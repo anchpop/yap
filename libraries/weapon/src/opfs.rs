@@ -182,17 +182,14 @@ impl EventStore<String, String> {
                     js_sys::Reflect::set(&obj, &"stream_id".into(), &stream_id.as_str().into())
                         .unwrap();
 
-                    log::info!(
-                        "Broadcasting opfs-written message for stream: {}",
-                        stream_id
-                    );
+                    log::info!("Broadcasting opfs-written message for stream: {stream_id}");
                     match channel.post_message(&obj) {
                         Ok(_) => log::info!("Message posted successfully"),
-                        Err(e) => log::error!("Failed to post message: {:?}", e),
+                        Err(e) => log::error!("Failed to post message: {e:?}"),
                     }
                 }
                 Err(e) => {
-                    log::error!("Failed to create BroadcastChannel: {:?}", e);
+                    log::error!("Failed to create BroadcastChannel: {e:?}");
                 }
             }
         }

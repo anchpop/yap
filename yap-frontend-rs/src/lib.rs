@@ -290,7 +290,7 @@ impl Weapon {
                 &self.store,
                 &access_token,
                 supabase::supabase_config(),
-                &user_id,
+                user_id,
                 &self.device_id,
                 Some(stream_id.clone()),
                 modifier,
