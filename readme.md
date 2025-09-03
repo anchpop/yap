@@ -1,32 +1,56 @@
 # Yap.Town 
 
-Currently supports french, with experimental support for spanish.
+**A Modern, Spaced-Repetition Language Learning App**
 
-## Build process
+Check it out on [yap.town](https://yap.town)!
 
-The build process is somewhat convoluted. It requires Rust, wasm-pack, uv, and pnpm.
+## Supported Languages
 
-1. Install the spaCy French NLP module: `cd ./generate-data/nlp && uv pip install https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.8.0/fr_dep_news_trf-3.8.0-py3-none-any.whl`
-2. Extract sentences from the Anki decks and generate the dictionary: `cargo run --bin generate-data`
-3. Build the wasm module: `cd yap-frontend-rs` `wasm-pack build --release`
-4. Build the frontend: `cd yap-frontend` `pnpm build`
+1. French
+2. Spanish (beta)
 
-## The server
+## Why Yap?
 
-Aside from relying on supabase, the frontend also relies on a server at yap-ai-backend.fly.io, code in `yap-ai-backend/`. The server requires the following environment variables be set:
+Other language learning apps I tried are very ineffective for language learning. They have two main flaws. 
 
+1. They do not effectively utilize spaced repetition. 
+2. They teach words in an ineffective order.
+
+Spaced repetition is the #1 most important thing a language learning app could possibly provide. It is the foundation of time-efficient focused study. 
+
+The order that words are taught in is also very inefficient. The most common words like "to", "from", "of", "I", "who", "that", and so on are the most common, so they should be learned first. But apps spend time teaching you how to say sentences like "the man is eating an apple", even though words like "man" and "apple" are incredibly rare by comparison.
+
+## Build Process
+
+Build the rust library
+
+```bash
+cd yap-frontend-rs
+wasm-pack build
 ```
-OPENAI_API_KEY=
-ELEVENLABS_API_KEY=
-SUPABASE_JWT_SECRET=
-SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
-GOOGLE_CLOUD_API_KEY=
+
+Then, run the page
+
+```bash
+cd yap-frontend
+pnpm i 
+pnpm dev
 ```
 
-# data
+There is also a supporting backend, normally assumed to be at `https://yap-ai-backend.fly.io`. But If you build the rust library with `wasm-pack build --features "local-backend`, it will look for the server on `localhost:8080`. You can then run the server locally with `cd yap-ai-backend && cargo run`. 
 
-thanks to 
+## Data Generation
 
-neri's sentences
-wikipron for phoneticshttps://github.com/CUNY-CL/wikipron/tree/master 
+The data in out/ is generated via the `generate-data` binary. Running it is somewhat convoluted. It requires python as well. 
+
+1. Install the spaCy French and Spanish NLP module: `cd ./generate-data/nlp && uv pip install https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.8.0/fr_dep_news_trf-3.8.0-py3-none-any.whl && uv pip install https://github.com/explosion/spacy-models/releases/download/es_dep_news_trf-3.8.0/es_dep_news_trf-3.8.0-py3-none-any.whl`
+2. Generate the data
+
+### Data Sources special thanks
+
+1. neri's frequency lists
+2. wikipron for phoneticshttps://github.com/CUNY-CL/wikipron/tree/master 
+
+## Supabase
+
+Accounts and cross-device sync uses supabase as a backend. Migrations are in the supabase/ folder.
