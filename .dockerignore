@@ -1,0 +1,33 @@
+# Rust build artifacts
+target/
+.cache/
+Cargo.lock
+
+# Version control
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Any other large directories
+node_modules/
+dist/
+tmp/
+logs/
+*.log
+
+# Test data or large assets
+test-data/
+*.mp4
+*.mov
+*.zip
+*.tar.gz
+

@@ -1,0 +1,53 @@
+[workspace]
+members = [
+    "yap-ai-backend",
+    "generate-data",
+    "language-utils",
+    "yap-frontend-rs",
+    "libraries/weapon",
+    "libraries/imdex_map",
+    "libraries/eyedee",
+]
+resolver = "3"
+
+[workspace.dependencies]
+html2text = "0.15"
+html-escape = "0.2"
+markdown-tables = "0.1.0"
+rusqlite = "0.35"
+serde_json = "1.0"
+tempfile = "3.20.0"
+zip = "4"
+schemars = "1"
+futures = "0.3.31"
+env_logger = "0.11.8"
+tsify = { version = "0.5.5", features = ["js"], default-features = false }
+tysm = { version = "0.10.0" }
+reqwest = { version = "0.12", features = ["json"] }
+tokio = { version = "1.45.1", features = ["full"] }
+opfs = { version = "0.1.4" }
+idb = { version = "0.6.3" }
+rkyv = { version = "0.8.10" }
+fetch-happen = { version = "0.2.0" }
+# { version = "0.1.1" }
+xxhash-rust = { version = "0.8.15", features = ["xxh3", "const_xxh3"] }
+indexmap = { version = "2" }
+chrono = "0.4.41"
+im = { version = "15.1.0", features = ["serde"] }
+log = "0.4"
+lasso = "0.7.3"
+wasm-bindgen = "0.2.84"
+thiserror = "2"
+slotmap = { version = "1.0", features = ["serde"] }
+wasm-logger = "0.2.0"
+
+
+[workspace.dependencies.serde]
+version = "1.0"
+features = ["derive"]
+
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+lto = true

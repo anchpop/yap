@@ -1,0 +1,13 @@
+[package]
+name = "language-utils"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+schemars.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tsify.workspace = true
+wasm-bindgen = "0.2.84"
+rkyv.workspace = true
+lasso.workspace = true

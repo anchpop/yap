@@ -1,0 +1,30 @@
+[package]
+name = "ai-backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+reqwest = { version = "0.12", default-features = false, features = [
+    "json",
+    "rustls-tls",
+] }
+base64 = "0.22"
+axum = "0.8.4"
+tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
+tysm.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+schemars.workspace = true
+tower = { version = "0.5" }
+tower-http = { version = "0.6", features = [
+    "cors",
+    "compression-br",
+    "compression-gzip",
+    "compression-deflate",
+    "compression-zstd",
+] }
+jsonwebtoken = "9.3"
+axum-extra = { version = "0.10.1", features = ["typed-header"] }
+dotenvy = "0.15.7"
+uuid = { version = "1.17", features = ["serde", "v4"] }
+language-utils = { path = "../language-utils" }

@@ -1,0 +1,1 @@
+Life goes on.

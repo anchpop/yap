@@ -1,0 +1,69 @@
+[package]
+name = "yap-frontend-rs"
+version = "0.3.0"
+authors = ["Andre Popovitch <andre@popovit.ch>"]
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+local-backend = []
+
+[dependencies]
+wasm-bindgen.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+im.workspace = true
+tsify.workspace = true
+futures.workspace = true
+opfs.workspace = true
+fetch-happen.workspace = true
+xxhash-rust.workspace = true
+rkyv.workspace = true
+wasm-bindgen-futures = { version = "0.4", features = [
+    "futures-core-03-stream",
+] }
+js-sys = "0.3"
+web-sys = { version = "0.3.77", features = [
+    "Storage",
+    "Window",
+    "FileSystemDirectoryHandle",
+    "FileSystemFileHandle",
+    "FileSystemWritableFileStream",
+    "FileSystemGetFileOptions",
+    "FileSystemCreateWritableOptions",
+    "Blob",
+    "Navigator",
+    "StorageManager",
+    "FileSystemGetDirectoryOptions",
+    "File",
+    "AbortSignal",
+    "Performance",
+] }
+console_error_panic_hook = { version = "0.1.7", optional = true }
+# The `console_error_panic_hook` crate provides better debugging of panics by
+# logging them with `console.error`. This is great for development, but requires
+# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
+# code size when deploying.
+rs-fsrs = "1.2.1"
+language-utils = { path = "../language-utils" }
+ordered-float = "5.0.0"
+serde-wasm-bindgen = "0.6"
+base64 = "0.22"
+thiserror = "2.0.12"
+weapon = { path = "../libraries/weapon", features = ["supabase", "opfs"] }
+imdex_map = { path = "../libraries/imdex_map" }
+eyedee = { path = "../libraries/eyedee" }
+lasso = { workspace = true }
+unicode-normalization = "0.1.24"
+wasm-logger.workspace = true
+log.workspace = true
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.34"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false

@@ -1,0 +1,1 @@
+["tierra", {"word":"tierra","lemma":"tierra","pos":"NOUN"}]

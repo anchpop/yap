@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm build:*)",
+      "Bash(grep:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(mkdir:*)",
+      "Bash(cargo fmt:*)",
+      "Bash(wasm-pack build:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(find:*)",
+      "Bash(cargo check:*)",
+      "Bash(cargo doc:*)",
+      "Bash(cargo build:*)"
+    ],
+    "deny": []
+  }
+}

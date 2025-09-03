@@ -1,0 +1,62 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- onesignal setup -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        // Determine if we're in development or production
+        const isDevelopment = window.location.hostname === 'localhost' || 
+                            window.location.hostname === '127.0.0.1' ||
+                            window.location.hostname.includes('dev') ||
+                            window.location.port === '5173'; // Vite's default dev port
+
+        const config = isDevelopment ? {
+          // Local development
+          appId: "cdde60d3-fd8c-4271-87cd-e3f18f6377b4",
+          safari_web_id: "web.onesignal.auto.44e66786-7e94-4ade-8822-3a1650cda83f"
+        } : {
+          // Production
+          appId: "31e87860-a9d1-435b-9838-cb7643bb5cdf",
+          safari_web_id: "web.onesignal.auto.29ad6177-53c3-46b5-8017-0e7b95131b37"
+        };
+
+        console.log(`OneSignal initializing in ${isDevelopment ? 'development' : 'production'} mode`);
+
+        await OneSignal.init({
+          ...config,
+          notifyButton: {
+            enable: false, // Disable the default notification button
+          },
+          welcomeNotification: {
+            disable: true  // This disables the welcome notification
+          },
+          serviceWorkerParam: { scope: "/push/onesignal/" },
+          serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js"
+        });
+      });
+    </script>
+
+    <!-- favicons -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Yap" />
+
+    <!-- viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- title and description -->
+    <title>Yap.Town</title>
+    <meta name="description" content="Language learning made easy">
+
+    <!-- pwa -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

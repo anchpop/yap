@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for yap-ai-backend on 2025-06-01T05:01:48-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'yap-ai-backend'
+primary_region = 'ord'
+
+[build]
+dockerfile = 'yap-ai-backend/Dockerfile'
+
+[build.args]
+CRATE_NAME = 'yap-ai-backend'
+
+[env]
+PORT = '8080'
+
+[http_service]
+internal_port = 8080
+force_https = true
+auto_stop_machines = 'stop'
+auto_start_machines = true
+min_machines_running = 0
+processes = ['app']
+
+[[vm]]
+memory = '1gb'
+cpu_kind = 'shared'
+cpus = 1

@@ -1,0 +1,52 @@
+[package]
+name = "weapon"
+version = "0.1.0"
+edition = "2024"
+description = "Cross-device sync engine"
+license = "MIT"
+authors = ["Andre Popovitch <andre@popovit.ch>"]
+
+[dependencies]
+chrono = { workspace = true, features = ["serde"] }
+im.workspace = true
+serde.workspace = true
+log.workspace = true
+serde_json.workspace = true
+
+fetch-happen = { workspace = true, optional = true }
+tsify = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+opfs = { workspace = true, optional = true }
+idb = { workspace = true, optional = true }
+futures = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+slotmap = { workspace = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { workspace = true }
+tsify = { workspace = true }
+web-sys = { version = "0.3", features = [
+    "BroadcastChannel",
+    "MessageEvent",
+], optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+js-sys = { version = "0.3", optional = true }
+
+[features]
+supabase = ["dep:fetch-happen", "dep:tsify", "dep:wasm-bindgen"]
+opfs = [
+    "dep:opfs",
+    "dep:futures",
+    "dep:thiserror",
+    "dep:web-sys",
+    "dep:serde-wasm-bindgen",
+    "dep:js-sys",
+]
+indexeddb = [
+    "dep:idb",
+    "dep:futures",
+    "dep:thiserror",
+    "dep:web-sys",
+    "dep:serde-wasm-bindgen",
+    "dep:js-sys",
+]

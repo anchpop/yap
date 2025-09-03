@@ -1,0 +1,11 @@
+[project]
+name = "nlp"
+version = "0.1.0"
+description = "NLP tools for French multiword term detection"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "spacy>=3.7.0",
+    "pydantic>=2.0.0",
+    "tqdm>=4.66.0",
+]

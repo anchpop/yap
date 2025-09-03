@@ -1,0 +1,11 @@
+out/frequencies.jsonl filter=lfs diff=lfs merge=lfs -text
+out/phrasebook.jsonl filter=lfs diff=lfs merge=lfs -text
+out/dictionary.jsonl filter=lfs diff=lfs merge=lfs -text
+out/french_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
+out/french_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
+https://github.com/anchpop/sentogen/blob/@anchpop/sentence-review/out/french_to_english_translations.jsonl filter=lfs diff=lfs merge=lfs -text
+out/french_to_english_translations.jsonl filter=lfs diff=lfs merge=lfs -text
+out/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
+out/corrected_proper_nouns.jsonl filter=lfs diff=lfs merge=lfs -text
+generate-data/data/fra_latn_broad_filtered.tsv filter=lfs diff=lfs merge=lfs -text
+out/frequency_lists/anki/frequencies.jsonl filter=lfs diff=lfs merge=lfs -text
