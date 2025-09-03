@@ -16,6 +16,7 @@ import { ReportIssueModal } from "./challenges/ReportIssueModal"
 import { CantListenButton } from "./CantListenButton"
 import { AudioVisualizer } from "./AudioVisualizer"
 import { CardsRemaining } from "./CardsRemaining"
+import { toast } from 'sonner'
 
 interface FlashcardProps {
   audioRequest: AudioRequest
@@ -206,12 +207,18 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
         return;
       }
 
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter') {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        toast('Use the arrow keys');
+        return;
+      }
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
       }
 
       // Show answer: Space / ↓ / j (when answer is hidden)
-      if (!showAnswer && (e.key === ' ' || e.key === 'ArrowDown' || e.key === 'j' || e.key === 'Enter')) {
+      if (!showAnswer && (e.key === ' ' || e.key === 'ArrowDown' || e.key === 'j')) {
         e.preventDefault();
         onToggle();
       }
@@ -220,8 +227,8 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
         e.preventDefault();
         onToggle();
       }
-      // Mark as "good" when answer is shown: Space or Enter
-      else if (showAnswer && (e.key === ' ' || e.key === 'Enter') && !e.shiftKey) {
+      // Mark as "good" when answer is shown: Space
+      else if (showAnswer && e.key === ' ' && !e.shiftKey) {
         e.preventDefault();
         if (onRating) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -229,7 +236,7 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
         }
       }
       // Skip sides and mark as "good": Shift + Space or →
-      else if (((e.key === ' ' || e.key === 'Enter') && e.shiftKey) || e.key === 'ArrowRight') {
+      else if ((e.key === ' ' && e.shiftKey) || e.key === 'ArrowRight') {
         e.preventDefault();
         if (onRating) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
