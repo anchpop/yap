@@ -201,7 +201,7 @@ function AppContent({ userInfo, accessToken }: { userInfo: UserInfo | undefined,
                 {
                   match(deck)
                     .with({ type: "deck", deck: null }, () =>
-                      <div className="min-h-screen bg-background flex items-center justify-center">
+                      <div className="flex-1 bg-background flex items-center justify-center">
                         <p className="text-muted-foreground">Loading...</p>
                       </div>)
                     .with({ type: "deck", deck: P.not(P.nullish) }, ({ deck, language }) => (
@@ -230,7 +230,7 @@ function AppContent({ userInfo, accessToken }: { userInfo: UserInfo | undefined,
                         }} />
                     ))
                     .with(null, () =>
-                      <div className="min-h-screen bg-background flex items-center justify-center">
+                      <div className="bg-background flex items-center justify-center">
                         <p className="text-muted-foreground">Loading...</p>
                       </div>)
                     .exhaustive()
