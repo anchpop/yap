@@ -1,4 +1,6 @@
-# Yap.Town - Language Learning
+# Yap.Town 
+
+Currently supports french, with experimental support for spanish.
 
 ## Build process
 
