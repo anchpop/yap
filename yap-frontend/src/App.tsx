@@ -2,6 +2,7 @@ import { useState, useEffect, Profiler, useMemo, useCallback, useSyncExternalSto
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CardSummary, Deck, type CardType, type Challenge, type ChallengeType, type Language, type Lexeme, type /* comes from TranscriptionChallenge */ PartGraded } from '../../yap-frontend-rs/pkg'
 import { Button } from "@/components/ui/button.tsx"
+import { Progress } from "@/components/ui/progress.tsx"
 import { ThemeProvider } from "@/components/theme-provider"
 import { supabase } from '@/lib/supabase'
 import type { Session as SupabaseSession } from '@supabase/supabase-js'
@@ -72,10 +73,25 @@ function AppMain() {
 function AppCheckBrowserSupport() {
   const token = useWeaponSupport()
   const supported = token.browserSupported
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    if (supported !== null) return
+
+    const start = Date.now()
+    const timer = setInterval(() => {
+      const diff = Date.now() - start
+      setProgress(Math.min(diff / 30, 100))
+    }, 30)
+
+    return () => clearInterval(timer)
+  }, [supported])
+
   if (supported === null) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Checking browser support...</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+        <p className="text-muted-foreground">Checking device compatibility...</p>
+        <Progress value={progress} className="w-64" />
       </div>
     )
   }
