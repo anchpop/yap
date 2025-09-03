@@ -230,7 +230,7 @@ function AppContent({ userInfo, accessToken }: { userInfo: UserInfo | undefined,
                         }} />
                     ))
                     .with(null, () =>
-                      <div className="flex-1 bg-background flex items-center justify-center">
+                      <div className="bg-background flex items-center justify-center">
                         <p className="text-muted-foreground">Loading...</p>
                       </div>)
                     .exhaustive()
