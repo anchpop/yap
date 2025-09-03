@@ -34,6 +34,7 @@ import { Header } from '@/components/header'
 import { Toaster } from 'sonner'
 import { BrowserNotSupported } from '@/components/browser-not-supported'
 import { Stats } from '@/components/stats'
+import { About } from '@/components/about'
 import { match, P } from 'ts-pattern';
 
 // Essential user info to persist for offline functionality
@@ -218,6 +219,7 @@ function AppContent({ userInfo, accessToken }: { userInfo: UserInfo | undefined,
                             weapon.add_deck_selection_event({ SelectLanguage: language })
                             setRequestedLanguageChange(false)
                           }} />
+
                     ))
                     .with({ type: "noLanguageSelected" }, () => (
                       <LanguageSelector
@@ -235,12 +237,13 @@ function AppContent({ userInfo, accessToken }: { userInfo: UserInfo | undefined,
                 }
               </div>
               {deck ? (
-                deck.type === "deck" ? (
+                deck.type === "deck" && !requestedLanguageChange ? (
                   deck.deck ? (
                     <Stats deck={deck.deck} />
                   ) : <></>
                 ) : <></>
               ) : <></>}
+              <About />
             </Profiler>
             <div className="p-2"></div>
           </div>
