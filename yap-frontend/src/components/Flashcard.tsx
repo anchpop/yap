@@ -152,6 +152,9 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
   const leftLabel = isNew ? "Didn't know" : "Forgot"
   const rightLabel = isNew ? "Already knew" : "Good"
 
+  const requireShowAnswer = totalCount < 10
+  const canGrade = showAnswer || !requireShowAnswer
+
   const rotate = useTransform(x, [-200, 200], [-30, 30])
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0])
 
@@ -162,6 +165,11 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
   const handleDragEnd = async (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false)
     const threshold = 100
+
+    if (!canGrade) {
+      controls.start({ x: 0, transition: { type: "spring", stiffness: 300, damping: 20 } })
+      return
+    }
 
     if (info.offset.x > threshold && info.velocity.x > 0) {
       // Swiped right - Good
@@ -228,15 +236,7 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
         onToggle();
       }
       // Mark as "good" when answer is shown: Space
-      else if (showAnswer && e.key === ' ' && !e.shiftKey) {
-        e.preventDefault();
-        if (onRating) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          onRating('good');
-        }
-      }
-      // Skip sides and mark as "good": Shift + Space or →
-      else if ((e.key === ' ' && e.shiftKey) || e.key === 'ArrowRight') {
+      else if (canGrade && e.key === 'ArrowRight' && !e.shiftKey) {
         e.preventDefault();
         if (onRating) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -244,7 +244,7 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
         }
       }
       // Mark as "again": f or ←
-      else if (e.key === 'f' || e.key === 'ArrowLeft') {
+      else if (canGrade && (e.key === 'f' || e.key === 'ArrowLeft')) {
         e.preventDefault();
         if (onRating) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -255,7 +255,7 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showAnswer, onToggle, onRating]);
+  }, [showAnswer, canGrade, onToggle, onRating]);
 
   return (
     <div className="flex flex-col flex-1 justify-between">
@@ -350,8 +350,8 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
               </motion.div>)
               : (
                 <div>
-                  <div className="text-muted-foreground">
-                    Next Side
+                  <div className={`text-muted-foreground ${requireShowAnswer ? 'font-bold' : ''}`}>
+                    Show Answer
                   </div>
                   <div className="text-muted-foreground">
                     ↓
@@ -376,23 +376,27 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
           <div className="grid grid-cols-2 gap-2">
             <Button
               onClick={() => {
+                if (!canGrade) return
                 window.scrollTo({ top: 0, behavior: 'smooth' })
                 onRating('again')
               }}
               variant="destructive"
               size="lg"
               className="h-14"
+              disabled={!canGrade}
             >
               {leftLabel}
             </Button>
             <Button
               onClick={() => {
+                if (!canGrade) return
                 window.scrollTo({ top: 0, behavior: 'smooth' })
                 onRating('good')
               }}
               variant="default"
               size="lg"
               className="h-14"
+              disabled={!canGrade}
             >
               {rightLabel}
             </Button>
