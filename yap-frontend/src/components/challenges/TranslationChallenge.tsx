@@ -642,6 +642,11 @@ export function TranslationChallenge({ sentence, onComplete, dueCount, totalCoun
         e.preventDefault()
         handleContinue()
       }
+      else if (e.key === 'ArrowRight' && grade && "graded" in grade && canContinue) {
+        e.preventDefault()
+        handleContinue()
+        return
+      }
 
       const wordStatuses = grade && 'graded' in grade && 'wordStatuses' in grade.graded && grade.graded.wordStatuses
 

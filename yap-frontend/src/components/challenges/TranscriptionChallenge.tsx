@@ -147,10 +147,10 @@ export function TranscriptionChallenge({
   // Global keyboard handler for Enter key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        const activeElement = document.activeElement
-        const isInputFocused = activeElement?.tagName === 'INPUT'
+      const activeElement = document.activeElement
+      const isInputFocused = activeElement?.tagName === 'INPUT'
 
+      if (e.key === 'Enter') {
         if (isInputFocused) {
           // Handle input navigation
           e.preventDefault()
@@ -175,6 +175,9 @@ export function TranscriptionChallenge({
           e.preventDefault()
           onComplete(gradingState.graded.results)
         }
+      } else if (e.key === 'ArrowRight' && gradingState && 'graded' in gradingState && !isInputFocused) {
+        e.preventDefault()
+        onComplete(gradingState.graded.results)
       }
     }
 
