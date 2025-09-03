@@ -411,6 +411,9 @@ Words that need grading:
                     let grade = if let Some(grade_str) = llm_response.grades.get(grade_idx) {
                         match grade_str.as_str() {
                             "Perfect" => transcription_challenge::WordGrade::Perfect {},
+                            "CorrectWithTypo" => {
+                                transcription_challenge::WordGrade::CorrectWithTypo {}
+                            },
                             "PhoneticallyIdenticalButContextuallyIncorrect" => {
                                 transcription_challenge::WordGrade::PhoneticallyIdenticalButContextuallyIncorrect {}
                             }
