@@ -1492,17 +1492,17 @@ impl Deck {
 
         // sort by due date
         due_cards.sort_by_key(|card_index| {
-            let (_, card) = self.get_card(*card_index).unwrap();
+            let (_, card) = self.cards.get_index(*card_index).unwrap();
             ordered_float::NotNan::new(card.due_timestamp_ms()).unwrap()
         });
 
         due_but_banned_cards.sort_by_key(|card_index| {
-            let (_, card) = self.get_card(*card_index).unwrap();
+            let (_, card) = self.cards.get_index(*card_index).unwrap();
             ordered_float::NotNan::new(card.due_timestamp_ms()).unwrap()
         });
 
         future_cards.sort_by_key(|card_index| {
-            let (_, card) = self.get_card(*card_index).unwrap();
+            let (_, card) = self.cards.get_index(*card_index).unwrap();
             ordered_float::NotNan::new(card.due_timestamp_ms()).unwrap()
         });
 
@@ -2099,7 +2099,7 @@ impl ReviewInfo {
     }
 }
 
-impl Card {
+impl CardData {
     pub fn due_timestamp_ms(&self) -> f64 {
         self.fsrs_card.due.timestamp_millis() as f64
     }

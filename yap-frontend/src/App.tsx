@@ -634,7 +634,6 @@ function useDeck(): { type: "deck", language: Language, deck: Deck | null } | { 
     }
 
     const deck_selection = weapon.get_deck_selection_state()
-    console.log("deck_selection", deck_selection)
     if (deck_selection === undefined || deck_selection === null) {
       return null
     }

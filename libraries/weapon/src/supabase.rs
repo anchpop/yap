@@ -140,7 +140,7 @@ impl EventStore<String, String> {
         for (stream, device_events) in sync_response {
             for (device, events) in device_events {
                 let events = events.into_iter().map(|event| event.event).collect();
-                store.borrow_mut().add_device_events_jsons(
+                sync_result.downloaded_from_supabase += store.borrow_mut().add_device_events_jsons(
                     stream.clone(),
                     device,
                     events,
@@ -317,6 +317,7 @@ async fn get_clock(
     Ok(m)
 }
 
+#[derive(Debug)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub struct SupabaseSyncResult {
     pub uploaded_to_supabase: usize,
