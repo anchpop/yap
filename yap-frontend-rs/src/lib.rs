@@ -5,6 +5,7 @@ mod language_pack;
 mod next_cards;
 mod notifications;
 pub mod opfs_test;
+mod simulation;
 mod supabase;
 mod utils;
 
@@ -1498,7 +1499,6 @@ impl Deck {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub async fn cache_challenge_audio(
         &self,
-        review_info: &ReviewInfo,
         access_token: Option<String>,
         abort_signal: Option<web_sys::AbortSignal>,
     ) {
@@ -1511,7 +1511,12 @@ impl Deck {
         };
         let access_token = access_token.as_ref();
 
-        let requests = review_info.get_upcoming_audio_needed(self);
+        const SIMULATION_DAYS: u32 = 10;
+        let mut requests = Vec::new();
+        self.simulate_usage(SIMULATION_DAYS, |challenge| {
+            requests.push(challenge.audio_request());
+        });
+        let requests = requests.into_iter();
 
         let requested_filenames = futures::stream::iter(requests)
             .map(|request| {
@@ -2068,22 +2073,6 @@ impl ReviewInfo {
         } else {
             None
         }
-    }
-}
-
-impl ReviewInfo {
-    pub fn get_upcoming_audio_needed(&self, deck: &Deck) -> impl Iterator<Item = AudioRequest> {
-        self.due_cards
-            .iter()
-            .chain(self.due_but_banned_cards.iter())
-            .chain(self.future_cards.iter())
-            .filter_map(|card_index| {
-                let audio_request = self
-                    .get_challenge_for_card(deck, *card_index)?
-                    .audio_request();
-                Some(audio_request)
-            })
-            .take(50)
     }
 }
 
