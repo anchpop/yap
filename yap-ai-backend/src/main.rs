@@ -27,6 +27,7 @@ static CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
 // Include the language data rkyv file at compile time
 static FRENCH_LANGUAGE_DATA: &[u8] = include_bytes!("../../out/fra/language_data.rkyv");
 static SPANISH_LANGUAGE_DATA: &[u8] = include_bytes!("../../out/spa/language_data.rkyv");
+static KOREAN_LANGUAGE_DATA: &[u8] = include_bytes!("../../out/kor/language_data.rkyv");
 
 #[derive(Serialize)]
 struct ElevenLabsRequest {
@@ -120,6 +121,7 @@ async fn text_to_speech(
         Language::French => "ohItIVrXTBI80RrUECOD", // Existing French voice
         Language::Spanish => "zl1Ut8dvwcVSuQSB9XkG", // Ninoska - Spanish voice
         Language::English => "ohItIVrXTBI80RrUECOD", // Default to French voice for now
+        Language::Korean => "nbrxrAz3eYm9NgojrmFK", // Korean
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -164,6 +166,7 @@ async fn google_text_to_speech(
         Language::French => ("fr-FR", "fr-FR-Chirp3-HD-Achernar"),
         Language::Spanish => ("es-ES", "es-ES-Chirp3-HD-Achernar"),
         Language::English => ("en-US", "en-US-Chirp3-HD-Achernar"),
+        Language::Korean => ("ko-KR", "ko-KR-Chirp3-HD-Achernar"),
     };
 
     let google_request = GoogleTtsRequest {
@@ -220,6 +223,7 @@ async fn autograde_translation(
         Language::French => "French",
         Language::Spanish => "Spanish",
         Language::English => "English",
+        Language::Korean => "Korean",
     };
 
     let system_prompt = format!(
@@ -275,6 +279,7 @@ async fn autograde_transcription(
         Language::French => "French",
         Language::Spanish => "Spanish",
         Language::English => "English",
+        Language::Korean => "Korean",
     };
 
     let system_prompt = format!(
@@ -308,6 +313,8 @@ The explanation should be in English and help the user learn from their mistakes
                 r#"For example, if the user confused "esta" and "está", you could generate ["esta", "está"] in the compare array."#,
             Language::English =>
                 r#"For example, if the user confused "then" and "than", you could generate ["then", "than"] in the compare array."#,
+            Language::Korean =>
+                r#"For example, if the user confused "어떻게" and "어떡해", you could generate ["어떻게", "어떡해"] in the compare array."#,
         }
     );
 
@@ -470,6 +477,13 @@ async fn serve_language_data(Path(language): Path<String>) -> Response {
             .header(header::CONTENT_TYPE, "application/octet-stream")
             .header(header::CONTENT_LENGTH, SPANISH_LANGUAGE_DATA.len())
             .body(axum::body::Body::from(SPANISH_LANGUAGE_DATA))
+            .unwrap()
+    } else if language == "kor" {
+        Response::builder()
+            .status(StatusCode::OK)
+            .header(header::CONTENT_TYPE, "application/octet-stream")
+            .header(header::CONTENT_LENGTH, KOREAN_LANGUAGE_DATA.len())
+            .body(axum::body::Body::from(KOREAN_LANGUAGE_DATA))
             .unwrap()
     } else {
         Response::builder()

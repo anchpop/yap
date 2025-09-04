@@ -88,7 +88,7 @@ Examples:
 
         None
     })
-    .buffered(10)
+    .buffered(40)
     .collect::<Vec<_>>()
     .await.into_iter().flatten().collect::<BTreeMap<_, _>>();
 

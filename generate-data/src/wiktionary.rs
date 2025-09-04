@@ -23,12 +23,17 @@ pub async fn ensure_multiword_terms_file(
     }
 
     println!("Multiword terms file not found, downloading from Wiktionary...");
-    let terms = download_multiword_terms(*target_language).await?;
-    let extra_terms = extra_multiword_terms(*target_language).await?;
+    let terms = download_multiword_terms(*target_language)
+        .await
+        .context("Failed to download multiword terms")?;
+    let extra_terms = extra_multiword_terms(*target_language)
+        .await
+        .context("Failed to get extra multiword terms")?;
     let banned_terms = match target_language {
         Language::French => vec!["de le", "de les", "à le", "à les"],
         Language::Spanish => vec!["de el", "a el"], // Spanish contractions that become "del" and "al"
         Language::English => vec![],
+        Language::Korean => vec![],
     };
     let banned_terms = banned_terms
         .into_iter()
@@ -41,7 +46,8 @@ pub async fn ensure_multiword_terms_file(
         .filter(|term| !banned_terms.contains(term))
         .collect::<BTreeSet<_>>();
 
-    let mut file = File::create(&multiword_terms_file)?;
+    let mut file =
+        File::create(&multiword_terms_file).context("Failed to create multiword terms file")?;
 
     for term in terms {
         writeln!(file, "{term}")?;
@@ -55,11 +61,19 @@ pub async fn ensure_multiword_terms_file(
 async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>> {
     let language_code = language.iso_639_3();
     let file_path = format!("./generate-data/data/{language_code}/extra_multiword_terms.txt");
-    let file = File::open(Path::new(&file_path))?;
+    let file = File::open(Path::new(&file_path)).context(format!(
+        "Failed to open extra multiword terms file at {file_path}"
+    ))?;
     let reader = BufReader::new(file);
     let mut terms = Vec::new();
     for line in reader.lines() {
-        terms.push(line?.trim().to_string());
+        let line = line?.trim().to_string();
+        let line = line
+            .replace("...", "")
+            .replace("  ", " ")
+            .trim()
+            .to_string();
+        terms.push(line);
     }
     Ok(terms)
 }
@@ -69,6 +83,10 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
         Language::French => "French_multiword_terms",
         Language::English => "English_multiword_terms",
         Language::Spanish => "Spanish_multiword_terms",
+        Language::Korean => {
+            // Korean multiword terms are not supported yet. The wiktionary page seems very barebones.
+            return Ok(vec![]);
+        }
     };
     println!("Downloading category: {category}");
 

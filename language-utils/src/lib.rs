@@ -42,7 +42,7 @@ pub fn expand_spanish_word(
     })
 }
 
-/// Expands English contractions to their full forms and normalizes words
+/// Normalizes english words
 pub fn expand_english_word(
     text: &str,
     _pos: Option<PartOfSpeech>,
@@ -188,6 +188,30 @@ pub fn expand_french_word(
     })
 }
 
+/// Expands English contractions to their full forms and normalizes words
+pub fn expand_korean_word(
+    text: &str,
+    _pos: Option<PartOfSpeech>,
+    _morph: &BTreeMap<String, String>,
+) -> Option<(String, Option<String>, Option<PartOfSpeech>)> {
+    let text = strip_punctuation(text);
+
+    if text.is_empty() {
+        return None;
+    }
+
+    if ["'", "-", "—", "–", "’", "‘"].contains(&text) {
+        return None;
+    }
+    if text.chars().all(|c| c.is_numeric()) {
+        return None;
+    }
+
+    let text = text.to_lowercase();
+
+    Some((text, None, None))
+}
+
 #[derive(
     Clone,
     Debug,
@@ -240,6 +264,8 @@ pub enum PartOfSpeech {
     Sym, // symbol
     #[serde(rename = "VERB")]
     Verb, // verb
+    #[serde(rename = "SPACE")]
+    Space, // space
     #[serde(rename = "X")]
     X, // other
 }
@@ -263,6 +289,7 @@ impl std::fmt::Display for PartOfSpeech {
             PartOfSpeech::Sconj => "subordinating conjunction",
             PartOfSpeech::Sym => "symbol",
             PartOfSpeech::Verb => "verb",
+            PartOfSpeech::Space => "space",
             PartOfSpeech::X => "other",
         };
         write!(f, "{word}")
@@ -664,6 +691,7 @@ impl Heteronym<String> {
             Language::French => expand_french_word,
             Language::Spanish => expand_spanish_word,
             Language::English => expand_english_word,
+            Language::Korean => expand_korean_word,
         };
 
         let heteronym = if let Some(heteronym) = proper_nouns.get(&doc_token.text.to_lowercase()) {
@@ -1135,6 +1163,7 @@ pub enum Language {
     French,
     English,
     Spanish,
+    Korean,
 }
 
 impl Language {
@@ -1143,6 +1172,7 @@ impl Language {
             Language::French => "fra",
             Language::English => "eng",
             Language::Spanish => "spa",
+            Language::Korean => "kor",
         }
     }
 
@@ -1151,6 +1181,7 @@ impl Language {
             Language::French => "fr",
             Language::English => "en",
             Language::Spanish => "es",
+            Language::Korean => "ko",
         }
     }
 }
@@ -1161,6 +1192,7 @@ impl std::fmt::Display for Language {
             Language::French => write!(f, "French"),
             Language::English => write!(f, "English"),
             Language::Spanish => write!(f, "Spanish"),
+            Language::Korean => write!(f, "Korean"),
         }
     }
 }
@@ -1180,6 +1212,10 @@ pub const COURSES: &[Course] = &[
     Course {
         native_language: Language::English,
         target_language: Language::Spanish,
+    },
+    Course {
+        native_language: Language::English,
+        target_language: Language::Korean,
     },
 ];
 
