@@ -187,6 +187,7 @@ impl Weapon {
                 ..Default::default()
             }),
             total_reviews: 0,
+            xp: 0.0,
             daily_streak: None,
             language_pack,
             target_language,
@@ -968,6 +969,7 @@ pub struct Deck {
 
     fsrs: FSRS,
     total_reviews: u64,
+    xp: f64,
     daily_streak: Option<DailyStreak>,
 
     language_pack: Arc<LanguagePack>,
@@ -1221,8 +1223,11 @@ impl Deck {
         }
 
         let card_data = self.cards.get_mut(&card)?;
+        let old_stability = card_data.fsrs_card.stability;
         let record_log = self.fsrs.repeat(card_data.fsrs_card.clone(), timestamp);
         card_data.fsrs_card = record_log[&rating].card.clone();
+        let new_stability = card_data.fsrs_card.stability;
+        self.xp += (new_stability - old_stability).max(0.0) / 10.0;
         Some(card_data)
     }
 
@@ -1593,6 +1598,11 @@ impl Deck {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_total_reviews(&self) -> u64 {
         self.total_reviews
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_xp(&self) -> f64 {
+        self.xp
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
