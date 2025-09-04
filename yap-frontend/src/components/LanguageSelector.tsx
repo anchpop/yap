@@ -57,6 +57,17 @@ export function LanguageSelector({ onLanguageConfirmed, skipOnboarding }: Langua
         accent: '#C60B1E',
         gradient: 'linear-gradient(180deg, #C60B1E 25%, #FFC400 25% 75%, #C60B1E 75%)'
       }
+    },
+    {
+      name: 'Korean' as Language,
+      flag: '🇰🇷',
+      confirmText: '가자',
+      colors: {
+        primary: '#003478',
+        secondary: '#FFFFFF',
+        accent: '#C60B1E',
+        gradient: 'linear-gradient(180deg, #FFFFFF 50%, #C60B1E 50%)'
+      }
     }
   ];
 
@@ -108,7 +119,7 @@ export function LanguageSelector({ onLanguageConfirmed, skipOnboarding }: Langua
               </h1>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 w-full">
+            <div className="grid md:grid-cols-3 gap-8 w-full">
               {languages.map((lang) => (
                 <motion.div
                   key={lang.name}

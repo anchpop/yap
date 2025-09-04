@@ -43,13 +43,14 @@ There is also a supporting backend, normally assumed to be at `https://yap-ai-ba
 
 The data in out/ is generated via the `generate-data` binary. Running it is somewhat convoluted. It requires python as well. 
 
-1. Install the spaCy French and Spanish NLP module: `cd ./generate-data/nlp && uv pip install https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.8.0/fr_dep_news_trf-3.8.0-py3-none-any.whl && uv pip install https://github.com/explosion/spacy-models/releases/download/es_dep_news_trf-3.8.0/es_dep_news_trf-3.8.0-py3-none-any.whl`
+1. Install the spaCy French and Spanish NLP module: `cd ./generate-data/nlp && uv pip install https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.8.0/fr_dep_news_trf-3.8.0-py3-none-any.whl && uv pip install https://github.com/explosion/spacy-models/releases/download/es_dep_news_trf-3.8.0/es_dep_news_trf-3.8.0-py3-none-any.whl && uv pip install https://github.com/explosion/spacy-models/releases/download/ko_core_news_lg-3.8.0/ko_core_news_lg-3.8.0-py3-none-any.whl`
 2. Generate the data
 
 ### Data Sources special thanks
 
 1. neri's frequency lists
-2. wikipron for phoneticshttps://github.com/CUNY-CL/wikipron/tree/master 
+2. wikipron for phonetics https://github.com/CUNY-CL/wikipron/tree/master 
+3. opensubtitles http://www.opensubtitles.org/ (downloaded via https://opus.nlpl.eu/OpenSubtitles/ko&en/v2024/OpenSubtitles)
 
 ## Supabase
 

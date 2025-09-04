@@ -650,7 +650,11 @@ impl LanguagePack {
                         analysis
                             .words
                             .iter()
-                            .map(|word| word.get_interned(&rodeo).unwrap())
+                            .map(|word| {
+                                word.get_interned(&rodeo).unwrap_or_else(|| {
+                                    panic!("word not in rodeo: {word:?} in sentence: {sentence:?}")
+                                })
+                            })
                             .collect(),
                     )
                 })
@@ -749,7 +753,14 @@ impl LanguagePack {
                 .word_to_pronunciation
                 .iter()
                 .map(|(word, pronunciation)| {
-                    (rodeo.get(word).unwrap(), rodeo.get(pronunciation).unwrap())
+                    (
+                        rodeo
+                            .get(word)
+                            .unwrap_or_else(|| panic!("word not in rodeo: {word:?}")),
+                        rodeo.get(pronunciation).unwrap_or_else(|| {
+                            panic!("pronunciation not in rodeo: {pronunciation:?}")
+                        }),
+                    )
                 })
                 .collect()
         };
@@ -1258,7 +1269,8 @@ impl Deck {
                 } => {
                     let Some(entry) = self.language_pack.dictionary.get(heteronym).cloned() else {
                         panic!(
-                            "Heteronym {heteronym:?} was in the deck, but was not found in dictionary"
+                            "Heteronym {:?} was in the deck, but was not found in dictionary",
+                            heteronym.resolve(&self.language_pack.rodeo)
                         );
                     };
                     CardContent::Heteronym(*heteronym, entry.definitions.clone())
@@ -1866,6 +1878,7 @@ impl ReviewInfo {
             Language::French => "Le mot est",
             Language::Spanish => "La palabra es",
             Language::English => "The word is",
+            Language::Korean => "단어는",
         }
     }
 

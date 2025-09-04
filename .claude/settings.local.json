@@ -13,7 +13,9 @@
       "Bash(find:*)",
       "Bash(cargo check:*)",
       "Bash(cargo doc:*)",
-      "Bash(cargo build:*)"
+      "Bash(cargo build:*)",
+      "Bash(python3:*)",
+      "Bash(sqlite3:*)"
     ],
     "deny": []
   }

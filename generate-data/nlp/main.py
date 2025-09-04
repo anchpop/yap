@@ -25,6 +25,10 @@ MODEL_MAPPING = {
     "spa": {
         "small": "es_core_news_sm",
         "large": "es_dep_news_trf"
+    },
+    "kor": {
+        "small": "ko_core_news_sm",
+        "large": "ko_core_news_lg"
     }
 }
 
@@ -372,7 +376,6 @@ def process_sentences(sentences_file: str, terms_file: str, output_file: str, la
                                 "morph": token.morph.to_dict(),
                                 "dep": token.dep_} for token in doc],
                         "entities": [(ent.text, ent.label_) for ent in doc.ents],
-                        "noun_chunks": [chunk.text for chunk in doc.noun_chunks],
                     }
 
                     # Write the enhanced data
@@ -406,7 +409,6 @@ def process_sentences(sentences_file: str, terms_file: str, output_file: str, la
                             "morph": token.morph.to_dict(),
                             "dep": token.dep_} for token in doc],
                     "entities": [(ent.text, ent.label_) for ent in doc.ents],
-                    "noun_chunks": [chunk.text for chunk in doc.noun_chunks],
                 }
 
                 # Write the enhanced data
