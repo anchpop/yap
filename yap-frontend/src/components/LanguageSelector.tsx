@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { ArrowRight } from 'lucide-react';
 import {
   Carousel,
@@ -56,7 +57,8 @@ export function LanguageSelector({ onLanguageConfirmed, skipOnboarding }: Langua
         secondary: '#FFC400',
         accent: '#C60B1E',
         gradient: 'linear-gradient(180deg, #C60B1E 25%, #FFC400 25% 75%, #C60B1E 75%)'
-      }
+      },
+      beta: true
     },
     {
       name: 'Korean' as Language,
@@ -67,7 +69,8 @@ export function LanguageSelector({ onLanguageConfirmed, skipOnboarding }: Langua
         secondary: '#FFFFFF',
         accent: '#C60B1E',
         gradient: 'linear-gradient(180deg, #FFFFFF 50%, #C60B1E 50%)'
-      }
+      },
+      beta: true
     }
   ];
 
@@ -132,6 +135,11 @@ export function LanguageSelector({ onLanguageConfirmed, skipOnboarding }: Langua
                       setSelectedLanguage(lang.name);
                     }}
                   >
+                    {lang.beta && (
+                      <Badge className="absolute top-2 right-2 z-20 gap-1">
+                        Beta
+                      </Badge>
+                    )}
                     <div
                       className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
                       style={{ background: lang.colors.gradient }}
