@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import TimeAgo from 'react-timeago'
 import type { Deck } from '../../../yap-frontend-rs/pkg'
 
@@ -9,6 +11,13 @@ interface StatsProps {
 export function Stats({ deck }: StatsProps) {
   const reviewInfo = deck.get_review_info([])
   const allCardsSummary = deck.get_all_cards_summary();
+
+  const now = Date.now();
+  const dueCards = allCardsSummary.filter((card) => card.due_timestamp_ms <= now);
+  const notDueCards = allCardsSummary.filter((card) => card.due_timestamp_ms > now);
+
+  const [visibleCount, setVisibleCount] = useState(10)
+  const visibleCards = [...dueCards, ...notDueCards.slice(0, visibleCount)]
 
   return (
     <div className="mt-4">
@@ -47,7 +56,7 @@ export function Stats({ deck }: StatsProps) {
             </tr>
           </thead>
           <tbody>
-            {allCardsSummary.map((card, index) => {
+            {visibleCards.map((card, index) => {
               const shortDescription =
                 "TargetLanguage" in card.card_indicator ?
                   "Heteronym" in card.card_indicator.TargetLanguage.lexeme ?
@@ -55,7 +64,7 @@ export function Stats({ deck }: StatsProps) {
                     card.card_indicator.TargetLanguage.lexeme.Multiword :
                   `/${card.card_indicator.ListeningHomophonous.pronunciation}/`
 
-              const isDue = card.due_timestamp_ms <= Date.now();
+              const isDue = card.due_timestamp_ms <= now;
               return (
                 <tr key={index} className={`border-b ${isDue ? 'bg-green-500/10' : ''}`}>
                   <td className="p-3 font-medium">{shortDescription}</td>
@@ -74,6 +83,13 @@ export function Stats({ deck }: StatsProps) {
             })}
           </tbody>
         </table>
+        {notDueCards.length > visibleCount && (
+          <div className="p-3">
+            <Button variant="outline" onClick={() => setVisibleCount((c) => c + 10)}>
+              Show more
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
