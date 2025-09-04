@@ -359,7 +359,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage }: ReviewProps) {
   useEffect(() => {
     const abortController = new AbortController();
 
-    deck.cache_challenge_audio(reviewInfo, accessToken, abortController.signal);
+    deck.cache_challenge_audio(accessToken, abortController.signal);
 
     return () => {
       abortController.abort();

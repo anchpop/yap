@@ -1499,7 +1499,6 @@ impl Deck {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub async fn cache_challenge_audio(
         &self,
-        _review_info: &ReviewInfo,
         access_token: Option<String>,
         abort_signal: Option<web_sys::AbortSignal>,
     ) {
