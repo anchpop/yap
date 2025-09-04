@@ -1511,9 +1511,9 @@ impl Deck {
         };
         let access_token = access_token.as_ref();
 
-        const SIMULATION_DAYS: u32 = 3;
+        const SIMULATION_DAYS: u32 = 10;
         let mut requests = Vec::new();
-        self.simulate_days(SIMULATION_DAYS, |challenge| {
+        self.simulate_usage(SIMULATION_DAYS, |challenge| {
             requests.push(challenge.audio_request());
         });
         let requests = requests.into_iter();

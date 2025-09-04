@@ -8,7 +8,7 @@ impl Deck {
     /// Simulate `days` of reviews, calling `on_challenge` for each generated challenge.
     /// The simulation answers every challenge perfectly, adds 10 new cards at the end of each day,
     /// and advances the time by one day.
-    pub fn simulate_days<F>(&self, days: u32, mut on_challenge: F)
+    pub(crate) fn simulate_usage<F>(&self, days: u32, mut on_challenge: F)
     where
         F: FnMut(Challenge<String>),
     {
