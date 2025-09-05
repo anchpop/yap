@@ -236,7 +236,7 @@ async fn main() -> anyhow::Result<()> {
             // read the nlp file
             let nlp_file = File::open(target_language_nlp_file)?;
             let reader = BufReader::new(nlp_file);
-            let nlp_sentences: Vec<language_utils::NlpAnalyzedSentence> = reader
+            let mut nlp_sentences: Vec<language_utils::NlpAnalyzedSentence> = reader
                 .lines()
                 .map(|line| {
                     let line = line.unwrap();
@@ -257,6 +257,22 @@ async fn main() -> anyhow::Result<()> {
                     },
                 )
                 .collect::<Vec<_>>();
+
+            // For Korean, filter out sentences with proper nouns
+            if course.target_language == language_utils::Language::Korean {
+                let before_count = nlp_sentences.len();
+                nlp_sentences.retain(|sentence| {
+                    !sentence
+                        .doc
+                        .iter()
+                        .any(|token| token.pos == language_utils::PartOfSpeech::Propn)
+                });
+                let after_count = nlp_sentences.len();
+                println!(
+                    "Filtered out {} Korean sentences containing proper nouns",
+                    before_count - after_count
+                );
+            }
 
             nlp_sentences
         };
