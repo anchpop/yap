@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreVertical } from "lucide-react"
 import { ReportIssueModal } from "./ReportIssueModal"
+import { OnScreenKeyboard } from "../OnScreenKeyboard"
 
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence<string>
@@ -276,6 +277,8 @@ export function TranscriptionChallenge({
                 {renderSentenceWithBlanks()}
               </div>
             </div>
+
+            <OnScreenKeyboard language={targetLanguage} />
 
             {/* Result feedback */}
             {gradingState && 'graded' in gradingState && (

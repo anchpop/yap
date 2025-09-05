@@ -80,6 +80,9 @@ importers:
       react-router-dom:
         specifier: ^7.6.2
         version: 7.6.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react-simple-keyboard:
+        specifier: ^3.8.120
+        version: 3.8.120(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-timeago:
         specifier: ^8.2.0
         version: 8.2.0(react@19.1.0)
@@ -3519,6 +3522,12 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
+
+  react-simple-keyboard@3.8.120:
+    resolution: {integrity: sha512-VREEGZWXUeqRKvRVg0n8hmoAqz/TSWZEs5UwbfLuan4yKvOQZUFHtS11QGnvIVYjkThh+JYslO2CHT4Lxf5d0w==}
+    peerDependencies:
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
@@ -7856,6 +7865,11 @@ snapshots:
       react: 19.1.0
       set-cookie-parser: 2.7.1
     optionalDependencies:
+      react-dom: 19.1.0(react@19.1.0)
+
+  react-simple-keyboard@3.8.120(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
   react-style-singleton@2.2.3(@types/react@19.1.5)(react@19.1.0):
