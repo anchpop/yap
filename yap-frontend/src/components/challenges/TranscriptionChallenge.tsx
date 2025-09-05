@@ -278,8 +278,6 @@ export function TranscriptionChallenge({
               </div>
             </div>
 
-            <OnScreenKeyboard language={targetLanguage} />
-
             {/* Result feedback */}
             {gradingState && 'graded' in gradingState && (
               <motion.div
@@ -352,6 +350,7 @@ export function TranscriptionChallenge({
             )}
           </div>
         </AnimatedCard>
+        <OnScreenKeyboard language={targetLanguage} />
         <CardsRemaining
           dueCount={dueCount}
           totalCount={totalCount}

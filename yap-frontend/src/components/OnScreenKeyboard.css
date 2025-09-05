@@ -1,0 +1,15 @@
+.simple-keyboard.hg-theme-default {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+}
+
+.simple-keyboard.hg-theme-default .hg-button {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.simple-keyboard.hg-theme-default .hg-button.hg-activeButton {
+  background-color: hsl(var(--accent));
+}

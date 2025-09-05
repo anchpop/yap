@@ -89,6 +89,9 @@ importers:
       react-use:
         specifier: ^17.6.0
         version: 17.6.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      simple-keyboard-layouts:
+        specifier: ^3.4.128
+        version: 3.4.128
       sonner:
         specifier: ^2.0.6
         version: 2.0.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3723,6 +3726,9 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  simple-keyboard-layouts@3.4.128:
+    resolution: {integrity: sha512-valZcZ1RdFr+dwW7uZZp7NEkjliz+fecI/N3nl3xJcXeRJK4+eUDX0N3/0LUxRgXDBGrBjMie2eSgYngkvx65Q==}
 
   simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
@@ -8159,6 +8165,8 @@ snapshots:
       side-channel-weakmap: 1.0.2
 
   signal-exit@4.1.0: {}
+
+  simple-keyboard-layouts@3.4.128: {}
 
   simple-swizzle@0.2.2:
     dependencies:

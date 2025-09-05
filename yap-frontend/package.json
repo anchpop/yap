@@ -40,6 +40,7 @@
     "react-simple-keyboard": "^3.8.120",
     "react-timeago": "^8.2.0",
     "react-use": "^17.6.0",
+    "simple-keyboard-layouts": "^3.4.128",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.7",
