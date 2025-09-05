@@ -10,6 +10,7 @@ import Markdown from 'react-markdown'
 import { AudioVisualizer } from "../AudioVisualizer"
 import { CardsRemaining } from "../CardsRemaining"
 import { AnimatedCard } from "../AnimatedCard"
+import { AccentedCharacterKeyboard } from "../AccentedCharacterKeyboard"
 import {
   Collapsible,
   CollapsibleContent,
@@ -76,6 +77,7 @@ export function TranscriptionChallenge({
   const [gradingState, setGradingState] = useState<GradingState>(null)
   const [showReportModal, setShowReportModal] = useState(false)
   const [isTranslationRevealed, setIsTranslationRevealed] = useState(false)
+  const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(null)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   // Find indices of words that should be blanks
@@ -105,6 +107,37 @@ export function TranscriptionChallenge({
     const newInputs = new Map(userInputs)
     newInputs.set(index, value)
     setUserInputs(newInputs)
+  }
+
+  const handleCharacterInsert = (char: string) => {
+    // Use the last focused input index, or the first blank if none was focused
+    const targetIndex = focusedInputIndex !== null ? focusedInputIndex : blankIndices[0]
+    
+    if (targetIndex !== undefined) {
+      const currentValue = userInputs.get(targetIndex) || ''
+      const input = inputRefs.current[targetIndex]
+      
+      if (input) {
+        // Focus the input first to get correct selection
+        input.focus()
+        
+        const start = input.selectionStart || currentValue.length
+        const end = input.selectionEnd || currentValue.length
+        const newValue = currentValue.substring(0, start) + char + currentValue.substring(end)
+        
+        handleInputChange(targetIndex, newValue)
+        
+        // Set cursor position after the inserted character
+        setTimeout(() => {
+          if (input) {
+            const newPosition = start + char.length
+            input.setSelectionRange(newPosition, newPosition)
+            input.focus()
+            setFocusedInputIndex(targetIndex)
+          }
+        }, 0)
+      }
+    }
   }
 
   const allBlanksFilledOut = blankIndices.every((index) =>
@@ -142,7 +175,7 @@ export function TranscriptionChallenge({
     if (isAllCorrect) {
       playSoundEffect('perfect')
     }
-  }, [gradingState, challenge.parts, userInputs, accessToken])
+  }, [gradingState, challenge.parts, userInputs, accessToken, targetLanguage])
 
   // Global keyboard handler for Enter key
   useEffect(() => {
@@ -200,6 +233,11 @@ export function TranscriptionChallenge({
               type="text"
               value={userInputs.get(index) || ''}
               onChange={(e) => handleInputChange(index, e.target.value)}
+              onFocus={() => setFocusedInputIndex(index)}
+              onBlur={() => {
+                // Keep track of last focused input but allow blur
+                // The accent keyboard will refocus when clicked
+              }}
               disabled={gradingState !== null}
               className={`inline-block w-32 mx-1 text-center text-2xl font-semibold ${getInputClassName(index)}`}
               placeholder=""
@@ -354,6 +392,15 @@ export function TranscriptionChallenge({
           totalCount={totalCount}
           className="mt-2"
         />
+        
+        {/* Accented character keyboard - show when not graded, language supports it, and not on small screens */}
+        {gradingState === null && (targetLanguage === 'French' || targetLanguage === 'Spanish') && (
+          <AccentedCharacterKeyboard
+            onCharacterInsert={handleCharacterInsert}
+            language={targetLanguage}
+            className="hidden md:flex mt-3 p-3 border rounded-lg bg-muted/30"
+          />
+        )}
       </div >
 
       <div className="mt-4 flex flex-col gap-2">
