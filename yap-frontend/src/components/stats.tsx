@@ -106,13 +106,13 @@ export function Stats({ deck }: StatsProps) {
           </tbody>
         </table>
         {notDueCards.length > visibleCount && (
-          <div className="p-3">
-            <Button
-              variant="outline"
+          <div className="border-t">
+            <button
               onClick={() => setVisibleCount((c) => c + 10)}
+              className="w-full py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200 font-medium"
             >
-              Show more
-            </Button>
+              Show {Math.min(10, notDueCards.length - visibleCount)} more cards
+            </button>
           </div>
         )}
       </div>
