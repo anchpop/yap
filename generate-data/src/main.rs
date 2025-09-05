@@ -659,9 +659,6 @@ async fn main() -> anyhow::Result<()> {
             dictionary
                 .into_iter()
                 .filter(|(heteronym, _)| {
-                    if !words_set.contains(heteronym) {
-                        println!("Heteronym not in words set: {heteronym:?}");
-                    }
                     words_set.contains(heteronym)
                 })
                 .collect::<BTreeMap<_, _>>()
