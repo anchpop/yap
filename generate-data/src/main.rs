@@ -658,9 +658,7 @@ async fn main() -> anyhow::Result<()> {
                 .collect::<std::collections::HashSet<_>>();
             dictionary
                 .into_iter()
-                .filter(|(heteronym, _)| {
-                    words_set.contains(heteronym)
-                })
+                .filter(|(heteronym, _)| words_set.contains(heteronym))
                 .collect::<BTreeMap<_, _>>()
                 .into_iter()
                 .collect()
