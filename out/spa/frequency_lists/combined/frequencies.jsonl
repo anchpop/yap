@@ -22,7 +22,7 @@
 {"lexeme":{"Heteronym":{"word":"y","lemma":"y","pos":"CCONJ"}},"count":3336}
 {"lexeme":{"Heteronym":{"word":"eso","lemma":"eso","pos":"PRON"}},"count":3099}
 {"lexeme":{"Heteronym":{"word":"una","lemma":"uno","pos":"DET"}},"count":2993}
-{"lexeme":{"Heteronym":{"word":"mi","lemma":"mi","pos":"ADJ"}},"count":2538}
+{"lexeme":{"Heteronym":{"word":"mi","lemma":"mi","pos":"DET"}},"count":2538}
 {"lexeme":{"Heteronym":{"word":"yo","lemma":"yo","pos":"PRON"}},"count":2471}
 {"lexeme":{"Heteronym":{"word":"me","lemma":"yo","pos":"PRON"}},"count":2400}
 {"lexeme":{"Heteronym":{"word":"se","lemma":"él","pos":"PRON"}},"count":2060}
@@ -87,7 +87,7 @@
 {"lexeme":{"Heteronym":{"word":"ha","lemma":"haber","pos":"AUX"}},"count":675}
 {"lexeme":{"Heteronym":{"word":"fue","lemma":"ser","pos":"AUX"}},"count":663}
 {"lexeme":{"Heteronym":{"word":"voy","lemma":"ir","pos":"AUX"}},"count":645}
-{"lexeme":{"Heteronym":{"word":"este","lemma":"este","pos":"PRON"}},"count":644}
+{"lexeme":{"Heteronym":{"word":"este","lemma":"este","pos":"DET"}},"count":644}
 {"lexeme":{"Heteronym":{"word":"era","lemma":"ser","pos":"AUX"}},"count":638}
 {"lexeme":{"Heteronym":{"word":"tiempo","lemma":"tiempo","pos":"NOUN"}},"count":631}
 {"lexeme":{"Heteronym":{"word":"qué","lemma":"qué","pos":"PRON"}},"count":630}
@@ -314,12 +314,12 @@
 {"lexeme":{"Heteronym":{"word":"dice","lemma":"decir","pos":"VERB"}},"count":176}
 {"lexeme":{"Heteronym":{"word":"hermano","lemma":"hermano","pos":"NOUN"}},"count":176}
 {"lexeme":{"Heteronym":{"word":"ojos","lemma":"ojo","pos":"NOUN"}},"count":176}
-{"lexeme":{"Heteronym":{"word":"historia","lemma":"historia","pos":"NOUN"}},"count":175}
 {"lexeme":{"Heteronym":{"word":"somos","lemma":"ser","pos":"AUX"}},"count":175}
 {"lexeme":{"Multiword":"qué sé"},"count":175}
 {"lexeme":{"Heteronym":{"word":"están","lemma":"estar","pos":"VERB"}},"count":174}
 {"lexeme":{"Heteronym":{"word":"pronto","lemma":"pronto","pos":"ADV"}},"count":173}
 {"lexeme":{"Heteronym":{"word":"vemos","lemma":"ver","pos":"VERB"}},"count":173}
+{"lexeme":{"Heteronym":{"word":"historia","lemma":"historia","pos":"NOUN"}},"count":172}
 {"lexeme":{"Heteronym":{"word":"muchas","lemma":"mucho","pos":"DET"}},"count":172}
 {"lexeme":{"Heteronym":{"word":"pasar","lemma":"pasar","pos":"VERB"}},"count":172}
 {"lexeme":{"Heteronym":{"word":"cada","lemma":"cada","pos":"DET"}},"count":171}
@@ -343,7 +343,7 @@
 {"lexeme":{"Heteronym":{"word":"grande","lemma":"grande","pos":"ADJ"}},"count":158}
 {"lexeme":{"Heteronym":{"word":"oído","lemma":"oer","pos":"VERB"}},"count":158}
 {"lexeme":{"Heteronym":{"word":"sabía","lemma":"saber","pos":"VERB"}},"count":158}
-{"lexeme":{"Heteronym":{"word":"toma","lemma":"tomar","pos":"VERB"}},"count":158}
+{"lexeme":{"Heteronym":{"word":"toma","lemma":"toma","pos":"NOUN"}},"count":158}
 {"lexeme":{"Heteronym":{"word":"podría","lemma":"poder","pos":"AUX"}},"count":157}
 {"lexeme":{"Heteronym":{"word":"última","lemma":"último","pos":"ADJ"}},"count":157}
 {"lexeme":{"Heteronym":{"word":"fin","lemma":"fin","pos":"NOUN"}},"count":155}
@@ -884,7 +884,6 @@
 {"lexeme":{"Heteronym":{"word":"seguir","lemma":"seguir","pos":"VERB"}},"count":49}
 {"lexeme":{"Heteronym":{"word":"tren","lemma":"tren","pos":"NOUN"}},"count":49}
 {"lexeme":{"Heteronym":{"word":"venga","lemma":"venga","pos":"INTJ"}},"count":49}
-{"lexeme":{"Heteronym":{"word":"calle","lemma":"calle","pos":"NOUN"}},"count":48}
 {"lexeme":{"Heteronym":{"word":"escuché","lemma":"escuchar","pos":"VERB"}},"count":48}
 {"lexeme":{"Heteronym":{"word":"nada","lemma":"nada","pos":"NOUN"}},"count":48}
 {"lexeme":{"Heteronym":{"word":"necesario","lemma":"necesario","pos":"ADJ"}},"count":48}
@@ -923,6 +922,7 @@
 {"lexeme":{"Multiword":"damas y caballeros"},"count":46}
 {"lexeme":{"Multiword":"en cuanto"},"count":46}
 {"lexeme":{"Multiword":"sea lo que sea"},"count":46}
+{"lexeme":{"Heteronym":{"word":"calle","lemma":"calle","pos":"NOUN"}},"count":45}
 {"lexeme":{"Heteronym":{"word":"claro","lemma":"claro","pos":"ADJ"}},"count":45}
 {"lexeme":{"Heteronym":{"word":"cuanto","lemma":"cuanto","pos":"NOUN"}},"count":45}
 {"lexeme":{"Heteronym":{"word":"iremos","lemma":"ir","pos":"VERB"}},"count":45}
@@ -1244,7 +1244,7 @@
 {"lexeme":{"Heteronym":{"word":"usar","lemma":"usar","pos":"VERB"}},"count":31}
 {"lexeme":{"Heteronym":{"word":"veas","lemma":"ver","pos":"VERB"}},"count":31}
 {"lexeme":{"Heteronym":{"word":"viste","lemma":"ver","pos":"VERB"}},"count":31}
-{"lexeme":{"Heteronym":{"word":"ésa","lemma":"ese","pos":"PRON"}},"count":31}
+{"lexeme":{"Heteronym":{"word":"ésa","lemma":"ése","pos":"PRON"}},"count":31}
 {"lexeme":{"Multiword":"al lado"},"count":31}
 {"lexeme":{"Multiword":"dar cuenta de"},"count":31}
 {"lexeme":{"Multiword":"en paz"},"count":31}
@@ -1744,7 +1744,7 @@
 {"lexeme":{"Heteronym":{"word":"gustar","lemma":"gustar","pos":"VERB"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"laboratorio","lemma":"laboratorio","pos":"NOUN"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"libros","lemma":"libro","pos":"NOUN"}},"count":20}
-{"lexeme":{"Heteronym":{"word":"mami","lemma":"mami","pos":"NOUN"}},"count":20}
+{"lexeme":{"Heteronym":{"word":"mami","lemma":"mamá","pos":"NOUN"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"mamá","lemma":"mamá","pos":"INTJ"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"marcha","lemma":"marcha","pos":"NOUN"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"mirada","lemma":"mirada","pos":"NOUN"}},"count":20}
@@ -3606,7 +3606,6 @@
 {"lexeme":{"Heteronym":{"word":"mismos","lemma":"mismo","pos":"DET"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"miércoles","lemma":"miércoles","pos":"NOUN"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"moleste","lemma":"molestar","pos":"VERB"}},"count":7}
-{"lexeme":{"Heteronym":{"word":"moneda","lemma":"moneda","pos":"NOUN"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"muestra","lemma":"muestra","pos":"NOUN"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"mundial","lemma":"mundial","pos":"ADJ"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"máxima","lemma":"máximo","pos":"ADJ"}},"count":7}
@@ -4035,6 +4034,7 @@
 {"lexeme":{"Heteronym":{"word":"metió","lemma":"meter","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"miles","lemma":"mil","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"mira","lemma":"mira","pos":"NOUN"}},"count":6}
+{"lexeme":{"Heteronym":{"word":"moneda","lemma":"moneda","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"montañas","lemma":"montaña","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"moto","lemma":"moto","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"movernos","lemma":"mover yo","pos":"VERB"}},"count":6}
@@ -4170,7 +4170,7 @@
 {"lexeme":{"Heteronym":{"word":"trajiste","lemma":"traer","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"traten","lemma":"traten","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"trenes","lemma":"tren","pos":"NOUN"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"tte","lemma":"teniente","pos":"NOUN"}},"count":6}
+{"lexeme":{"Heteronym":{"word":"tte","lemma":"tte","pos":"X"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"tuyos","lemma":"tuyo","pos":"ADJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"unidos","lemma":"unido","pos":"ADJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"usamos","lemma":"usar","pos":"VERB"}},"count":6}
@@ -4875,7 +4875,7 @@
 {"lexeme":{"Heteronym":{"word":"acusado","lemma":"acusado","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"admitir","lemma":"admitir","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"admitirlo","lemma":"admitir él","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"adn","lemma":"adn","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"adn","lemma":"ADN","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"adora","lemma":"adorar","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"adoraba","lemma":"adorar","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"afueras","lemma":"afuera","pos":"NOUN"}},"count":4}
@@ -5227,7 +5227,7 @@
 {"lexeme":{"Heteronym":{"word":"ganarme","lemma":"ganar yo","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"ganaré","lemma":"ganar","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"gatos","lemma":"gato","pos":"NOUN"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"gemela","lemma":"gemelo","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"gemela","lemma":"gemela","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"generaciones","lemma":"generación","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"generación","lemma":"generación","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"genial","lemma":"genial","pos":"ADV"}},"count":4}
@@ -5541,7 +5541,7 @@
 {"lexeme":{"Heteronym":{"word":"saliste","lemma":"salir","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"salvo","lemma":"salvo","pos":"ADV"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"salía","lemma":"salir","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"santa","lemma":"santo","pos":"ADJ"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"santa","lemma":"santo","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"santo","lemma":"santo","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"saqué","lemma":"sacar","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"secuencia","lemma":"secuencia","pos":"NOUN"}},"count":4}
@@ -5569,7 +5569,7 @@
 {"lexeme":{"Heteronym":{"word":"supimos","lemma":"saber","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"supo","lemma":"saber","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"surgió","lemma":"surgir","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"suspendido","lemma":"suspender","pos":"VERB"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"suspendido","lemma":"suspendido","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"suéltame","lemma":"soltar","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"sácalo","lemma":"saca él","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"símbolos","lemma":"símbolo","pos":"NOUN"}},"count":4}
@@ -5609,7 +5609,7 @@
 {"lexeme":{"Heteronym":{"word":"tímida","lemma":"tímido","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"tíos","lemma":"tío","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"tómalo","lemma":"tomar él","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"uds","lemma":"usted","pos":"PRON"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"uds","lemma":"ustedes","pos":"PRON"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"uh","lemma":"uh","pos":"INTJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"une","lemma":"unir","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"usó","lemma":"usar","pos":"VERB"}},"count":4}
@@ -5969,7 +5969,7 @@
 {"lexeme":{"Heteronym":{"word":"convertiré","lemma":"convertir","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"convirtiendo","lemma":"convertir","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"cooperación","lemma":"cooperación","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"corazon","lemma":"corazón","pos":"NOUN"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"corazon","lemma":"corazon","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"coro","lemma":"coro","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"corporación","lemma":"corporación","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"correctas","lemma":"correcto","pos":"ADJ"}},"count":3}
@@ -6086,7 +6086,7 @@
 {"lexeme":{"Heteronym":{"word":"educación","lemma":"educación","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"ejecución","lemma":"ejecución","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"ejemplar","lemma":"ejemplar","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"ejercito","lemma":"ejercer","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"ejercito","lemma":"ejercitar","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"elefante","lemma":"elefante","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"elegí","lemma":"elegir","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"elevada","lemma":"elevado","pos":"ADJ"}},"count":3}
@@ -8701,7 +8701,7 @@
 {"lexeme":{"Heteronym":{"word":"soñaste","lemma":"soñar","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"sr","lemma":"señor","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"sra","lemma":"sra","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"srita","lemma":"srita","pos":"NOUN"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"srita","lemma":"señorita","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"srta","lemma":"señorita","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"subas","lemma":"subir","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"subasta","lemma":"subasta","pos":"NOUN"}},"count":2}
@@ -9741,6 +9741,7 @@
 {"lexeme":{"Heteronym":{"word":"callados","lemma":"callado","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"callar","lemma":"callar","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"callarse","lemma":"callar él","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"calle","lemma":"callar","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"calma","lemma":"calmar","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"calmada","lemma":"calmado","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"calmarse","lemma":"calmar él","pos":"VERB"}},"count":1}
@@ -10004,7 +10005,6 @@
 {"lexeme":{"Heteronym":{"word":"comunicarse","lemma":"comunicar él","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"comunismo","lemma":"comunismo","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"comía","lemma":"comer","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"concejal","lemma":"concejal","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"concejo","lemma":"concejo","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"concentrado","lemma":"concentrado","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"concentrarse","lemma":"concentrar él","pos":"VERB"}},"count":1}
@@ -11443,7 +11443,7 @@
 {"lexeme":{"Heteronym":{"word":"masajista","lemma":"masajista","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"masculino","lemma":"masculino","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"masiva","lemma":"masivo","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"matemáticas","lemma":"matemática","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"matemáticas","lemma":"matemáticas","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"matemático","lemma":"matemático","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"matemático","lemma":"matemático","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"materiales","lemma":"material","pos":"ADJ"}},"count":1}
@@ -12224,7 +12224,7 @@
 {"lexeme":{"Heteronym":{"word":"relato","lemma":"relato","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"relevo","lemma":"relevar","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"relevo","lemma":"relevo","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"religiosa","lemma":"religioso","pos":"ADJ"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"religiosa","lemma":"religiosa","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"religioso","lemma":"religioso","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"relámpago","lemma":"relámpago","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"remo","lemma":"remo","pos":"NOUN"}},"count":1}
