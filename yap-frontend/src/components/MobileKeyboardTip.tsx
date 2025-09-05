@@ -32,12 +32,12 @@ export function MobileKeyboardTip({
     return null
   }
 
-  const languageDisplay = language === 'French' ? 'French' : 'Spanish'
+  console.assert(language === 'French' || language === 'Spanish' || language === 'Korean')
 
   return (
     <div className={`md:hidden flex items-center justify-between gap-2 p-3 mt-3 border rounded-lg bg-muted/30 ${className}`}>
       <p className="text-sm text-muted-foreground flex-1">
-        <span className="font-medium">Tip:</span> Enable the {languageDisplay} keyboard on your device to easily type accented characters
+        <span className="font-medium">Tip:</span> Enable the {language} keyboard on your device to easily type {language === 'French' || language === 'Spanish' ? 'accented' : 'hangul'} characters
       </p>
       <Button
         variant="ghost"
