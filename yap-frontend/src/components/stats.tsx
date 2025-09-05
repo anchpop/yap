@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import TimeAgo from "react-timeago";
 import type { Deck } from "../../../yap-frontend-rs/pkg";
 
