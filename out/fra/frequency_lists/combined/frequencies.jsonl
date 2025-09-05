@@ -469,6 +469,7 @@
 {"lexeme":{"Heteronym":{"word":"après","lemma":"après","pos":"ADP"}},"count":54}
 {"lexeme":{"Heteronym":{"word":"autres","lemma":"autre","pos":"ADJ"}},"count":54}
 {"lexeme":{"Heteronym":{"word":"chef","lemma":"chef","pos":"NOUN"}},"count":54}
+{"lexeme":{"Heteronym":{"word":"cinq","lemma":"cinq","pos":"NUM"}},"count":54}
 {"lexeme":{"Heteronym":{"word":"dernière","lemma":"dernier","pos":"ADJ"}},"count":54}
 {"lexeme":{"Heteronym":{"word":"essaie","lemma":"essayer","pos":"VERB"}},"count":54}
 {"lexeme":{"Heteronym":{"word":"gens","lemma":"gens","pos":"NOUN"}},"count":54}
@@ -812,7 +813,6 @@
 {"lexeme":{"Heteronym":{"word":"arranger","lemma":"arranger","pos":"VERB"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"aucun","lemma":"aucun","pos":"DET"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"aucune","lemma":"aucun","pos":"DET"}},"count":26}
-{"lexeme":{"Heteronym":{"word":"cinq","lemma":"cinq","pos":"NUM"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"commencé","lemma":"commencer","pos":"VERB"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"garder","lemma":"garder","pos":"VERB"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"gardez","lemma":"garder","pos":"VERB"}},"count":26}
@@ -1209,7 +1209,6 @@
 {"lexeme":{"Heteronym":{"word":"arrivée","lemma":"arriver","pos":"VERB"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"aurait","lemma":"avoir","pos":"AUX"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"chacun","lemma":"chacun","pos":"PRON"}},"count":16}
-{"lexeme":{"Heteronym":{"word":"cinq","lemma":"Cinq","pos":"NUM"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"connu","lemma":"connaître","pos":"VERB"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"copain","lemma":"copain","pos":"NOUN"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"copine","lemma":"copine","pos":"NOUN"}},"count":16}
@@ -1580,7 +1579,6 @@
 {"lexeme":{"Heteronym":{"word":"certaine","lemma":"certain","pos":"ADJ"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"chanceux","lemma":"chanceux","pos":"ADJ"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"charge","lemma":"charger","pos":"VERB"}},"count":11}
-{"lexeme":{"Heteronym":{"word":"cinq","lemma":"cinq","pos":"PRON"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"coucou","lemma":"coucou","pos":"INTJ"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"couleur","lemma":"couleur","pos":"NOUN"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"coups","lemma":"coup","pos":"NOUN"}},"count":11}
@@ -3144,6 +3142,7 @@
 {"lexeme":{"Heteronym":{"word":"finissons","lemma":"finir","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"forcément","lemma":"forcément","pos":"ADV"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"forts","lemma":"fort","pos":"ADJ"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"fouille","lemma":"fouille","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"frais","lemma":"frais","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"français","lemma":"français","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"froide","lemma":"froid","pos":"ADJ"}},"count":4}
@@ -5116,7 +5115,6 @@
 {"lexeme":{"Heteronym":{"word":"parasites","lemma":"parasite","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"parfaits","lemma":"parfait","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"parfum","lemma":"parfum","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"paris","lemma":"pari","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"parlant","lemma":"parler","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"parleras","lemma":"parler","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"parlions","lemma":"parler","pos":"VERB"}},"count":2}
@@ -5959,6 +5957,7 @@
 {"lexeme":{"Heteronym":{"word":"am","lemma":"aimer","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"ambassadeur","lemma":"ambassadeur","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"ambition","lemma":"ambition","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"amen","lemma":"amen","pos":"INTJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"amende","lemma":"amende","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"amenez-la-moi","lemma":"amenez-la-moi","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"amenez-le-moi","lemma":"amenez-le-moi","pos":"VERB"}},"count":1}
@@ -6890,7 +6889,6 @@
 {"lexeme":{"Heteronym":{"word":"formé","lemma":"former","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"forteresse","lemma":"forteresse","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"fou","lemma":"fou","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"fouille","lemma":"fouille","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"fouiller","lemma":"fouiller","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"fouillé","lemma":"fouiller","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"foulard","lemma":"foulard","pos":"NOUN"}},"count":1}
@@ -7023,6 +7021,7 @@
 {"lexeme":{"Heteronym":{"word":"hurlait","lemma":"hurler","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"hurle","lemma":"hurler","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"huîtres","lemma":"huître","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"hybride","lemma":"hybride","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"hypnose","lemma":"hypnose","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"hé","lemma":"hé","pos":"INTJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"héberger","lemma":"héberger","pos":"VERB"}},"count":1}
