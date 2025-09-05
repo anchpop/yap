@@ -37,10 +37,9 @@ const CardFront = ({ content, listeningPrefix }: { content: CardContent<string>,
   if ("Listening" in content) {
     const prefix = listeningPrefix || "Le mot est"
     return (
-      <h2 className="text-3xl font-semibold flex items-center gap-3">
-        "{prefix}...
+      <h2 className="text-3xl font-semibold flex items-center gap-3 flex-col">
+        {prefix}...
         <AudioVisualizer />
-        ."
       </h2>
     )
   }
@@ -152,7 +151,7 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
   const leftLabel = isNew ? "Didn't know" : "Forgot"
   const rightLabel = isNew ? "Already knew" : "Good"
 
-  const requireShowAnswer = totalCount < 10
+  const requireShowAnswer = totalCount < 30
   const canGrade = showAnswer || !requireShowAnswer
 
   const rotate = useTransform(x, [-200, 200], [-30, 30])

@@ -11,6 +11,7 @@ import { AudioVisualizer } from "../AudioVisualizer"
 import { CardsRemaining } from "../CardsRemaining"
 import { AnimatedCard } from "../AnimatedCard"
 import { AccentedCharacterKeyboard } from "../AccentedCharacterKeyboard"
+import { MobileKeyboardTip } from "../MobileKeyboardTip"
 import {
   Collapsible,
   CollapsibleContent,
@@ -112,21 +113,21 @@ export function TranscriptionChallenge({
   const handleCharacterInsert = (char: string) => {
     // Use the last focused input index, or the first blank if none was focused
     const targetIndex = focusedInputIndex !== null ? focusedInputIndex : blankIndices[0]
-    
+
     if (targetIndex !== undefined) {
       const currentValue = userInputs.get(targetIndex) || ''
       const input = inputRefs.current[targetIndex]
-      
+
       if (input) {
         // Focus the input first to get correct selection
         input.focus()
-        
+
         const start = input.selectionStart || currentValue.length
         const end = input.selectionEnd || currentValue.length
         const newValue = currentValue.substring(0, start) + char + currentValue.substring(end)
-        
+
         handleInputChange(targetIndex, newValue)
-        
+
         // Set cursor position after the inserted character
         setTimeout(() => {
           if (input) {
@@ -392,13 +393,21 @@ export function TranscriptionChallenge({
           totalCount={totalCount}
           className="mt-2"
         />
-        
+
         {/* Accented character keyboard - show when not graded, language supports it, and not on small screens */}
         {gradingState === null && (targetLanguage === 'French' || targetLanguage === 'Spanish') && (
           <AccentedCharacterKeyboard
             onCharacterInsert={handleCharacterInsert}
             language={targetLanguage}
             className="hidden md:flex mt-3 p-3 border rounded-lg bg-muted/30"
+          />
+        )}
+
+        {/* Mobile keyboard tip - show on small screens when conditions are met */}
+        {gradingState === null && totalCount < 30 && (
+          <MobileKeyboardTip
+            language={targetLanguage}
+            totalCount={totalCount}
           />
         )}
       </div >
