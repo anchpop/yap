@@ -37,8 +37,8 @@ const CardFront = ({ content, listeningPrefix }: { content: CardContent<string>,
   if ("Listening" in content) {
     const prefix = listeningPrefix || "Le mot est"
     return (
-      <h2 className="text-3xl font-semibold flex items-center gap-3 flex-col">
-        {prefix}...
+      <h2 className="text-3xl font-semibold flex items-center gap-3 flex-wrap justify-center text-center">
+        <span>{prefix}...</span>
         <AudioVisualizer />
       </h2>
     )
