@@ -404,7 +404,7 @@ export function TranscriptionChallenge({
         )}
 
         {/* Mobile keyboard tip - show on small screens when conditions are met */}
-        {gradingState === null && totalCount < 30 && (
+        {gradingState === null && totalCount < 60 && (
           <MobileKeyboardTip
             language={targetLanguage}
             totalCount={totalCount}
