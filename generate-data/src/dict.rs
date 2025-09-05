@@ -1,10 +1,16 @@
 use futures::StreamExt;
 use language_utils::{Course, DictionaryEntryThoughts, Heteronym, PhrasebookEntryThoughts};
-use std::{collections::BTreeSet, sync::LazyLock};
+use std::{collections::BTreeMap, sync::LazyLock};
 use tysm::chat_completions::ChatClient;
 
-static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
+static CHAT_CLIENT_4O: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-4o")
+        .unwrap()
+        .with_cache_directory("./.cache")
+});
+
+static CHAT_CLIENT_O3: LazyLock<ChatClient> = LazyLock::new(|| {
+    ChatClient::from_env("o3")
         .unwrap()
         .with_cache_directory("./.cache")
 });
@@ -19,17 +25,20 @@ pub async fn create_phrasebook(
         ..
     } = course;
 
-    let mut target_language_multi_word_terms: BTreeSet<String> = BTreeSet::new();
+    let mut target_language_multi_word_terms: BTreeMap<String, u32> = BTreeMap::new();
     for entry in frequencies {
         if let Some(multiword_term) = entry.lexeme.multiword() {
-            target_language_multi_word_terms.insert(multiword_term.clone());
+            target_language_multi_word_terms
+                .entry(multiword_term.clone())
+                .or_insert(entry.count);
         }
     }
 
     let count = target_language_multi_word_terms.len();
 
-    let phrasebook = futures::stream::iter(&target_language_multi_word_terms).enumerate().map(async |(i, multiword_term)| {
-        let response: Result<PhrasebookEntryThoughts, _> = CHAT_CLIENT.chat_with_system_prompt(
+    let phrasebook = futures::stream::iter(target_language_multi_word_terms.iter()).enumerate().map(|(i, (multiword_term, &freq))| async move {
+        let chat_client = if freq > 500 { &*CHAT_CLIENT_O3 } else { &*CHAT_CLIENT_4O };
+        let response: Result<PhrasebookEntryThoughts, _> = chat_client.chat_with_system_prompt(
             format!(r#"The input is a {target_language} multi-word term. Generate a phrasebook entry for it, to be used in an app for beginner  {target_language} learners (whose native language is {native_language}). First, think about the word and its meaning, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning in a concise way. (Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just get straight to the meaning.) Then, provide additional context for how the term is used in the "additional_notes" field. Finally, provide an example of the term's usage in a natural sentence.
 
 Example:
@@ -76,20 +85,23 @@ pub async fn create_dictionary(
         target_language,
     } = course;
     // Process sentences to get unique words and track occurrences
-    let mut target_language_heteronyms = BTreeSet::new();
+    let mut target_language_heteronyms = BTreeMap::new();
     for entry in frequencies {
         if let Some(heteronym) = entry.lexeme.heteronym() {
-            target_language_heteronyms.insert(heteronym.clone());
+            target_language_heteronyms
+                .entry(heteronym.clone())
+                .or_insert(entry.count);
         }
     }
 
     let count = target_language_heteronyms.len();
 
-    let dictionary = futures::stream::iter(&target_language_heteronyms).enumerate().map(async |(i, heteronym)| {
+    let dictionary = futures::stream::iter(target_language_heteronyms.iter()).enumerate().map(|(i, (heteronym, &freq))| async move {
         if heteronym.word == "t" && heteronym.lemma == "tu" {
             panic!("heteronym: {heteronym:?}");
         }
-        let response: Result<DictionaryEntryThoughts, _> = CHAT_CLIENT.chat_with_system_prompt(
+        let chat_client = if freq > 500 { &*CHAT_CLIENT_O3 } else { &*CHAT_CLIENT_4O };
+        let response: Result<DictionaryEntryThoughts, _> = chat_client.chat_with_system_prompt(
             format!(r#"The input is a {target_language} word, along with its morphological information. Generate a dictionary entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}). (First, think about the word and its meaning, and what is likely to be relevant to a beginner learner.) First, write the word, then provide a list of one or more definitions. Each definition should be a JSON object with the following fields:
 
 - "native" (string): The {native_language} translation(s) of the word. If a word has multiple very similar meanings (e.g. “this” and “that”), include them in the same string separated by commas. (If it's a verb, you don't have to include the infinitive form or information about conjugation - that will be displayed separately in the app.)
