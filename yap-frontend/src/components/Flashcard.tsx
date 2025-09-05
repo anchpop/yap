@@ -256,6 +256,28 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showAnswer, canGrade, onToggle, onRating]);
 
+  const copyWord = () => {
+    let word: string | undefined;
+    if ("Heteronym" in content) {
+      word = content.Heteronym[0].word;
+    } else if ("Multiword" in content) {
+      word = content.Multiword[0];
+    } else if ("Listening" in content) {
+      const possible = content.Listening.possible_words;
+      if (possible.length > 0) {
+        word = possible[0][1];
+      }
+    }
+
+    if (word) {
+      navigator.clipboard.writeText(word)
+        .then(() => toast('Copied to clipboard'))
+        .catch(() => toast('Failed to copy'));
+    } else {
+      toast('No word to copy');
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 justify-between">
       <AnimatedCard
@@ -318,6 +340,9 @@ export const Flashcard = memo(function Flashcard({ audioRequest, content, showAn
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={copyWord}>
+                        Copy word
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onRating('hard')}>
                         Hard
                       </DropdownMenuItem>
