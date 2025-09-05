@@ -73,8 +73,8 @@
 {"lexeme":{"Heteronym":{"word":"plus","lemma":"plus","pos":"ADV"}},"count":506}
 {"lexeme":{"Heteronym":{"word":"chose","lemma":"chose","pos":"NOUN"}},"count":503}
 {"lexeme":{"Heteronym":{"word":"êtes","lemma":"être","pos":"AUX"}},"count":501}
-{"lexeme":{"Heteronym":{"word":"ma","lemma":"mon","pos":"DET"}},"count":490}
 {"lexeme":{"Heteronym":{"word":"fais","lemma":"faire","pos":"VERB"}},"count":489}
+{"lexeme":{"Heteronym":{"word":"ma","lemma":"mon","pos":"DET"}},"count":489}
 {"lexeme":{"Heteronym":{"word":"dire","lemma":"dire","pos":"VERB"}},"count":486}
 {"lexeme":{"Heteronym":{"word":"quelque","lemma":"quelque","pos":"DET"}},"count":481}
 {"lexeme":{"Heteronym":{"word":"dit","lemma":"dire","pos":"VERB"}},"count":479}
@@ -233,7 +233,6 @@
 {"lexeme":{"Heteronym":{"word":"papa","lemma":"papa","pos":"NOUN"}},"count":121}
 {"lexeme":{"Heteronym":{"word":"sa","lemma":"son","pos":"DET"}},"count":121}
 {"lexeme":{"Heteronym":{"word":"voulais","lemma":"vouloir","pos":"VERB"}},"count":121}
-{"lexeme":{"Heteronym":{"word":"homme","lemma":"homme","pos":"NOUN"}},"count":118}
 {"lexeme":{"Heteronym":{"word":"belle","lemma":"bel","pos":"ADJ"}},"count":116}
 {"lexeme":{"Heteronym":{"word":"plaît","lemma":"plaire","pos":"VERB"}},"count":116}
 {"lexeme":{"Heteronym":{"word":"voiture","lemma":"voiture","pos":"NOUN"}},"count":116}
@@ -253,6 +252,7 @@
 {"lexeme":{"Heteronym":{"word":"hé","lemma":"Hé","pos":"INTJ"}},"count":110}
 {"lexeme":{"Heteronym":{"word":"laissez","lemma":"laisser","pos":"VERB"}},"count":110}
 {"lexeme":{"Heteronym":{"word":"vie","lemma":"vie","pos":"NOUN"}},"count":110}
+{"lexeme":{"Heteronym":{"word":"homme","lemma":"homme","pos":"NOUN"}},"count":109}
 {"lexeme":{"Heteronym":{"word":"mec","lemma":"mec","pos":"NOUN"}},"count":109}
 {"lexeme":{"Heteronym":{"word":"tes","lemma":"ton","pos":"DET"}},"count":109}
 {"lexeme":{"Heteronym":{"word":"gars","lemma":"gars","pos":"NOUN"}},"count":108}
@@ -265,7 +265,7 @@
 {"lexeme":{"Heteronym":{"word":"trouvé","lemma":"trouver","pos":"VERB"}},"count":106}
 {"lexeme":{"Multiword":"est-il"},"count":105}
 {"lexeme":{"Heteronym":{"word":"attends","lemma":"attendre","pos":"VERB"}},"count":102}
-{"lexeme":{"Heteronym":{"word":"chérie","lemma":"chéri","pos":"NOUN"}},"count":102}
+{"lexeme":{"Heteronym":{"word":"chérie","lemma":"chéri","pos":"ADJ"}},"count":102}
 {"lexeme":{"Heteronym":{"word":"femme","lemma":"femme","pos":"NOUN"}},"count":102}
 {"lexeme":{"Multiword":"du temps de"},"count":102}
 {"lexeme":{"Heteronym":{"word":"beau","lemma":"beau","pos":"ADJ"}},"count":101}
@@ -420,7 +420,7 @@
 {"lexeme":{"Heteronym":{"word":"êtes","lemma":"être","pos":"VERB"}},"count":60}
 {"lexeme":{"Multiword":"bonne nuit"},"count":60}
 {"lexeme":{"Heteronym":{"word":"attendre","lemma":"attendre","pos":"VERB"}},"count":59}
-{"lexeme":{"Heteronym":{"word":"chéri","lemma":"chéri","pos":"ADJ"}},"count":59}
+{"lexeme":{"Heteronym":{"word":"chéri","lemma":"chéri","pos":"NOUN"}},"count":59}
 {"lexeme":{"Heteronym":{"word":"demander","lemma":"demander","pos":"VERB"}},"count":59}
 {"lexeme":{"Heteronym":{"word":"deux","lemma":"Deux","pos":"NUM"}},"count":59}
 {"lexeme":{"Heteronym":{"word":"dû","lemma":"devoir","pos":"VERB"}},"count":59}
@@ -679,12 +679,12 @@
 {"lexeme":{"Heteronym":{"word":"vaut","lemma":"valoir","pos":"VERB"}},"count":35}
 {"lexeme":{"Heteronym":{"word":"voyons","lemma":"voir","pos":"VERB"}},"count":35}
 {"lexeme":{"Multiword":"parce que"},"count":35}
-{"lexeme":{"Heteronym":{"word":"chien","lemma":"chien","pos":"NOUN"}},"count":34}
 {"lexeme":{"Heteronym":{"word":"des","lemma":"de","pos":"ADP"}},"count":34}
 {"lexeme":{"Heteronym":{"word":"grande","lemma":"grand","pos":"ADJ"}},"count":34}
 {"lexeme":{"Heteronym":{"word":"voit","lemma":"voir","pos":"VERB"}},"count":34}
 {"lexeme":{"Heteronym":{"word":"bras","lemma":"bras","pos":"NOUN"}},"count":33}
 {"lexeme":{"Heteronym":{"word":"ceci","lemma":"ceci","pos":"PRON"}},"count":33}
+{"lexeme":{"Heteronym":{"word":"chien","lemma":"chien","pos":"NOUN"}},"count":33}
 {"lexeme":{"Heteronym":{"word":"croyais","lemma":"croire","pos":"VERB"}},"count":33}
 {"lexeme":{"Heteronym":{"word":"fiston","lemma":"fiston","pos":"NOUN"}},"count":33}
 {"lexeme":{"Heteronym":{"word":"hey","lemma":"Hey","pos":"INTJ"}},"count":33}
@@ -1342,7 +1342,7 @@
 {"lexeme":{"Heteronym":{"word":"faudra","lemma":"falloir","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"feras","lemma":"faire","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"feu","lemma":"feu","pos":"NOUN"}},"count":14}
-{"lexeme":{"Heteronym":{"word":"file","lemma":"file","pos":"VERB"}},"count":14}
+{"lexeme":{"Heteronym":{"word":"file","lemma":"file","pos":"NOUN"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"forte","lemma":"fort","pos":"ADJ"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"gosse","lemma":"gosse","pos":"NOUN"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"grâce","lemma":"grâce","pos":"NOUN"}},"count":14}
@@ -1612,7 +1612,7 @@
 {"lexeme":{"Heteronym":{"word":"montrez","lemma":"montrer","pos":"VERB"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"métier","lemma":"métier","pos":"NOUN"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"offre","lemma":"offrir","pos":"VERB"}},"count":11}
-{"lexeme":{"Heteronym":{"word":"paie","lemma":"payer","pos":"VERB"}},"count":11}
+{"lexeme":{"Heteronym":{"word":"paie","lemma":"paie","pos":"VERB"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"paraît","lemma":"paraître","pos":"VERB"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"parfois","lemma":"parfois","pos":"ADV"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"parlait","lemma":"parler","pos":"VERB"}},"count":11}
@@ -1841,6 +1841,7 @@
 {"lexeme":{"Heteronym":{"word":"libère","lemma":"libérer","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"lourd","lemma":"lourd","pos":"ADJ"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"magie","lemma":"magie","pos":"NOUN"}},"count":9}
+{"lexeme":{"Heteronym":{"word":"man","lemma":"man","pos":"INTJ"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"marier","lemma":"marier","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"minuit","lemma":"minuit","pos":"NOUN"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"miracle","lemma":"miracle","pos":"NOUN"}},"count":9}
@@ -1895,7 +1896,7 @@
 {"lexeme":{"Heteronym":{"word":"sourire","lemma":"sourire","pos":"NOUN"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"test","lemma":"test","pos":"NOUN"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"tien","lemma":"tien","pos":"PRON"}},"count":9}
-{"lexeme":{"Heteronym":{"word":"tienne","lemma":"tienne","pos":"PRON"}},"count":9}
+{"lexeme":{"Heteronym":{"word":"tienne","lemma":"tenir","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"titre","lemma":"titre","pos":"NOUN"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"totalement","lemma":"totalement","pos":"ADV"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"toucher","lemma":"toucher","pos":"VERB"}},"count":9}
@@ -2207,7 +2208,7 @@
 {"lexeme":{"Heteronym":{"word":"nez","lemma":"nez","pos":"NOUN"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"non","lemma":"non","pos":"NOUN"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"nourriture","lemma":"nourriture","pos":"NOUN"}},"count":7}
-{"lexeme":{"Heteronym":{"word":"nôtre","lemma":"nôtre","pos":"DET"}},"count":7}
+{"lexeme":{"Heteronym":{"word":"nôtre","lemma":"nôtre","pos":"PRON"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"observe","lemma":"observer","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"oignons","lemma":"oignon","pos":"NOUN"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"oiseau","lemma":"oiseau","pos":"NOUN"}},"count":7}
@@ -3145,9 +3146,9 @@
 {"lexeme":{"Heteronym":{"word":"frais","lemma":"frais","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"français","lemma":"français","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"froide","lemma":"froid","pos":"ADJ"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"fromage","lemma":"fromage","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"fruit","lemma":"fruit","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"fréquence","lemma":"fréquence","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"frérot","lemma":"frérot","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"gagnant","lemma":"gagnant","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"gagnant","lemma":"gagnant","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"gamine","lemma":"gamin","pos":"NOUN"}},"count":4}
@@ -3210,7 +3211,7 @@
 {"lexeme":{"Heteronym":{"word":"magicien","lemma":"magicien","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"magique","lemma":"magique","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"magnifiques","lemma":"magnifique","pos":"ADJ"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"major","lemma":"major","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"major","lemma":"major","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"marchent","lemma":"marcher","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"mariés","lemma":"marier","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"mate","lemma":"mat","pos":"VERB"}},"count":4}
@@ -4567,6 +4568,7 @@
 {"lexeme":{"Heteronym":{"word":"charmants","lemma":"charmant","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"charme","lemma":"charme","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"chasse","lemma":"chasser","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"cheese","lemma":"cheese","pos":"X"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"chemins","lemma":"chemin","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"cheminée","lemma":"cheminée","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"cherchaient","lemma":"chercher","pos":"VERB"}},"count":2}
@@ -4636,7 +4638,7 @@
 {"lexeme":{"Heteronym":{"word":"copains","lemma":"copain","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"cordes","lemma":"corde","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"coriace","lemma":"coriace","pos":"ADJ"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"corn","lemma":"corn","pos":"NOUN"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"corn","lemma":"corné","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"couche","lemma":"couche","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"couchez","lemma":"coucher","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"couler","lemma":"couler","pos":"VERB"}},"count":2}
@@ -4774,7 +4776,6 @@
 {"lexeme":{"Heteronym":{"word":"essaierai","lemma":"essayer","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"essayes","lemma":"essayer","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"estime","lemma":"estime","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"ex-mari","lemma":"ex-mari","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"excellentes","lemma":"excellent","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"expire","lemma":"expirer","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"explications","lemma":"explication","pos":"NOUN"}},"count":2}
@@ -4824,6 +4825,7 @@
 {"lexeme":{"Heteronym":{"word":"fraîche","lemma":"frais","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"fringues","lemma":"fringue","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"frissons","lemma":"frisson","pos":"NOUN"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"fromage","lemma":"fromage","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"frontière","lemma":"frontière","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"fume","lemma":"fumer","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"fumer","lemma":"fumer","pos":"VERB"}},"count":2}
@@ -4839,7 +4841,6 @@
 {"lexeme":{"Heteronym":{"word":"gamme","lemma":"gamme","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"gang","lemma":"gang","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"garanti","lemma":"garantir","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"garde-la","lemma":"garder","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"garderai","lemma":"garder","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"gardé","lemma":"garder","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"gare","lemma":"gare","pos":"NOUN"}},"count":2}
@@ -4986,7 +4987,7 @@
 {"lexeme":{"Heteronym":{"word":"lac","lemma":"lac","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"laissée","lemma":"laisser","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"latin","lemma":"latin","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"lave","lemma":"lave","pos":"NOUN"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"lave","lemma":"laver","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"lendemain","lemma":"lendemain","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"levons","lemma":"lever","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"libérer","lemma":"libérer","pos":"VERB"}},"count":2}
@@ -5486,7 +5487,7 @@
 {"lexeme":{"Heteronym":{"word":"tirer","lemma":"tirer","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"tirons","lemma":"tirer","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"tombez","lemma":"tomber","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"tope","lemma":"tope","pos":"INTJ"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"tope","lemma":"toper","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"topo","lemma":"topo","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"totalité","lemma":"totalité","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"touches","lemma":"toucher","pos":"VERB"}},"count":2}
@@ -5953,7 +5954,7 @@
 {"lexeme":{"Heteronym":{"word":"allégeance","lemma":"allégeance","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"alternative","lemma":"alternative","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"altitude","lemma":"altitude","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"am","lemma":"être","pos":"AUX"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"am","lemma":"aimer","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"ambassadeur","lemma":"ambassadeur","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"ambition","lemma":"ambition","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"amen","lemma":"amen","pos":"INTJ"}},"count":1}
@@ -6451,6 +6452,7 @@
 {"lexeme":{"Heteronym":{"word":"coule","lemma":"coule","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"couleurs","lemma":"couleur","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"coulé","lemma":"couler","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"coupe-la","lemma":"couper-la","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"coupure","lemma":"coupure","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"coupées","lemma":"couper","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"cour","lemma":"cour","pos":"NOUN"}},"count":1}
@@ -6468,7 +6470,6 @@
 {"lexeme":{"Heteronym":{"word":"couvert","lemma":"couvert","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"couvertures","lemma":"couverture","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"couvre-feu","lemma":"couvre-feu","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"couvre-moi","lemma":"couvrir","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"couvre-nous","lemma":"couvre-nous","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"couvres","lemma":"couvrir","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"coûtera","lemma":"coûter","pos":"VERB"}},"count":1}
@@ -6611,6 +6612,7 @@
 {"lexeme":{"Heteronym":{"word":"dizaine","lemma":"dizaine","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"docteurs","lemma":"docteur","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"doctorat","lemma":"doctorat","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"dog","lemma":"dog","pos":"X"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"domination","lemma":"domination","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"donne-la-lui","lemma":"donne-la-lui","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"donne-la-moi","lemma":"donne-la-moi","pos":"PRON"}},"count":1}
@@ -6792,6 +6794,7 @@
 {"lexeme":{"Heteronym":{"word":"euphémisme","lemma":"euphémisme","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"eux","lemma":"eux","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"ex-copine","lemma":"ex-copine","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"ex-mari","lemma":"ex-mari","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"exacte","lemma":"exact","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"exagérez","lemma":"exagérer","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"examen","lemma":"examen","pos":"NOUN"}},"count":1}
@@ -6909,7 +6912,6 @@
 {"lexeme":{"Heteronym":{"word":"fruits","lemma":"fruit","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"frères","lemma":"frère","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"fréquent","lemma":"fréquent","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"frérot","lemma":"frérot","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"fuite","lemma":"fuite","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"full","lemma":"full","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"fumeur","lemma":"fumeur","pos":"NOUN"}},"count":1}
@@ -7177,7 +7179,7 @@
 {"lexeme":{"Heteronym":{"word":"lancement","lemma":"lancement","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"lancée","lemma":"lancer","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"lapins","lemma":"lapin","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"largue","lemma":"larguer","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"largue","lemma":"large","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"larme","lemma":"larme","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"lasagnes","lemma":"lasagne","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"laveur","lemma":"laveur","pos":"ADJ"}},"count":1}
@@ -7214,6 +7216,7 @@
 {"lexeme":{"Heteronym":{"word":"légume","lemma":"légume","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"légumes","lemma":"légume","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"lézard","lemma":"lézard","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"ma'","lemma":"ma","pos":"DET"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"mafia","lemma":"mafia","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"magazine","lemma":"magazine","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"magnétophone","lemma":"magnétophone","pos":"NOUN"}},"count":1}
@@ -7557,7 +7560,6 @@
 {"lexeme":{"Heteronym":{"word":"perso","lemma":"perso","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"personnel","lemma":"personnel","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"pertinent","lemma":"pertinent","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"petit-déj","lemma":"petit-déjeuner","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"phare","lemma":"phare","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"pharmacie","lemma":"pharmacie","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"phaseurs","lemma":"phaseur","pos":"NOUN"}},"count":1}
@@ -8323,7 +8325,7 @@
 {"lexeme":{"Heteronym":{"word":"verrais","lemma":"voir","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"verront","lemma":"voir","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"verrouille","lemma":"verrouiller","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"verse","lemma":"verser","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"verse","lemma":"verse","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"version","lemma":"version","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"verte","lemma":"vert","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"vertu","lemma":"vertu","pos":"NOUN"}},"count":1}
