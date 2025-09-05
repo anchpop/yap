@@ -24,13 +24,17 @@ export function AccentedCharacterKeyboard({
   }
 
   return (
-    <div className={`accent-keyboard flex flex-wrap gap-1 justify-center ${className}`}>
-      {characters.map((char) => (
+    <div className={`accent-keyboard flex flex-wrap justify-center ${className}`}>
+      {characters.map((char, index) => (
         <Button
           key={char}
           variant="outline"
           size="sm"
-          className="h-8 w-10 text-base font-medium"
+          className={`h-8 w-10 text-base font-medium rounded-none border-r-0 last:border-r ${
+            index === 0 ? 'rounded-l-md' : ''
+          } ${
+            index === characters.length - 1 ? 'rounded-r-md' : ''
+          }`}
           onClick={() => onCharacterInsert(char)}
           onMouseDown={(e) => e.preventDefault()}
           type="button"

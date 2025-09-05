@@ -388,11 +388,6 @@ export function TranscriptionChallenge({
             )}
           </div>
         </AnimatedCard>
-        <CardsRemaining
-          dueCount={dueCount}
-          totalCount={totalCount}
-          className="mt-2"
-        />
 
         {/* Accented character keyboard - show when not graded, language supports it, and not on small screens */}
         {gradingState === null && (targetLanguage === 'French' || targetLanguage === 'Spanish') && (
@@ -410,6 +405,13 @@ export function TranscriptionChallenge({
             totalCount={totalCount}
           />
         )}
+
+        <CardsRemaining
+          dueCount={dueCount}
+          totalCount={totalCount}
+          className="mt-2"
+        />
+
       </div >
 
       <div className="mt-4 flex flex-col gap-2">
