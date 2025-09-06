@@ -4,6 +4,8 @@
 
 Check it out on [yap.town](https://yap.town)!
 
+Join the community on [Discord](https://discord.gg/mpgqfsH).
+
 ## Supported Languages
 
 1. French
