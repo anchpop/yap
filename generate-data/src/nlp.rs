@@ -225,7 +225,10 @@ pub async fn process_sentences(
 /// Generate NLP analyzed sentences by matching multiword terms against sentences
 /// using lemma matcher (high confidence) and dependency matcher (low confidence)
 ///
-/// Returns a BTreeMap containing only the requested input sentences that were successfully processed
+/// Always regenerates the entire output file from scratch based on the input tokenizations.
+/// This is fast since it only involves local pattern matching (no API calls).
+///
+/// Returns a BTreeMap containing all the input sentences that were successfully processed
 pub async fn generate_nlp_sentences(
     sentences_tokenizations: BTreeMap<String, Vec<lexide::Token>>,
     multiword_terms_tokenizations: &BTreeMap<String, Vec<lexide::Token>>,
@@ -234,39 +237,6 @@ pub async fn generate_nlp_sentences(
 ) -> Result<BTreeMap<String, language_utils::SentenceInfo>> {
     use language_utils::{Literal, MultiwordTerms, SentenceInfo};
     use lexide::matching::{DependencyMatcher, LemmaMatcher, TreeNode};
-
-    // Load already processed sentences from output file (if it exists)
-    let mut already_processed: BTreeMap<String, SentenceInfo> = BTreeMap::new();
-    if output_file.exists() {
-        let file = std::fs::File::open(output_file)?;
-        let reader = BufReader::new(file);
-
-        for line in reader.lines().map_while(Result::ok) {
-            if let Ok((sentence, info)) = serde_json::from_str::<(String, SentenceInfo)>(&line) {
-                already_processed.insert(sentence, info);
-            }
-        }
-    }
-
-    // Filter out already processed sentences
-    let sentences_to_process: BTreeMap<String, Vec<lexide::Token>> = sentences_tokenizations
-        .iter()
-        .filter(|(sentence, _)| !already_processed.contains_key(*sentence))
-        .map(|(k, v)| (k.clone(), v.clone()))
-        .collect();
-
-    if sentences_to_process.is_empty() {
-        // Return only the sentences that were requested
-        let result: BTreeMap<String, SentenceInfo> = sentences_tokenizations
-            .keys()
-            .filter_map(|s| {
-                already_processed
-                    .get(s)
-                    .map(|info| (s.clone(), info.clone()))
-            })
-            .collect();
-        return Ok(result);
-    }
 
     // Build matchers for all multiword terms
 
@@ -304,20 +274,21 @@ pub async fn generate_nlp_sentences(
 
     let dependency_matcher = DependencyMatcher::new(&tree_patterns);
 
-    // Open output file in append mode
+    // Open output file in write mode (truncate existing content)
     let output_file_handle = std::fs::OpenOptions::new()
         .create(true)
-        .append(true)
+        .write(true)
+        .truncate(true)
         .open(output_file)?;
     let mut writer = std::io::BufWriter::new(output_file_handle);
 
     // Empty proper nouns map (for now, proper noun handling can be added later if needed)
     let proper_nouns = BTreeMap::new();
 
-    // Process only the new sentences
-    let mut newly_processed: BTreeMap<String, SentenceInfo> = BTreeMap::new();
+    // Process all sentences
+    let mut result: BTreeMap<String, SentenceInfo> = BTreeMap::new();
 
-    for (sentence_str, tokens) in sentences_to_process.iter() {
+    for (sentence_str, tokens) in sentences_tokenizations.iter() {
         let tokenization = lexide::Tokenization {
             tokens: tokens.clone(),
         };
@@ -365,24 +336,11 @@ pub async fn generate_nlp_sentences(
         let json = serde_json::to_string(&(sentence_str, &sentence_info))?;
         writeln!(writer, "{json}")?;
 
-        // Store in newly processed map
-        newly_processed.insert(sentence_str.clone(), sentence_info);
+        // Store in result map
+        result.insert(sentence_str.clone(), sentence_info);
     }
 
     writer.flush()?;
-
-    // Merge newly processed sentences with already processed ones
-    already_processed.extend(newly_processed);
-
-    // Build result map containing only the requested sentences
-    let result: BTreeMap<String, SentenceInfo> = sentences_tokenizations
-        .keys()
-        .filter_map(|s| {
-            already_processed
-                .get(s)
-                .map(|info| (s.clone(), info.clone()))
-        })
-        .collect();
 
     Ok(result)
 }
