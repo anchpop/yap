@@ -1,4 +1,4 @@
-use language_utils::{Language, NlpAnalyzedSentence, PartOfSpeech};
+use language_utils::{Language, NlpAnalyzedSentence, PartOfSpeechTag};
 use tysm::chat_completions::ChatClient;
 
 /// Classification result for a sentence
@@ -75,7 +75,7 @@ impl SentenceClassifier for SpanishClassifier {
 
         // Check for Space tokens which indicate NLP parsing issues
         for token in &sentence.doc {
-            if token.pos == PartOfSpeech::Space {
+            if token.pos == PartOfSpeechTag::Space {
                 reasons.push(format!("Contains Space token: '{}'", sentence.sentence));
             }
 
@@ -123,7 +123,7 @@ impl SentenceClassifier for SpanishClassifier {
             ];
 
             if det_or_pron_words.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Det || token.pos == PartOfSpeech::Pron)
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
             {
                 reasons.push(format!(
                     "'{}' can be either DET or PRON depending on context (Rule: modifies noun → DET, stands alone → PRON)",
@@ -132,7 +132,7 @@ impl SentenceClassifier for SpanishClassifier {
             }
 
             // Check common past-tense verbs are lemmatized to infinitive
-            if token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux {
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
                 let expected_lemmas: Vec<(&str, &str)> = vec![
                     ("era", "ser"),
                     ("eran", "ser"),
@@ -301,7 +301,7 @@ impl SentenceClassifier for SpanishClassifier {
             ];
 
             if haber_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "haber"
             {
                 reasons.push(format!(
@@ -311,7 +311,7 @@ impl SentenceClassifier for SpanishClassifier {
             }
 
             if deber_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "deber"
             {
                 reasons.push(format!(
@@ -321,7 +321,7 @@ impl SentenceClassifier for SpanishClassifier {
             }
 
             if poder_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "poder"
             {
                 reasons.push(format!(
@@ -331,7 +331,7 @@ impl SentenceClassifier for SpanishClassifier {
             }
 
             if saber_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "saber"
             {
                 reasons.push(format!(
@@ -383,7 +383,7 @@ impl SentenceClassifier for SpanishClassifier {
             }
 
             // Check for lemmas that look like conjugated forms rather than infinitives
-            if token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux {
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
                 let lemma_lower = token.lemma.to_lowercase();
                 // Check for common conjugation endings that shouldn't be in lemmas
                 if lemma_lower.ends_with("ado")
@@ -404,7 +404,7 @@ impl SentenceClassifier for SpanishClassifier {
             }
 
             // Check for non-verb words being lemmatized as verbs (common error)
-            if token.pos != PartOfSpeech::Verb && token.pos != PartOfSpeech::Aux {
+            if token.pos != PartOfSpeechTag::Verb && token.pos != PartOfSpeechTag::Aux {
                 let lemma_lower = token.lemma.to_lowercase();
                 // Spanish infinitives end in -ar, -er, -ir
                 if lemma_lower.ends_with("ar")
@@ -463,12 +463,12 @@ impl SentenceClassifier for PortugueseClassifier {
 
         // Check for Space tokens which indicate NLP parsing issues
         for token in &sentence.doc {
-            if token.pos == PartOfSpeech::Space {
+            if token.pos == PartOfSpeechTag::Space {
                 reasons.push(format!("Contains Space token: '{}'", sentence.sentence));
             }
 
             // Check for PROPN (proper noun) tags - often over-classified
-            if token.pos == PartOfSpeech::Propn {
+            if token.pos == PartOfSpeechTag::Propn {
                 reasons.push(format!(
                     "Contains '{}' classified as a proper noun, but the legacy NLP pipeline often over-classifies things as proper nouns",
                     token.text
@@ -494,7 +494,7 @@ impl SentenceClassifier for PortugueseClassifier {
             }
 
             // Check for verbs/auxiliaries with themselves as lemma (no morphological analysis)
-            if (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.text.to_lowercase() == token.lemma.to_lowercase()
             {
                 reasons.push(format!(
@@ -506,8 +506,8 @@ impl SentenceClassifier for PortugueseClassifier {
             // Check for object/reflexive pronouns with subject pronoun lemmas
             if (text_lower == "me" && token.lemma == "eu")
                 || (text_lower == "te" && token.lemma == "tu")
-                || (text_lower == "o" && token.lemma == "ele" && token.pos == PartOfSpeech::Pron)
-                || (text_lower == "a" && token.lemma == "ele" && token.pos == PartOfSpeech::Pron)
+                || (text_lower == "o" && token.lemma == "ele" && token.pos == PartOfSpeechTag::Pron)
+                || (text_lower == "a" && token.lemma == "ele" && token.pos == PartOfSpeechTag::Pron)
                 || (text_lower == "lhe" && token.lemma == "ele")
                 || (text_lower == "se" && token.lemma == "ele")
                 || (text_lower == "nos" && token.lemma == "eu")
@@ -520,7 +520,7 @@ impl SentenceClassifier for PortugueseClassifier {
             }
 
             // Check for "nos" with lemma "nós" - could be wrong if it's an object pronoun
-            if text_lower == "nos" && token.lemma == "nós" && token.pos == PartOfSpeech::Pron {
+            if text_lower == "nos" && token.lemma == "nós" && token.pos == PartOfSpeechTag::Pron {
                 reasons.push(
                     "'nos' has lemma 'nós' - check if this is correct. If 'nos' is an object pronoun (e.g., 'ele nos disse'), it should not have lemma 'nós' (subject pronoun)".to_string()
                 );
@@ -546,7 +546,7 @@ impl SentenceClassifier for PortugueseClassifier {
             ];
 
             if det_or_pron_words.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Det || token.pos == PartOfSpeech::Pron)
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
             {
                 reasons.push(format!(
                     "'{}' can be either DET or PRON depending on context (Rule: modifies noun → DET, stands alone → PRON)",
@@ -555,7 +555,7 @@ impl SentenceClassifier for PortugueseClassifier {
             }
 
             // Check common past-tense verbs are lemmatized to infinitive
-            if token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux {
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
                 let expected_lemmas: Vec<(&str, &str)> = vec![
                     ("era", "ser"),
                     ("eram", "ser"),
@@ -756,7 +756,7 @@ impl SentenceClassifier for PortugueseClassifier {
             ];
 
             if ter_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "ter"
             {
                 reasons.push(format!(
@@ -766,7 +766,7 @@ impl SentenceClassifier for PortugueseClassifier {
             }
 
             if haver_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "haver"
             {
                 reasons.push(format!(
@@ -776,7 +776,7 @@ impl SentenceClassifier for PortugueseClassifier {
             }
 
             if dever_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "dever"
             {
                 reasons.push(format!(
@@ -786,7 +786,7 @@ impl SentenceClassifier for PortugueseClassifier {
             }
 
             if poder_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "poder"
             {
                 reasons.push(format!(
@@ -796,7 +796,7 @@ impl SentenceClassifier for PortugueseClassifier {
             }
 
             if saber_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "saber"
             {
                 reasons.push(format!(
@@ -857,7 +857,7 @@ impl WordCorrector for PortugueseCorrector {
                     let hyphen_token = language_utils::DocToken {
                         text: "-".to_string(),
                         whitespace: String::new(), // No whitespace after hyphen
-                        pos: PartOfSpeech::Punct,
+                        pos: PartOfSpeechTag::Punct,
                         lemma: "-".to_string(),
                         morph: std::collections::BTreeMap::new(),
                     };
@@ -885,7 +885,7 @@ impl WordCorrector for PortugueseCorrector {
                     let hyphen_token = language_utils::DocToken {
                         text: "-".to_string(),
                         whitespace: original_whitespace,
-                        pos: PartOfSpeech::Punct,
+                        pos: PartOfSpeechTag::Punct,
                         lemma: "-".to_string(),
                         morph: std::collections::BTreeMap::new(),
                     };
@@ -916,18 +916,18 @@ impl SentenceClassifier for KoreanClassifier {
 
         // Check for Space tokens which indicate NLP parsing issues
         for token in &sentence.doc {
-            if token.pos == PartOfSpeech::Space {
+            if token.pos == PartOfSpeechTag::Space {
                 reasons.push(format!("Contains Space token: '{}'", sentence.sentence));
             }
 
             // Check for X (unknown) POS tags
-            if token.pos == PartOfSpeech::X {
+            if token.pos == PartOfSpeechTag::X {
                 reasons.push(format!("Token '{}' has unknown POS (X)", token.text));
             }
 
             // Check for verbs/auxiliaries with themselves as lemma (no morphological analysis)
             // Properly analyzed Korean should have lemmas with "+" morpheme boundaries
-            if (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.text == token.lemma
                 && !token.lemma.contains('+')
             {
@@ -988,10 +988,10 @@ impl SentenceClassifier for FrenchClassifier {
 
         // Check for Space tokens which indicate NLP parsing issues
         for token in &sentence.doc {
-            if token.pos == PartOfSpeech::Space {
+            if token.pos == PartOfSpeechTag::Space {
                 reasons.push("Contains Space token, which is usually not necessary due to the `whitespace` field".to_string());
             }
-            if token.pos == PartOfSpeech::Propn {
+            if token.pos == PartOfSpeechTag::Propn {
                 reasons.push(format!(
                     "Contains '{}' classified as a proper noun, but the legacy NLP pipeline often over-classifies things as proper nouns",
                     token.text
@@ -1002,7 +1002,7 @@ impl SentenceClassifier for FrenchClassifier {
 
             // Check for hyphen being parsed incorrectly (indicates parsing error)
             if text_lower == "-"
-                && (token.pos == PartOfSpeech::Pron || token.pos == PartOfSpeech::X)
+                && (token.pos == PartOfSpeechTag::Pron || token.pos == PartOfSpeechTag::X)
             {
                 reasons.push(format!("Hyphen parsed as {:?}", token.pos));
             }
@@ -1051,7 +1051,7 @@ impl SentenceClassifier for FrenchClassifier {
             ];
 
             if det_or_pron_words.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Det || token.pos == PartOfSpeech::Pron)
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
             {
                 reasons.push(format!(
                     "'{}' can be either DET or PRON depending on context (Rule: modifies noun → DET, stands alone → PRON)",
@@ -1060,7 +1060,7 @@ impl SentenceClassifier for FrenchClassifier {
             }
 
             // Check common past-tense verbs are lemmatized to infinitive
-            if token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux {
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
                 let expected_lemmas: Vec<(&str, &str)> = vec![
                     ("était", "être"),
                     ("étaient", "être"),
@@ -1206,7 +1206,7 @@ impl SentenceClassifier for FrenchClassifier {
             ];
 
             if avoir_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "avoir"
             {
                 reasons.push(format!(
@@ -1216,7 +1216,7 @@ impl SentenceClassifier for FrenchClassifier {
             }
 
             if devoir_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "devoir"
             {
                 reasons.push(format!(
@@ -1226,7 +1226,7 @@ impl SentenceClassifier for FrenchClassifier {
             }
 
             if pouvoir_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "pouvoir"
             {
                 reasons.push(format!(
@@ -1236,7 +1236,7 @@ impl SentenceClassifier for FrenchClassifier {
             }
 
             if savoir_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "savoir"
             {
                 reasons.push(format!(
@@ -1246,7 +1246,7 @@ impl SentenceClassifier for FrenchClassifier {
             }
 
             if falloir_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "falloir"
             {
                 reasons.push(format!(
@@ -1315,7 +1315,7 @@ impl SentenceClassifier for FrenchClassifier {
 
             // Check for lemmas that look like conjugated forms rather than infinitives
             // Common patterns: past participles ending in é/ée/és/ées, imperfect forms ending in -ait
-            if token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux {
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
                 let lemma_lower = token.lemma.to_lowercase();
                 if lemma_lower.ends_with("ait")
                     || lemma_lower.ends_with("aient")
@@ -1334,7 +1334,7 @@ impl SentenceClassifier for FrenchClassifier {
             }
 
             // Check for non-verb words being lemmatized as verbs (common error)
-            if token.pos != PartOfSpeech::Verb && token.pos != PartOfSpeech::Aux {
+            if token.pos != PartOfSpeechTag::Verb && token.pos != PartOfSpeechTag::Aux {
                 let lemma_lower = token.lemma.to_lowercase();
                 // French infinitives end in -er, -ir, -re, -oir
                 if lemma_lower.ends_with("er")
@@ -1371,10 +1371,10 @@ impl SentenceClassifier for GermanClassifier {
             let is_first_word = idx == 0;
             let _is_last_word = idx == sentence.doc.len() - 1;
 
-            if token.pos == PartOfSpeech::Space {
+            if token.pos == PartOfSpeechTag::Space {
                 reasons.push("Contains SPACE token, but the `whitespace` field should be used instead (SPACE tokens are not usually necessary)".to_string());
             }
-            if token.pos == PartOfSpeech::Propn {
+            if token.pos == PartOfSpeechTag::Propn {
                 reasons.push(format!(
                     "Contains '{}' classified as a proper noun, but the legacy NLP pipeline often over-classifies things as proper nouns",
                     token.text
@@ -1508,7 +1508,7 @@ impl SentenceClassifier for GermanClassifier {
             ];
 
             if det_or_pron_words.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Det || token.pos == PartOfSpeech::Pron)
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
             {
                 reasons.push(format!(
                     "'{}' can be either DET or PRON depending on context (Rule: modifies noun → DET, stands alone → PRON)",
@@ -1519,14 +1519,14 @@ impl SentenceClassifier for GermanClassifier {
             // Check for reflexive pronouns with lemma "sich"
             if (text_lower == "mich" || text_lower == "dich")
                 && token.lemma == "sich"
-                && token.pos == PartOfSpeech::Pron
+                && token.pos == PartOfSpeechTag::Pron
             {
                 reasons.push(format!("'{}' has lemma 'sich'", token.text));
             }
 
             // Check for "den" article with incorrect lemma "die"
             // Could be wrong (should be "der" for masc. acc.) or correct (dative plural)
-            if text_lower == "den" && token.lemma == "die" && token.pos == PartOfSpeech::Det {
+            if text_lower == "den" && token.lemma == "die" && token.pos == PartOfSpeechTag::Det {
                 reasons.push(
                     "'den' has lemma 'die' (could be wrong if accusative masculine)".to_string(),
                 );
@@ -1534,7 +1534,7 @@ impl SentenceClassifier for GermanClassifier {
 
             // Check for words that should be pronouns but are tagged as nouns
             // Common indefinite pronouns: alles, jemand, jemanden, jemandem, niemand, etc.
-            if token.pos == PartOfSpeech::Noun {
+            if token.pos == PartOfSpeechTag::Noun {
                 let indefinite_pronouns = [
                     "alles",
                     "etwas",
@@ -1557,9 +1557,9 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             // Check for capitalized lemma on non-nouns (nouns are capitalized in German)
-            if token.pos != PartOfSpeech::Noun
-                && token.pos != PartOfSpeech::Propn
-                && token.pos != PartOfSpeech::Punct
+            if token.pos != PartOfSpeechTag::Noun
+                && token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
             {
                 if let Some(first_char) = token.lemma.chars().next() {
                     if first_char.is_uppercase() {
@@ -1572,7 +1572,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             // Check for nouns with lowercase lemmas (nouns are capitalized in German)
-            if token.pos == PartOfSpeech::Noun || token.pos == PartOfSpeech::Propn {
+            if token.pos == PartOfSpeechTag::Noun || token.pos == PartOfSpeechTag::Propn {
                 if let Some(first_char) = token.lemma.chars().next() {
                     if first_char.is_lowercase() {
                         reasons.push(format!(
@@ -1584,7 +1584,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             // Check common past-tense verbs are lemmatized to infinitive
-            if token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux {
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
                 let expected_lemmas: Vec<(&str, &str)> = vec![
                     ("war", "sein"),
                     ("waren", "sein"),
@@ -1692,7 +1692,7 @@ impl SentenceClassifier for GermanClassifier {
             ];
 
             if haben_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "haben"
             {
                 reasons.push(format!(
@@ -1702,7 +1702,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             if müssen_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "müssen"
             {
                 reasons.push(format!(
@@ -1712,7 +1712,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             if können_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "können"
             {
                 reasons.push(format!(
@@ -1722,7 +1722,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             if wissen_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "wissen"
             {
                 reasons.push(format!(
@@ -1732,7 +1732,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             if sollen_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "sollen"
             {
                 reasons.push(format!(
@@ -1742,7 +1742,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             if wollen_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "wollen"
             {
                 reasons.push(format!(
@@ -1752,7 +1752,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             if dürfen_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "dürfen"
             {
                 reasons.push(format!(
@@ -1762,7 +1762,7 @@ impl SentenceClassifier for GermanClassifier {
             }
 
             if mögen_forms.contains(&text_lower.as_str())
-                && (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "mögen"
             {
                 reasons.push(format!(
@@ -1792,7 +1792,7 @@ impl WordCorrector for GermanCorrector {
             let text_lower = token.text.to_lowercase();
 
             // Fix personal pronouns that aren't properly lemmatized
-            if token.pos == PartOfSpeech::Pron {
+            if token.pos == PartOfSpeechTag::Pron {
                 // 2nd person plural: euch → ihr
                 if text_lower == "euch" && token.lemma != "ihr" {
                     corrections.push(format!(
@@ -1825,7 +1825,7 @@ impl WordCorrector for GermanCorrector {
             }
 
             // Fix punctuation with lemma "--"
-            if token.pos == PartOfSpeech::Punct && token.lemma == "--" {
+            if token.pos == PartOfSpeechTag::Punct && token.lemma == "--" {
                 corrections.push(format!(
                     "Fixed punctuation '{}' lemma from '--' to itself",
                     token.text
@@ -1867,9 +1867,10 @@ impl WordCorrector for FrenchCorrector {
                 let text_lower = token.text.to_lowercase();
 
                 // Fix "ne" and "n'" - should always be Adv, not Part
-                if (text_lower == "ne" || text_lower == "n'") && token.pos == PartOfSpeech::Part {
+                if (text_lower == "ne" || text_lower == "n'") && token.pos == PartOfSpeechTag::Part
+                {
                     corrections.push(format!("Fixed '{}' POS from Part to Adv", token.text));
-                    token.pos = PartOfSpeech::Adv;
+                    token.pos = PartOfSpeechTag::Adv;
                     corrected = true;
                 }
 
@@ -1922,7 +1923,7 @@ impl WordCorrector for FrenchCorrector {
                 }
 
                 // Fix "a" in "il y a" construction - should always be Verb
-                if text_lower == "a" && token.pos != PartOfSpeech::Verb && acc.len() >= 2 {
+                if text_lower == "a" && token.pos != PartOfSpeechTag::Verb && acc.len() >= 2 {
                     // Check if preceded by "y" and "il"
                     let prev_token = &acc[acc.len() - 1];
                     let prev_prev_token = &acc[acc.len() - 2];
@@ -1934,7 +1935,7 @@ impl WordCorrector for FrenchCorrector {
                             "Fixed '{}' in 'il y a' construction from {:?} to Verb",
                             token.text, token.pos
                         ));
-                        token.pos = PartOfSpeech::Verb;
+                        token.pos = PartOfSpeechTag::Verb;
                         // Also ensure lemma is "avoir"
                         if token.lemma != "avoir" {
                             corrections.push(format!(
@@ -1948,7 +1949,7 @@ impl WordCorrector for FrenchCorrector {
                 }
 
                 // Normalize possessive adjectives to masculine singular form
-                if token.pos == PartOfSpeech::Det {
+                if token.pos == PartOfSpeechTag::Det {
                     let possessive_normalizations = [
                         ("ta", "ton"),
                         ("ma", "mon"),
@@ -2001,7 +2002,7 @@ impl WordCorrector for FrenchCorrector {
                     let hyphen_token = language_utils::DocToken {
                         text: "-".to_string(),
                         whitespace: String::new(), // No whitespace after hyphen
-                        pos: PartOfSpeech::Punct,
+                        pos: PartOfSpeechTag::Punct,
                         lemma: "-".to_string(),
                         morph: std::collections::BTreeMap::new(),
                     };
@@ -2029,7 +2030,7 @@ impl WordCorrector for FrenchCorrector {
                     let hyphen_token = language_utils::DocToken {
                         text: "-".to_string(),
                         whitespace: original_whitespace,
-                        pos: PartOfSpeech::Punct,
+                        pos: PartOfSpeechTag::Punct,
                         lemma: "-".to_string(),
                         morph: std::collections::BTreeMap::new(),
                     };
@@ -2060,12 +2061,12 @@ impl SentenceClassifier for ItalianClassifier {
 
         // Check for Space tokens which indicate NLP parsing issues
         for token in &sentence.doc {
-            if token.pos == PartOfSpeech::Space {
+            if token.pos == PartOfSpeechTag::Space {
                 reasons.push(format!("Contains Space token: '{}'", sentence.sentence));
             }
 
             // Check for PROPN (proper noun) tags - often over-classified
-            if token.pos == PartOfSpeech::Propn {
+            if token.pos == PartOfSpeechTag::Propn {
                 reasons.push(format!(
                     "Contains '{}' classified as a proper noun, but the legacy NLP pipeline often over-classifies things as proper nouns",
                     token.text
@@ -2083,7 +2084,7 @@ impl SentenceClassifier for ItalianClassifier {
             }
 
             // Check for verbs/auxiliaries with themselves as lemma (no morphological analysis)
-            if (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.text.to_lowercase() == token.lemma.to_lowercase()
             {
                 reasons.push(format!(
@@ -2098,11 +2099,15 @@ impl SentenceClassifier for ItalianClassifier {
             if (text_lower == "mi" && token.lemma == "io")
                 || (text_lower == "ti" && token.lemma == "tu")
                 || (text_lower == "lo" && token.lemma == "lui")
-                || (text_lower == "la" && token.lemma == "lei" && token.pos == PartOfSpeech::Pron)
+                || (text_lower == "la"
+                    && token.lemma == "lei"
+                    && token.pos == PartOfSpeechTag::Pron)
                 || (text_lower == "ci" && token.lemma == "noi")
                 || (text_lower == "vi" && token.lemma == "voi")
                 || (text_lower == "li" && token.lemma == "loro")
-                || (text_lower == "le" && token.lemma == "loro" && token.pos == PartOfSpeech::Pron)
+                || (text_lower == "le"
+                    && token.lemma == "loro"
+                    && token.pos == PartOfSpeechTag::Pron)
             {
                 reasons.push(format!(
                     "Check whether object/reflexive pronoun '{}' should have lemma '{}' (currently has subject pronoun lemma)",
@@ -2112,7 +2117,7 @@ impl SentenceClassifier for ItalianClassifier {
 
             // Check for specific Italian pronoun lemmatization issues
             // "gli" (to him/to them) should not be lemmatized to "il" (the)
-            if text_lower == "gli" && token.lemma == "il" && token.pos == PartOfSpeech::Pron {
+            if text_lower == "gli" && token.lemma == "il" && token.pos == PartOfSpeechTag::Pron {
                 reasons.push(
                     "Check whether pronoun 'gli' should be lemmatized to 'il' (article lemma)"
                         .to_string(),
@@ -2121,8 +2126,8 @@ impl SentenceClassifier for ItalianClassifier {
 
             // "ne" (of it/of them) is a pronoun, not a conjunction
             if text_lower == "ne"
-                && token.pos != PartOfSpeech::Pron
-                && token.pos != PartOfSpeech::Adv
+                && token.pos != PartOfSpeechTag::Pron
+                && token.pos != PartOfSpeechTag::Adv
             {
                 reasons.push(format!(
                     "Check whether 'ne' is really {:?} (often a pronoun or adverb)",
@@ -2134,7 +2139,7 @@ impl SentenceClassifier for ItalianClassifier {
             // Examples: dacci (dare + ci), dammi (dare + mi), dimmi (dire + mi)
             // These imperative + clitic combinations are often misclassified
             let common_clitic_endings = ["ci", "mi", "ti", "lo", "la", "vi", "li", "le", "ne"];
-            if token.pos == PartOfSpeech::Noun {
+            if token.pos == PartOfSpeechTag::Noun {
                 // Check if word ends with a common clitic and has verb lemma
                 let ends_with_clitic = common_clitic_endings
                     .iter()
@@ -2156,7 +2161,7 @@ impl SentenceClassifier for ItalianClassifier {
             let participle_endings = [
                 "ato", "ata", "ati", "ate", "ito", "ita", "iti", "ite", "uto", "uta", "uti", "ute",
             ];
-            if token.pos == PartOfSpeech::Noun
+            if token.pos == PartOfSpeechTag::Noun
                 && participle_endings
                     .iter()
                     .any(|&ending| text_lower.ends_with(ending))
@@ -2176,7 +2181,7 @@ impl SentenceClassifier for ItalianClassifier {
 
             // Check for adjectives like "arrabbiati" being misclassified
             // Words ending in -ato/-ito/-uto plural forms often misclassified
-            if token.pos == PartOfSpeech::Noun
+            if token.pos == PartOfSpeechTag::Noun
                 && (text_lower.ends_with("ati")
                     || text_lower.ends_with("iti")
                     || text_lower.ends_with("uti"))
@@ -2188,7 +2193,7 @@ impl SentenceClassifier for ItalianClassifier {
             }
 
             // Check for malformed verb infinitives (not ending in -are/-ere/-ire)
-            if (token.pos == PartOfSpeech::Verb || token.pos == PartOfSpeech::Aux)
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && !token.lemma.ends_with("are")
                 && !token.lemma.ends_with("ere")
                 && !token.lemma.ends_with("ire")
@@ -2202,7 +2207,7 @@ impl SentenceClassifier for ItalianClassifier {
             }
 
             // Check for adjectives with plural forms as lemmas (should be singular)
-            if token.pos == PartOfSpeech::Adj {
+            if token.pos == PartOfSpeechTag::Adj {
                 let lemma_lower = token.lemma.to_lowercase();
                 if lemma_lower.ends_with("i") && lemma_lower.len() > 2 {
                     // Common plural endings
@@ -2215,7 +2220,7 @@ impl SentenceClassifier for ItalianClassifier {
 
             // Check for words that look like verbs but are misclassified as adverbs
             // Common misclassification: "vivo" (I live) tagged as Adv instead of Verb
-            if token.pos == PartOfSpeech::Adv {
+            if token.pos == PartOfSpeechTag::Adv {
                 // Common verb forms that might be misclassified as adverbs
                 // These are first-person singular present tense forms
                 let common_verb_forms = [
@@ -2250,7 +2255,7 @@ impl WordCorrector for ItalianCorrector {
             let text_lower = token.text.to_lowercase();
 
             // Fix "lei" (she) lemma - should be "lei", not "lui" (he)
-            if text_lower == "lei" && token.lemma == "lui" && token.pos == PartOfSpeech::Pron {
+            if text_lower == "lei" && token.lemma == "lui" && token.pos == PartOfSpeechTag::Pron {
                 corrections.push(format!(
                     "Fixed '{}' lemma from '{}' to 'lei'",
                     token.text, token.lemma
@@ -2280,7 +2285,7 @@ impl WordCorrector for ItalianCorrector {
             }
 
             // Fix "gli" when used as pronoun (not article)
-            if text_lower == "gli" && token.lemma == "il" && token.pos == PartOfSpeech::Pron {
+            if text_lower == "gli" && token.lemma == "il" && token.pos == PartOfSpeechTag::Pron {
                 corrections.push(format!(
                     "Fixed pronoun '{}' lemma from 'il' to 'gli'",
                     token.text
@@ -2290,7 +2295,7 @@ impl WordCorrector for ItalianCorrector {
             }
 
             // Fix capitalized lemmas (only for non-proper nouns)
-            if token.pos != PartOfSpeech::Propn
+            if token.pos != PartOfSpeechTag::Propn
                 && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
             {
                 let lowercase_lemma = token.lemma.to_lowercase();
@@ -2313,7 +2318,7 @@ impl WordCorrector for ItalianCorrector {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use language_utils::PartOfSpeech;
+
     use std::collections::BTreeMap;
 
     #[test]
@@ -2330,14 +2335,14 @@ mod tests {
                 DocToken {
                     text: "Elle".to_string(),
                     whitespace: " ".to_string(),
-                    pos: PartOfSpeech::Pron,
+                    pos: PartOfSpeechTag::Pron,
                     lemma: "lui".to_string(), // Wrong lemma
                     morph: BTreeMap::new(),
                 },
                 DocToken {
                     text: "parle".to_string(),
                     whitespace: "".to_string(),
-                    pos: PartOfSpeech::Verb,
+                    pos: PartOfSpeechTag::Verb,
                     lemma: "parler".to_string(),
                     morph: BTreeMap::new(),
                 },
@@ -2361,7 +2366,7 @@ pub struct SimplifiedToken {
     #[serde(rename = "2. whitespace")]
     pub whitespace: String,
     #[serde(rename = "3. pos")]
-    pub pos: PartOfSpeech,
+    pub pos: PartOfSpeechTag,
     #[serde(rename = "4. lemma")]
     pub lemma: String,
 }
@@ -2371,7 +2376,7 @@ pub struct SimplifiedToken {
 pub struct SimplifiedTokenPrime {
     pub text: String,
     pub whitespace: String,
-    pub pos: PartOfSpeech,
+    pub pos: PartOfSpeechTag,
     pub lemma: String,
 }
 
@@ -2653,7 +2658,7 @@ Think through your analysis, and finally provide the corrected token list. Remem
                 token.whitespace
             },
             pos: if token.text == "-" {
-                PartOfSpeech::Punct
+                PartOfSpeechTag::Punct
             } else {
                 token.pos
             },

@@ -1,21 +1,21 @@
-{"lexeme":{"Multiword":"있다"},"count":1088}
+{"lexeme":{"Multiword":"있다"},"count":1082}
 {"lexeme":{"Multiword":"나니까"},"count":969}
 {"lexeme":{"Multiword":"나요"},"count":969}
-{"lexeme":{"Multiword":"하다"},"count":560}
+{"lexeme":{"Multiword":"하다"},"count":556}
 {"lexeme":{"Heteronym":{"word":"나는","lemma":"나","pos":"PRON"}},"count":390}
 {"lexeme":{"Heteronym":{"word":"그","lemma":"그","pos":"DET"}},"count":271}
 {"lexeme":{"Multiword":"이보다"},"count":245}
 {"lexeme":{"Heteronym":{"word":"그는","lemma":"그","pos":"PRON"}},"count":241}
 {"lexeme":{"Heteronym":{"word":"이","lemma":"이","pos":"DET"}},"count":227}
-{"lexeme":{"Multiword":"갈수록"},"count":208}
-{"lexeme":{"Heteronym":{"word":"있어","lemma":"있다","pos":"AUX"}},"count":199}
+{"lexeme":{"Multiword":"갈수록"},"count":199}
+{"lexeme":{"Heteronym":{"word":"있어","lemma":"있다","pos":"AUX"}},"count":198}
 {"lexeme":{"Heteronym":{"word":"수","lemma":"수","pos":"NOUN"}},"count":188}
 {"lexeme":{"Multiword":"알다"},"count":180}
 {"lexeme":{"Multiword":"수 있다"},"count":173}
 {"lexeme":{"Heteronym":{"word":"내","lemma":"나","pos":"DET"}},"count":163}
 {"lexeme":{"Multiword":"것이다"},"count":144}
-{"lexeme":{"Heteronym":{"word":"있어","lemma":"있다","pos":"VERB"}},"count":141}
-{"lexeme":{"Heteronym":{"word":"있다","lemma":"있다","pos":"AUX"}},"count":131}
+{"lexeme":{"Heteronym":{"word":"있어","lemma":"있다","pos":"VERB"}},"count":140}
+{"lexeme":{"Heteronym":{"word":"있다","lemma":"있다","pos":"AUX"}},"count":130}
 {"lexeme":{"Multiword":"보다"},"count":127}
 {"lexeme":{"Heteronym":{"word":"내가","lemma":"나","pos":"PRON"}},"count":115}
 {"lexeme":{"Multiword":"더"},"count":115}
@@ -37,17 +37,17 @@
 {"lexeme":{"Multiword":"뭘"},"count":104}
 {"lexeme":{"Heteronym":{"word":"그녀는","lemma":"그녀","pos":"PRON"}},"count":103}
 {"lexeme":{"Heteronym":{"word":"난","lemma":"나","pos":"PRON"}},"count":100}
-{"lexeme":{"Multiword":"말하다"},"count":97}
-{"lexeme":{"Multiword":"말하자면"},"count":97}
-{"lexeme":{"Heteronym":{"word":"왜","lemma":"왜","pos":"ADV"}},"count":94}
-{"lexeme":{"Heteronym":{"word":"좀","lemma":"좀","pos":"ADV"}},"count":94}
-{"lexeme":{"Multiword":"왜"},"count":94}
-{"lexeme":{"Multiword":"좀"},"count":94}
+{"lexeme":{"Heteronym":{"word":"좀","lemma":"좀","pos":"ADV"}},"count":93}
+{"lexeme":{"Multiword":"좀"},"count":93}
+{"lexeme":{"Heteronym":{"word":"왜","lemma":"왜","pos":"ADV"}},"count":92}
+{"lexeme":{"Multiword":"말하다"},"count":92}
+{"lexeme":{"Multiword":"말하자면"},"count":92}
+{"lexeme":{"Multiword":"왜"},"count":92}
 {"lexeme":{"Heteronym":{"word":"것","lemma":"것","pos":"NOUN"}},"count":82}
-{"lexeme":{"Heteronym":{"word":"있다","lemma":"있다","pos":"VERB"}},"count":80}
 {"lexeme":{"Heteronym":{"word":"너","lemma":"너","pos":"PRON"}},"count":79}
-{"lexeme":{"Heteronym":{"word":"것을","lemma":"것","pos":"NOUN"}},"count":78}
+{"lexeme":{"Heteronym":{"word":"있다","lemma":"있다","pos":"VERB"}},"count":78}
 {"lexeme":{"Multiword":"정말"},"count":78}
+{"lexeme":{"Heteronym":{"word":"것을","lemma":"것","pos":"NOUN"}},"count":77}
 {"lexeme":{"Heteronym":{"word":"우리는","lemma":"우리","pos":"PRON"}},"count":77}
 {"lexeme":{"Heteronym":{"word":"정말","lemma":"정말","pos":"ADV"}},"count":77}
 {"lexeme":{"Multiword":"것 같다"},"count":77}
@@ -58,7 +58,7 @@
 {"lexeme":{"Multiword":"어떻게"},"count":71}
 {"lexeme":{"Heteronym":{"word":"할","lemma":"하다","pos":"VERB"}},"count":69}
 {"lexeme":{"Heteronym":{"word":"잘","lemma":"잘","pos":"ADV"}},"count":68}
-{"lexeme":{"Multiword":"많아야"},"count":63}
+{"lexeme":{"Multiword":"많아야"},"count":62}
 {"lexeme":{"Heteronym":{"word":"네","lemma":"너","pos":"DET"}},"count":60}
 {"lexeme":{"Heteronym":{"word":"거야","lemma":"것이다","pos":"AUX"}},"count":58}
 {"lexeme":{"Heteronym":{"word":"우리","lemma":"우리","pos":"DET"}},"count":57}
@@ -106,26 +106,26 @@
 {"lexeme":{"Heteronym":{"word":"날","lemma":"나","pos":"PRON"}},"count":38}
 {"lexeme":{"Heteronym":{"word":"무슨","lemma":"무슨","pos":"DET"}},"count":38}
 {"lexeme":{"Multiword":"무슨"},"count":38}
-{"lexeme":{"Heteronym":{"word":"매우","lemma":"매우","pos":"ADV"}},"count":37}
 {"lexeme":{"Heteronym":{"word":"제","lemma":"저","pos":"DET"}},"count":37}
-{"lexeme":{"Heteronym":{"word":"했다","lemma":"하다","pos":"VERB"}},"count":37}
-{"lexeme":{"Multiword":"매우"},"count":37}
 {"lexeme":{"Multiword":"어제"},"count":37}
 {"lexeme":{"Heteronym":{"word":"그가","lemma":"그","pos":"PRON"}},"count":36}
 {"lexeme":{"Heteronym":{"word":"나를","lemma":"나","pos":"PRON"}},"count":36}
 {"lexeme":{"Heteronym":{"word":"때","lemma":"때","pos":"NOUN"}},"count":36}
+{"lexeme":{"Heteronym":{"word":"매우","lemma":"매우","pos":"ADV"}},"count":36}
 {"lexeme":{"Heteronym":{"word":"아무도","lemma":"아무도","pos":"PRON"}},"count":36}
 {"lexeme":{"Heteronym":{"word":"있었다","lemma":"있다","pos":"AUX"}},"count":36}
+{"lexeme":{"Heteronym":{"word":"했다","lemma":"하다","pos":"VERB"}},"count":36}
+{"lexeme":{"Multiword":"매우"},"count":36}
 {"lexeme":{"Multiword":"아무도"},"count":36}
 {"lexeme":{"Heteronym":{"word":"오늘","lemma":"오늘","pos":"NOUN"}},"count":35}
 {"lexeme":{"Heteronym":{"word":"해","lemma":"하다","pos":"VERB"}},"count":35}
-{"lexeme":{"Heteronym":{"word":"안","lemma":"안","pos":"ADV"}},"count":34}
 {"lexeme":{"Heteronym":{"word":"저","lemma":"저","pos":"DET"}},"count":34}
 {"lexeme":{"Multiword":"뭐 하러"},"count":34}
 {"lexeme":{"Multiword":"뭐라 할까"},"count":34}
 {"lexeme":{"Multiword":"뭐라고 할까"},"count":34}
 {"lexeme":{"Multiword":"뭐라고 해야"},"count":34}
 {"lexeme":{"Heteronym":{"word":"것이","lemma":"것","pos":"NOUN"}},"count":33}
+{"lexeme":{"Heteronym":{"word":"안","lemma":"안","pos":"ADV"}},"count":33}
 {"lexeme":{"Heteronym":{"word":"있습니다","lemma":"있다","pos":"AUX"}},"count":33}
 {"lexeme":{"Multiword":"줄 알다"},"count":33}
 {"lexeme":{"Multiword":"할 수 있다"},"count":33}
@@ -151,7 +151,6 @@
 {"lexeme":{"Heteronym":{"word":"그걸","lemma":"그것","pos":"PRON"}},"count":30}
 {"lexeme":{"Heteronym":{"word":"그를","lemma":"그","pos":"PRON"}},"count":30}
 {"lexeme":{"Heteronym":{"word":"그만","lemma":"그만","pos":"ADV"}},"count":30}
-{"lexeme":{"Heteronym":{"word":"사람들은","lemma":"사람","pos":"NOUN"}},"count":30}
 {"lexeme":{"Heteronym":{"word":"어떤","lemma":"어떤","pos":"DET"}},"count":30}
 {"lexeme":{"Heteronym":{"word":"없어","lemma":"없다","pos":"ADJ"}},"count":30}
 {"lexeme":{"Heteronym":{"word":"우린","lemma":"우리","pos":"PRON"}},"count":30}
@@ -162,45 +161,43 @@
 {"lexeme":{"Heteronym":{"word":"누가","lemma":"누구","pos":"PRON"}},"count":29}
 {"lexeme":{"Heteronym":{"word":"당신은","lemma":"당신","pos":"PRON"}},"count":29}
 {"lexeme":{"Heteronym":{"word":"많은","lemma":"많다","pos":"ADJ"}},"count":29}
+{"lexeme":{"Heteronym":{"word":"사람들은","lemma":"사람","pos":"NOUN"}},"count":29}
 {"lexeme":{"Heteronym":{"word":"어제","lemma":"어제","pos":"NOUN"}},"count":29}
 {"lexeme":{"Heteronym":{"word":"적이","lemma":"적","pos":"NOUN"}},"count":29}
 {"lexeme":{"Heteronym":{"word":"한다","lemma":"하다","pos":"VERB"}},"count":29}
 {"lexeme":{"Multiword":"가지고 있다"},"count":29}
 {"lexeme":{"Multiword":"그렇게"},"count":29}
-{"lexeme":{"Multiword":"이라고"},"count":29}
-{"lexeme":{"Multiword":"이라면"},"count":29}
 {"lexeme":{"Heteronym":{"word":"게","lemma":"것","pos":"NOUN"}},"count":28}
 {"lexeme":{"Heteronym":{"word":"이거","lemma":"이것","pos":"PRON"}},"count":28}
 {"lexeme":{"Heteronym":{"word":"큰","lemma":"크다","pos":"ADJ"}},"count":28}
-{"lexeme":{"Heteronym":{"word":"했어","lemma":"하다","pos":"VERB"}},"count":28}
+{"lexeme":{"Multiword":"이라고"},"count":28}
+{"lexeme":{"Multiword":"이라면"},"count":28}
 {"lexeme":{"Heteronym":{"word":"가고","lemma":"가다","pos":"VERB"}},"count":27}
 {"lexeme":{"Heteronym":{"word":"계속","lemma":"계속","pos":"ADV"}},"count":27}
-{"lexeme":{"Heteronym":{"word":"말해","lemma":"말하다","pos":"VERB"}},"count":27}
 {"lexeme":{"Heteronym":{"word":"사람","lemma":"사람","pos":"NOUN"}},"count":27}
-{"lexeme":{"Heteronym":{"word":"살고","lemma":"살다","pos":"VERB"}},"count":27}
 {"lexeme":{"Heteronym":{"word":"있었어","lemma":"있다","pos":"AUX"}},"count":27}
-{"lexeme":{"Heteronym":{"word":"학교에","lemma":"학교","pos":"NOUN"}},"count":27}
+{"lexeme":{"Heteronym":{"word":"했어","lemma":"하다","pos":"VERB"}},"count":27}
 {"lexeme":{"Multiword":"계속"},"count":27}
 {"lexeme":{"Multiword":"그런"},"count":27}
 {"lexeme":{"Multiword":"그렇다면"},"count":27}
 {"lexeme":{"Multiword":"내일"},"count":27}
 {"lexeme":{"Multiword":"찾다"},"count":27}
 {"lexeme":{"Heteronym":{"word":"뭘","lemma":"무엇","pos":"PRON"}},"count":26}
+{"lexeme":{"Heteronym":{"word":"살고","lemma":"살다","pos":"VERB"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"여기","lemma":"여기","pos":"PRON"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"책을","lemma":"책","pos":"NOUN"}},"count":26}
+{"lexeme":{"Heteronym":{"word":"학교에","lemma":"학교","pos":"NOUN"}},"count":26}
 {"lexeme":{"Heteronym":{"word":"가지고","lemma":"가지다","pos":"VERB"}},"count":25}
 {"lexeme":{"Heteronym":{"word":"그것을","lemma":"그것","pos":"PRON"}},"count":25}
 {"lexeme":{"Heteronym":{"word":"넌","lemma":"너","pos":"PRON"}},"count":25}
 {"lexeme":{"Heteronym":{"word":"두","lemma":"둘","pos":"NUM"}},"count":25}
+{"lexeme":{"Heteronym":{"word":"말해","lemma":"말하다","pos":"VERB"}},"count":25}
 {"lexeme":{"Heteronym":{"word":"사람이","lemma":"사람","pos":"NOUN"}},"count":25}
-{"lexeme":{"Heteronym":{"word":"아직도","lemma":"아직도","pos":"ADV"}},"count":25}
 {"lexeme":{"Heteronym":{"word":"우리가","lemma":"우리","pos":"PRON"}},"count":25}
-{"lexeme":{"Multiword":"아직도"},"count":25}
 {"lexeme":{"Multiword":"하고 있다"},"count":25}
 {"lexeme":{"Heteronym":{"word":"내일","lemma":"내일","pos":"NOUN"}},"count":24}
 {"lexeme":{"Heteronym":{"word":"다","lemma":"다","pos":"ADV"}},"count":24}
 {"lexeme":{"Heteronym":{"word":"돼","lemma":"되다","pos":"AUX"}},"count":24}
-{"lexeme":{"Heteronym":{"word":"말했다","lemma":"말하다","pos":"VERB"}},"count":24}
 {"lexeme":{"Heteronym":{"word":"모두","lemma":"모두","pos":"ADV"}},"count":24}
 {"lexeme":{"Heteronym":{"word":"알아","lemma":"알다","pos":"VERB"}},"count":24}
 {"lexeme":{"Heteronym":{"word":"우리","lemma":"우리","pos":"PRON"}},"count":24}
@@ -208,8 +205,11 @@
 {"lexeme":{"Heteronym":{"word":"좋아한다","lemma":"좋아하다","pos":"VERB"}},"count":24}
 {"lexeme":{"Multiword":"다"},"count":24}
 {"lexeme":{"Heteronym":{"word":"둘","lemma":"둘","pos":"NUM"}},"count":23}
+{"lexeme":{"Heteronym":{"word":"말했다","lemma":"말하다","pos":"VERB"}},"count":23}
+{"lexeme":{"Heteronym":{"word":"아직도","lemma":"아직도","pos":"ADV"}},"count":23}
 {"lexeme":{"Heteronym":{"word":"좋다","lemma":"좋다","pos":"ADJ"}},"count":23}
 {"lexeme":{"Heteronym":{"word":"항상","lemma":"항상","pos":"ADV"}},"count":23}
+{"lexeme":{"Multiword":"아직도"},"count":23}
 {"lexeme":{"Multiword":"자고"},"count":23}
 {"lexeme":{"Multiword":"자고는"},"count":23}
 {"lexeme":{"Multiword":"자니"},"count":23}
@@ -217,11 +217,9 @@
 {"lexeme":{"Multiword":"자면"},"count":23}
 {"lexeme":{"Multiword":"자면서"},"count":23}
 {"lexeme":{"Multiword":"항상"},"count":23}
-{"lexeme":{"Heteronym":{"word":"갔다","lemma":"가다","pos":"VERB"}},"count":22}
 {"lexeme":{"Heteronym":{"word":"거의","lemma":"거의","pos":"ADV"}},"count":22}
 {"lexeme":{"Heteronym":{"word":"많이","lemma":"많이","pos":"ADV"}},"count":22}
 {"lexeme":{"Heteronym":{"word":"사람을","lemma":"사람","pos":"NOUN"}},"count":22}
-{"lexeme":{"Heteronym":{"word":"생각해","lemma":"생각하다","pos":"VERB"}},"count":22}
 {"lexeme":{"Heteronym":{"word":"좋아해요","lemma":"좋아해요","pos":"VERB"}},"count":22}
 {"lexeme":{"Heteronym":{"word":"주세요","lemma":"주세요","pos":"VERB"}},"count":22}
 {"lexeme":{"Heteronym":{"word":"해","lemma":"하다","pos":"AUX"}},"count":22}
@@ -230,6 +228,7 @@
 {"lexeme":{"Heteronym":{"word":"같이","lemma":"같이","pos":"ADV"}},"count":21}
 {"lexeme":{"Heteronym":{"word":"돈이","lemma":"돈","pos":"NOUN"}},"count":21}
 {"lexeme":{"Heteronym":{"word":"빨리","lemma":"빨리","pos":"ADV"}},"count":21}
+{"lexeme":{"Heteronym":{"word":"생각해","lemma":"생각하다","pos":"VERB"}},"count":21}
 {"lexeme":{"Heteronym":{"word":"않는다","lemma":"않다","pos":"AUX"}},"count":21}
 {"lexeme":{"Heteronym":{"word":"언제","lemma":"언제","pos":"ADV"}},"count":21}
 {"lexeme":{"Heteronym":{"word":"이상","lemma":"이상","pos":"NOUN"}},"count":21}
@@ -238,13 +237,13 @@
 {"lexeme":{"Multiword":"빨리"},"count":21}
 {"lexeme":{"Multiword":"언제"},"count":21}
 {"lexeme":{"Heteronym":{"word":"가는","lemma":"가다","pos":"VERB"}},"count":20}
+{"lexeme":{"Heteronym":{"word":"갔다","lemma":"가다","pos":"VERB"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"나에게","lemma":"나","pos":"PRON"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"나한테","lemma":"나","pos":"PRON"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"대해","lemma":"대하다","pos":"ADP"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"말을","lemma":"말","pos":"NOUN"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"매일","lemma":"매일","pos":"ADV"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"무엇을","lemma":"무엇","pos":"PRON"}},"count":20}
-{"lexeme":{"Heteronym":{"word":"있습니다","lemma":"있다","pos":"VERB"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"제가","lemma":"저","pos":"PRON"}},"count":20}
 {"lexeme":{"Heteronym":{"word":"좋아","lemma":"좋다","pos":"ADJ"}},"count":20}
 {"lexeme":{"Multiword":"더 이상"},"count":20}
@@ -256,8 +255,7 @@
 {"lexeme":{"Heteronym":{"word":"안다","lemma":"알다","pos":"VERB"}},"count":19}
 {"lexeme":{"Heteronym":{"word":"언어를","lemma":"언어","pos":"NOUN"}},"count":19}
 {"lexeme":{"Heteronym":{"word":"이걸","lemma":"이것","pos":"PRON"}},"count":19}
-{"lexeme":{"Multiword":"다르게"},"count":19}
-{"lexeme":{"Multiword":"다른"},"count":19}
+{"lexeme":{"Heteronym":{"word":"있습니다","lemma":"있다","pos":"VERB"}},"count":19}
 {"lexeme":{"Multiword":"조금"},"count":19}
 {"lexeme":{"Heteronym":{"word":"그녀를","lemma":"그녀","pos":"PRON"}},"count":18}
 {"lexeme":{"Heteronym":{"word":"와","lemma":"오다","pos":"VERB"}},"count":18}
@@ -266,6 +264,8 @@
 {"lexeme":{"Heteronym":{"word":"있습니까","lemma":"있다","pos":"VERB"}},"count":18}
 {"lexeme":{"Heteronym":{"word":"필요하다","lemma":"필요하다","pos":"ADJ"}},"count":18}
 {"lexeme":{"Multiword":"나 나"},"count":18}
+{"lexeme":{"Multiword":"다르게"},"count":18}
+{"lexeme":{"Multiword":"다른"},"count":18}
 {"lexeme":{"Heteronym":{"word":"거","lemma":"것","pos":"NOUN"}},"count":17}
 {"lexeme":{"Heteronym":{"word":"널","lemma":"너","pos":"PRON"}},"count":17}
 {"lexeme":{"Heteronym":{"word":"문을","lemma":"문","pos":"NOUN"}},"count":17}
@@ -274,7 +274,6 @@
 {"lexeme":{"Heteronym":{"word":"세","lemma":"셋","pos":"NUM"}},"count":17}
 {"lexeme":{"Heteronym":{"word":"어디","lemma":"어디","pos":"PRON"}},"count":17}
 {"lexeme":{"Heteronym":{"word":"오늘은","lemma":"오늘","pos":"NOUN"}},"count":17}
-{"lexeme":{"Heteronym":{"word":"웃었어","lemma":"웃다","pos":"VERB"}},"count":17}
 {"lexeme":{"Heteronym":{"word":"위해","lemma":"위하다","pos":"ADP"}},"count":17}
 {"lexeme":{"Heteronym":{"word":"있었다","lemma":"있다","pos":"VERB"}},"count":17}
 {"lexeme":{"Heteronym":{"word":"하나","lemma":"하나","pos":"NUM"}},"count":17}
@@ -290,13 +289,12 @@
 {"lexeme":{"Heteronym":{"word":"없었다","lemma":"없다","pos":"ADJ"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"여기에","lemma":"여기","pos":"PRON"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"영화를","lemma":"영화","pos":"NOUN"}},"count":16}
-{"lexeme":{"Heteronym":{"word":"왔어요","lemma":"오다","pos":"VERB"}},"count":16}
+{"lexeme":{"Heteronym":{"word":"웃었어","lemma":"웃다","pos":"VERB"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"일이","lemma":"일","pos":"NOUN"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"일찍","lemma":"일찍","pos":"ADV"}},"count":16}
 {"lexeme":{"Heteronym":{"word":"하는","lemma":"하다","pos":"VERB"}},"count":16}
 {"lexeme":{"Multiword":"꽤"},"count":16}
 {"lexeme":{"Multiword":"아직"},"count":16}
-{"lexeme":{"Multiword":"함께"},"count":16}
 {"lexeme":{"Heteronym":{"word":"같다","lemma":"같다","pos":"ADJ"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"고양이는","lemma":"고양이","pos":"NOUN"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"그녀가","lemma":"그녀","pos":"PRON"}},"count":15}
@@ -305,18 +303,15 @@
 {"lexeme":{"Heteronym":{"word":"를","lemma":"를","pos":"ADP"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"못","lemma":"못","pos":"ADV"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"배우고","lemma":"배우다","pos":"VERB"}},"count":15}
-{"lexeme":{"Heteronym":{"word":"보인다","lemma":"보이다","pos":"VERB"}},"count":15}
-{"lexeme":{"Heteronym":{"word":"수도입니다","lemma":"수도이다","pos":"VERB"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"쓰고","lemma":"쓰다","pos":"VERB"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"에","lemma":"에","pos":"ADP"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"이미","lemma":"이미","pos":"ADV"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"좋겠어","lemma":"좋다","pos":"ADJ"}},"count":15}
-{"lexeme":{"Heteronym":{"word":"죽었어","lemma":"죽었어","pos":"VERB"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"줘","lemma":"줘","pos":"AUX"}},"count":15}
-{"lexeme":{"Heteronym":{"word":"함께","lemma":"함께","pos":"ADV"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"합니다","lemma":"하다","pos":"AUX"}},"count":15}
 {"lexeme":{"Heteronym":{"word":"해요","lemma":"하다","pos":"AUX"}},"count":15}
 {"lexeme":{"Multiword":"이미"},"count":15}
+{"lexeme":{"Multiword":"함께"},"count":15}
 {"lexeme":{"Heteronym":{"word":"가본","lemma":"가보다","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"가야","lemma":"가다","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"건","lemma":"것","pos":"NOUN"}},"count":14}
@@ -326,16 +321,18 @@
 {"lexeme":{"Heteronym":{"word":"말","lemma":"말","pos":"NOUN"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"말했어","lemma":"말했어","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"모두가","lemma":"모두","pos":"PRON"}},"count":14}
+{"lexeme":{"Heteronym":{"word":"보인다","lemma":"보이다","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"수영을","lemma":"수영","pos":"NOUN"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"열심히","lemma":"열심히","pos":"ADV"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"왔어","lemma":"오다","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"일을","lemma":"일","pos":"NOUN"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"자주","lemma":"자주","pos":"ADV"}},"count":14}
+{"lexeme":{"Heteronym":{"word":"죽었어","lemma":"죽었어","pos":"VERB"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"집","lemma":"집","pos":"NOUN"}},"count":14}
+{"lexeme":{"Heteronym":{"word":"함께","lemma":"함께","pos":"ADV"}},"count":14}
 {"lexeme":{"Heteronym":{"word":"혼자","lemma":"혼자","pos":"ADV"}},"count":14}
 {"lexeme":{"Multiword":"가야 하다"},"count":14}
 {"lexeme":{"Multiword":"나면서"},"count":14}
-{"lexeme":{"Multiword":"도와주다"},"count":14}
 {"lexeme":{"Multiword":"때문에"},"count":14}
 {"lexeme":{"Multiword":"모든 걸"},"count":14}
 {"lexeme":{"Multiword":"모든 것"},"count":14}
@@ -363,13 +360,13 @@
 {"lexeme":{"Heteronym":{"word":"하지","lemma":"하다","pos":"VERB"}},"count":13}
 {"lexeme":{"Heteronym":{"word":"훨씬","lemma":"훨씬","pos":"ADV"}},"count":13}
 {"lexeme":{"Multiword":"가끔"},"count":13}
+{"lexeme":{"Multiword":"도와주다"},"count":13}
 {"lexeme":{"Multiword":"몇 시"},"count":13}
 {"lexeme":{"Multiword":"몇 시에"},"count":13}
 {"lexeme":{"Multiword":"어디서"},"count":13}
 {"lexeme":{"Multiword":"절대"},"count":13}
 {"lexeme":{"Multiword":"하고 싶다"},"count":13}
 {"lexeme":{"Multiword":"훨씬"},"count":13}
-{"lexeme":{"Heteronym":{"word":"가요","lemma":"가다","pos":"VERB"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"개","lemma":"개","pos":"NOUN"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"그건","lemma":"그것","pos":"PRON"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"기다려","lemma":"기다리다","pos":"VERB"}},"count":12}
@@ -379,12 +376,11 @@
 {"lexeme":{"Heteronym":{"word":"때문에","lemma":"때문에","pos":"ADP"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"마음에","lemma":"마음","pos":"NOUN"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"봤어","lemma":"보다","pos":"VERB"}},"count":12}
-{"lexeme":{"Heteronym":{"word":"사람입니다","lemma":"사람이다","pos":"VERB"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"수가","lemma":"수","pos":"NOUN"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"시에","lemma":"시","pos":"NOUN"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"싫어","lemma":"싫다","pos":"ADJ"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"아마","lemma":"아마","pos":"ADV"}},"count":12}
-{"lexeme":{"Heteronym":{"word":"이렇게","lemma":"이렇게","pos":"ADV"}},"count":12}
+{"lexeme":{"Heteronym":{"word":"왔어요","lemma":"오다","pos":"VERB"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"전에","lemma":"전에","pos":"ADP"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"절대","lemma":"절대","pos":"ADV"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"주십시오","lemma":"주다","pos":"AUX"}},"count":12}
@@ -392,11 +388,9 @@
 {"lexeme":{"Heteronym":{"word":"찾고","lemma":"찾다","pos":"VERB"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"타고","lemma":"타다","pos":"VERB"}},"count":12}
 {"lexeme":{"Heteronym":{"word":"해야","lemma":"하다","pos":"VERB"}},"count":12}
-{"lexeme":{"Heteronym":{"word":"해요","lemma":"하다","pos":"VERB"}},"count":12}
 {"lexeme":{"Multiword":"거짓말을 하다"},"count":12}
 {"lexeme":{"Multiword":"떨어지다"},"count":12}
 {"lexeme":{"Multiword":"아마"},"count":12}
-{"lexeme":{"Multiword":"이렇게"},"count":12}
 {"lexeme":{"Multiword":"진짜"},"count":12}
 {"lexeme":{"Multiword":"책을 읽다"},"count":12}
 {"lexeme":{"Heteronym":{"word":"거예요","lemma":"것이다","pos":"AUX"}},"count":11}
@@ -412,12 +406,11 @@
 {"lexeme":{"Heteronym":{"word":"물이","lemma":"물","pos":"NOUN"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"뭔가","lemma":"무언가","pos":"PRON"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"불러","lemma":"부르다","pos":"VERB"}},"count":11}
-{"lexeme":{"Heteronym":{"word":"사람이야","lemma":"사람이다","pos":"VERB"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"수도","lemma":"수","pos":"NOUN"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"시간","lemma":"시간","pos":"NOUN"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"않았어","lemma":"않다","pos":"AUX"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"어디에","lemma":"어디","pos":"PRON"}},"count":11}
-{"lexeme":{"Heteronym":{"word":"왔습니다","lemma":"오다","pos":"VERB"}},"count":11}
+{"lexeme":{"Heteronym":{"word":"이렇게","lemma":"이렇게","pos":"ADV"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"일은","lemma":"일","pos":"NOUN"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"있습니까","lemma":"있다","pos":"AUX"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"있어봐","lemma":"있다","pos":"AUX"}},"count":11}
@@ -429,12 +422,13 @@
 {"lexeme":{"Heteronym":{"word":"진짜","lemma":"진짜","pos":"ADV"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"프랑스어","lemma":"프랑스어","pos":"NOUN"}},"count":11}
 {"lexeme":{"Heteronym":{"word":"필요가","lemma":"필요","pos":"NOUN"}},"count":11}
+{"lexeme":{"Heteronym":{"word":"해요","lemma":"하다","pos":"VERB"}},"count":11}
 {"lexeme":{"Multiword":"곧"},"count":11}
 {"lexeme":{"Multiword":"몇 개"},"count":11}
 {"lexeme":{"Multiword":"몇 개나"},"count":11}
 {"lexeme":{"Multiword":"몇 개쯤"},"count":11}
-{"lexeme":{"Heteronym":{"word":"감사합니다","lemma":"감사하다","pos":"VERB"}},"count":10}
-{"lexeme":{"Heteronym":{"word":"갔어","lemma":"가다","pos":"VERB"}},"count":10}
+{"lexeme":{"Multiword":"이렇게"},"count":11}
+{"lexeme":{"Heteronym":{"word":"가요","lemma":"가다","pos":"VERB"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"개의","lemma":"개","pos":"NOUN"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"걸","lemma":"것+을","pos":"NOUN"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"그거","lemma":"그것","pos":"PRON"}},"count":10}
@@ -446,7 +440,8 @@
 {"lexeme":{"Heteronym":{"word":"모두들","lemma":"모두","pos":"PRON"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"무엇입니까","lemma":"무엇입니까","pos":"VERB"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"방","lemma":"방","pos":"NOUN"}},"count":10}
-{"lexeme":{"Heteronym":{"word":"살아","lemma":"살다","pos":"VERB"}},"count":10}
+{"lexeme":{"Heteronym":{"word":"사람이야","lemma":"사람이다","pos":"VERB"}},"count":10}
+{"lexeme":{"Heteronym":{"word":"사람입니다","lemma":"사람이다","pos":"VERB"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"샀다","lemma":"사다","pos":"VERB"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"샀어","lemma":"사다","pos":"VERB"}},"count":10}
 {"lexeme":{"Heteronym":{"word":"새","lemma":"새","pos":"DET"}},"count":10}
@@ -478,7 +473,7 @@
 {"lexeme":{"Multiword":"정말로"},"count":10}
 {"lexeme":{"Multiword":"찾고 있다"},"count":10}
 {"lexeme":{"Multiword":"해야 하다"},"count":10}
-{"lexeme":{"Heteronym":{"word":"간다","lemma":"가다","pos":"VERB"}},"count":9}
+{"lexeme":{"Heteronym":{"word":"감사합니다","lemma":"감사하다","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"갖고","lemma":"가지다","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"개를","lemma":"개","pos":"NOUN"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"거기에","lemma":"거기","pos":"PRON"}},"count":9}
@@ -505,13 +500,11 @@
 {"lexeme":{"Heteronym":{"word":"볼","lemma":"보다","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"사람이다","lemma":"사람이다","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"사랑한다","lemma":"사랑하다","pos":"VERB"}},"count":9}
-{"lexeme":{"Heteronym":{"word":"산다","lemma":"살다","pos":"VERB"}},"count":9}
+{"lexeme":{"Heteronym":{"word":"살아","lemma":"살다","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"서로","lemma":"서로","pos":"PRON"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"아침","lemma":"아침","pos":"NOUN"}},"count":9}
-{"lexeme":{"Heteronym":{"word":"안녕","lemma":"안녕","pos":"INTJ"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"알았다","lemma":"알다","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"어느","lemma":"어느","pos":"DET"}},"count":9}
-{"lexeme":{"Heteronym":{"word":"없어요","lemma":"없다","pos":"ADJ"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"우리에게","lemma":"우리","pos":"PRON"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"울고","lemma":"울다","pos":"VERB"}},"count":9}
 {"lexeme":{"Heteronym":{"word":"원한다","lemma":"원하다","pos":"VERB"}},"count":9}
@@ -534,10 +527,11 @@
 {"lexeme":{"Multiword":"어느"},"count":9}
 {"lexeme":{"Multiword":"이렇게나"},"count":9}
 {"lexeme":{"Heteronym":{"word":"가치가","lemma":"가치","pos":"NOUN"}},"count":8}
+{"lexeme":{"Heteronym":{"word":"간다","lemma":"가다","pos":"VERB"}},"count":8}
+{"lexeme":{"Heteronym":{"word":"갔어","lemma":"가다","pos":"VERB"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"개가","lemma":"개","pos":"NOUN"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"거짓말을","lemma":"거짓말","pos":"NOUN"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"것이다","lemma":"것이다","pos":"VERB"}},"count":8}
-{"lexeme":{"Heteronym":{"word":"결혼했어","lemma":"결혼했어","pos":"VERB"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"그것은","lemma":"그것","pos":"PRON"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"그녀에게","lemma":"그녀","pos":"PRON"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"나도","lemma":"나","pos":"PRON"}},"count":8}
@@ -563,6 +557,7 @@
 {"lexeme":{"Heteronym":{"word":"봐","lemma":"봐","pos":"VERB"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"사람의","lemma":"사람","pos":"NOUN"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"사랑해","lemma":"사랑하다","pos":"VERB"}},"count":8}
+{"lexeme":{"Heteronym":{"word":"산다","lemma":"살다","pos":"VERB"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"소년은","lemma":"소년","pos":"NOUN"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"소식을","lemma":"소식","pos":"NOUN"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"싶어한다","lemma":"싶어하다","pos":"VERB"}},"count":8}
@@ -570,6 +565,7 @@
 {"lexeme":{"Heteronym":{"word":"아니다","lemma":"아니다","pos":"AUX"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"어디에서","lemma":"어디에서","pos":"ADV"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"어렵다","lemma":"어렵다","pos":"ADJ"}},"count":8}
+{"lexeme":{"Heteronym":{"word":"없어요","lemma":"없다","pos":"ADJ"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"여기서","lemma":"여기서","pos":"ADV"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"여섯","lemma":"여섯","pos":"NUM"}},"count":8}
 {"lexeme":{"Heteronym":{"word":"영어를","lemma":"영어","pos":"NOUN"}},"count":8}
@@ -610,7 +606,6 @@
 {"lexeme":{"Multiword":"어떻게 해서든지"},"count":8}
 {"lexeme":{"Multiword":"어떻게 해서라도"},"count":8}
 {"lexeme":{"Multiword":"어떻게 해야"},"count":8}
-{"lexeme":{"Multiword":"잊어버리다"},"count":8}
 {"lexeme":{"Multiword":"전부"},"count":8}
 {"lexeme":{"Multiword":"조심하다"},"count":8}
 {"lexeme":{"Multiword":"좀 더"},"count":8}
@@ -630,7 +625,6 @@
 {"lexeme":{"Heteronym":{"word":"될","lemma":"되다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"드디어","lemma":"드디어","pos":"ADV"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"듣고","lemma":"듣다","pos":"VERB"}},"count":7}
-{"lexeme":{"Heteronym":{"word":"떠났다","lemma":"떠나다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"만든다","lemma":"만들다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"많다","lemma":"많다","pos":"ADJ"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"말한다","lemma":"말하다","pos":"VERB"}},"count":7}
@@ -647,7 +641,6 @@
 {"lexeme":{"Heteronym":{"word":"배울","lemma":"배우다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"배워야","lemma":"배우다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"보냈다","lemma":"보내다","pos":"VERB"}},"count":7}
-{"lexeme":{"Heteronym":{"word":"보냈어","lemma":"보내다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"보통","lemma":"보통","pos":"ADV"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"봐","lemma":"보다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"봐요","lemma":"봐요","pos":"VERB"}},"count":7}
@@ -660,6 +653,7 @@
 {"lexeme":{"Heteronym":{"word":"아세요","lemma":"알다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"아이들은","lemma":"아이","pos":"NOUN"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"아이들이","lemma":"아이","pos":"NOUN"}},"count":7}
+{"lexeme":{"Heteronym":{"word":"안녕","lemma":"안녕","pos":"INTJ"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"안녕히","lemma":"안녕히","pos":"ADV"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"않아","lemma":"않다","pos":"AUX"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"않을","lemma":"않다","pos":"AUX"}},"count":7}
@@ -673,7 +667,6 @@
 {"lexeme":{"Heteronym":{"word":"우리의","lemma":"우리","pos":"DET"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"원해","lemma":"원하다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"원해요","lemma":"원해요","pos":"VERB"}},"count":7}
-{"lexeme":{"Heteronym":{"word":"이겼어","lemma":"이겼어","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"읽고","lemma":"읽다","pos":"VERB"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"있다는","lemma":"있다","pos":"AUX"}},"count":7}
 {"lexeme":{"Heteronym":{"word":"있으세요","lemma":"있다","pos":"VERB"}},"count":7}
@@ -698,15 +691,16 @@
 {"lexeme":{"Multiword":"비해"},"count":7}
 {"lexeme":{"Multiword":"비해서"},"count":7}
 {"lexeme":{"Multiword":"시간을 보내다"},"count":7}
+{"lexeme":{"Multiword":"잊어버리다"},"count":7}
 {"lexeme":{"Multiword":"정도"},"count":7}
 {"lexeme":{"Multiword":"해야 되다"},"count":7}
 {"lexeme":{"Heteronym":{"word":"가도","lemma":"가다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"가진","lemma":"가지다","pos":"VERB"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"갑니다","lemma":"가다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"갖고","lemma":"갖다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"개는","lemma":"개","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"거기","lemma":"거기","pos":"ADV"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"것이라고","lemma":"것","pos":"NOUN"}},"count":6}
+{"lexeme":{"Heteronym":{"word":"결혼했어","lemma":"결혼했어","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"경찰은","lemma":"경찰","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"계세요","lemma":"계세요","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"공부해야","lemma":"공부하다","pos":"VERB"}},"count":6}
@@ -721,7 +715,6 @@
 {"lexeme":{"Heteronym":{"word":"나와","lemma":"나","pos":"PRON"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"남자를","lemma":"남자","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"냄새가","lemma":"냄새","pos":"NOUN"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"노래를","lemma":"노래","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"다음","lemma":"다음","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"단어를","lemma":"단어","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"달린다","lemma":"달리다","pos":"VERB"}},"count":6}
@@ -736,7 +729,7 @@
 {"lexeme":{"Heteronym":{"word":"되었다","lemma":"되다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"된","lemma":"되다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"따라","lemma":"따라","pos":"ADP"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"떠났어","lemma":"떠나다","pos":"VERB"}},"count":6}
+{"lexeme":{"Heteronym":{"word":"떠났다","lemma":"떠나다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"마세요","lemma":"말다","pos":"AUX"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"마음을","lemma":"마음","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"마음이","lemma":"마음","pos":"NOUN"}},"count":6}
@@ -751,12 +744,12 @@
 {"lexeme":{"Heteronym":{"word":"방법을","lemma":"방법","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"버스를","lemma":"버스","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"보내고","lemma":"보내다","pos":"VERB"}},"count":6}
+{"lexeme":{"Heteronym":{"word":"보냈어","lemma":"보내다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"보세요","lemma":"보다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"본","lemma":"보다","pos":"AUX"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"봐","lemma":"봐","pos":"AUX"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"비해","lemma":"비하다","pos":"ADP"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"사과","lemma":"사과","pos":"NOUN"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"사라졌어","lemma":"사라지다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"사진","lemma":"사진","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"생각했어","lemma":"생각하다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"선물을","lemma":"선물","pos":"NOUN"}},"count":6}
@@ -771,10 +764,8 @@
 {"lexeme":{"Heteronym":{"word":"싶었다","lemma":"싶다","pos":"AUX"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"싶은","lemma":"싶다","pos":"AUX"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"아니야","lemma":"아니다","pos":"ADJ"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"아름다워요","lemma":"아름답다","pos":"ADJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"아름답다","lemma":"아름답다","pos":"ADJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"아버지는","lemma":"아버지","pos":"NOUN"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"아파","lemma":"아프다","pos":"ADJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"아파트에서","lemma":"아파트","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"아프다","lemma":"아프다","pos":"ADJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"안녕하세요","lemma":"안녕하세요","pos":"INTJ"}},"count":6}
@@ -788,10 +779,12 @@
 {"lexeme":{"Heteronym":{"word":"예를","lemma":"예","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"오래","lemma":"오래","pos":"ADV"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"왔다","lemma":"오다","pos":"VERB"}},"count":6}
+{"lexeme":{"Heteronym":{"word":"왔습니다","lemma":"오다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"외국어를","lemma":"외국어","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"외로워","lemma":"외롭다","pos":"ADJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"위에","lemma":"위","pos":"NOUN"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"위해서","lemma":"위하다","pos":"ADP"}},"count":6}
+{"lexeme":{"Heteronym":{"word":"이겼어","lemma":"이겼어","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"이곳은","lemma":"이곳","pos":"PRON"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"이런","lemma":"이렇다","pos":"DET"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"이번","lemma":"이번","pos":"DET"}},"count":6}
@@ -801,7 +794,6 @@
 {"lexeme":{"Heteronym":{"word":"있을","lemma":"있다","pos":"AUX"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"자기","lemma":"자기","pos":"PRON"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"자기소개","lemma":"자기소개","pos":"NOUN"}},"count":6}
-{"lexeme":{"Heteronym":{"word":"자살했다","lemma":"자살하다","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"저에게","lemma":"저","pos":"PRON"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"전부","lemma":"전부","pos":"ADV"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"전혀","lemma":"전혀","pos":"ADV"}},"count":6}
@@ -861,12 +853,12 @@
 {"lexeme":{"Multiword":"하지 않다"},"count":6}
 {"lexeme":{"Multiword":"확실하게"},"count":6}
 {"lexeme":{"Heteronym":{"word":"가","lemma":"가","pos":"VERB"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"가기로","lemma":"가다","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"가난한","lemma":"가난하다","pos":"ADJ"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"가세요","lemma":"가세요","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"가지","lemma":"가지","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"감기에","lemma":"감기","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"감옥에","lemma":"감옥","pos":"NOUN"}},"count":5}
+{"lexeme":{"Heteronym":{"word":"갑니다","lemma":"가다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"갔어요","lemma":"가다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"걔는","lemma":"걔","pos":"PRON"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"걱정","lemma":"걱정","pos":"NOUN"}},"count":5}
@@ -894,6 +886,7 @@
 {"lexeme":{"Heteronym":{"word":"내렸다","lemma":"내리다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"너와","lemma":"너","pos":"PRON"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"노래","lemma":"노래","pos":"NOUN"}},"count":5}
+{"lexeme":{"Heteronym":{"word":"노래를","lemma":"노래","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"노력했어","lemma":"노력했어","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"누구도","lemma":"누구","pos":"PRON"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"눈을","lemma":"눈","pos":"NOUN"}},"count":5}
@@ -902,13 +895,11 @@
 {"lexeme":{"Heteronym":{"word":"당신","lemma":"당신","pos":"PRON"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"당신에게","lemma":"당신","pos":"PRON"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"데려다","lemma":"데리다","pos":"VERB"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"도와줘","lemma":"도와줘","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"도움을","lemma":"도움","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"동물이야","lemma":"동물이다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"되겠습니까","lemma":"되다","pos":"AUX"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"두통이","lemma":"두통","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"딱","lemma":"딱","pos":"ADV"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"딸이","lemma":"딸","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"마셔","lemma":"마셔","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"만났다","lemma":"만나다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"만약","lemma":"만약","pos":"ADV"}},"count":5}
@@ -918,7 +909,6 @@
 {"lexeme":{"Heteronym":{"word":"말이","lemma":"말","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"말해야","lemma":"말하다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"먹었다","lemma":"먹다","pos":"VERB"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"먹었어","lemma":"먹다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"며칠","lemma":"며칠","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"명의","lemma":"명","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"몇몇","lemma":"몇몇","pos":"DET"}},"count":5}
@@ -932,6 +922,7 @@
 {"lexeme":{"Heteronym":{"word":"보는","lemma":"보다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"부탁해","lemma":"부탁해","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"빌려","lemma":"빌리다","pos":"VERB"}},"count":5}
+{"lexeme":{"Heteronym":{"word":"사라졌어","lemma":"사라지다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"사랑을","lemma":"사랑","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"살","lemma":"사다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"살","lemma":"살","pos":"NOUN"}},"count":5}
@@ -954,9 +945,10 @@
 {"lexeme":{"Heteronym":{"word":"싫어해","lemma":"싫어하다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"썼어","lemma":"쓰다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"쓰는","lemma":"쓰다","pos":"VERB"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"아름답습니다","lemma":"아름답다","pos":"ADJ"}},"count":5}
+{"lexeme":{"Heteronym":{"word":"아름다워요","lemma":"아름답다","pos":"ADJ"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"아무것도","lemma":"아무것도","pos":"PRON"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"아침에","lemma":"아침","pos":"NOUN"}},"count":5}
+{"lexeme":{"Heteronym":{"word":"아파","lemma":"아프다","pos":"ADJ"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"않습니다","lemma":"않다","pos":"AUX"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"않아요","lemma":"않다","pos":"AUX"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"야구","lemma":"야구","pos":"NOUN"}},"count":5}
@@ -1030,17 +1022,14 @@
 {"lexeme":{"Heteronym":{"word":"텐데","lemma":"터이다","pos":"AUX"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"피아노를","lemma":"피아노","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"하면","lemma":"하다","pos":"VERB"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"학교에서","lemma":"학교","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"학생이","lemma":"학생","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"할","lemma":"하다","pos":"AUX"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"합니다","lemma":"하다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"해가","lemma":"해","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"해서","lemma":"하다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"했어","lemma":"하다","pos":"AUX"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"혼자인","lemma":"혼자이다","pos":"VERB"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"화가","lemma":"화","pos":"NOUN"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"환영합니다","lemma":"환영합니다","pos":"VERB"}},"count":5}
-{"lexeme":{"Heteronym":{"word":"훌륭한","lemma":"훌륭하다","pos":"ADJ"}},"count":5}
 {"lexeme":{"Heteronym":{"word":"흥미로운","lemma":"흥미롭다","pos":"ADJ"}},"count":5}
 {"lexeme":{"Multiword":"나중에"},"count":5}
 {"lexeme":{"Multiword":"너희 둘"},"count":5}
@@ -1062,6 +1051,7 @@
 {"lexeme":{"Multiword":"전혀 없다"},"count":5}
 {"lexeme":{"Multiword":"점점"},"count":5}
 {"lexeme":{"Multiword":"진짜로"},"count":5}
+{"lexeme":{"Heteronym":{"word":"가기로","lemma":"가다","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"가르쳤어","lemma":"가르치다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"간","lemma":"가다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"갑자기","lemma":"갑자기","pos":"ADV"}},"count":4}
@@ -1073,7 +1063,6 @@
 {"lexeme":{"Heteronym":{"word":"걸렸어요","lemma":"걸렸어요","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"걸을","lemma":"걷다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"것보다","lemma":"것","pos":"NOUN"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"결정했다","lemma":"결정하다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"계란","lemma":"계란","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"계산서","lemma":"계산서","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"계절이","lemma":"계절","pos":"NOUN"}},"count":4}
@@ -1110,13 +1099,12 @@
 {"lexeme":{"Heteronym":{"word":"누군가가","lemma":"누군가","pos":"PRON"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"누군가는","lemma":"누군가","pos":"PRON"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"눈물로","lemma":"눈물","pos":"NOUN"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"늦잠잤어","lemma":"늦잠자다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"다섯","lemma":"다섯","pos":"NUM"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"다쳤어","lemma":"다치다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"단지","lemma":"단지","pos":"ADV"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"달리기","lemma":"달리기","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"달에","lemma":"달","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"당장","lemma":"당장","pos":"ADV"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"도와줘","lemma":"도와줘","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"돌아","lemma":"돌다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"돌아왔다","lemma":"돌아오다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"동물을","lemma":"동물","pos":"NOUN"}},"count":4}
@@ -1125,8 +1113,10 @@
 {"lexeme":{"Heteronym":{"word":"됩니다","lemma":"되다","pos":"AUX"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"드세요","lemma":"드세요","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"들어갔다","lemma":"들어가다","pos":"VERB"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"딸이","lemma":"딸","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"때까지","lemma":"때","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"때는","lemma":"때","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"떠났어","lemma":"떠나다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"떨어졌다","lemma":"떨어지다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"마리가","lemma":"마리","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"마리를","lemma":"마리","pos":"NOUN"}},"count":4}
@@ -1140,14 +1130,12 @@
 {"lexeme":{"Heteronym":{"word":"많을수록","lemma":"많다","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"말도","lemma":"말","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"말은","lemma":"말","pos":"NOUN"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"말하길","lemma":"말하다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"말하는","lemma":"말하다","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"말한","lemma":"말하다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"말할","lemma":"말하다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"맛있게","lemma":"맛있게","pos":"ADV"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"망할","lemma":"망하다","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"매년","lemma":"매년","pos":"ADV"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"먹어도","lemma":"먹다","pos":"VERB"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"먹었어","lemma":"먹다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"먹을래","lemma":"먹을래","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"멈춰","lemma":"멈추다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"멈췄어","lemma":"멈추다","pos":"VERB"}},"count":4}
@@ -1163,7 +1151,6 @@
 {"lexeme":{"Heteronym":{"word":"물은","lemma":"물","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"뭔가가","lemma":"뭔가","pos":"PRON"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"뭔가를","lemma":"뭔가","pos":"PRON"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"믿습니까","lemma":"믿다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"믿어","lemma":"믿다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"바란다","lemma":"바라다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"바랍니다","lemma":"바라다","pos":"VERB"}},"count":4}
@@ -1193,7 +1180,6 @@
 {"lexeme":{"Heteronym":{"word":"사랑해요","lemma":"사랑해요","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"사실을","lemma":"사실","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"살아남았어","lemma":"살아남다","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"살아요","lemma":"살다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"새가","lemma":"새","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"생각하고","lemma":"생각하다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"생겼어","lemma":"생기다","pos":"VERB"}},"count":4}
@@ -1204,8 +1190,6 @@
 {"lexeme":{"Heteronym":{"word":"세게","lemma":"세게","pos":"ADV"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"세상에","lemma":"세상에","pos":"INTJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"소설을","lemma":"소설","pos":"NOUN"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"수도다","lemma":"수도이다","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"수도야","lemma":"수도야","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"숙제를","lemma":"숙제","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"숨어","lemma":"숨다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"쉬고","lemma":"쉬다","pos":"VERB"}},"count":4}
@@ -1218,6 +1202,7 @@
 {"lexeme":{"Heteronym":{"word":"아니야","lemma":"아니다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"아랍어를","lemma":"아랍어","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"아래에","lemma":"아래","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"아름답습니다","lemma":"아름답다","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"아무","lemma":"아무","pos":"DET"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"아시나요","lemma":"아시나요","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"앉았다","lemma":"앉다","pos":"VERB"}},"count":4}
@@ -1249,7 +1234,6 @@
 {"lexeme":{"Heteronym":{"word":"와인","lemma":"와인","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"우릴","lemma":"우리","pos":"PRON"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"운동을","lemma":"운동","pos":"NOUN"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"울었어","lemma":"울다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"웃고","lemma":"웃다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"원숭이는","lemma":"원숭이","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"원인은","lemma":"원인","pos":"NOUN"}},"count":4}
@@ -1277,7 +1261,6 @@
 {"lexeme":{"Heteronym":{"word":"있다고","lemma":"있다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"있었어요","lemma":"있다","pos":"AUX"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"있으신가요","lemma":"있다","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"잊어버려","lemma":"잊어버리다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"자기가","lemma":"자기","pos":"PRON"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"작아","lemma":"작다","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"잠깐만","lemma":"잠깐만","pos":"ADV"}},"count":4}
@@ -1313,7 +1296,6 @@
 {"lexeme":{"Heteronym":{"word":"최선을","lemma":"최선","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"충격을","lemma":"충격","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"치는","lemma":"치다","pos":"VERB"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"친구가","lemma":"친구","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"친구는","lemma":"친구","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"친구를","lemma":"친구","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"친구야","lemma":"친구야","pos":"VERB"}},"count":4}
@@ -1322,7 +1304,6 @@
 {"lexeme":{"Heteronym":{"word":"커","lemma":"크다","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"컴퓨터를","lemma":"컴퓨터","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"코트를","lemma":"코트","pos":"NOUN"}},"count":4}
-{"lexeme":{"Heteronym":{"word":"태어났어","lemma":"태어났어","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"텔레비전","lemma":"텔레비전","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"파란","lemma":"파랗다","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"파이를","lemma":"파이","pos":"NOUN"}},"count":4}
@@ -1332,9 +1313,11 @@
 {"lexeme":{"Heteronym":{"word":"하나가","lemma":"하나","pos":"NUM"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"하러","lemma":"하다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"학교","lemma":"학교","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"학교에서","lemma":"학교","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"한국말을","lemma":"한국말","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"한자는","lemma":"한자","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"할아버지는","lemma":"할아버지","pos":"NOUN"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"합니다","lemma":"하다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"해봐","lemma":"해봐","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"해줘","lemma":"해주다","pos":"VERB"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"했는데","lemma":"하다","pos":"AUX"}},"count":4}
@@ -1343,6 +1326,7 @@
 {"lexeme":{"Heteronym":{"word":"화장실에","lemma":"화장실","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"효과가","lemma":"효과","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"후에","lemma":"후에","pos":"ADP"}},"count":4}
+{"lexeme":{"Heteronym":{"word":"훌륭한","lemma":"훌륭하다","pos":"ADJ"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"흡연은","lemma":"흡연","pos":"NOUN"}},"count":4}
 {"lexeme":{"Heteronym":{"word":"힘든","lemma":"힘들다","pos":"ADJ"}},"count":4}
 {"lexeme":{"Multiword":"그러고는"},"count":4}
@@ -1353,7 +1337,6 @@
 {"lexeme":{"Multiword":"만큼"},"count":4}
 {"lexeme":{"Multiword":"말고"},"count":4}
 {"lexeme":{"Multiword":"말을 듣다"},"count":4}
-{"lexeme":{"Multiword":"매년"},"count":4}
 {"lexeme":{"Multiword":"무슨 말"},"count":4}
 {"lexeme":{"Multiword":"무슨 말을"},"count":4}
 {"lexeme":{"Multiword":"세상에"},"count":4}
@@ -1382,7 +1365,6 @@
 {"lexeme":{"Heteronym":{"word":"가","lemma":"가","pos":"PART"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"가게는","lemma":"가게","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"가격이","lemma":"가격","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"가까운","lemma":"가깝다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"가득하다","lemma":"가득하다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"가르쳐","lemma":"가르치다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"가만히","lemma":"가만히","pos":"ADV"}},"count":3}
@@ -1416,6 +1398,7 @@
 {"lexeme":{"Heteronym":{"word":"것이","lemma":"것+이","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"게으른","lemma":"게으르다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"게임","lemma":"게임","pos":"NOUN"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"결정했다","lemma":"결정하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"결혼해","lemma":"결혼하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"경찰을","lemma":"경찰","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"계세요","lemma":"계세요","pos":"AUX"}},"count":3}
@@ -1431,23 +1414,18 @@
 {"lexeme":{"Heteronym":{"word":"교수야","lemma":"교수야","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"구성되어","lemma":"구성되다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"구했다","lemma":"구하다","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"국가다","lemma":"국가이다","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"국가입니다","lemma":"국가이다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"궁금해","lemma":"궁금하다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"귀신이","lemma":"귀신","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"그것에","lemma":"그것","pos":"PRON"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"그도","lemma":"그","pos":"PRON"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"그렸어","lemma":"그렸어","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"그림을","lemma":"그림","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"그사람이","lemma":"그사람","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"그저","lemma":"그저","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"글을","lemma":"글","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"글자로","lemma":"글자","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"기다렸다","lemma":"기다리다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"기사를","lemma":"기사","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"기억하고","lemma":"기억하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"기억해","lemma":"기억하다","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"기침했어","lemma":"기침했어","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"길에","lemma":"길","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"깊게","lemma":"깊다","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"깊이","lemma":"깊이","pos":"ADV"}},"count":3}
@@ -1481,7 +1459,9 @@
 {"lexeme":{"Heteronym":{"word":"느낌이","lemma":"느낌","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"늙었어","lemma":"늙다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"늦게","lemma":"늦게","pos":"ADV"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"늦잠잤어","lemma":"늦잠자다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"다음","lemma":"다음","pos":"ADJ"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"다쳤어","lemma":"다치다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"닫아요","lemma":"닫다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"달다","lemma":"달다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"달렸다","lemma":"달리다","pos":"VERB"}},"count":3}
@@ -1531,11 +1511,14 @@
 {"lexeme":{"Heteronym":{"word":"말고","lemma":"말고","pos":"ADP"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"말고","lemma":"말다","pos":"AUX"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"말하고","lemma":"말하다","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"말하길","lemma":"말하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"말하더라","lemma":"말하다","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"말한","lemma":"말하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"맛있어","lemma":"맛있다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"맛있어요","lemma":"맛있어요","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"맞아","lemma":"맞다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"맞지","lemma":"맞다","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"매년","lemma":"매년","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"맥주","lemma":"맥주","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"머리","lemma":"머리","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"머리카락은","lemma":"머리카락","pos":"NOUN"}},"count":3}
@@ -1553,7 +1536,6 @@
 {"lexeme":{"Heteronym":{"word":"몰","lemma":"몰다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"못해","lemma":"못하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"무서워해","lemma":"무서워하다","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"무시해","lemma":"무시하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"무엇이든","lemma":"무엇","pos":"PRON"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"문법은","lemma":"문법","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"문은","lemma":"문","pos":"NOUN"}},"count":3}
@@ -1566,6 +1548,7 @@
 {"lexeme":{"Heteronym":{"word":"미래를","lemma":"미래","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"미소지었어","lemma":"미소짓다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"믿니","lemma":"믿다","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"믿습니까","lemma":"믿다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"바꿀","lemma":"바꾸다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"바뀌었어","lemma":"바뀌었어","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"바보같이","lemma":"바보같이","pos":"ADV"}},"count":3}
@@ -1591,7 +1574,6 @@
 {"lexeme":{"Heteronym":{"word":"보여줘","lemma":"보여줘","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"보이는","lemma":"보이다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"봤어","lemma":"봤어","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"부르세요","lemma":"부르세요","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"부상을","lemma":"부상","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"부탁","lemma":"부탁","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"부탁했어","lemma":"부탁했어","pos":"VERB"}},"count":3}
@@ -1604,7 +1586,6 @@
 {"lexeme":{"Heteronym":{"word":"비행기를","lemma":"비행기","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"빠르게","lemma":"빠르다","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"빠르다","lemma":"빠르다","pos":"ADJ"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"빨라","lemma":"빠르다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"빼고","lemma":"빼다","pos":"ADP"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"뿐이야","lemma":"뿐이다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"사고","lemma":"사다","pos":"VERB"}},"count":3}
@@ -1613,7 +1594,6 @@
 {"lexeme":{"Heteronym":{"word":"사는","lemma":"살다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"사람과","lemma":"사람","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"사람들","lemma":"사람들","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"사람이에요","lemma":"사람이에요","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"사람인","lemma":"사람이다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"사랑합니까","lemma":"사랑하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"사실","lemma":"사실","pos":"ADV"}},"count":3}
@@ -1643,7 +1623,6 @@
 {"lexeme":{"Heteronym":{"word":"소심한","lemma":"소심하다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"속해","lemma":"속하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"손이","lemma":"손","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"수도예요","lemma":"수도이다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"수많은","lemma":"수많다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"수영하는","lemma":"수영하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"수입한다","lemma":"수입하다","pos":"VERB"}},"count":3}
@@ -1677,14 +1656,12 @@
 {"lexeme":{"Heteronym":{"word":"아기를","lemma":"아기","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아내는","lemma":"아내","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아니라","lemma":"아니다","pos":"SCONJ"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"아니야","lemma":"아니다","pos":"AUX"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아랍어","lemma":"아랍어","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아버지를","lemma":"아버지","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아빠는","lemma":"아빠","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아십니까","lemma":"알다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아이들에게","lemma":"아이","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아이를","lemma":"아이","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"아파요","lemma":"아프다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아파트에","lemma":"아파트","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"아홉","lemma":"아홉","pos":"NUM"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"안녕하십니까","lemma":"안녕하십니까","pos":"INTJ"}},"count":3}
@@ -1695,7 +1672,6 @@
 {"lexeme":{"Heteronym":{"word":"알려줄","lemma":"알려줄","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"알려지지","lemma":"알려지다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"알파벳은","lemma":"알파벳","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"앞에","lemma":"앞","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"야","lemma":"이다","pos":"AUX"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"약간","lemma":"약간","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"약을","lemma":"약","pos":"NOUN"}},"count":3}
@@ -1744,6 +1720,7 @@
 {"lexeme":{"Heteronym":{"word":"운전","lemma":"운전","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"운전을","lemma":"운전","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"울었다","lemma":"울다","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"울었어","lemma":"울다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"웃는","lemma":"웃다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"웃어","lemma":"웃다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"원숭이가","lemma":"원숭이","pos":"NOUN"}},"count":3}
@@ -1779,10 +1756,10 @@
 {"lexeme":{"Heteronym":{"word":"있을까","lemma":"있다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"있을까요","lemma":"있다","pos":"AUX"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"잊어","lemma":"잊다","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"잊어버려","lemma":"잊어버리다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"자","lemma":"자다","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"자랐다","lemma":"자랐다","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"자랐어","lemma":"자랐어","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"자리에","lemma":"자리","pos":"NOUN"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"자살했다","lemma":"자살하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"잘못","lemma":"잘못","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"잠깐","lemma":"잠깐","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"잠이","lemma":"잠","pos":"NOUN"}},"count":3}
@@ -1797,13 +1774,11 @@
 {"lexeme":{"Heteronym":{"word":"저리","lemma":"저리","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"저희","lemma":"저희","pos":"PRON"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"전","lemma":"전","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"전에","lemma":"전","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"전화했다","lemma":"전화하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"절대로","lemma":"절대로","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"점심","lemma":"점심","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"정확히","lemma":"정확히","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"제안을","lemma":"제안","pos":"NOUN"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"졌어","lemma":"졌어","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"조각을","lemma":"조각","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"조금만","lemma":"조금만","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"조용한","lemma":"조용하다","pos":"ADJ"}},"count":3}
@@ -1819,15 +1794,12 @@
 {"lexeme":{"Heteronym":{"word":"주문했다","lemma":"주문하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"주소","lemma":"주소","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"주었다","lemma":"주다","pos":"AUX"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"주장했어","lemma":"주장했어","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"죽어","lemma":"죽다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"죽여","lemma":"죽이다","pos":"VERB"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"죽였다","lemma":"죽이다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"줄","lemma":"주다","pos":"AUX"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"중요해","lemma":"중요하다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"줬어요","lemma":"주다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"즉시","lemma":"즉시","pos":"ADV"}},"count":3}
-{"lexeme":{"Heteronym":{"word":"즐거운","lemma":"즐겁다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"즐겁게","lemma":"즐겁다","pos":"ADV"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"증거가","lemma":"증거","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"지니고","lemma":"지니다","pos":"VERB"}},"count":3}
@@ -1852,6 +1824,7 @@
 {"lexeme":{"Heteronym":{"word":"춥습니다","lemma":"춥다","pos":"ADJ"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"취해","lemma":"취하다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"치실질을","lemma":"치실질","pos":"NOUN"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"친구가","lemma":"친구","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"친구다","lemma":"친구이다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"친구들이","lemma":"친구","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"친구와","lemma":"친구","pos":"NOUN"}},"count":3}
@@ -1866,6 +1839,7 @@
 {"lexeme":{"Heteronym":{"word":"타는","lemma":"타다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"탄다","lemma":"타다","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"탔다","lemma":"타다","pos":"VERB"}},"count":3}
+{"lexeme":{"Heteronym":{"word":"태어났어","lemma":"태어났어","pos":"VERB"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"테니스를","lemma":"테니스","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"토끼는","lemma":"토끼","pos":"NOUN"}},"count":3}
 {"lexeme":{"Heteronym":{"word":"투명한","lemma":"투명하다","pos":"ADJ"}},"count":3}
@@ -1919,6 +1893,7 @@
 {"lexeme":{"Multiword":"말도 안 되다"},"count":3}
 {"lexeme":{"Multiword":"말이 안 되다"},"count":3}
 {"lexeme":{"Multiword":"말해 주다"},"count":3}
+{"lexeme":{"Multiword":"매년"},"count":3}
 {"lexeme":{"Multiword":"먼저"},"count":3}
 {"lexeme":{"Multiword":"몇 명"},"count":3}
 {"lexeme":{"Multiword":"몇 명이나"},"count":3}
@@ -1972,6 +1947,7 @@
 {"lexeme":{"Heteronym":{"word":"가격은","lemma":"가격","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"가곤","lemma":"가다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"가기","lemma":"가다","pos":"NOUN"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"가까운","lemma":"가깝다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"가까이서","lemma":"가까이","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"가끔씩","lemma":"가끔씩","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"가나","lemma":"가다","pos":"VERB"}},"count":2}
@@ -2066,7 +2042,6 @@
 {"lexeme":{"Heteronym":{"word":"경향이","lemma":"경향","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"경험이","lemma":"경험","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"계속해","lemma":"계속하다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"계속해서","lemma":"계속해서","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"계십니까","lemma":"계시다","pos":"AUX"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"계십니까","lemma":"계시다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"계십시오","lemma":"계시다","pos":"VERB"}},"count":2}
@@ -2090,7 +2065,6 @@
 {"lexeme":{"Heteronym":{"word":"공부하지","lemma":"공부하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"공부할","lemma":"공부하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"공원에","lemma":"공원","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"관리자야","lemma":"관리자야","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"관점으로","lemma":"관점","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"광고가","lemma":"광고","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"괜찮아요","lemma":"괜찮다","pos":"ADJ"}},"count":2}
@@ -2113,8 +2087,8 @@
 {"lexeme":{"Heteronym":{"word":"그러는데","lemma":"그러다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"그렇게나","lemma":"그렇게나","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"그렇습니다","lemma":"그렇다","pos":"ADJ"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"그렸어","lemma":"그렸어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"그림은","lemma":"그림","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"그만둬","lemma":"그만둬","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"그에","lemma":"그","pos":"PRON"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"그와","lemma":"그","pos":"PRON"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"그저께","lemma":"그저께","pos":"NOUN"}},"count":2}
@@ -2124,6 +2098,7 @@
 {"lexeme":{"Heteronym":{"word":"금방","lemma":"금방","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"금지","lemma":"금지","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기계","lemma":"기계","pos":"NOUN"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"기다렸다","lemma":"기다리다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기다렸어","lemma":"기다렸어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기다리게","lemma":"기다리다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기다릴","lemma":"기다리다","pos":"VERB"}},"count":2}
@@ -2135,7 +2110,6 @@
 {"lexeme":{"Heteronym":{"word":"기억나","lemma":"기억나","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기억력이","lemma":"기억력","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기억하시나요","lemma":"기억하시나요","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"기절했어","lemma":"기절했어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기차는","lemma":"기차","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기타","lemma":"기타","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"기회가","lemma":"기회","pos":"NOUN"}},"count":2}
@@ -2241,7 +2215,6 @@
 {"lexeme":{"Heteronym":{"word":"단어는","lemma":"단어","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"닫아라","lemma":"닫다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"닫혀","lemma":"닫히다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"달라","lemma":"다르다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"달릴","lemma":"달리다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"달이","lemma":"달","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"닭을","lemma":"닭","pos":"NOUN"}},"count":2}
@@ -2266,7 +2239,6 @@
 {"lexeme":{"Heteronym":{"word":"덥다","lemma":"덥다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도서관에서","lemma":"도서관","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도시는","lemma":"도시","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"도시다","lemma":"도시다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도시에서","lemma":"도시","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도와드릴까요","lemma":"도와드리다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도와야","lemma":"돕다","pos":"VERB"}},"count":2}
@@ -2275,7 +2247,6 @@
 {"lexeme":{"Heteronym":{"word":"도와주실","lemma":"도와주실","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도와줘서","lemma":"도와주다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도착할","lemma":"도착하다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"도착했어","lemma":"도착했어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"도착했어요","lemma":"도착했어요","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"독서는","lemma":"독서","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"돈으로","lemma":"돈","pos":"NOUN"}},"count":2}
@@ -2340,7 +2311,6 @@
 {"lexeme":{"Heteronym":{"word":"떠났는지","lemma":"떠나다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"떠올랐다","lemma":"떠오르다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"똑같은","lemma":"똑같다","pos":"ADJ"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"똑똑해","lemma":"똑똑하다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"뜻이야","lemma":"이다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"라디오가","lemma":"라디오","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"라디오를","lemma":"라디오","pos":"NOUN"}},"count":2}
@@ -2398,9 +2368,7 @@
 {"lexeme":{"Heteronym":{"word":"먹지","lemma":"먹다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"멈췄다","lemma":"멈추다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"멉니까","lemma":"멀다","pos":"ADJ"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"멍청하다","lemma":"멍청하다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"메뉴","lemma":"메뉴","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"메리","lemma":"메리","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"메일","lemma":"메일","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"모기가","lemma":"모기","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"모두","lemma":"모두","pos":"PRON"}},"count":2}
@@ -2425,7 +2393,7 @@
 {"lexeme":{"Heteronym":{"word":"무사히","lemma":"무사히","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"무서워","lemma":"무섭다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"무섭게","lemma":"무섭다","pos":"ADV"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"무슬림이다","lemma":"무슬림이다","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"무시해","lemma":"무시하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"묶였다","lemma":"묶이다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"문법을","lemma":"문법","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"문에","lemma":"문","pos":"NOUN"}},"count":2}
@@ -2452,14 +2420,12 @@
 {"lexeme":{"Heteronym":{"word":"민주주의가","lemma":"민주주의","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"믿고","lemma":"믿다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"믿는다","lemma":"믿다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"믿어요","lemma":"믿다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"믿지","lemma":"믿다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"밀가루가","lemma":"밀가루","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"밀가루로","lemma":"밀가루","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"밀가루를","lemma":"밀가루","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"밀을","lemma":"밀","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"밑에","lemma":"밑","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"밑에서","lemma":"밑","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"밑으로","lemma":"밑","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"바나나를","lemma":"바나나","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"바다","lemma":"바다","pos":"NOUN"}},"count":2}
@@ -2504,7 +2470,6 @@
 {"lexeme":{"Heteronym":{"word":"벽에","lemma":"벽","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"변한다","lemma":"변하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"변화가","lemma":"변화","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"변화를","lemma":"변화","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"병원에","lemma":"병원","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"병원이","lemma":"병원","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"보내십시오","lemma":"보내십시오","pos":"VERB"}},"count":2}
@@ -2524,7 +2489,6 @@
 {"lexeme":{"Heteronym":{"word":"보자","lemma":"보다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"보호해야","lemma":"보호하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"복","lemma":"복","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"복용했다","lemma":"복용하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"본다","lemma":"보다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"봄","lemma":"봄","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"봄에","lemma":"봄","pos":"NOUN"}},"count":2}
@@ -2538,6 +2502,7 @@
 {"lexeme":{"Heteronym":{"word":"부담이","lemma":"부담","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"부러뜨렸다","lemma":"부러뜨리다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"부러워","lemma":"부럽다","pos":"ADJ"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"부르세요","lemma":"부르세요","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"부모님은","lemma":"부모님","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"부모님을","lemma":"부모님","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"부서졌다","lemma":"부서지다","pos":"VERB"}},"count":2}
@@ -2555,7 +2520,6 @@
 {"lexeme":{"Heteronym":{"word":"불렀어","lemma":"부르다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"불어오는","lemma":"불어오다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"불에","lemma":"불","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"불행해","lemma":"불행하다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"붉다","lemma":"붉다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"붙었다","lemma":"붙다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"비싸다","lemma":"비싸다","pos":"ADJ"}},"count":2}
@@ -2578,7 +2542,6 @@
 {"lexeme":{"Heteronym":{"word":"사공이","lemma":"사공","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"사과는","lemma":"사과","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"사과할게","lemma":"사과하다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"사과했어","lemma":"사과했어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"사교적인","lemma":"사교적이다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"사기","lemma":"사기","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"사냥꾼이었다","lemma":"사냥꾼이다","pos":"VERB"}},"count":2}
@@ -2614,12 +2577,10 @@
 {"lexeme":{"Heteronym":{"word":"살이세요","lemma":"살다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"살이야","lemma":"살이다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"살인죄로","lemma":"살인죄","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"살해당했어","lemma":"살해당했어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"삶과","lemma":"삶","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"삶을","lemma":"삶","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"삼등분으로","lemma":"삼등분","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"삼십","lemma":"삼십","pos":"NUM"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"삽니다","lemma":"살다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"상자를","lemma":"상자","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"상처에서","lemma":"상처","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"상황에","lemma":"상황","pos":"NOUN"}},"count":2}
@@ -2714,20 +2675,16 @@
 {"lexeme":{"Heteronym":{"word":"실수","lemma":"실수","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"실수로","lemma":"실수","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"실존할까","lemma":"실존하다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"실패했어","lemma":"실패하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"싫어한다는","lemma":"싫어하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"심각한","lemma":"심각하다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"심하게","lemma":"심하다","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"심하다","lemma":"심하다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"십자말풀이를","lemma":"십자말풀이","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"싶으면","lemma":"싶다","pos":"AUX"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"싸우고","lemma":"싸우다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"싸워","lemma":"싸우다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"싸웠어","lemma":"싸웠어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"써도","lemma":"쓰다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"써서","lemma":"쓰다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"썩","lemma":"썩","pos":"ADV"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"쐈다","lemma":"쐈다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"쓰기","lemma":"쓰다","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"쓰러졌다","lemma":"쓰러지다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"쓰레기","lemma":"쓰레기","pos":"NOUN"}},"count":2}
@@ -2737,13 +2694,11 @@
 {"lexeme":{"Heteronym":{"word":"아기가","lemma":"아기","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아니","lemma":"아니다","pos":"AUX"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아니면","lemma":"아니면","pos":"CCONJ"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"아니야","lemma":"아니다","pos":"AUX"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아니에요","lemma":"아니다","pos":"AUX"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"아니에요","lemma":"아니다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아니오","lemma":"아니오","pos":"INTJ"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"아닙니다","lemma":"아니다","pos":"AUX"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아들은","lemma":"아들","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아랍어로","lemma":"아랍어","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"아름다워","lemma":"아름답다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아름답고","lemma":"아름답다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아마도","lemma":"아마도","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아버지","lemma":"아버지","pos":"NOUN"}},"count":2}
@@ -2757,12 +2712,12 @@
 {"lexeme":{"Heteronym":{"word":"아침으로","lemma":"아침","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아침을","lemma":"아침","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"아파서","lemma":"아프다","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"아파요","lemma":"아프다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"안","lemma":"안","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"안개가","lemma":"안개","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"안경을","lemma":"안경","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"안부","lemma":"안부","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"안아주었다","lemma":"안아주다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"안았어","lemma":"안다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"안에","lemma":"안에","pos":"ADP"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"안에서","lemma":"안","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"않으려고","lemma":"않다","pos":"AUX"}},"count":2}
@@ -2775,6 +2730,7 @@
 {"lexeme":{"Heteronym":{"word":"알았어요","lemma":"알다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"알았지","lemma":"알다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"앓고","lemma":"앓다","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"앞에","lemma":"앞","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"앞에서","lemma":"앞","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"앞으로","lemma":"앞으로","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"앞으로는","lemma":"앞으로","pos":"ADV"}},"count":2}
@@ -2853,7 +2809,6 @@
 {"lexeme":{"Heteronym":{"word":"영향을","lemma":"영향","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"영화의","lemma":"영화","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"옆에","lemma":"옆","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"옆집에","lemma":"옆집","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"예쁘고","lemma":"예쁘다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"예쁘다","lemma":"예쁘다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"예상하고","lemma":"예상하다","pos":"VERB"}},"count":2}
@@ -2925,7 +2880,6 @@
 {"lexeme":{"Heteronym":{"word":"유감스럽게도","lemma":"유감스럽게도","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"유일한","lemma":"유일하다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"유창하게","lemma":"유창하다","pos":"ADV"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"은퇴했어","lemma":"은퇴했어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"은행에","lemma":"은행","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"은행에서","lemma":"은행","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"음식","lemma":"음식","pos":"NOUN"}},"count":2}
@@ -2942,7 +2896,6 @@
 {"lexeme":{"Heteronym":{"word":"이기고","lemma":"이기다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이는","lemma":"이","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이따","lemma":"이따","pos":"ADV"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"이름이다","lemma":"이름이다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이리","lemma":"이리","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이번","lemma":"이번","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이상하게","lemma":"이상하다","pos":"ADV"}},"count":2}
@@ -2950,8 +2903,6 @@
 {"lexeme":{"Heteronym":{"word":"이슬람교","lemma":"이슬람교","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이야기","lemma":"이야기","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이야기하고","lemma":"이야기하다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"이웃","lemma":"이웃","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"이웃이다","lemma":"이웃이다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이유가","lemma":"이유","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이쪽으로","lemma":"이쪽으로","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"이해하기","lemma":"이해하다","pos":"VERB"}},"count":2}
@@ -3003,7 +2954,9 @@
 {"lexeme":{"Heteronym":{"word":"자기","lemma":"자다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"자녀가","lemma":"자녀","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"자는","lemma":"자다","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"자랐다","lemma":"자랐다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"자랐습니다","lemma":"자랐습니다","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"자랐어","lemma":"자랐어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"자리","lemma":"자리","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"자식이","lemma":"자식","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"자야겠어요","lemma":"자야겠어요","pos":"VERB"}},"count":2}
@@ -3024,7 +2977,6 @@
 {"lexeme":{"Heteronym":{"word":"잠시","lemma":"잠시","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"잠시만","lemma":"잠시만","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"잠을","lemma":"잠","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"잡아","lemma":"잡다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"잡아라","lemma":"잡다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"잡을","lemma":"잡다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"잡자","lemma":"잡다","pos":"VERB"}},"count":2}
@@ -3041,6 +2993,7 @@
 {"lexeme":{"Heteronym":{"word":"적절하게","lemma":"적절하다","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"전등이","lemma":"전등","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"전부터","lemma":"전부터","pos":"NOUN"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"전에","lemma":"전","pos":"ADV"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"전화로","lemma":"전화","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"점이","lemma":"점","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"점차","lemma":"점차","pos":"ADV"}},"count":2}
@@ -3056,6 +3009,7 @@
 {"lexeme":{"Heteronym":{"word":"제안은","lemma":"제안","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"제이팝과","lemma":"제이팝","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"졌다","lemma":"지다","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"졌어","lemma":"졌어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"조각","lemma":"조각","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"조사해봐","lemma":"조사해봐","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"조심하세요","lemma":"조심하세요","pos":"VERB"}},"count":2}
@@ -3083,7 +3037,7 @@
 {"lexeme":{"Heteronym":{"word":"주실래요","lemma":"주실래요","pos":"AUX"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"주에","lemma":"주","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"주장을","lemma":"주장","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"주저했어","lemma":"주저하다","pos":"VERB"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"주장했어","lemma":"주장했어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"주차","lemma":"주차","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"주차금지","lemma":"주차금지","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"죽은","lemma":"죽다","pos":"VERB"}},"count":2}
@@ -3105,6 +3059,7 @@
 {"lexeme":{"Heteronym":{"word":"줬다","lemma":"주다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"줬어","lemma":"주다","pos":"AUX"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"즉각","lemma":"즉각","pos":"ADV"}},"count":2}
+{"lexeme":{"Heteronym":{"word":"즐거운","lemma":"즐겁다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지","lemma":"지","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지갑을","lemma":"지갑","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지구는","lemma":"지구","pos":"NOUN"}},"count":2}
@@ -3114,7 +3069,6 @@
 {"lexeme":{"Heteronym":{"word":"지내십니까","lemma":"지내십니까","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지리는","lemma":"지리다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지역에","lemma":"지역","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"지켜보았다","lemma":"지켜보다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지켰다","lemma":"지키다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지키고","lemma":"지키다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"지퍼가","lemma":"지퍼","pos":"NOUN"}},"count":2}
@@ -3143,7 +3097,6 @@
 {"lexeme":{"Heteronym":{"word":"첨부파일을","lemma":"첨부파일","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"체스","lemma":"체스","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"체스를","lemma":"체스","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"쳐다봤어","lemma":"쳐다보다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"쳤다","lemma":"치다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"초대해","lemma":"초대하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"초대했어","lemma":"초대했어","pos":"VERB"}},"count":2}
@@ -3192,9 +3145,6 @@
 {"lexeme":{"Heteronym":{"word":"탑재했어","lemma":"탑재했어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"탔어","lemma":"타다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"태어나고","lemma":"태어나다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"태어났다","lemma":"태어나다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"태어났습니다","lemma":"태어났습니다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"태어났어요","lemma":"태어났어요","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"테니스","lemma":"테니스","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"테니스는","lemma":"테니스","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"테러","lemma":"테러","pos":"NOUN"}},"count":2}
@@ -3251,10 +3201,8 @@
 {"lexeme":{"Heteronym":{"word":"할인을","lemma":"할인","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"할지","lemma":"하다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"해고당한","lemma":"해고당하다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"해고됐다","lemma":"해고되다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"해낼","lemma":"해낼","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"해라","lemma":"하다","pos":"VERB"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"해방하라","lemma":"해방하라","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"해변에","lemma":"해변","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"해야겠어","lemma":"해야겠어","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"해외에서","lemma":"해외","pos":"NOUN"}},"count":2}
@@ -3263,7 +3211,6 @@
 {"lexeme":{"Heteronym":{"word":"행동을","lemma":"행동","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"헌신적인","lemma":"헌신적이다","pos":"ADJ"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"헤로인","lemma":"헤로인","pos":"NOUN"}},"count":2}
-{"lexeme":{"Heteronym":{"word":"헤어졌다","lemma":"헤어지다","pos":"VERB"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"헬멧을","lemma":"헬멧","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"현관에","lemma":"현관","pos":"NOUN"}},"count":2}
 {"lexeme":{"Heteronym":{"word":"현장","lemma":"현장","pos":"NOUN"}},"count":2}
@@ -3296,7 +3243,6 @@
 {"lexeme":{"Multiword":"거의 다"},"count":2}
 {"lexeme":{"Multiword":"건 건"},"count":2}
 {"lexeme":{"Multiword":"계속하다"},"count":2}
-{"lexeme":{"Multiword":"계속해서"},"count":2}
 {"lexeme":{"Multiword":"골프를 치다"},"count":2}
 {"lexeme":{"Multiword":"공항에 가다"},"count":2}
 {"lexeme":{"Multiword":"귀에 익다"},"count":2}
@@ -3411,7 +3357,6 @@
 {"lexeme":{"Multiword":"통해서"},"count":2}
 {"lexeme":{"Multiword":"학교를 다니다"},"count":2}
 {"lexeme":{"Multiword":"한 번 더"},"count":2}
-{"lexeme":{"Multiword":"헤어지다"},"count":2}
 {"lexeme":{"Multiword":"혹시"},"count":2}
 {"lexeme":{"Heteronym":{"word":"一石二鳥","lemma":"一石二鳥","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"가","lemma":"가","pos":"AUX"}},"count":1}
@@ -3465,7 +3410,6 @@
 {"lexeme":{"Heteronym":{"word":"가설이","lemma":"가설","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"가셔도","lemma":"가다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"가수같다","lemma":"같다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"가수야","lemma":"가수야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"가스","lemma":"가스","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"가스를","lemma":"가스","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"가슴","lemma":"가슴","pos":"NOUN"}},"count":1}
@@ -3596,7 +3540,6 @@
 {"lexeme":{"Heteronym":{"word":"개발을","lemma":"개발","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"개발자입니까","lemma":"개발자입니까","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"개방되어","lemma":"개방되다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"개방적이야","lemma":"개방적이야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"개새끼야","lemma":"개새끼","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"개시","lemma":"개시","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"개씩","lemma":"개씩","pos":"NOUN"}},"count":1}
@@ -3638,7 +3581,6 @@
 {"lexeme":{"Heteronym":{"word":"거절해야만","lemma":"거절하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"거짓말쟁이다","lemma":"거짓말쟁이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"거짓말하지","lemma":"거짓말하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"거짓말했어","lemma":"거짓말하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"거짓말했어","lemma":"거짓말했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"거쳐서","lemma":"거치다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"거친","lemma":"거칠다","pos":"ADJ"}},"count":1}
@@ -3650,7 +3592,6 @@
 {"lexeme":{"Heteronym":{"word":"걱정하는","lemma":"걱정하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"걱정해","lemma":"걱정하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"걱정했다","lemma":"걱정하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"걱정했어","lemma":"걱정하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"걱정했었어","lemma":"걱정했었어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"건가요","lemma":"건가요","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"건가요","lemma":"건가요","pos":"VERB"}},"count":1}
@@ -3802,7 +3743,6 @@
 {"lexeme":{"Heteronym":{"word":"경험은","lemma":"경험","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"경험이었어","lemma":"경험이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"경험적","lemma":"경험적","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"곁을","lemma":"곁","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계단을","lemma":"계단","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계란을","lemma":"계란","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계산은","lemma":"계산","pos":"NOUN"}},"count":1}
@@ -3811,6 +3751,7 @@
 {"lexeme":{"Heteronym":{"word":"계셔","lemma":"계시다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계셨나요","lemma":"계셨나요","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계셨어요","lemma":"계셨어요","pos":"AUX"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"계속해서","lemma":"계속해서","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계시나요","lemma":"계시나요","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계신가요","lemma":"계신가요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"계신다","lemma":"계신다","pos":"VERB"}},"count":1}
@@ -3847,7 +3788,6 @@
 {"lexeme":{"Heteronym":{"word":"고생하셨어요","lemma":"고생하셨어요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"고슴도치를","lemma":"고슴도치","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"고슴도치에","lemma":"고슴도치","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"고아야","lemma":"고아야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"고양이가","lemma":"고양이+가","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"고양이들","lemma":"고양이들","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"고양이들은","lemma":"고양이","pos":"NOUN"}},"count":1}
@@ -3878,7 +3818,6 @@
 {"lexeme":{"Heteronym":{"word":"고통이","lemma":"고통","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"고프다","lemma":"고프다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"고향에","lemma":"고향","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"고혈압이다","lemma":"고혈압이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"곧장","lemma":"곧장","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"골라주세요","lemma":"골라주세요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"골반은","lemma":"골반","pos":"NOUN"}},"count":1}
@@ -3899,7 +3838,6 @@
 {"lexeme":{"Heteronym":{"word":"공격해","lemma":"공격하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공기가","lemma":"공기","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공기를","lemma":"공기","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"공무원이야","lemma":"공무원이야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공부는","lemma":"공부","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공부도","lemma":"공부","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공부를","lemma":"공부","pos":"NOUN"}},"count":1}
@@ -3932,12 +3870,9 @@
 {"lexeme":{"Heteronym":{"word":"공항까지","lemma":"공항","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공항에서","lemma":"공항","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공항에서부터","lemma":"공항","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"공화국이다","lemma":"공화국이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"공화국입니다","lemma":"공화국이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"공휴일이야","lemma":"공휴일이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"과거","lemma":"과거","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"과거를","lemma":"과거","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"과다체중이라고","lemma":"과다체중이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"과로로","lemma":"과로","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"과목은","lemma":"과목","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"과민반응","lemma":"과민반응","pos":"NOUN"}},"count":1}
@@ -3966,6 +3901,7 @@
 {"lexeme":{"Heteronym":{"word":"관련","lemma":"관련","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"관리를","lemma":"관리","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"관리자를","lemma":"관리자","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"관리자야","lemma":"관리자야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"관심이","lemma":"관심","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"관심있어","lemma":"있다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"관이","lemma":"관","pos":"NOUN"}},"count":1}
@@ -3977,7 +3913,6 @@
 {"lexeme":{"Heteronym":{"word":"괜찮겠네요","lemma":"괜찮다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"괜찮겠니","lemma":"괜찮다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"괜찮다고","lemma":"괜찮다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"괜찮대","lemma":"괜찮다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"괜찮습니까","lemma":"괜찮다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"괜찮습니다","lemma":"괜찮다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"괜찮아지기까지","lemma":"괜찮아지다","pos":"VERB"}},"count":1}
@@ -4040,18 +3975,18 @@
 {"lexeme":{"Heteronym":{"word":"구해봐","lemma":"구해봐","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국","lemma":"국","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국가","lemma":"국가","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"국가다","lemma":"국가이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국가들과의","lemma":"국가","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국가에서","lemma":"국가","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"국가예요","lemma":"국가이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국가의","lemma":"국가","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국가이다","lemma":"국가이다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"국가입니다","lemma":"국가이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국물을","lemma":"국물","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국어를","lemma":"국어","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국적은","lemma":"국적","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국제기관에서","lemma":"국제기관","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"국제적인","lemma":"국제적이다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"군대는","lemma":"군대","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"군대를","lemma":"군대","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"군악대가","lemma":"군악대","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"군인","lemma":"군인","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"군인들은","lemma":"군인","pos":"NOUN"}},"count":1}
@@ -4073,7 +4008,6 @@
 {"lexeme":{"Heteronym":{"word":"궁금해","lemma":"궁금해하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"궁금해서","lemma":"궁금하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"궁금해하던데","lemma":"궁금해하던데","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"궁시렁거렸어","lemma":"궁시렁거리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"권","lemma":"권","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"권위를","lemma":"권위","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"권은","lemma":"권","pos":"NOUN"}},"count":1}
@@ -4124,9 +4058,7 @@
 {"lexeme":{"Heteronym":{"word":"그래왔다","lemma":"그래왔다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그래요","lemma":"그래요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그랬구나","lemma":"그랬구나","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"그랬대","lemma":"그랬대","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그랬듯이","lemma":"그렇다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"그랬어","lemma":"그랬어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그러는","lemma":"그러다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그러니까","lemma":"그러니까","pos":"CCONJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그러다가","lemma":"그러다가","pos":"ADV"}},"count":1}
@@ -4151,6 +4083,7 @@
 {"lexeme":{"Heteronym":{"word":"그만두겠어","lemma":"그만두다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그만두고","lemma":"그만두다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그만둘","lemma":"그만두다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"그만둬","lemma":"그만둬","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그만둬야","lemma":"그만둬야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그만뒀어","lemma":"그만두다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"그만하세요","lemma":"그만하세요","pos":"VERB"}},"count":1}
@@ -4172,7 +4105,6 @@
 {"lexeme":{"Heteronym":{"word":"극장에","lemma":"극장","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"극제비갈매기라는","lemma":"극제비갈매기이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"근데","lemma":"근데","pos":"CCONJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"근무중이다","lemma":"근무중이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"근무한다","lemma":"근무하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"근방의","lemma":"근방","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"근원이다","lemma":"근원이다","pos":"VERB"}},"count":1}
@@ -4203,13 +4135,11 @@
 {"lexeme":{"Heteronym":{"word":"긍정적으로","lemma":"긍정적으로","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기간","lemma":"기간","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기계가","lemma":"기계","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"기괴하다","lemma":"기괴하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기구로부터","lemma":"기구","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기념품을","lemma":"기념품","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기능을","lemma":"기능","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기다려도","lemma":"기다리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기다려야할까","lemma":"기다리다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"기다렸어","lemma":"기다리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기다리는","lemma":"기다리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기다리라고","lemma":"기다리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기다리세요","lemma":"기다리다","pos":"VERB"}},"count":1}
@@ -4242,7 +4172,6 @@
 {"lexeme":{"Heteronym":{"word":"기어들어왔다","lemma":"기어들어왔다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기억나는","lemma":"기억나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기억하는","lemma":"기억하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"기억하라","lemma":"기억하라","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기억하십니까","lemma":"기억하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기억한다","lemma":"기억하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기억해라","lemma":"기억하다","pos":"VERB"}},"count":1}
@@ -4255,12 +4184,14 @@
 {"lexeme":{"Heteronym":{"word":"기자회견","lemma":"기자회견","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기재되었다","lemma":"기재되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기절했다","lemma":"기절하다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"기절했어","lemma":"기절했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기증을","lemma":"기증","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기차","lemma":"기차","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기차로","lemma":"기차","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기차역까지","lemma":"기차역","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기차역에","lemma":"기차역","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기침한","lemma":"기침하다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"기침했어","lemma":"기침했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기타는","lemma":"기타","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기타좀","lemma":"기타","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"기회라도","lemma":"기회","pos":"NOUN"}},"count":1}
@@ -4355,7 +4286,6 @@
 {"lexeme":{"Heteronym":{"word":"끔찍할","lemma":"끔찍하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끔찍해","lemma":"끔찍하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끔찍해라","lemma":"끔찍하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"끙끙댔어","lemma":"끙끙댔어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끝나고","lemma":"끝나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끝나지","lemma":"끝나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끝날","lemma":"끝나다","pos":"VERB"}},"count":1}
@@ -4366,13 +4296,10 @@
 {"lexeme":{"Heteronym":{"word":"끝낼","lemma":"끝내다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끝냈니","lemma":"끝냈니","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끝냈다","lemma":"끝내다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"끝냈어","lemma":"끝내다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끝인","lemma":"끝이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끝장이야","lemma":"끝장이야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끼어있어","lemma":"끼어있다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"끼쳐서","lemma":"끼치다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"낄낄거렸어","lemma":"낄낄거리다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"낄낄댔다","lemma":"낄낄댔다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나","lemma":"나","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나가","lemma":"나가다","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나가","lemma":"나가다","pos":"VERB"}},"count":1}
@@ -4417,16 +4344,12 @@
 {"lexeme":{"Heteronym":{"word":"나좀","lemma":"나","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나중에서야","lemma":"나중에서야","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나중을","lemma":"나중","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"나치야","lemma":"나치야","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"나치예요","lemma":"나치이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"나치입니다","lemma":"나치이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나타나지","lemma":"나타나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나타낼","lemma":"나타내다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"나하고","lemma":"나","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"낙서를","lemma":"낙서","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"낙엽을","lemma":"낙엽","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"낙원은","lemma":"낙원","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"낙천적이다","lemma":"낙천적이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"낙태를","lemma":"낙태","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"낚시배가","lemma":"낚시배","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"낚시하러","lemma":"낚시하다","pos":"VERB"}},"count":1}
@@ -4439,10 +4362,8 @@
 {"lexeme":{"Heteronym":{"word":"날고","lemma":"날다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"날라","lemma":"나르다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"날랐다","lemma":"날랐다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"날렵해","lemma":"날렵하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"날리곤","lemma":"날리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"날숨을","lemma":"날숨","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"날씨는","lemma":"날씨","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"날씨를","lemma":"날씨","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"날씬하다","lemma":"날씬하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"날아가도록","lemma":"날아가다","pos":"VERB"}},"count":1}
@@ -4557,7 +4478,6 @@
 {"lexeme":{"Heteronym":{"word":"냈다","lemma":"내다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"냈어","lemma":"내다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"냉혈동물이다","lemma":"냉혈동물이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"냉혹하게","lemma":"냉혹하다","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"너가","lemma":"너","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"너네도","lemma":"너희","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"너네들","lemma":"너희들","pos":"PRON"}},"count":1}
@@ -4573,13 +4493,10 @@
 {"lexeme":{"Heteronym":{"word":"너희들은","lemma":"너희들","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"너희들의","lemma":"너희들","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넓고","lemma":"넓다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"넓다","lemma":"넓다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넓어","lemma":"넓다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넘게","lemma":"넘다","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넘어갔어","lemma":"넘어가다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넘어졌다","lemma":"넘어지다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"넘어졌습니다","lemma":"넘어졌습니다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"넘어졌어요","lemma":"넘어졌어요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넘었다","lemma":"넘다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넘이야","lemma":"넘이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"넣고","lemma":"넣다","pos":"VERB"}},"count":1}
@@ -4637,8 +4554,6 @@
 {"lexeme":{"Heteronym":{"word":"놀라워","lemma":"놀라워하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"놀랄걸","lemma":"놀라다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"놀랍네요","lemma":"놀랍다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"놀러","lemma":"놀다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"놀아요","lemma":"놀다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"놀았다","lemma":"놀다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"놀이가","lemma":"놀이","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"놀이를","lemma":"놀이","pos":"NOUN"}},"count":1}
@@ -4699,7 +4614,6 @@
 {"lexeme":{"Heteronym":{"word":"눈처럼","lemma":"눈","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"눈치가","lemma":"눈치","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"눈치챘는지","lemma":"눈치채다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"눈치챘다","lemma":"눈치채다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"눕기","lemma":"눕다","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"뉴스로","lemma":"뉴스","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"뉴스를","lemma":"뉴스","pos":"NOUN"}},"count":1}
@@ -4792,6 +4706,7 @@
 {"lexeme":{"Heteronym":{"word":"닫으십시오","lemma":"닫으십시오","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"닫힌다","lemma":"닫히다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"달걀이","lemma":"달걀","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"달라","lemma":"다르다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"달라","lemma":"달다","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"달라요","lemma":"달라요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"달랐다","lemma":"다르다","pos":"ADJ"}},"count":1}
@@ -4841,10 +4756,8 @@
 {"lexeme":{"Heteronym":{"word":"대답하기에","lemma":"대답하다","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대답하길","lemma":"대답하다","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대답해","lemma":"대답하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"대답했어","lemma":"대답했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대디야","lemma":"대디야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대량생산할","lemma":"대량생산하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"대륙을","lemma":"대륙","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대륙이","lemma":"대륙+이","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대륙이다","lemma":"대륙이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대만","lemma":"대","pos":"NOUN"}},"count":1}
@@ -4865,10 +4778,8 @@
 {"lexeme":{"Heteronym":{"word":"대통령","lemma":"대통령","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대통령이","lemma":"대통령","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대통령이","lemma":"대통령+이","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"대통령이다","lemma":"대통령이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대통령입니다","lemma":"대통령이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대하면","lemma":"대하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"대학생입니다","lemma":"대학생이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대학에","lemma":"대학","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대학의","lemma":"대학","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"대항하여","lemma":"대항하다","pos":"VERB"}},"count":1}
@@ -4897,7 +4808,6 @@
 {"lexeme":{"Heteronym":{"word":"던졌다","lemma":"던지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"던졌습니다","lemma":"던지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"덤불","lemma":"덤불","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"덥나요","lemma":"덥다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"덥습니다","lemma":"덥다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"덥지않다","lemma":"덥다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"덥혔다","lemma":"덥히다","pos":"VERB"}},"count":1}
@@ -4937,7 +4847,6 @@
 {"lexeme":{"Heteronym":{"word":"도서관입니다","lemma":"도서관이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도시","lemma":"도시","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도시를","lemma":"도시","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"도시야","lemma":"도시야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도와달라고","lemma":"돕다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도와도","lemma":"돕다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도와드릴게요","lemma":"도와드리다","pos":"VERB"}},"count":1}
@@ -4950,10 +4859,8 @@
 {"lexeme":{"Heteronym":{"word":"도와줄게","lemma":"도와줄게","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도와줄래","lemma":"도와줄래","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도와줘야","lemma":"도와줘야","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"도와줬어","lemma":"도와주다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도왔다","lemma":"돕다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도우러","lemma":"돕다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"도우려고","lemma":"돕다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도움","lemma":"도움","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도움받도록","lemma":"도움받다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도전이다","lemma":"도전이다","pos":"VERB"}},"count":1}
@@ -4962,7 +4869,7 @@
 {"lexeme":{"Heteronym":{"word":"도착하기","lemma":"도착하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도착하셨나요","lemma":"도착하셨나요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도착할까","lemma":"도착할까","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"도착했습니까","lemma":"도착했습니까","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"도착했어","lemma":"도착했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"도착했지","lemma":"도착했지","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"독","lemma":"독","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"독은","lemma":"독","pos":"NOUN"}},"count":1}
@@ -5027,7 +4934,6 @@
 {"lexeme":{"Heteronym":{"word":"동영상을","lemma":"동영상","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"동의한다","lemma":"동의하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"동의했다","lemma":"동의하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"동의했어","lemma":"동의하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"동작이","lemma":"동작","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"동작하네","lemma":"동작하네","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"동전을","lemma":"동전","pos":"NOUN"}},"count":1}
@@ -5204,7 +5110,6 @@
 {"lexeme":{"Heteronym":{"word":"디저트를","lemma":"디저트","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"따끈한","lemma":"따끈하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"따는","lemma":"따다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"따듯하다","lemma":"따듯하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"따뜻한","lemma":"따뜻하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"따뜻해","lemma":"따뜻하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"따라","lemma":"따라","pos":"ADV"}},"count":1}
@@ -5227,7 +5132,6 @@
 {"lexeme":{"Heteronym":{"word":"땅을","lemma":"땅","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"땋았다","lemma":"땋다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"때때로","lemma":"때때로","pos":"ADV"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"때려","lemma":"때리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"때문이다","lemma":"때문이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"때부터","lemma":"때","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"때우고","lemma":"때우다","pos":"VERB"}},"count":1}
@@ -5265,6 +5169,7 @@
 {"lexeme":{"Heteronym":{"word":"똑똑하고","lemma":"똑똑하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"똑똑하다","lemma":"똑똑하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"똑똑할","lemma":"똑똑하다","pos":"ADJ"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"똑똑해","lemma":"똑똑하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"똑똑해지고","lemma":"똑똑해지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"뚱뚱한","lemma":"뚱뚱하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"뚱뚱해","lemma":"뚱뚱하다","pos":"ADJ"}},"count":1}
@@ -5362,7 +5267,6 @@
 {"lexeme":{"Heteronym":{"word":"만나길","lemma":"만나길","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"만나도록","lemma":"만나다+도록","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"만나봐야","lemma":"만나보다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"만나요","lemma":"만나요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"만날","lemma":"만나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"만납시다","lemma":"만납시다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"만났었던","lemma":"만났었던","pos":"VERB"}},"count":1}
@@ -5395,7 +5299,6 @@
 {"lexeme":{"Heteronym":{"word":"많다고","lemma":"많다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"많습니다","lemma":"많다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"많아지고","lemma":"많아지다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"많을까","lemma":"많다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"많지는","lemma":"많다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"말고는","lemma":"말고","pos":"ADP"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"말다툼하는","lemma":"말다툼하다","pos":"VERB"}},"count":1}
@@ -5500,7 +5403,6 @@
 {"lexeme":{"Heteronym":{"word":"머물고","lemma":"머무르다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"머물러","lemma":"머무르다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"머물렀다","lemma":"머무르다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"머뭇거렸어","lemma":"머뭇거리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"먹기","lemma":"먹다","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"먹어라","lemma":"먹다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"먹어버렸어","lemma":"먹어버리다","pos":"VERB"}},"count":1}
@@ -5531,7 +5433,6 @@
 {"lexeme":{"Heteronym":{"word":"멀어요","lemma":"멀다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멀었다","lemma":"멀다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멀쩡할","lemma":"멀쩡하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"멀쩡해","lemma":"멀쩡하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멈추게하고","lemma":"멈추다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멈추고","lemma":"멈추다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멈춰야","lemma":"멈추다","pos":"VERB"}},"count":1}
@@ -5542,11 +5443,13 @@
 {"lexeme":{"Heteronym":{"word":"멍청이라고","lemma":"멍청이","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멍청하게","lemma":"멍청하다","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멍청하냐","lemma":"멍청하냐","pos":"ADJ"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"멍청하다","lemma":"멍청하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멍청하다고","lemma":"멍청하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멍청해","lemma":"멍청하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"멍청했어","lemma":"멍청하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"메달은","lemma":"메달","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"메달을","lemma":"메달","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"메리","lemma":"메리","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"메리예요","lemma":"메리예요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"메모를","lemma":"메모","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"메스암페타민","lemma":"메스암페타민","pos":"NOUN"}},"count":1}
@@ -5679,7 +5582,6 @@
 {"lexeme":{"Heteronym":{"word":"문자해","lemma":"문자하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"문장에","lemma":"문장","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"문제로","lemma":"문제","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"문제아였어","lemma":"문제아이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"문제의","lemma":"문제","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"문제인가요","lemma":"문제인가요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"문제입니까","lemma":"문제입니까","pos":"VERB"}},"count":1}
@@ -5745,7 +5647,6 @@
 {"lexeme":{"Heteronym":{"word":"미쳐있다","lemma":"미쳐있다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"미쳤구나","lemma":"미치다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"미쳤어요","lemma":"미치다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"미쳤을까","lemma":"미치다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"미치겠다","lemma":"미치겠다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"미치는","lemma":"미치다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"미치도록","lemma":"미치도록","pos":"ADV"}},"count":1}
@@ -5761,6 +5662,7 @@
 {"lexeme":{"Heteronym":{"word":"믿길","lemma":"믿기다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"믿나요","lemma":"믿다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"믿어도","lemma":"믿다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"믿어요","lemma":"믿다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"믿을","lemma":"믿다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"믿을수","lemma":"믿을수","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"밀가루","lemma":"밀가루","pos":"NOUN"}},"count":1}
@@ -5768,6 +5670,7 @@
 {"lexeme":{"Heteronym":{"word":"밀가루와","lemma":"밀가루","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"밀로","lemma":"밀","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"밀치며","lemma":"밀치다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"밑에서","lemma":"밑","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"바구니에","lemma":"바구니","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"바꾸게","lemma":"바꾸다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"바꾸는","lemma":"바꾸다","pos":"VERB"}},"count":1}
@@ -5815,7 +5718,6 @@
 {"lexeme":{"Heteronym":{"word":"박물관에","lemma":"박물관","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"박사님은","lemma":"박사님","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"박수를","lemma":"박수","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"박수쳤어","lemma":"박수치다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"박스와","lemma":"박스","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"박지성이다","lemma":"박지성이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"박테리아보다","lemma":"박테리아","pos":"NOUN"}},"count":1}
@@ -5857,7 +5759,6 @@
 {"lexeme":{"Heteronym":{"word":"받은","lemma":"받다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"발견되지","lemma":"발견되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"발견하면","lemma":"발견하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"발견했다","lemma":"발견하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"발명품","lemma":"발명품","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"발상이네","lemma":"발상이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"발생한다","lemma":"발생하다","pos":"VERB"}},"count":1}
@@ -6013,6 +5914,7 @@
 {"lexeme":{"Heteronym":{"word":"변호사가","lemma":"변호사","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"변호사들은","lemma":"변호사","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"변호사야","lemma":"변호사야","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"변화를","lemma":"변화","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"변화하고","lemma":"변화하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"변화함을","lemma":"변화함","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"변화해","lemma":"변화하다","pos":"VERB"}},"count":1}
@@ -6093,6 +5995,7 @@
 {"lexeme":{"Heteronym":{"word":"복수가","lemma":"복수","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"복수를","lemma":"복수","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"복수하고","lemma":"복수하다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"복용했다","lemma":"복용하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"복원되었고","lemma":"복원되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"복잡하다","lemma":"복잡하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"복잡합니다","lemma":"복잡하다","pos":"ADJ"}},"count":1}
@@ -6170,7 +6073,6 @@
 {"lexeme":{"Heteronym":{"word":"부탁드려요","lemma":"부탁드리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"부탁드릴게요","lemma":"부탁드리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"부탁드립니다","lemma":"부탁드립니다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"부탁하더라","lemma":"부탁하더라","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"부탁합니다","lemma":"부탁하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"부터","lemma":"부터","pos":"ADP"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"부피를","lemma":"부피","pos":"NOUN"}},"count":1}
@@ -6198,7 +6100,6 @@
 {"lexeme":{"Heteronym":{"word":"불러주실","lemma":"불러주실","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불러주십시오","lemma":"부르다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불러주어","lemma":"불러주다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"불러주었다","lemma":"불러주다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불러줘","lemma":"불러줘","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불렀니","lemma":"부르다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불렀으면","lemma":"부르다","pos":"VERB"}},"count":1}
@@ -6225,6 +6126,7 @@
 {"lexeme":{"Heteronym":{"word":"불평해","lemma":"불평하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불평했다","lemma":"불평하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불행을","lemma":"불행","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"불행해","lemma":"불행하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"불행했어","lemma":"불행하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"붐벼","lemma":"붐비다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"붐빈다","lemma":"붐비다","pos":"VERB"}},"count":1}
@@ -6277,8 +6179,6 @@
 {"lexeme":{"Heteronym":{"word":"빠른","lemma":"빠르다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빠를지도","lemma":"빠르다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빠져나가고","lemma":"빠져나가다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"빠져나갔어","lemma":"빠져나갔어","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"빠져나왔어","lemma":"빠져나왔어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빠져들었다","lemma":"빠져들다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빠졌나","lemma":"빠지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빠졌다","lemma":"빠지다","pos":"VERB"}},"count":1}
@@ -6292,6 +6192,7 @@
 {"lexeme":{"Heteronym":{"word":"빨개졌어","lemma":"빨개지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빨갰어","lemma":"빨갰어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빨대를","lemma":"빨대","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"빨라","lemma":"빠르다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빨래","lemma":"빨래","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빨리할수록","lemma":"빨리하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"빼갔어","lemma":"빼가다","pos":"VERB"}},"count":1}
@@ -6321,11 +6222,11 @@
 {"lexeme":{"Heteronym":{"word":"사과하려고","lemma":"사과하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사과할","lemma":"사과하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사과해","lemma":"사과하다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"사과했어","lemma":"사과했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사귀고","lemma":"사귀다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사귈래요","lemma":"사귀다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사나요","lemma":"사나요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사나이다","lemma":"사나이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"사냥하러","lemma":"사냥하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사느냐","lemma":"살다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사는","lemma":"사다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사는게","lemma":"사는것","pos":"NOUN"}},"count":1}
@@ -6350,6 +6251,7 @@
 {"lexeme":{"Heteronym":{"word":"사람이랑","lemma":"사람","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사람이었다","lemma":"사람이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사람이었어","lemma":"사람이다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"사람이에요","lemma":"사람이에요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사람인지야","lemma":"사람인지야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사람있습니까","lemma":"사람있다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사람중에","lemma":"사람","pos":"NOUN"}},"count":1}
@@ -6371,7 +6273,6 @@
 {"lexeme":{"Heteronym":{"word":"사랑한다고","lemma":"사랑하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사랑한다는","lemma":"사랑하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사랑할","lemma":"사랑하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"사랑해라","lemma":"사랑하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사랑했다","lemma":"사랑하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사랑했던","lemma":"사랑하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"사랑했습니까","lemma":"사랑했습니까","pos":"VERB"}},"count":1}
@@ -6458,11 +6359,11 @@
 {"lexeme":{"Heteronym":{"word":"살빼는","lemma":"살빼다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살아남았다","lemma":"살아남다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살아남지","lemma":"살아남다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"살아요","lemma":"살다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살아있는","lemma":"살아있다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살아있다","lemma":"살아있다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살았냐","lemma":"살다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살았었어","lemma":"살다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"살았지","lemma":"살다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살에","lemma":"살","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살이었어","lemma":"살이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살이었어요","lemma":"살이다","pos":"VERB"}},"count":1}
@@ -6475,6 +6376,7 @@
 {"lexeme":{"Heteronym":{"word":"살펴봤다","lemma":"살펴봤다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살펴야","lemma":"살피다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살해당했다","lemma":"살해당하다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"살해당했어","lemma":"살해당했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"살해했다","lemma":"살해하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"삶에","lemma":"삶","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"삶은","lemma":"삶","pos":"NOUN"}},"count":1}
@@ -6491,6 +6393,7 @@
 {"lexeme":{"Heteronym":{"word":"삼촌들이","lemma":"삼촌","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"삼촌은","lemma":"삼촌","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"삼키는","lemma":"삼키다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"삽니다","lemma":"살다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"샀는지","lemma":"사다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"샀니","lemma":"사다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"샀습니까","lemma":"샀습니까","pos":"VERB"}},"count":1}
@@ -6593,7 +6496,6 @@
 {"lexeme":{"Heteronym":{"word":"선거는","lemma":"선거","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"선거에서","lemma":"선거","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"선고","lemma":"선고","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"선교사로서","lemma":"선교사","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"선구자야","lemma":"선구자야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"선글라스","lemma":"선글라스","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"선글라스를","lemma":"선글라스","pos":"NOUN"}},"count":1}
@@ -6647,7 +6549,6 @@
 {"lexeme":{"Heteronym":{"word":"섬에는","lemma":"섬","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"섬유로","lemma":"섬유","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"섭섭해","lemma":"섭섭하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"섰다","lemma":"서다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"성가실","lemma":"성가실","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"성격도","lemma":"성격","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"성격에","lemma":"성격","pos":"NOUN"}},"count":1}
@@ -6784,7 +6685,6 @@
 {"lexeme":{"Heteronym":{"word":"수고하세요","lemma":"수고하세요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수고하셨습니다","lemma":"수고하셨습니다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수고했어","lemma":"수고했어","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"수교했다","lemma":"수교하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수년","lemma":"수년","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수년간","lemma":"수년간","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수다쟁이야","lemma":"수다쟁이야","pos":"VERB"}},"count":1}
@@ -6792,7 +6692,6 @@
 {"lexeme":{"Heteronym":{"word":"수도사가","lemma":"수도사","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수도승이다","lemma":"수도승이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수도원의","lemma":"수도원","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"수도이다","lemma":"수도이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수동","lemma":"수동","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수리받아야","lemma":"수리받다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"수리중입니다","lemma":"수리중이다","pos":"VERB"}},"count":1}
@@ -6900,7 +6799,6 @@
 {"lexeme":{"Heteronym":{"word":"습관을","lemma":"습관","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"습도가","lemma":"습도","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"승객이","lemma":"승객","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"승낙했어","lemma":"승낙하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"승리는","lemma":"승리","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"승마를","lemma":"승마","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"시각으로","lemma":"시각","pos":"NOUN"}},"count":1}
@@ -7020,13 +6918,13 @@
 {"lexeme":{"Heteronym":{"word":"실업","lemma":"실업","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실업은","lemma":"실업","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실업자인지","lemma":"실업자이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"실없어","lemma":"실없다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실용적","lemma":"실용적","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실은","lemma":"실은","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실제","lemma":"실제","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실패하는","lemma":"실패하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실패한","lemma":"실패하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실패했습니다","lemma":"실패하다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"실패했어","lemma":"실패하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실행하는","lemma":"실행하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실행했다","lemma":"실행하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"실행했어","lemma":"실행하다","pos":"VERB"}},"count":1}
@@ -7037,7 +6935,6 @@
 {"lexeme":{"Heteronym":{"word":"싫어하네","lemma":"싫어하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싫어한다고","lemma":"싫어하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싫어한대","lemma":"싫어하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"싫어할까","lemma":"싫어하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싫어했다","lemma":"싫어하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싫었어","lemma":"싫다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싫은","lemma":"싫다","pos":"ADJ"}},"count":1}
@@ -7068,15 +6965,15 @@
 {"lexeme":{"Heteronym":{"word":"싶을","lemma":"싶다","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싶지도","lemma":"싶다","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싸게","lemma":"싸다","pos":"ADV"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"싸우고","lemma":"싸우다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싸우자","lemma":"싸우다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싸운","lemma":"싸우다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싸울","lemma":"싸우다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싸웠다는","lemma":"싸우다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"싸웠어","lemma":"싸웠어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싸이코패스같아","lemma":"싸이코패스같다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"싸인하는","lemma":"싸인하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쌉니다","lemma":"쌉다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"쌍둥이야","lemma":"쌍둥이+이+야","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"쌍둥이야","lemma":"쌍둥이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쌓고","lemma":"쌓다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쌓여","lemma":"쌓이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쌓이고","lemma":"쌓이다","pos":"VERB"}},"count":1}
@@ -7094,6 +6991,7 @@
 {"lexeme":{"Heteronym":{"word":"쏘는","lemma":"쏘다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쏜다","lemma":"쏘다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쏴","lemma":"쏴","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"쐈다","lemma":"쐈다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쑤신다","lemma":"쑤신다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쑥스러웠다","lemma":"쑥스럽다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쓰거나","lemma":"쓰다","pos":"VERB"}},"count":1}
@@ -7151,9 +7049,11 @@
 {"lexeme":{"Heteronym":{"word":"아니면","lemma":"아니면","pos":"SCONJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아니었다","lemma":"아니다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아니었어","lemma":"아니다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"아니에요","lemma":"아니다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아닐","lemma":"아니다","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아닐까","lemma":"아니다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아님","lemma":"아니면","pos":"CCONJ"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"아닙니다","lemma":"아니다","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아동용이다","lemma":"아동용이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아들","lemma":"아들","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아들을","lemma":"아들","pos":"NOUN"}},"count":1}
@@ -7169,6 +7069,7 @@
 {"lexeme":{"Heteronym":{"word":"아르바이트한다","lemma":"아르바이트하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아름다우시네요","lemma":"아름답다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아름다울","lemma":"아름답다","pos":"ADJ"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"아름다워","lemma":"아름답다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아름답네요","lemma":"아름답다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아무거나","lemma":"아무거나","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"아무나","lemma":"아무나","pos":"PRON"}},"count":1}
@@ -7240,7 +7141,6 @@
 {"lexeme":{"Heteronym":{"word":"안돼","lemma":"안되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"안된다고","lemma":"안되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"안보이네","lemma":"안보이네","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"안심시켰다","lemma":"안심시키다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"안심하세요","lemma":"안심하세요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"안아서","lemma":"안다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"안아줘","lemma":"안아줘","pos":"VERB"}},"count":1}
@@ -7334,7 +7234,6 @@
 {"lexeme":{"Heteronym":{"word":"애묘인이야","lemma":"애묘인이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"애석하게도","lemma":"애석하다","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"애석한","lemma":"애석하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"애써왔다","lemma":"애써왔다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"애썼다","lemma":"애쓰다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"애쓰고","lemma":"애쓰다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"애야","lemma":"애","pos":"NOUN"}},"count":1}
@@ -7398,7 +7297,6 @@
 {"lexeme":{"Heteronym":{"word":"어딨었니","lemma":"있다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"어때요","lemma":"어떻다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"어땠어","lemma":"어떻다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"어떠세요","lemma":"어떻다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"어떡해","lemma":"어떡하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"어떤지","lemma":"어떤지","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"어떨지","lemma":"어떻다","pos":"ADJ"}},"count":1}
@@ -7463,7 +7361,6 @@
 {"lexeme":{"Heteronym":{"word":"언제지","lemma":"언제지","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"언제쯤","lemma":"언제쯤","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"언젠가는","lemma":"언젠가","pos":"ADV"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"언짢았다","lemma":"언짢다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"얻기","lemma":"얻다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"얻었다","lemma":"얻다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"얻었어","lemma":"얻다","pos":"VERB"}},"count":1}
@@ -7531,7 +7428,6 @@
 {"lexeme":{"Heteronym":{"word":"여름의","lemma":"여름","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"여름이","lemma":"여름","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"여름이에요","lemma":"여름이에요","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"여배우이다","lemma":"이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"여보","lemma":"여보","pos":"INTJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"여부는","lemma":"여부","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"여섯시에","lemma":"여섯시","pos":"NOUN"}},"count":1}
@@ -7601,7 +7497,6 @@
 {"lexeme":{"Heteronym":{"word":"열매입니다","lemma":"열매이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"열면","lemma":"열다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"열살이","lemma":"열살","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"열성적이야","lemma":"열성적이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"열세","lemma":"열셋","pos":"NUM"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"열세살일","lemma":"열세살","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"열쇠가","lemma":"열쇠","pos":"NOUN"}},"count":1}
@@ -7632,7 +7527,6 @@
 {"lexeme":{"Heteronym":{"word":"영어와","lemma":"영어","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"영어책이","lemma":"영어책","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"영원한","lemma":"영원하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"영토는","lemma":"영토","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"영혼이","lemma":"영혼","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"영화가","lemma":"영화","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"영화관에","lemma":"영화관","pos":"NOUN"}},"count":1}
@@ -7641,7 +7535,7 @@
 {"lexeme":{"Heteronym":{"word":"옆","lemma":"옆","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"옆으로","lemma":"옆으로","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"옆집","lemma":"옆집","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"옆집에","lemma":"옆집+에","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"옆집에","lemma":"옆집","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"예","lemma":"예","pos":"INTJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"예민한","lemma":"예민하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"예보","lemma":"예보","pos":"NOUN"}},"count":1}
@@ -7701,7 +7595,6 @@
 {"lexeme":{"Heteronym":{"word":"올리고","lemma":"올리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"올릴","lemma":"올리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"옮겨졌다","lemma":"옮겨지다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"옮겼다","lemma":"옮기다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"옳다고","lemma":"옳다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"옳았다","lemma":"옳다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"와","lemma":"와","pos":"CCONJ"}},"count":1}
@@ -7744,7 +7637,6 @@
 {"lexeme":{"Heteronym":{"word":"외로웠던","lemma":"외롭다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"외로웠어","lemma":"외롭다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"외롭고","lemma":"외롭다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"외롭다고","lemma":"외롭다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"외모로","lemma":"외모","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"외바퀴","lemma":"외바퀴","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"외야수는","lemma":"외야수","pos":"NOUN"}},"count":1}
@@ -7780,7 +7672,6 @@
 {"lexeme":{"Heteronym":{"word":"용기는","lemma":"용기","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"용서","lemma":"용서","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"용서한다","lemma":"용서하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"용서해달라고","lemma":"용서하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"용서했어","lemma":"용서했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"용암이","lemma":"용암","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"용은","lemma":"용","pos":"NOUN"}},"count":1}
@@ -7810,7 +7701,6 @@
 {"lexeme":{"Heteronym":{"word":"우주","lemma":"우주","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"우주는","lemma":"우주","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"우체국에서라도","lemma":"우체국","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"우크라이나입니다","lemma":"우크라이나이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"우표는","lemma":"우표","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"우표를","lemma":"우표","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"우회전","lemma":"우회전","pos":"NOUN"}},"count":1}
@@ -7833,7 +7723,6 @@
 {"lexeme":{"Heteronym":{"word":"운전하기","lemma":"운전하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"운전하세요","lemma":"운전하세요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"운전한다","lemma":"운전하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"운전했어","lemma":"운전했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"운전했었다","lemma":"운전했었다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"운항을","lemma":"운항","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"운행돼","lemma":"운행되다","pos":"VERB"}},"count":1}
@@ -7850,17 +7739,14 @@
 {"lexeme":{"Heteronym":{"word":"움직이는","lemma":"움직이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"움직이려고","lemma":"움직이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"움직이지","lemma":"움직이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"움찔했어","lemma":"움찔했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"움켜쥐어","lemma":"움켜쥐다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웁니까","lemma":"웁니까","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃게","lemma":"웃다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃겨","lemma":"웃기다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"웃고나서","lemma":"웃다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃기","lemma":"웃기","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃기다","lemma":"웃기다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃기예요","lemma":"웃기다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃어줘","lemma":"웃어줘","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"웃으면서","lemma":"웃다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃은","lemma":"웃다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃음에는","lemma":"웃음","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"웃음을","lemma":"웃음","pos":"NOUN"}},"count":1}
@@ -7912,7 +7798,6 @@
 {"lexeme":{"Heteronym":{"word":"유령은","lemma":"유령","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"유리컵이","lemma":"유리컵","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"유망해","lemma":"유망하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"유명인사이다","lemma":"유명인사이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"유명해졌다","lemma":"유명해지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"유명해지길","lemma":"유명해지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"유방암으로","lemma":"유방암","pos":"NOUN"}},"count":1}
@@ -7943,13 +7828,13 @@
 {"lexeme":{"Heteronym":{"word":"은유를","lemma":"은유","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"은으로","lemma":"은","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"은이","lemma":"은","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"은퇴했어","lemma":"은퇴했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음란물","lemma":"음란물","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음료수를","lemma":"음료수","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음식만","lemma":"음식","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음식은","lemma":"음식","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음식점","lemma":"음식점","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음악가다","lemma":"음악가이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"음악가이다","lemma":"음악가이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음악가일","lemma":"음악가일","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음악가임에","lemma":"음악가","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"음악과","lemma":"음악","pos":"NOUN"}},"count":1}
@@ -8006,7 +7891,6 @@
 {"lexeme":{"Heteronym":{"word":"이것보단","lemma":"이것+보다+는","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이것좀","lemma":"이것","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이게","lemma":"이것+이","pos":"PRON"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"이겼습니까","lemma":"이겼습니까","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이곳에","lemma":"이곳","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이곳에서","lemma":"이곳","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이곳을","lemma":"이곳","pos":"PRON"}},"count":1}
@@ -8016,7 +7900,6 @@
 {"lexeme":{"Heteronym":{"word":"이끌고","lemma":"이끌다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이단자로","lemma":"이단자","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이동한다","lemma":"이동하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"이동했다","lemma":"이동하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이래도","lemma":"이래도","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이래라","lemma":"이래라","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이래로","lemma":"이래로","pos":"ADP"}},"count":1}
@@ -8028,6 +7911,7 @@
 {"lexeme":{"Heteronym":{"word":"이루었어","lemma":"이루었어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이른","lemma":"이르다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이름으로","lemma":"이름","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"이름이다","lemma":"이름이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이모가","lemma":"이모","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이발소에","lemma":"이발소","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이번주에","lemma":"이번주","pos":"NOUN"}},"count":1}
@@ -8062,9 +7946,7 @@
 {"lexeme":{"Heteronym":{"word":"이어폰을","lemma":"이어폰","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이여","lemma":"이","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이와","lemma":"이","pos":"PRON"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"이웃나라입니다","lemma":"이웃나라이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"이웃이었다","lemma":"이웃이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"이웃이에요","lemma":"이웃이다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"이웃이다","lemma":"이웃이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이유","lemma":"이유","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이유는","lemma":"이유","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이유로","lemma":"이유","pos":"NOUN"}},"count":1}
@@ -8093,12 +7975,10 @@
 {"lexeme":{"Heteronym":{"word":"이해했습니다","lemma":"이해하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이해했어","lemma":"이해하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이해했으면","lemma":"이해하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"이혼했어","lemma":"이혼했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"이후","lemma":"이후","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"익는다","lemma":"익다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"익다","lemma":"익다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"익사할","lemma":"익사하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"익사했어","lemma":"익사했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"익은","lemma":"익다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"인간에게","lemma":"인간","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"인간이란","lemma":"인간","pos":"NOUN"}},"count":1}
@@ -8131,12 +8011,10 @@
 {"lexeme":{"Heteronym":{"word":"일기예보가","lemma":"일기예보","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일년에","lemma":"일년","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일년은","lemma":"일년","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"일란성","lemma":"일란성","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일로","lemma":"일","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일반적","lemma":"일반적","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일보다","lemma":"일","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일본말","lemma":"일본말","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"일본인입니다","lemma":"일본인이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일부","lemma":"일부","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일부러","lemma":"일부러","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"일상에서","lemma":"일상","pos":"NOUN"}},"count":1}
@@ -8219,7 +8097,6 @@
 {"lexeme":{"Heteronym":{"word":"입는다","lemma":"입다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"입니다","lemma":"것이다","pos":"AUX"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"입니다","lemma":"이다","pos":"AUX"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"입대했어","lemma":"입대했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"입술","lemma":"입술","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"입술을","lemma":"입술","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"입었어","lemma":"입었어","pos":"VERB"}},"count":1}
@@ -8283,7 +8160,6 @@
 {"lexeme":{"Heteronym":{"word":"잊어버렸니","lemma":"잊어버리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잊어버렸어","lemma":"잊어버리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잊었습니다","lemma":"잊다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"잊었어","lemma":"잊다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잎들이","lemma":"잎","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자가용이","lemma":"자가용","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자겠습니다","lemma":"자겠습니다","pos":"VERB"}},"count":1}
@@ -8321,7 +8197,6 @@
 {"lexeme":{"Heteronym":{"word":"자리에서","lemma":"자리","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자매라는","lemma":"자매+라는","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자백했다","lemma":"자백하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"자백했어","lemma":"자백했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자비를","lemma":"자비","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자살","lemma":"자살","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자살은","lemma":"자살","pos":"NOUN"}},"count":1}
@@ -8330,7 +8205,6 @@
 {"lexeme":{"Heteronym":{"word":"자서","lemma":"자다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자석은","lemma":"자석","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자세히","lemma":"자세히","pos":"ADV"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"자식이","lemma":"자식+이","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자신감","lemma":"자신감","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자신감을","lemma":"자신감","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자신의","lemma":"자신","pos":"PRON"}},"count":1}
@@ -8340,7 +8214,6 @@
 {"lexeme":{"Heteronym":{"word":"자연이란","lemma":"자연","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자원해서","lemma":"자원하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자원했다","lemma":"자원하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"자원했어","lemma":"자원했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자유","lemma":"자유","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자유의","lemma":"자유","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자유의지도","lemma":"자유의지","pos":"NOUN"}},"count":1}
@@ -8359,7 +8232,6 @@
 {"lexeme":{"Heteronym":{"word":"자폐증으로","lemma":"자폐증+으로","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자폐증의","lemma":"자폐증","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"자폐증이란","lemma":"자폐증+이+라는","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"자폐증이래","lemma":"자폐증이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"작가가","lemma":"작가","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"작고","lemma":"작다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"작년","lemma":"작년","pos":"NOUN"}},"count":1}
@@ -8408,6 +8280,7 @@
 {"lexeme":{"Heteronym":{"word":"잡는다","lemma":"잡다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잡수셨습니까","lemma":"잡수셨습니까","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잡수셨어요","lemma":"잡수셨어요","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"잡아","lemma":"잡다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잡아두고","lemma":"잡아두다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잡아야","lemma":"잡다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"잡아주세요","lemma":"잡아주세요","pos":"VERB"}},"count":1}
@@ -8475,7 +8348,6 @@
 {"lexeme":{"Heteronym":{"word":"저질렀어","lemma":"저질렀어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"저항이","lemma":"저항","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"저혈압에","lemma":"저혈압","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"저혈압이다","lemma":"저혈압이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"저혈압입니다","lemma":"저혈압이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"저희는","lemma":"저희","pos":"PRON"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"저희들을","lemma":"저희","pos":"PRON"}},"count":1}
@@ -8486,14 +8358,12 @@
 {"lexeme":{"Heteronym":{"word":"적당히","lemma":"적당히","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"적들을","lemma":"적","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"적발","lemma":"적발","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"적어","lemma":"적다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"적어두는","lemma":"적어두다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"적에","lemma":"적","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"적응을","lemma":"적응","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"적의","lemma":"적","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전","lemma":"전","pos":"DET"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전공이다","lemma":"전공이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"전기기사다","lemma":"전기기사이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전까지는","lemma":"전","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전달하는","lemma":"전달하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전래된","lemma":"전래되다","pos":"VERB"}},"count":1}
@@ -8510,7 +8380,6 @@
 {"lexeme":{"Heteronym":{"word":"전유물이","lemma":"전유물","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전이야","lemma":"전이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전자담배는","lemma":"전자담배","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"전쟁범죄인입니다","lemma":"전쟁범죄인이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전쟁에서","lemma":"전쟁","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전쟁으로","lemma":"전쟁","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전쟁은","lemma":"전쟁","pos":"NOUN"}},"count":1}
@@ -8533,7 +8402,6 @@
 {"lexeme":{"Heteronym":{"word":"전화에서","lemma":"전화","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전화한","lemma":"전화하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전화할게요","lemma":"전화하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"전화해요","lemma":"전화해요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전화했는데","lemma":"전화하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전화했어","lemma":"전화하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"전화했어요","lemma":"전화하다","pos":"VERB"}},"count":1}
@@ -8552,7 +8420,6 @@
 {"lexeme":{"Heteronym":{"word":"점을","lemma":"점","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"점프","lemma":"점프","pos":"INTJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"점프해","lemma":"점프하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"점프했어","lemma":"점프하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"접수했다","lemma":"접수하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"접어","lemma":"접다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정교인입니다","lemma":"정교인이다","pos":"VERB"}},"count":1}
@@ -8563,7 +8430,6 @@
 {"lexeme":{"Heteronym":{"word":"정도입니까","lemma":"정도입니까","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정돈이","lemma":"정돈","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정류장에","lemma":"정류장+에","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"정류장이","lemma":"정류장","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정리해","lemma":"정리하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정리해라","lemma":"정리해라","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정말","lemma":"정말","pos":"INTJ"}},"count":1}
@@ -8588,7 +8454,6 @@
 {"lexeme":{"Heteronym":{"word":"정의를","lemma":"정의","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정전이","lemma":"정전","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정지하셨나요","lemma":"정지하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"정직하다","lemma":"정직하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정체불명의","lemma":"정체불명","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정치적","lemma":"정치적","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"정학을","lemma":"정학","pos":"NOUN"}},"count":1}
@@ -8611,7 +8476,6 @@
 {"lexeme":{"Heteronym":{"word":"제임스입니다","lemma":"제임스이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"제자리에","lemma":"제자리","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"제작해","lemma":"제작하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"제정신이야","lemma":"제정신이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"제철입니다","lemma":"제철이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"제품들은","lemma":"제품","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"제한되어","lemma":"제한되다","pos":"VERB"}},"count":1}
@@ -8647,12 +8511,10 @@
 {"lexeme":{"Heteronym":{"word":"존재한다고","lemma":"존재하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"존재합니까","lemma":"존재합니까","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"존중한다고","lemma":"존중하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"존중해","lemma":"존중하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"졸려","lemma":"졸리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"졸려해","lemma":"졸려하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"졸았어","lemma":"졸다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"졸업","lemma":"졸업","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"졸업했어","lemma":"졸업했어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"좀비들에게","lemma":"좀비","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"좁네요","lemma":"좁다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"좁습니다","lemma":"좁다","pos":"ADJ"}},"count":1}
@@ -8710,9 +8572,6 @@
 {"lexeme":{"Heteronym":{"word":"죄책감이","lemma":"죄책감","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주간지를","lemma":"주간지","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주권","lemma":"주권","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"주권국가다","lemma":"주권국가이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"주권국가예요","lemma":"주권국가이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"주권국가입니다","lemma":"주권국가이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주기를","lemma":"주기","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주는","lemma":"주","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주름져","lemma":"주름지다","pos":"VERB"}},"count":1}
@@ -8742,6 +8601,7 @@
 {"lexeme":{"Heteronym":{"word":"주의하세요","lemma":"주의하세요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주인공은","lemma":"주인공","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주인을","lemma":"주인","pos":"NOUN"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"주저했어","lemma":"주저하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주차장이","lemma":"주차장","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"주차할","lemma":"주차하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"죽게","lemma":"죽다","pos":"VERB"}},"count":1}
@@ -8754,9 +8614,7 @@
 {"lexeme":{"Heteronym":{"word":"죽어도","lemma":"죽다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"죽었나","lemma":"죽었나","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"죽였나요","lemma":"죽이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"죽였습니다","lemma":"죽이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"죽였어","lemma":"죽이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"죽였어요","lemma":"죽였어요","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"죽였다","lemma":"죽이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"죽을지도","lemma":"죽을지도","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"죽음","lemma":"죽음","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"죽음과","lemma":"죽음","pos":"NOUN"}},"count":1}
@@ -8825,7 +8683,6 @@
 {"lexeme":{"Heteronym":{"word":"지금처럼","lemma":"지금처럼","pos":"ADV"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지기","lemma":"지다","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지난달에","lemma":"지난달","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"지난주에","lemma":"지난주+에","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지난해에","lemma":"지난해","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지났습니까","lemma":"지나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지내셨습니까","lemma":"지내셨습니까","pos":"VERB"}},"count":1}
@@ -8848,7 +8705,6 @@
 {"lexeme":{"Heteronym":{"word":"지를","lemma":"지","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지름길로","lemma":"지름길","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지불한","lemma":"지불하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"지불했어","lemma":"지불하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지붕은","lemma":"지붕","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지상낙원이라","lemma":"지상낙원","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지식체계이다","lemma":"지식체계이다","pos":"VERB"}},"count":1}
@@ -8860,10 +8716,10 @@
 {"lexeme":{"Heteronym":{"word":"지으려고","lemma":"지으려고","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지적이야","lemma":"지적이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지적인","lemma":"지적이다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"지지합니다","lemma":"지지하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지지해주지","lemma":"지지해주다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지쳐보였어","lemma":"지쳐보였어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지켜보고","lemma":"지켜보고","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"지켜보았다","lemma":"지켜보다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지켜봤다","lemma":"지켜봤다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지켜봤어","lemma":"지켜봤어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"지켜주시길","lemma":"지켜주시길","pos":"VERB"}},"count":1}
@@ -8885,7 +8741,6 @@
 {"lexeme":{"Heteronym":{"word":"직전이다","lemma":"직전이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"직접적인","lemma":"직접적이다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"직진하세요","lemma":"직진하세요","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"진격시켰다","lemma":"진격시키다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"진단받아","lemma":"진단받다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"진단받았다","lemma":"진단받다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"진보를","lemma":"진보","pos":"NOUN"}},"count":1}
@@ -8949,7 +8804,6 @@
 {"lexeme":{"Heteronym":{"word":"짭새들","lemma":"짭새","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쪘어","lemma":"찌다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쪼들리고","lemma":"쪼들리다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"쪽","lemma":"쪽","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쪽이","lemma":"쪽","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쪽지를","lemma":"쪽지","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쫓겨난","lemma":"쫓겨나다","pos":"VERB"}},"count":1}
@@ -9068,6 +8922,7 @@
 {"lexeme":{"Heteronym":{"word":"쳐다보는","lemma":"쳐다보다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쳐다보았다","lemma":"쳐다보다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쳐다봐","lemma":"쳐다보다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"쳐다봤어","lemma":"쳐다보다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쳐달라고","lemma":"치다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쳤어","lemma":"쳤어","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"쳤을","lemma":"치다","pos":"VERB"}},"count":1}
@@ -9134,8 +8989,6 @@
 {"lexeme":{"Heteronym":{"word":"출세작이","lemma":"출세작","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"출시되었을","lemma":"출시되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"출신이세요","lemma":"출신이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"출신이에요","lemma":"출신이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"출신입니다","lemma":"출신이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"출처는","lemma":"출처","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"춤도","lemma":"춤","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"춤은","lemma":"춤","pos":"NOUN"}},"count":1}
@@ -9207,7 +9060,6 @@
 {"lexeme":{"Heteronym":{"word":"친절하다","lemma":"친절하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"친절한","lemma":"친절하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"친절해","lemma":"친절하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"친척이야","lemma":"친척이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"친해요","lemma":"친해요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"칠","lemma":"치다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"칠","lemma":"칠하다","pos":"VERB"}},"count":1}
@@ -9217,7 +9069,6 @@
 {"lexeme":{"Heteronym":{"word":"칠할","lemma":"칠하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"칠했다","lemma":"칠하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"칠했어","lemma":"칠했어","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"침공했다","lemma":"침공하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"침대로","lemma":"침대","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"침대를","lemma":"침대","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"침묵은","lemma":"침묵","pos":"NOUN"}},"count":1}
@@ -9247,7 +9098,6 @@
 {"lexeme":{"Heteronym":{"word":"칼륨이","lemma":"칼륨","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"캐나다인과","lemma":"캐나다인","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"캐나다인이신가요","lemma":"캐나다인이다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"캐나다인이야","lemma":"캐나다인이야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"캐나다인이었어","lemma":"캐나다인이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"커다란","lemma":"커다랗다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"커튼은","lemma":"커튼","pos":"NOUN"}},"count":1}
@@ -9292,9 +9142,7 @@
 {"lexeme":{"Heteronym":{"word":"클럽은","lemma":"클럽","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"큽니다","lemma":"크다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"키가","lemma":"키+가","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"키다리다","lemma":"키다리다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"키도","lemma":"키","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"키득거렸어","lemma":"키득거리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"키를","lemma":"키","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"키스를","lemma":"키스","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"키스하고","lemma":"키스하다","pos":"VERB"}},"count":1}
@@ -9318,7 +9166,6 @@
 {"lexeme":{"Heteronym":{"word":"탄","lemma":"타다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"탄산음료를","lemma":"탄산음료","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"탄핵","lemma":"탄핵","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"탄핵될까","lemma":"탄핵되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"탈옥했다","lemma":"탈옥하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"탈출한","lemma":"탈출하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"탐사하고","lemma":"탐사하다","pos":"VERB"}},"count":1}
@@ -9334,6 +9181,7 @@
 {"lexeme":{"Heteronym":{"word":"태어나셨습니까","lemma":"태어나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"태어나셨어요","lemma":"태어나셨어요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"태어났나요","lemma":"태어났나요","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"태어났다","lemma":"태어나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"택시로","lemma":"택시","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"택하지","lemma":"택하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"탱고","lemma":"탱고","pos":"NOUN"}},"count":1}
@@ -9380,7 +9228,6 @@
 {"lexeme":{"Heteronym":{"word":"퇴근","lemma":"퇴근","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"퇴치해","lemma":"퇴치하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"투덜거려","lemma":"투덜거리다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"투덜거렸어","lemma":"투덜거리다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"투명하다","lemma":"투명하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"트럭에","lemma":"트럭","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"트럭을","lemma":"트럭","pos":"NOUN"}},"count":1}
@@ -9477,7 +9324,6 @@
 {"lexeme":{"Heteronym":{"word":"포함되어","lemma":"포함되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"포함이야","lemma":"포함이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"폭력으로","lemma":"폭력","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"폭력적이야","lemma":"폭력적이야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"폭발로","lemma":"폭발","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"폭발했습니다","lemma":"폭발하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"폭탄이","lemma":"폭탄","pos":"NOUN"}},"count":1}
@@ -9596,7 +9442,6 @@
 {"lexeme":{"Heteronym":{"word":"하자","lemma":"하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"하지마","lemma":"하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"하지만","lemma":"하지만","pos":"CCONJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"하품했어","lemma":"하품하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"학교가","lemma":"학교","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"학교는","lemma":"학교","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"학교다","lemma":"학교다","pos":"VERB"}},"count":1}
@@ -9670,7 +9515,6 @@
 {"lexeme":{"Heteronym":{"word":"항복했다","lemma":"항복하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"항복했어","lemma":"항복하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"항소하였다","lemma":"항소하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"항의했다","lemma":"항의하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"항체는","lemma":"항체","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해결될","lemma":"해결되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해결책은","lemma":"해결책","pos":"NOUN"}},"count":1}
@@ -9680,8 +9524,8 @@
 {"lexeme":{"Heteronym":{"word":"해결했다","lemma":"해결하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해결했어요","lemma":"해결했어요","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해결했으면","lemma":"해결하다","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"해고당했다","lemma":"해고당하다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해고당했다는","lemma":"해고당하다","pos":"VERB"}},"count":1}
+{"lexeme":{"Heteronym":{"word":"해고됐다","lemma":"해고되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해답이","lemma":"해답","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해당되는","lemma":"해당되다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"해독했어","lemma":"해독하다","pos":"VERB"}},"count":1}
@@ -9753,13 +9597,11 @@
 {"lexeme":{"Heteronym":{"word":"행복하고","lemma":"행복하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행복하냐고","lemma":"행복하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행복하다","lemma":"행복하다","pos":"ADJ"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"행복할까","lemma":"행복하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행복해요","lemma":"행복해요","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행복해졌어","lemma":"행복해지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행복해지고","lemma":"행복해지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행복해질","lemma":"행복해지다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행복해하네","lemma":"행복해하네","pos":"VERB"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"행복했다","lemma":"행복하다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행성","lemma":"행성","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행성입니다","lemma":"행성이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"행운을","lemma":"행운","pos":"NOUN"}},"count":1}
@@ -9832,7 +9674,6 @@
 {"lexeme":{"Heteronym":{"word":"홍합은","lemma":"홍합","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"화가는","lemma":"화가","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"화나게","lemma":"화나다","pos":"ADV"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"화나게","lemma":"화나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"화나서","lemma":"화나다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"화난","lemma":"화난","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"화났어","lemma":"화났어","pos":"VERB"}},"count":1}
@@ -9855,7 +9696,6 @@
 {"lexeme":{"Heteronym":{"word":"확인해봐","lemma":"확인해봐","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"확인해줄","lemma":"확인해줄","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"환각제는","lemma":"환각제","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"환상적이야","lemma":"환상적이다","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"환상적인","lemma":"환상적이다","pos":"ADJ"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"환영해","lemma":"환영해","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"환자","lemma":"환자","pos":"NOUN"}},"count":1}
@@ -9882,7 +9722,6 @@
 {"lexeme":{"Heteronym":{"word":"후","lemma":"후","pos":"ADP"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"후레자식아","lemma":"후레자식","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"후보라고","lemma":"후보","pos":"NOUN"}},"count":1}
-{"lexeme":{"Heteronym":{"word":"후보야","lemma":"후보야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"후야","lemma":"후야","pos":"VERB"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"후에","lemma":"후","pos":"NOUN"}},"count":1}
 {"lexeme":{"Heteronym":{"word":"후에야","lemma":"후+에+야","pos":"NOUN"}},"count":1}
@@ -9972,6 +9811,7 @@
 {"lexeme":{"Multiword":"결정을 하다"},"count":1}
 {"lexeme":{"Multiword":"결코"},"count":1}
 {"lexeme":{"Multiword":"계속 가다"},"count":1}
+{"lexeme":{"Multiword":"계속해서"},"count":1}
 {"lexeme":{"Multiword":"고통을 받다"},"count":1}
 {"lexeme":{"Multiword":"공부를 하다"},"count":1}
 {"lexeme":{"Multiword":"굉장히"},"count":1}

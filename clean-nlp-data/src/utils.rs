@@ -137,13 +137,13 @@ pub fn validate_and_fix_whitespace(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use language_utils::PartOfSpeech;
+    use language_utils::PartOfSpeechTag;
 
     fn make_token(text: &str, whitespace: &str) -> SimplifiedTokenPrime {
         SimplifiedTokenPrime {
             text: text.to_string(),
             whitespace: whitespace.to_string(),
-            pos: PartOfSpeech::Noun,
+            pos: PartOfSpeechTag::Noun,
             lemma: text.to_string(),
         }
     }

@@ -552,8 +552,8 @@ impl<'a> Drop for FlushLater<'a> {
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct TranslateComprehensibleSentence<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
     <Option<Heteronym<S>> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
@@ -639,8 +639,8 @@ pub enum SentenceReviewResult {
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct PickHomophone<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
     word_pair: HomophoneWordPair<S>,
     sentence_pair: HomophoneSentencePair<S>,
@@ -675,8 +675,8 @@ pub struct AddCardOptions {
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum CardIndicator<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     TargetLanguage {
@@ -701,8 +701,8 @@ where
 
 impl<S> CardIndicator<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     pub fn target_language(&self) -> Option<&Lexeme<S>> {
@@ -1231,7 +1231,7 @@ impl weapon::PartialAppState for Deck {
                 // Check if this is a full sentence transcription
                 // (no Provided parts with heteronyms - only punctuation is provided)
                 let is_full_sentence_transcription = !challenge.iter().any(|part| {
-                    matches!(part, transcription_challenge::PartGraded::Provided { part } if part.heteronym.is_some())
+                    matches!(part, transcription_challenge::PartGraded::Provided { part } if part.heteronym().is_some())
                 });
 
                 // First pass: collect worst grade for each heteronym (word with its specific meaning)
@@ -1247,7 +1247,7 @@ impl weapon::PartialAppState for Deck {
                     } = part
                     {
                         for graded_part in parts {
-                            if let Some(heteronym) = &graded_part.heard.heteronym
+                            if let Some(heteronym) = graded_part.heard.heteronym()
                                 && let Some(heteronym) =
                                     heteronym.get_interned(&deck.context.language_pack.rodeo)
                             {
@@ -2892,8 +2892,8 @@ pub struct MultiwordCardContent {
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum CardContent<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
     Heteronym {
         heteronym: Heteronym<S>,
@@ -2959,8 +2959,8 @@ pub struct ReviewInfo {
 #[serde(tag = "type")]
 pub enum Challenge<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     FlashCardReview {
@@ -2976,8 +2976,8 @@ where
 
 impl<S> Challenge<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     fn audio_request(&self) -> Option<AudioRequest> {
@@ -3114,7 +3114,7 @@ impl ReviewInfo {
                     for literal in &sentence.target_language_literals {
                         let resolved = literal.resolve(&language_pack.rodeo);
 
-                        if resolved.heteronym.is_some() {
+                        if resolved.heteronym().is_some() {
                             // This is a word - add to current words group
                             current_words.push(resolved);
                         } else {

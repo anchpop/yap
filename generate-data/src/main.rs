@@ -252,12 +252,6 @@ async fn main() -> anyhow::Result<()> {
         )
         .await?;
 
-        // filter out sentences that are >=50% proper nouns
-        nlp_sentences = nlp_sentences
-            .into_iter()
-            .filter(|(_, analysis)| analysis.proper_noun_fraction() < 0.5)
-            .collect::<BTreeMap<_, _>>();
-
         let all_lexemes: Vec<language_utils::Lexeme<String>> = nlp_sentences
             .iter()
             .flat_map(|(_, analysis)| analysis.all_lexemes())
@@ -491,12 +485,6 @@ async fn main() -> anyhow::Result<()> {
                 course.target_language,
             )
             .await?;
-
-            // Filter out sentences that are >=50% proper nouns (same as main sentences)
-            let nlp = nlp
-                .into_iter()
-                .filter(|(_, analysis)| analysis.proper_noun_fraction() < 0.5)
-                .collect::<BTreeMap<_, _>>();
 
             nlp_sentences.extend(nlp.clone());
 

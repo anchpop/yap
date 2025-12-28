@@ -657,7 +657,6 @@ impl FeatureSet for Gender {
                 matches!(
                     pos,
                     PartOfSpeech::Noun
-                        | PartOfSpeech::Propn
                         | PartOfSpeech::Pron
                         | PartOfSpeech::Adj
                         | PartOfSpeech::Det
@@ -669,7 +668,6 @@ impl FeatureSet for Gender {
                 matches!(
                     pos,
                     PartOfSpeech::Noun
-                        | PartOfSpeech::Propn
                         | PartOfSpeech::Pron
                         | PartOfSpeech::Adj
                         | PartOfSpeech::Det
@@ -793,11 +791,7 @@ impl FeatureSet for Case {
             Language::German => {
                 matches!(
                     pos,
-                    PartOfSpeech::Noun
-                        | PartOfSpeech::Propn
-                        | PartOfSpeech::Pron
-                        | PartOfSpeech::Adj
-                        | PartOfSpeech::Det
+                    PartOfSpeech::Noun | PartOfSpeech::Pron | PartOfSpeech::Adj | PartOfSpeech::Det
                 )
             }
             Language::Korean => {
@@ -831,10 +825,7 @@ impl FeatureSet for Definite {
             | Language::Korean => {
                 matches!(
                     pos,
-                    PartOfSpeech::Noun
-                        | PartOfSpeech::Propn
-                        | PartOfSpeech::Adj
-                        | PartOfSpeech::Det
+                    PartOfSpeech::Noun | PartOfSpeech::Adj | PartOfSpeech::Det
                 )
             }
             Language::Chinese
@@ -912,10 +903,7 @@ impl FeatureSet for Degree {
             | Language::Korean => {
                 matches!(
                     pos,
-                    PartOfSpeech::Adj
-                        | PartOfSpeech::Adv
-                        | PartOfSpeech::Noun
-                        | PartOfSpeech::Propn
+                    PartOfSpeech::Adj | PartOfSpeech::Adv | PartOfSpeech::Noun
                 )
             }
             Language::Chinese

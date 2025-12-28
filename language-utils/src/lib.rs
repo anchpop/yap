@@ -13,6 +13,95 @@ use wasm_bindgen::prelude::*;
 
 use crate::features::Morphology;
 
+/// Full part-of-speech tag from NLP tokenization (includes all Universal Dependencies tags)
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    tsify::Tsify,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+    schemars::JsonSchema,
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+#[rkyv(
+    compare(PartialEq, PartialOrd),
+    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
+)]
+pub enum PartOfSpeechTag {
+    #[serde(rename = "ADJ")]
+    Adj, // adjective
+    #[serde(rename = "ADP")]
+    Adp, // adposition
+    #[serde(rename = "ADV")]
+    Adv, // adverb
+    #[serde(rename = "AUX")]
+    Aux, // auxiliary
+    #[serde(rename = "CCONJ")]
+    Cconj, // coordinating conjunction
+    #[serde(rename = "DET")]
+    Det, // determiner
+    #[serde(rename = "INTJ")]
+    Intj, // interjection
+    #[serde(rename = "NOUN")]
+    Noun, // noun
+    #[serde(rename = "NUM")]
+    Num, // numeral
+    #[serde(rename = "PART")]
+    Part, // particle
+    #[serde(rename = "PRON")]
+    Pron, // pronoun
+    #[serde(rename = "PROPN")]
+    Propn, // proper noun
+    #[serde(rename = "PUNCT")]
+    Punct, // punctuation
+    #[serde(rename = "SCONJ")]
+    Sconj, // subordinating conjunction
+    #[serde(rename = "SYM")]
+    Sym, // symbol
+    #[serde(rename = "VERB")]
+    Verb, // verb
+    #[serde(rename = "SPACE")]
+    Space, // space
+    #[serde(rename = "X")]
+    X, // other
+}
+
+impl std::fmt::Display for PartOfSpeechTag {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let word = match self {
+            PartOfSpeechTag::Adj => "adjective",
+            PartOfSpeechTag::Adp => "adposition",
+            PartOfSpeechTag::Adv => "adverb",
+            PartOfSpeechTag::Aux => "auxiliary",
+            PartOfSpeechTag::Cconj => "coordinating conjunction",
+            PartOfSpeechTag::Det => "determiner",
+            PartOfSpeechTag::Intj => "interjection",
+            PartOfSpeechTag::Noun => "noun",
+            PartOfSpeechTag::Num => "numeral",
+            PartOfSpeechTag::Part => "particle",
+            PartOfSpeechTag::Pron => "pronoun",
+            PartOfSpeechTag::Propn => "proper noun",
+            PartOfSpeechTag::Punct => "punctuation",
+            PartOfSpeechTag::Sconj => "subordinating conjunction",
+            PartOfSpeechTag::Sym => "symbol",
+            PartOfSpeechTag::Verb => "verb",
+            PartOfSpeechTag::Space => "space",
+            PartOfSpeechTag::X => "other",
+        };
+        write!(f, "{word}")
+    }
+}
+
+/// Part-of-speech for heteronyms (excludes proper nouns, punctuation, spaces, and unknown)
 #[derive(
     Clone,
     Debug,
@@ -58,20 +147,12 @@ pub enum PartOfSpeech {
     Part, // particle
     #[serde(rename = "PRON")]
     Pron, // pronoun
-    #[serde(rename = "PROPN")]
-    Propn, // proper noun
-    #[serde(rename = "PUNCT")]
-    Punct, // punctuation
     #[serde(rename = "SCONJ")]
     Sconj, // subordinating conjunction
     #[serde(rename = "SYM")]
     Sym, // symbol
     #[serde(rename = "VERB")]
     Verb, // verb
-    #[serde(rename = "SPACE")]
-    Space, // space
-    #[serde(rename = "X")]
-    X, // other
 }
 
 impl std::fmt::Display for PartOfSpeech {
@@ -88,13 +169,9 @@ impl std::fmt::Display for PartOfSpeech {
             PartOfSpeech::Num => "numeral",
             PartOfSpeech::Part => "particle",
             PartOfSpeech::Pron => "pronoun",
-            PartOfSpeech::Propn => "proper noun",
-            PartOfSpeech::Punct => "punctuation",
             PartOfSpeech::Sconj => "subordinating conjunction",
             PartOfSpeech::Sym => "symbol",
             PartOfSpeech::Verb => "verb",
-            PartOfSpeech::Space => "space",
-            PartOfSpeech::X => "other",
         };
         write!(f, "{word}")
     }
@@ -367,7 +444,7 @@ impl From<MovieMetadataBasic> for MovieMetadata {
 #[rkyv(derive(Debug))]
 pub struct SubtitleLine<S>
 where
-    S: rkyv::Archive,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
     <S as rkyv::Archive>::Archived: std::fmt::Debug,
 {
     /// The sentence text (Spur reference to sentence)
@@ -469,8 +546,7 @@ impl SentenceInfo {
             .iter()
             .filter_map(|token| {
                 token
-                    .heteronym
-                    .as_ref()
+                    .heteronym()
                     .map(|heteronym| Lexeme::Heteronym(heteronym.clone()))
             })
             .chain(
@@ -496,21 +572,33 @@ impl SentenceInfo {
         let total_words = self
             .words
             .iter()
-            .filter(|token| token.heteronym.is_some())
+            .filter(|token| {
+                !matches!(
+                    token.word_type,
+                    WordType::Other(OtherWord {
+                        other_tag: OtherWordType::Punct | OtherWordType::Space | OtherWordType::X
+                    })
+                )
+            })
             .count() as f32;
+
+        if total_words == 0.0 {
+            return 0.0;
+        }
+
         let proper_nouns = self
             .words
             .iter()
             .filter(|token| {
                 matches!(
-                    &token.heteronym,
-                    Some(Heteronym {
-                        pos: PartOfSpeech::Propn,
-                        ..
+                    token.word_type,
+                    WordType::Other(OtherWord {
+                        other_tag: OtherWordType::Propn
                     })
                 )
             })
             .count() as f32;
+
         proper_nouns / total_words
     }
 }
@@ -534,7 +622,7 @@ impl SentenceInfo {
 pub struct DocToken {
     pub text: String,
     pub whitespace: String,
-    pub pos: PartOfSpeech,
+    pub pos: PartOfSpeechTag,
     pub lemma: String,
     pub morph: BTreeMap<String, String>,
 }
@@ -558,17 +646,113 @@ pub struct DocToken {
 )]
 #[rkyv(
     compare(PartialEq, PartialOrd),
-    derive(PartialEq, PartialOrd, Eq, Ord, Hash)
+    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Heteronym<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
     pub word: S,
     pub lemma: S,
     pub pos: PartOfSpeech,
+}
+
+/// Type of non-heteronym word
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    tsify::Tsify,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[rkyv(
+    compare(PartialEq),
+    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum OtherWordType {
+    #[serde(rename = "PROPN")]
+    Propn, // proper noun
+    #[serde(rename = "PUNCT")]
+    Punct, // punctuation
+    #[serde(rename = "SPACE")]
+    Space, // space
+    #[serde(rename = "X")]
+    X, // other/unknown
+}
+
+/// Information about a non-heteronym word
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    tsify::Tsify,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[rkyv(
+    compare(PartialEq),
+    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct OtherWord {
+    pub other_tag: OtherWordType,
+}
+
+/// The type of word in a literal - heteronym or other
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    tsify::Tsify,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[serde(untagged)]
+#[rkyv(
+    compare(PartialEq),
+    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum WordType<S>
+where
+    S: rkyv::Archive + Hash + std::fmt::Debug,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+{
+    /// A word with dictionary/grammatical information
+    Heteronym(Heteronym<S>),
+    /// Other (proper noun, punctuation, space, unknown)
+    Other(OtherWord),
 }
 
 #[derive(
@@ -587,17 +771,76 @@ where
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(PartialEq, PartialOrd, Eq, Ord, Hash))]
+#[rkyv(
+    compare(PartialEq),
+    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
+)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Literal<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-    <Option<Heteronym<S>> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    WordType<S>: rkyv::Archive,
+    <WordType<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
     pub text: S,
     pub whitespace: S,
-    pub heteronym: Option<Heteronym<S>>,
+    #[serde(
+        alias = "heteronym",
+        deserialize_with = "deserialize_word_type_from_legacy"
+    )]
+    pub word_type: WordType<S>,
+}
+
+/// Custom deserializer to handle old format where `heteronym` could be null
+fn deserialize_word_type_from_legacy<'de, D, S>(deserializer: D) -> Result<WordType<S>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    S: serde::Deserialize<'de>
+        + rkyv::Archive
+        + Hash
+        + std::fmt::Debug
+        + Eq
+        + PartialEq
+        + Ord
+        + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+{
+    use serde::Deserialize;
+
+    // Deserialize as Option<WordType> - if it's null, convert to Other
+    let opt: Option<WordType<S>> = Option::deserialize(deserializer)?;
+
+    Ok(opt.unwrap_or(WordType::Other(OtherWord {
+        other_tag: OtherWordType::X,
+    })))
+}
+
+impl<S> Literal<S>
+where
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    WordType<S>: rkyv::Archive,
+    <WordType<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+{
+    /// Get the heteronym if this literal represents a heteronym, otherwise None
+    pub fn heteronym(&self) -> Option<&Heteronym<S>> {
+        match &self.word_type {
+            WordType::Heteronym(h) => Some(h),
+            _ => None,
+        }
+    }
 }
 
 impl Literal<String> {
@@ -605,19 +848,22 @@ impl Literal<String> {
         Literal {
             text: rodeo.get_or_intern(&self.text),
             whitespace: rodeo.get_or_intern(&self.whitespace),
-            heteronym: self.heteronym.as_ref().map(|h| h.get_or_intern(rodeo)),
+            word_type: match &self.word_type {
+                WordType::Heteronym(h) => WordType::Heteronym(h.get_or_intern(rodeo)),
+                WordType::Other(other) => WordType::Other(*other),
+            },
         }
     }
 
     pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<Literal<lasso::Spur>> {
-        let heteronym = match self.heteronym.as_ref() {
-            Some(h) => Some(h.get_interned(rodeo)?),
-            None => None,
+        let word_type = match &self.word_type {
+            WordType::Heteronym(h) => WordType::Heteronym(h.get_interned(rodeo)?),
+            WordType::Other(other) => WordType::Other(*other),
         };
         Some(Literal {
             text: rodeo.get(&self.text)?,
             whitespace: rodeo.get(&self.whitespace)?,
-            heteronym,
+            word_type,
         })
     }
 }
@@ -627,7 +873,10 @@ impl Literal<lasso::Spur> {
         Literal {
             text: rodeo.resolve(&self.text).to_string(),
             whitespace: rodeo.resolve(&self.whitespace).to_string(),
-            heteronym: self.heteronym.as_ref().map(|h| h.resolve(rodeo)),
+            word_type: match &self.word_type {
+                WordType::Heteronym(h) => WordType::Heteronym(h.resolve(rodeo)),
+                WordType::Other(other) => WordType::Other(*other),
+            },
         }
     }
 }
@@ -685,8 +934,8 @@ impl Heteronym<lasso::Spur> {
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Lexeme<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     Heteronym(Heteronym<S>),
@@ -695,8 +944,8 @@ where
 
 impl<S> Lexeme<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     pub fn heteronym(&self) -> Option<&Heteronym<S>> {
@@ -755,8 +1004,8 @@ impl Lexeme<lasso::Spur> {
 #[rkyv(compare(PartialEq), derive(PartialEq, PartialOrd, Eq, Ord, Hash))]
 pub struct FrequencyEntry<S>
 where
-    S: rkyv::Archive + PartialEq + PartialOrd + Eq + Ord + Hash,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Lexeme<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     pub lexeme: Lexeme<S>,
@@ -1604,8 +1853,8 @@ pub const LANGUAGES: &[Language] = &[
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct HomophoneWordPair<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
     pub word1: S,
     pub word2: S,
@@ -1673,8 +1922,8 @@ impl HomophoneWordPair<lasso::Spur> {
 #[rkyv(compare(PartialEq))]
 pub struct HomophoneSentencePair<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
     /// Sentence using the first word (lexicographically)
     pub sentence1: S,
@@ -1727,8 +1976,8 @@ impl HomophoneSentencePair<lasso::Spur> {
 #[rkyv(compare(PartialEq))]
 pub struct HomophonePractice<S>
 where
-    S: rkyv::Archive,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
     pub sentence_pairs: Vec<HomophoneSentencePair<S>>,
 }

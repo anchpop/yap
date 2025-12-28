@@ -132,8 +132,8 @@ impl Deck {
                     .target_language_literals
                     .into_iter()
                     .map(|literal| {
-                        if let Some(ref heteronym) = literal.heteronym
-                            && heteronym == &target_heteronym
+                        if let Some(heteronym) = literal.heteronym()
+                            && *heteronym == target_heteronym
                         {
                             transcription_challenge::Part::AskedToTranscribe {
                                 parts: vec![literal.resolve(&self.context.language_pack.rodeo)],

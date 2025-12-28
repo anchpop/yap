@@ -277,18 +277,20 @@ pub(crate) fn lexide_token_to_literal(
     language: language_utils::Language,
     is_first_word: bool,
 ) -> Literal<String> {
-    // Convert lexide POS to language_utils POS
-    let convert_pos = |pos: lexide::pos::PartOfSpeech| -> PartOfSpeech {
+    use language_utils::PartOfSpeechTag;
+
+    // Convert lexide POS to language_utils PartOfSpeechTag
+    let convert_pos_tag = |pos: lexide::pos::PartOfSpeech| -> PartOfSpeechTag {
         // Both enums have identical variants with the same serde renames,
         // so we can convert by serializing and deserializing
         let json = serde_json::to_string(&pos).unwrap();
         serde_json::from_str(&json).unwrap()
     };
 
-    let pos = convert_pos(token.pos);
+    let pos_tag = convert_pos_tag(token.pos);
 
     // Handle space tokens specially
-    if pos == PartOfSpeech::Space {
+    if pos_tag == PartOfSpeechTag::Space {
         let whitespace = if token.text.text.is_empty() && token.whitespace.is_empty() {
             " ".to_string()
         } else if token.text.text.is_empty() {
@@ -301,24 +303,46 @@ pub(crate) fn lexide_token_to_literal(
         return Literal {
             text: "".to_string(),
             whitespace,
-            heteronym: None,
+            word_type: language_utils::WordType::Other(language_utils::OtherWord {
+                other_tag: language_utils::OtherWordType::Space,
+            }),
         };
     }
 
-    // Try to create heteronym
-    let heteronym = heteronym_from_lexide_token(
-        &token.text.text,
-        &token.lemma.lemma,
-        pos,
-        proper_nouns,
-        language,
-        is_first_word,
-    );
+    // Determine the word type based on POS tag
+    let word_type = match pos_tag {
+        PartOfSpeechTag::Propn => language_utils::WordType::Other(language_utils::OtherWord {
+            other_tag: language_utils::OtherWordType::Propn,
+        }),
+        PartOfSpeechTag::Punct => language_utils::WordType::Other(language_utils::OtherWord {
+            other_tag: language_utils::OtherWordType::Punct,
+        }),
+        PartOfSpeechTag::X => language_utils::WordType::Other(language_utils::OtherWord {
+            other_tag: language_utils::OtherWordType::X,
+        }),
+        _ => {
+            // Try to create heteronym for other word types
+            match heteronym_from_lexide_token(
+                &token.text.text,
+                &token.lemma.lemma,
+                pos_tag,
+                proper_nouns,
+                language,
+                is_first_word,
+            ) {
+                Some(h) => language_utils::WordType::Heteronym(h),
+                // If heteronym creation failed for a non-special POS tag, mark as unknown
+                None => language_utils::WordType::Other(language_utils::OtherWord {
+                    other_tag: language_utils::OtherWordType::X,
+                }),
+            }
+        }
+    };
 
     Literal {
         text: token.text.text.clone(),
         whitespace: token.whitespace.clone(),
-        heteronym,
+        word_type,
     }
 }
 
@@ -326,18 +350,37 @@ pub(crate) fn lexide_token_to_literal(
 fn heteronym_from_lexide_token(
     text: &str,
     lemma: &str,
-    pos: PartOfSpeech,
+    pos_tag: language_utils::PartOfSpeechTag,
     proper_nouns: &BTreeMap<String, Heteronym<String>>,
     language: language_utils::Language,
     is_first_word: bool,
 ) -> Option<Heteronym<String>> {
-    // Filter out punctuation, spaces, and unknown
-    if matches!(
-        pos,
-        PartOfSpeech::Punct | PartOfSpeech::Space | PartOfSpeech::X | PartOfSpeech::Propn
-    ) {
-        return None;
-    }
+    use language_utils::{PartOfSpeech, PartOfSpeechTag};
+
+    // Convert PartOfSpeechTag to PartOfSpeech, filtering out invalid types
+    let pos = match pos_tag {
+        PartOfSpeechTag::Adj => PartOfSpeech::Adj,
+        PartOfSpeechTag::Adp => PartOfSpeech::Adp,
+        PartOfSpeechTag::Adv => PartOfSpeech::Adv,
+        PartOfSpeechTag::Aux => PartOfSpeech::Aux,
+        PartOfSpeechTag::Cconj => PartOfSpeech::Cconj,
+        PartOfSpeechTag::Det => PartOfSpeech::Det,
+        PartOfSpeechTag::Intj => PartOfSpeech::Intj,
+        PartOfSpeechTag::Noun => PartOfSpeech::Noun,
+        PartOfSpeechTag::Num => PartOfSpeech::Num,
+        PartOfSpeechTag::Part => PartOfSpeech::Part,
+        PartOfSpeechTag::Pron => PartOfSpeech::Pron,
+        PartOfSpeechTag::Sconj => PartOfSpeech::Sconj,
+        PartOfSpeechTag::Sym => PartOfSpeech::Sym,
+        PartOfSpeechTag::Verb => PartOfSpeech::Verb,
+        // Filter out proper nouns, punctuation, spaces, and unknown
+        PartOfSpeechTag::Propn
+        | PartOfSpeechTag::Punct
+        | PartOfSpeechTag::Space
+        | PartOfSpeechTag::X => {
+            return None;
+        }
+    };
 
     let expand_word: ExpandWordFn = match language {
         language_utils::Language::French => expand_french_word,
@@ -377,13 +420,7 @@ fn heteronym_from_lexide_token(
         Heteronym { word, lemma, pos }
     };
 
-    // Final filter for punctuation and proper nouns
-    if heteronym.pos == PartOfSpeech::Punct {
-        return None;
-    }
-    if heteronym.pos == PartOfSpeech::Propn {
-        return None;
-    }
+    // Punctuation and proper nouns are already filtered out during PartOfSpeechTag -> PartOfSpeech conversion
 
     Some(heteronym)
 }

@@ -190,8 +190,8 @@ pub fn calculate_pattern_frequencies<S>(
 ) -> HashMap<(String, PatternPosition), u32>
 where
     S: AsRef<str>,
-    S: rkyv::Archive + PartialEq + PartialOrd + Eq + Ord + Hash,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
+    S: rkyv::Archive + PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Lexeme<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
     let mut frequencies = HashMap::new();

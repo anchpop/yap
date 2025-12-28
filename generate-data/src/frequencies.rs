@@ -31,7 +31,7 @@ pub fn compute_frequencies(
         pb.inc(1);
         // Count individual words
         for word in &sentence.words {
-            if let Some(heteronym) = &word.heteronym {
+            if let Some(heteronym) = word.heteronym() {
                 if !banned_words.contains(heteronym) {
                     *frequencies
                         .entry(Lexeme::Heteronym(heteronym.clone()))
