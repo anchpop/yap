@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import type { UserInfo } from "@/App";
 import { AlmostThereMovie } from "@/components/AlmostThereMovie";
+import { useEffect } from "react";
 
 interface MovieWithMetadata {
   id: string;
@@ -119,6 +120,28 @@ export function NoCardsReady({
 
   // Handle empty deck case
   const isEmptyDeck = deck.num_cards() === 0;
+
+  // Keyboard shortcut to add cards
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Don't handle shortcuts if user is typing in an input field
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+        return;
+      }
+
+      if ((event.code === 'Space' || event.code === 'Enter') && add_cards.length > 0) {
+        event.preventDefault();
+        addNextCards(add_cards[0][1], add_cards[0][0]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [addNextCards, add_cards]);
 
   return (
     <div className="space-y-4">

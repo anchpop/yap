@@ -439,13 +439,14 @@ export const Flashcard = function Flashcard({
   const controls = animationControls();
   const [isDragging, setIsDragging] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const { bumpBackground } = useBackground();
 
   const leftLabel = isNew ? "Didn't know" : "Forgot";
   const rightLabel = isNew ? "Already knew" : "Remembered";
 
   const requireShowAnswer = totalCount < 50;
-  const canGrade = showAnswer || !requireShowAnswer;
+  const canGrade = hasBeenOpened || showAnswer || !requireShowAnswer;
 
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
 
@@ -498,6 +499,13 @@ export const Flashcard = function Flashcard({
       });
     }
   };
+
+  // Track if card has been opened
+  useEffect(() => {
+    if (showAnswer && !hasBeenOpened) {
+      setHasBeenOpened(true);
+    }
+  }, [showAnswer, hasBeenOpened]);
 
   // Reset position and animate in
   useEffect(() => {
@@ -734,8 +742,8 @@ export const Flashcard = function Flashcard({
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <div
-                  className={`text-muted-foreground ${
-                    requireShowAnswer ? "font-bold" : ""
+                  className={` ${
+                    requireShowAnswer ? "font-bold" : "text-muted-foreground"
                   }`}
                 >
                   Show Answer
@@ -750,7 +758,7 @@ export const Flashcard = function Flashcard({
       </motion.div>
 
       {onRating && (
-        <div className="mt-4 flex flex-col gap-2">
+        <div className={`mt-4 flex flex-col gap-2 transition-opacity duration-300 ${!canGrade ? "opacity-0" : "opacity-100"}`}>
           {onCantListen && "Listening" in content && (
             <CantListenButton onClick={onCantListen} />
           )}
