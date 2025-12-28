@@ -13,7 +13,6 @@ use wasm_bindgen::prelude::*;
 
 use crate::features::Morphology;
 
-/// Full part-of-speech tag from NLP tokenization (includes all Universal Dependencies tags)
 #[derive(
     Clone,
     Debug,
@@ -36,6 +35,7 @@ use crate::features::Morphology;
     compare(PartialEq, PartialOrd),
     derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
 )]
+#[schemars(rename = "PartOfSpeech")]
 pub enum PartOfSpeechTag {
     #[serde(rename = "ADJ")]
     Adj, // adjective

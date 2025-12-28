@@ -1286,7 +1286,7 @@ impl SentenceClassifier for FrenchClassifier {
 
             if text_lower == "puis" {
                 reasons.push(format!(
-                    "'puis' can be: (1) Verb 'pouvoir' (1st person singular passé simple, meaning 'could') → lemma 'pouvoir', POS VERB, OR (2) Adverb meaning 'then' (e.g., 'Et puis il est parti') → lemma 'puis', POS ADV. Current lemma: '{}', POS: {:?}.",
+                    "'puis' can be: (1) Verb 'pouvoir' (1st person singular passé simple, meaning 'could') → lemma 'pouvoir', POS VERB (or POS AUX if it's functioning as an auxiliary verb), OR (2) Adverb meaning 'then' (e.g., 'Et puis il est parti') → lemma 'puis', POS ADV. Current lemma (double check this): '{}', POS: {:?}.",
                     token.lemma, token.pos
                 ));
             }
