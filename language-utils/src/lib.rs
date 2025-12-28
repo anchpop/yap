@@ -275,6 +275,33 @@ impl From<PhrasebookEntryThoughts> for PhrasebookEntry {
     PartialEq,
     Ord,
     PartialOrd,
+    Hash,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[rkyv(compare(PartialEq), derive(Debug), derive(Hash))]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct ProperNounDefinition {
+    pub is_person_name: bool,
+    pub is_place_name: bool,
+    pub is_organization_name: bool,
+    pub is_other: bool,
+    pub learner_native_language_translation: String,
+    pub description: Option<String>,
+}
+
+#[derive(
+    Clone,
+    Debug,
+    serde::Deserialize,
+    schemars::JsonSchema,
+    serde::Serialize,
+    tsify::Tsify,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
@@ -1262,6 +1289,8 @@ pub struct ConsolidatedLanguageData {
     pub dictionary: BTreeMap<Heteronym<String>, DictionaryEntry>,
     /// Phrasebook entries for multiword terms
     pub phrasebook: BTreeMap<String, PhrasebookEntry>,
+    /// Proper noun definitions for names, places, organizations
+    pub proper_noun_definitions: BTreeMap<String, ProperNounDefinition>,
     /// Frequency data for words and phrases
     pub frequencies: Vec<FrequencyEntry<String>>,
     /// Per-movie word frequencies indexed by movie ID
@@ -1379,6 +1408,11 @@ impl ConsolidatedLanguageData {
             for movie_id in &source.movie_ids {
                 rodeo.get_or_intern(movie_id);
             }
+        }
+
+        // intern proper noun definitions keys
+        for proper_noun in self.proper_noun_definitions.keys() {
+            rodeo.get_or_intern(proper_noun);
         }
     }
 }

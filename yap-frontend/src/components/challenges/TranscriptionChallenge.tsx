@@ -320,7 +320,7 @@ export function TranscriptionChallenge({
       challenge.parts.every(
         (part) =>
           "AskedToTranscribe" in part ||
-          ("Provided" in part && !part.Provided.part.heteronym)
+          ("Provided" in part && !("word" in part.Provided.part.word_type))
       );
 
     return challenge.parts.map((item, index) => {

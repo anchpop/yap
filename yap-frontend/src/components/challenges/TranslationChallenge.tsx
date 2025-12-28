@@ -13,6 +13,7 @@ import {
   type Lexeme,
   type Literal,
   type TargetToNativeWord,
+  type ProperNounDefinition,
   autograde_translation,
   find_closest_translation,
   type Language,
@@ -294,7 +295,7 @@ function WordDefinition({
     "Heteronym" in lexeme ? lexeme.Heteronym.word : lexeme.Multiword;
 
   return (
-    <div className="mt-2 p-3 border border-card/50 bg-card/30 rounded-md">
+    <div className="p-3 border border-card/50 bg-card/30 rounded-md">
       <p className="text-sm font-semibold">{lexemeText}:</p>
       <ul className="list-disc list-inside text-sm">
         {definitions.map((def, i) => (
@@ -309,6 +310,129 @@ function WordDefinition({
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function ProperNounDefinitionCard({
+  words,
+  type_singular,
+  type_plural,
+}: {
+  words: string[];
+  type_singular: string;
+  type_plural: string;
+}) {
+  return (
+    <div className="p-3 border border-card/50 bg-card/30 rounded-md">
+      <span className="font-semibold">
+        {words.map((word, index) => (
+          <>
+            {word}
+            <span className="text-muted-foreground">
+              {index < words.length - 1
+                ? index === words.length - 2
+                  ? " and "
+                  : ", "
+                : ""}
+            </span>
+          </>
+        ))}
+      </span>
+      <span className="text-muted-foreground">
+        : {words.length === 1 ? type_singular : type_plural}
+      </span>
+    </div>
+  );
+}
+
+function ProperNounDefinitions({
+  definitions,
+}: {
+  definitions: [string, ProperNounDefinition][];
+}) {
+  if (!definitions || definitions.length === 0) {
+    return null;
+  }
+
+  // Group proper nouns by type
+  const personNames: string[] = [];
+  const placeNames: string[] = [];
+  const organizationNames: string[] = [];
+  const transliterations: Array<[string, string]> = [];
+  const transliterationAndDescription: Array<[string, string, string]> = [];
+  const descriptionOnly: Array<[string, string]> = [];
+
+  definitions.forEach(([noun, def]) => {
+    if (def.learner_native_language_translation === noun) {
+      if (def.description) {
+        descriptionOnly.push([noun, def.description]);
+      } else if (def.is_person_name) {
+        personNames.push(def.learner_native_language_translation);
+      } else if (def.is_place_name) {
+        placeNames.push(def.learner_native_language_translation);
+      } else if (def.is_organization_name) {
+        organizationNames.push(def.learner_native_language_translation);
+      }
+    } else {
+      if (def.description) {
+        transliterationAndDescription.push([
+          noun,
+          def.learner_native_language_translation,
+          def.description,
+        ]);
+      } else {
+        transliterations.push([noun, def.learner_native_language_translation]);
+      }
+    }
+  });
+
+  return (
+    <div className="text-sm space-y-1">
+      {personNames.length > 0 && (
+        <ProperNounDefinitionCard
+          words={personNames}
+          type_singular="person"
+          type_plural="people"
+        />
+      )}
+      {placeNames.length > 0 && (
+        <ProperNounDefinitionCard
+          words={placeNames}
+          type_singular="place"
+          type_plural="places"
+        />
+      )}
+      {organizationNames.length > 0 && (
+        <ProperNounDefinitionCard
+          words={organizationNames}
+          type_singular="organization"
+          type_plural="organizations"
+        />
+      )}
+      {transliterationAndDescription.map(
+        ([noun, transliteration, description]) => (
+          <ProperNounDefinitionCard
+            words={[noun]}
+            type_singular={`${transliteration} (${description})`}
+            type_plural=""
+          />
+        )
+      )}
+      {transliterations.map(([noun, transliteration]) => (
+        <ProperNounDefinitionCard
+          words={[noun]}
+          type_singular={transliteration}
+          type_plural=""
+        />
+      ))}
+      {descriptionOnly.map(([noun, description]) => (
+        <ProperNounDefinitionCard
+          words={[noun]}
+          type_singular={description}
+          type_plural=""
+        />
+      ))}
     </div>
   );
 }
@@ -397,8 +521,8 @@ function ChallengeSentence({
     }
 
     const heteronym =
-      "heteronym" in literal && literal.heteronym !== undefined
-        ? literal.heteronym
+      "word" in literal.word_type && literal.word_type !== undefined
+        ? literal.word_type
         : undefined;
 
     if (heteronym && tappedWords.has(i)) {
@@ -429,8 +553,8 @@ function ChallengeSentence({
       {literals.map((literal, i) => {
         const colorClass = getLiteralColorClass(literal, i);
         const heteronym =
-          "heteronym" in literal && literal.heteronym !== undefined
-            ? literal.heteronym
+          "word" in literal.word_type && literal.word_type !== undefined
+            ? literal.word_type
             : undefined;
 
         return (
@@ -632,8 +756,8 @@ export function TranslationChallenge({
     const lexemesTapped = new Array<Lexeme<string>>();
     for (const index of tappedWords.values()) {
       const literal = sentence.target_language_literals[index];
-      if (literal.heteronym !== undefined) {
-        const lexeme: Lexeme<string> = { Heteronym: literal.heteronym };
+      if ("word" in literal.word_type) {
+        const lexeme: Lexeme<string> = { Heteronym: literal.word_type };
         lexemesTapped.push(lexeme);
       }
     }
@@ -796,7 +920,7 @@ export function TranslationChallenge({
   return (
     <div className="flex flex-col flex-1 justify-between">
       <div>
-        <Card animate className="pt-3 pb-3 pl-3 pr-3 relative gap-0">
+        <Card animate className="pt-3 pb-3 pl-3 pr-3 relative gap-2">
           <div className="space-y-6">
             <div className="text-center">
               <div className="flex items-center justify-between w-full">
@@ -848,14 +972,20 @@ export function TranslationChallenge({
             </div>
 
             {grade === null ? (
-              <Input
-                ref={inputRef}
-                type="text"
-                placeholder="Translation..."
-                value={userTranslation}
-                onChange={(e) => setUserTranslation(e.target.value)}
-                className="text-lg"
-              />
+              <>
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Translation..."
+                  value={userTranslation}
+                  onChange={(e) => setUserTranslation(e.target.value)}
+                  className="text-lg"
+                />
+
+                <ProperNounDefinitions
+                  definitions={sentence.proper_noun_definitions}
+                />
+              </>
             ) : (
               <div className="space-y-4 mt-4 animate-feedback-in">
                 {"grading" in grade ? (
@@ -908,7 +1038,7 @@ export function TranslationChallenge({
               </div>
             )}
           </div>
-          <div>
+          <div className="space-y-2">
             {definitionsToShow.map((lexeme, i) => (
               <WordDefinition
                 key={i}

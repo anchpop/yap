@@ -2,7 +2,7 @@ use crate::indexmap::IndexMap;
 use crate::{
     ConsolidatedLanguageData, DictionaryEntry, Frequency, Heteronym, HomophonePractice,
     HomophoneWordPair, Lexeme, Literal, MovieMetadata, PatternPosition, PhrasebookEntry,
-    PronunciationData, SentenceSource,
+    PronunciationData, ProperNounDefinition, SentenceSource,
 };
 use lasso::Spur;
 use rustc_hash::FxHashMap;
@@ -34,6 +34,8 @@ pub struct LanguagePack {
     pub movies: FxHashMap<String, MovieMetadata>,
     /// Sentence source provenance tracking (maps sentence to its sources)
     pub sentence_sources: FxHashMap<Spur, SentenceSource>,
+    /// Global proper noun definitions map
+    pub proper_noun_definitions: BTreeMap<Spur, ProperNounDefinition>,
 }
 
 impl LanguagePack {
@@ -327,6 +329,17 @@ impl LanguagePack {
                 .collect()
         };
 
+        // Convert proper noun definitions to use Spurs
+        let proper_noun_definitions = {
+            language_data
+                .proper_noun_definitions
+                .iter()
+                .map(|(proper_noun, definition)| {
+                    (rodeo.get(proper_noun).unwrap(), definition.clone())
+                })
+                .collect()
+        };
+
         Self {
             rodeo,
             translations,
@@ -348,6 +361,7 @@ impl LanguagePack {
             pronunciation_max_freq_cache,
             movies,
             sentence_sources,
+            proper_noun_definitions,
         }
     }
 }

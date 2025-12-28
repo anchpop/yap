@@ -16,6 +16,7 @@ mod utils;
 use language_utils::HomophonePractice;
 use language_utils::HomophoneSentencePair;
 use language_utils::HomophoneWordPair;
+use language_utils::ProperNounDefinition;
 pub use simulation::DailySimulationIterator;
 
 use chrono::{DateTime, Utc};
@@ -565,6 +566,7 @@ where
     pub unique_target_language_lexeme_definitions: Vec<(Lexeme<S>, Vec<TargetToNativeWord>)>,
     pub native_translations: Vec<S>,
     pub movie_titles: Vec<(String, String)>,
+    pub proper_noun_definitions: Vec<(S, ProperNounDefinition)>,
 }
 
 impl TranslateComprehensibleSentence<Spur> {
@@ -594,6 +596,11 @@ impl TranslateComprehensibleSentence<Spur> {
                 .map(|t| rodeo.resolve(t).to_string())
                 .collect(),
             movie_titles: self.movie_titles.clone(),
+            proper_noun_definitions: self
+                .proper_noun_definitions
+                .iter()
+                .map(|(s, def)| (rodeo.resolve(s).to_string(), def.clone()))
+                .collect(),
         }
     }
 }
@@ -2498,11 +2505,11 @@ impl Deck {
                 let sentence_review_count = sentences_reviewed.get(sentence).unwrap_or(&0);
                 *sentence_review_count
             });
-            let target_language = **possible_sentences.first()?;
+            let target_language_sentence = **possible_sentences.first()?;
 
             let lexemes = language_pack
                 .sentences_to_all_lexemes
-                .get(&target_language)?;
+                .get(&target_language_sentence)?;
 
             let unique_target_language_lexemes = {
                 let mut unique_target_language_lexemes = vec![];
@@ -2519,18 +2526,18 @@ impl Deck {
 
             let native_languages = language_pack
                 .translations
-                .get(&target_language)
+                .get(&target_language_sentence)
                 .unwrap()
                 .clone();
 
             let target_language_literals = language_pack
                 .sentences_to_literals
-                .get(&target_language)
+                .get(&target_language_sentence)
                 .unwrap()
                 .clone();
 
             return Some(ComprehensibleSentence {
-                target_language,
+                target_language: target_language_sentence,
                 target_language_literals,
                 unique_target_language_lexemes,
                 native_languages,
@@ -3335,6 +3342,24 @@ impl ReviewInfo {
                         })
                         .unwrap_or_default();
 
+                    // Get proper noun definitions by looking at the literals and checking the global definitions map
+                    let proper_noun_definitions: Vec<(Spur, ProperNounDefinition)> =
+                        target_language_literals
+                            .iter()
+                            .filter_map(|literal| {
+                                if let language_utils::WordType::Other(other) = &literal.word_type {
+                                    if other.other_tag == language_utils::OtherWordType::Propn {
+                                        let text_spur = literal.text;
+                                        return language_pack
+                                            .proper_noun_definitions
+                                            .get(&text_spur)
+                                            .map(|def| (text_spur, def.clone()));
+                                    }
+                                }
+                                None
+                            })
+                            .collect();
+
                     Challenge::TranslateComprehensibleSentence(TranslateComprehensibleSentence {
                         target_language,
                         target_language_literals,
@@ -3350,6 +3375,7 @@ impl ReviewInfo {
                             provider: TtsProvider::ElevenLabs,
                         },
                         movie_titles,
+                        proper_noun_definitions,
                     })
                 } else {
                     flashcard

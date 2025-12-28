@@ -9,7 +9,7 @@ pub mod morphology_analysis;
 pub mod nlp;
 pub mod pronunciation_patterns;
 pub mod pronunciations;
-pub mod proper_noun_filter;
+pub mod proper_noun_definitions;
 pub mod read_anki;
 pub mod target_sentences;
 pub mod tatoeba;

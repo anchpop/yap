@@ -252,6 +252,27 @@ async fn main() -> anyhow::Result<()> {
         )
         .await?;
 
+        // Generate proper noun definitions
+        let proper_noun_definitions_file =
+            native_specific_dir.join("proper_noun_definitions.jsonl");
+        let proper_noun_definitions: BTreeMap<String, language_utils::ProperNounDefinition> = {
+            let definitions =
+                generate_data::proper_noun_definitions::generate_proper_noun_definitions(
+                    *course,
+                    &nlp_sentences,
+                )
+                .await?;
+
+            // Write the proper noun definitions to a jsonl file
+            let mut file = File::create(proper_noun_definitions_file)?;
+            for entry in &definitions {
+                let json = serde_json::to_string(&entry)?;
+                writeln!(file, "{json}")?;
+            }
+
+            definitions
+        };
+
         let all_lexemes: Vec<language_utils::Lexeme<String>> = nlp_sentences
             .iter()
             .flat_map(|(_, analysis)| analysis.all_lexemes())
@@ -890,6 +911,7 @@ async fn main() -> anyhow::Result<()> {
             nlp_sentences,
             dictionary,
             phrasebook,
+            proper_noun_definitions,
             frequencies,
             movie_frequencies,
             word_to_pronunciation,
