@@ -485,7 +485,7 @@ impl Weapon {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub async fn cache_language_pack(&self, course: Course) {
-        let _ = self.get_language_pack(course).await;
+        let _ = self.get_language_pack(course, None).await;
     }
 }
 
@@ -500,6 +500,7 @@ impl Weapon {
     pub async fn get_language_pack(
         &self,
         course: Course,
+        on_progress: Option<js_sys::Function>,
     ) -> Result<FetchedLanguagePack, language_pack::LanguageDataError> {
         let language_pack = if let Some(language_pack) = self.language_pack.borrow().get(&course) {
             language_pack.clone()
@@ -507,7 +508,14 @@ impl Weapon {
             let language_pack = language_pack::get_language_pack(
                 &self.directories.data_directory_handle,
                 course,
-                &|_| {},
+                &|message: &str, progress: f32| {
+                    if let Some(ref callback) = on_progress {
+                        let this = wasm_bindgen::JsValue::NULL;
+                        let message_js = wasm_bindgen::JsValue::from_str(message);
+                        let progress_js = wasm_bindgen::JsValue::from_f64(progress as f64);
+                        let _ = callback.call2(&this, &message_js, &progress_js);
+                    }
+                },
             )
             .await?;
             self.language_pack

@@ -989,9 +989,9 @@ checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 
 [[package]]
 name = "fetch-happen"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbbd880bb3d9ae133a4b6c55a2092e7eb398570d105b57cb63a64ebc055101ae"
+checksum = "cc6b17948903874e4bab347361c0bdcf1437d78b733b14062015f0772f925d86"
 dependencies = [
  "js-sys",
  "serde",

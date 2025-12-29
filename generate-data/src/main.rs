@@ -934,9 +934,10 @@ async fn main() -> anyhow::Result<()> {
         // Read the rkyv file and compute hash
         let rkyv_bytes = std::fs::read(&rkyv_file)?;
         let hash = const_xxh3(&rkyv_bytes);
+        let size = rkyv_bytes.len();
 
-        // Write hash to file
-        std::fs::write(&hash_file, hash.to_string())?;
+        // Write hash and size to file in format: hash;size_in_bytes
+        std::fs::write(&hash_file, format!("{hash};{size}"))?;
     }
 
     Ok(())
