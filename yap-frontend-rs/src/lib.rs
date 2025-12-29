@@ -39,7 +39,7 @@ use language_utils::{
 };
 use lasso::Spur;
 use opfs::persistent::{self};
-use pav_regression::{IsotonicRegression, Point};
+use pav_regression::{IsotonicRegression, Point, SmoothRegression};
 use rs_fsrs::FSRS;
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
@@ -1027,8 +1027,8 @@ pub struct Deck {
 
 #[derive(Clone, Debug)]
 pub(crate) struct Regressions {
-    target_language_regression: Option<IsotonicRegression<f64>>,
-    listening_regression: Option<IsotonicRegression<f64>>,
+    target_language_regression: Option<SmoothRegression<f64>>,
+    listening_regression: Option<SmoothRegression<f64>>,
 }
 
 struct ComprehensibleSentence {
@@ -1424,12 +1424,22 @@ impl weapon::PartialAppState for Deck {
             Point::new_with_weight(Frequency { count: 4000 }.sqrt_frequency(), 0.0, 0.5),
         ];
 
+        // Calculate smoothing window as 20% of max sqrt_frequency
+        let smoothing_window = state
+            .context
+            .language_pack
+            .word_frequencies
+            .get_index(0)
+            .map(|(_, freq)| freq.sqrt_frequency() * 0.1)
+            .unwrap_or(1.0); // Fallback if no frequencies exist
+
         // Create isotonic regressions (need at least 2 non-new cards)
         let target_language_regression = if target_language_points.len() >= 2 {
             target_language_points.extend_from_slice(&bias_points);
             IsotonicRegression::new_ascending(&target_language_points)
                 .inspect_err(|e| log::error!("regression error: {e:?}"))
                 .ok()
+                .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
         } else {
             None
         };
@@ -1439,6 +1449,7 @@ impl weapon::PartialAppState for Deck {
             IsotonicRegression::new_ascending(&listening_points)
                 .inspect_err(|e| log::error!("regression error: {e:?}"))
                 .ok()
+                .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
         } else {
             None
         };
@@ -2796,25 +2807,7 @@ impl Regressions {
             }
         }?;
 
-        // Compute smoothed prediction by averaging at frequency ±20%
-        let base_freq = frequency.sqrt_frequency();
-        let lower_freq = base_freq * 0.8;
-        let upper_freq = base_freq * 1.2;
-
-        // Get predictions at all three points
-        let predictions = [
-            regression.interpolate(lower_freq),
-            regression.interpolate(base_freq),
-            regression.interpolate(upper_freq),
-        ];
-
-        // Average the available predictions
-        let valid_predictions: Vec<f64> = predictions.into_iter().flatten().collect();
-        if valid_predictions.is_empty() {
-            None
-        } else {
-            Some(valid_predictions.iter().sum::<f64>() / valid_predictions.len() as f64)
-        }
+        regression.interpolate(frequency.sqrt_frequency())
     }
 
     /// Get the predicted probability of knowing a card (0.0 to 1.0).

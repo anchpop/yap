@@ -2578,7 +2578,7 @@ dependencies = [
 [[package]]
 name = "pav_regression"
 version = "0.5.2"
-source = "git+https://github.com/anchpop/pav.rs.git?rev=4bbe67ddeb886f5311edceade4f3137336ec2cfc#4bbe67ddeb886f5311edceade4f3137336ec2cfc"
+source = "git+https://github.com/anchpop/pav.rs.git?rev=033a36103c094cdd52bcc32f41c1794aa70bb301#033a36103c094cdd52bcc32f41c1794aa70bb301"
 dependencies = [
  "eytzinger",
  "ordered-float 3.9.2",
