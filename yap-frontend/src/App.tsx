@@ -314,6 +314,22 @@ function ReviewPage() {
     <div className="flex flex-col gap-6">
       {
         match(deck)
+          .with({ type: "loading" }, ({ message, progress }) => (
+            <TopPageLayout
+              userInfo={userInfo}
+              headerProps={{
+                onChangeLanguage: () => navigate('/select-language'),
+                showSignupNag: false
+              }}
+            >
+              <div className="flex-1 flex items-center justify-center">
+                <div className="w-full max-w-md space-y-4">
+                  <p className="text-muted-foreground text-center">{message}</p>
+                  <Progress value={progress} className="w-full" />
+                </div>
+              </div>
+            </TopPageLayout>
+          ))
           .with({ type: "deck", deck: null }, () => (
             <TopPageLayout
               userInfo={userInfo}
@@ -1023,9 +1039,10 @@ function SelectLanguagePage() {
 }
 
 
-function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | null {
+function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
   const weapon = useWeapon()
   const [retryCount, setRetryCount] = useState(0)
+  const [loadingState, setLoadingState] = useState<{ message: string, progress: number } | null>(null)
 
   useEffect(() => {
     weapon.request_deck_selection()
@@ -1079,7 +1096,10 @@ function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: La
       }
 
       try {
-        const languagePack = await weapon.get_language_pack(course)
+        const languagePack = await weapon.get_language_pack(course, (message: string, progress: number) => {
+          setLoadingState({ message, progress })
+        })
+        setLoadingState(null)
         return {
           type: "deck",
           nativeLanguage: deck_selection.nativeLanguage,
@@ -1087,6 +1107,7 @@ function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: La
           deck: await weapon.get_deck_state(languagePack, course),
         } as { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null }
       } catch (error) {
+        setLoadingState(null)
         console.error("Failed to fetch language pack:", error)
         const errorMessage = error instanceof Error ? error.message : String(error)
         return {
@@ -1101,6 +1122,11 @@ function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: La
 
   if (state?.type === "error" && state.retryCount < retryCount) {
     return null
+  }
+
+  // If we're loading and have progress info, return loading state
+  if (loadingState && state === null) {
+    return { type: "loading", message: loadingState.message, progress: loadingState.progress }
   }
 
   return state ?? null

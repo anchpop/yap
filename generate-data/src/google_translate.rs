@@ -123,7 +123,14 @@ impl GoogleTranslator {
         }
 
         // Write the consolidated cache to the master file
-        if let Ok(json) = serde_json::to_string_pretty(&self.cache) {
+        // Convert to BTreeMap for deterministic serialization order
+        let sorted_cache: std::collections::BTreeMap<_, _> = self
+            .cache
+            .iter()
+            .map(|entry| (*entry.key(), entry.value().clone()))
+            .collect();
+
+        if let Ok(json) = serde_json::to_string_pretty(&sorted_cache) {
             if std::fs::write(&self.master_cache_file, json).is_ok() {
                 // Only delete individual files if the master cache was written successfully
                 for file in files_to_delete {
