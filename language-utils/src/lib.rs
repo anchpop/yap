@@ -1060,7 +1060,7 @@ pub struct Frequency {
 
 impl Frequency {
     pub fn sqrt_frequency(&self) -> f64 {
-        (self.count as f64).sqrt()
+        (self.count as f64).sqrt().sqrt().sqrt()
     }
 }
 

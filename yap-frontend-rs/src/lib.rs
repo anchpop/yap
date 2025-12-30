@@ -8,6 +8,7 @@ mod language_pack;
 mod next_cards;
 mod notifications;
 pub mod opfs_test;
+mod placement_test;
 pub mod profile;
 pub mod simulation;
 mod supabase;
