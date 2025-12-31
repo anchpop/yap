@@ -66,6 +66,11 @@ function getLanguageCode(language: Language): string {
   }
 }
 
+// Helper function to remove accents from a string for accent-insensitive search
+function removeAccents(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
 export function Dictionary({ deck, weapon, targetLanguage, nativeLanguage }: { deck: Deck, weapon: Weapon, targetLanguage: Language, nativeLanguage: Language }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [addedCards, setAddedCards] = useState<Set<string>>(new Set())
@@ -133,14 +138,14 @@ export function Dictionary({ deck, weapon, targetLanguage, nativeLanguage }: { d
   const filteredEntries = (() => {
     if (!searchQuery.trim()) return entries.slice(0, 100) // Only show top 100 when not searching
 
-    const query = searchQuery.toLowerCase()
+    const query = removeAccents(searchQuery.toLowerCase())
     return entries.filter(entry => {
-      // Search in target language word
-      if (entry.word.toLowerCase().includes(query)) return true
+      // Search in target language word (accent-insensitive)
+      if (removeAccents(entry.word.toLowerCase()).includes(query)) return true
 
-      // Search in native language translations
+      // Search in native language translations (accent-insensitive)
       return entry.entry.definitions.some(def =>
-        def.native.toLowerCase().includes(query)
+        removeAccents(def.native.toLowerCase()).includes(query)
       )
     }).slice(0, 100) // Limit search results to 100 as well
   })()
