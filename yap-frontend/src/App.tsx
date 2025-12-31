@@ -47,6 +47,7 @@ import { ErrorMessage } from '@/components/ui/error-message'
 import { BackgroundShader } from '@/components/BackgroundShader'
 import { Movies } from '@/components/Movies'
 import { getMovieMetadata } from '@/lib/movie-cache'
+import { PlacementTest } from '@/components/PlacementTest'
 
 // Essential user info to persist for offline functionality
 export interface UserInfo {
@@ -892,11 +893,18 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     !dismissedSetDisplayName &&
     accessToken !== undefined;
 
+  const shouldShowPlacementTest = true;
+
   return (
     <>
       {/* main content */}
       <div className="flex flex-col flex-1 gap-2">
-        {shouldShowSetDisplayName ? (
+        {shouldShowPlacementTest ? (
+          <PlacementTest
+            deck={deck}
+            onComplete={() => {}}
+          />
+        ) : shouldShowSetDisplayName ? (
           <SetDisplayName
             accessToken={accessToken!}
             totalReviewsCompleted={totalReviewsCompleted}

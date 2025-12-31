@@ -856,7 +856,17 @@ pub enum Rating {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct PlacementTest {
+    known_words: Vec<String>,
+    unknown_words: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum LanguageEventContent {
+    StateExperience {
+        result: UserStatedExperience,
+    },
     AddCards {
         cards: Vec<CardIndicator<String>>,
     },
@@ -1004,8 +1014,19 @@ pub struct Stats {
     pub start_time: Option<DateTime<Utc>>,
 }
 
+#[derive(
+    Clone, Debug, Eq, PartialEq, Ord, PartialOrd, serde::Serialize, serde::Deserialize, tsify::Tsify,
+)]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum UserStatedExperience {
+    PlacementTest { results: PlacementTest },
+    FreshStart {},
+}
+
 #[derive(Clone, Debug)]
 pub struct DeckState {
+    stated_experience: Option<UserStatedExperience>,
     cards: FxHashMap<CardIndicator<Spur>, CardData>,
     fsrs: FSRS,
     stats: Stats,
@@ -1017,6 +1038,7 @@ pub struct DeckState {
 #[derive(Clone, Debug)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct Deck {
+    stated_experience: Option<UserStatedExperience>,
     cards: FxHashMap<CardIndicator<Spur>, CardStatus>,
     fsrs: FSRS,
     pub(crate) stats: Stats,
@@ -1052,6 +1074,7 @@ impl From<Deck> for DeckState {
             .collect();
 
         DeckState {
+            stated_experience: deck.stated_experience,
             cards,
             fsrs: deck.fsrs,
             stats: deck.stats,
@@ -1116,6 +1139,9 @@ impl weapon::PartialAppState for Deck {
         }
 
         match event {
+            LanguageEventContent::StateExperience { result } => {
+                deck.stated_experience = Some(result.clone());
+            }
             LanguageEventContent::AddCards { cards } => {
                 for (index, card) in cards.iter().enumerate() {
                     if let Some(card) = card.get_interned(&deck.context.language_pack.rodeo) {
@@ -1399,7 +1425,7 @@ impl weapon::PartialAppState for Deck {
 
             if let Some(frequency) = state.context.get_card_frequency(card_indicator) {
                 let pre_existing_knowledge = card_data.pre_existing_knowledge();
-                let point = Point::new(frequency.sqrt_frequency(), pre_existing_knowledge);
+                let point = Point::new(frequency.ln_frequency(), pre_existing_knowledge);
 
                 match card_indicator {
                     CardIndicator::TargetLanguage { .. } => {
@@ -1416,22 +1442,30 @@ impl weapon::PartialAppState for Deck {
 
         // Add bias points at (0, -10) and (10, -10) to ensure the curve slopes down
         // This represents a word with 0 occurrences being very difficult. We'll give them a weight of 10 to ensure it's not ignored
-        let bias_points = [
-            Point::new_with_weight(Frequency { count: 1 }.sqrt_frequency(), -10.0, 5.0),
-            Point::new_with_weight(Frequency { count: 25 }.sqrt_frequency(), 0.0, 5.0),
-            Point::new_with_weight(Frequency { count: 64 }.sqrt_frequency(), 0.0, 1.0),
-            Point::new_with_weight(Frequency { count: 400 }.sqrt_frequency(), 0.0, 1.0),
-            Point::new_with_weight(Frequency { count: 1000 }.sqrt_frequency(), 0.0, 0.5),
-            Point::new_with_weight(Frequency { count: 4000 }.sqrt_frequency(), 0.0, 0.5),
-        ];
 
-        // Calculate smoothing window as 20% of max sqrt_frequency
+        let bias_points = if let Some(UserStatedExperience::PlacementTest { results }) =
+            &state.stated_experience
+        {
+            // Use placement test results to create bias points
+            state.context.get_placement_test_points(results)
+        } else {
+            vec![
+                Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
+                Point::new_with_weight(Frequency { count: 25 }.ln_frequency(), 0.0, 5.0),
+                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 1.0),
+                Point::new_with_weight(Frequency { count: 400 }.ln_frequency(), 0.0, 1.0),
+                Point::new_with_weight(Frequency { count: 1000 }.ln_frequency(), 0.0, 0.5),
+                Point::new_with_weight(Frequency { count: 4000 }.ln_frequency(), 0.0, 0.5),
+            ]
+        };
+
+        // Calculate smoothing window as 20% of max ln_frequency
         let smoothing_window = state
             .context
             .language_pack
             .word_frequencies
             .get_index(0)
-            .map(|(_, freq)| freq.sqrt_frequency() * 0.1)
+            .map(|(_, freq)| freq.ln_frequency() * 0.1)
             .unwrap_or(1.0); // Fallback if no frequencies exist
 
         // Create isotonic regressions (need at least 2 non-new cards)
@@ -1538,6 +1572,7 @@ impl weapon::PartialAppState for Deck {
         }
 
         Deck {
+            stated_experience: state.stated_experience,
             cards: all_cards,
             fsrs: state.fsrs,
             stats: state.stats,
@@ -1556,6 +1591,7 @@ impl DeckState {
         native_language: Language,
     ) -> Self {
         Self {
+            stated_experience: None,
             cards: FxHashMap::default(),
             fsrs: FSRS::new(rs_fsrs::Parameters {
                 request_retention: 0.7,
@@ -2651,8 +2687,7 @@ impl Context {
     ) -> Option<ordered_float::NotNan<f64>> {
         let (knowledge_probability, frequency) =
             self.get_card_knowledge_probability(card, regressions)?;
-        ordered_float::NotNan::new((1.0 - knowledge_probability) * (frequency.sqrt_frequency()))
-            .ok()
+        ordered_float::NotNan::new((1.0 - knowledge_probability) * (frequency.ln_frequency())).ok()
     }
 
     fn get_card_value_with_status(
@@ -2702,10 +2737,8 @@ impl Context {
 
                 // Convert knowledge to probability and then to value
                 let probability = Regressions::knowledge_to_probability(combined_knowledge);
-                return ordered_float::NotNan::new(
-                    (1.0 - probability) * frequency.sqrt_frequency(),
-                )
-                .ok();
+                return ordered_float::NotNan::new((1.0 - probability) * frequency.ln_frequency())
+                    .ok();
             }
         }
 
@@ -2786,6 +2819,37 @@ impl Context {
                     })
             })
     }
+
+    /// Look up a word string and return the most common lexeme with its frequency
+    /// Tries heteronyms first (most common), then multiword
+    pub(crate) fn lookup_word(&self, word_str: &str) -> Option<(Lexeme<Spur>, Frequency)> {
+        let rodeo = &self.language_pack.rodeo;
+        let words_to_heteronyms = &self.language_pack.words_to_heteronyms;
+        let word_frequencies = &self.language_pack.word_frequencies;
+
+        let word_spur = rodeo.get(word_str)?;
+
+        // Try heteronyms first (most common)
+        if let Some(heteronyms) = words_to_heteronyms.get(&word_spur) {
+            // Find the first heteronym that appears in word_frequencies (most common)
+            if let Some(most_common) = heteronyms
+                .iter()
+                .find(|h| word_frequencies.contains_key(&Lexeme::Heteronym(**h)))
+            {
+                let lexeme = Lexeme::Heteronym(*most_common);
+                let freq = *word_frequencies.get(&lexeme)?;
+                return Some((lexeme, freq));
+            }
+        }
+
+        // Try as multiword
+        let lexeme = Lexeme::Multiword(word_spur);
+        if let Some(&freq) = word_frequencies.get(&lexeme) {
+            return Some((lexeme, freq));
+        }
+
+        None
+    }
 }
 
 impl Regressions {
@@ -2808,7 +2872,7 @@ impl Regressions {
             }
         }?;
 
-        regression.interpolate(frequency.sqrt_frequency())
+        regression.interpolate(frequency.ln_frequency())
     }
 
     /// Get the predicted probability of knowing a card (0.0 to 1.0).

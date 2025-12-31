@@ -223,8 +223,7 @@ export function Stats({ deck }: StatsProps) {
               Pre-existing Knowledge by Word Frequency
             </h3>
             <p className="text-sm text-muted-foreground mb-4">
-              This is used to help Yap decide which words to teach first. (There
-              is no point in Yap teaching you words you already know).
+              This is used to help Yap decide which words to teach first. (Yap tries to avoid teaching you words you already know!)
             </p>
             <Suspense
               fallback={
