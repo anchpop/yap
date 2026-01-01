@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import type { Deck } from "../../../yap-frontend-rs/pkg";
+import { Progress } from "@/components/ui/progress";
 
 const NUM_ROUNDS = 3;
 
@@ -26,8 +27,12 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
     if (round <= NUM_ROUNDS) {
       // Use accumulated known/unknown words for adaptive word selection
       const placementWords = deck.get_placement_test(knownWords, unknownWords);
-      setWords(placementWords);
-      setSelectedWords(new Set());
+      if (placementWords.length === 0) {
+        setRound(NUM_ROUNDS + 1);
+      } else {
+        setWords(placementWords);
+        setSelectedWords(new Set());
+      }
     }
   }, [round, deck, knownWords, unknownWords]);
 
@@ -69,61 +74,60 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
     }
   };
 
-  if (round > NUM_ROUNDS) {
-    return (
-      <div className="flex justify-center items-center">
-        <Card className="max-w w-full p-8 text-center" animate>
-          <h2 className="text-2xl font-semibold mb-4">Ready to Start!</h2>
-          <p className="text-muted-foreground mb-6">
-            We've analyzed your knowledge level and will tailor your learning
-            experience.
-          </p>
-          <Button
-            onClick={() => onComplete({ knownWords, unknownWords })}
-            size="lg"
-            className="w-full"
-          >
-            Begin Learning
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex justify-center items-center">
-      <Card className="max-w-2xl w-full p-6" animate>
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              {round > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleBack}
-                  className="h-8 w-8"
-                  title="Go back"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
-              )}
-              <h2 className="text-xl font-semibold">Placement Test</h2>
+    <Card className="max-w w-full p-0 gap-0" animate>
+      <Progress value={(round / (NUM_ROUNDS + 1)) * 100} />
+      <div className="p-6 space-y-4">
+        {round > NUM_ROUNDS ? (
+          <>
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold">Ready to Start!</h2>
             </div>
-            <span className="text-sm text-muted-foreground">
-              Round {round} of {NUM_ROUNDS}
-            </span>
-          </div>
-          <p className="text-muted-foreground">
-            Tap the words you know, then press Next
-          </p>
-        </div>
+            <p className="text-muted-foreground">
+              We've analyzed your knowledge level and will tailor your learning
+              experience.
+            </p>
+            <Button
+              onClick={() => onComplete({ knownWords, unknownWords })}
+              size="lg"
+              className="w-full"
+            >
+              Begin Learning
+            </Button>
+          </>
+        ) : (
+          <>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  {round > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleBack}
+                      className="h-8 w-8"
+                      title="Go back"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </Button>
+                  )}
+                  <h2 className="text-xl font-semibold">Placement Test</h2>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  Round {round} of {NUM_ROUNDS}
+                </span>
+              </div>
+              <p className="text-muted-foreground">
+                Tap the words you know, then press Next
+              </p>
+            </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-          {words.map((word) => (
-            <button
-              key={word}
-              onClick={() => toggleWord(word)}
-              className={`
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+              {words.map((word) => (
+                <button
+                  key={word}
+                  onClick={() => toggleWord(word)}
+                  className={`
                 p-4 rounded-lg border-2 transition-all
                 ${
                   selectedWords.has(word)
@@ -131,16 +135,18 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
                     : "border-border hover:border-primary/50 hover:bg-accent"
                 }
               `}
-            >
-              <span className="text-lg font-medium">{word}</span>
-            </button>
-          ))}
-        </div>
+                >
+                  <span className="text-lg font-medium">{word}</span>
+                </button>
+              ))}
+            </div>
 
-        <Button onClick={handleNext} className="w-full" size="lg">
-          Next
-        </Button>
-      </Card>
-    </div>
+            <Button onClick={handleNext} className="w-full" size="lg">
+              Next
+            </Button>
+          </>
+        )}
+      </div>
+    </Card>
   );
 }
