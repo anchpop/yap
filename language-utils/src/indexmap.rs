@@ -85,7 +85,7 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
     }
 
     /// Returns an iterator over the key-value pairs in insertion order
-    pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+    pub fn iter(&self) -> impl DoubleEndedIterator<Item = (&K, &V)> {
         self.order.iter().map(|(k, v)| (k, v))
     }
 

@@ -218,13 +218,12 @@ export function Stats({ deck }: StatsProps) {
           Graphs
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-4">
-          <div className="bg-card border rounded-lg p-6">
-            <h3 className="text-base font-semibold mb-4">
+          <Card className="p-4 gap-4">
+            <h3 className="text-base font-semibold">
               Pre-existing Knowledge by Word Frequency
             </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              This is used to help Yap decide which words to teach first. (There
-              is no point in Yap teaching you words you already know).
+            <p className="text-sm text-muted-foreground">
+              This is used to help Yap decide which words to teach first. (Yap tries to avoid teaching you words you already know!)
             </p>
             <Suspense
               fallback={
@@ -235,7 +234,7 @@ export function Stats({ deck }: StatsProps) {
             >
               <FrequencyKnowledgeChart deck={deck} />
             </Suspense>
-          </div>
+          </Card>
         </CollapsibleContent>
       </Collapsible>
     </div>

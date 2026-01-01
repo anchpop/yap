@@ -4,6 +4,14 @@ use std::path::PathBuf;
 use anyhow::Context;
 use indexmap::IndexSet;
 use language_utils::{Course, Language, SentenceSource};
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct Subtitle {
+    sentence: String,
+    start_ms: u32,
+    end_ms: u32,
+}
 
 /// Default target maximum number of sentences to import from Tatoeba
 const DEFAULT_TARGET_SENTENCE_COUNT: usize = 200_000;
@@ -267,35 +275,161 @@ fn load_movie_sentences(
             format!("Failed to read subtitle file: {}", subtitle_file.display())
         })?;
 
-        for subtitle_line in subtitle_content.lines() {
-            let subtitle_line = subtitle_line.trim();
-            if subtitle_line.is_empty() {
+        // Parse all subtitle lines into Subtitle objects
+        let mut parsed_subtitles = Vec::new();
+        for line in subtitle_content.lines() {
+            let line = line.trim();
+            if line.is_empty() {
                 continue;
             }
+            let subtitle: Subtitle =
+                serde_json::from_str(line).context("Failed to parse subtitle line")?;
 
-            // Parse subtitle line JSON
-            let subtitle: serde_json::Value =
-                serde_json::from_str(subtitle_line).context("Failed to parse subtitle line")?;
-
-            if let Some(sentence) = subtitle.get("sentence").and_then(|s| s.as_str()) {
-                // Filter out bad sentences (music markers, numbers, too short/long, etc.)
-                if !should_include_sentence(sentence, language) {
-                    continue;
-                }
-
-                let mut source = SentenceSource::none();
-                source.movie_ids.push(movie.id.clone());
-
-                all_movie_sentences.push((
-                    sentence.to_string(),
-                    None, // No native translation for movies
-                    source,
-                ));
-            }
+            // Split multi-dialogue subtitles (e.g., "- Speaker 1 - Speaker 2")
+            let split_subtitles = split_multi_dialogue_subtitle(subtitle);
+            parsed_subtitles.extend(split_subtitles);
         }
+
+        let movie_sentences = filter_subtitle_sentences(&parsed_subtitles, &movie.id, language);
+        all_movie_sentences.extend(movie_sentences);
     }
 
     Ok(all_movie_sentences)
+}
+
+/// Split subtitles that contain multiple speakers' dialogue or multiple sentences.
+///
+/// Subtitles often combine multiple speakers in one line like:
+/// "- Speaker 1 dialogue - Speaker 2 dialogue"
+/// or multiple sentences like:
+/// "What are you doing? I don't know!"
+///
+/// This function splits them into separate subtitle objects.
+fn split_multi_dialogue_subtitle(subtitle: Subtitle) -> Vec<Subtitle> {
+    let mut sentences = vec![subtitle.sentence.clone()];
+
+    // First, split on " - " if it starts with "- "
+    if subtitle.sentence.starts_with("- ") {
+        let parts: Vec<&str> = subtitle.sentence.split(" - ").collect();
+        if parts.len() > 1 {
+            sentences = parts
+                .into_iter()
+                .map(|s| s.trim_start_matches("- ").trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect();
+        }
+    }
+
+    // Then split on ? and ! (but not . to avoid splitting abbreviations)
+    let mut final_sentences = Vec::new();
+    for sentence in sentences {
+        let mut current = String::new();
+
+        for ch in sentence.chars() {
+            current.push(ch);
+
+            // If we hit ? or !, that's the end of a sentence
+            if ch == '?' || ch == '!' {
+                let trimmed = current.trim().trim_start_matches('-').trim().to_string();
+                if !trimmed.is_empty() {
+                    final_sentences.push(trimmed);
+                }
+                current = String::new();
+            }
+        }
+
+        // Don't forget the last part if it doesn't end with ? or !
+        let trimmed = current.trim().trim_start_matches('-').trim().to_string();
+        if !trimmed.is_empty() {
+            final_sentences.push(trimmed);
+        }
+    }
+
+    // Convert to Subtitle objects
+    final_sentences
+        .into_iter()
+        .filter(|s| !s.is_empty())
+        .map(|sentence| Subtitle {
+            sentence,
+            start_ms: subtitle.start_ms,
+            end_ms: subtitle.end_ms,
+        })
+        .collect()
+}
+
+/// Filter and transform parsed subtitle objects into sentences with source information.
+/// This function is separated for testability.
+///
+/// Subtitles often break long sentences into multiple pieces for display. This function
+/// merges them back together when:
+/// - Writing system is Latin (where capitalization matters)
+/// - Current subtitle doesn't end with sentence-terminating punctuation
+/// - Next subtitle starts at the same time (or within 1ms) as current one ends
+/// - Next subtitle starts with a lowercase letter
+///
+/// # Arguments
+///
+/// * `subtitles` - Array of parsed subtitle objects
+/// * `movie_id` - The ID of the movie these subtitles belong to
+/// * `language` - The language of the subtitles for filtering
+///
+/// # Returns
+///
+/// A vector of tuples: (sentence, None, source_info)
+fn filter_subtitle_sentences(
+    subtitles: &[Subtitle],
+    movie_id: &str,
+    language: Language,
+) -> Vec<(String, Option<String>, SentenceSource)> {
+    let mut sentences = Vec::new();
+    let is_latin = language.writing_system() == language_utils::WritingSystem::Latin;
+
+    let mut i = 0;
+    while i < subtitles.len() {
+        let mut merged_sentence = subtitles[i].sentence.clone();
+        let mut j = i + 1;
+
+        // Merge consecutive subtitle fragments if they belong to the same sentence
+        while j < subtitles.len() && is_latin {
+            let current = &subtitles[j - 1];
+            let next = &subtitles[j];
+
+            // Check if we should merge
+            let no_terminating_punctuation = !current.sentence.ends_with('.')
+                && !current.sentence.ends_with('!')
+                && !current.sentence.ends_with('?');
+
+            let timing_matches = next.start_ms <= current.end_ms + 1;
+
+            let next_starts_lowercase = next
+                .sentence
+                .chars()
+                .next()
+                .map(|c| c.is_lowercase())
+                .unwrap_or(false);
+
+            if no_terminating_punctuation && timing_matches && next_starts_lowercase {
+                // Merge with a space
+                merged_sentence.push(' ');
+                merged_sentence.push_str(&next.sentence);
+                j += 1;
+            } else {
+                break;
+            }
+        }
+
+        // Filter out bad sentences (music markers, numbers, too short/long, etc.)
+        if should_include_sentence(&merged_sentence, language) {
+            let mut source = SentenceSource::none();
+            source.movie_ids.push(movie_id.to_string());
+
+            sentences.push((merged_sentence, None, source));
+        }
+
+        i = j;
+    }
+
+    sentences
 }
 
 /// Check if a sentence pair should be included based on filtering criteria

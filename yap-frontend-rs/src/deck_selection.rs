@@ -1,17 +1,25 @@
+use std::collections::BTreeMap;
+
 use language_utils::Language;
 use weapon::data_model::Event;
-
 #[derive(Clone, Debug, tsify::Tsify, serde::Serialize, serde::Deserialize)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(rename_all = "camelCase")]
 pub struct DeckSelection {
     pub target_language: Option<Language>,
     pub native_language: Option<Language>,
+    pub starting_fresh: Option<bool>,
+}
+
+pub struct DeckSelectionPartial {
+    pub target_language: Option<Language>,
+    pub native_language: Option<Language>,
+    pub starting_fresh: BTreeMap<Language, bool>,
 }
 
 impl weapon::PartialAppState for DeckSelection {
     type Event = DeckSelectionEvent;
-    type Partial = Self; // For now, partial state is the same as final state
+    type Partial = DeckSelectionPartial;
 
     fn process_event(
         mut partial: Self::Partial,
@@ -27,12 +35,28 @@ impl weapon::PartialAppState for DeckSelection {
                 partial.target_language = Some(target);
                 partial
             }
+            DeckSelectionEvent::SetStartingFresh {
+                starting_fresh,
+                target_language,
+            } => {
+                partial
+                    .starting_fresh
+                    .insert(target_language, starting_fresh);
+                partial
+            }
         }
     }
 
     fn finalize(partial: Self::Partial) -> Self {
-        // For now, finalization is a no-op since Partial = Self
-        partial
+        DeckSelection {
+            starting_fresh: partial
+                .target_language
+                .as_ref()
+                .and_then(|target_language| partial.starting_fresh.get(target_language))
+                .cloned(),
+            target_language: partial.target_language,
+            native_language: partial.native_language,
+        }
     }
 }
 
@@ -46,6 +70,10 @@ pub enum DeckSelectionEvent {
     SelectBothLanguages {
         native: Language,
         target: Language,
+    },
+    SetStartingFresh {
+        starting_fresh: bool,
+        target_language: Language,
     },
 }
 #[derive(
