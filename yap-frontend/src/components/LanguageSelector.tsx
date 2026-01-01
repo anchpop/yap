@@ -43,6 +43,7 @@ type LanguageSelectionState =
 
 interface LanguageSelectorProps {
   onLanguagesConfirmed: (native: Language, target: Language) => void;
+  onExperience: (fresh: boolean, target: Language) => void;
   skipOnboarding: boolean;
   currentTargetLanguage?: Language;
   showResumeButton?: boolean;
@@ -53,6 +54,7 @@ interface LanguageSelectorProps {
 
 export function LanguageSelector({
   onLanguagesConfirmed,
+  onExperience,
   skipOnboarding,
   currentTargetLanguage,
   showResumeButton,
@@ -280,9 +282,9 @@ export function LanguageSelector({
   const acknowledgeExperience =
     userKnowsLanguage === "knows_some"
       ? {
-          title: "Great! We'll find your level.",
+          title: "Great! Let's find your level.",
           content:
-            "The first few challenges will serve as a placement test. The difficulty will ramp up quickly to find where you're at.",
+            "You'll start with a quick placement test to help us understand what you already know. It'll take less than 2 minutes!",
         }
       : {
           title: "Perfect! Welcome aboard.",
@@ -601,6 +603,7 @@ export function LanguageSelector({
                   variant="outline"
                   onClick={() => {
                     setUserKnowsLanguage("knows_some");
+                    onExperience(false, selectionState.targetLanguage);
                     setSelectionState({
                       stage: "onboarding",
                       nativeLanguage: selectionState.nativeLanguage,
@@ -616,6 +619,7 @@ export function LanguageSelector({
                   variant="outline"
                   onClick={() => {
                     setUserKnowsLanguage("beginner");
+                    onExperience(true, selectionState.targetLanguage);
                     setSelectionState({
                       stage: "onboarding",
                       nativeLanguage: selectionState.nativeLanguage,

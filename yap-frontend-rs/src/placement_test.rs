@@ -220,7 +220,7 @@ impl Deck {
         };
 
         // Calculate smoothing window (20% of max ln_frequency)
-        let smoothing_window = most_common_freq.ln_frequency() * 0.2;
+        let smoothing_window = most_common_freq.ln_frequency() * 0.1;
         let smooth_regression = SmoothRegression::from_regression(&regression, smoothing_window);
 
         // Target knowledge probabilities

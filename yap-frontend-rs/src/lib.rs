@@ -55,6 +55,7 @@ use weapon::data_model::Event;
 use weapon::data_model::{EventStore, EventType, ListenerKey, Timestamped};
 
 use crate::deck_selection::DeckSelection;
+use crate::deck_selection::DeckSelectionPartial;
 use crate::directories::Directories;
 use crate::next_cards::AllowedCards;
 use crate::utils::hit_ai_server;
@@ -207,9 +208,10 @@ impl Weapon {
         store
             .get::<EventType<DeckSelectionEvent>>("deck_selection".to_string())
             .map(|s| {
-                s.state(DeckSelection {
+                s.state(DeckSelectionPartial {
                     target_language: None,
                     native_language: None,
+                    starting_fresh: BTreeMap::new(),
                 })
             })
     }
@@ -864,8 +866,8 @@ pub struct PlacementTest {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum LanguageEventContent {
-    StateExperience {
-        result: UserStatedExperience,
+    CompletePlacementTest {
+        results: PlacementTest,
     },
     AddCards {
         cards: Vec<CardIndicator<String>>,
@@ -1026,7 +1028,7 @@ pub enum UserStatedExperience {
 
 #[derive(Clone, Debug)]
 pub struct DeckState {
-    stated_experience: Option<UserStatedExperience>,
+    placement_test_results: Option<PlacementTest>,
     cards: FxHashMap<CardIndicator<Spur>, CardData>,
     fsrs: FSRS,
     stats: Stats,
@@ -1038,7 +1040,7 @@ pub struct DeckState {
 #[derive(Clone, Debug)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct Deck {
-    stated_experience: Option<UserStatedExperience>,
+    placement_test_results: Option<PlacementTest>,
     cards: FxHashMap<CardIndicator<Spur>, CardStatus>,
     fsrs: FSRS,
     pub(crate) stats: Stats,
@@ -1074,7 +1076,7 @@ impl From<Deck> for DeckState {
             .collect();
 
         DeckState {
-            stated_experience: deck.stated_experience,
+            placement_test_results: deck.placement_test_results,
             cards,
             fsrs: deck.fsrs,
             stats: deck.stats,
@@ -1139,8 +1141,8 @@ impl weapon::PartialAppState for Deck {
         }
 
         match event {
-            LanguageEventContent::StateExperience { result } => {
-                deck.stated_experience = Some(result.clone());
+            LanguageEventContent::CompletePlacementTest { results } => {
+                deck.placement_test_results = Some(results.clone());
             }
             LanguageEventContent::AddCards { cards } => {
                 for (index, card) in cards.iter().enumerate() {
@@ -1443,11 +1445,11 @@ impl weapon::PartialAppState for Deck {
         // Add bias points at (0, -10) and (10, -10) to ensure the curve slopes down
         // This represents a word with 0 occurrences being very difficult. We'll give them a weight of 10 to ensure it's not ignored
 
-        let bias_points = if let Some(UserStatedExperience::PlacementTest { results }) =
-            &state.stated_experience
-        {
+        let bias_points = if let Some(placement_test_results) = &state.placement_test_results {
             // Use placement test results to create bias points
-            state.context.get_placement_test_points(results)
+            state
+                .context
+                .get_placement_test_points(placement_test_results)
         } else {
             vec![
                 Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
@@ -1469,25 +1471,27 @@ impl weapon::PartialAppState for Deck {
             .unwrap_or(1.0); // Fallback if no frequencies exist
 
         // Create isotonic regressions (need at least 2 non-new cards)
-        let target_language_regression = if target_language_points.len() >= 2 {
-            target_language_points.extend_from_slice(&bias_points);
-            IsotonicRegression::new_ascending(&target_language_points)
-                .inspect_err(|e| log::error!("regression error: {e:?}"))
-                .ok()
-                .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
-        } else {
-            None
-        };
+        let target_language_regression =
+            if target_language_points.len() >= 2 || state.placement_test_results.is_some() {
+                target_language_points.extend_from_slice(&bias_points[..]);
+                IsotonicRegression::new_ascending(&target_language_points)
+                    .inspect_err(|e| log::error!("regression error: {e:?}"))
+                    .ok()
+                    .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
+            } else {
+                None
+            };
 
-        let listening_regression = if listening_points.len() >= 2 {
-            listening_points.extend_from_slice(&bias_points);
-            IsotonicRegression::new_ascending(&listening_points)
-                .inspect_err(|e| log::error!("regression error: {e:?}"))
-                .ok()
-                .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
-        } else {
-            None
-        };
+        let listening_regression =
+            if listening_points.len() >= 2 || state.placement_test_results.is_some() {
+                listening_points.extend_from_slice(&bias_points);
+                IsotonicRegression::new_ascending(&listening_points)
+                    .inspect_err(|e| log::error!("regression error: {e:?}"))
+                    .ok()
+                    .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
+            } else {
+                None
+            };
 
         let regressions = Regressions {
             target_language_regression,
@@ -1572,7 +1576,7 @@ impl weapon::PartialAppState for Deck {
         }
 
         Deck {
-            stated_experience: state.stated_experience,
+            placement_test_results: state.placement_test_results,
             cards: all_cards,
             fsrs: state.fsrs,
             stats: state.stats,
@@ -1591,7 +1595,7 @@ impl DeckState {
         native_language: Language,
     ) -> Self {
         Self {
-            stated_experience: None,
+            placement_test_results: None,
             cards: FxHashMap::default(),
             fsrs: FSRS::new(rs_fsrs::Parameters {
                 request_retention: 0.7,
@@ -2222,6 +2226,24 @@ impl Deck {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn complete_placement_test(
+        &self,
+        known_words: Vec<String>,
+        unknown_words: Vec<String>,
+    ) -> DeckEvent {
+        DeckEvent::Language(LanguageEvent {
+            target_language: self.context.target_language,
+            native_language: self.context.native_language,
+            content: LanguageEventContent::CompletePlacementTest {
+                results: PlacementTest {
+                    known_words,
+                    unknown_words,
+                },
+            },
+        })
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn review_card(
         &self,
         reviewed: CardIndicator<String>,
@@ -2462,6 +2484,11 @@ impl Deck {
                 }
             })
             .collect()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn has_taken_placement_test(&self) -> bool {
+        self.placement_test_results.is_some()
     }
 }
 

@@ -344,7 +344,7 @@ function ReviewPage() {
               </div>
             </TopPageLayout>
           ))
-          .with({ type: "deck", deck: P.not(P.nullish) }, ({ deck, targetLanguage, nativeLanguage }) => {
+          .with({ type: "deck", deck: P.not(P.nullish) }, ({ deck, targetLanguage, nativeLanguage, startingFresh }) => {
             const reviewInfo = deck.get_review_info([], Date.now());
 
             // Calculate movie stats once for use in both Review and Movies components
@@ -375,6 +375,7 @@ function ReviewPage() {
                   targetLanguage={targetLanguage}
                   nativeLanguage={nativeLanguage}
                   moviesWithMetadata={moviesWithMetadata}
+                  startingFresh={startingFresh}
                 />
               </TopPageLayout>
               <Tools deck={deck} />
@@ -604,9 +605,10 @@ interface ReviewProps {
   targetLanguage: Language
   nativeLanguage: Language
   moviesWithMetadata: MovieWithMetadata[]
+  startingFresh: boolean | undefined
 }
 
-function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, moviesWithMetadata }: ReviewProps) {
+function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, moviesWithMetadata, startingFresh }: ReviewProps) {
   const weapon = useWeapon()
 
   const CANT_LISTEN_DURATION_MS = 15 * 60 * 1000;
@@ -893,7 +895,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     !dismissedSetDisplayName &&
     accessToken !== undefined;
 
-  const shouldShowPlacementTest = true;
+  const shouldShowPlacementTest = startingFresh === false && !deck.has_taken_placement_test() && deck.num_cards() < 3;
 
   return (
     <>
@@ -902,7 +904,10 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
         {shouldShowPlacementTest ? (
           <PlacementTest
             deck={deck}
-            onComplete={() => {}}
+            onComplete={({ knownWords, unknownWords }) => {
+              const event = deck.complete_placement_test(knownWords, unknownWords);
+              weapon.add_deck_event(event);
+            }}
           />
         ) : shouldShowSetDisplayName ? (
           <SetDisplayName
@@ -1018,6 +1023,9 @@ function SelectLanguagePage() {
           weapon.add_deck_selection_event({ SelectBothLanguages: { native, target } })
           navigate('/')
         }}
+        onExperience={(starting_fresh, language) => {
+          weapon.add_deck_selection_event({ SetStartingFresh: { starting_fresh, target_language: language } })
+        }}
         userInfo={userInfo}
         onBack={() => navigate('/')}
       />
@@ -1028,6 +1036,9 @@ function SelectLanguagePage() {
         onLanguagesConfirmed={(native, target) => {
           weapon.add_deck_selection_event({ SelectBothLanguages: { native, target } })
           navigate('/')
+        }}
+        onExperience={(starting_fresh, language) => {
+          weapon.add_deck_selection_event({ SetStartingFresh: { starting_fresh, target_language: language } })
         }}
         userInfo={userInfo}
       />
@@ -1047,7 +1058,7 @@ function SelectLanguagePage() {
 }
 
 
-function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
+function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
   const weapon = useWeapon()
   const [retryCount, setRetryCount] = useState(0)
   const [loadingState, setLoadingState] = useState<{ message: string, progress: number } | null>(null)
@@ -1110,10 +1121,11 @@ function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: La
         setLoadingState(null)
         return {
           type: "deck",
+          startingFresh: deck_selection.startingFresh,
           nativeLanguage: deck_selection.nativeLanguage,
           targetLanguage: deck_selection.targetLanguage,
           deck: await weapon.get_deck_state(languagePack, course),
-        } as { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null }
+        } as { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined }
       } catch (error) {
         setLoadingState(null)
         console.error("Failed to fetch language pack:", error)

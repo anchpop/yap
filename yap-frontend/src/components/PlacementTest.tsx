@@ -8,7 +8,10 @@ const NUM_ROUNDS = 3;
 
 interface PlacementTestProps {
   deck: Deck;
-  onComplete: () => void;
+  onComplete: (results: {
+    knownWords: string[];
+    unknownWords: string[];
+  }) => void;
 }
 
 export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
@@ -75,7 +78,11 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
             We've analyzed your knowledge level and will tailor your learning
             experience.
           </p>
-          <Button onClick={onComplete} size="lg" className="w-full">
+          <Button
+            onClick={() => onComplete({ knownWords, unknownWords })}
+            size="lg"
+            className="w-full"
+          >
             Begin Learning
           </Button>
         </Card>
