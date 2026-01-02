@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotificationSettings } from "@/components/notification-settings";
 import { LogOut, AlertTriangle, ArrowLeft, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SyncStatusDialog } from "@/components/sync-status-dialog";
 import type { UserInfo } from "@/App";
 import { AuthDialog } from "@/components/auth-dialog";
@@ -100,7 +100,7 @@ export function Header({
                   </div>
                 )}
                 <h1 className="text-2xl font-bold drop-shadow-[0_0px_8px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)]">
-                  <span className="hidden sm:inline">{title}</span>
+                  <Link to="/about"><span className="hidden sm:inline">{title}</span></Link>
                   <span className="sm:hidden">{title.split(".")[0]}</span>
                 </h1>
               </div>

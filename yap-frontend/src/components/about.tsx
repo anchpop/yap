@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export function About() {
   return (
     <div className="text-center text-xs text-muted-foreground mt-4">
@@ -13,6 +15,10 @@ export function About() {
       <a href="https://discord.gg/mpgqfsH" className="underline">
         Discord
       </a>
+      {" | "}
+      <Link to="/about" className="underline">
+        About
+      </Link>
     </div>
   );
 }

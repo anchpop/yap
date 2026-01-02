@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, Home, Sparkles } from "lucide-react";
+import { Bell, Sparkles } from "lucide-react";
 import { useOneSignalNotifications } from "@/hooks/use-onesignal-notifications";
 import { useIsInstalled } from "@/hooks/use-is-installed";
-import { AddToHomeScreenModal } from "@/components/add-to-home-screen-modal";
+import { InstallPwaButton } from "@/components/InstallPwaButton";
 import { Card } from "@/components/ui/card";
 import { match } from "ts-pattern";
 import type { Language } from "../../../yap-frontend-rs/pkg";
@@ -23,8 +23,6 @@ export function EngagementPrompts({ language }: EngagementPromptsProps) {
 
   const { isInstalled, isLoading: isInstalledLoading } = useIsInstalled();
   const [promptsDismissed, setPromptsDismissed] = useState(false);
-  const [showHomeScreenInstructions, setShowHomeScreenInstructions] =
-    useState(false);
 
   useEffect(() => {
     // Check dismissal count first
@@ -55,10 +53,6 @@ export function EngagementPrompts({ language }: EngagementPromptsProps) {
       }
     }
   }, []);
-
-  const handleAddToHomeScreenModalClose = (open: boolean) => {
-    setShowHomeScreenInstructions(open);
-  };
 
   const handleDismiss = () => {
     setPromptsDismissed(true);
@@ -119,17 +113,7 @@ export function EngagementPrompts({ language }: EngagementPromptsProps) {
         <div className="grid grid-cols-[auto_1fr] gap-3">
           {shouldShowAddToHomeScreen && (
             <>
-              <Button
-                onClick={() => setShowHomeScreenInstructions(true)}
-                variant="outline"
-                size="sm"
-                className="justify-start"
-              >
-                <Home className="mr-2 h-4 w-4" />
-                {window.navigator.userAgent.match(/mobile/i)
-                  ? "Add to Home Screen"
-                  : "Install App"}
-              </Button>
+              <InstallPwaButton variant="outline" size="sm" className="justify-start" />
               <p className="text-xs text-muted-foreground self-center">
                 {window.navigator.userAgent.match(/mobile/i)
                   ? "Quick access from your home screen makes it easier to practice daily"
@@ -167,11 +151,6 @@ export function EngagementPrompts({ language }: EngagementPromptsProps) {
             Maybe later
           </Button>
         </div>
-
-        <AddToHomeScreenModal
-          open={showHomeScreenInstructions}
-          onOpenChange={handleAddToHomeScreenModalClose}
-        />
       </Card>
   );
 }

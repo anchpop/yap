@@ -17,6 +17,7 @@ import { ConfirmEmail } from '@/pages/confirm-email'
 import { AcceptInvite } from '@/pages/accept-invite'
 import { ForgotPassword } from '@/pages/forgot-password'
 import { UserProfilePage } from '@/pages/user-profile'
+import { AboutPage } from '@/pages/about'
 import { playSoundEffect } from '@/lib/sound-effects'
 import { registerSW } from 'virtual:pwa-register'
 import { NoCardsReady } from '@/components/no-cards-ready'
@@ -78,14 +79,7 @@ function AppMain() {
     }
   });
 
-  return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <BackgroundShader>
-        <AppCheckBrowserSupport />
-        <Toaster />
-      </BackgroundShader>
-    </ThemeProvider>
-  )
+  return <AppCheckBrowserSupport />
 }
 
 function AppCheckBrowserSupport() {
@@ -989,19 +983,25 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/confirm-email" element={<ConfirmEmail />} />
-        <Route path="/accept-invite" element={<AcceptInvite />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/*" element={<AppMain />}>
-          <Route index element={<ReviewPage />} />
-          <Route path="dictionary" element={<DictionaryPage />} />
-          <Route path="leeches" element={<LeechesPage />} />
-          <Route path="select-language" element={<SelectLanguagePage />} />
-          <Route path="user/id/:id" element={<UserProfilePage />} />
-        </Route>
-      </Routes>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <BackgroundShader>
+          <Routes>
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/confirm-email" element={<ConfirmEmail />} />
+            <Route path="/accept-invite" element={<AcceptInvite />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/*" element={<AppMain />}>
+              <Route index element={<ReviewPage />} />
+              <Route path="dictionary" element={<DictionaryPage />} />
+              <Route path="leeches" element={<LeechesPage />} />
+              <Route path="select-language" element={<SelectLanguagePage />} />
+              <Route path="user/id/:id" element={<UserProfilePage />} />
+            </Route>
+          </Routes>
+          <Toaster />
+        </BackgroundShader>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }
@@ -1145,7 +1145,7 @@ function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: La
   }
 
   // If we're loading and have progress info, return loading state
-  if (loadingState && state === null) {
+  if (loadingState && (state === null || state === undefined)) {
     return { type: "loading", message: loadingState.message, progress: loadingState.progress }
   }
 
