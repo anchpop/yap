@@ -50,7 +50,7 @@ export function Movies({ moviesWithMetadata }: MoviesProps) {
           return (
             <Card
               key={movie.id}
-              className="overflow-hidden p-0 transition-all cursor-pointer group gap-0"
+              className="overflow-hidden p-0 transition-all group gap-0"
               animate
             >
               <div className="relative aspect-[2/3] bg-muted">

@@ -34,17 +34,19 @@ export function AboutPage() {
           </h2>
           <div className="px-2 space-y-2">
             <p>
-              The difficulty with comprehensible input is that it is not always
-              easy to find level-appropriate content, especially at the very
-              beginning. Yap tries to keep track of what words you know show it
-              can show you sentences that contain only those words.
+              Yap tries to keep track of what words you know show it can show
+              you sentences that contain only those words. This is called
+              "comprehensible input".
             </p>
             <p>
-              Spaced repetition is used to select sentences that also contain
-              words that you need to review. This approach helps you build
-              vocabulary and grammar intuition through context, the same way you
-              learned your first language. The algorithm used is a slightly
-              modified version of FSRS.
+              Furthermore, Yap selects sentences that also contain words that
+              you need to review. By spacing out these reviews over time, you
+              can learn an immense amount of vocabulary and grammar in a short
+              amount of time. This is called "spaced repetition".
+            </p>
+            <p>
+              This approach helps you build vocabulary and grammar intuition
+              through context, the same way you learned your first language.
             </p>
           </div>
         </Card>
