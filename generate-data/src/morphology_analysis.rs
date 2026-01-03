@@ -470,6 +470,8 @@ pub mod wiktionary_morphology {
             Language::French => french::create_french_morphology(frequencies).await,
             Language::Spanish => spanish::create_spanish_morphology(frequencies).await,
             Language::German => german::create_german_morphology(frequencies).await,
+            Language::Portuguese => portuguese::create_portuguese_morphology(frequencies).await,
+            Language::Italian => italian::create_italian_morphology(frequencies).await,
             _ => {
                 // Return empty for unsupported languages
                 Ok(BTreeMap::new())
@@ -1052,6 +1054,559 @@ pub mod wiktionary_morphology {
             }
 
             // Imperative (5 forms: tú, usted, nosotros, vosotros, ustedes)
+            let imperative_persons = [
+                Person::Second,
+                Person::Third,
+                Person::First,
+                Person::Second,
+                Person::Third,
+            ];
+            let imperative_numbers = [
+                Number::Singular,
+                Number::Singular,
+                Number::Plural,
+                Number::Plural,
+                Number::Plural,
+            ];
+
+            for (i, form) in conjugation.imperative.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(imperative_numbers[i]),
+                        politeness: None,
+                        tense: None,
+                        person: Some(imperative_persons[i]),
+                        case: None,
+                        mood: Some(Mood::Imperative),
+                    },
+                );
+            }
+
+            morphology
+        }
+    }
+
+    mod portuguese {
+        use super::*;
+        use crate::wiktionary_conjugations::portuguese::{
+            PortugueseVerbConjugation, fetch_portuguese_verb_conjugations,
+        };
+        use language_utils::features::{Mood, Number, Person, Tense};
+        use std::collections::HashSet;
+        use std::path::Path;
+
+        pub async fn create_portuguese_morphology(
+            frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+        ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
+            // Step 1: Extract all verb lemmas from frequencies
+            let mut verb_lemmas = HashSet::new();
+            for entry in frequencies {
+                if let Some(heteronym) = entry.lexeme.heteronym() {
+                    if heteronym.pos == PartOfSpeech::Verb {
+                        verb_lemmas.insert(heteronym.lemma.clone());
+                    }
+                }
+            }
+
+            let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+
+            // Step 2: Fetch Wiktionary pages with HTML caching
+            let cache_dir = Path::new(".cache/wiktionary/portuguese");
+
+            let conjugations =
+                fetch_portuguese_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+
+            // Step 3: Convert conjugations to morphology entries
+            let mut morphology = BTreeMap::new();
+
+            for (infinitive, conjugation) in conjugations.iter() {
+                let verb_morphology = conjugation_to_morphology(infinitive, conjugation);
+                morphology.extend(verb_morphology);
+            }
+
+            Ok(morphology)
+        }
+
+        fn conjugation_to_morphology(
+            infinitive: &str,
+            conjugation: &PortugueseVerbConjugation,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut morphology = BTreeMap::new();
+
+            // Helper to add a morphology entry
+            let mut add_morph = |word: &str, morph: Morphology| {
+                let heteronym = Heteronym {
+                    word: word.to_string(),
+                    lemma: infinitive.to_string(),
+                    pos: PartOfSpeech::Verb,
+                };
+                morphology
+                    .entry(heteronym)
+                    .or_insert_with(Vec::new)
+                    .push(morph);
+            };
+
+            // Infinitive
+            add_morph(
+                infinitive,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: None,
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Gerund
+            add_morph(
+                &conjugation.gerund,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: Some(Tense::Present),
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Past participle (Portuguese uses only masculine singular, no gender distinction in this form)
+            add_morph(
+                &conjugation.past_participle,
+                Morphology {
+                    gender: None,
+                    number: Some(Number::Singular),
+                    politeness: None,
+                    tense: Some(Tense::Past),
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Verb forms (6 forms: eu, tu, ele/você, nós, vós, eles/vocês)
+            let persons = [
+                Person::First,
+                Person::Second,
+                Person::Third,
+                Person::First,
+                Person::Second,
+                Person::Third,
+            ];
+            let numbers = [
+                Number::Singular,
+                Number::Singular,
+                Number::Singular,
+                Number::Plural,
+                Number::Plural,
+                Number::Plural,
+            ];
+
+            // Indicative forms
+            for (i, form) in conjugation.indicative_present.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Present),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_imperfect.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Imperfect),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_preterite.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Past),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_pluperfect.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Pluperfect),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_future.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Future),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_conditional.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: None,
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Conditional),
+                    },
+                );
+            }
+
+            // Subjunctive forms
+            for (i, form) in conjugation.subjunctive_present.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Present),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Subjunctive),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.subjunctive_imperfect.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Imperfect),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Subjunctive),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.subjunctive_future.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Future),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Subjunctive),
+                    },
+                );
+            }
+
+            // Imperative affirmative (5 forms: tu, você, nós, vós, vocês)
+            let imperative_persons = [
+                Person::Second,
+                Person::Third,
+                Person::First,
+                Person::Second,
+                Person::Third,
+            ];
+            let imperative_numbers = [
+                Number::Singular,
+                Number::Singular,
+                Number::Plural,
+                Number::Plural,
+                Number::Plural,
+            ];
+
+            for (i, form) in conjugation.imperative_affirmative.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(imperative_numbers[i]),
+                        politeness: None,
+                        tense: None,
+                        person: Some(imperative_persons[i]),
+                        case: None,
+                        mood: Some(Mood::Imperative),
+                    },
+                );
+            }
+
+            morphology
+        }
+    }
+
+    mod italian {
+        use super::*;
+        use crate::wiktionary_conjugations::italian::{
+            ItalianVerbConjugation, fetch_italian_verb_conjugations,
+        };
+        use language_utils::features::{Mood, Number, Person, Tense};
+        use std::collections::HashSet;
+        use std::path::Path;
+
+        pub async fn create_italian_morphology(
+            frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+        ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
+            // Step 1: Extract all verb lemmas from frequencies
+            let mut verb_lemmas = HashSet::new();
+            for entry in frequencies {
+                if let Some(heteronym) = entry.lexeme.heteronym() {
+                    if heteronym.pos == PartOfSpeech::Verb {
+                        verb_lemmas.insert(heteronym.lemma.clone());
+                    }
+                }
+            }
+
+            let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+
+            // Step 2: Fetch Wiktionary pages with HTML caching
+            let cache_dir = Path::new(".cache/wiktionary/italian");
+
+            let conjugations = fetch_italian_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+
+            // Step 3: Convert conjugations to morphology entries
+            let mut morphology = BTreeMap::new();
+
+            for (infinitive, conjugation) in conjugations.iter() {
+                let verb_morphology = conjugation_to_morphology(infinitive, conjugation);
+                morphology.extend(verb_morphology);
+            }
+
+            Ok(morphology)
+        }
+
+        fn conjugation_to_morphology(
+            infinitive: &str,
+            conjugation: &ItalianVerbConjugation,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut morphology = BTreeMap::new();
+
+            // Helper to add a morphology entry
+            let mut add_morph = |word: &str, morph: Morphology| {
+                let heteronym = Heteronym {
+                    word: word.to_string(),
+                    lemma: infinitive.to_string(),
+                    pos: PartOfSpeech::Verb,
+                };
+                morphology
+                    .entry(heteronym)
+                    .or_insert_with(Vec::new)
+                    .push(morph);
+            };
+
+            // Infinitive
+            add_morph(
+                infinitive,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: None,
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Gerund
+            add_morph(
+                &conjugation.gerund,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: Some(Tense::Present),
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Past participle
+            add_morph(
+                &conjugation.past_participle,
+                Morphology {
+                    gender: None,
+                    number: Some(Number::Singular),
+                    politeness: None,
+                    tense: Some(Tense::Past),
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Verb forms (6 forms: io, tu, lui/lei, noi, voi, loro)
+            let persons = [
+                Person::First,
+                Person::Second,
+                Person::Third,
+                Person::First,
+                Person::Second,
+                Person::Third,
+            ];
+            let numbers = [
+                Number::Singular,
+                Number::Singular,
+                Number::Singular,
+                Number::Plural,
+                Number::Plural,
+                Number::Plural,
+            ];
+
+            // Indicative forms
+            for (i, form) in conjugation.indicative_present.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Present),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_imperfect.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Imperfect),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_past_historic.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Past),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_future.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Future),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.indicative_conditional.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: None,
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Conditional),
+                    },
+                );
+            }
+
+            // Subjunctive forms
+            for (i, form) in conjugation.subjunctive_present.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Present),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Subjunctive),
+                    },
+                );
+            }
+
+            for (i, form) in conjugation.subjunctive_imperfect.iter().enumerate() {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: Some(numbers[i]),
+                        politeness: None,
+                        tense: Some(Tense::Imperfect),
+                        person: Some(persons[i]),
+                        case: None,
+                        mood: Some(Mood::Subjunctive),
+                    },
+                );
+            }
+
+            // Imperative (5 forms: tu, Lei, noi, voi, Loro)
             let imperative_persons = [
                 Person::Second,
                 Person::Third,

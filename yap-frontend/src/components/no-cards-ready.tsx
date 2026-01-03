@@ -255,7 +255,7 @@ export function NoCardsReady({
         </div>
         </Card>
 
-      {closestToMilestone && (
+      {closestToMilestone && deck.num_cards() > 100 && (
         <AlmostThereMovie movie={closestToMilestone} />
       )}
 

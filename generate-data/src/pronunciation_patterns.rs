@@ -9,10 +9,10 @@ use tysm::chat_completions::ChatClient;
 use unicode_normalization::UnicodeNormalization;
 
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("o3")
+    ChatClient::from_env("gpt-5.2")
         .unwrap()
+        .with_reasoning_effort("high")
         .with_cache_directory("./.cache")
-        .with_service_tier("flex")
 });
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
@@ -115,6 +115,7 @@ For the example words, choose 1-4 {target:?} words that:
 - Are VERY likely to be familiar to {native:?} speakers (brand names, food items, place names, cultural references, loan words)
 - Clearly demonstrate the pattern, in all the ways it can be pronounced
 - Contain the actual pattern (e.g. for the pattern "yn", "sphinx" would not be a good example as it does not contain "yn". You may want to spell out candidate words letter by letter while you're thinking, to help make sure they contain the pattern.)
+- important: for words to contain the actual pattern, they must literally contain that pattern, with no added or removed accents or diacritics. For example, "chacón" does not contain the pattern "on", because "chacón" has an accent on the "o". This is where spelling the words out letter by letter is helpful.
 
 For each word, specify:
 - position: Where the sound appears ("Beginning", "Middle", "End", or "Multiple" if it appears more than once)

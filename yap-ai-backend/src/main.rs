@@ -201,12 +201,10 @@ async fn text_to_speech(
         Language::English => "ohItIVrXTBI80RrUECOD", // Default to French voice for now
         Language::Korean => "nbrxrAz3eYm9NgojrmFK", // Korean
         Language::German => "IWm8DnJ4NGjFI7QAM5lM", // Stephan - German voice
+        Language::Italian => "sKbNSlHXq99bttvf8rRF", // Nicola Lorusso - Italian voice
+        Language::Portuguese => "tS45q0QcrDHqHoaWdCDR", // Lax - Italian voice
 
-        Language::Chinese
-        | Language::Japanese
-        | Language::Russian
-        | Language::Portuguese
-        | Language::Italian => todo!(),
+        Language::Chinese | Language::Japanese | Language::Russian => todo!(),
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -254,12 +252,10 @@ async fn google_text_to_speech(
         Language::English => ("en-US", "en-US-Chirp3-HD-Achernar"),
         Language::Korean => ("ko-KR", "ko-KR-Chirp3-HD-Achernar"),
         Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar"),
+        Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar"),
+        Language::Portuguese => ("pt-PT", "pt-PT-Chirp3-HD-Achernar"),
 
-        Language::Chinese
-        | Language::Japanese
-        | Language::Russian
-        | Language::Portuguese
-        | Language::Italian => todo!(),
+        Language::Chinese | Language::Japanese | Language::Russian => todo!(),
     };
 
     let google_request = GoogleTtsRequest {

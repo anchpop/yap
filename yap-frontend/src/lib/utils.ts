@@ -64,6 +64,23 @@ export function getLanguageName(isoCodeOrLanguage: string): string {
   return language ? nativeLanguageNames[language] : isoCodeOrLanguage
 }
 
+// Convert Language to ISO 639-1 2-letter language code for HTML lang attribute
+export function languageToIso6391(language: Language): string {
+  const languageToIso: Record<Language, string> = {
+    French: 'fr',
+    English: 'en',
+    Spanish: 'es',
+    Korean: 'ko',
+    German: 'de',
+    Chinese: 'zh',
+    Japanese: 'ja',
+    Russian: 'ru',
+    Portuguese: 'pt',
+    Italian: 'it',
+  }
+  return languageToIso[language]
+}
+
 export const profilerOnRender = (id: string, phase: string, actualDuration: number, baseDuration: number, startTime: number, commitTime: number) => {
   void id
   void phase

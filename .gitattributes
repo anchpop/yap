@@ -1,109 +1,45 @@
+# Legacy/specific output files
 out/frequencies.jsonl filter=lfs diff=lfs merge=lfs -text
 out/phrasebook.jsonl filter=lfs diff=lfs merge=lfs -text
 out/dictionary.jsonl filter=lfs diff=lfs merge=lfs -text
 out/french_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
 out/french_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-https://github.com/anchpop/sentogen/blob/@anchpop/sentence-review/out/french_to_english_translations.jsonl filter=lfs diff=lfs merge=lfs -text
 out/french_to_english_translations.jsonl filter=lfs diff=lfs merge=lfs -text
-out/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
 out/corrected_proper_nouns.jsonl filter=lfs diff=lfs merge=lfs -text
-generate-data/data/fra_latn_broad_filtered.tsv filter=lfs diff=lfs merge=lfs -text
-out/frequency_lists/anki/frequencies.jsonl filter=lfs diff=lfs merge=lfs -text
-out/eng/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/deu_for_eng/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/deu/sentence_sources/tatoeba/2025-09-27.tsv filter=lfs diff=lfs merge=lfs -text
-out/deu/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-generate-data/data/deu/sentence-sources/tatoeba/2025-09-27.tsv filter=lfs diff=lfs merge=lfs -text
-out/fra/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/fra_for_eng/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/fra/sentence-sources/tatoeba/2025-10-13.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/heb/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/ita/pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/deu/pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/fra/extra_pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/ita/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/kor/pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/tha/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/eng/extra_pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/ita/extra_pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/jpn/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/kor/extra_pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/nld/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/rus/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/spa/pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/swe/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/arb/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/deu/extra_pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/eng/pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/fra/pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/por/sentence-sources/tatoba/2025-10-27.tsv filter=lfs diff=lfs merge=lfs -text
-generate-data/data/spa/extra_pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
-out/kor/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/spa/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
+
+# Per-language output files
+out/*/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
+out/*/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
+out/*/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
+out/*/target_language_multiword_terms_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
+out/cleaned_*.jsonl filter=lfs diff=lfs merge=lfs -text
+
+# Language pair data (e.g., fra_for_eng)
+out/*_for_*/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
+out/*_for_*/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
+
+# Clean NLP data (all languages)
+out/clean-nlp-data/*/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
+out/clean-nlp-data/*/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
+out/clean-nlp-data/*/multiword_terms.jsonl filter=lfs diff=lfs merge=lfs -text
+out/clean-nlp-data/*/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
+
+# Frequency lists
+out/frequency_lists/*/frequencies.jsonl filter=lfs diff=lfs merge=lfs -text
+
+# Pronunciations (all languages)
+generate-data/data/*/pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
+generate-data/data/*/extra_pronunciations.tsv filter=lfs diff=lfs merge=lfs -text
+
+# Sentence sources (all languages, all sources)
+generate-data/data/*/sentence-sources/**/*.tsv filter=lfs diff=lfs merge=lfs -text
+
+# Tatoeba core files
 generate-data/data/tatoeba/sentences.csv filter=lfs diff=lfs merge=lfs -text
 generate-data/data/tatoeba/links.csv filter=lfs diff=lfs merge=lfs -text
-out/eng_for_fra/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
-out/kor_for_eng/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
-out/spa_for_eng/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/deu filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/eng filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/fra filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/kor filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/por filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/spa filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/spa/multiword_terms.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/spa/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/eng/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/fra/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/kor/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/por/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/por/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/spa/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/deu/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/kor/multiword_terms.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/kor/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/por/multiword_terms.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/deu/multiword_terms.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/deu/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/fra/multiword_terms.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/eng/multiword_terms.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/eng/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/fra/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
+
+# Google translate cache
 .cache/google_translate/master_cache.json filter=lfs diff=lfs merge=lfs -text
-out/fra/target_language_multiword_terms_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/*/target_language_multiword_terms_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/*/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/fra/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/deu/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/eng/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/fra/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/ita/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/kor/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/por/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/spa/multiword_terms_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/ita/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
-out/eng/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/fra/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/kor/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/spa/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/clean-nlp-data/ita/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/deu/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
-out/cleaned_ita.jsonl filter=lfs diff=lfs merge=lfs -text
-out/cleaned_deu.jsonl filter=lfs diff=lfs merge=lfs -text
-out/cleaned_eng.jsonl filter=lfs diff=lfs merge=lfs -text
-out/cleaned_fra.jsonl filter=lfs diff=lfs merge=lfs -text
-out/cleaned_kor.jsonl filter=lfs diff=lfs merge=lfs -text
-out/cleaned_por.jsonl filter=lfs diff=lfs merge=lfs -text
-out/cleaned_spa.jsonl filter=lfs diff=lfs merge=lfs -text
-out/spa/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/eng/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/kor/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/deu/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
-out/eng_for_fra/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
-out/fra_for_eng/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
-out/kor_for_eng/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
-out/spa_for_eng/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
-out/deu_for_eng/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
 
+# Encrypted movie subtitles (intentionally overrides LFS above)
 generate-data/data/*/sentence-sources/movies/subtitles/** filter=git-crypt diff=git-crypt
-

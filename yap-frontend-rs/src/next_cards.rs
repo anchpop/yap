@@ -201,9 +201,9 @@ impl NextCardsIterator<'_> {
                 .map(|(card_type, count)| {
                     (*card_type, {
                         let target_ratio = match card_type {
-                            CardType::TargetLanguage => 0.6,
+                            CardType::TargetLanguage => 0.65,
                             CardType::Listening => 0.3,
-                            CardType::LetterPronunciation => 0.1,
+                            CardType::LetterPronunciation => 0.05,
                         };
                         (*count as f64 / total_cards as f64) / target_ratio
                     })

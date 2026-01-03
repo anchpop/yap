@@ -1850,6 +1850,10 @@ pub const COURSES: &[Course] = &[
         native_language: Language::English,
         target_language: Language::German,
     },
+    Course {
+        native_language: Language::English,
+        target_language: Language::Italian,
+    },
 ];
 
 pub const LANGUAGES: &[Language] = &[

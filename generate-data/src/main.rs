@@ -535,15 +535,7 @@ async fn main() -> anyhow::Result<()> {
         let guides_file = native_specific_dir.join("pronunciation_guides.jsonl");
 
         // Generate or load language sounds
-        let sounds = if sounds_file.exists() {
-            let file = File::open(&sounds_file)?;
-            let reader = BufReader::new(file);
-            let line = reader
-                .lines()
-                .next()
-                .ok_or_else(|| anyhow::anyhow!("Empty sounds file"))??;
-            serde_json::from_str(&line)?
-        } else {
+        let sounds = {
             let sounds = generate_data::pronunciation_patterns::generate_language_sounds(
                 course.target_language,
             )
@@ -558,17 +550,7 @@ async fn main() -> anyhow::Result<()> {
         };
 
         // Generate or load pronunciation guides
-        let guides = if guides_file.exists() {
-            let file = File::open(&guides_file)?;
-            let reader = BufReader::new(file);
-            reader
-                .lines()
-                .map(|line| {
-                    let line = line?;
-                    Ok(serde_json::from_str(&line)?)
-                })
-                .collect::<Result<Vec<_>, anyhow::Error>>()?
-        } else {
+        let guides = {
             let guides_with_thoughts =
                 generate_data::pronunciation_patterns::generate_pronunciation_guides(
                     *course, &sounds,
