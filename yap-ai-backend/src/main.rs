@@ -233,6 +233,7 @@ async fn text_to_speech(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if !response.status().is_success() {
+        eprintln!("ElevenLabs TTS Error: {response:?}");
         return Err(StatusCode::BAD_GATEWAY);
     }
 
@@ -267,7 +268,7 @@ async fn google_text_to_speech(
         Language::Korean => ("ko-KR", "ko-KR-Chirp3-HD-Achernar"),
         Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar"),
         Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar"),
-        Language::Portuguese => ("pt-PT", "pt-PT-Chirp3-HD-Achernar"),
+        Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar"),
 
         Language::Chinese | Language::Japanese | Language::Russian => todo!(),
     };
@@ -295,6 +296,7 @@ async fn google_text_to_speech(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if !response.status().is_success() {
+        eprintln!("Google TTS Error: {response:?}");
         return Err(StatusCode::BAD_GATEWAY);
     }
 
