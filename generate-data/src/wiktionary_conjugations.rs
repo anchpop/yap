@@ -1873,3 +1873,905 @@ pub mod german {
         }
     }
 }
+
+pub mod portuguese {
+    use super::*;
+
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct PortugueseVerbConjugation {
+        pub infinitive: String,
+        pub gerund: String,
+        pub past_participle: String,
+
+        // Indicative mood - simple tenses (6 forms each: eu, tu, ele/você, nós, vós, eles/vocês)
+        pub indicative_present: [String; 6],
+        pub indicative_imperfect: [String; 6],
+        pub indicative_preterite: [String; 6],
+        pub indicative_pluperfect: [String; 6],
+        pub indicative_future: [String; 6],
+        pub indicative_conditional: [String; 6],
+
+        // Subjunctive mood - simple tenses (6 forms each)
+        pub subjunctive_present: [String; 6],
+        pub subjunctive_imperfect: [String; 6],
+        pub subjunctive_future: [String; 6],
+
+        // Imperative mood - affirmative (5 forms: tu, você, nós, vós, vocês)
+        pub imperative_affirmative: [String; 5],
+    }
+
+    /// Extract the Portuguese language section from a Wiktionary page
+    fn extract_portuguese_section(document: &Html) -> anyhow::Result<Html> {
+        // Find the h2 heading with id="Portuguese"
+        let h2_selector = Selector::parse("h2#Portuguese").unwrap();
+
+        let portuguese_heading = document
+            .select(&h2_selector)
+            .next()
+            .context("Could not find Portuguese language section")?;
+
+        // Collect all content until the next h2 (language section)
+        let mut portuguese_content = String::new();
+        let mut current = portuguese_heading.parent();
+
+        while let Some(node) = current {
+            current = node.next_sibling();
+            if let Some(current_node) = current {
+                // Stop if we hit another h2 (next language section)
+                if let Some(elem) = ElementRef::wrap(current_node) {
+                    if elem.value().name() == "div" {
+                        if let Some(first_child) = elem.first_child() {
+                            if let Some(child_elem) = ElementRef::wrap(first_child) {
+                                if child_elem.value().name() == "h2" {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    portuguese_content.push_str(&elem.html());
+                }
+            }
+        }
+
+        Ok(Html::parse_fragment(&portuguese_content))
+    }
+
+    /// Parse a Portuguese verb conjugation table from Wiktionary HTML
+    pub fn parse_portuguese_verb_conjugation(
+        html: &str,
+        verb: &str,
+    ) -> anyhow::Result<PortugueseVerbConjugation> {
+        let document = Html::parse_document(html);
+
+        // Extract only the Portuguese language section
+        let portuguese_section = extract_portuguese_section(&document)?;
+
+        // Parse infinitive (it's the verb itself)
+        let infinitive = verb.to_string();
+
+        // Parse gerund
+        let gerund = parse_gerund(&portuguese_section)?;
+
+        // Parse past participle
+        let past_participle = parse_past_participle(&portuguese_section)?;
+
+        // Parse indicative tenses
+        let indicative_present = parse_tense(&portuguese_section, "present", "indicative")?;
+        let indicative_imperfect = parse_tense(&portuguese_section, "imperfect", "indicative")?;
+        let indicative_preterite = parse_tense(&portuguese_section, "preterite", "indicative")?;
+        let indicative_pluperfect = parse_tense(&portuguese_section, "pluperfect", "indicative")?;
+        let indicative_future = parse_tense(&portuguese_section, "future", "indicative")?;
+        let indicative_conditional = parse_tense(&portuguese_section, "conditional", "indicative")?;
+
+        // Parse subjunctive tenses
+        let subjunctive_present = parse_tense(&portuguese_section, "present", "subjunctive")?;
+        let subjunctive_imperfect = parse_tense(&portuguese_section, "imperfect", "subjunctive")?;
+        let subjunctive_future = parse_tense(&portuguese_section, "future", "subjunctive")?;
+
+        // Parse imperative
+        let imperative_affirmative = parse_imperative(&portuguese_section)?;
+
+        Ok(PortugueseVerbConjugation {
+            infinitive,
+            gerund,
+            past_participle,
+            indicative_present,
+            indicative_imperfect,
+            indicative_preterite,
+            indicative_pluperfect,
+            indicative_future,
+            indicative_conditional,
+            subjunctive_present,
+            subjunctive_imperfect,
+            subjunctive_future,
+            imperative_affirmative,
+        })
+    }
+
+    fn parse_gerund(document: &Html) -> anyhow::Result<String> {
+        // Look for the gerund row in the table
+        // Format: <span class="Latn form-of lang-pt gerund-...">
+        let selector =
+            Selector::parse("span.gerund-ser-form-of a, span[class*='gerund'] a").unwrap();
+
+        document
+            .select(&selector)
+            .next()
+            .and_then(|el| el.text().next())
+            .map(|s| s.to_string())
+            .context("Failed to find gerund")
+    }
+
+    fn parse_past_participle(document: &Html) -> anyhow::Result<String> {
+        // Look for the past participle row (masculine singular form)
+        // Portuguese only uses one form of past participle (unlike Spanish)
+        let selector =
+            Selector::parse("span[class*='pp'][class*='ms'] a, span.pp￰ms-form-of a").unwrap();
+
+        document
+            .select(&selector)
+            .next()
+            .and_then(|el| el.text().next())
+            .map(|s| s.to_string())
+            .context("Failed to find past participle")
+    }
+
+    fn parse_tense(document: &Html, tense: &str, mood: &str) -> anyhow::Result<[String; 6]> {
+        // Portuguese uses roa-indicative-left-rail and roa-subjunctive-left-rail for tense headers
+        let th_selector = match mood {
+            "indicative" => Selector::parse("th.roa-indicative-left-rail").unwrap(),
+            "subjunctive" => Selector::parse("th.roa-subjunctive-left-rail").unwrap(),
+            _ => anyhow::bail!("Unknown mood: {}", mood),
+        };
+        let a_selector = Selector::parse("a").unwrap();
+
+        // Find the header for this tense
+        let mut tense_row_ref = None;
+        for th in document.select(&th_selector) {
+            let text = th.text().collect::<String>().to_lowercase();
+            if text.contains(&tense.to_lowercase()) {
+                // Get the parent tr element
+                if let Some(parent) = th.parent() {
+                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
+                        tense_row_ref = Some(parent);
+                        break;
+                    }
+                }
+            }
+        }
+
+        let tense_row =
+            tense_row_ref.context(format!("Failed to find tense row for {mood} {tense}"))?;
+
+        // Extract the 6 conjugated forms from the td elements in this row
+        let mut forms = Vec::new();
+
+        // Iterate through children of the tr element
+        for child in tense_row.children() {
+            if let Some(element) = child.value().as_element() {
+                if element.name() == "td" {
+                    // Find the link inside the td
+                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+                    if let Some(link) = td_elem.select(&a_selector).next() {
+                        if let Some(text) = link.text().next() {
+                            forms.push(text.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        if forms.len() != 6 {
+            anyhow::bail!(
+                "Expected 6 forms for {} {}, found {}",
+                mood,
+                tense,
+                forms.len()
+            );
+        }
+
+        Ok([
+            forms[0].clone(),
+            forms[1].clone(),
+            forms[2].clone(),
+            forms[3].clone(),
+            forms[4].clone(),
+            forms[5].clone(),
+        ])
+    }
+
+    fn parse_imperative(document: &Html) -> anyhow::Result<[String; 5]> {
+        // Find the affirmative imperative row
+        let th_selector = Selector::parse("th.roa-imperative-left-rail").unwrap();
+        let a_selector = Selector::parse("a").unwrap();
+
+        let mut imperative_row_ref = None;
+        for th in document.select(&th_selector) {
+            let text = th.text().collect::<String>().to_lowercase();
+            if text.contains("affirmative") {
+                // Get the parent tr element
+                if let Some(parent) = th.parent() {
+                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
+                        imperative_row_ref = Some(parent);
+                        break;
+                    }
+                }
+            }
+        }
+
+        let imperative_row =
+            imperative_row_ref.context("Failed to find imperative affirmative row")?;
+
+        // Extract the 5 forms (skip the first td which is empty for "eu")
+        // Forms are: tu, você, nós, vós, vocês
+        let mut forms = Vec::new();
+
+        // Iterate through children of the tr element
+        for child in imperative_row.children() {
+            if let Some(element) = child.value().as_element() {
+                if element.name() == "td" {
+                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+
+                    // Check if this is an empty cell or rowspan cell (for "eu" form)
+                    let text = td_elem.text().collect::<String>().trim().to_string();
+                    if text.is_empty() || td_elem.value().attr("rowspan").is_some() {
+                        continue;
+                    }
+
+                    // Extract the link text (the conjugated form)
+                    if let Some(link) = td_elem.select(&a_selector).next() {
+                        if let Some(form_text) = link.text().next() {
+                            forms.push(form_text.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        if forms.len() != 5 {
+            anyhow::bail!("Expected 5 forms for imperative, found {}", forms.len());
+        }
+
+        Ok([
+            forms[0].clone(),
+            forms[1].clone(),
+            forms[2].clone(),
+            forms[3].clone(),
+            forms[4].clone(),
+        ])
+    }
+
+    /// Fetch Portuguese verb conjugations from Wiktionary with HTML caching
+    pub async fn fetch_portuguese_verb_conjugations(
+        verbs: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, PortugueseVerbConjugation>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(verbs.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} Portuguese verbs ({per_sec}, {msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let fetch_results: Vec<(String, Result<PortugueseVerbConjugation, String>)> =
+            futures::stream::iter(verbs.iter())
+                .map(|verb| {
+                    let pb = pb.clone();
+                    async move {
+                        pb.set_message(verb.to_string());
+
+                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                            Ok(html) => {
+                                parse_portuguese_verb_conjugation(&html, verb).map_err(|e| {
+                                    format!("Failed to parse Portuguese verb '{verb}': {e}")
+                                })
+                            }
+                            Err(e) => Err(format!(
+                                "Failed to get HTML for Portuguese verb '{verb}': {e}"
+                            )),
+                        };
+
+                        pb.inc(1);
+                        (verb.clone(), result)
+                    }
+                })
+                .buffered(50)
+                .collect()
+                .await;
+
+        // Process results
+        let mut results = HashMap::new();
+        let mut errors = Vec::new();
+
+        for (verb, result) in fetch_results {
+            match result {
+                Ok(conjugation) => {
+                    results.insert(verb, conjugation);
+                }
+                Err(e) => {
+                    errors.push(e);
+                }
+            }
+        }
+
+        pb.finish_with_message(format!(
+            "Finished: {}/{} parsed ({} errors)",
+            results.len(),
+            verbs.len(),
+            errors.len()
+        ));
+
+        Ok(results)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use std::fs;
+
+        #[test]
+        fn test_parse_ser() {
+            let html = fs::read_to_string("src/wiktionary-examples/por/ser.txt")
+                .expect("Failed to read ser.txt");
+
+            let conjugation = parse_portuguese_verb_conjugation(&html, "ser")
+                .expect("Failed to parse ser conjugation");
+
+            assert_eq!(conjugation.infinitive, "ser");
+            assert_eq!(conjugation.gerund, "sendo");
+            assert_eq!(conjugation.past_participle, "sido");
+
+            // Check indicative present (eu, tu, ele, nós, vós, eles)
+            assert_eq!(conjugation.indicative_present[0], "sou"); // eu
+            assert_eq!(conjugation.indicative_present[1], "és"); // tu
+            assert_eq!(conjugation.indicative_present[2], "é"); // ele/você
+            assert_eq!(conjugation.indicative_present[3], "somos"); // nós
+            assert_eq!(conjugation.indicative_present[4], "sois"); // vós
+            assert_eq!(conjugation.indicative_present[5], "são"); // eles/vocês
+
+            // Check preterite (irregular)
+            assert_eq!(conjugation.indicative_preterite[0], "fui");
+            assert_eq!(conjugation.indicative_preterite[1], "foste");
+            assert_eq!(conjugation.indicative_preterite[2], "foi");
+
+            // Check imperative affirmative (tu, você, nós, vós, vocês)
+            assert_eq!(conjugation.imperative_affirmative[0], "sê"); // tu
+            assert_eq!(conjugation.imperative_affirmative[1], "seja"); // você
+            assert_eq!(conjugation.imperative_affirmative[2], "sejamos"); // nós
+            assert_eq!(conjugation.imperative_affirmative[3], "sede"); // vós
+            assert_eq!(conjugation.imperative_affirmative[4], "sejam"); // vocês
+        }
+
+        #[test]
+        fn test_parse_ter() {
+            let html = fs::read_to_string("src/wiktionary-examples/por/ter.txt")
+                .expect("Failed to read ter.txt");
+
+            let conjugation = parse_portuguese_verb_conjugation(&html, "ter")
+                .expect("Failed to parse ter conjugation");
+
+            assert_eq!(conjugation.infinitive, "ter");
+            assert_eq!(conjugation.gerund, "tendo");
+            assert_eq!(conjugation.past_participle, "tido");
+
+            // Check indicative present
+            assert_eq!(conjugation.indicative_present[0], "tenho"); // eu
+            assert_eq!(conjugation.indicative_present[1], "tens"); // tu
+            assert_eq!(conjugation.indicative_present[2], "tem"); // ele
+        }
+
+        #[test]
+        fn test_parse_fazer() {
+            let html = fs::read_to_string("src/wiktionary-examples/por/fazer.txt")
+                .expect("Failed to read fazer.txt");
+
+            let conjugation = parse_portuguese_verb_conjugation(&html, "fazer")
+                .expect("Failed to parse fazer conjugation");
+
+            assert_eq!(conjugation.infinitive, "fazer");
+        }
+
+        #[test]
+        fn test_parse_ir() {
+            let html = fs::read_to_string("src/wiktionary-examples/por/ir.txt")
+                .expect("Failed to read ir.txt");
+
+            let conjugation = parse_portuguese_verb_conjugation(&html, "ir")
+                .expect("Failed to parse ir conjugation");
+
+            assert_eq!(conjugation.infinitive, "ir");
+        }
+    }
+}
+
+pub mod italian {
+    use super::*;
+
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct ItalianVerbConjugation {
+        pub infinitive: String,
+        pub gerund: String,
+        pub past_participle: String,
+
+        // Indicative mood - simple tenses (6 forms each: io, tu, lui/lei, noi, voi, loro)
+        pub indicative_present: [String; 6],
+        pub indicative_imperfect: [String; 6],
+        pub indicative_past_historic: [String; 6],
+        pub indicative_future: [String; 6],
+        pub indicative_conditional: [String; 6],
+
+        // Subjunctive mood - simple tenses (6 forms each)
+        pub subjunctive_present: [String; 6],
+        pub subjunctive_imperfect: [String; 6],
+
+        // Imperative mood (5 forms: tu, Lei, noi, voi, Loro)
+        pub imperative: [String; 5],
+    }
+
+    /// Extract the Italian language section from a Wiktionary page
+    fn extract_italian_section(document: &Html) -> anyhow::Result<Html> {
+        // Find the h2 heading with id="Italian"
+        let h2_selector = Selector::parse("h2#Italian").unwrap();
+
+        let italian_heading = document
+            .select(&h2_selector)
+            .next()
+            .context("Could not find Italian language section")?;
+
+        // Collect all content until the next h2 (language section)
+        let mut italian_content = String::new();
+        let mut current = italian_heading.parent();
+
+        while let Some(node) = current {
+            current = node.next_sibling();
+            if let Some(current_node) = current {
+                // Stop if we hit another h2 (next language section)
+                if let Some(elem) = ElementRef::wrap(current_node) {
+                    if elem.value().name() == "div" {
+                        if let Some(first_child) = elem.first_child() {
+                            if let Some(child_elem) = ElementRef::wrap(first_child) {
+                                if child_elem.value().name() == "h2" {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    italian_content.push_str(&elem.html());
+                }
+            }
+        }
+
+        Ok(Html::parse_fragment(&italian_content))
+    }
+
+    /// Parse an Italian verb conjugation table from Wiktionary HTML
+    pub fn parse_italian_verb_conjugation(
+        html: &str,
+        verb: &str,
+    ) -> anyhow::Result<ItalianVerbConjugation> {
+        let document = Html::parse_document(html);
+
+        // Extract only the Italian language section
+        let italian_section = extract_italian_section(&document)?;
+
+        // Parse infinitive (it's the verb itself)
+        let infinitive = verb.to_string();
+
+        // Parse gerund
+        let gerund = parse_gerund(&italian_section)?;
+
+        // Parse past participle
+        let past_participle = parse_past_participle(&italian_section)?;
+
+        // Parse indicative tenses
+        let indicative_present = parse_tense(&italian_section, "present", "indicative")?;
+        let indicative_imperfect = parse_tense(&italian_section, "imperfect", "indicative")?;
+        let indicative_past_historic =
+            parse_tense(&italian_section, "past historic", "indicative")?;
+        let indicative_future = parse_tense(&italian_section, "future", "indicative")?;
+        let indicative_conditional = parse_tense(&italian_section, "conditional", "indicative")?;
+
+        // Parse subjunctive tenses
+        let subjunctive_present = parse_tense(&italian_section, "present", "subjunctive")?;
+        let subjunctive_imperfect = parse_tense(&italian_section, "imperfect", "subjunctive")?;
+
+        // Parse imperative
+        let imperative = parse_imperative(&italian_section)?;
+
+        Ok(ItalianVerbConjugation {
+            infinitive,
+            gerund,
+            past_participle,
+            indicative_present,
+            indicative_imperfect,
+            indicative_past_historic,
+            indicative_future,
+            indicative_conditional,
+            subjunctive_present,
+            subjunctive_imperfect,
+            imperative,
+        })
+    }
+
+    fn parse_gerund(document: &Html) -> anyhow::Result<String> {
+        // Look for the gerund row in the table
+        // Format: <th>gerund</th> followed by <td> with links
+        let th_selector = Selector::parse("th.roa-nonfinite-header").unwrap();
+        let a_selector = Selector::parse("a").unwrap();
+
+        for th in document.select(&th_selector) {
+            let text = th.text().collect::<String>().to_lowercase();
+            if text.contains("gerund") {
+                // Get the next td sibling (skip text nodes)
+                let mut current = th.next_sibling();
+                while let Some(node) = current {
+                    if let Some(elem) = ElementRef::wrap(node) {
+                        if elem.value().name() == "td" {
+                            // Get first link - extract word from href to get actual spelling
+                            if let Some(link) = elem.select(&a_selector).next() {
+                                if let Some(href) = link.value().attr("href") {
+                                    // href is like "/wiki/essendo#Italian"
+                                    if let Some(word) = href.strip_prefix("/wiki/") {
+                                        if let Some(word_clean) = word.split('#').next() {
+                                            // URL decode in case of special characters (like %C3%A8 → è)
+                                            let decoded =
+                                                percent_encoding::percent_decode_str(word_clean)
+                                                    .decode_utf8_lossy()
+                                                    .to_string();
+                                            return Ok(decoded);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    current = node.next_sibling();
+                }
+            }
+        }
+
+        anyhow::bail!("Failed to find gerund")
+    }
+
+    fn parse_past_participle(document: &Html) -> anyhow::Result<String> {
+        // Look for the past participle row
+        let th_selector = Selector::parse("th.roa-nonfinite-header").unwrap();
+        let a_selector = Selector::parse("a").unwrap();
+
+        for th in document.select(&th_selector) {
+            let text = th.text().collect::<String>().to_lowercase();
+            if text.contains("past participle") {
+                // Get the next td sibling (skip text nodes)
+                let mut current = th.next_sibling();
+                while let Some(node) = current {
+                    if let Some(elem) = ElementRef::wrap(node) {
+                        if elem.value().name() == "td" {
+                            // Get first link - extract word from href to get actual spelling
+                            if let Some(link) = elem.select(&a_selector).next() {
+                                if let Some(href) = link.value().attr("href") {
+                                    // href is like "/wiki/stato#Italian"
+                                    if let Some(word) = href.strip_prefix("/wiki/") {
+                                        if let Some(word_clean) = word.split('#').next() {
+                                            // URL decode in case of special characters (like %C3%A8 → è)
+                                            let decoded =
+                                                percent_encoding::percent_decode_str(word_clean)
+                                                    .decode_utf8_lossy()
+                                                    .to_string();
+                                            return Ok(decoded);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    current = node.next_sibling();
+                }
+            }
+        }
+
+        anyhow::bail!("Failed to find past participle")
+    }
+
+    fn parse_tense(document: &Html, tense: &str, mood: &str) -> anyhow::Result<[String; 6]> {
+        // Italian uses roa-indicative-left-rail and roa-subjunctive-left-rail for tense headers
+        let th_selector = match mood {
+            "indicative" => Selector::parse("th.roa-indicative-left-rail").unwrap(),
+            "subjunctive" => Selector::parse("th.roa-subjunctive-left-rail").unwrap(),
+            _ => anyhow::bail!("Unknown mood: {}", mood),
+        };
+        let a_selector = Selector::parse("a").unwrap();
+
+        // Find the header for this tense
+        let mut tense_row_ref = None;
+        for th in document.select(&th_selector) {
+            let text = th.text().collect::<String>().to_lowercase();
+            if text.contains(&tense.to_lowercase()) {
+                // Get the parent tr element
+                if let Some(parent) = th.parent() {
+                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
+                        tense_row_ref = Some(parent);
+                        break;
+                    }
+                }
+            }
+        }
+
+        let tense_row =
+            tense_row_ref.context(format!("Failed to find tense row for {mood} {tense}"))?;
+
+        // Extract the 6 conjugated forms from the td elements in this row
+        let mut forms = Vec::new();
+
+        // Iterate through children of the tr element
+        for child in tense_row.children() {
+            if let Some(element) = child.value().as_element() {
+                if element.name() == "td" {
+                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+
+                    // Get the first link - extract word from href to get actual spelling
+                    if let Some(link) = td_elem.select(&a_selector).next() {
+                        if let Some(href) = link.value().attr("href") {
+                            // href is like "/wiki/sono#Italian"
+                            if let Some(word) = href.strip_prefix("/wiki/") {
+                                if let Some(word_clean) = word.split('#').next() {
+                                    // URL decode in case of special characters (like %C3%A8 → è)
+                                    let decoded = percent_encoding::percent_decode_str(word_clean)
+                                        .decode_utf8_lossy()
+                                        .to_string();
+                                    forms.push(decoded);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if forms.len() != 6 {
+            anyhow::bail!(
+                "Expected 6 forms for {} {}, found {}",
+                mood,
+                tense,
+                forms.len()
+            );
+        }
+
+        Ok([
+            forms[0].clone(),
+            forms[1].clone(),
+            forms[2].clone(),
+            forms[3].clone(),
+            forms[4].clone(),
+            forms[5].clone(),
+        ])
+    }
+
+    fn parse_imperative(document: &Html) -> anyhow::Result<[String; 5]> {
+        // Find the imperative row (not the negative imperative)
+        let th_selector = Selector::parse("th.roa-imperative-left-rail").unwrap();
+        let a_selector = Selector::parse("a").unwrap();
+
+        let mut imperative_row_ref = None;
+        for th in document.select(&th_selector) {
+            let text = th.text().collect::<String>().to_lowercase();
+            // Look for "imperative" but not "negative imperative"
+            if text.contains("imperative") && !text.contains("negative") {
+                // Get the parent tr element
+                if let Some(parent) = th.parent() {
+                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
+                        // Skip text nodes to find the next tr sibling
+                        let mut current = parent.next_sibling();
+                        while let Some(node) = current {
+                            if let Some(next_elem) = ElementRef::wrap(node) {
+                                if next_elem.value().name() == "tr" {
+                                    imperative_row_ref = Some(next_elem);
+                                    break;
+                                }
+                            }
+                            current = node.next_sibling();
+                        }
+                        if imperative_row_ref.is_some() {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        let imperative_row = imperative_row_ref.context("Failed to find imperative row")?;
+
+        // Extract the 5 forms (skip the first td which is empty)
+        // Forms are: tu, Lei, noi, voi, Loro
+        let mut forms = Vec::new();
+
+        // Iterate through children of the tr element
+        for child in imperative_row.children() {
+            if let Some(element) = child.value().as_element() {
+                if element.name() == "td" {
+                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+
+                    // Check if this is an empty cell
+                    let text = td_elem.text().collect::<String>().trim().to_string();
+                    if text.is_empty() {
+                        continue;
+                    }
+
+                    // Extract from href to get actual spelling (not pronunciation marks)
+                    if let Some(link) = td_elem.select(&a_selector).next() {
+                        if let Some(href) = link.value().attr("href") {
+                            // href is like "/wiki/sii#Italian"
+                            if let Some(word) = href.strip_prefix("/wiki/") {
+                                if let Some(word_clean) = word.split('#').next() {
+                                    // URL decode in case of special characters (like %C3%A8 → è)
+                                    let decoded = percent_encoding::percent_decode_str(word_clean)
+                                        .decode_utf8_lossy()
+                                        .to_string();
+                                    forms.push(decoded);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if forms.len() != 5 {
+            anyhow::bail!("Expected 5 forms for imperative, found {}", forms.len());
+        }
+
+        Ok([
+            forms[0].clone(),
+            forms[1].clone(),
+            forms[2].clone(),
+            forms[3].clone(),
+            forms[4].clone(),
+        ])
+    }
+
+    /// Fetch Italian verb conjugations from Wiktionary with HTML caching
+    pub async fn fetch_italian_verb_conjugations(
+        verbs: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, ItalianVerbConjugation>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(verbs.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} Italian verbs ({per_sec}, {msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let fetch_results: Vec<(String, Result<ItalianVerbConjugation, String>)> =
+            futures::stream::iter(verbs.iter())
+                .map(|verb| {
+                    let pb = pb.clone();
+                    async move {
+                        pb.set_message(verb.to_string());
+
+                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                            Ok(html) => parse_italian_verb_conjugation(&html, verb)
+                                .map_err(|e| format!("Failed to parse Italian verb '{verb}': {e}")),
+                            Err(e) => {
+                                Err(format!("Failed to get HTML for Italian verb '{verb}': {e}"))
+                            }
+                        };
+
+                        pb.inc(1);
+                        (verb.clone(), result)
+                    }
+                })
+                .buffered(50)
+                .collect()
+                .await;
+
+        // Process results
+        let mut results = HashMap::new();
+        let mut errors = Vec::new();
+
+        for (verb, result) in fetch_results {
+            match result {
+                Ok(conjugation) => {
+                    results.insert(verb, conjugation);
+                }
+                Err(e) => {
+                    errors.push(e);
+                }
+            }
+        }
+
+        pb.finish_with_message(format!(
+            "Finished: {}/{} parsed ({} errors)",
+            results.len(),
+            verbs.len(),
+            errors.len()
+        ));
+
+        Ok(results)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use std::fs;
+
+        #[test]
+        fn test_parse_essere() {
+            let html = fs::read_to_string("src/wiktionary-examples/ita/essere.txt")
+                .expect("Failed to read essere.txt");
+
+            let conjugation = parse_italian_verb_conjugation(&html, "essere")
+                .expect("Failed to parse essere conjugation");
+
+            assert_eq!(conjugation.infinitive, "essere");
+            assert_eq!(conjugation.gerund, "essendo");
+            assert_eq!(conjugation.past_participle, "stato");
+
+            // Check indicative present (io, tu, lui/lei, noi, voi, loro)
+            assert_eq!(conjugation.indicative_present[0], "sono"); // io
+            assert_eq!(conjugation.indicative_present[1], "sei"); // tu
+            assert_eq!(conjugation.indicative_present[2], "è"); // lui/lei
+            assert_eq!(conjugation.indicative_present[3], "siamo"); // noi
+            assert_eq!(conjugation.indicative_present[4], "siete"); // voi
+            assert_eq!(conjugation.indicative_present[5], "sono"); // loro
+
+            // Check past historic (irregular)
+            assert_eq!(conjugation.indicative_past_historic[0], "fui");
+            assert_eq!(conjugation.indicative_past_historic[1], "fosti");
+            assert_eq!(conjugation.indicative_past_historic[2], "fu");
+
+            // Check imperative (tu, Lei, noi, voi, Loro)
+            assert_eq!(conjugation.imperative[0], "sii"); // tu
+            assert_eq!(conjugation.imperative[1], "sia"); // Lei
+            assert_eq!(conjugation.imperative[2], "siamo"); // noi
+            assert_eq!(conjugation.imperative[3], "siate"); // voi
+            assert_eq!(conjugation.imperative[4], "siano"); // Loro
+        }
+
+        #[test]
+        fn test_parse_avere() {
+            let html = fs::read_to_string("src/wiktionary-examples/ita/avere.txt")
+                .expect("Failed to read avere.txt");
+
+            let conjugation = parse_italian_verb_conjugation(&html, "avere")
+                .expect("Failed to parse avere conjugation");
+
+            assert_eq!(conjugation.infinitive, "avere");
+            assert_eq!(conjugation.gerund, "avendo");
+            assert_eq!(conjugation.past_participle, "avuto");
+
+            // Check indicative present
+            assert_eq!(conjugation.indicative_present[0], "ho"); // io
+            assert_eq!(conjugation.indicative_present[1], "hai"); // tu
+            assert_eq!(conjugation.indicative_present[2], "ha"); // lui/lei
+        }
+
+        #[test]
+        fn test_parse_fare() {
+            let html = fs::read_to_string("src/wiktionary-examples/ita/fare.txt")
+                .expect("Failed to read fare.txt");
+
+            let conjugation = parse_italian_verb_conjugation(&html, "fare")
+                .expect("Failed to parse fare conjugation");
+
+            assert_eq!(conjugation.infinitive, "fare");
+        }
+
+        #[test]
+        fn test_parse_andare() {
+            let html = fs::read_to_string("src/wiktionary-examples/ita/andare.txt")
+                .expect("Failed to read andare.txt");
+
+            let conjugation = parse_italian_verb_conjugation(&html, "andare")
+                .expect("Failed to parse andare conjugation");
+
+            assert_eq!(conjugation.infinitive, "andare");
+        }
+    }
+}

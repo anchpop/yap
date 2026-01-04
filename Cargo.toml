@@ -10,7 +10,8 @@ members = [
     "libraries/course-spot-check",
     "libraries/sentence-sampler",
     "clean-nlp-data",
-    "libraries/enumap", "opensubtitles-downloader",
+    "libraries/enumap",
+    "opensubtitles-downloader",
 ]
 resolver = "3"
 
@@ -43,7 +44,7 @@ slotmap = { version = "1.0", features = ["serde"] }
 wasm-logger = "0.2.0"
 unicode-normalization = "0.1.24"
 weblocks = { version = "0.1.0" }
-lexide = { git = "https://github.com/anchpop/lexide.git", rev = "a8334c53e161448cb0796d8a8d4806500c9713ec", features = [
+lexide = { git = "https://github.com/anchpop/lexide.git", rev = "b3780b1e643d31d007ecc5962bf17cff8391718f", features = [
     "remote",
 ] }
 indicatif = "0.17"

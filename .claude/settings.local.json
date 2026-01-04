@@ -23,7 +23,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(cat:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(xargs:*)"
     ],
     "deny": []
   }

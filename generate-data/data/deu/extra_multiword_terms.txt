@@ -1845,4 +1845,272 @@ schon wieder
 erst mal
 wohl kaum
 eben nicht
-
+brauchen zu
+pflegen zu
+scheinen zu
+drohen zu
+wissen zu
+haben zu
+sein zu
+sich lassen
+nicht umhin können
+in Betracht ziehen
+in Erwägung ziehen
+unter Beweis stellen
+unter Druck setzen
+unter Druck stehen
+unter Druck geraten
+zum Ausdruck bringen
+zum Ausdruck kommen
+zum Einsatz kommen
+zum Einsatz bringen
+zum Erliegen kommen
+zum Erliegen bringen
+zum Stillstand kommen
+zum Stillstand bringen
+zum Vorschein kommen
+zum Vorschein bringen
+zum Abschluss bringen
+zum Abschluss kommen
+zur Anwendung kommen
+zur Anwendung bringen
+zur Durchführung bringen
+zur Rechenschaft ziehen
+zur Ruhe kommen
+zur Vernunft bringen
+zur Vernunft kommen
+zur Verantwortung ziehen
+zu Fall bringen
+zu Gehör bringen
+zu Papier bringen
+zustande bringen
+zustande kommen
+zuwege bringen
+Abschied nehmen
+Anteil nehmen
+Antwort geben
+Aufmerksamkeit schenken
+Beachtung schenken
+Beachtung finden
+Bezug nehmen
+Eindruck machen
+Einsicht nehmen
+Einfluss nehmen
+Einfluss haben
+einen Beitrag leisten
+eine Entscheidung treffen
+eine Frage stellen
+Hilfe leisten
+Kritik üben
+Rache nehmen
+Rat geben
+Rat erteilen
+Rechenschaft ablegen
+Rücksicht nehmen
+Schaden nehmen
+Schaden anrichten
+Schluss machen
+Verständnis haben
+Widerstand leisten
+Wirkung haben
+Wirkung zeigen
+Berücksichtigung finden
+Anerkennung finden
+Anwendung finden
+Verwendung finden
+Verbreitung finden
+Zustimmung finden
+Ablehnung finden
+Gehör finden
+Aufnahme finden
+Eingang finden
+Niederschlag finden
+Ausdruck finden
+um Gottes willen
+um Himmels willen
+Gott sei Dank
+Gott behüte
+Gott bewahre
+zum Glück
+zum Beispiel
+zum Teil
+auf Anhieb
+mit einem Mal
+auf einen Schlag
+im Nu
+im Handumdrehen
+in Windeseile
+in null Komma nichts
+mir nichts dir nichts
+über kurz oder lang
+wer weiß
+weiß Gott
+weiß der Himmel
+weiß der Kuckuck
+ganz und gar
+ganz und gar nicht
+ruck zuck
+fix und fertig
+fix und foxi
+klipp und klar
+frank und frei
+null und nichtig
+gang und gäbe
+samt und sonders
+klacks und fertig
+Knall auf Fall
+Hals über Kopf
+Kopf an Kopf
+Schulter an Schulter
+Seite an Seite
+Arm in Arm
+Hand in Hand
+Auge in Auge
+Stirn an Stirn
+Rücken an Rücken
+Mann für Mann
+Frau für Frau
+Wort für Wort
+Schritt für Schritt
+Stück für Stück
+Punkt für Punkt
+Fall für Fall
+Satz für Satz
+Zeile für Zeile
+Haus zu Haus
+Tür zu Tür
+bei weitem
+bei weitem nicht
+mit Abstand
+um einiges
+um vieles
+um Längen
+um Welten
+um Klassen
+hoch und heilig
+von Grund auf
+bis aufs Äußerste
+aufs Äußerste
+aufs Höchste
+aufs Tiefste
+im Höchstfall
+im Mindestfall
+im Idealfall
+im Normalfall
+im Regelfall
+im Zweifelsfall
+im Notfall
+im Ernstfall
+im Extremfall
+im schlimmsten Fall
+im besten Fall
+bestenfalls
+schlimmstenfalls
+günstigenfalls
+ungünstigenfalls
+gegebenenfalls
+notfalls
+allenfalls
+jedenfalls
+keinesfalls
+mitnichten
+durchaus nicht
+ganz und gar nicht
+längst nicht
+noch lange nicht
+für den Fall dass
+im Falle dass
+gesetzt den Fall
+angenommen dass
+vorausgesetzt dass
+wenn auch
+auch wenn
+selbst wenn
+und wenn
+wie sehr auch
+sosehr auch
+so sehr auch
+obgleich
+obschon
+obwohl
+wiewohl
+wenngleich
+sich verlassen auf
+sich freuen auf
+sich freuen über
+sich interessieren für
+sich kümmern um
+sich konzentrieren auf
+sich sehnen nach
+sich wundern über
+sich unterscheiden von
+sich verabschieden von
+verzichten auf
+teilnehmen an
+leiden an
+leiden unter
+fragen nach
+sorgen für
+sich unterhalten über
+ankommen bei
+wie gesagt
+wie bereits erwähnt
+wie erwähnt
+wie oben erwähnt
+wie schon gesagt
+anders gesagt
+besser gesagt
+genauer gesagt
+mit anderen Worten
+sprich
+das heißt
+will heißen
+will sagen
+soll heißen
+sagen wir
+sagen wir mal
+nehmen wir an
+stellen wir uns vor
+angenommen
+mal angenommen
+gesetzt
+wohlgemerkt
+nota bene
+nebenbei bemerkt
+nebenbei gesagt
+übrigens
+apropos
+was das betrifft
+was das angeht
+was anbelangt
+was anbetrifft
+im Übrigen
+des Weiteren
+darüber hinaus
+außerdem
+zudem
+ferner
+weiterhin
+hinzu kommt
+dazu kommt
+obendrein
+noch dazu
+nach wie vor
+wie eh und je
+ein für alle Mal
+fürs Erste
+auf unbestimmte Zeit
+bis auf Weiteres
+bis auf weiteres
+auf absehbare Zeit
+in absehbarer Zeit
+wie kommt es dass
+was um alles in der Welt
+wer um alles in der Welt
+wo um alles in der Welt
+warum in aller Welt
+wieso bloß
+warum bloß
+was bloß
+wer bloß
+wo bloß

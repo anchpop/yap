@@ -11,6 +11,7 @@ import {
   type Deck,
 } from "../../../../yap-frontend-rs/pkg/yap_frontend_rs";
 import { Button } from "@/components/ui/button";
+import { languageToIso6391 } from "@/lib/utils";
 import {
   InputFieldSizingContent,
   InputDottedUnderline,
@@ -353,6 +354,7 @@ export function TranscriptionChallenge({
                 // The accent keyboard will refocus when clicked
               }}
               disabled={gradingState !== null}
+              lang={languageToIso6391(targetLanguage)}
               className={`inline-block ${
                 isSinglePartTranscription ? "min-w-64" : "min-w-32"
               } mx-1 text-center text-2xl font-semibold ${getInputClassName(

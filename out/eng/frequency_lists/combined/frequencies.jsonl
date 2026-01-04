@@ -1,5 +1,5 @@
 {"lexeme":{"Heteronym":{"word":"the","lemma":"the","pos":"DET"}},"count":38585}
-{"lexeme":{"Heteronym":{"word":"you","lemma":"you","pos":"PRON"}},"count":25136}
+{"lexeme":{"Heteronym":{"word":"you","lemma":"you","pos":"PRON"}},"count":25135}
 {"lexeme":{"Heteronym":{"word":"is","lemma":"be","pos":"AUX"}},"count":23548}
 {"lexeme":{"Heteronym":{"word":"a","lemma":"a","pos":"DET"}},"count":23334}
 {"lexeme":{"Heteronym":{"word":"i","lemma":"i","pos":"PRON"}},"count":21958}
@@ -171,7 +171,6 @@
 {"lexeme":{"Heteronym":{"word":"thought","lemma":"think","pos":"VERB"}},"count":712}
 {"lexeme":{"Heteronym":{"word":"say","lemma":"say","pos":"VERB"}},"count":702}
 {"lexeme":{"Heteronym":{"word":"mother","lemma":"mother","pos":"NOUN"}},"count":688}
-{"lexeme":{"Multiword":"let"},"count":685}
 {"lexeme":{"Heteronym":{"word":"wanted","lemma":"want","pos":"VERB"}},"count":684}
 {"lexeme":{"Multiword":"lots of"},"count":675}
 {"lexeme":{"Heteronym":{"word":"last","lemma":"last","pos":"ADJ"}},"count":674}
@@ -559,9 +558,9 @@
 {"lexeme":{"Heteronym":{"word":"born","lemma":"bear","pos":"VERB"}},"count":216}
 {"lexeme":{"Heteronym":{"word":"used","lemma":"use","pos":"AUX"}},"count":216}
 {"lexeme":{"Heteronym":{"word":"married","lemma":"married","pos":"ADJ"}},"count":215}
-{"lexeme":{"Heteronym":{"word":"dead","lemma":"dead","pos":"ADJ"}},"count":214}
 {"lexeme":{"Heteronym":{"word":"love","lemma":"love","pos":"NOUN"}},"count":214}
 {"lexeme":{"Heteronym":{"word":"also","lemma":"also","pos":"ADV"}},"count":213}
+{"lexeme":{"Heteronym":{"word":"dead","lemma":"dead","pos":"ADJ"}},"count":213}
 {"lexeme":{"Heteronym":{"word":"snow","lemma":"snow","pos":"NOUN"}},"count":213}
 {"lexeme":{"Heteronym":{"word":"cake","lemma":"cake","pos":"NOUN"}},"count":211}
 {"lexeme":{"Heteronym":{"word":"open","lemma":"open","pos":"VERB"}},"count":211}
@@ -579,6 +578,7 @@
 {"lexeme":{"Heteronym":{"word":"girls","lemma":"girl","pos":"NOUN"}},"count":206}
 {"lexeme":{"Heteronym":{"word":"open","lemma":"open","pos":"ADJ"}},"count":206}
 {"lexeme":{"Heteronym":{"word":"seen","lemma":"see","pos":"VERB"}},"count":206}
+{"lexeme":{"Multiword":"let"},"count":206}
 {"lexeme":{"Multiword":"think about"},"count":206}
 {"lexeme":{"Heteronym":{"word":"most","lemma":"most","pos":"ADV"}},"count":205}
 {"lexeme":{"Multiword":"all the time"},"count":205}
@@ -1160,7 +1160,6 @@
 {"lexeme":{"Heteronym":{"word":"novel","lemma":"novel","pos":"NOUN"}},"count":94}
 {"lexeme":{"Heteronym":{"word":"prison","lemma":"prison","pos":"NOUN"}},"count":94}
 {"lexeme":{"Heteronym":{"word":"rest","lemma":"rest","pos":"NOUN"}},"count":94}
-{"lexeme":{"Multiword":"United States"},"count":94}
 {"lexeme":{"Multiword":"all night"},"count":94}
 {"lexeme":{"Heteronym":{"word":"american","lemma":"american","pos":"ADJ"}},"count":93}
 {"lexeme":{"Heteronym":{"word":"begin","lemma":"begin","pos":"VERB"}},"count":93}
@@ -1191,7 +1190,6 @@
 {"lexeme":{"Heteronym":{"word":"driving","lemma":"drive","pos":"VERB"}},"count":90}
 {"lexeme":{"Heteronym":{"word":"needed","lemma":"need","pos":"VERB"}},"count":90}
 {"lexeme":{"Heteronym":{"word":"second","lemma":"second","pos":"ADJ"}},"count":90}
-{"lexeme":{"Multiword":"New York"},"count":90}
 {"lexeme":{"Multiword":"come from"},"count":90}
 {"lexeme":{"Multiword":"come on"},"count":90}
 {"lexeme":{"Multiword":"coming on"},"count":90}
@@ -1224,7 +1222,6 @@
 {"lexeme":{"Multiword":"I tell you"},"count":88}
 {"lexeme":{"Multiword":"I told you"},"count":88}
 {"lexeme":{"Multiword":"end of"},"count":88}
-{"lexeme":{"Multiword":"f--k"},"count":88}
 {"lexeme":{"Heteronym":{"word":"dishes","lemma":"dish","pos":"NOUN"}},"count":87}
 {"lexeme":{"Heteronym":{"word":"faster","lemma":"fast","pos":"ADV"}},"count":87}
 {"lexeme":{"Heteronym":{"word":"lights","lemma":"light","pos":"NOUN"}},"count":87}
@@ -1713,7 +1710,6 @@
 {"lexeme":{"Heteronym":{"word":"staying","lemma":"stay","pos":"VERB"}},"count":58}
 {"lexeme":{"Heteronym":{"word":"teachers","lemma":"teacher","pos":"NOUN"}},"count":58}
 {"lexeme":{"Heteronym":{"word":"yourselves","lemma":"yourselves","pos":"PRON"}},"count":58}
-{"lexeme":{"Multiword":"----hole"},"count":58}
 {"lexeme":{"Multiword":"a piece of"},"count":58}
 {"lexeme":{"Multiword":"back in"},"count":58}
 {"lexeme":{"Multiword":"know everything"},"count":58}
@@ -2510,7 +2506,6 @@
 {"lexeme":{"Multiword":"my aunt"},"count":36}
 {"lexeme":{"Multiword":"run into"},"count":36}
 {"lexeme":{"Multiword":"run over"},"count":36}
-{"lexeme":{"Multiword":"s--t"},"count":36}
 {"lexeme":{"Multiword":"take up"},"count":36}
 {"lexeme":{"Multiword":"the hell"},"count":36}
 {"lexeme":{"Multiword":"to let"},"count":36}
@@ -2799,7 +2794,6 @@
 {"lexeme":{"Heteronym":{"word":"washes","lemma":"wash","pos":"VERB"}},"count":31}
 {"lexeme":{"Heteronym":{"word":"way","lemma":"way","pos":"ADV"}},"count":31}
 {"lexeme":{"Multiword":"Christmas tree"},"count":31}
-{"lexeme":{"Multiword":"Western Sahara"},"count":31}
 {"lexeme":{"Multiword":"bed in"},"count":31}
 {"lexeme":{"Multiword":"come tomorrow"},"count":31}
 {"lexeme":{"Multiword":"cut down"},"count":31}
@@ -2870,7 +2864,6 @@
 {"lexeme":{"Heteronym":{"word":"thirsty","lemma":"thirsty","pos":"ADJ"}},"count":30}
 {"lexeme":{"Heteronym":{"word":"worry","lemma":"worry","pos":"VERB"}},"count":30}
 {"lexeme":{"Multiword":"I can't"},"count":30}
-{"lexeme":{"Multiword":"Santa Claus"},"count":30}
 {"lexeme":{"Multiword":"any more"},"count":30}
 {"lexeme":{"Multiword":"be silent"},"count":30}
 {"lexeme":{"Multiword":"if only"},"count":30}
@@ -2945,6 +2938,7 @@
 {"lexeme":{"Heteronym":{"word":"wanna","lemma":"want","pos":"VERB"}},"count":29}
 {"lexeme":{"Heteronym":{"word":"whom","lemma":"who","pos":"PRON"}},"count":29}
 {"lexeme":{"Heteronym":{"word":"yen","lemma":"yen","pos":"NOUN"}},"count":29}
+{"lexeme":{"Multiword":"United States"},"count":29}
 {"lexeme":{"Multiword":"any time"},"count":29}
 {"lexeme":{"Multiword":"as long as"},"count":29}
 {"lexeme":{"Multiword":"bad weather"},"count":29}
@@ -3107,6 +3101,7 @@
 {"lexeme":{"Heteronym":{"word":"wooden","lemma":"wooden","pos":"ADJ"}},"count":27}
 {"lexeme":{"Multiword":"A game"},"count":27}
 {"lexeme":{"Multiword":"I don't know"},"count":27}
+{"lexeme":{"Multiword":"New York"},"count":27}
 {"lexeme":{"Multiword":"anything but"},"count":27}
 {"lexeme":{"Multiword":"at it"},"count":27}
 {"lexeme":{"Multiword":"at the door"},"count":27}
@@ -3115,6 +3110,7 @@
 {"lexeme":{"Multiword":"come out in"},"count":27}
 {"lexeme":{"Multiword":"down to"},"count":27}
 {"lexeme":{"Multiword":"every time"},"count":27}
+{"lexeme":{"Multiword":"f--k"},"count":27}
 {"lexeme":{"Multiword":"fall on"},"count":27}
 {"lexeme":{"Multiword":"for one"},"count":27}
 {"lexeme":{"Multiword":"free time"},"count":27}
@@ -3503,7 +3499,6 @@
 {"lexeme":{"Multiword":"-in-law"},"count":23}
 {"lexeme":{"Multiword":"A flat"},"count":23}
 {"lexeme":{"Multiword":"Cherry Tree"},"count":23}
-{"lexeme":{"Multiword":"Toki Pona"},"count":23}
 {"lexeme":{"Multiword":"a flat"},"count":23}
 {"lexeme":{"Multiword":"a great deal"},"count":23}
 {"lexeme":{"Multiword":"after you"},"count":23}
@@ -4212,6 +4207,7 @@
 {"lexeme":{"Heteronym":{"word":"valley","lemma":"valley","pos":"NOUN"}},"count":18}
 {"lexeme":{"Heteronym":{"word":"whale","lemma":"whale","pos":"NOUN"}},"count":18}
 {"lexeme":{"Heteronym":{"word":"worst","lemma":"bad","pos":"ADJ"}},"count":18}
+{"lexeme":{"Multiword":"----hole"},"count":18}
 {"lexeme":{"Multiword":"Bright Young People"},"count":18}
 {"lexeme":{"Multiword":"any good"},"count":18}
 {"lexeme":{"Multiword":"apple tree"},"count":18}
@@ -5310,14 +5306,10 @@
 {"lexeme":{"Heteronym":{"word":"working","lemma":"working","pos":"ADJ"}},"count":13}
 {"lexeme":{"Heteronym":{"word":"wrong","lemma":"wrong","pos":"NOUN"}},"count":13}
 {"lexeme":{"Multiword":"Bad Thing"},"count":13}
-{"lexeme":{"Multiword":"Christmas Day"},"count":13}
-{"lexeme":{"Multiword":"Christmas Eve"},"count":13}
 {"lexeme":{"Multiword":"Day and Night"},"count":13}
-{"lexeme":{"Multiword":"Eiffel Tower"},"count":13}
 {"lexeme":{"Multiword":"I'll tell you"},"count":13}
 {"lexeme":{"Multiword":"I'm busy"},"count":13}
 {"lexeme":{"Multiword":"I'm good"},"count":13}
-{"lexeme":{"Multiword":"New Year"},"count":13}
 {"lexeme":{"Multiword":"Philadelphia ice cream"},"count":13}
 {"lexeme":{"Multiword":"The Valley"},"count":13}
 {"lexeme":{"Multiword":"aim at"},"count":13}
@@ -6018,6 +6010,7 @@
 {"lexeme":{"Multiword":"rich man"},"count":11}
 {"lexeme":{"Multiword":"run down"},"count":11}
 {"lexeme":{"Multiword":"run through"},"count":11}
+{"lexeme":{"Multiword":"s--t"},"count":11}
 {"lexeme":{"Multiword":"senior ship-of-the-line captain"},"count":11}
 {"lexeme":{"Multiword":"set in"},"count":11}
 {"lexeme":{"Multiword":"sit around"},"count":11}
@@ -6337,7 +6330,8 @@
 {"lexeme":{"Multiword":"I take it"},"count":10}
 {"lexeme":{"Multiword":"I would rather die"},"count":10}
 {"lexeme":{"Multiword":"New Thing"},"count":10}
-{"lexeme":{"Multiword":"Park Street"},"count":10}
+{"lexeme":{"Multiword":"Santa Claus"},"count":10}
+{"lexeme":{"Multiword":"Western Sahara"},"count":10}
 {"lexeme":{"Multiword":"act on"},"count":10}
 {"lexeme":{"Multiword":"all along"},"count":10}
 {"lexeme":{"Multiword":"all good"},"count":10}
@@ -6803,7 +6797,6 @@
 {"lexeme":{"Heteronym":{"word":"wrist","lemma":"wrist","pos":"NOUN"}},"count":9}
 {"lexeme":{"Multiword":"A band"},"count":9}
 {"lexeme":{"Multiword":"Good Book"},"count":9}
-{"lexeme":{"Multiword":"Olympic Games"},"count":9}
 {"lexeme":{"Multiword":"The Mall"},"count":9}
 {"lexeme":{"Multiword":"White Horse"},"count":9}
 {"lexeme":{"Multiword":"a good look"},"count":9}
@@ -7391,8 +7384,6 @@
 {"lexeme":{"Multiword":"I fear"},"count":8}
 {"lexeme":{"Multiword":"I think so"},"count":8}
 {"lexeme":{"Multiword":"June beetle"},"count":8}
-{"lexeme":{"Multiword":"North Korea"},"count":8}
-{"lexeme":{"Multiword":"Second World War"},"count":8}
 {"lexeme":{"Multiword":"X-ray"},"count":8}
 {"lexeme":{"Multiword":"about time"},"count":8}
 {"lexeme":{"Multiword":"alarm clock"},"count":8}
@@ -8070,11 +8061,8 @@
 {"lexeme":{"Multiword":"I never did"},"count":7}
 {"lexeme":{"Multiword":"I'm bleeding"},"count":7}
 {"lexeme":{"Multiword":"I'm worried"},"count":7}
-{"lexeme":{"Multiword":"Jesus Christ"},"count":7}
-{"lexeme":{"Multiword":"New Zealand"},"count":7}
-{"lexeme":{"Multiword":"South Korea"},"count":7}
+{"lexeme":{"Multiword":"Toki Pona"},"count":7}
 {"lexeme":{"Multiword":"Washington cherry tree"},"count":7}
-{"lexeme":{"Multiword":"White House"},"count":7}
 {"lexeme":{"Multiword":"a clock"},"count":7}
 {"lexeme":{"Multiword":"a good deal"},"count":7}
 {"lexeme":{"Multiword":"abide by"},"count":7}
@@ -8946,11 +8934,9 @@
 {"lexeme":{"Heteronym":{"word":"yell","lemma":"yell","pos":"VERB"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"yet","lemma":"yet","pos":"CCONJ"}},"count":6}
 {"lexeme":{"Heteronym":{"word":"yields","lemma":"yield","pos":"VERB"}},"count":6}
-{"lexeme":{"Multiword":"Donald Trump"},"count":6}
 {"lexeme":{"Multiword":"French and English"},"count":6}
 {"lexeme":{"Multiword":"Hawaiian blue eyes"},"count":6}
 {"lexeme":{"Multiword":"New Song"},"count":6}
-{"lexeme":{"Multiword":"North Pole"},"count":6}
 {"lexeme":{"Multiword":"Usenet Death Penalty"},"count":6}
 {"lexeme":{"Multiword":"White Dogs"},"count":6}
 {"lexeme":{"Multiword":"a great deal of"},"count":6}
@@ -10098,7 +10084,6 @@
 {"lexeme":{"Multiword":"1st person"},"count":5}
 {"lexeme":{"Multiword":"Bride of the Red Sea"},"count":5}
 {"lexeme":{"Multiword":"Chinese character"},"count":5}
-{"lexeme":{"Multiword":"East Jerusalem"},"count":5}
 {"lexeme":{"Multiword":"First People"},"count":5}
 {"lexeme":{"Multiword":"French fries"},"count":5}
 {"lexeme":{"Multiword":"French fry"},"count":5}
@@ -10112,15 +10097,9 @@
 {"lexeme":{"Multiword":"I'm sick"},"count":5}
 {"lexeme":{"Multiword":"Ist person"},"count":5}
 {"lexeme":{"Multiword":"Knight of the Golden Circle"},"count":5}
-{"lexeme":{"Multiword":"Lake Biwa"},"count":5}
-{"lexeme":{"Multiword":"Middle Ages"},"count":5}
 {"lexeme":{"Multiword":"New Buildings"},"count":5}
-{"lexeme":{"Multiword":"New York City"},"count":5}
-{"lexeme":{"Multiword":"San Francisco"},"count":5}
 {"lexeme":{"Multiword":"TV set"},"count":5}
 {"lexeme":{"Multiword":"The Emergency"},"count":5}
-{"lexeme":{"Multiword":"United Nations"},"count":5}
-{"lexeme":{"Multiword":"World Cup"},"count":5}
 {"lexeme":{"Multiword":"a great many"},"count":5}
 {"lexeme":{"Multiword":"a thing or two"},"count":5}
 {"lexeme":{"Multiword":"after a while"},"count":5}
@@ -11706,37 +11685,27 @@
 {"lexeme":{"Heteronym":{"word":"’t","lemma":"not","pos":"PART"}},"count":4}
 {"lexeme":{"Multiword":"American comic book"},"count":4}
 {"lexeme":{"Multiword":"American football"},"count":4}
-{"lexeme":{"Multiword":"Ancient Greek"},"count":4}
-{"lexeme":{"Multiword":"Berlin Wall"},"count":4}
+{"lexeme":{"Multiword":"Christmas Day"},"count":4}
+{"lexeme":{"Multiword":"Christmas Eve"},"count":4}
 {"lexeme":{"Multiword":"Christmas dinner"},"count":4}
 {"lexeme":{"Multiword":"Christmas is coming"},"count":4}
-{"lexeme":{"Multiword":"Civil War"},"count":4}
+{"lexeme":{"Multiword":"Eiffel Tower"},"count":4}
 {"lexeme":{"Multiword":"Ferris wheel"},"count":4}
 {"lexeme":{"Multiword":"Green Tea"},"count":4}
-{"lexeme":{"Multiword":"Helen Keller"},"count":4}
-{"lexeme":{"Multiword":"Holy Spirit"},"count":4}
 {"lexeme":{"Multiword":"I and I"},"count":4}
 {"lexeme":{"Multiword":"I don't think"},"count":4}
 {"lexeme":{"Multiword":"I'd say"},"count":4}
 {"lexeme":{"Multiword":"I'll say"},"count":4}
 {"lexeme":{"Multiword":"I'm looking for a job"},"count":4}
 {"lexeme":{"Multiword":"I'm scared"},"count":4}
-{"lexeme":{"Multiword":"Industrial Revolution"},"count":4}
 {"lexeme":{"Multiword":"Long Vacation"},"count":4}
 {"lexeme":{"Multiword":"Mashed Potato"},"count":4}
-{"lexeme":{"Multiword":"Modern Greek"},"count":4}
-{"lexeme":{"Multiword":"Mona Lisa"},"count":4}
-{"lexeme":{"Multiword":"North Africa"},"count":4}
-{"lexeme":{"Multiword":"Prime Minister"},"count":4}
-{"lexeme":{"Multiword":"Red Cross"},"count":4}
+{"lexeme":{"Multiword":"New Year"},"count":4}
 {"lexeme":{"Multiword":"Red Roses"},"count":4}
 {"lexeme":{"Multiword":"TV program"},"count":4}
 {"lexeme":{"Multiword":"The Firm"},"count":4}
 {"lexeme":{"Multiword":"Tom and Jerry"},"count":4}
-{"lexeme":{"Multiword":"Tour de France"},"count":4}
-{"lexeme":{"Multiword":"United Kingdom"},"count":4}
 {"lexeme":{"Multiword":"White Cloud"},"count":4}
-{"lexeme":{"Multiword":"World War II"},"count":4}
 {"lexeme":{"Multiword":"a tad"},"count":4}
 {"lexeme":{"Multiword":"absent-minded"},"count":4}
 {"lexeme":{"Multiword":"across from"},"count":4}
@@ -14088,29 +14057,16 @@
 {"lexeme":{"Multiword":"A level"},"count":3}
 {"lexeme":{"Multiword":"A negative"},"count":3}
 {"lexeme":{"Multiword":"A wave"},"count":3}
-{"lexeme":{"Multiword":"Arnold Schwarzenegger"},"count":3}
 {"lexeme":{"Multiword":"Blue Shirt"},"count":3}
-{"lexeme":{"Multiword":"Brazilian Portuguese"},"count":3}
-{"lexeme":{"Multiword":"Burj Khalifa"},"count":3}
-{"lexeme":{"Multiword":"Central Park"},"count":3}
 {"lexeme":{"Multiword":"Chinese medicine"},"count":3}
 {"lexeme":{"Multiword":"Christmas break"},"count":3}
 {"lexeme":{"Multiword":"Christmas carol"},"count":3}
 {"lexeme":{"Multiword":"Christmas light"},"count":3}
-{"lexeme":{"Multiword":"Cold War"},"count":3}
 {"lexeme":{"Multiword":"F off"},"count":3}
-{"lexeme":{"Multiword":"Father Christmas"},"count":3}
 {"lexeme":{"Multiword":"Glory Be"},"count":3}
 {"lexeme":{"Multiword":"God willing"},"count":3}
-{"lexeme":{"Multiword":"Google Translate"},"count":3}
-{"lexeme":{"Multiword":"Gr. Brit."},"count":3}
-{"lexeme":{"Multiword":"Great Britain"},"count":3}
-{"lexeme":{"Multiword":"Gulf War"},"count":3}
 {"lexeme":{"Multiword":"Happy Time"},"count":3}
-{"lexeme":{"Multiword":"Highway Code"},"count":3}
 {"lexeme":{"Multiword":"Hold 'em"},"count":3}
-{"lexeme":{"Multiword":"Holy Trinity"},"count":3}
-{"lexeme":{"Multiword":"Hong Kong"},"count":3}
 {"lexeme":{"Multiword":"I am a doctor"},"count":3}
 {"lexeme":{"Multiword":"I beg your pardon"},"count":3}
 {"lexeme":{"Multiword":"I have a cold"},"count":3}
@@ -14119,30 +14075,23 @@
 {"lexeme":{"Multiword":"I want my money back"},"count":3}
 {"lexeme":{"Multiword":"I'd like to know"},"count":3}
 {"lexeme":{"Multiword":"I'm ashamed"},"count":3}
-{"lexeme":{"Multiword":"Los Angeles"},"count":3}
-{"lexeme":{"Multiword":"Los Angelise"},"count":3}
-{"lexeme":{"Multiword":"Middle East"},"count":3}
-{"lexeme":{"Multiword":"Mont Blanc"},"count":3}
-{"lexeme":{"Multiword":"Mount Fuji"},"count":3}
+{"lexeme":{"Multiword":"Jesus Christ"},"count":3}
 {"lexeme":{"Multiword":"National Park"},"count":3}
-{"lexeme":{"Multiword":"North America"},"count":3}
+{"lexeme":{"Multiword":"New Zealand"},"count":3}
+{"lexeme":{"Multiword":"North Korea"},"count":3}
+{"lexeme":{"Multiword":"Olympic Games"},"count":3}
 {"lexeme":{"Multiword":"Our Father"},"count":3}
+{"lexeme":{"Multiword":"Park Street"},"count":3}
 {"lexeme":{"Multiword":"Pear Tree"},"count":3}
-{"lexeme":{"Multiword":"Porto Alegre"},"count":3}
 {"lexeme":{"Multiword":"Red Shirt"},"count":3}
-{"lexeme":{"Multiword":"Robin Hood"},"count":3}
-{"lexeme":{"Multiword":"Santa Ana"},"count":3}
 {"lexeme":{"Multiword":"Santa hat"},"count":3}
+{"lexeme":{"Multiword":"Second World War"},"count":3}
 {"lexeme":{"Multiword":"Sixth Day"},"count":3}
 {"lexeme":{"Multiword":"Son of God"},"count":3}
-{"lexeme":{"Multiword":"South America"},"count":3}
-{"lexeme":{"Multiword":"Soviet Union"},"count":3}
-{"lexeme":{"Multiword":"São Paulo"},"count":3}
+{"lexeme":{"Multiword":"South Korea"},"count":3}
 {"lexeme":{"Multiword":"The Ditch"},"count":3}
 {"lexeme":{"Multiword":"Third Planet"},"count":3}
-{"lexeme":{"Multiword":"Van Gogh"},"count":3}
-{"lexeme":{"Multiword":"Vietnam War"},"count":3}
-{"lexeme":{"Multiword":"West Bank"},"count":3}
+{"lexeme":{"Multiword":"White House"},"count":3}
 {"lexeme":{"Multiword":"a good many"},"count":3}
 {"lexeme":{"Multiword":"above average"},"count":3}
 {"lexeme":{"Multiword":"account to"},"count":3}
@@ -18439,45 +18388,37 @@
 {"lexeme":{"Multiword":"A battery"},"count":2}
 {"lexeme":{"Multiword":"A minor"},"count":2}
 {"lexeme":{"Multiword":"Advanced level"},"count":2}
-{"lexeme":{"Multiword":"Al Capone"},"count":2}
-{"lexeme":{"Multiword":"American Civil War"},"count":2}
+{"lexeme":{"Multiword":"Ancient Greek"},"count":2}
 {"lexeme":{"Multiword":"Be star"},"count":2}
-{"lexeme":{"Multiword":"Big Apple"},"count":2}
+{"lexeme":{"Multiword":"Berlin Wall"},"count":2}
 {"lexeme":{"Multiword":"Big Game"},"count":2}
 {"lexeme":{"Multiword":"Big Rock"},"count":2}
 {"lexeme":{"Multiword":"Big Sister"},"count":2}
 {"lexeme":{"Multiword":"Black Belt"},"count":2}
-{"lexeme":{"Multiword":"Black Forest"},"count":2}
-{"lexeme":{"Multiword":"Black Sea"},"count":2}
 {"lexeme":{"Multiword":"Black lives matter"},"count":2}
-{"lexeme":{"Multiword":"Boy Scout"},"count":2}
-{"lexeme":{"Multiword":"Buckingham Palace"},"count":2}
 {"lexeme":{"Multiword":"C-PTSD"},"count":2}
 {"lexeme":{"Multiword":"CD player"},"count":2}
-{"lexeme":{"Multiword":"Central Europe"},"count":2}
 {"lexeme":{"Multiword":"Chinese full stop"},"count":2}
+{"lexeme":{"Multiword":"Civil War"},"count":2}
 {"lexeme":{"Multiword":"Coca-Cola"},"count":2}
-{"lexeme":{"Multiword":"Communist Party"},"count":2}
-{"lexeme":{"Multiword":"Democratic Republic of the Congo"},"count":2}
+{"lexeme":{"Multiword":"Donald Trump"},"count":2}
+{"lexeme":{"Multiword":"East Jerusalem"},"count":2}
 {"lexeme":{"Multiword":"Editor-in-Chief"},"count":2}
 {"lexeme":{"Multiword":"English-speaking"},"count":2}
 {"lexeme":{"Multiword":"Fifth Day"},"count":2}
-{"lexeme":{"Multiword":"French Revolution"},"count":2}
 {"lexeme":{"Multiword":"French bread"},"count":2}
 {"lexeme":{"Multiword":"French toast"},"count":2}
-{"lexeme":{"Multiword":"Geneva Convention"},"count":2}
 {"lexeme":{"Multiword":"God Almighty"},"count":2}
 {"lexeme":{"Multiword":"God Save the Queen"},"count":2}
 {"lexeme":{"Multiword":"God bless you"},"count":2}
 {"lexeme":{"Multiword":"God damn"},"count":2}
 {"lexeme":{"Multiword":"God forbid"},"count":2}
-{"lexeme":{"Multiword":"Golden Gate Bridge"},"count":2}
-{"lexeme":{"Multiword":"Great Wall of China"},"count":2}
 {"lexeme":{"Multiword":"Gummy Bears"},"count":2}
 {"lexeme":{"Multiword":"HIV-positive"},"count":2}
 {"lexeme":{"Multiword":"Hail Mary"},"count":2}
-{"lexeme":{"Multiword":"Harry Potter"},"count":2}
+{"lexeme":{"Multiword":"Helen Keller"},"count":2}
 {"lexeme":{"Multiword":"Hello World"},"count":2}
+{"lexeme":{"Multiword":"Holy Spirit"},"count":2}
 {"lexeme":{"Multiword":"I am English"},"count":2}
 {"lexeme":{"Multiword":"I can tell you"},"count":2}
 {"lexeme":{"Multiword":"I don't think so"},"count":2}
@@ -18495,53 +18436,47 @@
 {"lexeme":{"Multiword":"I'm embarrassed"},"count":2}
 {"lexeme":{"Multiword":"I'm fine, thank you"},"count":2}
 {"lexeme":{"Multiword":"I'm single"},"count":2}
+{"lexeme":{"Multiword":"Industrial Revolution"},"count":2}
 {"lexeme":{"Multiword":"Japanese full stop"},"count":2}
 {"lexeme":{"Multiword":"Jesus H. Christ"},"count":2}
-{"lexeme":{"Multiword":"Lake Chad"},"count":2}
+{"lexeme":{"Multiword":"Lake Biwa"},"count":2}
 {"lexeme":{"Multiword":"Lyme disease"},"count":2}
-{"lexeme":{"Multiword":"Milky Way"},"count":2}
-{"lexeme":{"Multiword":"Mississippi River"},"count":2}
-{"lexeme":{"Multiword":"Mother Nature"},"count":2}
-{"lexeme":{"Multiword":"Mother Teresa"},"count":2}
-{"lexeme":{"Multiword":"Mount Everest"},"count":2}
+{"lexeme":{"Multiword":"Middle Ages"},"count":2}
+{"lexeme":{"Multiword":"Modern Greek"},"count":2}
+{"lexeme":{"Multiword":"Mona Lisa"},"count":2}
 {"lexeme":{"Multiword":"New Man"},"count":2}
+{"lexeme":{"Multiword":"New York City"},"count":2}
+{"lexeme":{"Multiword":"North Africa"},"count":2}
+{"lexeme":{"Multiword":"North Pole"},"count":2}
 {"lexeme":{"Multiword":"Notre-Dame"},"count":2}
-{"lexeme":{"Multiword":"Papua New Guinea"},"count":2}
-{"lexeme":{"Multiword":"Puerto Rico"},"count":2}
-{"lexeme":{"Multiword":"Quebec City"},"count":2}
+{"lexeme":{"Multiword":"Prime Minister"},"count":2}
+{"lexeme":{"Multiword":"Red Cross"},"count":2}
 {"lexeme":{"Multiword":"Red Flag"},"count":2}
-{"lexeme":{"Multiword":"Republic of China"},"count":2}
 {"lexeme":{"Multiword":"Roman numeral"},"count":2}
 {"lexeme":{"Multiword":"Roman numeraled"},"count":2}
 {"lexeme":{"Multiword":"Roman numerals"},"count":2}
 {"lexeme":{"Multiword":"Russian roulette"},"count":2}
 {"lexeme":{"Multiword":"Saint-Étienne"},"count":2}
-{"lexeme":{"Multiword":"San Diego"},"count":2}
-{"lexeme":{"Multiword":"Sao Paulo"},"count":2}
+{"lexeme":{"Multiword":"San Francisco"},"count":2}
 {"lexeme":{"Multiword":"Second Day"},"count":2}
 {"lexeme":{"Multiword":"Sky Blue"},"count":2}
-{"lexeme":{"Multiword":"South Pole"},"count":2}
-{"lexeme":{"Multiword":"Statue of Liberty"},"count":2}
-{"lexeme":{"Multiword":"Sup. Ct."},"count":2}
-{"lexeme":{"Multiword":"Super Bowl"},"count":2}
-{"lexeme":{"Multiword":"Supreme Court"},"count":2}
 {"lexeme":{"Multiword":"TV series"},"count":2}
-{"lexeme":{"Multiword":"Tel Aviv"},"count":2}
 {"lexeme":{"Multiword":"The Few"},"count":2}
 {"lexeme":{"Multiword":"The Hundred"},"count":2}
 {"lexeme":{"Multiword":"The Settlement"},"count":2}
 {"lexeme":{"Multiword":"Tipler time machine"},"count":2}
-{"lexeme":{"Multiword":"Tizi Ouzou"},"count":2}
-{"lexeme":{"Multiword":"Tower of London"},"count":2}
+{"lexeme":{"Multiword":"Tour de France"},"count":2}
 {"lexeme":{"Multiword":"Two Rivers"},"count":2}
 {"lexeme":{"Multiword":"U-turn"},"count":2}
-{"lexeme":{"Multiword":"United States of America"},"count":2}
-{"lexeme":{"Multiword":"Van Horn"},"count":2}
+{"lexeme":{"Multiword":"United Kingdom"},"count":2}
+{"lexeme":{"Multiword":"United Nations"},"count":2}
 {"lexeme":{"Multiword":"War in Europe"},"count":2}
 {"lexeme":{"Multiword":"White Man"},"count":2}
 {"lexeme":{"Multiword":"White man"},"count":2}
 {"lexeme":{"Multiword":"White supremacist"},"count":2}
 {"lexeme":{"Multiword":"Wi-Fi"},"count":2}
+{"lexeme":{"Multiword":"World Cup"},"count":2}
+{"lexeme":{"Multiword":"World War II"},"count":2}
 {"lexeme":{"Multiword":"a bird in the hand"},"count":2}
 {"lexeme":{"Multiword":"a hundred percent"},"count":2}
 {"lexeme":{"Multiword":"a trifle"},"count":2}
@@ -29040,8 +28975,10 @@
 {"lexeme":{"Multiword":"African blue tit"},"count":1}
 {"lexeme":{"Multiword":"African elephant"},"count":1}
 {"lexeme":{"Multiword":"African wild dog"},"count":1}
+{"lexeme":{"Multiword":"Al Capone"},"count":1}
 {"lexeme":{"Multiword":"Albert Einstein"},"count":1}
 {"lexeme":{"Multiword":"Allahu akbar"},"count":1}
+{"lexeme":{"Multiword":"American Civil War"},"count":1}
 {"lexeme":{"Multiword":"American Revolution"},"count":1}
 {"lexeme":{"Multiword":"American hot dog"},"count":1}
 {"lexeme":{"Multiword":"American painted lady"},"count":1}
@@ -29050,6 +28987,7 @@
 {"lexeme":{"Multiword":"Arab League"},"count":1}
 {"lexeme":{"Multiword":"Armenian Genocide"},"count":1}
 {"lexeme":{"Multiword":"Armenian genocide"},"count":1}
+{"lexeme":{"Multiword":"Arnold Schwarzenegger"},"count":1}
 {"lexeme":{"Multiword":"Ash Wednesday"},"count":1}
 {"lexeme":{"Multiword":"Asian wild dog"},"count":1}
 {"lexeme":{"Multiword":"Atlantic City"},"count":1}
@@ -29061,17 +28999,24 @@
 {"lexeme":{"Multiword":"Baltic Sea"},"count":1}
 {"lexeme":{"Multiword":"Benjamin Franklin"},"count":1}
 {"lexeme":{"Multiword":"Bermuda Triangle"},"count":1}
+{"lexeme":{"Multiword":"Big Apple"},"count":1}
 {"lexeme":{"Multiword":"Big Business"},"count":1}
 {"lexeme":{"Multiword":"Big Stone"},"count":1}
 {"lexeme":{"Multiword":"Black Death"},"count":1}
+{"lexeme":{"Multiword":"Black Forest"},"count":1}
 {"lexeme":{"Multiword":"Black Forest cake"},"count":1}
 {"lexeme":{"Multiword":"Black Forest gateau"},"count":1}
+{"lexeme":{"Multiword":"Black Sea"},"count":1}
 {"lexeme":{"Multiword":"Black man"},"count":1}
 {"lexeme":{"Multiword":"Boston lettuce"},"count":1}
+{"lexeme":{"Multiword":"Boy Scout"},"count":1}
+{"lexeme":{"Multiword":"Brazilian Portuguese"},"count":1}
 {"lexeme":{"Multiword":"British Virgin Islands"},"count":1}
 {"lexeme":{"Multiword":"Britney Spears"},"count":1}
+{"lexeme":{"Multiword":"Buckingham Palace"},"count":1}
 {"lexeme":{"Multiword":"Buddha-nature"},"count":1}
 {"lexeme":{"Multiword":"Buenos Aires"},"count":1}
+{"lexeme":{"Multiword":"Burj Khalifa"},"count":1}
 {"lexeme":{"Multiword":"Burkina Faso"},"count":1}
 {"lexeme":{"Multiword":"California Condor"},"count":1}
 {"lexeme":{"Multiword":"California condor"},"count":1}
@@ -29086,9 +29031,10 @@
 {"lexeme":{"Multiword":"Captain Obvious"},"count":1}
 {"lexeme":{"Multiword":"Cayman Islands"},"count":1}
 {"lexeme":{"Multiword":"Central African Republic"},"count":1}
+{"lexeme":{"Multiword":"Central Europe"},"count":1}
+{"lexeme":{"Multiword":"Central Park"},"count":1}
 {"lexeme":{"Multiword":"Champions League"},"count":1}
 {"lexeme":{"Multiword":"Charles de Gaulle"},"count":1}
-{"lexeme":{"Multiword":"Chinese New Year"},"count":1}
 {"lexeme":{"Multiword":"Chinese traditional medicine"},"count":1}
 {"lexeme":{"Multiword":"Christian name"},"count":1}
 {"lexeme":{"Multiword":"Christmas cookie"},"count":1}
@@ -29096,14 +29042,16 @@
 {"lexeme":{"Multiword":"Christmas market"},"count":1}
 {"lexeme":{"Multiword":"City Hall"},"count":1}
 {"lexeme":{"Multiword":"Clermont-Ferrand"},"count":1}
+{"lexeme":{"Multiword":"Cold War"},"count":1}
+{"lexeme":{"Multiword":"Communist Party"},"count":1}
 {"lexeme":{"Multiword":"Confederate flag"},"count":1}
-{"lexeme":{"Multiword":"Cuban Missile Crisis"},"count":1}
 {"lexeme":{"Multiword":"Dalai Lama"},"count":1}
 {"lexeme":{"Multiword":"Dark Knight"},"count":1}
 {"lexeme":{"Multiword":"Dead Sea"},"count":1}
 {"lexeme":{"Multiword":"Deep Water"},"count":1}
 {"lexeme":{"Multiword":"Democratic Republic of Congo"},"count":1}
 {"lexeme":{"Multiword":"Democratic Republic of Vietnam"},"count":1}
+{"lexeme":{"Multiword":"Democratic Republic of the Congo"},"count":1}
 {"lexeme":{"Multiword":"Diet Coke"},"count":1}
 {"lexeme":{"Multiword":"Don Quixote"},"count":1}
 {"lexeme":{"Multiword":"Donald Duck"},"count":1}
@@ -29122,6 +29070,7 @@
 {"lexeme":{"Multiword":"European Central Bank"},"count":1}
 {"lexeme":{"Multiword":"European Council"},"count":1}
 {"lexeme":{"Multiword":"European green woodpecker"},"count":1}
+{"lexeme":{"Multiword":"Father Christmas"},"count":1}
 {"lexeme":{"Multiword":"Federal Register"},"count":1}
 {"lexeme":{"Multiword":"Feng Shui"},"count":1}
 {"lexeme":{"Multiword":"Fertile Crescent"},"count":1}
@@ -29134,10 +29083,12 @@
 {"lexeme":{"Multiword":"Forty-five"},"count":1}
 {"lexeme":{"Multiword":"Fourth Day"},"count":1}
 {"lexeme":{"Multiword":"French Alps"},"count":1}
+{"lexeme":{"Multiword":"French Revolution"},"count":1}
 {"lexeme":{"Multiword":"French window"},"count":1}
 {"lexeme":{"Multiword":"Friday prayers"},"count":1}
 {"lexeme":{"Multiword":"Galapagos sea lion"},"count":1}
 {"lexeme":{"Multiword":"Galápagos sea lion"},"count":1}
+{"lexeme":{"Multiword":"Geneva Convention"},"count":1}
 {"lexeme":{"Multiword":"Genghis Khan"},"count":1}
 {"lexeme":{"Multiword":"German shepherd"},"count":1}
 {"lexeme":{"Multiword":"Germanic New Medicine"},"count":1}
@@ -29147,11 +29098,16 @@
 {"lexeme":{"Multiword":"God is in the detail"},"count":1}
 {"lexeme":{"Multiword":"God only knows"},"count":1}
 {"lexeme":{"Multiword":"Gold Star"},"count":1}
+{"lexeme":{"Multiword":"Golden Gate Bridge"},"count":1}
+{"lexeme":{"Multiword":"Google Translate"},"count":1}
 {"lexeme":{"Multiword":"Gordon Bennett"},"count":1}
+{"lexeme":{"Multiword":"Gr. Brit."},"count":1}
 {"lexeme":{"Multiword":"Grand Canyon"},"count":1}
 {"lexeme":{"Multiword":"Great Bear"},"count":1}
+{"lexeme":{"Multiword":"Great Britain"},"count":1}
 {"lexeme":{"Multiword":"Great Mother"},"count":1}
 {"lexeme":{"Multiword":"Great Wall"},"count":1}
+{"lexeme":{"Multiword":"Great Wall of China"},"count":1}
 {"lexeme":{"Multiword":"Greek god"},"count":1}
 {"lexeme":{"Multiword":"Greek letter"},"count":1}
 {"lexeme":{"Multiword":"Greek salad"},"count":1}
@@ -29160,14 +29116,17 @@
 {"lexeme":{"Multiword":"Gregorian chant"},"count":1}
 {"lexeme":{"Multiword":"Greisen-Zatsepin-Kuzmin cut-off"},"count":1}
 {"lexeme":{"Multiword":"Guinea-Bissau"},"count":1}
+{"lexeme":{"Multiword":"Gulf War"},"count":1}
 {"lexeme":{"Multiword":"Gulf of Mexico"},"count":1}
 {"lexeme":{"Multiword":"HIV positive"},"count":1}
 {"lexeme":{"Multiword":"HIV virus"},"count":1}
+{"lexeme":{"Multiword":"Harry Potter"},"count":1}
 {"lexeme":{"Multiword":"He Frowned"},"count":1}
 {"lexeme":{"Multiword":"He dating"},"count":1}
 {"lexeme":{"Multiword":"Hello World!"},"count":1}
 {"lexeme":{"Multiword":"Her Highness"},"count":1}
 {"lexeme":{"Multiword":"High German"},"count":1}
+{"lexeme":{"Multiword":"Highway Code"},"count":1}
 {"lexeme":{"Multiword":"Himalayan brown bear"},"count":1}
 {"lexeme":{"Multiword":"His Honor"},"count":1}
 {"lexeme":{"Multiword":"His Maj"},"count":1}
@@ -29176,7 +29135,9 @@
 {"lexeme":{"Multiword":"Holy Grail"},"count":1}
 {"lexeme":{"Multiword":"Holy Mary"},"count":1}
 {"lexeme":{"Multiword":"Holy Robe"},"count":1}
+{"lexeme":{"Multiword":"Holy Trinity"},"count":1}
 {"lexeme":{"Multiword":"Holy Tunic"},"count":1}
+{"lexeme":{"Multiword":"Hong Kong"},"count":1}
 {"lexeme":{"Multiword":"House of Worship"},"count":1}
 {"lexeme":{"Multiword":"Houston, we have a problem"},"count":1}
 {"lexeme":{"Multiword":"Hyde Park"},"count":1}
@@ -29248,6 +29209,7 @@
 {"lexeme":{"Multiword":"Korean Peninsula"},"count":1}
 {"lexeme":{"Multiword":"Labor Day"},"count":1}
 {"lexeme":{"Multiword":"Lake Baikal"},"count":1}
+{"lexeme":{"Multiword":"Lake Chad"},"count":1}
 {"lexeme":{"Multiword":"Lake Geneva"},"count":1}
 {"lexeme":{"Multiword":"Las Vegas"},"count":1}
 {"lexeme":{"Multiword":"Latin American"},"count":1}
@@ -29257,6 +29219,8 @@
 {"lexeme":{"Multiword":"Loch Ness"},"count":1}
 {"lexeme":{"Multiword":"Loch Ness monster"},"count":1}
 {"lexeme":{"Multiword":"Lord love a duck"},"count":1}
+{"lexeme":{"Multiword":"Los Angeles"},"count":1}
+{"lexeme":{"Multiword":"Los Angelise"},"count":1}
 {"lexeme":{"Multiword":"Lower Sorbian"},"count":1}
 {"lexeme":{"Multiword":"Main Street"},"count":1}
 {"lexeme":{"Multiword":"Mandarin orange"},"count":1}
@@ -29269,7 +29233,15 @@
 {"lexeme":{"Multiword":"Mediterranean diet"},"count":1}
 {"lexeme":{"Multiword":"Michelin star"},"count":1}
 {"lexeme":{"Multiword":"Mickey Mouse"},"count":1}
+{"lexeme":{"Multiword":"Middle East"},"count":1}
+{"lexeme":{"Multiword":"Milky Way"},"count":1}
+{"lexeme":{"Multiword":"Mississippi River"},"count":1}
 {"lexeme":{"Multiword":"Monday night"},"count":1}
+{"lexeme":{"Multiword":"Mont Blanc"},"count":1}
+{"lexeme":{"Multiword":"Mother Nature"},"count":1}
+{"lexeme":{"Multiword":"Mother Teresa"},"count":1}
+{"lexeme":{"Multiword":"Mount Everest"},"count":1}
+{"lexeme":{"Multiword":"Mount Fuji"},"count":1}
 {"lexeme":{"Multiword":"Mountain Ash"},"count":1}
 {"lexeme":{"Multiword":"N-word"},"count":1}
 {"lexeme":{"Multiword":"NOT function"},"count":1}
@@ -29285,6 +29257,7 @@
 {"lexeme":{"Multiword":"No Place"},"count":1}
 {"lexeme":{"Multiword":"Nobel Prize"},"count":1}
 {"lexeme":{"Multiword":"Nordic skiing"},"count":1}
+{"lexeme":{"Multiword":"North America"},"count":1}
 {"lexeme":{"Multiword":"North Carolina"},"count":1}
 {"lexeme":{"Multiword":"North Macedonia"},"count":1}
 {"lexeme":{"Multiword":"North Sea"},"count":1}
@@ -29295,6 +29268,7 @@
 {"lexeme":{"Multiword":"Own Voices"},"count":1}
 {"lexeme":{"Multiword":"Paleo diet"},"count":1}
 {"lexeme":{"Multiword":"Panama rubber tree"},"count":1}
+{"lexeme":{"Multiword":"Papua New Guinea"},"count":1}
 {"lexeme":{"Multiword":"Paralympic Games"},"count":1}
 {"lexeme":{"Multiword":"Park Ridge"},"count":1}
 {"lexeme":{"Multiword":"Pará rubber tree"},"count":1}
@@ -29305,16 +29279,21 @@
 {"lexeme":{"Multiword":"Pippi Longstocking"},"count":1}
 {"lexeme":{"Multiword":"Poor Tom"},"count":1}
 {"lexeme":{"Multiword":"Port Moresby"},"count":1}
+{"lexeme":{"Multiword":"Porto Alegre"},"count":1}
 {"lexeme":{"Multiword":"Proto-Finno-Ugric"},"count":1}
+{"lexeme":{"Multiword":"Puerto Rico"},"count":1}
+{"lexeme":{"Multiword":"Quebec City"},"count":1}
 {"lexeme":{"Multiword":"Ramadan mubarak"},"count":1}
 {"lexeme":{"Multiword":"Red Army Faction"},"count":1}
 {"lexeme":{"Multiword":"Red Book"},"count":1}
 {"lexeme":{"Multiword":"Red Scar"},"count":1}
 {"lexeme":{"Multiword":"Red Sox"},"count":1}
 {"lexeme":{"Multiword":"Red Star"},"count":1}
+{"lexeme":{"Multiword":"Republic of China"},"count":1}
 {"lexeme":{"Multiword":"Republic of the Congo"},"count":1}
 {"lexeme":{"Multiword":"Right Man"},"count":1}
 {"lexeme":{"Multiword":"Rio de Janeiro"},"count":1}
+{"lexeme":{"Multiword":"Robin Hood"},"count":1}
 {"lexeme":{"Multiword":"Rock Quarry"},"count":1}
 {"lexeme":{"Multiword":"Roland Garros"},"count":1}
 {"lexeme":{"Multiword":"Rolls Royce"},"count":1}
@@ -29326,6 +29305,9 @@
 {"lexeme":{"Multiword":"S. Afr."},"count":1}
 {"lexeme":{"Multiword":"Saint Peter"},"count":1}
 {"lexeme":{"Multiword":"Salt Lake City"},"count":1}
+{"lexeme":{"Multiword":"San Diego"},"count":1}
+{"lexeme":{"Multiword":"Santa Ana"},"count":1}
+{"lexeme":{"Multiword":"Sao Paulo"},"count":1}
 {"lexeme":{"Multiword":"Saudi Arabia"},"count":1}
 {"lexeme":{"Multiword":"Scottish Gaelic"},"count":1}
 {"lexeme":{"Multiword":"Sea of Japan"},"count":1}
@@ -29341,22 +29323,31 @@
 {"lexeme":{"Multiword":"Soup Bowl"},"count":1}
 {"lexeme":{"Multiword":"South Africa"},"count":1}
 {"lexeme":{"Multiword":"South African"},"count":1}
+{"lexeme":{"Multiword":"South America"},"count":1}
 {"lexeme":{"Multiword":"South American"},"count":1}
 {"lexeme":{"Multiword":"South China Sea"},"count":1}
 {"lexeme":{"Multiword":"South Pacific"},"count":1}
+{"lexeme":{"Multiword":"South Pole"},"count":1}
+{"lexeme":{"Multiword":"Soviet Union"},"count":1}
 {"lexeme":{"Multiword":"Special Olympics"},"count":1}
 {"lexeme":{"Multiword":"Spring Festival"},"count":1}
 {"lexeme":{"Multiword":"Star Trek"},"count":1}
 {"lexeme":{"Multiword":"Star Wars"},"count":1}
+{"lexeme":{"Multiword":"Statue of Liberty"},"count":1}
 {"lexeme":{"Multiword":"Steller sea lion"},"count":1}
 {"lexeme":{"Multiword":"Strait of Gibraltar"},"count":1}
 {"lexeme":{"Multiword":"Suez Canal"},"count":1}
 {"lexeme":{"Multiword":"Sunday best"},"count":1}
+{"lexeme":{"Multiword":"Sup. Ct."},"count":1}
+{"lexeme":{"Multiword":"Super Bowl"},"count":1}
+{"lexeme":{"Multiword":"Supreme Court"},"count":1}
 {"lexeme":{"Multiword":"Swiss German"},"count":1}
 {"lexeme":{"Multiword":"Swiss bank"},"count":1}
 {"lexeme":{"Multiword":"Syrian brown bear"},"count":1}
+{"lexeme":{"Multiword":"São Paulo"},"count":1}
 {"lexeme":{"Multiword":"TV guide"},"count":1}
 {"lexeme":{"Multiword":"Taj Mahal"},"count":1}
+{"lexeme":{"Multiword":"Tel Aviv"},"count":1}
 {"lexeme":{"Multiword":"Thanksgiving Day"},"count":1}
 {"lexeme":{"Multiword":"The County"},"count":1}
 {"lexeme":{"Multiword":"The Entrance"},"count":1}
@@ -29368,17 +29359,24 @@
 {"lexeme":{"Multiword":"Third World"},"count":1}
 {"lexeme":{"Multiword":"Third World War"},"count":1}
 {"lexeme":{"Multiword":"Three Kings"},"count":1}
+{"lexeme":{"Multiword":"Tizi Ouzou"},"count":1}
 {"lexeme":{"Multiword":"Tommy gun"},"count":1}
 {"lexeme":{"Multiword":"Tower of Babel"},"count":1}
+{"lexeme":{"Multiword":"Tower of London"},"count":1}
 {"lexeme":{"Multiword":"Two Ladies"},"count":1}
 {"lexeme":{"Multiword":"USB drive"},"count":1}
+{"lexeme":{"Multiword":"United States of America"},"count":1}
 {"lexeme":{"Multiword":"Ursa Major"},"count":1}
+{"lexeme":{"Multiword":"Van Gogh"},"count":1}
+{"lexeme":{"Multiword":"Van Horn"},"count":1}
 {"lexeme":{"Multiword":"Venus de Milo"},"count":1}
 {"lexeme":{"Multiword":"Very light"},"count":1}
+{"lexeme":{"Multiword":"Vietnam War"},"count":1}
 {"lexeme":{"Multiword":"Visual Basic"},"count":1}
 {"lexeme":{"Multiword":"Wars of the Roses"},"count":1}
 {"lexeme":{"Multiword":"Web site"},"count":1}
 {"lexeme":{"Multiword":"Welcome to Country"},"count":1}
+{"lexeme":{"Multiword":"West Bank"},"count":1}
 {"lexeme":{"Multiword":"West Coast"},"count":1}
 {"lexeme":{"Multiword":"West Indies"},"count":1}
 {"lexeme":{"Multiword":"Western Europe"},"count":1}

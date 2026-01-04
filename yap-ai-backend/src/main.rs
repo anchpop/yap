@@ -102,6 +102,20 @@ static LANGUAGE_DATA: LazyLock<BTreeMap<Course, &'static [u8]>> = LazyLock::new(
         },
         include_bytes!("../../out/deu_for_eng/language_data.rkyv") as &'static [u8],
     );
+    data.insert(
+        Course {
+            native_language: Language::English,
+            target_language: Language::Italian,
+        },
+        include_bytes!("../../out/ita_for_eng/language_data.rkyv") as &'static [u8],
+    );
+    data.insert(
+        Course {
+            native_language: Language::English,
+            target_language: Language::Portuguese,
+        },
+        include_bytes!("../../out/por_for_eng/language_data.rkyv") as &'static [u8],
+    );
     data
 });
 
@@ -201,12 +215,10 @@ async fn text_to_speech(
         Language::English => "ohItIVrXTBI80RrUECOD", // Default to French voice for now
         Language::Korean => "nbrxrAz3eYm9NgojrmFK", // Korean
         Language::German => "IWm8DnJ4NGjFI7QAM5lM", // Stephan - German voice
+        Language::Italian => "sKbNSlHXq99bttvf8rRF", // Nicola Lorusso - Italian voice
+        Language::Portuguese => "tS45q0QcrDHqHoaWdCDR", // Lax - Portuguese voice
 
-        Language::Chinese
-        | Language::Japanese
-        | Language::Russian
-        | Language::Portuguese
-        | Language::Italian => todo!(),
+        Language::Chinese | Language::Japanese | Language::Russian => todo!(),
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -221,6 +233,7 @@ async fn text_to_speech(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if !response.status().is_success() {
+        eprintln!("ElevenLabs TTS Error: {response:?}");
         return Err(StatusCode::BAD_GATEWAY);
     }
 
@@ -254,12 +267,10 @@ async fn google_text_to_speech(
         Language::English => ("en-US", "en-US-Chirp3-HD-Achernar"),
         Language::Korean => ("ko-KR", "ko-KR-Chirp3-HD-Achernar"),
         Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar"),
+        Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar"),
+        Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar"),
 
-        Language::Chinese
-        | Language::Japanese
-        | Language::Russian
-        | Language::Portuguese
-        | Language::Italian => todo!(),
+        Language::Chinese | Language::Japanese | Language::Russian => todo!(),
     };
 
     let google_request = GoogleTtsRequest {
@@ -285,6 +296,7 @@ async fn google_text_to_speech(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if !response.status().is_success() {
+        eprintln!("Google TTS Error: {response:?}");
         return Err(StatusCode::BAD_GATEWAY);
     }
 
@@ -398,11 +410,41 @@ Output: {{
 }}
 "#,
         ),
-        Language::Chinese
-        | Language::Japanese
-        | Language::Russian
-        | Language::Portuguese
-        | Language::Italian => return Err(StatusCode::NOT_IMPLEMENTED),
+        Language::Italian => (
+            "Italian",
+            r#"Example
+Input: "Challenge sentence: Mi sono divertito.
+User response: I am enjoyed myself.
+Primary expression: divertirsi
+Expressions: {{word: 'mi', lemma: 'io', pos: 'PRON'}}, {{word: 'sono', lemma: 'essere', pos: 'AUX'}}, {{word: 'divertito', lemma: 'divertire', pos: 'VERB'}}, {{word: 'divertirsi', lemma: 'divertirsi', pos: 'VERB'}}"
+
+Output: {{
+"explanation": "The Italian reflexive verb 'divertirsi' means 'to have fun' or 'to enjoy oneself.' You confused the tense and structure. A correct translation is: 'I had fun.'",
+"primary_expression_status": "Forgot",
+"expressions_remembered": [{{"Heteronym": {{ "word": "mi", "lemma": "io", "pos": "Pron" }}}}, {{"Heteronym": {{ "word": "sono", "lemma": "essere", "pos": "Aux" }}}}, {{"Heteronym": {{ "word": "divertito", "lemma": "divertire", "pos": "Verb" }}}}],
+"expressions_forgot": [{{"Heteronym": {{ "word": "divertirsi", "lemma": "divertirsi", "pos": "Verb" }}}}]
+}}
+"#,
+        ),
+        Language::Portuguese => (
+            "Portuguese",
+            r#"Example
+Input: "Challenge sentence: Vou pôr a mesa.
+User response: I go for to put the table.
+Primary expression: pôr
+Expressions: {{word: 'vou', lemma: 'ir', pos: 'VERB'}}, {{word: 'pôr', lemma: 'pôr', pos: 'VERB'}}, {{word: 'a', lemma: 'o', pos: 'DET'}}, {{word: 'mesa', lemma: 'mesa', pos: 'NOUN'}}"
+
+Output: {{
+"explanation": "The verb 'pôr' means 'to put' or 'to place.' The expression 'pôr a mesa' means 'to set the table.' You translated 'vou' as 'go' instead of future tense, and mistook 'por' (for) for 'pôr' (to put). A correct translation is: 'I'm going to set the table.'",
+"primary_expression_status": "Forgot",
+"expressions_remembered": [{{"Heteronym": {{ "word": "vou", "lemma": "ir", "pos": "Verb" }}}}, {{"Heteronym": {{ "word": "mesa", "lemma": "mesa", "pos": "Noun" }}}}],
+"expressions_forgot": [{{"Heteronym": {{ "word": "pôr", "lemma": "pôr", "pos": "Verb" }}}}]
+}}
+"#,
+        ),
+        Language::Chinese | Language::Japanese | Language::Russian => {
+            return Err(StatusCode::NOT_IMPLEMENTED);
+        }
     };
 
     let native_language_name = native_language.to_string();
@@ -502,12 +544,13 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
                 r#"For example, if the user confused "어떻게" and "어떡해", you could generate ["어떻게", "어떡해"] in the compare array."#,
             Language::German =>
                 r#"For example, if the user confused "der" and "die", you could generate ["der", "die"] in the compare array."#,
+            Language::Italian =>
+                r#"For example, if the user confused "anno" and "hanno", or "pena" and "penna", you could generate ["anno", "hanno"] or ["pena", "penna"] in the compare array."#,
+            Language::Portuguese =>
+                r#"For example, if the user confused "avô" and "avó", or "coser" and "cozer", you could generate ["avô", "avó"] or ["coser", "cozer"] in the compare array."#,
 
-            Language::Chinese
-            | Language::Japanese
-            | Language::Russian
-            | Language::Portuguese
-            | Language::Italian => return Err(StatusCode::NOT_IMPLEMENTED),
+            Language::Chinese | Language::Japanese | Language::Russian =>
+                return Err(StatusCode::NOT_IMPLEMENTED),
         }
     );
 

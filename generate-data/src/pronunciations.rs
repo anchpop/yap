@@ -7,10 +7,10 @@ use std::{collections::BTreeMap, sync::LazyLock};
 use tysm::chat_completions::ChatClient;
 
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("o3")
+    ChatClient::from_env("gpt-5.2")
         .unwrap()
+        .with_reasoning_effort("high")
         .with_cache_directory("./.cache")
-        .with_service_tier("flex")
 });
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
