@@ -325,7 +325,7 @@ async fn main() -> anyhow::Result<()> {
                     .collect::<Result<
                         BTreeMap<
                             language_utils::Heteronym<String>,
-                            language_utils::DictionaryEntryThoughts,
+                            language_utils::DictionaryDefinition,
                         >,
                         serde_json::Error,
                     >>()?

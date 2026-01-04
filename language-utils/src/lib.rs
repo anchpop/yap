@@ -199,6 +199,8 @@ pub struct TargetToNativeWord {
     pub note: Option<String>,
     pub example_sentence_target_language: String,
     pub example_sentence_native_language: String,
+    pub cognate: bool,
+    pub false_cognate: bool,
 }
 
 #[derive(
@@ -218,13 +220,17 @@ pub struct TargetToNativeWord {
 )]
 #[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct PhrasebookEntryThoughts {
-    pub thoughts: String,
+pub struct PhrasebookDefinitionEntry {
     pub target_language_multi_word_term: String,
     pub meaning: String,
     pub additional_notes: String,
     pub target_language_example: String,
     pub native_language_example: String,
+    pub informal: bool,
+    pub compositional: bool,
+    pub cognate: bool,
+    pub false_cognate: bool,
+    pub can_be_translated_literally: bool,
 }
 
 #[derive(
@@ -252,8 +258,8 @@ pub struct PhrasebookEntry {
     pub native_language_example: String,
 }
 
-impl From<PhrasebookEntryThoughts> for PhrasebookEntry {
-    fn from(entry: PhrasebookEntryThoughts) -> Self {
+impl From<PhrasebookDefinitionEntry> for PhrasebookEntry {
+    fn from(entry: PhrasebookDefinitionEntry) -> Self {
         Self {
             target_language_multi_word_term: entry.target_language_multi_word_term,
             meaning: entry.meaning,
@@ -308,9 +314,10 @@ pub struct ProperNounDefinition {
 )]
 #[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct DictionaryEntryThoughts {
-    pub thoughts: String,
+pub struct DictionaryDefinition {
+    #[serde(rename = "1. target_language_word")]
     pub target_language_word: String,
+    #[serde(rename = "2. definitions")]
     pub definitions: Vec<TargetToNativeWord>,
 }
 
@@ -337,8 +344,8 @@ pub struct DictionaryEntry {
     pub morphology: Vec<Morphology>,
 }
 
-impl From<(DictionaryEntryThoughts, Vec<Morphology>)> for DictionaryEntry {
-    fn from(entry: (DictionaryEntryThoughts, Vec<Morphology>)) -> Self {
+impl From<(DictionaryDefinition, Vec<Morphology>)> for DictionaryEntry {
+    fn from(entry: (DictionaryDefinition, Vec<Morphology>)) -> Self {
         let (entry, morphology) = entry;
         Self {
             target_language_word: entry.target_language_word,
