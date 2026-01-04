@@ -100,8 +100,8 @@ export function AboutPage() {
             </p>
             <p>Here is a picture of me and my girlfriend Emma :P</p>
             <img
-              src="/selfie.png"
-              alt="A man and woman dressed formally"
+              src="/selfie.webp"
+              alt="A man and woman dressed formally. Both are smiling and have red hair."
               className="w-full rounded-lg"
             />
           </div>
