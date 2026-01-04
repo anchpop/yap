@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
 import { useBackground } from "@/components/BackgroundShader";
 import {
