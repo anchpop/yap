@@ -495,9 +495,7 @@ export function LanguageSelector({
 
               {/* Resume button if already learning a language */}
               {showResumeButton && currentTargetLanguage && onResume && (
-                <div
-                  className="w-full max-w-md mb-4"
-                >
+                <div className="w-full max-w-md mb-4">
                   <Card
                     className="relative overflow-hidden p-6 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-4"
                     style={{
@@ -595,7 +593,7 @@ export function LanguageSelector({
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                       <span className="px-2 text-foreground">
-                        Alpha
+                        Alpha Languages
                       </span>
                     </div>
                   </div>
@@ -650,9 +648,7 @@ export function LanguageSelector({
                         <span className="w-full border-t" />
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
-                        <span className="px-2 text-foreground">
-                          Beta
-                        </span>
+                        <span className="px-2 text-foreground">Beta</span>
                       </div>
                     </div>
                   </div>
@@ -677,7 +673,9 @@ export function LanguageSelector({
                         >
                           <div
                             className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                            style={{ background: languageColors[lang]?.gradient }}
+                            style={{
+                              background: languageColors[lang]?.gradient,
+                            }}
                           />
                           <div className="relative z-10">
                             <div className="md:text-8xl text-6xl mb-4">

@@ -30,7 +30,8 @@ async fn main() -> anyhow::Result<()> {
 
         let target_language_dir =
             PathBuf::from(format!("./out/{}", course.target_language.iso_639_3()));
-        std::fs::create_dir_all(&target_language_dir)?;
+        std::fs::create_dir_all(&target_language_dir)
+            .context("Failed to create target language directory")?;
         let target_language_dir = target_language_dir
             .canonicalize()
             .context("Failed to canonicalize target language output directory")?;
@@ -40,7 +41,8 @@ async fn main() -> anyhow::Result<()> {
             course.target_language.iso_639_3(),
             course.native_language.iso_639_3()
         ));
-        std::fs::create_dir_all(&native_specific_dir)?;
+        std::fs::create_dir_all(&native_specific_dir)
+            .context("Failed to create native-specific directory")?;
         let native_specific_dir = native_specific_dir
             .canonicalize()
             .context("Failed to canonicalize native-specific output directory")?;
@@ -78,7 +80,8 @@ async fn main() -> anyhow::Result<()> {
 
             // Get target sentences with their existing translations (from Anki, Tatoeba, and manual sources)
             let sentences_with_translations_and_sources =
-                generate_data::target_sentences::get_target_sentences(*course)?;
+                generate_data::target_sentences::get_target_sentences(*course)
+                    .context("Failed to get target sentences")?;
 
             // Create the translator once and share it across all async tasks
             let translator = GoogleTranslator::new(
@@ -86,7 +89,7 @@ async fn main() -> anyhow::Result<()> {
                 course.native_language,
                 PathBuf::from(".cache/google_translate/"),
             )
-            .unwrap();
+            .context("Failed to create Google Translator")?;
 
             let all_sentences =
                 futures::stream::iter(sentences_with_translations_and_sources.into_iter().map(
@@ -149,7 +152,8 @@ async fn main() -> anyhow::Result<()> {
 
             for (target_language_sentence, (native_translations, source)) in all_sentences {
                 // Write individual target language sentence
-                let target_language_json = serde_json::to_string(&target_language_sentence)?;
+                let target_language_json = serde_json::to_string(&target_language_sentence)
+                    .context("Failed to serialize target language sentence")?;
                 if let Err(e) = writeln!(target_language_writer, "{target_language_json}") {
                     eprintln!("Error writing to target_language sentences file: {e}");
                 }
@@ -157,12 +161,14 @@ async fn main() -> anyhow::Result<()> {
                 let translation_json = serde_json::to_string(&(
                     &target_language_sentence,
                     native_translations.into_iter().collect::<Vec<_>>(),
-                ))?;
+                ))
+                .context("Failed to serialize translation")?;
                 if let Err(e) = writeln!(translations_writer, "{translation_json}") {
                     eprintln!("Error writing to translations file: {e}");
                 }
 
-                let source_json = serde_json::to_string(&(&target_language_sentence, &source))?;
+                let source_json = serde_json::to_string(&(&target_language_sentence, &source))
+                    .context("Failed to serialize sentence source")?;
                 if let Err(e) = writeln!(sentence_sources_writer, "{source_json}") {
                     eprintln!("Error writing to sentence sources file: {e}");
                 }
@@ -191,7 +197,8 @@ async fn main() -> anyhow::Result<()> {
             course,
             &target_language_dir,
         )
-        .await?;
+        .await
+        .context("Failed to ensure multiword terms file exists")?;
 
         // Process multiword terms with Rust NLP (lexide)
         let multiword_terms_tokenization_file =
@@ -199,7 +206,8 @@ async fn main() -> anyhow::Result<()> {
 
         // Read multiword terms from file
         let multiword_terms = {
-            let file = File::open(&multiword_terms_file)?;
+            let file =
+                File::open(&multiword_terms_file).context("Failed to open multiword terms file")?;
             let reader = BufReader::new(file);
             reader
                 .lines()
@@ -214,7 +222,8 @@ async fn main() -> anyhow::Result<()> {
             &multiword_terms_tokenization_file,
             course.target_language,
         )
-        .await?;
+        .await
+        .context("Failed to process multiword terms tokenization")?;
 
         // Process sentences with lexide
         let target_language_tokenization_file =
@@ -222,12 +231,14 @@ async fn main() -> anyhow::Result<()> {
 
         // Read sentences from file
         let sentences = {
-            let file = File::open(&target_language_sentences_file)?;
+            let file = File::open(&target_language_sentences_file)
+                .context("Failed to open target language sentences file")?;
             let reader = BufReader::new(file);
             reader
                 .lines()
                 .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<String>, _>>()?
+                .collect::<Result<Vec<String>, _>>()
+                .context("Failed to parse target language sentences")?
         };
 
         // Process sentences using the new Rust implementation and get tokenizations
@@ -237,7 +248,8 @@ async fn main() -> anyhow::Result<()> {
             &target_language_tokenization_file,
             course.target_language,
         )
-        .await?;
+        .await
+        .context("Failed to process sentences tokenization")?;
 
         // now add multiword terms to the tokenized sentences
         let target_language_nlp_file =
@@ -250,7 +262,8 @@ async fn main() -> anyhow::Result<()> {
             &target_language_nlp_file,
             course.target_language,
         )
-        .await?;
+        .await
+        .context("Failed to generate NLP sentences")?;
 
         // Generate proper noun definitions
         let proper_noun_definitions_file =
@@ -261,13 +274,17 @@ async fn main() -> anyhow::Result<()> {
                     *course,
                     &nlp_sentences,
                 )
-                .await?;
+                .await
+                .context("Failed to generate proper noun definitions")?;
 
             // Write the proper noun definitions to a jsonl file
-            let mut file = File::create(proper_noun_definitions_file)?;
+            let mut file = File::create(proper_noun_definitions_file)
+                .context("Failed to create proper noun definitions file")?;
             for entry in &definitions {
-                let json = serde_json::to_string(&entry)?;
-                writeln!(file, "{json}")?;
+                let json = serde_json::to_string(&entry)
+                    .context("Failed to serialize proper noun definition")?;
+                writeln!(file, "{json}")
+                    .context("Failed to write proper noun definition to file")?;
             }
 
             definitions
@@ -284,7 +301,8 @@ async fn main() -> anyhow::Result<()> {
 
         // Generate frequencies file for combined sources
         let combined_freq_dir = target_language_dir.join("frequency_lists/combined");
-        std::fs::create_dir_all(&combined_freq_dir)?;
+        std::fs::create_dir_all(&combined_freq_dir)
+            .context("Failed to create combined frequency directory")?;
         let frequencies_file = combined_freq_dir.join("frequencies.jsonl");
         {
             let frequencies = generate_data::frequencies::compute_frequencies(
@@ -293,15 +311,17 @@ async fn main() -> anyhow::Result<()> {
                 &banned_words,
             );
 
-            generate_data::frequencies::write_frequencies_file(frequencies, &frequencies_file)?;
+            generate_data::frequencies::write_frequencies_file(frequencies, &frequencies_file)
+                .context("Failed to write frequencies file")?;
         }
         let frequencies = {
-            let file = File::open(&frequencies_file)?;
+            let file = File::open(&frequencies_file).context("Failed to open frequencies file")?;
             let reader = BufReader::new(file);
             let frequencies = reader
                 .lines()
                 .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<language_utils::FrequencyEntry<String>>, _>>()?;
+                .collect::<Result<Vec<language_utils::FrequencyEntry<String>>, _>>()
+                .context("Failed to parse frequencies")?;
             frequencies
                 .into_iter()
                 .filter(|entry| entry.count > 3)
@@ -315,7 +335,8 @@ async fn main() -> anyhow::Result<()> {
             language_utils::DictionaryEntry,
         > = {
             let custom_definitions = {
-                let file = File::open(source_data_path.join("custom_definitions.jsonl"))?;
+                let file = File::open(source_data_path.join("custom_definitions.jsonl"))
+                    .context("Failed to open custom definitions file")?;
                 let reader = BufReader::new(file);
                 reader
                     .lines()
@@ -328,13 +349,17 @@ async fn main() -> anyhow::Result<()> {
                             language_utils::DictionaryDefinition,
                         >,
                         serde_json::Error,
-                    >>()?
+                    >>()
+                    .context("Failed to parse custom definitions")?
             };
 
-            let dictionary = generate_data::dict::create_dictionary(*course, &frequencies).await?;
+            let dictionary = generate_data::dict::create_dictionary(*course, &frequencies)
+                .await
+                .context("Failed to create dictionary")?;
             let morphology =
                 morphology_analysis::create_morphology(course.target_language, &frequencies)
-                    .await?;
+                    .await
+                    .context("Failed to create morphology")?;
             let dictionary = dictionary
                 .into_iter()
                 .filter_map(|(heteronym, def)| {
@@ -352,10 +377,11 @@ async fn main() -> anyhow::Result<()> {
                 .collect::<BTreeMap<_, _>>();
 
             // Write the dictionary to a jsonl file
-            let mut file = File::create(dict_file)?;
+            let mut file = File::create(dict_file).context("Failed to create dictionary file")?;
             for entry in &dictionary {
-                let json = serde_json::to_string(&entry)?;
-                writeln!(file, "{json}")?;
+                let json = serde_json::to_string(&entry)
+                    .context("Failed to serialize dictionary entry")?;
+                writeln!(file, "{json}").context("Failed to write dictionary entry to file")?;
             }
             dictionary
                 .into_iter()
@@ -368,29 +394,38 @@ async fn main() -> anyhow::Result<()> {
             let morphology_groups = morphology_analysis::analyze_morphology(&dictionary);
 
             let conjugations_path = native_specific_dir.join("conjugations.jsonl");
-            morphology_analysis::write_conjugations_jsonl(&morphology_groups, &conjugations_path)?;
+            morphology_analysis::write_conjugations_jsonl(&morphology_groups, &conjugations_path)
+                .context("Failed to write conjugations file")?;
         }
 
         // create and write phrasebook
         let phrasebook_file = native_specific_dir.join("phrasebook.jsonl");
         let phrasebook: BTreeMap<String, language_utils::PhrasebookEntry> = {
-            let phrasebook = generate_data::dict::create_phrasebook(*course, &frequencies).await?;
-            let mut file = File::create(phrasebook_file)?;
+            let phrasebook = generate_data::dict::create_phrasebook(*course, &frequencies)
+                .await
+                .context("Failed to create phrasebook")?;
+            let mut file =
+                File::create(phrasebook_file).context("Failed to create phrasebook file")?;
             let phrasebook: BTreeMap<String, language_utils::PhrasebookEntry> = phrasebook
                 .into_iter()
                 .map(|(phrase, thoughts)| (phrase, thoughts.into()))
                 .collect();
             for entry in phrasebook.iter() {
-                let json = serde_json::to_string(&entry)?;
-                writeln!(file, "{json}")?;
+                let json = serde_json::to_string(&entry)
+                    .context("Failed to serialize phrasebook entry")?;
+                writeln!(file, "{json}").context("Failed to write phrasebook entry to file")?;
             }
             phrasebook
         };
 
-        let wikipron_path = source_data_path.join("pronunciations.tsv").canonicalize()?;
+        let wikipron_path = source_data_path
+            .join("pronunciations.tsv")
+            .canonicalize()
+            .context("Failed to canonicalize wikipron path")?;
         let extra_pronunciations_path = source_data_path
             .join("extra_pronunciations.tsv")
-            .canonicalize()?;
+            .canonicalize()
+            .context("Failed to canonicalize extra pronunciations path")?;
         let word_to_pronunciation_file = target_language_dir.join("word_to_pronunciation.jsonl");
         let pronunciation_to_word_file = target_language_dir.join("pronunciation_to_words.jsonl");
         if !word_to_pronunciation_file.exists() || !pronunciation_to_word_file.exists() {
@@ -401,9 +436,11 @@ async fn main() -> anyhow::Result<()> {
                 .map(|h| h.word.clone())
                 .collect();
 
-            let phonetics_file = File::open(wikipron_path)?;
+            let phonetics_file =
+                File::open(wikipron_path).context("Failed to open wikipron pronunciations file")?;
             let phonetics_file = BufReader::new(phonetics_file);
-            let extra_phonetics_file = File::open(extra_pronunciations_path)?;
+            let extra_phonetics_file = File::open(extra_pronunciations_path)
+                .context("Failed to open extra pronunciations file")?;
             let extra_phonetics_file = BufReader::new(extra_phonetics_file);
             let word_to_pronunciations = phonetics_file
                 .lines()
@@ -428,7 +465,8 @@ async fn main() -> anyhow::Result<()> {
                     *course,
                     word_to_pronunciations,
                 )
-                .await?
+                .await
+                .context("Failed to select common pronunciations")?
                 .into_iter()
                 .collect::<BTreeMap<_, _>>();
 
@@ -451,15 +489,19 @@ async fn main() -> anyhow::Result<()> {
                 .map(|(ipa, words)| (ipa, words.into_iter().collect()))
                 .collect();
 
-            let mut file = File::create(word_to_pronunciation_file)?;
+            let mut file = File::create(word_to_pronunciation_file)
+                .context("Failed to create word to pronunciation file")?;
             for (word, pronunciation) in &word_to_pronunciation {
-                let json = serde_json::to_string(&(word, pronunciation))?;
-                writeln!(file, "{json}")?;
+                let json = serde_json::to_string(&(word, pronunciation))
+                    .context("Failed to serialize word to pronunciation entry")?;
+                writeln!(file, "{json}").context("Failed to write word to pronunciation entry")?;
             }
-            let mut file = File::create(pronunciation_to_word_file)?;
+            let mut file = File::create(pronunciation_to_word_file)
+                .context("Failed to create pronunciation to words file")?;
             for (ipa, words) in &pronunciation_to_words {
-                let json = serde_json::to_string(&(ipa, words))?;
-                writeln!(file, "{json}")?;
+                let json = serde_json::to_string(&(ipa, words))
+                    .context("Failed to serialize pronunciation to words entry")?;
+                writeln!(file, "{json}").context("Failed to write pronunciation to words entry")?;
             }
         }
 
@@ -469,7 +511,8 @@ async fn main() -> anyhow::Result<()> {
             &target_language_dir,
             &frequencies,
             1000,
-        )?;
+        )
+        .context("Failed to generate homophones")?;
 
         // Generate homophone practice sentences
         let homophone_practice: BTreeMap<
@@ -481,7 +524,8 @@ async fn main() -> anyhow::Result<()> {
                 &homophones,
                 &target_language_dir,
             )
-            .await?;
+            .await
+            .context("Failed to generate homophone practice")?;
 
             let sentences = practice
                 .values()
@@ -497,7 +541,8 @@ async fn main() -> anyhow::Result<()> {
                 &target_language_dir.join("target_language_sentences_tokenization.jsonl"),
                 course.target_language,
             )
-            .await?;
+            .await
+            .context("Failed to process homophone practice sentences tokenization")?;
 
             let nlp = generate_data::nlp::generate_nlp_sentences(
                 tokenizations,
@@ -505,7 +550,8 @@ async fn main() -> anyhow::Result<()> {
                 &target_language_nlp_file,
                 course.target_language,
             )
-            .await?;
+            .await
+            .context("Failed to generate NLP for homophone practice sentences")?;
 
             nlp_sentences.extend(nlp.clone());
 
@@ -539,12 +585,14 @@ async fn main() -> anyhow::Result<()> {
             let sounds = generate_data::pronunciation_patterns::generate_language_sounds(
                 course.target_language,
             )
-            .await?;
+            .await
+            .context("Failed to generate language sounds")?;
 
             // Save to file
-            let mut file = File::create(&sounds_file)?;
-            let json = serde_json::to_string(&sounds)?;
-            writeln!(file, "{json}")?;
+            let mut file =
+                File::create(&sounds_file).context("Failed to create pronunciation sounds file")?;
+            let json = serde_json::to_string(&sounds).context("Failed to serialize sounds")?;
+            writeln!(file, "{json}").context("Failed to write sounds to file")?;
 
             sounds
         };
@@ -555,13 +603,16 @@ async fn main() -> anyhow::Result<()> {
                 generate_data::pronunciation_patterns::generate_pronunciation_guides(
                     *course, &sounds,
                 )
-                .await?;
+                .await
+                .context("Failed to generate pronunciation guides")?;
 
             // Save to file
-            let mut file = File::create(&guides_file)?;
+            let mut file =
+                File::create(&guides_file).context("Failed to create pronunciation guides file")?;
             for (sound, guide_thoughts) in &guides_with_thoughts {
-                let json = serde_json::to_string(&(sound, guide_thoughts))?;
-                writeln!(file, "{json}")?;
+                let json = serde_json::to_string(&(sound, guide_thoughts))
+                    .context("Failed to serialize pronunciation guide")?;
+                writeln!(file, "{json}").context("Failed to write pronunciation guide to file")?;
             }
 
             guides_with_thoughts
@@ -574,23 +625,27 @@ async fn main() -> anyhow::Result<()> {
 
         // Load all the JSON files
         let target_language_sentences = {
-            let file = File::open(target_language_dir.join("target_language_sentences.jsonl"))?;
+            let file = File::open(target_language_dir.join("target_language_sentences.jsonl"))
+                .context("Failed to open target language sentences file for consolidation")?;
             let reader = BufReader::new(file);
             reader
                 .lines()
                 .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<String>, _>>()?
+                .collect::<Result<Vec<String>, _>>()
+                .context("Failed to parse target language sentences for consolidation")?
         };
 
         let translations = {
             let file = File::open(
                 native_specific_dir.join("target_language_to_native_translations.jsonl"),
-            )?;
+            )
+            .context("Failed to open translations file for consolidation")?;
             let reader = BufReader::new(file);
             reader
                 .lines()
                 .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<(String, Vec<String>)>, _>>()?
+                .collect::<Result<Vec<(String, Vec<String>)>, _>>()
+                .context("Failed to parse translations for consolidation")?
         };
 
         // Calculate pattern frequencies using the word frequency data
@@ -601,12 +656,14 @@ async fn main() -> anyhow::Result<()> {
 
         // Load and process phonetics data
         let word_to_pronunciation = {
-            let file = File::open(target_language_dir.join("word_to_pronunciation.jsonl"))?;
+            let file = File::open(target_language_dir.join("word_to_pronunciation.jsonl"))
+                .context("Failed to open word to pronunciation file")?;
             let reader = BufReader::new(file);
             reader
                 .lines()
                 .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<(String, String)>, _>>()?
+                .collect::<Result<Vec<(String, String)>, _>>()
+                .context("Failed to parse word to pronunciation data")?
         };
 
         // Sort patterns by frequency (descending)
@@ -624,12 +681,14 @@ async fn main() -> anyhow::Result<()> {
             pattern_frequencies: pattern_frequencies.clone(),
         };
         let pronunciation_to_words = {
-            let file = File::open(target_language_dir.join("pronunciation_to_words.jsonl"))?;
+            let file = File::open(target_language_dir.join("pronunciation_to_words.jsonl"))
+                .context("Failed to open pronunciation to words file")?;
             let reader = BufReader::new(file);
             reader
                 .lines()
                 .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<(String, Vec<String>)>, _>>()?
+                .collect::<Result<Vec<(String, Vec<String>)>, _>>()
+                .context("Failed to parse pronunciation to words data")?
         };
 
         let nlp_sentences = {
@@ -827,7 +886,8 @@ async fn main() -> anyhow::Result<()> {
         let movies = if movies_dir.exists() {
             let metadata_file = movies_dir.join("metadata.jsonl");
             if metadata_file.exists() {
-                let metadata_content = std::fs::read_to_string(&metadata_file)?;
+                let metadata_content = std::fs::read_to_string(&metadata_file)
+                    .context("Failed to read movie metadata file")?;
                 let posters_dir = movies_dir.join("posters");
                 let mut movies = FxHashMap::default();
 
@@ -835,7 +895,8 @@ async fn main() -> anyhow::Result<()> {
                     if line.trim().is_empty() {
                         continue;
                     }
-                    let basic: language_utils::MovieMetadataBasic = serde_json::from_str(line)?;
+                    let basic: language_utils::MovieMetadataBasic =
+                        serde_json::from_str(line).context("Failed to parse movie metadata")?;
 
                     // Convert to full MovieMetadata and load poster bytes from separate file
                     let mut movie: language_utils::MovieMetadata = basic.into();
@@ -861,12 +922,14 @@ async fn main() -> anyhow::Result<()> {
         let sentence_sources = {
             let sentence_sources_file = target_language_dir.join("sentence_sources.jsonl");
             if sentence_sources_file.exists() {
-                let file = File::open(&sentence_sources_file)?;
+                let file = File::open(&sentence_sources_file)
+                    .context("Failed to open sentence sources file")?;
                 let reader = BufReader::new(file);
                 reader
                     .lines()
                     .map(|line| serde_json::from_str(&line.unwrap()))
-                    .collect::<Result<Vec<(String, language_utils::SentenceSource)>, _>>()?
+                    .collect::<Result<Vec<(String, language_utils::SentenceSource)>, _>>()
+                    .context("Failed to parse sentence sources")?
             } else {
                 Vec::new()
             }
@@ -907,19 +970,22 @@ async fn main() -> anyhow::Result<()> {
         let language_pack = language_utils::language_pack::LanguagePack::new(consolidated_data);
 
         // Serialize with rkyv
-        let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&language_pack)?;
-        std::fs::write(&rkyv_file, bytes)?;
+        let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&language_pack)
+            .context("Failed to serialize language pack with rkyv")?;
+        std::fs::write(&rkyv_file, bytes).context("Failed to write rkyv file")?;
 
         // Generate hash of the rkyv file
         let hash_file = native_specific_dir.join("language_data.hash");
 
         // Read the rkyv file and compute hash
-        let rkyv_bytes = std::fs::read(&rkyv_file)?;
+        let rkyv_bytes =
+            std::fs::read(&rkyv_file).context("Failed to read rkyv file for hashing")?;
         let hash = const_xxh3(&rkyv_bytes);
         let size = rkyv_bytes.len();
 
         // Write hash and size to file in format: hash;size_in_bytes
-        std::fs::write(&hash_file, format!("{hash};{size}"))?;
+        std::fs::write(&hash_file, format!("{hash};{size}"))
+            .context("Failed to write hash file")?;
     }
 
     Ok(())
