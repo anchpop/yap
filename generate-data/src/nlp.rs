@@ -239,6 +239,7 @@ pub async fn generate_nlp_sentences(
     // For lemma matcher (high confidence), create patterns from lemmas
     let lemma_patterns: Vec<(String, Vec<&str>)> = multiword_terms_tokenizations
         .iter()
+        .filter(|(_, tokens)| tokens.len() > 1)
         .map(|(term_str, tokens)| {
             (
                 term_str.clone(),
