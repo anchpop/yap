@@ -127,6 +127,17 @@ export function LanguageSelector({
     }
   }, []); // Only run on mount
 
+  // Determine language stability level
+  const getLanguageStatus = (lang: Language): "stable" | "alpha" | "beta" => {
+    if (lang === "French" || lang === "Spanish" || lang === "German") {
+      return "stable";
+    }
+    if (lang === "Italian" || lang === "Portuguese" || lang === "Korean") {
+      return "alpha";
+    }
+    return "beta";
+  };
+
   // Get target languages available for selected native language
   const targetLanguages =
     selectionState.stage === "selectingNative"
@@ -136,6 +147,17 @@ export function LanguageSelector({
             (course) => course.nativeLanguage === selectionState.nativeLanguage
           )
           .map((course) => course.targetLanguage);
+
+  // Group languages by stability status
+  const stableLanguages = targetLanguages.filter(
+    (lang) => getLanguageStatus(lang) === "stable"
+  );
+  const alphaLanguages = targetLanguages.filter(
+    (lang) => getLanguageStatus(lang) === "alpha"
+  );
+  const betaLanguages = targetLanguages.filter(
+    (lang) => getLanguageStatus(lang) === "beta"
+  );
 
   useEffect(() => {
     if (!api) {
@@ -262,12 +284,6 @@ export function LanguageSelector({
       gradient:
         "linear-gradient(90deg, #009246 33%, #FFFFFF 33% 66%, #CE2B37 66%)",
     },
-  };
-
-  // Determine if languages are beta
-  const isBeta = (lang: Language) => {
-    // French and German are stable, others are beta for now
-    return lang !== "French" && lang !== "German";
   };
 
   useEffect(() => {
@@ -531,46 +547,152 @@ export function LanguageSelector({
                 </div>
               )}
 
-              <div className="grid md:grid-cols-3 grid-cols-2 gap-8 w-full">
-                {targetLanguages.map((lang) => (
-                  <motion.div
-                    key={lang}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Card
-                      className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                      onClick={() => {
-                        bumpBackground(50.0);
-                        setSelectionState({
-                          stage: "askingExperience",
-                          nativeLanguage: selectionState.nativeLanguage,
-                          targetLanguage: lang,
-                        });
-                      }}
-                      animate
+              {/* Stable languages (unlabeled) */}
+              {stableLanguages.length > 0 && (
+                <div className="grid md:grid-cols-3 grid-cols-2 gap-8 w-full">
+                  {stableLanguages.map((lang) => (
+                    <motion.div
+                      key={lang}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      {isBeta(lang) && (
-                        <Badge className="absolute bottom-1 right-1 z-20 gap-1">
-                          Beta
-                        </Badge>
-                      )}
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                        style={{ background: languageColors[lang]?.gradient }}
-                      />
-                      <div className="relative z-10">
-                        <div className="md:text-8xl text-6xl mb-4">
-                          {languageFlags[lang]}
+                      <Card
+                        className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
+                        onClick={() => {
+                          bumpBackground(50.0);
+                          setSelectionState({
+                            stage: "askingExperience",
+                            nativeLanguage: selectionState.nativeLanguage,
+                            targetLanguage: lang,
+                          });
+                        }}
+                        animate
+                      >
+                        <div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                          style={{ background: languageColors[lang]?.gradient }}
+                        />
+                        <div className="relative z-10">
+                          <div className="md:text-8xl text-6xl mb-4">
+                            {languageFlags[lang]}
+                          </div>
+                          <h2 className="md:text-3xl text-2xl font-bold mb-2">
+                            {nativeLanguageNames[lang]}
+                          </h2>
                         </div>
-                        <h2 className="md:text-3xl text-2xl font-bold mb-2">
-                          {nativeLanguageNames[lang]}
-                        </h2>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Alpha section divider */}
+              {alphaLanguages.length > 0 && (
+                <div className="w-full max-w-md my-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="px-2 text-foreground">
+                        Alpha
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Alpha languages */}
+              {alphaLanguages.length > 0 && (
+                <div className="grid md:grid-cols-3 grid-cols-2 gap-8 w-full">
+                  {alphaLanguages.map((lang) => (
+                    <motion.div
+                      key={lang}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Card
+                        className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
+                        onClick={() => {
+                          bumpBackground(50.0);
+                          setSelectionState({
+                            stage: "askingExperience",
+                            nativeLanguage: selectionState.nativeLanguage,
+                            targetLanguage: lang,
+                          });
+                        }}
+                        animate
+                      >
+                        <div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                          style={{ background: languageColors[lang]?.gradient }}
+                        />
+                        <div className="relative z-10">
+                          <div className="md:text-8xl text-6xl mb-4">
+                            {languageFlags[lang]}
+                          </div>
+                          <h2 className="md:text-3xl text-2xl font-bold mb-2">
+                            {nativeLanguageNames[lang]}
+                          </h2>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Beta languages (if any) */}
+              {betaLanguages.length > 0 && (
+                <>
+                  <div className="w-full max-w-md my-8">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
                       </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="px-2 text-foreground">
+                          Beta
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-3 grid-cols-2 gap-8 w-full">
+                    {betaLanguages.map((lang) => (
+                      <motion.div
+                        key={lang}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Card
+                          className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
+                          onClick={() => {
+                            bumpBackground(50.0);
+                            setSelectionState({
+                              stage: "askingExperience",
+                              nativeLanguage: selectionState.nativeLanguage,
+                              targetLanguage: lang,
+                            });
+                          }}
+                          animate
+                        >
+                          <div
+                            className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                            style={{ background: languageColors[lang]?.gradient }}
+                          />
+                          <div className="relative z-10">
+                            <div className="md:text-8xl text-6xl mb-4">
+                              {languageFlags[lang]}
+                            </div>
+                            <h2 className="md:text-3xl text-2xl font-bold mb-2">
+                              {nativeLanguageNames[lang]}
+                            </h2>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
+              )}
 
               <div className="text-center mb-12">
                 <p className="text-xl text-muted-foreground/70">

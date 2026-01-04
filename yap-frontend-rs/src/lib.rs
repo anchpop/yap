@@ -3409,8 +3409,8 @@ impl ReviewInfo {
                                             example_sentence_native_language: entry
                                                 .native_language_example
                                                 .clone(),
-                                            cognate: todo!(),
-                                            false_cognate: todo!(),
+                                            cognate: entry.cognate,
+                                            false_cognate: entry.false_cognate,
                                         }]
                                     })
                                     .unwrap_or_default(),

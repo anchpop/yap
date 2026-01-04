@@ -256,6 +256,8 @@ pub struct PhrasebookEntry {
     pub additional_notes: String,
     pub target_language_example: String,
     pub native_language_example: String,
+    pub cognate: bool,
+    pub false_cognate: bool,
 }
 
 impl From<PhrasebookDefinitionEntry> for PhrasebookEntry {
@@ -266,6 +268,8 @@ impl From<PhrasebookDefinitionEntry> for PhrasebookEntry {
             additional_notes: entry.additional_notes,
             target_language_example: entry.target_language_example,
             native_language_example: entry.native_language_example,
+            cognate: entry.cognate,
+            false_cognate: entry.false_cognate,
         }
     }
 }
@@ -315,9 +319,7 @@ pub struct ProperNounDefinition {
 #[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct DictionaryDefinition {
-    #[serde(rename = "1. target_language_word")]
     pub target_language_word: String,
-    #[serde(rename = "2. definitions")]
     pub definitions: Vec<TargetToNativeWord>,
 }
 
