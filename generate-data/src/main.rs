@@ -259,7 +259,6 @@ async fn main() -> anyhow::Result<()> {
         let mut nlp_sentences = generate_data::nlp::generate_nlp_sentences(
             sentences_tokenizations,
             &multiword_terms_tokenizations,
-            &target_language_nlp_file,
             course.target_language,
         )
         .await
@@ -547,7 +546,6 @@ async fn main() -> anyhow::Result<()> {
             let nlp = generate_data::nlp::generate_nlp_sentences(
                 tokenizations,
                 &multiword_terms_tokenizations,
-                &target_language_nlp_file,
                 course.target_language,
             )
             .await
@@ -575,6 +573,19 @@ async fn main() -> anyhow::Result<()> {
                 .filter(|(_, practice)| !practice.sentence_pairs.is_empty())
                 .collect()
         };
+
+        // Write all NLP sentences to file (now that we have both main and homophone sentences)
+        {
+            let nlp_file = File::create(&target_language_nlp_file)
+                .context("Failed to create NLP sentences file")?;
+            let mut nlp_writer = BufWriter::new(nlp_file);
+            for (sentence, sentence_info) in &nlp_sentences {
+                let json = serde_json::to_string(&(sentence, sentence_info))
+                    .context("Failed to serialize NLP sentence")?;
+                writeln!(nlp_writer, "{json}").context("Failed to write NLP sentence to file")?;
+            }
+            nlp_writer.flush().context("Failed to flush NLP writer")?;
+        }
 
         // Generate pronunciation sounds and guides
         let sounds_file = target_language_dir.join("pronunciation_sounds.jsonl");

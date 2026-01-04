@@ -223,14 +223,12 @@ pub async fn process_sentences(
 /// Generate NLP analyzed sentences by matching multiword terms against sentences
 /// using lemma matcher (high confidence) and dependency matcher (low confidence)
 ///
-/// Always regenerates the entire output file from scratch based on the input tokenizations.
 /// This is fast since it only involves local pattern matching (no API calls).
 ///
 /// Returns a BTreeMap containing all the input sentences that were successfully processed
 pub async fn generate_nlp_sentences(
     sentences_tokenizations: BTreeMap<String, Vec<lexide::Token>>,
     multiword_terms_tokenizations: &BTreeMap<String, Vec<lexide::Token>>,
-    output_file: &Path,
     language: Language,
 ) -> Result<BTreeMap<String, language_utils::SentenceInfo>> {
     use language_utils::{Literal, MultiwordTerms, SentenceInfo};
@@ -271,14 +269,6 @@ pub async fn generate_nlp_sentences(
         .collect();
 
     let dependency_matcher = DependencyMatcher::new(&tree_patterns);
-
-    // Open output file in write mode (truncate existing content)
-    let output_file_handle = std::fs::OpenOptions::new()
-        .create(true)
-        .write(true)
-        .truncate(true)
-        .open(output_file)?;
-    let mut writer = std::io::BufWriter::new(output_file_handle);
 
     // Empty proper nouns map (for now, proper noun handling can be added later if needed)
     let proper_nouns = BTreeMap::new();
@@ -330,15 +320,9 @@ pub async fn generate_nlp_sentences(
             },
         };
 
-        // Write (sentence, SentenceInfo) tuple to output file
-        let json = serde_json::to_string(&(sentence_str, &sentence_info))?;
-        writeln!(writer, "{json}")?;
-
         // Store in result map
         result.insert(sentence_str.clone(), sentence_info);
     }
-
-    writer.flush()?;
 
     Ok(result)
 }
