@@ -21,7 +21,7 @@ import {
   type Deck,
 } from "../../../../yap-frontend-rs/pkg/yap_frontend_rs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { TextareaAutoResize } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import {
@@ -629,7 +629,7 @@ export function TranslationChallenge({
     | { grading: null }
     | null
   >(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const wordRefs = useRef<Map<number, SwipeableWordHandle>>(new Map());
   const { bumpBackground } = useBackground();
 
@@ -977,9 +977,8 @@ export function TranslationChallenge({
 
             {grade === null ? (
               <>
-                <Input
+                <TextareaAutoResize
                   ref={inputRef}
-                  type="text"
                   placeholder="Translation..."
                   value={userTranslation}
                   onChange={(e) => setUserTranslation(e.target.value)}

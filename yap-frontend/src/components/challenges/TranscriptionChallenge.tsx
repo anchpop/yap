@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { languageToIso6391 } from "@/lib/utils";
 import {
   InputFieldSizingContent,
-  InputDottedUnderline,
+  TextareaDottedUnderline,
 } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { AudioButton } from "../AudioButton";
@@ -128,7 +128,7 @@ export function TranscriptionChallenge({
   const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(
     null
   );
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>([]);
   const { bumpBackground } = useBackground();
 
   // Find indices of words that should be blanks
@@ -334,14 +334,36 @@ export function TranscriptionChallenge({
           asked_to_transcribe.parts[asked_to_transcribe.parts.length - 1]
             .whitespace;
 
-        // Use dotted underline for single-part transcriptions, regular input otherwise
-        const InputComponent = isSinglePartTranscription
-          ? InputDottedUnderline
-          : InputFieldSizingContent;
+        // Use textarea for single-part transcriptions (wraps text), regular input otherwise
+        if (isSinglePartTranscription) {
+          return (
+            <span key={index} className="w-full">
+              <TextareaDottedUnderline
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
+                value={userInputs.get(index) || ""}
+                onChange={(e) => handleInputChange(index, e.target.value)}
+                onFocus={() => setFocusedInputIndex(index)}
+                onBlur={() => {
+                  // Keep track of last focused input but allow blur
+                  // The accent keyboard will refocus when clicked
+                }}
+                disabled={gradingState !== null}
+                lang={languageToIso6391(targetLanguage)}
+                className={`min-w-64 text-center text-2xl font-semibold ${getInputClassName(
+                  index
+                )}`}
+                placeholder="Write what you hear"
+              />
+              <span>{end_whitespace}</span>
+            </span>
+          );
+        }
 
         return (
           <span key={index} className="w-full">
-            <InputComponent
+            <InputFieldSizingContent
               ref={(el) => {
                 inputRefs.current[index] = el;
               }}
@@ -355,9 +377,7 @@ export function TranscriptionChallenge({
               }}
               disabled={gradingState !== null}
               lang={languageToIso6391(targetLanguage)}
-              className={`inline-block ${
-                isSinglePartTranscription ? "min-w-64" : "min-w-32"
-              } mx-1 text-center text-2xl font-semibold ${getInputClassName(
+              className={`inline-block min-w-32 max-w-full mx-1 text-center text-2xl font-semibold ${getInputClassName(
                 index
               )}`}
               placeholder="Write what you hear"
