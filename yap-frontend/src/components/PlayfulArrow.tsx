@@ -3,6 +3,7 @@ interface PlayfulArrowProps {
   flipStart?: boolean;
   className?: string;
   size?: number;
+  opacity?: number;
 }
 
 export function PlayfulArrow({
@@ -10,6 +11,7 @@ export function PlayfulArrow({
   flipStart = false,
   className = "",
   size = 100,
+  opacity = 0.5,
 }: PlayfulArrowProps) {
   const getTransform = () => {
     const transforms: string[] = [];
@@ -45,7 +47,7 @@ export function PlayfulArrow({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`playful-arrow ${className}`}
-      style={{ transform: getTransform() }}
+      style={{ transform: getTransform(), opacity }}
       overflow="visible"
     >
       <path
@@ -57,7 +59,7 @@ export function PlayfulArrow({
       />
 
       <path
-        d="M 142 19 L 160 32 L 142 45"
+        d="M 137 14 L 160 32 L 137 50"
         stroke="currentColor"
         strokeWidth="10"
         strokeLinecap="round"
