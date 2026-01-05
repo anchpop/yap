@@ -1497,10 +1497,16 @@ impl weapon::PartialAppState for Deck {
             vec![
                 Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
                 Point::new_with_weight(Frequency { count: 25 }.ln_frequency(), 0.0, 5.0),
-                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 1.0),
-                Point::new_with_weight(Frequency { count: 400 }.ln_frequency(), 0.0, 1.0),
-                Point::new_with_weight(Frequency { count: 1000 }.ln_frequency(), 0.0, 0.5),
-                Point::new_with_weight(Frequency { count: 4000 }.ln_frequency(), 0.0, 0.5),
+                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 5.0),
+                Point::new_with_weight(Frequency { count: 400 }.ln_frequency(), 0.0, 3.0),
+                Point::new_with_weight(Frequency { count: 800 }.ln_frequency(), 0.0, 3.0),
+                Point::new_with_weight(Frequency { count: 1000 }.ln_frequency(), 0.0, 3.0),
+                Point::new_with_weight(Frequency { count: 1500 }.ln_frequency(), 0.0, 3.0),
+                Point::new_with_weight(Frequency { count: 2000 }.ln_frequency(), 0.0, 2.0),
+                Point::new_with_weight(Frequency { count: 2500 }.ln_frequency(), 0.0, 2.0),
+                Point::new_with_weight(Frequency { count: 3000 }.ln_frequency(), 0.0, 2.0),
+                Point::new_with_weight(Frequency { count: 3500 }.ln_frequency(), 0.0, 2.0),
+                Point::new_with_weight(Frequency { count: 4000 }.ln_frequency(), 0.0, 2.0),
             ]
         };
 
@@ -1510,7 +1516,7 @@ impl weapon::PartialAppState for Deck {
             .language_pack
             .word_frequencies
             .get_index(0)
-            .map(|(_, freq)| freq.ln_frequency() * 0.1)
+            .map(|(_, freq)| freq.ln_frequency() * 0.2)
             .unwrap_or(1.0); // Fallback if no frequencies exist
 
         // Create isotonic regressions (need at least 2 non-new cards)

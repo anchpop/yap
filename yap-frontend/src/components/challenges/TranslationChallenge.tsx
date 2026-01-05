@@ -49,6 +49,7 @@ import { FeedbackDisplay } from "@/components/FeedbackDisplay";
 import { playSoundEffect } from "@/lib/sound-effects";
 import { useBackground } from "../BackgroundShader";
 import { MoviePosterCard } from "./MoviePosterCard";
+import { cn } from "@/lib/utils";
 
 interface SentenceChallengeProps {
   sentence: TranslateComprehensibleSentence<string>;
@@ -561,9 +562,12 @@ function ChallengeSentence({
           <>
             <span
               key={i}
-              className={`${colorClass} ${
-                heteronym ? "cursor-pointer hover:underline" : ""
-              }`}
+              className={cn(
+                colorClass,
+                heteronym
+                  ? "cursor-pointer underline-offset-3 underline decoration-dotted hover:decoration-solid hover:decoration-3 transition-transform hover:scale-105 inline-block"
+                  : ""
+              )}
               onClick={() => {
                 if (heteronym) {
                   onWordTap(i);
