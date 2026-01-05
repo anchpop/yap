@@ -601,5 +601,10 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
         return false;
     }
 
+    // Reject sentences with colons (often speaker attribution in subtitles)
+    if text.contains(':') {
+        return false;
+    }
+
     true
 }
