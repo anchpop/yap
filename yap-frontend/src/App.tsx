@@ -607,7 +607,6 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
   const CANT_LISTEN_DURATION_MS = 15 * 60 * 1000;
 
-  const [showAnswer, setShowAnswer] = useState(false)
   const network = useNetworkState()
   const [cardsBecameDue, setCardsBecameDue] = useState<number>(0)
   const [lastAutoPlayReviewCount, setLastAutoPlayReviewCount] = useState<bigint | null>(null)
@@ -777,7 +776,6 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     const event = deck.review_card(currentChallenge.indicator, rating);
     if (event) {
       weapon.add_deck_event(event);
-      setShowAnswer(false);
     }
   }
 
@@ -796,7 +794,6 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
       if (event) {
         weapon.add_deck_event(event);
       }
-      setShowAnswer(false);
     } else {
       // Wrong sentence review with word statuses
       const wordsRemembered: Lexeme<string>[] = [];
@@ -820,7 +817,6 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
       if (event) {
         weapon.add_deck_event(event);
       }
-      setShowAnswer(false);
     }
   }, [deck, currentChallenge, weapon])
 
@@ -837,12 +833,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     if (event) {
       weapon.add_deck_event(event);
     }
-    setShowAnswer(false)
   }, [deck, currentChallenge, weapon])
-
-  const toggleAnswer = () => {
-    setShowAnswer(!showAnswer)
-  }
 
   const handleCantListen = () => {
     const timestamp = Date.now();
@@ -930,8 +921,6 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
               audioRequest={currentChallenge.audio}
               content={currentChallenge.content}
               isNew={currentChallenge.is_new}
-              showAnswer={showAnswer}
-              onToggle={toggleAnswer}
               totalCount={reviewInfo.total_count}
               onRating={handleRating}
               accessToken={accessToken}
@@ -939,9 +928,11 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
               onCantListen={handleCantListen}
               onCantSpeak={handleCantSpeak}
               targetLanguage={targetLanguage}
+              nativeLanguage={nativeLanguage}
               listeningPrefix={currentChallenge.listening_prefix}
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
+              timesTypeSeen={currentChallenge.times_type_seen}
             />
           ) : (currentChallenge.type === 'TranslateComprehensibleSentence') ? (
             <TranslationChallenge

@@ -3,6 +3,7 @@ use std::collections::BTreeSet;
 
 use chrono::Utc;
 use language_utils::Lexeme;
+use language_utils::PartOfSpeech;
 use lasso::Spur;
 use ordered_float::NotNan;
 
@@ -21,6 +22,7 @@ pub(crate) struct NextCardsIterator<'a> {
     card_type_counts: FxHashMap<CardType, u32>,
 }
 
+#[derive(Debug)]
 pub(crate) enum AllowedCards {
     #[expect(unused)]
     // All is not yet used, but could be used to express intent more clearly than an empty BannedRequirements set
@@ -60,7 +62,10 @@ impl<'a> NextCardsIterator<'a> {
 
     fn next_text_card(&self) -> Option<(CardIndicator<Spur>, rs_fsrs::Card)> {
         // None of the first 20 cards can be multiword cards
-        let added_over_20_cards = self.added_count > 20;
+        // And the first 5 should be "easy"
+        let no_auxiliary_words = self.added_count > 30;
+        let no_multiwords = self.added_count > 20;
+        let easy_cards = self.added_count < 5 && !self.context.course.teaches_new_writing_system();
 
         self.cards
             .iter()
@@ -68,8 +73,21 @@ impl<'a> NextCardsIterator<'a> {
                 let CardIndicator::TargetLanguage { lexeme } = card else {
                     return None;
                 };
-                if !added_over_20_cards && lexeme.multiword().is_some() {
-                    return None;
+                let mut preferred = true;
+                if !no_multiwords && lexeme.multiword().is_some() {
+                    preferred = false;
+                }
+                if easy_cards
+                    && let Some(heteronym) = lexeme.heteronym()
+                    && !self.context.is_word_easy(heteronym)
+                {
+                    preferred = false;
+                }
+                if no_auxiliary_words
+                    && let Some(heteronym) = lexeme.heteronym()
+                    && heteronym.pos == PartOfSpeech::Aux
+                {
+                    preferred = false;
                 }
 
                 status.unadded()?;
@@ -80,7 +98,7 @@ impl<'a> NextCardsIterator<'a> {
 
                 let fsrs_card = rs_fsrs::Card::new(Utc::now());
 
-                Some((lexeme, fsrs_card, value))
+                Some((lexeme, fsrs_card, (preferred, value)))
             })
             .max_by_key(|(_, _, value)| *value)
             .map(|(card, fsrs_card, _)| {
@@ -181,9 +199,18 @@ impl<'a> NextCardsIterator<'a> {
 impl NextCardsIterator<'_> {
     fn next_card(&self) -> Option<(CardIndicator<Spur>, rs_fsrs::Card)> {
         if self.added_count < 20 {
-            let card = self.next_text_card()?;
-            return Some(card);
+            let can_only_add_text_cards = match &self.allowed_cards {
+                AllowedCards::All | AllowedCards::Type(CardType::TargetLanguage) => true,
+                AllowedCards::BannedRequirements(r) => r.is_empty(),
+                _ => false,
+            };
+            if can_only_add_text_cards {
+                let card = self.next_text_card()?;
+                return Some(card);
+            }
         }
+
+        log::info!("next_card: self.allowed_cards={:?}", self.allowed_cards);
 
         // Calculate which type is most underrepresented based on target ratios
         let total_cards: u32 = self.card_type_counts.values().cloned().sum();

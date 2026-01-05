@@ -140,6 +140,10 @@ ol {
   }
 }
 
+.quick-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
 .animate-fade-in {
   animation: fade-in 0.6s ease-out;
 }

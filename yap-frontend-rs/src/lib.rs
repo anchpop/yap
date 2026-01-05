@@ -796,6 +796,19 @@ impl CardIndicator<String> {
 }
 
 impl CardIndicator<Spur> {
+    pub fn get_flashcard_type(&self) -> Option<FlashcardType> {
+        match self {
+            CardIndicator::TargetLanguage { lexeme } => match lexeme {
+                Lexeme::Heteronym(_) => Some(FlashcardType::Heteronym),
+                Lexeme::Multiword(_) => Some(FlashcardType::Multiword),
+            },
+            CardIndicator::ListeningHomophonous { .. } | CardIndicator::ListeningLexeme { .. } => {
+                Some(FlashcardType::Listening)
+            }
+            CardIndicator::LetterPronunciation { .. } => Some(FlashcardType::LetterPronunciation),
+        }
+    }
+
     pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> CardIndicator<String> {
         match self {
             CardIndicator::TargetLanguage { lexeme } => CardIndicator::TargetLanguage {
@@ -996,8 +1009,28 @@ pub struct DailyStreak {
 #[derive(Clone, Debug)]
 pub struct Context {
     pub language_pack: Arc<LanguagePack>,
-    pub target_language: Language,
-    pub native_language: Language,
+    pub course: Course,
+}
+
+/// Flashcard types for tracking tutorial progress
+#[derive(
+    Clone,
+    Debug,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    tsify::Tsify,
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum FlashcardType {
+    Heteronym,
+    Multiword,
+    Listening,
+    LetterPronunciation,
 }
 
 /// Stats contains review statistics and progress tracking
@@ -1014,6 +1047,8 @@ pub struct Stats {
     pub past_week_challenges: BTreeMap<i64, u32>,
     /// Timestamp of the first event processed (when the user started using the app)
     pub start_time: Option<DateTime<Utc>>,
+    /// Track how many times each flashcard type has been seen (for tutorial purposes)
+    pub flashcard_type_seen_count: BTreeMap<FlashcardType, u32>,
 }
 
 #[derive(
@@ -1116,7 +1151,7 @@ impl weapon::PartialAppState for Deck {
         deck.leeches
             .retain(|_, detected_at| current_reviews - *detected_at <= 250);
 
-        if *event_language != deck.context.target_language {
+        if *event_language != deck.context.course.target_language {
             return deck;
         }
 
@@ -1176,6 +1211,14 @@ impl weapon::PartialAppState for Deck {
             }
             LanguageEventContent::ReviewCard { reviewed, rating } => {
                 if let Some(reviewed) = reviewed.get_interned(&deck.context.language_pack.rodeo) {
+                    // Track flashcard type for tutorial purposes
+                    if let Some(flashcard_type) = reviewed.get_flashcard_type() {
+                        *deck
+                            .stats
+                            .flashcard_type_seen_count
+                            .entry(flashcard_type)
+                            .or_insert(0) += 1;
+                    }
                     deck.log_review(reviewed, *rating, *timestamp);
                 }
             }
@@ -1193,7 +1236,7 @@ impl weapon::PartialAppState for Deck {
                 // can be mapped to new sentences with correct spacing
                 let cleaned_sentence = language_utils::text_cleanup::cleanup_sentence(
                     challenge_sentence.clone(),
-                    deck.context.target_language,
+                    deck.context.course.target_language,
                 );
                 if let Some(challenge_sentence) =
                     deck.context.language_pack.rodeo.get(&cleaned_sentence)
@@ -1610,11 +1653,14 @@ impl DeckState {
                 daily_streak: None,
                 past_week_challenges: BTreeMap::new(),
                 start_time: None,
+                flashcard_type_seen_count: BTreeMap::new(),
             },
             context: Context {
                 language_pack,
-                target_language,
-                native_language,
+                course: Course {
+                    target_language,
+                    native_language,
+                },
             },
             leeches: BTreeMap::new(),
         }
@@ -2124,7 +2170,7 @@ impl Deck {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_target_language(&self) -> Language {
-        self.context.target_language
+        self.context.course.target_language
     }
 
     fn max_cards_to_add(&self) -> usize {
@@ -2205,6 +2251,10 @@ impl Deck {
             return None;
         }
 
+        log::info!(
+            "add_next_unknown_cards: card_type={card_type:?}, count={count:?}, banned_types_set={banned_types_set:?}"
+        );
+
         let allowed_cards = match (card_type, banned_types_set) {
             (Some(card_type), _) => AllowedCards::Type(card_type),
             (None, banned_types_set) => AllowedCards::BannedRequirements(banned_types_set),
@@ -2218,8 +2268,8 @@ impl Deck {
 
         (!cards.is_empty()).then_some({
             DeckEvent::Language(LanguageEvent {
-                target_language: self.context.target_language,
-                native_language: self.context.native_language,
+                target_language: self.context.course.target_language,
+                native_language: self.context.course.native_language,
                 content: LanguageEventContent::AddCards { cards },
             })
         })
@@ -2232,8 +2282,8 @@ impl Deck {
         unknown_words: Vec<String>,
     ) -> DeckEvent {
         DeckEvent::Language(LanguageEvent {
-            target_language: self.context.target_language,
-            native_language: self.context.native_language,
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
             content: LanguageEventContent::CompletePlacementTest {
                 results: PlacementTest {
                     known_words,
@@ -2252,8 +2302,8 @@ impl Deck {
         let indicator = reviewed.get_interned(&self.context.language_pack.rodeo)?;
         self.cards.get(&indicator).and_then(|status| {
             matches!(status, CardStatus::Tracked(_)).then_some(DeckEvent::Language(LanguageEvent {
-                target_language: self.context.target_language,
-                native_language: self.context.native_language,
+                target_language: self.context.course.target_language,
+                native_language: self.context.course.native_language,
                 content: LanguageEventContent::ReviewCard { reviewed, rating },
             }))
         })
@@ -2266,8 +2316,8 @@ impl Deck {
         challenge_sentence: String,
     ) -> Option<DeckEvent> {
         Some(DeckEvent::Language(LanguageEvent {
-            target_language: self.context.target_language,
-            native_language: self.context.native_language,
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
             content: LanguageEventContent::TranslationChallenge {
                 review: SentenceReviewIndicator::TargetToNative {
                     challenge_sentence,
@@ -2289,8 +2339,8 @@ impl Deck {
         words_tapped: Vec<Lexeme<String>>,
     ) -> Option<DeckEvent> {
         Some(DeckEvent::Language(LanguageEvent {
-            target_language: self.context.target_language,
-            native_language: self.context.native_language,
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
             content: LanguageEventContent::TranslationChallenge {
                 review: SentenceReviewIndicator::TargetToNative {
                     challenge_sentence,
@@ -2311,8 +2361,8 @@ impl Deck {
         challenge: Vec<transcription_challenge::PartGraded>,
     ) -> Option<DeckEvent> {
         Some(DeckEvent::Language(LanguageEvent {
-            target_language: self.context.target_language,
-            native_language: self.context.native_language,
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
             content: LanguageEventContent::TranscriptionChallenge { challenge },
         }))
     }
@@ -2877,6 +2927,26 @@ impl Context {
 
         None
     }
+
+    pub(crate) fn is_word_easy(&self, word: &Heteronym<Spur>) -> bool {
+        // todo: probably move this to frequency entry?
+        let Some(entry) = self.language_pack.dictionary.get(word) else {
+            return false;
+        };
+        if entry.definitions.len() > 1 {
+            return false;
+        }
+        let Some(definition) = entry.definitions.first() else {
+            return false;
+        };
+        if definition.native.contains(" ") {
+            return false;
+        }
+        if definition.native == entry.target_language_word {
+            return false;
+        }
+        definition.cognate && !definition.false_cognate
+    }
 }
 
 impl Regressions {
@@ -3069,6 +3139,7 @@ where
         audio: Option<AudioRequest>,
         is_new: bool,
         listening_prefix: Option<String>, // TODO: move into content probably lol
+        times_type_seen: u32,
     },
     TranslateComprehensibleSentence(TranslateComprehensibleSentence<S>),
     TranscribeComprehensibleSentence(TranscribeComprehensibleSentence<S>),
@@ -3102,12 +3173,14 @@ impl Challenge<Spur> {
                 audio,
                 is_new,
                 listening_prefix,
+                times_type_seen,
             } => Challenge::FlashCardReview {
                 indicator: indicator.resolve(rodeo),
                 content: content.resolve(rodeo),
                 audio: audio.clone(),
                 is_new: *is_new,
                 listening_prefix: listening_prefix.clone(),
+                times_type_seen: *times_type_seen,
             },
             Challenge::TranslateComprehensibleSentence(translate_comprehensible_sentence) => {
                 Challenge::TranslateComprehensibleSentence(
@@ -3265,7 +3338,7 @@ impl ReviewInfo {
                                     .rodeo
                                     .resolve(&sentence.target_language)
                                     .to_string(),
-                                language: deck.context.target_language,
+                                language: deck.context.course.target_language,
                             },
                             provider: TtsProvider::Google,
                         },
@@ -3350,18 +3423,23 @@ impl ReviewInfo {
                         Lexeme::Heteronym(heteronym) => AudioRequest {
                             request: TtsRequest {
                                 text: language_pack.rodeo.resolve(&heteronym.word).to_string(),
-                                language: deck.context.target_language,
+                                language: deck.context.course.target_language,
                             },
                             provider: TtsProvider::Google,
                         },
                         Lexeme::Multiword(multiword_term) => AudioRequest {
                             request: TtsRequest {
                                 text: language_pack.rodeo.resolve(&multiword_term).to_string(),
-                                language: deck.context.target_language,
+                                language: deck.context.course.target_language,
                             },
                             provider: TtsProvider::Google,
                         },
                     };
+
+                    let times_type_seen = card_indicator
+                        .get_flashcard_type()
+                        .and_then(|ft| deck.stats.flashcard_type_seen_count.get(&ft).copied())
+                        .unwrap_or(0);
 
                     Challenge::<Spur>::FlashCardReview {
                         indicator: card_indicator,
@@ -3369,6 +3447,7 @@ impl ReviewInfo {
                         audio: Some(audio),
                         is_new,
                         listening_prefix: None,
+                        times_type_seen,
                     }
                 };
                 if is_new {
@@ -3465,7 +3544,7 @@ impl ReviewInfo {
                         audio: AudioRequest {
                             request: TtsRequest {
                                 text: language_pack.rodeo.resolve(&target_language).to_string(),
-                                language: deck.context.target_language,
+                                language: deck.context.course.target_language,
                             },
                             provider: TtsProvider::ElevenLabs,
                         },
@@ -3491,12 +3570,18 @@ impl ReviewInfo {
                         "Pattern {pattern_str} with position {position:?} was in the deck, but was not found in pronunciation guides"
                     );
                 };
+                let content = CardContent::LetterPronunciation { pattern, guide };
+                let times_type_seen = card_indicator
+                    .get_flashcard_type()
+                    .and_then(|ft| deck.stats.flashcard_type_seen_count.get(&ft).copied())
+                    .unwrap_or(0);
                 Challenge::FlashCardReview {
                     indicator: card_indicator,
-                    content: CardContent::LetterPronunciation { pattern, guide },
+                    content,
                     audio: None,
                     is_new,
                     listening_prefix: None,
+                    times_type_seen,
                 }
             }
         };

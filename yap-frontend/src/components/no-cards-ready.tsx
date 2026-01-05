@@ -53,16 +53,27 @@ export function NoCardsReady({
   closestToMilestone,
 }: NoCardsReadyProps) {
   const addCardOptionsRaw = deck.add_card_options(bannedChallengeTypes);
-  const addCardOptions: AddCardOptions = userInfo === undefined
-    ? { smart_add: 0, manual_add: addCardOptionsRaw.manual_add.map(([count, card_type]) => [card_type == "TargetLanguage" || card_type == "LetterPronunciation" ? count : 0, card_type] as [number, CardType]) }
-    : addCardOptionsRaw;
+  const addCardOptions: AddCardOptions =
+    userInfo === undefined
+      ? {
+          smart_add: 0,
+          manual_add: addCardOptionsRaw.manual_add.map(
+            ([count, card_type]) =>
+              [
+                card_type == "TargetLanguage" ||
+                card_type == "LetterPronunciation"
+                  ? count
+                  : 0,
+                card_type,
+              ] as [number, CardType]
+          ),
+        }
+      : addCardOptionsRaw;
   let nextTargetLanguageWord: string | null = null;
   if (nextDueCard && "TargetLanguage" in nextDueCard.card_indicator) {
     const lexeme = nextDueCard.card_indicator.TargetLanguage.lexeme;
     nextTargetLanguageWord =
-      "Heteronym" in lexeme
-        ? lexeme.Heteronym.word
-        : lexeme.Multiword;
+      "Heteronym" in lexeme ? lexeme.Heteronym.word : lexeme.Multiword;
   }
 
   const numCanAddTargetLanguage =
@@ -126,26 +137,33 @@ export function NoCardsReady({
     const handleKeyPress = (event: KeyboardEvent) => {
       // Don't handle shortcuts if user is typing in an input field
       const target = event.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT"
+      ) {
         return;
       }
 
-      if ((event.code === 'Space' || event.code === 'Enter') && add_cards.length > 0) {
+      if (
+        (event.code === "Space" || event.code === "Enter") &&
+        add_cards.length > 0
+      ) {
         event.preventDefault();
         addNextCards(add_cards[0][1], add_cards[0][0]);
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
     };
   }, [addNextCards, add_cards]);
 
   return (
     <div className="space-y-4">
-        <Card animate className="text-center p-6">
+      <Card animate className="text-center p-6">
         {showLightWorkloadNotification && (
           <Alert>
             <AlertCircle className="h-4 w-4" />
@@ -156,7 +174,11 @@ export function NoCardsReady({
           </Alert>
         )}
         <div className="flex flex-col gap-2">
-          <p className="text-lg">{isEmptyDeck ? "Ready to start learning?" : "Nothing ready for review!"}</p>
+          <p className="text-lg">
+            {isEmptyDeck
+              ? "Ready to start learning?"
+              : "Nothing ready for review!"}
+          </p>
           {isEmptyDeck ? (
             <p className="text-muted-foreground">
               We'll start with the most important words.
@@ -165,10 +187,10 @@ export function NoCardsReady({
             <p className="text-muted-foreground">
               {nextTargetLanguageWord ? (
                 <>
-                  You'll review <span className="font-semibold">
+                  You'll review{" "}
+                  <span className="font-semibold">
                     {nextTargetLanguageWord}
-                  </span>
-                  {' '}
+                  </span>{" "}
                   {nextDueCard ? (
                     <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
                   ) : (
@@ -198,7 +220,9 @@ export function NoCardsReady({
                 onClick={() => addNextCards(add_cards[0][1], add_cards[0][0])}
                 variant="default"
                 size="lg"
-                className={`group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg ${add_cards.length > 1 ? "rounded-r-none" : ""}`}
+                className={`group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg ${
+                  add_cards.length > 1 ? "rounded-r-none" : ""
+                }`}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
                 <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
@@ -253,15 +277,13 @@ export function NoCardsReady({
             </p>
           )}
         </div>
-        </Card>
+      </Card>
 
       {closestToMilestone && deck.num_cards() > 100 && (
         <AlmostThereMovie movie={closestToMilestone} />
       )}
 
-      {showEngagementPrompts && (
-        <EngagementPrompts language={targetLanguage} />
-      )}
+      {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
     </div>
   );
 }

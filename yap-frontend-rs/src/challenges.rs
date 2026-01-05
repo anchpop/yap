@@ -18,7 +18,7 @@ impl Deck {
     ) -> Challenge<Spur> {
         let flashcard = {
             let listening_prefix =
-                ReviewInfo::get_listening_prefix(self.context.target_language).to_string();
+                ReviewInfo::get_listening_prefix(self.context.course.target_language).to_string();
             let possible_words: Vec<(bool, Spur)> = {
                 let Some(possible_words) = self
                     .context
@@ -74,19 +74,25 @@ impl Deck {
                                 .1
                         )
                     ),
-                    language: self.context.target_language,
+                    language: self.context.course.target_language,
                 },
                 provider: TtsProvider::Google,
             };
+            let content = CardContent::Listening {
+                pronunciation,
+                possible_words,
+            };
+            let times_type_seen = card_indicator
+                .get_flashcard_type()
+                .and_then(|ft| self.stats.flashcard_type_seen_count.get(&ft).copied())
+                .unwrap_or(0);
             Challenge::<Spur>::FlashCardReview {
                 indicator: card_indicator,
                 audio: Some(audio),
-                content: CardContent::Listening {
-                    pronunciation,
-                    possible_words,
-                },
+                content,
                 is_new,
                 listening_prefix: Some(listening_prefix),
+                times_type_seen,
             }
         };
         if is_new {
@@ -179,7 +185,7 @@ impl Deck {
                                 .rodeo
                                 .resolve(&sentence.target_language)
                                 .to_string(),
-                            language: self.context.target_language,
+                            language: self.context.course.target_language,
                         },
                         provider: TtsProvider::Google,
                     },

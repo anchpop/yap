@@ -31,12 +31,12 @@ import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { formatMorphology } from "@/utils/formatMorphology";
 import { useBackground } from "./BackgroundShader";
+import { PlayfulArrow } from "./PlayfulArrow";
+import { cn } from "@/lib/utils";
 
 interface FlashcardProps {
   audioRequest: AudioRequest | undefined;
   content: CardContent<string>;
-  showAnswer: boolean;
-  onToggle: () => void;
   totalCount: number;
   onRating?: (rating: Rating) => void;
   accessToken: string | undefined;
@@ -44,9 +44,11 @@ interface FlashcardProps {
   onCantSpeak?: () => void;
   isNew: boolean;
   targetLanguage: Language;
+  nativeLanguage: Language;
   listeningPrefix?: string;
   autoplayed: boolean;
   setAutoplayed: () => void;
+  timesTypeSeen: number;
 }
 
 const CardFront = ({
@@ -422,8 +424,6 @@ const CardBack = ({
 export const Flashcard = function Flashcard({
   audioRequest,
   content,
-  showAnswer,
-  onToggle,
   totalCount,
   onRating,
   accessToken,
@@ -431,22 +431,40 @@ export const Flashcard = function Flashcard({
   onCantSpeak,
   isNew,
   targetLanguage,
+  nativeLanguage,
   listeningPrefix,
   autoplayed,
   setAutoplayed,
+  timesTypeSeen,
 }: FlashcardProps) {
   const x = useMotionValue(0);
   const controls = animationControls();
   const [isDragging, setIsDragging] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const { bumpBackground } = useBackground();
+
+  const toggleAnswer = () => setShowAnswer(!showAnswer);
 
   const leftLabel = isNew ? "Didn't know" : "Forgot";
   const rightLabel = isNew ? "Already knew" : "Remembered";
 
   const requireShowAnswer = totalCount < 50;
   const canGrade = hasBeenOpened || showAnswer || !requireShowAnswer;
+
+  const showTutorial = timesTypeSeen < 2;
+
+  const tutorialText =
+    "Heteronym" in content
+      ? `Guess what "${content.Heteronym.heteronym.word}" means in ${nativeLanguage}`
+      : "Multiword" in content
+      ? `Guess what "${content.Multiword[0]}" means in ${nativeLanguage}`
+      : "Listening" in content
+      ? `Guess what ${targetLanguage} word is missing`
+      : "LetterPronunciation" in content
+      ? `Say "${content.LetterPronunciation.pattern}" like you would in ${targetLanguage}`
+      : "";
 
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
 
@@ -554,12 +572,12 @@ export const Flashcard = function Flashcard({
         (e.key === " " || e.key === "ArrowDown" || e.key === "j")
       ) {
         e.preventDefault();
-        onToggle();
+        toggleAnswer();
       }
       // Hide answer: ↑ / k
       else if (showAnswer && (e.key === "ArrowUp" || e.key === "k")) {
         e.preventDefault();
-        onToggle();
+        toggleAnswer();
       }
       // Mark as remembered: →
       else if (canGrade && e.key === "ArrowRight" && !e.shiftKey) {
@@ -583,7 +601,7 @@ export const Flashcard = function Flashcard({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showAnswer, canGrade, onToggle, onRating, isNew]);
+  }, [showAnswer, canGrade, toggleAnswer, onRating, isNew, bumpBackground]);
 
   const copyWord = () => {
     let word: string | undefined;
@@ -612,201 +630,255 @@ export const Flashcard = function Flashcard({
 
   return (
     <div className="flex flex-col flex-1 justify-between">
-      <motion.div
-        className="relative w-full flex-1"
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={handleDragEnd}
-        animate={controls}
-        style={{ x, rotate }}
-      >
-        <Card
-          className={`pt-3 pb-3 pl-3 pr-3 cursor-pointer transition-all hover:shadow-lg overflow-hidden flashcard h-full gap-0 ${
-            !showAnswer ? "spin-on-hover" : ""
-          }`}
-          onClick={() => {
-            if (!isDragging) {
-              onToggle();
-            }
-          }}
-          animate
-        >
-          {/* Swipe feedback overlays */}
-          <motion.div
-            className="absolute inset-0 bg-red-500/20 pointer-events-none"
-            style={{ opacity: leftOverlayOpacity }}
-          />
-          <motion.div
-            className="absolute inset-0 bg-green-500/20 pointer-events-none"
-            style={{ opacity: rightOverlayOpacity }}
-          />
-
-          {/* Swipe indicators */}
-          <motion.div
-            className="absolute top-8 left-8 text-red-500 font-bold text-2xl rotate-[-30deg] pointer-events-none"
-            style={{ opacity: leftOverlayOpacity }}
-          >
-            {leftLabel.toUpperCase()}
-          </motion.div>
-          <motion.div
-            className="absolute top-8 right-8 text-green-500 font-bold text-2xl rotate-[30deg] pointer-events-none"
-            style={{ opacity: rightOverlayOpacity }}
-          >
-            {rightLabel.toUpperCase()}
-          </motion.div>
-
-          <div className="text-center relative z-10 flex flex-col gap-6">
-            <div className="justify-center gap-2 flex flex-col items-center w-full">
-              <div
-                className="flex items-center justify-between w-full"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {!("LetterPronunciation" in content) && audioRequest ? (
-                  <AudioButton
-                    audioRequest={audioRequest}
-                    accessToken={accessToken}
-                    autoPlay={true}
-                    autoplayed={autoplayed}
-                    setAutoplayed={setAutoplayed}
-                  />
-                ) : (
-                  <div className="w-10" /> /* Spacer to keep content centered */
-                )}
-
-                <CardFront
-                  content={content}
-                  listeningPrefix={listeningPrefix}
-                  targetLanguage={targetLanguage}
-                />
-
-                {onRating ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-10 w-10">
-                        <MoreVertical className="h-6 w-6 size--xl" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => {
-                          bumpBackground(30.0);
-                          onRating("easy");
-                        }}
-                      >
-                        Easy
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          bumpBackground(30.0);
-                          onRating("good");
-                        }}
-                      >
-                        Good
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          bumpBackground(30.0);
-                          onRating("hard");
-                        }}
-                      >
-                        Hard
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={copyWord}>
-                        Copy word
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setShowReportModal(true)}
-                      >
-                        Report an Issue
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <div className="w-8" /> /* Spacer to keep word centered */
-                )}
-              </div>
-              <CardFrontSubtitle content={content} />
-            </div>
-
-            <hr className="" />
-
-            {showAnswer ? (
-              <div className="space-y-6 animate-feedback-in">
-                <CardBack
-                  content={content}
-                  targetLanguage={targetLanguage}
-                  accessToken={accessToken}
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <div
-                  className={` ${
-                    requireShowAnswer ? "font-bold" : "text-muted-foreground"
-                  }`}
-                >
-                  Show Answer
-                </div>
-                <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-muted/20 border flex items-center justify-center hide-kbd-border-mobile">
-                  <ArrowDown className="h-3 w-3 text-muted-foreground" />
-                </kbd>
-              </div>
+      <div className="flex flex-col gap-2">
+        {/* Tutorial text above card */}
+        {showTutorial && (
+          <div
+            className={cn(
+              "grid transition-all duration-300",
+              showAnswer
+                ? "grid-rows-[0fr] opacity-0"
+                : "grid-rows-[1fr] opacity-100"
             )}
+          >
+            <div className="overflow-hidden">
+              <div className="text-center mt-4 text-2xl font-semibold text-muted-foreground animate-fade-in flex flex-row justify-center items-start gap-1">
+                <PlayfulArrow direction="down" flipStart size={70} />
+                <div>{tutorialText}</div>
+                <PlayfulArrow direction="down" size={70} />
+              </div>
+            </div>
           </div>
-        </Card>
-      </motion.div>
+        )}
 
-      {onRating && (
-        <div className={`mt-4 flex flex-col gap-2 transition-opacity duration-300 ${!canGrade ? "opacity-0" : "opacity-100"}`}>
-          {onCantListen && "Listening" in content && (
-            <CantListenButton onClick={onCantListen} />
-          )}
-          {onCantSpeak && "LetterPronunciation" in content && (
-            <CantSpeakButton onClick={onCantSpeak} />
-          )}
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              onClick={() => {
-                if (!canGrade) return;
-                bumpBackground(30.0);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                onRating("again");
-              }}
-              variant="destructive"
-              size="lg"
-              className="h-14 group"
-              disabled={!canGrade}
+        <motion.div
+          className="relative w-full"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={handleDragEnd}
+          animate={controls}
+          style={{ x, rotate }}
+        >
+          <Card
+            className={`pt-3 pb-3 pl-3 pr-3 cursor-pointer transition-all hover:shadow-lg overflow-hidden flashcard h-full gap-0 ${
+              !showAnswer ? "spin-on-hover" : ""
+            }`}
+            onClick={() => {
+              if (!isDragging) {
+                toggleAnswer();
+              }
+            }}
+            animate
+          >
+            {/* Swipe feedback overlays */}
+            <motion.div
+              className="absolute inset-0 bg-red-500/20 pointer-events-none"
+              style={{ opacity: leftOverlayOpacity }}
+            />
+            <motion.div
+              className="absolute inset-0 bg-green-500/20 pointer-events-none"
+              style={{ opacity: rightOverlayOpacity }}
+            />
+
+            {/* Swipe indicators */}
+            <motion.div
+              className="absolute top-8 left-8 text-red-500 font-bold text-2xl rotate-[-30deg] pointer-events-none"
+              style={{ opacity: leftOverlayOpacity }}
             >
-              <span className="flex items-center gap-2">
-                <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowLeft className="h-3 w-3" />
-                </kbd>
-                {leftLabel}
-              </span>
-            </Button>
-            <Button
-              onClick={() => {
-                if (!canGrade) return;
-                bumpBackground(30.0);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                onRating("remembered");
-              }}
-              variant="default"
-              size="lg"
-              className="h-14 group"
-              disabled={!canGrade}
+              {leftLabel.toUpperCase()}
+            </motion.div>
+            <motion.div
+              className="absolute top-8 right-8 text-green-500 font-bold text-2xl rotate-[30deg] pointer-events-none"
+              style={{ opacity: rightOverlayOpacity }}
             >
-              <span className="flex items-center gap-2">
-                {rightLabel}
-                <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowRight className="h-3 w-3" />
-                </kbd>
-              </span>
-            </Button>
+              {rightLabel.toUpperCase()}
+            </motion.div>
+
+            <div className="text-center relative z-10 flex flex-col gap-6">
+              <div className="justify-center gap-2 flex flex-col items-center w-full">
+                <div
+                  className="flex items-center justify-between w-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {!("LetterPronunciation" in content) && audioRequest ? (
+                    <AudioButton
+                      audioRequest={audioRequest}
+                      accessToken={accessToken}
+                      autoPlay={true}
+                      autoplayed={autoplayed}
+                      setAutoplayed={setAutoplayed}
+                    />
+                  ) : (
+                    <div className="w-10" /> /* Spacer to keep content centered */
+                  )}
+
+                  <CardFront
+                    content={content}
+                    listeningPrefix={listeningPrefix}
+                    targetLanguage={targetLanguage}
+                  />
+
+                  {onRating ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-10 w-10"
+                        >
+                          <MoreVertical className="h-6 w-6 size--xl" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            bumpBackground(30.0);
+                            onRating("easy");
+                          }}
+                        >
+                          Easy
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            bumpBackground(30.0);
+                            onRating("good");
+                          }}
+                        >
+                          Good
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            bumpBackground(30.0);
+                            onRating("hard");
+                          }}
+                        >
+                          Hard
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={copyWord}>
+                          Copy word
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setShowReportModal(true)}
+                        >
+                          Report an Issue
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <div className="w-8" /> /* Spacer to keep word centered */
+                  )}
+                </div>
+                <CardFrontSubtitle content={content} />
+              </div>
+
+              <hr className="" />
+
+              {showAnswer ? (
+                <div className="space-y-6 animate-feedback-in">
+                  <CardBack
+                    content={content}
+                    targetLanguage={targetLanguage}
+                    accessToken={accessToken}
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-2">
+                  <div
+                    className={` ${
+                      requireShowAnswer ? "font-bold" : "text-muted-foreground"
+                    }`}
+                  >
+                    Show Answer
+                  </div>
+                  <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-muted/20 border flex items-center justify-center hide-kbd-border-mobile">
+                    <ArrowDown className="h-3 w-3 text-muted-foreground" />
+                  </kbd>
+                </div>
+              )}
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Tutorial text below card */}
+        {showTutorial && !showAnswer && (
+          <div className="text-center mt-2 text-2xl font-semibold text-muted-foreground flex flex-row justify-center items-end animate-fade-in-delayed">
+            <PlayfulArrow direction="up" size={70} />
+            <span>Then, tap to see if you're right!</span>
+            <PlayfulArrow direction="up" flipStart size={70} />
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      <div className="flex flex-col">
+        {/* Tutorial text above buttons */}
+        {showTutorial && showAnswer && (
+          <div className="text-center mt-4 text-2xl font-semibold text-muted-foreground flex flex-row justify-center items-start animate-fade-in-delayed">
+            <PlayfulArrow direction="down" flipStart size={96} />
+            <span>Were you right?</span>
+            <PlayfulArrow direction="down" size={96} />
+          </div>
+        )}
+
+        {onRating && (
+          <div
+            className={`mt-4 flex flex-col gap-2 transition-opacity duration-300`}
+          >
+            {!showAnswer && (
+              <>
+                {onCantListen && "Listening" in content && (
+                  <CantListenButton onClick={onCantListen} />
+                )}
+                {onCantSpeak && "LetterPronunciation" in content && (
+                  <CantSpeakButton onClick={onCantSpeak} />
+                )}
+              </>
+            )}
+            <div className={!canGrade ? "hidden" : "quick-fade-in"}>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  onClick={() => {
+                    if (!canGrade) return;
+                    bumpBackground(30.0);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    onRating("again");
+                  }}
+                  variant="destructive"
+                  size="lg"
+                  className="h-14 group"
+                  disabled={!canGrade}
+                >
+                  <span className="flex items-center gap-2">
+                    <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowLeft className="h-3 w-3" />
+                    </kbd>
+                    {leftLabel}
+                  </span>
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (!canGrade) return;
+                    bumpBackground(30.0);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    onRating("remembered");
+                  }}
+                  variant="default"
+                  size="lg"
+                  className="h-14 group"
+                  disabled={!canGrade}
+                >
+                  <span className="flex items-center gap-2">
+                    {rightLabel}
+                    <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight className="h-3 w-3" />
+                    </kbd>
+                  </span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       <ReportIssueModal
         context={`${JSON.stringify(content)}`}

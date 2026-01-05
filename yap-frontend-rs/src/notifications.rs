@@ -331,7 +331,7 @@ impl Deck {
         // Get percent_known from the existing method (weighted by word frequency)
         let percent_known = self.get_percent_of_words_known() * 100.0;
 
-        let language = self.context.target_language;
+        let language = self.context.course.target_language;
 
         // Get start_time from stats
         let start_time = self.stats.start_time.map(|time| time.to_rfc3339());
