@@ -21,7 +21,7 @@ import {
   useAnimation as animationControls,
   type PanInfo,
 } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./Flashcard.css";
 import { AudioButton } from "./AudioButton";
 import { ReportIssueModal } from "./challenges/ReportIssueModal";
@@ -445,12 +445,15 @@ export const Flashcard = function Flashcard({
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const { bumpBackground } = useBackground();
 
-  const toggleAnswer = () => setShowAnswer(!showAnswer);
+  const toggleAnswer = useCallback(
+    () => setShowAnswer(!showAnswer),
+    [showAnswer]
+  );
 
   const leftLabel = isNew ? "Didn't know" : "Forgot";
   const rightLabel = isNew ? "Already knew" : "Remembered";
 
-  const requireShowAnswer = totalCount < 50;
+  const requireShowAnswer = totalCount < 50 || timesTypeSeen < 10;
   const canGrade = hasBeenOpened || showAnswer || !requireShowAnswer;
 
   const showTutorial = timesTypeSeen < 2;
@@ -465,6 +468,17 @@ export const Flashcard = function Flashcard({
       : "LetterPronunciation" in content
       ? `Say "${content.LetterPronunciation.pattern}" like you would in ${targetLanguage}`
       : "";
+
+  const showAnswerText =
+    "Heteronym" in content
+      ? `Show ${nativeLanguage}`
+      : "Multiword" in content
+      ? `Show ${nativeLanguage}`
+      : "Listening" in content
+      ? "Show missing word"
+      : "LetterPronunciation" in content
+      ? "Show pronunciation"
+      : "Show Answer";
 
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
 
@@ -789,7 +803,7 @@ export const Flashcard = function Flashcard({
                       requireShowAnswer ? "font-bold" : "text-muted-foreground"
                     }`}
                   >
-                    Show Answer
+                    {showAnswerText}
                   </div>
                   <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-muted/20 border flex items-center justify-center hide-kbd-border-mobile">
                     <ArrowDown className="h-3 w-3 text-muted-foreground" />
