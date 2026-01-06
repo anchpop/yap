@@ -279,11 +279,11 @@ export function NoCardsReady({
         </div>
       </Card>
 
+      {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
+      
       {closestToMilestone && deck.num_cards() > 100 && (
         <AlmostThereMovie movie={closestToMilestone} />
       )}
-
-      {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
     </div>
   );
 }

@@ -47,6 +47,7 @@ import { MoreVertical } from "lucide-react";
 import { ReportIssueModal } from "./ReportIssueModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MoviePosterCard } from "./MoviePosterCard";
+import { InlineTextarea } from "../ui/textarea";
 
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence<string>;
@@ -128,7 +129,7 @@ export function TranscriptionChallenge({
   const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(
     null
   );
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
   const { bumpBackground } = useBackground();
 
   // Find indices of words that should be blanks
@@ -257,7 +258,7 @@ export function TranscriptionChallenge({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const activeElement = document.activeElement;
-      const isInputFocused = activeElement?.tagName === "INPUT";
+      const isInputFocused = activeElement?.tagName === "INPUT" || activeElement?.tagName === "TEXTAREA";
 
       if (e.key === "Enter") {
         if (isInputFocused) {
@@ -334,18 +335,12 @@ export function TranscriptionChallenge({
           asked_to_transcribe.parts[asked_to_transcribe.parts.length - 1]
             .whitespace;
 
-        // Use dotted underline for single-part transcriptions, regular input otherwise
-        const InputComponent = isSinglePartTranscription
-          ? InputDottedUnderline
-          : InputFieldSizingContent;
-
         return (
-          <span key={index} className="w-full">
-            <InputComponent
+          <span key={index}>
+            <InlineTextarea
               ref={(el) => {
                 inputRefs.current[index] = el;
               }}
-              type="text"
               value={userInputs.get(index) || ""}
               onChange={(e) => handleInputChange(index, e.target.value)}
               onFocus={() => setFocusedInputIndex(index)}
@@ -357,9 +352,9 @@ export function TranscriptionChallenge({
               lang={languageToIso6391(targetLanguage)}
               className={`inline-block ${
                 isSinglePartTranscription ? "min-w-64" : "min-w-32"
-              } mx-1 text-center text-2xl font-semibold ${getInputClassName(
+              } mx-1 text-center resize-none text-l font-semibold ${getInputClassName(
                 index
-              )}`}
+              )} border-0 border-b-3 border-dotted`}
               placeholder="Write what you hear"
             />
             <span>{end_whitespace}</span>

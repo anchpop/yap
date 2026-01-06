@@ -44,8 +44,8 @@ export function AlmostThereMovie({ movie }: AlmostThereMovieProps) {
           )}
         </div>
         <div className="flex-1 p-4 flex flex-col justify-center">
-          <div className="text-xs font-medium text-muted-foreground mb-1">
-            ALMOST THERE
+          <div className="text-xs font-medium text-muted-foreground mb-1 uppercase">
+            Almost There
           </div>
           <h3 className="text-lg font-semibold text-muted-foreground mb-1">
             {movie.title}

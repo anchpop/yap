@@ -50,6 +50,7 @@ import { playSoundEffect } from "@/lib/sound-effects";
 import { useBackground } from "../BackgroundShader";
 import { MoviePosterCard } from "./MoviePosterCard";
 import { cn } from "@/lib/utils";
+import { Textarea } from "../ui/textarea";
 
 interface SentenceChallengeProps {
   sentence: TranslateComprehensibleSentence<string>;
@@ -629,7 +630,7 @@ export function TranslationChallenge({
     | { grading: null }
     | null
   >(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const wordRefs = useRef<Map<number, SwipeableWordHandle>>(new Map());
   const { bumpBackground } = useBackground();
 
@@ -977,13 +978,13 @@ export function TranslationChallenge({
 
             {grade === null ? (
               <>
-                <Input
+                <Textarea
                   ref={inputRef}
-                  type="text"
                   placeholder="Translation..."
                   value={userTranslation}
                   onChange={(e) => setUserTranslation(e.target.value)}
-                  className="text-lg"
+                  className="text-lg min-h-0"
+                  rows={1}
                 />
 
                 <ProperNounDefinitions
