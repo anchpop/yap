@@ -129,6 +129,10 @@ ol {
   padding-left: 1rem;
 }
 
+.handwritten {
+  font-family: 'Rock Salt', cursive;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

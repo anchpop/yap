@@ -1,4 +1,5 @@
 import { useState, useEffect, Profiler, useSyncExternalStore, useMemo, useCallback } from 'react'
+import { useZeno } from '@/hooks/useZeno'
 import { BrowserRouter, Routes, Route, Outlet, useNavigate, useOutletContext } from 'react-router-dom'
 import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Language, type Lexeme, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
 import { Button } from "@/components/ui/button.tsx"
@@ -99,11 +100,13 @@ function AppCheckBrowserSupport() {
     return () => clearInterval(timer)
   }, [supported])
 
+  const smoothProgress = useZeno(progress)
+
   if (supported === null) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
         <p className="text-muted-foreground animate-fade-in-delay-2">Checking device compatibility...</p>
-        <Progress value={progress} className="w-64 animate-fade-in-delay-2" />
+        <Progress value={smoothProgress} className="w-64 animate-fade-in-delay-2" disableTransition />
       </div>
     )
   }
@@ -294,6 +297,18 @@ function AppContent({ userInfo, accessToken }: AppContextType) {
   )
 }
 
+function LoadingProgress({ message, progress }: { message: string; progress: number }) {
+  const smoothProgress = useZeno(progress)
+  return (
+    <div className="flex-1 flex items-center justify-center">
+      <div className="w-full max-w-md space-y-4">
+        <p className="text-muted-foreground text-center">{message}</p>
+        <Progress value={smoothProgress} className="w-full" disableTransition />
+      </div>
+    </div>
+  )
+}
+
 function ReviewPage() {
   const { userInfo, accessToken } = useOutletContext<AppContextType>()
   const deck = useDeck()
@@ -317,12 +332,7 @@ function ReviewPage() {
                 showSignupNag: false
               }}
             >
-              <div className="flex-1 flex items-center justify-center">
-                <div className="w-full max-w-md space-y-4">
-                  <p className="text-muted-foreground text-center">{message}</p>
-                  <Progress value={progress} className="w-full" />
-                </div>
-              </div>
+              <LoadingProgress message={message} progress={progress} />
             </TopPageLayout>
           ))
           .with({ type: "deck", deck: null }, () => (

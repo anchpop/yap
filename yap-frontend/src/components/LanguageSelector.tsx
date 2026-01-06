@@ -419,7 +419,7 @@ export function LanguageSelector({
             // Step 2: Select target language
             <div
               key="target-selection"
-              className="w-full max-w-4xl gap-4 flex flex-col items-center"
+              className="w-full max-w-4xl gap-4 flex flex-col items-center gap-8"
             >
               <div className="text-center">
                 <h1
@@ -430,66 +430,6 @@ export function LanguageSelector({
                     What language will you speak next?
                   </span>
                 </h1>
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <span className="text-lg text-muted-foreground animate-fade-in">
-                    Native language:
-                  </span>
-                  <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={comboboxOpen}
-                        className="w-[180px] justify-between animate-fade-in"
-                        animate
-                      >
-                        <>
-                          <span className="mr-2">
-                            {languageFlags[selectionState.nativeLanguage]}
-                          </span>
-                          {selectionState.nativeLanguage}
-                        </>
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[180px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search language..." />
-                        <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
-                          <CommandGroup>
-                            {nativeLanguages.map((lang) => (
-                              <CommandItem
-                                key={lang}
-                                value={lang}
-                                onSelect={() => {
-                                  setSelectionState({
-                                    stage: "selectingTarget",
-                                    nativeLanguage: lang,
-                                  });
-                                  setComboboxOpen(false);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    selectionState.nativeLanguage === lang
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                <span className="mr-2">
-                                  {languageFlags[lang]}
-                                </span>
-                                {lang}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
               </div>
 
               {/* Resume button if already learning a language */}
@@ -573,7 +513,7 @@ export function LanguageSelector({
                           <div className="md:text-8xl text-6xl mb-4">
                             {languageFlags[lang]}
                           </div>
-                          <h2 className="md:text-3xl text-2xl font-bold mb-2">
+                          <h2 className="text-3xl font-bold mb-2">
                             {nativeLanguageNames[lang]}
                           </h2>
                         </div>
@@ -585,7 +525,7 @@ export function LanguageSelector({
 
               {/* Alpha section divider */}
               {alphaLanguages.length > 0 && (
-                <div className="w-full max-w-md my-8">
+                <div className="w-full max-w-md">
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t" />
@@ -628,7 +568,7 @@ export function LanguageSelector({
                           <div className="md:text-8xl text-6xl mb-4">
                             {languageFlags[lang]}
                           </div>
-                          <h2 className="md:text-3xl text-2xl font-bold mb-2">
+                          <h2 className="text-3xl font-bold mb-2">
                             {nativeLanguageNames[lang]}
                           </h2>
                         </div>
@@ -641,7 +581,7 @@ export function LanguageSelector({
               {/* Beta languages (if any) */}
               {betaLanguages.length > 0 && (
                 <>
-                  <div className="w-full max-w-md my-8">
+                  <div className="w-full max-w-md">
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
                         <span className="w-full border-t" />
@@ -691,6 +631,68 @@ export function LanguageSelector({
                 </>
               )}
 
+              {/* Native language selector */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <span className="text-lg text-muted-foreground animate-fade-in">
+                  Native language:
+                </span>
+                <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={comboboxOpen}
+                      className="w-[180px] justify-between animate-fade-in"
+                      animate
+                    >
+                      <>
+                        <span className="mr-2">
+                          {languageFlags[selectionState.nativeLanguage]}
+                        </span>
+                        {selectionState.nativeLanguage}
+                      </>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[180px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search language..." />
+                      <CommandList>
+                        <CommandEmpty>No language found.</CommandEmpty>
+                        <CommandGroup>
+                          {nativeLanguages.map((lang) => (
+                            <CommandItem
+                              key={lang}
+                              value={lang}
+                              onSelect={() => {
+                                setSelectionState({
+                                  stage: "selectingTarget",
+                                  nativeLanguage: lang,
+                                });
+                                setComboboxOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectionState.nativeLanguage === lang
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              <span className="mr-2">
+                                {languageFlags[lang]}
+                              </span>
+                              {lang}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
               <div className="text-center mb-12">
                 <p className="text-xl text-muted-foreground/70">
                   (Yap.Town is great for beginner and intermediate students.)
@@ -699,14 +701,11 @@ export function LanguageSelector({
             </div>
           ) : selectionState.stage === "askingExperience" ? (
             // Step 3: Ask about experience level
-            <motion.div
+            <div
               key="experience-question"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
               className="w-full max-w-2xl gap-4 flex flex-col items-center"
             >
-              <div className="text-center mb-8">
+              <div className="text-center animate-fade-in">
                 <h1
                   className="text-5xl font-bold mb-4"
                   style={{ textWrap: "balance" }}
@@ -729,7 +728,7 @@ export function LanguageSelector({
                       targetLanguage: selectionState.targetLanguage,
                     });
                   }}
-                  className="text-lg py-8 hover:scale-105 transition-transform"
+                  className="text-lg py-8 hover:scale-105 transition-transform animate-fade-in"
                 >
                   Yes, I know some
                 </Button>
@@ -745,7 +744,7 @@ export function LanguageSelector({
                       targetLanguage: selectionState.targetLanguage,
                     });
                   }}
-                  className="text-lg py-8 hover:scale-105 transition-transform"
+                  className="text-lg py-8 hover:scale-105 transition-transform animate-fade-in"
                 >
                   No, I'm starting fresh
                 </Button>
@@ -753,7 +752,7 @@ export function LanguageSelector({
 
               <Button
                 variant="ghost"
-                className="mt-6"
+                className="mt-6 animate-fade-in"
                 onClick={() => {
                   setSelectionState({
                     stage: "selectingTarget",
@@ -763,7 +762,7 @@ export function LanguageSelector({
               >
                 Back
               </Button>
-            </motion.div>
+            </div>
           ) : selectionState.stage === "onboarding" ? (
             // Step 4: Onboarding screens (if not skipping)
             <div className="flex flex-col items-center justify-center w-full max-w-4xl">
@@ -810,20 +809,16 @@ export function LanguageSelector({
                         >
                           {languageFlags[selectionState.targetLanguage]}
                         </motion.div>
-                        <h2 className="text-3xl font-bold mb-6">
+                        <h2 className="text-3xl font-semibold mb-6">
                           {selectionState.targetLanguage ===
                             currentTargetLanguage ||
                           userKnowsLanguage == "knows_some"
-                            ? `Ready to continue learning ${
-                                nativeLanguageNames[
-                                  selectionState.targetLanguage
-                                ]
-                              }?`
-                            : `Ready to start learning ${
-                                nativeLanguageNames[
-                                  selectionState.targetLanguage
-                                ]
-                              }?`}
+                            ? `Ready to continue learning`
+                            : `Ready to start learning`}{" "}
+                          <span>
+                            {nativeLanguageNames[selectionState.targetLanguage]}
+                          </span>
+                          ?
                         </h2>
                       </div>
                     </Card>

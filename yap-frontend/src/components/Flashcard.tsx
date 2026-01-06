@@ -460,9 +460,9 @@ export const Flashcard = function Flashcard({
 
   const tutorialText =
     "Heteronym" in content
-      ? `Guess what "${content.Heteronym.heteronym.word}" means in ${nativeLanguage}`
+      ? `Guess what "${content.Heteronym.heteronym.word}" means…`
       : "Multiword" in content
-      ? `Guess what "${content.Multiword[0]}" means in ${nativeLanguage}`
+      ? `Guess what "${content.Multiword[0]}" means`
       : "Listening" in content
       ? `Guess what ${targetLanguage} word is missing`
       : "LetterPronunciation" in content

@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils"
 function Progress({
   className,
   value,
+  disableTransition,
   ...props
-}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
+}: React.ComponentProps<typeof ProgressPrimitive.Root> & { disableTransition?: boolean }) {
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
@@ -19,7 +20,7 @@ function Progress({
     >
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
-        className="bg-primary h-full w-full flex-1 transition-all"
+        className={cn("bg-primary h-full w-full flex-1", !disableTransition && "transition-all")}
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />
     </ProgressPrimitive.Root>
