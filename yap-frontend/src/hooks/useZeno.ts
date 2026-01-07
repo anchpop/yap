@@ -14,7 +14,7 @@ export function useZeno(
   const [display, setDisplay] = useState(target);
   const current = useRef(target);
   const lastTime = useRef<number | null>(null);
-  const rafId = useRef<number>();
+  const rafId = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const tick = (now: number) => {

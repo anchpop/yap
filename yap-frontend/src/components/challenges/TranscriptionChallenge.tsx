@@ -12,10 +12,6 @@ import {
 } from "../../../../yap-frontend-rs/pkg/yap_frontend_rs";
 import { Button } from "@/components/ui/button";
 import { languageToIso6391 } from "@/lib/utils";
-import {
-  InputFieldSizingContent,
-  InputDottedUnderline,
-} from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { AudioButton } from "../AudioButton";
 import { playSoundEffect } from "@/lib/sound-effects";
