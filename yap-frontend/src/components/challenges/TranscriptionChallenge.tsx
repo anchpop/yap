@@ -504,7 +504,7 @@ export function TranscriptionChallenge({
                     <FeedbackDisplay
                       encouragement={gradingState.graded.encouragement}
                       explanation={gradingState.graded.explanation}
-                      perfect={isAllCorrect}
+                      perfect={isAllCorrect ?? undefined}
                     />
 
                     {Array.isArray(gradingState.graded.compare) &&
