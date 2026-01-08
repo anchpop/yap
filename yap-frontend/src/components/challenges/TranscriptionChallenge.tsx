@@ -308,6 +308,15 @@ export function TranscriptionChallenge({
     handleSubmit,
   ]);
 
+  const isAllCorrect =
+    gradingState &&
+    "graded" in gradingState &&
+    gradingState.graded.results.every(
+      (result) =>
+        "Provided" in result ||
+        result.AskedToTranscribe.parts.every((part) => "Perfect" in part.grade)
+    );
+
   const renderSentenceWithBlanks = () => {
     // Check if it's a single AskedToTranscribe part (full sentence transcription)
     const askedToTranscribeParts = challenge.parts.filter(
@@ -495,6 +504,7 @@ export function TranscriptionChallenge({
                     <FeedbackDisplay
                       encouragement={gradingState.graded.encouragement}
                       explanation={gradingState.graded.explanation}
+                      perfect={isAllCorrect}
                     />
 
                     {Array.isArray(gradingState.graded.compare) &&
@@ -620,15 +630,7 @@ export function TranscriptionChallenge({
             "Error"
           ) : (
             <>
-              {gradingState.graded.results.every(
-                (result) =>
-                  "Provided" in result ||
-                  result.AskedToTranscribe.parts.every(
-                    (part) => "Perfect" in part.grade
-                  )
-              )
-                ? "Nailed it!"
-                : "Continue"}
+              {isAllCorrect ? "Nailed it!" : "Continue"}
               <span className="ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
                 (⏎)
               </span>

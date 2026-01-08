@@ -270,11 +270,11 @@ export function LanguageSelector({
         "linear-gradient(180deg, #FFFFFF 33%, #0039A6 33% 66%, #D52B1E 66%)",
     },
     Portuguese: {
-      primary: "#006600",
-      secondary: "#FFCC00",
-      accent: "#009900",
+      primary: "#009B3A",
+      secondary: "#FFDF00",
+      accent: "#002776",
       gradient:
-        "linear-gradient(135deg, #006600 33%, #FFCC00 33% 66%, #009900 66%)",
+        "linear-gradient(135deg, #009B3A 40%, #FFDF00 40% 60%, #002776 60%)",
     },
     Italian: {
       primary: "#009246",

@@ -16,7 +16,7 @@ export const languageFlags: Record<Language, string> = {
   Chinese: "🇨🇳",
   Japanese: "🇯🇵",
   Russian: "🇷🇺",
-  Portuguese: "🇵🇹",
+  Portuguese: "🇧🇷",
   Italian: "🇮🇹",
 }
 

@@ -1008,6 +1008,7 @@ export function TranslationChallenge({
                       <FeedbackDisplay
                         encouragement={grade.graded.encouragement}
                         explanation={grade.graded.explanation}
+                        perfect
                       />
                     </div>
                   </>

@@ -75,10 +75,14 @@ pub fn write_frequencies_file(
 ) -> anyhow::Result<()> {
     let mut frequencies: Vec<FrequencyEntry<String>> = frequencies
         .into_iter()
-        .map(|(lexeme, count)| FrequencyEntry { lexeme, count })
+        .map(|(lexeme, count)| FrequencyEntry {
+            disambiguation_key: lexeme.get_disambiguation_key(),
+            lexeme,
+            count,
+        })
         .collect();
 
-    frequencies.sort_by_key(|entry| Reverse(entry.count));
+    frequencies.sort_by_key(|entry| Reverse(entry.clone()));
 
     let mut file = File::create(output_path)?;
 
@@ -137,7 +141,11 @@ pub fn compute_movie_frequencies(
 
             let freq_entries: Vec<FrequencyEntry<String>> = freqs
                 .into_iter()
-                .map(|(lexeme, count)| FrequencyEntry { lexeme, count })
+                .map(|(lexeme, count)| FrequencyEntry {
+                    disambiguation_key: lexeme.get_disambiguation_key(),
+                    lexeme,
+                    count,
+                })
                 .collect();
 
             movie_frequencies.insert(movie_id.clone(), freq_entries);

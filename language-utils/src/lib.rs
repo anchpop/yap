@@ -1013,6 +1013,16 @@ impl Lexeme<String> {
             Lexeme::Multiword(multiword) => Some(Lexeme::Multiword(rodeo.get(multiword)?)),
         }
     }
+
+    pub fn get_disambiguation_key(&self) -> u32 {
+        match self {
+            Lexeme::Heteronym(h) => {
+                let combined = format!("{}\0{}\0{:?}", h.word, h.lemma, h.pos);
+                xxhash_rust::xxh3::xxh3_64(combined.as_bytes()) as u32
+            }
+            Lexeme::Multiword(s) => xxhash_rust::xxh3::xxh3_64(s.as_bytes()) as u32,
+        }
+    }
 }
 
 impl Lexeme<lasso::Spur> {
@@ -1044,8 +1054,13 @@ where
     <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     <Lexeme<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
 {
-    pub lexeme: Lexeme<S>,
     pub count: u32,
+
+    /// This key is different for each word, which allows a consistent ordering of words with the same frequency.
+    pub disambiguation_key: u32,
+
+    // Goes last for ordering purposes
+    pub lexeme: Lexeme<S>,
 }
 
 #[derive(
@@ -1078,6 +1093,7 @@ impl FrequencyEntry<String> {
         FrequencyEntry {
             lexeme: self.lexeme.get_or_intern(rodeo),
             count: self.count,
+            disambiguation_key: self.disambiguation_key,
         }
     }
 
@@ -1085,6 +1101,7 @@ impl FrequencyEntry<String> {
         Some(FrequencyEntry {
             lexeme: self.lexeme.get_interned(rodeo)?,
             count: self.count,
+            disambiguation_key: self.disambiguation_key,
         })
     }
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, TriangleAlert } from "lucide-react";
 import type { Deck } from "../../../yap-frontend-rs/pkg";
 import { Progress } from "@/components/ui/progress";
 
@@ -79,22 +79,35 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
       <Progress value={(round / (NUM_ROUNDS + 1)) * 100} />
       <div className="p-6 space-y-4">
         {round > NUM_ROUNDS ? (
-          <>
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold">Ready to Start!</h2>
-            </div>
-            <p className="text-muted-foreground">
-              We've analyzed your knowledge level and will tailor your learning
-              experience.
-            </p>
-            <Button
-              onClick={() => onComplete({ knownWords, unknownWords })}
-              size="lg"
-              className="w-full"
-            >
-              Begin Learning
-            </Button>
-          </>
+          (() => {
+            const tooAdvanced =
+              knownWords.length / (knownWords.length + unknownWords.length) >
+              0.85;
+            return (
+              <>
+                <div className="space-y-2">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
+                    {tooAdvanced && (
+                      <TriangleAlert className="w-5 h-5 text-yellow-500" />
+                    )}
+                    {tooAdvanced ? "You might be too advanced" : "Ready to Start!"}
+                  </h2>
+                </div>
+                <p className="text-muted-foreground">
+                  {tooAdvanced
+                    ? "Yap.Town is designed for intermediate learners. We'll still try our best to find words you don't know!"
+                    : "We've analyzed your knowledge level and will tailor your learning experience."}
+                </p>
+                <Button
+                  onClick={() => onComplete({ knownWords, unknownWords })}
+                  size="lg"
+                  className="w-full"
+                >
+                  {tooAdvanced ? "Continue Anyway" : "Begin Learning"}
+                </Button>
+              </>
+            );
+          })()
         ) : (
           <>
             <div className="space-y-2">

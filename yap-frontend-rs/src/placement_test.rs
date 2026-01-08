@@ -1,5 +1,5 @@
 use crate::{Context, Deck, PlacementTest};
-use language_utils::Lexeme;
+use language_utils::{Heteronym, Lexeme, PartOfSpeech};
 use lasso::Spur;
 use pav_regression::{IsotonicRegression, Point, SmoothRegression};
 
@@ -30,17 +30,31 @@ impl Context {
     }
 }
 
+impl Context {
+    pub(crate) fn is_word_good_for_placement_test(&self, word: &Heteronym<Spur>) -> bool {
+        if word.pos == PartOfSpeech::Intj {
+            return false;
+        }
+        let Some(entry) = self.language_pack.dictionary.get(word) else {
+            return false;
+        };
+        let Some(definition) = entry.definitions.first() else {
+            return false;
+        };
+        !definition.cognate && !definition.false_cognate
+    }
+}
+
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 impl Deck {
     /// Helper function to find the lexeme with ln_frequency closest to the target value
     /// Uses binary search since word_frequencies is sorted by frequency (descending)
     /// Returns None if all words at that frequency are excluded
-    pub(crate) fn find_lexeme_near_ln_frequency(
+    pub(crate) fn find_heteronym_near_ln_frequency_for_placement_test(
         &self,
         target_sqrt_freq: f64,
-        excluded_lexemes: &std::collections::HashSet<Lexeme<Spur>>,
-        heteronyms_only: bool,
-    ) -> Option<(Lexeme<Spur>, language_utils::Frequency)> {
+        excluded_lemmas: &std::collections::HashSet<Spur>,
+    ) -> Option<(Heteronym<Spur>, language_utils::Frequency)> {
         let frequencies = &self.context.language_pack.word_frequencies;
         if frequencies.is_empty() {
             return None;
@@ -64,37 +78,24 @@ impl Deck {
         }
 
         // Now left is the insertion point. Check neighbors to find closest non-excluded word
-        let mut best_match: Option<(Lexeme<Spur>, language_utils::Frequency, f64)> = None;
+        let start = left.saturating_sub(50);
+        let end = (left + 50).min(frequencies.len());
 
-        // Check a range around the insertion point
-        let start = left.saturating_sub(5);
-        let end = (left + 5).min(frequencies.len());
-
-        for i in start..end {
-            if let Some((lexeme, freq)) = frequencies.get_index(i) {
-                if excluded_lexemes.contains(lexeme) {
-                    continue;
+        (start..end)
+            .filter_map(|i| frequencies.get_index(i))
+            .filter_map(|(lexeme, freq)| {
+                let heteronym = lexeme.heteronym()?;
+                if excluded_lemmas.contains(&heteronym.lemma) {
+                    return None;
                 }
-
-                // Skip multiwords if heteronyms_only is true
-                if heteronyms_only && matches!(lexeme, Lexeme::Multiword(_)) {
-                    continue;
+                if !self.context.is_word_good_for_placement_test(heteronym) {
+                    return None;
                 }
-
-                let sqrt_freq = freq.ln_frequency();
-                let distance = (sqrt_freq - target_sqrt_freq).abs();
-
-                match &best_match {
-                    None => best_match = Some((*lexeme, *freq, distance)),
-                    Some((_, _, best_distance)) if distance < *best_distance => {
-                        best_match = Some((*lexeme, *freq, distance));
-                    }
-                    _ => {}
-                }
-            }
-        }
-
-        best_match.map(|(lex, freq, _)| (lex, freq))
+                let distance = (freq.ln_frequency() - target_sqrt_freq).abs();
+                Some((*heteronym, *freq, distance))
+            })
+            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal))
+            .map(|(lex, freq, _)| (lex, freq))
     }
 
     /// Get placement test words distributed by likelihood of knowledge
@@ -107,43 +108,65 @@ impl Deck {
         unknown_words: Vec<String>,
     ) -> Vec<String> {
         // Convert word strings to their most common lexemes using the helper method
-        let mut known: Vec<Lexeme<Spur>> = Vec::new();
+        let mut known: Vec<Heteronym<Spur>> = Vec::new();
         for word_str in &known_words {
             if let Some((lexeme, _freq)) = self.context.lookup_word(word_str) {
-                known.push(lexeme);
+                let Some(heteronym) = lexeme.heteronym() else {
+                    continue;
+                };
+                known.push(*heteronym);
             }
         }
 
-        let mut unknown: Vec<Lexeme<Spur>> = Vec::new();
+        let mut unknown: Vec<Heteronym<Spur>> = Vec::new();
         for word_str in &unknown_words {
             if let Some((lexeme, _freq)) = self.context.lookup_word(word_str) {
-                unknown.push(lexeme);
+                let Some(heteronym) = lexeme.heteronym() else {
+                    continue;
+                };
+                unknown.push(*heteronym);
             }
         }
 
         // Get most and least common words
-        let (_most_common_lexeme, most_common_freq) =
-            match self.context.language_pack.word_frequencies.get_index(0) {
-                Some((lex, freq)) => (*lex, *freq),
-                None => return vec![],
-            };
+        let (_most_common_lexeme, most_common_freq) = match self
+            .context
+            .language_pack
+            .word_frequencies
+            .iter()
+            .filter_map(|(lexeme, freq)| lexeme.heteronym().map(|h| (h, freq)))
+            .next()
+        {
+            Some((heteronym, freq)) => (heteronym, freq),
+            None => return vec![],
+        };
 
-        let (_least_common_lexeme, least_common_freq) =
-            match self.context.language_pack.word_frequencies.iter().last() {
-                Some((lex, freq)) => (*lex, *freq),
-                None => return vec![],
-            };
+        let (_least_common_lexeme, least_common_freq) = match self
+            .context
+            .language_pack
+            .word_frequencies
+            .iter()
+            .rev()
+            .filter_map(|(lexeme, freq)| lexeme.heteronym().map(|h| (h, freq)))
+            .next()
+        {
+            Some((heteronym, freq)) => (heteronym, freq),
+            None => return vec![],
+        };
 
         // Build set of excluded lexemes:
         // - All words with same frequency as most common word
         // - All words with same frequency as least common word
         // - All input lexemes (known and unknown)
-        let mut excluded_lexemes = std::collections::HashSet::new();
+        let mut excluded_lemmas = std::collections::HashSet::new();
 
         // Exclude all words with the same frequency as the most common (from start)
         for (lexeme, freq) in self.context.language_pack.word_frequencies.iter() {
-            if freq.count == most_common_freq.count {
-                excluded_lexemes.insert(*lexeme);
+            if freq.count >= most_common_freq.count {
+                let Some(heteronym) = lexeme.heteronym() else {
+                    continue;
+                };
+                excluded_lemmas.insert(heteronym.lemma);
             } else {
                 break; // Frequency changed, stop iterating
             }
@@ -151,8 +174,11 @@ impl Deck {
 
         // Exclude all words with the same frequency as the least common (from end)
         for (lexeme, freq) in self.context.language_pack.word_frequencies.iter().rev() {
-            if freq.count == least_common_freq.count {
-                excluded_lexemes.insert(*lexeme);
+            if freq.count <= least_common_freq.count {
+                let Some(heteronym) = lexeme.heteronym() else {
+                    continue;
+                };
+                excluded_lemmas.insert(heteronym.lemma);
             } else {
                 break; // Frequency changed, stop iterating
             }
@@ -160,10 +186,10 @@ impl Deck {
 
         // Also exclude all input lexemes
         for lexeme in &known {
-            excluded_lexemes.insert(*lexeme);
+            excluded_lemmas.insert(lexeme.lemma);
         }
         for lexeme in &unknown {
-            excluded_lexemes.insert(*lexeme);
+            excluded_lemmas.insert(lexeme.lemma);
         }
 
         // Build a set of excluded word strings (just the words, not full lexemes)
@@ -171,14 +197,12 @@ impl Deck {
         let excluded_word_strings: std::collections::HashSet<String> = known
             .iter()
             .chain(unknown.iter())
-            .map(|lexeme| match lexeme {
-                Lexeme::Heteronym(h) => self
-                    .context
+            .map(|heteronym| {
+                self.context
                     .language_pack
                     .rodeo
-                    .resolve(&h.word)
-                    .to_string(),
-                Lexeme::Multiword(s) => self.context.language_pack.rodeo.resolve(s).to_string(),
+                    .resolve(&heteronym.word)
+                    .to_string()
             })
             .collect();
 
@@ -193,14 +217,24 @@ impl Deck {
 
         // Add all known words
         for lexeme in &known {
-            if let Some(freq) = self.context.language_pack.word_frequencies.get(lexeme) {
+            if let Some(freq) = self
+                .context
+                .language_pack
+                .word_frequencies
+                .get(&Lexeme::Heteronym(*lexeme))
+            {
                 points.push(Point::new(freq.ln_frequency(), 1.0));
             }
         }
 
         // Add all unknown words
         for lexeme in &unknown {
-            if let Some(freq) = self.context.language_pack.word_frequencies.get(lexeme) {
+            if let Some(freq) = self
+                .context
+                .language_pack
+                .word_frequencies
+                .get(&Lexeme::Heteronym(*lexeme))
+            {
                 points.push(Point::new(freq.ln_frequency(), 0.0));
             }
         }
@@ -240,21 +274,17 @@ impl Deck {
                 {
                     // Find a lexeme near this ln_frequency using binary search
                     // Use heteronyms_only=true to prefer single words over multiword phrases
-                    if let Some((lexeme, _freq)) = self.find_lexeme_near_ln_frequency(
-                        target_sqrt_freq,
-                        &excluded_lexemes,
-                        true,
-                    ) {
+                    if let Some((heteronym, _freq)) = self
+                        .find_heteronym_near_ln_frequency_for_placement_test(
+                            target_sqrt_freq,
+                            &excluded_lemmas,
+                        )
+                    {
                         // Add to excluded set so we don't use it again
-                        excluded_lexemes.insert(lexeme);
+                        excluded_lemmas.insert(heteronym.lemma);
 
                         // Get the word string
-                        let word_str = match lexeme {
-                            Lexeme::Heteronym(h) => {
-                                self.context.language_pack.rodeo.resolve(&h.word)
-                            }
-                            Lexeme::Multiword(s) => self.context.language_pack.rodeo.resolve(&s),
-                        };
+                        let word_str = self.context.language_pack.rodeo.resolve(&heteronym.word);
                         result_words.push(word_str.to_string());
                     }
                 }

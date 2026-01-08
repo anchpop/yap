@@ -3,11 +3,13 @@ import Markdown from "react-markdown";
 interface FeedbackDisplayProps {
   encouragement?: string;
   explanation?: string;
+  perfect?: boolean;
 }
 
 export function FeedbackDisplay({
   encouragement,
   explanation,
+  perfect = false,
 }: FeedbackDisplayProps) {
   if (!encouragement && !explanation) {
     return null;
@@ -22,7 +24,7 @@ export function FeedbackDisplay({
         {encouragement && (
           <div className="animate-fade-in px-3 py-2 rounded-md bg-gradient-to-r from-green-500/5 to-emerald-500/5 border-l-2 border-green-500/40">
             <div className="flex items-start gap-2">
-              <span className="text-lg leading-none">🎉</span>
+              <span className="text-lg leading-none">{perfect ? "🎉" : "☀️"}</span>
               <div className="flex-1 font-medium text-green-700 dark:text-green-300">
                 <Markdown>{encouragement}</Markdown>
               </div>

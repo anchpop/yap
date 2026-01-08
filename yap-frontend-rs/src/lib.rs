@@ -1490,9 +1490,15 @@ impl weapon::PartialAppState for Deck {
 
         let bias_points = if let Some(placement_test_results) = &state.placement_test_results {
             // Use placement test results to create bias points
-            state
+            let mut points = state
                 .context
-                .get_placement_test_points(placement_test_results)
+                .get_placement_test_points(placement_test_results);
+            points.extend_from_slice(&[
+                Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
+                Point::new_with_weight(Frequency { count: 25 }.ln_frequency(), 0.0, 5.0),
+                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 5.0),
+            ]);
+            points
         } else {
             vec![
                 Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
@@ -2936,6 +2942,9 @@ impl Context {
 
     pub(crate) fn is_word_easy(&self, word: &Heteronym<Spur>) -> bool {
         // todo: probably move this to frequency entry?
+        if word.pos == PartOfSpeech::Intj {
+            return false;
+        }
         let Some(entry) = self.language_pack.dictionary.get(word) else {
             return false;
         };
