@@ -24,10 +24,10 @@ pub async fn generate_proper_noun_definitions(
 
     for (sentence, info) in nlp_sentences {
         for literal in &info.words {
-            if let WordType::Other(other) = &literal.word_type {
+            if let WordType::Other(other) = &literal.word.word_type {
                 if other.other_tag == OtherWordType::Propn {
                     proper_noun_to_sentences
-                        .entry(literal.text.clone())
+                        .entry(literal.word.text.clone())
                         .or_default()
                         .push(sentence.clone());
                 }

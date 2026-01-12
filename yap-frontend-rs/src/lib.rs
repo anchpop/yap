@@ -1425,11 +1425,14 @@ impl weapon::PartialAppState for Deck {
                             } => parts
                                 .iter()
                                 .flat_map(|part| {
-                                    vec![part.heard.text.clone(), part.heard.whitespace.clone()]
+                                    vec![
+                                        part.heard.word.text.clone(),
+                                        part.heard.whitespace.clone(),
+                                    ]
                                 })
                                 .collect::<Vec<_>>(),
                             transcription_challenge::PartGraded::Provided { part } => {
-                                vec![part.text.clone(), part.whitespace.clone()]
+                                vec![part.word.text.clone(), part.whitespace.clone()]
                             }
                         })
                         .collect::<Vec<String>>()
@@ -3536,9 +3539,11 @@ impl ReviewInfo {
                         target_language_literals
                             .iter()
                             .filter_map(|literal| {
-                                if let language_utils::WordType::Other(other) = &literal.word_type {
+                                if let language_utils::WordType::Other(other) =
+                                    &literal.word.word_type
+                                {
                                     if other.other_tag == language_utils::OtherWordType::Propn {
-                                        let text_spur = literal.text;
+                                        let text_spur = literal.word.text;
                                         return language_pack
                                             .proper_noun_definitions
                                             .get(&text_spur)
@@ -3844,7 +3849,7 @@ pub async fn autograde_transcription(
                         .zip(submitted_words.iter())
                         .map(|(part, &submission)| {
                             let part_text =
-                                normalize_for_grading(&part.text, course.target_language)
+                                normalize_for_grading(&part.word.text, course.target_language)
                                     .trim()
                                     .to_string();
                             let submission =
@@ -3910,7 +3915,7 @@ pub async fn autograde_transcription_llm(
                 .map(|part| {
                     format!(
                         "{text}{whitespace}",
-                        text = normalize_for_grading(&part.text, course.target_language),
+                        text = normalize_for_grading(&part.word.text, course.target_language),
                         whitespace = part.whitespace
                     )
                 })
@@ -3930,7 +3935,7 @@ pub async fn autograde_transcription_llm(
                         .map(|part| transcription_challenge::PartGradedPart {
                             heard: part.clone(),
                             grade: transcription_challenge::WordGrade::Perfect {
-                                wrote: Some(part.text.clone()),
+                                wrote: Some(part.word.text.clone()),
                             },
                         })
                         .collect();

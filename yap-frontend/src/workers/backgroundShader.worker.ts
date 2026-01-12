@@ -309,7 +309,7 @@ function initWebGL(
     const lightness = theme === "dark" ? 15.0 : theme === "oled" ? 5.0 : 78.0;
     const chroma = theme === "oled" ? 0.0 : theme === "dark" ? 9.0 : 30.0;
     const lightnessShift =
-      theme === "oled" ? 20.0 : theme === "dark" ? 7.0 : 12.0;
+      theme === "oled" ? 15.0 : theme === "dark" ? 7.0 : 12.0;
     const hueStart = theme === "oled" ? 3.2 : theme === "dark" ? 5.2 : 3.2;
     const hueRange = theme === "oled" ? -3.0 : theme === "dark" ? 3.0 : -3.0;
 
