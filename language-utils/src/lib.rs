@@ -873,7 +873,14 @@ where
 
 impl<S> serde::Serialize for Literal<S>
 where
-    S: serde::Serialize + rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    S: serde::Serialize
+        + rkyv::Archive
+        + Hash
+        + std::fmt::Debug
+        + Eq
+        + PartialEq
+        + Ord
+        + PartialOrd,
     <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     Heteronym<S>: rkyv::Archive,
     <Heteronym<S> as rkyv::Archive>::Archived:
@@ -900,7 +907,14 @@ where
 
 impl<'de, S> serde::Deserialize<'de> for Literal<S>
 where
-    S: serde::Deserialize<'de> + rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    S: serde::Deserialize<'de>
+        + rkyv::Archive
+        + Hash
+        + std::fmt::Debug
+        + Eq
+        + PartialEq
+        + Ord
+        + PartialOrd,
     <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
     Heteronym<S>: rkyv::Archive,
     <Heteronym<S> as rkyv::Archive>::Archived:
@@ -924,8 +938,16 @@ where
 
         impl<'de, S> Visitor<'de> for LiteralVisitor<S>
         where
-            S: serde::Deserialize<'de> + rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-            <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+            S: serde::Deserialize<'de>
+                + rkyv::Archive
+                + Hash
+                + std::fmt::Debug
+                + Eq
+                + PartialEq
+                + Ord
+                + PartialOrd,
+            <S as rkyv::Archive>::Archived:
+                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
             Heteronym<S>: rkyv::Archive,
             <Heteronym<S> as rkyv::Archive>::Archived:
                 PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
@@ -978,7 +1000,8 @@ where
 
                 let text = text.ok_or_else(|| de::Error::missing_field("text"))?;
                 let word_type = word_type.ok_or_else(|| de::Error::missing_field("word_type"))?;
-                let whitespace = whitespace.ok_or_else(|| de::Error::missing_field("whitespace"))?;
+                let whitespace =
+                    whitespace.ok_or_else(|| de::Error::missing_field("whitespace"))?;
 
                 Ok(Literal {
                     word: Word { text, word_type },
