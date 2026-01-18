@@ -610,7 +610,7 @@ impl SentenceInfo {
             .iter()
             .filter(|token| {
                 !matches!(
-                    token.word_type,
+                    token.word.word_type,
                     WordType::Other(OtherWord {
                         other_tag: OtherWordType::Punct | OtherWordType::Space | OtherWordType::X
                     })
@@ -627,7 +627,7 @@ impl SentenceInfo {
             .iter()
             .filter(|token| {
                 matches!(
-                    token.word_type,
+                    token.word.word_type,
                     WordType::Other(OtherWord {
                         other_tag: OtherWordType::Propn
                     })
@@ -791,12 +791,52 @@ where
     Other(OtherWord),
 }
 
+/// A word with its text and grammatical type
 #[derive(
     Copy,
     Clone,
     Debug,
     serde::Serialize,
     serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    tsify::Tsify,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[rkyv(
+    compare(PartialEq),
+    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct Word<S>
+where
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    WordType<S>: rkyv::Archive,
+    <WordType<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+{
+    pub text: S,
+    #[serde(
+        alias = "heteronym",
+        deserialize_with = "deserialize_word_type_from_legacy"
+    )]
+    pub word_type: WordType<S>,
+}
+
+/// A literal token in a sentence (word + trailing whitespace)
+#[derive(
+    Copy,
+    Clone,
+    Debug,
     Hash,
     Eq,
     PartialEq,
@@ -822,14 +862,156 @@ where
     WordType<S>: rkyv::Archive,
     <WordType<S> as rkyv::Archive>::Archived:
         PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Word<S>: rkyv::Archive,
+    <Word<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
-    pub text: S,
+    #[serde(flatten)]
+    pub word: Word<S>,
     pub whitespace: S,
-    #[serde(
-        alias = "heteronym",
-        deserialize_with = "deserialize_word_type_from_legacy"
-    )]
-    pub word_type: WordType<S>,
+}
+
+impl<S> serde::Serialize for Literal<S>
+where
+    S: serde::Serialize
+        + rkyv::Archive
+        + Hash
+        + std::fmt::Debug
+        + Eq
+        + PartialEq
+        + Ord
+        + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    WordType<S>: rkyv::Archive + serde::Serialize,
+    <WordType<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Word<S>: rkyv::Archive,
+    <Word<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+{
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut state = serializer.serialize_struct("Literal", 3)?;
+        state.serialize_field("text", &self.word.text)?;
+        state.serialize_field("word_type", &self.word.word_type)?;
+        state.serialize_field("whitespace", &self.whitespace)?;
+        state.end()
+    }
+}
+
+impl<'de, S> serde::Deserialize<'de> for Literal<S>
+where
+    S: serde::Deserialize<'de>
+        + rkyv::Archive
+        + Hash
+        + std::fmt::Debug
+        + Eq
+        + PartialEq
+        + Ord
+        + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    WordType<S>: rkyv::Archive + serde::Deserialize<'de>,
+    <WordType<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Word<S>: rkyv::Archive,
+    <Word<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::{self, MapAccess, Visitor};
+        use std::fmt;
+        use std::marker::PhantomData;
+
+        struct LiteralVisitor<S>(PhantomData<S>);
+
+        impl<'de, S> Visitor<'de> for LiteralVisitor<S>
+        where
+            S: serde::Deserialize<'de>
+                + rkyv::Archive
+                + Hash
+                + std::fmt::Debug
+                + Eq
+                + PartialEq
+                + Ord
+                + PartialOrd,
+            <S as rkyv::Archive>::Archived:
+                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+            Heteronym<S>: rkyv::Archive,
+            <Heteronym<S> as rkyv::Archive>::Archived:
+                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+            WordType<S>: rkyv::Archive + serde::Deserialize<'de>,
+            <WordType<S> as rkyv::Archive>::Archived:
+                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+            Word<S>: rkyv::Archive,
+            <Word<S> as rkyv::Archive>::Archived:
+                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+        {
+            type Value = Literal<S>;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("struct Literal")
+            }
+
+            fn visit_map<V>(self, mut map: V) -> Result<Literal<S>, V::Error>
+            where
+                V: MapAccess<'de>,
+            {
+                let mut text: Option<S> = None;
+                let mut word_type: Option<WordType<S>> = None;
+                let mut whitespace: Option<S> = None;
+
+                while let Some(key) = map.next_key::<String>()? {
+                    match key.as_str() {
+                        "text" => {
+                            if text.is_some() {
+                                return Err(de::Error::duplicate_field("text"));
+                            }
+                            text = Some(map.next_value()?);
+                        }
+                        "word_type" | "heteronym" => {
+                            if word_type.is_some() {
+                                return Err(de::Error::duplicate_field("word_type"));
+                            }
+                            word_type = Some(map.next_value()?);
+                        }
+                        "whitespace" => {
+                            if whitespace.is_some() {
+                                return Err(de::Error::duplicate_field("whitespace"));
+                            }
+                            whitespace = Some(map.next_value()?);
+                        }
+                        _ => {
+                            let _ = map.next_value::<de::IgnoredAny>()?;
+                        }
+                    }
+                }
+
+                let text = text.ok_or_else(|| de::Error::missing_field("text"))?;
+                let word_type = word_type.ok_or_else(|| de::Error::missing_field("word_type"))?;
+                let whitespace =
+                    whitespace.ok_or_else(|| de::Error::missing_field("whitespace"))?;
+
+                Ok(Literal {
+                    word: Word { text, word_type },
+                    whitespace,
+                })
+            }
+        }
+
+        deserializer.deserialize_map(LiteralVisitor(PhantomData))
+    }
 }
 
 /// Custom deserializer to handle old format where `heteronym` could be null
@@ -859,7 +1041,7 @@ where
     })))
 }
 
-impl<S> Literal<S>
+impl<S> Word<S>
 where
     S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
     <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
@@ -870,7 +1052,7 @@ where
     <WordType<S> as rkyv::Archive>::Archived:
         PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
 {
-    /// Get the heteronym if this literal represents a heteronym, otherwise None
+    /// Get the heteronym if this word represents a heteronym, otherwise None
     pub fn heteronym(&self) -> Option<&Heteronym<S>> {
         match &self.word_type {
             WordType::Heteronym(h) => Some(h),
@@ -879,11 +1061,30 @@ where
     }
 }
 
-impl Literal<String> {
-    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> Literal<lasso::Spur> {
-        Literal {
+impl<S> Literal<S>
+where
+    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
+    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Heteronym<S>: rkyv::Archive,
+    <Heteronym<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    WordType<S>: rkyv::Archive,
+    <WordType<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+    Word<S>: rkyv::Archive,
+    <Word<S> as rkyv::Archive>::Archived:
+        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
+{
+    /// Get the heteronym if this literal represents a heteronym, otherwise None
+    pub fn heteronym(&self) -> Option<&Heteronym<S>> {
+        self.word.heteronym()
+    }
+}
+
+impl Word<String> {
+    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> Word<lasso::Spur> {
+        Word {
             text: rodeo.get_or_intern(&self.text),
-            whitespace: rodeo.get_or_intern(&self.whitespace),
             word_type: match &self.word_type {
                 WordType::Heteronym(h) => WordType::Heteronym(h.get_or_intern(rodeo)),
                 WordType::Other(other) => WordType::Other(*other),
@@ -891,28 +1092,51 @@ impl Literal<String> {
         }
     }
 
-    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<Literal<lasso::Spur>> {
+    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<Word<lasso::Spur>> {
         let word_type = match &self.word_type {
             WordType::Heteronym(h) => WordType::Heteronym(h.get_interned(rodeo)?),
             WordType::Other(other) => WordType::Other(*other),
         };
-        Some(Literal {
+        Some(Word {
             text: rodeo.get(&self.text)?,
-            whitespace: rodeo.get(&self.whitespace)?,
             word_type,
         })
+    }
+}
+
+impl Literal<String> {
+    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> Literal<lasso::Spur> {
+        Literal {
+            word: self.word.get_or_intern(rodeo),
+            whitespace: rodeo.get_or_intern(&self.whitespace),
+        }
+    }
+
+    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<Literal<lasso::Spur>> {
+        Some(Literal {
+            word: self.word.get_interned(rodeo)?,
+            whitespace: rodeo.get(&self.whitespace)?,
+        })
+    }
+}
+
+impl Word<lasso::Spur> {
+    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> Word<String> {
+        Word {
+            text: rodeo.resolve(&self.text).to_string(),
+            word_type: match &self.word_type {
+                WordType::Heteronym(h) => WordType::Heteronym(h.resolve(rodeo)),
+                WordType::Other(other) => WordType::Other(*other),
+            },
+        }
     }
 }
 
 impl Literal<lasso::Spur> {
     pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> Literal<String> {
         Literal {
-            text: rodeo.resolve(&self.text).to_string(),
+            word: self.word.resolve(rodeo),
             whitespace: rodeo.resolve(&self.whitespace).to_string(),
-            word_type: match &self.word_type {
-                WordType::Heteronym(h) => WordType::Heteronym(h.resolve(rodeo)),
-                WordType::Other(other) => WordType::Other(*other),
-            },
         }
     }
 }
@@ -1391,9 +1615,9 @@ impl ConsolidatedLanguageData {
 
         // Intern words used in sentences (includes proper nouns, plus capitalization might differ)
         for (_, sentence_info) in &self.nlp_sentences {
-            for word in &sentence_info.words {
-                rodeo.get_or_intern(&word.text);
-                rodeo.get_or_intern(&word.whitespace);
+            for literal in &sentence_info.words {
+                rodeo.get_or_intern(&literal.word.text);
+                rodeo.get_or_intern(&literal.whitespace);
             }
         }
 

@@ -301,11 +301,13 @@ pub(crate) fn lexide_token_to_literal(
             format!("{}{}", token.text.text, token.whitespace)
         };
         return Literal {
-            text: "".to_string(),
+            word: language_utils::Word {
+                text: "".to_string(),
+                word_type: language_utils::WordType::Other(language_utils::OtherWord {
+                    other_tag: language_utils::OtherWordType::Space,
+                }),
+            },
             whitespace,
-            word_type: language_utils::WordType::Other(language_utils::OtherWord {
-                other_tag: language_utils::OtherWordType::Space,
-            }),
         };
     }
 
@@ -340,9 +342,11 @@ pub(crate) fn lexide_token_to_literal(
     };
 
     Literal {
-        text: token.text.text.clone(),
+        word: language_utils::Word {
+            text: token.text.text.clone(),
+            word_type,
+        },
         whitespace: token.whitespace.clone(),
-        word_type,
     }
 }
 

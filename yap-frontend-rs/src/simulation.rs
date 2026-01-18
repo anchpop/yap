@@ -67,7 +67,7 @@ impl DailySimulationIterator {
                                 transcription_challenge::Part::AskedToTranscribe { parts } => {
                                     let submission = parts
                                         .iter()
-                                        .map(|p| p.text.clone())
+                                        .map(|p| p.word.text.clone())
                                         .collect::<Vec<_>>()
                                         .join(" ");
                                     transcription_challenge::PartGraded::AskedToTranscribe {
@@ -77,7 +77,7 @@ impl DailySimulationIterator {
                                             .map(|p| transcription_challenge::PartGradedPart {
                                                 grade:
                                                     transcription_challenge::WordGrade::Perfect {
-                                                        wrote: Some(p.text.clone()),
+                                                        wrote: Some(p.word.text.clone()),
                                                     },
                                                 heard: p,
                                             })

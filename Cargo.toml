@@ -11,7 +11,7 @@ members = [
     "libraries/sentence-sampler",
     "clean-nlp-data",
     "libraries/enumap",
-    "opensubtitles-downloader",
+    "opensubtitles-downloader", "omnigram",
 ]
 resolver = "3"
 

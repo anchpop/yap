@@ -565,7 +565,7 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
                 submission: _,
             } => {
                 for literal in parts {
-                    all_words_to_grade.push(literal.text.clone());
+                    all_words_to_grade.push(literal.word.text.clone());
                     word_to_part_mapping.push((part_idx, all_words_to_grade.len() - 1));
                 }
             }
@@ -585,7 +585,7 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
             transcription_challenge::PartSubmitted::AskedToTranscribe { parts, submission } => {
                 // For the full sentence
                 for literal in parts {
-                    full_sentence_parts.push(literal.text.clone());
+                    full_sentence_parts.push(literal.word.text.clone());
                 }
 
                 // For the sentence with blanks
@@ -596,9 +596,9 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
             }
             transcription_challenge::PartSubmitted::Provided { part } => {
                 // Add provided parts to all versions
-                full_sentence_parts.push(part.text.clone());
-                sentence_with_blanks.push(part.text.clone());
-                user_submission_parts.push(part.text.clone());
+                full_sentence_parts.push(part.word.text.clone());
+                sentence_with_blanks.push(part.word.text.clone());
+                user_submission_parts.push(part.word.text.clone());
             }
         }
     }

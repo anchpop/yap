@@ -767,7 +767,7 @@ async fn main() -> Result<()> {
             "zho" => "zh",
             "jpn" => "ja",
             "rus" => "ru",
-            "por" => "pt",
+            "por" => "pt-br",
             "ita" => "it",
             _ => {
                 eprintln!("Unsupported language code: {language_iso639_3}");

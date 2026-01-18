@@ -48,7 +48,7 @@ pub fn get_target_sentences(
     let all_cards = crate::read_anki::get_all_cards(&source_data_path);
     let target_sentence_count = match course.target_language.writing_system() {
         language_utils::WritingSystem::Latin => DEFAULT_TARGET_SENTENCE_COUNT,
-        _ => DEFAULT_TARGET_SENTENCE_COUNT / 8, // these courses are low-quality anyway, so let's save money
+        _ => DEFAULT_TARGET_SENTENCE_COUNT / 4, // these courses are low-quality anyway, so let's save money
     };
     let tatoeba_pairs =
         crate::tatoeba::get_tatoeba_pairs(&source_data_path, course, target_sentence_count);
