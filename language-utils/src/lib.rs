@@ -980,11 +980,24 @@ where
                             }
                             text = Some(map.next_value()?);
                         }
-                        "word_type" | "heteronym" => {
+                        "word_type" => {
                             if word_type.is_some() {
                                 return Err(de::Error::duplicate_field("word_type"));
                             }
                             word_type = Some(map.next_value()?);
+                        }
+                        "heteronym" => {
+                            // Legacy format: heteronym is Option<Heteronym<S>>
+                            if word_type.is_some() {
+                                return Err(de::Error::duplicate_field("word_type"));
+                            }
+                            let heteronym: Option<Heteronym<S>> = map.next_value()?;
+                            word_type = Some(match heteronym {
+                                Some(h) => WordType::Heteronym(h),
+                                None => WordType::Other(OtherWord {
+                                    other_tag: OtherWordType::X,
+                                }),
+                            });
                         }
                         "whitespace" => {
                             if whitespace.is_some() {
