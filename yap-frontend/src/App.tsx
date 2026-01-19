@@ -695,6 +695,13 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     
     return banned;
   });
+  const [pendingUnbanChallengeTypes, setPendingUnbanChallengeTypes] = useState<ChallengeRequirements[]>([]);
+
+  const applyPendingUnbans = useCallback(() => {
+    if (pendingUnbanChallengeTypes.length === 0) return;
+    setBannedChallengeTypes(banned => banned.filter(t => !pendingUnbanChallengeTypes.includes(t)));
+    setPendingUnbanChallengeTypes([]);
+  }, [pendingUnbanChallengeTypes]);
 
   useEffect(() => {
     const timeouts: any = [];
@@ -708,13 +715,21 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
         if (remaining > 0) {
           const timeout = setTimeout(() => {
-            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
             localStorage.removeItem('yap-cant-listen-timestamp');
+            if (currentChallenge) {
+              setPendingUnbanChallengeTypes(pending => pending.includes('Listening') ? pending : [...pending, 'Listening']);
+            } else {
+              setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
+            }
           }, remaining);
           timeouts.push(timeout);
         } else {
-          setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
           localStorage.removeItem('yap-cant-listen-timestamp');
+          if (currentChallenge) {
+            setPendingUnbanChallengeTypes(pending => pending.includes('Listening') ? pending : [...pending, 'Listening']);
+          } else {
+            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
+          }
         }
       }
     }
@@ -728,19 +743,27 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
         if (remaining > 0) {
           const timeout = setTimeout(() => {
-            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Speaking'));
             localStorage.removeItem('yap-cant-speak-timestamp');
+            if (currentChallenge) {
+              setPendingUnbanChallengeTypes(pending => pending.includes('Speaking') ? pending : [...pending, 'Speaking']);
+            } else {
+              setBannedChallengeTypes(banned => banned.filter(t => t !== 'Speaking'));
+            }
           }, remaining);
           timeouts.push(timeout);
         } else {
-          setBannedChallengeTypes(banned => banned.filter(t => t !== ('Speaking' as any)));
           localStorage.removeItem('yap-cant-speak-timestamp');
+          if (currentChallenge) {
+            setPendingUnbanChallengeTypes(pending => pending.includes('Speaking') ? pending : [...pending, 'Speaking']);
+          } else {
+            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Speaking'));
+          }
         }
       }
     }
     
     return () => timeouts.forEach((timeout: any) => clearTimeout(timeout));
-  }, [bannedChallengeTypes, CANT_LISTEN_DURATION_MS]);
+  }, [bannedChallengeTypes, CANT_LISTEN_DURATION_MS, currentChallenge]);
 
   const reviewInfo = useMemo(() => {
     const now = Date.now();
@@ -787,6 +810,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     if (event) {
       weapon.add_deck_event(event);
     }
+    applyPendingUnbans();
   }
 
   const handleTranslationComplete = useCallback(async (grade: { wordStatuses: [Lexeme<string>, boolean | null][] } | { perfect: string | null }, wordsTapped: Lexeme<string>[], submission: string) => {
@@ -828,7 +852,8 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
         weapon.add_deck_event(event);
       }
     }
-  }, [deck, currentChallenge, weapon])
+    applyPendingUnbans();
+  }, [deck, currentChallenge, weapon, applyPendingUnbans])
 
   const handleTranscriptionComplete = useCallback((grade: /* comes from TranscriptionChallenge*/ PartGraded[]) => {
     if (!currentChallenge || currentChallenge.type !== 'TranscribeComprehensibleSentence') {
@@ -843,7 +868,14 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     if (event) {
       weapon.add_deck_event(event);
     }
-  }, [deck, currentChallenge, weapon])
+    applyPendingUnbans();
+  }, [deck, currentChallenge, weapon, applyPendingUnbans])
+
+  useEffect(() => {
+    if (!currentChallenge) {
+      applyPendingUnbans();
+    }
+  }, [currentChallenge, applyPendingUnbans]);
 
   const handleCantListen = () => {
     const timestamp = Date.now();
