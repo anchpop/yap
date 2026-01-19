@@ -696,50 +696,40 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     return banned;
   });
 
-  useEffect(() => {
-    const timeouts: any = [];
-    
-    if (bannedChallengeTypes.includes('Listening')) {
+  // Check for expired bans and remove them - only call this between challenges
+  const checkAndRemoveExpiredBans = useCallback(() => {
+    let updated = false;
+    let newBanned = [...bannedChallengeTypes];
+
+    if (newBanned.includes('Listening')) {
       const cantListenTimestamp = localStorage.getItem('yap-cant-listen-timestamp');
       if (cantListenTimestamp) {
         const timestamp = parseInt(cantListenTimestamp);
         const elapsed = Date.now() - timestamp;
-        const remaining = CANT_LISTEN_DURATION_MS - elapsed;
-
-        if (remaining > 0) {
-          const timeout = setTimeout(() => {
-            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
-            localStorage.removeItem('yap-cant-listen-timestamp');
-          }, remaining);
-          timeouts.push(timeout);
-        } else {
-          setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
+        if (elapsed >= CANT_LISTEN_DURATION_MS) {
+          newBanned = newBanned.filter(t => t !== 'Listening');
           localStorage.removeItem('yap-cant-listen-timestamp');
+          updated = true;
         }
       }
     }
-    
-    if (bannedChallengeTypes.includes('Speaking')) {
+
+    if (newBanned.includes('Speaking')) {
       const cantSpeakTimestamp = localStorage.getItem('yap-cant-speak-timestamp');
       if (cantSpeakTimestamp) {
         const timestamp = parseInt(cantSpeakTimestamp);
         const elapsed = Date.now() - timestamp;
-        const remaining = CANT_LISTEN_DURATION_MS - elapsed;
-
-        if (remaining > 0) {
-          const timeout = setTimeout(() => {
-            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Speaking'));
-            localStorage.removeItem('yap-cant-speak-timestamp');
-          }, remaining);
-          timeouts.push(timeout);
-        } else {
-          setBannedChallengeTypes(banned => banned.filter(t => t !== ('Speaking' as any)));
+        if (elapsed >= CANT_LISTEN_DURATION_MS) {
+          newBanned = newBanned.filter(t => t !== 'Speaking');
           localStorage.removeItem('yap-cant-speak-timestamp');
+          updated = true;
         }
       }
     }
-    
-    return () => timeouts.forEach((timeout: any) => clearTimeout(timeout));
+
+    if (updated) {
+      setBannedChallengeTypes(newBanned);
+    }
   }, [bannedChallengeTypes, CANT_LISTEN_DURATION_MS]);
 
   const reviewInfo = useMemo(() => {
@@ -787,6 +777,9 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     if (event) {
       weapon.add_deck_event(event);
     }
+
+    // Check for expired bans now that we're transitioning between challenges
+    checkAndRemoveExpiredBans();
   }
 
   const handleTranslationComplete = useCallback(async (grade: { wordStatuses: [Lexeme<string>, boolean | null][] } | { perfect: string | null }, wordsTapped: Lexeme<string>[], submission: string) => {
@@ -828,7 +821,10 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
         weapon.add_deck_event(event);
       }
     }
-  }, [deck, currentChallenge, weapon])
+
+    // Check for expired bans now that we're transitioning between challenges
+    checkAndRemoveExpiredBans();
+  }, [deck, currentChallenge, weapon, checkAndRemoveExpiredBans])
 
   const handleTranscriptionComplete = useCallback((grade: /* comes from TranscriptionChallenge*/ PartGraded[]) => {
     if (!currentChallenge || currentChallenge.type !== 'TranscribeComprehensibleSentence') {
@@ -843,7 +839,10 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     if (event) {
       weapon.add_deck_event(event);
     }
-  }, [deck, currentChallenge, weapon])
+
+    // Check for expired bans now that we're transitioning between challenges
+    checkAndRemoveExpiredBans();
+  }, [deck, currentChallenge, weapon, checkAndRemoveExpiredBans])
 
   const handleCantListen = () => {
     const timestamp = Date.now();
