@@ -666,7 +666,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     }
   }, [nextDueCard?.due_timestamp_ms])
 
-  const [bannedChallengeTypes, setBannedChallengeTypes] = useState<ChallengeRequirements[]>(() => {
+  const computeBannedChallengeTypes = useCallback(() => {
     const banned: ChallengeRequirements[] = [];
     
     const cantListenTimestamp = localStorage.getItem('yap-cant-listen-timestamp');
@@ -694,53 +694,8 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     }
     
     return banned;
-  });
-
-  useEffect(() => {
-    const timeouts: any = [];
-    
-    if (bannedChallengeTypes.includes('Listening')) {
-      const cantListenTimestamp = localStorage.getItem('yap-cant-listen-timestamp');
-      if (cantListenTimestamp) {
-        const timestamp = parseInt(cantListenTimestamp);
-        const elapsed = Date.now() - timestamp;
-        const remaining = CANT_LISTEN_DURATION_MS - elapsed;
-
-        if (remaining > 0) {
-          const timeout = setTimeout(() => {
-            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
-            localStorage.removeItem('yap-cant-listen-timestamp');
-          }, remaining);
-          timeouts.push(timeout);
-        } else {
-          setBannedChallengeTypes(banned => banned.filter(t => t !== 'Listening'));
-          localStorage.removeItem('yap-cant-listen-timestamp');
-        }
-      }
-    }
-    
-    if (bannedChallengeTypes.includes('Speaking')) {
-      const cantSpeakTimestamp = localStorage.getItem('yap-cant-speak-timestamp');
-      if (cantSpeakTimestamp) {
-        const timestamp = parseInt(cantSpeakTimestamp);
-        const elapsed = Date.now() - timestamp;
-        const remaining = CANT_LISTEN_DURATION_MS - elapsed;
-
-        if (remaining > 0) {
-          const timeout = setTimeout(() => {
-            setBannedChallengeTypes(banned => banned.filter(t => t !== 'Speaking'));
-            localStorage.removeItem('yap-cant-speak-timestamp');
-          }, remaining);
-          timeouts.push(timeout);
-        } else {
-          setBannedChallengeTypes(banned => banned.filter(t => t !== ('Speaking' as any)));
-          localStorage.removeItem('yap-cant-speak-timestamp');
-        }
-      }
-    }
-    
-    return () => timeouts.forEach((timeout: any) => clearTimeout(timeout));
-  }, [bannedChallengeTypes, CANT_LISTEN_DURATION_MS]);
+  }, [CANT_LISTEN_DURATION_MS]);
+  const [bannedChallengeTypes, setBannedChallengeTypes] = useState<ChallengeRequirements[]>(() => computeBannedChallengeTypes());
 
   const reviewInfo = useMemo(() => {
     const now = Date.now();
@@ -751,6 +706,37 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
   useInterval(() => setCardsBecameDue(cardsBecameDue => cardsBecameDue + 1), reviewInfo.due_count === 0 ? 1000 : 60000);
 
   const currentChallenge: Challenge<string> | undefined = useMemo(() => reviewInfo.get_next_challenge(deck), [reviewInfo, deck]);
+
+  useEffect(() => {
+    if (!currentChallenge) {
+      setBannedChallengeTypes(computeBannedChallengeTypes());
+    }
+  }, [currentChallenge, computeBannedChallengeTypes]);
+
+  useEffect(() => {
+    if (currentChallenge) return;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    const scheduleRefresh = (storageKey: string) => {
+      const timestamp = localStorage.getItem(storageKey);
+      if (!timestamp) return;
+      const elapsed = Date.now() - parseInt(timestamp);
+      const remaining = CANT_LISTEN_DURATION_MS - elapsed;
+
+      if (remaining > 0) {
+        timeouts.push(setTimeout(() => {
+          setBannedChallengeTypes(computeBannedChallengeTypes());
+        }, remaining));
+      } else {
+        setBannedChallengeTypes(computeBannedChallengeTypes());
+      }
+    };
+
+    scheduleRefresh('yap-cant-listen-timestamp');
+    scheduleRefresh('yap-cant-speak-timestamp');
+
+    return () => timeouts.forEach(timeout => clearTimeout(timeout));
+  }, [currentChallenge, bannedChallengeTypes, CANT_LISTEN_DURATION_MS, computeBannedChallengeTypes]);
 
   useEffect(() => {
     const abortController = new AbortController();
