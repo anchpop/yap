@@ -9,7 +9,10 @@ Join the community on [Discord](https://discord.gg/mpgqfsH).
 ## Supported Languages
 
 1. French
-2. Spanish (beta)
+2. Spanish
+3. German
+4. Italian (beta)
+5. Portuguese (beta)
 3. Korean (alpha)
 
 ## Supported learning modalities
