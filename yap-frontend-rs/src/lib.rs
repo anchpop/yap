@@ -1922,7 +1922,7 @@ impl Deck {
         };
         let access_token = access_token.as_ref();
 
-        const SIMULATION_DAYS: u32 = 0;
+        const SIMULATION_DAYS: u32 = 0; // set to 0 right now in case it's causing our memory issues
         let mut requested_filenames = BTreeSet::new();
         let mut simulation_iterator = self.simulate_usage(chrono::Utc::now());
         for _ in 0..SIMULATION_DAYS {
