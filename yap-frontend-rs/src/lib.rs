@@ -4345,4 +4345,132 @@ mod tests {
             assert_limits(&deck);
         }
     }
+
+    /// E2E integration test: loads real weapon event data from disk,
+    /// replays all events through the state machine, and verifies
+    /// the computed deck state is sane.
+    #[test]
+    fn test_e2e_load_weapon_data_and_compute_state() {
+        use std::collections::BTreeMap;
+        use weapon::data_model::{EventStore, EventType, Timestamped};
+        use weapon::opfs::parse_event_log_records;
+
+        // 1. Load language pack from rkyv
+        let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
+            .expect("Failed to read language data - run `cargo run --bin generate-data` first");
+        let archived = rkyv::access::<
+            language_utils::language_pack::ArchivedLanguagePack,
+            rkyv::rancor::Error,
+        >(&bytes)
+        .unwrap();
+        let language_pack: LanguagePack =
+            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        let language_pack = Arc::new(language_pack);
+
+        // 2. Set up the EventStore (same as production: EventStore<String, String>)
+        let mut store: EventStore<String, String> = EventStore::default();
+
+        // Initialize the streams with the correct typed stores
+        store.get_or_insert_default::<EventType<DeckEvent>>("reviews".to_string(), None);
+        store.get_or_insert_default::<EventType<DeckSelectionEvent>>(
+            "deck_selection".to_string(),
+            None,
+        );
+
+        // 3. Load and parse the reviews event blob
+        let reviews_blob = std::fs::read(
+            "test-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__reviews/events.blob",
+        )
+        .expect("Failed to read reviews events blob");
+        let review_records = parse_event_log_records(&reviews_blob);
+        println!("Parsed {} review event records", review_records.len());
+        assert!(
+            !review_records.is_empty(),
+            "Expected review events in test data"
+        );
+
+        // Group events by device and add them to the store
+        let mut reviews_by_device: BTreeMap<String, Vec<Timestamped<serde_json::Value>>> =
+            BTreeMap::new();
+        for record in &review_records {
+            reviews_by_device
+                .entry(record.device_id.clone())
+                .or_default()
+                .push(record.event.clone());
+        }
+        for (device_id, events) in reviews_by_device {
+            let added = store.add_device_events_jsons(
+                "reviews".to_string(),
+                device_id.clone(),
+                events.clone(),
+                None,
+            );
+            println!("Added {added} review events for device {device_id}");
+            assert!(added > 0, "Expected to add review events for {device_id}");
+        }
+
+        // 4. Load and parse the deck_selection event blob
+        let deck_selection_blob = std::fs::read(
+            "test-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__deck_selection/events.blob",
+        )
+        .expect("Failed to read deck_selection events blob");
+        let deck_selection_records = parse_event_log_records(&deck_selection_blob);
+        println!(
+            "Parsed {} deck_selection event records",
+            deck_selection_records.len()
+        );
+
+        let mut selections_by_device: BTreeMap<String, Vec<Timestamped<serde_json::Value>>> =
+            BTreeMap::new();
+        for record in &deck_selection_records {
+            selections_by_device
+                .entry(record.device_id.clone())
+                .or_default()
+                .push(record.event.clone());
+        }
+        for (device_id, events) in selections_by_device {
+            store.add_device_events_jsons(
+                "deck_selection".to_string(),
+                device_id,
+                events,
+                None,
+            );
+        }
+
+        // 5. Compute the deck state by replaying all events
+        let initial_state =
+            DeckState::new(language_pack, Language::French, Language::English);
+        let stream = store
+            .get::<EventType<DeckEvent>>("reviews".to_string())
+            .expect("reviews stream should exist");
+        let deck: Deck = stream.state(initial_state);
+
+        // 6. Verify the computed state looks reasonable
+        let num_cards = deck.num_cards();
+        let total_reviews = deck.stats.total_reviews;
+        println!("Computed deck state:");
+        println!("  Total tracked cards: {num_cards}");
+        println!("  Total reviews: {total_reviews}");
+        println!("  XP: {}", deck.stats.xp);
+        println!(
+            "  Has placement test: {}",
+            deck.placement_test_results.is_some()
+        );
+        println!("  Leeches: {}", deck.leeches.len());
+        println!(
+            "  Start time: {:?}",
+            deck.stats.start_time
+        );
+
+        assert!(num_cards > 0, "Expected cards after replaying events");
+        assert!(
+            total_reviews > 0,
+            "Expected total_reviews > 0 after replaying events"
+        );
+        assert!(deck.stats.xp > 0.0, "Expected XP > 0 after replaying events");
+        assert!(
+            deck.stats.start_time.is_some(),
+            "Expected start_time to be set"
+        );
+    }
 }
