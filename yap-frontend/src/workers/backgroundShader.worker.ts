@@ -300,8 +300,12 @@ function initWebGL(
 
   let elapsedTime = 0;
   let lastFrameTime = performance.now();
-  const targetSpeed = 0.03;
-  let speed = targetSpeed;
+  const targetSpeed = 0;
+  let speed = 0.09; // Start with bump-like energy for initial lava-lamp effect
+  let isAnimating = true;
+
+  const SPEED_THRESHOLD = 0.0005;
+  const COLOR_THRESHOLD = 0.001;
 
   function calculateColors(theme: "dark" | "light" | "oled") {
     const isDark = theme === "dark" || theme === "oled";
@@ -361,7 +365,35 @@ function initWebGL(
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
+    // Check if animation has fully settled (speed near zero and colors converged)
+    if (speed < SPEED_THRESHOLD) {
+      let colorsSettled = true;
+      for (let i = 0; i < currentColors.length; i++) {
+        if (
+          Math.abs(currentColors[i] - targetColors[i]) > COLOR_THRESHOLD
+        ) {
+          colorsSettled = false;
+          break;
+        }
+      }
+      if (colorsSettled) {
+        speed = 0;
+        isAnimating = false;
+        animationFrameId = null;
+        return;
+      }
+    }
+
     animationFrameId = requestAnimationFrame(render);
+  }
+
+  // Restart the animation loop if it has settled
+  function ensureAnimating() {
+    if (!isAnimating) {
+      isAnimating = true;
+      lastFrameTime = performance.now();
+      render();
+    }
   }
 
   // Expose updateColors for theme changes
@@ -374,6 +406,7 @@ function initWebGL(
     const newColorData = calculateColors(currentTheme);
     targetColors = newColorData.colors;
     numBands = newColorData.numBands;
+    ensureAnimating();
   };
 
   // Expose bumpSpeed function
@@ -383,7 +416,8 @@ function initWebGL(
       bumpSpeed?: (multiplier?: number) => void;
     }
   ).bumpSpeed = (multiplier = 3.0) => {
-    speed = targetSpeed * multiplier;
+    speed = 0.03 * multiplier;
+    ensureAnimating();
   };
 
   render();
