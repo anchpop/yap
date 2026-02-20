@@ -212,6 +212,12 @@ impl Deck {
         );
 
         for (&time, notification_type) in notification_times.iter() {
+            // Skip notifications scheduled in the past — these would fire immediately
+            // via the cron job, causing spurious notifications every time the app is opened.
+            if time <= now.timestamp_millis() {
+                continue;
+            }
+
             let cards = cards_due_by(time);
             let time_f64 = time as f64;
 
