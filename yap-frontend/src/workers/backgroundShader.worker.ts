@@ -300,8 +300,9 @@ function initWebGL(
 
   let elapsedTime = 0;
   let lastFrameTime = performance.now();
-  const targetSpeed = 0.03;
-  let speed = targetSpeed;
+  const targetSpeed = 0;
+  const SPEED_STOP_THRESHOLD = 0.001;
+  let speed = 1.0; // Start with visible lava-lamp motion, decays to 0
 
   function calculateColors(theme: "dark" | "light" | "oled") {
     const isDark = theme === "dark" || theme === "oled";
@@ -361,6 +362,17 @@ function initWebGL(
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
+    // Stop generating frames once speed is near zero and colors have settled
+    const colorsDelta = currentColors.reduce(
+      (sum, val, i) => sum + Math.abs(val - targetColors[i]),
+      0
+    );
+    if (speed < SPEED_STOP_THRESHOLD && colorsDelta < 0.01) {
+      speed = 0;
+      animationFrameId = null;
+      return;
+    }
+
     animationFrameId = requestAnimationFrame(render);
   }
 
@@ -381,9 +393,27 @@ function initWebGL(
     self as typeof self & {
       updateShaderColors?: () => void;
       bumpSpeed?: (multiplier?: number) => void;
+      restartLoop?: () => void;
     }
   ).bumpSpeed = (multiplier = 3.0) => {
-    speed = targetSpeed * multiplier;
+    speed = 0.03 * multiplier;
+    // Restart animation loop if it was stopped
+    if (animationFrameId === null) {
+      lastFrameTime = performance.now();
+      animationFrameId = requestAnimationFrame(render);
+    }
+  };
+
+  // Expose restartLoop for theme changes (color interpolation)
+  (
+    self as typeof self & {
+      restartLoop?: () => void;
+    }
+  ).restartLoop = () => {
+    if (animationFrameId === null) {
+      lastFrameTime = performance.now();
+      animationFrameId = requestAnimationFrame(render);
+    }
   };
 
   render();
@@ -434,6 +464,13 @@ self.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
         ).updateShaderColors;
         if (updateColors) {
           updateColors();
+        }
+        // Restart animation loop if stopped, to interpolate new colors
+        const restartLoop = (
+          self as typeof self & { restartLoop?: () => void }
+        ).restartLoop;
+        if (restartLoop) {
+          restartLoop();
         }
       }
       break;
