@@ -3,7 +3,18 @@
 //! This module provides functions for cleaning up and normalizing text
 //! according to language-specific typographic rules.
 
+use unicode_normalization::UnicodeNormalization;
+
 use crate::Language;
+
+/// Remove accents/diacritics from a string by NFD-decomposing and stripping combining characters.
+/// Also lowercases the result.
+pub fn remove_accents_lowercase(text: &str) -> String {
+    text.nfd()
+        .filter(|c| !unicode_normalization::char::is_combining_mark(*c))
+        .collect::<String>()
+        .to_lowercase()
+}
 
 /// Normalize text for grading purposes
 ///

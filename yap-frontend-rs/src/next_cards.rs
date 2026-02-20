@@ -1,9 +1,9 @@
-use rustc_hash::FxHashMap;
 use std::collections::BTreeSet;
 
+use rustc_hash::FxHashMap;
+
 use chrono::Utc;
-use language_utils::Lexeme;
-use language_utils::PartOfSpeech;
+use language_utils::{Atom, SpurGram, Word, WordType, grm};
 use lasso::Spur;
 use ordered_float::NotNan;
 
@@ -12,8 +12,23 @@ use crate::{
     Regressions,
 };
 
+/// Returns the single word from a gram if it has exactly one Tok atom.
+/// Returns None for multi-word grams or empty grams.
+fn gram_single_word(gram: &grm<Spur>) -> Option<&Word<Spur>> {
+    let mut words = gram.iter().filter_map(|atom| match atom {
+        Atom::Tok(word) => Some(word),
+        Atom::Control(_) => None,
+    });
+    let first = words.next()?;
+    if words.next().is_some() {
+        None // More than one word
+    } else {
+        Some(first)
+    }
+}
+
 pub(crate) struct NextCardsIterator<'a> {
-    pub(crate) cards: FxHashMap<CardIndicator<Spur>, CardStatus>,
+    pub(crate) cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardStatus>,
     pub(crate) allowed_cards: AllowedCards,
     pub(crate) context: &'a Context,
     pub(crate) regressions: &'a Regressions,
@@ -27,7 +42,7 @@ pub(crate) enum AllowedCards {
     #[expect(unused)]
     // All is not yet used, but could be used to express intent more clearly than an empty BannedRequirements set
     All,
-    BannedRequirements(std::collections::BTreeSet<ChallengeRequirements>),
+    BannedRequirements(BTreeSet<ChallengeRequirements>),
     Type(CardType),
 }
 
@@ -60,37 +75,41 @@ impl<'a> NextCardsIterator<'a> {
         }
     }
 
-    fn next_text_card(&self) -> Option<(CardIndicator<Spur>, rs_fsrs::Card)> {
-        // None of the first 20 cards can be multiword cards
-        // And the first 5 should be "easy"
-        let no_auxiliary_words = self.added_count > 30;
-        let no_multiwords = self.added_count > 20;
-        let easy_cards = self.added_count < 5 && !self.context.course.teaches_new_writing_system();
+    fn next_text_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
+        // First 20 cards: prefer single-word grams (deprioritize multi-word grams/phrases)
+        // First 5 cards: prefer "easy" single-word grams
+        let prefer_single_word = self.added_count < 20;
+        let easy_only = self.added_count < 5 && !self.context.course.teaches_new_writing_system();
 
         self.cards
             .iter()
             .filter_map(|(card, status)| {
-                let CardIndicator::TargetLanguage { lexeme } = card else {
-                    return None;
-                };
-                let mut preferred = true;
-                if !no_multiwords && lexeme.multiword().is_some() {
-                    preferred = false;
-                }
-                if easy_cards
-                    && let Some(heteronym) = lexeme.heteronym()
-                    && !self.context.is_word_easy(heteronym)
-                {
-                    preferred = false;
-                }
-                if no_auxiliary_words
-                    && let Some(heteronym) = lexeme.heteronym()
-                    && heteronym.pos == PartOfSpeech::Aux
-                {
-                    preferred = false;
-                }
-
                 status.unadded()?;
+
+                let mut preferred = true;
+
+                match card {
+                    CardIndicator::WrittenGram { gram } => {
+                        if let Some(word) =
+                            gram_single_word(self.context.language_pack.gram_rodeo.resolve(gram))
+                        {
+                            // Single-word gram: check if it's easy
+                            if easy_only {
+                                if let WordType::Heteronym(h) = &word.word_type {
+                                    if !self.context.is_word_easy(h) {
+                                        preferred = false;
+                                    }
+                                }
+                            }
+                        } else {
+                            // Multi-word gram: deprioritize during early onboarding
+                            if prefer_single_word {
+                                preferred = false;
+                            }
+                        }
+                    }
+                    _ => return None, // Not a text card
+                }
 
                 let value =
                     self.context
@@ -98,15 +117,15 @@ impl<'a> NextCardsIterator<'a> {
 
                 let fsrs_card = rs_fsrs::Card::new(Utc::now());
 
-                Some((lexeme, fsrs_card, (preferred, value)))
+                Some((*card, fsrs_card, (preferred, value)))
             })
             .max_by_key(|(_, _, value)| *value)
-            .map(|(card, fsrs_card, _)| {
-                (CardIndicator::TargetLanguage { lexeme: *card }, fsrs_card)
-            })
+            .map(|(card, fsrs_card, _)| (card, fsrs_card))
     }
 
-    fn next_letter_pronunciation_card(&self) -> Option<(CardIndicator<Spur>, rs_fsrs::Card)> {
+    fn next_letter_pronunciation_card(
+        &self,
+    ) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
         // Find pronunciation patterns that haven't been added yet
         self.cards
             .iter()
@@ -137,15 +156,15 @@ impl<'a> NextCardsIterator<'a> {
             })
     }
 
-    fn next_listening_card(&self) -> Option<(CardIndicator<Spur>, rs_fsrs::Card)> {
-        // Get all known words (already added text cards)
-        let known_words: BTreeSet<Lexeme<Spur>> = self
+    fn next_listening_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
+        // Get all known grams (already added WrittenGram cards)
+        let known_grams: BTreeSet<SpurGram> = self
             .cards
             .iter()
             .filter_map(|(card, status)| {
-                if let CardIndicator::TargetLanguage { lexeme } = card {
+                if let CardIndicator::WrittenGram { gram } = card {
                     if matches!(status, CardStatus::Tracked(_)) {
-                        Some(*lexeme)
+                        Some(*gram)
                     } else {
                         None
                     }
@@ -158,7 +177,7 @@ impl<'a> NextCardsIterator<'a> {
         self.cards
             .iter()
             .filter_map(|(card, status)| {
-                let CardIndicator::ListeningHomophonous { pronunciation } = card else {
+                let CardIndicator::ListeningGram { gram } = card else {
                     return None;
                 };
 
@@ -168,36 +187,22 @@ impl<'a> NextCardsIterator<'a> {
                     self.context
                         .get_card_value_with_status(card, status, self.regressions)?;
 
-                // Check if we know at least one word with this pronunciation
-                let has_known_word = self
-                    .context
-                    .language_pack
-                    .pronunciation_to_lexemes(pronunciation)
-                    .any(|(_, lexeme)| known_words.contains(&lexeme));
-
-                // Only include if we know at least one word with this pronunciation
-                if !has_known_word {
+                // Only include if we already know this gram as a written card
+                if !known_grams.contains(gram) {
                     return None;
                 }
 
                 let fsrs_card = rs_fsrs::Card::new(Utc::now());
 
-                Some((pronunciation, fsrs_card, value))
+                Some((*gram, fsrs_card, value))
             })
             .max_by_key(|(_, _, value)| *value)
-            .map(|(pronunciation, fsrs_card, _)| {
-                (
-                    CardIndicator::ListeningHomophonous {
-                        pronunciation: *pronunciation,
-                    },
-                    fsrs_card,
-                )
-            })
+            .map(|(gram, fsrs_card, _)| (CardIndicator::ListeningGram { gram }, fsrs_card))
     }
 }
 
 impl NextCardsIterator<'_> {
-    fn next_card(&self) -> Option<(CardIndicator<Spur>, rs_fsrs::Card)> {
+    fn next_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
         if self.added_count < 20 {
             let can_only_add_text_cards = match &self.allowed_cards {
                 AllowedCards::All | AllowedCards::Type(CardType::TargetLanguage) => true,
@@ -209,8 +214,6 @@ impl NextCardsIterator<'_> {
                 return Some(card);
             }
         }
-
-        log::info!("next_card: self.allowed_cards={:?}", self.allowed_cards);
 
         // Calculate which type is most underrepresented based on target ratios
         let total_cards: u32 = self.card_type_counts.values().cloned().sum();
@@ -259,10 +262,13 @@ impl NextCardsIterator<'_> {
 }
 
 impl Iterator for NextCardsIterator<'_> {
-    type Item = CardIndicator<Spur>;
+    type Item = CardIndicator<SpurGram, Spur>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((card, fsrs_card)) = self.next_card() {
+            // Get card_type before moving the card
+            let card_type = card.card_type();
+
             self.cards.insert(
                 card,
                 CardStatus::Tracked(crate::CardData::Added { fsrs_card }),
@@ -270,7 +276,6 @@ impl Iterator for NextCardsIterator<'_> {
 
             // Update incremental counts
             self.added_count += 1;
-            let card_type = card.card_type();
             self.card_type_counts
                 .entry(card_type)
                 .and_modify(|count| *count += 1);

@@ -132,7 +132,7 @@ export function TranscriptionChallenge({
   const blankIndices: number[] = useMemo(() => {
     const blankIndices: number[] = [];
     challenge.parts.forEach((item, index) => {
-      if ("AskedToTranscribe" in item) {
+      if (item.type === "AskedToTranscribe") {
         blankIndices.push(index);
       }
     });
@@ -203,18 +203,18 @@ export function TranscriptionChallenge({
     setGradingState({ grading: null });
 
     const request: PartSubmitted[] = challenge.parts.map((part, index) => {
-      if ("AskedToTranscribe" in part) {
+      if (part.type === "AskedToTranscribe") {
         const submission = (userInputs.get(index) ?? "").trim();
 
         return {
-          AskedToTranscribe: {
-            parts: part.AskedToTranscribe.parts,
-            submission,
-          },
+          type: "AskedToTranscribe" as const,
+          parts: part.parts,
+          submission,
         };
       } else {
         return {
-          Provided: { part: part.Provided.part },
+          type: "Provided" as const,
+          part: part.part,
         };
       }
     });
@@ -227,8 +227,8 @@ export function TranscriptionChallenge({
     const graded = await autograde_transcription(request, accessToken, course);
     const isAllCorrect = graded.results.every(
       (result) =>
-        "Provided" in result ||
-        result.AskedToTranscribe.parts.every((part) => "Perfect" in part.grade)
+        result.type === "Provided" ||
+        result.parts.every((part) => part.grade.type === "Perfect")
     );
 
     setGradingState({
@@ -313,32 +313,30 @@ export function TranscriptionChallenge({
     "graded" in gradingState &&
     gradingState.graded.results.every(
       (result) =>
-        "Provided" in result ||
-        result.AskedToTranscribe.parts.every((part) => "Perfect" in part.grade)
+        result.type === "Provided" ||
+        result.parts.every((part) => part.grade.type === "Perfect")
     );
 
   const renderSentenceWithBlanks = () => {
     // Check if it's a single AskedToTranscribe part (full sentence transcription)
     const askedToTranscribeParts = challenge.parts.filter(
-      (part) => "AskedToTranscribe" in part
+      (part) => part.type === "AskedToTranscribe"
     );
     const isSinglePartTranscription =
       askedToTranscribeParts.length === 1 &&
       challenge.parts.every(
         (part) =>
-          "AskedToTranscribe" in part ||
-          ("Provided" in part && !("word" in part.Provided.part.word_type))
+          part.type === "AskedToTranscribe" ||
+          (part.type === "Provided" && part.part.word.word_type?.type !== "Heteronym")
       );
 
     return challenge.parts.map((item, index) => {
-      if ("AskedToTranscribe" in item) {
-        const asked_to_transcribe = item.AskedToTranscribe;
-        if (asked_to_transcribe.parts.length === 0) {
+      if (item.type === "AskedToTranscribe") {
+        if (item.parts.length === 0) {
           throw new Error("AskedToTranscribe part has no parts");
         }
         const end_whitespace =
-          asked_to_transcribe.parts[asked_to_transcribe.parts.length - 1]
-            .whitespace;
+          item.parts[item.parts.length - 1].whitespace;
 
         return (
           <span key={index}>
@@ -366,11 +364,10 @@ export function TranscriptionChallenge({
           </span>
         );
       } else {
-        const provided = item.Provided.part;
         return (
           <span key={index}>
-            {provided.text}
-            {provided.whitespace}
+            {item.part.word.text}
+            {item.part.whitespace}
           </span>
         );
       }
@@ -381,24 +378,24 @@ export function TranscriptionChallenge({
     if (gradingState && "graded" in gradingState) {
       const result = gradingState.graded.results[index];
 
-      if (result && "AskedToTranscribe" in result) {
+      if (result && result.type === "AskedToTranscribe") {
         // Check if all words are perfect
-        const allPerfect = result.AskedToTranscribe.parts.every(
-          (part) => "Perfect" in part.grade
+        const allPerfect = result.parts.every(
+          (part) => part.grade.type === "Perfect"
         );
         // Check for other grades
-        const hasMissed = result.AskedToTranscribe.parts.some(
-          (part) => "Missed" in part.grade
+        const hasMissed = result.parts.some(
+          (part) => part.grade.type === "Missed"
         );
-        const hasIncorrect = result.AskedToTranscribe.parts.some(
-          (part) => "Incorrect" in part.grade
+        const hasIncorrect = result.parts.some(
+          (part) => part.grade.type === "Incorrect"
         );
-        const hasPhoneticallySimilar = result.AskedToTranscribe.parts.some(
-          (part) => "PhoneticallySimilarButContextuallyIncorrect" in part.grade
+        const hasPhoneticallySimilar = result.parts.some(
+          (part) => part.grade.type === "PhoneticallySimilarButContextuallyIncorrect"
         );
-        const hasPhoneticallyIdentical = result.AskedToTranscribe.parts.some(
+        const hasPhoneticallyIdentical = result.parts.some(
           (part) =>
-            "PhoneticallyIdenticalButContextuallyIncorrect" in part.grade
+            part.grade.type === "PhoneticallyIdenticalButContextuallyIncorrect"
         );
 
         if (allPerfect) {
@@ -678,7 +675,7 @@ function WordGrades({
   ];
 
   const getGradeKey = (grade: WordGrade): string => {
-    return Object.keys(grade)[0];
+    return grade.type;
   };
 
   const handleGradeChange = (
@@ -689,21 +686,23 @@ function WordGrades({
     const updatedGrades = [...wordGrades];
     const part = updatedGrades[partIndex];
 
-    if ("AskedToTranscribe" in part) {
-      const newGrade: WordGrade = { [newGradeKey]: {} } as WordGrade;
-      part.AskedToTranscribe.parts[wordIndex].grade = newGrade;
+    if (part.type === "AskedToTranscribe") {
+      const newGrade: WordGrade = { type: newGradeKey } as WordGrade;
+      part.parts[wordIndex].grade = newGrade;
     }
 
     setGrade(updatedGrades);
   };
 
   const transcribedParts = wordGrades.filter(
-    (part) => "AskedToTranscribe" in part
+    (part) => part.type === "AskedToTranscribe"
   );
 
   if (transcribedParts.length === 0) {
     return null;
   }
+
+  console.log(wordGrades);
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -718,21 +717,21 @@ function WordGrades({
       <CollapsibleContent>
         <div className="mt-3 space-y-3">
           {wordGrades.map((part, partIndex) => {
-            if ("AskedToTranscribe" in part) {
+            if (part.type === "AskedToTranscribe") {
               return (
                 <div key={partIndex} className="space-y-2">
                   <div className="text-sm text-muted-foreground">
-                    Your answer: "{part.AskedToTranscribe.submission}"
+                    Your answer: "{part.submission}"
                   </div>
                   <div className="grid gap-2">
-                    {part.AskedToTranscribe.parts.map((wordPart, wordIndex) => (
+                    {part.parts.map((wordPart, wordIndex) => (
                       <div
                         key={wordIndex}
                         className="flex items-center gap-3 p-2 rounded-lg bg-muted/30"
                       >
                         <div className="flex-1">
                           <span className="font-medium">
-                            {wordPart.heard.text}
+                            {wordPart.heard.word.text}
                           </span>
                         </div>
                         <Select

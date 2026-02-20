@@ -19,6 +19,7 @@ import {
   type Language,
   type Course,
   type Deck,
+  type Heteronym,
 } from "../../../../yap-frontend-rs/pkg/yap_frontend_rs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -57,7 +58,7 @@ interface SentenceChallengeProps {
     grade:
       | { wordStatuses: [Lexeme<string>, boolean | null][] }
       | { perfect: string | null },
-    lexemesTapped: Lexeme<string>[],
+    heteronymsTapped: Heteronym<string>[],
     submission: string
   ) => void;
   unique_target_language_lexeme_definitions: [
@@ -197,11 +198,11 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
             }`}
           >
             <p className="text-lg font-medium text-center">
-              {"Heteronym" in lexeme ? lexeme.Heteronym.word : lexeme.Multiword}
+              {lexeme.type === "Heteronym" ? lexeme.heteronym.word : lexeme.phrase}
               <span className="text-sm text-muted-foreground">
                 {aliased
-                  ? "Heteronym" in lexeme
-                    ? ` (${lexeme.Heteronym.pos})`
+                  ? lexeme.type === "Heteronym"
+                    ? ` (${lexeme.heteronym.pos})`
                     : ""
                   : ""}
               </span>
@@ -293,7 +294,7 @@ function WordDefinition({
   }
 
   const lexemeText =
-    "Heteronym" in lexeme ? lexeme.Heteronym.word : lexeme.Multiword;
+    lexeme.type === "Heteronym" ? lexeme.heteronym.word : lexeme.phrase;
 
   return (
     <div className="p-3 border border-card/50 bg-card/30 rounded-md">
@@ -521,22 +522,19 @@ function ChallengeSentence({
       return "text-green-600 dark:text-green-400";
     }
 
-    const heteronym =
-      "word" in literal.word_type && literal.word_type !== undefined
-        ? literal.word_type
-        : undefined;
+    const isHeteronym = (literal.word.word_type as { type?: string })?.type === "Heteronym";
 
-    if (heteronym && tappedWords.has(i)) {
+    if (isHeteronym && tappedWords.has(i)) {
       return "text-yellow-500 dark:text-yellow-400"; // Color for tapped words
     }
 
     // If no word statuses, use default color
-    if (!wordStatuses || !heteronym) {
+    if (!wordStatuses || !isHeteronym) {
       return "";
     }
 
     // Find if this literal belongs to any of the graded lexemes
-    const lexeme: Lexeme<string> = { Heteronym: heteronym };
+    const lexeme = literal.word.word_type as unknown as Lexeme<string>;
     const statusEntry = wordStatuses.find(
       ([l]) => JSON.stringify(l) === JSON.stringify(lexeme)
     );
@@ -553,10 +551,7 @@ function ChallengeSentence({
     <h2 className="text-2xl font-semibold">
       {literals.map((literal, i) => {
         const colorClass = getLiteralColorClass(literal, i);
-        const heteronym =
-          "word" in literal.word_type && literal.word_type !== undefined
-            ? literal.word_type
-            : undefined;
+        const isHeteronym = (literal.word.word_type as { type?: string })?.type === "Heteronym";
 
         return (
           <>
@@ -564,17 +559,17 @@ function ChallengeSentence({
               key={i}
               className={cn(
                 colorClass,
-                heteronym
+                isHeteronym
                   ? "cursor-pointer underline-offset-3 underline decoration-dotted hover:decoration-solid hover:decoration-3 transition-transform hover:scale-105 inline-block"
                   : ""
               )}
               onClick={() => {
-                if (heteronym) {
+                if (isHeteronym) {
                   onWordTap(i);
                 }
               }}
             >
-              {literal.text}
+              {literal.word.text}
             </span>
             {literal.whitespace}
           </>
@@ -756,29 +751,29 @@ export function TranslationChallenge({
     bumpBackground,
   ]);
 
-  const lexemesTapped = useMemo(() => {
-    const lexemesTapped = new Array<Lexeme<string>>();
+  const heteronymsTapped = useMemo(() => {
+    const heteronymsTapped = new Array<Heteronym<string>>();
     for (const index of tappedWords.values()) {
       const literal = sentence.target_language_literals[index];
-      if ("word" in literal.word_type) {
-        const lexeme: Lexeme<string> = { Heteronym: literal.word_type };
-        lexemesTapped.push(lexeme);
+      if (literal.word.word_type.type === "Heteronym") {
+        const heteronym = literal.word.word_type as Heteronym<string>;
+        heteronymsTapped.push(heteronym);
       }
     }
-    return lexemesTapped;
+    return heteronymsTapped;
   }, [sentence, tappedWords]);
 
   const wordsToGradeManually = new Array<[Lexeme<string>, boolean | null]>();
   if (grade && "graded" in grade && "wordStatuses" in grade.graded) {
     for (const [lexeme, status] of grade.graded.wordStatuses) {
       if (
-        !lexemesTapped.some((l) => JSON.stringify(l) === JSON.stringify(lexeme))
+        !heteronymsTapped.some((l) => JSON.stringify(l) === JSON.stringify(lexeme))
       ) {
         wordsToGradeManually.push([lexeme, status]);
       }
     }
   }
-  const definitionsToShow = [...lexemesTapped];
+  const definitionsToShow: Lexeme<string>[] = heteronymsTapped.map((h) => ({type: "Heteronym", heteronym: h}));
   if (grade && "graded" in grade && "wordStatuses" in grade.graded) {
     for (const [lexeme, status] of grade.graded.wordStatuses) {
       if (status === false) {
@@ -799,7 +794,7 @@ export function TranslationChallenge({
         // Scroll to top when continuing
         bumpBackground(30.0);
         window.scrollTo({ top: 0, behavior: "smooth" });
-        onComplete(grade.graded, lexemesTapped, userTranslation);
+        onComplete(grade.graded, heteronymsTapped, userTranslation);
       }
     }
   }, [
@@ -807,7 +802,7 @@ export function TranslationChallenge({
     onComplete,
     grade,
     userTranslation,
-    lexemesTapped,
+    heteronymsTapped,
     bumpBackground,
   ]);
 

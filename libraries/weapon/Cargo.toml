@@ -21,7 +21,6 @@ fetch-happen = { workspace = true, optional = true }
 tsify = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true, optional = true }
 opfs = { workspace = true, optional = true }
-idb = { workspace = true, optional = true }
 futures = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 slotmap = { workspace = true }
@@ -41,14 +40,6 @@ js-sys = { version = "0.3", optional = true }
 supabase = ["dep:fetch-happen", "dep:tsify", "dep:wasm-bindgen"]
 opfs = [
     "dep:opfs",
-    "dep:futures",
-    "dep:thiserror",
-    "dep:web-sys",
-    "dep:serde-wasm-bindgen",
-    "dep:js-sys",
-]
-indexeddb = [
-    "dep:idb",
     "dep:futures",
     "dep:thiserror",
     "dep:web-sys",

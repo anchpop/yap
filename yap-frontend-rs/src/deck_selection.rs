@@ -17,12 +17,13 @@ pub struct DeckSelectionPartial {
     pub starting_fresh: BTreeMap<Language, bool>,
 }
 
-impl weapon::PartialAppState for DeckSelection {
+impl weapon::AppState for DeckSelection {
     type Event = DeckSelectionEvent;
     type Partial = DeckSelectionPartial;
 
     fn process_event(
         mut partial: Self::Partial,
+        _context: &<Self::Event as weapon::data_model::Event>::Context,
         event: &weapon::data_model::Timestamped<Self::Event>,
     ) -> Self::Partial {
         match event.event {
@@ -47,7 +48,10 @@ impl weapon::PartialAppState for DeckSelection {
         }
     }
 
-    fn finalize(partial: Self::Partial) -> Self {
+    fn finalize(
+        partial: Self::Partial,
+        _context: &<Self::Event as weapon::data_model::Event>::Context,
+    ) -> Self {
         DeckSelection {
             starting_fresh: partial
                 .target_language
@@ -85,25 +89,21 @@ pub enum VersionedDeckSelectionEvent {
     V1(DeckSelectionEvent),
 }
 impl Event for DeckSelectionEvent {
-    fn to_json(&self) -> Result<serde_json::Value, serde_json::Error> {
-        let versioned = VersionedDeckSelectionEvent::from(self.clone());
-        serde_json::to_value(versioned)
+    type Versioned = VersionedDeckSelectionEvent;
+    type Context = ();
+
+    fn to_versioned(&self) -> Self::Versioned {
+        VersionedDeckSelectionEvent::from(self.clone())
     }
 
-    fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error> {
-        serde_json::from_value::<VersionedDeckSelectionEvent>(json.clone())
-            .map(|versioned| versioned.into())
+    fn from_versioned(versioned: &Self::Versioned, _context: &Self::Context) -> Option<Self> {
+        Some(match versioned {
+            VersionedDeckSelectionEvent::V1(event) => event.clone(),
+        })
     }
 }
 impl From<DeckSelectionEvent> for VersionedDeckSelectionEvent {
     fn from(event: DeckSelectionEvent) -> Self {
         VersionedDeckSelectionEvent::V1(event)
-    }
-}
-impl From<VersionedDeckSelectionEvent> for DeckSelectionEvent {
-    fn from(event: VersionedDeckSelectionEvent) -> Self {
-        match event {
-            VersionedDeckSelectionEvent::V1(event) => event,
-        }
     }
 }

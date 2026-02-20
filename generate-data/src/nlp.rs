@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use language_utils::Language;
+use language_utils::{Gram, Language};
 use lexide::Lexide;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap, HashSet};
@@ -220,59 +220,70 @@ pub async fn process_sentences(
     Ok(result)
 }
 
+/// Convert tokenizations to Literals without multiword detection.
+/// This is useful when you only need the literal words from sentences
+/// (e.g., for omnigram training) without the heavier multiword matching.
+pub fn convert_tokens_to_literals(
+    sentences_tokenizations: &BTreeMap<String, Vec<lexide::Token>>,
+    language: Language,
+) -> BTreeMap<String, Vec<language_utils::Literal<String>>> {
+    use language_utils::Literal;
+
+    let proper_nouns = BTreeMap::new();
+
+    sentences_tokenizations
+        .iter()
+        .map(|(sentence_str, tokens)| {
+            let words: Vec<Literal<String>> = tokens
+                .iter()
+                .enumerate()
+                .map(|(i, token)| {
+                    crate::lexide_token::lexide_token_to_literal(
+                        token,
+                        &proper_nouns,
+                        language,
+                        i == 0,
+                    )
+                })
+                .collect();
+            (sentence_str.clone(), words)
+        })
+        .collect()
+}
+
 /// Generate NLP analyzed sentences by matching multiword terms against sentences
 /// using lemma matcher (high confidence) and dependency matcher (low confidence)
+///
+/// Takes pre-computed literals (from `convert_tokens_to_literals`), the raw
+/// sentence tokenizations, and pre-computed matcher data:
+/// - `lemma_patterns`: maps multiword term labels to their lemma sequences
+/// - `tree_patterns`: maps multiword term labels to their dependency tree patterns
 ///
 /// This is fast since it only involves local pattern matching (no API calls).
 ///
 /// Returns a BTreeMap containing all the input sentences that were successfully processed
 pub async fn generate_nlp_sentences(
-    sentences_tokenizations: BTreeMap<String, Vec<lexide::Token>>,
-    multiword_terms_tokenizations: &BTreeMap<String, Vec<lexide::Token>>,
-    language: Language,
+    sentence_literals: &BTreeMap<String, Vec<language_utils::Literal<String>>>,
+    sentences_tokenizations: &BTreeMap<String, Vec<lexide::Token>>,
+    lemma_patterns: &BTreeMap<Gram<String>, Vec<String>>,
+    tree_patterns: &BTreeMap<Gram<String>, lexide::matching::TreeNode>,
 ) -> Result<BTreeMap<String, language_utils::SentenceInfo>> {
-    use language_utils::{Literal, MultiwordTerms, SentenceInfo};
+    use language_utils::{MultiwordTerms, SentenceInfo};
     use lexide::matching::{DependencyMatcher, LemmaMatcher, TreeNode};
 
-    // Build matchers for all multiword terms
-
-    // For lemma matcher (high confidence), create patterns from lemmas
-    let lemma_patterns: Vec<(String, Vec<&str>)> = multiword_terms_tokenizations
+    // Build lemma matcher (high confidence) — use Gram<String> keys directly
+    let lemma_patterns: Vec<(Gram<String>, Vec<&str>)> = lemma_patterns
         .iter()
-        .filter(|(_, tokens)| tokens.len() > 1)
-        .map(|(term_str, tokens)| {
-            (
-                term_str.clone(),
-                tokens
-                    .iter()
-                    .map(|token| token.lemma.lemma.as_str())
-                    .collect(),
-            )
-        })
+        .map(|(gram, lemmas)| (gram.clone(), lemmas.iter().map(|s| s.as_str()).collect()))
         .collect();
     let lemma_matcher = LemmaMatcher::new(&lemma_patterns);
 
-    // For dependency matcher (low confidence), create tree patterns
-    let tree_patterns: Vec<(String, TreeNode)> = multiword_terms_tokenizations
+    // Build dependency matcher (low confidence) — use Gram<String> keys directly
+    let tree_patterns: Vec<(Gram<String>, TreeNode)> = tree_patterns
         .iter()
-        .filter_map(|(term_str, tokens)| {
-            let tokenization = lexide::Tokenization {
-                tokens: tokens.clone(),
-            };
-            match TreeNode::try_from(tokenization.clone()) {
-                Ok(tree) => Some((term_str.clone(), tree)),
-                Err(_e) => {
-                    // eprintln!("Warning: Failed to create TreeNode for '{term_str}': {e}"); // todo make this less noisy
-                    None
-                }
-            }
-        })
+        .map(|(gram, tree)| (gram.clone(), tree.clone()))
         .collect();
-
     let dependency_matcher = DependencyMatcher::new(&tree_patterns);
-
-    // Empty proper nouns map (for now, proper noun handling can be added later if needed)
-    let proper_nouns = BTreeMap::new();
 
     // Process all sentences
     let mut result: BTreeMap<String, SentenceInfo> = BTreeMap::new();
@@ -284,34 +295,31 @@ pub async fn generate_nlp_sentences(
 
         // Find high confidence matches using lemma matcher
         let lemma_matches = lemma_matcher.find_all(&tokenization);
-        let high_confidence: Vec<String> = lemma_matches
+        let high_confidence: Vec<Gram<String>> = lemma_matches
             .iter()
             .map(|m| m.matched_label.clone())
             .collect();
 
         // Find low confidence matches using dependency matcher
-        let low_confidence: Vec<String> = if let Ok(tree) = TreeNode::try_from(tokenization.clone())
-        {
-            let dep_matches = dependency_matcher.find_all(&tree);
+        let low_confidence: Vec<Gram<String>> =
+            if let Ok(tree) = TreeNode::try_from(tokenization.clone()) {
+                let dep_matches = dependency_matcher.find_all(&tree);
 
-            dep_matches
-                .iter()
-                .map(|m| m.matched_label.clone())
-                // Filter out high confidence matches
-                .filter(|term| !high_confidence.contains(term))
-                .collect()
-        } else {
-            Vec::new()
-        };
+                dep_matches
+                    .iter()
+                    .map(|m| m.matched_label.clone())
+                    // Filter out high confidence matches
+                    .filter(|gram| !high_confidence.contains(gram))
+                    .collect()
+            } else {
+                Vec::new()
+            };
 
-        // Convert lexide tokens to Literals
-        let words: Vec<Literal<String>> = tokens
-            .iter()
-            .enumerate()
-            .map(|(i, token)| {
-                crate::lexide_token::lexide_token_to_literal(token, &proper_nouns, language, i == 0)
-            })
-            .collect();
+        // Use pre-computed literals
+        let words = sentence_literals
+            .get(sentence_str)
+            .cloned()
+            .unwrap_or_default();
 
         let sentence_info = SentenceInfo {
             words,

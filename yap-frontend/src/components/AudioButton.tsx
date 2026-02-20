@@ -109,6 +109,11 @@ export function AudioButton({
     let cancelled = false;
 
     const playWithDelay = async () => {
+      // Only autoplay if user has interacted with the page and it's focused
+      if (!navigator.userActivation?.hasBeenActive || !document.hasFocus()) {
+        return;
+      }
+
       // Wait for any currently playing sound effects to finish
       while (isSoundEffectPlaying() && !cancelled) {
         await new Promise((resolve) => setTimeout(resolve, 50));

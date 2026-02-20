@@ -1,7 +1,7 @@
 use futures::StreamExt as _;
 use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::features::Morphology;
-use language_utils::{DictionaryEntry, Heteronym, Language, PartOfSpeech};
+use language_utils::{DictionaryEntry, GramFrequencyEntry, Heteronym, Language, PartOfSpeech};
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::Write;
@@ -23,12 +23,12 @@ static CHAT_CLIENT_5: LazyLock<ChatClient> = LazyLock::new(|| {
 
 pub async fn create_morphology(
     language: Language,
-    frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+    gram_frequencies: &[GramFrequencyEntry<String>],
 ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
     // Process sentences to get unique words and track occurrences
     let mut target_language_heteronyms = BTreeMap::new();
-    for entry in frequencies {
-        if let Some(heteronym) = entry.lexeme.heteronym() {
+    for entry in gram_frequencies {
+        if let Some(heteronym) = entry.gram.heteronym() {
             target_language_heteronyms
                 .entry(heteronym.clone())
                 .or_insert(entry.count);
@@ -37,7 +37,7 @@ pub async fn create_morphology(
 
     // Try Wiktionary first for supported languages
     let mut morphology =
-        wiktionary_morphology::create_morphology_from_wiktionary(language, frequencies)
+        wiktionary_morphology::create_morphology_from_wiktionary(language, gram_frequencies)
             .await
             .unwrap_or_default();
 
@@ -464,14 +464,16 @@ pub mod wiktionary_morphology {
 
     pub async fn create_morphology_from_wiktionary(
         language: Language,
-        frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+        gram_frequencies: &[GramFrequencyEntry<String>],
     ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
         match language {
-            Language::French => french::create_french_morphology(frequencies).await,
-            Language::Spanish => spanish::create_spanish_morphology(frequencies).await,
-            Language::German => german::create_german_morphology(frequencies).await,
-            Language::Portuguese => portuguese::create_portuguese_morphology(frequencies).await,
-            Language::Italian => italian::create_italian_morphology(frequencies).await,
+            Language::French => french::create_french_morphology(gram_frequencies).await,
+            Language::Spanish => spanish::create_spanish_morphology(gram_frequencies).await,
+            Language::German => german::create_german_morphology(gram_frequencies).await,
+            Language::Portuguese => {
+                portuguese::create_portuguese_morphology(gram_frequencies).await
+            }
+            Language::Italian => italian::create_italian_morphology(gram_frequencies).await,
             _ => {
                 // Return empty for unsupported languages
                 Ok(BTreeMap::new())
@@ -487,12 +489,12 @@ pub mod wiktionary_morphology {
         use std::path::Path;
 
         pub async fn create_french_morphology(
-            frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+            gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
             // Step 1: Extract all verb lemmas from frequencies (including auxiliaries)
             let mut verb_lemmas = HashSet::new();
-            for entry in frequencies {
-                if let Some(heteronym) = entry.lexeme.heteronym() {
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
                     if heteronym.pos == PartOfSpeech::Verb || heteronym.pos == PartOfSpeech::Aux {
                         verb_lemmas.insert(heteronym.lemma.clone());
                     }
@@ -810,12 +812,12 @@ pub mod wiktionary_morphology {
         use std::path::Path;
 
         pub async fn create_spanish_morphology(
-            frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+            gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
             // Step 1: Extract all verb lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
-            for entry in frequencies {
-                if let Some(heteronym) = entry.lexeme.heteronym() {
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
                     if heteronym.pos == PartOfSpeech::Verb {
                         verb_lemmas.insert(heteronym.lemma.clone());
                     }
@@ -1098,12 +1100,12 @@ pub mod wiktionary_morphology {
         use std::path::Path;
 
         pub async fn create_portuguese_morphology(
-            frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+            gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
             // Step 1: Extract all verb lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
-            for entry in frequencies {
-                if let Some(heteronym) = entry.lexeme.heteronym() {
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
                     if heteronym.pos == PartOfSpeech::Verb {
                         verb_lemmas.insert(heteronym.lemma.clone());
                     }
@@ -1390,12 +1392,12 @@ pub mod wiktionary_morphology {
         use std::path::Path;
 
         pub async fn create_italian_morphology(
-            frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+            gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
             // Step 1: Extract all verb lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
-            for entry in frequencies {
-                if let Some(heteronym) = entry.lexeme.heteronym() {
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
                     if heteronym.pos == PartOfSpeech::Verb {
                         verb_lemmas.insert(heteronym.lemma.clone());
                     }
@@ -1652,7 +1654,7 @@ pub mod wiktionary_morphology {
         use std::path::Path;
 
         pub async fn create_german_morphology(
-            frequencies: &Vec<language_utils::FrequencyEntry<String>>,
+            gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
             let mut morphology = BTreeMap::new();
 
@@ -1660,8 +1662,8 @@ pub mod wiktionary_morphology {
             let mut verb_lemmas = HashSet::new();
             let mut noun_lemmas = HashSet::new();
 
-            for entry in frequencies {
-                if let Some(heteronym) = entry.lexeme.heteronym() {
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
                     match heteronym.pos {
                         PartOfSpeech::Verb => {
                             verb_lemmas.insert(heteronym.lemma.clone());

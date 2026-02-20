@@ -71,40 +71,27 @@ export function Leeches({ deck }: { deck: Deck }) {
                   let pos = "";
                   const tags: string[] = [];
 
-                  const isListeningLexeme =
-                    "ListeningLexeme" in card.card_indicator;
+                  const isListeningHeteronym =
+                    card.card_indicator.type === "ListeningHeteronym";
                   let listeningCardKey: string | null = null;
 
-                  if ("TargetLanguage" in card.card_indicator) {
-                    if (
-                      "Heteronym" in card.card_indicator.TargetLanguage.lexeme
-                    ) {
-                      shortDescription =
-                        card.card_indicator.TargetLanguage.lexeme.Heteronym
-                          .word;
-                      pos =
-                        card.card_indicator.TargetLanguage.lexeme.Heteronym.pos;
+                  if (card.card_indicator.type === "TargetLanguage") {
+                    const lexeme = card.card_indicator.lexeme;
+                    if (lexeme.type === "Heteronym") {
+                      shortDescription = lexeme.heteronym.word;
+                      pos = lexeme.heteronym.pos;
                     } else {
-                      shortDescription =
-                        card.card_indicator.TargetLanguage.lexeme.Multiword;
+                      shortDescription = lexeme.phrase;
                     }
-                  } else if ("ListeningHomophonous" in card.card_indicator) {
-                    shortDescription = `/${card.card_indicator.ListeningHomophonous.pronunciation}/`;
-                  } else if (isListeningLexeme) {
-                    if (
-                      "Heteronym" in card.card_indicator.ListeningLexeme.lexeme
-                    ) {
-                      shortDescription =
-                        card.card_indicator.ListeningLexeme.lexeme.Heteronym
-                          .word;
-                    } else {
-                      shortDescription =
-                        card.card_indicator.ListeningLexeme.lexeme.Multiword;
-                    }
+                  } else if (card.card_indicator.type === "ListeningHomophonous") {
+                    shortDescription = `/${card.card_indicator.pronunciation}/`;
+                  } else if (isListeningHeteronym) {
+                    // ListeningHeteronym always contains a heteronym directly
+                    shortDescription = card.card_indicator.heteronym.word;
                     tags.push("listening");
                     listeningCardKey = JSON.stringify(card.card_indicator);
-                  } else if ("LetterPronunciation" in card.card_indicator) {
-                    shortDescription = `[${card.card_indicator.LetterPronunciation.pattern}]`;
+                  } else if (card.card_indicator.type === "LetterPronunciation") {
+                    shortDescription = `[${card.card_indicator.pattern}]`;
                   }
 
                   const isReady = card.due_timestamp_ms <= currentTimestamp;
@@ -112,7 +99,7 @@ export function Leeches({ deck }: { deck: Deck }) {
                     ? revealedListeningCards.has(listeningCardKey)
                     : false;
 
-                  const wordCellContent = isListeningLexeme ? (
+                  const wordCellContent = isListeningHeteronym ? (
                     isListeningCardRevealed ? (
                       shortDescription
                     ) : (
@@ -160,9 +147,9 @@ export function Leeches({ deck }: { deck: Deck }) {
                       </td>
                       <td className="p-3 text-sm text-muted-foreground">
                         {isReady ? (
-                          <span className="text-green-500 font-medium">
+                          <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">
                             Ready now
-                          </span>
+                          </Badge>
                         ) : (
                           <TimeAgo date={new Date(card.due_timestamp_ms)} />
                         )}

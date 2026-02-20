@@ -44,18 +44,20 @@ slotmap = { version = "1.0", features = ["serde"] }
 wasm-logger = "0.2.0"
 unicode-normalization = "0.1.24"
 weblocks = { version = "0.1.0" }
-lexide = { git = "https://github.com/anchpop/lexide.git", rev = "b3780b1e643d31d007ecc5962bf17cff8391718f", features = [
+lexide = { git = "https://github.com/anchpop/lexide.git", rev = "05fc8772a4a76f242ddce4341d79692237598225", features = [
     "remote",
 ] }
 indicatif = "0.17"
 
 [workspace.dependencies.rkyv]
+# path = "../tmp/rkyv/rkyv"
 git = "https://github.com/anchpop/rkyv.git"
-rev = "8a558ca3e043432dc55b0fc7bcce1068f9777ac8"
+rev = "3639e126c26b6071dea12eeab8b6376196eb9f59"
 
 [workspace.dependencies.lasso]
+# path = "../tmp/lasso"
 git = "https://github.com/anchpop/lasso.git"
-rev = "1e6acbbcf74a8ff7af9df29ccaee1bef9d14297c"
+rev = "a894ec1210dc058fb4ec88969c6fc065568b9311"
 
 [workspace.dependencies.serde]
 version = "1.0"

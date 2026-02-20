@@ -35,8 +35,11 @@ pub trait StreamStore<Device>: Any {
     ) -> Option<chrono::DateTime<chrono::Utc>>;
 }
 
-impl<Device: Ord + Eq + Clone + Hash + 'static, Event: crate::Event + 'static> StreamStore<Device>
-    for EventStreamStore<Device, Timestamped<Event>>
+/// Implementation for stores that hold versioned events (which are Serialize + DeserializeOwned).
+impl<
+    Device: Ord + Eq + Clone + Hash + 'static,
+    VersionedEvent: Ord + Clone + serde::Serialize + serde::de::DeserializeOwned + 'static,
+> StreamStore<Device> for EventStreamStore<Device, Timestamped<VersionedEvent>>
 {
     fn num_events_per_device(&self) -> HashMap<&Device, usize> {
         self.events()
@@ -52,7 +55,11 @@ impl<Device: Ord + Eq + Clone + Hash + 'static, Event: crate::Event + 'static> S
                 events
                     .iter()
                     .skip(skip)
-                    .map(|event| event.as_ref().map(|event| event.to_json().unwrap()))
+                    .map(|event| {
+                        event
+                            .as_ref()
+                            .map(|event| serde_json::to_value(event).unwrap())
+                    })
                     .collect()
             })
             .unwrap_or_default()
@@ -72,7 +79,7 @@ impl<Device: Ord + Eq + Clone + Hash + 'static, Event: crate::Event + 'static> S
         events: ValidToAddEvents<Timestamped<serde_json::Value>>,
     ) -> Result<usize, serde_json::Error> {
         let events = events.try_map(|event| {
-            Event::from_json(&event).inspect_err(|e| {
+            serde_json::from_value::<VersionedEvent>(event.clone()).inspect_err(|e| {
                 log::error!("Error deserializing event JSON into event type: {e:?} in `{event}`");
             })
         })?;

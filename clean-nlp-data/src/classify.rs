@@ -962,8 +962,54 @@ impl WordCorrector for KoreanCorrector {
 struct EnglishClassifier;
 
 impl SentenceClassifier for EnglishClassifier {
-    fn classify(&self, _sentence: &NlpAnalyzedSentence) -> SentenceClassification {
-        SentenceClassification::Unknown
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        // Check for split contractions - the tokenizer sometimes splits "don't" into "do" + "n't"
+        // or "gonna" into "gon" + "na", which creates incorrect separate tokens
+        let suspicious_suffixes = [
+            "n't", "'t", "'s", "'m", "'re", "'ve", "'ll", "'d", "na", "'",
+        ];
+
+        for token in &sentence.doc {
+            let text_lower = token.text.to_lowercase();
+
+            // Check if token is a split contraction suffix
+            if suspicious_suffixes.contains(&text_lower.as_str()) {
+                reasons.push(format!(
+                    "Token '{}' looks like a split contraction suffix - should probably be merged with the previous word (e.g., \"don't\" not \"do\" + \"n't\")",
+                    token.text
+                ));
+            }
+
+            // Check for "gon" which is likely from "gonna" being split
+            if text_lower == "gon" {
+                reasons.push(
+                    "Token 'gon' is likely from 'gonna' being incorrectly split into 'gon' + 'na'"
+                        .to_string(),
+                );
+            }
+
+            // Check for "wan" which is likely from "wanna" being split
+            if text_lower == "wan" {
+                reasons.push(
+                    "Token 'wan' is likely from 'wanna' being incorrectly split into 'wan' + 'na'"
+                        .to_string(),
+                );
+            }
+
+            // Check for "got" followed by "ta" (gotta)
+            if text_lower == "ta" {
+                reasons
+                    .push("Token 'ta' might be from 'gotta' being incorrectly split".to_string());
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
     }
 }
 

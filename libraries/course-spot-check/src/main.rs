@@ -182,7 +182,7 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
             let (sentence, language, multiword_terms) = match challenge {
                 Challenge::TranslateComprehensibleSentence(TranslateComprehensibleSentence {
                     target_language_literals,
-                    unique_target_language_lexemes,
+                    unique_target_language_phrases,
                     ..
                 }) => {
                     // Reconstruct sentence from literals
@@ -194,11 +194,7 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
                         .collect::<Vec<_>>()
                         .join("");
 
-                    // Extract multiword terms from lexemes
-                    let multiword_terms: Vec<String> = unique_target_language_lexemes
-                        .iter()
-                        .filter_map(|lexeme| lexeme.multiword().cloned())
-                        .collect();
+                    let multiword_terms = unique_target_language_phrases.clone();
 
                     (sentence_text, course.target_language, multiword_terms)
                 }
@@ -391,13 +387,13 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
 
     let language_pack = std::sync::Arc::new(language_pack);
 
-    // Create deck state and finalize to get a Deck
-    let state = DeckState::new(
+    // Create context and deck state, then finalize to get a Deck
+    let context = yap_frontend_rs::Context {
         language_pack,
-        course.target_language,
-        course.native_language,
-    );
-    let mut deck = <Deck as weapon::PartialAppState>::finalize(state);
+        course,
+    };
+    let state = DeckState::new();
+    let mut deck = <Deck as weapon::AppState>::finalize(state, &context);
 
     // Add initial cards to the deck
     if let Some(event) = deck.add_next_unknown_cards(None, 100, vec![]) {
@@ -406,7 +402,9 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
             within_device_events_index: 0,
             event,
         };
-        deck = deck.apply_event(&ts);
+        let state = DeckState::from(deck);
+        let state = Deck::process_event(state, &context, &ts);
+        deck = Deck::finalize(state, &context);
     }
 
     Ok(deck)

@@ -321,127 +321,46 @@ async fn autograde_translation(
     let autograde::AutoGradeTranslationRequest {
         challenge_sentence,
         user_sentence,
-        primary_expression,
-        lexemes,
+        literals,
+        phrases,
         course,
     } = request;
 
     let target_language = course.target_language;
     let native_language = course.native_language;
 
-    let (target_language_name, example) = match target_language {
-        Language::French => (
-            "French",
-            r#"Example
-Input: "Challenge sentence: Ça se passe bien.
-User response: It passes itself well.
-Primary expression: se passer
-Expressions: {{word: 'ça', lemma: 'ce', pos: 'PRON'}}, {{word: 'se', lemma: 'se', pos: 'PRON'}}, {{word: 'passe', lemma: 'passer', pos: 'VERB'}}, {{word: 'bien', lemma: 'bien', pos: 'ADV'}}, {{word: 'se passer', lemma: 'se passer', pos: 'VERB'}}"
+    // Dedup phrases
+    let phrases: Vec<String> = phrases
+        .into_iter()
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect();
 
-Output: {{
-"explanation": "The French expression 'se passer' means 'to happen.' You translated it literally as 'pass itself.' A correct translation is: 'It's going well.'",
-"primary_expression_status": "Forgot",
-"expressions_remembered": [{{"Heteronym": {{ "word": "se", "lemma": "se", "pos": "Pron" }}}}, {{"Heteronym": {{ "word": "passe", "lemma": "passer", "pos": "Verb" }}}}, {{"Heteronym": {{ "word": "bien", "lemma": "bien", "pos": "Adv" }}}}],
-"expressions_forgot": [{{"Heteronym": {{ "word": "se passer", "lemma": "se passer", "pos": "Verb" }}}}]
-}}
-"#,
-        ),
-        Language::Spanish => (
-            "Spanish",
-            r#"Example
-Input: "Challenge sentence: Me di cuenta del error.
-User response: I gave myself account of the error.
-Primary expression: darse cuenta
-Expressions: {{word: 'me', lemma: 'yo', pos: 'PRON'}}, {{word: 'di', lemma: 'dar', pos: 'VERB'}}, {{word: 'cuenta', lemma: 'cuenta', pos: 'NOUN'}}, {{word: 'del', lemma: 'de+el', pos: 'ADP'}}, {{word: 'error', lemma: 'error', pos: 'NOUN'}}, {{word: 'darse cuenta', lemma: 'darse cuenta', pos: 'VERB'}}"
+    // Count gradable literals early for threshold checks
+    let gradable_count = literals
+        .iter()
+        .filter(|l| l.word.heteronym().is_some())
+        .count();
 
-Output: {{
-"explanation": "In Spanish, 'darse cuenta' means 'to realize.' You translated it literally. A correct translation is: 'I realized the mistake.'",
-"primary_expression_status": "Forgot",
-"expressions_remembered": [{{"Heteronym": {{ "word": "me", "lemma": "yo", "pos": "Pron" }}}}, {{"Heteronym": {{ "word": "di", "lemma": "dar", "pos": "Verb" }}}}, {{"Heteronym": {{ "word": "cuenta", "lemma": "cuenta", "pos": "Noun" }}}}, {{"Heteronym": {{ "word": "error", "lemma": "error", "pos": "Noun" }}}}],
-"expressions_forgot": [{{"Heteronym": {{ "word": "darse cuenta", "lemma": "darse cuenta", "pos": "Verb" }}}}]
-}}
-"#,
-        ),
-        Language::English => (
-            "English",
-            r#"Example
-Input: "Challenge sentence: He gave up.
-User response: He quit.
-Primary expression: give up
-Expressions: {{word: 'he', lemma: 'he', pos: 'PRON'}}, {{word: 'gave', lemma: 'give', pos: 'VERB'}}, {{word: 'up', lemma: 'up', pos: 'PART'}}, {{word: 'give up', lemma: 'give up', pos: 'VERB'}}"
+    // Early return if nothing to grade
+    if gradable_count == 0 && phrases.is_empty() {
+        return Ok(Json(autograde::AutoGradeTranslationResponse {
+            encouragement: Some("Good effort!".to_string()),
+            explanation: None,
+            literal_grades: vec![],
+            phrases_remembered: vec![],
+            phrases_forgot: vec![],
+        }));
+    }
 
-Output: {{
-"explanation": "Great work! 'Give up' means 'to quit,' which you translated correctly.",
-"primary_expression_status": "Remembered",
-"expressions_remembered": [{{"Heteronym": {{ "word": "he", "lemma": "he", "pos": "Pron" }}}}, {{"Heteronym": {{ "word": "give up", "lemma": "give up", "pos": "Verb" }}}}],
-"expressions_forgot": []
-}}
-"#,
-        ),
-        Language::Korean => (
-            "Korean",
-            r#"Example
-Input: "Challenge sentence: 책을 읽고 있어요.
-User response: I read and am existing a book.
-Primary expression: 읽고 있다
-Expressions: {{word: '책을', lemma: '책', pos: 'NOUN'}}, {{word: '읽고', lemma: '읽다', pos: 'VERB'}}, {{word: '있어요', lemma: '있다', pos: 'VERB'}}, {{word: '읽고 있다', lemma: '읽고 있다', pos: 'VERB'}}"
-
-Output: {{
-"explanation": "The Korean expression '읽고 있다' means 'to be reading.' You treated it as separate verbs 'read' and 'exist.' A correct translation is: 'I am reading a book.'",
-"primary_expression_status": "Forgot",
-"expressions_remembered": [{{"Heteronym": {{ "word": "책을", "lemma": "책", "pos": "Noun" }}}}, {{"Heteronym": {{ "word": "읽다", "lemma": "읽다", "pos": "Verb" }}}}, {{"Heteronym": {{ "word": "있다", "lemma": "있다", "pos": "Verb" }}}}],
-"expressions_forgot": [{{"Heteronym": {{ "word": "읽고 있다", "lemma": "읽고 있다", "pos": "Verb" }}}}]
-}}
-"#,
-        ),
-        Language::German => (
-            "German",
-            r#"Example
-Input: "Challenge sentence: Ich gehe zur Schule.
-User response: I go to the school.
-Primary expression: zur
-Expressions: {{word: 'ich', lemma: 'ich', pos: 'PRON'}}, {{word: 'gehe', lemma: 'gehen', pos: 'VERB'}}, {{word: 'zur', lemma: 'zu', pos: 'ADP'}}, {{word: 'Schule', lemma: 'Schule', pos: 'NOUN'}}"
-
-Output: {{
-"explanation": "Your translation is correct! 'Ich gehe zur Schule' means 'I go to school.'",
-"primary_expression_status": "Remembered",
-"expressions_remembered": [{{"Heteronym": {{ "word": "ich", "lemma": "ich", "pos": "Pron" }}}}, {{"Heteronym": {{ "word": "gehe", "lemma": "gehen", "pos": "Verb" }}}}, {{"Heteronym": {{ "word": "zur", "lemma": "zu", "pos": "Adp" }}}}, {{"Heteronym": {{ "word": "Schule", "lemma": "Schule", "pos": "Noun" }}}}],
-"expressions_forgot": []
-}}
-"#,
-        ),
-        Language::Italian => (
-            "Italian",
-            r#"Example
-Input: "Challenge sentence: Mi sono divertito.
-User response: I am enjoyed myself.
-Primary expression: divertirsi
-Expressions: {{word: 'mi', lemma: 'io', pos: 'PRON'}}, {{word: 'sono', lemma: 'essere', pos: 'AUX'}}, {{word: 'divertito', lemma: 'divertire', pos: 'VERB'}}, {{word: 'divertirsi', lemma: 'divertirsi', pos: 'VERB'}}"
-
-Output: {{
-"explanation": "The Italian reflexive verb 'divertirsi' means 'to have fun' or 'to enjoy oneself.' You confused the tense and structure. A correct translation is: 'I had fun.'",
-"primary_expression_status": "Forgot",
-"expressions_remembered": [{{"Heteronym": {{ "word": "mi", "lemma": "io", "pos": "Pron" }}}}, {{"Heteronym": {{ "word": "sono", "lemma": "essere", "pos": "Aux" }}}}, {{"Heteronym": {{ "word": "divertito", "lemma": "divertire", "pos": "Verb" }}}}],
-"expressions_forgot": [{{"Heteronym": {{ "word": "divertirsi", "lemma": "divertirsi", "pos": "Verb" }}}}]
-}}
-"#,
-        ),
-        Language::Portuguese => (
-            "Portuguese",
-            r#"Example
-Input: "Challenge sentence: Vou pôr a mesa.
-User response: I go for to put the table.
-Primary expression: pôr
-Expressions: {{word: 'vou', lemma: 'ir', pos: 'VERB'}}, {{word: 'pôr', lemma: 'pôr', pos: 'VERB'}}, {{word: 'a', lemma: 'o', pos: 'DET'}}, {{word: 'mesa', lemma: 'mesa', pos: 'NOUN'}}"
-
-Output: {{
-"explanation": "The verb 'pôr' means 'to put' or 'to place.' The expression 'pôr a mesa' means 'to set the table.' You translated 'vou' as 'go' instead of future tense, and mistook 'por' (for) for 'pôr' (to put). A correct translation is: 'I'm going to set the table.'",
-"primary_expression_status": "Forgot",
-"expressions_remembered": [{{"Heteronym": {{ "word": "vou", "lemma": "ir", "pos": "Verb" }}}}, {{"Heteronym": {{ "word": "mesa", "lemma": "mesa", "pos": "Noun" }}}}],
-"expressions_forgot": [{{"Heteronym": {{ "word": "pôr", "lemma": "pôr", "pos": "Verb" }}}}]
-}}
-"#,
-        ),
+    let target_language_name = match target_language {
+        Language::French => "French",
+        Language::Spanish => "Spanish",
+        Language::English => "English",
+        Language::Korean => "Korean",
+        Language::German => "German",
+        Language::Italian => "Italian",
+        Language::Portuguese => "Portuguese",
         Language::Chinese | Language::Japanese | Language::Russian => {
             return Err(StatusCode::NOT_IMPLEMENTED);
         }
@@ -449,45 +368,185 @@ Output: {{
 
     let native_language_name = native_language.to_string();
 
+    // Build the literals list with indices for gradable words, _ for ungradable
+    // Track which literal positions have gradable words (for mapping indices back)
+    let mut literals_display = String::new();
+    let mut gradable_index = 1u32;
+    let mut index_to_position: Vec<usize> = Vec::new(); // Maps 1-based index to literal position
+    for (position, literal) in literals.iter().enumerate() {
+        let is_gradable = literal.word.heteronym().is_some();
+        if is_gradable {
+            index_to_position.push(position);
+            literals_display.push_str(&format!(
+                "{}. \"{}\" (lemma: {}, pos: {})\n",
+                gradable_index,
+                literal.word.text,
+                literal
+                    .word
+                    .heteronym()
+                    .map(|h| h.lemma.as_str())
+                    .unwrap_or(&literal.word.text),
+                literal
+                    .word
+                    .heteronym()
+                    .map(|h| format!("{:?}", h.pos))
+                    .unwrap_or_else(|| "OTHER".to_string())
+            ));
+            gradable_index += 1;
+        } else {
+            literals_display.push_str(&format!(
+                "_. \"{}\" (does not need to be graded)\n",
+                literal.word.text
+            ));
+        }
+    }
+
+    // Build phrases list
+    let phrases_display = if phrases.is_empty() {
+        "(none)".to_string()
+    } else {
+        phrases
+            .iter()
+            .map(|p| format!("- \"{p}\""))
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+
     let system_prompt = format!(
-        r#"{PERSONALITY}The user is learning {target_language_name}. They were challenged to translate a {target_language_name} sentence to {native_language_name}. Your goal is to identify which {target_language_name} words or phrases they remembered, and which ones they forgot. If they translated the sentence correctly, that means they remembered everything! But if they translated the sentence incorrectly, we need to figure out what words and phrases they seemed to have remembered correctly, and which ones they seem to have remembered incorrectly. This will be used as part of a spaced-repetition system, which will help users study the words they need to. The system can only incorporate this for the words that it knows are in the sentence, which will be provided to you. Words are provided with additional context about their part of speech and lemmatised form, to allow you to distinguish between different usages of the same word. The 'primary word' is also provided, which is the word that the sentence most needed to test. You should always provide encouragement highlighting what the user got right and acknowledging their progress. If there are any errors, also provide a brief explanation focusing on where they made mistakes and how they can improve.
+        r#"{PERSONALITY}The user is learning {target_language_name}. They were challenged to translate a {target_language_name} sentence to {native_language_name}. Your goal is to identify which {target_language_name} words or phrases they remembered, and which ones they forgot. If they translated the sentence correctly, that means they remembered everything! But if they translated the sentence incorrectly, we need to figure out what words and phrases they seemed to have remembered correctly, and which ones they seem to have remembered incorrectly. This will be used as part of a spaced-repetition system, which will help users study the words they need to.
 
-Many sentences will be "partial sentences," such as "Ne pas." meaning "Do not." These partial sentences are still useful as test sentences for the user, so you should still grade them.
+You will be given:
+1. Literals: Individual words in order, each with an index number. Words marked with "_" do not need grading (proper nouns, punctuation, etc.).
+2. Phrases: Multi-word expressions that should be graded as units.
 
-Do not grade individual words when they are part of a multi-word expression that can be definitively graded as remembered or forgotten. Grade the multi-word expression as a whole. Only grade the individual words separately if the user's translation clearly shows they specifically understood or failed to understand those words independently. For example, if the challenge sentence includes "se passer" and the user writes "pass itself," mark "se passer" as forgotten but mark "se" and "passe" as remembered. On the other hand, do not punish leaners for not translating a sentence or phrase or word literally, if the meaning has been fully preserved (including past/present/future tense, tone, etc).
+For each indexed literal, decide if the user remembered it ("Remembered"), forgot it ("Forgot"), or if it's indeterminate (null). Grade each literal individually based on the user's translation.
 
-Respond with JSON.
+For phrases, list which ones were remembered and which were forgotten.
 
-{example}
-If there are lexemes (particularly multiword terms) that are not in the challenge sentence, do not include them in the expressions_remembered or expressions_forgot arrays. (Since the user did not have a chance to try to translate them.) However, if the user forgot a word that is in the challenge sentence, include it in the expressions_forgot array. The conjugations used in the multiword terms might be different than how they appear in the challenge sentence.
+Do not punish learners for non-literal translations if the meaning is preserved (including tense, tone, etc).
 
-The encouragement should always be provided, be a short positive message (1-2 sentences), focus on what they got right, and be written as if speaking directly to the user. The explanation should only be provided if there are errors, focus on their mistakes and how to improve, and be written as if speaking directly to the user. Markdown formatting is allowed for both (just no bullet points or numbered lists). Try to keep both short and concise. The user is still learning {target_language_name}, so respond in {native_language_name}!
+Many sentences will be "partial sentences," such as "Ne pas." meaning "Do not." These are still valid test sentences.
+
+Respond with JSON in this format:
+{{
+  "encouragement": "Always provide: short positive message (1-2 sentences) highlighting what they got right",
+  "explanation": "Only if errors: brief explanation of mistakes and how to improve",
+  "literal_grades": [{{"index": 1, "result": "Remembered"}}, {{"index": 2, "result": "Forgot"}}, {{"index": 3, "result": null}}],
+  "phrases_remembered": ["phrase1"],
+  "phrases_forgot": ["phrase2"]
+}}
+
+Example:
+Input:
+Challenge sentence: Ça se passe bien.
+User response: It passes itself well.
+
+Literals:
+1. "Ça" (lemma: ce, pos: Pron)
+2. "se" (lemma: se, pos: Pron)
+3. "passe" (lemma: passer, pos: Verb)
+4. "bien" (lemma: bien, pos: Adv)
+_. "." (does not need to be graded)
+
+Phrases:
+- "se passer"
+
+Output:
+{{
+  "encouragement": "Good effort tackling this sentence!",
+  "explanation": "The French expression 'se passer' means 'to happen.' You translated it literally as 'pass itself.' A correct translation is: 'It's going well.'",
+  "literal_grades": [{{"index": 1, "result": "Remembered"}}, {{"index": 2, "result": "Remembered"}}, {{"index": 3, "result": "Remembered"}}, {{"index": 4, "result": "Remembered"}}],
+  "phrases_remembered": [],
+  "phrases_forgot": ["se passer"]
+}}
+
+Note: Even though "se passer" was forgotten, the individual words "se" and "passe" were understood (the user knew they mean "itself" and "pass"), so they are marked as remembered.
+
+The encouragement should always be provided, focus on what they got right, and be written as if speaking directly to the user. The explanation should only be provided if there are errors. Markdown formatting is allowed (no bullet points or numbered lists). Keep both short and concise. Respond in {native_language_name}!
 "#,
     );
 
-    // Use low reasoning effort for simple challenges with few lexemes
+    // Use low reasoning effort for simple challenges
     let client = if !logged_in {
         &UNAUTHENTICATED_CLIENT
-    } else if lexemes.len() <= 4 {
+    } else if gradable_count + phrases.len() <= 4 {
         &LOW_REASONING_CLIENT
     } else {
         &CLIENT
     };
 
-    let autograde_response: autograde::AutoGradeTranslationResponse = client.chat_with_system_prompt(
-        system_prompt,
-        &{
-            format!(
-            "{target_language_name} challenge sentence: {challenge_sentence}\nUser response: {user_sentence}\nPrimary expression: {primary_expression}\nExpressions: {expressions}",
-            challenge_sentence = challenge_sentence,
-            user_sentence = user_sentence,
-            primary_expression = serde_json::to_value(&primary_expression).unwrap(),
-            expressions = serde_json::to_value(&lexemes).unwrap()
-        )}
-    )
-    .await
-    .inspect_err(|e| eprintln!("Error: {e:?}"))
-    .map_err(|_e| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let user_prompt = format!(
+        r#"Challenge sentence: {challenge_sentence}
+User response: {user_sentence}
+
+Literals:
+{literals_display}
+Phrases:
+{phrases_display}"#
+    );
+
+    // LLM response format uses indexed grades for easier model tracking
+    #[derive(Deserialize, schemars::JsonSchema)]
+    struct LiteralGrade {
+        index: u32,
+        result: Option<autograde::Remembered>,
+    }
+
+    #[derive(Deserialize, schemars::JsonSchema)]
+    struct LlmResponse {
+        encouragement: Option<String>,
+        explanation: Option<String>,
+        literal_grades: Vec<LiteralGrade>,
+        phrases_remembered: Vec<String>,
+        phrases_forgot: Vec<String>,
+    }
+
+    let llm_response: LlmResponse = client
+        .chat_with_system_prompt(system_prompt, &user_prompt)
+        .await
+        .inspect_err(|e| eprintln!("Error: {e:?}"))
+        .map_err(|_e| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Map indexed grades back to positional array (one entry per literal)
+    // Ungradable literals (Other word types) remain None
+    let mut positional_grades: Vec<Option<autograde::Remembered>> = vec![None; literals.len()];
+    for grade in llm_response.literal_grades {
+        if grade.index >= 1 && (grade.index as usize) <= index_to_position.len() {
+            let position = index_to_position[(grade.index - 1) as usize];
+            positional_grades[position] = grade.result;
+        }
+    }
+
+    // Sanitize phrase outputs:
+    // 1. Filter to only phrases that were in the input
+    // 2. Resolve contradictions: if same phrase in both, keep in forgot (forgot takes precedence)
+    let phrases_set: std::collections::BTreeSet<&String> = phrases.iter().collect();
+
+    let mut phrases_forgot: Vec<String> = llm_response
+        .phrases_forgot
+        .into_iter()
+        .filter(|p| phrases_set.contains(p))
+        .collect();
+    phrases_forgot.sort();
+    phrases_forgot.dedup();
+
+    let forgot_set: std::collections::BTreeSet<&String> = phrases_forgot.iter().collect();
+    let mut phrases_remembered: Vec<String> = llm_response
+        .phrases_remembered
+        .into_iter()
+        .filter(|p| phrases_set.contains(p) && !forgot_set.contains(p))
+        .collect();
+    phrases_remembered.sort();
+    phrases_remembered.dedup();
+
+    let autograde_response = autograde::AutoGradeTranslationResponse {
+        encouragement: llm_response.encouragement,
+        explanation: llm_response.explanation,
+        literal_grades: positional_grades,
+        phrases_remembered,
+        phrases_forgot,
+    };
+
     eprintln!("Response: {autograde_response:?}");
 
     Ok(Json(autograde_response))

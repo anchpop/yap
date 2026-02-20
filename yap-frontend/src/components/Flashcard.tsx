@@ -5,6 +5,7 @@ import {
   type Rating,
   get_word_prefix,
 } from "../../../yap-frontend-rs/pkg";
+import Markdown from "react-markdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,18 +61,18 @@ const CardFront = ({
   listeningPrefix?: string;
   targetLanguage: Language;
 }) => {
-  if ("Listening" in content) {
+  if (content.type === "Listening") {
     const prefix = listeningPrefix || "Le mot est";
     return (
       <h2 className="text-3xl font-semibold flex items-center gap-3 flex-wrap justify-center text-center">
         <span>{prefix} _____. </span>
       </h2>
     );
-  } else if ("Heteronym" in content) {
+  } else if (content.type === "Heteronym") {
     const wordPrefix = get_word_prefix(
-      content.Heteronym.morphology,
-      content.Heteronym.heteronym.word,
-      content.Heteronym.heteronym.pos,
+      content.morphology,
+      content.heteronym.word,
+      content.heteronym.pos,
       targetLanguage
     );
     return (
@@ -82,14 +83,14 @@ const CardFront = ({
             {wordPrefix.separator}
           </span>
         )}
-        {content.Heteronym.heteronym.word}
+        {content.heteronym.word}
       </h2>
     );
-  } else if ("Multiword" in content) {
-    return <h2 className="text-3xl font-semibold">{content.Multiword[0]}</h2>;
-  } else if ("LetterPronunciation" in content) {
-    const guide = content.LetterPronunciation.guide;
-    const pattern = content.LetterPronunciation.pattern;
+  } else if (content.type === "Multiword") {
+    return <h2 className="text-3xl font-semibold">{content.term}</h2>;
+  } else if (content.type === "LetterPronunciation") {
+    const guide = content.guide;
+    const pattern = content.pattern;
 
     // Add visual indicators for position
     const displayPattern = match(guide.position)
@@ -105,14 +106,14 @@ const CardFront = ({
 };
 
 const CardFrontSubtitle = ({ content }: { content: CardContent<string> }) => {
-  if ("Listening" in content) {
+  if (content.type === "Listening") {
     return (
       <span className="text-sm text-muted-foreground"> Fill in the blank!</span>
     );
   }
 
-  if ("LetterPronunciation" in content) {
-    const guide = content.LetterPronunciation.guide;
+  if (content.type === "LetterPronunciation") {
+    const guide = content.guide;
     const positionText = match(guide.position)
       .with("Beginning", () => "Appears at the beginning of words")
       .with("End", () => "Appears at the end of words")
@@ -132,36 +133,36 @@ const CardFrontSubtitle = ({ content }: { content: CardContent<string> }) => {
   }
 
   const partOfSpeech =
-    "Heteronym" in content
-      ? content.Heteronym.heteronym.pos == "ADJ"
+    content.type === "Heteronym"
+      ? content.heteronym.pos == "ADJ"
         ? "Adjective"
-        : content.Heteronym.heteronym.pos == "ADP"
+        : content.heteronym.pos == "ADP"
         ? "Adposition"
-        : content.Heteronym.heteronym.pos == "ADV"
+        : content.heteronym.pos == "ADV"
         ? "Adverb"
-        : content.Heteronym.heteronym.pos == "AUX"
+        : content.heteronym.pos == "AUX"
         ? "Auxiliary"
-        : content.Heteronym.heteronym.pos == "CCONJ"
+        : content.heteronym.pos == "CCONJ"
         ? "Conjunction"
-        : content.Heteronym.heteronym.pos == "DET"
+        : content.heteronym.pos == "DET"
         ? "Determiner"
-        : content.Heteronym.heteronym.pos == "INTJ"
+        : content.heteronym.pos == "INTJ"
         ? "Interjection"
-        : content.Heteronym.heteronym.pos == "NOUN"
+        : content.heteronym.pos == "NOUN"
         ? "Noun"
-        : content.Heteronym.heteronym.pos == "NUM"
+        : content.heteronym.pos == "NUM"
         ? "Number"
-        : content.Heteronym.heteronym.pos == "PART"
+        : content.heteronym.pos == "PART"
         ? "Particle"
-        : content.Heteronym.heteronym.pos == "PRON"
+        : content.heteronym.pos == "PRON"
         ? "Pronoun"
-        : content.Heteronym.heteronym.pos == "SCONJ"
+        : content.heteronym.pos == "SCONJ"
         ? "Subordinating Conjunction"
-        : content.Heteronym.heteronym.pos == "SYM"
+        : content.heteronym.pos == "SYM"
         ? "Symbol"
-        : content.Heteronym.heteronym.pos == "VERB"
+        : content.heteronym.pos == "VERB"
         ? "Verb"
-        : content.Heteronym.heteronym.pos == "X"
+        : content.heteronym.pos == "X"
         ? "Unknown"
         : "Unknown"
       : "Multiword";
@@ -179,9 +180,9 @@ const CardBack = ({
   targetLanguage: Language;
   accessToken: string | undefined;
 }) => {
-  if ("Listening" in content) {
+  if (content.type === "Listening") {
     const possible_words: [boolean, string][] =
-      content.Listening.possible_words;
+      content.possible_words;
 
     if (possible_words.length === 1) {
       return <div className="text-3xl font-medium">{possible_words[0][1]}</div>;
@@ -211,9 +212,9 @@ const CardBack = ({
         </div>
       </div>
     );
-  } else if ("Heteronym" in content) {
-    const morphologyText = formatMorphology(content.Heteronym.morphology);
-    return content.Heteronym.definitions.map((def, index) => (
+  } else if (content.type === "Heteronym") {
+    const morphologyText = formatMorphology(content.morphology);
+    return content.definitions.map((def, index) => (
       <div
         key={index}
         className="text-left border border-card/50 bg-card/30 rounded-lg p-4 space-y-2"
@@ -257,9 +258,9 @@ const CardBack = ({
         )}
       </div>
     ));
-  } else if ("LetterPronunciation" in content) {
-    const guide = content.LetterPronunciation.guide;
-    const pattern = content.LetterPronunciation.pattern;
+  } else if (content.type === "LetterPronunciation") {
+    const guide = content.guide;
+    const pattern = content.pattern;
 
     // Get the appropriate connector phrase based on the target language
     const connector = match(targetLanguage)
@@ -371,33 +372,33 @@ const CardBack = ({
           {guide.description && (
             <div className="pt-3 border-t border-muted/20">
               <div className="text-sm text-muted-foreground">
-                {guide.description}
+                <Markdown>{guide.description}</Markdown>
               </div>
             </div>
           )}
         </div>
       </div>
     );
-  } else if ("Multiword" in content) {
+  } else if (content.type === "Multiword") {
     return (
       <div className="text-left bg-muted/30 rounded-lg p-4 space-y-2">
         <div className="flex items-baseline gap-2">
           <span className="text-xl font-medium">
-            {content.Multiword[1].meaning}
+            {content.content.meaning}
           </span>
         </div>
 
-        {content.Multiword[1].example_sentence_target_language && (
+        {content.content.example_sentence_target_language && (
           <div className="space-y-1 text-sm">
             <div className="flex items-start gap-2">
               <p className="text-muted-foreground italic flex-1">
-                "{content.Multiword[1].example_sentence_target_language}"
+                "{content.content.example_sentence_target_language}"
               </p>
               <div onClick={(e) => e.stopPropagation()}>
                 <AudioButton
                   audioRequest={{
                     request: {
-                      text: content.Multiword[1]
+                      text: content.content
                         .example_sentence_target_language,
                       language: targetLanguage,
                     },
@@ -410,7 +411,7 @@ const CardBack = ({
               </div>
             </div>
             <p className="text-muted-foreground">
-              "{content.Multiword[1].example_sentence_native_language}"
+              "{content.content.example_sentence_native_language}"
             </p>
           </div>
         )}
@@ -459,24 +460,24 @@ export const Flashcard = function Flashcard({
   const showTutorial = timesTypeSeen < 2;
 
   const tutorialText =
-    "Heteronym" in content
-      ? `Guess what "${content.Heteronym.heteronym.word}" means…`
-      : "Multiword" in content
-      ? `Guess what "${content.Multiword[0]}" means`
-      : "Listening" in content
+    content.type === "Heteronym"
+      ? `Guess what "${content.heteronym.word}" means…`
+      : content.type === "Multiword"
+      ? `Guess what "${content.term}" means`
+      : content.type === "Listening"
       ? `Guess what ${targetLanguage} word is missing`
-      : "LetterPronunciation" in content
-      ? `Say "${content.LetterPronunciation.pattern}" like you would in ${targetLanguage}`
+      : content.type === "LetterPronunciation"
+      ? `Say "${content.pattern}" like you would in ${targetLanguage}`
       : "";
 
   const showAnswerText =
-    "Heteronym" in content
+    content.type === "Heteronym"
       ? `Show ${nativeLanguage}`
-      : "Multiword" in content
+      : content.type === "Multiword"
       ? `Show ${nativeLanguage}`
-      : "Listening" in content
+      : content.type === "Listening"
       ? "Show missing word"
-      : "LetterPronunciation" in content
+      : content.type === "LetterPronunciation"
       ? "Show pronunciation"
       : "Show Answer";
 
@@ -619,17 +620,17 @@ export const Flashcard = function Flashcard({
 
   const copyWord = () => {
     let word: string | undefined;
-    if ("Heteronym" in content) {
-      word = content.Heteronym.heteronym.word;
-    } else if ("Multiword" in content) {
-      word = content.Multiword[0];
-    } else if ("Listening" in content) {
-      const possible = content.Listening.possible_words;
+    if (content.type === "Heteronym") {
+      word = content.heteronym.word;
+    } else if (content.type === "Multiword") {
+      word = content.term;
+    } else if (content.type === "Listening") {
+      const possible = content.possible_words;
       if (possible.length > 0) {
         word = possible[0][1];
       }
-    } else if ("LetterPronunciation" in content) {
-      word = content.LetterPronunciation.pattern;
+    } else if (content.type === "LetterPronunciation") {
+      word = content.pattern;
     }
 
     if (word) {
@@ -715,7 +716,7 @@ export const Flashcard = function Flashcard({
                   className="flex items-center justify-between w-full"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {!("LetterPronunciation" in content) && audioRequest ? (
+                  {!(content.type === "LetterPronunciation") && audioRequest ? (
                     <AudioButton
                       audioRequest={audioRequest}
                       accessToken={accessToken}
@@ -840,10 +841,10 @@ export const Flashcard = function Flashcard({
           >
             {!showAnswer && (
               <>
-                {onCantListen && "Listening" in content && (
+                {onCantListen && content.type === "Listening" && (
                   <CantListenButton onClick={onCantListen} />
                 )}
-                {onCantSpeak && "LetterPronunciation" in content && (
+                {onCantSpeak && content.type === "LetterPronunciation" && (
                   <CantSpeakButton onClick={onCantSpeak} />
                 )}
               </>

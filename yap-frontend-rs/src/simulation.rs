@@ -1,9 +1,18 @@
 use crate::Rating;
-use crate::{Challenge, Deck, TranscribeComprehensibleSentence, TranslateComprehensibleSentence};
+use crate::{
+    Challenge, Deck, DeckState, TranscribeComprehensibleSentence, TranslateComprehensibleSentence,
+};
 use chrono::{DateTime, Duration, Utc};
-use language_utils::transcription_challenge;
+use language_utils::{Gram, transcription_challenge};
 use weapon::AppState;
 use weapon::data_model::Timestamped;
+
+fn apply_event(deck: Deck, event: &Timestamped<crate::DeckEvent>) -> Deck {
+    let context = deck.context.clone();
+    let state = DeckState::from(deck);
+    let state = Deck::process_event(state, &context, event);
+    Deck::finalize(state, &context)
+}
 
 /// Iterator that simulates daily usage of a deck, yielding all challenges for each day
 pub struct DailySimulationIterator {
@@ -23,7 +32,7 @@ impl DailySimulationIterator {
 }
 
 impl DailySimulationIterator {
-    pub fn next(mut self) -> (Self, Vec<Challenge<String>>) {
+    pub fn next(mut self) -> (Self, Vec<Challenge<Gram<String>>>) {
         let mut day_challenges = Vec::new();
 
         // Process all due reviews for the day (max 20 cards to keep simulation fast)
@@ -99,7 +108,7 @@ impl DailySimulationIterator {
                         within_device_events_index: self.event_index,
                         event,
                     };
-                    self.deck = self.deck.apply_event(&ts);
+                    self.deck = apply_event(self.deck, &ts);
                     self.event_index += 1;
                 }
             } else {
@@ -114,7 +123,7 @@ impl DailySimulationIterator {
                 within_device_events_index: self.event_index,
                 event,
             };
-            self.deck = self.deck.apply_event(&ts);
+            self.deck = apply_event(self.deck, &ts);
             self.event_index += 1;
         }
 

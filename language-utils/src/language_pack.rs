@@ -1,8 +1,9 @@
 use crate::indexmap::IndexMap;
 use crate::{
-    ConsolidatedLanguageData, DictionaryEntry, Frequency, Heteronym, HomophonePractice,
-    HomophoneWordPair, Lexeme, Literal, MovieMetadata, PatternPosition, PhrasebookEntry,
-    PronunciationData, ProperNounDefinition, SentenceSource,
+    Atom, ConsolidatedLanguageData, Frequency, Gram, GramDefinition, Heteronym, HomophonePractice,
+    HomophoneWordPair, Language, Lexeme, Literal, MovieMetadata, PatternPosition,
+    PronunciationData, ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram,
+    WordType,
 };
 use lasso::Spur;
 use rustc_hash::FxHashMap;
@@ -10,19 +11,13 @@ use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub struct LanguagePack {
-    pub rodeo: lasso::RodeoReader,
+    pub string_rodeo: lasso::RodeoReader,
+    pub gram_rodeo: lasso::RodeoReader<Gram<Spur>>,
     pub translations: FxHashMap<Spur, Vec<Spur>>,
     pub words_to_heteronyms: FxHashMap<Spur, BTreeSet<Heteronym<Spur>>>,
-    pub sentences_containing_lexeme_index: FxHashMap<Lexeme<Spur>, Vec<Spur>>,
-    pub sentences_to_literals: FxHashMap<Spur, Vec<Literal<Spur>>>,
-    pub sentences_to_lexemes: FxHashMap<Spur, Vec<Lexeme<Spur>>>,
-    pub sentences_to_all_lexemes: FxHashMap<Spur, Vec<Lexeme<Spur>>>,
-    pub word_frequencies: IndexMap<Lexeme<Spur>, Frequency>,
     pub total_word_count: u64,
-    /// Per-movie word frequencies indexed by movie ID
-    pub movie_word_frequencies: FxHashMap<String, IndexMap<Lexeme<Spur>, Frequency>>,
-    pub dictionary: BTreeMap<Heteronym<Spur>, DictionaryEntry>,
-    pub phrasebook: BTreeMap<Spur, PhrasebookEntry>,
+    /// Per-movie gram frequencies indexed by movie ID
+    pub movie_gram_frequencies: FxHashMap<String, IndexMap<SpurGram, Frequency>>,
     pub word_to_pronunciation: FxHashMap<Spur, Spur>,
     pub pronunciation_to_words: FxHashMap<Spur, Vec<Spur>>,
     pub pronunciation_data: PronunciationData,
@@ -36,6 +31,20 @@ pub struct LanguagePack {
     pub sentence_sources: FxHashMap<Spur, SentenceSource>,
     /// Global proper noun definitions map
     pub proper_noun_definitions: BTreeMap<Spur, ProperNounDefinition>,
+    /// Gram frequencies: maps gram to frequency, for learnable grams
+    pub gram_frequencies: IndexMap<SpurGram, Frequency>,
+    /// Encoded sentences: maps sentence to grams with learnability and capitalize_first
+    /// The gram Spur is a key into gram_rodeo
+    pub encoded_sentences: FxHashMap<Spur, SentenceGrams<SpurGram>>,
+    /// Gram definitions: dictionary entries (single-word) and phrasebook entries (multi-word)
+    /// The Spur is a key into gram_rodeo
+    pub gram_definitions: FxHashMap<SpurGram, GramDefinition>,
+    /// Index from heteronym to all grams composed only of that heteronym, sorted by frequency (most common first)
+    pub heteronym_to_grams: FxHashMap<Heteronym<Spur>, Vec<SpurGram>>,
+    /// Index from gram to sentences containing it
+    pub sentences_containing_gram_index: FxHashMap<SpurGram, Vec<Spur>>,
+    /// Reverse index from display string to grams (for O(1) lookup by phrase text)
+    pub string_to_grams: FxHashMap<String, Vec<SpurGram>>,
 }
 
 impl LanguagePack {
@@ -54,8 +63,66 @@ impl LanguagePack {
                     .get(word)
                     .into_iter()
                     .flat_map(|heteronyms| heteronyms.iter())
-                    .map(move |heteronym| (*word, Lexeme::Heteronym(*heteronym)))
+                    .map(move |heteronym| {
+                        (
+                            *word,
+                            Lexeme::Heteronym {
+                                heteronym: *heteronym,
+                            },
+                        )
+                    })
             })
+    }
+
+    /// Derive flat literals for a sentence from its encoded gram representation.
+    /// This computes the literals on-the-fly from `encoded_sentences` rather than
+    /// storing a separate precomputed map.
+    pub fn sentence_to_literals(
+        &self,
+        sentence: &Spur,
+        language: crate::Language,
+    ) -> Option<Vec<Literal<String>>> {
+        let sentence_grams = self.encoded_sentences.get(sentence)?;
+
+        // Collect all words from gram atoms
+        let mut all_words: Vec<crate::Word<String>> = Vec::new();
+        for gram in &sentence_grams.grams {
+            let spur_gram = match gram {
+                SentenceGram::Learnable(g) | SentenceGram::Obvious(g) => g,
+            };
+            let gram_resolved = self
+                .gram_rodeo
+                .resolve(spur_gram)
+                .resolve(&self.string_rodeo);
+            for atom in gram_resolved.iter() {
+                if let Atom::Tok(word) = atom {
+                    all_words.push(word.clone());
+                }
+            }
+        }
+
+        // Capitalize first word if needed
+        if sentence_grams.capitalize_first {
+            if let Some(first_word) = all_words.first_mut() {
+                first_word.text = crate::capitalize_first_letter(&first_word.text);
+            }
+        }
+
+        // Build literals with whitespace prediction
+        let literals = all_words
+            .iter()
+            .enumerate()
+            .map(|(i, word)| {
+                let next_word = all_words.get(i + 1);
+                let whitespace = crate::predict_whitespace(word, next_word, language);
+                Literal {
+                    word: word.clone(),
+                    whitespace: whitespace.to_str().to_string(),
+                }
+            })
+            .collect();
+
+        Some(literals)
     }
 
     /// Get the maximum frequency for any word with this pronunciation
@@ -65,19 +132,11 @@ impl LanguagePack {
             .copied()
     }
 
-    pub fn new(language_data: ConsolidatedLanguageData) -> Self {
+    pub fn new(language_data: ConsolidatedLanguageData, target_language: Language) -> Self {
         let rodeo = {
             let mut rodeo = lasso::Rodeo::new();
             language_data.intern(&mut rodeo);
             rodeo.into_reader()
-        };
-
-        let sentences: Vec<Spur> = {
-            language_data
-                .target_language_sentences
-                .iter()
-                .map(|s| rodeo.get(s).unwrap())
-                .collect()
         };
 
         let translations = {
@@ -99,8 +158,8 @@ impl LanguagePack {
         let words_to_heteronyms = {
             let mut map: FxHashMap<Spur, BTreeSet<Heteronym<Spur>>> = FxHashMap::default();
 
-            for freq in &language_data.frequencies {
-                if let Lexeme::Heteronym(heteronym) = &freq.lexeme {
+            for entry in &language_data.gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
                     let word_spur = rodeo.get(&heteronym.word).unwrap();
                     map.entry(word_spur).or_default().insert({
                         Heteronym {
@@ -115,113 +174,12 @@ impl LanguagePack {
             map
         };
 
-        let sentences_to_literals = {
-            language_data
-                .nlp_sentences
-                .iter()
-                .map(|(sentence, analysis)| {
-                    (
-                        rodeo.get(sentence).unwrap(),
-                        analysis
-                            .words
-                            .iter()
-                            .map(|word| {
-                                word.get_interned(&rodeo).unwrap_or_else(|| {
-                                    panic!("word not in rodeo: {word:?} in sentence: {sentence:?}")
-                                })
-                            })
-                            .collect(),
-                    )
-                })
-                .collect()
-        };
-
-        let sentences_to_lexemes: FxHashMap<Spur, Vec<Lexeme<Spur>>> = {
-            language_data
-                .nlp_sentences
-                .iter()
-                .map(|(sentence, analysis)| {
-                    (
-                        rodeo.get(sentence).unwrap(),
-                        analysis
-                            .lexemes()
-                            .map(|l| l.get_interned(&rodeo).unwrap())
-                            .collect(),
-                    )
-                })
-                .collect()
-        };
-
-        let sentences_containing_lexeme_index = {
-            let mut map = FxHashMap::default();
-            for (i, sentence_spur) in sentences.iter().enumerate() {
-                let _sentence = rodeo.resolve(sentence_spur);
-                let Some(lexemes) = sentences_to_lexemes.get(sentence_spur) else {
-                    continue;
-                };
-                for lexeme in lexemes.iter().cloned() {
-                    map.entry(lexeme).or_insert(vec![]).push(sentences[i]);
-                }
-            }
-            map
-        };
-
-        let sentences_to_all_lexemes = {
-            language_data
-                .nlp_sentences
-                .iter()
-                .map(|(sentence, analysis)| {
-                    (
-                        rodeo.get(sentence).unwrap(),
-                        analysis
-                            .all_lexemes()
-                            .map(|l| l.get_interned(&rodeo).unwrap())
-                            .collect(),
-                    )
-                })
-                .collect()
-        };
-
-        let word_frequencies = {
-            let mut map = IndexMap::new();
-            for freq in &language_data.frequencies {
-                map.insert(
-                    freq.lexeme.get_interned(&rodeo).unwrap(),
-                    Frequency { count: freq.count },
-                );
-            }
-            map
-        };
-
         let total_word_count = {
             language_data
-                .frequencies
+                .gram_frequencies
                 .iter()
-                .map(|freq| freq.count as u64)
+                .map(|entry| entry.count as u64)
                 .sum()
-        };
-
-        let dictionary = {
-            language_data
-                .dictionary
-                .iter()
-                .map(|(heteronym, entry)| {
-                    (
-                        heteronym
-                            .get_interned(&rodeo)
-                            .unwrap_or_else(|| panic!("heteronym not in rodeo: {heteronym:?}")),
-                        entry.clone(),
-                    )
-                })
-                .collect()
-        };
-
-        let phrasebook = {
-            language_data
-                .phrasebook
-                .iter()
-                .map(|(multiword_term, entry)| (rodeo.get(multiword_term).unwrap(), entry.clone()))
-                .collect()
         };
 
         let word_to_pronunciation = {
@@ -277,48 +235,11 @@ impl LanguagePack {
             })
             .collect();
 
-        // Pre-compute pronunciation max frequencies for performance
-        let pronunciation_max_freq_cache: FxHashMap<Spur, Frequency> = pronunciation_to_words
-            .iter()
-            .filter_map(|(pronunciation, words)| {
-                let max_freq = words
-                    .iter()
-                    .flat_map(|word| {
-                        words_to_heteronyms
-                            .get(word)
-                            .map(|heteronyms| heteronyms.iter())
-                            .into_iter()
-                            .flatten()
-                    })
-                    .filter_map(|heteronym| {
-                        let lexeme = Lexeme::Heteronym(*heteronym);
-                        word_frequencies.get(&lexeme).copied()
-                    })
-                    .max()?;
-                Some((*pronunciation, max_freq))
-            })
-            .collect();
-
         // Initialize movie data
         let movies = language_data.movies;
 
-        // Convert per-movie frequencies
-        let movie_word_frequencies = {
-            language_data
-                .movie_frequencies
-                .iter()
-                .map(|(movie_id, freqs)| {
-                    let mut map = IndexMap::new();
-                    for freq in freqs {
-                        map.insert(
-                            freq.lexeme.get_interned(&rodeo).unwrap(),
-                            Frequency { count: freq.count },
-                        );
-                    }
-                    (movie_id.clone(), map)
-                })
-                .collect()
-        };
+        // Store movie_gram_frequencies to convert after gram_rodeo is created
+        let movie_gram_frequencies_data = language_data.movie_gram_frequencies.clone();
 
         // Convert sentence sources
         let sentence_sources = {
@@ -340,19 +261,232 @@ impl LanguagePack {
                 .collect()
         };
 
+        // Convert gram vocabulary entries to use Spurs
+        let gram_vocabulary: Vec<_> = language_data
+            .gram_vocabulary
+            .iter()
+            .map(|entry| {
+                entry
+                    .get_interned(&rodeo)
+                    .expect("all gram vocab atoms should be interned")
+            })
+            .collect();
+
+        // Intern all grams into the gram_rodeo
+        let gram_rodeo = {
+            let mut gram_rodeo: lasso::Rodeo<Gram<Spur>> = lasso::Rodeo::new();
+            for entry in &gram_vocabulary {
+                gram_rodeo.get_or_intern(entry.atoms.clone());
+            }
+            gram_rodeo.into_reader()
+        };
+
+        // Convert encoded sentences to use Spurs for sentence keys
+        // The grams are looked up in gram_rodeo to get their Spur keys
+        // multiword_terms and low_confidence_multiword_terms are now Gram<String>,
+        // so they need to be interned into gram_rodeo as SpurGram
+        let encoded_sentences: FxHashMap<Spur, SentenceGrams<SpurGram>> = language_data
+            .encoded_sentences
+            .iter()
+            .filter_map(|(sentence, encoded)| {
+                let interned_grams: Option<Vec<SentenceGram<SpurGram>>> = encoded
+                    .grams
+                    .iter()
+                    .map(|g| {
+                        g.get_interned(&rodeo)?
+                            .try_map(|gram| gram_rodeo.get(&gram))
+                    })
+                    .collect();
+                let interned_multiword_terms: Option<Vec<SpurGram>> = encoded
+                    .multiword_terms
+                    .iter()
+                    .map(|term| {
+                        let interned = term.get_interned(&rodeo)?;
+                        interned.get_interned(&gram_rodeo)
+                    })
+                    .collect();
+                let interned_low_confidence_multiword_terms: Option<Vec<SpurGram>> = encoded
+                    .low_confidence_multiword_terms
+                    .iter()
+                    .map(|term| {
+                        let interned = term.get_interned(&rodeo)?;
+                        interned.get_interned(&gram_rodeo)
+                    })
+                    .collect();
+                Some((
+                    rodeo.get(sentence)?,
+                    SentenceGrams::<SpurGram> {
+                        grams: interned_grams?,
+                        capitalize_first: encoded.capitalize_first,
+                        multiword_terms: interned_multiword_terms?,
+                        low_confidence_multiword_terms: interned_low_confidence_multiword_terms?,
+                    },
+                ))
+            })
+            .collect();
+
+        // Convert gram frequencies (pre-computed in generate-data)
+        // Each entry now has a `gram` field (Gram<String>) which we intern
+        let gram_frequencies: IndexMap<SpurGram, Frequency> = {
+            let mut map = IndexMap::new();
+            for entry in &language_data.gram_frequencies {
+                let interned_gram = entry.gram.get_interned(&rodeo);
+                if let Some(interned_gram) = interned_gram {
+                    if let Some(gram_spur) = gram_rodeo.get(&interned_gram) {
+                        map.insert(gram_spur, Frequency { count: entry.count });
+                    }
+                }
+            }
+            map
+        };
+
+        // Build unified gram definitions map
+        let gram_definitions: FxHashMap<SpurGram, GramDefinition> = {
+            let mut map = FxHashMap::default();
+
+            // Add dictionary entries (single-atom grams)
+            for (heteronym, definition) in &language_data.gram_dictionary {
+                let interned_heteronym = heteronym.get_interned(&rodeo).unwrap_or_else(|| {
+                    panic!("gram dictionary heteronym not in rodeo: {heteronym:?}")
+                });
+                // Create a single-atom gram from this heteronym
+                let word = crate::Word {
+                    text: interned_heteronym.word,
+                    word_type: WordType::Heteronym(interned_heteronym),
+                };
+                let gram = Gram::new(vec![Atom::Tok(word)]);
+                if let Some(gram_spur) = gram_rodeo.get(&gram) {
+                    map.insert(gram_spur, GramDefinition::Dictionary(definition.clone()));
+                }
+            }
+
+            // Add phrasebook entries (multi-atom grams)
+            for (gram, entry) in &language_data.phrasebook {
+                let interned_gram: Option<Gram<Spur>> =
+                    gram.iter().map(|atom| atom.get_interned(&rodeo)).collect();
+                if let Some(interned_gram) = interned_gram {
+                    if let Some(gram_spur) = gram_rodeo.get(&interned_gram) {
+                        map.insert(gram_spur, GramDefinition::Phrasebook(entry.clone()));
+                    }
+                }
+            }
+
+            map
+        };
+
+        // Build index from heteronym to all grams composed only of that heteronym, sorted by frequency
+        let heteronym_to_grams: FxHashMap<Heteronym<Spur>, Vec<SpurGram>> = {
+            let mut map: FxHashMap<Heteronym<Spur>, Vec<(SpurGram, Frequency)>> =
+                FxHashMap::default();
+            for (gram_spur, freq) in gram_frequencies.iter() {
+                let gram = gram_rodeo.resolve(gram_spur);
+                // Check if this gram is composed of a single heteronym atom
+                if gram.len() == 1 {
+                    if let Some(Atom::Tok(word)) = gram.iter().next() {
+                        if let WordType::Heteronym(heteronym) = &word.word_type {
+                            map.entry(*heteronym).or_default().push((*gram_spur, *freq));
+                        }
+                    }
+                }
+            }
+            // Sort each list by frequency (highest first) and extract just the spurs
+            map.into_iter()
+                .map(|(k, mut v)| {
+                    v.sort_by(|a, b| b.1.cmp(&a.1));
+                    (k, v.into_iter().map(|(spur, _)| spur).collect())
+                })
+                .collect()
+        };
+
+        // Build index from gram to sentences containing it
+        // All grams, multiword_terms, and low_confidence_multiword_terms are now unified as SpurGram
+        let sentences_containing_gram_index: FxHashMap<SpurGram, Vec<Spur>> = {
+            let mut map: FxHashMap<SpurGram, Vec<Spur>> = FxHashMap::default();
+            for (sentence_spur, sentence_grams) in encoded_sentences.iter() {
+                // Add grams to index
+                for gram in &sentence_grams.grams {
+                    let gram_spur = match gram {
+                        SentenceGram::Learnable(g) | SentenceGram::Obvious(g) => *g,
+                    };
+                    map.entry(gram_spur).or_default().push(*sentence_spur);
+                }
+                // Add high-confidence multiword term grams to index
+                for gram_spur in &sentence_grams.multiword_terms {
+                    map.entry(*gram_spur).or_default().push(*sentence_spur);
+                }
+                // Add low-confidence multiword term grams to index
+                for gram_spur in &sentence_grams.low_confidence_multiword_terms {
+                    map.entry(*gram_spur).or_default().push(*sentence_spur);
+                }
+            }
+            map
+        };
+
+        // Convert per-movie gram frequencies (pre-computed in generate-data)
+        // Each entry now has a `gram` field (Gram<String>) which we intern
+        let movie_gram_frequencies: FxHashMap<String, IndexMap<SpurGram, Frequency>> =
+            movie_gram_frequencies_data
+                .iter()
+                .map(|(movie_id, freqs)| {
+                    let mut map: IndexMap<SpurGram, Frequency> = IndexMap::new();
+                    for entry in freqs {
+                        let interned_gram = entry.gram.get_interned(&rodeo);
+                        if let Some(interned_gram) = interned_gram {
+                            if let Some(gram_spur) = gram_rodeo.get(&interned_gram) {
+                                map.insert(gram_spur, Frequency { count: entry.count });
+                            }
+                        }
+                    }
+                    (movie_id.clone(), map)
+                })
+                .filter(|(_, map)| !map.is_empty())
+                .collect();
+
+        // Pre-compute pronunciation max frequencies for performance
+        // Look up through heteronym_to_grams -> gram_frequencies
+        let pronunciation_max_freq_cache: FxHashMap<Spur, Frequency> = pronunciation_to_words
+            .iter()
+            .filter_map(|(pronunciation, words)| {
+                let max_freq = words
+                    .iter()
+                    .flat_map(|word| {
+                        words_to_heteronyms
+                            .get(word)
+                            .map(|heteronyms| heteronyms.iter())
+                            .into_iter()
+                            .flatten()
+                    })
+                    .filter_map(|heteronym| {
+                        // Find the max frequency among all grams for this heteronym
+                        heteronym_to_grams
+                            .get(heteronym)?
+                            .iter()
+                            .filter_map(|gram_spur| gram_frequencies.get(gram_spur).copied())
+                            .max()
+                    })
+                    .max()?;
+                Some((*pronunciation, max_freq))
+            })
+            .collect();
+
+        // Build reverse index from display string to grams
+        let string_to_grams: FxHashMap<String, Vec<SpurGram>> = {
+            let mut map: FxHashMap<String, Vec<SpurGram>> = FxHashMap::default();
+            for &gram_spur in gram_definitions.keys() {
+                let resolved = gram_rodeo.resolve(&gram_spur).resolve(&rodeo);
+                let display = resolved.to_display_string(target_language);
+                map.entry(display).or_default().push(gram_spur);
+            }
+            map
+        };
+
         Self {
-            rodeo,
+            string_rodeo: rodeo,
+            gram_rodeo,
             translations,
             words_to_heteronyms,
-            sentences_containing_lexeme_index,
-            sentences_to_literals,
-            sentences_to_lexemes,
-            sentences_to_all_lexemes,
-            word_frequencies,
             total_word_count,
-            movie_word_frequencies,
-            dictionary,
-            phrasebook,
+            movie_gram_frequencies,
             word_to_pronunciation,
             pronunciation_to_words,
             pronunciation_data,
@@ -362,6 +496,12 @@ impl LanguagePack {
             movies,
             sentence_sources,
             proper_noun_definitions,
+            gram_frequencies,
+            encoded_sentences,
+            gram_definitions,
+            heteronym_to_grams,
+            sentences_containing_gram_index,
+            string_to_grams,
         }
     }
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, Profiler, useSyncExternalStore, useMemo, useCallback } from 'react'
 import { useZeno } from '@/hooks/useZeno'
 import { BrowserRouter, Routes, Route, Outlet, useNavigate, useOutletContext } from 'react-router-dom'
-import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Language, type Lexeme, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
+import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Heteronym, type Language, type LiteralGrades, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
 import { Button } from "@/components/ui/button.tsx"
 import { Progress } from "@/components/ui/progress.tsx"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -705,7 +705,40 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
   useInterval(() => setCardsBecameDue(cardsBecameDue => cardsBecameDue + 1), reviewInfo.due_count === 0 ? 1000 : 60000);
 
-  const currentChallenge: Challenge<string> | undefined = useMemo(() => reviewInfo.get_next_challenge(deck), [reviewInfo, deck]);
+  // Challenge type parameters: <GramType, StringType>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const currentChallenge: Challenge<any, string> | undefined = useMemo(() => reviewInfo.get_next_challenge(deck), [reviewInfo, deck]);
+
+  useEffect(() => {
+    if (!currentChallenge) {
+      setBannedChallengeTypes(computeBannedChallengeTypes());
+    }
+  }, [currentChallenge, computeBannedChallengeTypes]);
+
+  useEffect(() => {
+    if (currentChallenge) return;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    const scheduleRefresh = (storageKey: string) => {
+      const timestamp = localStorage.getItem(storageKey);
+      if (!timestamp) return;
+      const elapsed = Date.now() - parseInt(timestamp);
+      const remaining = CANT_LISTEN_DURATION_MS - elapsed;
+
+      if (remaining > 0) {
+        timeouts.push(setTimeout(() => {
+          setBannedChallengeTypes(computeBannedChallengeTypes());
+        }, remaining));
+      } else {
+        setBannedChallengeTypes(computeBannedChallengeTypes());
+      }
+    };
+
+    scheduleRefresh('yap-cant-listen-timestamp');
+    scheduleRefresh('yap-cant-speak-timestamp');
+
+    return () => timeouts.forEach(timeout => clearTimeout(timeout));
+  }, [currentChallenge, bannedChallengeTypes, CANT_LISTEN_DURATION_MS, computeBannedChallengeTypes]);
 
   useEffect(() => {
     if (!currentChallenge) {
@@ -775,7 +808,11 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     }
   }
 
-  const handleTranslationComplete = useCallback(async (grade: { wordStatuses: [Lexeme<string>, boolean | null][] } | { perfect: string | null }, wordsTapped: Lexeme<string>[], submission: string) => {
+  const handleTranslationComplete = useCallback(async (
+    grade: { literalGrades: LiteralGrades, phrasesRemembered: string[], phrasesForgot: string[] } | { perfect: string | null },
+    wordsTapped: Heteronym<string>[],
+    submission: string
+  ) => {
     if (!currentChallenge || currentChallenge.type !== 'TranslateComprehensibleSentence') {
       console.error("handleTranslationComplete called with no current challenge or no TranslateComprehensibleSentence in current challenge");
       return
@@ -791,24 +828,14 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
         weapon.add_deck_event(event);
       }
     } else {
-      // Wrong sentence review with word statuses
-      const wordsRemembered: Lexeme<string>[] = [];
-      const wordsForgotten: Lexeme<string>[] = [];
-
-      grade.wordStatuses.forEach(([word, status]) => {
-        if (status === true) {
-          wordsRemembered.push(word);
-        } else if (status === false) {
-          wordsForgotten.push(word);
-        }
-      });
-
+      // Wrong sentence review - pass literal grades directly to Rust
       const event = deck.translate_sentence_wrong(
         currentChallenge.target_language,
         submission,
-        wordsRemembered,
-        wordsForgotten,
-        wordsTapped
+        grade.literalGrades,
+        wordsTapped,
+        grade.phrasesRemembered,
+        grade.phrasesForgot
       );
       if (event) {
         weapon.add_deck_event(event);
@@ -827,6 +854,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
     const event = deck.transcribe_sentence(grade);
     if (event) {
+      console.log("event", event);
       weapon.add_deck_event(event);
     }
   }, [deck, currentChallenge, weapon])
@@ -914,8 +942,8 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
         ) : currentChallenge ? (
           (currentChallenge.type === 'FlashCardReview') ? (
             <Flashcard
-              audioRequest={currentChallenge.audio}
-              content={currentChallenge.content}
+              audioRequest={currentChallenge.flashcard.audio}
+              content={currentChallenge.flashcard.content}
               isNew={currentChallenge.is_new}
               totalCount={reviewInfo.total_count}
               onRating={handleRating}
@@ -925,7 +953,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
               onCantSpeak={handleCantSpeak}
               targetLanguage={targetLanguage}
               nativeLanguage={nativeLanguage}
-              listeningPrefix={currentChallenge.listening_prefix}
+              listeningPrefix={currentChallenge.flashcard.listening_prefix}
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
               timesTypeSeen={currentChallenge.times_type_seen}
@@ -936,7 +964,6 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
               onComplete={handleTranslationComplete}
               accessToken={accessToken}
               key={totalReviewsCompleted}
-              unique_target_language_lexeme_definitions={currentChallenge.unique_target_language_lexeme_definitions}
               targetLanguage={targetLanguage}
               nativeLanguage={nativeLanguage}
               autoplayed={autoplayed}

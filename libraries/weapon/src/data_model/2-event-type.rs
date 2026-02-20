@@ -22,6 +22,13 @@ impl<E> EventType<E> {
             EventType::Meta(e) => EventType::Meta(e),
         }
     }
+
+    pub fn map_ref<G, F: Fn(&E) -> G>(&self, f: F) -> EventType<G> {
+        match self {
+            EventType::User(e) => EventType::User(f(e)),
+            EventType::Meta(e) => EventType::Meta(e.clone()),
+        }
+    }
 }
 
 impl<E, Error> EventType<Result<E, Error>> {
@@ -34,13 +41,17 @@ impl<E, Error> EventType<Result<E, Error>> {
 }
 
 impl<E: crate::Event> crate::Event for EventType<E> {
-    fn to_json(&self) -> Result<serde_json::Value, serde_json::Error> {
-        let s = self.clone().map(|e| e.to_json()).transpose()?;
-        serde_json::to_value(&s)
+    type Versioned = EventType<E::Versioned>;
+    type Context = E::Context;
+
+    fn to_versioned(&self) -> Self::Versioned {
+        self.map_ref(|e| e.to_versioned())
     }
 
-    fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error> {
-        let s = serde_json::from_value::<EventType<serde_json::Value>>(json.clone())?;
-        s.map(|e| E::from_json(&e)).transpose()
+    fn from_versioned(versioned: &Self::Versioned, context: &Self::Context) -> Option<Self> {
+        match versioned {
+            EventType::User(v) => E::from_versioned(v, context).map(EventType::User),
+            EventType::Meta(e) => Some(EventType::Meta(e.clone())),
+        }
     }
 }

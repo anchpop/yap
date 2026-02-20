@@ -1,217 +1,193 @@
-# Weapon - A Local-First Event Sourcing & Cross-Device Sync Engine
+# Weapon - A Local-First Cross-Device Sync Engine
 
-Weapon is a Rust library that enables local-first applications with cross-device synchronization. It implements event sourcing patterns with support for offline usage, real-time sync, and multi-device collaboration. It is designed primarily to be compiled to WASM and used with React applications. That said, isn't react-specific in any way and would probably work in a Dioxus app (or similar) as well. I made it for [Yap.Town](https://yap.town), a language learning app I work on sometimes.
+Weapon is a Rust library for building local-first applications with cross-device sync. It is designed primarily to be compiled to WASM and used with React applications. That said, isn't react-specific in any way and would probably work in a Dioxus app (or similar) as well. I made it for [Yap.Town](https://yap.town), a language learning app I work on sometimes.
 
-## Core Concept
+## Event-Based
 
-Weapon uses an event-sourcing architecture where:
-- User actions generate "events" with unique IDs and timestamps
-- Application state is derived from "replaying" the chronological sequence of events
-- Events are stored locally first (using OPFS in browsers)
+Weapon is event-based. In other words:
+- In response to user actions, your code generates "events" with unique IDs and timestamps
+- Each event describes a modification to the application state
+- Application state is then derived from "replaying" the chronological sequence of events (starting from the initial state)
 - Synchronization simply merges events from all devices
 
-## Key Features
+This architecture can support any op-based CRDT.
 
-1. **Local-First Architecture**
-   - Users can use your app without logging in
-   - All data is stored locally using browser storage (OPFS)
-   - Works fully offline with zero network dependency (great for PWAs!)
+## Features
 
-2. **Seamless Authentication Transition**
-   - When users log in, their local data automatically syncs to the cloud
-   - Logged-out user data gets imported into their account
-   - No data loss during authentication state changes
+1. All data is stored locally using browser storage (OPFS)
+2. Works fully offline with zero network dependency (great for PWAs!)
+3. Users can use your app without logging in
+4. When they do log in, their local data automatically syncs to their account and is saved in the cloud
+5. Changes sync instantly across all devices (supabase, websockets)
+6. Complete audit trail of all changes
 
-3. **Real-Time Cross-Device Sync**
-   - Changes sync instantly across all devices
-   - Any postgres server can be used for cloud persistence 
-   - With supabase, supports real-time subscriptions for lower-latency sync
-   - Supports both push (real-time) and pull (periodic) synchronization
+One cool thing about event sourcing is that it enables fixing bugs retroactively. When you fix a bug in your state computation logic, users will replay all historical events through the corrected code to regenerate a bug-free state. This effectively "rewrites history" as if the bug never existed.
 
-4. **Event Sourcing**
-   - Complete audit trail of all changes
-   - Time-travel debugging capabilities
-   - Conflict-free merging of concurrent edits
-   - Ability to replay events to rebuild state
+Take a budgeting app for example. In your first attempt you use floating point numbers. Later, you discover floating-point precision errors and switch to fixed-precision arithmetic. Users' devices will replay all events and recalculate every transaction with the correct precision, fixing all historical calculation errors automatically.
 
-Event sourcing enables fixing bugs retroactively. When you fix a bug in your state computation logic, users will replay all historical events through the corrected code to regenerate a bug-free state. This effectively "rewrites history" as if the bug never existed.
+This might not sound like a huge deal, but in some cases it's extremely convenient. 
 
-For example, in a budgeting app, if you discover floating-point rounding errors and switch to fixed-precision arithmetic, replaying all events will recalculate every transaction with the correct precision, fixing all historical calculation errors automatically.
+## More in-depth explanation
 
-## Architecture
+### Events
 
-### Event Model
-
-Events are the atomic units of change in Weapon. Each event:
-- Has a unique timestamp and device-specific index
-- Is immutable once created
-- Can be versioned for backward compatibility
-- Is serializable to JSON for storage/transmission
+Events are the atomic units of change in Weapon. Each event must:
+- Have a timestamp and device-specific index
+- Be immutable once created
+- Be versioned for backward compatibility (stored in versioned form, converted to current form during processing)
+- Be serializable to JSON for storage/transmission
 
 ```rust
-pub trait Event: Sized + PartialOrd + Ord + Clone + Eq {
-    fn to_json(&self) -> Result<serde_json::Value, serde_json::Error>;
-    fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error>;
-}
-```
+use weapon::data_model::Event;
+use serde::{Serialize, Deserialize};
 
-### State Management
-
-Application state is computed by applying events in chronological order:
-
-```rust
-pub trait PartialAppState: Sized {
-    type Event: Event;
-    type Partial: Sized;
-    
-    // Process events incrementally
-    fn process_event(partial: Self::Partial, event: &Timestamped<Self::Event>) -> Self::Partial;
-    
-    // Compute derived state once after all events
-    fn finalize(partial: Self::Partial) -> Self;
-}
-```
-
-### Storage Layers
-
-Weapon supports multiple storage backends:
-- **OPFS** (Origin Private File System) - Browser storage
-- **Supabase** - Cloud persistence and sync
-- **Memory** - For testing and temporary state
-
-## Real-World Usage Example
-
-Here's how Weapon is used in Yap.Town for managing language learning state:
-
-### 1. Define Your Events
-
-```rust
+// A simple event with no versioning (Versioned = Self)
 #[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq)]
-pub enum DeckEvent {
-    CardReviewed { 
-        card_id: String, 
-        rating: u8 
-    },
-    CardAdded { 
-        card_id: String, 
-        content: CardContent 
-    },
-    SettingChanged { 
-        key: String, 
-        value: serde_json::Value 
-    },
+pub enum MyEvent {
+    Increment,
+    Decrement,
 }
 
-// Version your events for future compatibility
-pub enum VersionedDeckEvent {
-    V1(DeckEvent),
-}
+impl Event for MyEvent {
+    type Versioned = Self;
+    type Context = (); // Used to store any additional info needed to implement from_versioned
 
-impl Event for DeckEvent {
-    fn to_json(&self) -> Result<serde_json::Value, serde_json::Error> {
-        let versioned = VersionedDeckEvent::V1(self.clone());
-        serde_json::to_value(versioned)
+    fn to_versioned(&self) -> Self::Versioned {
+        self.clone()
     }
-    
-    fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error> {
-        let versioned: VersionedDeckEvent = serde_json::from_value(json.clone())?;
-        Ok(match versioned {
-            VersionedDeckEvent::V1(event) => event,
-        })
+
+    fn from_versioned(versioned: &Self::Versioned, _context: &Self::Context) -> Option<Self> {
+        Some(versioned.clone())
     }
 }
 ```
 
-### 2. Define Your State
+### App State
+
+Application state is computed by applying events in chronological order.
+
+There is a distinction between the "partial" state and the "final" state. You give weapon the initial "partial" state, which is the same for all users, and a `process_event` function for updating that state given an event. Then you also provide a function to "finalize" a partial state into the true app state. (You might want to defer some expensive operations to this finalization function when possible, because it only runs once, as opposed to the `process_event` function which runs once for each event.)
+
+The partial state type is defined by `AppState::Partial`:
 
 ```rust
-pub struct DeckState {
-    cards: HashMap<String, Card>,
-    settings: HashMap<String, serde_json::Value>,
-    // Derived state (computed in finalize)
-    due_cards: Vec<String>,
-    statistics: DeckStatistics,
+use weapon::{AppState, data_model::{Event, Timestamped}};
+use serde::{Serialize, Deserialize};
+
+#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq)]
+pub enum CounterEvent {
+    Increment,
+    Decrement,
 }
 
-impl PartialAppState for DeckState {
-    type Event = DeckEvent;
-    type Partial = PartialDeckState;
-    
-    fn process_event(mut partial: Self::Partial, event: &Timestamped<DeckEvent>) -> Self::Partial {
+impl Event for CounterEvent {
+    type Versioned = Self;
+    type Context = ();  // No context needed for deversioning
+
+    fn to_versioned(&self) -> Self::Versioned { self.clone() }
+    fn from_versioned(v: &Self::Versioned, _: &Self::Context) -> Option<Self> { Some(v.clone()) }
+}
+
+pub struct Counter(i32);
+
+impl AppState for Counter {
+    type Event = CounterEvent;
+    type Partial = i32;  // Partial state is just the count
+
+    fn process_event(count: Self::Partial, _context: &<Self::Event as Event>::Context, event: &Timestamped<Self::Event>) -> Self::Partial {
+        match event.event {
+            CounterEvent::Increment => count + 1,
+            CounterEvent::Decrement => count - 1,
+        }
+    }
+
+    fn finalize(count: Self::Partial, _context: &<Self::Event as Event>::Context) -> Self {
+        Counter(count)
+    }
+}
+```
+
+## Example: Todo App
+
+```rust
+use weapon::{AppState, data_model::{Event, Timestamped}};
+use serde::{Serialize, Deserialize};
+use std::collections::HashMap;
+
+// --- Events ---
+
+// Current event type - what your app logic uses
+#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq)]
+pub enum TodoEvent {
+    Add { id: String, text: String },
+    Complete { id: String },
+    Delete { id: String },
+}
+
+// Versioned wrapper for storage - allows future migrations
+#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq)]
+#[serde(tag = "version")]
+pub enum VersionedTodoEvent {
+    V1(TodoEvent),
+    // V2(TodoEventV2), // Add new versions as schema evolves
+}
+
+impl Event for TodoEvent {
+    type Versioned = VersionedTodoEvent;
+    type Context = ();
+
+    fn to_versioned(&self) -> Self::Versioned {
+        VersionedTodoEvent::V1(self.clone())
+    }
+
+    fn from_versioned(versioned: &Self::Versioned, _context: &Self::Context) -> Option<Self> {
+        match versioned {
+            VersionedTodoEvent::V1(event) => Some(event.clone()),
+            // Future: migrate V2 events to current format here
+        }
+    }
+}
+
+// --- State ---
+
+#[derive(Clone)]
+pub struct Todo { text: String, completed: bool }
+
+// Final state with derived data
+pub struct TodoList {
+    todos: HashMap<String, Todo>,
+    pending_count: usize,  // Derived in finalize()
+}
+
+impl AppState for TodoList {
+    type Event = TodoEvent;
+    type Partial = HashMap<String, Todo>;
+
+    fn process_event(mut todos: Self::Partial, _context: &<Self::Event as Event>::Context, event: &Timestamped<Self::Event>) -> Self::Partial {
         match &event.event {
-            DeckEvent::CardReviewed { card_id, rating } => {
-                // Update card with review
-                partial.update_card_review(card_id, *rating, event.timestamp);
+            TodoEvent::Add { id, text } => {
+                todos.insert(id.clone(), Todo { text: text.clone(), completed: false });
             }
-            DeckEvent::CardAdded { card_id, content } => {
-                partial.cards.insert(card_id.clone(), Card::new(content.clone()));
+            TodoEvent::Complete { id } => {
+                if let Some(todo) = todos.get_mut(id) {
+                    todo.completed = true;
+                }
             }
-            DeckEvent::SettingChanged { key, value } => {
-                partial.settings.insert(key.clone(), value.clone());
+            TodoEvent::Delete { id } => {
+                todos.remove(id);
             }
         }
-        partial
+        todos
     }
-    
-    fn finalize(partial: Self::Partial) -> Self {
-        // Compute derived state like due cards and statistics
-        let due_cards = partial.compute_due_cards();
-        let statistics = partial.compute_statistics();
-        
-        DeckState {
-            cards: partial.cards,
-            settings: partial.settings,
-            due_cards,
-            statistics,
-        }
+
+    fn finalize(todos: Self::Partial, _context: &<Self::Event as Event>::Context) -> Self {
+        let pending_count = todos.values().filter(|t| !t.completed).count();
+        TodoList { todos, pending_count }
     }
 }
 ```
 
-### 3. Initialize Weapon (Rust/WASM)
-
-```rust
-use weapon::data_model::{EventStore, EventType};
-
-pub struct WeaponInstance {
-    store: RefCell<EventStore<String, String>>,
-    device_id: String,
-    user_id: Option<String>,
-}
-
-impl WeaponInstance {
-    pub async fn new(user_id: Option<String>) -> Result<Self, Error> {
-        // Get or create device ID
-        let device_id = get_or_create_device_id(&user_id).await?;
-        
-        // Initialize event store
-        let mut store = EventStore::default();
-        
-        // Register sync callback for when events change
-        store.register_listener(move |listener_id, stream_id| {
-            // Trigger sync with cloud
-            sync_with_supabase(stream_id).await;
-        });
-        
-        Ok(Self {
-            store: RefCell::new(store),
-            device_id,
-            user_id,
-        })
-    }
-    
-    pub fn add_event(&self, stream_id: String, event: DeckEvent) {
-        let mut store = self.store.borrow_mut();
-        let stream = store.get_or_insert_default::<EventType<DeckEvent>>(
-            stream_id, 
-            None
-        );
-        stream.add_event(event);
-    }
-}
-```
-
-### 4. React Integration
+### React Integration
 
 ```typescript
 import { Weapon } from 'weapon-wasm';

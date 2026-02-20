@@ -146,58 +146,64 @@ impl<K: Eq + Hash + Clone, T: Ord + Clone> EventStreamStore<K, T> {
     }
 }
 
-impl<Device: Eq + Hash + Clone, Event: Ord + Clone + crate::Event>
-    EventStreamStore<Device, Timestamped<EventType<Event>>>
+/// Compute application state from a store that holds versioned events.
+impl<Device: Eq + Hash + Clone, VersionedEvent: Ord + Clone>
+    EventStreamStore<Device, Timestamped<EventType<VersionedEvent>>>
 {
-    pub fn state<A>(&self, initial_state: A::Partial) -> A
+    /// Compute application state by applying stored events.
+    /// The `CurrentEvent` type is what events are converted to for processing.
+    /// The store holds `CurrentEvent::Versioned` (which should equal `VersionedEvent`).
+    pub fn state<CurrentEvent, A>(
+        &self,
+        initial_state: A::Partial,
+        context: &CurrentEvent::Context,
+    ) -> A
     where
-        A: crate::PartialAppState<Event = Event>,
+        CurrentEvent: crate::Event<Versioned = VersionedEvent>,
+        A: crate::AppState<Event = CurrentEvent>,
     {
-        apply_events_and_metaevents(self.iter(), initial_state)
+        apply_events_and_metaevents::<CurrentEvent, A>(self.iter(), initial_state, context)
     }
 }
 
-pub(crate) fn apply_events_and_metaevents<'a, E: crate::data_model::Event + 'a, A>(
-    events: impl Iterator<Item = &'a Timestamped<EventType<E>>>,
+/// Apply versioned events by converting them to current form during processing.
+/// Events that return None from from_versioned are skipped (e.g., no-op migrations).
+/// Context is passed to from_versioned for conversions that need external data.
+pub(crate) fn apply_events_and_metaevents<'a, E, A>(
+    events: impl Iterator<Item = &'a Timestamped<EventType<E::Versioned>>>,
     initial_state: A::Partial,
+    context: &E::Context,
 ) -> A
 where
-    A: crate::PartialAppState<Event = E>,
-{
-    let events = events
-        .cloned()
-        .filter_map(|event| match event {
-            Timestamped {
-                event: EventType::User(event),
-                timestamp,
-                within_device_events_index,
-            } => Some(Timestamped {
-                event,
-                timestamp,
-                within_device_events_index,
-            }),
-            _ => unimplemented!(), // todo: remove?
-        })
-        .collect::<Vec<_>>();
-
-    apply_events(events.iter(), initial_state)
-}
-
-pub(crate) fn apply_events<'a, E: crate::data_model::Event + 'a, A>(
-    events: impl Iterator<Item = &'a Timestamped<E>>,
-    initial_state: A::Partial,
-) -> A
-where
-    A: crate::PartialAppState<Event = E>,
+    E: crate::data_model::Event + 'a,
+    E::Versioned: 'a,
+    A: crate::AppState<Event = E>,
 {
     let mut state = initial_state;
-    // Process all events efficiently without finalizing
+
+    // Process events one at a time, passing context to from_versioned
     for event in events {
-        state = A::process_event(state, event);
+        match event {
+            Timestamped {
+                event: EventType::User(versioned_event),
+                timestamp,
+                within_device_events_index,
+            } => {
+                // Convert from versioned, passing context
+                if let Some(current_event) = E::from_versioned(versioned_event, context) {
+                    let timestamped = Timestamped {
+                        event: current_event,
+                        timestamp: *timestamp,
+                        within_device_events_index: *within_device_events_index,
+                    };
+                    state = A::process_event(state, context, &timestamped);
+                }
+            }
+            _ => unimplemented!(), // todo: remove?
+        }
     }
 
-    // Finalize once at the end
-    A::finalize(state)
+    A::finalize(state, context)
 }
 
 pub struct ValidToAddEvents<Event> {

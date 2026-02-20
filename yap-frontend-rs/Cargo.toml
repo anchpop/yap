@@ -63,6 +63,7 @@ wasm-logger.workspace = true
 log.workspace = true
 pav_regression = { git = "https://github.com/anchpop/pav.rs.git", rev = "033a36103c094cdd52bcc32f41c1794aa70bb301" }
 rustc-hash = "2.0"
+itertools = "0.14.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"

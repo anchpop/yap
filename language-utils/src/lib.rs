@@ -31,10 +31,6 @@ use crate::features::Morphology;
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(
-    compare(PartialEq, PartialOrd),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
-)]
 #[schemars(rename = "PartOfSpeech")]
 pub enum PartOfSpeechTag {
     #[serde(rename = "ADJ")]
@@ -120,10 +116,6 @@ impl std::fmt::Display for PartOfSpeechTag {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(
-    compare(PartialEq, PartialOrd),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
-)]
 pub enum PartOfSpeech {
     #[serde(rename = "ADJ")]
     Adj, // adjective
@@ -192,7 +184,6 @@ impl std::fmt::Display for PartOfSpeech {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct TargetToNativeWord {
     pub native: String,
@@ -218,7 +209,6 @@ pub struct TargetToNativeWord {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct PhrasebookDefinitionEntry {
     pub target_language_multi_word_term: String,
@@ -248,7 +238,6 @@ pub struct PhrasebookDefinitionEntry {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct PhrasebookEntry {
     pub target_language_multi_word_term: String,
@@ -316,11 +305,29 @@ pub struct ProperNounDefinition {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct DictionaryDefinition {
     pub target_language_word: String,
     pub definitions: Vec<TargetToNativeWord>,
+}
+
+/// A gram definition - either a dictionary entry (single word) or phrasebook entry (multi-word)
+#[derive(
+    Clone,
+    Debug,
+    serde::Deserialize,
+    serde::Serialize,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub enum GramDefinition {
+    Dictionary(DictionaryEntry),
+    Phrasebook(PhrasebookDefinitionEntry),
 }
 
 #[derive(
@@ -338,7 +345,6 @@ pub struct DictionaryDefinition {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct DictionaryEntry {
     pub target_language_word: String,
@@ -372,7 +378,6 @@ impl From<(DictionaryDefinition, Vec<Morphology>)> for DictionaryEntry {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 pub struct SentenceSource {
     /// Sentence came from an Anki deck
     pub from_anki: bool,
@@ -445,7 +450,6 @@ pub struct MovieMetadataBasic {
 )]
 #[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
 #[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
-#[rkyv(compare(PartialEq), derive(Debug))]
 pub struct MovieMetadata {
     /// Unique identifier (IMDb ID, e.g., "tt0211915")
     pub id: String,
@@ -491,23 +495,165 @@ where
     pub end_ms: u32,
 }
 
+/// An encoded sentence with grams (atoms with learnability info) and display metadata
 #[derive(
     Clone,
     Debug,
+    PartialEq,
+    Eq,
+    Hash,
     serde::Serialize,
     serde::Deserialize,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
-pub struct Sentence {
-    pub french: Vec<String>,
-    pub english: String,
+pub struct SentenceGrams<G> {
+    /// The grams that make up this sentence, each marked as learnable or obvious
+    pub grams: Vec<SentenceGram<G>>,
+    /// Whether the first letter should be capitalized when displaying
+    pub capitalize_first: bool,
+    /// High-confidence multiword terms found in this sentence
+    pub multiword_terms: Vec<G>,
+    /// Low-confidence multiword terms found in this sentence
+    pub low_confidence_multiword_terms: Vec<G>,
+}
+
+impl SentenceGrams<SpurGram> {
+    pub fn to_literals(
+        self,
+        string_rodeo: &lasso::RodeoReader<String>,
+        gram_rodeo: &lasso::RodeoReader<Gram<lasso::Spur>>,
+        language: Language,
+    ) -> Vec<SentenceGram<(SpurGram, Vec<Literal<String>>)>> {
+        // First pass: collect all words with their gram index
+        let mut all_words: Vec<(usize, Word<String>)> = Vec::new();
+        for (gram_idx, gram) in self.grams.iter().enumerate() {
+            let gram_spur = match gram {
+                SentenceGram::Learnable(g) | SentenceGram::Obvious(g) => g,
+            };
+            let gram_resolved = gram_rodeo.resolve(gram_spur).resolve(string_rodeo);
+            for atom in gram_resolved.iter() {
+                if let Atom::Tok(word) = atom {
+                    all_words.push((gram_idx, word.clone()));
+                }
+            }
+        }
+
+        // Capitalize first word if needed
+        if self.capitalize_first {
+            if let Some((_, first_word)) = all_words.first_mut() {
+                first_word.text = capitalize_first_letter(&first_word.text);
+            }
+        }
+
+        // Build literals with proper cross-gram whitespace prediction
+        let literals_with_gram_idx: Vec<(usize, Literal<String>)> = all_words
+            .iter()
+            .enumerate()
+            .map(|(i, (gram_idx, word))| {
+                let next_word = all_words.get(i + 1).map(|(_, w)| w);
+                let whitespace = predict_whitespace(word, next_word, language);
+                (
+                    *gram_idx,
+                    Literal {
+                        word: word.clone(),
+                        whitespace: whitespace.to_str().to_string(),
+                    },
+                )
+            })
+            .collect();
+
+        // Group literals back into their grams
+        self.grams
+            .into_iter()
+            .enumerate()
+            .map(|(gram_idx, gram)| {
+                gram.map(|gram_spur| {
+                    let literals: Vec<Literal<String>> = literals_with_gram_idx
+                        .iter()
+                        .filter(|(idx, _)| *idx == gram_idx)
+                        .map(|(_, lit)| lit.clone())
+                        .collect();
+                    (gram_spur, literals)
+                })
+            })
+            .collect()
+    }
+}
+
+impl SentenceGrams<SpurGram> {
+    pub fn resolve(
+        &self,
+        rodeo: &lasso::RodeoReader<Gram<lasso::Spur>>,
+    ) -> SentenceGrams<Gram<lasso::Spur>> {
+        SentenceGrams {
+            grams: self.grams.iter().map(|gram| gram.resolve(rodeo)).collect(),
+            capitalize_first: self.capitalize_first,
+            multiword_terms: self
+                .multiword_terms
+                .iter()
+                .map(|g| rodeo.resolve(g).to_gram())
+                .collect(),
+            low_confidence_multiword_terms: self
+                .low_confidence_multiword_terms
+                .iter()
+                .map(|g| rodeo.resolve(g).to_gram())
+                .collect(),
+        }
+    }
+}
+
+impl SentenceGrams<Gram<lasso::Spur>> {
+    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> SentenceGrams<Gram<String>> {
+        SentenceGrams {
+            grams: self.grams.iter().map(|gram| gram.resolve(rodeo)).collect(),
+            capitalize_first: self.capitalize_first,
+            multiword_terms: self
+                .multiword_terms
+                .iter()
+                .map(|gram| gram.resolve(rodeo))
+                .collect(),
+            low_confidence_multiword_terms: self
+                .low_confidence_multiword_terms
+                .iter()
+                .map(|gram| gram.resolve(rodeo))
+                .collect(),
+        }
+    }
+}
+
+impl<S> SentenceGram<S> {
+    pub fn map<T, F>(self, f: F) -> SentenceGram<T>
+    where
+        F: Fn(S) -> T,
+    {
+        match self {
+            SentenceGram::Learnable(s) => SentenceGram::Learnable(f(s)),
+            SentenceGram::Obvious(s) => SentenceGram::Obvious(f(s)),
+        }
+    }
+}
+
+impl SentenceGram<SpurGram> {
+    pub fn resolve(
+        &self,
+        rodeo: &lasso::RodeoReader<Gram<lasso::Spur>>,
+    ) -> SentenceGram<Gram<lasso::Spur>> {
+        match self {
+            SentenceGram::Learnable(g) => SentenceGram::Learnable(rodeo.resolve(g).to_gram()),
+            SentenceGram::Obvious(g) => SentenceGram::Obvious(rodeo.resolve(g).to_gram()),
+        }
+    }
+}
+
+impl SentenceGram<Gram<lasso::Spur>> {
+    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> SentenceGram<Gram<String>> {
+        match self {
+            SentenceGram::Learnable(g) => SentenceGram::Learnable(g.resolve(rodeo)),
+            SentenceGram::Obvious(g) => SentenceGram::Obvious(g.resolve(rodeo)),
+        }
+    }
 }
 
 #[derive(
@@ -523,12 +669,10 @@ pub struct Sentence {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    schemars::JsonSchema,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
-pub struct MultiwordTerms {
-    pub high_confidence: Vec<String>,
-    pub low_confidence: Vec<String>,
+pub struct MultiwordTerms<T> {
+    pub high_confidence: Vec<T>,
+    pub low_confidence: Vec<T>,
 }
 
 /// The raw output from the Spacy python script
@@ -545,10 +689,9 @@ pub struct MultiwordTerms {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 pub struct NlpAnalyzedSentence {
     pub sentence: String,
-    pub multiword_terms: MultiwordTerms,
+    pub multiword_terms: MultiwordTerms<String>,
     pub doc: Vec<DocToken>,
 }
 
@@ -563,46 +706,16 @@ pub struct NlpAnalyzedSentence {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq))]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct SentenceInfo {
     pub words: Vec<Literal<String>>,
-    pub multiword_terms: MultiwordTerms,
+    pub multiword_terms: MultiwordTerms<Gram<String>>,
 }
 
 impl SentenceInfo {
-    /// The words and the high-confidence multiword terms
-    pub fn lexemes(&self) -> impl Iterator<Item = Lexeme<String>> {
-        self.words
-            .iter()
-            .filter_map(|token| {
-                token
-                    .heteronym()
-                    .map(|heteronym| Lexeme::Heteronym(heteronym.clone()))
-            })
-            .chain(
-                self.multiword_terms
-                    .high_confidence
-                    .iter()
-                    .map(|term| Lexeme::Multiword(term.clone())),
-            )
-    }
-
-    /// The words and the high-confidence and low-confidence multiword terms
-    pub fn all_lexemes(&self) -> impl Iterator<Item = Lexeme<String>> {
-        self.lexemes().chain(
-            self.multiword_terms
-                .low_confidence
-                .iter()
-                .map(|term| Lexeme::Multiword(term.clone())),
-        )
-    }
-
     /// The fraction of words that are proper nouns
     pub fn proper_noun_fraction(&self) -> f32 {
         let total_words = self
@@ -654,7 +767,6 @@ impl SentenceInfo {
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 pub struct DocToken {
     pub text: String,
     pub whitespace: String,
@@ -680,16 +792,8 @@ pub struct DocToken {
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[rkyv(
-    compare(PartialEq, PartialOrd),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
-)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct Heteronym<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
+pub struct Heteronym<S> {
     pub word: S,
     pub lemma: S,
     pub pos: PartOfSpeech,
@@ -711,10 +815,6 @@ where
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-)]
-#[rkyv(
-    compare(PartialEq),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum OtherWordType {
@@ -745,10 +845,6 @@ pub enum OtherWordType {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(
-    compare(PartialEq),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
-)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct OtherWord {
     pub other_tag: OtherWordType,
@@ -771,20 +867,9 @@ pub struct OtherWord {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[serde(untagged)]
-#[rkyv(
-    compare(PartialEq),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
-)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum WordType<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
+#[serde(tag = "type")]
+pub enum WordType<S> {
     /// A word with dictionary/grammatical information
     Heteronym(Heteronym<S>),
     /// Other (proper noun, punctuation, space, unknown)
@@ -808,27 +893,9 @@ where
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(
-    compare(PartialEq),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
-)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct Word<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    WordType<S>: rkyv::Archive,
-    <WordType<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
+pub struct Word<S> {
     pub text: S,
-    #[serde(
-        alias = "heteronym",
-        deserialize_with = "deserialize_word_type_from_legacy"
-    )]
     pub word_type: WordType<S>,
 }
 
@@ -846,225 +913,16 @@ where
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-)]
-#[rkyv(
-    compare(PartialEq),
-    derive(Debug, PartialEq, PartialOrd, Eq, Ord, Hash)
+    serde::Serialize,
+    serde::Deserialize,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct Literal<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    WordType<S>: rkyv::Archive,
-    <WordType<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Word<S>: rkyv::Archive,
-    <Word<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
-    #[serde(flatten)]
+pub struct Literal<S> {
     pub word: Word<S>,
     pub whitespace: S,
 }
 
-impl<S> serde::Serialize for Literal<S>
-where
-    S: serde::Serialize
-        + rkyv::Archive
-        + Hash
-        + std::fmt::Debug
-        + Eq
-        + PartialEq
-        + Ord
-        + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    WordType<S>: rkyv::Archive + serde::Serialize,
-    <WordType<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Word<S>: rkyv::Archive,
-    <Word<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
-    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
-    where
-        Ser: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        let mut state = serializer.serialize_struct("Literal", 3)?;
-        state.serialize_field("text", &self.word.text)?;
-        state.serialize_field("word_type", &self.word.word_type)?;
-        state.serialize_field("whitespace", &self.whitespace)?;
-        state.end()
-    }
-}
-
-impl<'de, S> serde::Deserialize<'de> for Literal<S>
-where
-    S: serde::Deserialize<'de>
-        + rkyv::Archive
-        + Hash
-        + std::fmt::Debug
-        + Eq
-        + PartialEq
-        + Ord
-        + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    WordType<S>: rkyv::Archive + serde::Deserialize<'de>,
-    <WordType<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Word<S>: rkyv::Archive,
-    <Word<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        use serde::de::{self, MapAccess, Visitor};
-        use std::fmt;
-        use std::marker::PhantomData;
-
-        struct LiteralVisitor<S>(PhantomData<S>);
-
-        impl<'de, S> Visitor<'de> for LiteralVisitor<S>
-        where
-            S: serde::Deserialize<'de>
-                + rkyv::Archive
-                + Hash
-                + std::fmt::Debug
-                + Eq
-                + PartialEq
-                + Ord
-                + PartialOrd,
-            <S as rkyv::Archive>::Archived:
-                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-            Heteronym<S>: rkyv::Archive,
-            <Heteronym<S> as rkyv::Archive>::Archived:
-                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-            WordType<S>: rkyv::Archive + serde::Deserialize<'de>,
-            <WordType<S> as rkyv::Archive>::Archived:
-                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-            Word<S>: rkyv::Archive,
-            <Word<S> as rkyv::Archive>::Archived:
-                PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-        {
-            type Value = Literal<S>;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("struct Literal")
-            }
-
-            fn visit_map<V>(self, mut map: V) -> Result<Literal<S>, V::Error>
-            where
-                V: MapAccess<'de>,
-            {
-                let mut text: Option<S> = None;
-                let mut word_type: Option<WordType<S>> = None;
-                let mut whitespace: Option<S> = None;
-
-                while let Some(key) = map.next_key::<String>()? {
-                    match key.as_str() {
-                        "text" => {
-                            if text.is_some() {
-                                return Err(de::Error::duplicate_field("text"));
-                            }
-                            text = Some(map.next_value()?);
-                        }
-                        "word_type" => {
-                            if word_type.is_some() {
-                                return Err(de::Error::duplicate_field("word_type"));
-                            }
-                            word_type = Some(map.next_value()?);
-                        }
-                        "heteronym" => {
-                            // Legacy format: heteronym is Option<Heteronym<S>>
-                            if word_type.is_some() {
-                                return Err(de::Error::duplicate_field("word_type"));
-                            }
-                            let heteronym: Option<Heteronym<S>> = map.next_value()?;
-                            word_type = Some(match heteronym {
-                                Some(h) => WordType::Heteronym(h),
-                                None => WordType::Other(OtherWord {
-                                    other_tag: OtherWordType::X,
-                                }),
-                            });
-                        }
-                        "whitespace" => {
-                            if whitespace.is_some() {
-                                return Err(de::Error::duplicate_field("whitespace"));
-                            }
-                            whitespace = Some(map.next_value()?);
-                        }
-                        _ => {
-                            let _ = map.next_value::<de::IgnoredAny>()?;
-                        }
-                    }
-                }
-
-                let text = text.ok_or_else(|| de::Error::missing_field("text"))?;
-                let word_type = word_type.ok_or_else(|| de::Error::missing_field("word_type"))?;
-                let whitespace =
-                    whitespace.ok_or_else(|| de::Error::missing_field("whitespace"))?;
-
-                Ok(Literal {
-                    word: Word { text, word_type },
-                    whitespace,
-                })
-            }
-        }
-
-        deserializer.deserialize_map(LiteralVisitor(PhantomData))
-    }
-}
-
-/// Custom deserializer to handle old format where `heteronym` could be null
-fn deserialize_word_type_from_legacy<'de, D, S>(deserializer: D) -> Result<WordType<S>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-    S: serde::Deserialize<'de>
-        + rkyv::Archive
-        + Hash
-        + std::fmt::Debug
-        + Eq
-        + PartialEq
-        + Ord
-        + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
-    use serde::Deserialize;
-
-    // Deserialize as Option<WordType> - if it's null, convert to Other
-    let opt: Option<WordType<S>> = Option::deserialize(deserializer)?;
-
-    Ok(opt.unwrap_or(WordType::Other(OtherWord {
-        other_tag: OtherWordType::X,
-    })))
-}
-
-impl<S> Word<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    WordType<S>: rkyv::Archive,
-    <WordType<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
+impl<S> Word<S> {
     /// Get the heteronym if this word represents a heteronym, otherwise None
     pub fn heteronym(&self) -> Option<&Heteronym<S>> {
         match &self.word_type {
@@ -1074,20 +932,7 @@ where
     }
 }
 
-impl<S> Literal<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Heteronym<S>: rkyv::Archive,
-    <Heteronym<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    WordType<S>: rkyv::Archive,
-    <WordType<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    Word<S>: rkyv::Archive,
-    <Word<S> as rkyv::Archive>::Archived:
-        PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
+impl<S> Literal<S> {
     /// Get the heteronym if this literal represents a heteronym, otherwise None
     pub fn heteronym(&self) -> Option<&Heteronym<S>> {
         self.word.heteronym()
@@ -1203,34 +1048,24 @@ impl Heteronym<lasso::Spur> {
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[rkyv(compare(PartialEq), derive(PartialEq, PartialOrd, Eq, Ord, Hash))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum Lexeme<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
-    Heteronym(Heteronym<S>),
-    Multiword(S),
+#[serde(tag = "type")]
+pub enum Lexeme<S> {
+    Heteronym { heteronym: Heteronym<S> },
+    Multiword { phrase: S },
 }
 
-impl<S> Lexeme<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
+impl<S> Lexeme<S> {
     pub fn heteronym(&self) -> Option<&Heteronym<S>> {
         match self {
-            Lexeme::Heteronym(heteronym) => Some(heteronym),
+            Lexeme::Heteronym { heteronym } => Some(heteronym),
             _ => None,
         }
     }
 
     pub fn multiword(&self) -> Option<&S> {
         match self {
-            Lexeme::Multiword(multiword) => Some(multiword),
+            Lexeme::Multiword { phrase } => Some(phrase),
             _ => None,
         }
     }
@@ -1239,25 +1074,33 @@ where
 impl Lexeme<String> {
     pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> Lexeme<lasso::Spur> {
         match self {
-            Lexeme::Heteronym(heteronym) => Lexeme::Heteronym(heteronym.get_or_intern(rodeo)),
-            Lexeme::Multiword(multiword) => Lexeme::Multiword(rodeo.get_or_intern(multiword)),
+            Lexeme::Heteronym { heteronym } => Lexeme::Heteronym {
+                heteronym: heteronym.get_or_intern(rodeo),
+            },
+            Lexeme::Multiword { phrase } => Lexeme::Multiword {
+                phrase: rodeo.get_or_intern(phrase),
+            },
         }
     }
 
     pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<Lexeme<lasso::Spur>> {
         match self {
-            Lexeme::Heteronym(heteronym) => Some(Lexeme::Heteronym(heteronym.get_interned(rodeo)?)),
-            Lexeme::Multiword(multiword) => Some(Lexeme::Multiword(rodeo.get(multiword)?)),
+            Lexeme::Heteronym { heteronym } => Some(Lexeme::Heteronym {
+                heteronym: heteronym.get_interned(rodeo)?,
+            }),
+            Lexeme::Multiword { phrase } => Some(Lexeme::Multiword {
+                phrase: rodeo.get(phrase)?,
+            }),
         }
     }
 
     pub fn get_disambiguation_key(&self) -> u32 {
         match self {
-            Lexeme::Heteronym(h) => {
+            Lexeme::Heteronym { heteronym: h } => {
                 let combined = format!("{}\0{}\0{:?}", h.word, h.lemma, h.pos);
                 xxhash_rust::xxh3::xxh3_64(combined.as_bytes()) as u32
             }
-            Lexeme::Multiword(s) => xxhash_rust::xxh3::xxh3_64(s.as_bytes()) as u32,
+            Lexeme::Multiword { phrase } => xxhash_rust::xxh3::xxh3_64(phrase.as_bytes()) as u32,
         }
     }
 }
@@ -1265,39 +1108,24 @@ impl Lexeme<String> {
 impl Lexeme<lasso::Spur> {
     pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> Lexeme<String> {
         match self {
-            Lexeme::Heteronym(heteronym) => Lexeme::Heteronym(heteronym.resolve(rodeo)),
-            Lexeme::Multiword(multiword) => Lexeme::Multiword(rodeo.resolve(multiword).to_string()),
+            Lexeme::Heteronym { heteronym } => Lexeme::Heteronym {
+                heteronym: heteronym.resolve(rodeo),
+            },
+            Lexeme::Multiword { phrase } => Lexeme::Multiword {
+                phrase: rodeo.resolve(phrase).to_string(),
+            },
         }
     }
 }
 
-#[derive(
-    Clone,
-    Debug,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    serde::Serialize,
-    serde::Deserialize,
-    rkyv::Archive,
-    rkyv::Serialize,
-    rkyv::Deserialize,
-)]
-#[rkyv(compare(PartialEq), derive(PartialEq, PartialOrd, Eq, Ord, Hash))]
-pub struct FrequencyEntry<S>
-where
-    S: rkyv::Archive + PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Lexeme<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, serde::Serialize, serde::Deserialize)]
+pub struct GramFrequencyEntry<S> {
     pub count: u32,
 
-    /// This key is different for each word, which allows a consistent ordering of words with the same frequency.
+    /// This key is different for each gram, which allows a consistent ordering with the same frequency.
     pub disambiguation_key: u32,
 
-    // Goes last for ordering purposes
-    pub lexeme: Lexeme<S>,
+    pub gram: Gram<S>,
 }
 
 #[derive(
@@ -1314,7 +1142,6 @@ where
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq), derive(PartialEq, PartialOrd, Eq, Ord, Hash))]
 pub struct Frequency {
     pub count: u32,
 }
@@ -1322,24 +1149,6 @@ pub struct Frequency {
 impl Frequency {
     pub fn ln_frequency(&self) -> f64 {
         (self.count as f64).ln()
-    }
-}
-
-impl FrequencyEntry<String> {
-    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> FrequencyEntry<lasso::Spur> {
-        FrequencyEntry {
-            lexeme: self.lexeme.get_or_intern(rodeo),
-            count: self.count,
-            disambiguation_key: self.disambiguation_key,
-        }
-    }
-
-    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<FrequencyEntry<lasso::Spur>> {
-        Some(FrequencyEntry {
-            lexeme: self.lexeme.get_interned(rodeo)?,
-            count: self.count,
-            disambiguation_key: self.disambiguation_key,
-        })
     }
 }
 
@@ -1371,9 +1180,11 @@ pub mod autograde {
         pub course: Course,
         pub challenge_sentence: String,
         pub user_sentence: String,
-        pub primary_expression: Lexeme<String>,
-        pub lexemes: Vec<Lexeme<String>>,
+        pub literals: Vec<Literal<String>>,
+        pub phrases: Vec<String>,
     }
+
+    /// Response from autograde.
     #[derive(
         Clone, Debug, serde::Serialize, serde::Deserialize, schemars::JsonSchema, tsify::Tsify,
     )]
@@ -1381,9 +1192,10 @@ pub mod autograde {
     pub struct AutoGradeTranslationResponse {
         pub encouragement: Option<String>,
         pub explanation: Option<String>,
-        pub primary_expression_status: Remembered,
-        pub expressions_remembered: Vec<Lexeme<String>>,
-        pub expressions_forgot: Vec<Lexeme<String>>,
+        /// One entry per literal in order. None = ungradable (Other word type) or indeterminate.
+        pub literal_grades: Vec<Option<Remembered>>,
+        pub phrases_remembered: Vec<String>,
+        pub phrases_forgot: Vec<String>,
     }
 
     #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
@@ -1392,6 +1204,12 @@ pub mod autograde {
         pub course: Course,
         pub submission: Vec<transcription_challenge::PartSubmitted>,
     }
+
+    /// Wrapper for passing literal grades across the WASM boundary.
+    /// One entry per literal in order. None = ungradable (Other word type) or indeterminate.
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+    #[tsify(into_wasm_abi, from_wasm_abi)]
+    pub struct LiteralGrades(pub Vec<Option<Remembered>>);
 }
 
 pub mod transcription_challenge {
@@ -1410,6 +1228,7 @@ pub mod transcription_challenge {
         Hash,
     )]
     #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
+    #[serde(tag = "type")]
     pub enum Part {
         AskedToTranscribe { parts: Vec<Literal<String>> },
         Provided { part: Literal<String> },
@@ -1428,6 +1247,7 @@ pub mod transcription_challenge {
         Hash,
     )]
     #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
+    #[serde(tag = "type")]
     pub enum PartSubmitted {
         AskedToTranscribe {
             parts: Vec<Literal<String>>,
@@ -1451,6 +1271,7 @@ pub mod transcription_challenge {
         Hash,
     )]
     #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
+    #[serde(tag = "type")]
     pub enum PartGraded {
         AskedToTranscribe {
             parts: Vec<PartGradedPart>,
@@ -1493,6 +1314,7 @@ pub mod transcription_challenge {
         Hash,
     )]
     #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
+    #[serde(tag = "type")]
     pub enum WordGrade {
         Perfect {
             #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1539,6 +1361,533 @@ pub mod transcription_challenge {
     }
 }
 
+/// Represents whitespace between tokens.
+/// We use an explicit enum rather than storing the actual string to normalize
+/// the representation and make it more compact.
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub enum Whitespace {
+    /// Regular space (U+0020)
+    Space,
+    /// Narrow non-breaking space (U+202F) - used in French before high punctuation
+    NarrowNbsp,
+    /// Regular non-breaking space (U+00A0)
+    Nbsp,
+    /// No whitespace
+    None,
+}
+
+impl Whitespace {
+    /// Convert whitespace enum to actual string
+    pub fn to_str(&self) -> &'static str {
+        match self {
+            Whitespace::Space => " ",
+            Whitespace::NarrowNbsp => "\u{202F}",
+            Whitespace::Nbsp => "\u{00A0}",
+            Whitespace::None => "",
+        }
+    }
+}
+
+impl std::str::FromStr for Whitespace {
+    type Err = std::convert::Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s {
+            "" => Whitespace::None,
+            " " => Whitespace::Space,
+            "\u{202F}" => Whitespace::NarrowNbsp,
+            "\u{00A0}" => Whitespace::Nbsp,
+            // For multiple spaces or other whitespace, normalize to single space
+            s if s.chars().all(|c| c.is_whitespace()) => {
+                if s.contains('\u{202F}') {
+                    Whitespace::NarrowNbsp
+                } else if s.contains('\u{00A0}') {
+                    Whitespace::Nbsp
+                } else {
+                    Whitespace::Space
+                }
+            }
+            // Default to space for anything else
+            _ => Whitespace::Space,
+        })
+    }
+}
+
+/// A control token that corrects wrong whitespace predictions.
+/// When the predicted whitespace doesn't match the actual whitespace,
+/// we emit a Control token to record the correct value.
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    PartialOrd,
+    Ord,
+    serde::Serialize,
+    serde::Deserialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub struct ControlToken(pub Whitespace);
+
+/// An atom is either a word token or a control token.
+/// This is the basic unit after whitespace normalization.
+#[derive(
+    Copy,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub enum Atom<S> {
+    /// A regular word token
+    Tok(Word<S>),
+    /// A control token for whitespace correction
+    Control(ControlToken),
+}
+
+impl Atom<String> {
+    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> Atom<lasso::Spur> {
+        match self {
+            Atom::Tok(word) => Atom::Tok(word.get_or_intern(rodeo)),
+            Atom::Control(ctrl) => Atom::Control(*ctrl),
+        }
+    }
+
+    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<Atom<lasso::Spur>> {
+        match self {
+            Atom::Tok(word) => Some(Atom::Tok(word.get_interned(rodeo)?)),
+            Atom::Control(ctrl) => Some(Atom::Control(*ctrl)),
+        }
+    }
+}
+
+impl Atom<lasso::Spur> {
+    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> Atom<String> {
+        match self {
+            Atom::Tok(word) => Atom::Tok(word.resolve(rodeo)),
+            Atom::Control(ctrl) => Atom::Control(*ctrl),
+        }
+    }
+}
+
+/// An encoded sentence with token IDs from the gram vocabulary
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[rkyv(compare(PartialEq), derive(Debug, PartialEq, Eq))]
+pub struct EncodedSentence {
+    /// Token IDs from the gram vocabulary
+    pub tokens: Vec<u32>,
+    /// Whether the first letter should be capitalized when displaying
+    pub capitalize_first: bool,
+}
+
+/// A gram is a sequence of atoms representing a learnable unit in a sentence.
+/// This is a newtype wrapper around `Vec<Atom<S>>` that provides methods for
+/// working with grams and implements `Internable` for use with lasso.
+#[derive(
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub struct Gram<S>(pub Vec<Atom<S>>);
+pub type SpurGram = lasso::Spur<Gram<lasso::Spur>>;
+
+#[repr(transparent)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[allow(non_camel_case_types)]
+pub struct grm<S> {
+    atoms: [Atom<S>],
+}
+impl<S> AsRef<grm<S>> for grm<S> {
+    fn as_ref(&self) -> &grm<S> {
+        self
+    }
+}
+
+impl<S> grm<S> {
+    pub fn from_slice(slice: &[Atom<S>]) -> &Self {
+        // SAFETY: grm is repr(transparent) over [Atom<S>]
+        unsafe { &*(slice as *const [Atom<S>] as *const grm<S>) }
+    }
+
+    pub fn atoms(&self) -> &[Atom<S>] {
+        &self.atoms
+    }
+
+    pub fn len(&self) -> usize {
+        self.atoms.len()
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &Atom<S>> {
+        self.atoms.iter()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.atoms.is_empty()
+    }
+}
+
+impl<S: Clone> grm<S> {
+    pub fn to_gram(&self) -> Gram<S> {
+        Gram(self.atoms.to_vec())
+    }
+}
+
+impl<S> std::ops::Deref for Gram<S> {
+    type Target = grm<S>;
+
+    fn deref(&self) -> &grm<S> {
+        grm::from_slice(&self.0)
+    }
+}
+impl<S> AsRef<grm<S>> for Gram<S> {
+    fn as_ref(&self) -> &grm<S> {
+        self
+    }
+}
+
+impl<S> Gram<S> {
+    /// Creates a new gram from a vector of atoms.
+    pub fn new(atoms: Vec<Atom<S>>) -> Self {
+        Gram(atoms)
+    }
+
+    /// Returns true if this gram contains at least one learnable atom (a heteronym).
+    pub fn is_learnable(&self) -> bool {
+        self.0.iter().any(|atom| match atom {
+            Atom::Tok(word) => matches!(word.word_type, WordType::Heteronym(_)),
+            Atom::Control(_) => false,
+        })
+    }
+
+    /// Returns the number of atoms in this gram.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    /// Returns true if this gram has no atoms.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// Returns an iterator over the atoms in this gram.
+    pub fn iter(&self) -> impl Iterator<Item = &Atom<S>> {
+        self.0.iter()
+    }
+
+    /// Returns a reference to the first atom, if any.
+    pub fn first(&self) -> Option<&Atom<S>> {
+        self.0.first()
+    }
+
+    /// If this is a single-atom heteronym gram, return a reference to the heteronym.
+    pub fn heteronym(&self) -> Option<&Heteronym<S>> {
+        if self.0.len() != 1 {
+            return None;
+        }
+        match self.0.first()? {
+            Atom::Tok(word) => word.heteronym(),
+            Atom::Control(_) => None,
+        }
+    }
+}
+
+impl grm<lasso::Spur> {
+    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> Gram<String> {
+        Gram(self.atoms.iter().map(|a| a.resolve(rodeo)).collect())
+    }
+}
+
+impl Gram<String> {
+    /// Returns a disambiguation key for this gram, used to maintain consistent ordering
+    /// of grams with the same frequency.
+    pub fn disambiguation_key(&self) -> u32 {
+        use std::fmt::Write;
+        let mut combined = String::new();
+        for atom in &self.0 {
+            match atom {
+                Atom::Tok(word) => {
+                    let _ = write!(combined, "{}\0", word.text);
+                }
+                Atom::Control(ctrl) => {
+                    let _ = write!(combined, "{ctrl:?}\0");
+                }
+            }
+        }
+        xxhash_rust::xxh3::xxh3_64(combined.as_bytes()) as u32
+    }
+
+    /// Converts this gram to a display string using whitespace prediction.
+    /// This properly reconstructs the text with correct spacing for the given language.
+    pub fn to_display_string(&self, language: Language) -> String {
+        let literals = atoms_to_literals(&self.0, language);
+        literals_to_text(&literals)
+    }
+
+    /// Interns all strings in this gram using the given rodeo.
+    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> Gram<lasso::Spur> {
+        Gram(self.0.iter().map(|a| a.get_or_intern(rodeo)).collect())
+    }
+
+    /// Looks up all strings in this gram in the given rodeo reader.
+    /// Returns None if any string is not found.
+    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<Gram<lasso::Spur>> {
+        Some(Gram(
+            self.0
+                .iter()
+                .map(|a| a.get_interned(rodeo))
+                .collect::<Option<Vec<_>>>()?,
+        ))
+    }
+}
+
+impl Gram<lasso::Spur> {
+    pub fn get_interned(&self, rodeo: &lasso::RodeoReader<Gram<lasso::Spur>>) -> Option<SpurGram> {
+        rodeo.get(self)
+    }
+}
+
+impl Gram<lasso::Spur> {
+    /// Resolves all interned strings in this gram using the given rodeo reader.
+    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> Gram<String> {
+        Gram(self.0.iter().map(|a| a.resolve(rodeo)).collect())
+    }
+}
+
+impl<S> AsRef<[Atom<S>]> for Gram<S> {
+    fn as_ref(&self) -> &[Atom<S>] {
+        &self.0
+    }
+}
+
+impl<S> From<Vec<Atom<S>>> for Gram<S> {
+    fn from(atoms: Vec<Atom<S>>) -> Self {
+        Gram(atoms)
+    }
+}
+
+impl<S> FromIterator<Atom<S>> for Gram<S> {
+    fn from_iter<I: IntoIterator<Item = Atom<S>>>(iter: I) -> Self {
+        Gram(iter.into_iter().collect())
+    }
+}
+
+impl<S> IntoIterator for Gram<S> {
+    type Item = Atom<S>;
+    type IntoIter = std::vec::IntoIter<Atom<S>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl<'a, S> IntoIterator for &'a Gram<S> {
+    type Item = &'a Atom<S>;
+    type IntoIter = std::slice::Iter<'a, Atom<S>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
+    }
+}
+
+// Implement Internable for Gram so it can be used with lasso::Rodeo<Gram<S>>
+impl<S: Copy + Eq + std::hash::Hash + 'static> lasso::Internable for Gram<S> {
+    type Ref = grm<S>;
+
+    fn from_ref(r: &Self::Ref) -> Self {
+        Gram(r.atoms().to_vec())
+    }
+}
+
+impl<S: Copy + Eq + std::hash::Hash + 'static> lasso::InternableRef for grm<S> {
+    const ALIGNMENT: usize = std::mem::align_of::<Atom<S>>();
+    fn is_empty(&self) -> bool {
+        self.atoms.is_empty()
+    }
+    fn as_bytes(&self) -> &[u8] {
+        self.atoms.as_bytes()
+    }
+    fn len(&self) -> usize {
+        self.atoms.len()
+    }
+    fn empty() -> &'static Self {
+        grm::<S>::from_slice(<[Atom<S>] as lasso::InternableRef>::empty())
+    }
+
+    unsafe fn from_raw_parts<'a>(ptr: *const u8, count: usize) -> &'a Self {
+        let slice: &[Atom<S>] =
+            unsafe { <[Atom<S>] as lasso::InternableRef>::from_raw_parts(ptr, count) };
+        unsafe { &*(slice as *const [Atom<S>] as *const grm<S>) }
+    }
+}
+
+// Legacy function for backwards compatibility - delegates to the method
+#[deprecated(note = "Use gram.is_learnable() instead")]
+pub fn is_gram_learnable<S>(gram: &Gram<S>) -> bool {
+    gram.is_learnable()
+}
+
+// Legacy function for backwards compatibility - delegates to the method
+#[deprecated(note = "Use gram.disambiguation_key() instead")]
+pub fn get_gram_disambiguation_key(gram: &Gram<String>) -> u32 {
+    gram.disambiguation_key()
+}
+
+// By doing it like this instead of using a Boolean, we allow the Rust compiler to use the learnability in the niche left by the Gram type argument.
+#[derive(
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub enum SentenceGram<G> {
+    Learnable(G),
+    Obvious(G),
+}
+
+impl<S> From<Gram<S>> for SentenceGram<Gram<S>> {
+    fn from(gram: Gram<S>) -> Self {
+        if gram.is_learnable() {
+            SentenceGram::Learnable(gram)
+        } else {
+            SentenceGram::Obvious(gram)
+        }
+    }
+}
+
+impl<G> SentenceGram<G> {
+    /// Get a reference to the inner gram
+    pub fn learnable(&self) -> Option<&G> {
+        match self {
+            SentenceGram::Learnable(g) => Some(g),
+            SentenceGram::Obvious(_) => None,
+        }
+    }
+
+    /// Transform the inner gram type with a fallible function
+    pub fn try_map<H, F: FnOnce(G) -> Option<H>>(self, f: F) -> Option<SentenceGram<H>> {
+        match self {
+            SentenceGram::Learnable(g) => Some(SentenceGram::Learnable(f(g)?)),
+            SentenceGram::Obvious(g) => Some(SentenceGram::Obvious(f(g)?)),
+        }
+    }
+}
+
+impl SentenceGram<Gram<String>> {
+    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> SentenceGram<Gram<lasso::Spur>> {
+        match self {
+            SentenceGram::Learnable(gram) => SentenceGram::Learnable(gram.get_or_intern(rodeo)),
+            SentenceGram::Obvious(gram) => SentenceGram::Obvious(gram.get_or_intern(rodeo)),
+        }
+    }
+
+    pub fn get_interned(
+        &self,
+        rodeo: &lasso::RodeoReader,
+    ) -> Option<SentenceGram<Gram<lasso::Spur>>> {
+        match self {
+            SentenceGram::Learnable(gram) => {
+                Some(SentenceGram::Learnable(gram.get_interned(rodeo)?))
+            }
+            SentenceGram::Obvious(gram) => Some(SentenceGram::Obvious(gram.get_interned(rodeo)?)),
+        }
+    }
+}
+
+/// A vocabulary entry for a gram (supertoken)
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub struct GramVocabEntry<S> {
+    /// The atoms that make up this gram
+    pub atoms: Gram<S>,
+    /// Frequency count in the corpus
+    pub frequency: u32,
+}
+
+impl GramVocabEntry<String> {
+    pub fn get_or_intern(&self, rodeo: &mut lasso::Rodeo) -> GramVocabEntry<lasso::Spur> {
+        GramVocabEntry {
+            atoms: self.atoms.get_or_intern(rodeo),
+            frequency: self.frequency,
+        }
+    }
+
+    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<GramVocabEntry<lasso::Spur>> {
+        Some(GramVocabEntry {
+            atoms: self.atoms.get_interned(rodeo)?,
+            frequency: self.frequency,
+        })
+    }
+}
+
+impl GramVocabEntry<lasso::Spur> {
+    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> GramVocabEntry<String> {
+        GramVocabEntry {
+            atoms: self.atoms.resolve(rodeo),
+            frequency: self.frequency,
+        }
+    }
+}
+
 /// Consolidated data structure containing all generated language data
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ConsolidatedLanguageData {
@@ -1548,16 +1897,12 @@ pub struct ConsolidatedLanguageData {
     pub translations: Vec<(String, Vec<String>)>,
     /// NLP-analyzed sentences with multiword terms and heteronyms
     pub nlp_sentences: Vec<(String, SentenceInfo)>,
-    /// Dictionary entries for individual words
-    pub dictionary: BTreeMap<Heteronym<String>, DictionaryEntry>,
-    /// Phrasebook entries for multiword terms
-    pub phrasebook: BTreeMap<String, PhrasebookEntry>,
+    /// Unified phrasebook: maps gram to definition entry (both MWE phrases and learned multi-atom grams)
+    pub phrasebook: BTreeMap<Gram<String>, PhrasebookDefinitionEntry>,
     /// Proper noun definitions for names, places, organizations
     pub proper_noun_definitions: BTreeMap<String, ProperNounDefinition>,
-    /// Frequency data for words and phrases
-    pub frequencies: Vec<FrequencyEntry<String>>,
-    /// Per-movie word frequencies indexed by movie ID
-    pub movie_frequencies: FxHashMap<String, Vec<FrequencyEntry<String>>>,
+    /// Per-movie gram frequencies indexed by movie ID
+    pub movie_gram_frequencies: FxHashMap<String, Vec<GramFrequencyEntry<String>>>,
     /// Mapping from words to their IPA pronunciations
     pub word_to_pronunciation: Vec<(String, Pronunciation)>,
     /// Mapping from IPA pronunciations to lists of words
@@ -1570,6 +1915,14 @@ pub struct ConsolidatedLanguageData {
     pub movies: FxHashMap<String, MovieMetadata>,
     /// Sentence source provenance tracking (including movie_ids)
     pub sentence_sources: Vec<(String, SentenceSource)>,
+    /// Gram vocabulary: maps gram ID to display info (index = gram ID)
+    pub gram_vocabulary: Vec<GramVocabEntry<String>>,
+    /// Gram frequencies for learnable grams
+    pub gram_frequencies: Vec<GramFrequencyEntry<String>>,
+    /// Encoded sentences: sentence text -> grams with learnability and capitalize_first
+    pub encoded_sentences: Vec<(String, SentenceGrams<Gram<String>>)>,
+    /// Gram dictionary: definitions for single-atom grams (individual words)
+    pub gram_dictionary: BTreeMap<Heteronym<String>, DictionaryEntry>,
 }
 
 impl ConsolidatedLanguageData {
@@ -1591,39 +1944,12 @@ impl ConsolidatedLanguageData {
             }
         }
 
-        // Intern words from frequency list
-        for freq in &self.frequencies {
-            match &freq.lexeme {
-                Lexeme::Heteronym(heteronym) => {
-                    rodeo.get_or_intern(&heteronym.word);
-                    rodeo.get_or_intern(&heteronym.lemma);
-                }
-                Lexeme::Multiword(multiword) => {
-                    rodeo.get_or_intern(multiword);
-                }
-            }
-        }
-
-        // Intern words from per-movie frequency lists
-        for movie_freqs in self.movie_frequencies.values() {
-            for freq in movie_freqs {
-                match &freq.lexeme {
-                    Lexeme::Heteronym(heteronym) => {
-                        rodeo.get_or_intern(&heteronym.word);
-                        rodeo.get_or_intern(&heteronym.lemma);
-                    }
-                    Lexeme::Multiword(multiword) => {
-                        rodeo.get_or_intern(multiword);
-                    }
-                }
-            }
-        }
-        for heteronym in self.dictionary.keys() {
+        for heteronym in self.gram_dictionary.keys() {
             rodeo.get_or_intern(&heteronym.word);
             rodeo.get_or_intern(&heteronym.lemma);
         }
-        for multiword in self.phrasebook.keys() {
-            rodeo.get_or_intern(multiword);
+        for entry in self.phrasebook.values() {
+            rodeo.get_or_intern(&entry.target_language_multi_word_term);
         }
 
         // Intern words used in sentences (includes proper nouns, plus capitalization might differ)
@@ -1631,6 +1957,11 @@ impl ConsolidatedLanguageData {
             for literal in &sentence_info.words {
                 rodeo.get_or_intern(&literal.word.text);
                 rodeo.get_or_intern(&literal.whitespace);
+                // Also intern word and lemma if it's a heteronym
+                if let WordType::Heteronym(h) = &literal.word.word_type {
+                    rodeo.get_or_intern(&h.word);
+                    rodeo.get_or_intern(&h.lemma);
+                }
             }
         }
 
@@ -1677,6 +2008,72 @@ impl ConsolidatedLanguageData {
         for proper_noun in self.proper_noun_definitions.keys() {
             rodeo.get_or_intern(proper_noun);
         }
+
+        // intern gram vocabulary atom texts
+        for entry in &self.gram_vocabulary {
+            for atom in &entry.atoms {
+                if let Atom::<String>::Tok(word) = atom {
+                    rodeo.get_or_intern(&word.text);
+                    // Also intern word and lemma if it's a heteronym
+                    if let WordType::Heteronym(h) = &word.word_type {
+                        rodeo.get_or_intern(&h.word);
+                        rodeo.get_or_intern(&h.lemma);
+                    }
+                }
+            }
+        }
+
+        // intern encoded sentence keys, atoms, and multiword term grams
+        for (sentence, encoded) in &self.encoded_sentences {
+            rodeo.get_or_intern(sentence);
+            for gram in &encoded.grams {
+                match gram {
+                    SentenceGram::Learnable(atoms) | SentenceGram::Obvious(atoms) => {
+                        for atom in atoms {
+                            atom.get_or_intern(rodeo);
+                        }
+                    }
+                }
+            }
+            for gram in &encoded.multiword_terms {
+                for atom in gram.iter() {
+                    atom.get_or_intern(rodeo);
+                }
+            }
+            for gram in &encoded.low_confidence_multiword_terms {
+                for atom in gram.iter() {
+                    atom.get_or_intern(rodeo);
+                }
+            }
+        }
+
+        // intern movie gram frequencies
+        for movie_gram_freqs in self.movie_gram_frequencies.values() {
+            for entry in movie_gram_freqs {
+                for atom in &entry.gram {
+                    if let Atom::<String>::Tok(word) = atom {
+                        rodeo.get_or_intern(&word.text);
+                        if let WordType::Heteronym(h) = &word.word_type {
+                            rodeo.get_or_intern(&h.word);
+                            rodeo.get_or_intern(&h.lemma);
+                        }
+                    }
+                }
+            }
+        }
+
+        // intern master gram frequencies
+        for entry in &self.gram_frequencies {
+            for atom in &entry.gram {
+                if let Atom::<String>::Tok(word) = atom {
+                    rodeo.get_or_intern(&word.text);
+                    if let WordType::Heteronym(h) = &word.word_type {
+                        rodeo.get_or_intern(&h.word);
+                        rodeo.get_or_intern(&h.lemma);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1695,7 +2092,6 @@ impl ConsolidatedLanguageData {
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum TtsProvider {
     ElevenLabs,
@@ -1721,7 +2117,6 @@ pub type Pronunciation = String;
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub enum PronunciationDifficulty {
     Easy,
     Medium,
@@ -1745,7 +2140,6 @@ pub enum PronunciationDifficulty {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub enum PronunciationFamiliarity {
     LikelyAlreadyKnows,
     MaybeAlreadyKnows,
@@ -1769,7 +2163,6 @@ pub enum PronunciationFamiliarity {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub struct LanguageSoundPattern {
     pub pattern: String, // e.g. "ch", "ent$", "^h"
 }
@@ -1791,7 +2184,6 @@ pub struct LanguageSoundPattern {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub enum SoundPosition {
     Beginning,
     Middle,
@@ -1817,7 +2209,6 @@ pub enum SoundPosition {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq), derive(PartialEq, PartialOrd, Eq, Ord, Hash))]
 pub enum PatternPosition {
     Beginning,
     End,
@@ -1841,7 +2232,6 @@ pub enum PatternPosition {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub struct WordPair {
     pub target: String,
     pub native: String,
@@ -1866,7 +2256,6 @@ pub struct WordPair {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub struct PronunciationGuideThoughts {
     pub thoughts: String,
     pub pattern: String,
@@ -1894,7 +2283,6 @@ pub struct PronunciationGuideThoughts {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub struct PronunciationGuide {
     pub pattern: String,
     pub position: PatternPosition,
@@ -1933,7 +2321,6 @@ impl From<PronunciationGuideThoughts> for PronunciationGuide {
     schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-#[rkyv(compare(PartialEq))]
 pub struct PronunciationData {
     pub sounds: Vec<(String, PatternPosition)>, // List of characteristic sounds/patterns for the language
     pub guides: Vec<PronunciationGuide>,        // Detailed guides for each sound
@@ -2224,7 +2611,6 @@ impl HomophoneWordPair<lasso::Spur> {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq))]
 pub struct HomophoneSentencePair<S>
 where
     S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
@@ -2278,7 +2664,6 @@ impl HomophoneSentencePair<lasso::Spur> {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[rkyv(compare(PartialEq))]
 pub struct HomophonePractice<S>
 where
     S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
@@ -2328,4 +2713,263 @@ impl HomophonePractice<lasso::Spur> {
 pub struct TtsRequest {
     pub text: String,
     pub language: Language,
+}
+
+// ============================================================================
+// Whitespace prediction for reconstructing text from atoms
+// ============================================================================
+
+/// French punctuation that requires narrow non-breaking space before it
+const FRENCH_HIGH_PUNCT: &[char] = &['?', '!', ';', '»'];
+
+/// Common Korean particles that attach directly to the preceding word
+const KOREAN_PARTICLES: &[&str] = &[
+    "이", "가", "을", "를", "은", "는", "에", "에서", "으로", "로", "와", "과", "하고", "의", "도",
+    "만", "까지", "부터", "처럼", "같이", "보다", "마다", "이나", "나",
+];
+
+/// Punctuation that typically has no space after it
+/// Includes Spanish inverted punctuation (¿ ¡) which attach to the following word
+const NO_SPACE_AFTER: &[char] = &[
+    '(', '[', '{', '«', '\'', '\u{2018}', '"', '\u{201C}', '-', '¿', '¡',
+];
+
+/// Punctuation that typically has no space before it
+/// Note: apostrophe/quote chars are handled specially (opening vs closing)
+/// Note: French » (closing guillemet) has space BEFORE it, so not in this list
+const NO_SPACE_BEFORE: &[char] = &[
+    ')', ']', '}', ',', '.', '?', '!', ';', '\u{2019}', '"', '\u{201D}', '-', '…',
+];
+
+/// Characters that end words and attach directly (apostrophes, hyphens in compounds)
+const ATTACHING_SUFFIXES: &[char] = &['\'', '\u{2019}', '-'];
+
+/// Capitalize the first letter of a string, leaving the rest unchanged.
+pub fn capitalize_first_letter(s: &str) -> String {
+    let mut chars = s.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(first) => first.to_uppercase().chain(chars).collect(),
+    }
+}
+
+/// Returns true if the first letter of this word is always capitalized regardless of position.
+///
+/// This is used to avoid lowercasing words that carry meaning through their capitalization:
+/// - Proper nouns in any language (e.g. "Paris", "Marie")
+/// - All nouns in German (German capitalizes every noun)
+pub fn first_letter_always_capitalized<S>(word: &Word<S>, language: Language) -> bool {
+    match &word.word_type {
+        WordType::Other(other) => matches!(other.other_tag, OtherWordType::Propn),
+        WordType::Heteronym(h) => language == Language::German && h.pos == PartOfSpeech::Noun,
+    }
+}
+
+/// Lowercase the first letter of a string, leaving the rest unchanged.
+/// Returns the modified string and whether a change was made.
+pub fn lowercase_first_letter(s: &str) -> (String, bool) {
+    let mut chars = s.chars();
+    match chars.next() {
+        None => (String::new(), false),
+        Some(first) => {
+            if first.is_uppercase() {
+                let lowercased: String = first.to_lowercase().chain(chars).collect();
+                let changed = lowercased != s;
+                (lowercased, changed)
+            } else {
+                (s.to_string(), false)
+            }
+        }
+    }
+}
+
+/// Predicts the whitespace between two tokens based on deterministic rules.
+///
+/// This is the core function that enables whitespace normalization. By predicting
+/// whitespace from token properties, we can omit explicit whitespace storage
+/// and only emit Control tokens when the prediction is wrong.
+///
+/// Rules:
+/// - After apostrophes/elisions: no space (l'amour, j'ai)
+/// - Before French high punctuation (?, !, ;, ») in French: narrow nbsp
+/// - After opening brackets/quotes: no space
+/// - Before closing brackets/quotes/punctuation: no space
+/// - After hyphen in compounds: no space
+/// - Default: space
+pub fn predict_whitespace(
+    left: &Word<String>,
+    right: Option<&Word<String>>,
+    language: Language,
+) -> Whitespace {
+    let left_text = &left.text;
+
+    // If there's no right token, no whitespace needed
+    let right = match right {
+        Some(r) => r,
+        None => return Whitespace::None,
+    };
+
+    let right_text = &right.text;
+
+    // Get the last char of left and first char of right
+    let left_last = left_text.chars().last();
+    let right_first = right_text.chars().next();
+
+    // Check if left ends with an attaching suffix (apostrophe, hyphen)
+    if let Some(c) = left_last {
+        if ATTACHING_SUFFIXES.contains(&c) {
+            return Whitespace::None;
+        }
+    }
+
+    // Check if right starts with certain punctuation
+    if let Some(c) = right_first {
+        // No space before closing punct, commas, periods
+        if NO_SPACE_BEFORE.contains(&c) {
+            // Special case: French high punctuation needs narrow nbsp (only for French)
+            if language == Language::French && FRENCH_HIGH_PUNCT.contains(&c) && c != '»' {
+                return Whitespace::NarrowNbsp;
+            }
+            return Whitespace::None;
+        }
+    }
+
+    // Check if left ends with opening bracket/quote (no space after)
+    if let Some(c) = left_last {
+        if NO_SPACE_AFTER.contains(&c) {
+            return Whitespace::None;
+        }
+    }
+
+    // Check if left is punctuation and right is punctuation (no space between)
+    // Exception: after colon before quotes, there's a space (e.g., "dit : 'hello'")
+    // Exception: Spanish inverted punctuation (¿ ¡) has space before it after comma
+    let left_is_punct =
+        matches!(&left.word_type, WordType::Other(o) if o.other_tag == OtherWordType::Punct);
+    let right_is_punct =
+        matches!(&right.word_type, WordType::Other(o) if o.other_tag == OtherWordType::Punct);
+
+    if left_is_punct && right_is_punct {
+        // After colon, there's typically a space (before quotes, etc.)
+        if left_last == Some(':') {
+            return Whitespace::Space;
+        }
+        // Spanish: space before inverted punctuation (¿ ¡) after comma/period
+        if right_first == Some('¿') || right_first == Some('¡') {
+            return Whitespace::Space;
+        }
+        return Whitespace::None;
+    }
+
+    // Korean: particles attach directly to the preceding word
+    if language == Language::Korean && KOREAN_PARTICLES.contains(&right_text.as_str()) {
+        return Whitespace::None;
+    }
+
+    // Default: regular space
+    Whitespace::Space
+}
+
+/// Convert a sequence of Literals into a sequence of Atoms.
+///
+/// This is the forward conversion that removes explicit whitespace and
+/// replaces it with Control tokens where the prediction is wrong.
+pub fn literals_to_atoms(
+    literals: &[Literal<String>],
+    language: Language,
+) -> (Vec<Atom<String>>, bool) {
+    if literals.is_empty() {
+        return (Vec::new(), false);
+    }
+
+    let mut atoms = Vec::new();
+    let mut capitalize_first = false;
+
+    for (i, literal) in literals.iter().enumerate() {
+        let mut word = literal.word.clone();
+
+        // Lowercase the first letter of the first word and track if we changed it,
+        // but only if the word's capitalization isn't intrinsic (e.g. proper nouns,
+        // German nouns which are always capitalized regardless of position).
+        if i == 0 && !first_letter_always_capitalized(&word, language) {
+            let (lowercased, changed) = lowercase_first_letter(&word.text);
+            if changed {
+                capitalize_first = true;
+                word.text = lowercased;
+            }
+        }
+
+        // Emit the word token
+        atoms.push(Atom::Tok(word.clone()));
+
+        // Check if we need a control token for whitespace
+        let next_word = literals.get(i + 1).map(|l| &l.word);
+        let predicted = predict_whitespace(&word, next_word, language);
+        let actual: Whitespace = literal.whitespace.parse().unwrap();
+
+        // If prediction is wrong, emit a control token
+        if predicted != actual {
+            atoms.push(Atom::Control(ControlToken(actual)));
+        }
+    }
+
+    (atoms, capitalize_first)
+}
+
+/// Convert a sequence of Atoms back into Literals.
+///
+/// This is the reverse conversion that reconstructs the original
+/// whitespace from predictions and control tokens.
+pub fn atoms_to_literals(atoms: &[Atom<String>], language: Language) -> Vec<Literal<String>> {
+    let mut literals = Vec::new();
+    let mut i = 0;
+
+    while i < atoms.len() {
+        let atom = &atoms[i];
+
+        match atom {
+            Atom::<String>::Tok(word) => {
+                let word = word.clone();
+
+                // Look ahead to determine whitespace
+                let whitespace = if i + 1 < atoms.len() {
+                    match &atoms[i + 1] {
+                        // If next is a control token, use its whitespace
+                        Atom::<String>::Control(ctrl) => {
+                            i += 1; // consume the control token
+                            ctrl.0
+                        }
+                        // Otherwise predict based on next word
+                        Atom::<String>::Tok(next_word) => {
+                            predict_whitespace(&word, Some(next_word), language)
+                        }
+                    }
+                } else {
+                    // Last token - predict with no lookahead
+                    predict_whitespace(&word, None, language)
+                };
+
+                literals.push(Literal {
+                    word,
+                    whitespace: whitespace.to_str().to_string(),
+                });
+            }
+            Atom::<String>::Control(_) => {
+                // Standalone control tokens shouldn't happen in well-formed input,
+                // but if they do, skip them
+            }
+        }
+
+        i += 1;
+    }
+
+    literals
+}
+
+/// Reconstruct the original sentence text from literals
+pub fn literals_to_text(literals: &[Literal<String>]) -> String {
+    literals
+        .iter()
+        .map(|lit| format!("{}{}", lit.word.text, lit.whitespace))
+        .collect()
 }
