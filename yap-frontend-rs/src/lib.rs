@@ -1925,6 +1925,8 @@ impl Deck {
         const SIMULATION_DAYS: u32 = 0; // set to 0 right now in case it's causing our memory issues
         let mut requested_filenames = BTreeSet::new();
         let mut simulation_iterator = self.simulate_usage(chrono::Utc::now());
+        #[expect(clippy::reversed_empty_ranges)]
+        // because we set to 0 right now in case it's causing our memory issues
         for _ in 0..SIMULATION_DAYS {
             // Sleep for 1 second using JavaScript's setTimeout via JsFuture
             let promise = js_sys::Promise::new(&mut |resolve, _| {
@@ -4429,17 +4431,11 @@ mod tests {
                 .push(record.event.clone());
         }
         for (device_id, events) in selections_by_device {
-            store.add_device_events_jsons(
-                "deck_selection".to_string(),
-                device_id,
-                events,
-                None,
-            );
+            store.add_device_events_jsons("deck_selection".to_string(), device_id, events, None);
         }
 
         // 5. Compute the deck state by replaying all events
-        let initial_state =
-            DeckState::new(language_pack, Language::French, Language::English);
+        let initial_state = DeckState::new(language_pack, Language::French, Language::English);
         let stream = store
             .get::<EventType<DeckEvent>>("reviews".to_string())
             .expect("reviews stream should exist");
@@ -4457,17 +4453,17 @@ mod tests {
             deck.placement_test_results.is_some()
         );
         println!("  Leeches: {}", deck.leeches.len());
-        println!(
-            "  Start time: {:?}",
-            deck.stats.start_time
-        );
+        println!("  Start time: {:?}", deck.stats.start_time);
 
         assert!(num_cards > 0, "Expected cards after replaying events");
         assert!(
             total_reviews > 0,
             "Expected total_reviews > 0 after replaying events"
         );
-        assert!(deck.stats.xp > 0.0, "Expected XP > 0 after replaying events");
+        assert!(
+            deck.stats.xp > 0.0,
+            "Expected XP > 0 after replaying events"
+        );
         assert!(
             deck.stats.start_time.is_some(),
             "Expected start_time to be set"
