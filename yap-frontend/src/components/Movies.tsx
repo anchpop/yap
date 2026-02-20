@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useDeferredValue } from 'react'
 import { Card } from "@/components/ui/card"
 
 interface MovieWithMetadata {
@@ -14,7 +14,8 @@ interface MoviesProps {
   moviesWithMetadata: MovieWithMetadata[]
 }
 
-export function Movies({ moviesWithMetadata }: MoviesProps) {
+export function Movies({ moviesWithMetadata: moviesWithMetadataProp }: MoviesProps) {
+  const moviesWithMetadata = useDeferredValue(moviesWithMetadataProp);
   const [showAllMovies, setShowAllMovies] = useState(false)
 
   const visibleMovies = showAllMovies ? moviesWithMetadata : moviesWithMetadata.slice(0, 8)
