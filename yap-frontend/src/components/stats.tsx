@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useMemo } from "react";
+import { useState, lazy, Suspense, useDeferredValue, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import TimeAgo from "react-timeago";
 import type { Deck } from "../../../yap-frontend-rs/pkg";
@@ -23,7 +23,8 @@ interface StatsProps {
   deck: Deck;
 }
 
-export function Stats({ deck }: StatsProps) {
+export function Stats({ deck: deckProp }: StatsProps) {
+  const deck = useDeferredValue(deckProp);
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
 
   // Update timestamp periodically to keep stats fresh
@@ -48,7 +49,8 @@ export function Stats({ deck }: StatsProps) {
 
   const [visibleCount, setVisibleCount] = useState(10);
   const [nextBatchSize, setNextBatchSize] = useState(10);
-  const visibleCards = [...readyCards, ...notReadyCards.slice(0, visibleCount)];
+  const allCards = [...readyCards, ...notReadyCards];
+  const visibleCards = allCards.slice(0, visibleCount);
 
   const [revealedListeningCards, setRevealedListeningCards] = useState<
     Set<string>
@@ -186,7 +188,7 @@ export function Stats({ deck }: StatsProps) {
             })}
           </tbody>
         </table>
-        {notReadyCards.length > visibleCount && (
+        {allCards.length > visibleCount && (
           <div className="border-t">
             <button
               onClick={() => {
@@ -196,7 +198,7 @@ export function Stats({ deck }: StatsProps) {
               className="w-full py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200 font-medium"
             >
               Show{" "}
-              {Math.min(nextBatchSize, notReadyCards.length - visibleCount)}{" "}
+              {Math.min(nextBatchSize, allCards.length - visibleCount)}{" "}
               more cards
             </button>
           </div>
