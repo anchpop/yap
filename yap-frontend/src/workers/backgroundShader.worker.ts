@@ -345,7 +345,7 @@ function initWebGL(
     lastFrameTime = now;
 
     // Decay speed back to target using zeno
-    speed = zeno(speed, targetSpeed, deltaTime / 1000, 3.0);
+    speed = zeno(speed, targetSpeed, deltaTime / 1000, 0.5);
 
     // Interpolate colors towards target
     currentColors = zeno(currentColors, targetColors, deltaTime / 1000, 18.0);
@@ -409,6 +409,15 @@ function initWebGL(
     ensureAnimating();
   };
 
+  // Expose ensureAnimating for resize redraws
+  (
+    self as typeof self & {
+      updateShaderColors?: () => void;
+      bumpSpeed?: (multiplier?: number) => void;
+      ensureAnimating?: () => void;
+    }
+  ).ensureAnimating = ensureAnimating;
+
   // Expose bumpSpeed function
   (
     self as typeof self & {
@@ -456,6 +465,12 @@ self.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
         canvas.width = width * dpr * scale;
         canvas.height = height * dpr * scale;
         gl.viewport(0, 0, canvas.width, canvas.height);
+        const ensureAnim = (
+          self as typeof self & { ensureAnimating?: () => void }
+        ).ensureAnimating;
+        if (ensureAnim) {
+          ensureAnim();
+        }
       }
       break;
     }
