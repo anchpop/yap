@@ -23,6 +23,7 @@ impl EventStore<String, String> {
         user_id: &str,
         stream_id_to_sync: Option<String>,
         modifier: Option<ListenerKey>,
+        upload: bool,
     ) -> Result<SupabaseSyncResult, JsValue> {
         store.borrow_mut().mark_sync_started(SyncTarget::Supabase);
 
@@ -33,6 +34,7 @@ impl EventStore<String, String> {
             user_id,
             stream_id_to_sync,
             modifier,
+            upload,
         )
         .await
         {
@@ -62,6 +64,7 @@ impl EventStore<String, String> {
         user_id: &str,
         stream_id_to_sync: Option<String>,
         modifier: Option<ListenerKey>,
+        upload: bool,
     ) -> Result<(SupabaseSyncResult, Clock<String, String>), JsValue> {
         let mut sync_result = SupabaseSyncResult {
             uploaded_to_supabase: 0,
@@ -149,79 +152,81 @@ impl EventStore<String, String> {
         // Fetch remote event counts for all streams/devices in one RPC
         let remote_clock = get_clock(&client, &supabase_config, access_token, user_id).await?;
 
-        // upload local events if needed
-        // first, collect them into a vector to avoid holding the lock across an .await
-        let events_to_upload = store
-            .borrow()
-            .iter()
-            .flat_map(|(stream_id, stream_events)| {
-                // Get all devices with events in this stream
-                let device_event_counts = stream_events.num_events_per_device();
-
-                // For each device, upload any events not yet on the server
-                device_event_counts
-                    .into_iter()
-                    .flat_map(|(local_device_id, _local_count)| {
-                        let device_events_on_db: usize = remote_clock
-                            .get(stream_id)
-                            .and_then(|device_map| {
-                                device_map.get(&local_device_id.to_string()).copied()
-                            })
-                            .unwrap_or(0);
-
-                        let events_to_upload =
-                            stream_events.jsons(local_device_id, device_events_on_db);
-
-                        events_to_upload
-                            .into_iter()
-                            .map(|event| SyncableEvent {
-                                user_id: user_id.to_string(),
-                                device_id: local_device_id.to_string(),
-                                created_at: event.timestamp.to_string(),
-                                within_device_events_index: event.within_device_events_index,
-                                event: serde_json::to_value(&event).unwrap(),
-                                stream_id: stream_id.clone(),
-                            })
-                            .collect::<Vec<_>>()
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .collect::<Vec<_>>();
-
-        if !events_to_upload.is_empty() {
-            // Count unique devices we're uploading from
-            let unique_devices: std::collections::HashSet<_> = events_to_upload
+        // upload local events if needed (skip when upload=false, e.g. during impersonation)
+        if upload {
+            // first, collect them into a vector to avoid holding the lock across an .await
+            let events_to_upload = store
+                .borrow()
                 .iter()
-                .map(|e| e.device_id.as_str())
-                .collect();
-            log::info!(
-                "Uploading {} events from {} device(s)",
-                events_to_upload.len(),
-                unique_devices.len()
-            );
+                .flat_map(|(stream_id, stream_events)| {
+                    // Get all devices with events in this stream
+                    let device_event_counts = stream_events.num_events_per_device();
 
-            let upload_url = format!("{supabase_url}/rest/v1/events");
+                    // For each device, upload any events not yet on the server
+                    device_event_counts
+                        .into_iter()
+                        .flat_map(|(local_device_id, _local_count)| {
+                            let device_events_on_db: usize = remote_clock
+                                .get(stream_id)
+                                .and_then(|device_map| {
+                                    device_map.get(&local_device_id.to_string()).copied()
+                                })
+                                .unwrap_or(0);
 
-            let upload_response = client
-                .post(&upload_url)
-                .header("apikey", supabase_anon_key)
-                .header("Authorization", format!("Bearer {access_token}"))
-                .json(&events_to_upload)
-                .map_err(|e| JsValue::from_str(&format!("{e:?}")))?
-                .send()
-                .await
-                .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+                            let events_to_upload =
+                                stream_events.jsons(local_device_id, device_events_on_db);
 
-            if !upload_response.ok() {
-                let status = upload_response.status();
-                let error_body = upload_response
-                    .text()
+                            events_to_upload
+                                .into_iter()
+                                .map(|event| SyncableEvent {
+                                    user_id: user_id.to_string(),
+                                    device_id: local_device_id.to_string(),
+                                    created_at: event.timestamp.to_string(),
+                                    within_device_events_index: event.within_device_events_index,
+                                    event: serde_json::to_value(&event).unwrap(),
+                                    stream_id: stream_id.clone(),
+                                })
+                                .collect::<Vec<_>>()
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>();
+
+            if !events_to_upload.is_empty() {
+                // Count unique devices we're uploading from
+                let unique_devices: std::collections::HashSet<_> = events_to_upload
+                    .iter()
+                    .map(|e| e.device_id.as_str())
+                    .collect();
+                log::info!(
+                    "Uploading {} events from {} device(s)",
+                    events_to_upload.len(),
+                    unique_devices.len()
+                );
+
+                let upload_url = format!("{supabase_url}/rest/v1/events");
+
+                let upload_response = client
+                    .post(&upload_url)
+                    .header("apikey", supabase_anon_key)
+                    .header("Authorization", format!("Bearer {access_token}"))
+                    .json(&events_to_upload)
+                    .map_err(|e| JsValue::from_str(&format!("{e:?}")))?
+                    .send()
                     .await
-                    .unwrap_or_else(|_| "Unknown error".to_string());
-                log::error!("Failed to upload events: {status} - {error_body}");
-            } else {
-                log::info!("Successfully uploaded events");
-                sync_result.uploaded_to_supabase += events_to_upload.len();
+                    .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+
+                if !upload_response.ok() {
+                    let status = upload_response.status();
+                    let error_body = upload_response
+                        .text()
+                        .await
+                        .unwrap_or_else(|_| "Unknown error".to_string());
+                    log::error!("Failed to upload events: {status} - {error_body}");
+                } else {
+                    log::info!("Successfully uploaded events");
+                    sync_result.uploaded_to_supabase += events_to_upload.len();
+                }
             }
         }
 

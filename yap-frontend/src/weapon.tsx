@@ -24,9 +24,11 @@ type WeaponState =
 // React context for Weapon state
 const WeaponContext = createContext<WeaponState | undefined>(undefined);
 
+const ORIGINAL_SESSION_KEY = "yap-impersonation-original-session";
+
 // simple actions context to trigger syncs
 const SyncActionsContext = createContext<
-  undefined | { syncNow: () => Promise<void> }
+  undefined | { syncNow: () => Promise<void>; forcePush: () => Promise<void> }
 >(undefined);
 
 export function WeaponProvider({
@@ -50,6 +52,11 @@ export function WeaponProvider({
   const realtimeChannelRef = useRef<any>(null);
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
 
+  const isImpersonating = useCallback(
+    () => !!localStorage.getItem(ORIGINAL_SESSION_KEY),
+    []
+  );
+
   const sync = useCallback(async function sync(
     listenerId: any,
     stream_id: string
@@ -57,18 +64,20 @@ export function WeaponProvider({
     if (stateRef.current) {
       if (stateRef.current.type !== "ready") return;
       try {
+        const upload = !isImpersonating();
         await stateRef.current.weapon.sync(
           stream_id,
           accessTokenRef.current,
           networkStateRef.current.online ? true : false,
-          listenerId ?? undefined
+          listenerId ?? undefined,
+          upload
         );
       } catch (e: any) {
         console.warn("sync failed after store change", e);
       }
     }
   },
-  []);
+  [isImpersonating]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -93,21 +102,23 @@ export function WeaponProvider({
     return () => abortController.abort();
   }, [userId, sync]);
 
-  const syncWithSupabase = useCallback(async () => {
+  const syncWithSupabase = useCallback(async (forceUpload?: boolean) => {
     if (stateRef.current === null) return;
     if (stateRef.current.type !== "ready") return;
     if (accessTokenRef.current === undefined) return;
     try {
       if (networkStateRef.current.online) {
+        const upload = forceUpload ?? !isImpersonating();
         await stateRef.current.weapon.sync_with_supabase(
           accessTokenRef.current,
-          undefined
+          undefined,
+          upload
         );
       }
     } catch (e: any) {
       console.warn("sync_with_supabase failed", e);
     }
-  }, []);
+  }, [isImpersonating]);
 
   useEffect(() => {
     // rerun supabase sync every 30 seconds
@@ -236,6 +247,9 @@ export function WeaponProvider({
     syncNow: async () => {
       await syncWithSupabase();
     },
+    forcePush: async () => {
+      await syncWithSupabase(true);
+    },
   };
 
   return (
@@ -263,7 +277,7 @@ export function useWeaponState(): WeaponState {
   return ctx;
 }
 
-export function useSyncActions(): { syncNow: () => Promise<void> } {
+export function useSyncActions(): { syncNow: () => Promise<void>; forcePush: () => Promise<void> } {
   const ctx = useContext(SyncActionsContext);
   if (!ctx)
     throw new Error("useSyncActions must be used within a WeaponProvider");
