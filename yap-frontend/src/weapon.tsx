@@ -187,6 +187,7 @@ export function WeaponProvider({
 
     if (!userId) return;
     if (!network.online) return;
+    if (isImpersonating()) return;
 
     const channel = supabase
       .channel(`events:${userId}`)
