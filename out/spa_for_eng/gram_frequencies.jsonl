@@ -376,6 +376,7 @@
 {"count":523,"disambiguation_key":3745889653,"gram":[{"Tok":{"text":"tienen","word_type":{"type":"Heteronym","word":"tienen","lemma":"tener","pos":"VERB"}}}]}
 {"count":522,"disambiguation_key":1600105441,"gram":[{"Tok":{"text":"hay","word_type":{"type":"Heteronym","word":"hay","lemma":"haber","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":520,"disambiguation_key":3363248784,"gram":[{"Tok":{"text":"haber","word_type":{"type":"Heteronym","word":"haber","lemma":"haber","pos":"AUX"}}},{"Tok":{"text":"estado","word_type":{"type":"Heteronym","word":"estado","lemma":"estar","pos":"VERB"}}}]}
+{"count":520,"disambiguation_key":1114148138,"gram":[{"Tok":{"text":"voy","word_type":{"type":"Heteronym","word":"voy","lemma":"ir","pos":"AUX"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":519,"disambiguation_key":1578484354,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"PRON"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":515,"disambiguation_key":4246549073,"gram":[{"Tok":{"text":"haber","word_type":{"type":"Heteronym","word":"haber","lemma":"haber","pos":"AUX"}}},{"Tok":{"text":"estar","word_type":{"type":"Heteronym","word":"estar","lemma":"estar","pos":"VERB"}}}]}
 {"count":515,"disambiguation_key":354438942,"gram":[{"Tok":{"text":"qué","word_type":{"type":"Heteronym","word":"qué","lemma":"qué","pos":"DET"}}}]}
