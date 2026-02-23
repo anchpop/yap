@@ -2112,6 +2112,8 @@ impl Deck {
                     id: movie_id.clone(),
                     title: movie_metadata.title.clone(),
                     year: movie_metadata.year,
+                    original_language: movie_metadata.original_language.clone(),
+                    rotten_tomatoes_score: movie_metadata.rotten_tomatoes_score,
                     poster_bytes: movie_metadata.poster_bytes.clone(),
                 });
             }

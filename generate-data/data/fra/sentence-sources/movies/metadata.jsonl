@@ -1,65 +1,212 @@
-{"id":"tt0211915","title":"Le Fabuleux Destin d'Amélie Poulain","year":2001}
-{"id":"tt0241527","title":"Harry Potter à l'école des sorciers","year":2001}
-{"id":"tt32820897","title":"Demon Slayer : Kimetsu no Yaiba - Le film : La Forteresse infinie","year":2025}
-{"id":"tt0903624","title":"Le Hobbit : Un voyage inattendu","year":2012}
-{"id":"tt19847976","title":"Wicked : Partie II","year":2025}
-{"id":"tt4712810","title":"Insaisissables 3","year":2025}
-{"id":"tt0167261","title":"Le Seigneur des anneaux : Les Deux Tours","year":2002}
-{"id":"tt1757678","title":"Avatar : De feu et de cendres","year":2025}
-{"id":"tt1630029","title":"Avatar : La Voie de l'eau","year":2022}
-{"id":"tt30144839","title":"Une bataille après l'autre","year":2025}
-{"id":"tt32642706","title":"The Rip","year":2026}
-{"id":"tt0108500","title":"Les Visiteurs","year":1993}
-{"id":"tt0417741","title":"Harry Potter et le Prince de sang-mêlé","year":2009}
-{"id":"tt0295297","title":"Harry Potter et la Chambre des secrets","year":2002}
-{"id":"tt0848228","title":"Avengers","year":2012}
-{"id":"tt15239678","title":"Dune : Deuxième partie","year":2024}
-{"id":"tt1675434","title":"Intouchables","year":2011}
-{"id":"tt0120737","title":"Le Seigneur des anneaux : La Communauté de l'anneau","year":2001}
-{"id":"tt0167260","title":"Le Seigneur des anneaux : Le Retour du roi","year":2003}
-{"id":"tt34610311","title":"The Shadow's Edge","year":2025}
-{"id":"tt0816692","title":"Interstellar","year":2014}
-{"id":"tt26443597","title":"Zootopie 2","year":2025}
-{"id":"tt31227572","title":"Predator: Badlands","year":2025}
-{"id":"tt0499549","title":"Avatar","year":2009}
-{"id":"tt6604188","title":"Tron : Ares","year":2025}
-{"id":"tt6751668","title":"Parasite","year":2019}
-{"id":"tt20215234","title":"Conclave","year":2024}
-{"id":"tt2584384","title":"Jojo Rabbit","year":2019}
-{"id":"tt4468740","title":"Paddington 2","year":2017}
-{"id":"tt1856101","title":"Blade Runner 2049","year":2017}
-{"id":"tt4263482","title":"The Witch","year":2016}
-{"id":"tt28607951","title":"Anora","year":2024}
-{"id":"tt2582802","title":"Whiplash","year":2014}
-{"id":"tt0382932","title":"Ratatouille","year":2007}
-{"id":"tt0347149","title":"Le Château ambulant","year":2004}
-{"id":"tt0299658","title":"Chicago","year":2002}
-{"id":"tt0245429","title":"Le Voyage de Chihiro","year":2001}
-{"id":"tt0230011","title":"Atlantide, l'empire perdu","year":2001}
-{"id":"tt2396224","title":"It's Such a Beautiful Day","year":2012}
-{"id":"tt0805564","title":"Une fiancée pas comme les autres","year":2007}
-{"id":"tt0460989","title":"Le vent se lève","year":2006}
-{"id":"tt0320661","title":"Kingdom of Heaven","year":2005}
-{"id":"tt0363163","title":"La Chute","year":2004}
-{"id":"tt0120737","title":"Le Seigneur des anneaux : La Communauté de l'anneau","year":2001}
-{"id":"tt0167261","title":"Le Seigneur des anneaux : Les Deux Tours","year":2002}
-{"id":"tt0167260","title":"Le Seigneur des anneaux : Le Retour du roi","year":2003}
-{"id":"tt0265666","title":"La Famille Tenenbaum","year":2001}
-{"id":"tt0137523","title":"Fight Club","year":1999}
-{"id":"tt0128445","title":"Rushmore","year":1998}
-{"id":"tt0120338","title":"Titanic","year":1997}
-{"id":"tt0119698","title":"Princesse Mononoké","year":1997}
-{"id":"tt0104797","title":"Malcolm X","year":1992}
-{"id":"tt0105236","title":"Reservoir Dogs","year":1992}
-{"id":"tt3783958","title":"La La Land","year":2016}
-{"id":"tt0099685","title":"Les Affranchis","year":1990}
-{"id":"tt0097499","title":"Henry V","year":1989}
-{"id":"tt0097165","title":"Le Cercle des poètes disparus","year":1989}
-{"id":"tt0097576","title":"Indiana Jones et la dernière croisade","year":1989}
-{"id":"tt0097216","title":"Do the Right Thing","year":1989}
-{"id":"tt0093779","title":"Princess Bride","year":1987}
-{"id":"tt0096018","title":"À bout de course","year":1988}
-{"id":"tt0181875","title":"Presque Célèbre","year":2000}
-{"id":"tt2194499","title":"Il était Temps","year":2013}
-{"id":"tt0780504","title":"Drive","year":2011}
-{"id":"tt7131622","title":"Once Upon a Time... in Hollywood","year":2019}
+{"id":"tt0241527","title":"Harry Potter à l'école des sorciers","year":2001,"original_language":"en","rotten_tomatoes_score":80}
+{"id":"tt0903624","title":"Le Hobbit : Un voyage inattendu","year":2012,"original_language":"en","rotten_tomatoes_score":64}
+{"id":"tt0211915","title":"Le Fabuleux Destin d'Amélie Poulain","year":2001,"original_language":"fr","rotten_tomatoes_score":90}
+{"id":"tt1757678","title":"Avatar : De feu et de cendres","year":2025,"original_language":"en","rotten_tomatoes_score":66}
+{"id":"tt4712810","title":"Insaisissables 3","year":2025,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt27543632","title":"La Femme de ménage","year":2025,"original_language":"en","rotten_tomatoes_score":73}
+{"id":"tt1527793","title":"Aucun autre choix","year":2025,"original_language":"ko","rotten_tomatoes_score":98}
+{"id":"tt32820897","title":"Demon Slayer : Kimetsu no Yaiba - Le film : La Forteresse infinie","year":2025,"original_language":"ja","rotten_tomatoes_score":98}
+{"id":"tt32141377","title":"28 Ans plus tard : Le Temple des morts","year":2026,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt1160419","title":"Dune : Première partie","year":2021,"original_language":"en","rotten_tomatoes_score":83}
+{"id":"tt30144839","title":"Une bataille après l'autre","year":2025,"original_language":"en","rotten_tomatoes_score":95}
+{"id":"tt29567915","title":"Nuremberg","year":2025,"original_language":"en","rotten_tomatoes_score":72}
+{"id":"tt33028778","title":"Primate","year":2026,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt32916440","title":"Marty Supreme","year":2025,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt27847051","title":"L’Agent secret","year":2025,"original_language":"pt","rotten_tomatoes_score":null}
+{"id":"tt0295297","title":"Harry Potter et la Chambre des secrets","year":2002,"original_language":"en","rotten_tomatoes_score":82}
+{"id":"tt15239678","title":"Dune : Deuxième partie","year":2024,"original_language":"en","rotten_tomatoes_score":92}
+{"id":"tt33244668","title":"Anaconda","year":2025,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt0167260","title":"Le Seigneur des anneaux : Le Retour du roi","year":2003,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0499549","title":"Avatar","year":2009,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt26443597","title":"Zootopie 2","year":2025,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt0417741","title":"Harry Potter et le Prince de sang-mêlé","year":2009,"original_language":"en","rotten_tomatoes_score":83}
+{"id":"tt31227572","title":"Predator : Badlands","year":2025,"original_language":"en","rotten_tomatoes_score":86}
+{"id":"tt0120737","title":"Le Seigneur des anneaux : La Communauté de l'anneau","year":2001,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt31050594","title":"Reconnu coupable","year":2026,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt6751668","title":"Parasite","year":2019,"original_language":"ko","rotten_tomatoes_score":99}
+{"id":"tt20215234","title":"Conclave","year":2024,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt2584384","title":"Jojo Rabbit","year":2019,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt4468740","title":"Paddington 2","year":2017,"original_language":"en","rotten_tomatoes_score":99}
+{"id":"tt1856101","title":"Blade Runner 2049","year":2017,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt4263482","title":"The Witch","year":2016,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt28607951","title":"Anora","year":2024,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt2582802","title":"Whiplash","year":2014,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0382932","title":"Ratatouille","year":2007,"original_language":"en","rotten_tomatoes_score":96}
+{"id":"tt0347149","title":"Le Château ambulant","year":2004,"original_language":"ja","rotten_tomatoes_score":88}
+{"id":"tt0299658","title":"Chicago","year":2002,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt0245429","title":"Le Voyage de Chihiro","year":2001,"original_language":"ja","rotten_tomatoes_score":96}
+{"id":"tt0230011","title":"Atlantide, l'empire perdu","year":2001,"original_language":"en","rotten_tomatoes_score":48}
+{"id":"tt2396224","title":"It's Such a Beautiful Day","year":2012,"original_language":"en","rotten_tomatoes_score":100}
+{"id":"tt0805564","title":"Une fiancée pas comme les autres","year":2007,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0460989","title":"Le vent se lève","year":2006,"original_language":"en","rotten_tomatoes_score":90}
+{"id":"tt0320661","title":"Kingdom of Heaven","year":2005,"original_language":"en","rotten_tomatoes_score":39}
+{"id":"tt0363163","title":"La Chute","year":2004,"original_language":"de","rotten_tomatoes_score":90}
+{"id":"tt0120737","title":"Le Seigneur des anneaux : La Communauté de l'anneau","year":2001,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt0167261","title":"Le Seigneur des anneaux : Les Deux Tours","year":2002,"original_language":"en","rotten_tomatoes_score":95}
+{"id":"tt0167260","title":"Le Seigneur des anneaux : Le Retour du roi","year":2003,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0265666","title":"La Famille Tenenbaum","year":2001,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0137523","title":"Fight Club","year":1999,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0128445","title":"Rushmore","year":1998,"original_language":"en","rotten_tomatoes_score":90}
+{"id":"tt0120338","title":"Titanic","year":1997,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt0119698","title":"Princesse Mononoké","year":1997,"original_language":"ja","rotten_tomatoes_score":93}
+{"id":"tt0104797","title":"Malcolm X","year":1992,"original_language":"en","rotten_tomatoes_score":89}
+{"id":"tt0105236","title":"Reservoir Dogs","year":1992,"original_language":"en","rotten_tomatoes_score":90}
+{"id":"tt3783958","title":"La La Land","year":2016,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt0099685","title":"Les Affranchis","year":1990,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt0097499","title":"Henry V","year":1989,"original_language":"en","rotten_tomatoes_score":98}
+{"id":"tt0097165","title":"Le Cercle des poètes disparus","year":1989,"original_language":"en","rotten_tomatoes_score":85}
+{"id":"tt0097576","title":"Indiana Jones et la dernière croisade","year":1989,"original_language":"en","rotten_tomatoes_score":84}
+{"id":"tt0097216","title":"Do the Right Thing","year":1989,"original_language":"en","rotten_tomatoes_score":92}
+{"id":"tt0093779","title":"Princess Bride","year":1987,"original_language":"en","rotten_tomatoes_score":96}
+{"id":"tt0096018","title":"À bout de course","year":1988,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0181875","title":"Presque Célèbre","year":2000,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt2194499","title":"Il était Temps","year":2013,"original_language":"en","rotten_tomatoes_score":71}
+{"id":"tt0780504","title":"Drive","year":2011,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt7131622","title":"Once Upon a Time... in Hollywood","year":2019,"original_language":"en","rotten_tomatoes_score":86}
+{"id":"tt1675434","title":"Intouchables","year":2011,"original_language":"fr","rotten_tomatoes_score":75}
+{"id":"tt0110413","title":"Léon","year":1994,"original_language":"fr","rotten_tomatoes_score":76}
+{"id":"tt0211915","title":"Le Fabuleux Destin d'Amélie Poulain","year":2001,"original_language":"fr","rotten_tomatoes_score":90}
+{"id":"tt0119116","title":"Le Cinquième Élément","year":1997,"original_language":"fr","rotten_tomatoes_score":71}
+{"id":"tt2278871","title":"La Vie d'Adèle - Chapitres 1 et 2","year":2013,"original_language":"fr","rotten_tomatoes_score":88}
+{"id":"tt0113247","title":"La Haine","year":1995,"original_language":"fr","rotten_tomatoes_score":96}
+{"id":"tt0250223","title":"Astérix & Obélix : Mission Cléopâtre","year":2002,"original_language":"fr","rotten_tomatoes_score":86}
+{"id":"tt1655442","title":"The Artist","year":2011,"original_language":"fr","rotten_tomatoes_score":95}
+{"id":"tt4954522","title":"Grave","year":2017,"original_language":"fr","rotten_tomatoes_score":92}
+{"id":"tt0290673","title":"Irréversible","year":2002,"original_language":"fr","rotten_tomatoes_score":59}
+{"id":"tt1255953","title":"Incendies","year":2010,"original_language":"fr","rotten_tomatoes_score":91}
+{"id":"tt17009710","title":"Anatomie d'une chute","year":2023,"original_language":"fr","rotten_tomatoes_score":96}
+{"id":"tt8613070","title":"Portrait de la jeune fille en feu","year":2019,"original_language":"fr","rotten_tomatoes_score":97}
+{"id":"tt3612616","title":"Mommy","year":2014,"original_language":"fr","rotten_tomatoes_score":89}
+{"id":"tt0372824","title":"Les Choristes","year":2004,"original_language":"fr","rotten_tomatoes_score":68}
+{"id":"tt0053198","title":"Les Quatre Cents Coups","year":1959,"original_language":"fr","rotten_tomatoes_score":99}
+{"id":"tt7458762","title":"Le Chant du loup","year":2019,"original_language":"fr","rotten_tomatoes_score":null}
+{"id":"tt5078204","title":"Demain tout commence","year":2016,"original_language":"fr","rotten_tomatoes_score":43}
+{"id":"tt0457430","title":"Le Labyrinthe de Pan","year":2006,"original_language":"es","rotten_tomatoes_score":95}
+{"id":"tt4857264","title":"L'Accusé","year":2017,"original_language":"es","rotten_tomatoes_score":67}
+{"id":"tt1038988","title":"[REC]","year":2007,"original_language":"es","rotten_tomatoes_score":90}
+{"id":"tt1189073","title":"La piel que habito","year":2011,"original_language":"es","rotten_tomatoes_score":81}
+{"id":"tt6155172","title":"Roma","year":2018,"original_language":"es","rotten_tomatoes_score":96}
+{"id":"tt3011894","title":"Les Nouveaux Sauvages","year":2014,"original_language":"es","rotten_tomatoes_score":94}
+{"id":"tt16277242","title":"Le Cercle des neiges","year":2023,"original_language":"es","rotten_tomatoes_score":90}
+{"id":"tt0464141","title":"L'Orphelinat","year":2007,"original_language":"es","rotten_tomatoes_score":87}
+{"id":"tt0245712","title":"Amours chiennes","year":2000,"original_language":"es","rotten_tomatoes_score":93}
+{"id":"tt1305806","title":"Dans ses yeux","year":2009,"original_language":"es","rotten_tomatoes_score":89}
+{"id":"tt0185125","title":"Tout sur ma mère","year":1999,"original_language":"es","rotten_tomatoes_score":98}
+{"id":"tt6908274","title":"Mirage","year":2018,"original_language":"es","rotten_tomatoes_score":null}
+{"id":"tt8291806","title":"Douleur et gloire","year":2019,"original_language":"es","rotten_tomatoes_score":96}
+{"id":"tt0441909","title":"Volver","year":2006,"original_language":"es","rotten_tomatoes_score":91}
+{"id":"tt0245574","title":"Y tu mamá también","year":2001,"original_language":"es","rotten_tomatoes_score":90}
+{"id":"tt1016150","title":"À l'ouest rien de nouveau","year":2022,"original_language":"de","rotten_tomatoes_score":90}
+{"id":"tt0088323","title":"L'Histoire sans fin","year":1984,"original_language":"de","rotten_tomatoes_score":84}
+{"id":"tt0405094","title":"La Vie des autres","year":2006,"original_language":"de","rotten_tomatoes_score":92}
+{"id":"tt1063669","title":"La Vague","year":2008,"original_language":"de","rotten_tomatoes_score":67}
+{"id":"tt0017136","title":"Metropolis","year":1927,"original_language":"de","rotten_tomatoes_score":97}
+{"id":"tt0301357","title":"Good Bye Lenin!","year":2003,"original_language":"de","rotten_tomatoes_score":91}
+{"id":"tt0130827","title":"Cours, Lola, cours","year":1998,"original_language":"de","rotten_tomatoes_score":93}
+{"id":"tt0082096","title":"Le Bateau","year":1981,"original_language":"de","rotten_tomatoes_score":98}
+{"id":"tt0022100","title":"M le maudit","year":1931,"original_language":"de","rotten_tomatoes_score":100}
+{"id":"tt0013442","title":"Nosferatu","year":1922,"original_language":"de","rotten_tomatoes_score":97}
+{"id":"tt0119167","title":"Funny Games","year":1997,"original_language":"de","rotten_tomatoes_score":73}
+{"id":"tt3042408","title":"Qui suis-je","year":2014,"original_language":"de","rotten_tomatoes_score":null}
+{"id":"tt0093191","title":"Les Ailes du désir","year":1987,"original_language":"de","rotten_tomatoes_score":95}
+{"id":"tt4226388","title":"Victoria","year":2015,"original_language":"de","rotten_tomatoes_score":82}
+{"id":"tt0068182","title":"Aguirre, la colère de Dieu","year":1972,"original_language":"de","rotten_tomatoes_score":96}
+{"id":"tt0364569","title":"Old Boy","year":2003,"original_language":"ko","rotten_tomatoes_score":82}
+{"id":"tt5700672","title":"Dernier train pour Busan","year":2016,"original_language":"ko","rotten_tomatoes_score":95}
+{"id":"tt0353969","title":"Memories of Murder","year":2003,"original_language":"ko","rotten_tomatoes_score":null}
+{"id":"tt4016934","title":"Mademoiselle","year":2016,"original_language":"ko","rotten_tomatoes_score":96}
+{"id":"tt1588170","title":"J'ai rencontré le Diable","year":2010,"original_language":"ko","rotten_tomatoes_score":83}
+{"id":"tt5215952","title":"The Strangers","year":2016,"original_language":"ko","rotten_tomatoes_score":99}
+{"id":"tt0451094","title":"Lady Vengeance","year":2005,"original_language":"ko","rotten_tomatoes_score":76}
+{"id":"tt7282468","title":"Burning","year":2018,"original_language":"ko","rotten_tomatoes_score":95}
+{"id":"tt1216496","title":"Mother","year":2009,"original_language":"ko","rotten_tomatoes_score":96}
+{"id":"tt1190539","title":"The Chaser","year":2008,"original_language":"ko","rotten_tomatoes_score":82}
+{"id":"tt1527788","title":"The Man From Nowhere","year":2010,"original_language":"ko","rotten_tomatoes_score":100}
+{"id":"tt12477480","title":"Decision to Leave","year":2022,"original_language":"ko","rotten_tomatoes_score":94}
+{"id":"tt0365376","title":"2 sœurs","year":2003,"original_language":"ko","rotten_tomatoes_score":86}
+{"id":"tt0423866","title":"Locataires","year":2004,"original_language":"ko","rotten_tomatoes_score":87}
+{"id":"tt0190332","title":"Tigre & Dragon","year":2000,"original_language":"zh","rotten_tomatoes_score":98}
+{"id":"tt0299977","title":"Hero","year":2002,"original_language":"zh","rotten_tomatoes_score":null}
+{"id":"tt0385004","title":"Le Secret des poignards volants","year":2004,"original_language":"zh","rotten_tomatoes_score":87}
+{"id":"tt0446059","title":"Le Maître d'armes","year":2006,"original_language":"zh","rotten_tomatoes_score":73}
+{"id":"tt0425637","title":"Les 3 Royaumes","year":2008,"original_language":"zh","rotten_tomatoes_score":89}
+{"id":"tt1410063","title":"Sacrifices of War","year":2011,"original_language":"zh","rotten_tomatoes_score":41}
+{"id":"tt10627720","title":"Ne Zha","year":2019,"original_language":"zh","rotten_tomatoes_score":88}
+{"id":"tt0101640","title":"Épouses et Concubines","year":1991,"original_language":"zh","rotten_tomatoes_score":97}
+{"id":"tt0808357","title":"Lust, Caution","year":2007,"original_language":"zh","rotten_tomatoes_score":73}
+{"id":"tt0106332","title":"Adieu ma concubine","year":1993,"original_language":"zh","rotten_tomatoes_score":90}
+{"id":"tt0118694","title":"In the Mood for Love","year":2000,"original_language":"cn","rotten_tomatoes_score":92}
+{"id":"tt0109424","title":"Chungking Express","year":1994,"original_language":"cn","rotten_tomatoes_score":89}
+{"id":"tt0338564","title":"Infernal Affairs","year":2002,"original_language":"cn","rotten_tomatoes_score":94}
+{"id":"tt5311514","title":"Your Name.","year":2016,"original_language":"ja","rotten_tomatoes_score":98}
+{"id":"tt0096283","title":"Mon voisin Totoro","year":1988,"original_language":"ja","rotten_tomatoes_score":94}
+{"id":"tt0095327","title":"Le Tombeau des lucioles","year":1988,"original_language":"ja","rotten_tomatoes_score":100}
+{"id":"tt0876563","title":"Ponyo sur la falaise","year":2008,"original_language":"ja","rotten_tomatoes_score":91}
+{"id":"tt0094625","title":"Akira","year":1988,"original_language":"ja","rotten_tomatoes_score":91}
+{"id":"tt0092067","title":"Le Château dans le ciel","year":1986,"original_language":"ja","rotten_tomatoes_score":96}
+{"id":"tt0097814","title":"Kiki la petite sorcière","year":1989,"original_language":"ja","rotten_tomatoes_score":null}
+{"id":"tt5323662","title":"Silent Voice","year":2016,"original_language":"ja","rotten_tomatoes_score":null}
+{"id":"tt0047478","title":"Les Sept Samouraïs","year":1954,"original_language":"ja","rotten_tomatoes_score":100}
+{"id":"tt0087544","title":"Nausicaä de la vallée du vent","year":1984,"original_language":"ja","rotten_tomatoes_score":91}
+{"id":"tt0113568","title":"Ghost in the Shell","year":1995,"original_language":"ja","rotten_tomatoes_score":95}
+{"id":"tt0266308","title":"Battle Royale","year":2000,"original_language":"ja","rotten_tomatoes_score":90}
+{"id":"tt0104652","title":"Porco Rosso","year":1992,"original_language":"ja","rotten_tomatoes_score":96}
+{"id":"tt2013293","title":"Le Vent se lève","year":2013,"original_language":"ja","rotten_tomatoes_score":88}
+{"id":"tt0079944","title":"Stalker","year":1979,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0069293","title":"Solaris","year":1972,"original_language":"ru","rotten_tomatoes_score":92}
+{"id":"tt0091251","title":"Requiem pour un massacre","year":1985,"original_language":"ru","rotten_tomatoes_score":90}
+{"id":"tt0072443","title":"Le Miroir","year":1975,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt2802154","title":"Léviathan","year":2014,"original_language":"ru","rotten_tomatoes_score":97}
+{"id":"tt0060107","title":"Andreï Roublev","year":1966,"original_language":"ru","rotten_tomatoes_score":96}
+{"id":"tt6304162","title":"Faute d'amour","year":2017,"original_language":"ru","rotten_tomatoes_score":94}
+{"id":"tt0376968","title":"Le Retour","year":2003,"original_language":"ru","rotten_tomatoes_score":null}
+{"id":"tt0318034","title":"L'Arche russe","year":2002,"original_language":"ru","rotten_tomatoes_score":89}
+{"id":"tt6537238","title":"Salyut-7","year":2017,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0118767","title":"Le Frère","year":1997,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0317248","title":"La Cité de Dieu","year":2002,"original_language":"pt","rotten_tomatoes_score":91}
+{"id":"tt0861739","title":"Troupe d'Élite","year":2007,"original_language":"pt","rotten_tomatoes_score":51}
+{"id":"tt1555149","title":"Troupe d'Élite : l'Ennemi Intérieur","year":2010,"original_language":"pt","rotten_tomatoes_score":91}
+{"id":"tt2762506","title":"Bacurau","year":2019,"original_language":"pt","rotten_tomatoes_score":93}
+{"id":"tt0140888","title":"Central do Brasil","year":1998,"original_language":"pt","rotten_tomatoes_score":94}
+{"id":"tt14961016","title":"Je suis toujours là","year":2024,"original_language":"pt","rotten_tomatoes_score":null}
+{"id":"tt3742378","title":"Une seconde mère","year":2015,"original_language":"pt","rotten_tomatoes_score":98}
+{"id":"tt5221584","title":"Aquarius","year":2016,"original_language":"pt","rotten_tomatoes_score":97}
+{"id":"tt0293007","title":"Carandiru","year":2003,"original_language":"pt","rotten_tomatoes_score":68}
+{"id":"tt0118799","title":"La vie est belle","year":1997,"original_language":"it","rotten_tomatoes_score":80}
+{"id":"tt0060196","title":"Le Bon, la Brute et le Truand","year":1966,"original_language":"it","rotten_tomatoes_score":97}
+{"id":"tt0064116","title":"Il était une fois dans l'Ouest","year":1968,"original_language":"it","rotten_tomatoes_score":96}
+{"id":"tt0095765","title":"Cinema Paradiso","year":1988,"original_language":"it","rotten_tomatoes_score":90}
+{"id":"tt0058461","title":"Pour une poignée de dollars","year":1964,"original_language":"it","rotten_tomatoes_score":98}
+{"id":"tt4901306","title":"Perfetti sconosciuti","year":2016,"original_language":"it","rotten_tomatoes_score":79}
+{"id":"tt2358891","title":"La grande bellezza","year":2013,"original_language":"it","rotten_tomatoes_score":91}
+{"id":"tt0076786","title":"Suspiria","year":1977,"original_language":"it","rotten_tomatoes_score":94}
+{"id":"tt0040522","title":"Le Voleur de bicyclette","year":1948,"original_language":"it","rotten_tomatoes_score":99}
+{"id":"tt0056801","title":"Huit et demi","year":1963,"original_language":"it","rotten_tomatoes_score":97}
+{"id":"tt0213847","title":"Malèna","year":2000,"original_language":"it","rotten_tomatoes_score":54}
+{"id":"tt0120731","title":"La Légende du pianiste sur l'océan","year":1998,"original_language":"it","rotten_tomatoes_score":58}
+{"id":"tt0053779","title":"La dolce vita","year":1960,"original_language":"it","rotten_tomatoes_score":95}
+{"id":"tt0848228","title":"Avengers","year":2012,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt3110958","title":"Insaisissables 2","year":2016,"original_language":"en","rotten_tomatoes_score":34}
+{"id":"tt19847976","title":"Wicked : Partie II","year":2025,"original_language":"en","rotten_tomatoes_score":66}
+{"id":"tt14364480","title":"Wake Up Dead Man : Une histoire à couteaux tirés","year":2025,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt0099785","title":"Maman, j'ai raté l'avion !","year":1990,"original_language":"en","rotten_tomatoes_score":66}
+{"id":"tt0373889","title":"Harry Potter et l'Ordre du Phénix","year":2007,"original_language":"en","rotten_tomatoes_score":78}
+{"id":"tt0108500","title":"Les Visiteurs","year":1993,"original_language":"fr","rotten_tomatoes_score":31}
+{"id":"tt0330373","title":"Harry Potter et la Coupe de feu","year":2005,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt2948356","title":"Zootopie","year":2016,"original_language":"en","rotten_tomatoes_score":98}
+{"id":"tt0120915","title":"Star Wars, épisode I - La Menace fantôme","year":1999,"original_language":"en","rotten_tomatoes_score":54}
+{"id":"tt34610311","title":"The Shadow's Edge","year":2025,"original_language":"zh","rotten_tomatoes_score":80}
+{"id":"tt0314331","title":"Love Actually","year":2003,"original_language":"en","rotten_tomatoes_score":65}
+{"id":"tt6604188","title":"Tron : Ares","year":2025,"original_language":"en","rotten_tomatoes_score":53}
+{"id":"tt36491653","title":"Un simple accident","year":2025,"original_language":"fr","rotten_tomatoes_score":98}
+{"id":"tt30274401","title":"Five Nights at Freddy's 2","year":2025,"original_language":"en","rotten_tomatoes_score":16}
+{"id":"tt0304141","title":"Harry Potter et le Prisonnier d'Azkaban","year":2004,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt14107334","title":"Running Man","year":2025,"original_language":"en","rotten_tomatoes_score":63}
+{"id":"tt31844586","title":"Sisu : Le Chemin de la vengeance","year":2025,"original_language":"fi","rotten_tomatoes_score":95}
+{"id":"tt1630029","title":"Avatar : La Voie de l'eau","year":2022,"original_language":"en","rotten_tomatoes_score":76}
+{"id":"tt0381061","title":"Casino Royale","year":2006,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt24950660","title":"Pour l'éternité","year":2025,"original_language":"en","rotten_tomatoes_score":77}
+{"id":"tt16311594","title":"F1® Le Film","year":2025,"original_language":"en","rotten_tomatoes_score":82}
+{"id":"tt9362736","title":"Die My Love","year":2025,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt12300742","title":"Bugonia","year":2025,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt1825683","title":"Black Panther","year":2018,"original_language":"en","rotten_tomatoes_score":96}

@@ -432,6 +432,12 @@ pub struct MovieMetadataBasic {
     pub title: String,
     /// Release year
     pub year: Option<u16>,
+    /// Original language of the movie (ISO 639-1 code, e.g., "en", "fr")
+    #[serde(default)]
+    pub original_language: Option<String>,
+    /// Rotten Tomatoes score (0-100)
+    #[serde(default)]
+    pub rotten_tomatoes_score: Option<u8>,
 }
 
 /// Full movie metadata including poster bytes, for runtime use
@@ -457,6 +463,10 @@ pub struct MovieMetadata {
     pub title: String,
     /// Release year
     pub year: Option<u16>,
+    /// Original language of the movie (ISO 639-1 code, e.g., "en", "fr")
+    pub original_language: Option<String>,
+    /// Rotten Tomatoes score (0-100)
+    pub rotten_tomatoes_score: Option<u8>,
     /// Poster image bytes (JPEG format)
     pub poster_bytes: Option<Vec<u8>>,
 }
@@ -467,6 +477,8 @@ impl From<MovieMetadataBasic> for MovieMetadata {
             id: basic.id,
             title: basic.title,
             year: basic.year,
+            original_language: basic.original_language,
+            rotten_tomatoes_score: basic.rotten_tomatoes_score,
             poster_bytes: None,
         }
     }
