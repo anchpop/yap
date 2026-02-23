@@ -257,6 +257,7 @@ impl Weapon {
         &self,
         access_token: String,
         modifier: Option<ListenerKey>,
+        upload: bool,
     ) -> Result<(), wasm_bindgen::JsValue> {
         if let Some(user_id) = &self.user_id {
             // After sync, flush any pending notifications to JS listeners
@@ -269,6 +270,7 @@ impl Weapon {
                 user_id,
                 None,
                 modifier,
+                upload,
             )
             .await?;
         }
@@ -283,6 +285,7 @@ impl Weapon {
         access_token: Option<String>,
         attempt_supabase: bool,
         modifier: Option<ListenerKey>,
+        upload: bool,
     ) -> Result<(), wasm_bindgen::JsValue> {
         // After sync, flush any pending notifications to JS listeners
         let _flusher = FlushLater::new(self);
@@ -347,6 +350,7 @@ impl Weapon {
                 user_id,
                 Some(stream_id.clone()),
                 modifier,
+                upload,
             )
             .await?;
             if supabase_sync_result.downloaded_from_supabase > 0 {

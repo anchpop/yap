@@ -27,11 +27,17 @@ import {
 import { useWeapon, useSyncActions } from "@/weapon";
 import { useNetworkState } from "react-use";
 import { ErrorMessage } from "@/components/ui/error-message";
+import {
+  useImpersonationActivation,
+  ImpersonateUser,
+} from "@/components/impersonate-user";
 
 export function SyncStatusDialog() {
   const weapon = useWeapon();
   const { syncNow } = useSyncActions();
   const { online: isOnline } = useNetworkState();
+  const { activated: impersonationActivated, handleActivationClick } =
+    useImpersonationActivation();
 
   // Poll sync state and earliest unsynced timestamp every second
   const [lastSyncFinishedAt, setLastSyncFinishedAt] = useState<number | null>(
@@ -201,7 +207,10 @@ export function SyncStatusDialog() {
 
             {/* Additional remote metrics can be added when exposed by the core */}
 
-            <div className="flex items-center justify-between">
+            <div
+              className="flex items-center justify-between cursor-default select-none"
+              onClick={handleActivationClick}
+            >
               <div className="flex items-center gap-2">
                 <CupSoda className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground">
@@ -238,6 +247,8 @@ export function SyncStatusDialog() {
               </span>
             </div>
           </div>
+
+          {impersonationActivated && <ImpersonateUser />}
 
           {!isOnline && (
             <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
