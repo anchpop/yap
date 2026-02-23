@@ -4485,9 +4485,9 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 
 [[package]]
 name = "tysm"
-version = "0.15.0"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dc8972226e0df655ad174679c599fda4873476c40aec559a23637e0de468695"
+checksum = "91df2661a3b6bdffcd3395b10d7c2be8692253d7d9b3a0c8bfeaf09b6c28f92a"
 dependencies = [
  "dashmap",
  "dotenvy",
@@ -4912,7 +4912,7 @@ version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0978bf7171b3d90bac376700cb56d606feb40f251a475a5d6634613564460b22"
 dependencies = [
- "windows-sys 0.48.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
