@@ -6,7 +6,6 @@ edition = "2024"
 [dependencies]
 zip.workspace = true
 rusqlite.workspace = true
-html2text.workspace = true
 tempfile.workspace = true
 log = "0.4.27"
 markdown-tables.workspace = true

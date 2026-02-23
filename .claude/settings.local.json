@@ -25,7 +25,8 @@
       "Bash(cat:*)",
       "Bash(curl:*)",
       "Bash(ls:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(git status:*)"
     ],
     "deny": []
   }

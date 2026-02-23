@@ -139,7 +139,7 @@ Output JSON format:
                 (response, proper_noun.clone())
             }
         })
-        .buffer_unordered(40)
+        .buffer_unordered(400)
         .collect::<Vec<_>>()
         .await
         .into_iter()

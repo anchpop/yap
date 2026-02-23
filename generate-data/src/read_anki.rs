@@ -1,4 +1,4 @@
-use html2text::from_read;
+use html_escape::decode_html_entities;
 use indexmap::IndexSet;
 use rusqlite::{Connection, Result as SqlResult};
 use std::error::Error;
@@ -160,10 +160,9 @@ impl AnkiReader {
             // Get the template for this card
             let (question, answer) = self.get_card_content(card_id, model_id, &field_vec)?;
 
-            // Convert HTML to plain text
-            let question_text =
-                from_read(question.as_bytes(), 80).unwrap_or_else(|_| question.clone());
-            let answer_text = from_read(answer.as_bytes(), 80).unwrap_or_else(|_| answer.clone());
+            // Convert HTML to plain text using fast tag stripping
+            let question_text = strip_html_tags(&question);
+            let answer_text = strip_html_tags(&answer);
 
             // Parse tags
             let tag_vec: Vec<String> = if tags.is_empty() {
@@ -320,6 +319,59 @@ impl AnkiReader {
 // rusqlite = { version = "0.29", features = ["bundled"] }
 // html2text = "0.4"
 // tempfile = "3.8"
+
+/// Fast HTML tag stripping: removes tags, converts <br> and <div> to newlines,
+/// and decodes HTML entities. Much faster than html2text which does full
+/// HTML/CSS rendering.
+fn strip_html_tags(html: &str) -> String {
+    if !html.contains('<') {
+        return decode_html_entities(html).into_owned();
+    }
+
+    let mut result = String::with_capacity(html.len());
+    let mut in_tag = false;
+    let mut tag_buf = String::new();
+    let bytes = html.as_bytes();
+    let mut i = 0;
+
+    while i < bytes.len() {
+        let b = bytes[i];
+        if b == b'<' {
+            in_tag = true;
+            tag_buf.clear();
+            i += 1;
+            continue;
+        }
+        if in_tag {
+            if b == b'>' {
+                in_tag = false;
+                let tag_lower = tag_buf.to_ascii_lowercase();
+                // Insert newline for block-level tags
+                if (tag_lower == "br"
+                    || tag_lower == "br/"
+                    || tag_lower == "br /"
+                    || tag_lower.starts_with("div")
+                    || tag_lower.starts_with("/div")
+                    || tag_lower.starts_with("/p")
+                    || tag_lower == "p"
+                    || tag_lower.starts_with("/li")
+                    || tag_lower.starts_with("li"))
+                    && !result.ends_with('\n')
+                {
+                    result.push('\n');
+                }
+            } else {
+                tag_buf.push(b as char);
+            }
+            i += 1;
+            continue;
+        }
+        result.push(b as char);
+        i += 1;
+    }
+
+    decode_html_entities(&result).into_owned()
+}
 
 // This test is a bit goofy because it actually updates the docs/anki-schema.md file (if it needs updating).
 // This means that it will fail the first time and pass the second time.
