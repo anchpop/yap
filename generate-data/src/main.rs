@@ -34,6 +34,28 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
     dotenvy::dotenv().ok();
 
+    // Check and raise the file descriptor limit (macOS often defaults to 256)
+    unsafe {
+        let mut rl = libc::rlimit {
+            rlim_cur: 0,
+            rlim_max: 0,
+        };
+        libc::getrlimit(libc::RLIMIT_NOFILE, &mut rl);
+        println!("fd limit: soft={}, hard={}", rl.rlim_cur, rl.rlim_max);
+        if rl.rlim_cur < 65536 {
+            let new_rl = libc::rlimit {
+                rlim_cur: 65536.min(rl.rlim_max),
+                rlim_max: rl.rlim_max,
+            };
+            libc::setrlimit(libc::RLIMIT_NOFILE, &new_rl);
+            libc::getrlimit(libc::RLIMIT_NOFILE, &mut rl);
+            println!(
+                "fd limit raised to: soft={}, hard={}",
+                rl.rlim_cur, rl.rlim_max
+            );
+        }
+    }
+
     for course in COURSES {
         println!();
         println!();

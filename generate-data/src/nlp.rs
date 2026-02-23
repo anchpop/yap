@@ -186,7 +186,7 @@ pub async fn process_sentences(
                 result
             }
         })
-        .buffer_unordered(900);
+        .buffer_unordered(1500);
 
     // Write results as they come in and collect them in memory
     while let Some(result) = results.next().await {

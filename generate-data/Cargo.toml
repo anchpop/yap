@@ -38,3 +38,4 @@ lexide.workspace = true
 scraper = "0.22"
 percent-encoding = "2.3.2"
 dotenvy = "0.15.7"
+libc = "0.2"

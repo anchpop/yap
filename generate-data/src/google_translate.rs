@@ -87,7 +87,7 @@ impl GoogleTranslator {
         self.cache.insert(hash, translated.clone());
 
         // Write individual cache file with just the translation
-        std::fs::write(&cache_file, &translated)?;
+        tokio::fs::write(&cache_file, &translated).await?;
         Ok(translated)
     }
 

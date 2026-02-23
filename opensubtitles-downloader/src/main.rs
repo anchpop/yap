@@ -93,22 +93,22 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0441909",  // Volver
     "tt0245574",  // Y Tu Mamá También
     // German
-    "tt1016150",  // All Quiet on the Western Front
-    "tt0088323",  // The NeverEnding Story
-    "tt0405094",  // The Lives of Others
-    "tt1063669",  // The Wave
-    "tt0017136",  // Metropolis
-    "tt0301357",  // Good Bye, Lenin!
-    "tt0130827",  // Run Lola Run
-    "tt0082096",  // Das Boot
-    "tt0022100",  // M
-    "tt0013442",  // Nosferatu
-    "tt0119167",  // Funny Games
-    "tt2987732",  // Suck Me Shakespeer
-    "tt3042408",  // Who Am I
-    "tt0093191",  // Wings of Desire
-    "tt4226388",  // Victoria
-    "tt0068182",  // Aguirre, the Wrath of God
+    "tt1016150", // All Quiet on the Western Front
+    "tt0088323", // The NeverEnding Story
+    "tt0405094", // The Lives of Others
+    "tt1063669", // The Wave
+    "tt0017136", // Metropolis
+    "tt0301357", // Good Bye, Lenin!
+    "tt0130827", // Run Lola Run
+    "tt0082096", // Das Boot
+    "tt0022100", // M
+    "tt0013442", // Nosferatu
+    "tt0119167", // Funny Games
+    "tt2987732", // Suck Me Shakespeer
+    "tt3042408", // Who Am I
+    "tt0093191", // Wings of Desire
+    "tt4226388", // Victoria
+    "tt0068182", // Aguirre, the Wrath of God
     // Korean
     "tt0364569",  // Oldboy
     "tt5700672",  // Train to Busan
@@ -139,32 +139,32 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0109424",  // Chungking Express
     "tt0338564",  // Infernal Affairs
     // Japanese
-    "tt5311514",  // Your Name.
-    "tt0096283",  // My Neighbor Totoro
-    "tt0095327",  // Grave of the Fireflies
-    "tt0876563",  // Ponyo
-    "tt0094625",  // Akira
-    "tt0092067",  // Castle in the Sky
-    "tt0097814",  // Kiki's Delivery Service
-    "tt5323662",  // A Silent Voice
-    "tt0047478",  // Seven Samurai
-    "tt0087544",  // Nausicaä of the Valley of the Wind
-    "tt0113568",  // Ghost in the Shell
-    "tt0266308",  // Battle Royale
-    "tt0104652",  // Porco Rosso
-    "tt2013293",  // The Wind Rises
+    "tt5311514", // Your Name.
+    "tt0096283", // My Neighbor Totoro
+    "tt0095327", // Grave of the Fireflies
+    "tt0876563", // Ponyo
+    "tt0094625", // Akira
+    "tt0092067", // Castle in the Sky
+    "tt0097814", // Kiki's Delivery Service
+    "tt5323662", // A Silent Voice
+    "tt0047478", // Seven Samurai
+    "tt0087544", // Nausicaä of the Valley of the Wind
+    "tt0113568", // Ghost in the Shell
+    "tt0266308", // Battle Royale
+    "tt0104652", // Porco Rosso
+    "tt2013293", // The Wind Rises
     // Russian
-    "tt0079944",  // Stalker
-    "tt0069293",  // Solaris
-    "tt0091251",  // Come and See
-    "tt0072443",  // Mirror
-    "tt2802154",  // Leviathan
-    "tt0060107",  // Andrei Rublev
-    "tt6304162",  // Loveless
-    "tt0376968",  // The Return
-    "tt0318034",  // Russian Ark
-    "tt6537238",  // Salyut-7
-    "tt0118767",  // Brother
+    "tt0079944", // Stalker
+    "tt0069293", // Solaris
+    "tt0091251", // Come and See
+    "tt0072443", // Mirror
+    "tt2802154", // Leviathan
+    "tt0060107", // Andrei Rublev
+    "tt6304162", // Loveless
+    "tt0376968", // The Return
+    "tt0318034", // Russian Ark
+    "tt6537238", // Salyut-7
+    "tt0118767", // Brother
     // Portuguese
     "tt0317248",  // City of God
     "tt0861739",  // Elite Squad
@@ -177,19 +177,19 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt5221584",  // Aquarius
     "tt0293007",  // Carandiru
     // Italian
-    "tt0118799",  // Life Is Beautiful
-    "tt0060196",  // The Good, the Bad and the Ugly
-    "tt0064116",  // Once Upon a Time in the West
-    "tt0095765",  // Cinema Paradiso
-    "tt0058461",  // A Fistful of Dollars
-    "tt4901306",  // Perfect Strangers
-    "tt2358891",  // The Great Beauty
-    "tt0076786",  // Suspiria
-    "tt0040522",  // Bicycle Thieves
-    "tt0056801",  // 8½
-    "tt0213847",  // Malèna
-    "tt0120731",  // The Legend of 1900
-    "tt0053779",  // La Dolce Vita
+    "tt0118799", // Life Is Beautiful
+    "tt0060196", // The Good, the Bad and the Ugly
+    "tt0064116", // Once Upon a Time in the West
+    "tt0095765", // Cinema Paradiso
+    "tt0058461", // A Fistful of Dollars
+    "tt4901306", // Perfect Strangers
+    "tt2358891", // The Great Beauty
+    "tt0076786", // Suspiria
+    "tt0040522", // Bicycle Thieves
+    "tt0056801", // 8½
+    "tt0213847", // Malèna
+    "tt0120731", // The Legend of 1900
+    "tt0053779", // La Dolce Vita
 ];
 
 /// OMDB API response
@@ -736,10 +736,7 @@ async fn download_movie_subtitles(
                                     if let Err(e) = fs::write(&poster_file, &bytes) {
                                         println!("  ⚠ Failed to save poster: {e}");
                                     } else {
-                                        println!(
-                                            "  ✓ Saved poster to {}",
-                                            poster_file.display()
-                                        );
+                                        println!("  ✓ Saved poster to {}", poster_file.display());
                                     }
                                 }
                                 Err(e) => {
@@ -800,8 +797,7 @@ async fn fetch_tmdb_metadata(
                 if !poster_file.exists() {
                     if let Some(poster_path) = tmdb_data.poster_path {
                         println!("  Fetching poster image...");
-                        let poster_url =
-                            format!("https://image.tmdb.org/t/p/w500{poster_path}");
+                        let poster_url = format!("https://image.tmdb.org/t/p/w500{poster_path}");
                         match fetch_image_bytes(&opensub_client.client, &poster_url).await {
                             Ok(bytes) => {
                                 if let Err(e) = fs::write(&poster_file, &bytes) {
@@ -889,7 +885,8 @@ async fn process_movie(
     // If we got metadata from download, use it. Otherwise check existing or fetch from TMDB
     let metadata = if let Some(meta) = maybe_metadata {
         meta
-    } else if let Some(existing) = existing_metadata.get(imdb_id_str)
+    } else if let Some(existing) = existing_metadata
+        .get(imdb_id_str)
         .filter(|m| m.original_language.is_some() && m.rotten_tomatoes_score.is_some())
     {
         println!("  ✓ Using existing metadata");
@@ -1063,7 +1060,7 @@ async fn main() -> Result<()> {
                 println!("  ✗ Skipping movie with no IMDB ID: {}", attrs.title);
                 continue;
             };
-            let imdb_id_str = format!("tt{:07}", imdb_id);
+            let imdb_id_str = format!("tt{imdb_id:07}");
 
             println!(
                 "\n[Downloaded: {}/{}] {} ({})",
@@ -1153,7 +1150,8 @@ async fn main() -> Result<()> {
             );
             for imdb_id_str in &subtitle_files {
                 println!("  Processing {imdb_id_str}...");
-                if let Some(existing) = existing_metadata.get(imdb_id_str)
+                if let Some(existing) = existing_metadata
+                    .get(imdb_id_str)
                     .filter(|m| m.original_language.is_some() && m.rotten_tomatoes_score.is_some())
                 {
                     println!("  ✓ Using existing metadata");
