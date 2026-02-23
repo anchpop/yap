@@ -296,13 +296,17 @@ fn build_gram_to_sentences_index<'a>(
 ///
 /// This function:
 /// 1. Extracts multi-atom grams from the gram vocabulary
-/// 2. Finds example sentences containing each gram
+/// 2. Finds example sentences containing each gram (using cached sentences when available)
 /// 3. Generates phrasebook entries using LLM with example sentences in the prompt
+///
+/// `gram_sentences` is a persistent cache of gram -> example sentences. Missing grams
+/// will have sentences selected from the corpus and added to this map.
 pub async fn create_gram_phrasebook(
     course: Course,
     gram_frequencies: &[GramFrequencyEntry<String>],
     encoded_sentences: &[(String, SentenceGrams<Gram<String>>)],
     existing_phrase_grams: &std::collections::HashSet<Gram<String>>,
+    gram_sentences: &mut BTreeMap<String, Vec<String>>,
 ) -> anyhow::Result<Vec<(Gram<String>, PhrasebookDefinitionEntry)>> {
     let Course {
         native_language,
@@ -323,6 +327,16 @@ pub async fn create_gram_phrasebook(
         }
     }
 
+    // Populate gram_sentences for any grams not already cached
+    for gram in multi_atom_grams.keys() {
+        let gram_text = gram.to_display_string(target_language);
+        gram_sentences.entry(gram_text).or_insert_with(|| {
+            let sentences: Vec<&str> = gram_to_sentences.get(gram).cloned().unwrap_or_default();
+            let selected = sample_to_target(sentences, 5, |s: &&str| *s);
+            selected.into_iter().map(|s| s.to_owned()).collect()
+        });
+    }
+
     let count = multi_atom_grams.len();
 
     let pb = ProgressBar::new(count as u64);
@@ -337,21 +351,17 @@ pub async fn create_gram_phrasebook(
     let mut phrasebook = futures::stream::iter(multi_atom_grams.iter())
         .map(|(gram, &freq)| {
             let pb = pb.clone();
-            let gram_to_sentences = &gram_to_sentences;
             let gram_text = gram.to_display_string(target_language);
             let cost =
                 CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHT.cost().unwrap_or(0.0);
             pb.set_message(format!("{cost:.2} ({gram_text})"));
 
+            let example_sentences = gram_sentences
+                .get(&gram_text)
+                .cloned()
+                .unwrap_or_default();
+
             async move {
-                // Look up sentences containing this gram (O(1) lookup)
-                let sentences: Vec<&str> = gram_to_sentences
-                    .get(gram).cloned()
-                    .unwrap_or_default();
-
-                // Deterministically select up to 5 example sentences
-                let example_sentences = sample_to_target(sentences, 5, |s: &&str| *s);
-
                 let examples_text = if example_sentences.is_empty() {
                     String::from("(No example sentences available)")
                 } else {

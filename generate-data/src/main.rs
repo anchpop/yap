@@ -581,14 +581,48 @@ async fn main() -> anyhow::Result<()> {
         let existing_phrase_grams: std::collections::HashSet<Gram<String>> =
             seed_grams.iter().cloned().collect();
         let gram_phrasebook_file = native_specific_dir.join("gram_phrasebook.jsonl");
+        let gram_sentences_file = native_specific_dir.join("gram_sentences.jsonl");
+
+        // Load cached gram -> example sentences mapping
+        let mut gram_sentences: BTreeMap<String, Vec<String>> = if gram_sentences_file.exists() {
+            let file =
+                File::open(&gram_sentences_file).context("Failed to open gram sentences file")?;
+            BufReader::new(file)
+                .lines()
+                .filter_map(|line| {
+                    let line = line.ok()?;
+                    serde_json::from_str::<(String, Vec<String>)>(&line).ok()
+                })
+                .collect()
+        } else {
+            BTreeMap::new()
+        };
+
         let gram_phrasebook = generate_data::dict::create_gram_phrasebook(
             *course,
             &filtered_gram_frequencies,
             &encoded_sentences_with_grams,
             &existing_phrase_grams,
+            &mut gram_sentences,
         )
         .await
         .context("Failed to create gram phrasebook")?;
+
+        // Write updated gram sentences cache
+        {
+            let mut file = File::create(&gram_sentences_file)
+                .context("Failed to create gram sentences file")?;
+            for (gram_text, sentences) in &gram_sentences {
+                let json = serde_json::to_string(&(gram_text, sentences))
+                    .context("Failed to serialize gram sentences entry")?;
+                writeln!(file, "{json}").context("Failed to write gram sentences entry to file")?;
+            }
+            println!(
+                "Wrote {} gram sentence entries to {:?}",
+                gram_sentences.len(),
+                gram_sentences_file
+            );
+        }
         {
             let mut file = File::create(&gram_phrasebook_file)
                 .context("Failed to create gram phrasebook file")?;
