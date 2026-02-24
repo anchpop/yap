@@ -24,7 +24,6 @@ struct PhraseDetectionData {
 type PhraseDetectionDataMap = BTreeMap<Gram<String>, PhraseDetectionData>;
 
 struct PhraseData {
-    tokens: Option<Vec<lexide::Token>>, // we don't have this for grams
     entry: PhrasebookDefinitionEntry,
 }
 type PhraseDataMap = BTreeMap<Gram<String>, PhraseData>;
@@ -677,11 +676,9 @@ async fn main() -> anyhow::Result<()> {
                 let (atoms, _) =
                     language_utils::literals_to_atoms(literals, course.target_language);
                 let gram = Gram::from(atoms);
-                let tokens = multiword_terms_tokenizations.get(phrase).cloned();
                 map.insert(
                     gram,
                     PhraseData {
-                        tokens,
                         entry: entry.clone(),
                     },
                 );
@@ -692,7 +689,6 @@ async fn main() -> anyhow::Result<()> {
                 map.insert(
                     gram.clone(),
                     PhraseData {
-                        tokens: None,
                         entry: entry.clone(),
                     },
                 );
@@ -1328,52 +1324,45 @@ async fn main() -> anyhow::Result<()> {
                 .map(|(text, grams)| (text.as_str(), grams))
                 .collect();
 
-        #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-        enum SentenceWordFreq {
-            Present(u32),
-            NotPresent,
+        // Precompute sort keys to avoid allocating per comparison.
+        // Key: (least_common, 2nd_least, 3rd_least) frequency.
+        // Option<u32> where None sorts after Some (so sentences without grams go last).
+        type SortKey = std::cmp::Reverse<(Option<u32>, Option<u32>, Option<u32>)>;
+        let mut sort_keys: Vec<SortKey> = target_language_sentences
+            .iter()
+            .map(|sentence| {
+                if let Some(sg) = sentence_to_grams.get(sentence.as_str()) {
+                    let mut freqs: Vec<u32> = sg
+                        .grams
+                        .iter()
+                        .filter_map(|g| match g {
+                            SentenceGram::Learnable(gram) => gram_frequency_map.get(gram).copied(),
+                            SentenceGram::Obvious(_) => None,
+                        })
+                        .collect();
+                    freqs.sort_unstable();
+                    let mut it = freqs.into_iter();
+                    std::cmp::Reverse((it.next(), it.next(), it.next()))
+                } else {
+                    eprintln!("No encoded grams found for sentence: {sentence}");
+                    std::cmp::Reverse((None, None, None))
+                }
+            })
+            .collect();
+
+        // Sort both arrays together using precomputed keys
+        {
+            let mut indices: Vec<usize> = (0..target_language_sentences.len()).collect();
+            indices.sort_by_key(|&i| sort_keys[i]);
+            let sorted_sentences: Vec<String> = indices
+                .iter()
+                .map(|&i| std::mem::take(&mut target_language_sentences[i]))
+                .collect();
+            let sorted_keys: Vec<SortKey> = indices.iter().map(|&i| sort_keys[i]).collect();
+            target_language_sentences = sorted_sentences;
+            sort_keys = sorted_keys;
         }
-
-        // Sort target_language_sentences by the frequency of their least common gram
-        target_language_sentences.sort_by_key(|sentence| {
-            if let Some(sg) = sentence_to_grams.get(sentence.as_str()) {
-                // Find the three least common gram frequencies in the sentence
-                let mut freqs: Vec<_> = sg
-                    .grams
-                    .iter()
-                    .filter_map(|g| match g {
-                        SentenceGram::Learnable(gram) => gram_frequency_map.get(gram).copied(),
-                        SentenceGram::Obvious(_) => None,
-                    })
-                    .collect();
-                freqs.sort_unstable();
-
-                let mut freq_iter = freqs.into_iter();
-                let least_common = freq_iter
-                    .next()
-                    .map(SentenceWordFreq::Present)
-                    .unwrap_or(SentenceWordFreq::NotPresent);
-                let second_least_common = freq_iter
-                    .next()
-                    .map(SentenceWordFreq::Present)
-                    .unwrap_or(SentenceWordFreq::NotPresent);
-                let third_least_common = freq_iter
-                    .next()
-                    .map(SentenceWordFreq::Present)
-                    .unwrap_or(SentenceWordFreq::NotPresent);
-
-                // Return reversed to sort descending (highest frequency first)
-                std::cmp::Reverse((least_common, second_least_common, third_least_common))
-            } else {
-                // If no encoded grams found, put at the end
-                eprintln!("No encoded grams found for sentence: {sentence}");
-                std::cmp::Reverse((
-                    SentenceWordFreq::NotPresent,
-                    SentenceWordFreq::NotPresent,
-                    SentenceWordFreq::NotPresent,
-                ))
-            }
-        });
+        drop(sort_keys);
 
         // Load movie metadata and subtitles
         let source_data_path = std::path::PathBuf::from(format!(
