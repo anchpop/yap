@@ -71,16 +71,15 @@ fn strip_html(input: &str) -> String {
                     }
                     _ => {
                         // Check for numeric entities like &#39;
-                        if let Some(num_str) = entity.strip_prefix('#') {
-                            if let Ok(code) = num_str.parse::<u32>()
-                                && let Some(c) = char::from_u32(code)
-                            {
-                                result.push(c);
-                                for _ in 0..entity.len() + 1 {
-                                    chars.next();
-                                }
-                                continue;
+                        if let Some(num_str) = entity.strip_prefix('#')
+                            && let Ok(code) = num_str.parse::<u32>()
+                            && let Some(c) = char::from_u32(code)
+                        {
+                            result.push(c);
+                            for _ in 0..entity.len() + 1 {
+                                chars.next();
                             }
+                            continue;
                         }
                         result.push('&');
                     }

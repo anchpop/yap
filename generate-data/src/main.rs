@@ -1324,45 +1324,25 @@ async fn main() -> anyhow::Result<()> {
                 .map(|(text, grams)| (text.as_str(), grams))
                 .collect();
 
-        // Precompute sort keys to avoid allocating per comparison.
-        // Key: (least_common, 2nd_least, 3rd_least) frequency.
-        // Option<u32> where None sorts after Some (so sentences without grams go last).
-        type SortKey = std::cmp::Reverse<(Option<u32>, Option<u32>, Option<u32>)>;
-        let mut sort_keys: Vec<SortKey> = target_language_sentences
-            .iter()
-            .map(|sentence| {
-                if let Some(sg) = sentence_to_grams.get(sentence.as_str()) {
-                    let mut freqs: Vec<u32> = sg
-                        .grams
-                        .iter()
-                        .filter_map(|g| match g {
-                            SentenceGram::Learnable(gram) => gram_frequency_map.get(gram).copied(),
-                            SentenceGram::Obvious(_) => None,
-                        })
-                        .collect();
-                    freqs.sort_unstable();
-                    let mut it = freqs.into_iter();
-                    std::cmp::Reverse((it.next(), it.next(), it.next()))
-                } else {
-                    eprintln!("No encoded grams found for sentence: {sentence}");
-                    std::cmp::Reverse((None, None, None))
-                }
-            })
-            .collect();
-
-        // Sort both arrays together using precomputed keys
-        {
-            let mut indices: Vec<usize> = (0..target_language_sentences.len()).collect();
-            indices.sort_by_key(|&i| sort_keys[i]);
-            let sorted_sentences: Vec<String> = indices
-                .iter()
-                .map(|&i| std::mem::take(&mut target_language_sentences[i]))
-                .collect();
-            let sorted_keys: Vec<SortKey> = indices.iter().map(|&i| sort_keys[i]).collect();
-            target_language_sentences = sorted_sentences;
-            sort_keys = sorted_keys;
-        }
-        drop(sort_keys);
+        // Sort target_language_sentences by the frequency of their least common gram
+        target_language_sentences.sort_by_cached_key(|sentence| {
+            if let Some(sg) = sentence_to_grams.get(sentence.as_str()) {
+                let mut freqs: Vec<u32> = sg
+                    .grams
+                    .iter()
+                    .filter_map(|g| match g {
+                        SentenceGram::Learnable(gram) => gram_frequency_map.get(gram).copied(),
+                        SentenceGram::Obvious(_) => None,
+                    })
+                    .collect();
+                freqs.sort_unstable();
+                let mut it = freqs.into_iter();
+                std::cmp::Reverse((it.next(), it.next(), it.next()))
+            } else {
+                eprintln!("No encoded grams found for sentence: {sentence}");
+                std::cmp::Reverse((None, None, None))
+            }
+        });
 
         // Load movie metadata and subtitles
         let source_data_path = std::path::PathBuf::from(format!(
