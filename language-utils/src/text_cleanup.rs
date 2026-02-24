@@ -207,11 +207,14 @@ fn levenshtein_distance(a: &str, b: &str) -> usize {
 /// Language-specific:
 /// - French: Fixes spacing before high punctuation marks (re-inserts thin nbsp)
 pub fn cleanup_sentence(sentence: String, language: Language) -> String {
-    // Trim all unicode whitespace from both ends
-    let trimmed = sentence.trim();
-
-    // Normalize non-breaking spaces to regular spaces
-    let normalized = trimmed.replace('\u{00A0}', " ").replace('\u{202F}', " ");
+    // Normalize all unicode whitespace to regular spaces and collapse runs.
+    // This handles: nbsp (U+00A0), thin nbsp (U+202F), thin space (U+2009),
+    // and any other char where char::is_whitespace() is true.
+    let normalized: String = sentence
+        .split(|c: char| c.is_whitespace())
+        .filter(|s| !s.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ");
 
     // Apply language-specific cleanup
     match language {
@@ -370,6 +373,57 @@ mod tests {
         let input = "Hello!".to_string();
         let expected = "Hello!";
         assert_eq!(cleanup_sentence(input, Language::English), expected);
+    }
+
+    // Tests from real generate-data warnings
+    #[test]
+    fn test_cleanup_guillemets_with_nbsp() {
+        // « and » in French use nbsp around them — should normalize to regular spaces
+        let input = "Tu as dit \u{ab}\u{a0}bonjour\u{a0}\u{bb} ?".to_string();
+        assert_eq!(
+            cleanup_sentence(input, Language::French),
+            "Tu as dit \u{ab} bonjour \u{bb}\u{202F}?"
+        );
+    }
+
+    #[test]
+    fn test_cleanup_multiple_spaces_before_question_mark() {
+        // Multiple nbsp/spaces before ? should collapse to single thin nbsp
+        let input = "Voulez-vous coucher avec moi\u{a0}\u{202f}?".to_string();
+        assert_eq!(
+            cleanup_sentence(input, Language::French),
+            "Voulez-vous coucher avec moi\u{202F}?"
+        );
+    }
+
+    #[test]
+    fn test_cleanup_thin_space_u2009() {
+        // U+2009 thin space should be normalized like other unicode whitespace
+        let input = "Est-ce que tu fumes ici\u{2009}?".to_string();
+        assert_eq!(
+            cleanup_sentence(input, Language::French),
+            "Est-ce que tu fumes ici\u{202F}?"
+        );
+    }
+
+    #[test]
+    fn test_cleanup_collapses_multiple_spaces() {
+        // Multiple consecutive spaces should collapse to one
+        let input = "Bonjour  le   monde.".to_string();
+        assert_eq!(
+            cleanup_sentence(input, Language::French),
+            "Bonjour le monde."
+        );
+    }
+
+    #[test]
+    fn test_cleanup_mixed_unicode_whitespace_before_punct() {
+        // Mix of thin space + nbsp + regular space before ? should all collapse
+        let input = "Vraiment\u{2009}\u{a0} ?".to_string();
+        assert_eq!(
+            cleanup_sentence(input, Language::French),
+            "Vraiment\u{202F}?"
+        );
     }
 
     #[test]
