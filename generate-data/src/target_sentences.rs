@@ -1,8 +1,7 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 use anyhow::Context;
-use indexmap::IndexSet;
 use language_utils::{Course, Language, SentenceSource};
 use serde::Deserialize;
 
@@ -127,27 +126,21 @@ pub fn get_target_sentences(
         .chain(manual_sentences_iter)
         .collect();
 
-    // Use IndexSet to deduplicate by target sentence while preserving order
+    // Deduplicate by target sentence while preserving order
     // When there are duplicates, prefer entries with translations and merge sources
-    let mut seen_targets: IndexSet<String> = IndexSet::new();
     let mut result: Vec<(String, Option<String>, SentenceSource)> = Vec::new();
-    let mut target_to_index: std::collections::HashMap<String, usize> =
-        std::collections::HashMap::new();
+    let mut target_to_index: HashMap<String, usize> = HashMap::new();
 
     for (target, native, source) in all_sentences {
         if let Some(&existing_index) = target_to_index.get(&target) {
-            // If we already have this target sentence:
-            // 1. Merge the sources
             result[existing_index].2.merge(&source);
-            // 2. Update translation if the existing entry has no translation and this one does
             if result[existing_index].1.is_none() && native.is_some() {
                 result[existing_index].1 = native;
             }
-        } else if seen_targets.insert(target.clone()) {
-            // New target sentence
+        } else {
             let index = result.len();
-            result.push((target.clone(), native, source));
-            target_to_index.insert(target, index);
+            target_to_index.insert(target.clone(), index);
+            result.push((target, native, source));
         }
     }
 

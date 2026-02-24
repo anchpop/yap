@@ -199,12 +199,24 @@ fn levenshtein_distance(a: &str, b: &str) -> usize {
 
 /// Clean up text according to language-specific rules
 ///
-/// Currently supported languages:
-/// - French: Fixes spacing before high punctuation marks
+/// For all languages:
+/// - Trims leading/trailing whitespace (including unicode whitespace like nbsp)
+/// - Normalizes non-breaking spaces (U+00A0) and thin non-breaking spaces (U+202F)
+///   between words to regular spaces
+///
+/// Language-specific:
+/// - French: Fixes spacing before high punctuation marks (re-inserts thin nbsp)
 pub fn cleanup_sentence(sentence: String, language: Language) -> String {
+    // Trim all unicode whitespace from both ends
+    let trimmed = sentence.trim();
+
+    // Normalize non-breaking spaces to regular spaces
+    let normalized = trimmed.replace('\u{00A0}', " ").replace('\u{202F}', " ");
+
+    // Apply language-specific cleanup
     match language {
-        Language::French => cleanup_french_sentence(sentence),
-        _ => sentence,
+        Language::French => cleanup_french_sentence(normalized),
+        _ => normalized,
     }
 }
 
@@ -286,6 +298,30 @@ mod tests {
         let input = "Bonjour\u{00A0}!".to_string();
         let expected = "Bonjour\u{202F}!".to_string();
         assert_eq!(cleanup_french_sentence(input), expected);
+    }
+
+    #[test]
+    fn test_cleanup_trims_unicode_whitespace() {
+        // Leading/trailing nbsp and regular spaces should be trimmed
+        let input = " \u{00A0}Bonjour. ".to_string();
+        assert_eq!(cleanup_sentence(input, Language::French), "Bonjour.");
+    }
+
+    #[test]
+    fn test_cleanup_normalizes_nbsp_between_words() {
+        // Non-breaking spaces between words should become regular spaces
+        // (except before French high punctuation, which gets thin nbsp)
+        let input = "Bonjour\u{00A0}le\u{00A0}monde !".to_string();
+        assert_eq!(
+            cleanup_sentence(input, Language::French),
+            "Bonjour le monde\u{202F}!"
+        );
+    }
+
+    #[test]
+    fn test_cleanup_normalizes_thin_nbsp_between_words() {
+        let input = "Ça\u{202F}va ?".to_string();
+        assert_eq!(cleanup_sentence(input, Language::French), "Ça va\u{202F}?");
     }
 
     #[test]

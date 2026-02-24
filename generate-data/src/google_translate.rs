@@ -122,6 +122,11 @@ impl GoogleTranslator {
             }
         }
 
+        // Skip rewriting the master cache if nothing changed
+        if files_to_delete.is_empty() {
+            return;
+        }
+
         // Write the consolidated cache to the master file
         // Convert to BTreeMap for deterministic serialization order
         let sorted_cache: std::collections::BTreeMap<_, _> = self
