@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2029816
-Total errors: 2524
+Total predictions: 2029796
+Total errors: 2518
 Accuracy: 99.88%
 
 ## Error Patterns (sorted by frequency)
@@ -4969,12 +4969,6 @@ Accuracy: 99.88%
 - Examples:
   - Seduto !
 
-### "Sei" + " " (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sei un pazzo a mettere a rischio la tua vita.
-
 ### "Senape" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8899,12 +8893,6 @@ Accuracy: 99.88%
 - Examples:
   - Quanti abiti ti porti ?
 
-### "possano" + " cambiare" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Si dice che i gatti possano cambiare aspetto.
-
 ### "posto" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10885,12 +10873,6 @@ Accuracy: 99.88%
 - Examples:
   - Con latte e zucchero ?
 
-### " " + "un" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sei un pazzo a mettere a rischio la tua vita.
-
 ### "È" + "Jorge" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -10908,18 +10890,6 @@ Accuracy: 99.88%
 - Actual: None
 - Examples:
   - Èuna buona idea.
-
-### "È" + " tornato" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - È tornato a casa dopo essere stato via per dieci mesi.
-
-### "È" + " tuo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - È tuo quello?
 
 ### "è" + "Vandré" (1 occurrences)
 - Predicted: Space
@@ -10944,12 +10914,6 @@ Accuracy: 99.88%
 - Actual: None
 - Examples:
   - Non serve, ho già fatto, ètutto a posto.
-
-### "è" + " attivo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Lui è attivo nonostante sia molto vecchio.
 
 ### "​​" + "Santo Padre" (1 occurrences)
 - Predicted: Space

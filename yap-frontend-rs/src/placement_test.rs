@@ -248,12 +248,10 @@ impl Deck {
                 .language_pack
                 .heteronym_to_grams
                 .get(&heteronym)
+                && let Some(gram) = grams.first()
+                && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
             {
-                if let Some(gram) = grams.first() {
-                    if let Some(freq) = self.context.language_pack.gram_frequencies.get(gram) {
-                        points.push(Point::new(freq.ln_frequency(), 1.0));
-                    }
-                }
+                points.push(Point::new(freq.ln_frequency(), 1.0));
             }
         }
 
@@ -264,12 +262,10 @@ impl Deck {
                 .language_pack
                 .heteronym_to_grams
                 .get(&heteronym)
+                && let Some(gram) = grams.first()
+                && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
             {
-                if let Some(gram) = grams.first() {
-                    if let Some(freq) = self.context.language_pack.gram_frequencies.get(gram) {
-                        points.push(Point::new(freq.ln_frequency(), 0.0));
-                    }
-                }
+                points.push(Point::new(freq.ln_frequency(), 0.0));
             }
         }
 

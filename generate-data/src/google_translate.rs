@@ -108,15 +108,15 @@ impl GoogleTranslator {
                 }
 
                 // Extract hash from filename
-                if let Some(filename) = path.file_stem().and_then(|s| s.to_str()) {
-                    if let Ok(hash) = filename.parse::<u64>() {
-                        // Read the translation from the file
-                        if let Ok(translation) = std::fs::read_to_string(&path) {
-                            // Add to consolidated cache if not already present
-                            self.cache.entry(hash).or_insert_with(|| translation);
-                            // Mark this file for deletion
-                            files_to_delete.push(path);
-                        }
+                if let Some(filename) = path.file_stem().and_then(|s| s.to_str())
+                    && let Ok(hash) = filename.parse::<u64>()
+                {
+                    // Read the translation from the file
+                    if let Ok(translation) = std::fs::read_to_string(&path) {
+                        // Add to consolidated cache if not already present
+                        self.cache.entry(hash).or_insert_with(|| translation);
+                        // Mark this file for deletion
+                        files_to_delete.push(path);
                     }
                 }
             }
@@ -135,12 +135,12 @@ impl GoogleTranslator {
             .map(|entry| (*entry.key(), entry.value().clone()))
             .collect();
 
-        if let Ok(json) = serde_json::to_string_pretty(&sorted_cache) {
-            if std::fs::write(&self.master_cache_file, json).is_ok() {
-                // Only delete individual files if the master cache was written successfully
-                for file in files_to_delete {
-                    let _ = std::fs::remove_file(file);
-                }
+        if let Ok(json) = serde_json::to_string_pretty(&sorted_cache)
+            && std::fs::write(&self.master_cache_file, json).is_ok()
+        {
+            // Only delete individual files if the master cache was written successfully
+            for file in files_to_delete {
+                let _ = std::fs::remove_file(file);
             }
         }
     }

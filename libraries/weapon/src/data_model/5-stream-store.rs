@@ -94,17 +94,16 @@ impl<
         for (device_id, events_set) in self.events() {
             let synced_count = sync_state.get(device_id).copied().unwrap_or(0);
 
-            if events_set.len() > synced_count {
-                if let Some(ev) = events_set
+            if events_set.len() > synced_count
+                && let Some(ev) = events_set
                     .iter()
                     .find(|e| e.within_device_events_index == synced_count)
-                {
-                    let candidate = ev.timestamp;
-                    earliest = match earliest {
-                        None => Some(candidate),
-                        Some(current) => Some(current.min(candidate)),
-                    };
-                }
+            {
+                let candidate = ev.timestamp;
+                earliest = match earliest {
+                    None => Some(candidate),
+                    Some(current) => Some(current.min(candidate)),
+                };
             }
         }
         earliest

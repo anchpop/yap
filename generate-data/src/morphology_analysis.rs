@@ -494,10 +494,10 @@ pub mod wiktionary_morphology {
             // Step 1: Extract all verb lemmas from frequencies (including auxiliaries)
             let mut verb_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym() {
-                    if heteronym.pos == PartOfSpeech::Verb || heteronym.pos == PartOfSpeech::Aux {
-                        verb_lemmas.insert(heteronym.lemma.clone());
-                    }
+                if let Some(heteronym) = entry.gram.heteronym()
+                    && (heteronym.pos == PartOfSpeech::Verb || heteronym.pos == PartOfSpeech::Aux)
+                {
+                    verb_lemmas.insert(heteronym.lemma.clone());
                 }
             }
 
@@ -817,10 +817,10 @@ pub mod wiktionary_morphology {
             // Step 1: Extract all verb lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym() {
-                    if heteronym.pos == PartOfSpeech::Verb {
-                        verb_lemmas.insert(heteronym.lemma.clone());
-                    }
+                if let Some(heteronym) = entry.gram.heteronym()
+                    && heteronym.pos == PartOfSpeech::Verb
+                {
+                    verb_lemmas.insert(heteronym.lemma.clone());
                 }
             }
 
@@ -1105,10 +1105,10 @@ pub mod wiktionary_morphology {
             // Step 1: Extract all verb lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym() {
-                    if heteronym.pos == PartOfSpeech::Verb {
-                        verb_lemmas.insert(heteronym.lemma.clone());
-                    }
+                if let Some(heteronym) = entry.gram.heteronym()
+                    && heteronym.pos == PartOfSpeech::Verb
+                {
+                    verb_lemmas.insert(heteronym.lemma.clone());
                 }
             }
 
@@ -1397,10 +1397,10 @@ pub mod wiktionary_morphology {
             // Step 1: Extract all verb lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym() {
-                    if heteronym.pos == PartOfSpeech::Verb {
-                        verb_lemmas.insert(heteronym.lemma.clone());
-                    }
+                if let Some(heteronym) = entry.gram.heteronym()
+                    && heteronym.pos == PartOfSpeech::Verb
+                {
+                    verb_lemmas.insert(heteronym.lemma.clone());
                 }
             }
 

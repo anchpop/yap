@@ -102,10 +102,10 @@ impl LanguagePack {
         }
 
         // Capitalize first word if needed
-        if sentence_grams.capitalize_first {
-            if let Some(first_word) = all_words.first_mut() {
-                first_word.text = crate::capitalize_first_letter(&first_word.text);
-            }
+        if sentence_grams.capitalize_first
+            && let Some(first_word) = all_words.first_mut()
+        {
+            first_word.text = crate::capitalize_first_letter(&first_word.text);
         }
 
         // Build literals with whitespace prediction
@@ -331,10 +331,10 @@ impl LanguagePack {
             let mut map = IndexMap::new();
             for entry in &language_data.gram_frequencies {
                 let interned_gram = entry.gram.get_interned(&rodeo);
-                if let Some(interned_gram) = interned_gram {
-                    if let Some(gram_spur) = gram_rodeo.get(&interned_gram) {
-                        map.insert(gram_spur, Frequency { count: entry.count });
-                    }
+                if let Some(interned_gram) = interned_gram
+                    && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
+                {
+                    map.insert(gram_spur, Frequency { count: entry.count });
                 }
             }
             map
@@ -364,10 +364,10 @@ impl LanguagePack {
             for (gram, entry) in &language_data.phrasebook {
                 let interned_gram: Option<Gram<Spur>> =
                     gram.iter().map(|atom| atom.get_interned(&rodeo)).collect();
-                if let Some(interned_gram) = interned_gram {
-                    if let Some(gram_spur) = gram_rodeo.get(&interned_gram) {
-                        map.insert(gram_spur, GramDefinition::Phrasebook(entry.clone()));
-                    }
+                if let Some(interned_gram) = interned_gram
+                    && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
+                {
+                    map.insert(gram_spur, GramDefinition::Phrasebook(entry.clone()));
                 }
             }
 
@@ -381,12 +381,11 @@ impl LanguagePack {
             for (gram_spur, freq) in gram_frequencies.iter() {
                 let gram = gram_rodeo.resolve(gram_spur);
                 // Check if this gram is composed of a single heteronym atom
-                if gram.len() == 1 {
-                    if let Some(Atom::Tok(word)) = gram.iter().next() {
-                        if let WordType::Heteronym(heteronym) = &word.word_type {
-                            map.entry(*heteronym).or_default().push((*gram_spur, *freq));
-                        }
-                    }
+                if gram.len() == 1
+                    && let Some(Atom::Tok(word)) = gram.iter().next()
+                    && let WordType::Heteronym(heteronym) = &word.word_type
+                {
+                    map.entry(*heteronym).or_default().push((*gram_spur, *freq));
                 }
             }
             // Sort each list by frequency (highest first) and extract just the spurs
@@ -431,10 +430,10 @@ impl LanguagePack {
                     let mut map: IndexMap<SpurGram, Frequency> = IndexMap::new();
                     for entry in freqs {
                         let interned_gram = entry.gram.get_interned(&rodeo);
-                        if let Some(interned_gram) = interned_gram {
-                            if let Some(gram_spur) = gram_rodeo.get(&interned_gram) {
-                                map.insert(gram_spur, Frequency { count: entry.count });
-                            }
+                        if let Some(interned_gram) = interned_gram
+                            && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
+                        {
+                            map.insert(gram_spur, Frequency { count: entry.count });
                         }
                     }
                     (movie_id.clone(), map)

@@ -113,11 +113,11 @@ impl<K: Eq + Hash + Clone, T: Ord + Clone> EventStreamStore<K, T> {
             let mut min_val = None;
 
             for (idx, iter) in iters.iter_mut().enumerate() {
-                if let Some(val) = iter.peek() {
-                    if min_val.is_none() || val < min_val.unwrap() {
-                        min_idx = Some(idx);
-                        min_val = Some(val);
-                    }
+                if let Some(val) = iter.peek()
+                    && (min_val.is_none() || val < min_val.unwrap())
+                {
+                    min_idx = Some(idx);
+                    min_val = Some(val);
                 }
             }
 

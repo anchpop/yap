@@ -373,14 +373,14 @@ impl ReviewInfo {
             target_language_literals
                 .iter()
                 .filter_map(|literal| {
-                    if let language_utils::WordType::Other(other) = &literal.word.word_type {
-                        if other.other_tag == language_utils::OtherWordType::Propn {
-                            let text_spur = language_pack.string_rodeo.get(&literal.word.text)?;
-                            return language_pack
-                                .proper_noun_definitions
-                                .get(&text_spur)
-                                .map(|def| (literal.word.text.clone(), def.clone()));
-                        }
+                    if let language_utils::WordType::Other(other) = &literal.word.word_type
+                        && other.other_tag == language_utils::OtherWordType::Propn
+                    {
+                        let text_spur = language_pack.string_rodeo.get(&literal.word.text)?;
+                        return language_pack
+                            .proper_noun_definitions
+                            .get(&text_spur)
+                            .map(|def| (literal.word.text.clone(), def.clone()));
                     }
                     None
                 })
@@ -430,10 +430,10 @@ impl ReviewInfo {
         gram: SpurGram,
     ) -> Challenge<Gram<String>> {
         // If not new, try to create a translation challenge
-        if !ctx.is_new {
-            if let Some(challenge) = self.translation_challenge(deck, gram) {
-                return challenge;
-            }
+        if !ctx.is_new
+            && let Some(challenge) = self.translation_challenge(deck, gram)
+        {
+            return challenge;
         }
 
         // Fall back to flashcard

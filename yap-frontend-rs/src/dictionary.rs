@@ -70,15 +70,15 @@ impl Deck {
                             .atoms()
                             .iter()
                             .find_map(|atom| {
-                                if let Atom::Tok(word) = atom {
-                                    if let WordType::Heteronym(h) = &word.word_type {
-                                        let morph = dict_def.morphology.first().cloned();
-                                        let word_text = string_rodeo.resolve(&h.word);
-                                        let prefix = morph.as_ref().and_then(|m| {
-                                            m.get_prefix(word_text, h.pos, target_language)
-                                        });
-                                        return Some((prefix, morph));
-                                    }
+                                if let Atom::Tok(word) = atom
+                                    && let WordType::Heteronym(h) = &word.word_type
+                                {
+                                    let morph = dict_def.morphology.first().cloned();
+                                    let word_text = string_rodeo.resolve(&h.word);
+                                    let prefix = morph.as_ref().and_then(|m| {
+                                        m.get_prefix(word_text, h.pos, target_language)
+                                    });
+                                    return Some((prefix, morph));
                                 }
                                 None
                             })

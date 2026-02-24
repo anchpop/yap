@@ -834,10 +834,10 @@ async fn main() -> anyhow::Result<()> {
                 let gram = &entry.gram;
                 if gram.len() == 1 {
                     // Single-atom gram: check if the heteronym is in gram_dictionary
-                    if let Some(Atom::Tok(word)) = gram.first() {
-                        if let language_utils::WordType::Heteronym(heteronym) = &word.word_type {
-                            return gram_dictionary_set.contains(heteronym);
-                        }
+                    if let Some(Atom::Tok(word)) = gram.first()
+                        && let language_utils::WordType::Heteronym(heteronym) = &word.word_type
+                    {
+                        return gram_dictionary_set.contains(heteronym);
                     }
                     false
                 } else {
@@ -1263,10 +1263,10 @@ async fn main() -> anyhow::Result<()> {
                     .map(|(_, sg)| sg)
                 {
                     for gram in &sg.grams {
-                        if let SentenceGram::Learnable(g) = gram {
-                            if !defined_gram_set.contains(g) {
-                                missing_grams.push(g.to_display_string(course.target_language));
-                            }
+                        if let SentenceGram::Learnable(g) = gram
+                            && !defined_gram_set.contains(g)
+                        {
+                            missing_grams.push(g.to_display_string(course.target_language));
                         }
                     }
                 }
@@ -1389,10 +1389,10 @@ async fn main() -> anyhow::Result<()> {
                     // Convert to full MovieMetadata and load poster bytes from separate file
                     let mut movie: language_utils::MovieMetadata = basic.into();
                     let poster_path = posters_dir.join(format!("{}.jpg", movie.id));
-                    if poster_path.exists() {
-                        if let Ok(bytes) = std::fs::read(&poster_path) {
-                            movie.poster_bytes = Some(bytes);
-                        }
+                    if poster_path.exists()
+                        && let Ok(bytes) = std::fs::read(&poster_path)
+                    {
+                        movie.poster_bytes = Some(bytes);
                     }
 
                     movies.insert(movie.id.clone(), movie);
@@ -1443,12 +1443,11 @@ async fn main() -> anyhow::Result<()> {
                             .filter(|entry| {
                                 let gram = &entry.gram;
                                 if gram.len() == 1 {
-                                    if let Some(Atom::Tok(word)) = gram.first() {
-                                        if let language_utils::WordType::Heteronym(heteronym) =
+                                    if let Some(Atom::Tok(word)) = gram.first()
+                                        && let language_utils::WordType::Heteronym(heteronym) =
                                             &word.word_type
-                                        {
-                                            return gram_dictionary_set.contains(heteronym);
-                                        }
+                                    {
+                                        return gram_dictionary_set.contains(heteronym);
                                     }
                                     false
                                 } else {

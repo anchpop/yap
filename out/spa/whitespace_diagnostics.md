@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2138342
-Total errors: 639
+Total predictions: 2138370
+Total errors: 637
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -2037,12 +2037,6 @@ Accuracy: 99.97%
 - Examples:
   - Cuantos vasos de jugo se tomó ella ?
 
-### "en" + " raya" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Tom no gana nunca al tres en raya.
-
 ### "enamorados" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2762,12 +2756,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Eres una 'turista'.
-
-### "un" + " misógino" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Eso me hace sonar como un misógino.
 
 ### "va" + "'" (1 occurrences)
 - Predicted: Space

@@ -1,14 +1,14 @@
-{"count":9445,"disambiguation_key":3263364519,"gram":[{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}}]}
+{"count":9446,"disambiguation_key":3263364519,"gram":[{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}}]}
 {"count":8669,"disambiguation_key":1367281294,"gram":[{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}}]}
 {"count":8441,"disambiguation_key":4120534469,"gram":[{"Tok":{"text":"e","word_type":{"type":"Heteronym","word":"e","lemma":"e","pos":"CCONJ"}}}]}
-{"count":7856,"disambiguation_key":136543707,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
+{"count":7855,"disambiguation_key":136543707,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":6189,"disambiguation_key":1950980908,"gram":[{"Tok":{"text":"il","word_type":{"type":"Heteronym","word":"il","lemma":"il","pos":"DET"}}}]}
 {"count":6114,"disambiguation_key":578158932,"gram":[{"Tok":{"text":"non","word_type":{"type":"Heteronym","word":"non","lemma":"non","pos":"ADV"}}}]}
 {"count":5457,"disambiguation_key":2852303249,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"il","pos":"DET"}}},{"Tok":{"text":"suoi","word_type":{"type":"Heteronym","word":"suoi","lemma":"suo","pos":"PRON"}}}]}
 {"count":5455,"disambiguation_key":365698279,"gram":[{"Tok":{"text":"le","word_type":{"type":"Heteronym","word":"le","lemma":"il","pos":"DET"}}},{"Tok":{"text":"sue","word_type":{"type":"Heteronym","word":"sue","lemma":"suo","pos":"PRON"}}}]}
 {"count":5096,"disambiguation_key":3540353618,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}}]}
 {"count":4642,"disambiguation_key":4042717653,"gram":[{"Tok":{"text":"sono","word_type":{"type":"Heteronym","word":"sono","lemma":"essere","pos":"AUX"}}}]}
-{"count":4607,"disambiguation_key":632149940,"gram":[{"Tok":{"text":"per","word_type":{"type":"Heteronym","word":"per","lemma":"per","pos":"ADP"}}}]}
+{"count":4608,"disambiguation_key":632149940,"gram":[{"Tok":{"text":"per","word_type":{"type":"Heteronym","word":"per","lemma":"per","pos":"ADP"}}}]}
 {"count":3892,"disambiguation_key":1904959810,"gram":[{"Tok":{"text":"mi","word_type":{"type":"Heteronym","word":"mi","lemma":"mi","pos":"PRON"}}}]}
 {"count":3699,"disambiguation_key":788088164,"gram":[{"Tok":{"text":"io","word_type":{"type":"Heteronym","word":"io","lemma":"io","pos":"PRON"}}}]}
 {"count":3646,"disambiguation_key":1581124864,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}}]}
@@ -17,7 +17,7 @@
 {"count":3228,"disambiguation_key":4080753658,"gram":[{"Tok":{"text":"lei","word_type":{"type":"Heteronym","word":"lei","lemma":"lei","pos":"PRON"}}}]}
 {"count":2966,"disambiguation_key":1550775959,"gram":[{"Tok":{"text":"qui","word_type":{"type":"Heteronym","word":"qui","lemma":"qui","pos":"ADV"}}}]}
 {"count":2880,"disambiguation_key":2065753102,"gram":[{"Tok":{"text":"lo","word_type":{"type":"Heteronym","word":"lo","lemma":"lo","pos":"PRON"}}}]}
-{"count":2874,"disambiguation_key":1116358978,"gram":[{"Tok":{"text":"lui","word_type":{"type":"Heteronym","word":"lui","lemma":"lui","pos":"PRON"}}}]}
+{"count":2875,"disambiguation_key":1116358978,"gram":[{"Tok":{"text":"lui","word_type":{"type":"Heteronym","word":"lui","lemma":"lui","pos":"PRON"}}}]}
 {"count":2778,"disambiguation_key":4284751728,"gram":[{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}}]}
 {"count":2534,"disambiguation_key":1345433354,"gram":[{"Tok":{"text":"perché","word_type":{"type":"Heteronym","word":"perché","lemma":"perché","pos":"ADV"}}}]}
 {"count":2533,"disambiguation_key":2398047732,"gram":[{"Tok":{"text":"con","word_type":{"type":"Heteronym","word":"con","lemma":"con","pos":"ADP"}}}]}
@@ -33,7 +33,7 @@
 {"count":1917,"disambiguation_key":3822733816,"gram":[{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"PRON"}}}]}
 {"count":1869,"disambiguation_key":3818878466,"gram":[{"Tok":{"text":"ora","word_type":{"type":"Heteronym","word":"ora","lemma":"ora","pos":"ADV"}}}]}
 {"count":1868,"disambiguation_key":3005306616,"gram":[{"Tok":{"text":"cosa","word_type":{"type":"Heteronym","word":"cosa","lemma":"cosa","pos":"PRON"}}}]}
-{"count":1854,"disambiguation_key":1548559493,"gram":[{"Tok":{"text":"sei","word_type":{"type":"Heteronym","word":"sei","lemma":"essere","pos":"AUX"}}}]}
+{"count":1853,"disambiguation_key":1548559493,"gram":[{"Tok":{"text":"sei","word_type":{"type":"Heteronym","word":"sei","lemma":"essere","pos":"AUX"}}}]}
 {"count":1853,"disambiguation_key":578158932,"gram":[{"Tok":{"text":"non","word_type":{"type":"Heteronym","word":"non","lemma":"non","pos":"PART"}}}]}
 {"count":1781,"disambiguation_key":1954333463,"gram":[{"Tok":{"text":"molto","word_type":{"type":"Heteronym","word":"molto","lemma":"molto","pos":"ADV"}}}]}
 {"count":1743,"disambiguation_key":918966344,"gram":[{"Tok":{"text":"così","word_type":{"type":"Heteronym","word":"così","lemma":"così","pos":"ADV"}}}]}
@@ -99,7 +99,7 @@
 {"count":874,"disambiguation_key":870366040,"gram":[{"Tok":{"text":"ieri","word_type":{"type":"Heteronym","word":"ieri","lemma":"ieri","pos":"ADV"}}}]}
 {"count":873,"disambiguation_key":803707829,"gram":[{"Tok":{"text":"sta","word_type":{"type":"Heteronym","word":"sta","lemma":"stare","pos":"AUX"}}}]}
 {"count":867,"disambiguation_key":3179203543,"gram":[{"Tok":{"text":"qualcuno","word_type":{"type":"Heteronym","word":"qualcuno","lemma":"qualcuno","pos":"PRON"}}}]}
-{"count":864,"disambiguation_key":474038042,"gram":[{"Tok":{"text":"essere","word_type":{"type":"Heteronym","word":"essere","lemma":"essere","pos":"AUX"}}}]}
+{"count":865,"disambiguation_key":474038042,"gram":[{"Tok":{"text":"essere","word_type":{"type":"Heteronym","word":"essere","lemma":"essere","pos":"AUX"}}}]}
 {"count":858,"disambiguation_key":758049645,"gram":[{"Tok":{"text":"le","word_type":{"type":"Heteronym","word":"le","lemma":"le","pos":"PRON"}}}]}
 {"count":856,"disambiguation_key":503559561,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"casa","word_type":{"type":"Heteronym","word":"casa","lemma":"casa","pos":"NOUN"}}}]}
 {"count":856,"disambiguation_key":49090120,"gram":[{"Tok":{"text":"nel","word_type":{"type":"Heteronym","word":"nel","lemma":"in il","pos":"ADP"}}}]}
@@ -124,8 +124,8 @@
 {"count":758,"disambiguation_key":2350356299,"gram":[{"Tok":{"text":"gli","word_type":{"type":"Heteronym","word":"gli","lemma":"gli","pos":"PRON"}}}]}
 {"count":758,"disambiguation_key":1940323138,"gram":[{"Tok":{"text":"farlo","word_type":{"type":"Heteronym","word":"farlo","lemma":"fare lo","pos":"VERB"}}}]}
 {"count":747,"disambiguation_key":2169323071,"gram":[{"Tok":{"text":"avete","word_type":{"type":"Heteronym","word":"avete","lemma":"avere","pos":"AUX"}}}]}
+{"count":744,"disambiguation_key":1299638985,"gram":[{"Tok":{"text":"quello","word_type":{"type":"Heteronym","word":"quello","lemma":"quello","pos":"PRON"}}}]}
 {"count":743,"disambiguation_key":2453172789,"gram":[{"Tok":{"text":"si","word_type":{"type":"Heteronym","word":"si","lemma":"si","pos":"PRON"}}},{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}}]}
-{"count":743,"disambiguation_key":1299638985,"gram":[{"Tok":{"text":"quello","word_type":{"type":"Heteronym","word":"quello","lemma":"quello","pos":"PRON"}}}]}
 {"count":740,"disambiguation_key":290078958,"gram":[{"Tok":{"text":"andare","word_type":{"type":"Heteronym","word":"andare","lemma":"andare","pos":"VERB"}}}]}
 {"count":738,"disambiguation_key":357596408,"gram":[{"Tok":{"text":"quel","word_type":{"type":"Heteronym","word":"quel","lemma":"quello","pos":"DET"}}}]}
 {"count":717,"disambiguation_key":1014123498,"gram":[{"Tok":{"text":"hai","word_type":{"type":"Heteronym","word":"hai","lemma":"avere","pos":"VERB"}}}]}
@@ -182,8 +182,8 @@
 {"count":497,"disambiguation_key":3061289710,"gram":[{"Tok":{"text":"con","word_type":{"type":"Heteronym","word":"con","lemma":"con","pos":"ADP"}}},{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"io","pos":"PRON"}}}]}
 {"count":497,"disambiguation_key":2419570283,"gram":[{"Tok":{"text":"vero","word_type":{"type":"Heteronym","word":"vero","lemma":"vero","pos":"INTJ"}}}]}
 {"count":495,"disambiguation_key":1408309433,"gram":[{"Tok":{"text":"te","word_type":{"type":"Heteronym","word":"te","lemma":"tu","pos":"PRON"}}}]}
+{"count":494,"disambiguation_key":1252669286,"gram":[{"Tok":{"text":"via","word_type":{"type":"Heteronym","word":"via","lemma":"via","pos":"ADV"}}}]}
 {"count":493,"disambiguation_key":2769653853,"gram":[{"Tok":{"text":"dovrebbe","word_type":{"type":"Heteronym","word":"dovrebbe","lemma":"dovere","pos":"AUX"}}}]}
-{"count":493,"disambiguation_key":1252669286,"gram":[{"Tok":{"text":"via","word_type":{"type":"Heteronym","word":"via","lemma":"via","pos":"ADV"}}}]}
 {"count":491,"disambiguation_key":3398767244,"gram":[{"Tok":{"text":"andiamo","word_type":{"type":"Heteronym","word":"andiamo","lemma":"andare","pos":"VERB"}}}]}
 {"count":488,"disambiguation_key":3762851695,"gram":[{"Tok":{"text":"ogni","word_type":{"type":"Heteronym","word":"ogni","lemma":"ogni","pos":"DET"}}},{"Tok":{"text":"giorno","word_type":{"type":"Heteronym","word":"giorno","lemma":"giorno","pos":"NOUN"}}}]}
 {"count":487,"disambiguation_key":2012435229,"gram":[{"Tok":{"text":"mi","word_type":{"type":"Heteronym","word":"mi","lemma":"mi","pos":"PRON"}}},{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}}]}
@@ -386,8 +386,8 @@
 {"count":261,"disambiguation_key":113252325,"gram":[{"Tok":{"text":"morire","word_type":{"type":"Heteronym","word":"morire","lemma":"morire","pos":"VERB"}}}]}
 {"count":260,"disambiguation_key":3897611696,"gram":[{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}},{"Tok":{"text":"più","word_type":{"type":"Heteronym","word":"più","lemma":"più","pos":"ADV"}}}]}
 {"count":260,"disambiguation_key":2362454785,"gram":[{"Tok":{"text":"sapere","word_type":{"type":"Heteronym","word":"sapere","lemma":"sapere","pos":"VERB"}}}]}
+{"count":259,"disambiguation_key":1759476875,"gram":[{"Tok":{"text":"dopo","word_type":{"type":"Heteronym","word":"dopo","lemma":"dopo","pos":"ADP"}}}]}
 {"count":259,"disambiguation_key":919978342,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"PRON"}}}]}
-{"count":258,"disambiguation_key":1759476875,"gram":[{"Tok":{"text":"dopo","word_type":{"type":"Heteronym","word":"dopo","lemma":"dopo","pos":"ADP"}}}]}
 {"count":257,"disambiguation_key":1236241298,"gram":[{"Tok":{"text":"avere","word_type":{"type":"Heteronym","word":"avere","lemma":"avere","pos":"VERB"}}}]}
 {"count":256,"disambiguation_key":3303287285,"gram":[{"Tok":{"text":"potrei","word_type":{"type":"Heteronym","word":"potrei","lemma":"potere","pos":"AUX"}}}]}
 {"count":256,"disambiguation_key":2590949878,"gram":[{"Tok":{"text":"odia","word_type":{"type":"Heteronym","word":"odia","lemma":"odiare","pos":"VERB"}}}]}
@@ -514,10 +514,10 @@
 {"count":212,"disambiguation_key":454997105,"gram":[{"Tok":{"text":"indietro","word_type":{"type":"Heteronym","word":"indietro","lemma":"indietro","pos":"ADV"}}}]}
 {"count":212,"disambiguation_key":446799579,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"te","word_type":{"type":"Heteronym","word":"te","lemma":"tu","pos":"PRON"}}}]}
 {"count":212,"disambiguation_key":124229699,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"scuola","word_type":{"type":"Heteronym","word":"scuola","lemma":"scuola","pos":"NOUN"}}}]}
+{"count":211,"disambiguation_key":1547079109,"gram":[{"Tok":{"text":"cambiare","word_type":{"type":"Heteronym","word":"cambiare","lemma":"cambiare","pos":"VERB"}}}]}
 {"count":211,"disambiguation_key":699021884,"gram":[{"Tok":{"text":"quattro","word_type":{"type":"Heteronym","word":"quattro","lemma":"quattro","pos":"NUM"}}}]}
 {"count":210,"disambiguation_key":3070239152,"gram":[{"Tok":{"text":"ciò","word_type":{"type":"Heteronym","word":"ciò","lemma":"ciò","pos":"PRON"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"PRON"}}}]}
 {"count":210,"disambiguation_key":2121809174,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}},{"Tok":{"text":"grado","word_type":{"type":"Heteronym","word":"grado","lemma":"grado","pos":"NOUN"}}}]}
-{"count":210,"disambiguation_key":1547079109,"gram":[{"Tok":{"text":"cambiare","word_type":{"type":"Heteronym","word":"cambiare","lemma":"cambiare","pos":"VERB"}}}]}
 {"count":210,"disambiguation_key":1090446836,"gram":[{"Tok":{"text":"perchè","word_type":{"type":"Heteronym","word":"perchè","lemma":"perchè","pos":"ADV"}}}]}
 {"count":210,"disambiguation_key":883286139,"gram":[{"Tok":{"text":"vive","word_type":{"type":"Heteronym","word":"vive","lemma":"vivere","pos":"VERB"}}}]}
 {"count":210,"disambiguation_key":830865413,"gram":[{"Tok":{"text":"andate","word_type":{"type":"Heteronym","word":"andate","lemma":"andare","pos":"VERB"}}}]}
@@ -699,8 +699,8 @@
 {"count":170,"disambiguation_key":1138092817,"gram":[{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}}]}
 {"count":170,"disambiguation_key":99071588,"gram":[{"Tok":{"text":"anni","word_type":{"type":"Heteronym","word":"anni","lemma":"anno","pos":"NOUN"}}}]}
 {"count":169,"disambiguation_key":4014536158,"gram":[{"Tok":{"text":"paese","word_type":{"type":"Heteronym","word":"paese","lemma":"paese","pos":"NOUN"}}}]}
+{"count":169,"disambiguation_key":2897973385,"gram":[{"Tok":{"text":"tuo","word_type":{"type":"Heteronym","word":"tuo","lemma":"tuo","pos":"DET"}}}]}
 {"count":169,"disambiguation_key":651304034,"gram":[{"Tok":{"text":"perché","word_type":{"type":"Heteronym","word":"perché","lemma":"perché","pos":"ADV"}}},{"Tok":{"text":"sei","word_type":{"type":"Heteronym","word":"sei","lemma":"essere","pos":"AUX"}}}]}
-{"count":168,"disambiguation_key":2897973385,"gram":[{"Tok":{"text":"tuo","word_type":{"type":"Heteronym","word":"tuo","lemma":"tuo","pos":"DET"}}}]}
 {"count":168,"disambiguation_key":2253691420,"gram":[{"Tok":{"text":"porti","word_type":{"type":"Heteronym","word":"porti","lemma":"portare","pos":"VERB"}}}]}
 {"count":168,"disambiguation_key":1799586521,"gram":[{"Tok":{"text":"imparare","word_type":{"type":"Heteronym","word":"imparare","lemma":"imparare","pos":"VERB"}}}]}
 {"count":168,"disambiguation_key":1613186091,"gram":[{"Tok":{"text":"stia","word_type":{"type":"Heteronym","word":"stia","lemma":"stare","pos":"AUX"}}}]}
@@ -1226,6 +1226,7 @@
 {"count":111,"disambiguation_key":756823394,"gram":[{"Tok":{"text":"sua","word_type":{"type":"Heteronym","word":"sua","lemma":"suo","pos":"DET"}}},{"Tok":{"text":"sorella","word_type":{"type":"Heteronym","word":"sorella","lemma":"sorella","pos":"NOUN"}}}]}
 {"count":111,"disambiguation_key":751536081,"gram":[{"Tok":{"text":"bevo","word_type":{"type":"Heteronym","word":"bevo","lemma":"bere","pos":"VERB"}}}]}
 {"count":111,"disambiguation_key":547726767,"gram":[{"Tok":{"text":"il","word_type":{"type":"Heteronym","word":"il","lemma":"il","pos":"DET"}}},{"Tok":{"text":"latte","word_type":{"type":"Heteronym","word":"latte","lemma":"latte","pos":"NOUN"}}}]}
+{"count":110,"disambiguation_key":4088540227,"gram":[{"Tok":{"text":"semplice","word_type":{"type":"Heteronym","word":"semplice","lemma":"semplice","pos":"ADJ"}}}]}
 {"count":110,"disambiguation_key":3617478651,"gram":[{"Tok":{"text":"parliamo","word_type":{"type":"Heteronym","word":"parliamo","lemma":"parlare","pos":"VERB"}}}]}
 {"count":110,"disambiguation_key":3469292253,"gram":[{"Tok":{"text":"avevo","word_type":{"type":"Heteronym","word":"avevo","lemma":"avere","pos":"AUX"}}}]}
 {"count":110,"disambiguation_key":3345279525,"gram":[{"Tok":{"text":"come","word_type":{"type":"Heteronym","word":"come","lemma":"come","pos":"SCONJ"}}},{"Tok":{"text":"se","word_type":{"type":"Heteronym","word":"se","lemma":"se","pos":"SCONJ"}}}]}
@@ -1240,7 +1241,6 @@
 {"count":110,"disambiguation_key":474038042,"gram":[{"Tok":{"text":"essere","word_type":{"type":"Heteronym","word":"essere","lemma":"essere","pos":"VERB"}}}]}
 {"count":110,"disambiguation_key":282639247,"gram":[{"Tok":{"text":"importante","word_type":{"type":"Heteronym","word":"importante","lemma":"importante","pos":"ADJ"}}}]}
 {"count":109,"disambiguation_key":4175074214,"gram":[{"Tok":{"text":"mio","word_type":{"type":"Heteronym","word":"mio","lemma":"mio","pos":"DET"}}},{"Tok":{"text":"marito","word_type":{"type":"Heteronym","word":"marito","lemma":"marito","pos":"NOUN"}}}]}
-{"count":109,"disambiguation_key":4088540227,"gram":[{"Tok":{"text":"semplice","word_type":{"type":"Heteronym","word":"semplice","lemma":"semplice","pos":"ADJ"}}}]}
 {"count":109,"disambiguation_key":3884857043,"gram":[{"Tok":{"text":"castello","word_type":{"type":"Heteronym","word":"castello","lemma":"castello","pos":"NOUN"}}}]}
 {"count":109,"disambiguation_key":3298597211,"gram":[{"Tok":{"text":"uova","word_type":{"type":"Heteronym","word":"uova","lemma":"uovo","pos":"NOUN"}}}]}
 {"count":109,"disambiguation_key":3116759424,"gram":[{"Tok":{"text":"polizia","word_type":{"type":"Heteronym","word":"polizia","lemma":"polizia","pos":"NOUN"}}}]}
@@ -1250,6 +1250,7 @@
 {"count":109,"disambiguation_key":2248232073,"gram":[{"Tok":{"text":"sembrava","word_type":{"type":"Heteronym","word":"sembrava","lemma":"sembrare","pos":"VERB"}}},{"Tok":{"text":"essere","word_type":{"type":"Heteronym","word":"essere","lemma":"essere","pos":"AUX"}}}]}
 {"count":109,"disambiguation_key":2190021294,"gram":[{"Tok":{"text":"trovo","word_type":{"type":"Heteronym","word":"trovo","lemma":"trovare","pos":"VERB"}}}]}
 {"count":109,"disambiguation_key":2009733241,"gram":[{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"PRON"}}},{"Tok":{"text":"ti","word_type":{"type":"Heteronym","word":"ti","lemma":"tu","pos":"PRON"}}}]}
+{"count":109,"disambiguation_key":1467175968,"gram":[{"Tok":{"text":"impegnata","word_type":{"type":"Heteronym","word":"impegnata","lemma":"impegnato","pos":"ADJ"}}}]}
 {"count":109,"disambiguation_key":1463257327,"gram":[{"Tok":{"text":"sii","word_type":{"type":"Heteronym","word":"sii","lemma":"essere","pos":"AUX"}}}]}
 {"count":109,"disambiguation_key":866882344,"gram":[{"Tok":{"text":"il","word_type":{"type":"Heteronym","word":"il","lemma":"il","pos":"DET"}}},{"Tok":{"text":"suo","word_type":{"type":"Heteronym","word":"suo","lemma":"suo","pos":"DET"}}},{"Tok":{"text":"cane","word_type":{"type":"Heteronym","word":"cane","lemma":"cane","pos":"NOUN"}}}]}
 {"count":109,"disambiguation_key":823010754,"gram":[{"Tok":{"text":"speciale","word_type":{"type":"Heteronym","word":"speciale","lemma":"speciale","pos":"ADJ"}}}]}
@@ -1263,7 +1264,6 @@
 {"count":108,"disambiguation_key":2065038548,"gram":[{"Tok":{"text":"stupida","word_type":{"type":"Heteronym","word":"stupida","lemma":"stupido","pos":"ADJ"}}}]}
 {"count":108,"disambiguation_key":1785600305,"gram":[{"Tok":{"text":"vicino","word_type":{"type":"Heteronym","word":"vicino","lemma":"vicino","pos":"ADV"}}}]}
 {"count":108,"disambiguation_key":1717920838,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"grande","word_type":{"type":"Heteronym","word":"grande","lemma":"grande","pos":"ADJ"}}}]}
-{"count":108,"disambiguation_key":1467175968,"gram":[{"Tok":{"text":"impegnata","word_type":{"type":"Heteronym","word":"impegnata","lemma":"impegnato","pos":"ADJ"}}}]}
 {"count":108,"disambiguation_key":1376993185,"gram":[{"Tok":{"text":"fammi","word_type":{"type":"Heteronym","word":"fammi","lemma":"fare","pos":"VERB"}}}]}
 {"count":108,"disambiguation_key":1350965869,"gram":[{"Tok":{"text":"ti","word_type":{"type":"Heteronym","word":"ti","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}}]}
 {"count":108,"disambiguation_key":1224867955,"gram":[{"Tok":{"text":"dicono","word_type":{"type":"Heteronym","word":"dicono","lemma":"dire","pos":"VERB"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"SCONJ"}}}]}
@@ -1329,6 +1329,7 @@
 {"count":104,"disambiguation_key":2846161246,"gram":[{"Tok":{"text":"tranquillo","word_type":{"type":"Heteronym","word":"tranquillo","lemma":"tranquillo","pos":"ADJ"}}}]}
 {"count":104,"disambiguation_key":2758328761,"gram":[{"Tok":{"text":"hai","word_type":{"type":"Heteronym","word":"hai","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"mai","word_type":{"type":"Heteronym","word":"mai","lemma":"mai","pos":"ADV"}}}]}
 {"count":104,"disambiguation_key":2557183857,"gram":[{"Tok":{"text":"futuro","word_type":{"type":"Heteronym","word":"futuro","lemma":"futuro","pos":"NOUN"}}}]}
+{"count":104,"disambiguation_key":2084650409,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"vita","word_type":{"type":"Heteronym","word":"vita","lemma":"vita","pos":"NOUN"}}}]}
 {"count":104,"disambiguation_key":1827897329,"gram":[{"Tok":{"text":"lasciate","word_type":{"type":"Heteronym","word":"lasciate","lemma":"lasciare","pos":"VERB"}}}]}
 {"count":104,"disambiguation_key":1523263898,"gram":[{"Tok":{"text":"vuoi","word_type":{"type":"Heteronym","word":"vuoi","lemma":"volere","pos":"VERB"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"SCONJ"}}}]}
 {"count":104,"disambiguation_key":442084927,"gram":[{"Tok":{"text":"molte","word_type":{"type":"Heteronym","word":"molte","lemma":"molto","pos":"DET"}}},{"Tok":{"text":"cose","word_type":{"type":"Heteronym","word":"cose","lemma":"cosa","pos":"NOUN"}}}]}
@@ -1349,7 +1350,6 @@
 {"count":103,"disambiguation_key":2261811071,"gram":[{"Tok":{"text":"francese","word_type":{"type":"Heteronym","word":"francese","lemma":"francese","pos":"ADJ"}}}]}
 {"count":103,"disambiguation_key":2204885302,"gram":[{"Tok":{"text":"cosa","word_type":{"type":"Heteronym","word":"cosa","lemma":"cosa","pos":"PRON"}}},{"Tok":{"text":"fare","word_type":{"type":"Heteronym","word":"fare","lemma":"fare","pos":"VERB"}}}]}
 {"count":103,"disambiguation_key":2161666063,"gram":[{"Tok":{"text":"tu","word_type":{"type":"Heteronym","word":"tu","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"hai","word_type":{"type":"Heteronym","word":"hai","lemma":"avere","pos":"AUX"}}}]}
-{"count":103,"disambiguation_key":1458749288,"gram":[{"Tok":{"text":"mettere","word_type":{"type":"Heteronym","word":"mettere","lemma":"mettere","pos":"VERB"}}}]}
 {"count":103,"disambiguation_key":1448998524,"gram":[{"Tok":{"text":"fortuna","word_type":{"type":"Heteronym","word":"fortuna","lemma":"fortuna","pos":"NOUN"}}}]}
 {"count":103,"disambiguation_key":1354503477,"gram":[{"Tok":{"text":"affamato","word_type":{"type":"Heteronym","word":"affamato","lemma":"affamato","pos":"ADJ"}}}]}
 {"count":103,"disambiguation_key":1242606691,"gram":[{"Tok":{"text":"lavoro","word_type":{"type":"Heteronym","word":"lavoro","lemma":"lavorare","pos":"VERB"}}}]}
@@ -1370,6 +1370,7 @@
 {"count":102,"disambiguation_key":2823457408,"gram":[{"Tok":{"text":"testa","word_type":{"type":"Heteronym","word":"testa","lemma":"testa","pos":"NOUN"}}}]}
 {"count":102,"disambiguation_key":1903888521,"gram":[{"Tok":{"text":"questo","word_type":{"type":"Heteronym","word":"questo","lemma":"questo","pos":"PRON"}}},{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}}]}
 {"count":102,"disambiguation_key":1636312732,"gram":[{"Tok":{"text":"bastardo","word_type":{"type":"Heteronym","word":"bastardo","lemma":"bastardo","pos":"NOUN"}}}]}
+{"count":102,"disambiguation_key":1458749288,"gram":[{"Tok":{"text":"mettere","word_type":{"type":"Heteronym","word":"mettere","lemma":"mettere","pos":"VERB"}}}]}
 {"count":102,"disambiguation_key":1440175312,"gram":[{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"parlato","word_type":{"type":"Heteronym","word":"parlato","lemma":"parlare","pos":"VERB"}}}]}
 {"count":102,"disambiguation_key":1293464785,"gram":[{"Tok":{"text":"hai","word_type":{"type":"Heteronym","word":"hai","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"detto","word_type":{"type":"Heteronym","word":"detto","lemma":"dire","pos":"VERB"}}}]}
 {"count":102,"disambiguation_key":958719142,"gram":[{"Tok":{"text":"non","word_type":{"type":"Heteronym","word":"non","lemma":"non","pos":"ADV"}}},{"Tok":{"text":"abbiamo","word_type":{"type":"Heteronym","word":"abbiamo","lemma":"avere","pos":"VERB"}}}]}
@@ -1387,7 +1388,6 @@
 {"count":101,"disambiguation_key":2286091940,"gram":[{"Tok":{"text":"pizza","word_type":{"type":"Heteronym","word":"pizza","lemma":"pizza","pos":"NOUN"}}}]}
 {"count":101,"disambiguation_key":2226032057,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"il","pos":"DET"}}},{"Tok":{"text":"vostri","word_type":{"type":"Heteronym","word":"vostri","lemma":"vostro","pos":"DET"}}}]}
 {"count":101,"disambiguation_key":2133019870,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}},{"Tok":{"text":"inglese","word_type":{"type":"Heteronym","word":"inglese","lemma":"inglese","pos":"NOUN"}}}]}
-{"count":101,"disambiguation_key":2084650409,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"vita","word_type":{"type":"Heteronym","word":"vita","lemma":"vita","pos":"NOUN"}}}]}
 {"count":101,"disambiguation_key":2009733241,"gram":[{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"SCONJ"}}},{"Tok":{"text":"ti","word_type":{"type":"Heteronym","word":"ti","lemma":"tu","pos":"PRON"}}}]}
 {"count":101,"disambiguation_key":1931975442,"gram":[{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"regalo","word_type":{"type":"Heteronym","word":"regalo","lemma":"regalo","pos":"NOUN"}}}]}
 {"count":101,"disambiguation_key":1634579412,"gram":[{"Tok":{"text":"del","word_type":{"type":"Heteronym","word":"del","lemma":"di il","pos":"ADP"}}},{"Tok":{"text":"mondo","word_type":{"type":"Heteronym","word":"mondo","lemma":"mondo","pos":"NOUN"}}}]}
@@ -1493,6 +1493,7 @@
 {"count":95,"disambiguation_key":1818366054,"gram":[{"Tok":{"text":"sono","word_type":{"type":"Heteronym","word":"sono","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"qui","word_type":{"type":"Heteronym","word":"qui","lemma":"qui","pos":"ADV"}}}]}
 {"count":95,"disambiguation_key":1582992259,"gram":[{"Tok":{"text":"domenica","word_type":{"type":"Heteronym","word":"domenica","lemma":"domenica","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":1164894050,"gram":[{"Tok":{"text":"puttana","word_type":{"type":"Heteronym","word":"puttana","lemma":"puttana","pos":"NOUN"}}}]}
+{"count":95,"disambiguation_key":1049028514,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"il","pos":"DET"}}},{"Tok":{"text":"gatti","word_type":{"type":"Heteronym","word":"gatti","lemma":"gatto","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":481328997,"gram":[{"Tok":{"text":"del","word_type":{"type":"Heteronym","word":"del","lemma":"di il","pos":"ADP"}}},{"Tok":{"text":"mio","word_type":{"type":"Heteronym","word":"mio","lemma":"mio","pos":"DET"}}}]}
 {"count":95,"disambiguation_key":453586867,"gram":[{"Tok":{"text":"portami","word_type":{"type":"Heteronym","word":"portami","lemma":"portare","pos":"VERB"}}}]}
 {"count":95,"disambiguation_key":95132070,"gram":[{"Tok":{"text":"cantante","word_type":{"type":"Heteronym","word":"cantante","lemma":"cantante","pos":"NOUN"}}}]}
@@ -1503,7 +1504,6 @@
 {"count":94,"disambiguation_key":2197208118,"gram":[{"Tok":{"text":"lontano","word_type":{"type":"Heteronym","word":"lontano","lemma":"lontano","pos":"ADV"}}}]}
 {"count":94,"disambiguation_key":1499127739,"gram":[{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"provato","word_type":{"type":"Heteronym","word":"provato","lemma":"provare","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":94,"disambiguation_key":1242256535,"gram":[{"Tok":{"text":"del","word_type":{"type":"Heteronym","word":"del","lemma":"di","pos":"DET"}}}]}
-{"count":94,"disambiguation_key":1049028514,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"il","pos":"DET"}}},{"Tok":{"text":"gatti","word_type":{"type":"Heteronym","word":"gatti","lemma":"gatto","pos":"NOUN"}}}]}
 {"count":94,"disambiguation_key":931688069,"gram":[{"Tok":{"text":"difficoltà","word_type":{"type":"Heteronym","word":"difficoltà","lemma":"difficoltà","pos":"NOUN"}}}]}
 {"count":93,"disambiguation_key":4039619536,"gram":[{"Tok":{"text":"pronta","word_type":{"type":"Heteronym","word":"pronta","lemma":"pronto","pos":"ADJ"}}}]}
 {"count":93,"disambiguation_key":3984863168,"gram":[{"Tok":{"text":"ditemi","word_type":{"type":"Heteronym","word":"ditemi","lemma":"dire","pos":"VERB"}}}]}
@@ -2546,6 +2546,7 @@
 {"count":61,"disambiguation_key":546234873,"gram":[{"Tok":{"text":"sandwich","word_type":{"type":"Heteronym","word":"sandwich","lemma":"sandwich","pos":"NOUN"}}}]}
 {"count":61,"disambiguation_key":323806148,"gram":[{"Tok":{"text":"pesci","word_type":{"type":"Heteronym","word":"pesci","lemma":"pesce","pos":"NOUN"}}}]}
 {"count":61,"disambiguation_key":253896838,"gram":[{"Tok":{"text":"pagina","word_type":{"type":"Heteronym","word":"pagina","lemma":"pagina","pos":"NOUN"}}}]}
+{"count":61,"disambiguation_key":73283963,"gram":[{"Tok":{"text":"mesi","word_type":{"type":"Heteronym","word":"mesi","lemma":"mese","pos":"NOUN"}}}]}
 {"count":60,"disambiguation_key":4272285988,"gram":[{"Tok":{"text":"dalle","word_type":{"type":"Heteronym","word":"dalle","lemma":"da il","pos":"ADP"}}}]}
 {"count":60,"disambiguation_key":4109665228,"gram":[{"Tok":{"text":"farsi","word_type":{"type":"Heteronym","word":"farsi","lemma":"fare si","pos":"VERB"}}}]}
 {"count":60,"disambiguation_key":4100930462,"gram":[{"Tok":{"text":"mentire","word_type":{"type":"Heteronym","word":"mentire","lemma":"mentire","pos":"VERB"}}}]}
@@ -2602,7 +2603,6 @@
 {"count":60,"disambiguation_key":228024849,"gram":[{"Tok":{"text":"durante","word_type":{"type":"Heteronym","word":"durante","lemma":"durante","pos":"ADP"}}}]}
 {"count":60,"disambiguation_key":192280784,"gram":[{"Tok":{"text":"piove","word_type":{"type":"Heteronym","word":"piove","lemma":"piovere","pos":"VERB"}}}]}
 {"count":60,"disambiguation_key":129431165,"gram":[{"Tok":{"text":"alla","word_type":{"type":"Heteronym","word":"alla","lemma":"a il","pos":"ADP"}}},{"Tok":{"text":"mia","word_type":{"type":"Heteronym","word":"mia","lemma":"mio","pos":"DET"}}}]}
-{"count":60,"disambiguation_key":73283963,"gram":[{"Tok":{"text":"mesi","word_type":{"type":"Heteronym","word":"mesi","lemma":"mese","pos":"NOUN"}}}]}
 {"count":59,"disambiguation_key":4190028363,"gram":[{"Tok":{"text":"frutta","word_type":{"type":"Heteronym","word":"frutta","lemma":"frutta","pos":"NOUN"}}}]}
 {"count":59,"disambiguation_key":4165467382,"gram":[{"Tok":{"text":"gli","word_type":{"type":"Heteronym","word":"gli","lemma":"il","pos":"DET"}}},{"Tok":{"text":"studenti","word_type":{"type":"Heteronym","word":"studenti","lemma":"studente","pos":"NOUN"}}}]}
 {"count":59,"disambiguation_key":4155103552,"gram":[{"Tok":{"text":"utilizza","word_type":{"type":"Heteronym","word":"utilizza","lemma":"utilizzare","pos":"VERB"}}}]}
@@ -2836,6 +2836,7 @@
 {"count":56,"disambiguation_key":599079996,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"venire","word_type":{"type":"Heteronym","word":"venire","lemma":"venire","pos":"VERB"}}}]}
 {"count":56,"disambiguation_key":597899958,"gram":[{"Tok":{"text":"parla","word_type":{"type":"Heteronym","word":"parla","lemma":"parlare","pos":"VERB"}}},{"Tok":{"text":"inglese","word_type":{"type":"Heteronym","word":"inglese","lemma":"inglese","pos":"NOUN"}}}]}
 {"count":56,"disambiguation_key":591238028,"gram":[{"Tok":{"text":"ti","word_type":{"type":"Heteronym","word":"ti","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"hanno","word_type":{"type":"Heteronym","word":"hanno","lemma":"avere","pos":"AUX"}}}]}
+{"count":56,"disambiguation_key":541986604,"gram":[{"Tok":{"text":"stato","word_type":{"type":"Heteronym","word":"stato","lemma":"essere","pos":"VERB"}}}]}
 {"count":56,"disambiguation_key":493223738,"gram":[{"Tok":{"text":"riusciamo","word_type":{"type":"Heteronym","word":"riusciamo","lemma":"riuscire","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":56,"disambiguation_key":475575109,"gram":[{"Tok":{"text":"guardo","word_type":{"type":"Heteronym","word":"guardo","lemma":"guardare","pos":"VERB"}}}]}
 {"count":56,"disambiguation_key":303880169,"gram":[{"Tok":{"text":"prova","word_type":{"type":"Heteronym","word":"prova","lemma":"provare","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
@@ -2904,7 +2905,6 @@
 {"count":55,"disambiguation_key":651505102,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"proposito","word_type":{"type":"Heteronym","word":"proposito","lemma":"proposito","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":592824763,"gram":[{"Tok":{"text":"mi","word_type":{"type":"Heteronym","word":"mi","lemma":"mi","pos":"PRON"}}},{"Tok":{"text":"servono","word_type":{"type":"Heteronym","word":"servono","lemma":"servire","pos":"VERB"}}}]}
 {"count":55,"disambiguation_key":571613678,"gram":[{"Tok":{"text":"andarci","word_type":{"type":"Heteronym","word":"andarci","lemma":"andare ci","pos":"VERB"}}}]}
-{"count":55,"disambiguation_key":541986604,"gram":[{"Tok":{"text":"stato","word_type":{"type":"Heteronym","word":"stato","lemma":"essere","pos":"VERB"}}}]}
 {"count":55,"disambiguation_key":525097472,"gram":[{"Tok":{"text":"non","word_type":{"type":"Heteronym","word":"non","lemma":"non","pos":"ADV"}}},{"Tok":{"text":"siamo","word_type":{"type":"Heteronym","word":"siamo","lemma":"essere","pos":"AUX"}}}]}
 {"count":55,"disambiguation_key":439776733,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"bambina","word_type":{"type":"Heteronym","word":"bambina","lemma":"bambina","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":430662732,"gram":[{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"da","pos":"ADP"}}},{"Tok":{"text":"te","word_type":{"type":"Heteronym","word":"te","lemma":"tu","pos":"PRON"}}}]}
@@ -3198,6 +3198,7 @@
 {"count":51,"disambiguation_key":842680458,"gram":[{"Tok":{"text":"pronte","word_type":{"type":"Heteronym","word":"pronte","lemma":"pronto","pos":"ADJ"}}}]}
 {"count":51,"disambiguation_key":811508830,"gram":[{"Tok":{"text":"cliente","word_type":{"type":"Heteronym","word":"cliente","lemma":"cliente","pos":"NOUN"}}}]}
 {"count":51,"disambiguation_key":779501499,"gram":[{"Tok":{"text":"sparato","word_type":{"type":"Heteronym","word":"sparato","lemma":"sparare","pos":"VERB"}}}]}
+{"count":51,"disambiguation_key":765906486,"gram":[{"Tok":{"text":"aspetto","word_type":{"type":"Heteronym","word":"aspetto","lemma":"aspetto","pos":"NOUN"}}}]}
 {"count":51,"disambiguation_key":752667122,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}},{"Tok":{"text":"classe","word_type":{"type":"Heteronym","word":"classe","lemma":"classe","pos":"NOUN"}}}]}
 {"count":51,"disambiguation_key":665289536,"gram":[{"Tok":{"text":"tuo","word_type":{"type":"Heteronym","word":"tuo","lemma":"tuo","pos":"DET"}}},{"Tok":{"text":"marito","word_type":{"type":"Heteronym","word":"marito","lemma":"marito","pos":"NOUN"}}}]}
 {"count":51,"disambiguation_key":662789320,"gram":[{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"alto","word_type":{"type":"Heteronym","word":"alto","lemma":"alto","pos":"ADJ"}}}]}
@@ -3263,7 +3264,6 @@
 {"count":50,"disambiguation_key":959308454,"gram":[{"Tok":{"text":"offerto","word_type":{"type":"Heteronym","word":"offerto","lemma":"offrire","pos":"VERB"}}}]}
 {"count":50,"disambiguation_key":875890308,"gram":[{"Tok":{"text":"del","word_type":{"type":"Heteronym","word":"del","lemma":"di il","pos":"DET"}}},{"Tok":{"text":"vino","word_type":{"type":"Heteronym","word":"vino","lemma":"vino","pos":"NOUN"}}}]}
 {"count":50,"disambiguation_key":790452140,"gram":[{"Tok":{"text":"prima","word_type":{"type":"Heteronym","word":"prima","lemma":"prima","pos":"ADV"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"CCONJ"}}},{"Tok":{"text":"poi","word_type":{"type":"Heteronym","word":"poi","lemma":"poi","pos":"ADV"}}}]}
-{"count":50,"disambiguation_key":765906486,"gram":[{"Tok":{"text":"aspetto","word_type":{"type":"Heteronym","word":"aspetto","lemma":"aspetto","pos":"NOUN"}}}]}
 {"count":50,"disambiguation_key":753014644,"gram":[{"Tok":{"text":"ti","word_type":{"type":"Heteronym","word":"ti","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"senti","word_type":{"type":"Heteronym","word":"senti","lemma":"sentire","pos":"VERB"}}}]}
 {"count":50,"disambiguation_key":612153497,"gram":[{"Tok":{"text":"gamba","word_type":{"type":"Heteronym","word":"gamba","lemma":"gamba","pos":"NOUN"}}}]}
 {"count":50,"disambiguation_key":603234934,"gram":[{"Tok":{"text":"ho","word_type":{"type":"Heteronym","word":"ho","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"conosciuto","word_type":{"type":"Heteronym","word":"conosciuto","lemma":"conoscere","pos":"VERB"}}}]}
@@ -3579,6 +3579,7 @@
 {"count":46,"disambiguation_key":1983569993,"gram":[{"Tok":{"text":"venduto","word_type":{"type":"Heteronym","word":"venduto","lemma":"vendere","pos":"VERB"}}}]}
 {"count":46,"disambiguation_key":1969487815,"gram":[{"Tok":{"text":"neve","word_type":{"type":"Heteronym","word":"neve","lemma":"neve","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":1857675712,"gram":[{"Tok":{"text":"sicurezza","word_type":{"type":"Heteronym","word":"sicurezza","lemma":"sicurezza","pos":"NOUN"}}}]}
+{"count":46,"disambiguation_key":1801937892,"gram":[{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"vissuto","word_type":{"type":"Heteronym","word":"vissuto","lemma":"vivere","pos":"VERB"}}}]}
 {"count":46,"disambiguation_key":1799893677,"gram":[{"Tok":{"text":"noi","word_type":{"type":"Heteronym","word":"noi","lemma":"noi","pos":"PRON"}}},{"Tok":{"text":"dovremmo","word_type":{"type":"Heteronym","word":"dovremmo","lemma":"dovere","pos":"AUX"}}}]}
 {"count":46,"disambiguation_key":1785479846,"gram":[{"Tok":{"text":"come","word_type":{"type":"Heteronym","word":"come","lemma":"come","pos":"ADV"}}},{"Tok":{"text":"ti","word_type":{"type":"Heteronym","word":"ti","lemma":"tu","pos":"PRON"}}}]}
 {"count":46,"disambiguation_key":1764638289,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"il","pos":"DET"}}},{"Tok":{"text":"miei","word_type":{"type":"Heteronym","word":"miei","lemma":"mio","pos":"DET"}}},{"Tok":{"text":"amici","word_type":{"type":"Heteronym","word":"amici","lemma":"amico","pos":"NOUN"}}}]}
@@ -3871,7 +3872,6 @@
 {"count":43,"disambiguation_key":2047831054,"gram":[{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"PRON"}}},{"Tok":{"text":"gli","word_type":{"type":"Heteronym","word":"gli","lemma":"gli","pos":"PRON"}}}]}
 {"count":43,"disambiguation_key":1901981927,"gram":[{"Tok":{"text":"iniziò","word_type":{"type":"Heteronym","word":"iniziò","lemma":"iniziare","pos":"VERB"}}}]}
 {"count":43,"disambiguation_key":1895123694,"gram":[{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"PRON"}}},{"Tok":{"text":"fa","word_type":{"type":"Heteronym","word":"fa","lemma":"fare","pos":"VERB"}}}]}
-{"count":43,"disambiguation_key":1801937892,"gram":[{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"vissuto","word_type":{"type":"Heteronym","word":"vissuto","lemma":"vivere","pos":"VERB"}}}]}
 {"count":43,"disambiguation_key":1765070314,"gram":[{"Tok":{"text":"affrontare","word_type":{"type":"Heteronym","word":"affrontare","lemma":"affrontare","pos":"VERB"}}}]}
 {"count":43,"disambiguation_key":1654028429,"gram":[{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"bravo","word_type":{"type":"Heteronym","word":"bravo","lemma":"bravo","pos":"ADJ"}}}]}
 {"count":43,"disambiguation_key":1651032059,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"banana","word_type":{"type":"Heteronym","word":"banana","lemma":"banana","pos":"NOUN"}}}]}
@@ -6548,6 +6548,7 @@
 {"count":26,"disambiguation_key":1256803221,"gram":[{"Tok":{"text":"quel","word_type":{"type":"Heteronym","word":"quel","lemma":"quello","pos":"DET"}}},{"Tok":{"text":"tipo","word_type":{"type":"Heteronym","word":"tipo","lemma":"tipo","pos":"NOUN"}}}]}
 {"count":26,"disambiguation_key":1254483723,"gram":[{"Tok":{"text":"abitare","word_type":{"type":"Heteronym","word":"abitare","lemma":"abitare","pos":"VERB"}}},{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}}]}
 {"count":26,"disambiguation_key":1248953254,"gram":[{"Tok":{"text":"spostare","word_type":{"type":"Heteronym","word":"spostare","lemma":"spostare","pos":"VERB"}}}]}
+{"count":26,"disambiguation_key":1242374022,"gram":[{"Tok":{"text":"si","word_type":{"type":"Heteronym","word":"si","lemma":"si","pos":"PRON"}}},{"Tok":{"text":"dice","word_type":{"type":"Heteronym","word":"dice","lemma":"dire","pos":"VERB"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"SCONJ"}}}]}
 {"count":26,"disambiguation_key":1194223609,"gram":[{"Tok":{"text":"entrare","word_type":{"type":"Heteronym","word":"entrare","lemma":"entrare","pos":"VERB"}}},{"Tok":{"text":"nella","word_type":{"type":"Heteronym","word":"nella","lemma":"in il","pos":"ADP"}}}]}
 {"count":26,"disambiguation_key":1183579688,"gram":[{"Tok":{"text":"fottuti","word_type":{"type":"Heteronym","word":"fottuti","lemma":"fottuto","pos":"ADJ"}}}]}
 {"count":26,"disambiguation_key":1182112001,"gram":[{"Tok":{"text":"rise","word_type":{"type":"Heteronym","word":"rise","lemma":"ridere","pos":"VERB"}}}]}
@@ -6704,7 +6705,6 @@
 {"count":25,"disambiguation_key":2752124014,"gram":[{"Tok":{"text":"cavolo","word_type":{"type":"Heteronym","word":"cavolo","lemma":"cavolo","pos":"INTJ"}}}]}
 {"count":25,"disambiguation_key":2748512367,"gram":[{"Tok":{"text":"ucciderli","word_type":{"type":"Heteronym","word":"ucciderli","lemma":"uccidere","pos":"VERB"}}}]}
 {"count":25,"disambiguation_key":2720338452,"gram":[{"Tok":{"text":"apparteneva","word_type":{"type":"Heteronym","word":"apparteneva","lemma":"appartenere","pos":"VERB"}}}]}
-{"count":25,"disambiguation_key":2676398168,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"tua","word_type":{"type":"Heteronym","word":"tua","lemma":"tuo","pos":"DET"}}},{"Tok":{"text":"vita","word_type":{"type":"Heteronym","word":"vita","lemma":"vita","pos":"NOUN"}}}]}
 {"count":25,"disambiguation_key":2654128207,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"mia","word_type":{"type":"Heteronym","word":"mia","lemma":"mio","pos":"DET"}}},{"Tok":{"text":"penna","word_type":{"type":"Heteronym","word":"penna","lemma":"penna","pos":"NOUN"}}}]}
 {"count":25,"disambiguation_key":2641564812,"gram":[{"Tok":{"text":"hanno","word_type":{"type":"Heteronym","word":"hanno","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"dato","word_type":{"type":"Heteronym","word":"dato","lemma":"dare","pos":"VERB"}}}]}
 {"count":25,"disambiguation_key":2628734029,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"correre","word_type":{"type":"Heteronym","word":"correre","lemma":"correre","pos":"VERB"}}}]}
@@ -6786,7 +6786,6 @@
 {"count":25,"disambiguation_key":1293471964,"gram":[{"Tok":{"text":"quel","word_type":{"type":"Heteronym","word":"quel","lemma":"quello","pos":"DET"}}},{"Tok":{"text":"vestito","word_type":{"type":"Heteronym","word":"vestito","lemma":"vestito","pos":"NOUN"}}}]}
 {"count":25,"disambiguation_key":1264059950,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"mia","word_type":{"type":"Heteronym","word":"mia","lemma":"mio","pos":"DET"}}},{"Tok":{"text":"insegnante","word_type":{"type":"Heteronym","word":"insegnante","lemma":"insegnante","pos":"NOUN"}}}]}
 {"count":25,"disambiguation_key":1250520301,"gram":[{"Tok":{"text":"abbandonò","word_type":{"type":"Heteronym","word":"abbandonò","lemma":"abbandonare","pos":"VERB"}}}]}
-{"count":25,"disambiguation_key":1242374022,"gram":[{"Tok":{"text":"si","word_type":{"type":"Heteronym","word":"si","lemma":"si","pos":"PRON"}}},{"Tok":{"text":"dice","word_type":{"type":"Heteronym","word":"dice","lemma":"dire","pos":"VERB"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"SCONJ"}}}]}
 {"count":25,"disambiguation_key":1237284980,"gram":[{"Tok":{"text":"piace","word_type":{"type":"Heteronym","word":"piace","lemma":"piacere","pos":"VERB"}}},{"Tok":{"text":"davvero","word_type":{"type":"Heteronym","word":"davvero","lemma":"davvero","pos":"ADV"}}}]}
 {"count":25,"disambiguation_key":1232741358,"gram":[{"Tok":{"text":"rischi","word_type":{"type":"Heteronym","word":"rischi","lemma":"rischio","pos":"NOUN"}}}]}
 {"count":25,"disambiguation_key":1222463546,"gram":[{"Tok":{"text":"lei","word_type":{"type":"Heteronym","word":"lei","lemma":"lei","pos":"PRON"}}},{"Tok":{"text":"mi","word_type":{"type":"Heteronym","word":"mi","lemma":"mi","pos":"PRON"}}},{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}}]}
@@ -6872,6 +6871,7 @@
 {"count":24,"disambiguation_key":4267066847,"gram":[{"Tok":{"text":"curiosità","word_type":{"type":"Heteronym","word":"curiosità","lemma":"curiosità","pos":"NOUN"}}}]}
 {"count":24,"disambiguation_key":4249295039,"gram":[{"Tok":{"text":"io","word_type":{"type":"Heteronym","word":"io","lemma":"io","pos":"PRON"}}},{"Tok":{"text":"ho","word_type":{"type":"Heteronym","word":"ho","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"appena","word_type":{"type":"Heteronym","word":"appena","lemma":"appena","pos":"ADV"}}}]}
 {"count":24,"disambiguation_key":4191393054,"gram":[{"Tok":{"text":"nella","word_type":{"type":"Heteronym","word":"nella","lemma":"in il","pos":"ADP"}}},{"Tok":{"text":"mia","word_type":{"type":"Heteronym","word":"mia","lemma":"mio","pos":"DET"}}},{"Tok":{"text":"vita","word_type":{"type":"Heteronym","word":"vita","lemma":"vita","pos":"NOUN"}}}]}
+{"count":24,"disambiguation_key":4162616503,"gram":[{"Tok":{"text":"colpa","word_type":{"type":"Heteronym","word":"colpa","lemma":"colpa","pos":"NOUN"}}},{"Tok":{"text":"sua","word_type":{"type":"Heteronym","word":"sua","lemma":"suo","pos":"DET"}}}]}
 {"count":24,"disambiguation_key":4151450085,"gram":[{"Tok":{"text":"alle","word_type":{"type":"Heteronym","word":"alle","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"superiori","word_type":{"type":"Heteronym","word":"superiori","lemma":"superiore","pos":"NOUN"}}}]}
 {"count":24,"disambiguation_key":4120872547,"gram":[{"Tok":{"text":"prepari","word_type":{"type":"Heteronym","word":"prepari","lemma":"preparare","pos":"VERB"}}}]}
 {"count":24,"disambiguation_key":4120053379,"gram":[{"Tok":{"text":"comprende","word_type":{"type":"Heteronym","word":"comprende","lemma":"comprendere","pos":"VERB"}}}]}
@@ -6976,6 +6976,7 @@
 {"count":24,"disambiguation_key":2701128349,"gram":[{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"mondo","word_type":{"type":"Heteronym","word":"mondo","lemma":"mondo","pos":"NOUN"}}}]}
 {"count":24,"disambiguation_key":2688318311,"gram":[{"Tok":{"text":"verità","word_type":{"type":"Heteronym","word":"verità","lemma":"verità","pos":"NOUN"}}}]}
 {"count":24,"disambiguation_key":2681303801,"gram":[{"Tok":{"text":"morse","word_type":{"type":"Heteronym","word":"morse","lemma":"mordere","pos":"VERB"}}}]}
+{"count":24,"disambiguation_key":2676398168,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"tua","word_type":{"type":"Heteronym","word":"tua","lemma":"tuo","pos":"DET"}}},{"Tok":{"text":"vita","word_type":{"type":"Heteronym","word":"vita","lemma":"vita","pos":"NOUN"}}}]}
 {"count":24,"disambiguation_key":2674385454,"gram":[{"Tok":{"text":"lupo","word_type":{"type":"Heteronym","word":"lupo","lemma":"lupo","pos":"NOUN"}}}]}
 {"count":24,"disambiguation_key":2644249401,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"tempesta","word_type":{"type":"Heteronym","word":"tempesta","lemma":"tempesta","pos":"NOUN"}}}]}
 {"count":24,"disambiguation_key":2619206053,"gram":[{"Tok":{"text":"nel","word_type":{"type":"Heteronym","word":"nel","lemma":"in il","pos":"ADP"}}},{"Tok":{"text":"cielo","word_type":{"type":"Heteronym","word":"cielo","lemma":"cielo","pos":"NOUN"}}}]}
@@ -7160,7 +7161,6 @@
 {"count":23,"disambiguation_key":4174399693,"gram":[{"Tok":{"text":"cambiato","word_type":{"type":"Heteronym","word":"cambiato","lemma":"cambiare","pos":"VERB"}}},{"Tok":{"text":"idea","word_type":{"type":"Heteronym","word":"idea","lemma":"idea","pos":"NOUN"}}}]}
 {"count":23,"disambiguation_key":4170706135,"gram":[{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"minestra","word_type":{"type":"Heteronym","word":"minestra","lemma":"minestra","pos":"NOUN"}}}]}
 {"count":23,"disambiguation_key":4165624710,"gram":[{"Tok":{"text":"prendila","word_type":{"type":"Heteronym","word":"prendila","lemma":"prendere","pos":"VERB"}}}]}
-{"count":23,"disambiguation_key":4162616503,"gram":[{"Tok":{"text":"colpa","word_type":{"type":"Heteronym","word":"colpa","lemma":"colpa","pos":"NOUN"}}},{"Tok":{"text":"sua","word_type":{"type":"Heteronym","word":"sua","lemma":"suo","pos":"DET"}}}]}
 {"count":23,"disambiguation_key":4115551982,"gram":[{"Tok":{"text":"andartene","word_type":{"type":"Heteronym","word":"andartene","lemma":"andare","pos":"VERB"}}}]}
 {"count":23,"disambiguation_key":4109973259,"gram":[{"Tok":{"text":"sofferto","word_type":{"type":"Heteronym","word":"sofferto","lemma":"soffrire","pos":"VERB"}}}]}
 {"count":23,"disambiguation_key":4094703556,"gram":[{"Tok":{"text":"ginocchio","word_type":{"type":"Heteronym","word":"ginocchio","lemma":"ginocchio","pos":"NOUN"}}}]}
@@ -7363,6 +7363,7 @@
 {"count":23,"disambiguation_key":1431780289,"gram":[{"Tok":{"text":"avranno","word_type":{"type":"Heteronym","word":"avranno","lemma":"avere","pos":"VERB"}}}]}
 {"count":23,"disambiguation_key":1423766898,"gram":[{"Tok":{"text":"esercito","word_type":{"type":"Heteronym","word":"esercito","lemma":"esercito","pos":"NOUN"}}}]}
 {"count":23,"disambiguation_key":1410639868,"gram":[{"Tok":{"text":"il","word_type":{"type":"Heteronym","word":"il","lemma":"il","pos":"DET"}}},{"Tok":{"text":"suo","word_type":{"type":"Heteronym","word":"suo","lemma":"suo","pos":"DET"}}},{"Tok":{"text":"discorso","word_type":{"type":"Heteronym","word":"discorso","lemma":"discorso","pos":"NOUN"}}}]}
+{"count":23,"disambiguation_key":1372211547,"gram":[{"Tok":{"text":"possano","word_type":{"type":"Heteronym","word":"possano","lemma":"potere","pos":"AUX"}}}]}
 {"count":23,"disambiguation_key":1363916162,"gram":[{"Tok":{"text":"state","word_type":{"type":"Heteronym","word":"state","lemma":"essere","pos":"AUX"}}}]}
 {"count":23,"disambiguation_key":1304875909,"gram":[{"Tok":{"text":"leone","word_type":{"type":"Heteronym","word":"leone","lemma":"leone","pos":"NOUN"}}}]}
 {"count":23,"disambiguation_key":1237295286,"gram":[{"Tok":{"text":"resa","word_type":{"type":"Heteronym","word":"resa","lemma":"rendere","pos":"VERB"}}}]}
@@ -7637,7 +7638,6 @@
 {"count":22,"disambiguation_key":1473103337,"gram":[{"Tok":{"text":"dichiarazione","word_type":{"type":"Heteronym","word":"dichiarazione","lemma":"dichiarazione","pos":"NOUN"}}}]}
 {"count":22,"disambiguation_key":1417615698,"gram":[{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"asciugamano","word_type":{"type":"Heteronym","word":"asciugamano","lemma":"asciugamano","pos":"NOUN"}}}]}
 {"count":22,"disambiguation_key":1416460593,"gram":[{"Tok":{"text":"prendere","word_type":{"type":"Heteronym","word":"prendere","lemma":"prendere","pos":"VERB"}}},{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}}]}
-{"count":22,"disambiguation_key":1372211547,"gram":[{"Tok":{"text":"possano","word_type":{"type":"Heteronym","word":"possano","lemma":"potere","pos":"AUX"}}}]}
 {"count":22,"disambiguation_key":1367093057,"gram":[{"Tok":{"text":"ucciderò","word_type":{"type":"Heteronym","word":"ucciderò","lemma":"uccidere","pos":"VERB"}}}]}
 {"count":22,"disambiguation_key":1362162476,"gram":[{"Tok":{"text":"colpo","word_type":{"type":"Heteronym","word":"colpo","lemma":"colpo","pos":"NOUN"}}}]}
 {"count":22,"disambiguation_key":1360720449,"gram":[{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"lupo","word_type":{"type":"Heteronym","word":"lupo","lemma":"lupo","pos":"NOUN"}}}]}
@@ -8294,7 +8294,6 @@
 {"count":20,"disambiguation_key":525281283,"gram":[{"Tok":{"text":"avevi","word_type":{"type":"Heteronym","word":"avevi","lemma":"avere","pos":"VERB"}}},{"Tok":{"text":"ragione","word_type":{"type":"Heteronym","word":"ragione","lemma":"ragione","pos":"NOUN"}}}]}
 {"count":20,"disambiguation_key":520959946,"gram":[{"Tok":{"text":"riso","word_type":{"type":"Heteronym","word":"riso","lemma":"ridere","pos":"VERB"}}}]}
 {"count":20,"disambiguation_key":519241087,"gram":[{"Tok":{"text":"dimenticato","word_type":{"type":"Heteronym","word":"dimenticato","lemma":"dimenticare","pos":"VERB"}}},{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}}]}
-{"count":20,"disambiguation_key":503222774,"gram":[{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"pazzo","word_type":{"type":"Heteronym","word":"pazzo","lemma":"pazzo","pos":"NOUN"}}}]}
 {"count":20,"disambiguation_key":493458400,"gram":[{"Tok":{"text":"perché","word_type":{"type":"Heteronym","word":"perché","lemma":"perché","pos":"ADV"}}},{"Tok":{"text":"sei","word_type":{"type":"Heteronym","word":"sei","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"sempre","word_type":{"type":"Heteronym","word":"sempre","lemma":"sempre","pos":"ADV"}}},{"Tok":{"text":"così","word_type":{"type":"Heteronym","word":"così","lemma":"così","pos":"ADV"}}}]}
 {"count":20,"disambiguation_key":474398817,"gram":[{"Tok":{"text":"jazz","word_type":{"type":"Heteronym","word":"jazz","lemma":"jazz","pos":"NOUN"}}}]}
 {"count":20,"disambiguation_key":464724838,"gram":[{"Tok":{"text":"fermò","word_type":{"type":"Heteronym","word":"fermò","lemma":"fermare","pos":"VERB"}}}]}
@@ -8652,6 +8651,7 @@
 {"count":19,"disambiguation_key":563034491,"gram":[{"Tok":{"text":"perdonerà","word_type":{"type":"Heteronym","word":"perdonerà","lemma":"perdonare","pos":"VERB"}}}]}
 {"count":19,"disambiguation_key":538082449,"gram":[{"Tok":{"text":"oggetto","word_type":{"type":"Heteronym","word":"oggetto","lemma":"oggetto","pos":"NOUN"}}}]}
 {"count":19,"disambiguation_key":531981595,"gram":[{"Tok":{"text":"impegno","word_type":{"type":"Heteronym","word":"impegno","lemma":"impegno","pos":"NOUN"}}}]}
+{"count":19,"disambiguation_key":503222774,"gram":[{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"pazzo","word_type":{"type":"Heteronym","word":"pazzo","lemma":"pazzo","pos":"NOUN"}}}]}
 {"count":19,"disambiguation_key":499329257,"gram":[{"Tok":{"text":"carini","word_type":{"type":"Heteronym","word":"carini","lemma":"carino","pos":"ADJ"}}}]}
 {"count":19,"disambiguation_key":495847313,"gram":[{"Tok":{"text":"ho","word_type":{"type":"Heteronym","word":"ho","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"dato","word_type":{"type":"Heteronym","word":"dato","lemma":"dare","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":19,"disambiguation_key":487672981,"gram":[{"Tok":{"text":"lavoratori","word_type":{"type":"Heteronym","word":"lavoratori","lemma":"lavoratore","pos":"NOUN"}}}]}
@@ -13218,6 +13218,7 @@
 {"count":11,"disambiguation_key":1075160216,"gram":[{"Tok":{"text":"pensava","word_type":{"type":"Heteronym","word":"pensava","lemma":"pensare","pos":"VERB"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"SCONJ"}}},{"Tok":{"text":"io","word_type":{"type":"Heteronym","word":"io","lemma":"io","pos":"PRON"}}},{"Tok":{"text":"fossi","word_type":{"type":"Heteronym","word":"fossi","lemma":"essere","pos":"AUX"}}}]}
 {"count":11,"disambiguation_key":1070118725,"gram":[{"Tok":{"text":"cartina","word_type":{"type":"Heteronym","word":"cartina","lemma":"cartina","pos":"NOUN"}}}]}
 {"count":11,"disambiguation_key":1068941253,"gram":[{"Tok":{"text":"ora","word_type":{"type":"Heteronym","word":"ora","lemma":"ora","pos":"NOUN"}}},{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}}]}
+{"count":11,"disambiguation_key":1051123149,"gram":[{"Tok":{"text":"per","word_type":{"type":"Heteronym","word":"per","lemma":"per","pos":"ADP"}}},{"Tok":{"text":"dieci","word_type":{"type":"Heteronym","word":"dieci","lemma":"dieci","pos":"NUM"}}}]}
 {"count":11,"disambiguation_key":1047855686,"gram":[{"Tok":{"text":"dalle","word_type":{"type":"Heteronym","word":"dalle","lemma":"da","pos":"ADP"}}},{"Tok":{"text":"scale","word_type":{"type":"Heteronym","word":"scale","lemma":"scala","pos":"NOUN"}}}]}
 {"count":11,"disambiguation_key":1040871947,"gram":[{"Tok":{"text":"ferita","word_type":{"type":"Heteronym","word":"ferita","lemma":"ferire","pos":"VERB"}}}]}
 {"count":11,"disambiguation_key":1040710114,"gram":[{"Tok":{"text":"prendere","word_type":{"type":"Heteronym","word":"prendere","lemma":"prendere","pos":"VERB"}}},{"Tok":{"text":"tempo","word_type":{"type":"Heteronym","word":"tempo","lemma":"tempo","pos":"NOUN"}}}]}
@@ -13694,6 +13695,7 @@
 {"count":10,"disambiguation_key":3186378333,"gram":[{"Tok":{"text":"io","word_type":{"type":"Heteronym","word":"io","lemma":"io","pos":"PRON"}}},{"Tok":{"text":"non","word_type":{"type":"Heteronym","word":"non","lemma":"non","pos":"ADV"}}},{"Tok":{"text":"ho","word_type":{"type":"Heteronym","word":"ho","lemma":"avere","pos":"AUX"}}}]}
 {"count":10,"disambiguation_key":3183957905,"gram":[{"Tok":{"text":"capello","word_type":{"type":"Heteronym","word":"capello","lemma":"capello","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":3183669034,"gram":[{"Tok":{"text":"rimasero","word_type":{"type":"Heteronym","word":"rimasero","lemma":"rimanere","pos":"VERB"}}}]}
+{"count":10,"disambiguation_key":3180794995,"gram":[{"Tok":{"text":"le","word_type":{"type":"Heteronym","word":"le","lemma":"il","pos":"DET"}}},{"Tok":{"text":"cose","word_type":{"type":"Heteronym","word":"cose","lemma":"cosa","pos":"NOUN"}}},{"Tok":{"text":"più","word_type":{"type":"Heteronym","word":"più","lemma":"più","pos":"ADV"}}}]}
 {"count":10,"disambiguation_key":3178429643,"gram":[{"Tok":{"text":"installare","word_type":{"type":"Heteronym","word":"installare","lemma":"installare","pos":"VERB"}}}]}
 {"count":10,"disambiguation_key":3177457655,"gram":[{"Tok":{"text":"frutto","word_type":{"type":"Heteronym","word":"frutto","lemma":"frutto","pos":"NOUN"}}},{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}},{"Tok":{"text":"mare","word_type":{"type":"Heteronym","word":"mare","lemma":"mare","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":3158144721,"gram":[{"Tok":{"text":"offerte","word_type":{"type":"Heteronym","word":"offerte","lemma":"offerta","pos":"NOUN"}}}]}
@@ -14213,7 +14215,6 @@
 {"count":10,"disambiguation_key":1060418313,"gram":[{"Tok":{"text":"si","word_type":{"type":"Heteronym","word":"si","lemma":"si","pos":"PRON"}}},{"Tok":{"text":"lamenta","word_type":{"type":"Heteronym","word":"lamenta","lemma":"lamentare","pos":"VERB"}}},{"Tok":{"text":"sempre","word_type":{"type":"Heteronym","word":"sempre","lemma":"sempre","pos":"ADV"}}}]}
 {"count":10,"disambiguation_key":1057847269,"gram":[{"Tok":{"text":"occhiata","word_type":{"type":"Heteronym","word":"occhiata","lemma":"occhiata","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":1057275576,"gram":[{"Tok":{"text":"veste","word_type":{"type":"Heteronym","word":"veste","lemma":"vestire","pos":"VERB"}}}]}
-{"count":10,"disambiguation_key":1051123149,"gram":[{"Tok":{"text":"per","word_type":{"type":"Heteronym","word":"per","lemma":"per","pos":"ADP"}}},{"Tok":{"text":"dieci","word_type":{"type":"Heteronym","word":"dieci","lemma":"dieci","pos":"NUM"}}}]}
 {"count":10,"disambiguation_key":1047053183,"gram":[{"Tok":{"text":"tutto","word_type":{"type":"Heteronym","word":"tutto","lemma":"tutto","pos":"DET"}}},{"Tok":{"text":"quello","word_type":{"type":"Heteronym","word":"quello","lemma":"quello","pos":"PRON"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"PRON"}}},{"Tok":{"text":"devi","word_type":{"type":"Heteronym","word":"devi","lemma":"dovere","pos":"AUX"}}},{"Tok":{"text":"fare","word_type":{"type":"Heteronym","word":"fare","lemma":"fare","pos":"VERB"}}},{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}}]}
 {"count":10,"disambiguation_key":1044945161,"gram":[{"Tok":{"text":"una","word_type":{"type":"Heteronym","word":"una","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"buona","word_type":{"type":"Heteronym","word":"buona","lemma":"buono","pos":"ADJ"}}},{"Tok":{"text":"memoria","word_type":{"type":"Heteronym","word":"memoria","lemma":"memoria","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":1041332422,"gram":[{"Tok":{"text":"trovato","word_type":{"type":"Heteronym","word":"trovato","lemma":"trovare","pos":"VERB"}}},{"Tok":{"text":"il","word_type":{"type":"Heteronym","word":"il","lemma":"il","pos":"DET"}}}]}
@@ -14284,6 +14285,7 @@
 {"count":10,"disambiguation_key":728945740,"gram":[{"Tok":{"text":"lasciami","word_type":{"type":"Heteronym","word":"lasciami","lemma":"lasciare","pos":"VERB"}}},{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}},{"Tok":{"text":"pace","word_type":{"type":"Heteronym","word":"pace","lemma":"pace","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":720747198,"gram":[{"Tok":{"text":"bicchiere","word_type":{"type":"Heteronym","word":"bicchiere","lemma":"bicchiere","pos":"NOUN"}}},{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}},{"Tok":{"text":"latte","word_type":{"type":"Heteronym","word":"latte","lemma":"latte","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":718226910,"gram":[{"Tok":{"text":"ti","word_type":{"type":"Heteronym","word":"ti","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"piace","word_type":{"type":"Heteronym","word":"piace","lemma":"piacere","pos":"VERB"}}},{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}}]}
+{"count":10,"disambiguation_key":700113597,"gram":[{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"tornato","word_type":{"type":"Heteronym","word":"tornato","lemma":"tornare","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"casa","word_type":{"type":"Heteronym","word":"casa","lemma":"casa","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":697797886,"gram":[{"Tok":{"text":"dinosauri","word_type":{"type":"Heteronym","word":"dinosauri","lemma":"dinosauro","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":697240980,"gram":[{"Tok":{"text":"frontiera","word_type":{"type":"Heteronym","word":"frontiera","lemma":"frontiera","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":694044027,"gram":[{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}},{"Tok":{"text":"fronte","word_type":{"type":"Heteronym","word":"fronte","lemma":"fronte","pos":"NOUN"}}},{"Tok":{"text":"al","word_type":{"type":"Heteronym","word":"al","lemma":"a il","pos":"ADP"}}}]}
@@ -15108,6 +15110,7 @@
 {"count":9,"disambiguation_key":1914532625,"gram":[{"Tok":{"text":"vada","word_type":{"type":"Heteronym","word":"vada","lemma":"andare","pos":"VERB"}}},{"Tok":{"text":"ad","word_type":{"type":"Heteronym","word":"ad","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"aiutare","word_type":{"type":"Heteronym","word":"aiutare","lemma":"aiutare","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":1910821149,"gram":[{"Tok":{"text":"salutarti","word_type":{"type":"Heteronym","word":"salutarti","lemma":"salutare","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":1906660567,"gram":[{"Tok":{"text":"annegò","word_type":{"type":"Heteronym","word":"annegò","lemma":"annegare","pos":"VERB"}}}]}
+{"count":9,"disambiguation_key":1902301946,"gram":[{"Tok":{"text":"miserabile","word_type":{"type":"Heteronym","word":"miserabile","lemma":"miserabile","pos":"ADJ"}}}]}
 {"count":9,"disambiguation_key":1897734078,"gram":[{"Tok":{"text":"ecco","word_type":{"type":"Heteronym","word":"ecco","lemma":"ecco","pos":"INTJ"}}},{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"SCONJ"}}},{"Tok":{"text":"arriva","word_type":{"type":"Heteronym","word":"arriva","lemma":"arrivare","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":1880419096,"gram":[{"Tok":{"text":"venivo","word_type":{"type":"Heteronym","word":"venivo","lemma":"venire","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":1878759986,"gram":[{"Tok":{"text":"russa","word_type":{"type":"Heteronym","word":"russa","lemma":"russare","pos":"VERB"}}}]}
@@ -15419,7 +15422,6 @@
 {"count":9,"disambiguation_key":709391598,"gram":[{"Tok":{"text":"quanto","word_type":{"type":"Heteronym","word":"quanto","lemma":"quanto","pos":"DET"}}},{"Tok":{"text":"tempo","word_type":{"type":"Heteronym","word":"tempo","lemma":"tempo","pos":"NOUN"}}},{"Tok":{"text":"ci","word_type":{"type":"Heteronym","word":"ci","lemma":"ci","pos":"PRON"}}},{"Tok":{"text":"vuole","word_type":{"type":"Heteronym","word":"vuole","lemma":"volere","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":708870339,"gram":[{"Tok":{"text":"vestire","word_type":{"type":"Heteronym","word":"vestire","lemma":"vestire","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":701743098,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"il","pos":"DET"}}},{"Tok":{"text":"tuoi","word_type":{"type":"Heteronym","word":"tuoi","lemma":"tuo","pos":"DET"}}},{"Tok":{"text":"soldi","word_type":{"type":"Heteronym","word":"soldi","lemma":"soldo","pos":"NOUN"}}}]}
-{"count":9,"disambiguation_key":700113597,"gram":[{"Tok":{"text":"è","word_type":{"type":"Heteronym","word":"è","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"tornato","word_type":{"type":"Heteronym","word":"tornato","lemma":"tornare","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"casa","word_type":{"type":"Heteronym","word":"casa","lemma":"casa","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":700048777,"gram":[{"Tok":{"text":"per","word_type":{"type":"Heteronym","word":"per","lemma":"per","pos":"ADP"}}},{"Tok":{"text":"mezzo","word_type":{"type":"Heteronym","word":"mezzo","lemma":"mezzo","pos":"NOUN"}}},{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}}]}
 {"count":9,"disambiguation_key":697823204,"gram":[{"Tok":{"text":"popolazione","word_type":{"type":"Heteronym","word":"popolazione","lemma":"popolazione","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":694473224,"gram":[{"Tok":{"text":"esistito","word_type":{"type":"Heteronym","word":"esistito","lemma":"esistere","pos":"VERB"}}}]}
@@ -15653,7 +15655,6 @@
 {"count":8,"disambiguation_key":4123130769,"gram":[{"Tok":{"text":"accordato","word_type":{"type":"Heteronym","word":"accordato","lemma":"accordare","pos":"VERB"}}}]}
 {"count":8,"disambiguation_key":4122852949,"gram":[{"Tok":{"text":"nascondete","word_type":{"type":"Heteronym","word":"nascondete","lemma":"nascondere","pos":"VERB"}}}]}
 {"count":8,"disambiguation_key":4122213511,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}},{"Tok":{"text":"un","word_type":{"type":"Heteronym","word":"un","lemma":"uno","pos":"DET"}}},{"Tok":{"text":"paese","word_type":{"type":"Heteronym","word":"paese","lemma":"paese","pos":"NOUN"}}},{"Tok":{"text":"straniero","word_type":{"type":"Heteronym","word":"straniero","lemma":"straniero","pos":"ADJ"}}}]}
-{"count":8,"disambiguation_key":4119543270,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"rischio","word_type":{"type":"Heteronym","word":"rischio","lemma":"rischio","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":4117194606,"gram":[{"Tok":{"text":"riferisce","word_type":{"type":"Heteronym","word":"riferisce","lemma":"riferire","pos":"VERB"}}}]}
 {"count":8,"disambiguation_key":4111852387,"gram":[{"Tok":{"text":"gridò","word_type":{"type":"Heteronym","word":"gridò","lemma":"gridare","pos":"VERB"}}}]}
 {"count":8,"disambiguation_key":4103616149,"gram":[{"Tok":{"text":"che","word_type":{"type":"Heteronym","word":"che","lemma":"che","pos":"DET"}}},{"Tok":{"text":"cosa","word_type":{"type":"Heteronym","word":"cosa","lemma":"cosa","pos":"NOUN"}}},{"Tok":{"text":"stanno","word_type":{"type":"Heteronym","word":"stanno","lemma":"stare","pos":"AUX"}}}]}
@@ -16369,7 +16370,6 @@
 {"count":8,"disambiguation_key":1909190861,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"io","pos":"PRON"}}}]}
 {"count":8,"disambiguation_key":1905407808,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"giocare","word_type":{"type":"Heteronym","word":"giocare","lemma":"giocare","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"carte","word_type":{"type":"Heteronym","word":"carte","lemma":"carta","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":1902468311,"gram":[{"Tok":{"text":"ci","word_type":{"type":"Heteronym","word":"ci","lemma":"ci","pos":"PRON"}}},{"Tok":{"text":"siamo","word_type":{"type":"Heteronym","word":"siamo","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"sposati","word_type":{"type":"Heteronym","word":"sposati","lemma":"sposare","pos":"VERB"}}}]}
-{"count":8,"disambiguation_key":1902301946,"gram":[{"Tok":{"text":"miserabile","word_type":{"type":"Heteronym","word":"miserabile","lemma":"miserabile","pos":"ADJ"}}}]}
 {"count":8,"disambiguation_key":1891589093,"gram":[{"Tok":{"text":"affollata","word_type":{"type":"Heteronym","word":"affollata","lemma":"affollato","pos":"ADJ"}}}]}
 {"count":8,"disambiguation_key":1887530336,"gram":[{"Tok":{"text":"prospettiva","word_type":{"type":"Heteronym","word":"prospettiva","lemma":"prospettiva","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":1885967209,"gram":[{"Tok":{"text":"chiudi","word_type":{"type":"Heteronym","word":"chiudi","lemma":"chiudere","pos":"VERB"}}},{"Tok":{"text":"gli","word_type":{"type":"Heteronym","word":"gli","lemma":"il","pos":"DET"}}},{"Tok":{"text":"occhi","word_type":{"type":"Heteronym","word":"occhi","lemma":"occhio","pos":"NOUN"}}}]}
@@ -17022,6 +17022,7 @@
 {"count":7,"disambiguation_key":4133424799,"gram":[{"Tok":{"text":"anziane","word_type":{"type":"Heteronym","word":"anziane","lemma":"anziano","pos":"ADJ"}}}]}
 {"count":7,"disambiguation_key":4121923787,"gram":[{"Tok":{"text":"assomigliate","word_type":{"type":"Heteronym","word":"assomigliate","lemma":"assomigliare","pos":"VERB"}}}]}
 {"count":7,"disambiguation_key":4120959021,"gram":[{"Tok":{"text":"le","word_type":{"type":"Heteronym","word":"le","lemma":"lei","pos":"PRON"}}},{"Tok":{"text":"ha","word_type":{"type":"Heteronym","word":"ha","lemma":"avere","pos":"AUX"}}},{"Tok":{"text":"chiesto","word_type":{"type":"Heteronym","word":"chiesto","lemma":"chiedere","pos":"VERB"}}},{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}}]}
+{"count":7,"disambiguation_key":4119543270,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"rischio","word_type":{"type":"Heteronym","word":"rischio","lemma":"rischio","pos":"NOUN"}}}]}
 {"count":7,"disambiguation_key":4115950389,"gram":[{"Tok":{"text":"dice","word_type":{"type":"Heteronym","word":"dice","lemma":"dire","pos":"VERB"}}},{"Tok":{"text":"di","word_type":{"type":"Heteronym","word":"di","lemma":"di","pos":"ADP"}}},{"Tok":{"text":"non","word_type":{"type":"Heteronym","word":"non","lemma":"non","pos":"ADV"}}},{"Tok":{"text":"avere","word_type":{"type":"Heteronym","word":"avere","lemma":"avere","pos":"VERB"}}}]}
 {"count":7,"disambiguation_key":4115500850,"gram":[{"Tok":{"text":"trasferirono","word_type":{"type":"Heteronym","word":"trasferirono","lemma":"trasferire","pos":"VERB"}}}]}
 {"count":7,"disambiguation_key":4113887508,"gram":[{"Tok":{"text":"Quarta","word_type":{"type":"Heteronym","word":"quarta","lemma":"quarto","pos":"ADJ"}}},{"Tok":{"text":"Signora","word_type":{"type":"Heteronym","word":"signora","lemma":"signora","pos":"NOUN"}}}]}

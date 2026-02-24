@@ -118,14 +118,12 @@ pub mod french {
             if let Some(current_node) = current {
                 // Stop if we hit another h2 (next language section)
                 if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div" {
-                        if let Some(first_child) = elem.first_child() {
-                            if let Some(child_elem) = ElementRef::wrap(first_child) {
-                                if child_elem.value().name() == "h2" {
-                                    break;
-                                }
-                            }
-                        }
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
                     }
                     french_content.push_str(&elem.html());
                 }
@@ -253,11 +251,11 @@ pub mod french {
                 && th.attr("class").unwrap_or("").contains(mood_prefix)
             {
                 // Get the parent tr element
-                if let Some(parent) = th.parent() {
-                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                        tense_row_ref = Some(parent);
-                        break;
-                    }
+                if let Some(parent) = th.parent()
+                    && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                {
+                    tense_row_ref = Some(parent);
+                    break;
                 }
             }
         }
@@ -270,15 +268,15 @@ pub mod french {
 
         // Iterate through children of the tr element
         for child in tense_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    // Find the link inside the td
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
-                    if let Some(link) = td_elem.select(&a_selector).next() {
-                        if let Some(text) = link.text().next() {
-                            forms.push(text.to_string());
-                        }
-                    }
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                // Find the link inside the td
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
+                if let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(text) = link.text().next()
+                {
+                    forms.push(text.to_string());
                 }
             }
         }
@@ -312,11 +310,11 @@ pub mod french {
             let text = th.text().collect::<String>().to_lowercase();
             if text.contains("simple") {
                 // Get the parent tr element
-                if let Some(parent) = th.parent() {
-                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                        imperative_row_ref = Some(parent);
-                        break;
-                    }
+                if let Some(parent) = th.parent()
+                    && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                {
+                    imperative_row_ref = Some(parent);
+                    break;
                 }
             }
         }
@@ -328,22 +326,22 @@ pub mod french {
 
         // Iterate through children of the tr element
         for child in imperative_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
-                    let text = td_elem.text().collect::<String>().trim().to_string();
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
+                let text = td_elem.text().collect::<String>().trim().to_string();
 
-                    // Skip empty cells marked with "—"
-                    if text == "—" {
-                        continue;
-                    }
+                // Skip empty cells marked with "—"
+                if text == "—" {
+                    continue;
+                }
 
-                    // Extract the link text (the conjugated form)
-                    if let Some(link) = td_elem.select(&a_selector).next() {
-                        if let Some(text) = link.text().next() {
-                            forms.push(text.to_string());
-                        }
-                    }
+                // Extract the link text (the conjugated form)
+                if let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(text) = link.text().next()
+                {
+                    forms.push(text.to_string());
                 }
             }
         }
@@ -655,14 +653,12 @@ pub mod spanish {
             if let Some(current_node) = current {
                 // Stop if we hit another h2 (next language section)
                 if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div" {
-                        if let Some(first_child) = elem.first_child() {
-                            if let Some(child_elem) = ElementRef::wrap(first_child) {
-                                if child_elem.value().name() == "h2" {
-                                    break;
-                                }
-                            }
-                        }
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
                     }
                     spanish_content.push_str(&elem.html());
                 }
@@ -789,11 +785,11 @@ pub mod spanish {
             if let Some(title) = th.value().attr("title") {
                 if title.to_lowercase().contains(&tense_keyword.to_lowercase()) {
                     // Get the parent tr element
-                    if let Some(parent) = th.parent() {
-                        if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                            tense_row_ref = Some(parent);
-                            break;
-                        }
+                    if let Some(parent) = th.parent()
+                        && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                    {
+                        tense_row_ref = Some(parent);
+                        break;
                     }
                 }
             } else {
@@ -802,11 +798,11 @@ pub mod spanish {
                 if text.contains(&tense.to_lowercase()) {
                     // Need to check if this belongs to the right mood by looking at context
                     // For now, just accept it
-                    if let Some(parent) = th.parent() {
-                        if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                            tense_row_ref = Some(parent);
-                            break;
-                        }
+                    if let Some(parent) = th.parent()
+                        && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                    {
+                        tense_row_ref = Some(parent);
+                        break;
                     }
                 }
             }
@@ -820,15 +816,15 @@ pub mod spanish {
 
         // Iterate through children of the tr element
         for child in tense_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    // Find the link inside the td
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
-                    if let Some(link) = td_elem.select(&a_selector).next() {
-                        if let Some(text) = link.text().next() {
-                            forms.push(text.to_string());
-                        }
-                    }
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                // Find the link inside the td
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
+                if let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(text) = link.text().next()
+                {
+                    forms.push(text.to_string());
                 }
             }
         }
@@ -871,11 +867,11 @@ pub mod spanish {
 
             if matches {
                 // Get the parent tr element
-                if let Some(parent) = th.parent() {
-                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                        imperative_row_ref = Some(parent);
-                        break;
-                    }
+                if let Some(parent) = th.parent()
+                    && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                {
+                    imperative_row_ref = Some(parent);
+                    break;
                 }
             }
         }
@@ -889,37 +885,36 @@ pub mod spanish {
 
         // Iterate through children of the tr element
         for child in imperative_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
 
-                    // Check if this is an empty cell (for yo form)
-                    let text = td_elem.text().collect::<String>().trim().to_string();
-                    if text.is_empty() {
-                        continue;
-                    }
+                // Check if this is an empty cell (for yo form)
+                let text = td_elem.text().collect::<String>().trim().to_string();
+                if text.is_empty() {
+                    continue;
+                }
 
-                    // Extract the first Spanish link in this cell
-                    // (tú cell has two forms - tú and vos, we take the first one for tú)
-                    let mut found = false;
-                    for span in td_elem.select(&span_selector) {
-                        if let Some(link) = span.select(&a_selector).next() {
-                            if let Some(form_text) = link.text().next() {
-                                forms.push(form_text.to_string());
-                                found = true;
-                                break; // Take only the first form (tú, not vos)
-                            }
-                        }
+                // Extract the first Spanish link in this cell
+                // (tú cell has two forms - tú and vos, we take the first one for tú)
+                let mut found = false;
+                for span in td_elem.select(&span_selector) {
+                    if let Some(link) = span.select(&a_selector).next()
+                        && let Some(form_text) = link.text().next()
+                    {
+                        forms.push(form_text.to_string());
+                        found = true;
+                        break; // Take only the first form (tú, not vos)
                     }
+                }
 
-                    // Fallback: try any link if no Spanish span found
-                    if !found {
-                        if let Some(link) = td_elem.select(&a_selector).next() {
-                            if let Some(form_text) = link.text().next() {
-                                forms.push(form_text.to_string());
-                            }
-                        }
-                    }
+                // Fallback: try any link if no Spanish span found
+                if !found
+                    && let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(form_text) = link.text().next()
+                {
+                    forms.push(form_text.to_string());
                 }
             }
         }
@@ -1168,14 +1163,12 @@ pub mod german {
             if let Some(current_node) = current {
                 // Stop if we hit another h2 (next language section)
                 if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div" {
-                        if let Some(first_child) = elem.first_child() {
-                            if let Some(child_elem) = ElementRef::wrap(first_child) {
-                                if child_elem.value().name() == "h2" {
-                                    break;
-                                }
-                            }
-                        }
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
                     }
                     german_content.push_str(&elem.html());
                 }
@@ -1244,17 +1237,17 @@ pub mod german {
         for element in document.select(&selector) {
             // Get the text from the link inside
             let a_selector = Selector::parse("a").unwrap();
-            if let Some(link) = element.select(&a_selector).next() {
-                if let Some(text) = link.text().next() {
-                    return Ok(text.to_string());
-                }
+            if let Some(link) = element.select(&a_selector).next()
+                && let Some(text) = link.text().next()
+            {
+                return Ok(text.to_string());
             }
             // Fallback: check if it's a selflink (bold text)
             let strong_selector = Selector::parse("strong.selflink").unwrap();
-            if let Some(strong) = element.select(&strong_selector).next() {
-                if let Some(text) = strong.text().next() {
-                    return Ok(text.to_string());
-                }
+            if let Some(strong) = element.select(&strong_selector).next()
+                && let Some(text) = strong.text().next()
+            {
+                return Ok(text.to_string());
             }
         }
 
@@ -1284,17 +1277,17 @@ pub mod german {
 
         for td in document.select(&td_selector) {
             // Check previous sibling for "auxiliary" header
-            if let Some(prev) = td.prev_sibling() {
-                if let Some(prev_elem) = ElementRef::wrap(prev) {
-                    let prev_text = prev_elem.text().collect::<String>().to_lowercase();
-                    if prev_text.contains("auxiliary") {
-                        let td_text = td.text().collect::<String>().to_lowercase();
-                        if td_text.contains("sein") {
-                            return Ok(GermanAuxiliary::Sein);
-                        }
-                        if td_text.contains("haben") {
-                            return Ok(GermanAuxiliary::Haben);
-                        }
+            if let Some(prev) = td.prev_sibling()
+                && let Some(prev_elem) = ElementRef::wrap(prev)
+            {
+                let prev_text = prev_elem.text().collect::<String>().to_lowercase();
+                if prev_text.contains("auxiliary") {
+                    let td_text = td.text().collect::<String>().to_lowercase();
+                    if td_text.contains("sein") {
+                        return Ok(GermanAuxiliary::Sein);
+                    }
+                    if td_text.contains("haben") {
+                        return Ok(GermanAuxiliary::Haben);
                     }
                 }
             }
@@ -1314,15 +1307,15 @@ pub mod german {
                             }
                         }
                     }
-                    if href.contains("haben#German") {
-                        if let Some(parent) = td.parent() {
-                            let parent_text = ElementRef::wrap(parent)
-                                .map(|e| e.text().collect::<String>())
-                                .unwrap_or_default()
-                                .to_lowercase();
-                            if parent_text.contains("auxiliary") {
-                                return Ok(GermanAuxiliary::Haben);
-                            }
+                    if href.contains("haben#German")
+                        && let Some(parent) = td.parent()
+                    {
+                        let parent_text = ElementRef::wrap(parent)
+                            .map(|e| e.text().collect::<String>())
+                            .unwrap_or_default()
+                            .to_lowercase();
+                        if parent_text.contains("auxiliary") {
+                            return Ok(GermanAuxiliary::Haben);
                         }
                     }
                 }
@@ -1352,21 +1345,21 @@ pub mod german {
                     for element in document.select(&selector) {
                         // Get the text from the link inside, or selflink
                         let a_selector = Selector::parse("a").unwrap();
-                        if let Some(link) = element.select(&a_selector).next() {
-                            if let Some(text) = link.text().next() {
-                                forms.push(text.to_string());
-                                found = true;
-                                break;
-                            }
+                        if let Some(link) = element.select(&a_selector).next()
+                            && let Some(text) = link.text().next()
+                        {
+                            forms.push(text.to_string());
+                            found = true;
+                            break;
                         }
                         // Check for selflink
                         let strong_selector = Selector::parse("strong.selflink").unwrap();
-                        if let Some(strong) = element.select(&strong_selector).next() {
-                            if let Some(text) = strong.text().next() {
-                                forms.push(text.to_string());
-                                found = true;
-                                break;
-                            }
+                        if let Some(strong) = element.select(&strong_selector).next()
+                            && let Some(text) = strong.text().next()
+                        {
+                            forms.push(text.to_string());
+                            found = true;
+                            break;
                         }
                         // Fallback: direct text
                         if !found {
@@ -1422,12 +1415,12 @@ pub mod german {
         let mut found_s = false;
         for element in document.select(&s_selector) {
             let a_selector = Selector::parse("a").unwrap();
-            if let Some(link) = element.select(&a_selector).next() {
-                if let Some(text) = link.text().next() {
-                    forms.push(text.to_string());
-                    found_s = true;
-                    break;
-                }
+            if let Some(link) = element.select(&a_selector).next()
+                && let Some(text) = link.text().next()
+            {
+                forms.push(text.to_string());
+                found_s = true;
+                break;
             }
         }
         if !found_s {
@@ -1439,12 +1432,12 @@ pub mod german {
         let mut found_p = false;
         for element in document.select(&p_selector) {
             let a_selector = Selector::parse("a").unwrap();
-            if let Some(link) = element.select(&a_selector).next() {
-                if let Some(text) = link.text().next() {
-                    forms.push(text.to_string());
-                    found_p = true;
-                    break;
-                }
+            if let Some(link) = element.select(&a_selector).next()
+                && let Some(text) = link.text().next()
+            {
+                forms.push(text.to_string());
+                found_p = true;
+                break;
             }
         }
         if !found_p {
@@ -1625,17 +1618,17 @@ pub mod german {
             for element in document.select(&selector) {
                 // Get the text from the link inside
                 let a_selector = Selector::parse("a").unwrap();
-                if let Some(link) = element.select(&a_selector).next() {
-                    if let Some(text) = link.text().next() {
-                        return Ok(text.to_string());
-                    }
+                if let Some(link) = element.select(&a_selector).next()
+                    && let Some(text) = link.text().next()
+                {
+                    return Ok(text.to_string());
                 }
                 // Check for selflink (bold text)
                 let strong_selector = Selector::parse("strong.selflink").unwrap();
-                if let Some(strong) = element.select(&strong_selector).next() {
-                    if let Some(text) = strong.text().next() {
-                        return Ok(text.to_string());
-                    }
+                if let Some(strong) = element.select(&strong_selector).next()
+                    && let Some(text) = strong.text().next()
+                {
+                    return Ok(text.to_string());
                 }
             }
         }
@@ -1919,14 +1912,12 @@ pub mod portuguese {
             if let Some(current_node) = current {
                 // Stop if we hit another h2 (next language section)
                 if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div" {
-                        if let Some(first_child) = elem.first_child() {
-                            if let Some(child_elem) = ElementRef::wrap(first_child) {
-                                if child_elem.value().name() == "h2" {
-                                    break;
-                                }
-                            }
-                        }
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
                     }
                     portuguese_content.push_str(&elem.html());
                 }
@@ -2031,11 +2022,11 @@ pub mod portuguese {
             let text = th.text().collect::<String>().to_lowercase();
             if text.contains(&tense.to_lowercase()) {
                 // Get the parent tr element
-                if let Some(parent) = th.parent() {
-                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                        tense_row_ref = Some(parent);
-                        break;
-                    }
+                if let Some(parent) = th.parent()
+                    && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                {
+                    tense_row_ref = Some(parent);
+                    break;
                 }
             }
         }
@@ -2048,15 +2039,15 @@ pub mod portuguese {
 
         // Iterate through children of the tr element
         for child in tense_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    // Find the link inside the td
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
-                    if let Some(link) = td_elem.select(&a_selector).next() {
-                        if let Some(text) = link.text().next() {
-                            forms.push(text.to_string());
-                        }
-                    }
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                // Find the link inside the td
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
+                if let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(text) = link.text().next()
+                {
+                    forms.push(text.to_string());
                 }
             }
         }
@@ -2090,11 +2081,11 @@ pub mod portuguese {
             let text = th.text().collect::<String>().to_lowercase();
             if text.contains("affirmative") {
                 // Get the parent tr element
-                if let Some(parent) = th.parent() {
-                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                        imperative_row_ref = Some(parent);
-                        break;
-                    }
+                if let Some(parent) = th.parent()
+                    && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                {
+                    imperative_row_ref = Some(parent);
+                    break;
                 }
             }
         }
@@ -2108,22 +2099,22 @@ pub mod portuguese {
 
         // Iterate through children of the tr element
         for child in imperative_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
 
-                    // Check if this is an empty cell or rowspan cell (for "eu" form)
-                    let text = td_elem.text().collect::<String>().trim().to_string();
-                    if text.is_empty() || td_elem.value().attr("rowspan").is_some() {
-                        continue;
-                    }
+                // Check if this is an empty cell or rowspan cell (for "eu" form)
+                let text = td_elem.text().collect::<String>().trim().to_string();
+                if text.is_empty() || td_elem.value().attr("rowspan").is_some() {
+                    continue;
+                }
 
-                    // Extract the link text (the conjugated form)
-                    if let Some(link) = td_elem.select(&a_selector).next() {
-                        if let Some(form_text) = link.text().next() {
-                            forms.push(form_text.to_string());
-                        }
-                    }
+                // Extract the link text (the conjugated form)
+                if let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(form_text) = link.text().next()
+                {
+                    forms.push(form_text.to_string());
                 }
             }
         }
@@ -2331,14 +2322,12 @@ pub mod italian {
             if let Some(current_node) = current {
                 // Stop if we hit another h2 (next language section)
                 if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div" {
-                        if let Some(first_child) = elem.first_child() {
-                            if let Some(child_elem) = ElementRef::wrap(first_child) {
-                                if child_elem.value().name() == "h2" {
-                                    break;
-                                }
-                            }
-                        }
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
                     }
                     italian_content.push_str(&elem.html());
                 }
@@ -2409,23 +2398,22 @@ pub mod italian {
                 // Get the next td sibling (skip text nodes)
                 let mut current = th.next_sibling();
                 while let Some(node) = current {
-                    if let Some(elem) = ElementRef::wrap(node) {
-                        if elem.value().name() == "td" {
-                            // Get first link - extract word from href to get actual spelling
-                            if let Some(link) = elem.select(&a_selector).next() {
-                                if let Some(href) = link.value().attr("href") {
-                                    // href is like "/wiki/essendo#Italian"
-                                    if let Some(word) = href.strip_prefix("/wiki/") {
-                                        if let Some(word_clean) = word.split('#').next() {
-                                            // URL decode in case of special characters (like %C3%A8 → è)
-                                            let decoded =
-                                                percent_encoding::percent_decode_str(word_clean)
-                                                    .decode_utf8_lossy()
-                                                    .to_string();
-                                            return Ok(decoded);
-                                        }
-                                    }
-                                }
+                    if let Some(elem) = ElementRef::wrap(node)
+                        && elem.value().name() == "td"
+                    {
+                        // Get first link - extract word from href to get actual spelling
+                        if let Some(link) = elem.select(&a_selector).next()
+                            && let Some(href) = link.value().attr("href")
+                        {
+                            // href is like "/wiki/essendo#Italian"
+                            if let Some(word) = href.strip_prefix("/wiki/")
+                                && let Some(word_clean) = word.split('#').next()
+                            {
+                                // URL decode in case of special characters (like %C3%A8 → è)
+                                let decoded = percent_encoding::percent_decode_str(word_clean)
+                                    .decode_utf8_lossy()
+                                    .to_string();
+                                return Ok(decoded);
                             }
                         }
                     }
@@ -2448,23 +2436,22 @@ pub mod italian {
                 // Get the next td sibling (skip text nodes)
                 let mut current = th.next_sibling();
                 while let Some(node) = current {
-                    if let Some(elem) = ElementRef::wrap(node) {
-                        if elem.value().name() == "td" {
-                            // Get first link - extract word from href to get actual spelling
-                            if let Some(link) = elem.select(&a_selector).next() {
-                                if let Some(href) = link.value().attr("href") {
-                                    // href is like "/wiki/stato#Italian"
-                                    if let Some(word) = href.strip_prefix("/wiki/") {
-                                        if let Some(word_clean) = word.split('#').next() {
-                                            // URL decode in case of special characters (like %C3%A8 → è)
-                                            let decoded =
-                                                percent_encoding::percent_decode_str(word_clean)
-                                                    .decode_utf8_lossy()
-                                                    .to_string();
-                                            return Ok(decoded);
-                                        }
-                                    }
-                                }
+                    if let Some(elem) = ElementRef::wrap(node)
+                        && elem.value().name() == "td"
+                    {
+                        // Get first link - extract word from href to get actual spelling
+                        if let Some(link) = elem.select(&a_selector).next()
+                            && let Some(href) = link.value().attr("href")
+                        {
+                            // href is like "/wiki/stato#Italian"
+                            if let Some(word) = href.strip_prefix("/wiki/")
+                                && let Some(word_clean) = word.split('#').next()
+                            {
+                                // URL decode in case of special characters (like %C3%A8 → è)
+                                let decoded = percent_encoding::percent_decode_str(word_clean)
+                                    .decode_utf8_lossy()
+                                    .to_string();
+                                return Ok(decoded);
                             }
                         }
                     }
@@ -2491,11 +2478,11 @@ pub mod italian {
             let text = th.text().collect::<String>().to_lowercase();
             if text.contains(&tense.to_lowercase()) {
                 // Get the parent tr element
-                if let Some(parent) = th.parent() {
-                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                        tense_row_ref = Some(parent);
-                        break;
-                    }
+                if let Some(parent) = th.parent()
+                    && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                {
+                    tense_row_ref = Some(parent);
+                    break;
                 }
             }
         }
@@ -2508,24 +2495,24 @@ pub mod italian {
 
         // Iterate through children of the tr element
         for child in tense_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
 
-                    // Get the first link - extract word from href to get actual spelling
-                    if let Some(link) = td_elem.select(&a_selector).next() {
-                        if let Some(href) = link.value().attr("href") {
-                            // href is like "/wiki/sono#Italian"
-                            if let Some(word) = href.strip_prefix("/wiki/") {
-                                if let Some(word_clean) = word.split('#').next() {
-                                    // URL decode in case of special characters (like %C3%A8 → è)
-                                    let decoded = percent_encoding::percent_decode_str(word_clean)
-                                        .decode_utf8_lossy()
-                                        .to_string();
-                                    forms.push(decoded);
-                                }
-                            }
-                        }
+                // Get the first link - extract word from href to get actual spelling
+                if let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(href) = link.value().attr("href")
+                {
+                    // href is like "/wiki/sono#Italian"
+                    if let Some(word) = href.strip_prefix("/wiki/")
+                        && let Some(word_clean) = word.split('#').next()
+                    {
+                        // URL decode in case of special characters (like %C3%A8 → è)
+                        let decoded = percent_encoding::percent_decode_str(word_clean)
+                            .decode_utf8_lossy()
+                            .to_string();
+                        forms.push(decoded);
                     }
                 }
             }
@@ -2561,22 +2548,22 @@ pub mod italian {
             // Look for "imperative" but not "negative imperative"
             if text.contains("imperative") && !text.contains("negative") {
                 // Get the parent tr element
-                if let Some(parent) = th.parent() {
-                    if parent.value().as_element().map(|e| e.name()) == Some("tr") {
-                        // Skip text nodes to find the next tr sibling
-                        let mut current = parent.next_sibling();
-                        while let Some(node) = current {
-                            if let Some(next_elem) = ElementRef::wrap(node) {
-                                if next_elem.value().name() == "tr" {
-                                    imperative_row_ref = Some(next_elem);
-                                    break;
-                                }
-                            }
-                            current = node.next_sibling();
-                        }
-                        if imperative_row_ref.is_some() {
+                if let Some(parent) = th.parent()
+                    && parent.value().as_element().map(|e| e.name()) == Some("tr")
+                {
+                    // Skip text nodes to find the next tr sibling
+                    let mut current = parent.next_sibling();
+                    while let Some(node) = current {
+                        if let Some(next_elem) = ElementRef::wrap(node)
+                            && next_elem.value().name() == "tr"
+                        {
+                            imperative_row_ref = Some(next_elem);
                             break;
                         }
+                        current = node.next_sibling();
+                    }
+                    if imperative_row_ref.is_some() {
+                        break;
                     }
                 }
             }
@@ -2590,30 +2577,30 @@ pub mod italian {
 
         // Iterate through children of the tr element
         for child in imperative_row.children() {
-            if let Some(element) = child.value().as_element() {
-                if element.name() == "td" {
-                    let td_elem = scraper::ElementRef::wrap(child).unwrap();
+            if let Some(element) = child.value().as_element()
+                && element.name() == "td"
+            {
+                let td_elem = scraper::ElementRef::wrap(child).unwrap();
 
-                    // Check if this is an empty cell
-                    let text = td_elem.text().collect::<String>().trim().to_string();
-                    if text.is_empty() {
-                        continue;
-                    }
+                // Check if this is an empty cell
+                let text = td_elem.text().collect::<String>().trim().to_string();
+                if text.is_empty() {
+                    continue;
+                }
 
-                    // Extract from href to get actual spelling (not pronunciation marks)
-                    if let Some(link) = td_elem.select(&a_selector).next() {
-                        if let Some(href) = link.value().attr("href") {
-                            // href is like "/wiki/sii#Italian"
-                            if let Some(word) = href.strip_prefix("/wiki/") {
-                                if let Some(word_clean) = word.split('#').next() {
-                                    // URL decode in case of special characters (like %C3%A8 → è)
-                                    let decoded = percent_encoding::percent_decode_str(word_clean)
-                                        .decode_utf8_lossy()
-                                        .to_string();
-                                    forms.push(decoded);
-                                }
-                            }
-                        }
+                // Extract from href to get actual spelling (not pronunciation marks)
+                if let Some(link) = td_elem.select(&a_selector).next()
+                    && let Some(href) = link.value().attr("href")
+                {
+                    // href is like "/wiki/sii#Italian"
+                    if let Some(word) = href.strip_prefix("/wiki/")
+                        && let Some(word_clean) = word.split('#').next()
+                    {
+                        // URL decode in case of special characters (like %C3%A8 → è)
+                        let decoded = percent_encoding::percent_decode_str(word_clean)
+                            .decode_utf8_lossy()
+                            .to_string();
+                        forms.push(decoded);
                     }
                 }
             }

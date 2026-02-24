@@ -222,14 +222,14 @@ pub fn extract_single_atom_heteronyms(
         }
 
         // Extract the heteronym if this single atom is a heteronym
-        if let Some(Atom::Tok(word)) = gram.first() {
-            if let WordType::Heteronym(heteronym) = &word.word_type {
-                // Keep the maximum frequency for duplicated heteronyms
-                heteronym_frequencies
-                    .entry(heteronym.clone())
-                    .and_modify(|freq| *freq = (*freq).max(entry.count))
-                    .or_insert(entry.count);
-            }
+        if let Some(Atom::Tok(word)) = gram.first()
+            && let WordType::Heteronym(heteronym) = &word.word_type
+        {
+            // Keep the maximum frequency for duplicated heteronyms
+            heteronym_frequencies
+                .entry(heteronym.clone())
+                .and_modify(|freq| *freq = (*freq).max(entry.count))
+                .or_insert(entry.count);
         }
     }
 

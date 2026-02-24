@@ -1606,27 +1606,24 @@ impl SentenceClassifier for GermanClassifier {
             if token.pos != PartOfSpeechTag::Noun
                 && token.pos != PartOfSpeechTag::Propn
                 && token.pos != PartOfSpeechTag::Punct
+                && let Some(first_char) = token.lemma.chars().next()
+                && first_char.is_uppercase()
             {
-                if let Some(first_char) = token.lemma.chars().next() {
-                    if first_char.is_uppercase() {
-                        reasons.push(format!(
-                            "Non-noun '{}' has capitalized lemma '{}'",
-                            token.text, token.lemma
-                        ));
-                    }
-                }
+                reasons.push(format!(
+                    "Non-noun '{}' has capitalized lemma '{}'",
+                    token.text, token.lemma
+                ));
             }
 
             // Check for nouns with lowercase lemmas (nouns are capitalized in German)
-            if token.pos == PartOfSpeechTag::Noun || token.pos == PartOfSpeechTag::Propn {
-                if let Some(first_char) = token.lemma.chars().next() {
-                    if first_char.is_lowercase() {
-                        reasons.push(format!(
-                            "Noun '{}' has lowercase lemma '{}'",
-                            token.text, token.lemma
-                        ));
-                    }
-                }
+            if (token.pos == PartOfSpeechTag::Noun || token.pos == PartOfSpeechTag::Propn)
+                && let Some(first_char) = token.lemma.chars().next()
+                && first_char.is_lowercase()
+            {
+                reasons.push(format!(
+                    "Noun '{}' has lowercase lemma '{}'",
+                    token.text, token.lemma
+                ));
             }
 
             // Check common past-tense verbs are lemmatized to infinitive

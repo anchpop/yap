@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2342891
-Total errors: 1340
-Accuracy: 99.94%
+Total predictions: 2342882
+Total errors: 1265
+Accuracy: 99.95%
 
 ## Error Patterns (sorted by frequency)
 
@@ -411,13 +411,6 @@ Accuracy: 99.94%
   - Ein Fremder schreibt nicht „Arschloch“.
   - Er schreibt „Arschloch“.
 
-### "Beste" + "–" (2 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Möge der Beste – oder die Beste – gewinnen!
-  - Möge der Beste – oder die Beste – gewinnen!
-
 ### "Chief" + "…" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -530,26 +523,12 @@ Accuracy: 99.94%
   - Hey, du … - Auf Wiedersehen!
   - Und du … brauchst eine Therapietierherde.
 
-### "gefährlicher" + "–" (2 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Welche Stadt haltet ihr für gefährlicher – Boston oder Chicago?
-  - Welche Stadt hältst du für gefährlicher – Boston oder Chicago?
-
 ### "ich" + "jemanden" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Die Leute wußten, daß ichjemanden im Rücken hatte.
   - Zum erstenmal sah ichjemanden, der angeschossen worden war.
-
-### "ihn" + "–" (2 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Ich bewundere ihn – trotz seiner Fehler.
-  - Ich bewundere ihn – trotz seiner Untugenden.
 
 ### "ironisch" + "“" (2 occurrences)
 - Predicted: Space
@@ -795,18 +774,6 @@ Accuracy: 99.94%
 - Examples:
   - Denken Sie ernsthaft darüber nach, das auf „eBay“ zu verkaufen?
   - Ziehst du ernsthaft in Erwägung, das auf „eBay“ zu verkaufen?
-
-### "+" + "Z" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Die Tastenkombination Strg + Z macht die Änderungen rückgängig.
-
-### "," + "was" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Wenn das geschähe, was tätest du dann?
 
 ### "," + "„" (1 occurrences)
 - Predicted: None
@@ -1642,12 +1609,6 @@ Accuracy: 99.94%
 - Examples:
   - Ein ausgewogenes Verhältnis zwischen Berufs- und Privatleben ist wichtig.
 
-### "Bett" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom sprang aufs Bett – und krachend ging der Lattenrost zu Bruch.
-
 ### "Bira" + "´s" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1750,12 +1711,6 @@ Accuracy: 99.94%
 - Examples:
   - Deckung !
 
-### "Denker" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Deutschland, das Land der Dichter und Denker – das war einmal.
-
 ### "Dies" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1798,12 +1753,6 @@ Accuracy: 99.94%
 - Examples:
   - Du … Vielleicht bist du ja doch ein Lynxley.
 
-### "Dunkelheit" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Er war allein in der Dunkelheit – und niemand sonst.
-
 ### "Ehemann" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1828,23 +1777,11 @@ Accuracy: 99.94%
 - Examples:
   - Und man sieht kein Ende - und das ist die Wahrheit, Max.
 
-### "Englisch" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Ich kann kein Englisch – und Spanisch schon überhaupt nicht.
-
 ### "Englisch" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Ich brauche ein Wörterbuch „Japanisch-Englisch“.
-
-### "Erde" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Wir leben auf dem Planeten Erde – oder zumindest glauben wir das.
 
 ### "Erderwärmung" + "“" (1 occurrences)
 - Predicted: Space
@@ -1899,12 +1836,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Luiz und Fe/ício warten beim Friseur.
-
-### "Fenster" + "sangen" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Vor dem Fenster sangen Vögel und schien die Sonne.
 
 ### "Fest" + "-" (1 occurrences)
 - Predicted: None
@@ -1990,12 +1921,6 @@ Accuracy: 99.94%
 - Examples:
   - Geh .
 
-### "Gehirn" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Jeder Mensch besitzt ein Gehirn – nur Tom nicht.
-
 ### "Geld" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2031,12 +1956,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Kennt ihr euch im Geschäftaus?
-
-### "Gib" + "mir" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Gib mir dein Geld!
 
 ### "Glasschrank" + "-" (1 occurrences)
 - Predicted: None
@@ -2188,12 +2107,6 @@ Accuracy: 99.94%
 - Examples:
   - Warum gibt es eine „Miss“, aber keinen „Mister Italien“?
 
-### "Jahren" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Dieses Haus hat – wer weiß, seit wie vielen Jahren – Staub geschluckt.
-
 ### "Jeans" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2278,12 +2191,6 @@ Accuracy: 99.94%
 - Examples:
   - Staatsstreiche, Mafia, Korruption - sind das nicht Ihre Kunden?
 
-### "Krawatte" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Alle trugen eine Krawatte – außer Tom.
-
 ### "Kreisel" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2319,12 +2226,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Er starb für sein Land .
-
-### "Leider" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Leider – oder vielleicht glücklicherweise – nicht.
 
 ### "Lächeln" + "d" (1 occurrences)
 - Predicted: Space
@@ -2374,12 +2275,6 @@ Accuracy: 99.94%
 - Examples:
   - Maria !
 
-### "Maria" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom oder Maria – einer von beiden lügt.
-
 ### "Maria" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2422,12 +2317,6 @@ Accuracy: 99.94%
 - Examples:
   - Das sind Männer - jawohl!
 
-### "Männer" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Die beiden Frauern sind sehr sympathisch, die Männer – na ja, eher weniger.
-
 ### "Müll" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2457,12 +2346,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Nein .
-
-### "Neubeginn" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Jeder Tag ist ein Neubeginn – hole tief Luft und starte neu.
 
 ### "Noah" + "s" (1 occurrences)
 - Predicted: Space
@@ -2500,12 +2383,6 @@ Accuracy: 99.94%
 - Examples:
   - Du gehst zu einem sehr gefährlichen Ort - also, gib Acht!
 
-### "Osten" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Die Erde dreht sich um ihre Achse nach Osten – mit einer Umdrehung pro Tag.
-
 ### "Osten" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2530,29 +2407,11 @@ Accuracy: 99.94%
 - Examples:
   - Peter !
 
-### "Pflicht" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Macht ist Pflicht — Freiheit ist Verantwortlichkeit.
-
 ### "Photoshop" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Tom kann recht gut mit „Photoshop“ umgehen.
-
-### "Prinz" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Der Prinz – oder die Prinzessin – erbt den Thron.
-
-### "Prinzessin" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Der Prinz – oder die Prinzessin – erbt den Thron.
 
 ### "Problem" + "-" (1 occurrences)
 - Predicted: None
@@ -2698,12 +2557,6 @@ Accuracy: 99.94%
 - Examples:
   - Alles Schwarze - mit Kanonen!
 
-### "Schwedisch" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Sie sprechen Schwedisch — wie auch Karima.
-
 ### "Schwein" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2806,12 +2659,6 @@ Accuracy: 99.94%
 - Examples:
   - Seine Stadt - ein Architektentraum.
 
-### "Stadt" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Früher gab es nur zwei Restaurants in der Stadt – jetzt sind es zehn.
-
 ### "Stadtverordneten" + "­" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2829,18 +2676,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Haltet eure Stellung !
-
-### "Strg" + "+" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Die Tastenkombination Strg + Z macht die Änderungen rückgängig.
-
-### "Stunde" + "warten" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Sie ließ mich eine halbe Stunde warten.
 
 ### "Sully" + "s" (1 occurrences)
 - Predicted: Space
@@ -2920,12 +2755,6 @@ Accuracy: 99.94%
 - Examples:
   - All dein Tunwird Offenbart.
 
-### "Tür" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Weihnachten steht vor der Tür – wieder einmal.
-
 ### "UNRUHEN" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2979,12 +2808,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Volltreffer !
-
-### "Vorlagen" + "schrieb" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Unter Verwendung historischer Vorlagen schrieb sie mehrere spannende Romane.
 
 ### "Wahr" + "lich" (1 occurrences)
 - Predicted: Space
@@ -3075,18 +2898,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Zusammenreißen !
-
-### "ab" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Der Mensch stammt nicht vom Affen ab – mit Ausnahme einiger Leute.
-
-### "abgeschickt" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Ich habe es gestern abgeschickt – du solltest es morgen bekommen.
 
 ### "abschicken" + "“" (1 occurrences)
 - Predicted: Space
@@ -3238,12 +3049,6 @@ Accuracy: 99.94%
 - Examples:
   - Paulie wollte nicht, daßjemand in seinem Haus starb.
 
-### "denn" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Nun denn – du bist dran!
-
 ### "der" + "Arbeit" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3255,12 +3060,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Ich habe nur Augen für dich - ehrlich.
-
-### "dich" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Das ist für dich – von Mama und mir.
 
 ### "die" + "Juden" (1 occurrences)
 - Predicted: Space
@@ -3352,18 +3151,6 @@ Accuracy: 99.94%
 - Examples:
   - Oh mein Gott, das ist ja eineTragödie.
 
-### "einen" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Einer für alle und alle für einen – das ist unser Wahlspruch.
-
-### "einig" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - In ihrem Hass gegen mich sind sie sich einig – und der ist mir recht.
-
 ### "einschlafen" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3382,12 +3169,6 @@ Accuracy: 99.94%
 - Examples:
   - Es wurde ein neues Kommunikationsmittel entwickelt - die Eisenbahn.
 
-### "er" + " –" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wenn er ein Vöglein wär’ – sagt er –, flöge er zu mir.
-
 ### "er" + "’ne" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3399,18 +3180,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Wenn der Widerstand es erfährt - - deutsches Baby.
-
-### "ergehen" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Lass deinen Arbeitseifer in Stille ergehen – dein Erfolg möge tönen!
-
-### "ermordet" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom wurde ermordet – zum Exempel den anderen Gefangenen gegenüber.
 
 ### "erst" + "-" (1 occurrences)
 - Predicted: None
@@ -3436,12 +3205,6 @@ Accuracy: 99.94%
 - Examples:
   - Okay, es … es ist mir egal, dass wir unterschiedlich sind.
 
-### "etwas" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom trinkt nie etwas – außer zu besonderen Anlässen.
-
 ### "evidence" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3460,12 +3223,6 @@ Accuracy: 99.94%
 - Examples:
   - Die Italiener nennen es la posta del falcone - die Wacht des Falken.
 
-### "fallen" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Einmal muss die Entscheidung fallen – je eher, desto besser.
-
 ### "fang" + "t" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3483,12 +3240,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Ich frag’ ihn, ob er Japanisch spricht.
-
-### "früher" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Erinnerst du dich an früher – wie schön es zu Hause war?
 
 ### "für" + "Tag" (1 occurrences)
 - Predicted: Space
@@ -3520,18 +3271,6 @@ Accuracy: 99.94%
 - Examples:
   - Er gehtjeden Morgen eine Stunde spazieren.
 
-### "geliebt" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Ich habe ihn geliebt – und das tue ich immer noch.
-
-### "genug" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Der Tag ist lang genug – du musst ihn nur nutzen!
-
 ### "gesagt" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3555,18 +3294,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Es gibtjemanden auf dem Gebiet, dem ich vertraue.
-
-### "gingen" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Wir alle gingen — mit Ausnahme seiner.
-
-### "glücklicherweise" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Leider – oder vielleicht glücklicherweise – nicht.
 
 ### "hab" + "’ne" (1 occurrences)
 - Predicted: None
@@ -3634,12 +3361,6 @@ Accuracy: 99.94%
 - Examples:
   - Eigentlich hatjedes Weib einen Bart an seinem Leib.
 
-### "hat" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Dieses Haus hat – wer weiß, seit wie vielen Jahren – Staub geschluckt.
-
 ### "hat" + "’ne" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3652,23 +3373,11 @@ Accuracy: 99.94%
 - Examples:
   - Er hat … Geburtstag?
 
-### "herzuschieben" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Hör auf, alles vor dir herzuschieben – ab morgen!
-
 ### "hielt" + "’ne" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ich hielt ’ne kurze Ansprache.
-
-### "hoffnungsvoll" + "aus" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Alles sah hell und hoffnungsvoll aus.
 
 ### "ich" + "-" (1 occurrences)
 - Predicted: None
@@ -3723,12 +3432,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Was istlos?
-
-### "ist" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Egal, wo sie ist – sie hat immer Personenschützer bei sich.
 
 ### "ist" + "’ne" (1 occurrences)
 - Predicted: None
@@ -3814,42 +3517,6 @@ Accuracy: 99.94%
 - Examples:
   - Ich glaub, ich könnte … Ich glaub, ich hab da was.
 
-### "könntest" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Wenn du es könntest – tätest du’s?
-
-### "lachte" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Sie lachte – mit Tränen in den Augen.
-
-### "lachten" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Alle lachten – außer Tom.
-
-### "lassen" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom und Maria haben sich scheiden lassen — ganz so, wie du voraussagtest.
-
-### "lebten" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Wenn wir auf dem Monde lebten — wie groß sähe dann die Erde aus?
-
-### "leiden" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Niemand konnte den neuen Geschichtslehrer leiden — außer Tom.
-
 ### "ler" + "stadt" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3915,12 +3582,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Ich musszu meiner Schwester, um ihr beim Umzugzu helfen.
-
-### "möchtest" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Du darfst hierbleiben, wenn du möchtest — solange du ruhig bleibst.
 
 ### "mögen" + "…" (1 occurrences)
 - Predicted: None
@@ -3994,12 +3655,6 @@ Accuracy: 99.94%
 - Examples:
   - Schaff ihn hier raus - wie, ist mir egal.
 
-### "redete" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Maria redete und redete – ihr Mund wollte gar nicht stille stehen.
-
 ### "reiste" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4060,12 +3715,6 @@ Accuracy: 99.94%
 - Examples:
   - Versuch nicht, mich zu schlagen - schlag mich!
 
-### "schneller" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Wer ist schneller — Yumi oder Keiko?
-
 ### "schon" + "’ne" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4078,29 +3727,11 @@ Accuracy: 99.94%
 - Examples:
   - Meine Freundin war sehrjung.
 
-### "sehr" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Meiner Mutter gefallen Tulpen sehr – ebenso wie meiner Schwester.
-
-### "sei" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Wo er auch sei – wir werden ihn finden.
-
 ### "sein" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Von jetzt an werde ich an Ihrer Seite sein - für immer.
-
-### "sein" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Christ sein – was bedeutet das?
 
 ### "senden" + "“" (1 occurrences)
 - Predicted: Space
@@ -4119,12 +3750,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Vielleicht können wir sie verfolgen, ohne dass sieVerdacht schöpfen?
-
-### "sie" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Durch ein unerwartetes Klopfen an der Tür erschrak sie – sie schrie auf.
 
 ### "sieht" + "-" (1 occurrences)
 - Predicted: None
@@ -4156,35 +3781,11 @@ Accuracy: 99.94%
 - Examples:
   - Wir müssen uns beeilen, sonst … - Wir werden gewinnen, Judy Hopps.
 
-### "stehen" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - So nahe wir uns auch stehen – das kann ich nicht von ihm verlangen.
-
-### "trinken" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Ich brauche jetzt erst mal was zu trinken – was Hochprozentiges.
-
-### "tut" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Gleich, was Maria tut — es scheint Tom nie zu verärgern.
-
 ### "tu’" + "mir" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ich tu’ mir sehr gern Essig auf die Pommes.
-
-### "tätig" + "und" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom ist gerne tätig und hasst es, nichtstuend herumzusitzen.
 
 ### "um" + "verteidigung" (1 occurrences)
 - Predicted: Space
@@ -4221,12 +3822,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Arme ausgebreitet, sie um dich gelegt und … - - … gedrückt.
-
-### "unfehlbar" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Niemand ist unfehlbar – außer Marina.
 
 ### "unseres" + "…" (1 occurrences)
 - Predicted: None
@@ -4378,12 +3973,6 @@ Accuracy: 99.94%
 - Examples:
   - Sie tat so, als wär’ sie schwer zu haben.
 
-### "wünschst" + "–" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Sei vorsichtig, was du dir wünschst – es könnte in Erfüllung gehen!
-
 ### "würde" + "jetzt" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -4467,36 +4056,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Halten Sie Ihre Steine ​​​​verbunden.
-
-### "–" + "das" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Trinken oder nicht trinken – das ist hier die Frage.
-
-### "–" + "du" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Was du auch tust – du musst dein Bestes geben!
-
-### "—" + "das" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Das Wort gefällt mir — das wird sofort in meinen Wortschatz integriert!
-
-### "—" + "ich" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Egal, wie müde ich auch bin — ich muss arbeiten.
-
-### "—" + " außer" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Alle spürten das Erdbeben — außer mir.
 
 ### "’" + "Erscheinen" (1 occurrences)
 - Predicted: None
@@ -4587,6 +4146,12 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Ich fühl’ mich voll entspannt.
+
+### "’" + "–" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wenn er ein Vöglein wär’ – sagt er –, flöge er zu mir.
 
 ### "“" + "(" (1 occurrences)
 - Predicted: None

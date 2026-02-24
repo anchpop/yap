@@ -1119,10 +1119,9 @@ impl weapon::AppState for Deck {
                                 language_utils::Lexeme::Multiword { phrase } => {
                                     if let Some(grams) =
                                         context.language_pack.string_to_grams.get(phrase)
+                                        && let Some(gram) = grams.first()
                                     {
-                                        if let Some(gram) = grams.first() {
-                                            remembered_grams.insert(*gram);
-                                        }
+                                        remembered_grams.insert(*gram);
                                     }
                                 }
                             }
@@ -1148,10 +1147,9 @@ impl weapon::AppState for Deck {
                                 language_utils::Lexeme::Multiword { phrase } => {
                                     if let Some(grams) =
                                         context.language_pack.string_to_grams.get(phrase)
+                                        && let Some(gram) = grams.first()
                                     {
-                                        if let Some(gram) = grams.first() {
-                                            forgotten_grams.insert(*gram);
-                                        }
+                                        forgotten_grams.insert(*gram);
                                     }
                                 }
                             }
@@ -1689,10 +1687,10 @@ impl Deck {
                     let text = gram_resolved.to_display_string(self.context.course.target_language);
                     // Get POS from first heteronym if available for subtitle
                     let subtitle = gram_resolved.0.first().and_then(|atom| {
-                        if let language_utils::Atom::Tok(word) = atom {
-                            if let language_utils::WordType::Heteronym(h) = &word.word_type {
-                                return Some(h.pos.to_string().to_lowercase());
-                            }
+                        if let language_utils::Atom::Tok(word) = atom
+                            && let language_utils::WordType::Heteronym(h) = &word.word_type
+                        {
+                            return Some(h.pos.to_string().to_lowercase());
                         }
                         None
                     });
@@ -1895,10 +1893,10 @@ impl Deck {
             wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
 
             // Check if aborted before progressing
-            if let Some(ref signal) = abort_signal {
-                if signal.aborted() {
-                    return;
-                }
+            if let Some(ref signal) = abort_signal
+                && signal.aborted()
+            {
+                return;
             }
 
             let challenges;
@@ -1914,10 +1912,10 @@ impl Deck {
                         async move {
                             let request = request?;
                             // Check if aborted before processing
-                            if let Some(ref signal) = abort_signal {
-                                if signal.aborted() {
-                                    return None;
-                                }
+                            if let Some(ref signal) = abort_signal
+                                && signal.aborted()
+                            {
+                                return None;
                             }
 
                             // Generate the cache filename for this request
@@ -1940,10 +1938,10 @@ impl Deck {
         }
 
         // Check if aborted before cleanup
-        if let Some(ref signal) = abort_signal {
-            if signal.aborted() {
-                return;
-            }
+        if let Some(ref signal) = abort_signal
+            && signal.aborted()
+        {
+            return;
         }
 
         // Clean up any files that weren't in the requested set
@@ -2542,17 +2540,17 @@ impl Deck {
         let mut chart_data = Vec::new();
         for &target_freq in &target_frequencies {
             let bucket_key = format!("{target_freq}");
-            if let Some((probabilities, words)) = frequency_buckets.get(&bucket_key) {
-                if !probabilities.is_empty() {
-                    let avg_probability =
-                        probabilities.iter().sum::<f64>() / probabilities.len() as f64;
-                    chart_data.push(FrequencyKnowledgePoint {
-                        frequency: target_freq,
-                        predicted_knowledge: avg_probability,
-                        word_count: probabilities.len() as u32,
-                        example_words: words.join(", "),
-                    });
-                }
+            if let Some((probabilities, words)) = frequency_buckets.get(&bucket_key)
+                && !probabilities.is_empty()
+            {
+                let avg_probability =
+                    probabilities.iter().sum::<f64>() / probabilities.len() as f64;
+                chart_data.push(FrequencyKnowledgePoint {
+                    frequency: target_freq,
+                    predicted_knowledge: avg_probability,
+                    word_count: probabilities.len() as u32,
+                    example_words: words.join(", "),
+                });
             }
         }
 
@@ -2629,10 +2627,10 @@ impl Deck {
 
             // Check that all learnable grams are comprehensible
             for sentence_gram in &sentence_grams.grams {
-                if let SentenceGram::Learnable(gram) = sentence_gram {
-                    if !comprehensible_grams.contains(gram) {
-                        continue 'checkSentences; // Early exit!
-                    }
+                if let SentenceGram::Learnable(gram) = sentence_gram
+                    && !comprehensible_grams.contains(gram)
+                {
+                    continue 'checkSentences; // Early exit!
                 }
             }
 
@@ -2888,12 +2886,11 @@ impl Context {
         // Try heteronyms - find the first one that has a gram in gram_frequencies
         if let Some(heteronyms) = words_to_heteronyms.get(&word_spur) {
             for heteronym in heteronyms {
-                if let Some(grams) = self.language_pack.heteronym_to_grams.get(heteronym) {
-                    if let Some(gram) = grams.first() {
-                        if let Some(freq) = self.language_pack.gram_frequencies.get(gram) {
-                            return Some((*heteronym, *freq));
-                        }
-                    }
+                if let Some(grams) = self.language_pack.heteronym_to_grams.get(heteronym)
+                    && let Some(gram) = grams.first()
+                    && let Some(freq) = self.language_pack.gram_frequencies.get(gram)
+                {
+                    return Some((*heteronym, *freq));
                 }
             }
         }

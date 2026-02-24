@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
 Total predictions: 1540572
-Total errors: 1049
+Total errors: 1041
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -824,12 +824,6 @@ Accuracy: 99.93%
 - Examples:
   - Look,There is no boy like you in Brazil.
 
-### "," + "Walid" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Martino understand his son, Walid.
-
 ### "," + "\h" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1562,12 +1556,6 @@ Accuracy: 99.93%
 - Examples:
   - Mama - Miss Morton gave it to me.
 
-### "Many" + "Parisians" (1 occurrences)
-- Predicted: Space
-- Actual: NarrowNbsp
-- Examples:
-  - Many Parisians consider the area a no-go zone.
-
 ### "Max" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1699,12 +1687,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Today´s special is lentils and rice stew.
-
-### "Tom" + "left" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom left without even saying goodbye.
 
 ### "We" + "-" (1 occurrences)
 - Predicted: None
@@ -2636,12 +2618,6 @@ Accuracy: 99.93%
 - Examples:
   - Let me tell you the story of right hand/left hand.
 
-### "have" + "a" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - We have a lot of time left.
-
 ### "haven" + "´t" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2797,12 +2773,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - France seems to be swinging left - Britain to the right.
-
-### "left" + "without" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Tom left without even saying goodbye.
 
 ### "left" + "yesterday" (1 occurrences)
 - Predicted: Space
@@ -3085,12 +3055,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - On my count ofthree your hands will become immobile.
-
-### "of" + "time" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - We have a lot of time left.
 
 ### "of" + "time" (1 occurrences)
 - Predicted: Space
@@ -3560,12 +3524,6 @@ Accuracy: 99.93%
 - Examples:
   - This courage you pretend to\nis only inhumanity.
 
-### "to" + "get" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Did you manage to get in touch with Tom?
-
 ### "to" + "join" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3757,12 +3715,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - No, youlookbetterthan ever.
-
-### "you" + "manage" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Did you manage to get in touch with Tom?
 
 ### "you" + "´d" (1 occurrences)
 - Predicted: Space

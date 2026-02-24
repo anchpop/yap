@@ -176,10 +176,10 @@ async fn download_category(category_name: &str) -> anyhow::Result<Vec<String>> {
         if let Some(members) = data["query"]["categorymembers"].as_array() {
             for member in members {
                 // Only include main namespace pages (ns = 0)
-                if member["ns"] == 0 {
-                    if let Some(title) = member["title"].as_str() {
-                        all_pages.push(title.to_string());
-                    }
+                if member["ns"] == 0
+                    && let Some(title) = member["title"].as_str()
+                {
+                    all_pages.push(title.to_string());
                 }
             }
         }

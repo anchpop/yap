@@ -9,7 +9,7 @@
 {"count":4062,"disambiguation_key":1982751442,"gram":[{"Tok":{"text":"it","word_type":{"type":"Heteronym","word":"it","lemma":"it","pos":"PRON"}}}]}
 {"count":3732,"disambiguation_key":774027551,"gram":[{"Tok":{"text":"she","word_type":{"type":"Heteronym","word":"she","lemma":"she","pos":"PRON"}}}]}
 {"count":3646,"disambiguation_key":3465683630,"gram":[{"Tok":{"text":"was","word_type":{"type":"Heteronym","word":"was","lemma":"be","pos":"AUX"}}}]}
-{"count":3452,"disambiguation_key":1581124864,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}}]}
+{"count":3453,"disambiguation_key":1581124864,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}}]}
 {"count":3208,"disambiguation_key":4289426490,"gram":[{"Tok":{"text":"my","word_type":{"type":"Heteronym","word":"my","lemma":"my","pos":"DET"}}}]}
 {"count":3208,"disambiguation_key":2531747995,"gram":[{"Tok":{"text":"this","word_type":{"type":"Heteronym","word":"this","lemma":"this","pos":"DET"}}}]}
 {"count":3164,"disambiguation_key":822709958,"gram":[{"Tok":{"text":"we","word_type":{"type":"Heteronym","word":"we","lemma":"we","pos":"PRON"}}}]}
@@ -28,7 +28,7 @@
 {"count":2029,"disambiguation_key":2805788915,"gram":[{"Tok":{"text":"that","word_type":{"type":"Heteronym","word":"that","lemma":"that","pos":"PRON"}}}]}
 {"count":1917,"disambiguation_key":1550145640,"gram":[{"Tok":{"text":"with","word_type":{"type":"Heteronym","word":"with","lemma":"with","pos":"ADP"}}}]}
 {"count":1884,"disambiguation_key":748123274,"gram":[{"Tok":{"text":"going","word_type":{"type":"Heteronym","word":"going","lemma":"go","pos":"VERB"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"ADP"}}}]}
-{"count":1764,"disambiguation_key":3780842137,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}}]}
+{"count":1763,"disambiguation_key":3780842137,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}}]}
 {"count":1748,"disambiguation_key":2805788915,"gram":[{"Tok":{"text":"that","word_type":{"type":"Heteronym","word":"that","lemma":"that","pos":"DET"}}}]}
 {"count":1734,"disambiguation_key":2531747995,"gram":[{"Tok":{"text":"this","word_type":{"type":"Heteronym","word":"this","lemma":"this","pos":"PRON"}}}]}
 {"count":1704,"disambiguation_key":4177112041,"gram":[{"Tok":{"text":"go","word_type":{"type":"Heteronym","word":"go","lemma":"go","pos":"VERB"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"ADP"}}}]}
@@ -65,8 +65,8 @@
 {"count":1052,"disambiguation_key":1808751929,"gram":[{"Tok":{"text":"is","word_type":{"type":"Heteronym","word":"is","lemma":"be","pos":"AUX"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}}]}
 {"count":958,"disambiguation_key":4027625853,"gram":[{"Tok":{"text":"he","word_type":{"type":"Heteronym","word":"he","lemma":"he","pos":"PRON"}}},{"Tok":{"text":"is","word_type":{"type":"Heteronym","word":"is","lemma":"be","pos":"AUX"}}}]}
 {"count":950,"disambiguation_key":927226857,"gram":[{"Tok":{"text":"were","word_type":{"type":"Heteronym","word":"were","lemma":"be","pos":"AUX"}}}]}
+{"count":937,"disambiguation_key":4039120485,"gram":[{"Tok":{"text":"how","word_type":{"type":"Heteronym","word":"how","lemma":"how","pos":"ADV"}}}]}
 {"count":930,"disambiguation_key":4256503514,"gram":[{"Tok":{"text":"by","word_type":{"type":"Heteronym","word":"by","lemma":"by","pos":"ADP"}}}]}
-{"count":928,"disambiguation_key":4039120485,"gram":[{"Tok":{"text":"how","word_type":{"type":"Heteronym","word":"how","lemma":"how","pos":"ADV"}}}]}
 {"count":912,"disambiguation_key":3768358225,"gram":[{"Tok":{"text":"or","word_type":{"type":"Heteronym","word":"or","lemma":"or","pos":"CCONJ"}}}]}
 {"count":907,"disambiguation_key":3411561952,"gram":[{"Tok":{"text":"up","word_type":{"type":"Heteronym","word":"up","lemma":"up","pos":"PART"}}}]}
 {"count":902,"disambiguation_key":3096576806,"gram":[{"Tok":{"text":"everything","word_type":{"type":"Heteronym","word":"everything","lemma":"everything","pos":"PRON"}}}]}
@@ -115,7 +115,7 @@
 {"count":610,"disambiguation_key":1583156899,"gram":[{"Tok":{"text":"has","word_type":{"type":"Heteronym","word":"has","lemma":"have","pos":"VERB"}}}]}
 {"count":605,"disambiguation_key":4210967418,"gram":[{"Tok":{"text":"isn't","word_type":{"type":"Heteronym","word":"isn't","lemma":"be","pos":"AUX"}}},{"Tok":{"text":"it","word_type":{"type":"Heteronym","word":"it","lemma":"it","pos":"PRON"}}}]}
 {"count":601,"disambiguation_key":1286510426,"gram":[{"Tok":{"text":"take","word_type":{"type":"Heteronym","word":"take","lemma":"take","pos":"VERB"}}}]}
-{"count":600,"disambiguation_key":3600193388,"gram":[{"Tok":{"text":"did","word_type":{"type":"Heteronym","word":"did","lemma":"do","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}}]}
+{"count":599,"disambiguation_key":3600193388,"gram":[{"Tok":{"text":"did","word_type":{"type":"Heteronym","word":"did","lemma":"do","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}}]}
 {"count":593,"disambiguation_key":1128810079,"gram":[{"Tok":{"text":"these","word_type":{"type":"Heteronym","word":"these","lemma":"this","pos":"DET"}}}]}
 {"count":577,"disambiguation_key":2080380204,"gram":[{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"can","word_type":{"type":"Heteronym","word":"can","lemma":"can","pos":"AUX"}}}]}
 {"count":577,"disambiguation_key":2040495643,"gram":[{"Tok":{"text":"stop","word_type":{"type":"Heteronym","word":"stop","lemma":"stop","pos":"VERB"}}}]}
@@ -160,7 +160,7 @@
 {"count":488,"disambiguation_key":2889168596,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}},{"Tok":{"text":"lot","word_type":{"type":"Heteronym","word":"lot","lemma":"lot","pos":"NOUN"}}},{"Tok":{"text":"of","word_type":{"type":"Heteronym","word":"of","lemma":"of","pos":"ADP"}}}]}
 {"count":488,"disambiguation_key":354436609,"gram":[{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"see","word_type":{"type":"Heteronym","word":"see","lemma":"see","pos":"VERB"}}}]}
 {"count":485,"disambiguation_key":1663984907,"gram":[{"Tok":{"text":"would","word_type":{"type":"Heteronym","word":"would","lemma":"will","pos":"AUX"}}}]}
-{"count":482,"disambiguation_key":1678308857,"gram":[{"Tok":{"text":"time","word_type":{"type":"Heteronym","word":"time","lemma":"time","pos":"NOUN"}}}]}
+{"count":481,"disambiguation_key":1678308857,"gram":[{"Tok":{"text":"time","word_type":{"type":"Heteronym","word":"time","lemma":"time","pos":"NOUN"}}}]}
 {"count":476,"disambiguation_key":3690083901,"gram":[{"Tok":{"text":"yesterday","word_type":{"type":"Heteronym","word":"yesterday","lemma":"yesterday","pos":"ADV"}}}]}
 {"count":474,"disambiguation_key":3287451253,"gram":[{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"should","word_type":{"type":"Heteronym","word":"should","lemma":"should","pos":"AUX"}}}]}
 {"count":471,"disambiguation_key":2769503175,"gram":[{"Tok":{"text":"made","word_type":{"type":"Heteronym","word":"made","lemma":"make","pos":"VERB"}}}]}
@@ -235,8 +235,8 @@
 {"count":361,"disambiguation_key":2989090069,"gram":[{"Tok":{"text":"got","word_type":{"type":"Heteronym","word":"got","lemma":"get","pos":"VERB"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"ADP"}}}]}
 {"count":358,"disambiguation_key":2014731357,"gram":[{"Tok":{"text":"could","word_type":{"type":"Heteronym","word":"could","lemma":"can","pos":"AUX"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"do","pos":"VERB"}}}]}
 {"count":355,"disambiguation_key":4087968589,"gram":[{"Tok":{"text":"money","word_type":{"type":"Heteronym","word":"money","lemma":"money","pos":"NOUN"}}}]}
+{"count":355,"disambiguation_key":2584523633,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}},{"Tok":{"text":"be","word_type":{"type":"Heteronym","word":"be","lemma":"be","pos":"AUX"}}}]}
 {"count":354,"disambiguation_key":2656846505,"gram":[{"Tok":{"text":"friends","word_type":{"type":"Heteronym","word":"friends","lemma":"friend","pos":"NOUN"}}}]}
-{"count":354,"disambiguation_key":2584523633,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}},{"Tok":{"text":"be","word_type":{"type":"Heteronym","word":"be","lemma":"be","pos":"AUX"}}}]}
 {"count":354,"disambiguation_key":1112347910,"gram":[{"Tok":{"text":"has","word_type":{"type":"Heteronym","word":"has","lemma":"have","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}}]}
 {"count":353,"disambiguation_key":881999684,"gram":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"i","pos":"PRON"}}},{"Tok":{"text":"can","word_type":{"type":"Heteronym","word":"can","lemma":"can","pos":"AUX"}}}]}
 {"count":350,"disambiguation_key":43194623,"gram":[{"Tok":{"text":"had","word_type":{"type":"Heteronym","word":"had","lemma":"have","pos":"VERB"}}}]}
@@ -896,6 +896,7 @@
 {"count":126,"disambiguation_key":1855273911,"gram":[{"Tok":{"text":"what","word_type":{"type":"Heteronym","word":"what","lemma":"what","pos":"PRON"}}},{"Tok":{"text":"are","word_type":{"type":"Heteronym","word":"are","lemma":"be","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}}]}
 {"count":126,"disambiguation_key":1324930595,"gram":[{"Tok":{"text":"be","word_type":{"type":"Heteronym","word":"be","lemma":"be","pos":"AUX"}}},{"Tok":{"text":"wrong","word_type":{"type":"Heteronym","word":"wrong","lemma":"wrong","pos":"ADJ"}}}]}
 {"count":125,"disambiguation_key":4291207703,"gram":[{"Tok":{"text":"all","word_type":{"type":"Heteronym","word":"all","lemma":"all","pos":"DET"}}},{"Tok":{"text":"right","word_type":{"type":"Heteronym","word":"right","lemma":"right","pos":"ADJ"}}}]}
+{"count":125,"disambiguation_key":2305130793,"gram":[{"Tok":{"text":"would","word_type":{"type":"Heteronym","word":"would","lemma":"would","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}}]}
 {"count":125,"disambiguation_key":1381356717,"gram":[{"Tok":{"text":"trust","word_type":{"type":"Heteronym","word":"trust","lemma":"trust","pos":"VERB"}}}]}
 {"count":125,"disambiguation_key":834482383,"gram":[{"Tok":{"text":"work","word_type":{"type":"Heteronym","word":"work","lemma":"work","pos":"VERB"}}},{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}}]}
 {"count":125,"disambiguation_key":560824200,"gram":[{"Tok":{"text":"trip","word_type":{"type":"Heteronym","word":"trip","lemma":"trip","pos":"NOUN"}}}]}
@@ -972,7 +973,6 @@
 {"count":117,"disambiguation_key":3540201114,"gram":[{"Tok":{"text":"sister","word_type":{"type":"Heteronym","word":"sister","lemma":"sister","pos":"NOUN"}}}]}
 {"count":117,"disambiguation_key":2933457513,"gram":[{"Tok":{"text":"suddenly","word_type":{"type":"Heteronym","word":"suddenly","lemma":"suddenly","pos":"ADV"}}}]}
 {"count":117,"disambiguation_key":2737399484,"gram":[{"Tok":{"text":"problem","word_type":{"type":"Heteronym","word":"problem","lemma":"problem","pos":"NOUN"}}}]}
-{"count":117,"disambiguation_key":2305130793,"gram":[{"Tok":{"text":"would","word_type":{"type":"Heteronym","word":"would","lemma":"would","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}}]}
 {"count":117,"disambiguation_key":1807809525,"gram":[{"Tok":{"text":"is","word_type":{"type":"Heteronym","word":"is","lemma":"be","pos":"AUX"}}},{"Tok":{"text":"always","word_type":{"type":"Heteronym","word":"always","lemma":"always","pos":"ADV"}}}]}
 {"count":117,"disambiguation_key":1354900758,"gram":[{"Tok":{"text":"study","word_type":{"type":"Heteronym","word":"study","lemma":"study","pos":"VERB"}}}]}
 {"count":117,"disambiguation_key":1219430941,"gram":[{"Tok":{"text":"shirt","word_type":{"type":"Heteronym","word":"shirt","lemma":"shirt","pos":"NOUN"}}}]}
@@ -1147,6 +1147,7 @@
 {"count":102,"disambiguation_key":2819031503,"gram":[{"Tok":{"text":"went","word_type":{"type":"Heteronym","word":"went","lemma":"go","pos":"VERB"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"ADP"}}}]}
 {"count":102,"disambiguation_key":2814918040,"gram":[{"Tok":{"text":"chair","word_type":{"type":"Heteronym","word":"chair","lemma":"chair","pos":"NOUN"}}}]}
 {"count":102,"disambiguation_key":2788207103,"gram":[{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"two","word_type":{"type":"Heteronym","word":"two","lemma":"two","pos":"NUM"}}}]}
+{"count":102,"disambiguation_key":2282427926,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}},{"Tok":{"text":"very","word_type":{"type":"Heteronym","word":"very","lemma":"very","pos":"ADV"}}}]}
 {"count":102,"disambiguation_key":2047734444,"gram":[{"Tok":{"text":"wash","word_type":{"type":"Heteronym","word":"wash","lemma":"wash","pos":"VERB"}}}]}
 {"count":102,"disambiguation_key":2030169010,"gram":[{"Tok":{"text":"herself","word_type":{"type":"Heteronym","word":"herself","lemma":"herself","pos":"PRON"}}}]}
 {"count":102,"disambiguation_key":1851828950,"gram":[{"Tok":{"text":"in","word_type":{"type":"Heteronym","word":"in","lemma":"in","pos":"ADP"}}},{"Tok":{"text":"front","word_type":{"type":"Heteronym","word":"front","lemma":"front","pos":"NOUN"}}},{"Tok":{"text":"of","word_type":{"type":"Heteronym","word":"of","lemma":"of","pos":"ADP"}}}]}
@@ -1159,7 +1160,6 @@
 {"count":101,"disambiguation_key":3051725097,"gram":[{"Tok":{"text":"wrote","word_type":{"type":"Heteronym","word":"wrote","lemma":"write","pos":"VERB"}}}]}
 {"count":101,"disambiguation_key":2777947338,"gram":[{"Tok":{"text":"built","word_type":{"type":"Heteronym","word":"built","lemma":"build","pos":"VERB"}}}]}
 {"count":101,"disambiguation_key":2528792558,"gram":[{"Tok":{"text":"picture","word_type":{"type":"Heteronym","word":"picture","lemma":"picture","pos":"NOUN"}}}]}
-{"count":101,"disambiguation_key":2282427926,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}},{"Tok":{"text":"very","word_type":{"type":"Heteronym","word":"very","lemma":"very","pos":"ADV"}}}]}
 {"count":101,"disambiguation_key":1654244329,"gram":[{"Tok":{"text":"clear","word_type":{"type":"Heteronym","word":"clear","lemma":"clear","pos":"ADJ"}}}]}
 {"count":101,"disambiguation_key":1628223447,"gram":[{"Tok":{"text":"lost","word_type":{"type":"Heteronym","word":"lost","lemma":"lost","pos":"ADJ"}}}]}
 {"count":101,"disambiguation_key":1381539916,"gram":[{"Tok":{"text":"voice","word_type":{"type":"Heteronym","word":"voice","lemma":"voice","pos":"NOUN"}}}]}
@@ -2363,6 +2363,7 @@
 {"count":55,"disambiguation_key":1285810192,"gram":[{"Tok":{"text":"Chinese","word_type":{"type":"Heteronym","word":"chinese","lemma":"chinese","pos":"ADJ"}}}]}
 {"count":55,"disambiguation_key":1283027566,"gram":[{"Tok":{"text":"your","word_type":{"type":"Heteronym","word":"your","lemma":"you","pos":"DET"}}},{"Tok":{"text":"eyes","word_type":{"type":"Heteronym","word":"eyes","lemma":"eye","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":1159306315,"gram":[{"Tok":{"text":"gold","word_type":{"type":"Heteronym","word":"gold","lemma":"gold","pos":"NOUN"}}}]}
+{"count":55,"disambiguation_key":864323756,"gram":[{"Tok":{"text":"deep","word_type":{"type":"Heteronym","word":"deep","lemma":"deep","pos":"ADJ"}}}]}
 {"count":55,"disambiguation_key":712200451,"gram":[{"Tok":{"text":"enough","word_type":{"type":"Heteronym","word":"enough","lemma":"enough","pos":"DET"}}}]}
 {"count":55,"disambiguation_key":406564246,"gram":[{"Tok":{"text":"the","word_type":{"type":"Heteronym","word":"the","lemma":"the","pos":"DET"}}},{"Tok":{"text":"wall","word_type":{"type":"Heteronym","word":"wall","lemma":"wall","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":324351399,"gram":[{"Tok":{"text":"got","word_type":{"type":"Heteronym","word":"got","lemma":"get","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}}]}
@@ -2419,7 +2420,6 @@
 {"count":54,"disambiguation_key":1072119527,"gram":[{"Tok":{"text":"another","word_type":{"type":"Heteronym","word":"another","lemma":"another","pos":"PRON"}}}]}
 {"count":54,"disambiguation_key":1071539879,"gram":[{"Tok":{"text":"guess","word_type":{"type":"Heteronym","word":"guess","lemma":"guess","pos":"VERB"}}}]}
 {"count":54,"disambiguation_key":899520569,"gram":[{"Tok":{"text":"gonna","word_type":{"type":"Heteronym","word":"gonna","lemma":"gonna","pos":"AUX"}}}]}
-{"count":54,"disambiguation_key":864323756,"gram":[{"Tok":{"text":"deep","word_type":{"type":"Heteronym","word":"deep","lemma":"deep","pos":"ADJ"}}}]}
 {"count":54,"disambiguation_key":802527508,"gram":[{"Tok":{"text":"sleeps","word_type":{"type":"Heteronym","word":"sleeps","lemma":"sleep","pos":"VERB"}}}]}
 {"count":54,"disambiguation_key":744595848,"gram":[{"Tok":{"text":"put","word_type":{"type":"Heteronym","word":"put","lemma":"put","pos":"VERB"}}},{"Tok":{"text":"up","word_type":{"type":"Heteronym","word":"up","lemma":"up","pos":"PART"}}},{"Tok":{"text":"on","word_type":{"type":"Heteronym","word":"on","lemma":"on","pos":"ADP"}}}]}
 {"count":54,"disambiguation_key":663373496,"gram":[{"Tok":{"text":"flight","word_type":{"type":"Heteronym","word":"flight","lemma":"flight","pos":"NOUN"}}}]}
@@ -2432,6 +2432,7 @@
 {"count":54,"disambiguation_key":172112320,"gram":[{"Tok":{"text":"his","word_type":{"type":"Heteronym","word":"his","lemma":"he","pos":"DET"}}},{"Tok":{"text":"face","word_type":{"type":"Heteronym","word":"face","lemma":"face","pos":"NOUN"}}}]}
 {"count":54,"disambiguation_key":160182013,"gram":[{"Tok":{"text":"belong","word_type":{"type":"Heteronym","word":"belong","lemma":"belong","pos":"VERB"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"ADP"}}}]}
 {"count":54,"disambiguation_key":95420287,"gram":[{"Tok":{"text":"idiot","word_type":{"type":"Heteronym","word":"idiot","lemma":"idiot","pos":"NOUN"}}}]}
+{"count":54,"disambiguation_key":19533232,"gram":[{"Tok":{"text":"buried","word_type":{"type":"Heteronym","word":"buried","lemma":"bury","pos":"VERB"}}}]}
 {"count":53,"disambiguation_key":4208664512,"gram":[{"Tok":{"text":"suppose","word_type":{"type":"Heteronym","word":"suppose","lemma":"suppose","pos":"VERB"}}}]}
 {"count":53,"disambiguation_key":4191299199,"gram":[{"Tok":{"text":"bedroom","word_type":{"type":"Heteronym","word":"bedroom","lemma":"bedroom","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":4040651210,"gram":[{"Tok":{"text":"mouse","word_type":{"type":"Heteronym","word":"mouse","lemma":"mouse","pos":"NOUN"}}}]}
@@ -2486,7 +2487,6 @@
 {"count":53,"disambiguation_key":217359885,"gram":[{"Tok":{"text":"news","word_type":{"type":"Heteronym","word":"news","lemma":"news","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":142751673,"gram":[{"Tok":{"text":"instead","word_type":{"type":"Heteronym","word":"instead","lemma":"instead","pos":"ADV"}}},{"Tok":{"text":"of","word_type":{"type":"Heteronym","word":"of","lemma":"of","pos":"ADP"}}}]}
 {"count":53,"disambiguation_key":115987372,"gram":[{"Tok":{"text":"for","word_type":{"type":"Heteronym","word":"for","lemma":"for","pos":"ADP"}}},{"Tok":{"text":"dinner","word_type":{"type":"Heteronym","word":"dinner","lemma":"dinner","pos":"NOUN"}}}]}
-{"count":53,"disambiguation_key":19533232,"gram":[{"Tok":{"text":"buried","word_type":{"type":"Heteronym","word":"buried","lemma":"bury","pos":"VERB"}}}]}
 {"count":53,"disambiguation_key":12197587,"gram":[{"Tok":{"text":"rules","word_type":{"type":"Heteronym","word":"rules","lemma":"rule","pos":"NOUN"}}}]}
 {"count":52,"disambiguation_key":4190318338,"gram":[{"Tok":{"text":"he","word_type":{"type":"Heteronym","word":"he","lemma":"he","pos":"PRON"}}},{"Tok":{"text":"could","word_type":{"type":"Heteronym","word":"could","lemma":"can","pos":"AUX"}}}]}
 {"count":52,"disambiguation_key":4187658803,"gram":[{"Tok":{"text":"refused","word_type":{"type":"Heteronym","word":"refused","lemma":"refuse","pos":"VERB"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}}]}
@@ -2863,6 +2863,7 @@
 {"count":47,"disambiguation_key":66147986,"gram":[{"Tok":{"text":"we","word_type":{"type":"Heteronym","word":"we","lemma":"we","pos":"PRON"}}},{"Tok":{"text":"did","word_type":{"type":"Heteronym","word":"did","lemma":"do","pos":"VERB"}}}]}
 {"count":46,"disambiguation_key":4288813116,"gram":[{"Tok":{"text":"on","word_type":{"type":"Heteronym","word":"on","lemma":"on","pos":"ADP"}}},{"Tok":{"text":"that","word_type":{"type":"Heteronym","word":"that","lemma":"that","pos":"DET"}}}]}
 {"count":46,"disambiguation_key":4283812410,"gram":[{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Control":"None"},{"Tok":{"text":"'re","word_type":{"type":"Heteronym","word":"'re","lemma":"be","pos":"AUX"}}},{"Tok":{"text":"right","word_type":{"type":"Heteronym","word":"right","lemma":"right","pos":"ADJ"}}}]}
+{"count":46,"disambiguation_key":4254069650,"gram":[{"Tok":{"text":"hole","word_type":{"type":"Heteronym","word":"hole","lemma":"hole","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":4187410720,"gram":[{"Tok":{"text":"soul","word_type":{"type":"Heteronym","word":"soul","lemma":"soul","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":4131193462,"gram":[{"Tok":{"text":"the","word_type":{"type":"Heteronym","word":"the","lemma":"the","pos":"DET"}}},{"Tok":{"text":"crowd","word_type":{"type":"Heteronym","word":"crowd","lemma":"crowd","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":4040610594,"gram":[{"Tok":{"text":"his","word_type":{"type":"Heteronym","word":"his","lemma":"he","pos":"DET"}}},{"Tok":{"text":"head","word_type":{"type":"Heteronym","word":"head","lemma":"head","pos":"NOUN"}}}]}
@@ -2922,7 +2923,6 @@
 {"count":46,"disambiguation_key":74342126,"gram":[{"Tok":{"text":"joy","word_type":{"type":"Heteronym","word":"joy","lemma":"joy","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":51673488,"gram":[{"Tok":{"text":"breath","word_type":{"type":"Heteronym","word":"breath","lemma":"breath","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":11738750,"gram":[{"Tok":{"text":"get","word_type":{"type":"Heteronym","word":"get","lemma":"get","pos":"VERB"}}},{"Tok":{"text":"ready","word_type":{"type":"Heteronym","word":"ready","lemma":"ready","pos":"ADJ"}}}]}
-{"count":45,"disambiguation_key":4254069650,"gram":[{"Tok":{"text":"hole","word_type":{"type":"Heteronym","word":"hole","lemma":"hole","pos":"NOUN"}}}]}
 {"count":45,"disambiguation_key":4171818470,"gram":[{"Tok":{"text":"what","word_type":{"type":"Heteronym","word":"what","lemma":"what","pos":"PRON"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"do","pos":"VERB"}}}]}
 {"count":45,"disambiguation_key":4143525233,"gram":[{"Tok":{"text":"keep","word_type":{"type":"Heteronym","word":"keep","lemma":"keep","pos":"VERB"}}},{"Tok":{"text":"your","word_type":{"type":"Heteronym","word":"your","lemma":"you","pos":"DET"}}}]}
 {"count":45,"disambiguation_key":3971627523,"gram":[{"Tok":{"text":"get","word_type":{"type":"Heteronym","word":"get","lemma":"get","pos":"VERB"}}},{"Tok":{"text":"out","word_type":{"type":"Heteronym","word":"out","lemma":"out","pos":"ADP"}}},{"Tok":{"text":"of","word_type":{"type":"Heteronym","word":"of","lemma":"of","pos":"ADP"}}},{"Tok":{"text":"here","word_type":{"type":"Heteronym","word":"here","lemma":"here","pos":"ADV"}}}]}
@@ -3272,7 +3272,6 @@
 {"count":40,"disambiguation_key":4189539977,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}},{"Tok":{"text":"dance","word_type":{"type":"Heteronym","word":"dance","lemma":"dance","pos":"VERB"}}}]}
 {"count":40,"disambiguation_key":4188504419,"gram":[{"Tok":{"text":"would","word_type":{"type":"Heteronym","word":"would","lemma":"will","pos":"AUX"}}},{"Tok":{"text":"never","word_type":{"type":"Heteronym","word":"never","lemma":"never","pos":"ADV"}}}]}
 {"count":40,"disambiguation_key":4171382946,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}},{"Tok":{"text":"fight","word_type":{"type":"Heteronym","word":"fight","lemma":"fight","pos":"VERB"}}}]}
-{"count":40,"disambiguation_key":4112878881,"gram":[{"Tok":{"text":"manage","word_type":{"type":"Heteronym","word":"manage","lemma":"manage","pos":"VERB"}}}]}
 {"count":40,"disambiguation_key":4030066908,"gram":[{"Tok":{"text":"blew","word_type":{"type":"Heteronym","word":"blew","lemma":"blow","pos":"VERB"}}}]}
 {"count":40,"disambiguation_key":3998328406,"gram":[{"Tok":{"text":"program","word_type":{"type":"Heteronym","word":"program","lemma":"program","pos":"NOUN"}}}]}
 {"count":40,"disambiguation_key":3998006302,"gram":[{"Tok":{"text":"notice","word_type":{"type":"Heteronym","word":"notice","lemma":"notice","pos":"VERB"}}}]}
@@ -3357,6 +3356,7 @@
 {"count":40,"disambiguation_key":152696390,"gram":[{"Tok":{"text":"how","word_type":{"type":"Heteronym","word":"how","lemma":"how","pos":"ADV"}}},{"Tok":{"text":"are","word_type":{"type":"Heteronym","word":"are","lemma":"be","pos":"AUX"}}}]}
 {"count":39,"disambiguation_key":4139774248,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}},{"Tok":{"text":"kid","word_type":{"type":"Heteronym","word":"kid","lemma":"kid","pos":"NOUN"}}}]}
 {"count":39,"disambiguation_key":4114015243,"gram":[{"Tok":{"text":"fail","word_type":{"type":"Heteronym","word":"fail","lemma":"fail","pos":"VERB"}}}]}
+{"count":39,"disambiguation_key":4112878881,"gram":[{"Tok":{"text":"manage","word_type":{"type":"Heteronym","word":"manage","lemma":"manage","pos":"VERB"}}}]}
 {"count":39,"disambiguation_key":4061199621,"gram":[{"Tok":{"text":"sons","word_type":{"type":"Heteronym","word":"sons","lemma":"son","pos":"NOUN"}}}]}
 {"count":39,"disambiguation_key":3959792690,"gram":[{"Tok":{"text":"somewhere","word_type":{"type":"Heteronym","word":"somewhere","lemma":"somewhere","pos":"ADV"}}},{"Tok":{"text":"else","word_type":{"type":"Heteronym","word":"else","lemma":"else","pos":"ADV"}}}]}
 {"count":39,"disambiguation_key":3937430287,"gram":[{"Tok":{"text":"when","word_type":{"type":"Heteronym","word":"when","lemma":"when","pos":"SCONJ"}}},{"Tok":{"text":"they","word_type":{"type":"Heteronym","word":"they","lemma":"they","pos":"PRON"}}}]}
@@ -4790,6 +4790,7 @@
 {"count":27,"disambiguation_key":3824694626,"gram":[{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"no","pos":"INTJ"}}},{"Tok":{"text":",","word_type":{"type":"Other","other_tag":"PUNCT"}}},{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"no","pos":"INTJ"}}}]}
 {"count":27,"disambiguation_key":3815438309,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}},{"Tok":{"text":"pretty","word_type":{"type":"Heteronym","word":"pretty","lemma":"pretty","pos":"ADJ"}}}]}
 {"count":27,"disambiguation_key":3807455608,"gram":[{"Tok":{"text":"basket","word_type":{"type":"Heteronym","word":"basket","lemma":"basket","pos":"NOUN"}}}]}
+{"count":27,"disambiguation_key":3805092734,"gram":[{"Tok":{"text":"would","word_type":{"type":"Heteronym","word":"would","lemma":"would","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"like","word_type":{"type":"Heteronym","word":"like","lemma":"like","pos":"VERB"}}}]}
 {"count":27,"disambiguation_key":3710869709,"gram":[{"Tok":{"text":"that","word_type":{"type":"Heteronym","word":"that","lemma":"that","pos":"DET"}}},{"Tok":{"text":"movie","word_type":{"type":"Heteronym","word":"movie","lemma":"movie","pos":"NOUN"}}}]}
 {"count":27,"disambiguation_key":3696653727,"gram":[{"Tok":{"text":"take","word_type":{"type":"Heteronym","word":"take","lemma":"take","pos":"VERB"}}},{"Tok":{"text":"over","word_type":{"type":"Heteronym","word":"over","lemma":"over","pos":"PART"}}}]}
 {"count":27,"disambiguation_key":3666284076,"gram":[{"Tok":{"text":"worry","word_type":{"type":"Heteronym","word":"worry","lemma":"worry","pos":"VERB"}}},{"Tok":{"text":"about","word_type":{"type":"Heteronym","word":"about","lemma":"about","pos":"ADP"}}}]}
@@ -4945,7 +4946,6 @@
 {"count":26,"disambiguation_key":3870441195,"gram":[{"Tok":{"text":"look","word_type":{"type":"Heteronym","word":"look","lemma":"look","pos":"VERB"}}},{"Tok":{"text":"forward","word_type":{"type":"Heteronym","word":"forward","lemma":"forward","pos":"ADV"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"ADP"}}}]}
 {"count":26,"disambiguation_key":3856742129,"gram":[{"Tok":{"text":"why","word_type":{"type":"Heteronym","word":"why","lemma":"why","pos":"ADV"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"do","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"want","word_type":{"type":"Heteronym","word":"want","lemma":"want","pos":"VERB"}}}]}
 {"count":26,"disambiguation_key":3830560217,"gram":[{"Tok":{"text":"express","word_type":{"type":"Heteronym","word":"express","lemma":"express","pos":"VERB"}}}]}
-{"count":26,"disambiguation_key":3805092734,"gram":[{"Tok":{"text":"would","word_type":{"type":"Heteronym","word":"would","lemma":"would","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"like","word_type":{"type":"Heteronym","word":"like","lemma":"like","pos":"VERB"}}}]}
 {"count":26,"disambiguation_key":3794602075,"gram":[{"Tok":{"text":"politicians","word_type":{"type":"Heteronym","word":"politicians","lemma":"politician","pos":"NOUN"}}}]}
 {"count":26,"disambiguation_key":3792169740,"gram":[{"Tok":{"text":"give","word_type":{"type":"Heteronym","word":"give","lemma":"give","pos":"VERB"}}},{"Tok":{"text":"back","word_type":{"type":"Heteronym","word":"back","lemma":"back","pos":"ADV"}}}]}
 {"count":26,"disambiguation_key":3777654235,"gram":[{"Tok":{"text":"cleaning","word_type":{"type":"Heteronym","word":"cleaning","lemma":"clean","pos":"VERB"}}}]}
@@ -5918,6 +5918,7 @@
 {"count":21,"disambiguation_key":3761374136,"gram":[{"Tok":{"text":"round","word_type":{"type":"Heteronym","word":"round","lemma":"round","pos":"ADJ"}}}]}
 {"count":21,"disambiguation_key":3721920201,"gram":[{"Tok":{"text":"near","word_type":{"type":"Heteronym","word":"near","lemma":"near","pos":"ADV"}}}]}
 {"count":21,"disambiguation_key":3693618279,"gram":[{"Tok":{"text":"broke","word_type":{"type":"Heteronym","word":"broke","lemma":"break","pos":"VERB"}}},{"Tok":{"text":"out","word_type":{"type":"Heteronym","word":"out","lemma":"out","pos":"PART"}}}]}
+{"count":21,"disambiguation_key":3686520589,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}},{"Tok":{"text":"lot","word_type":{"type":"Heteronym","word":"lot","lemma":"lot","pos":"NOUN"}}},{"Tok":{"text":"of","word_type":{"type":"Heteronym","word":"of","lemma":"of","pos":"ADP"}}},{"Tok":{"text":"time","word_type":{"type":"Heteronym","word":"time","lemma":"time","pos":"NOUN"}}}]}
 {"count":21,"disambiguation_key":3668972425,"gram":[{"Tok":{"text":"have","word_type":{"type":"Heteronym","word":"have","lemma":"have","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"finished","word_type":{"type":"Heteronym","word":"finished","lemma":"finish","pos":"VERB"}}}]}
 {"count":21,"disambiguation_key":3662146679,"gram":[{"Tok":{"text":"generally","word_type":{"type":"Heteronym","word":"generally","lemma":"generally","pos":"ADV"}}}]}
 {"count":21,"disambiguation_key":3646726267,"gram":[{"Tok":{"text":"wings","word_type":{"type":"Heteronym","word":"wings","lemma":"wing","pos":"NOUN"}}}]}
@@ -6159,7 +6160,6 @@
 {"count":20,"disambiguation_key":3730584316,"gram":[{"Tok":{"text":"chased","word_type":{"type":"Heteronym","word":"chased","lemma":"chase","pos":"VERB"}}}]}
 {"count":20,"disambiguation_key":3726317815,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}},{"Tok":{"text":"discuss","word_type":{"type":"Heteronym","word":"discuss","lemma":"discuss","pos":"VERB"}}}]}
 {"count":20,"disambiguation_key":3718591526,"gram":[{"Tok":{"text":"willing","word_type":{"type":"Heteronym","word":"willing","lemma":"willing","pos":"ADJ"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}}]}
-{"count":20,"disambiguation_key":3686520589,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}},{"Tok":{"text":"lot","word_type":{"type":"Heteronym","word":"lot","lemma":"lot","pos":"NOUN"}}},{"Tok":{"text":"of","word_type":{"type":"Heteronym","word":"of","lemma":"of","pos":"ADP"}}},{"Tok":{"text":"time","word_type":{"type":"Heteronym","word":"time","lemma":"time","pos":"NOUN"}}}]}
 {"count":20,"disambiguation_key":3664120376,"gram":[{"Tok":{"text":"gate","word_type":{"type":"Heteronym","word":"gate","lemma":"gate","pos":"NOUN"}}}]}
 {"count":20,"disambiguation_key":3623488962,"gram":[{"Tok":{"text":"slow","word_type":{"type":"Heteronym","word":"slow","lemma":"slow","pos":"VERB"}}},{"Tok":{"text":"down","word_type":{"type":"Heteronym","word":"down","lemma":"down","pos":"PART"}}}]}
 {"count":20,"disambiguation_key":3618324585,"gram":[{"Tok":{"text":"be","word_type":{"type":"Heteronym","word":"be","lemma":"be","pos":"AUX"}}},{"Tok":{"text":"very","word_type":{"type":"Heteronym","word":"very","lemma":"very","pos":"ADV"}}}]}
@@ -12070,7 +12070,6 @@
 {"count":8,"disambiguation_key":3625835138,"gram":[{"Tok":{"text":"mines","word_type":{"type":"Heteronym","word":"mines","lemma":"mine","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":3618044091,"gram":[{"Tok":{"text":"an","word_type":{"type":"Heteronym","word":"an","lemma":"a","pos":"DET"}}},{"Tok":{"text":"interesting","word_type":{"type":"Heteronym","word":"interesting","lemma":"interesting","pos":"ADJ"}}},{"Tok":{"text":"book","word_type":{"type":"Heteronym","word":"book","lemma":"book","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":3612797321,"gram":[{"Tok":{"text":"deprived","word_type":{"type":"Heteronym","word":"deprived","lemma":"deprive","pos":"VERB"}}}]}
-{"count":8,"disambiguation_key":3612260231,"gram":[{"Tok":{"text":"how","word_type":{"type":"Heteronym","word":"how","lemma":"how","pos":"ADV"}}},{"Tok":{"text":"would","word_type":{"type":"Heteronym","word":"would","lemma":"would","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}}]}
 {"count":8,"disambiguation_key":3611952481,"gram":[{"Tok":{"text":"introduce","word_type":{"type":"Heteronym","word":"introduce","lemma":"introduce","pos":"VERB"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"ADP"}}},{"Tok":{"text":"my","word_type":{"type":"Heteronym","word":"my","lemma":"my","pos":"DET"}}}]}
 {"count":8,"disambiguation_key":3605385293,"gram":[{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}},{"Tok":{"text":"buy","word_type":{"type":"Heteronym","word":"buy","lemma":"buy","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"DET"}}}]}
 {"count":8,"disambiguation_key":3603885057,"gram":[{"Tok":{"text":"travelling","word_type":{"type":"Heteronym","word":"travelling","lemma":"travel","pos":"NOUN"}}}]}
@@ -18504,6 +18503,7 @@
 {"count":4,"disambiguation_key":3035480581,"gram":[{"Tok":{"text":"disturbed","word_type":{"type":"Heteronym","word":"disturbed","lemma":"disturbed","pos":"ADJ"}}}]}
 {"count":4,"disambiguation_key":3033225250,"gram":[{"Tok":{"text":"units","word_type":{"type":"Heteronym","word":"units","lemma":"unit","pos":"NOUN"}}}]}
 {"count":4,"disambiguation_key":3032977261,"gram":[{"Tok":{"text":"go","word_type":{"type":"Heteronym","word":"go","lemma":"go","pos":"VERB"}}},{"Tok":{"text":"fish","word_type":{"type":"Heteronym","word":"fish","lemma":"fish","pos":"VERB"}}}]}
+{"count":4,"disambiguation_key":3032189899,"gram":[{"Tok":{"text":"did","word_type":{"type":"Heteronym","word":"did","lemma":"do","pos":"AUX"}}},{"Tok":{"text":"you","word_type":{"type":"Heteronym","word":"you","lemma":"you","pos":"PRON"}}},{"Tok":{"text":"manage","word_type":{"type":"Heteronym","word":"manage","lemma":"manage","pos":"VERB"}}},{"Tok":{"text":"to","word_type":{"type":"Heteronym","word":"to","lemma":"to","pos":"PART"}}}]}
 {"count":4,"disambiguation_key":3030075303,"gram":[{"Tok":{"text":"relaxes","word_type":{"type":"Heteronym","word":"relaxes","lemma":"relax","pos":"VERB"}}}]}
 {"count":4,"disambiguation_key":3029294462,"gram":[{"Tok":{"text":"debate","word_type":{"type":"Heteronym","word":"debate","lemma":"debate","pos":"VERB"}}}]}
 {"count":4,"disambiguation_key":3029177982,"gram":[{"Tok":{"text":"pour","word_type":{"type":"Heteronym","word":"pour","lemma":"pour","pos":"VERB"}}},{"Tok":{"text":"out","word_type":{"type":"Heteronym","word":"out","lemma":"out","pos":"PART"}}}]}

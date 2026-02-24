@@ -21,3 +21,8 @@ yap-frontend/dev-dist
 .vercel
 .direnv
 .envrc
+
+# Perf profiling data
+perf.data
+perf.data.old
+perf-*.data

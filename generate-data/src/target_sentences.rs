@@ -191,10 +191,10 @@ fn load_banned_sentences(source_data_path: &std::path::Path) -> anyhow::Result<H
             .context("Failed to read AI banned sentences file")?;
         for line in content.lines() {
             // Parse JSON to extract just the sentence
-            if let Ok(banned_entry) = serde_json::from_str::<serde_json::Value>(line) {
-                if let Some(sentence) = banned_entry.get("sentence").and_then(|s| s.as_str()) {
-                    banned_sentences.insert(sentence.to_lowercase());
-                }
+            if let Ok(banned_entry) = serde_json::from_str::<serde_json::Value>(line)
+                && let Some(sentence) = banned_entry.get("sentence").and_then(|s| s.as_str())
+            {
+                banned_sentences.insert(sentence.to_lowercase());
             }
         }
     }

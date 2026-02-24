@@ -553,10 +553,10 @@ impl SentenceGrams<SpurGram> {
         }
 
         // Capitalize first word if needed
-        if self.capitalize_first {
-            if let Some((_, first_word)) = all_words.first_mut() {
-                first_word.text = capitalize_first_letter(&first_word.text);
-            }
+        if self.capitalize_first
+            && let Some((_, first_word)) = all_words.first_mut()
+        {
+            first_word.text = capitalize_first_letter(&first_word.text);
         }
 
         // Build literals with proper cross-gram whitespace prediction
@@ -2828,10 +2828,10 @@ pub fn predict_whitespace(
     let right_first = right_text.chars().next();
 
     // Check if left ends with an attaching suffix (apostrophe, hyphen)
-    if let Some(c) = left_last {
-        if ATTACHING_SUFFIXES.contains(&c) {
-            return Whitespace::None;
-        }
+    if let Some(c) = left_last
+        && ATTACHING_SUFFIXES.contains(&c)
+    {
+        return Whitespace::None;
     }
 
     // Check if right starts with certain punctuation
@@ -2847,10 +2847,10 @@ pub fn predict_whitespace(
     }
 
     // Check if left ends with opening bracket/quote (no space after)
-    if let Some(c) = left_last {
-        if NO_SPACE_AFTER.contains(&c) {
-            return Whitespace::None;
-        }
+    if let Some(c) = left_last
+        && NO_SPACE_AFTER.contains(&c)
+    {
+        return Whitespace::None;
     }
 
     // Check if left is punctuation and right is punctuation (no space between)

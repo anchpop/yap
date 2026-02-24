@@ -94,12 +94,11 @@ impl<'a> NextCardsIterator<'a> {
                             gram_single_word(self.context.language_pack.gram_rodeo.resolve(gram))
                         {
                             // Single-word gram: check if it's easy
-                            if easy_only {
-                                if let WordType::Heteronym(h) = &word.word_type {
-                                    if !self.context.is_word_easy(h) {
-                                        preferred = false;
-                                    }
-                                }
+                            if easy_only
+                                && let WordType::Heteronym(h) = &word.word_type
+                                && !self.context.is_word_easy(h)
+                            {
+                                preferred = false;
                             }
                         } else {
                             // Multi-word gram: deprioritize during early onboarding

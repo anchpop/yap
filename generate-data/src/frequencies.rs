@@ -110,14 +110,14 @@ pub fn compute_movie_gram_frequencies(
         for (gram, count) in gram_counts {
             let count = count.ceil() as u32;
             // Only include grams that are in the vocabulary and are learnable
-            if let Some(vocab_entry) = gram_to_vocab.get(&gram) {
-                if vocab_entry.atoms.is_learnable() {
-                    freq_entries.push(GramFrequencyEntry {
-                        count,
-                        disambiguation_key: gram.disambiguation_key(),
-                        gram,
-                    });
-                }
+            if let Some(vocab_entry) = gram_to_vocab.get(&gram)
+                && vocab_entry.atoms.is_learnable()
+            {
+                freq_entries.push(GramFrequencyEntry {
+                    count,
+                    disambiguation_key: gram.disambiguation_key(),
+                    gram,
+                });
             }
         }
 
@@ -186,14 +186,14 @@ pub fn compute_gram_frequencies(
     for (gram, count) in gram_counts {
         let count = count.ceil() as u32;
         // Only include grams that are in the vocabulary and are learnable
-        if let Some(vocab_entry) = gram_to_vocab.get(&gram) {
-            if vocab_entry.atoms.is_learnable() {
-                freq_entries.push(GramFrequencyEntry {
-                    count,
-                    disambiguation_key: gram.disambiguation_key(),
-                    gram,
-                });
-            }
+        if let Some(vocab_entry) = gram_to_vocab.get(&gram)
+            && vocab_entry.atoms.is_learnable()
+        {
+            freq_entries.push(GramFrequencyEntry {
+                count,
+                disambiguation_key: gram.disambiguation_key(),
+                gram,
+            });
         }
     }
 

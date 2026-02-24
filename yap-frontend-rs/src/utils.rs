@@ -83,11 +83,11 @@ impl PerfTimer {
 
 impl Drop for PerfTimer {
     fn drop(&mut self) {
-        if let Some(window) = web_sys::window() {
-            if let Some(performance) = window.performance() {
-                let duration = performance.now() - self.start_time;
-                log::info!("[PERF] {}: {:.2}ms", self.label, duration);
-            }
+        if let Some(window) = web_sys::window()
+            && let Some(performance) = window.performance()
+        {
+            let duration = performance.now() - self.start_time;
+            log::info!("[PERF] {}: {:.2}ms", self.label, duration);
         }
     }
 }

@@ -1,25 +1,25 @@
-{"count":15168,"disambiguation_key":2954350620,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
-{"count":10246,"disambiguation_key":3500170724,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
+{"count":15169,"disambiguation_key":2954350620,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
+{"count":10248,"disambiguation_key":3500170724,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":10240,"disambiguation_key":4120534469,"gram":[{"Tok":{"text":"e","word_type":{"type":"Heteronym","word":"e","lemma":"e","pos":"CCONJ"}}}]}
-{"count":8007,"disambiguation_key":136543707,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}}]}
+{"count":8008,"disambiguation_key":136543707,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}}]}
 {"count":7671,"disambiguation_key":3522509943,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}}]}
 {"count":7396,"disambiguation_key":846842596,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}}]}
 {"count":7119,"disambiguation_key":2108037062,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}}]}
-{"count":6819,"disambiguation_key":3959932134,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
-{"count":6345,"disambiguation_key":2983869737,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"quê","word_type":{"type":"Heteronym","word":"quê","lemma":"que","pos":"PRON"}}}]}
+{"count":6820,"disambiguation_key":3959932134,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
+{"count":6346,"disambiguation_key":2983869737,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"quê","word_type":{"type":"Heteronym","word":"quê","lemma":"que","pos":"PRON"}}}]}
 {"count":6298,"disambiguation_key":1571926905,"gram":[{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}}]}
 {"count":5552,"disambiguation_key":2321991656,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}}]}
 {"count":5147,"disambiguation_key":4159318385,"gram":[{"Tok":{"text":"para","word_type":{"type":"Heteronym","word":"para","lemma":"para","pos":"ADP"}}}]}
 {"count":4415,"disambiguation_key":3309771742,"gram":[{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}}]}
 {"count":4242,"disambiguation_key":3867711793,"gram":[{"Tok":{"text":"ela","word_type":{"type":"Heteronym","word":"ela","lemma":"ela","pos":"PRON"}}}]}
 {"count":3953,"disambiguation_key":3330800894,"gram":[{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
-{"count":3819,"disambiguation_key":1811754583,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}}]}
+{"count":3821,"disambiguation_key":1811754583,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}}]}
 {"count":3480,"disambiguation_key":741995833,"gram":[{"Tok":{"text":"se","word_type":{"type":"Heteronym","word":"se","lemma":"se","pos":"PRON"}}}]}
-{"count":3435,"disambiguation_key":1228875208,"gram":[{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
+{"count":3440,"disambiguation_key":1228875208,"gram":[{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
 {"count":3361,"disambiguation_key":186000313,"gram":[{"Tok":{"text":"aqui","word_type":{"type":"Heteronym","word":"aqui","lemma":"aqui","pos":"ADV"}}}]}
 {"count":3278,"disambiguation_key":136543707,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":3277,"disambiguation_key":2358249908,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}}]}
-{"count":3132,"disambiguation_key":3153224671,"gram":[{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"me","pos":"PRON"}}}]}
+{"count":3133,"disambiguation_key":3153224671,"gram":[{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"me","pos":"PRON"}}}]}
 {"count":3072,"disambiguation_key":2493740633,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":2958,"disambiguation_key":2273489157,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}}]}
 {"count":2946,"disambiguation_key":2911481389,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}}]}
@@ -29,11 +29,11 @@
 {"count":2734,"disambiguation_key":2493740633,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
 {"count":2711,"disambiguation_key":1078066869,"gram":[{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}}]}
 {"count":2637,"disambiguation_key":3396662749,"gram":[{"Tok":{"text":"agora","word_type":{"type":"Heteronym","word":"agora","lemma":"agora","pos":"ADV"}}}]}
-{"count":2574,"disambiguation_key":3949631484,"gram":[{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}}]}
+{"count":2575,"disambiguation_key":3949631484,"gram":[{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}}]}
 {"count":2565,"disambiguation_key":3639620981,"gram":[{"Tok":{"text":"por","word_type":{"type":"Heteronym","word":"por","lemma":"por","pos":"ADP"}}}]}
 {"count":2551,"disambiguation_key":316436355,"gram":[{"Tok":{"text":"por","word_type":{"type":"Heteronym","word":"por","lemma":"por","pos":"ADP"}}},{"Tok":{"text":"quê","word_type":{"type":"Heteronym","word":"quê","lemma":"que","pos":"PRON"}}}]}
 {"count":2540,"disambiguation_key":184524199,"gram":[{"Tok":{"text":"mais","word_type":{"type":"Heteronym","word":"mais","lemma":"mais","pos":"ADV"}}}]}
-{"count":2529,"disambiguation_key":3604294577,"gram":[{"Tok":{"text":"na","word_type":{"type":"Heteronym","word":"na","lemma":"em a","pos":"ADP"}}}]}
+{"count":2530,"disambiguation_key":3604294577,"gram":[{"Tok":{"text":"na","word_type":{"type":"Heteronym","word":"na","lemma":"em a","pos":"ADP"}}}]}
 {"count":2385,"disambiguation_key":3571686524,"gram":[{"Tok":{"text":"foi","word_type":{"type":"Heteronym","word":"foi","lemma":"ser","pos":"AUX"}}}]}
 {"count":2190,"disambiguation_key":1637106452,"gram":[{"Tok":{"text":"por","word_type":{"type":"Heteronym","word":"por","lemma":"por","pos":"ADP"}}},{"Tok":{"text":"favor","word_type":{"type":"Heteronym","word":"favor","lemma":"favor","pos":"NOUN"}}}]}
 {"count":1965,"disambiguation_key":1885042007,"gram":[{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}}]}
@@ -58,17 +58,17 @@
 {"count":1511,"disambiguation_key":2471381421,"gram":[{"Tok":{"text":"hoje","word_type":{"type":"Heteronym","word":"hoje","lemma":"hoje","pos":"ADV"}}}]}
 {"count":1489,"disambiguation_key":122678350,"gram":[{"Tok":{"text":"dele","word_type":{"type":"Heteronym","word":"dele","lemma":"de ele","pos":"PRON"}}}]}
 {"count":1463,"disambiguation_key":2639786045,"gram":[{"Tok":{"text":"era","word_type":{"type":"Heteronym","word":"era","lemma":"ser","pos":"AUX"}}}]}
-{"count":1447,"disambiguation_key":2892313784,"gram":[{"Tok":{"text":"são","word_type":{"type":"Heteronym","word":"são","lemma":"ser","pos":"AUX"}}}]}
+{"count":1448,"disambiguation_key":2892313784,"gram":[{"Tok":{"text":"são","word_type":{"type":"Heteronym","word":"são","lemma":"ser","pos":"AUX"}}}]}
 {"count":1444,"disambiguation_key":271592832,"gram":[{"Tok":{"text":"então","word_type":{"type":"Heteronym","word":"então","lemma":"então","pos":"ADV"}}}]}
 {"count":1433,"disambiguation_key":3923305756,"gram":[{"Tok":{"text":"quando","word_type":{"type":"Heteronym","word":"quando","lemma":"quando","pos":"SCONJ"}}}]}
 {"count":1418,"disambiguation_key":2026338809,"gram":[{"Tok":{"text":"nos","word_type":{"type":"Heteronym","word":"nos","lemma":"nos","pos":"PRON"}}}]}
 {"count":1400,"disambiguation_key":2493740633,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"DET"}}}]}
 {"count":1307,"disambiguation_key":3852814870,"gram":[{"Tok":{"text":"será","word_type":{"type":"Heteronym","word":"será","lemma":"ser","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":1305,"disambiguation_key":1449274489,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
-{"count":1302,"disambiguation_key":4129629001,"gram":[{"Tok":{"text":"eles","word_type":{"type":"Heteronym","word":"eles","lemma":"ele","pos":"PRON"}}}]}
+{"count":1303,"disambiguation_key":4129629001,"gram":[{"Tok":{"text":"eles","word_type":{"type":"Heteronym","word":"eles","lemma":"ele","pos":"PRON"}}}]}
 {"count":1300,"disambiguation_key":2768869444,"gram":[{"Tok":{"text":"estou","word_type":{"type":"Heteronym","word":"estou","lemma":"estar","pos":"AUX"}}}]}
-{"count":1299,"disambiguation_key":1408309433,"gram":[{"Tok":{"text":"te","word_type":{"type":"Heteronym","word":"te","lemma":"tu","pos":"PRON"}}}]}
-{"count":1291,"disambiguation_key":3886205557,"gram":[{"Tok":{"text":"estão","word_type":{"type":"Heteronym","word":"estão","lemma":"estar","pos":"AUX"}}}]}
+{"count":1300,"disambiguation_key":1408309433,"gram":[{"Tok":{"text":"te","word_type":{"type":"Heteronym","word":"te","lemma":"tu","pos":"PRON"}}}]}
+{"count":1292,"disambiguation_key":3886205557,"gram":[{"Tok":{"text":"estão","word_type":{"type":"Heteronym","word":"estão","lemma":"estar","pos":"AUX"}}}]}
 {"count":1282,"disambiguation_key":1543406392,"gram":[{"Tok":{"text":"nunca","word_type":{"type":"Heteronym","word":"nunca","lemma":"nunca","pos":"ADV"}}}]}
 {"count":1268,"disambiguation_key":2568818865,"gram":[{"Tok":{"text":"as","word_type":{"type":"Heteronym","word":"as","lemma":"o","pos":"DET"}}}]}
 {"count":1258,"disambiguation_key":4209373285,"gram":[{"Tok":{"text":"ninguém","word_type":{"type":"Heteronym","word":"ninguém","lemma":"ninguém","pos":"PRON"}}}]}
@@ -88,7 +88,7 @@
 {"count":1110,"disambiguation_key":2356135518,"gram":[{"Tok":{"text":"este","word_type":{"type":"Heteronym","word":"este","lemma":"este","pos":"DET"}}}]}
 {"count":1091,"disambiguation_key":943534652,"gram":[{"Tok":{"text":"sempre","word_type":{"type":"Heteronym","word":"sempre","lemma":"sempre","pos":"ADV"}}}]}
 {"count":1089,"disambiguation_key":1574322922,"gram":[{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}},{"Tok":{"text":"quê","word_type":{"type":"Heteronym","word":"quê","lemma":"que","pos":"PRON"}}}]}
-{"count":1074,"disambiguation_key":3046590447,"gram":[{"Tok":{"text":"alguém","word_type":{"type":"Heteronym","word":"alguém","lemma":"alguém","pos":"PRON"}}}]}
+{"count":1075,"disambiguation_key":3046590447,"gram":[{"Tok":{"text":"alguém","word_type":{"type":"Heteronym","word":"alguém","lemma":"alguém","pos":"PRON"}}}]}
 {"count":1058,"disambiguation_key":3386452038,"gram":[{"Tok":{"text":"comigo","word_type":{"type":"Heteronym","word":"comigo","lemma":"eu","pos":"PRON"}}}]}
 {"count":1058,"disambiguation_key":308557205,"gram":[{"Tok":{"text":"ainda","word_type":{"type":"Heteronym","word":"ainda","lemma":"ainda","pos":"ADV"}}}]}
 {"count":1042,"disambiguation_key":691005372,"gram":[{"Tok":{"text":"assim","word_type":{"type":"Heteronym","word":"assim","lemma":"assim","pos":"ADV"}}}]}
@@ -132,7 +132,7 @@
 {"count":741,"disambiguation_key":3363898169,"gram":[{"Tok":{"text":"ter","word_type":{"type":"Heteronym","word":"ter","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":740,"disambiguation_key":1393661582,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
 {"count":724,"disambiguation_key":194392134,"gram":[{"Tok":{"text":"dos","word_type":{"type":"Heteronym","word":"dos","lemma":"de o","pos":"ADP"}}}]}
-{"count":717,"disambiguation_key":3344180928,"gram":[{"Tok":{"text":"lhe","word_type":{"type":"Heteronym","word":"lhe","lemma":"lhe","pos":"PRON"}}}]}
+{"count":718,"disambiguation_key":3344180928,"gram":[{"Tok":{"text":"lhe","word_type":{"type":"Heteronym","word":"lhe","lemma":"lhe","pos":"PRON"}}}]}
 {"count":713,"disambiguation_key":2333703226,"gram":[{"Tok":{"text":"ser","word_type":{"type":"Heteronym","word":"ser","lemma":"ser","pos":"AUX"}}}]}
 {"count":709,"disambiguation_key":1830662052,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
 {"count":704,"disambiguation_key":820378666,"gram":[{"Tok":{"text":"porque","word_type":{"type":"Heteronym","word":"porque","lemma":"porque","pos":"SCONJ"}}}]}
@@ -148,7 +148,7 @@
 {"count":675,"disambiguation_key":3923305756,"gram":[{"Tok":{"text":"quando","word_type":{"type":"Heteronym","word":"quando","lemma":"quando","pos":"ADV"}}}]}
 {"count":670,"disambiguation_key":3665005295,"gram":[{"Tok":{"text":"sou","word_type":{"type":"Heteronym","word":"sou","lemma":"ser","pos":"AUX"}}}]}
 {"count":668,"disambiguation_key":3439050225,"gram":[{"Tok":{"text":"apenas","word_type":{"type":"Heteronym","word":"apenas","lemma":"apenas","pos":"ADV"}}}]}
-{"count":666,"disambiguation_key":1549206557,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}}]}
+{"count":668,"disambiguation_key":1549206557,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}}]}
 {"count":662,"disambiguation_key":2630875952,"gram":[{"Tok":{"text":"posso","word_type":{"type":"Heteronym","word":"posso","lemma":"poder","pos":"AUX"}}}]}
 {"count":654,"disambiguation_key":553552755,"gram":[{"Tok":{"text":"ser","word_type":{"type":"Heteronym","word":"ser","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"mais","word_type":{"type":"Heteronym","word":"mais","lemma":"mais","pos":"ADV"}}}]}
 {"count":647,"disambiguation_key":3409464705,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}}]}
@@ -180,7 +180,7 @@
 {"count":568,"disambiguation_key":2915201244,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"pode","word_type":{"type":"Heteronym","word":"pode","lemma":"poder","pos":"AUX"}}}]}
 {"count":567,"disambiguation_key":2703531213,"gram":[{"Tok":{"text":"fez","word_type":{"type":"Heteronym","word":"fez","lemma":"fazer","pos":"VERB"}}}]}
 {"count":566,"disambiguation_key":2882045889,"gram":[{"Tok":{"text":"ver","word_type":{"type":"Heteronym","word":"ver","lemma":"ver","pos":"VERB"}}}]}
-{"count":557,"disambiguation_key":772066241,"gram":[{"Tok":{"text":"realmente","word_type":{"type":"Heteronym","word":"realmente","lemma":"realmente","pos":"ADV"}}}]}
+{"count":558,"disambiguation_key":772066241,"gram":[{"Tok":{"text":"realmente","word_type":{"type":"Heteronym","word":"realmente","lemma":"realmente","pos":"ADV"}}}]}
 {"count":555,"disambiguation_key":4176070110,"gram":[{"Tok":{"text":"para","word_type":{"type":"Heteronym","word":"para","lemma":"para","pos":"ADP"}}},{"Tok":{"text":"casa","word_type":{"type":"Heteronym","word":"casa","lemma":"casa","pos":"NOUN"}}}]}
 {"count":554,"disambiguation_key":2612907877,"gram":[{"Tok":{"text":"falar","word_type":{"type":"Heteronym","word":"falar","lemma":"falar","pos":"VERB"}}}]}
 {"count":550,"disambiguation_key":136543707,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"ela","pos":"PRON"}}}]}
@@ -197,7 +197,7 @@
 {"count":525,"disambiguation_key":1698268499,"gram":[{"Tok":{"text":"juntos","word_type":{"type":"Heteronym","word":"juntos","lemma":"junto","pos":"ADJ"}}}]}
 {"count":522,"disambiguation_key":102668365,"gram":[{"Tok":{"text":"quase","word_type":{"type":"Heteronym","word":"quase","lemma":"quase","pos":"ADV"}}}]}
 {"count":521,"disambiguation_key":4153044653,"gram":[{"Tok":{"text":"tempo","word_type":{"type":"Heteronym","word":"tempo","lemma":"tempo","pos":"NOUN"}}}]}
-{"count":518,"disambiguation_key":2830517400,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"seu","word_type":{"type":"Heteronym","word":"seu","lemma":"seu","pos":"DET"}}}]}
+{"count":519,"disambiguation_key":2830517400,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"seu","word_type":{"type":"Heteronym","word":"seu","lemma":"seu","pos":"DET"}}}]}
 {"count":516,"disambiguation_key":2907724966,"gram":[{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}},{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}}]}
 {"count":514,"disambiguation_key":3292712886,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}}]}
 {"count":511,"disambiguation_key":1099005487,"gram":[{"Tok":{"text":"demais","word_type":{"type":"Heteronym","word":"demais","lemma":"demais","pos":"ADV"}}}]}
@@ -256,14 +256,14 @@
 {"count":397,"disambiguation_key":3250847593,"gram":[{"Tok":{"text":"francês","word_type":{"type":"Heteronym","word":"francês","lemma":"francês","pos":"NOUN"}}}]}
 {"count":395,"disambiguation_key":29146553,"gram":[{"Tok":{"text":"morreu","word_type":{"type":"Heteronym","word":"morreu","lemma":"morrer","pos":"VERB"}}}]}
 {"count":394,"disambiguation_key":2313038536,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"mesmo","word_type":{"type":"Heteronym","word":"mesmo","lemma":"mesmo","pos":"PRON"}}}]}
+{"count":393,"disambiguation_key":426846275,"gram":[{"Tok":{"text":"seja","word_type":{"type":"Heteronym","word":"seja","lemma":"ser","pos":"AUX"}}}]}
 {"count":392,"disambiguation_key":2217075010,"gram":[{"Tok":{"text":"ei","word_type":{"type":"Heteronym","word":"ei","lemma":"ei","pos":"INTJ"}}}]}
-{"count":392,"disambiguation_key":426846275,"gram":[{"Tok":{"text":"seja","word_type":{"type":"Heteronym","word":"seja","lemma":"ser","pos":"AUX"}}}]}
 {"count":391,"disambiguation_key":2108037062,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"INTJ"}}}]}
 {"count":390,"disambiguation_key":3859302653,"gram":[{"Tok":{"text":"poderia","word_type":{"type":"Heteronym","word":"poderia","lemma":"poder","pos":"AUX"}}}]}
 {"count":390,"disambiguation_key":1676898492,"gram":[{"Tok":{"text":"tá","word_type":{"type":"Heteronym","word":"tá","lemma":"estar","pos":"AUX"}}}]}
 {"count":390,"disambiguation_key":247344395,"gram":[{"Tok":{"text":"à","word_type":{"type":"Heteronym","word":"à","lemma":"a o","pos":"ADP"}}},{"Tok":{"text":"noite","word_type":{"type":"Heteronym","word":"noite","lemma":"noite","pos":"NOUN"}}}]}
+{"count":388,"disambiguation_key":1727137469,"gram":[{"Tok":{"text":"estavam","word_type":{"type":"Heteronym","word":"estavam","lemma":"estar","pos":"AUX"}}}]}
 {"count":387,"disambiguation_key":3027310318,"gram":[{"Tok":{"text":"chegou","word_type":{"type":"Heteronym","word":"chegou","lemma":"chegar","pos":"VERB"}}}]}
-{"count":387,"disambiguation_key":1727137469,"gram":[{"Tok":{"text":"estavam","word_type":{"type":"Heteronym","word":"estavam","lemma":"estar","pos":"AUX"}}}]}
 {"count":387,"disambiguation_key":1392708247,"gram":[{"Tok":{"text":"e","word_type":{"type":"Heteronym","word":"e","lemma":"e","pos":"CCONJ"}}},{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}}]}
 {"count":387,"disambiguation_key":906991854,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"meu","word_type":{"type":"Heteronym","word":"meu","lemma":"meu","pos":"DET"}}}]}
 {"count":386,"disambiguation_key":1126357374,"gram":[{"Tok":{"text":"deu","word_type":{"type":"Heteronym","word":"deu","lemma":"dar","pos":"VERB"}}}]}
@@ -280,7 +280,7 @@
 {"count":375,"disambiguation_key":378253598,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"sua","word_type":{"type":"Heteronym","word":"sua","lemma":"seu","pos":"DET"}}}]}
 {"count":369,"disambiguation_key":4043498769,"gram":[{"Tok":{"text":"grande","word_type":{"type":"Heteronym","word":"grande","lemma":"grande","pos":"ADJ"}}}]}
 {"count":369,"disambiguation_key":1653282501,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}}]}
-{"count":368,"disambiguation_key":1078066869,"gram":[{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de o","pos":"ADP"}}}]}
+{"count":369,"disambiguation_key":1078066869,"gram":[{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de o","pos":"ADP"}}}]}
 {"count":367,"disambiguation_key":3744792654,"gram":[{"Tok":{"text":"melhor","word_type":{"type":"Heteronym","word":"melhor","lemma":"bom","pos":"ADJ"}}}]}
 {"count":367,"disambiguation_key":3136081485,"gram":[{"Tok":{"text":"fora","word_type":{"type":"Heteronym","word":"fora","lemma":"fora","pos":"ADV"}}}]}
 {"count":367,"disambiguation_key":2008263093,"gram":[{"Tok":{"text":"têm","word_type":{"type":"Heteronym","word":"têm","lemma":"ter","pos":"VERB"}}}]}
@@ -295,8 +295,8 @@
 {"count":359,"disambiguation_key":3070115104,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"preciso","word_type":{"type":"Heteronym","word":"preciso","lemma":"precisar","pos":"VERB"}}}]}
 {"count":357,"disambiguation_key":4109960976,"gram":[{"Tok":{"text":"comida","word_type":{"type":"Heteronym","word":"comida","lemma":"comida","pos":"NOUN"}}}]}
 {"count":356,"disambiguation_key":3565145095,"gram":[{"Tok":{"text":"quanto","word_type":{"type":"Heteronym","word":"quanto","lemma":"quanto","pos":"ADV"}}}]}
+{"count":355,"disambiguation_key":1700198374,"gram":[{"Tok":{"text":"trabalhar","word_type":{"type":"Heteronym","word":"trabalhar","lemma":"trabalhar","pos":"VERB"}}}]}
 {"count":355,"disambiguation_key":879616421,"gram":[{"Tok":{"text":"inglês","word_type":{"type":"Heteronym","word":"inglês","lemma":"inglês","pos":"NOUN"}}}]}
-{"count":354,"disambiguation_key":1700198374,"gram":[{"Tok":{"text":"trabalhar","word_type":{"type":"Heteronym","word":"trabalhar","lemma":"trabalhar","pos":"VERB"}}}]}
 {"count":353,"disambiguation_key":4013653163,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"minha","word_type":{"type":"Heteronym","word":"minha","lemma":"meu","pos":"DET"}}}]}
 {"count":351,"disambiguation_key":1894586230,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}}]}
 {"count":349,"disambiguation_key":3755792335,"gram":[{"Tok":{"text":"por","word_type":{"type":"Heteronym","word":"por","lemma":"por","pos":"ADP"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}}]}
@@ -345,7 +345,7 @@
 {"count":314,"disambiguation_key":2814477908,"gram":[{"Tok":{"text":"minha","word_type":{"type":"Heteronym","word":"minha","lemma":"meu","pos":"DET"}}},{"Tok":{"text":"mãe","word_type":{"type":"Heteronym","word":"mãe","lemma":"mãe","pos":"NOUN"}}}]}
 {"count":313,"disambiguation_key":3065653720,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}}]}
 {"count":313,"disambiguation_key":2890036257,"gram":[{"Tok":{"text":"vão","word_type":{"type":"Heteronym","word":"vão","lemma":"ir","pos":"AUX"}}}]}
-{"count":312,"disambiguation_key":562870590,"gram":[{"Tok":{"text":"pessoas","word_type":{"type":"Heteronym","word":"pessoas","lemma":"pessoa","pos":"NOUN"}}}]}
+{"count":313,"disambiguation_key":562870590,"gram":[{"Tok":{"text":"pessoas","word_type":{"type":"Heteronym","word":"pessoas","lemma":"pessoa","pos":"NOUN"}}}]}
 {"count":311,"disambiguation_key":3108742301,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"precisa","word_type":{"type":"Heteronym","word":"precisa","lemma":"precisar","pos":"VERB"}}}]}
 {"count":310,"disambiguation_key":1720133148,"gram":[{"Tok":{"text":"veio","word_type":{"type":"Heteronym","word":"veio","lemma":"vir","pos":"VERB"}}}]}
 {"count":310,"disambiguation_key":791603596,"gram":[{"Tok":{"text":"duas","word_type":{"type":"Heteronym","word":"duas","lemma":"dois","pos":"NUM"}}}]}
@@ -365,8 +365,8 @@
 {"count":302,"disambiguation_key":1925980463,"gram":[{"Tok":{"text":"parece","word_type":{"type":"Heteronym","word":"parece","lemma":"parecer","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":301,"disambiguation_key":2215841527,"gram":[{"Tok":{"text":"vir","word_type":{"type":"Heteronym","word":"vir","lemma":"vir","pos":"VERB"}}}]}
 {"count":301,"disambiguation_key":1390237582,"gram":[{"Tok":{"text":"entrar","word_type":{"type":"Heteronym","word":"entrar","lemma":"entrar","pos":"VERB"}}}]}
+{"count":299,"disambiguation_key":3571686524,"gram":[{"Tok":{"text":"foi","word_type":{"type":"Heteronym","word":"foi","lemma":"ir","pos":"VERB"}}}]}
 {"count":299,"disambiguation_key":906542838,"gram":[{"Tok":{"text":"boa","word_type":{"type":"Heteronym","word":"boa","lemma":"bom","pos":"ADJ"}}}]}
-{"count":298,"disambiguation_key":3571686524,"gram":[{"Tok":{"text":"foi","word_type":{"type":"Heteronym","word":"foi","lemma":"ir","pos":"VERB"}}}]}
 {"count":297,"disambiguation_key":2033954508,"gram":[{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}},{"Tok":{"text":"tem","word_type":{"type":"Heteronym","word":"tem","lemma":"ter","pos":"VERB"}}}]}
 {"count":297,"disambiguation_key":284153974,"gram":[{"Tok":{"text":"alguns","word_type":{"type":"Heteronym","word":"alguns","lemma":"algum","pos":"DET"}}}]}
 {"count":296,"disambiguation_key":2088083187,"gram":[{"Tok":{"text":"amor","word_type":{"type":"Heteronym","word":"amor","lemma":"amor","pos":"NOUN"}}}]}
@@ -519,16 +519,16 @@
 {"count":233,"disambiguation_key":1419184804,"gram":[{"Tok":{"text":"imediatamente","word_type":{"type":"Heteronym","word":"imediatamente","lemma":"imediatamente","pos":"ADV"}}}]}
 {"count":233,"disambiguation_key":1283107046,"gram":[{"Tok":{"text":"tem","word_type":{"type":"Heteronym","word":"tem","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":233,"disambiguation_key":1184787016,"gram":[{"Tok":{"text":"vejo","word_type":{"type":"Heteronym","word":"vejo","lemma":"ver","pos":"VERB"}}}]}
+{"count":232,"disambiguation_key":3670574718,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"me","pos":"PRON"}}}]}
 {"count":232,"disambiguation_key":1910842497,"gram":[{"Tok":{"text":"gosta","word_type":{"type":"Heteronym","word":"gosta","lemma":"gostar","pos":"VERB"}}}]}
 {"count":232,"disambiguation_key":543870201,"gram":[{"Tok":{"text":"querer","word_type":{"type":"Heteronym","word":"querer","lemma":"querer","pos":"VERB"}}},{"Tok":{"text":"dizer","word_type":{"type":"Heteronym","word":"dizer","lemma":"dizer","pos":"VERB"}}}]}
 {"count":231,"disambiguation_key":4128394840,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}}]}
 {"count":231,"disambiguation_key":3706900724,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"deveria","word_type":{"type":"Heteronym","word":"deveria","lemma":"dever","pos":"AUX"}}}]}
 {"count":231,"disambiguation_key":3695003022,"gram":[{"Tok":{"text":"quantas","word_type":{"type":"Heteronym","word":"quantas","lemma":"quanto","pos":"DET"}}}]}
-{"count":231,"disambiguation_key":3670574718,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"me","pos":"PRON"}}}]}
-{"count":231,"disambiguation_key":3439273799,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}}]}
 {"count":231,"disambiguation_key":3239325793,"gram":[{"Tok":{"text":"espere","word_type":{"type":"Heteronym","word":"espere","lemma":"esperar","pos":"VERB"}}}]}
 {"count":231,"disambiguation_key":2488622363,"gram":[{"Tok":{"text":"neste","word_type":{"type":"Heteronym","word":"neste","lemma":"em este","pos":"ADP"}}}]}
 {"count":231,"disambiguation_key":1657034778,"gram":[{"Tok":{"text":"velho","word_type":{"type":"Heteronym","word":"velho","lemma":"velho","pos":"ADJ"}}}]}
+{"count":230,"disambiguation_key":3439273799,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}}]}
 {"count":230,"disambiguation_key":1335171883,"gram":[{"Tok":{"text":"escrever","word_type":{"type":"Heteronym","word":"escrever","lemma":"escrever","pos":"VERB"}}}]}
 {"count":229,"disambiguation_key":4201063577,"gram":[{"Tok":{"text":"pensar","word_type":{"type":"Heteronym","word":"pensar","lemma":"pensar","pos":"VERB"}}},{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}}]}
 {"count":229,"disambiguation_key":3382248617,"gram":[{"Tok":{"text":"dez","word_type":{"type":"Heteronym","word":"dez","lemma":"dez","pos":"NUM"}}}]}
@@ -552,10 +552,10 @@
 {"count":223,"disambiguation_key":2057060056,"gram":[{"Tok":{"text":"estranho","word_type":{"type":"Heteronym","word":"estranho","lemma":"estranho","pos":"ADJ"}}}]}
 {"count":223,"disambiguation_key":2036665068,"gram":[{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}},{"Tok":{"text":"francês","word_type":{"type":"Heteronym","word":"francês","lemma":"francês","pos":"NOUN"}}}]}
 {"count":223,"disambiguation_key":1671670661,"gram":[{"Tok":{"text":"nisso","word_type":{"type":"Heteronym","word":"nisso","lemma":"em isso","pos":"PRON"}}}]}
+{"count":223,"disambiguation_key":313313759,"gram":[{"Tok":{"text":"tudo","word_type":{"type":"Heteronym","word":"tudo","lemma":"tudo","pos":"PRON"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
 {"count":222,"disambiguation_key":3076827029,"gram":[{"Tok":{"text":"nessa","word_type":{"type":"Heteronym","word":"nessa","lemma":"em esse","pos":"ADP"}}}]}
 {"count":222,"disambiguation_key":2797251613,"gram":[{"Tok":{"text":"parar","word_type":{"type":"Heteronym","word":"parar","lemma":"parar","pos":"VERB"}}}]}
 {"count":222,"disambiguation_key":2465625854,"gram":[{"Tok":{"text":"ideia","word_type":{"type":"Heteronym","word":"ideia","lemma":"ideia","pos":"NOUN"}}}]}
-{"count":222,"disambiguation_key":313313759,"gram":[{"Tok":{"text":"tudo","word_type":{"type":"Heteronym","word":"tudo","lemma":"tudo","pos":"PRON"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
 {"count":222,"disambiguation_key":149056879,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"pode","word_type":{"type":"Heteronym","word":"pode","lemma":"poder","pos":"AUX"}}}]}
 {"count":222,"disambiguation_key":12622219,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"mais","word_type":{"type":"Heteronym","word":"mais","lemma":"mais","pos":"ADV"}}}]}
 {"count":221,"disambiguation_key":4096459333,"gram":[{"Tok":{"text":"sobre","word_type":{"type":"Heteronym","word":"sobre","lemma":"sobre","pos":"ADP"}}},{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
@@ -588,11 +588,11 @@
 {"count":212,"disambiguation_key":3203047864,"gram":[{"Tok":{"text":"mulher","word_type":{"type":"Heteronym","word":"mulher","lemma":"mulher","pos":"NOUN"}}}]}
 {"count":212,"disambiguation_key":1243308350,"gram":[{"Tok":{"text":"consegue","word_type":{"type":"Heteronym","word":"consegue","lemma":"conseguir","pos":"VERB"}}}]}
 {"count":211,"disambiguation_key":1375618483,"gram":[{"Tok":{"text":"decidiu","word_type":{"type":"Heteronym","word":"decidiu","lemma":"decidir","pos":"VERB"}}}]}
+{"count":210,"disambiguation_key":4152469872,"gram":[{"Tok":{"text":"havia","word_type":{"type":"Heteronym","word":"havia","lemma":"haver","pos":"VERB"}}}]}
 {"count":210,"disambiguation_key":4080788667,"gram":[{"Tok":{"text":"nós","word_type":{"type":"Heteronym","word":"nós","lemma":"nós","pos":"PRON"}}},{"Tok":{"text":"temos","word_type":{"type":"Heteronym","word":"temos","lemma":"ter","pos":"VERB"}}}]}
 {"count":210,"disambiguation_key":3864825622,"gram":[{"Tok":{"text":"senhora","word_type":{"type":"Heteronym","word":"senhora","lemma":"senhora","pos":"NOUN"}}}]}
 {"count":210,"disambiguation_key":3738018699,"gram":[{"Tok":{"text":"irá","word_type":{"type":"Heteronym","word":"irá","lemma":"ir","pos":"AUX"}}}]}
 {"count":210,"disambiguation_key":2283963717,"gram":[{"Tok":{"text":"todos","word_type":{"type":"Heteronym","word":"todos","lemma":"todo","pos":"DET"}}}]}
-{"count":209,"disambiguation_key":4152469872,"gram":[{"Tok":{"text":"havia","word_type":{"type":"Heteronym","word":"havia","lemma":"haver","pos":"VERB"}}}]}
 {"count":209,"disambiguation_key":4136650586,"gram":[{"Tok":{"text":"pelo","word_type":{"type":"Heteronym","word":"pelo","lemma":"por o","pos":"ADP"}}},{"Tok":{"text":"menos","word_type":{"type":"Heteronym","word":"menos","lemma":"menos","pos":"ADV"}}}]}
 {"count":209,"disambiguation_key":2653615822,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"quem","word_type":{"type":"Heteronym","word":"quem","lemma":"quem","pos":"PRON"}}}]}
 {"count":209,"disambiguation_key":1811866750,"gram":[{"Tok":{"text":"quando","word_type":{"type":"Heteronym","word":"quando","lemma":"quando","pos":"ADV"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}}]}
@@ -647,6 +647,7 @@
 {"count":197,"disambiguation_key":3893774239,"gram":[{"Tok":{"text":"palavras","word_type":{"type":"Heteronym","word":"palavras","lemma":"palavra","pos":"NOUN"}}}]}
 {"count":197,"disambiguation_key":3365246684,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"tempo","word_type":{"type":"Heteronym","word":"tempo","lemma":"tempo","pos":"NOUN"}}}]}
 {"count":197,"disambiguation_key":2941439366,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"mundo","word_type":{"type":"Heteronym","word":"mundo","lemma":"mundo","pos":"NOUN"}}}]}
+{"count":197,"disambiguation_key":2356135518,"gram":[{"Tok":{"text":"este","word_type":{"type":"Heteronym","word":"este","lemma":"este","pos":"PRON"}}}]}
 {"count":197,"disambiguation_key":841930775,"gram":[{"Tok":{"text":"país","word_type":{"type":"Heteronym","word":"país","lemma":"país","pos":"NOUN"}}}]}
 {"count":197,"disambiguation_key":77767693,"gram":[{"Tok":{"text":"história","word_type":{"type":"Heteronym","word":"história","lemma":"história","pos":"NOUN"}}}]}
 {"count":197,"disambiguation_key":47187581,"gram":[{"Tok":{"text":"dê","word_type":{"type":"Heteronym","word":"dê","lemma":"dar","pos":"VERB"}}}]}
@@ -655,7 +656,6 @@
 {"count":196,"disambiguation_key":2935649835,"gram":[{"Tok":{"text":"já","word_type":{"type":"Heteronym","word":"já","lemma":"já","pos":"ADV"}}},{"Tok":{"text":"era","word_type":{"type":"Heteronym","word":"era","lemma":"ser","pos":"AUX"}}}]}
 {"count":196,"disambiguation_key":2483552633,"gram":[{"Tok":{"text":"tirar","word_type":{"type":"Heteronym","word":"tirar","lemma":"tirar","pos":"VERB"}}}]}
 {"count":196,"disambiguation_key":2403885907,"gram":[{"Tok":{"text":"fiquei","word_type":{"type":"Heteronym","word":"fiquei","lemma":"ficar","pos":"VERB"}}}]}
-{"count":196,"disambiguation_key":2356135518,"gram":[{"Tok":{"text":"este","word_type":{"type":"Heteronym","word":"este","lemma":"este","pos":"PRON"}}}]}
 {"count":196,"disambiguation_key":2118583395,"gram":[{"Tok":{"text":"desse","word_type":{"type":"Heteronym","word":"desse","lemma":"de esse","pos":"ADP"}}}]}
 {"count":196,"disambiguation_key":1762456668,"gram":[{"Tok":{"text":"na","word_type":{"type":"Heteronym","word":"na","lemma":"em a","pos":"ADP"}}},{"Tok":{"text":"escola","word_type":{"type":"Heteronym","word":"escola","lemma":"escola","pos":"NOUN"}}}]}
 {"count":196,"disambiguation_key":716466754,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"tenho","word_type":{"type":"Heteronym","word":"tenho","lemma":"ter","pos":"VERB"}}}]}
@@ -996,6 +996,7 @@
 {"count":137,"disambiguation_key":3520738301,"gram":[{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}},{"Tok":{"text":"quer","word_type":{"type":"Heteronym","word":"quer","lemma":"querer","pos":"VERB"}}}]}
 {"count":137,"disambiguation_key":3411964037,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}}]}
 {"count":137,"disambiguation_key":3244196597,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"cachorro","word_type":{"type":"Heteronym","word":"cachorro","lemma":"cachorro","pos":"NOUN"}}}]}
+{"count":137,"disambiguation_key":3224922189,"gram":[{"Tok":{"text":"possível","word_type":{"type":"Heteronym","word":"possível","lemma":"possível","pos":"ADJ"}}}]}
 {"count":137,"disambiguation_key":2780651350,"gram":[{"Tok":{"text":"primeira","word_type":{"type":"Heteronym","word":"primeira","lemma":"primeiro","pos":"ADJ"}}},{"Tok":{"text":"vez","word_type":{"type":"Heteronym","word":"vez","lemma":"vez","pos":"NOUN"}}}]}
 {"count":137,"disambiguation_key":2746300164,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"gente","word_type":{"type":"Heteronym","word":"gente","lemma":"gente","pos":"PRON"}}}]}
 {"count":137,"disambiguation_key":2701914701,"gram":[{"Tok":{"text":"dormiu","word_type":{"type":"Heteronym","word":"dormiu","lemma":"dormir","pos":"VERB"}}}]}
@@ -1008,7 +1009,6 @@
 {"count":136,"disambiguation_key":4095394505,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"dia","word_type":{"type":"Heteronym","word":"dia","lemma":"dia","pos":"NOUN"}}},{"Tok":{"text":"todo","word_type":{"type":"Heteronym","word":"todo","lemma":"todo","pos":"DET"}}}]}
 {"count":136,"disambiguation_key":3982512219,"gram":[{"Tok":{"text":"tô","word_type":{"type":"Heteronym","word":"tô","lemma":"estar","pos":"AUX"}}}]}
 {"count":136,"disambiguation_key":3936246627,"gram":[{"Tok":{"text":"leva","word_type":{"type":"Heteronym","word":"leva","lemma":"levar","pos":"VERB"}}}]}
-{"count":136,"disambiguation_key":3224922189,"gram":[{"Tok":{"text":"possível","word_type":{"type":"Heteronym","word":"possível","lemma":"possível","pos":"ADJ"}}}]}
 {"count":136,"disambiguation_key":2357492141,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"história","word_type":{"type":"Heteronym","word":"história","lemma":"história","pos":"NOUN"}}}]}
 {"count":136,"disambiguation_key":1644480031,"gram":[{"Tok":{"text":"devia","word_type":{"type":"Heteronym","word":"devia","lemma":"dever","pos":"AUX"}}}]}
 {"count":136,"disambiguation_key":1400515531,"gram":[{"Tok":{"text":"advogado","word_type":{"type":"Heteronym","word":"advogado","lemma":"advogado","pos":"NOUN"}}}]}
@@ -1360,6 +1360,7 @@
 {"count":109,"disambiguation_key":1822181553,"gram":[{"Tok":{"text":"plano","word_type":{"type":"Heteronym","word":"plano","lemma":"plano","pos":"NOUN"}}}]}
 {"count":109,"disambiguation_key":1678308857,"gram":[{"Tok":{"text":"time","word_type":{"type":"Heteronym","word":"time","lemma":"time","pos":"NOUN"}}}]}
 {"count":109,"disambiguation_key":1524278234,"gram":[{"Tok":{"text":"carros","word_type":{"type":"Heteronym","word":"carros","lemma":"carro","pos":"NOUN"}}}]}
+{"count":109,"disambiguation_key":1179247301,"gram":[{"Tok":{"text":"rua","word_type":{"type":"Heteronym","word":"rua","lemma":"rua","pos":"NOUN"}}}]}
 {"count":109,"disambiguation_key":645199718,"gram":[{"Tok":{"text":"mostrar","word_type":{"type":"Heteronym","word":"mostrar","lemma":"mostrar","pos":"VERB"}}}]}
 {"count":109,"disambiguation_key":348817204,"gram":[{"Tok":{"text":"tivesse","word_type":{"type":"Heteronym","word":"tivesse","lemma":"ter","pos":"AUX"}}}]}
 {"count":108,"disambiguation_key":4222535977,"gram":[{"Tok":{"text":"à","word_type":{"type":"Heteronym","word":"à","lemma":"a a","pos":"ADP"}}}]}
@@ -1375,7 +1376,6 @@
 {"count":108,"disambiguation_key":1660257032,"gram":[{"Tok":{"text":"gostam","word_type":{"type":"Heteronym","word":"gostam","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":108,"disambiguation_key":1406453345,"gram":[{"Tok":{"text":"tivemos","word_type":{"type":"Heteronym","word":"tivemos","lemma":"ter","pos":"VERB"}}}]}
 {"count":108,"disambiguation_key":1378415844,"gram":[{"Tok":{"text":"as","word_type":{"type":"Heteronym","word":"as","lemma":"o","pos":"DET"}}},{"Tok":{"text":"mãos","word_type":{"type":"Heteronym","word":"mãos","lemma":"mão","pos":"NOUN"}}}]}
-{"count":108,"disambiguation_key":1179247301,"gram":[{"Tok":{"text":"rua","word_type":{"type":"Heteronym","word":"rua","lemma":"rua","pos":"NOUN"}}}]}
 {"count":108,"disambiguation_key":1031862510,"gram":[{"Tok":{"text":"pôs","word_type":{"type":"Heteronym","word":"pôs","lemma":"pôr","pos":"VERB"}}}]}
 {"count":108,"disambiguation_key":555605284,"gram":[{"Tok":{"text":"esse","word_type":{"type":"Heteronym","word":"esse","lemma":"esse","pos":"PRON"}}},{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}}]}
 {"count":108,"disambiguation_key":492200017,"gram":[{"Tok":{"text":"boa","word_type":{"type":"Heteronym","word":"boa","lemma":"bom","pos":"ADJ"}}},{"Tok":{"text":"noite","word_type":{"type":"Heteronym","word":"noite","lemma":"noite","pos":"NOUN"}}}]}
@@ -1483,6 +1483,7 @@
 {"count":102,"disambiguation_key":2054573311,"gram":[{"Tok":{"text":"marido","word_type":{"type":"Heteronym","word":"marido","lemma":"marido","pos":"NOUN"}}}]}
 {"count":102,"disambiguation_key":1932813714,"gram":[{"Tok":{"text":"naquele","word_type":{"type":"Heteronym","word":"naquele","lemma":"em aquele","pos":"ADP"}}}]}
 {"count":102,"disambiguation_key":1682350596,"gram":[{"Tok":{"text":"planeja","word_type":{"type":"Heteronym","word":"planeja","lemma":"planejar","pos":"VERB"}}}]}
+{"count":102,"disambiguation_key":1382945815,"gram":[{"Tok":{"text":"bebê","word_type":{"type":"Heteronym","word":"bebê","lemma":"bebê","pos":"NOUN"}}}]}
 {"count":102,"disambiguation_key":1314515064,"gram":[{"Tok":{"text":"outra","word_type":{"type":"Heteronym","word":"outra","lemma":"outro","pos":"DET"}}},{"Tok":{"text":"vez","word_type":{"type":"Heteronym","word":"vez","lemma":"vez","pos":"NOUN"}}}]}
 {"count":102,"disambiguation_key":1134230991,"gram":[{"Tok":{"text":"terá","word_type":{"type":"Heteronym","word":"terá","lemma":"ter","pos":"VERB"}}}]}
 {"count":102,"disambiguation_key":681010698,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"quer","word_type":{"type":"Heteronym","word":"quer","lemma":"querer","pos":"VERB"}}}]}
@@ -1493,7 +1494,6 @@
 {"count":101,"disambiguation_key":2210614513,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"mesma","word_type":{"type":"Heteronym","word":"mesma","lemma":"mesmo","pos":"ADJ"}}}]}
 {"count":101,"disambiguation_key":2151970748,"gram":[{"Tok":{"text":"cuidar","word_type":{"type":"Heteronym","word":"cuidar","lemma":"cuidar","pos":"VERB"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":101,"disambiguation_key":1902697820,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"melhor","word_type":{"type":"Heteronym","word":"melhor","lemma":"bom","pos":"ADJ"}}}]}
-{"count":101,"disambiguation_key":1382945815,"gram":[{"Tok":{"text":"bebê","word_type":{"type":"Heteronym","word":"bebê","lemma":"bebê","pos":"NOUN"}}}]}
 {"count":101,"disambiguation_key":1258536297,"gram":[{"Tok":{"text":"mandar","word_type":{"type":"Heteronym","word":"mandar","lemma":"mandar","pos":"VERB"}}}]}
 {"count":101,"disambiguation_key":1241041230,"gram":[{"Tok":{"text":"dentro","word_type":{"type":"Heteronym","word":"dentro","lemma":"dentro","pos":"ADV"}}}]}
 {"count":101,"disambiguation_key":1160225921,"gram":[{"Tok":{"text":"domingo","word_type":{"type":"Heteronym","word":"domingo","lemma":"domingo","pos":"NOUN"}}}]}
@@ -1564,6 +1564,7 @@
 {"count":98,"disambiguation_key":638552447,"gram":[{"Tok":{"text":"experiência","word_type":{"type":"Heteronym","word":"experiência","lemma":"experiência","pos":"NOUN"}}}]}
 {"count":98,"disambiguation_key":333974243,"gram":[{"Tok":{"text":"para","word_type":{"type":"Heteronym","word":"para","lemma":"para","pos":"ADP"}}},{"Tok":{"text":"fazer","word_type":{"type":"Heteronym","word":"fazer","lemma":"fazer","pos":"VERB"}}},{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
 {"count":97,"disambiguation_key":4263683086,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"nunca","word_type":{"type":"Heteronym","word":"nunca","lemma":"nunca","pos":"ADV"}}}]}
+{"count":97,"disambiguation_key":4157895362,"gram":[{"Tok":{"text":"era","word_type":{"type":"Heteronym","word":"era","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}}]}
 {"count":97,"disambiguation_key":4082472748,"gram":[{"Tok":{"text":"cadeira","word_type":{"type":"Heteronym","word":"cadeira","lemma":"cadeira","pos":"NOUN"}}}]}
 {"count":97,"disambiguation_key":3761881640,"gram":[{"Tok":{"text":"pudesse","word_type":{"type":"Heteronym","word":"pudesse","lemma":"poder","pos":"AUX"}}}]}
 {"count":97,"disambiguation_key":3156770923,"gram":[{"Tok":{"text":"quanto","word_type":{"type":"Heteronym","word":"quanto","lemma":"quanto","pos":"ADV"}}},{"Tok":{"text":"custa","word_type":{"type":"Heteronym","word":"custa","lemma":"custar","pos":"VERB"}}}]}
@@ -1581,7 +1582,6 @@
 {"count":97,"disambiguation_key":665852396,"gram":[{"Tok":{"text":"naquela","word_type":{"type":"Heteronym","word":"naquela","lemma":"em aquele","pos":"ADP"}}}]}
 {"count":97,"disambiguation_key":446296288,"gram":[{"Tok":{"text":"sete","word_type":{"type":"Heteronym","word":"sete","lemma":"sete","pos":"NUM"}}}]}
 {"count":97,"disambiguation_key":250846700,"gram":[{"Tok":{"text":"rei","word_type":{"type":"Heteronym","word":"rei","lemma":"rei","pos":"NOUN"}}}]}
-{"count":96,"disambiguation_key":4157895362,"gram":[{"Tok":{"text":"era","word_type":{"type":"Heteronym","word":"era","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}}]}
 {"count":96,"disambiguation_key":4156556867,"gram":[{"Tok":{"text":"prisão","word_type":{"type":"Heteronym","word":"prisão","lemma":"prisão","pos":"NOUN"}}}]}
 {"count":96,"disambiguation_key":4034394142,"gram":[{"Tok":{"text":"momento","word_type":{"type":"Heteronym","word":"momento","lemma":"momento","pos":"NOUN"}}}]}
 {"count":96,"disambiguation_key":3626561435,"gram":[{"Tok":{"text":"motivo","word_type":{"type":"Heteronym","word":"motivo","lemma":"motivo","pos":"NOUN"}}}]}
@@ -1590,6 +1590,7 @@
 {"count":96,"disambiguation_key":2754626841,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"morte","word_type":{"type":"Heteronym","word":"morte","lemma":"morte","pos":"NOUN"}}}]}
 {"count":96,"disambiguation_key":2567148471,"gram":[{"Tok":{"text":"sorvete","word_type":{"type":"Heteronym","word":"sorvete","lemma":"sorvete","pos":"NOUN"}}}]}
 {"count":96,"disambiguation_key":2289482289,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"ser","word_type":{"type":"Heteronym","word":"ser","lemma":"ser","pos":"AUX"}}}]}
+{"count":96,"disambiguation_key":2096287140,"gram":[{"Tok":{"text":"bairro","word_type":{"type":"Heteronym","word":"bairro","lemma":"bairro","pos":"NOUN"}}}]}
 {"count":96,"disambiguation_key":1878079983,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"indo","word_type":{"type":"Heteronym","word":"indo","lemma":"ir","pos":"VERB"}}}]}
 {"count":96,"disambiguation_key":1752307709,"gram":[{"Tok":{"text":"cabelo","word_type":{"type":"Heteronym","word":"cabelo","lemma":"cabelo","pos":"NOUN"}}}]}
 {"count":96,"disambiguation_key":1690616547,"gram":[{"Tok":{"text":"abra","word_type":{"type":"Heteronym","word":"abra","lemma":"abrir","pos":"VERB"}}}]}
@@ -1608,12 +1609,12 @@
 {"count":95,"disambiguation_key":3035269684,"gram":[{"Tok":{"text":"por","word_type":{"type":"Heteronym","word":"por","lemma":"por","pos":"ADP"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}}]}
 {"count":95,"disambiguation_key":2829644944,"gram":[{"Tok":{"text":"há","word_type":{"type":"Heteronym","word":"há","lemma":"haver","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"DET"}}},{"Tok":{"text":"tempo","word_type":{"type":"Heteronym","word":"tempo","lemma":"tempo","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":2253782304,"gram":[{"Tok":{"text":"fico","word_type":{"type":"Heteronym","word":"fico","lemma":"ficar","pos":"VERB"}}}]}
-{"count":95,"disambiguation_key":2096287140,"gram":[{"Tok":{"text":"bairro","word_type":{"type":"Heteronym","word":"bairro","lemma":"bairro","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":1969487815,"gram":[{"Tok":{"text":"neve","word_type":{"type":"Heteronym","word":"neve","lemma":"neve","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":1606768532,"gram":[{"Tok":{"text":"arroz","word_type":{"type":"Heteronym","word":"arroz","lemma":"arroz","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":1431944190,"gram":[{"Tok":{"text":"destino","word_type":{"type":"Heteronym","word":"destino","lemma":"destino","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":1362682783,"gram":[{"Tok":{"text":"estudantes","word_type":{"type":"Heteronym","word":"estudantes","lemma":"estudante","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":1007828116,"gram":[{"Tok":{"text":"estou","word_type":{"type":"Heteronym","word":"estou","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}}]}
+{"count":95,"disambiguation_key":802797122,"gram":[{"Tok":{"text":"e","word_type":{"type":"Heteronym","word":"e","lemma":"e","pos":"CCONJ"}}},{"Tok":{"text":"depois","word_type":{"type":"Heteronym","word":"depois","lemma":"depois","pos":"ADV"}}}]}
 {"count":95,"disambiguation_key":677102270,"gram":[{"Tok":{"text":"palavra","word_type":{"type":"Heteronym","word":"palavra","lemma":"palavra","pos":"NOUN"}}}]}
 {"count":95,"disambiguation_key":581839837,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"suficiente","word_type":{"type":"Heteronym","word":"suficiente","lemma":"suficiente","pos":"ADJ"}}}]}
 {"count":95,"disambiguation_key":113650125,"gram":[{"Tok":{"text":"pessoa","word_type":{"type":"Heteronym","word":"pessoa","lemma":"pessoa","pos":"NOUN"}}}]}
@@ -1632,7 +1633,6 @@
 {"count":94,"disambiguation_key":1212629976,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"mim","word_type":{"type":"Heteronym","word":"mim","lemma":"eu","pos":"PRON"}}}]}
 {"count":94,"disambiguation_key":1051506171,"gram":[{"Tok":{"text":"mestre","word_type":{"type":"Heteronym","word":"mestre","lemma":"mestre","pos":"NOUN"}}}]}
 {"count":94,"disambiguation_key":956437692,"gram":[{"Tok":{"text":"os","word_type":{"type":"Heteronym","word":"os","lemma":"o","pos":"DET"}}},{"Tok":{"text":"homens","word_type":{"type":"Heteronym","word":"homens","lemma":"homem","pos":"NOUN"}}}]}
-{"count":94,"disambiguation_key":802797122,"gram":[{"Tok":{"text":"e","word_type":{"type":"Heteronym","word":"e","lemma":"e","pos":"CCONJ"}}},{"Tok":{"text":"depois","word_type":{"type":"Heteronym","word":"depois","lemma":"depois","pos":"ADV"}}}]}
 {"count":94,"disambiguation_key":727224366,"gram":[{"Tok":{"text":"viagem","word_type":{"type":"Heteronym","word":"viagem","lemma":"viagem","pos":"NOUN"}}}]}
 {"count":94,"disambiguation_key":628764314,"gram":[{"Tok":{"text":"podes","word_type":{"type":"Heteronym","word":"podes","lemma":"poder","pos":"AUX"}}}]}
 {"count":94,"disambiguation_key":453042176,"gram":[{"Tok":{"text":"parece","word_type":{"type":"Heteronym","word":"parece","lemma":"parecer","pos":"VERB"}}},{"Tok":{"text":"ser","word_type":{"type":"Heteronym","word":"ser","lemma":"ser","pos":"AUX"}}}]}
@@ -1660,6 +1660,7 @@
 {"count":92,"disambiguation_key":4047008161,"gram":[{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"em o","pos":"ADP"}}},{"Tok":{"text":"ano","word_type":{"type":"Heteronym","word":"ano","lemma":"ano","pos":"NOUN"}}},{"Tok":{"text":"passado","word_type":{"type":"Heteronym","word":"passado","lemma":"passado","pos":"ADJ"}}}]}
 {"count":92,"disambiguation_key":3855017920,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"situação","word_type":{"type":"Heteronym","word":"situação","lemma":"situação","pos":"NOUN"}}}]}
 {"count":92,"disambiguation_key":3727843690,"gram":[{"Tok":{"text":"estivesse","word_type":{"type":"Heteronym","word":"estivesse","lemma":"estar","pos":"AUX"}}}]}
+{"count":92,"disambiguation_key":3666473160,"gram":[{"Tok":{"text":"beijou","word_type":{"type":"Heteronym","word":"beijou","lemma":"beijar","pos":"VERB"}}}]}
 {"count":92,"disambiguation_key":3634413565,"gram":[{"Tok":{"text":"ver","word_type":{"type":"Heteronym","word":"ver","lemma":"ver","pos":"VERB"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
 {"count":92,"disambiguation_key":3599577754,"gram":[{"Tok":{"text":"sentar","word_type":{"type":"Heteronym","word":"sentar","lemma":"sentar","pos":"VERB"}}}]}
 {"count":92,"disambiguation_key":3332520756,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"pouco","word_type":{"type":"Heteronym","word":"pouco","lemma":"pouco","pos":"NOUN"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
@@ -1681,7 +1682,6 @@
 {"count":92,"disambiguation_key":201402044,"gram":[{"Tok":{"text":"camisa","word_type":{"type":"Heteronym","word":"camisa","lemma":"camisa","pos":"NOUN"}}}]}
 {"count":92,"disambiguation_key":9885043,"gram":[{"Tok":{"text":"tira","word_type":{"type":"Heteronym","word":"tira","lemma":"tirar","pos":"VERB"}}}]}
 {"count":91,"disambiguation_key":3862804467,"gram":[{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}},{"Tok":{"text":"veio","word_type":{"type":"Heteronym","word":"veio","lemma":"vir","pos":"VERB"}}}]}
-{"count":91,"disambiguation_key":3666473160,"gram":[{"Tok":{"text":"beijou","word_type":{"type":"Heteronym","word":"beijou","lemma":"beijar","pos":"VERB"}}}]}
 {"count":91,"disambiguation_key":3614346884,"gram":[{"Tok":{"text":"moram","word_type":{"type":"Heteronym","word":"moram","lemma":"morar","pos":"VERB"}}}]}
 {"count":91,"disambiguation_key":3422366945,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"dia","word_type":{"type":"Heteronym","word":"dia","lemma":"dia","pos":"NOUN"}}}]}
 {"count":91,"disambiguation_key":3418068690,"gram":[{"Tok":{"text":"idiota","word_type":{"type":"Heteronym","word":"idiota","lemma":"idiota","pos":"ADJ"}}}]}
@@ -1716,6 +1716,7 @@
 {"count":90,"disambiguation_key":3227669095,"gram":[{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"hora","word_type":{"type":"Heteronym","word":"hora","lemma":"hora","pos":"NOUN"}}}]}
 {"count":90,"disambiguation_key":3193435433,"gram":[{"Tok":{"text":"classe","word_type":{"type":"Heteronym","word":"classe","lemma":"classe","pos":"NOUN"}}}]}
 {"count":90,"disambiguation_key":2571268443,"gram":[{"Tok":{"text":"onde","word_type":{"type":"Heteronym","word":"onde","lemma":"onde","pos":"ADV"}}},{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"VERB"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
+{"count":90,"disambiguation_key":2440931495,"gram":[{"Tok":{"text":"pois","word_type":{"type":"Heteronym","word":"pois","lemma":"pois","pos":"CCONJ"}}}]}
 {"count":90,"disambiguation_key":2265143406,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"fome","word_type":{"type":"Heteronym","word":"fome","lemma":"fome","pos":"NOUN"}}}]}
 {"count":90,"disambiguation_key":1753931858,"gram":[{"Tok":{"text":"claro","word_type":{"type":"Heteronym","word":"claro","lemma":"claro","pos":"ADV"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":90,"disambiguation_key":1681896165,"gram":[{"Tok":{"text":"inocente","word_type":{"type":"Heteronym","word":"inocente","lemma":"inocente","pos":"ADJ"}}}]}
@@ -1741,7 +1742,6 @@
 {"count":89,"disambiguation_key":3043123485,"gram":[{"Tok":{"text":"agradecer","word_type":{"type":"Heteronym","word":"agradecer","lemma":"agradecer","pos":"VERB"}}}]}
 {"count":89,"disambiguation_key":2968621468,"gram":[{"Tok":{"text":"resposta","word_type":{"type":"Heteronym","word":"resposta","lemma":"resposta","pos":"NOUN"}}}]}
 {"count":89,"disambiguation_key":2674249358,"gram":[{"Tok":{"text":"olhando","word_type":{"type":"Heteronym","word":"olhando","lemma":"olhar","pos":"VERB"}}}]}
-{"count":89,"disambiguation_key":2440931495,"gram":[{"Tok":{"text":"pois","word_type":{"type":"Heteronym","word":"pois","lemma":"pois","pos":"CCONJ"}}}]}
 {"count":89,"disambiguation_key":2290022506,"gram":[{"Tok":{"text":"ordem","word_type":{"type":"Heteronym","word":"ordem","lemma":"ordem","pos":"NOUN"}}}]}
 {"count":89,"disambiguation_key":2085247128,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"bom","word_type":{"type":"Heteronym","word":"bom","lemma":"bom","pos":"ADJ"}}}]}
 {"count":89,"disambiguation_key":1916360935,"gram":[{"Tok":{"text":"bater","word_type":{"type":"Heteronym","word":"bater","lemma":"bater","pos":"VERB"}}}]}
@@ -1855,12 +1855,14 @@
 {"count":85,"disambiguation_key":544497201,"gram":[{"Tok":{"text":"morava","word_type":{"type":"Heteronym","word":"morava","lemma":"morar","pos":"VERB"}}}]}
 {"count":85,"disambiguation_key":408027090,"gram":[{"Tok":{"text":"sentido","word_type":{"type":"Heteronym","word":"sentido","lemma":"sentido","pos":"NOUN"}}}]}
 {"count":85,"disambiguation_key":337879604,"gram":[{"Tok":{"text":"línguas","word_type":{"type":"Heteronym","word":"línguas","lemma":"língua","pos":"NOUN"}}}]}
+{"count":85,"disambiguation_key":241752835,"gram":[{"Tok":{"text":"muitas","word_type":{"type":"Heteronym","word":"muitas","lemma":"muito","pos":"DET"}}},{"Tok":{"text":"coisas","word_type":{"type":"Heteronym","word":"coisas","lemma":"coisa","pos":"NOUN"}}}]}
 {"count":85,"disambiguation_key":151878406,"gram":[{"Tok":{"text":"cor","word_type":{"type":"Heteronym","word":"cor","lemma":"cor","pos":"NOUN"}}}]}
 {"count":85,"disambiguation_key":49436644,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"importante","word_type":{"type":"Heteronym","word":"importante","lemma":"importante","pos":"ADJ"}}}]}
 {"count":85,"disambiguation_key":19624923,"gram":[{"Tok":{"text":"brincadeira","word_type":{"type":"Heteronym","word":"brincadeira","lemma":"brincadeira","pos":"NOUN"}}}]}
 {"count":84,"disambiguation_key":4247943451,"gram":[{"Tok":{"text":"sinal","word_type":{"type":"Heteronym","word":"sinal","lemma":"sinal","pos":"NOUN"}}}]}
 {"count":84,"disambiguation_key":4237051261,"gram":[{"Tok":{"text":"vergonha","word_type":{"type":"Heteronym","word":"vergonha","lemma":"vergonha","pos":"NOUN"}}}]}
 {"count":84,"disambiguation_key":4133223190,"gram":[{"Tok":{"text":"cozinha","word_type":{"type":"Heteronym","word":"cozinha","lemma":"cozinha","pos":"NOUN"}}}]}
+{"count":84,"disambiguation_key":3798866792,"gram":[{"Tok":{"text":"farei","word_type":{"type":"Heteronym","word":"farei","lemma":"fazer","pos":"VERB"}}}]}
 {"count":84,"disambiguation_key":3789898529,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"médico","word_type":{"type":"Heteronym","word":"médico","lemma":"médico","pos":"NOUN"}}}]}
 {"count":84,"disambiguation_key":3312958598,"gram":[{"Tok":{"text":"ajudá","word_type":{"type":"Heteronym","word":"ajudá","lemma":"ajudar","pos":"VERB"}}},{"Tok":{"text":"-","word_type":{"type":"Other","other_tag":"PUNCT"}}},{"Tok":{"text":"lo","word_type":{"type":"Heteronym","word":"lo","lemma":"o","pos":"PRON"}}}]}
 {"count":84,"disambiguation_key":3246242563,"gram":[{"Tok":{"text":"parecer","word_type":{"type":"Heteronym","word":"parecer","lemma":"parecer","pos":"VERB"}}}]}
@@ -1888,12 +1890,11 @@
 {"count":84,"disambiguation_key":401386246,"gram":[{"Tok":{"text":"trabalho","word_type":{"type":"Heteronym","word":"trabalho","lemma":"trabalhar","pos":"VERB"}}}]}
 {"count":84,"disambiguation_key":396392711,"gram":[{"Tok":{"text":"sua","word_type":{"type":"Heteronym","word":"sua","lemma":"seu","pos":"DET"}}},{"Tok":{"text":"esposa","word_type":{"type":"Heteronym","word":"esposa","lemma":"esposa","pos":"NOUN"}}}]}
 {"count":84,"disambiguation_key":348894862,"gram":[{"Tok":{"text":"nada","word_type":{"type":"Heteronym","word":"nada","lemma":"nada","pos":"PRON"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
-{"count":84,"disambiguation_key":241752835,"gram":[{"Tok":{"text":"muitas","word_type":{"type":"Heteronym","word":"muitas","lemma":"muito","pos":"DET"}}},{"Tok":{"text":"coisas","word_type":{"type":"Heteronym","word":"coisas","lemma":"coisa","pos":"NOUN"}}}]}
 {"count":84,"disambiguation_key":109259815,"gram":[{"Tok":{"text":"antigo","word_type":{"type":"Heteronym","word":"antigo","lemma":"antigo","pos":"ADJ"}}}]}
 {"count":83,"disambiguation_key":3928963808,"gram":[{"Tok":{"text":"as","word_type":{"type":"Heteronym","word":"as","lemma":"o","pos":"DET"}}},{"Tok":{"text":"minhas","word_type":{"type":"Heteronym","word":"minhas","lemma":"meu","pos":"DET"}}}]}
 {"count":83,"disambiguation_key":3870115538,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"possível","word_type":{"type":"Heteronym","word":"possível","lemma":"possível","pos":"ADJ"}}}]}
 {"count":83,"disambiguation_key":3813867963,"gram":[{"Tok":{"text":"sabe","word_type":{"type":"Heteronym","word":"sabe","lemma":"saber","pos":"VERB"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
-{"count":83,"disambiguation_key":3798866792,"gram":[{"Tok":{"text":"farei","word_type":{"type":"Heteronym","word":"farei","lemma":"fazer","pos":"VERB"}}}]}
+{"count":83,"disambiguation_key":3646515369,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"dormindo","word_type":{"type":"Heteronym","word":"dormindo","lemma":"dormir","pos":"VERB"}}}]}
 {"count":83,"disambiguation_key":3217964956,"gram":[{"Tok":{"text":"volta","word_type":{"type":"Heteronym","word":"volta","lemma":"volta","pos":"NOUN"}}}]}
 {"count":83,"disambiguation_key":2919556902,"gram":[{"Tok":{"text":"nós","word_type":{"type":"Heteronym","word":"nós","lemma":"nós","pos":"PRON"}}},{"Tok":{"text":"dois","word_type":{"type":"Heteronym","word":"dois","lemma":"dois","pos":"NUM"}}}]}
 {"count":83,"disambiguation_key":2773210313,"gram":[{"Tok":{"text":"carta","word_type":{"type":"Heteronym","word":"carta","lemma":"carta","pos":"NOUN"}}}]}
@@ -1924,7 +1925,6 @@
 {"count":82,"disambiguation_key":3949288307,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"essa","word_type":{"type":"Heteronym","word":"essa","lemma":"esse","pos":"PRON"}}}]}
 {"count":82,"disambiguation_key":3923418096,"gram":[{"Tok":{"text":"missão","word_type":{"type":"Heteronym","word":"missão","lemma":"missão","pos":"NOUN"}}}]}
 {"count":82,"disambiguation_key":3791304596,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"fazer","word_type":{"type":"Heteronym","word":"fazer","lemma":"fazer","pos":"VERB"}}},{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
-{"count":82,"disambiguation_key":3646515369,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"dormindo","word_type":{"type":"Heteronym","word":"dormindo","lemma":"dormir","pos":"VERB"}}}]}
 {"count":82,"disambiguation_key":3639002360,"gram":[{"Tok":{"text":"se","word_type":{"type":"Heteronym","word":"se","lemma":"se","pos":"SCONJ"}}},{"Tok":{"text":"ela","word_type":{"type":"Heteronym","word":"ela","lemma":"ela","pos":"PRON"}}}]}
 {"count":82,"disambiguation_key":3535487564,"gram":[{"Tok":{"text":"primeira","word_type":{"type":"Heteronym","word":"primeira","lemma":"primeiro","pos":"ADJ"}}}]}
 {"count":82,"disambiguation_key":3520912800,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"pé","word_type":{"type":"Heteronym","word":"pé","lemma":"pé","pos":"NOUN"}}}]}
@@ -2203,6 +2203,7 @@
 {"count":74,"disambiguation_key":2550314701,"gram":[{"Tok":{"text":"número","word_type":{"type":"Heteronym","word":"número","lemma":"número","pos":"NOUN"}}}]}
 {"count":74,"disambiguation_key":2423050712,"gram":[{"Tok":{"text":"queriam","word_type":{"type":"Heteronym","word":"queriam","lemma":"querer","pos":"VERB"}}}]}
 {"count":74,"disambiguation_key":2282041856,"gram":[{"Tok":{"text":"equipe","word_type":{"type":"Heteronym","word":"equipe","lemma":"equipe","pos":"NOUN"}}}]}
+{"count":74,"disambiguation_key":2211992604,"gram":[{"Tok":{"text":"tarefa","word_type":{"type":"Heteronym","word":"tarefa","lemma":"tarefa","pos":"NOUN"}}}]}
 {"count":74,"disambiguation_key":2177211572,"gram":[{"Tok":{"text":"violão","word_type":{"type":"Heteronym","word":"violão","lemma":"violão","pos":"NOUN"}}}]}
 {"count":74,"disambiguation_key":2078498325,"gram":[{"Tok":{"text":"limpo","word_type":{"type":"Heteronym","word":"limpo","lemma":"limpo","pos":"ADJ"}}}]}
 {"count":74,"disambiguation_key":2050635774,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"chefe","word_type":{"type":"Heteronym","word":"chefe","lemma":"chefe","pos":"NOUN"}}}]}
@@ -2234,7 +2235,6 @@
 {"count":73,"disambiguation_key":2402355607,"gram":[{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"história","word_type":{"type":"Heteronym","word":"história","lemma":"história","pos":"NOUN"}}}]}
 {"count":73,"disambiguation_key":2362607198,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"usando","word_type":{"type":"Heteronym","word":"usando","lemma":"usar","pos":"VERB"}}}]}
 {"count":73,"disambiguation_key":2241668069,"gram":[{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}},{"Tok":{"text":"frente","word_type":{"type":"Heteronym","word":"frente","lemma":"frente","pos":"NOUN"}}}]}
-{"count":73,"disambiguation_key":2211992604,"gram":[{"Tok":{"text":"tarefa","word_type":{"type":"Heteronym","word":"tarefa","lemma":"tarefa","pos":"NOUN"}}}]}
 {"count":73,"disambiguation_key":1727137469,"gram":[{"Tok":{"text":"estavam","word_type":{"type":"Heteronym","word":"estavam","lemma":"estar","pos":"VERB"}}}]}
 {"count":73,"disambiguation_key":1719536020,"gram":[{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"rápido","word_type":{"type":"Heteronym","word":"rápido","lemma":"rápido","pos":"ADV"}}}]}
 {"count":73,"disambiguation_key":1612646558,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"filme","word_type":{"type":"Heteronym","word":"filme","lemma":"filme","pos":"NOUN"}}}]}
@@ -2438,6 +2438,7 @@
 {"count":68,"disambiguation_key":1207143423,"gram":[{"Tok":{"text":"chorou","word_type":{"type":"Heteronym","word":"chorou","lemma":"chorar","pos":"VERB"}}}]}
 {"count":68,"disambiguation_key":1135391050,"gram":[{"Tok":{"text":"agradeço","word_type":{"type":"Heteronym","word":"agradeço","lemma":"agradecer","pos":"VERB"}}}]}
 {"count":68,"disambiguation_key":1015045501,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"esqueci","word_type":{"type":"Heteronym","word":"esqueci","lemma":"esquecer","pos":"VERB"}}}]}
+{"count":68,"disambiguation_key":666132480,"gram":[{"Tok":{"text":"agradável","word_type":{"type":"Heteronym","word":"agradável","lemma":"agradável","pos":"ADJ"}}}]}
 {"count":68,"disambiguation_key":491252653,"gram":[{"Tok":{"text":"afinal","word_type":{"type":"Heteronym","word":"afinal","lemma":"afinal","pos":"ADV"}}}]}
 {"count":68,"disambiguation_key":416292286,"gram":[{"Tok":{"text":"fraco","word_type":{"type":"Heteronym","word":"fraco","lemma":"fraco","pos":"ADJ"}}}]}
 {"count":68,"disambiguation_key":223124676,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"espero","word_type":{"type":"Heteronym","word":"espero","lemma":"esperar","pos":"VERB"}}}]}
@@ -2480,7 +2481,6 @@
 {"count":67,"disambiguation_key":1187648985,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"tem","word_type":{"type":"Heteronym","word":"tem","lemma":"ter","pos":"VERB"}}}]}
 {"count":67,"disambiguation_key":1180795223,"gram":[{"Tok":{"text":"ela","word_type":{"type":"Heteronym","word":"ela","lemma":"ela","pos":"PRON"}}},{"Tok":{"text":"disse","word_type":{"type":"Heteronym","word":"disse","lemma":"dizer","pos":"VERB"}}}]}
 {"count":67,"disambiguation_key":1016025242,"gram":[{"Tok":{"text":"sejam","word_type":{"type":"Heteronym","word":"sejam","lemma":"ser","pos":"AUX"}}}]}
-{"count":67,"disambiguation_key":666132480,"gram":[{"Tok":{"text":"agradável","word_type":{"type":"Heteronym","word":"agradável","lemma":"agradável","pos":"ADJ"}}}]}
 {"count":67,"disambiguation_key":594378897,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"tão","word_type":{"type":"Heteronym","word":"tão","lemma":"tão","pos":"ADV"}}}]}
 {"count":67,"disambiguation_key":520939587,"gram":[{"Tok":{"text":"até","word_type":{"type":"Heteronym","word":"até","lemma":"até","pos":"ADP"}}},{"Tok":{"text":"aqui","word_type":{"type":"Heteronym","word":"aqui","lemma":"aqui","pos":"ADV"}}}]}
 {"count":67,"disambiguation_key":506145237,"gram":[{"Tok":{"text":"ouvindo","word_type":{"type":"Heteronym","word":"ouvindo","lemma":"ouvir","pos":"VERB"}}}]}
@@ -2621,6 +2621,7 @@
 {"count":64,"disambiguation_key":2490990962,"gram":[{"Tok":{"text":"longa","word_type":{"type":"Heteronym","word":"longa","lemma":"longo","pos":"ADJ"}}}]}
 {"count":64,"disambiguation_key":2415439939,"gram":[{"Tok":{"text":"na","word_type":{"type":"Heteronym","word":"na","lemma":"em a","pos":"ADP"}}},{"Tok":{"text":"vida","word_type":{"type":"Heteronym","word":"vida","lemma":"vida","pos":"NOUN"}}}]}
 {"count":64,"disambiguation_key":2312010573,"gram":[{"Tok":{"text":"países","word_type":{"type":"Heteronym","word":"países","lemma":"país","pos":"NOUN"}}}]}
+{"count":64,"disambiguation_key":2294240821,"gram":[{"Tok":{"text":"muitos","word_type":{"type":"Heteronym","word":"muitos","lemma":"muito","pos":"PRON"}}}]}
 {"count":64,"disambiguation_key":2195399088,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"minha","word_type":{"type":"Heteronym","word":"minha","lemma":"meu","pos":"PRON"}}}]}
 {"count":64,"disambiguation_key":1881746335,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"disse","word_type":{"type":"Heteronym","word":"disse","lemma":"dizer","pos":"VERB"}}}]}
 {"count":64,"disambiguation_key":1811818416,"gram":[{"Tok":{"text":"tenta","word_type":{"type":"Heteronym","word":"tenta","lemma":"tentar","pos":"VERB"}}}]}
@@ -2658,7 +2659,6 @@
 {"count":63,"disambiguation_key":2755573303,"gram":[{"Tok":{"text":"vendeu","word_type":{"type":"Heteronym","word":"vendeu","lemma":"vender","pos":"VERB"}}}]}
 {"count":63,"disambiguation_key":2702932679,"gram":[{"Tok":{"text":"dever","word_type":{"type":"Heteronym","word":"dever","lemma":"dever","pos":"NOUN"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"casa","word_type":{"type":"Heteronym","word":"casa","lemma":"casa","pos":"NOUN"}}}]}
 {"count":63,"disambiguation_key":2428136769,"gram":[{"Tok":{"text":"cinema","word_type":{"type":"Heteronym","word":"cinema","lemma":"cinema","pos":"NOUN"}}}]}
-{"count":63,"disambiguation_key":2294240821,"gram":[{"Tok":{"text":"muitos","word_type":{"type":"Heteronym","word":"muitos","lemma":"muito","pos":"PRON"}}}]}
 {"count":63,"disambiguation_key":2270109233,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"sei","word_type":{"type":"Heteronym","word":"sei","lemma":"saber","pos":"VERB"}}}]}
 {"count":63,"disambiguation_key":2259863010,"gram":[{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"me","pos":"PRON"}}},{"Tok":{"text":"deixa","word_type":{"type":"Heteronym","word":"deixa","lemma":"deixar","pos":"VERB"}}}]}
 {"count":63,"disambiguation_key":2231740940,"gram":[{"Tok":{"text":"estive","word_type":{"type":"Heteronym","word":"estive","lemma":"estar","pos":"VERB"}}}]}
@@ -2885,6 +2885,7 @@
 {"count":59,"disambiguation_key":312534618,"gram":[{"Tok":{"text":"vai","word_type":{"type":"Heteronym","word":"vai","lemma":"ir","pos":"AUX"}}},{"Tok":{"text":"voltar","word_type":{"type":"Heteronym","word":"voltar","lemma":"voltar","pos":"VERB"}}}]}
 {"count":59,"disambiguation_key":295978771,"gram":[{"Tok":{"text":"sujo","word_type":{"type":"Heteronym","word":"sujo","lemma":"sujo","pos":"ADJ"}}}]}
 {"count":59,"disambiguation_key":244103467,"gram":[{"Tok":{"text":"várias","word_type":{"type":"Heteronym","word":"várias","lemma":"vário","pos":"DET"}}},{"Tok":{"text":"vezes","word_type":{"type":"Heteronym","word":"vezes","lemma":"vez","pos":"NOUN"}}}]}
+{"count":59,"disambiguation_key":233357990,"gram":[{"Tok":{"text":"soldados","word_type":{"type":"Heteronym","word":"soldados","lemma":"soldado","pos":"NOUN"}}}]}
 {"count":59,"disambiguation_key":183458851,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"filha","word_type":{"type":"Heteronym","word":"filha","lemma":"filha","pos":"NOUN"}}}]}
 {"count":59,"disambiguation_key":133488175,"gram":[{"Tok":{"text":"flor","word_type":{"type":"Heteronym","word":"flor","lemma":"flor","pos":"NOUN"}}}]}
 {"count":59,"disambiguation_key":76282588,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"rua","word_type":{"type":"Heteronym","word":"rua","lemma":"rua","pos":"NOUN"}}}]}
@@ -2952,8 +2953,8 @@
 {"count":58,"disambiguation_key":333185130,"gram":[{"Tok":{"text":"estarei","word_type":{"type":"Heteronym","word":"estarei","lemma":"estar","pos":"AUX"}}}]}
 {"count":58,"disambiguation_key":298330031,"gram":[{"Tok":{"text":"embaixo","word_type":{"type":"Heteronym","word":"embaixo","lemma":"embaixo","pos":"ADV"}}}]}
 {"count":58,"disambiguation_key":263575901,"gram":[{"Tok":{"text":"choveu","word_type":{"type":"Heteronym","word":"choveu","lemma":"chover","pos":"VERB"}}}]}
-{"count":58,"disambiguation_key":233357990,"gram":[{"Tok":{"text":"soldados","word_type":{"type":"Heteronym","word":"soldados","lemma":"soldado","pos":"NOUN"}}}]}
 {"count":58,"disambiguation_key":167064646,"gram":[{"Tok":{"text":"para","word_type":{"type":"Heteronym","word":"para","lemma":"parar","pos":"VERB"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
+{"count":58,"disambiguation_key":88607083,"gram":[{"Tok":{"text":"for","word_type":{"type":"Heteronym","word":"for","lemma":"ser","pos":"AUX"}}}]}
 {"count":58,"disambiguation_key":70617957,"gram":[{"Tok":{"text":"se","word_type":{"type":"Heteronym","word":"se","lemma":"se","pos":"PRON"}}},{"Tok":{"text":"sentiu","word_type":{"type":"Heteronym","word":"sentiu","lemma":"sentir","pos":"VERB"}}}]}
 {"count":58,"disambiguation_key":28673168,"gram":[{"Tok":{"text":"tocou","word_type":{"type":"Heteronym","word":"tocou","lemma":"tocar","pos":"VERB"}}}]}
 {"count":57,"disambiguation_key":4290008279,"gram":[{"Tok":{"text":"presentes","word_type":{"type":"Heteronym","word":"presentes","lemma":"presente","pos":"NOUN"}}}]}
@@ -2978,6 +2979,7 @@
 {"count":57,"disambiguation_key":2974603911,"gram":[{"Tok":{"text":"à","word_type":{"type":"Heteronym","word":"à","lemma":"a o","pos":"ADP"}}},{"Tok":{"text":"vontade","word_type":{"type":"Heteronym","word":"vontade","lemma":"vontade","pos":"NOUN"}}}]}
 {"count":57,"disambiguation_key":2940712822,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"pouquinho","word_type":{"type":"Heteronym","word":"pouquinho","lemma":"pouquinho","pos":"NOUN"}}}]}
 {"count":57,"disambiguation_key":2925673416,"gram":[{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}},{"Tok":{"text":"família","word_type":{"type":"Heteronym","word":"família","lemma":"família","pos":"NOUN"}}}]}
+{"count":57,"disambiguation_key":2843040222,"gram":[{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"bonita","word_type":{"type":"Heteronym","word":"bonita","lemma":"bonito","pos":"ADJ"}}}]}
 {"count":57,"disambiguation_key":2842951738,"gram":[{"Tok":{"text":"ano","word_type":{"type":"Heteronym","word":"ano","lemma":"ano","pos":"NOUN"}}},{"Tok":{"text":"passado","word_type":{"type":"Heteronym","word":"passado","lemma":"passado","pos":"ADJ"}}}]}
 {"count":57,"disambiguation_key":2690443135,"gram":[{"Tok":{"text":"puder","word_type":{"type":"Heteronym","word":"puder","lemma":"poder","pos":"VERB"}}}]}
 {"count":57,"disambiguation_key":2687259331,"gram":[{"Tok":{"text":"jantar","word_type":{"type":"Heteronym","word":"jantar","lemma":"jantar","pos":"NOUN"}}}]}
@@ -3024,7 +3026,6 @@
 {"count":57,"disambiguation_key":359541992,"gram":[{"Tok":{"text":"e","word_type":{"type":"Other","other_tag":"X"}}},{"Tok":{"text":"-","word_type":{"type":"Other","other_tag":"PUNCT"}}},{"Tok":{"text":"mail","word_type":{"type":"Heteronym","word":"mail","lemma":"mail","pos":"NOUN"}}}]}
 {"count":57,"disambiguation_key":357767344,"gram":[{"Tok":{"text":"roubaram","word_type":{"type":"Heteronym","word":"roubaram","lemma":"roubar","pos":"VERB"}}}]}
 {"count":57,"disambiguation_key":347277513,"gram":[{"Tok":{"text":"parede","word_type":{"type":"Heteronym","word":"parede","lemma":"parede","pos":"NOUN"}}}]}
-{"count":57,"disambiguation_key":88607083,"gram":[{"Tok":{"text":"for","word_type":{"type":"Heteronym","word":"for","lemma":"ser","pos":"AUX"}}}]}
 {"count":56,"disambiguation_key":4205061385,"gram":[{"Tok":{"text":"ela","word_type":{"type":"Heteronym","word":"ela","lemma":"ela","pos":"PRON"}}},{"Tok":{"text":"foi","word_type":{"type":"Heteronym","word":"foi","lemma":"ser","pos":"AUX"}}}]}
 {"count":56,"disambiguation_key":4028324753,"gram":[{"Tok":{"text":"saudades","word_type":{"type":"Heteronym","word":"saudades","lemma":"saudade","pos":"NOUN"}}}]}
 {"count":56,"disambiguation_key":3974574161,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
@@ -3036,7 +3037,6 @@
 {"count":56,"disambiguation_key":2963793281,"gram":[{"Tok":{"text":"quero","word_type":{"type":"Heteronym","word":"quero","lemma":"querer","pos":"VERB"}}},{"Tok":{"text":"saber","word_type":{"type":"Heteronym","word":"saber","lemma":"saber","pos":"VERB"}}}]}
 {"count":56,"disambiguation_key":2905272526,"gram":[{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"em o","pos":"ADP"}}},{"Tok":{"text":"banco","word_type":{"type":"Heteronym","word":"banco","lemma":"banco","pos":"NOUN"}}}]}
 {"count":56,"disambiguation_key":2893461714,"gram":[{"Tok":{"text":"este","word_type":{"type":"Heteronym","word":"este","lemma":"este","pos":"DET"}}},{"Tok":{"text":"ano","word_type":{"type":"Heteronym","word":"ano","lemma":"ano","pos":"NOUN"}}}]}
-{"count":56,"disambiguation_key":2843040222,"gram":[{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"bonita","word_type":{"type":"Heteronym","word":"bonita","lemma":"bonito","pos":"ADJ"}}}]}
 {"count":56,"disambiguation_key":2751383175,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"têm","word_type":{"type":"Heteronym","word":"têm","lemma":"ter","pos":"VERB"}}}]}
 {"count":56,"disambiguation_key":2740516866,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"papai","word_type":{"type":"Heteronym","word":"papai","lemma":"papai","pos":"NOUN"}}}]}
 {"count":56,"disambiguation_key":2632786205,"gram":[{"Tok":{"text":"para","word_type":{"type":"Heteronym","word":"para","lemma":"para","pos":"ADP"}}},{"Tok":{"text":"comer","word_type":{"type":"Heteronym","word":"comer","lemma":"comer","pos":"VERB"}}}]}
@@ -3134,6 +3134,7 @@
 {"count":55,"disambiguation_key":729699092,"gram":[{"Tok":{"text":"rosto","word_type":{"type":"Heteronym","word":"rosto","lemma":"rosto","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":673636722,"gram":[{"Tok":{"text":"trinta","word_type":{"type":"Heteronym","word":"trinta","lemma":"trinta","pos":"NUM"}}},{"Tok":{"text":"anos","word_type":{"type":"Heteronym","word":"anos","lemma":"ano","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":585657240,"gram":[{"Tok":{"text":"árabe","word_type":{"type":"Heteronym","word":"árabe","lemma":"árabe","pos":"NOUN"}}}]}
+{"count":55,"disambiguation_key":507479224,"gram":[{"Tok":{"text":"pontos","word_type":{"type":"Heteronym","word":"pontos","lemma":"ponto","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":477221790,"gram":[{"Tok":{"text":"mantém","word_type":{"type":"Heteronym","word":"mantém","lemma":"manter","pos":"VERB"}}}]}
 {"count":55,"disambiguation_key":289134588,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"palavra","word_type":{"type":"Heteronym","word":"palavra","lemma":"palavra","pos":"NOUN"}}}]}
 {"count":55,"disambiguation_key":51128639,"gram":[{"Tok":{"text":"obrigada","word_type":{"type":"Heteronym","word":"obrigada","lemma":"obrigado","pos":"INTJ"}}},{"Tok":{"text":"por","word_type":{"type":"Heteronym","word":"por","lemma":"por","pos":"ADP"}}}]}
@@ -3144,6 +3145,7 @@
 {"count":54,"disambiguation_key":4288767774,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"homem","word_type":{"type":"Heteronym","word":"homem","lemma":"homem","pos":"NOUN"}}}]}
 {"count":54,"disambiguation_key":4274373810,"gram":[{"Tok":{"text":"pode","word_type":{"type":"Heteronym","word":"pode","lemma":"poder","pos":"AUX"}}},{"Tok":{"text":"ser","word_type":{"type":"Heteronym","word":"ser","lemma":"ser","pos":"VERB"}}}]}
 {"count":54,"disambiguation_key":4270094826,"gram":[{"Tok":{"text":"só","word_type":{"type":"Heteronym","word":"só","lemma":"só","pos":"ADV"}}},{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}}]}
+{"count":54,"disambiguation_key":4244982968,"gram":[{"Tok":{"text":"os","word_type":{"type":"Heteronym","word":"os","lemma":"o","pos":"DET"}}},{"Tok":{"text":"meus","word_type":{"type":"Heteronym","word":"meus","lemma":"meu","pos":"DET"}}}]}
 {"count":54,"disambiguation_key":4233048105,"gram":[{"Tok":{"text":"fiz","word_type":{"type":"Heteronym","word":"fiz","lemma":"fazer","pos":"VERB"}}},{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
 {"count":54,"disambiguation_key":4205766557,"gram":[{"Tok":{"text":"difíceis","word_type":{"type":"Heteronym","word":"difíceis","lemma":"difícil","pos":"ADJ"}}}]}
 {"count":54,"disambiguation_key":4160015266,"gram":[{"Tok":{"text":"entregar","word_type":{"type":"Heteronym","word":"entregar","lemma":"entregar","pos":"VERB"}}}]}
@@ -3170,6 +3172,7 @@
 {"count":54,"disambiguation_key":2664995905,"gram":[{"Tok":{"text":"guitarra","word_type":{"type":"Heteronym","word":"guitarra","lemma":"guitarra","pos":"NOUN"}}}]}
 {"count":54,"disambiguation_key":2539886222,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"ocupado","word_type":{"type":"Heteronym","word":"ocupado","lemma":"ocupado","pos":"ADJ"}}}]}
 {"count":54,"disambiguation_key":2502455393,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"tenho","word_type":{"type":"Heteronym","word":"tenho","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
+{"count":54,"disambiguation_key":2309938905,"gram":[{"Tok":{"text":"meu","word_type":{"type":"Heteronym","word":"meu","lemma":"meu","pos":"DET"}}},{"Tok":{"text":"trabalho","word_type":{"type":"Heteronym","word":"trabalho","lemma":"trabalho","pos":"NOUN"}}}]}
 {"count":54,"disambiguation_key":2255438955,"gram":[{"Tok":{"text":"ficar","word_type":{"type":"Heteronym","word":"ficar","lemma":"ficar","pos":"VERB"}}},{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}},{"Tok":{"text":"casa","word_type":{"type":"Heteronym","word":"casa","lemma":"casa","pos":"NOUN"}}}]}
 {"count":54,"disambiguation_key":2201233450,"gram":[{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}}]}
 {"count":54,"disambiguation_key":2197340740,"gram":[{"Tok":{"text":"perguntei","word_type":{"type":"Heteronym","word":"perguntei","lemma":"perguntar","pos":"VERB"}}}]}
@@ -3225,6 +3228,7 @@
 {"count":53,"disambiguation_key":4097079100,"gram":[{"Tok":{"text":"na","word_type":{"type":"Heteronym","word":"na","lemma":"em a","pos":"ADP"}}},{"Tok":{"text":"floresta","word_type":{"type":"Heteronym","word":"floresta","lemma":"floresta","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":4091664154,"gram":[{"Tok":{"text":"para","word_type":{"type":"Heteronym","word":"para","lemma":"para","pos":"ADP"}}},{"Tok":{"text":"jantar","word_type":{"type":"Heteronym","word":"jantar","lemma":"jantar","pos":"VERB"}}}]}
 {"count":53,"disambiguation_key":4013653163,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"minha","word_type":{"type":"Heteronym","word":"minha","lemma":"meu","pos":"PRON"}}}]}
+{"count":53,"disambiguation_key":4005597317,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"cavalo","word_type":{"type":"Heteronym","word":"cavalo","lemma":"cavalo","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":3932727110,"gram":[{"Tok":{"text":"basta","word_type":{"type":"Heteronym","word":"basta","lemma":"bastar","pos":"VERB"}}}]}
 {"count":53,"disambiguation_key":3901618325,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"posso","word_type":{"type":"Heteronym","word":"posso","lemma":"poder","pos":"AUX"}}}]}
 {"count":53,"disambiguation_key":3754950069,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"fazendo","word_type":{"type":"Heteronym","word":"fazendo","lemma":"fazer","pos":"VERB"}}}]}
@@ -3276,7 +3280,6 @@
 {"count":53,"disambiguation_key":978873480,"gram":[{"Tok":{"text":"truque","word_type":{"type":"Heteronym","word":"truque","lemma":"truque","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":955484893,"gram":[{"Tok":{"text":"deve","word_type":{"type":"Heteronym","word":"deve","lemma":"dever","pos":"AUX"}}},{"Tok":{"text":"ter","word_type":{"type":"Heteronym","word":"ter","lemma":"ter","pos":"AUX"}}}]}
 {"count":53,"disambiguation_key":827820744,"gram":[{"Tok":{"text":"deveriam","word_type":{"type":"Heteronym","word":"deveriam","lemma":"dever","pos":"AUX"}}}]}
-{"count":53,"disambiguation_key":507479224,"gram":[{"Tok":{"text":"pontos","word_type":{"type":"Heteronym","word":"pontos","lemma":"ponto","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":452722274,"gram":[{"Tok":{"text":"revista","word_type":{"type":"Heteronym","word":"revista","lemma":"revista","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":416498970,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"tem","word_type":{"type":"Heteronym","word":"tem","lemma":"ter","pos":"VERB"}}}]}
 {"count":53,"disambiguation_key":391184013,"gram":[{"Tok":{"text":"desligue","word_type":{"type":"Heteronym","word":"desligue","lemma":"desligar","pos":"VERB"}}}]}
@@ -3288,7 +3291,6 @@
 {"count":53,"disambiguation_key":106416471,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"menino","word_type":{"type":"Heteronym","word":"menino","lemma":"menino","pos":"NOUN"}}}]}
 {"count":53,"disambiguation_key":86729161,"gram":[{"Tok":{"text":"poema","word_type":{"type":"Heteronym","word":"poema","lemma":"poema","pos":"NOUN"}}}]}
 {"count":52,"disambiguation_key":4254715223,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"trem","word_type":{"type":"Heteronym","word":"trem","lemma":"trem","pos":"NOUN"}}}]}
-{"count":52,"disambiguation_key":4244982968,"gram":[{"Tok":{"text":"os","word_type":{"type":"Heteronym","word":"os","lemma":"o","pos":"DET"}}},{"Tok":{"text":"meus","word_type":{"type":"Heteronym","word":"meus","lemma":"meu","pos":"DET"}}}]}
 {"count":52,"disambiguation_key":4228386261,"gram":[{"Tok":{"text":"quem","word_type":{"type":"Heteronym","word":"quem","lemma":"quem","pos":"PRON"}}},{"Tok":{"text":"diria","word_type":{"type":"Heteronym","word":"diria","lemma":"dizer","pos":"VERB"}}}]}
 {"count":52,"disambiguation_key":4205061385,"gram":[{"Tok":{"text":"ela","word_type":{"type":"Heteronym","word":"ela","lemma":"ela","pos":"PRON"}}},{"Tok":{"text":"foi","word_type":{"type":"Heteronym","word":"foi","lemma":"ir","pos":"VERB"}}}]}
 {"count":52,"disambiguation_key":4140872815,"gram":[{"Tok":{"text":"claramente","word_type":{"type":"Heteronym","word":"claramente","lemma":"claramente","pos":"ADV"}}}]}
@@ -3370,7 +3372,6 @@
 {"count":51,"disambiguation_key":4118476743,"gram":[{"Tok":{"text":"foi","word_type":{"type":"Heteronym","word":"foi","lemma":"ir","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":51,"disambiguation_key":4096585202,"gram":[{"Tok":{"text":"os","word_type":{"type":"Heteronym","word":"os","lemma":"o","pos":"DET"}}},{"Tok":{"text":"filhos","word_type":{"type":"Heteronym","word":"filhos","lemma":"filho","pos":"NOUN"}}}]}
 {"count":51,"disambiguation_key":4095592595,"gram":[{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"sabe","word_type":{"type":"Heteronym","word":"sabe","lemma":"saber","pos":"VERB"}}},{"Tok":{"text":"onde","word_type":{"type":"Heteronym","word":"onde","lemma":"onde","pos":"ADV"}}}]}
-{"count":51,"disambiguation_key":4005597317,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"cavalo","word_type":{"type":"Heteronym","word":"cavalo","lemma":"cavalo","pos":"NOUN"}}}]}
 {"count":51,"disambiguation_key":3966785790,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"pressa","word_type":{"type":"Heteronym","word":"pressa","lemma":"pressa","pos":"NOUN"}}}]}
 {"count":51,"disambiguation_key":3676440042,"gram":[{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}},{"Tok":{"text":"queria","word_type":{"type":"Heteronym","word":"queria","lemma":"querer","pos":"VERB"}}}]}
 {"count":51,"disambiguation_key":3526014698,"gram":[{"Tok":{"text":"as","word_type":{"type":"Heteronym","word":"as","lemma":"o","pos":"DET"}}},{"Tok":{"text":"palavras","word_type":{"type":"Heteronym","word":"palavras","lemma":"palavra","pos":"NOUN"}}}]}
@@ -3659,6 +3660,7 @@
 {"count":48,"disambiguation_key":878765614,"gram":[{"Tok":{"text":"promessa","word_type":{"type":"Heteronym","word":"promessa","lemma":"promessa","pos":"NOUN"}}}]}
 {"count":48,"disambiguation_key":842063062,"gram":[{"Tok":{"text":"falar","word_type":{"type":"Heteronym","word":"falar","lemma":"falar","pos":"VERB"}}},{"Tok":{"text":"inglês","word_type":{"type":"Heteronym","word":"inglês","lemma":"inglês","pos":"NOUN"}}}]}
 {"count":48,"disambiguation_key":775876342,"gram":[{"Tok":{"text":"teve","word_type":{"type":"Heteronym","word":"teve","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}}]}
+{"count":48,"disambiguation_key":729338659,"gram":[{"Tok":{"text":"enfermeira","word_type":{"type":"Heteronym","word":"enfermeira","lemma":"enfermeiro","pos":"NOUN"}}}]}
 {"count":48,"disambiguation_key":668301774,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"apartamento","word_type":{"type":"Heteronym","word":"apartamento","lemma":"apartamento","pos":"NOUN"}}}]}
 {"count":48,"disambiguation_key":655296600,"gram":[{"Tok":{"text":"queimou","word_type":{"type":"Heteronym","word":"queimou","lemma":"queimar","pos":"VERB"}}}]}
 {"count":48,"disambiguation_key":653273193,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"cão","word_type":{"type":"Heteronym","word":"cão","lemma":"cão","pos":"NOUN"}}}]}
@@ -3701,6 +3703,7 @@
 {"count":47,"disambiguation_key":3270345818,"gram":[{"Tok":{"text":"necessidade","word_type":{"type":"Heteronym","word":"necessidade","lemma":"necessidade","pos":"NOUN"}}}]}
 {"count":47,"disambiguation_key":3265022650,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"falar","word_type":{"type":"Heteronym","word":"falar","lemma":"falar","pos":"VERB"}}}]}
 {"count":47,"disambiguation_key":3259417864,"gram":[{"Tok":{"text":"parte","word_type":{"type":"Heteronym","word":"parte","lemma":"parte","pos":"NOUN"}}},{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}}]}
+{"count":47,"disambiguation_key":3250978161,"gram":[{"Tok":{"text":"embora","word_type":{"type":"Heteronym","word":"embora","lemma":"embora","pos":"SCONJ"}}}]}
 {"count":47,"disambiguation_key":3246690531,"gram":[{"Tok":{"text":"contato","word_type":{"type":"Heteronym","word":"contato","lemma":"contato","pos":"NOUN"}}}]}
 {"count":47,"disambiguation_key":3103173018,"gram":[{"Tok":{"text":"conseguimos","word_type":{"type":"Heteronym","word":"conseguimos","lemma":"conseguir","pos":"VERB"}}}]}
 {"count":47,"disambiguation_key":3085849863,"gram":[{"Tok":{"text":"impressionado","word_type":{"type":"Heteronym","word":"impressionado","lemma":"impressionado","pos":"ADJ"}}}]}
@@ -3752,7 +3755,6 @@
 {"count":47,"disambiguation_key":925833893,"gram":[{"Tok":{"text":"acham","word_type":{"type":"Heteronym","word":"acham","lemma":"achar","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":47,"disambiguation_key":801923057,"gram":[{"Tok":{"text":"fantasmas","word_type":{"type":"Heteronym","word":"fantasmas","lemma":"fantasma","pos":"NOUN"}}}]}
 {"count":47,"disambiguation_key":759364659,"gram":[{"Tok":{"text":"comum","word_type":{"type":"Heteronym","word":"comum","lemma":"comum","pos":"ADJ"}}}]}
-{"count":47,"disambiguation_key":729338659,"gram":[{"Tok":{"text":"enfermeira","word_type":{"type":"Heteronym","word":"enfermeira","lemma":"enfermeiro","pos":"NOUN"}}}]}
 {"count":47,"disambiguation_key":548970984,"gram":[{"Tok":{"text":"sua","word_type":{"type":"Heteronym","word":"sua","lemma":"seu","pos":"DET"}}},{"Tok":{"text":"idade","word_type":{"type":"Heteronym","word":"idade","lemma":"idade","pos":"NOUN"}}}]}
 {"count":47,"disambiguation_key":536869013,"gram":[{"Tok":{"text":"esta","word_type":{"type":"Heteronym","word":"esta","lemma":"estar","pos":"AUX"}}}]}
 {"count":47,"disambiguation_key":525076989,"gram":[{"Tok":{"text":"quer","word_type":{"type":"Heteronym","word":"quer","lemma":"querer","pos":"VERB"}}},{"Tok":{"text":"ver","word_type":{"type":"Heteronym","word":"ver","lemma":"ver","pos":"VERB"}}}]}
@@ -3794,7 +3796,6 @@
 {"count":46,"disambiguation_key":3407726196,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"essa","word_type":{"type":"Heteronym","word":"essa","lemma":"esse","pos":"DET"}}}]}
 {"count":46,"disambiguation_key":3392564856,"gram":[{"Tok":{"text":"vai","word_type":{"type":"Heteronym","word":"vai","lemma":"ir","pos":"AUX"}}},{"Tok":{"text":"nos","word_type":{"type":"Heteronym","word":"nos","lemma":"nos","pos":"PRON"}}}]}
 {"count":46,"disambiguation_key":3288183408,"gram":[{"Tok":{"text":"fé","word_type":{"type":"Heteronym","word":"fé","lemma":"fé","pos":"NOUN"}}}]}
-{"count":46,"disambiguation_key":3250978161,"gram":[{"Tok":{"text":"embora","word_type":{"type":"Heteronym","word":"embora","lemma":"embora","pos":"SCONJ"}}}]}
 {"count":46,"disambiguation_key":3181529842,"gram":[{"Tok":{"text":"supermercado","word_type":{"type":"Heteronym","word":"supermercado","lemma":"supermercado","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":3144640904,"gram":[{"Tok":{"text":"vingança","word_type":{"type":"Heteronym","word":"vingança","lemma":"vingança","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":3099570075,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"capital","word_type":{"type":"Heteronym","word":"capital","lemma":"capital","pos":"NOUN"}}},{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}}]}
@@ -3811,13 +3812,13 @@
 {"count":46,"disambiguation_key":2414598707,"gram":[{"Tok":{"text":"te","word_type":{"type":"Heteronym","word":"te","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"contar","word_type":{"type":"Heteronym","word":"contar","lemma":"contar","pos":"VERB"}}}]}
 {"count":46,"disambiguation_key":2335951559,"gram":[{"Tok":{"text":"estão","word_type":{"type":"Heteronym","word":"estão","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"esperando","word_type":{"type":"Heteronym","word":"esperando","lemma":"esperar","pos":"VERB"}}}]}
 {"count":46,"disambiguation_key":2319830108,"gram":[{"Tok":{"text":"animal","word_type":{"type":"Heteronym","word":"animal","lemma":"animal","pos":"NOUN"}}}]}
-{"count":46,"disambiguation_key":2309938905,"gram":[{"Tok":{"text":"meu","word_type":{"type":"Heteronym","word":"meu","lemma":"meu","pos":"DET"}}},{"Tok":{"text":"trabalho","word_type":{"type":"Heteronym","word":"trabalho","lemma":"trabalho","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":2280122546,"gram":[{"Tok":{"text":"melhor","word_type":{"type":"Heteronym","word":"melhor","lemma":"bem","pos":"ADV"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
 {"count":46,"disambiguation_key":2265847670,"gram":[{"Tok":{"text":"idéia","word_type":{"type":"Heteronym","word":"idéia","lemma":"idéia","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":2230690649,"gram":[{"Tok":{"text":"óculos","word_type":{"type":"Heteronym","word":"óculos","lemma":"óculos","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":2202944226,"gram":[{"Tok":{"text":"norte","word_type":{"type":"Heteronym","word":"norte","lemma":"norte","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":2192398084,"gram":[{"Tok":{"text":"visão","word_type":{"type":"Heteronym","word":"visão","lemma":"visão","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":2187311747,"gram":[{"Tok":{"text":"dançando","word_type":{"type":"Heteronym","word":"dançando","lemma":"dançar","pos":"VERB"}}}]}
+{"count":46,"disambiguation_key":2149096286,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"neve","word_type":{"type":"Heteronym","word":"neve","lemma":"neve","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":2128938165,"gram":[{"Tok":{"text":"pressão","word_type":{"type":"Heteronym","word":"pressão","lemma":"pressão","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":2087572182,"gram":[{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"em o","pos":"ADP"}}},{"Tok":{"text":"meio","word_type":{"type":"Heteronym","word":"meio","lemma":"meio","pos":"NOUN"}}}]}
 {"count":46,"disambiguation_key":1847755871,"gram":[{"Tok":{"text":"convenceu","word_type":{"type":"Heteronym","word":"convenceu","lemma":"convencer","pos":"VERB"}}}]}
@@ -3914,7 +3915,6 @@
 {"count":45,"disambiguation_key":2173257931,"gram":[{"Tok":{"text":"acesso","word_type":{"type":"Heteronym","word":"acesso","lemma":"acesso","pos":"NOUN"}}}]}
 {"count":45,"disambiguation_key":2160095782,"gram":[{"Tok":{"text":"cavalheiro","word_type":{"type":"Heteronym","word":"cavalheiro","lemma":"cavalheiro","pos":"NOUN"}}}]}
 {"count":45,"disambiguation_key":2151711041,"gram":[{"Tok":{"text":"aquele","word_type":{"type":"Heteronym","word":"aquele","lemma":"aquele","pos":"DET"}}},{"Tok":{"text":"livro","word_type":{"type":"Heteronym","word":"livro","lemma":"livro","pos":"NOUN"}}}]}
-{"count":45,"disambiguation_key":2149096286,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"neve","word_type":{"type":"Heteronym","word":"neve","lemma":"neve","pos":"NOUN"}}}]}
 {"count":45,"disambiguation_key":2003053831,"gram":[{"Tok":{"text":"diga","word_type":{"type":"Heteronym","word":"diga","lemma":"dizer","pos":"VERB"}}},{"Tok":{"text":"ao","word_type":{"type":"Heteronym","word":"ao","lemma":"a o","pos":"ADP"}}}]}
 {"count":45,"disambiguation_key":1952084600,"gram":[{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"me","pos":"PRON"}}},{"Tok":{"text":"ajudou","word_type":{"type":"Heteronym","word":"ajudou","lemma":"ajudar","pos":"VERB"}}}]}
 {"count":45,"disambiguation_key":1933025137,"gram":[{"Tok":{"text":"atacar","word_type":{"type":"Heteronym","word":"atacar","lemma":"atacar","pos":"VERB"}}}]}
@@ -3936,7 +3936,6 @@
 {"count":45,"disambiguation_key":1125945702,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"estudando","word_type":{"type":"Heteronym","word":"estudando","lemma":"estudar","pos":"VERB"}}}]}
 {"count":45,"disambiguation_key":1061011950,"gram":[{"Tok":{"text":"pode","word_type":{"type":"Heteronym","word":"pode","lemma":"poder","pos":"AUX"}}},{"Tok":{"text":"nos","word_type":{"type":"Heteronym","word":"nos","lemma":"nos","pos":"PRON"}}}]}
 {"count":45,"disambiguation_key":1048337095,"gram":[{"Tok":{"text":"acredito","word_type":{"type":"Heteronym","word":"acredito","lemma":"acreditar","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}}]}
-{"count":45,"disambiguation_key":907621584,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}}]}
 {"count":45,"disambiguation_key":895095250,"gram":[{"Tok":{"text":"durante","word_type":{"type":"Heteronym","word":"durante","lemma":"durante","pos":"ADP"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
 {"count":45,"disambiguation_key":893508805,"gram":[{"Tok":{"text":"estou","word_type":{"type":"Heteronym","word":"estou","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"tentando","word_type":{"type":"Heteronym","word":"tentando","lemma":"tentar","pos":"VERB"}}}]}
 {"count":45,"disambiguation_key":892965972,"gram":[{"Tok":{"text":"salada","word_type":{"type":"Heteronym","word":"salada","lemma":"salada","pos":"NOUN"}}}]}
@@ -4028,6 +4027,7 @@
 {"count":44,"disambiguation_key":955849665,"gram":[{"Tok":{"text":"desceu","word_type":{"type":"Heteronym","word":"desceu","lemma":"descer","pos":"VERB"}}}]}
 {"count":44,"disambiguation_key":933710415,"gram":[{"Tok":{"text":"fronteira","word_type":{"type":"Heteronym","word":"fronteira","lemma":"fronteira","pos":"NOUN"}}}]}
 {"count":44,"disambiguation_key":923129152,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"casaco","word_type":{"type":"Heteronym","word":"casaco","lemma":"casaco","pos":"NOUN"}}}]}
+{"count":44,"disambiguation_key":907621584,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}}]}
 {"count":44,"disambiguation_key":845461506,"gram":[{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}},{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"nada","word_type":{"type":"Heteronym","word":"nada","lemma":"nada","pos":"PRON"}}}]}
 {"count":44,"disambiguation_key":834769582,"gram":[{"Tok":{"text":"daria","word_type":{"type":"Heteronym","word":"daria","lemma":"dar","pos":"VERB"}}}]}
 {"count":44,"disambiguation_key":823186908,"gram":[{"Tok":{"text":"luvas","word_type":{"type":"Heteronym","word":"luvas","lemma":"luva","pos":"NOUN"}}}]}
@@ -4230,6 +4230,7 @@
 {"count":42,"disambiguation_key":1785899798,"gram":[{"Tok":{"text":"se","word_type":{"type":"Heteronym","word":"se","lemma":"se","pos":"PRON"}}},{"Tok":{"text":"recusou","word_type":{"type":"Heteronym","word":"recusou","lemma":"recusar","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}}]}
 {"count":42,"disambiguation_key":1772922951,"gram":[{"Tok":{"text":"escutou","word_type":{"type":"Heteronym","word":"escutou","lemma":"escutar","pos":"VERB"}}}]}
 {"count":42,"disambiguation_key":1749635085,"gram":[{"Tok":{"text":"devolva","word_type":{"type":"Heteronym","word":"devolva","lemma":"devolver","pos":"VERB"}}}]}
+{"count":42,"disambiguation_key":1720140056,"gram":[{"Tok":{"text":"lá","word_type":{"type":"Heteronym","word":"lá","lemma":"lá","pos":"ADV"}}},{"Tok":{"text":"dentro","word_type":{"type":"Heteronym","word":"dentro","lemma":"dentro","pos":"ADV"}}}]}
 {"count":42,"disambiguation_key":1671967832,"gram":[{"Tok":{"text":"morangos","word_type":{"type":"Heteronym","word":"morangos","lemma":"morango","pos":"NOUN"}}}]}
 {"count":42,"disambiguation_key":1671360291,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"qualquer","word_type":{"type":"Heteronym","word":"qualquer","lemma":"qualquer","pos":"DET"}}},{"Tok":{"text":"forma","word_type":{"type":"Heteronym","word":"forma","lemma":"forma","pos":"NOUN"}}}]}
 {"count":42,"disambiguation_key":1631144481,"gram":[{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"cuidado","word_type":{"type":"Heteronym","word":"cuidado","lemma":"cuidado","pos":"NOUN"}}}]}
@@ -4344,7 +4345,6 @@
 {"count":41,"disambiguation_key":1763600459,"gram":[{"Tok":{"text":"sede","word_type":{"type":"Heteronym","word":"sede","lemma":"sede","pos":"NOUN"}}}]}
 {"count":41,"disambiguation_key":1728885971,"gram":[{"Tok":{"text":"grávida","word_type":{"type":"Heteronym","word":"grávida","lemma":"grávido","pos":"ADJ"}}}]}
 {"count":41,"disambiguation_key":1725293689,"gram":[{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}},{"Tok":{"text":"sala","word_type":{"type":"Heteronym","word":"sala","lemma":"sala","pos":"NOUN"}}}]}
-{"count":41,"disambiguation_key":1720140056,"gram":[{"Tok":{"text":"lá","word_type":{"type":"Heteronym","word":"lá","lemma":"lá","pos":"ADV"}}},{"Tok":{"text":"dentro","word_type":{"type":"Heteronym","word":"dentro","lemma":"dentro","pos":"ADV"}}}]}
 {"count":41,"disambiguation_key":1699196997,"gram":[{"Tok":{"text":"alcançar","word_type":{"type":"Heteronym","word":"alcançar","lemma":"alcançar","pos":"VERB"}}}]}
 {"count":41,"disambiguation_key":1662712167,"gram":[{"Tok":{"text":"exame","word_type":{"type":"Heteronym","word":"exame","lemma":"exame","pos":"NOUN"}}}]}
 {"count":41,"disambiguation_key":1653566689,"gram":[{"Tok":{"text":"resta","word_type":{"type":"Heteronym","word":"resta","lemma":"restar","pos":"VERB"}}}]}
@@ -5012,6 +5012,7 @@
 {"count":36,"disambiguation_key":1791065634,"gram":[{"Tok":{"text":"barriga","word_type":{"type":"Heteronym","word":"barriga","lemma":"barriga","pos":"NOUN"}}}]}
 {"count":36,"disambiguation_key":1721632059,"gram":[{"Tok":{"text":"seus","word_type":{"type":"Heteronym","word":"seus","lemma":"seu","pos":"PRON"}}}]}
 {"count":36,"disambiguation_key":1716733797,"gram":[{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"em o","pos":"ADP"}}},{"Tok":{"text":"lugar","word_type":{"type":"Heteronym","word":"lugar","lemma":"lugar","pos":"NOUN"}}}]}
+{"count":36,"disambiguation_key":1654995728,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
 {"count":36,"disambiguation_key":1537760813,"gram":[{"Tok":{"text":"muitos","word_type":{"type":"Heteronym","word":"muitos","lemma":"muito","pos":"DET"}}},{"Tok":{"text":"livros","word_type":{"type":"Heteronym","word":"livros","lemma":"livro","pos":"NOUN"}}}]}
 {"count":36,"disambiguation_key":1497052116,"gram":[{"Tok":{"text":"tirando","word_type":{"type":"Heteronym","word":"tirando","lemma":"tirar","pos":"VERB"}}}]}
 {"count":36,"disambiguation_key":1372107258,"gram":[{"Tok":{"text":"acho","word_type":{"type":"Heteronym","word":"acho","lemma":"achar","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"ele","word_type":{"type":"Heteronym","word":"ele","lemma":"ele","pos":"PRON"}}}]}
@@ -5159,7 +5160,6 @@
 {"count":35,"disambiguation_key":1720532586,"gram":[{"Tok":{"text":"três","word_type":{"type":"Heteronym","word":"três","lemma":"três","pos":"NUM"}}},{"Tok":{"text":"anos","word_type":{"type":"Heteronym","word":"anos","lemma":"ano","pos":"NOUN"}}},{"Tok":{"text":"atrás","word_type":{"type":"Heteronym","word":"atrás","lemma":"atrás","pos":"ADV"}}}]}
 {"count":35,"disambiguation_key":1689208066,"gram":[{"Tok":{"text":"durma","word_type":{"type":"Heteronym","word":"durma","lemma":"dormir","pos":"VERB"}}}]}
 {"count":35,"disambiguation_key":1666719795,"gram":[{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"me","pos":"PRON"}}},{"Tok":{"text":"mandou","word_type":{"type":"Heteronym","word":"mandou","lemma":"mandar","pos":"VERB"}}}]}
-{"count":35,"disambiguation_key":1654995728,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
 {"count":35,"disambiguation_key":1616406673,"gram":[{"Tok":{"text":"vivia","word_type":{"type":"Heteronym","word":"vivia","lemma":"viver","pos":"VERB"}}}]}
 {"count":35,"disambiguation_key":1614998741,"gram":[{"Tok":{"text":"francesa","word_type":{"type":"Heteronym","word":"francesa","lemma":"francês","pos":"ADJ"}}}]}
 {"count":35,"disambiguation_key":1590622521,"gram":[{"Tok":{"text":"como","word_type":{"type":"Heteronym","word":"como","lemma":"como","pos":"SCONJ"}}},{"Tok":{"text":"fazer","word_type":{"type":"Heteronym","word":"fazer","lemma":"fazer","pos":"VERB"}}},{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
@@ -5512,6 +5512,7 @@
 {"count":33,"disambiguation_key":1181464045,"gram":[{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}},{"Tok":{"text":"rio","word_type":{"type":"Heteronym","word":"rio","lemma":"rio","pos":"NOUN"}}}]}
 {"count":33,"disambiguation_key":1154986483,"gram":[{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}},{"Tok":{"text":"jeito","word_type":{"type":"Heteronym","word":"jeito","lemma":"jeito","pos":"NOUN"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
 {"count":33,"disambiguation_key":1145353518,"gram":[{"Tok":{"text":"disse","word_type":{"type":"Heteronym","word":"disse","lemma":"dizer","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"era","word_type":{"type":"Heteronym","word":"era","lemma":"ser","pos":"AUX"}}}]}
+{"count":33,"disambiguation_key":1128727206,"gram":[{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"difícil","word_type":{"type":"Heteronym","word":"difícil","lemma":"difícil","pos":"ADJ"}}}]}
 {"count":33,"disambiguation_key":1094243295,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"minha","word_type":{"type":"Heteronym","word":"minha","lemma":"meu","pos":"DET"}}},{"Tok":{"text":"casa","word_type":{"type":"Heteronym","word":"casa","lemma":"casa","pos":"NOUN"}}}]}
 {"count":33,"disambiguation_key":1093533146,"gram":[{"Tok":{"text":"cima","word_type":{"type":"Heteronym","word":"cima","lemma":"cima","pos":"ADV"}}}]}
 {"count":33,"disambiguation_key":1093230447,"gram":[{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"beber","word_type":{"type":"Heteronym","word":"beber","lemma":"beber","pos":"VERB"}}}]}
@@ -5670,7 +5671,6 @@
 {"count":32,"disambiguation_key":1182973285,"gram":[{"Tok":{"text":"pareciam","word_type":{"type":"Heteronym","word":"pareciam","lemma":"parecer","pos":"VERB"}}}]}
 {"count":32,"disambiguation_key":1147879133,"gram":[{"Tok":{"text":"fotografia","word_type":{"type":"Heteronym","word":"fotografia","lemma":"fotografia","pos":"NOUN"}}}]}
 {"count":32,"disambiguation_key":1137272887,"gram":[{"Tok":{"text":"dedo","word_type":{"type":"Heteronym","word":"dedo","lemma":"dedo","pos":"NOUN"}}}]}
-{"count":32,"disambiguation_key":1128727206,"gram":[{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"difícil","word_type":{"type":"Heteronym","word":"difícil","lemma":"difícil","pos":"ADJ"}}}]}
 {"count":32,"disambiguation_key":1126486094,"gram":[{"Tok":{"text":"guarda","word_type":{"type":"Heteronym","word":"guarda","lemma":"guardar","pos":"VERB"}}}]}
 {"count":32,"disambiguation_key":1117680455,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"aí","word_type":{"type":"Heteronym","word":"aí","lemma":"aí","pos":"ADV"}}}]}
 {"count":32,"disambiguation_key":1095508012,"gram":[{"Tok":{"text":"são","word_type":{"type":"Heteronym","word":"são","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"amigos","word_type":{"type":"Heteronym","word":"amigos","lemma":"amigo","pos":"NOUN"}}}]}
@@ -6135,6 +6135,7 @@
 {"count":29,"disambiguation_key":3150007584,"gram":[{"Tok":{"text":"e","word_type":{"type":"Heteronym","word":"e","lemma":"e","pos":"CCONJ"}}},{"Tok":{"text":"tudo","word_type":{"type":"Heteronym","word":"tudo","lemma":"tudo","pos":"PRON"}}}]}
 {"count":29,"disambiguation_key":3108854544,"gram":[{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"em o","pos":"ADP"}}},{"Tok":{"text":"lago","word_type":{"type":"Heteronym","word":"lago","lemma":"lago","pos":"NOUN"}}}]}
 {"count":29,"disambiguation_key":3108384162,"gram":[{"Tok":{"text":"empregada","word_type":{"type":"Heteronym","word":"empregada","lemma":"empregado","pos":"NOUN"}}}]}
+{"count":29,"disambiguation_key":3096444458,"gram":[{"Tok":{"text":"darei","word_type":{"type":"Heteronym","word":"darei","lemma":"dar","pos":"VERB"}}}]}
 {"count":29,"disambiguation_key":3076331795,"gram":[{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}}]}
 {"count":29,"disambiguation_key":3061277800,"gram":[{"Tok":{"text":"vai","word_type":{"type":"Heteronym","word":"vai","lemma":"ir","pos":"AUX"}}},{"Tok":{"text":"chover","word_type":{"type":"Heteronym","word":"chover","lemma":"chover","pos":"VERB"}}}]}
 {"count":29,"disambiguation_key":2962734443,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"suéter","word_type":{"type":"Heteronym","word":"suéter","lemma":"suéter","pos":"NOUN"}}}]}
@@ -6398,7 +6399,6 @@
 {"count":28,"disambiguation_key":2240575325,"gram":[{"Tok":{"text":"fechou","word_type":{"type":"Heteronym","word":"fechou","lemma":"fechar","pos":"VERB"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"porta","word_type":{"type":"Heteronym","word":"porta","lemma":"porta","pos":"NOUN"}}}]}
 {"count":28,"disambiguation_key":2185865619,"gram":[{"Tok":{"text":"dados","word_type":{"type":"Heteronym","word":"dados","lemma":"dado","pos":"NOUN"}}}]}
 {"count":28,"disambiguation_key":2175359591,"gram":[{"Tok":{"text":"ter","word_type":{"type":"Heteronym","word":"ter","lemma":"ter","pos":"AUX"}}},{"Tok":{"text":"visto","word_type":{"type":"Heteronym","word":"visto","lemma":"ver","pos":"VERB"}}}]}
-{"count":28,"disambiguation_key":2171349870,"gram":[{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}}]}
 {"count":28,"disambiguation_key":2099883828,"gram":[{"Tok":{"text":"e","word_type":{"type":"Heteronym","word":"e","lemma":"e","pos":"CCONJ"}}},{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"não","word_type":{"type":"Heteronym","word":"não","lemma":"não","pos":"ADV"}}}]}
 {"count":28,"disambiguation_key":2095722559,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}}]}
 {"count":28,"disambiguation_key":2041384295,"gram":[{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}},{"Tok":{"text":"manhã","word_type":{"type":"Heteronym","word":"manhã","lemma":"manhã","pos":"NOUN"}}}]}
@@ -6555,7 +6555,6 @@
 {"count":27,"disambiguation_key":3174707321,"gram":[{"Tok":{"text":"quantidade","word_type":{"type":"Heteronym","word":"quantidade","lemma":"quantidade","pos":"NOUN"}}}]}
 {"count":27,"disambiguation_key":3152688616,"gram":[{"Tok":{"text":"estudar","word_type":{"type":"Heteronym","word":"estudar","lemma":"estudar","pos":"VERB"}}},{"Tok":{"text":"inglês","word_type":{"type":"Heteronym","word":"inglês","lemma":"inglês","pos":"NOUN"}}}]}
 {"count":27,"disambiguation_key":3140513235,"gram":[{"Tok":{"text":"ladrão","word_type":{"type":"Heteronym","word":"ladrão","lemma":"ladrão","pos":"NOUN"}}}]}
-{"count":27,"disambiguation_key":3096444458,"gram":[{"Tok":{"text":"darei","word_type":{"type":"Heteronym","word":"darei","lemma":"dar","pos":"VERB"}}}]}
 {"count":27,"disambiguation_key":3086679729,"gram":[{"Tok":{"text":"garfo","word_type":{"type":"Heteronym","word":"garfo","lemma":"garfo","pos":"NOUN"}}}]}
 {"count":27,"disambiguation_key":3077120954,"gram":[{"Tok":{"text":"seu","word_type":{"type":"Heteronym","word":"seu","lemma":"seu","pos":"DET"}}},{"Tok":{"text":"emprego","word_type":{"type":"Heteronym","word":"emprego","lemma":"emprego","pos":"NOUN"}}}]}
 {"count":27,"disambiguation_key":3062605877,"gram":[{"Tok":{"text":"tu","word_type":{"type":"Heteronym","word":"tu","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"já","word_type":{"type":"Heteronym","word":"já","lemma":"já","pos":"ADV"}}}]}
@@ -6607,6 +6606,7 @@
 {"count":27,"disambiguation_key":2204566617,"gram":[{"Tok":{"text":"superar","word_type":{"type":"Heteronym","word":"superar","lemma":"superar","pos":"VERB"}}}]}
 {"count":27,"disambiguation_key":2196416206,"gram":[{"Tok":{"text":"quer","word_type":{"type":"Heteronym","word":"quer","lemma":"querer","pos":"VERB"}}},{"Tok":{"text":"fazer","word_type":{"type":"Heteronym","word":"fazer","lemma":"fazer","pos":"VERB"}}},{"Tok":{"text":"isso","word_type":{"type":"Heteronym","word":"isso","lemma":"isso","pos":"PRON"}}}]}
 {"count":27,"disambiguation_key":2179150478,"gram":[{"Tok":{"text":"suportar","word_type":{"type":"Heteronym","word":"suportar","lemma":"suportar","pos":"VERB"}}}]}
+{"count":27,"disambiguation_key":2171349870,"gram":[{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}}]}
 {"count":27,"disambiguation_key":2157382214,"gram":[{"Tok":{"text":"peito","word_type":{"type":"Heteronym","word":"peito","lemma":"peito","pos":"NOUN"}}}]}
 {"count":27,"disambiguation_key":2130000317,"gram":[{"Tok":{"text":"assine","word_type":{"type":"Heteronym","word":"assine","lemma":"assinar","pos":"VERB"}}}]}
 {"count":27,"disambiguation_key":2106975486,"gram":[{"Tok":{"text":"sobremesa","word_type":{"type":"Heteronym","word":"sobremesa","lemma":"sobremesa","pos":"NOUN"}}}]}
@@ -8114,6 +8114,7 @@
 {"count":21,"disambiguation_key":3353186449,"gram":[{"Tok":{"text":"há","word_type":{"type":"Heteronym","word":"há","lemma":"haver","pos":"VERB"}}},{"Tok":{"text":"dez","word_type":{"type":"Heteronym","word":"dez","lemma":"dez","pos":"NUM"}}},{"Tok":{"text":"anos","word_type":{"type":"Heteronym","word":"anos","lemma":"ano","pos":"NOUN"}}}]}
 {"count":21,"disambiguation_key":3347925127,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"lugar","word_type":{"type":"Heteronym","word":"lugar","lemma":"lugar","pos":"NOUN"}}}]}
 {"count":21,"disambiguation_key":3347604161,"gram":[{"Tok":{"text":"vença","word_type":{"type":"Heteronym","word":"vença","lemma":"vencer","pos":"VERB"}}}]}
+{"count":21,"disambiguation_key":3340612483,"gram":[{"Tok":{"text":"arrependo","word_type":{"type":"Heteronym","word":"arrependo","lemma":"arrepender","pos":"VERB"}}}]}
 {"count":21,"disambiguation_key":3338582956,"gram":[{"Tok":{"text":"tomar","word_type":{"type":"Heteronym","word":"tomar","lemma":"tomar","pos":"VERB"}}},{"Tok":{"text":"café","word_type":{"type":"Heteronym","word":"café","lemma":"café","pos":"NOUN"}}},{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}},{"Tok":{"text":"manhã","word_type":{"type":"Heteronym","word":"manhã","lemma":"manhã","pos":"NOUN"}}}]}
 {"count":21,"disambiguation_key":3327497032,"gram":[{"Tok":{"text":"ter","word_type":{"type":"Heteronym","word":"ter","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"filhos","word_type":{"type":"Heteronym","word":"filhos","lemma":"filho","pos":"NOUN"}}}]}
 {"count":21,"disambiguation_key":3316550517,"gram":[{"Tok":{"text":"tubarão","word_type":{"type":"Heteronym","word":"tubarão","lemma":"tubarão","pos":"NOUN"}}}]}
@@ -8453,7 +8454,6 @@
 {"count":20,"disambiguation_key":3393461768,"gram":[{"Tok":{"text":"existência","word_type":{"type":"Heteronym","word":"existência","lemma":"existência","pos":"NOUN"}}}]}
 {"count":20,"disambiguation_key":3376029262,"gram":[{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"pausa","word_type":{"type":"Heteronym","word":"pausa","lemma":"pausa","pos":"NOUN"}}}]}
 {"count":20,"disambiguation_key":3364677393,"gram":[{"Tok":{"text":"investigar","word_type":{"type":"Heteronym","word":"investigar","lemma":"investigar","pos":"VERB"}}}]}
-{"count":20,"disambiguation_key":3340612483,"gram":[{"Tok":{"text":"arrependo","word_type":{"type":"Heteronym","word":"arrependo","lemma":"arrepender","pos":"VERB"}}}]}
 {"count":20,"disambiguation_key":3321293491,"gram":[{"Tok":{"text":"acabe","word_type":{"type":"Heteronym","word":"acabe","lemma":"acabar","pos":"VERB"}}}]}
 {"count":20,"disambiguation_key":3320173233,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"tocar","word_type":{"type":"Heteronym","word":"tocar","lemma":"tocar","pos":"VERB"}}}]}
 {"count":20,"disambiguation_key":3291544241,"gram":[{"Tok":{"text":"já","word_type":{"type":"Heteronym","word":"já","lemma":"já","pos":"ADV"}}},{"Tok":{"text":"vi","word_type":{"type":"Heteronym","word":"vi","lemma":"ver","pos":"VERB"}}}]}
@@ -9936,6 +9936,7 @@
 {"count":16,"disambiguation_key":3932832748,"gram":[{"Tok":{"text":"piorando","word_type":{"type":"Heteronym","word":"piorando","lemma":"piorar","pos":"VERB"}}}]}
 {"count":16,"disambiguation_key":3925721360,"gram":[{"Tok":{"text":"geografia","word_type":{"type":"Heteronym","word":"geografia","lemma":"geografia","pos":"NOUN"}}}]}
 {"count":16,"disambiguation_key":3915511877,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"quero","word_type":{"type":"Heteronym","word":"quero","lemma":"querer","pos":"VERB"}}},{"Tok":{"text":"aprender","word_type":{"type":"Heteronym","word":"aprender","lemma":"aprender","pos":"VERB"}}}]}
+{"count":16,"disambiguation_key":3913004812,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"pena","word_type":{"type":"Heteronym","word":"pena","lemma":"pena","pos":"NOUN"}}}]}
 {"count":16,"disambiguation_key":3911784213,"gram":[{"Tok":{"text":"essas","word_type":{"type":"Heteronym","word":"essas","lemma":"esse","pos":"PRON"}}},{"Tok":{"text":"são","word_type":{"type":"Heteronym","word":"são","lemma":"ser","pos":"AUX"}}}]}
 {"count":16,"disambiguation_key":3897400163,"gram":[{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de a","pos":"ADP"}}}]}
 {"count":16,"disambiguation_key":3872801632,"gram":[{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"hora","word_type":{"type":"Heteronym","word":"hora","lemma":"hora","pos":"NOUN"}}}]}
@@ -10419,7 +10420,6 @@
 {"count":15,"disambiguation_key":3927727609,"gram":[{"Tok":{"text":"jornada","word_type":{"type":"Heteronym","word":"jornada","lemma":"jornada","pos":"NOUN"}}}]}
 {"count":15,"disambiguation_key":3923302438,"gram":[{"Tok":{"text":"esses","word_type":{"type":"Heteronym","word":"esses","lemma":"esse","pos":"DET"}}},{"Tok":{"text":"dois","word_type":{"type":"Heteronym","word":"dois","lemma":"dois","pos":"NUM"}}}]}
 {"count":15,"disambiguation_key":3918220083,"gram":[{"Tok":{"text":"as","word_type":{"type":"Heteronym","word":"as","lemma":"o","pos":"DET"}}},{"Tok":{"text":"coisas","word_type":{"type":"Heteronym","word":"coisas","lemma":"coisa","pos":"NOUN"}}},{"Tok":{"text":"estão","word_type":{"type":"Heteronym","word":"estão","lemma":"estar","pos":"AUX"}}}]}
-{"count":15,"disambiguation_key":3913004812,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"pena","word_type":{"type":"Heteronym","word":"pena","lemma":"pena","pos":"NOUN"}}}]}
 {"count":15,"disambiguation_key":3904417584,"gram":[{"Tok":{"text":"encomenda","word_type":{"type":"Heteronym","word":"encomenda","lemma":"encomenda","pos":"NOUN"}}}]}
 {"count":15,"disambiguation_key":3903406394,"gram":[{"Tok":{"text":"na","word_type":{"type":"Heteronym","word":"na","lemma":"em a","pos":"ADP"}}},{"Tok":{"text":"frente","word_type":{"type":"Heteronym","word":"frente","lemma":"frente","pos":"NOUN"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":15,"disambiguation_key":3878252305,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"questão","word_type":{"type":"Heteronym","word":"questão","lemma":"questão","pos":"NOUN"}}},{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}}]}
@@ -11834,6 +11834,7 @@
 {"count":13,"disambiguation_key":1395665924,"gram":[{"Tok":{"text":"choram","word_type":{"type":"Heteronym","word":"choram","lemma":"chorar","pos":"VERB"}}}]}
 {"count":13,"disambiguation_key":1389508734,"gram":[{"Tok":{"text":"antes","word_type":{"type":"Heteronym","word":"antes","lemma":"antes","pos":"ADV"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"entrar","word_type":{"type":"Heteronym","word":"entrar","lemma":"entrar","pos":"VERB"}}}]}
 {"count":13,"disambiguation_key":1378971602,"gram":[{"Tok":{"text":"corro","word_type":{"type":"Heteronym","word":"corro","lemma":"correr","pos":"VERB"}}}]}
+{"count":13,"disambiguation_key":1369308074,"gram":[{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
 {"count":13,"disambiguation_key":1362105382,"gram":[{"Tok":{"text":"anotar","word_type":{"type":"Heteronym","word":"anotar","lemma":"anotar","pos":"VERB"}}}]}
 {"count":13,"disambiguation_key":1355705777,"gram":[{"Tok":{"text":"era","word_type":{"type":"Heteronym","word":"era","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"único","word_type":{"type":"Heteronym","word":"único","lemma":"único","pos":"ADJ"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}}]}
 {"count":13,"disambiguation_key":1354852518,"gram":[{"Tok":{"text":"interferir","word_type":{"type":"Heteronym","word":"interferir","lemma":"interferir","pos":"VERB"}}}]}
@@ -12544,7 +12545,6 @@
 {"count":12,"disambiguation_key":1394752632,"gram":[{"Tok":{"text":"precisa","word_type":{"type":"Heteronym","word":"precisa","lemma":"precisar","pos":"VERB"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"mais","word_type":{"type":"Heteronym","word":"mais","lemma":"mais","pos":"DET"}}}]}
 {"count":12,"disambiguation_key":1391331382,"gram":[{"Tok":{"text":"conjunto","word_type":{"type":"Heteronym","word":"conjunto","lemma":"conjunto","pos":"NOUN"}}}]}
 {"count":12,"disambiguation_key":1385107413,"gram":[{"Tok":{"text":"eles","word_type":{"type":"Heteronym","word":"eles","lemma":"eles","pos":"PRON"}}},{"Tok":{"text":"precisam","word_type":{"type":"Heteronym","word":"precisam","lemma":"precisar","pos":"VERB"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
-{"count":12,"disambiguation_key":1369308074,"gram":[{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
 {"count":12,"disambiguation_key":1364611599,"gram":[{"Tok":{"text":"puto","word_type":{"type":"Heteronym","word":"puto","lemma":"puto","pos":"ADJ"}}}]}
 {"count":12,"disambiguation_key":1364608789,"gram":[{"Tok":{"text":"ela","word_type":{"type":"Heteronym","word":"ela","lemma":"ela","pos":"PRON"}}},{"Tok":{"text":"era","word_type":{"type":"Heteronym","word":"era","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}}]}
 {"count":12,"disambiguation_key":1364536058,"gram":[{"Tok":{"text":"barra","word_type":{"type":"Heteronym","word":"barra","lemma":"barra","pos":"NOUN"}}}]}
@@ -14448,6 +14448,7 @@
 {"count":10,"disambiguation_key":283657526,"gram":[{"Tok":{"text":"está","word_type":{"type":"Heteronym","word":"está","lemma":"estar","pos":"AUX"}}},{"Tok":{"text":"se","word_type":{"type":"Heteronym","word":"se","lemma":"se","pos":"PRON"}}},{"Tok":{"text":"divertindo","word_type":{"type":"Heteronym","word":"divertindo","lemma":"divertir","pos":"VERB"}}}]}
 {"count":10,"disambiguation_key":283114575,"gram":[{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"minha","word_type":{"type":"Heteronym","word":"minha","lemma":"meu","pos":"DET"}}},{"Tok":{"text":"filha","word_type":{"type":"Heteronym","word":"filha","lemma":"filha","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":281889764,"gram":[{"Tok":{"text":"gols","word_type":{"type":"Heteronym","word":"gols","lemma":"gol","pos":"NOUN"}}}]}
+{"count":10,"disambiguation_key":279721474,"gram":[{"Tok":{"text":"nossos","word_type":{"type":"Heteronym","word":"nossos","lemma":"nosso","pos":"DET"}}},{"Tok":{"text":"clientes","word_type":{"type":"Heteronym","word":"clientes","lemma":"cliente","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":272446506,"gram":[{"Tok":{"text":"turnê","word_type":{"type":"Heteronym","word":"turnê","lemma":"turnê","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":271363928,"gram":[{"Tok":{"text":"intuição","word_type":{"type":"Heteronym","word":"intuição","lemma":"intuição","pos":"NOUN"}}}]}
 {"count":10,"disambiguation_key":266767741,"gram":[{"Tok":{"text":"abandonada","word_type":{"type":"Heteronym","word":"abandonada","lemma":"abandonado","pos":"ADJ"}}}]}
@@ -15300,6 +15301,7 @@
 {"count":9,"disambiguation_key":1122780817,"gram":[{"Tok":{"text":"falta","word_type":{"type":"Heteronym","word":"falta","lemma":"falta","pos":"NOUN"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"educação","word_type":{"type":"Heteronym","word":"educação","lemma":"educação","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":1121744416,"gram":[{"Tok":{"text":"tratada","word_type":{"type":"Heteronym","word":"tratada","lemma":"tratar","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":1121116541,"gram":[{"Tok":{"text":"enfermidade","word_type":{"type":"Heteronym","word":"enfermidade","lemma":"enfermidade","pos":"NOUN"}}}]}
+{"count":9,"disambiguation_key":1108573644,"gram":[{"Tok":{"text":"tem","word_type":{"type":"Heteronym","word":"tem","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"filha","word_type":{"type":"Heteronym","word":"filha","lemma":"filha","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":1100662598,"gram":[{"Tok":{"text":"como","word_type":{"type":"Heteronym","word":"como","lemma":"como","pos":"ADV"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"sabe","word_type":{"type":"Heteronym","word":"sabe","lemma":"saber","pos":"VERB"}}}]}
 {"count":9,"disambiguation_key":1094658425,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"acho","word_type":{"type":"Heteronym","word":"acho","lemma":"achar","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"nós","word_type":{"type":"Heteronym","word":"nós","lemma":"nós","pos":"PRON"}}},{"Tok":{"text":"deveríamos","word_type":{"type":"Heteronym","word":"deveríamos","lemma":"dever","pos":"AUX"}}}]}
 {"count":9,"disambiguation_key":1092858047,"gram":[{"Tok":{"text":"seguir","word_type":{"type":"Heteronym","word":"seguir","lemma":"seguir","pos":"VERB"}}},{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}},{"Tok":{"text":"frente","word_type":{"type":"Heteronym","word":"frente","lemma":"frente","pos":"NOUN"}}}]}
@@ -15424,6 +15426,7 @@
 {"count":9,"disambiguation_key":655049624,"gram":[{"Tok":{"text":"gradualmente","word_type":{"type":"Heteronym","word":"gradualmente","lemma":"gradualmente","pos":"ADV"}}}]}
 {"count":9,"disambiguation_key":653486350,"gram":[{"Tok":{"text":"nada","word_type":{"type":"Heteronym","word":"nada","lemma":"nada","pos":"PRON"}}},{"Tok":{"text":"além","word_type":{"type":"Heteronym","word":"além","lemma":"além","pos":"ADP"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":9,"disambiguation_key":650226912,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"dia","word_type":{"type":"Heteronym","word":"dia","lemma":"dia","pos":"NOUN"}}},{"Tok":{"text":"desses","word_type":{"type":"Heteronym","word":"desses","lemma":"de esse","pos":"ADP"}}}]}
+{"count":9,"disambiguation_key":645544880,"gram":[{"Tok":{"text":"enfermeiro","word_type":{"type":"Heteronym","word":"enfermeiro","lemma":"enfermeiro","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":640488170,"gram":[{"Tok":{"text":"repórter","word_type":{"type":"Heteronym","word":"repórter","lemma":"repórter","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":628529036,"gram":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}},{"Tok":{"text":"capital","word_type":{"type":"Heteronym","word":"capital","lemma":"capital","pos":"NOUN"}}},{"Tok":{"text":"da","word_type":{"type":"Heteronym","word":"da","lemma":"de o","pos":"ADP"}}}]}
 {"count":9,"disambiguation_key":628233612,"gram":[{"Tok":{"text":"estourar","word_type":{"type":"Heteronym","word":"estourar","lemma":"estourar","pos":"VERB"}}}]}
@@ -15523,7 +15526,6 @@
 {"count":9,"disambiguation_key":302500081,"gram":[{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"garrafa","word_type":{"type":"Heteronym","word":"garrafa","lemma":"garrafa","pos":"NOUN"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":9,"disambiguation_key":293125987,"gram":[{"Tok":{"text":"tampouco","word_type":{"type":"Heteronym","word":"tampouco","lemma":"tampouco","pos":"ADV"}}}]}
 {"count":9,"disambiguation_key":280596564,"gram":[{"Tok":{"text":"irmã","word_type":{"type":"Heteronym","word":"irmã","lemma":"irmã","pos":"NOUN"}}},{"Tok":{"text":"mais","word_type":{"type":"Heteronym","word":"mais","lemma":"mais","pos":"ADV"}}},{"Tok":{"text":"nova","word_type":{"type":"Heteronym","word":"nova","lemma":"novo","pos":"ADJ"}}}]}
-{"count":9,"disambiguation_key":279721474,"gram":[{"Tok":{"text":"nossos","word_type":{"type":"Heteronym","word":"nossos","lemma":"nosso","pos":"DET"}}},{"Tok":{"text":"clientes","word_type":{"type":"Heteronym","word":"clientes","lemma":"cliente","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":276740001,"gram":[{"Tok":{"text":"tem","word_type":{"type":"Heteronym","word":"tem","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gosto","pos":"NOUN"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}}]}
 {"count":9,"disambiguation_key":273617321,"gram":[{"Tok":{"text":"sacada","word_type":{"type":"Heteronym","word":"sacada","lemma":"sacada","pos":"NOUN"}}}]}
 {"count":9,"disambiguation_key":267824559,"gram":[{"Tok":{"text":"assalto","word_type":{"type":"Heteronym","word":"assalto","lemma":"assalto","pos":"NOUN"}}}]}
@@ -16527,7 +16529,6 @@
 {"count":8,"disambiguation_key":1112733688,"gram":[{"Tok":{"text":"quem","word_type":{"type":"Heteronym","word":"quem","lemma":"quem","pos":"PRON"}}},{"Tok":{"text":"são","word_type":{"type":"Heteronym","word":"são","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"os","word_type":{"type":"Heteronym","word":"os","lemma":"o","pos":"DET"}}}]}
 {"count":8,"disambiguation_key":1109973252,"gram":[{"Tok":{"text":"este","word_type":{"type":"Heteronym","word":"este","lemma":"este","pos":"PRON"}}},{"Tok":{"text":"é","word_type":{"type":"Heteronym","word":"é","lemma":"ser","pos":"AUX"}}},{"Tok":{"text":"meu","word_type":{"type":"Heteronym","word":"meu","lemma":"meu","pos":"DET"}}}]}
 {"count":8,"disambiguation_key":1109647595,"gram":[{"Tok":{"text":"arredores","word_type":{"type":"Heteronym","word":"arredores","lemma":"arredor","pos":"NOUN"}}}]}
-{"count":8,"disambiguation_key":1108573644,"gram":[{"Tok":{"text":"tem","word_type":{"type":"Heteronym","word":"tem","lemma":"ter","pos":"VERB"}}},{"Tok":{"text":"uma","word_type":{"type":"Heteronym","word":"uma","lemma":"um","pos":"DET"}}},{"Tok":{"text":"filha","word_type":{"type":"Heteronym","word":"filha","lemma":"filha","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":1108051044,"gram":[{"Tok":{"text":"novato","word_type":{"type":"Heteronym","word":"novato","lemma":"novato","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":1107418182,"gram":[{"Tok":{"text":"acho","word_type":{"type":"Heteronym","word":"acho","lemma":"achar","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}},{"Tok":{"text":"precisa","word_type":{"type":"Heteronym","word":"precisa","lemma":"precisar","pos":"VERB"}}}]}
 {"count":8,"disambiguation_key":1104777633,"gram":[{"Tok":{"text":"fiquemos","word_type":{"type":"Heteronym","word":"fiquemos","lemma":"ficar","pos":"VERB"}}}]}
@@ -16664,7 +16665,6 @@
 {"count":8,"disambiguation_key":648551915,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"queria","word_type":{"type":"Heteronym","word":"queria","lemma":"querer","pos":"VERB"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"SCONJ"}}},{"Tok":{"text":"você","word_type":{"type":"Heteronym","word":"você","lemma":"você","pos":"PRON"}}}]}
 {"count":8,"disambiguation_key":646204135,"gram":[{"Tok":{"text":"rápidas","word_type":{"type":"Heteronym","word":"rápidas","lemma":"rápido","pos":"ADJ"}}}]}
 {"count":8,"disambiguation_key":645877328,"gram":[{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"DET"}}},{"Tok":{"text":"que","word_type":{"type":"Heteronym","word":"que","lemma":"que","pos":"PRON"}}},{"Tok":{"text":"aconteceu","word_type":{"type":"Heteronym","word":"aconteceu","lemma":"acontecer","pos":"VERB"}}},{"Tok":{"text":"com","word_type":{"type":"Heteronym","word":"com","lemma":"com","pos":"ADP"}}},{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"o","pos":"DET"}}}]}
-{"count":8,"disambiguation_key":645544880,"gram":[{"Tok":{"text":"enfermeiro","word_type":{"type":"Heteronym","word":"enfermeiro","lemma":"enfermeiro","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":644819928,"gram":[{"Tok":{"text":"rural","word_type":{"type":"Heteronym","word":"rural","lemma":"rural","pos":"ADJ"}}}]}
 {"count":8,"disambiguation_key":640056784,"gram":[{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}},{"Tok":{"text":"direção","word_type":{"type":"Heteronym","word":"direção","lemma":"direção","pos":"NOUN"}}},{"Tok":{"text":"à","word_type":{"type":"Heteronym","word":"à","lemma":"a o","pos":"ADP"}}}]}
 {"count":8,"disambiguation_key":634906565,"gram":[{"Tok":{"text":"colaborar","word_type":{"type":"Heteronym","word":"colaborar","lemma":"colaborar","pos":"VERB"}}}]}
@@ -16769,7 +16769,6 @@
 {"count":8,"disambiguation_key":305772967,"gram":[{"Tok":{"text":"instinto","word_type":{"type":"Heteronym","word":"instinto","lemma":"instinto","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":305310963,"gram":[{"Tok":{"text":"posso","word_type":{"type":"Heteronym","word":"posso","lemma":"poder","pos":"AUX"}}},{"Tok":{"text":"te","word_type":{"type":"Heteronym","word":"te","lemma":"tu","pos":"PRON"}}},{"Tok":{"text":"dar","word_type":{"type":"Heteronym","word":"dar","lemma":"dar","pos":"VERB"}}}]}
 {"count":8,"disambiguation_key":304316193,"gram":[{"Tok":{"text":"sugeri","word_type":{"type":"Heteronym","word":"sugeri","lemma":"sugerir","pos":"VERB"}}}]}
-{"count":8,"disambiguation_key":300858231,"gram":[{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}},{"Tok":{"text":"meu","word_type":{"type":"Heteronym","word":"meu","lemma":"meu","pos":"DET"}}},{"Tok":{"text":"trabalho","word_type":{"type":"Heteronym","word":"trabalho","lemma":"trabalho","pos":"NOUN"}}}]}
 {"count":8,"disambiguation_key":294068874,"gram":[{"Tok":{"text":"em","word_type":{"type":"Heteronym","word":"em","lemma":"em","pos":"ADP"}}},{"Tok":{"text":"recursos","word_type":{"type":"Heteronym","word":"recursos","lemma":"recurso","pos":"NOUN"}}},{"Tok":{"text":"naturais","word_type":{"type":"Heteronym","word":"naturais","lemma":"natural","pos":"ADJ"}}}]}
 {"count":8,"disambiguation_key":284579043,"gram":[{"Tok":{"text":"vendê","word_type":{"type":"Heteronym","word":"vendê","lemma":"vender","pos":"VERB"}}},{"Tok":{"text":"-","word_type":{"type":"Other","other_tag":"PUNCT"}}},{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"a","pos":"PRON"}}}]}
 {"count":8,"disambiguation_key":282849739,"gram":[{"Tok":{"text":"complicadas","word_type":{"type":"Heteronym","word":"complicadas","lemma":"complicado","pos":"ADJ"}}}]}
@@ -20930,6 +20929,7 @@
 {"count":5,"disambiguation_key":2892313784,"gram":[{"Tok":{"text":"são","word_type":{"type":"Heteronym","word":"são","lemma":"são","pos":"ADJ"}}}]}
 {"count":5,"disambiguation_key":2891543075,"gram":[{"Tok":{"text":"pena","word_type":{"type":"Heteronym","word":"pena","lemma":"pena","pos":"NOUN"}}},{"Tok":{"text":"de","word_type":{"type":"Heteronym","word":"de","lemma":"de","pos":"ADP"}}},{"Tok":{"text":"morte","word_type":{"type":"Heteronym","word":"morte","lemma":"morte","pos":"NOUN"}}}]}
 {"count":5,"disambiguation_key":2890787673,"gram":[{"Tok":{"text":"prazeres","word_type":{"type":"Heteronym","word":"prazeres","lemma":"prazer","pos":"NOUN"}}}]}
+{"count":5,"disambiguation_key":2885495929,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
 {"count":5,"disambiguation_key":2885439827,"gram":[{"Tok":{"text":"criados","word_type":{"type":"Heteronym","word":"criados","lemma":"criado","pos":"NOUN"}}}]}
 {"count":5,"disambiguation_key":2885100204,"gram":[{"Tok":{"text":"existido","word_type":{"type":"Heteronym","word":"existido","lemma":"existir","pos":"VERB"}}}]}
 {"count":5,"disambiguation_key":2883500828,"gram":[{"Tok":{"text":"sóbria","word_type":{"type":"Heteronym","word":"sóbria","lemma":"sóbrio","pos":"ADJ"}}}]}
@@ -23346,7 +23346,6 @@
 {"count":4,"disambiguation_key":2887714806,"gram":[{"Tok":{"text":"sobreviveria","word_type":{"type":"Heteronym","word":"sobreviveria","lemma":"sobreviver","pos":"VERB"}}}]}
 {"count":4,"disambiguation_key":2887260948,"gram":[{"Tok":{"text":"alega","word_type":{"type":"Heteronym","word":"alega","lemma":"alegar","pos":"VERB"}}}]}
 {"count":4,"disambiguation_key":2886581723,"gram":[{"Tok":{"text":"escritura","word_type":{"type":"Heteronym","word":"escritura","lemma":"escritura","pos":"NOUN"}}}]}
-{"count":4,"disambiguation_key":2885495929,"gram":[{"Tok":{"text":"eu","word_type":{"type":"Heteronym","word":"eu","lemma":"eu","pos":"PRON"}}},{"Tok":{"text":"gosto","word_type":{"type":"Heteronym","word":"gosto","lemma":"gostar","pos":"VERB"}}},{"Tok":{"text":"muito","word_type":{"type":"Heteronym","word":"muito","lemma":"muito","pos":"ADV"}}},{"Tok":{"text":"do","word_type":{"type":"Heteronym","word":"do","lemma":"de o","pos":"ADP"}}}]}
 {"count":4,"disambiguation_key":2885268584,"gram":[{"Tok":{"text":"um","word_type":{"type":"Heteronym","word":"um","lemma":"um","pos":"DET"}}},{"Tok":{"text":"presente","word_type":{"type":"Heteronym","word":"presente","lemma":"presente","pos":"NOUN"}}},{"Tok":{"text":"para","word_type":{"type":"Heteronym","word":"para","lemma":"para","pos":"ADP"}}}]}
 {"count":4,"disambiguation_key":2883844617,"gram":[{"Tok":{"text":"caseiro","word_type":{"type":"Heteronym","word":"caseiro","lemma":"caseiro","pos":"ADJ"}}}]}
 {"count":4,"disambiguation_key":2882734895,"gram":[{"Tok":{"text":"compõe","word_type":{"type":"Heteronym","word":"compõe","lemma":"compor","pos":"VERB"}}}]}

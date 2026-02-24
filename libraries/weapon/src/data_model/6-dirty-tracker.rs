@@ -97,7 +97,10 @@ impl<Store> DirtyTracker<Store> {
         &self.store
     }
 
-    pub(crate) fn store_mut(&mut self, modifier: Option<ListenerKey>) -> DirtyOnDerefMut<Store> {
+    pub(crate) fn store_mut(
+        &mut self,
+        modifier: Option<ListenerKey>,
+    ) -> DirtyOnDerefMut<'_, Store> {
         DirtyOnDerefMut {
             dirty_tracker: &mut self.store,
             dirty_state: &mut self.dirty_state,

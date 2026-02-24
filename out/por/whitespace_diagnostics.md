@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2107365
-Total errors: 328
-Accuracy: 99.98%
+Total predictions: 2107402
+Total errors: 310
+Accuracy: 99.99%
 
 ## Error Patterns (sorted by frequency)
 
@@ -393,18 +393,6 @@ Accuracy: 99.98%
 - Examples:
   - Ele me disse, Sabe, ele pode ficar doente.
 
-### "," + " farei" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Embora seja uma tarefa muito difícil, farei tudo o que me for possível.
-
-### "," + " pois" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - É uma pena, pois este era um bairro agradável.
-
 ### "," + "élnútll" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -687,12 +675,6 @@ Accuracy: 99.98%
 - Examples:
   - Estaéumahistóriasimples; no entanto,não é fácilcontá-la.
 
-### "Eu" + " me" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Eu me arrependo de muitas coisas.
-
 ### "Fifty" + "é" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -849,12 +831,6 @@ Accuracy: 99.98%
 - Examples:
   - Todospreclsamsaber.
 
-### "Tom" + "aqui" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Nós deveríamos esperar por Tom aqui?
-
 ### "Vamos" + "IOúltlmo" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -878,12 +854,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Chama-se Zhu´s, em Kowloon.
-
-### "a" + " capital" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Porto Alegre é a capital do estado mais meridional do Brasil.
 
 ### "abandonaram" + "?" (1 occurrences)
 - Predicted: None
@@ -963,12 +933,6 @@ Accuracy: 99.98%
 - Examples:
   - Vamos,cego bêbadoIGrite!
 
-### "campo" + "florido" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Um dia, num amplo campo florido, ele encontrou um urso, um grande urso russo.
-
 ### "certo" + "" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1029,12 +993,6 @@ Accuracy: 99.98%
 - Examples:
   - Não gosta deIes?
 
-### "denuncia" + " que" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Seu sotaque denuncia que ele é francês.
-
 ### "desenvolvido" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1077,18 +1035,6 @@ Accuracy: 99.98%
 - Examples:
   - E ataque-o quando eIe vier.
 
-### "e" + " a" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - A morte chega igualmente para todos nós, e a todos nós iguala quando chega.
-
-### "e" + " depois" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Tom beijou Maria e depois foi trabalhar.
-
 ### "eI" + "a" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1125,12 +1071,6 @@ Accuracy: 99.98%
 - Examples:
   - Faremos a entrevistaem Cleveland.
 
-### "enviou" + "estavam" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - As maçãs que ele me enviou estavam deliciosas.
-
 ### "escapará" + "à" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1166,12 +1106,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Brinque ou estude - a escolha é sua.
-
-### "estão" + " na" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Muitos de nossos clientes estão na Austrália.
 
 ### "falando" + "?" (1 occurrences)
 - Predicted: None
@@ -1311,23 +1245,11 @@ Accuracy: 99.98%
 - Examples:
   - Ele perguntou isso ?
 
-### "livro" + "há" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Acabei de ler o livro há pouco.
-
 ### "lá" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - O que eles estão fazendo lá ?
-
-### "lá" + " dentro" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Havia alguém lá dentro?
 
 ### "maneiro" + "-" (1 occurrences)
 - Predicted: None
@@ -1406,12 +1328,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Tom disse à Mary que n´ão havia nada na geladeira.
-
-### "não" + " te" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Eu não te darei um cavalo.
 
 ### "o" + "(" (1 occurrences)
 - Predicted: Space
@@ -1515,23 +1431,11 @@ Accuracy: 99.98%
 - Examples:
   - Sinto cheiro de póIvora !
 
-### "quando" + "vem" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - Ele não me escreveu dizendo quando vem.
-
 ### "que" + "já" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - É só o senhor publicar o quejá foi combinado.
-
-### "recomendei" + " você" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Eu recomendei você.
 
 ### "representantes" + "de" (1 occurrences)
 - Predicted: Space
@@ -1581,12 +1485,6 @@ Accuracy: 99.98%
 - Examples:
   - O que tudo isso significa ?
 
-### "são" + " soldados" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Eles realmente são soldados?
-
 ### "talvez" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1634,12 +1532,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - E o Yakul e eu iremos visitar vocêe sempre que pudermos.
-
-### "vocês" + "escalaram" (1 occurrences)
-- Predicted: Space
-- Actual: Nbsp
-- Examples:
-  - É verdade que vocês escalaram esta montanha?
 
 ### "x" + "´" (1 occurrences)
 - Predicted: Space
