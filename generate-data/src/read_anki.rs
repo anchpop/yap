@@ -1,4 +1,3 @@
-use html2text::from_read;
 use indexmap::IndexSet;
 use rusqlite::{Connection, Result as SqlResult};
 use std::error::Error;
@@ -8,6 +7,113 @@ use std::path::Path;
 use std::{fmt, fs};
 use tempfile::NamedTempFile;
 use zip::ZipArchive;
+
+/// Fast HTML tag stripper for simple Anki card HTML.
+/// Strips tags, decodes common HTML entities, and normalizes whitespace.
+fn strip_html(input: &str) -> String {
+    let mut result = String::with_capacity(input.len());
+    let mut in_tag = false;
+    let mut chars = input.chars().peekable();
+
+    while let Some(ch) = chars.next() {
+        match ch {
+            '<' => {
+                // Check if this is a <br> or <br/> - insert newline
+                let rest: String = chars.clone().take(4).collect();
+                if rest.starts_with("br>") || rest.starts_with("br/>") || rest.starts_with("br />")
+                {
+                    result.push('\n');
+                }
+                in_tag = true;
+            }
+            '>' => {
+                in_tag = false;
+            }
+            '&' if !in_tag => {
+                // Decode common HTML entities
+                let entity: String = chars.clone().take(10).take_while(|&c| c != ';').collect();
+                match entity.as_str() {
+                    "amp" => {
+                        result.push('&');
+                        for _ in 0..entity.len() + 1 {
+                            chars.next();
+                        }
+                    }
+                    "lt" => {
+                        result.push('<');
+                        for _ in 0..entity.len() + 1 {
+                            chars.next();
+                        }
+                    }
+                    "gt" => {
+                        result.push('>');
+                        for _ in 0..entity.len() + 1 {
+                            chars.next();
+                        }
+                    }
+                    "quot" => {
+                        result.push('"');
+                        for _ in 0..entity.len() + 1 {
+                            chars.next();
+                        }
+                    }
+                    "apos" => {
+                        result.push('\'');
+                        for _ in 0..entity.len() + 1 {
+                            chars.next();
+                        }
+                    }
+                    "nbsp" => {
+                        result.push(' ');
+                        for _ in 0..entity.len() + 1 {
+                            chars.next();
+                        }
+                    }
+                    _ => {
+                        // Check for numeric entities like &#39;
+                        if entity.starts_with('#') {
+                            let num_str = &entity[1..];
+                            if let Ok(code) = num_str.parse::<u32>() {
+                                if let Some(c) = char::from_u32(code) {
+                                    result.push(c);
+                                    for _ in 0..entity.len() + 1 {
+                                        chars.next();
+                                    }
+                                    continue;
+                                }
+                            }
+                        }
+                        result.push('&');
+                    }
+                }
+            }
+            _ if !in_tag => {
+                result.push(ch);
+            }
+            _ => {}
+        }
+    }
+
+    // Normalize whitespace: collapse runs of whitespace (but keep newlines)
+    let mut normalized = String::with_capacity(result.len());
+    let mut last_was_space = false;
+    for ch in result.chars() {
+        if ch == '\n' {
+            normalized.push(ch);
+            last_was_space = false;
+        } else if ch.is_whitespace() {
+            if !last_was_space {
+                normalized.push(' ');
+            }
+            last_was_space = true;
+        } else {
+            normalized.push(ch);
+            last_was_space = false;
+        }
+    }
+
+    normalized.trim().to_string()
+}
 
 #[derive(serde::Serialize, serde::Deserialize, Hash, Eq, PartialEq)]
 pub struct CardOutput {
@@ -161,9 +267,8 @@ impl AnkiReader {
             let (question, answer) = self.get_card_content(card_id, model_id, &field_vec)?;
 
             // Convert HTML to plain text
-            let question_text =
-                from_read(question.as_bytes(), 80).unwrap_or_else(|_| question.clone());
-            let answer_text = from_read(answer.as_bytes(), 80).unwrap_or_else(|_| answer.clone());
+            let question_text = strip_html(&question);
+            let answer_text = strip_html(&answer);
 
             // Parse tags
             let tag_vec: Vec<String> = if tags.is_empty() {
