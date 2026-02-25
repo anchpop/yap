@@ -46,7 +46,7 @@ import { MoviePosterCard } from "./MoviePosterCard";
 import { InlineTextarea } from "../ui/textarea";
 
 interface TranscriptionChallengeProps {
-  challenge: TranscribeComprehensibleSentence<string>;
+  challenge: TranscribeComprehensibleSentence;
   onComplete: (grade: PartGraded[]) => void;
   totalCount: number;
   accessToken: string | undefined;

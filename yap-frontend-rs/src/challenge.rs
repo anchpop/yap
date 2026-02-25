@@ -2,7 +2,8 @@ use std::sync::Arc;
 
 use language_utils::{
     Atom, Gram, Heteronym, Literal, PatternPosition, SentenceGram, SpurGram, TtsProvider,
-    TtsRequest, WordType, atoms_to_literals, language_pack::LanguagePack, transcription_challenge,
+    TtsRequest, WordType, atoms_to_literals, language_pack::LanguagePack, literals_to_text,
+    transcription_challenge,
 };
 use lasso::Spur;
 
@@ -143,6 +144,23 @@ impl ReviewInfo {
             let literals =
                 atoms_to_literals(gram_resolved.as_ref(), deck.context.course.target_language);
             vec![(true, literals)]
+        };
+
+        // Deduplicate by display text, preserving order, keeping known=true if any duplicate is known
+        let possible_grams = {
+            let mut seen: std::collections::HashMap<String, usize> =
+                std::collections::HashMap::new();
+            let mut deduped: Vec<(bool, Vec<Literal<String>>)> = Vec::new();
+            for (known, literals) in possible_grams {
+                let display = literals_to_text(&literals);
+                if let Some(&idx) = seen.get(&display) {
+                    deduped[idx].0 |= known;
+                } else {
+                    seen.insert(display, deduped.len());
+                    deduped.push((known, literals));
+                }
+            }
+            deduped
         };
 
         let content = CardContent::Listening { possible_grams };
@@ -335,20 +353,31 @@ impl ReviewInfo {
             )?
         };
 
-        // Convert sentence grams to literals and flatten
-        let target_language_literals: Vec<Literal<String>> = target_language_sentence_grams
-            .to_literals(
-                &language_pack.string_rodeo,
-                &language_pack.gram_rodeo,
-                deck.context.course.target_language,
-            )
-            .into_iter()
-            .flat_map(|sentence_gram| match sentence_gram {
-                SentenceGram::Learnable((_, literals)) | SentenceGram::Obvious((_, literals)) => {
-                    literals
-                }
-            })
-            .collect();
+        // Convert sentence grams to literals, preserving gram group mapping
+        let sentence_grams_with_literals = target_language_sentence_grams.to_literals(
+            &language_pack.string_rodeo,
+            &language_pack.gram_rodeo,
+            deck.context.course.target_language,
+        );
+
+        let mut target_language_literals = Vec::new();
+        let mut literal_gram_indices = Vec::new();
+        let mut gram_definitions_for_lookup = Vec::new();
+
+        for sentence_gram in sentence_grams_with_literals {
+            let (gram_spur, literals) = match sentence_gram {
+                SentenceGram::Learnable((g, l)) | SentenceGram::Obvious((g, l)) => (g, l),
+            };
+
+            let group_index = gram_definitions_for_lookup.len();
+            let definition = language_pack.gram_definitions.get(&gram_spur).cloned();
+            gram_definitions_for_lookup.push(definition);
+
+            for literal in literals {
+                literal_gram_indices.push(group_index);
+                target_language_literals.push(literal);
+            }
+        }
 
         // Get movie titles from sentence_sources and movie metadata
         let movie_titles = language_pack
@@ -393,6 +422,8 @@ impl ReviewInfo {
                     .resolve(&target_language)
                     .to_string(),
                 target_language_literals,
+                literal_gram_indices,
+                gram_definitions_for_lookup,
                 unique_target_language_phrases: unique_target_language_phrases
                     .iter()
                     .map(|p| {
@@ -400,7 +431,6 @@ impl ReviewInfo {
                             .gram_rodeo
                             .resolve(p)
                             .resolve(&language_pack.string_rodeo)
-                            .to_display_string(deck.context.course.target_language)
                     })
                     .collect(),
                 native_translations: native_languages

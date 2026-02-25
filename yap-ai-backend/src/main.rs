@@ -330,11 +330,23 @@ async fn autograde_translation(
     let native_language = course.native_language;
 
     // Dedup phrases
-    let phrases: Vec<String> = phrases
+    let phrases: Vec<language_utils::Gram<String>> = phrases
         .into_iter()
         .collect::<std::collections::BTreeSet<_>>()
         .into_iter()
         .collect();
+
+    // Build display string → gram map for converting LLM output back to grams
+    let phrase_display_strings: Vec<String> = phrases
+        .iter()
+        .map(|g| g.to_display_string(target_language))
+        .collect();
+    let display_to_gram: std::collections::HashMap<&str, &language_utils::Gram<String>> =
+        phrase_display_strings
+            .iter()
+            .zip(phrases.iter())
+            .map(|(s, g)| (s.as_str(), g))
+            .collect();
 
     // Count gradable literals early for threshold checks
     let gradable_count = literals
@@ -405,7 +417,7 @@ async fn autograde_translation(
     let phrases_display = if phrases.is_empty() {
         "(none)".to_string()
     } else {
-        phrases
+        phrase_display_strings
             .iter()
             .map(|p| format!("- \"{p}\""))
             .collect::<Vec<_>>()
@@ -518,23 +530,23 @@ Phrases:
     }
 
     // Sanitize phrase outputs:
-    // 1. Filter to only phrases that were in the input
+    // 1. Map LLM display strings back to Gram<String> using the display_to_gram map (filters unknown phrases)
     // 2. Resolve contradictions: if same phrase in both, keep in forgot (forgot takes precedence)
-    let phrases_set: std::collections::BTreeSet<&String> = phrases.iter().collect();
-
-    let mut phrases_forgot: Vec<String> = llm_response
+    let mut phrases_forgot: Vec<language_utils::Gram<String>> = llm_response
         .phrases_forgot
         .into_iter()
-        .filter(|p| phrases_set.contains(p))
+        .filter_map(|p| display_to_gram.get(p.as_str()).map(|g| (*g).clone()))
         .collect();
     phrases_forgot.sort();
     phrases_forgot.dedup();
 
-    let forgot_set: std::collections::BTreeSet<&String> = phrases_forgot.iter().collect();
-    let mut phrases_remembered: Vec<String> = llm_response
+    let forgot_set: std::collections::BTreeSet<&language_utils::Gram<String>> =
+        phrases_forgot.iter().collect();
+    let mut phrases_remembered: Vec<language_utils::Gram<String>> = llm_response
         .phrases_remembered
         .into_iter()
-        .filter(|p| phrases_set.contains(p) && !forgot_set.contains(p))
+        .filter_map(|p| display_to_gram.get(p.as_str()).map(|g| (*g).clone()))
+        .filter(|p| !forgot_set.contains(p))
         .collect();
     phrases_remembered.sort();
     phrases_remembered.dedup();

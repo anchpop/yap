@@ -1,7 +1,7 @@
 import { useState, useEffect, Profiler, useSyncExternalStore, useMemo, useCallback } from 'react'
 import { useZeno } from '@/hooks/useZeno'
 import { BrowserRouter, Routes, Route, Outlet, useNavigate, useOutletContext } from 'react-router-dom'
-import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Heteronym, type Language, type LiteralGrades, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
+import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Heteronym, type Language, type LiteralGrades, type Gram, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
 import { Button } from "@/components/ui/button.tsx"
 import { Progress } from "@/components/ui/progress.tsx"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -705,9 +705,8 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
   useInterval(() => setCardsBecameDue(cardsBecameDue => cardsBecameDue + 1), reviewInfo.due_count === 0 ? 1000 : 60000);
 
-  // Challenge type parameters: <GramType, StringType>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currentChallenge: Challenge<any, string> | undefined = useMemo(() => reviewInfo.get_next_challenge(deck), [reviewInfo, deck]);
+  const currentChallenge: Challenge<any> | undefined = useMemo(() => reviewInfo.get_next_challenge(deck), [reviewInfo, deck]);
 
   useEffect(() => {
     if (!currentChallenge) {
@@ -809,7 +808,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
   }
 
   const handleTranslationComplete = useCallback(async (
-    grade: { literalGrades: LiteralGrades, phrasesRemembered: string[], phrasesForgot: string[] } | { perfect: string | null },
+    grade: { literalGrades: LiteralGrades, phrasesRemembered: Gram<string>[], phrasesForgot: Gram<string>[] } | { perfect: string | null },
     wordsTapped: Heteronym<string>[],
     submission: string
   ) => {

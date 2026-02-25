@@ -587,7 +587,11 @@ pub struct TranslateComprehensibleSentence {
     pub audio: AudioRequest,
     pub target_language: String,
     pub target_language_literals: Vec<Literal<String>>,
-    pub unique_target_language_phrases: Vec<String>,
+    /// For each literal, the index of the gram group it belongs to.
+    pub literal_gram_indices: Vec<usize>,
+    /// Definition for each gram group (indexed by group number). None if no definition is available.
+    pub gram_definitions_for_lookup: Vec<Option<GramDefinition>>,
+    pub unique_target_language_phrases: Vec<Gram<String>>,
     pub native_translations: Vec<String>,
     pub movie_titles: Vec<(String, String)>,
     pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
@@ -2326,8 +2330,8 @@ impl Deck {
         submission: String,
         literal_grades: autograde::LiteralGrades,
         words_tapped: Vec<Heteronym<String>>,
-        phrases_remembered: Vec<String>,
-        phrases_forgot: Vec<String>,
+        phrases_remembered: Vec<Gram<String>>,
+        phrases_forgot: Vec<Gram<String>>,
     ) -> Option<DeckEvent> {
         let literal_grades = literal_grades.0;
         let hinted_heteronyms: BTreeSet<Heteronym<String>> = words_tapped.into_iter().collect();
@@ -2369,16 +2373,19 @@ impl Deck {
             })
             .collect();
 
+        let target_language = self.context.course.target_language;
+
         // Build phrases list - forgot takes precedence over remembered
-        let forgot_set: BTreeSet<&String> = phrases_forgot.iter().collect();
+        // Deck event stores display strings for backward compatibility
+        let forgot_set: BTreeSet<&Gram<String>> = phrases_forgot.iter().collect();
         let phrases: Vec<_> = phrases_forgot
             .iter()
-            .map(|p| (p.clone(), Some(false)))
+            .map(|p| (p.to_display_string(target_language), Some(false)))
             .chain(
                 phrases_remembered
                     .iter()
                     .filter(|p| !forgot_set.contains(p))
-                    .map(|p| (p.clone(), Some(true))),
+                    .map(|p| (p.to_display_string(target_language), Some(true))),
             )
             .collect();
 
@@ -3269,6 +3276,11 @@ pub async fn invalidate_audio_cache(request: AudioRequest) -> Result<(), JsValue
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn gram_to_display_string(gram: Gram<String>, language: Language) -> String {
+    gram.to_display_string(language)
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn find_closest_translation(
     user_translation: String,
     candidates: Vec<String>,
@@ -3283,7 +3295,7 @@ pub async fn autograde_translation(
     user_sentence: String,
     native_translations: Vec<String>,
     literals: Vec<Literal<String>>,
-    phrases: Vec<String>,
+    phrases: Vec<Gram<String>>,
     access_token: Option<String>,
     course: Course,
 ) -> Result<autograde::AutoGradeTranslationResponse, JsValue> {

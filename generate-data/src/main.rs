@@ -523,12 +523,30 @@ async fn main() -> anyhow::Result<()> {
                                 .map(|entry| SentenceGram::from(entry.atoms.clone()))
                         })
                         .collect();
+                    // Collect grams already in the encoded sentence so we can
+                    // skip listing them again as multiword terms.
+                    let sentence_gram_set: std::collections::HashSet<&Gram<String>> = grams
+                        .iter()
+                        .map(|sg| match sg {
+                            SentenceGram::Learnable(g) | SentenceGram::Obvious(g) => g,
+                        })
+                        .collect();
                     let (multiword_terms, low_confidence_multiword_terms) = nlp_sentences
                         .get(text)
                         .map(|info| {
                             (
-                                info.multiword_terms.high_confidence.clone(),
-                                info.multiword_terms.low_confidence.clone(),
+                                info.multiword_terms
+                                    .high_confidence
+                                    .iter()
+                                    .filter(|g| !sentence_gram_set.contains(g))
+                                    .cloned()
+                                    .collect(),
+                                info.multiword_terms
+                                    .low_confidence
+                                    .iter()
+                                    .filter(|g| !sentence_gram_set.contains(g))
+                                    .cloned()
+                                    .collect(),
                             )
                         })
                         .unwrap_or_default();

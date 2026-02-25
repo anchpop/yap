@@ -194,7 +194,10 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
                         .collect::<Vec<_>>()
                         .join("");
 
-                    let multiword_terms = unique_target_language_phrases.clone();
+                    let multiword_terms: Vec<String> = unique_target_language_phrases
+                        .iter()
+                        .map(|g| g.to_display_string(course.target_language))
+                        .collect();
 
                     (sentence_text, course.target_language, multiword_terms)
                 }

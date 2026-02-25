@@ -1193,21 +1193,20 @@ pub mod autograde {
         pub challenge_sentence: String,
         pub user_sentence: String,
         pub literals: Vec<Literal<String>>,
-        pub phrases: Vec<String>,
+        pub phrases: Vec<Gram<String>>,
     }
 
     /// Response from autograde.
-    #[derive(
-        Clone, Debug, serde::Serialize, serde::Deserialize, schemars::JsonSchema, tsify::Tsify,
-    )]
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
     #[tsify(into_wasm_abi, from_wasm_abi)]
     pub struct AutoGradeTranslationResponse {
         pub encouragement: Option<String>,
         pub explanation: Option<String>,
         /// One entry per literal in order. None = ungradable (Other word type) or indeterminate.
+        /// Covers single-word grams (heteronyms); multi-word grams use phrases_remembered/phrases_forgot.
         pub literal_grades: Vec<Option<Remembered>>,
-        pub phrases_remembered: Vec<String>,
-        pub phrases_forgot: Vec<String>,
+        pub phrases_remembered: Vec<Gram<String>>,
+        pub phrases_forgot: Vec<Gram<String>>,
     }
 
     #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
@@ -1217,7 +1216,7 @@ pub mod autograde {
         pub submission: Vec<transcription_challenge::PartSubmitted>,
     }
 
-    /// Wrapper for passing literal grades across the WASM boundary.
+    /// Wrapper for passing gram grades across the WASM boundary.
     /// One entry per literal in order. None = ungradable (Other word type) or indeterminate.
     #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
     #[tsify(into_wasm_abi, from_wasm_abi)]
@@ -1387,10 +1386,12 @@ pub mod transcription_challenge {
     Hash,
     serde::Serialize,
     serde::Deserialize,
+    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Whitespace {
     /// Regular space (U+0020)
     Space,
@@ -1453,10 +1454,12 @@ impl std::str::FromStr for Whitespace {
     Ord,
     serde::Serialize,
     serde::Deserialize,
+    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ControlToken(pub Whitespace);
 
 /// An atom is either a word token or a control token.
@@ -1472,10 +1475,12 @@ pub struct ControlToken(pub Whitespace);
     Hash,
     serde::Serialize,
     serde::Deserialize,
+    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Atom<S> {
     /// A regular word token
     Tok(Word<S>),
@@ -1541,10 +1546,12 @@ pub struct EncodedSentence {
     Hash,
     serde::Serialize,
     serde::Deserialize,
+    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Gram<S>(pub Vec<Atom<S>>);
 pub type SpurGram = lasso::Spur<Gram<lasso::Spur>>;
 
