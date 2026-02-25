@@ -32598,8 +32598,8 @@
 {"id":32597,"atoms":[{"Tok":{"text":"indosserà","word_type":{"type":"Heteronym","word":"indosserà","lemma":"indossare","pos":"VERB"}}}],"frequency":3}
 {"id":32598,"atoms":[{"Tok":{"text":"cagando","word_type":{"type":"Heteronym","word":"cagando","lemma":"cagare","pos":"VERB"}}}],"frequency":3}
 {"id":32599,"atoms":[{"Tok":{"text":"tutta","word_type":{"type":"Heteronym","word":"tutta","lemma":"tutto","pos":"ADJ"}}}],"frequency":3}
-{"id":32600,"atoms":[{"Tok":{"text":"assicurò","word_type":{"type":"Heteronym","word":"assicurò","lemma":"assicurare","pos":"VERB"}}}],"frequency":3}
-{"id":32601,"atoms":[{"Tok":{"text":"passante","word_type":{"type":"Heteronym","word":"passante","lemma":"passante","pos":"NOUN"}}}],"frequency":3}
+{"id":32600,"atoms":[{"Tok":{"text":"passante","word_type":{"type":"Heteronym","word":"passante","lemma":"passante","pos":"NOUN"}}}],"frequency":3}
+{"id":32601,"atoms":[{"Tok":{"text":"assicurò","word_type":{"type":"Heteronym","word":"assicurò","lemma":"assicurare","pos":"VERB"}}}],"frequency":3}
 {"id":32602,"atoms":[{"Tok":{"text":"esistano","word_type":{"type":"Heteronym","word":"esistano","lemma":"esistere","pos":"VERB"}}}],"frequency":3}
 {"id":32603,"atoms":[{"Tok":{"text":"stenditi","word_type":{"type":"Heteronym","word":"stenditi","lemma":"stendere","pos":"VERB"}}}],"frequency":3}
 {"id":32604,"atoms":[{"Tok":{"text":"organismi","word_type":{"type":"Heteronym","word":"organismi","lemma":"organismo","pos":"NOUN"}}}],"frequency":3}
@@ -36826,8 +36826,8 @@
 {"id":36825,"atoms":[{"Tok":{"text":"Yann","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":2}
 {"id":36826,"atoms":[{"Tok":{"text":"manico","word_type":{"type":"Heteronym","word":"manico","lemma":"manico","pos":"NOUN"}}}],"frequency":2}
 {"id":36827,"atoms":[{"Tok":{"text":"levitare","word_type":{"type":"Heteronym","word":"levitare","lemma":"levitare","pos":"VERB"}}}],"frequency":2}
-{"id":36828,"atoms":[{"Tok":{"text":"Pop","word_type":{"type":"Heteronym","word":"pop","lemma":"pop","pos":"INTJ"}}}],"frequency":2}
-{"id":36829,"atoms":[{"Tok":{"text":"soliti","word_type":{"type":"Heteronym","word":"soliti","lemma":"solito","pos":"ADJ"}}}],"frequency":2}
+{"id":36828,"atoms":[{"Tok":{"text":"soliti","word_type":{"type":"Heteronym","word":"soliti","lemma":"solito","pos":"ADJ"}}}],"frequency":2}
+{"id":36829,"atoms":[{"Tok":{"text":"Pop","word_type":{"type":"Heteronym","word":"pop","lemma":"pop","pos":"INTJ"}}}],"frequency":2}
 {"id":36830,"atoms":[{"Tok":{"text":"Reitsch","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":2}
 {"id":36831,"atoms":[{"Tok":{"text":"truppa","word_type":{"type":"Heteronym","word":"truppa","lemma":"truppa","pos":"NOUN"}}}],"frequency":2}
 {"id":36832,"atoms":[{"Tok":{"text":"veniteci","word_type":{"type":"Heteronym","word":"veniteci","lemma":"venire","pos":"VERB"}}}],"frequency":2}
@@ -37442,9 +37442,9 @@
 {"id":37441,"atoms":[{"Tok":{"text":"basilare","word_type":{"type":"Heteronym","word":"basilare","lemma":"basilare","pos":"ADJ"}}}],"frequency":2}
 {"id":37442,"atoms":[{"Tok":{"text":"regionali","word_type":{"type":"Heteronym","word":"regionali","lemma":"regionale","pos":"ADJ"}}}],"frequency":2}
 {"id":37443,"atoms":[{"Tok":{"text":"indignata","word_type":{"type":"Heteronym","word":"indignata","lemma":"indignato","pos":"ADJ"}}}],"frequency":2}
-{"id":37444,"atoms":[{"Tok":{"text":"scarico","word_type":{"type":"Heteronym","word":"scarico","lemma":"scarico","pos":"ADJ"}}}],"frequency":2}
-{"id":37445,"atoms":[{"Tok":{"text":"bicchierino","word_type":{"type":"Heteronym","word":"bicchierino","lemma":"bicchierino","pos":"NOUN"}}}],"frequency":2}
-{"id":37446,"atoms":[{"Tok":{"text":"torturò","word_type":{"type":"Heteronym","word":"torturò","lemma":"torturare","pos":"VERB"}}}],"frequency":2}
+{"id":37444,"atoms":[{"Tok":{"text":"bicchierino","word_type":{"type":"Heteronym","word":"bicchierino","lemma":"bicchierino","pos":"NOUN"}}}],"frequency":2}
+{"id":37445,"atoms":[{"Tok":{"text":"torturò","word_type":{"type":"Heteronym","word":"torturò","lemma":"torturare","pos":"VERB"}}}],"frequency":2}
+{"id":37446,"atoms":[{"Tok":{"text":"scarico","word_type":{"type":"Heteronym","word":"scarico","lemma":"scarico","pos":"ADJ"}}}],"frequency":2}
 {"id":37447,"atoms":[{"Tok":{"text":"Fede","word_type":{"type":"Heteronym","word":"fede","lemma":"fede","pos":"NOUN"}}}],"frequency":2}
 {"id":37448,"atoms":[{"Tok":{"text":"squalificata","word_type":{"type":"Heteronym","word":"squalificata","lemma":"squalificare","pos":"VERB"}}}],"frequency":2}
 {"id":37449,"atoms":[{"Tok":{"text":"smosso","word_type":{"type":"Heteronym","word":"smosso","lemma":"smovere","pos":"VERB"}}}],"frequency":2}
@@ -40049,8 +40049,8 @@
 {"id":40048,"atoms":[{"Tok":{"text":"menzionarlo","word_type":{"type":"Heteronym","word":"menzionarlo","lemma":"menzionare","pos":"VERB"}}}],"frequency":2}
 {"id":40049,"atoms":[{"Tok":{"text":"Rose Dawson","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":2}
 {"id":40050,"atoms":[{"Tok":{"text":"liberata","word_type":{"type":"Heteronym","word":"liberata","lemma":"liberare","pos":"VERB"}}}],"frequency":2}
-{"id":40051,"atoms":[{"Tok":{"text":"lauta","word_type":{"type":"Heteronym","word":"lauta","lemma":"lauto","pos":"ADJ"}}}],"frequency":2}
-{"id":40052,"atoms":[{"Tok":{"text":"usarle","word_type":{"type":"Heteronym","word":"usarle","lemma":"usare","pos":"VERB"}}}],"frequency":2}
+{"id":40051,"atoms":[{"Tok":{"text":"usarle","word_type":{"type":"Heteronym","word":"usarle","lemma":"usare","pos":"VERB"}}}],"frequency":2}
+{"id":40052,"atoms":[{"Tok":{"text":"lauta","word_type":{"type":"Heteronym","word":"lauta","lemma":"lauto","pos":"ADJ"}}}],"frequency":2}
 {"id":40053,"atoms":[{"Tok":{"text":"jiribilla","word_type":{"type":"Heteronym","word":"jiribilla","lemma":"jiribilla","pos":"NOUN"}}}],"frequency":2}
 {"id":40054,"atoms":[{"Tok":{"text":"sapessero","word_type":{"type":"Heteronym","word":"sapessero","lemma":"sapere","pos":"VERB"}}}],"frequency":2}
 {"id":40055,"atoms":[{"Tok":{"text":"dolere","word_type":{"type":"Heteronym","word":"dolere","lemma":"dolere","pos":"VERB"}}}],"frequency":2}
@@ -41360,8 +41360,8 @@
 {"id":41359,"atoms":[{"Tok":{"text":"specifica","word_type":{"type":"Heteronym","word":"specifica","lemma":"specificare","pos":"VERB"}}}],"frequency":2}
 {"id":41360,"atoms":[{"Tok":{"text":"mammelle","word_type":{"type":"Heteronym","word":"mammelle","lemma":"mammella","pos":"NOUN"}}}],"frequency":2}
 {"id":41361,"atoms":[{"Tok":{"text":"groupie","word_type":{"type":"Heteronym","word":"groupie","lemma":"groupie","pos":"NOUN"}}}],"frequency":2}
-{"id":41362,"atoms":[{"Tok":{"text":"rivolgersi","word_type":{"type":"Heteronym","word":"rivolgersi","lemma":"rivolgere si","pos":"VERB"}}}],"frequency":2}
-{"id":41363,"atoms":[{"Tok":{"text":"angioletto","word_type":{"type":"Heteronym","word":"angioletto","lemma":"angioletto","pos":"NOUN"}}}],"frequency":2}
+{"id":41362,"atoms":[{"Tok":{"text":"angioletto","word_type":{"type":"Heteronym","word":"angioletto","lemma":"angioletto","pos":"NOUN"}}}],"frequency":2}
+{"id":41363,"atoms":[{"Tok":{"text":"rivolgersi","word_type":{"type":"Heteronym","word":"rivolgersi","lemma":"rivolgere si","pos":"VERB"}}}],"frequency":2}
 {"id":41364,"atoms":[{"Tok":{"text":"parcheggiate","word_type":{"type":"Heteronym","word":"parcheggiate","lemma":"parcheggiato","pos":"ADJ"}}}],"frequency":2}
 {"id":41365,"atoms":[{"Tok":{"text":"vergognarmi","word_type":{"type":"Heteronym","word":"vergognarmi","lemma":"vergognare mi","pos":"VERB"}}}],"frequency":2}
 {"id":41366,"atoms":[{"Tok":{"text":"statali","word_type":{"type":"Heteronym","word":"statali","lemma":"statale","pos":"ADJ"}}}],"frequency":2}
@@ -42922,8 +42922,8 @@
 {"id":42921,"atoms":[{"Tok":{"text":"saporite","word_type":{"type":"Heteronym","word":"saporite","lemma":"saporito","pos":"ADJ"}}}],"frequency":2}
 {"id":42922,"atoms":[{"Tok":{"text":"vendicarti","word_type":{"type":"Heteronym","word":"vendicarti","lemma":"vendicare","pos":"VERB"}}}],"frequency":2}
 {"id":42923,"atoms":[{"Tok":{"text":"pagaiare","word_type":{"type":"Heteronym","word":"pagaiare","lemma":"pagliare","pos":"VERB"}}}],"frequency":2}
-{"id":42924,"atoms":[{"Tok":{"text":"uccidetemi","word_type":{"type":"Heteronym","word":"uccidetemi","lemma":"uccidere","pos":"VERB"}}}],"frequency":2}
-{"id":42925,"atoms":[{"Tok":{"text":"baccalà","word_type":{"type":"Heteronym","word":"baccalà","lemma":"baccalà","pos":"NOUN"}}}],"frequency":2}
+{"id":42924,"atoms":[{"Tok":{"text":"baccalà","word_type":{"type":"Heteronym","word":"baccalà","lemma":"baccalà","pos":"NOUN"}}}],"frequency":2}
+{"id":42925,"atoms":[{"Tok":{"text":"uccidetemi","word_type":{"type":"Heteronym","word":"uccidetemi","lemma":"uccidere","pos":"VERB"}}}],"frequency":2}
 {"id":42926,"atoms":[{"Tok":{"text":"diverbio","word_type":{"type":"Heteronym","word":"diverbio","lemma":"diverbio","pos":"NOUN"}}}],"frequency":2}
 {"id":42927,"atoms":[{"Tok":{"text":"svegliarono","word_type":{"type":"Heteronym","word":"svegliarono","lemma":"svegliare","pos":"VERB"}}}],"frequency":2}
 {"id":42928,"atoms":[{"Tok":{"text":"agganciarla","word_type":{"type":"Heteronym","word":"agganciarla","lemma":"agganciare la","pos":"VERB"}}}],"frequency":2}
@@ -46018,8 +46018,8 @@
 {"id":46017,"atoms":[{"Tok":{"text":"Florence Foster Jenkins","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":46018,"atoms":[{"Tok":{"text":"collocare","word_type":{"type":"Heteronym","word":"collocare","lemma":"collocare","pos":"VERB"}}}],"frequency":1}
 {"id":46019,"atoms":[{"Tok":{"text":"galassie","word_type":{"type":"Heteronym","word":"galassie","lemma":"galassia","pos":"NOUN"}}}],"frequency":1}
-{"id":46020,"atoms":[{"Tok":{"text":"assaporavamo","word_type":{"type":"Heteronym","word":"assaporavamo","lemma":"assaporare","pos":"VERB"}}}],"frequency":1}
-{"id":46021,"atoms":[{"Tok":{"text":"incompiuti","word_type":{"type":"Heteronym","word":"incompiuti","lemma":"incompiuto","pos":"ADJ"}}}],"frequency":1}
+{"id":46020,"atoms":[{"Tok":{"text":"incompiuti","word_type":{"type":"Heteronym","word":"incompiuti","lemma":"incompiuto","pos":"ADJ"}}}],"frequency":1}
+{"id":46021,"atoms":[{"Tok":{"text":"assaporavamo","word_type":{"type":"Heteronym","word":"assaporavamo","lemma":"assaporare","pos":"VERB"}}}],"frequency":1}
 {"id":46022,"atoms":[{"Tok":{"text":"ronf","word_type":{"type":"Heteronym","word":"ronf","lemma":"ronfare","pos":"VERB"}}}],"frequency":1}
 {"id":46023,"atoms":[{"Tok":{"text":"sudata","word_type":{"type":"Heteronym","word":"sudata","lemma":"sudata","pos":"NOUN"}}}],"frequency":1}
 {"id":46024,"atoms":[{"Tok":{"text":"Ghiso","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -46267,8 +46267,8 @@
 {"id":46266,"atoms":[{"Tok":{"text":"viaggiavo","word_type":{"type":"Heteronym","word":"viaggiavo","lemma":"viaggiare","pos":"VERB"}}}],"frequency":1}
 {"id":46267,"atoms":[{"Tok":{"text":"pareggio","word_type":{"type":"Heteronym","word":"pareggio","lemma":"pareggiare","pos":"VERB"}}}],"frequency":1}
 {"id":46268,"atoms":[{"Tok":{"text":"caratteristico","word_type":{"type":"Heteronym","word":"caratteristico","lemma":"caratteristico","pos":"ADJ"}}}],"frequency":1}
-{"id":46269,"atoms":[{"Tok":{"text":"Yinyang","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":46270,"atoms":[{"Tok":{"text":"sussidi","word_type":{"type":"Heteronym","word":"sussidi","lemma":"sussidio","pos":"NOUN"}}}],"frequency":1}
+{"id":46269,"atoms":[{"Tok":{"text":"sussidi","word_type":{"type":"Heteronym","word":"sussidi","lemma":"sussidio","pos":"NOUN"}}}],"frequency":1}
+{"id":46270,"atoms":[{"Tok":{"text":"Yinyang","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":46271,"atoms":[{"Tok":{"text":"irragionevoli","word_type":{"type":"Heteronym","word":"irragionevoli","lemma":"irragionevole","pos":"ADJ"}}}],"frequency":1}
 {"id":46272,"atoms":[{"Tok":{"text":"intonata","word_type":{"type":"Heteronym","word":"intonata","lemma":"intonato","pos":"ADJ"}}}],"frequency":1}
 {"id":46273,"atoms":[{"Tok":{"text":"Sid","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -47133,8 +47133,8 @@
 {"id":47132,"atoms":[{"Tok":{"text":"stuoino","word_type":{"type":"Heteronym","word":"stuoino","lemma":"stuoino","pos":"NOUN"}}}],"frequency":1}
 {"id":47133,"atoms":[{"Tok":{"text":"Marce","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":47134,"atoms":[{"Tok":{"text":"sogghignava","word_type":{"type":"Heteronym","word":"sogghignava","lemma":"sogghignare","pos":"VERB"}}}],"frequency":1}
-{"id":47135,"atoms":[{"Tok":{"text":"scappatacol","word_type":{"type":"Heteronym","word":"scappatacol","lemma":"scappare","pos":"VERB"}}}],"frequency":1}
-{"id":47136,"atoms":[{"Tok":{"text":"veleggiare","word_type":{"type":"Heteronym","word":"veleggiare","lemma":"veleggiare","pos":"VERB"}}}],"frequency":1}
+{"id":47135,"atoms":[{"Tok":{"text":"veleggiare","word_type":{"type":"Heteronym","word":"veleggiare","lemma":"veleggiare","pos":"VERB"}}}],"frequency":1}
+{"id":47136,"atoms":[{"Tok":{"text":"scappatacol","word_type":{"type":"Heteronym","word":"scappatacol","lemma":"scappare","pos":"VERB"}}}],"frequency":1}
 {"id":47137,"atoms":[{"Tok":{"text":"IDEALI","word_type":{"type":"Heteronym","word":"ideali","lemma":"ideale","pos":"ADJ"}}}],"frequency":1}
 {"id":47138,"atoms":[{"Tok":{"text":"aerotaxi","word_type":{"type":"Heteronym","word":"aerotaxi","lemma":"aerotaxi","pos":"NOUN"}}}],"frequency":1}
 {"id":47139,"atoms":[{"Tok":{"text":"intrattenevate","word_type":{"type":"Heteronym","word":"intrattenevate","lemma":"intrattenere","pos":"VERB"}}}],"frequency":1}
@@ -47569,8 +47569,8 @@
 {"id":47568,"atoms":[{"Tok":{"text":"incatenata","word_type":{"type":"Heteronym","word":"incatenata","lemma":"incatenare","pos":"VERB"}}}],"frequency":1}
 {"id":47569,"atoms":[{"Tok":{"text":"conducevano","word_type":{"type":"Heteronym","word":"conducevano","lemma":"condurre","pos":"VERB"}}}],"frequency":1}
 {"id":47570,"atoms":[{"Tok":{"text":"sposai","word_type":{"type":"Heteronym","word":"sposai","lemma":"sposare","pos":"VERB"}}}],"frequency":1}
-{"id":47571,"atoms":[{"Tok":{"text":"sistematevi","word_type":{"type":"Heteronym","word":"sistematevi","lemma":"sistemare","pos":"VERB"}}}],"frequency":1}
-{"id":47572,"atoms":[{"Tok":{"text":"vediamolo","word_type":{"type":"Heteronym","word":"vediamolo","lemma":"vedere","pos":"VERB"}}}],"frequency":1}
+{"id":47571,"atoms":[{"Tok":{"text":"vediamolo","word_type":{"type":"Heteronym","word":"vediamolo","lemma":"vedere","pos":"VERB"}}}],"frequency":1}
+{"id":47572,"atoms":[{"Tok":{"text":"sistematevi","word_type":{"type":"Heteronym","word":"sistematevi","lemma":"sistemare","pos":"VERB"}}}],"frequency":1}
 {"id":47573,"atoms":[{"Tok":{"text":"tendou","word_type":{"type":"Heteronym","word":"tendou","lemma":"tendere","pos":"VERB"}}}],"frequency":1}
 {"id":47574,"atoms":[{"Tok":{"text":"PADRE","word_type":{"type":"Heteronym","word":"padre","lemma":"padre","pos":"NOUN"}}}],"frequency":1}
 {"id":47575,"atoms":[{"Tok":{"text":"barbaro","word_type":{"type":"Heteronym","word":"barbaro","lemma":"barbaro","pos":"NOUN"}}}],"frequency":1}
@@ -48763,9 +48763,9 @@
 {"id":48762,"atoms":[{"Tok":{"text":"Chet Danburry","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":48763,"atoms":[{"Tok":{"text":"pertutto","word_type":{"type":"Heteronym","word":"pertutto","lemma":"per tutto","pos":"ADP"}}}],"frequency":1}
 {"id":48764,"atoms":[{"Tok":{"text":"nutrendosi","word_type":{"type":"Heteronym","word":"nutrendosi","lemma":"nutrire si","pos":"VERB"}}}],"frequency":1}
-{"id":48765,"atoms":[{"Tok":{"text":"Quentin Tarallino","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":48765,"atoms":[{"Tok":{"text":"tappare","word_type":{"type":"Heteronym","word":"tappare","lemma":"tappare","pos":"VERB"}}}],"frequency":1}
 {"id":48766,"atoms":[{"Tok":{"text":"valorosi","word_type":{"type":"Heteronym","word":"valorosi","lemma":"valoroso","pos":"NOUN"}}}],"frequency":1}
-{"id":48767,"atoms":[{"Tok":{"text":"tappare","word_type":{"type":"Heteronym","word":"tappare","lemma":"tappare","pos":"VERB"}}}],"frequency":1}
+{"id":48767,"atoms":[{"Tok":{"text":"Quentin Tarallino","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":48768,"atoms":[{"Tok":{"text":"Éothain","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":48769,"atoms":[{"Tok":{"text":"assaggiarne","word_type":{"type":"Heteronym","word":"assaggiarne","lemma":"assaggiare ne","pos":"VERB"}}}],"frequency":1}
 {"id":48770,"atoms":[{"Tok":{"text":"minigonna","word_type":{"type":"Heteronym","word":"minigonna","lemma":"minigonna","pos":"NOUN"}}}],"frequency":1}
@@ -49289,8 +49289,8 @@
 {"id":49288,"atoms":[{"Tok":{"text":"presro","word_type":{"type":"Heteronym","word":"presro","lemma":"presro","pos":"ADV"}}}],"frequency":1}
 {"id":49289,"atoms":[{"Tok":{"text":"apparecchiatura","word_type":{"type":"Heteronym","word":"apparecchiatura","lemma":"apparecchiatura","pos":"NOUN"}}}],"frequency":1}
 {"id":49290,"atoms":[{"Tok":{"text":"dannosa","word_type":{"type":"Heteronym","word":"dannosa","lemma":"dannoso","pos":"ADJ"}}}],"frequency":1}
-{"id":49291,"atoms":[{"Tok":{"text":"VOSTRO","word_type":{"type":"Heteronym","word":"vostro","lemma":"vostro","pos":"DET"}}}],"frequency":1}
-{"id":49292,"atoms":[{"Tok":{"text":"contribuito","word_type":{"type":"Heteronym","word":"contribuito","lemma":"contributo","pos":"NOUN"}}}],"frequency":1}
+{"id":49291,"atoms":[{"Tok":{"text":"contribuito","word_type":{"type":"Heteronym","word":"contribuito","lemma":"contributo","pos":"NOUN"}}}],"frequency":1}
+{"id":49292,"atoms":[{"Tok":{"text":"VOSTRO","word_type":{"type":"Heteronym","word":"vostro","lemma":"vostro","pos":"DET"}}}],"frequency":1}
 {"id":49293,"atoms":[{"Tok":{"text":"giocarci","word_type":{"type":"Heteronym","word":"giocarci","lemma":"giocare ci","pos":"VERB"}}}],"frequency":1}
 {"id":49294,"atoms":[{"Tok":{"text":"così","word_type":{"type":"Heteronym","word":"così","lemma":"così","pos":"SCONJ"}}}],"frequency":1}
 {"id":49295,"atoms":[{"Tok":{"text":"Gundlach","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -50117,8 +50117,8 @@
 {"id":50116,"atoms":[{"Tok":{"text":"ThunderCat","word_type":{"type":"Heteronym","word":"thundercat","lemma":"thundercat","pos":"NOUN"}}}],"frequency":1}
 {"id":50117,"atoms":[{"Tok":{"text":"T","word_type":{"type":"Other","other_tag":"X"}}}],"frequency":1}
 {"id":50118,"atoms":[{"Tok":{"text":"previste","word_type":{"type":"Heteronym","word":"previste","lemma":"prevedere","pos":"VERB"}}}],"frequency":1}
-{"id":50119,"atoms":[{"Tok":{"text":"abbondanti","word_type":{"type":"Heteronym","word":"abbondanti","lemma":"abbondante","pos":"ADJ"}}}],"frequency":1}
-{"id":50120,"atoms":[{"Tok":{"text":"tranquillizzarla","word_type":{"type":"Heteronym","word":"tranquillizzarla","lemma":"tranquillizzare","pos":"VERB"}}}],"frequency":1}
+{"id":50119,"atoms":[{"Tok":{"text":"tranquillizzarla","word_type":{"type":"Heteronym","word":"tranquillizzarla","lemma":"tranquillizzare","pos":"VERB"}}}],"frequency":1}
+{"id":50120,"atoms":[{"Tok":{"text":"abbondanti","word_type":{"type":"Heteronym","word":"abbondanti","lemma":"abbondante","pos":"ADJ"}}}],"frequency":1}
 {"id":50121,"atoms":[{"Tok":{"text":"rieduchi","word_type":{"type":"Heteronym","word":"rieduchi","lemma":"rieducare","pos":"VERB"}}}],"frequency":1}
 {"id":50122,"atoms":[{"Tok":{"text":"residuato","word_type":{"type":"Heteronym","word":"residuato","lemma":"residuato","pos":"NOUN"}}}],"frequency":1}
 {"id":50123,"atoms":[{"Tok":{"text":"kitch","word_type":{"type":"Heteronym","word":"kitch","lemma":"kitch","pos":"ADJ"}}}],"frequency":1}
@@ -50716,9 +50716,9 @@
 {"id":50715,"atoms":[{"Tok":{"text":"van","word_type":{"type":"Heteronym","word":"van","lemma":"van","pos":"NOUN"}}}],"frequency":1}
 {"id":50716,"atoms":[{"Tok":{"text":"sorridono","word_type":{"type":"Heteronym","word":"sorridono","lemma":"sorridere","pos":"VERB"}}}],"frequency":1}
 {"id":50717,"atoms":[{"Tok":{"text":"riserverai","word_type":{"type":"Heteronym","word":"riserverai","lemma":"riservare","pos":"VERB"}}}],"frequency":1}
-{"id":50718,"atoms":[{"Tok":{"text":"scarsi","word_type":{"type":"Heteronym","word":"scarsi","lemma":"scasso","pos":"ADJ"}}}],"frequency":1}
-{"id":50719,"atoms":[{"Tok":{"text":"impresso","word_type":{"type":"Heteronym","word":"impresso","lemma":"impresso","pos":"ADJ"}}}],"frequency":1}
-{"id":50720,"atoms":[{"Tok":{"text":"inazione","word_type":{"type":"Heteronym","word":"inazione","lemma":"inazione","pos":"NOUN"}}}],"frequency":1}
+{"id":50718,"atoms":[{"Tok":{"text":"inazione","word_type":{"type":"Heteronym","word":"inazione","lemma":"inazione","pos":"NOUN"}}}],"frequency":1}
+{"id":50719,"atoms":[{"Tok":{"text":"scarsi","word_type":{"type":"Heteronym","word":"scarsi","lemma":"scasso","pos":"ADJ"}}}],"frequency":1}
+{"id":50720,"atoms":[{"Tok":{"text":"impresso","word_type":{"type":"Heteronym","word":"impresso","lemma":"impresso","pos":"ADJ"}}}],"frequency":1}
 {"id":50721,"atoms":[{"Tok":{"text":"rabarbaro","word_type":{"type":"Heteronym","word":"rabarbaro","lemma":"rabarbaro","pos":"NOUN"}}}],"frequency":1}
 {"id":50722,"atoms":[{"Tok":{"text":"schiacciateli","word_type":{"type":"Heteronym","word":"schiacciateli","lemma":"schiacciare","pos":"VERB"}}}],"frequency":1}
 {"id":50723,"atoms":[{"Tok":{"text":"burocrati","word_type":{"type":"Heteronym","word":"burocrati","lemma":"burocrate","pos":"NOUN"}}}],"frequency":1}
@@ -50978,10 +50978,10 @@
 {"id":50977,"atoms":[{"Tok":{"text":"Sciocchino","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":50978,"atoms":[{"Tok":{"text":"statale","word_type":{"type":"Heteronym","word":"statale","lemma":"statale","pos":"NOUN"}}}],"frequency":1}
 {"id":50979,"atoms":[{"Tok":{"text":"sfigati","word_type":{"type":"Heteronym","word":"sfigati","lemma":"sfigare","pos":"VERB"}}}],"frequency":1}
-{"id":50980,"atoms":[{"Tok":{"text":"megglio","word_type":{"type":"Heteronym","word":"megglio","lemma":"megglio","pos":"NOUN"}}}],"frequency":1}
+{"id":50980,"atoms":[{"Tok":{"text":"Daniel Shaw","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":50981,"atoms":[{"Tok":{"text":"Lighthouse","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":50982,"atoms":[{"Tok":{"text":"stracciona","word_type":{"type":"Heteronym","word":"stracciona","lemma":"stracciona","pos":"ADJ"}}}],"frequency":1}
-{"id":50983,"atoms":[{"Tok":{"text":"Daniel Shaw","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":50983,"atoms":[{"Tok":{"text":"megglio","word_type":{"type":"Heteronym","word":"megglio","lemma":"megglio","pos":"NOUN"}}}],"frequency":1}
 {"id":50984,"atoms":[{"Tok":{"text":"dipinto","word_type":{"type":"Heteronym","word":"dipinto","lemma":"dipinto","pos":"ADJ"}}}],"frequency":1}
 {"id":50985,"atoms":[{"Tok":{"text":"percorrono","word_type":{"type":"Heteronym","word":"percorrono","lemma":"percorrere","pos":"VERB"}}}],"frequency":1}
 {"id":50986,"atoms":[{"Tok":{"text":"termitaio","word_type":{"type":"Heteronym","word":"termitaio","lemma":"termitaio","pos":"NOUN"}}}],"frequency":1}
@@ -51139,8 +51139,8 @@
 {"id":51138,"atoms":[{"Tok":{"text":"viale","word_type":{"type":"Heteronym","word":"viale","lemma":"viale","pos":"NOUN"}}}],"frequency":1}
 {"id":51139,"atoms":[{"Tok":{"text":"pesche","word_type":{"type":"Heteronym","word":"pesche","lemma":"pescare","pos":"VERB"}}}],"frequency":1}
 {"id":51140,"atoms":[{"Tok":{"text":"abusando","word_type":{"type":"Heteronym","word":"abusando","lemma":"abusare","pos":"VERB"}}}],"frequency":1}
-{"id":51141,"atoms":[{"Tok":{"text":"smoothie","word_type":{"type":"Heteronym","word":"smoothie","lemma":"smoothie","pos":"NOUN"}}}],"frequency":1}
-{"id":51142,"atoms":[{"Tok":{"text":"ricade","word_type":{"type":"Heteronym","word":"ricade","lemma":"ricadere","pos":"VERB"}}}],"frequency":1}
+{"id":51141,"atoms":[{"Tok":{"text":"ricade","word_type":{"type":"Heteronym","word":"ricade","lemma":"ricadere","pos":"VERB"}}}],"frequency":1}
+{"id":51142,"atoms":[{"Tok":{"text":"smoothie","word_type":{"type":"Heteronym","word":"smoothie","lemma":"smoothie","pos":"NOUN"}}}],"frequency":1}
 {"id":51143,"atoms":[{"Tok":{"text":"robadamatti","word_type":{"type":"Heteronym","word":"robadamatti","lemma":"robare","pos":"VERB"}}}],"frequency":1}
 {"id":51144,"atoms":[{"Tok":{"text":"Sisal","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":51145,"atoms":[{"Tok":{"text":"squillanti","word_type":{"type":"Heteronym","word":"squillanti","lemma":"squillante","pos":"ADJ"}}}],"frequency":1}
@@ -52076,8 +52076,8 @@
 {"id":52075,"atoms":[{"Tok":{"text":"raureddore","word_type":{"type":"Heteronym","word":"raureddore","lemma":"raureddore","pos":"NOUN"}}}],"frequency":1}
 {"id":52076,"atoms":[{"Tok":{"text":"sapete","word_type":{"type":"Heteronym","word":"sapete","lemma":"sapere","pos":"AUX"}}}],"frequency":1}
 {"id":52077,"atoms":[{"Tok":{"text":"incompetenti","word_type":{"type":"Heteronym","word":"incompetenti","lemma":"incompetente","pos":"ADJ"}}}],"frequency":1}
-{"id":52078,"atoms":[{"Tok":{"text":"aspefta","word_type":{"type":"Heteronym","word":"aspefta","lemma":"aspefta","pos":"INTJ"}}}],"frequency":1}
-{"id":52079,"atoms":[{"Tok":{"text":"corporali","word_type":{"type":"Heteronym","word":"corporali","lemma":"corporale","pos":"ADJ"}}}],"frequency":1}
+{"id":52078,"atoms":[{"Tok":{"text":"corporali","word_type":{"type":"Heteronym","word":"corporali","lemma":"corporale","pos":"ADJ"}}}],"frequency":1}
+{"id":52079,"atoms":[{"Tok":{"text":"aspefta","word_type":{"type":"Heteronym","word":"aspefta","lemma":"aspefta","pos":"INTJ"}}}],"frequency":1}
 {"id":52080,"atoms":[{"Tok":{"text":"quanta","word_type":{"type":"Heteronym","word":"quanta","lemma":"quanto","pos":"ADJ"}}}],"frequency":1}
 {"id":52081,"atoms":[{"Tok":{"text":"seccati","word_type":{"type":"Heteronym","word":"seccati","lemma":"seccato","pos":"ADJ"}}}],"frequency":1}
 {"id":52082,"atoms":[{"Tok":{"text":"avventata","word_type":{"type":"Heteronym","word":"avventata","lemma":"avventare","pos":"VERB"}}}],"frequency":1}
@@ -53221,8 +53221,8 @@
 {"id":53220,"atoms":[{"Tok":{"text":"Annie Leibovitz","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":53221,"atoms":[{"Tok":{"text":"Vuole","word_type":{"type":"Heteronym","word":"vuole","lemma":"volere","pos":"VERB"}}}],"frequency":1}
 {"id":53222,"atoms":[{"Tok":{"text":"lata","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":53223,"atoms":[{"Tok":{"text":"Elron","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":53224,"atoms":[{"Tok":{"text":"filastrocche","word_type":{"type":"Heteronym","word":"filastrocche","lemma":"filastrocca","pos":"NOUN"}}}],"frequency":1}
+{"id":53223,"atoms":[{"Tok":{"text":"filastrocche","word_type":{"type":"Heteronym","word":"filastrocche","lemma":"filastrocca","pos":"NOUN"}}}],"frequency":1}
+{"id":53224,"atoms":[{"Tok":{"text":"Elron","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":53225,"atoms":[{"Tok":{"text":"glia","word_type":{"type":"Heteronym","word":"glia","lemma":"gliare","pos":"VERB"}}}],"frequency":1}
 {"id":53226,"atoms":[{"Tok":{"text":"mendicanti","word_type":{"type":"Heteronym","word":"mendicanti","lemma":"mendicante","pos":"NOUN"}}}],"frequency":1}
 {"id":53227,"atoms":[{"Tok":{"text":"fermami","word_type":{"type":"Heteronym","word":"fermami","lemma":"fermare","pos":"VERB"}}}],"frequency":1}
@@ -54357,9 +54357,9 @@
 {"id":54356,"atoms":[{"Tok":{"text":"mirtillo","word_type":{"type":"Heteronym","word":"mirtillo","lemma":"mirtillo","pos":"NOUN"}}}],"frequency":1}
 {"id":54357,"atoms":[{"Tok":{"text":"supplica","word_type":{"type":"Heteronym","word":"supplica","lemma":"supplica","pos":"NOUN"}}}],"frequency":1}
 {"id":54358,"atoms":[{"Tok":{"text":"RIO","word_type":{"type":"Heteronym","word":"rio","lemma":"rio","pos":"NOUN"}}}],"frequency":1}
-{"id":54359,"atoms":[{"Tok":{"text":"sceglite","word_type":{"type":"Heteronym","word":"sceglite","lemma":"scegliere","pos":"VERB"}}}],"frequency":1}
+{"id":54359,"atoms":[{"Tok":{"text":"Kirsch","word_type":{"type":"Heteronym","word":"kirsch","lemma":"kirsch","pos":"NOUN"}}}],"frequency":1}
 {"id":54360,"atoms":[{"Tok":{"text":"cenresimo","word_type":{"type":"Heteronym","word":"cenresimo","lemma":"cenresimo","pos":"NOUN"}}}],"frequency":1}
-{"id":54361,"atoms":[{"Tok":{"text":"Kirsch","word_type":{"type":"Heteronym","word":"kirsch","lemma":"kirsch","pos":"NOUN"}}}],"frequency":1}
+{"id":54361,"atoms":[{"Tok":{"text":"sceglite","word_type":{"type":"Heteronym","word":"sceglite","lemma":"scegliere","pos":"VERB"}}}],"frequency":1}
 {"id":54362,"atoms":[{"Tok":{"text":"microscopi","word_type":{"type":"Heteronym","word":"microscopi","lemma":"microscopio","pos":"NOUN"}}}],"frequency":1}
 {"id":54363,"atoms":[{"Tok":{"text":"Curia","word_type":{"type":"Heteronym","word":"curia","lemma":"curia","pos":"NOUN"}}}],"frequency":1}
 {"id":54364,"atoms":[{"Tok":{"text":"idiomi","word_type":{"type":"Heteronym","word":"idiomi","lemma":"idioma","pos":"NOUN"}}}],"frequency":1}
@@ -55604,10 +55604,10 @@
 {"id":55603,"atoms":[{"Tok":{"text":"Choderlos","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":55604,"atoms":[{"Tok":{"text":"coprimozzi","word_type":{"type":"Heteronym","word":"coprimozzi","lemma":"coprimozzo","pos":"NOUN"}}}],"frequency":1}
 {"id":55605,"atoms":[{"Tok":{"text":"collettivismo","word_type":{"type":"Heteronym","word":"collettivismo","lemma":"collettivismo","pos":"NOUN"}}}],"frequency":1}
-{"id":55606,"atoms":[{"Tok":{"text":"candidi","word_type":{"type":"Heteronym","word":"candidi","lemma":"candidato","pos":"ADJ"}}}],"frequency":1}
+{"id":55606,"atoms":[{"Tok":{"text":"indisturbato","word_type":{"type":"Heteronym","word":"indisturbato","lemma":"indisturbato","pos":"ADJ"}}}],"frequency":1}
 {"id":55607,"atoms":[{"Tok":{"text":"Commissione Europea","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":55608,"atoms":[{"Tok":{"text":"corazzati","word_type":{"type":"Heteronym","word":"corazzati","lemma":"corazzato","pos":"ADJ"}}}],"frequency":1}
-{"id":55609,"atoms":[{"Tok":{"text":"indisturbato","word_type":{"type":"Heteronym","word":"indisturbato","lemma":"indisturbato","pos":"ADJ"}}}],"frequency":1}
+{"id":55609,"atoms":[{"Tok":{"text":"candidi","word_type":{"type":"Heteronym","word":"candidi","lemma":"candidato","pos":"ADJ"}}}],"frequency":1}
 {"id":55610,"atoms":[{"Tok":{"text":"milanesa","word_type":{"type":"Heteronym","word":"milanesa","lemma":"milanesa","pos":"NOUN"}}}],"frequency":1}
 {"id":55611,"atoms":[{"Tok":{"text":"eruttando","word_type":{"type":"Heteronym","word":"eruttando","lemma":"eruttare","pos":"VERB"}}}],"frequency":1}
 {"id":55612,"atoms":[{"Tok":{"text":"Spivey","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -57014,12 +57014,12 @@
 {"id":57013,"atoms":[{"Tok":{"text":"ri","word_type":{"type":"Heteronym","word":"ri","lemma":"io","pos":"PRON"}}}],"frequency":1}
 {"id":57014,"atoms":[{"Tok":{"text":"inopportuna","word_type":{"type":"Heteronym","word":"inopportuna","lemma":"inopportuno","pos":"ADJ"}}}],"frequency":1}
 {"id":57015,"atoms":[{"Tok":{"text":"potenziare","word_type":{"type":"Heteronym","word":"potenziare","lemma":"potenziare","pos":"VERB"}}}],"frequency":1}
-{"id":57016,"atoms":[{"Tok":{"text":"Schiavo","word_type":{"type":"Heteronym","word":"schiavo","lemma":"schiavo","pos":"NOUN"}}}],"frequency":1}
+{"id":57016,"atoms":[{"Tok":{"text":"Stansfield","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":57017,"atoms":[{"Tok":{"text":"macchiato","word_type":{"type":"Heteronym","word":"macchiato","lemma":"macchiato","pos":"ADJ"}}}],"frequency":1}
-{"id":57018,"atoms":[{"Tok":{"text":"Stansfield","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":57018,"atoms":[{"Tok":{"text":"antartico","word_type":{"type":"Heteronym","word":"antartico","lemma":"antartico","pos":"ADJ"}}}],"frequency":1}
 {"id":57019,"atoms":[{"Tok":{"text":"Ricordella","word_type":{"type":"Heteronym","word":"ricordella","lemma":"ricordella","pos":"NOUN"}}}],"frequency":1}
 {"id":57020,"atoms":[{"Tok":{"text":"fiuh","word_type":{"type":"Heteronym","word":"fiuh","lemma":"fiuh","pos":"INTJ"}}}],"frequency":1}
-{"id":57021,"atoms":[{"Tok":{"text":"antartico","word_type":{"type":"Heteronym","word":"antartico","lemma":"antartico","pos":"ADJ"}}}],"frequency":1}
+{"id":57021,"atoms":[{"Tok":{"text":"Schiavo","word_type":{"type":"Heteronym","word":"schiavo","lemma":"schiavo","pos":"NOUN"}}}],"frequency":1}
 {"id":57022,"atoms":[{"Tok":{"text":"mschera","word_type":{"type":"Heteronym","word":"mschera","lemma":"maschera","pos":"NOUN"}}}],"frequency":1}
 {"id":57023,"atoms":[{"Tok":{"text":"mutanne","word_type":{"type":"Heteronym","word":"mutanne","lemma":"mutanna","pos":"NOUN"}}}],"frequency":1}
 {"id":57024,"atoms":[{"Tok":{"text":"scoprirsi","word_type":{"type":"Heteronym","word":"scoprirsi","lemma":"scoprire si","pos":"VERB"}}}],"frequency":1}
@@ -57090,8 +57090,8 @@
 {"id":57089,"atoms":[{"Tok":{"text":"contrassegni","word_type":{"type":"Heteronym","word":"contrassegni","lemma":"contrassegno","pos":"NOUN"}}}],"frequency":1}
 {"id":57090,"atoms":[{"Tok":{"text":"collegiale","word_type":{"type":"Heteronym","word":"collegiale","lemma":"collegiale","pos":"NOUN"}}}],"frequency":1}
 {"id":57091,"atoms":[{"Tok":{"text":"Niente","word_type":{"type":"Heteronym","word":"niente","lemma":"niente","pos":"PRON"}}}],"frequency":1}
-{"id":57092,"atoms":[{"Tok":{"text":"capirebbero","word_type":{"type":"Heteronym","word":"capirebbero","lemma":"capire","pos":"VERB"}}}],"frequency":1}
-{"id":57093,"atoms":[{"Tok":{"text":"Schweitzer","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":57092,"atoms":[{"Tok":{"text":"Schweitzer","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":57093,"atoms":[{"Tok":{"text":"capirebbero","word_type":{"type":"Heteronym","word":"capirebbero","lemma":"capire","pos":"VERB"}}}],"frequency":1}
 {"id":57094,"atoms":[{"Tok":{"text":"mettergliele","word_type":{"type":"Heteronym","word":"mettergliele","lemma":"mettere","pos":"VERB"}}}],"frequency":1}
 {"id":57095,"atoms":[{"Tok":{"text":"cornutissimo","word_type":{"type":"Heteronym","word":"cornutissimo","lemma":"cornuto","pos":"ADJ"}}}],"frequency":1}
 {"id":57096,"atoms":[{"Tok":{"text":"Concorso","word_type":{"type":"Heteronym","word":"concorso","lemma":"concorso","pos":"NOUN"}}}],"frequency":1}
@@ -57234,8 +57234,8 @@
 {"id":57233,"atoms":[{"Tok":{"text":"trapezista","word_type":{"type":"Heteronym","word":"trapezista","lemma":"trapzista","pos":"NOUN"}}}],"frequency":1}
 {"id":57234,"atoms":[{"Tok":{"text":"Caritatevole","word_type":{"type":"Heteronym","word":"caritatevole","lemma":"caritatevole","pos":"ADJ"}}}],"frequency":1}
 {"id":57235,"atoms":[{"Tok":{"text":"arrabbiarono","word_type":{"type":"Heteronym","word":"arrabbiarono","lemma":"arrabbiarsi","pos":"VERB"}}}],"frequency":1}
-{"id":57236,"atoms":[{"Tok":{"text":"Tanina","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":57237,"atoms":[{"Tok":{"text":"Fratello Mo","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":57236,"atoms":[{"Tok":{"text":"Fratello Mo","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":57237,"atoms":[{"Tok":{"text":"Tanina","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":57238,"atoms":[{"Tok":{"text":"George Chen","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":57239,"atoms":[{"Tok":{"text":"pistolero","word_type":{"type":"Heteronym","word":"pistolero","lemma":"pistolero","pos":"NOUN"}}}],"frequency":1}
 {"id":57240,"atoms":[{"Tok":{"text":"sAI","word_type":{"type":"Heteronym","word":"sai","lemma":"sapere","pos":"VERB"}}}],"frequency":1}
@@ -57248,8 +57248,8 @@
 {"id":57247,"atoms":[{"Tok":{"text":"rustica","word_type":{"type":"Heteronym","word":"rustica","lemma":"rustico","pos":"ADJ"}}}],"frequency":1}
 {"id":57248,"atoms":[{"Tok":{"text":"approcciarti","word_type":{"type":"Heteronym","word":"approcciarti","lemma":"approcciarsi","pos":"VERB"}}}],"frequency":1}
 {"id":57249,"atoms":[{"Tok":{"text":"Dunclivo","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":57250,"atoms":[{"Tok":{"text":"remake","word_type":{"type":"Heteronym","word":"remake","lemma":"remake","pos":"NOUN"}}}],"frequency":1}
-{"id":57251,"atoms":[{"Tok":{"text":"lanciarmi","word_type":{"type":"Heteronym","word":"lanciarmi","lemma":"lanciare","pos":"VERB"}}}],"frequency":1}
+{"id":57250,"atoms":[{"Tok":{"text":"lanciarmi","word_type":{"type":"Heteronym","word":"lanciarmi","lemma":"lanciare","pos":"VERB"}}}],"frequency":1}
+{"id":57251,"atoms":[{"Tok":{"text":"remake","word_type":{"type":"Heteronym","word":"remake","lemma":"remake","pos":"NOUN"}}}],"frequency":1}
 {"id":57252,"atoms":[{"Tok":{"text":"ambito","word_type":{"type":"Heteronym","word":"ambito","lemma":"ambito","pos":"NOUN"}}}],"frequency":1}
 {"id":57253,"atoms":[{"Tok":{"text":"pascolando","word_type":{"type":"Heteronym","word":"pascolando","lemma":"pascolare","pos":"VERB"}}}],"frequency":1}
 {"id":57254,"atoms":[{"Tok":{"text":"sbadigliamo","word_type":{"type":"Heteronym","word":"sbadigliamo","lemma":"sbadigliare","pos":"VERB"}}}],"frequency":1}
@@ -58112,10 +58112,10 @@
 {"id":58111,"atoms":[{"Tok":{"text":"arrenderebbe","word_type":{"type":"Heteronym","word":"arrenderebbe","lemma":"arrendere","pos":"VERB"}}}],"frequency":1}
 {"id":58112,"atoms":[{"Tok":{"text":"ficcail","word_type":{"type":"Heteronym","word":"ficcail","lemma":"ficcare","pos":"VERB"}}}],"frequency":1}
 {"id":58113,"atoms":[{"Tok":{"text":"FAMIGLIA","word_type":{"type":"Heteronym","word":"famiglia","lemma":"famiglia","pos":"NOUN"}}}],"frequency":1}
-{"id":58114,"atoms":[{"Tok":{"text":"deformi","word_type":{"type":"Heteronym","word":"deformi","lemma":"deforme","pos":"ADJ"}}}],"frequency":1}
-{"id":58115,"atoms":[{"Tok":{"text":"situation","word_type":{"type":"Heteronym","word":"situation","lemma":"situation","pos":"NOUN"}}}],"frequency":1}
-{"id":58116,"atoms":[{"Tok":{"text":"cuociamo","word_type":{"type":"Heteronym","word":"cuociamo","lemma":"cuocere","pos":"VERB"}}}],"frequency":1}
-{"id":58117,"atoms":[{"Tok":{"text":"munte","word_type":{"type":"Heteronym","word":"munte","lemma":"munte","pos":"NOUN"}}}],"frequency":1}
+{"id":58114,"atoms":[{"Tok":{"text":"situation","word_type":{"type":"Heteronym","word":"situation","lemma":"situation","pos":"NOUN"}}}],"frequency":1}
+{"id":58115,"atoms":[{"Tok":{"text":"cuociamo","word_type":{"type":"Heteronym","word":"cuociamo","lemma":"cuocere","pos":"VERB"}}}],"frequency":1}
+{"id":58116,"atoms":[{"Tok":{"text":"munte","word_type":{"type":"Heteronym","word":"munte","lemma":"munte","pos":"NOUN"}}}],"frequency":1}
+{"id":58117,"atoms":[{"Tok":{"text":"deformi","word_type":{"type":"Heteronym","word":"deformi","lemma":"deforme","pos":"ADJ"}}}],"frequency":1}
 {"id":58118,"atoms":[{"Tok":{"text":"fessi","word_type":{"type":"Heteronym","word":"fessi","lemma":"fesso","pos":"NOUN"}}}],"frequency":1}
 {"id":58119,"atoms":[{"Tok":{"text":"stimarti","word_type":{"type":"Heteronym","word":"stimarti","lemma":"stimare","pos":"VERB"}}}],"frequency":1}
 {"id":58120,"atoms":[{"Tok":{"text":"tralasciate","word_type":{"type":"Heteronym","word":"tralasciate","lemma":"traslasciare","pos":"VERB"}}}],"frequency":1}
@@ -59296,8 +59296,8 @@
 {"id":59295,"atoms":[{"Tok":{"text":"bANG","word_type":{"type":"Heteronym","word":"bang","lemma":"bang","pos":"INTJ"}}}],"frequency":1}
 {"id":59296,"atoms":[{"Tok":{"text":"lanciatela","word_type":{"type":"Heteronym","word":"lanciatela","lemma":"lanciare","pos":"VERB"}}}],"frequency":1}
 {"id":59297,"atoms":[{"Tok":{"text":"unilaterali","word_type":{"type":"Heteronym","word":"unilaterali","lemma":"unilaterale","pos":"ADJ"}}}],"frequency":1}
-{"id":59298,"atoms":[{"Tok":{"text":"Rustic Inn","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":59299,"atoms":[{"Tok":{"text":"comprenderebbe","word_type":{"type":"Heteronym","word":"comprenderebbe","lemma":"comprendere","pos":"VERB"}}}],"frequency":1}
+{"id":59298,"atoms":[{"Tok":{"text":"comprenderebbe","word_type":{"type":"Heteronym","word":"comprenderebbe","lemma":"comprendere","pos":"VERB"}}}],"frequency":1}
+{"id":59299,"atoms":[{"Tok":{"text":"Rustic Inn","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":59300,"atoms":[{"Tok":{"text":"tintoria","word_type":{"type":"Heteronym","word":"tintoria","lemma":"tintoria","pos":"NOUN"}}}],"frequency":1}
 {"id":59301,"atoms":[{"Tok":{"text":"The Care","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":59302,"atoms":[{"Tok":{"text":"scelto","word_type":{"type":"Heteronym","word":"scelto","lemma":"scelto","pos":"ADJ"}}}],"frequency":1}
@@ -59549,9 +59549,9 @@
 {"id":59548,"atoms":[{"Tok":{"text":"erto","word_type":{"type":"Heteronym","word":"erto","lemma":"erto","pos":"INTJ"}}}],"frequency":1}
 {"id":59549,"atoms":[{"Tok":{"text":"Benévoleva","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":59550,"atoms":[{"Tok":{"text":"raid","word_type":{"type":"Heteronym","word":"raid","lemma":"raid","pos":"NOUN"}}}],"frequency":1}
-{"id":59551,"atoms":[{"Tok":{"text":"dentini","word_type":{"type":"Heteronym","word":"dentini","lemma":"dentino","pos":"NOUN"}}}],"frequency":1}
+{"id":59551,"atoms":[{"Tok":{"text":"ebbe","word_type":{"type":"Heteronym","word":"ebbe","lemma":"avere","pos":"AUX"}}}],"frequency":1}
 {"id":59552,"atoms":[{"Tok":{"text":"coboldi","word_type":{"type":"Heteronym","word":"coboldi","lemma":"coboldo","pos":"NOUN"}}}],"frequency":1}
-{"id":59553,"atoms":[{"Tok":{"text":"ebbe","word_type":{"type":"Heteronym","word":"ebbe","lemma":"avere","pos":"AUX"}}}],"frequency":1}
+{"id":59553,"atoms":[{"Tok":{"text":"dentini","word_type":{"type":"Heteronym","word":"dentini","lemma":"dentino","pos":"NOUN"}}}],"frequency":1}
 {"id":59554,"atoms":[{"Tok":{"text":"disprezzare","word_type":{"type":"Heteronym","word":"disprezzare","lemma":"disprezzare","pos":"VERB"}}}],"frequency":1}
 {"id":59555,"atoms":[{"Tok":{"text":"smaschererò","word_type":{"type":"Heteronym","word":"smaschererò","lemma":"smascherare","pos":"VERB"}}}],"frequency":1}
 {"id":59556,"atoms":[{"Tok":{"text":"Heen","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -59733,8 +59733,8 @@
 {"id":59732,"atoms":[{"Tok":{"text":"spappolato","word_type":{"type":"Heteronym","word":"spappolato","lemma":"spappolare","pos":"VERB"}}}],"frequency":1}
 {"id":59733,"atoms":[{"Tok":{"text":"impolverato","word_type":{"type":"Heteronym","word":"impolverato","lemma":"impolverato","pos":"ADJ"}}}],"frequency":1}
 {"id":59734,"atoms":[{"Tok":{"text":"proibizionismo","word_type":{"type":"Heteronym","word":"proibizionismo","lemma":"proibizionismo","pos":"NOUN"}}}],"frequency":1}
-{"id":59735,"atoms":[{"Tok":{"text":"stravolta","word_type":{"type":"Heteronym","word":"stravolta","lemma":"stravolto","pos":"ADJ"}}}],"frequency":1}
-{"id":59736,"atoms":[{"Tok":{"text":"intercettò","word_type":{"type":"Heteronym","word":"intercettò","lemma":"intercettare","pos":"VERB"}}}],"frequency":1}
+{"id":59735,"atoms":[{"Tok":{"text":"intercettò","word_type":{"type":"Heteronym","word":"intercettò","lemma":"intercettare","pos":"VERB"}}}],"frequency":1}
+{"id":59736,"atoms":[{"Tok":{"text":"stravolta","word_type":{"type":"Heteronym","word":"stravolta","lemma":"stravolto","pos":"ADJ"}}}],"frequency":1}
 {"id":59737,"atoms":[{"Tok":{"text":"squadrone","word_type":{"type":"Heteronym","word":"squadrone","lemma":"squadrone","pos":"NOUN"}}}],"frequency":1}
 {"id":59738,"atoms":[{"Tok":{"text":"separate","word_type":{"type":"Heteronym","word":"separate","lemma":"separato","pos":"ADJ"}}}],"frequency":1}
 {"id":59739,"atoms":[{"Tok":{"text":"abbraccerebbe","word_type":{"type":"Heteronym","word":"abbraccerebbe","lemma":"abbracciare","pos":"VERB"}}}],"frequency":1}
@@ -60019,11 +60019,11 @@
 {"id":60018,"atoms":[{"Tok":{"text":"Sen","word_type":{"type":"Heteronym","word":"sen","lemma":"sen","pos":"NUM"}}}],"frequency":1}
 {"id":60019,"atoms":[{"Tok":{"text":"diventasse","word_type":{"type":"Heteronym","word":"diventasse","lemma":"diventare","pos":"VERB"}}}],"frequency":1}
 {"id":60020,"atoms":[{"Tok":{"text":"pellegrine","word_type":{"type":"Heteronym","word":"pellegrine","lemma":"pellegrino","pos":"NOUN"}}}],"frequency":1}
-{"id":60021,"atoms":[{"Tok":{"text":"seppelliremo","word_type":{"type":"Heteronym","word":"seppelliremo","lemma":"seppellire","pos":"VERB"}}}],"frequency":1}
+{"id":60021,"atoms":[{"Tok":{"text":"scambia","word_type":{"type":"Heteronym","word":"scambia","lemma":"scambiare","pos":"VERB"}}}],"frequency":1}
 {"id":60022,"atoms":[{"Tok":{"text":"impiccherà","word_type":{"type":"Heteronym","word":"impiccherà","lemma":"impiccare","pos":"VERB"}}}],"frequency":1}
 {"id":60023,"atoms":[{"Tok":{"text":"artico","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":60024,"atoms":[{"Tok":{"text":"Totalus","word_type":{"type":"Heteronym","word":"totalus","lemma":"totalus","pos":"ADJ"}}}],"frequency":1}
-{"id":60025,"atoms":[{"Tok":{"text":"scambia","word_type":{"type":"Heteronym","word":"scambia","lemma":"scambiare","pos":"VERB"}}}],"frequency":1}
+{"id":60025,"atoms":[{"Tok":{"text":"seppelliremo","word_type":{"type":"Heteronym","word":"seppelliremo","lemma":"seppellire","pos":"VERB"}}}],"frequency":1}
 {"id":60026,"atoms":[{"Tok":{"text":"abbandonano","word_type":{"type":"Heteronym","word":"abbandonano","lemma":"abbandonare","pos":"VERB"}}}],"frequency":1}
 {"id":60027,"atoms":[{"Tok":{"text":"fottuta","word_type":{"type":"Heteronym","word":"fottuta","lemma":"fottare","pos":"VERB"}}}],"frequency":1}
 {"id":60028,"atoms":[{"Tok":{"text":"contatto","word_type":{"type":"Heteronym","word":"contatto","lemma":"contatto","pos":"INTJ"}}}],"frequency":1}
@@ -60304,8 +60304,8 @@
 {"id":60303,"atoms":[{"Tok":{"text":"marocchina","word_type":{"type":"Heteronym","word":"marocchina","lemma":"marocchino","pos":"ADJ"}}}],"frequency":1}
 {"id":60304,"atoms":[{"Tok":{"text":"sepolti","word_type":{"type":"Heteronym","word":"sepolti","lemma":"sepolto","pos":"ADJ"}}}],"frequency":1}
 {"id":60305,"atoms":[{"Tok":{"text":"burlesque","word_type":{"type":"Heteronym","word":"burlesque","lemma":"burlesque","pos":"NOUN"}}}],"frequency":1}
-{"id":60306,"atoms":[{"Tok":{"text":"invecchiamo","word_type":{"type":"Heteronym","word":"invecchiamo","lemma":"invecchiare","pos":"VERB"}}}],"frequency":1}
-{"id":60307,"atoms":[{"Tok":{"text":"sanguineremo","word_type":{"type":"Heteronym","word":"sanguineremo","lemma":"sanguinare","pos":"VERB"}}}],"frequency":1}
+{"id":60306,"atoms":[{"Tok":{"text":"sanguineremo","word_type":{"type":"Heteronym","word":"sanguineremo","lemma":"sanguinare","pos":"VERB"}}}],"frequency":1}
+{"id":60307,"atoms":[{"Tok":{"text":"invecchiamo","word_type":{"type":"Heteronym","word":"invecchiamo","lemma":"invecchiare","pos":"VERB"}}}],"frequency":1}
 {"id":60308,"atoms":[{"Tok":{"text":"stringetelo","word_type":{"type":"Heteronym","word":"stringetelo","lemma":"stringere","pos":"VERB"}}}],"frequency":1}
 {"id":60309,"atoms":[{"Tok":{"text":"elfica","word_type":{"type":"Heteronym","word":"elfica","lemma":"elfico","pos":"ADJ"}}}],"frequency":1}
 {"id":60310,"atoms":[{"Tok":{"text":"dimenarti","word_type":{"type":"Heteronym","word":"dimenarti","lemma":"dimentare","pos":"VERB"}}}],"frequency":1}
@@ -60332,8 +60332,8 @@
 {"id":60331,"atoms":[{"Tok":{"text":"ideati","word_type":{"type":"Heteronym","word":"ideati","lemma":"ideare","pos":"VERB"}}}],"frequency":1}
 {"id":60332,"atoms":[{"Tok":{"text":"bestemmi","word_type":{"type":"Heteronym","word":"bestemmi","lemma":"bestemmere","pos":"VERB"}}}],"frequency":1}
 {"id":60333,"atoms":[{"Tok":{"text":"rasavo","word_type":{"type":"Heteronym","word":"rasavo","lemma":"rasare","pos":"VERB"}}}],"frequency":1}
-{"id":60334,"atoms":[{"Tok":{"text":"sbarazzate","word_type":{"type":"Heteronym","word":"sbarazzate","lemma":"sbarazzare","pos":"VERB"}}}],"frequency":1}
-{"id":60335,"atoms":[{"Tok":{"text":"dormicchiando","word_type":{"type":"Heteronym","word":"dormicchiando","lemma":"dormicchiare","pos":"VERB"}}}],"frequency":1}
+{"id":60334,"atoms":[{"Tok":{"text":"dormicchiando","word_type":{"type":"Heteronym","word":"dormicchiando","lemma":"dormicchiare","pos":"VERB"}}}],"frequency":1}
+{"id":60335,"atoms":[{"Tok":{"text":"sbarazzate","word_type":{"type":"Heteronym","word":"sbarazzate","lemma":"sbarazzare","pos":"VERB"}}}],"frequency":1}
 {"id":60336,"atoms":[{"Tok":{"text":"fici","word_type":{"type":"Heteronym","word":"fici","lemma":"fare","pos":"VERB"}}}],"frequency":1}
 {"id":60337,"atoms":[{"Tok":{"text":"Monica Bellucci","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":60338,"atoms":[{"Tok":{"text":"collezionato","word_type":{"type":"Heteronym","word":"collezionato","lemma":"collezionare","pos":"VERB"}}}],"frequency":1}
@@ -60470,8 +60470,8 @@
 {"id":60469,"atoms":[{"Tok":{"text":"anticipa","word_type":{"type":"Heteronym","word":"anticipa","lemma":"anticipare","pos":"VERB"}}}],"frequency":1}
 {"id":60470,"atoms":[{"Tok":{"text":"antipatia","word_type":{"type":"Heteronym","word":"antipatia","lemma":"antipatia","pos":"NOUN"}}}],"frequency":1}
 {"id":60471,"atoms":[{"Tok":{"text":"audioguide","word_type":{"type":"Heteronym","word":"audioguide","lemma":"audioguida","pos":"NOUN"}}}],"frequency":1}
-{"id":60472,"atoms":[{"Tok":{"text":"impegnativi","word_type":{"type":"Heteronym","word":"impegnativi","lemma":"impegnativo","pos":"ADJ"}}}],"frequency":1}
-{"id":60473,"atoms":[{"Tok":{"text":"silurata","word_type":{"type":"Heteronym","word":"silurata","lemma":"silurare","pos":"VERB"}}}],"frequency":1}
+{"id":60472,"atoms":[{"Tok":{"text":"silurata","word_type":{"type":"Heteronym","word":"silurata","lemma":"silurare","pos":"VERB"}}}],"frequency":1}
+{"id":60473,"atoms":[{"Tok":{"text":"impegnativi","word_type":{"type":"Heteronym","word":"impegnativi","lemma":"impegnativo","pos":"ADJ"}}}],"frequency":1}
 {"id":60474,"atoms":[{"Tok":{"text":"binocoli","word_type":{"type":"Heteronym","word":"binocoli","lemma":"binocolo","pos":"NOUN"}}}],"frequency":1}
 {"id":60475,"atoms":[{"Tok":{"text":"rotolai","word_type":{"type":"Heteronym","word":"rotolai","lemma":"rotolare","pos":"VERB"}}}],"frequency":1}
 {"id":60476,"atoms":[{"Tok":{"text":"indigena","word_type":{"type":"Heteronym","word":"indigena","lemma":"indigeno","pos":"ADJ"}}}],"frequency":1}
@@ -60663,8 +60663,8 @@
 {"id":60662,"atoms":[{"Tok":{"text":"pretendi","word_type":{"type":"Heteronym","word":"pretendi","lemma":"pretendere","pos":"VERB"}}}],"frequency":1}
 {"id":60663,"atoms":[{"Tok":{"text":"naro","word_type":{"type":"Heteronym","word":"naro","lemma":"nascere","pos":"VERB"}}}],"frequency":1}
 {"id":60664,"atoms":[{"Tok":{"text":"ingannarmi","word_type":{"type":"Heteronym","word":"ingannarmi","lemma":"ingannare","pos":"VERB"}}}],"frequency":1}
-{"id":60665,"atoms":[{"Tok":{"text":"comunismo","word_type":{"type":"Heteronym","word":"comunismo","lemma":"comunismo","pos":"NOUN"}}}],"frequency":1}
-{"id":60666,"atoms":[{"Tok":{"text":"Reef","word_type":{"type":"Heteronym","word":"reef","lemma":"reef","pos":"NOUN"}}}],"frequency":1}
+{"id":60665,"atoms":[{"Tok":{"text":"Reef","word_type":{"type":"Heteronym","word":"reef","lemma":"reef","pos":"NOUN"}}}],"frequency":1}
+{"id":60666,"atoms":[{"Tok":{"text":"comunismo","word_type":{"type":"Heteronym","word":"comunismo","lemma":"comunismo","pos":"NOUN"}}}],"frequency":1}
 {"id":60667,"atoms":[{"Tok":{"text":"costruirne","word_type":{"type":"Heteronym","word":"costruirne","lemma":"costruire ne","pos":"VERB"}}}],"frequency":1}
 {"id":60668,"atoms":[{"Tok":{"text":"consultarle","word_type":{"type":"Heteronym","word":"consultarle","lemma":"consultare","pos":"VERB"}}}],"frequency":1}
 {"id":60669,"atoms":[{"Tok":{"text":"commessi","word_type":{"type":"Heteronym","word":"commessi","lemma":"commesso","pos":"NOUN"}}}],"frequency":1}
@@ -60779,8 +60779,8 @@
 {"id":60778,"atoms":[{"Tok":{"text":"Rodrigues Rodrigues","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":60779,"atoms":[{"Tok":{"text":"prometterà","word_type":{"type":"Heteronym","word":"prometterà","lemma":"promettere","pos":"VERB"}}}],"frequency":1}
 {"id":60780,"atoms":[{"Tok":{"text":"marciavano","word_type":{"type":"Heteronym","word":"marciavano","lemma":"marciare","pos":"VERB"}}}],"frequency":1}
-{"id":60781,"atoms":[{"Tok":{"text":"Severina","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":60782,"atoms":[{"Tok":{"text":"trae","word_type":{"type":"Heteronym","word":"trae","lemma":"trarre","pos":"VERB"}}}],"frequency":1}
+{"id":60781,"atoms":[{"Tok":{"text":"trae","word_type":{"type":"Heteronym","word":"trae","lemma":"trarre","pos":"VERB"}}}],"frequency":1}
+{"id":60782,"atoms":[{"Tok":{"text":"Severina","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":60783,"atoms":[{"Tok":{"text":"piacetanto","word_type":{"type":"Heteronym","word":"piacetanto","lemma":"piacere tanto","pos":"VERB"}}}],"frequency":1}
 {"id":60784,"atoms":[{"Tok":{"text":"bisticciano","word_type":{"type":"Heteronym","word":"bisticciano","lemma":"bisticciare","pos":"VERB"}}}],"frequency":1}
 {"id":60785,"atoms":[{"Tok":{"text":"Mitchell","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -60853,8 +60853,8 @@
 {"id":60852,"atoms":[{"Tok":{"text":"riversarsi","word_type":{"type":"Heteronym","word":"riversarsi","lemma":"riversare si","pos":"VERB"}}}],"frequency":1}
 {"id":60853,"atoms":[{"Tok":{"text":"Benjamin Espósito","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":60854,"atoms":[{"Tok":{"text":"dissolvenza","word_type":{"type":"Heteronym","word":"dissolvenza","lemma":"dissolvenza","pos":"NOUN"}}}],"frequency":1}
-{"id":60855,"atoms":[{"Tok":{"text":"COLONIE","word_type":{"type":"Heteronym","word":"colonie","lemma":"colonia","pos":"NOUN"}}}],"frequency":1}
-{"id":60856,"atoms":[{"Tok":{"text":"cospirazione","word_type":{"type":"Heteronym","word":"cospirazione","lemma":"cospirazione","pos":"NOUN"}}}],"frequency":1}
+{"id":60855,"atoms":[{"Tok":{"text":"cospirazione","word_type":{"type":"Heteronym","word":"cospirazione","lemma":"cospirazione","pos":"NOUN"}}}],"frequency":1}
+{"id":60856,"atoms":[{"Tok":{"text":"COLONIE","word_type":{"type":"Heteronym","word":"colonie","lemma":"colonia","pos":"NOUN"}}}],"frequency":1}
 {"id":60857,"atoms":[{"Tok":{"text":"Memphis","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":60858,"atoms":[{"Tok":{"text":"facendogli","word_type":{"type":"Heteronym","word":"facendogli","lemma":"fare gli","pos":"VERB"}}}],"frequency":1}
 {"id":60859,"atoms":[{"Tok":{"text":"has","word_type":{"type":"Heteronym","word":"has","lemma":"have","pos":"AUX"}}}],"frequency":1}
@@ -61021,8 +61021,8 @@
 {"id":61020,"atoms":[{"Tok":{"text":"kemosabe","word_type":{"type":"Heteronym","word":"kemosabe","lemma":"kemosabe","pos":"INTJ"}}}],"frequency":1}
 {"id":61021,"atoms":[{"Tok":{"text":"impuntato","word_type":{"type":"Heteronym","word":"impuntato","lemma":"impuntato","pos":"ADJ"}}}],"frequency":1}
 {"id":61022,"atoms":[{"Tok":{"text":"maltese","word_type":{"type":"Heteronym","word":"maltese","lemma":"maltese","pos":"ADJ"}}}],"frequency":1}
-{"id":61023,"atoms":[{"Tok":{"text":"sommersi","word_type":{"type":"Heteronym","word":"sommersi","lemma":"sommerso","pos":"ADJ"}}}],"frequency":1}
-{"id":61024,"atoms":[{"Tok":{"text":"tienimelo","word_type":{"type":"Heteronym","word":"tienimelo","lemma":"tenere","pos":"VERB"}}}],"frequency":1}
+{"id":61023,"atoms":[{"Tok":{"text":"tienimelo","word_type":{"type":"Heteronym","word":"tienimelo","lemma":"tenere","pos":"VERB"}}}],"frequency":1}
+{"id":61024,"atoms":[{"Tok":{"text":"sommersi","word_type":{"type":"Heteronym","word":"sommersi","lemma":"sommerso","pos":"ADJ"}}}],"frequency":1}
 {"id":61025,"atoms":[{"Tok":{"text":"http","word_type":{"type":"Heteronym","word":"http","lemma":"http","pos":"NOUN"}}}],"frequency":1}
 {"id":61026,"atoms":[{"Tok":{"text":"sciare","word_type":{"type":"Heteronym","word":"sciare","lemma":"sciare","pos":"NOUN"}}}],"frequency":1}
 {"id":61027,"atoms":[{"Tok":{"text":"Shtooka","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -61221,8 +61221,8 @@
 {"id":61220,"atoms":[{"Tok":{"text":"pudore","word_type":{"type":"Heteronym","word":"pudore","lemma":"pudore","pos":"NOUN"}}}],"frequency":1}
 {"id":61221,"atoms":[{"Tok":{"text":"aspettandosi","word_type":{"type":"Heteronym","word":"aspettandosi","lemma":"aspettare si","pos":"VERB"}}}],"frequency":1}
 {"id":61222,"atoms":[{"Tok":{"text":"indossatrice","word_type":{"type":"Heteronym","word":"indossatrice","lemma":"indossatore","pos":"NOUN"}}}],"frequency":1}
-{"id":61223,"atoms":[{"Tok":{"text":"shampoo","word_type":{"type":"Heteronym","word":"shampoo","lemma":"shampoo","pos":"INTJ"}}}],"frequency":1}
-{"id":61224,"atoms":[{"Tok":{"text":"levata","word_type":{"type":"Heteronym","word":"levata","lemma":"levare","pos":"VERB"}}}],"frequency":1}
+{"id":61223,"atoms":[{"Tok":{"text":"levata","word_type":{"type":"Heteronym","word":"levata","lemma":"levare","pos":"VERB"}}}],"frequency":1}
+{"id":61224,"atoms":[{"Tok":{"text":"shampoo","word_type":{"type":"Heteronym","word":"shampoo","lemma":"shampoo","pos":"INTJ"}}}],"frequency":1}
 {"id":61225,"atoms":[{"Tok":{"text":"abituarvi","word_type":{"type":"Heteronym","word":"abituarvi","lemma":"abituare","pos":"VERB"}}}],"frequency":1}
 {"id":61226,"atoms":[{"Tok":{"text":"repressi","word_type":{"type":"Heteronym","word":"repressi","lemma":"represso","pos":"ADJ"}}}],"frequency":1}
 {"id":61227,"atoms":[{"Tok":{"text":"farfugliamento","word_type":{"type":"Heteronym","word":"farfugliamento","lemma":"farfugliamento","pos":"NOUN"}}}],"frequency":1}
@@ -61269,8 +61269,8 @@
 {"id":61268,"atoms":[{"Tok":{"text":"no","word_type":{"type":"Heteronym","word":"no","lemma":"no","pos":"ADJ"}}}],"frequency":1}
 {"id":61269,"atoms":[{"Tok":{"text":"ri","word_type":{"type":"Heteronym","word":"ri","lemma":"ri","pos":"PART"}}}],"frequency":1}
 {"id":61270,"atoms":[{"Tok":{"text":"sporta","word_type":{"type":"Heteronym","word":"sporta","lemma":"sportare","pos":"VERB"}}}],"frequency":1}
-{"id":61271,"atoms":[{"Tok":{"text":"Outback Island","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":61272,"atoms":[{"Tok":{"text":"consci","word_type":{"type":"Heteronym","word":"consci","lemma":"conscio","pos":"ADJ"}}}],"frequency":1}
+{"id":61271,"atoms":[{"Tok":{"text":"consci","word_type":{"type":"Heteronym","word":"consci","lemma":"conscio","pos":"ADJ"}}}],"frequency":1}
+{"id":61272,"atoms":[{"Tok":{"text":"Outback Island","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":61273,"atoms":[{"Tok":{"text":"MIDOLLO","word_type":{"type":"Heteronym","word":"midollo","lemma":"midollo","pos":"NOUN"}}}],"frequency":1}
 {"id":61274,"atoms":[{"Tok":{"text":"sincerarvi","word_type":{"type":"Heteronym","word":"sincerarvi","lemma":"sincerare","pos":"VERB"}}}],"frequency":1}
 {"id":61275,"atoms":[{"Tok":{"text":"retorica","word_type":{"type":"Heteronym","word":"retorica","lemma":"retorico","pos":"ADJ"}}}],"frequency":1}
@@ -62477,8 +62477,8 @@
 {"id":62476,"atoms":[{"Tok":{"text":"Cure","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":62477,"atoms":[{"Tok":{"text":"posteriore","word_type":{"type":"Heteronym","word":"posteriore","lemma":"posteriore","pos":"NOUN"}}}],"frequency":1}
 {"id":62478,"atoms":[{"Tok":{"text":"calmeranno","word_type":{"type":"Heteronym","word":"calmeranno","lemma":"calmare","pos":"VERB"}}}],"frequency":1}
-{"id":62479,"atoms":[{"Tok":{"text":"frenando","word_type":{"type":"Heteronym","word":"frenando","lemma":"frenare","pos":"VERB"}}}],"frequency":1}
-{"id":62480,"atoms":[{"Tok":{"text":"và","word_type":{"type":"Heteronym","word":"và","lemma":"andare","pos":"VERB"}}}],"frequency":1}
+{"id":62479,"atoms":[{"Tok":{"text":"và","word_type":{"type":"Heteronym","word":"và","lemma":"andare","pos":"VERB"}}}],"frequency":1}
+{"id":62480,"atoms":[{"Tok":{"text":"frenando","word_type":{"type":"Heteronym","word":"frenando","lemma":"frenare","pos":"VERB"}}}],"frequency":1}
 {"id":62481,"atoms":[{"Tok":{"text":"tipiche","word_type":{"type":"Heteronym","word":"tipiche","lemma":"tipico","pos":"ADJ"}}}],"frequency":1}
 {"id":62482,"atoms":[{"Tok":{"text":"seccature","word_type":{"type":"Heteronym","word":"seccature","lemma":"seccatura","pos":"NOUN"}}}],"frequency":1}
 {"id":62483,"atoms":[{"Tok":{"text":"combattè","word_type":{"type":"Heteronym","word":"combattè","lemma":"combattere","pos":"VERB"}}}],"frequency":1}
@@ -63290,8 +63290,8 @@
 {"id":63289,"atoms":[{"Tok":{"text":"aggancialo","word_type":{"type":"Heteronym","word":"aggancialo","lemma":"agganciare lo","pos":"VERB"}}}],"frequency":1}
 {"id":63290,"atoms":[{"Tok":{"text":"risorgi","word_type":{"type":"Heteronym","word":"risorgi","lemma":"risorgere","pos":"VERB"}}}],"frequency":1}
 {"id":63291,"atoms":[{"Tok":{"text":"arredò","word_type":{"type":"Heteronym","word":"arredò","lemma":"arredare","pos":"VERB"}}}],"frequency":1}
-{"id":63292,"atoms":[{"Tok":{"text":"kerosene","word_type":{"type":"Heteronym","word":"kerosene","lemma":"kerosene","pos":"NOUN"}}}],"frequency":1}
-{"id":63293,"atoms":[{"Tok":{"text":"repubblicano","word_type":{"type":"Heteronym","word":"repubblicano","lemma":"repubblicano","pos":"NOUN"}}}],"frequency":1}
+{"id":63292,"atoms":[{"Tok":{"text":"repubblicano","word_type":{"type":"Heteronym","word":"repubblicano","lemma":"repubblicano","pos":"NOUN"}}}],"frequency":1}
+{"id":63293,"atoms":[{"Tok":{"text":"kerosene","word_type":{"type":"Heteronym","word":"kerosene","lemma":"kerosene","pos":"NOUN"}}}],"frequency":1}
 {"id":63294,"atoms":[{"Tok":{"text":"Lusignano","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":63295,"atoms":[{"Tok":{"text":"applauso","word_type":{"type":"Heteronym","word":"applauso","lemma":"applauso","pos":"INTJ"}}}],"frequency":1}
 {"id":63296,"atoms":[{"Tok":{"text":"equamente","word_type":{"type":"Heteronym","word":"equamente","lemma":"equamente","pos":"ADV"}}}],"frequency":1}
@@ -63564,8 +63564,8 @@
 {"id":63563,"atoms":[{"Tok":{"text":"impiegata","word_type":{"type":"Heteronym","word":"impiegata","lemma":"impiegare","pos":"VERB"}}}],"frequency":1}
 {"id":63564,"atoms":[{"Tok":{"text":"me","word_type":{"type":"Heteronym","word":"me","lemma":"i","pos":"PRON"}}}],"frequency":1}
 {"id":63565,"atoms":[{"Tok":{"text":"Ii","word_type":{"type":"Heteronym","word":"ii","lemma":"il","pos":"DET"}}}],"frequency":1}
-{"id":63566,"atoms":[{"Tok":{"text":"dirigi","word_type":{"type":"Heteronym","word":"dirigi","lemma":"dirigere","pos":"VERB"}}}],"frequency":1}
-{"id":63567,"atoms":[{"Tok":{"text":"passeggere","word_type":{"type":"Heteronym","word":"passeggere","lemma":"passeggero","pos":"NOUN"}}}],"frequency":1}
+{"id":63566,"atoms":[{"Tok":{"text":"passeggere","word_type":{"type":"Heteronym","word":"passeggere","lemma":"passeggero","pos":"NOUN"}}}],"frequency":1}
+{"id":63567,"atoms":[{"Tok":{"text":"dirigi","word_type":{"type":"Heteronym","word":"dirigi","lemma":"dirigere","pos":"VERB"}}}],"frequency":1}
 {"id":63568,"atoms":[{"Tok":{"text":"tritoni","word_type":{"type":"Heteronym","word":"tritoni","lemma":"tritone","pos":"NOUN"}}}],"frequency":1}
 {"id":63569,"atoms":[{"Tok":{"text":"z","word_type":{"type":"Heteronym","word":"z","lemma":"z","pos":"NOUN"}}}],"frequency":1}
 {"id":63570,"atoms":[{"Tok":{"text":"mondani","word_type":{"type":"Heteronym","word":"mondani","lemma":"mondano","pos":"NOUN"}}}],"frequency":1}
@@ -64221,10 +64221,10 @@
 {"id":64220,"atoms":[{"Tok":{"text":"impossessò","word_type":{"type":"Heteronym","word":"impossessò","lemma":"impossessare","pos":"VERB"}}}],"frequency":1}
 {"id":64221,"atoms":[{"Tok":{"text":"hang","word_type":{"type":"Heteronym","word":"hang","lemma":"hang","pos":"VERB"}}}],"frequency":1}
 {"id":64222,"atoms":[{"Tok":{"text":"Quattro Pale","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":64223,"atoms":[{"Tok":{"text":"schiacciata","word_type":{"type":"Heteronym","word":"schiacciata","lemma":"schiacciato","pos":"ADJ"}}}],"frequency":1}
+{"id":64223,"atoms":[{"Tok":{"text":"maledettamente","word_type":{"type":"Heteronym","word":"maledettamente","lemma":"maledettamente","pos":"ADV"}}}],"frequency":1}
 {"id":64224,"atoms":[{"Tok":{"text":"tastare","word_type":{"type":"Heteronym","word":"tastare","lemma":"tastare","pos":"VERB"}}}],"frequency":1}
-{"id":64225,"atoms":[{"Tok":{"text":"maledettamente","word_type":{"type":"Heteronym","word":"maledettamente","lemma":"maledettamente","pos":"ADV"}}}],"frequency":1}
-{"id":64226,"atoms":[{"Tok":{"text":"riorganizzazione","word_type":{"type":"Heteronym","word":"riorganizzazione","lemma":"riorganizzazione","pos":"NOUN"}}}],"frequency":1}
+{"id":64225,"atoms":[{"Tok":{"text":"riorganizzazione","word_type":{"type":"Heteronym","word":"riorganizzazione","lemma":"riorganizzazione","pos":"NOUN"}}}],"frequency":1}
+{"id":64226,"atoms":[{"Tok":{"text":"schiacciata","word_type":{"type":"Heteronym","word":"schiacciata","lemma":"schiacciato","pos":"ADJ"}}}],"frequency":1}
 {"id":64227,"atoms":[{"Tok":{"text":"narrativo","word_type":{"type":"Heteronym","word":"narrativo","lemma":"narrativo","pos":"ADJ"}}}],"frequency":1}
 {"id":64228,"atoms":[{"Tok":{"text":"opta","word_type":{"type":"Heteronym","word":"opta","lemma":"optare","pos":"VERB"}}}],"frequency":1}
 {"id":64229,"atoms":[{"Tok":{"text":"Akazienstrasse","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -64296,9 +64296,9 @@
 {"id":64295,"atoms":[{"Tok":{"text":"contiuare","word_type":{"type":"Heteronym","word":"contiuare","lemma":"continuare","pos":"VERB"}}}],"frequency":1}
 {"id":64296,"atoms":[{"Tok":{"text":"autorizzate","word_type":{"type":"Heteronym","word":"autorizzate","lemma":"autorizzare","pos":"VERB"}}}],"frequency":1}
 {"id":64297,"atoms":[{"Tok":{"text":"morore","word_type":{"type":"Heteronym","word":"morore","lemma":"morore","pos":"NOUN"}}}],"frequency":1}
-{"id":64298,"atoms":[{"Tok":{"text":"distribuirne","word_type":{"type":"Heteronym","word":"distribuirne","lemma":"distribuire ne","pos":"VERB"}}}],"frequency":1}
+{"id":64298,"atoms":[{"Tok":{"text":"svolti","word_type":{"type":"Heteronym","word":"svolti","lemma":"svoltare","pos":"VERB"}}}],"frequency":1}
 {"id":64299,"atoms":[{"Tok":{"text":"órale","word_type":{"type":"Heteronym","word":"órale","lemma":"órale","pos":"INTJ"}}}],"frequency":1}
-{"id":64300,"atoms":[{"Tok":{"text":"svolti","word_type":{"type":"Heteronym","word":"svolti","lemma":"svoltare","pos":"VERB"}}}],"frequency":1}
+{"id":64300,"atoms":[{"Tok":{"text":"distribuirne","word_type":{"type":"Heteronym","word":"distribuirne","lemma":"distribuire ne","pos":"VERB"}}}],"frequency":1}
 {"id":64301,"atoms":[{"Tok":{"text":"sospendete","word_type":{"type":"Heteronym","word":"sospendete","lemma":"sospendere","pos":"VERB"}}}],"frequency":1}
 {"id":64302,"atoms":[{"Tok":{"text":"Mendola","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":64303,"atoms":[{"Tok":{"text":"importati","word_type":{"type":"Heteronym","word":"importati","lemma":"importare","pos":"VERB"}}}],"frequency":1}
@@ -65207,10 +65207,10 @@
 {"id":65206,"atoms":[{"Tok":{"text":"economy","word_type":{"type":"Heteronym","word":"economy","lemma":"economy","pos":"NOUN"}}}],"frequency":1}
 {"id":65207,"atoms":[{"Tok":{"text":"Milady","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":65208,"atoms":[{"Tok":{"text":"Luis Alberto","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":65209,"atoms":[{"Tok":{"text":"sgretolarsi","word_type":{"type":"Heteronym","word":"sgretolarsi","lemma":"sgretolare si","pos":"VERB"}}}],"frequency":1}
-{"id":65210,"atoms":[{"Tok":{"text":"alloestesia","word_type":{"type":"Heteronym","word":"alloestesia","lemma":"alloestesia","pos":"NOUN"}}}],"frequency":1}
+{"id":65209,"atoms":[{"Tok":{"text":"notta","word_type":{"type":"Heteronym","word":"notta","lemma":"notta","pos":"NOUN"}}}],"frequency":1}
+{"id":65210,"atoms":[{"Tok":{"text":"sgretolarsi","word_type":{"type":"Heteronym","word":"sgretolarsi","lemma":"sgretolare si","pos":"VERB"}}}],"frequency":1}
 {"id":65211,"atoms":[{"Tok":{"text":"Beypilic","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":65212,"atoms":[{"Tok":{"text":"notta","word_type":{"type":"Heteronym","word":"notta","lemma":"notta","pos":"NOUN"}}}],"frequency":1}
+{"id":65212,"atoms":[{"Tok":{"text":"alloestesia","word_type":{"type":"Heteronym","word":"alloestesia","lemma":"alloestesia","pos":"NOUN"}}}],"frequency":1}
 {"id":65213,"atoms":[{"Tok":{"text":"incorreggibili","word_type":{"type":"Heteronym","word":"incorreggibili","lemma":"incorreggibile","pos":"ADJ"}}}],"frequency":1}
 {"id":65214,"atoms":[{"Tok":{"text":"galleggiamo","word_type":{"type":"Heteronym","word":"galleggiamo","lemma":"galleggiare","pos":"VERB"}}}],"frequency":1}
 {"id":65215,"atoms":[{"Tok":{"text":"stupirsi","word_type":{"type":"Heteronym","word":"stupirsi","lemma":"stupirsi","pos":"VERB"}}}],"frequency":1}
@@ -65249,8 +65249,8 @@
 {"id":65248,"atoms":[{"Tok":{"text":"carciofo","word_type":{"type":"Heteronym","word":"carciofo","lemma":"carciofo","pos":"NOUN"}}}],"frequency":1}
 {"id":65249,"atoms":[{"Tok":{"text":"razzisti","word_type":{"type":"Heteronym","word":"razzisti","lemma":"razzista","pos":"ADJ"}}}],"frequency":1}
 {"id":65250,"atoms":[{"Tok":{"text":"USCIRNE","word_type":{"type":"Heteronym","word":"uscirne","lemma":"uscire ne","pos":"VERB"}}}],"frequency":1}
-{"id":65251,"atoms":[{"Tok":{"text":"avvertirete","word_type":{"type":"Heteronym","word":"avvertirete","lemma":"avvertire","pos":"VERB"}}}],"frequency":1}
-{"id":65252,"atoms":[{"Tok":{"text":"Weiss","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":65251,"atoms":[{"Tok":{"text":"Weiss","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":65252,"atoms":[{"Tok":{"text":"avvertirete","word_type":{"type":"Heteronym","word":"avvertirete","lemma":"avvertire","pos":"VERB"}}}],"frequency":1}
 {"id":65253,"atoms":[{"Tok":{"text":"rinsavire","word_type":{"type":"Heteronym","word":"rinsavire","lemma":"rinsavire","pos":"VERB"}}}],"frequency":1}
 {"id":65254,"atoms":[{"Tok":{"text":"Nell","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":65255,"atoms":[{"Tok":{"text":"cacao","word_type":{"type":"Heteronym","word":"cacao","lemma":"cacao","pos":"NOUN"}}}],"frequency":1}
@@ -65987,8 +65987,8 @@
 {"id":65986,"atoms":[{"Tok":{"text":"won","word_type":{"type":"Heteronym","word":"won","lemma":"won","pos":"AUX"}}}],"frequency":1}
 {"id":65987,"atoms":[{"Tok":{"text":"predisposto","word_type":{"type":"Heteronym","word":"predisposto","lemma":"predisposto","pos":"ADJ"}}}],"frequency":1}
 {"id":65988,"atoms":[{"Tok":{"text":"Uighur","word_type":{"type":"Heteronym","word":"uighur","lemma":"uighur","pos":"ADJ"}}}],"frequency":1}
-{"id":65989,"atoms":[{"Tok":{"text":"forriri","word_type":{"type":"Heteronym","word":"forriri","lemma":"forrire","pos":"VERB"}}}],"frequency":1}
-{"id":65990,"atoms":[{"Tok":{"text":"promotori","word_type":{"type":"Heteronym","word":"promotori","lemma":"promotore","pos":"NOUN"}}}],"frequency":1}
+{"id":65989,"atoms":[{"Tok":{"text":"promotori","word_type":{"type":"Heteronym","word":"promotori","lemma":"promotore","pos":"NOUN"}}}],"frequency":1}
+{"id":65990,"atoms":[{"Tok":{"text":"forriri","word_type":{"type":"Heteronym","word":"forriri","lemma":"forrire","pos":"VERB"}}}],"frequency":1}
 {"id":65991,"atoms":[{"Tok":{"text":"demoniaco","word_type":{"type":"Heteronym","word":"demoniaco","lemma":"demoniaco","pos":"ADJ"}}}],"frequency":1}
 {"id":65992,"atoms":[{"Tok":{"text":"deciderebbe","word_type":{"type":"Heteronym","word":"deciderebbe","lemma":"decidere","pos":"VERB"}}}],"frequency":1}
 {"id":65993,"atoms":[{"Tok":{"text":"vandalizzò","word_type":{"type":"Heteronym","word":"vandalizzò","lemma":"vandalizzare","pos":"VERB"}}}],"frequency":1}
@@ -66169,8 +66169,8 @@
 {"id":66168,"atoms":[{"Tok":{"text":"trovasse","word_type":{"type":"Heteronym","word":"trovasse","lemma":"trovare","pos":"VERB"}}}],"frequency":1}
 {"id":66169,"atoms":[{"Tok":{"text":"risparmiala","word_type":{"type":"Heteronym","word":"risparmiala","lemma":"risparmiare","pos":"VERB"}}}],"frequency":1}
 {"id":66170,"atoms":[{"Tok":{"text":"ouano","word_type":{"type":"Heteronym","word":"ouano","lemma":"ouano","pos":"NOUN"}}}],"frequency":1}
-{"id":66171,"atoms":[{"Tok":{"text":"NATO","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":66172,"atoms":[{"Tok":{"text":"radicati","word_type":{"type":"Heteronym","word":"radicati","lemma":"radicato","pos":"ADJ"}}}],"frequency":1}
+{"id":66171,"atoms":[{"Tok":{"text":"radicati","word_type":{"type":"Heteronym","word":"radicati","lemma":"radicato","pos":"ADJ"}}}],"frequency":1}
+{"id":66172,"atoms":[{"Tok":{"text":"NATO","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":66173,"atoms":[{"Tok":{"text":"subentrano","word_type":{"type":"Heteronym","word":"subentrano","lemma":"subentrare","pos":"VERB"}}}],"frequency":1}
 {"id":66174,"atoms":[{"Tok":{"text":"camice","word_type":{"type":"Heteronym","word":"camice","lemma":"camice","pos":"NOUN"}}}],"frequency":1}
 {"id":66175,"atoms":[{"Tok":{"text":"tentasse","word_type":{"type":"Heteronym","word":"tentasse","lemma":"tentare","pos":"VERB"}}}],"frequency":1}
@@ -66838,9 +66838,9 @@
 {"id":66837,"atoms":[{"Tok":{"text":"dopo","word_type":{"type":"Heteronym","word":"dopo","lemma":"dopo","pos":"NOUN"}}}],"frequency":1}
 {"id":66838,"atoms":[{"Tok":{"text":"pianificano","word_type":{"type":"Heteronym","word":"pianificano","lemma":"pianificare","pos":"VERB"}}}],"frequency":1}
 {"id":66839,"atoms":[{"Tok":{"text":"accusare","word_type":{"type":"Heteronym","word":"accusare","lemma":"accusare","pos":"VERB"}}}],"frequency":1}
-{"id":66840,"atoms":[{"Tok":{"text":"anfe","word_type":{"type":"Heteronym","word":"anfe","lemma":"anfe","pos":"ADV"}}}],"frequency":1}
-{"id":66841,"atoms":[{"Tok":{"text":"fellone","word_type":{"type":"Heteronym","word":"fellone","lemma":"fellone","pos":"NOUN"}}}],"frequency":1}
-{"id":66842,"atoms":[{"Tok":{"text":"coccolati","word_type":{"type":"Heteronym","word":"coccolati","lemma":"coccolare","pos":"VERB"}}}],"frequency":1}
+{"id":66840,"atoms":[{"Tok":{"text":"fellone","word_type":{"type":"Heteronym","word":"fellone","lemma":"fellone","pos":"NOUN"}}}],"frequency":1}
+{"id":66841,"atoms":[{"Tok":{"text":"coccolati","word_type":{"type":"Heteronym","word":"coccolati","lemma":"coccolare","pos":"VERB"}}}],"frequency":1}
+{"id":66842,"atoms":[{"Tok":{"text":"anfe","word_type":{"type":"Heteronym","word":"anfe","lemma":"anfe","pos":"ADV"}}}],"frequency":1}
 {"id":66843,"atoms":[{"Tok":{"text":"seppellirla","word_type":{"type":"Heteronym","word":"seppellirla","lemma":"seppellire la","pos":"VERB"}}}],"frequency":1}
 {"id":66844,"atoms":[{"Tok":{"text":"vedendoci","word_type":{"type":"Heteronym","word":"vedendoci","lemma":"vedere ci","pos":"VERB"}}}],"frequency":1}
 {"id":66845,"atoms":[{"Tok":{"text":"ru","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
@@ -68000,8 +68000,8 @@
 {"id":67999,"atoms":[{"Tok":{"text":"Bon","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":68000,"atoms":[{"Tok":{"text":"chiamaci","word_type":{"type":"Heteronym","word":"chiamaci","lemma":"chiamare ci","pos":"VERB"}}}],"frequency":1}
 {"id":68001,"atoms":[{"Tok":{"text":"Babbani","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":68002,"atoms":[{"Tok":{"text":"Tuktirey","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":68003,"atoms":[{"Tok":{"text":"sottoproletario","word_type":{"type":"Heteronym","word":"sottoproletario","lemma":"sottoproletario","pos":"NOUN"}}}],"frequency":1}
+{"id":68002,"atoms":[{"Tok":{"text":"sottoproletario","word_type":{"type":"Heteronym","word":"sottoproletario","lemma":"sottoproletario","pos":"NOUN"}}}],"frequency":1}
+{"id":68003,"atoms":[{"Tok":{"text":"Tuktirey","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":68004,"atoms":[{"Tok":{"text":"giovamento","word_type":{"type":"Heteronym","word":"giovamento","lemma":"giovamento","pos":"NOUN"}}}],"frequency":1}
 {"id":68005,"atoms":[{"Tok":{"text":"bolle","word_type":{"type":"Heteronym","word":"bolle","lemma":"bollere","pos":"VERB"}}}],"frequency":1}
 {"id":68006,"atoms":[{"Tok":{"text":"esagerammo","word_type":{"type":"Heteronym","word":"esagerammo","lemma":"esagerare","pos":"VERB"}}}],"frequency":1}
@@ -68229,8 +68229,8 @@
 {"id":68228,"atoms":[{"Tok":{"text":"i","word_type":{"type":"Heteronym","word":"i","lemma":"i","pos":"PRON"}}}],"frequency":1}
 {"id":68229,"atoms":[{"Tok":{"text":"orgasmo","word_type":{"type":"Heteronym","word":"orgasmo","lemma":"orgasmo","pos":"NOUN"}}}],"frequency":1}
 {"id":68230,"atoms":[{"Tok":{"text":"Lombardo","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":68231,"atoms":[{"Tok":{"text":"richiamarti","word_type":{"type":"Heteronym","word":"richiamarti","lemma":"richiamare","pos":"VERB"}}}],"frequency":1}
-{"id":68232,"atoms":[{"Tok":{"text":"inchiodato","word_type":{"type":"Heteronym","word":"inchiodato","lemma":"inchiodato","pos":"ADJ"}}}],"frequency":1}
+{"id":68231,"atoms":[{"Tok":{"text":"inchiodato","word_type":{"type":"Heteronym","word":"inchiodato","lemma":"inchiodato","pos":"ADJ"}}}],"frequency":1}
+{"id":68232,"atoms":[{"Tok":{"text":"richiamarti","word_type":{"type":"Heteronym","word":"richiamarti","lemma":"richiamare","pos":"VERB"}}}],"frequency":1}
 {"id":68233,"atoms":[{"Tok":{"text":"riposini","word_type":{"type":"Heteronym","word":"riposini","lemma":"riposino","pos":"NOUN"}}}],"frequency":1}
 {"id":68234,"atoms":[{"Tok":{"text":"Caetano","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":68235,"atoms":[{"Tok":{"text":"calmante","word_type":{"type":"Heteronym","word":"calmante","lemma":"calmante","pos":"NOUN"}}}],"frequency":1}
@@ -69082,8 +69082,8 @@
 {"id":69081,"atoms":[{"Tok":{"text":"eve","word_type":{"type":"Heteronym","word":"eve","lemma":"avere","pos":"AUX"}}}],"frequency":1}
 {"id":69082,"atoms":[{"Tok":{"text":"scaldarlo","word_type":{"type":"Heteronym","word":"scaldarlo","lemma":"scaldare lo","pos":"VERB"}}}],"frequency":1}
 {"id":69083,"atoms":[{"Tok":{"text":"bullizzava","word_type":{"type":"Heteronym","word":"bullizzava","lemma":"bullizzare","pos":"VERB"}}}],"frequency":1}
-{"id":69084,"atoms":[{"Tok":{"text":"crescete","word_type":{"type":"Heteronym","word":"crescete","lemma":"crescere","pos":"VERB"}}}],"frequency":1}
-{"id":69085,"atoms":[{"Tok":{"text":"dipingervi","word_type":{"type":"Heteronym","word":"dipingervi","lemma":"dipingere","pos":"VERB"}}}],"frequency":1}
+{"id":69084,"atoms":[{"Tok":{"text":"dipingervi","word_type":{"type":"Heteronym","word":"dipingervi","lemma":"dipingere","pos":"VERB"}}}],"frequency":1}
+{"id":69085,"atoms":[{"Tok":{"text":"crescete","word_type":{"type":"Heteronym","word":"crescete","lemma":"crescere","pos":"VERB"}}}],"frequency":1}
 {"id":69086,"atoms":[{"Tok":{"text":"cacciatelo","word_type":{"type":"Heteronym","word":"cacciatelo","lemma":"cacciare","pos":"VERB"}}}],"frequency":1}
 {"id":69087,"atoms":[{"Tok":{"text":"giungerete","word_type":{"type":"Heteronym","word":"giungerete","lemma":"giungere","pos":"VERB"}}}],"frequency":1}
 {"id":69088,"atoms":[{"Tok":{"text":"zsto","word_type":{"type":"Heteronym","word":"zsto","lemma":"zsto","pos":"VERB"}}}],"frequency":1}
@@ -69602,8 +69602,8 @@
 {"id":69601,"atoms":[{"Tok":{"text":"mochi","word_type":{"type":"Heteronym","word":"mochi","lemma":"mochi","pos":"NOUN"}}}],"frequency":1}
 {"id":69602,"atoms":[{"Tok":{"text":"qul","word_type":{"type":"Heteronym","word":"qul","lemma":"quello","pos":"DET"}}}],"frequency":1}
 {"id":69603,"atoms":[{"Tok":{"text":"soy","word_type":{"type":"Heteronym","word":"soy","lemma":"essere","pos":"AUX"}}}],"frequency":1}
-{"id":69604,"atoms":[{"Tok":{"text":"sacerdoti","word_type":{"type":"Heteronym","word":"sacerdoti","lemma":"sacerdote","pos":"NOUN"}}}],"frequency":1}
-{"id":69605,"atoms":[{"Tok":{"text":"Jang Kyung-chul","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":69604,"atoms":[{"Tok":{"text":"Jang Kyung-chul","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
+{"id":69605,"atoms":[{"Tok":{"text":"sacerdoti","word_type":{"type":"Heteronym","word":"sacerdoti","lemma":"sacerdote","pos":"NOUN"}}}],"frequency":1}
 {"id":69606,"atoms":[{"Tok":{"text":"brand","word_type":{"type":"Heteronym","word":"brand","lemma":"brand","pos":"NOUN"}}}],"frequency":1}
 {"id":69607,"atoms":[{"Tok":{"text":"complichiamo","word_type":{"type":"Heteronym","word":"complichiamo","lemma":"complicare","pos":"VERB"}}}],"frequency":1}
 {"id":69608,"atoms":[{"Tok":{"text":"matureranno","word_type":{"type":"Heteronym","word":"matureranno","lemma":"maturare","pos":"VERB"}}}],"frequency":1}
@@ -70583,8 +70583,8 @@
 {"id":70582,"atoms":[{"Tok":{"text":"derby","word_type":{"type":"Heteronym","word":"derby","lemma":"derby","pos":"NOUN"}}}],"frequency":1}
 {"id":70583,"atoms":[{"Tok":{"text":"afare","word_type":{"type":"Heteronym","word":"afare","lemma":"affare","pos":"VERB"}}}],"frequency":1}
 {"id":70584,"atoms":[{"Tok":{"text":"gazzella","word_type":{"type":"Heteronym","word":"gazzella","lemma":"gazzella","pos":"NOUN"}}}],"frequency":1}
-{"id":70585,"atoms":[{"Tok":{"text":"Marionette","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
-{"id":70586,"atoms":[{"Tok":{"text":"razionò","word_type":{"type":"Heteronym","word":"razionò","lemma":"razionare","pos":"VERB"}}}],"frequency":1}
+{"id":70585,"atoms":[{"Tok":{"text":"razionò","word_type":{"type":"Heteronym","word":"razionò","lemma":"razionare","pos":"VERB"}}}],"frequency":1}
+{"id":70586,"atoms":[{"Tok":{"text":"Marionette","word_type":{"type":"Other","other_tag":"PROPN"}}}],"frequency":1}
 {"id":70587,"atoms":[{"Tok":{"text":"diverrà","word_type":{"type":"Heteronym","word":"diverrà","lemma":"diventare","pos":"VERB"}}}],"frequency":1}
 {"id":70588,"atoms":[{"Tok":{"text":"genocidio","word_type":{"type":"Heteronym","word":"genocidio","lemma":"genocidio","pos":"NOUN"}}}],"frequency":1}
 {"id":70589,"atoms":[{"Tok":{"text":"restituirli","word_type":{"type":"Heteronym","word":"restituirli","lemma":"restituire li","pos":"VERB"}}}],"frequency":1}
@@ -70932,8 +70932,8 @@
 {"id":70931,"atoms":[{"Tok":{"text":"stigmatizzati","word_type":{"type":"Heteronym","word":"stigmatizzati","lemma":"stigmatizzare","pos":"VERB"}}}],"frequency":1}
 {"id":70932,"atoms":[{"Tok":{"text":"questanave","word_type":{"type":"Heteronym","word":"questanave","lemma":"questanave","pos":"NOUN"}}}],"frequency":1}
 {"id":70933,"atoms":[{"Tok":{"text":"saprebbero","word_type":{"type":"Heteronym","word":"saprebbero","lemma":"sapere","pos":"AUX"}}}],"frequency":1}
-{"id":70934,"atoms":[{"Tok":{"text":"fuggitore","word_type":{"type":"Heteronym","word":"fuggitore","lemma":"fuggitore","pos":"NOUN"}}}],"frequency":1}
-{"id":70935,"atoms":[{"Tok":{"text":"perfarti","word_type":{"type":"Heteronym","word":"perfarti","lemma":"perfarti","pos":"ADV"}}}],"frequency":1}
+{"id":70934,"atoms":[{"Tok":{"text":"perfarti","word_type":{"type":"Heteronym","word":"perfarti","lemma":"perfarti","pos":"ADV"}}}],"frequency":1}
+{"id":70935,"atoms":[{"Tok":{"text":"fuggitore","word_type":{"type":"Heteronym","word":"fuggitore","lemma":"fuggitore","pos":"NOUN"}}}],"frequency":1}
 {"id":70936,"atoms":[{"Tok":{"text":"sostantivi","word_type":{"type":"Heteronym","word":"sostantivi","lemma":"sostantivo","pos":"NOUN"}}}],"frequency":1}
 {"id":70937,"atoms":[{"Tok":{"text":"autogoverno","word_type":{"type":"Heteronym","word":"autogoverno","lemma":"autogoverno","pos":"NOUN"}}}],"frequency":1}
 {"id":70938,"atoms":[{"Tok":{"text":"lASCIA","word_type":{"type":"Heteronym","word":"lascia","lemma":"lasciare","pos":"VERB"}}}],"frequency":1}
@@ -76088,8 +76088,8 @@
 {"id":76087,"atoms":[{"Tok":{"text":"rompere","word_type":{"type":"Heteronym","word":"rompere","lemma":"rompere","pos":"VERB"}}},{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"minchia","word_type":{"type":"Heteronym","word":"minchia","lemma":"minchia","pos":"NOUN"}}}],"frequency":0}
 {"id":76088,"atoms":[{"Tok":{"text":"farsi","word_type":{"type":"Heteronym","word":"farsi","lemma":"fare si","pos":"VERB"}}},{"Tok":{"text":"strada","word_type":{"type":"Heteronym","word":"strada","lemma":"strada","pos":"NOUN"}}}],"frequency":0}
 {"id":76089,"atoms":[{"Tok":{"text":"funzionale","word_type":{"type":"Heteronym","word":"funzionale","lemma":"funzionale","pos":"NOUN"}}},{"Tok":{"text":"lineare","word_type":{"type":"Heteronym","word":"lineare","lemma":"lineare","pos":"ADJ"}}}],"frequency":0}
-{"id":76090,"atoms":[{"Tok":{"text":"cera","word_type":{"type":"Heteronym","word":"cera","lemma":"cera","pos":"NOUN"}}},{"Tok":{"text":"perduta","word_type":{"type":"Heteronym","word":"perduta","lemma":"perduto","pos":"ADJ"}}}],"frequency":0}
-{"id":76091,"atoms":[{"Tok":{"text":"sardo","word_type":{"type":"Heteronym","word":"sardo","lemma":"sordo","pos":"ADJ"}}},{"Tok":{"text":"campidanese","word_type":{"type":"Heteronym","word":"campidanese","lemma":"campidanese","pos":"ADJ"}}}],"frequency":0}
+{"id":76090,"atoms":[{"Tok":{"text":"sardo","word_type":{"type":"Heteronym","word":"sardo","lemma":"sordo","pos":"ADJ"}}},{"Tok":{"text":"campidanese","word_type":{"type":"Heteronym","word":"campidanese","lemma":"campidanese","pos":"ADJ"}}}],"frequency":0}
+{"id":76091,"atoms":[{"Tok":{"text":"cera","word_type":{"type":"Heteronym","word":"cera","lemma":"cera","pos":"NOUN"}}},{"Tok":{"text":"perduta","word_type":{"type":"Heteronym","word":"perduta","lemma":"perduto","pos":"ADJ"}}}],"frequency":0}
 {"id":76092,"atoms":[{"Tok":{"text":"acqua","word_type":{"type":"Heteronym","word":"acqua","lemma":"acqua","pos":"NOUN"}}},{"Tok":{"text":"-","word_type":{"type":"Other","other_tag":"PUNCT"}}},{"Tok":{"text":"acqua","word_type":{"type":"Heteronym","word":"acqua","lemma":"acqua","pos":"NOUN"}}}],"frequency":0}
 {"id":76093,"atoms":[{"Tok":{"text":"fissione","word_type":{"type":"Heteronym","word":"fissione","lemma":"fissione","pos":"NOUN"}}},{"Tok":{"text":"atomica","word_type":{"type":"Heteronym","word":"atomica","lemma":"atomico","pos":"ADJ"}}}],"frequency":0}
 {"id":76094,"atoms":[{"Tok":{"text":"dovuto","word_type":{"type":"Heteronym","word":"dovuto","lemma":"dovere","pos":"VERB"}}},{"Tok":{"text":"partecipare","word_type":{"type":"Heteronym","word":"partecipare","lemma":"partecipare","pos":"VERB"}}},{"Tok":{"text":"alla","word_type":{"type":"Heteronym","word":"alla","lemma":"a il","pos":"ADP"}}},{"Tok":{"text":"riunione","word_type":{"type":"Heteronym","word":"riunione","lemma":"riunione","pos":"NOUN"}}}],"frequency":0}
@@ -77158,8 +77158,8 @@
 {"id":77157,"atoms":[{"Tok":{"text":"entrare","word_type":{"type":"Heteronym","word":"entrare","lemma":"entrare","pos":"VERB"}}},{"Tok":{"text":"nel","word_type":{"type":"Heteronym","word":"nel","lemma":"in il","pos":"ADP"}}},{"Tok":{"text":"vivo","word_type":{"type":"Heteronym","word":"vivo","lemma":"vivo","pos":"NOUN"}}}],"frequency":0}
 {"id":77158,"atoms":[{"Tok":{"text":"siete","word_type":{"type":"Heteronym","word":"siete","lemma":"essere","pos":"AUX"}}},{"Tok":{"text":"favorevoli","word_type":{"type":"Heteronym","word":"favorevoli","lemma":"favorevole","pos":"ADJ"}}},{"Tok":{"text":"o","word_type":{"type":"Heteronym","word":"o","lemma":"o","pos":"CCONJ"}}}],"frequency":0}
 {"id":77159,"atoms":[{"Tok":{"text":"100","word_type":{"type":"Heteronym","word":"100","lemma":"100","pos":"NUM"}}},{"Tok":{"text":"metri","word_type":{"type":"Heteronym","word":"metri","lemma":"metro","pos":"NOUN"}}}],"frequency":0}
-{"id":77160,"atoms":[{"Tok":{"text":"sguardo","word_type":{"type":"Heteronym","word":"sguardo","lemma":"sguardo","pos":"NOUN"}}},{"Tok":{"text":"vitreo","word_type":{"type":"Heteronym","word":"vitreo","lemma":"vitreo","pos":"ADJ"}}}],"frequency":0}
-{"id":77161,"atoms":[{"Tok":{"text":"avere","word_type":{"type":"Heteronym","word":"avere","lemma":"avere","pos":"VERB"}}},{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"puzza","word_type":{"type":"Heteronym","word":"puzza","lemma":"puzza","pos":"NOUN"}}},{"Tok":{"text":"sotto","word_type":{"type":"Heteronym","word":"sotto","lemma":"sotto","pos":"ADP"}}},{"Tok":{"text":"il","word_type":{"type":"Heteronym","word":"il","lemma":"il","pos":"DET"}}},{"Tok":{"text":"naso","word_type":{"type":"Heteronym","word":"naso","lemma":"naso","pos":"NOUN"}}}],"frequency":0}
+{"id":77160,"atoms":[{"Tok":{"text":"avere","word_type":{"type":"Heteronym","word":"avere","lemma":"avere","pos":"VERB"}}},{"Tok":{"text":"la","word_type":{"type":"Heteronym","word":"la","lemma":"il","pos":"DET"}}},{"Tok":{"text":"puzza","word_type":{"type":"Heteronym","word":"puzza","lemma":"puzza","pos":"NOUN"}}},{"Tok":{"text":"sotto","word_type":{"type":"Heteronym","word":"sotto","lemma":"sotto","pos":"ADP"}}},{"Tok":{"text":"il","word_type":{"type":"Heteronym","word":"il","lemma":"il","pos":"DET"}}},{"Tok":{"text":"naso","word_type":{"type":"Heteronym","word":"naso","lemma":"naso","pos":"NOUN"}}}],"frequency":0}
+{"id":77161,"atoms":[{"Tok":{"text":"sguardo","word_type":{"type":"Heteronym","word":"sguardo","lemma":"sguardo","pos":"NOUN"}}},{"Tok":{"text":"vitreo","word_type":{"type":"Heteronym","word":"vitreo","lemma":"vitreo","pos":"ADJ"}}}],"frequency":0}
 {"id":77162,"atoms":[{"Tok":{"text":"a","word_type":{"type":"Heteronym","word":"a","lemma":"a","pos":"ADP"}}},{"Tok":{"text":"tutto","word_type":{"type":"Heteronym","word":"tutto","lemma":"tutto","pos":"PRON"}}},{"Tok":{"text":"spiano","word_type":{"type":"Heteronym","word":"spiano","lemma":"spianare","pos":"VERB"}}}],"frequency":0}
 {"id":77163,"atoms":[{"Tok":{"text":"osso","word_type":{"type":"Heteronym","word":"osso","lemma":"osso","pos":"NOUN"}}},{"Tok":{"text":"trapezio","word_type":{"type":"Heteronym","word":"trapezio","lemma":"trapezio","pos":"NOUN"}}}],"frequency":0}
 {"id":77164,"atoms":[{"Tok":{"text":"deviazione","word_type":{"type":"Heteronym","word":"deviazione","lemma":"deviazione","pos":"NOUN"}}},{"Tok":{"text":"standard","word_type":{"type":"Heteronym","word":"standard","lemma":"standard","pos":"ADJ"}}}],"frequency":0}
