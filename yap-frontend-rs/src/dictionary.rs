@@ -28,7 +28,7 @@ impl Deck {
             .filter(|q| !q.trim().is_empty())
             .map(|q| remove_accents_lowercase(&q));
 
-        language_pack
+        let mut entries: Vec<((u8, usize), GramDictionaryEntry)> = language_pack
             .gram_frequencies
             .iter()
             .enumerate()
@@ -39,11 +39,14 @@ impl Deck {
                     .resolve(string_rodeo)
                     .to_display_string(target_language);
 
-                // Filter by search query if provided
-                if let Some(q) = &query {
-                    let matches_display =
-                        remove_accents_lowercase(&display_text).contains(q.as_str());
-                    let matches_definition = match gram_def {
+                // Filter by search query if provided, and compute relevance
+                // 0 = exact match, 1 = starts with, 2 = contains
+                let relevance = if let Some(q) = &query {
+                    let normalized_display = remove_accents_lowercase(&display_text);
+                    let display_exact = normalized_display == *q;
+                    let display_starts = normalized_display.starts_with(q.as_str());
+                    let display_contains = normalized_display.contains(q.as_str());
+                    let definition_contains = match gram_def {
                         GramDefinition::Dictionary(dict_def) => dict_def
                             .definitions
                             .iter()
@@ -52,10 +55,20 @@ impl Deck {
                             remove_accents_lowercase(&pb_def.meaning).contains(q.as_str())
                         }
                     };
-                    if !matches_display && !matches_definition {
+                    if !display_contains && !definition_contains {
                         return None;
                     }
-                }
+                    if display_exact {
+                        0
+                    } else if display_starts {
+                        1
+                    } else {
+                        2
+                    }
+                } else {
+                    // No query — all entries have equal relevance
+                    0
+                };
 
                 let card = CardIndicator::WrittenGram { gram: *spur_gram };
                 let is_in_deck = matches!(
@@ -63,7 +76,7 @@ impl Deck {
                     Some(CardStatus::Tracked(CardData::Added { .. }))
                 );
 
-                match gram_def {
+                let entry = match gram_def {
                     GramDefinition::Dictionary(dict_def) => {
                         // Extract heteronym from the single-atom gram for morphology/prefix lookup
                         let (prefix, morphology) = gram
@@ -84,7 +97,7 @@ impl Deck {
                             })
                             .unwrap_or((None, None));
 
-                        Some(GramDictionaryEntry {
+                        GramDictionaryEntry {
                             display_text,
                             frequency_index,
                             is_in_deck,
@@ -94,9 +107,9 @@ impl Deck {
                             definition: GramDictionaryDefinition::Dictionary {
                                 definitions: dict_def.definitions.clone(),
                             },
-                        })
+                        }
                     }
-                    GramDefinition::Phrasebook(pb_def) => Some(GramDictionaryEntry {
+                    GramDefinition::Phrasebook(pb_def) => GramDictionaryEntry {
                         display_text,
                         frequency_index,
                         is_in_deck,
@@ -110,11 +123,20 @@ impl Deck {
                             native_language_example: Some(pb_def.native_language_example.clone())
                                 .filter(|s| !s.is_empty()),
                         },
-                    }),
-                }
+                    },
+                };
+
+                Some(((relevance, frequency_index), entry))
             })
-            .take(limit)
-            .collect()
+            .collect();
+
+        if entries.len() > limit {
+            entries.select_nth_unstable_by_key(limit, |(key, _)| *key);
+            entries.truncate(limit);
+        }
+        entries.sort_by_key(|(key, _)| *key);
+
+        entries.into_iter().map(|(_, entry)| entry).collect()
     }
 
     /// Get the total number of gram dictionary entries (for "Showing X of Y" display)

@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2342882
-Total errors: 1265
+Total predictions: 2336050
+Total errors: 1258
 Accuracy: 99.95%
 
 ## Error Patterns (sorted by frequency)
 
-### "Komm" + "t" (105 occurrences)
+### "Komm" + "t" (104 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -1111,12 +1111,6 @@ Accuracy: 99.95%
 - Examples:
   - Wenn der Widerstand es erfährt - - deutsches Baby.
 
-### "-" + "do" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Most people -normal people- do just about anything to avoid a fight.
-
 ### "-" + "du" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1206,18 +1200,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Hände - hinter den Kopf!
-
-### "-" + "his" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - We gotta get rid of the evidence - his body!
-
-### "-" + "huh" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Uh- huh?
 
 ### "-" + "ich" (1 occurrences)
 - Predicted: None
@@ -3205,12 +3187,6 @@ Accuracy: 99.95%
 - Examples:
   - Okay, es … es ist mir egal, dass wir unterschiedlich sind.
 
-### "evidence" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - We gotta get rid of the evidence - his body!
-
 ### "f" + "/" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3487,12 +3463,6 @@ Accuracy: 99.95%
 - Examples:
   - Was heißt es, „klug“ zu sein?
 
-### "know" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You know -using steroids.
-
 ### "kostet" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3642,12 +3612,6 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - In ein paarTagen ist alles vergessen und Sie können wieder tanzen.
-
-### "people" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Most people -normal people- do just about anything to avoid a fight.
 
 ### "raus" + "-" (1 occurrences)
 - Predicted: None

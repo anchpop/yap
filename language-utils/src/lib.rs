@@ -2414,6 +2414,22 @@ impl Language {
         }
     }
 
+    pub fn from_iso_639_3(code: &str) -> Option<Self> {
+        Some(match code {
+            "fra" => Language::French,
+            "eng" => Language::English,
+            "spa" => Language::Spanish,
+            "kor" => Language::Korean,
+            "deu" => Language::German,
+            "zho" => Language::Chinese,
+            "jpn" => Language::Japanese,
+            "rus" => Language::Russian,
+            "por" => Language::Portuguese,
+            "ita" => Language::Italian,
+            _ => return None,
+        })
+    }
+
     pub fn iso_639_1(&self) -> &'static str {
         match self {
             Language::French => "fr",
@@ -2453,6 +2469,48 @@ impl Language {
                 | Language::Portuguese
                 | Language::Italian
         )
+    }
+
+    /// OpenSubtitles API language code (usually ISO 639-1, but pt-br for Portuguese)
+    pub fn opensubtitles_language_code(&self) -> &'static str {
+        match self {
+            Language::Portuguese => "pt-br",
+            other => other.iso_639_1(),
+        }
+    }
+
+    /// TMDB API language code (language-REGION format)
+    pub fn tmdb_language_code(&self) -> &'static str {
+        match self {
+            Language::French => "fr-FR",
+            Language::English => "en-US",
+            Language::Spanish => "es-ES",
+            Language::German => "de-DE",
+            Language::Korean => "ko-KR",
+            Language::Chinese => "zh-CN",
+            Language::Japanese => "ja-JP",
+            Language::Russian => "ru-RU",
+            Language::Portuguese => "pt-BR",
+            Language::Italian => "it-IT",
+        }
+    }
+
+    /// Words that should appear in virtually any movie's subtitles for this language.
+    /// Used as a sanity check to detect wrong-language subtitle files.
+    /// Returns a list of words where ALL must appear at least once (as whole words) in the subtitle text.
+    pub fn subtitle_sanity_words(&self) -> &'static [&'static str] {
+        match self {
+            Language::French => &["le", "de", "pas", "je"],
+            Language::English => &["the", "to", "you", "is"],
+            Language::Spanish => &["el", "de", "no", "que"],
+            Language::German => &["ich", "das", "nicht", "du"],
+            Language::Korean => &["이", "는", "을", "에"],
+            Language::Chinese => &["的", "了", "是", "不"],
+            Language::Japanese => &["の", "は", "を", "に"],
+            Language::Russian => &["не", "что", "на", "это"],
+            Language::Portuguese => &["que", "de", "não", "eu"],
+            Language::Italian => &["che", "di", "non", "il"],
+        }
     }
 }
 
@@ -2784,6 +2842,23 @@ pub fn first_letter_always_capitalized<S>(word: &Word<S>, language: Language) ->
     }
 }
 
+/// Lowercase the first letter of a word to match encoded gram form,
+/// but only if the word's capitalization isn't intrinsic (e.g. proper nouns,
+/// German nouns). Returns whether a change was made.
+pub fn normalize_word_capitalization_for_gram_matching(
+    word: &mut Word<String>,
+    language: Language,
+) -> bool {
+    if !first_letter_always_capitalized(word, language) {
+        let (lowercased, changed) = lowercase_first_letter(&word.text);
+        if changed {
+            word.text = lowercased;
+            return true;
+        }
+    }
+    false
+}
+
 /// Lowercase the first letter of a string, leaving the rest unchanged.
 /// Returns the modified string and whether a change was made.
 pub fn lowercase_first_letter(s: &str) -> (String, bool) {
@@ -2907,15 +2982,8 @@ pub fn literals_to_atoms(
     for (i, literal) in literals.iter().enumerate() {
         let mut word = literal.word.clone();
 
-        // Lowercase the first letter of the first word and track if we changed it,
-        // but only if the word's capitalization isn't intrinsic (e.g. proper nouns,
-        // German nouns which are always capitalized regardless of position).
-        if i == 0 && !first_letter_always_capitalized(&word, language) {
-            let (lowercased, changed) = lowercase_first_letter(&word.text);
-            if changed {
-                capitalize_first = true;
-                word.text = lowercased;
-            }
+        if i == 0 && normalize_word_capitalization_for_gram_matching(&mut word, language) {
+            capitalize_first = true;
         }
 
         // Emit the word token

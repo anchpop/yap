@@ -7,14 +7,14 @@ use crate::{
 };
 use lasso::Spur;
 use rustc_hash::FxHashMap;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 #[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub struct LanguagePack {
     pub string_rodeo: lasso::RodeoReader,
     pub gram_rodeo: lasso::RodeoReader<Gram<Spur>>,
     pub translations: FxHashMap<Spur, Vec<Spur>>,
-    pub words_to_heteronyms: FxHashMap<Spur, BTreeSet<Heteronym<Spur>>>,
+    pub words_to_heteronyms: FxHashMap<Spur, Vec<Heteronym<Spur>>>,
     pub total_word_count: u64,
     /// Per-movie gram frequencies indexed by movie ID
     pub movie_gram_frequencies: FxHashMap<String, IndexMap<SpurGram, Frequency>>,
@@ -155,23 +155,33 @@ impl LanguagePack {
                 .collect()
         };
 
-        let words_to_heteronyms = {
-            let mut map: FxHashMap<Spur, BTreeSet<Heteronym<Spur>>> = FxHashMap::default();
+        let words_to_heteronyms: FxHashMap<Spur, Vec<Heteronym<Spur>>> = {
+            let mut map: FxHashMap<Spur, Vec<(Heteronym<Spur>, u32)>> = FxHashMap::default();
 
             for entry in &language_data.gram_frequencies {
                 if let Some(heteronym) = entry.gram.heteronym() {
                     let word_spur = rodeo.get(&heteronym.word).unwrap();
-                    map.entry(word_spur).or_default().insert({
-                        Heteronym {
-                            word: rodeo.get(&heteronym.word).unwrap(),
-                            lemma: rodeo.get(&heteronym.lemma).unwrap(),
-                            pos: heteronym.pos,
-                        }
-                    });
+                    let interned_het = Heteronym {
+                        word: rodeo.get(&heteronym.word).unwrap(),
+                        lemma: rodeo.get(&heteronym.lemma).unwrap(),
+                        pos: heteronym.pos,
+                    };
+                    let vec = map.entry(word_spur).or_default();
+                    if let Some(existing) = vec.iter_mut().find(|(h, _)| *h == interned_het) {
+                        existing.1 = existing.1.max(entry.count);
+                    } else {
+                        vec.push((interned_het, entry.count));
+                    }
                 }
             }
 
-            map
+            // Sort each list by frequency descending, then strip the frequencies
+            map.into_iter()
+                .map(|(word, mut hets)| {
+                    hets.sort_by(|a, b| b.1.cmp(&a.1));
+                    (word, hets.into_iter().map(|(h, _)| h).collect::<Vec<_>>())
+                })
+                .collect()
         };
 
         let total_word_count = {

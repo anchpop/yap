@@ -279,11 +279,51 @@ fn load_movie_sentences(
             parsed_subtitles.extend(split_subtitles);
         }
 
+        // Sanity check: verify subtitles are actually in the target language
+        if !passes_language_sanity_check(&parsed_subtitles, language) {
+            eprintln!(
+                "Warning: subtitles for movie {} failed language sanity check, skipping",
+                movie.id
+            );
+            continue;
+        }
+
         let movie_sentences = filter_subtitle_sentences(&parsed_subtitles, &movie.id, language);
         all_movie_sentences.extend(movie_sentences);
     }
 
     Ok(all_movie_sentences)
+}
+
+/// Check if subtitle lines pass the language sanity check.
+/// All sanity words for the language must appear at least once.
+fn passes_language_sanity_check(subtitles: &[Subtitle], language: Language) -> bool {
+    let sanity_words = language.subtitle_sanity_words();
+    if sanity_words.is_empty() {
+        return true;
+    }
+
+    let all_text: String = subtitles
+        .iter()
+        .map(|s| s.sentence.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    let all_text_lower = all_text.to_lowercase();
+
+    for &word in sanity_words {
+        let found = match language.writing_system() {
+            language_utils::WritingSystem::Latin | language_utils::WritingSystem::Cyrillic => {
+                all_text_lower
+                    .split(|c: char| !c.is_alphanumeric() && c != '\'')
+                    .any(|w| w == word)
+            }
+            _ => all_text_lower.contains(word),
+        };
+        if !found {
+            return false;
+        }
+    }
+    true
 }
 
 /// Split subtitles that contain multiple speakers' dialogue or multiple sentences.

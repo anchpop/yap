@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Context, Result};
 use clap::Parser;
-use language_utils::MovieMetadataBasic;
+use language_utils::{Language, MovieMetadataBasic};
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -596,6 +596,43 @@ fn strip_html_tags(text: &str) -> String {
     re.replace_all(text, "").to_string()
 }
 
+/// Check if subtitle lines pass the language sanity check.
+/// All sanity words for the language must appear at least once as whole words.
+fn passes_language_sanity_check(lines: &[SubtitleLineJson], language: Language) -> bool {
+    let sanity_words = language.subtitle_sanity_words();
+    if sanity_words.is_empty() {
+        return true;
+    }
+
+    // Concatenate all subtitle text for checking
+    let all_text: String = lines
+        .iter()
+        .map(|l| l.sentence.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    let all_text_lower = all_text.to_lowercase();
+
+    for &word in sanity_words {
+        // For CJK languages, just check substring containment
+        let found = match language.writing_system() {
+            language_utils::WritingSystem::Latin | language_utils::WritingSystem::Cyrillic => {
+                // Check for whole-word match using word boundaries
+                all_text_lower
+                    .split(|c: char| !c.is_alphanumeric() && c != '\'')
+                    .any(|w| w == word)
+            }
+            _ => {
+                // For CJK/Hangul, substring is fine
+                all_text_lower.contains(word)
+            }
+        };
+        if !found {
+            return false;
+        }
+    }
+    true
+}
+
 /// Download subtitles for a single movie and return metadata
 #[allow(clippy::too_many_arguments)]
 async fn download_movie_subtitles(
@@ -608,6 +645,7 @@ async fn download_movie_subtitles(
     tmdb_language: &str,
     subtitle_path: &std::path::Path,
     posters_dir: &std::path::Path,
+    language: Language,
 ) -> Result<Option<(Vec<SubtitleLineJson>, MovieMetadataBasic)>> {
     // Search for subtitles
     let mut subtitle_results = opensub_client
@@ -686,6 +724,14 @@ async fn download_movie_subtitles(
         };
 
         if subtitle_lines.is_empty() {
+            continue;
+        }
+
+        // Sanity check: verify subtitles are actually in the target language
+        if !passes_language_sanity_check(&subtitle_lines, language) {
+            println!(
+                "  ✗ Subtitles failed language sanity check (wrong language?), trying next..."
+            );
             continue;
         }
 
@@ -849,6 +895,7 @@ async fn process_movie(
     tmdb_language: &str,
     output_dir: &std::path::Path,
     posters_dir: &std::path::Path,
+    language: Language,
 ) -> Result<(MovieMetadataBasic, bool)> {
     let subtitle_path = output_dir.join(format!("subtitles/{imdb_id_str}.jsonl"));
     let imdb_id = imdb_id_str.strip_prefix("tt").unwrap().parse::<u64>()?;
@@ -868,6 +915,7 @@ async fn process_movie(
             tmdb_language,
             &subtitle_path,
             posters_dir,
+            language,
         )
         .await?
         {
@@ -907,13 +955,22 @@ async fn process_movie(
     Ok((metadata, is_new_download))
 }
 
+/// Parse a Language from an ISO 639-3 code for clap
+fn parse_language(s: &str) -> Result<Language, String> {
+    Language::from_iso_639_3(s).ok_or_else(|| {
+        format!(
+            "unsupported language code '{s}'. Supported: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita"
+        )
+    })
+}
+
 /// Download movie subtitles from OpenSubtitles
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
     /// Language codes (ISO 639-3: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita)
-    #[arg(short, long, num_args = 1..)]
-    language: Vec<String>,
+    #[arg(short, long, num_args = 1.., value_parser = parse_language)]
+    language: Vec<Language>,
 
     /// Number of movies to download per language
     #[arg(short, long, default_value_t = 5)]
@@ -958,40 +1015,10 @@ async fn main() -> Result<()> {
     }
 
     // Process each language
-    for language_iso639_3 in languages {
-        // Map ISO 639-3 to ISO 639-1 for OpenSubtitles API
-        let language_iso639_1 = match language_iso639_3.as_str() {
-            "fra" => "fr",
-            "eng" => "en",
-            "spa" => "es",
-            "deu" => "de",
-            "kor" => "ko",
-            "zho" => "zh",
-            "jpn" => "ja",
-            "rus" => "ru",
-            "por" => "pt-br",
-            "ita" => "it",
-            _ => {
-                eprintln!("Unsupported language code: {language_iso639_3}");
-                eprintln!("Supported: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita");
-                continue; // Skip this language instead of exiting
-            }
-        };
-
-        // Map to TMDB language code (language-REGION format for localized metadata)
-        let tmdb_language = match language_iso639_3.as_str() {
-            "fra" => "fr-FR",
-            "eng" => "en-US",
-            "spa" => "es-ES",
-            "deu" => "de-DE",
-            "kor" => "ko-KR",
-            "zho" => "zh-CN",
-            "jpn" => "ja-JP",
-            "rus" => "ru-RU",
-            "por" => "pt-BR",
-            "ita" => "it-IT",
-            _ => "en-US", // Fallback
-        };
+    for language in languages {
+        let language_iso639_3 = language.iso_639_3();
+        let language_iso639_1 = language.opensubtitles_language_code();
+        let tmdb_language = language.tmdb_language_code();
 
         println!(
             "\n========================================\nDownloading {count} subtitles for language: {language_iso639_3}\n========================================"
@@ -1080,6 +1107,7 @@ async fn main() -> Result<()> {
                 tmdb_language,
                 &output_dir,
                 &posters_dir,
+                language,
             )
             .await
             {
@@ -1117,6 +1145,7 @@ async fn main() -> Result<()> {
                 tmdb_language,
                 &output_dir,
                 &posters_dir,
+                language,
             )
             .await
             {

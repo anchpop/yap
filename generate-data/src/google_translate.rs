@@ -1,28 +1,42 @@
 use anyhow::Context;
 use dashmap::DashMap;
+use gcp_auth::TokenProvider;
 use html_escape::decode_html_entities;
 use language_utils::Language;
 use std::path::PathBuf;
+use std::sync::Arc;
 use xxhash_rust::xxh3::xxh3_64;
 
 pub struct GoogleTranslator {
     client: reqwest::Client,
     source_language: String,
     target_language: String,
-    api_key: String,
+    auth: Arc<dyn TokenProvider>,
+    project_id: String,
     cache: DashMap<u64, String>, // hash -> translation
     cache_dir: PathBuf,
     master_cache_file: PathBuf,
 }
 
 impl GoogleTranslator {
-    pub fn new(
+    pub async fn new(
         source_language: Language,
         target_language: Language,
         cache_dir: PathBuf,
     ) -> anyhow::Result<Self> {
-        let api_key = std::env::var("GOOGLE_TRANSLATE_API_KEY")
-            .context("GOOGLE_TRANSLATE_API_KEY not set")?;
+        let creds_path = std::env::var("GOOGLE_APPLICATION_CREDENTIALS")
+            .context("GOOGLE_APPLICATION_CREDENTIALS not set")?;
+        let creds_json: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&creds_path)?)?;
+        let project_id = creds_json["project_id"]
+            .as_str()
+            .context("No project_id in service account JSON")?
+            .to_string();
+
+        let auth = gcp_auth::provider()
+            .await
+            .context("Failed to initialize Google Cloud auth")?;
+
         std::fs::create_dir_all(&cache_dir)?;
 
         let master_cache_file = cache_dir.join("master_cache.json");
@@ -37,13 +51,23 @@ impl GoogleTranslator {
             client: reqwest::Client::new(),
             source_language: source_language.iso_639_1().to_string(),
             target_language: target_language.iso_639_1().to_string(),
-            api_key,
+            auth,
+            project_id,
             cache,
             cache_dir,
             master_cache_file,
         };
         res.consolidate_cache();
         Ok(res)
+    }
+
+    async fn get_token(&self) -> anyhow::Result<String> {
+        let token = self
+            .auth
+            .token(&["https://www.googleapis.com/auth/cloud-translation"])
+            .await
+            .context("Failed to get access token")?;
+        Ok(token.as_str().to_string())
     }
 
     pub async fn translate(&self, text: &str) -> anyhow::Result<String> {
@@ -59,36 +83,54 @@ impl GoogleTranslator {
         // Not in cache - make API call
         let cache_file = self.cache_dir.join(format!("{hash}.json"));
 
+        let token = self.get_token().await?;
         let url = format!(
-            "https://translation.googleapis.com/language/translate/v2?key={}",
-            self.api_key
+            "https://translation.googleapis.com/v3/projects/{}:translateText",
+            self.project_id
         );
         let resp = self
             .client
-            .post(&url)
-            .form(&[
-                ("q", text),
-                ("source", self.source_language.as_str()),
-                ("target", self.target_language.as_str()),
-                ("format", "text"),
-            ])
+            .post(url)
+            .bearer_auth(&token)
+            .json(&serde_json::json!({
+                "sourceLanguageCode": self.source_language,
+                "targetLanguageCode": self.target_language,
+                "contents": [text],
+                "mimeType": "text/plain",
+            }))
             .send()
             .await
             .context("Failed to call Google Translate API")?;
-        let value: serde_json::Value = resp
-            .json()
+        let status = resp.status();
+        let body = resp
+            .text()
             .await
-            .context("Failed to parse Google Translate response")?;
-        let translated = value["data"]["translations"][0]["translatedText"]
-            .as_str()
-            .unwrap_or("")
-            .to_string();
-        let translated = decode_html_entities(&translated).to_string();
-        self.cache.insert(hash, translated.clone());
+            .context("Failed to read Google Translate response")?;
 
-        // Write individual cache file with just the translation
-        tokio::fs::write(&cache_file, &translated).await?;
-        Ok(translated)
+        if !status.is_success() {
+            anyhow::bail!("Google Translate API error ({status}) for '{text}': {body}");
+        }
+
+        let value: serde_json::Value =
+            serde_json::from_str(&body).context("Failed to parse Google Translate response")?;
+        let translated = value["translations"][0]["translatedText"]
+            .as_str()
+            .map(|s| decode_html_entities(s).to_string());
+
+        match translated {
+            Some(t) if !t.trim().is_empty() => {
+                self.cache.insert(hash, t.clone());
+                // Write individual cache file with just the translation
+                tokio::fs::write(&cache_file, &t).await?;
+                Ok(t)
+            }
+            _ => {
+                // Don't cache empty/failed translations so they can be retried
+                anyhow::bail!(
+                    "Google Translate returned empty result for '{text}'. Response: {body}"
+                )
+            }
+        }
     }
 
     fn consolidate_cache(&self) {

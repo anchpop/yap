@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2138370
-Total errors: 637
+Total predictions: 2132473
+Total errors: 635
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -890,12 +890,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ah, «Family Feud».
-
-### "-" + "Abdias" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - En el certificado de nacimiento - Abdias.
 
 ### "-" + "Apagado" (1 occurrences)
 - Predicted: None
@@ -2378,12 +2372,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Aunque eso de 'Dios mío' se lo hayas añadido.
-
-### "nacimiento" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - En el certificado de nacimiento - Abdias.
 
 ### "nativo" + "'" (1 occurrences)
 - Predicted: Space

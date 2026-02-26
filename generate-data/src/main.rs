@@ -125,6 +125,7 @@ async fn main() -> anyhow::Result<()> {
                 course.native_language,
                 PathBuf::from(".cache/google_translate/"),
             )
+            .await
             .context("Failed to create Google Translator")?;
 
             let all_sentences =
@@ -187,6 +188,13 @@ async fn main() -> anyhow::Result<()> {
             let mut sentence_sources_writer = BufWriter::new(sentence_sources_file_handle);
 
             for (target_language_sentence, (native_translations, source)) in all_sentences {
+                if native_translations.is_empty() {
+                    eprintln!(
+                        "Warning: no translations for '{target_language_sentence}', skipping"
+                    );
+                    continue;
+                }
+
                 // Write individual target language sentence
                 let target_language_json = serde_json::to_string(&target_language_sentence)
                     .context("Failed to serialize target language sentence")?;
@@ -929,7 +937,7 @@ async fn main() -> anyhow::Result<()> {
             .context("Failed to canonicalize extra pronunciations path")?;
         let word_to_pronunciation_file = target_language_dir.join("word_to_pronunciation.jsonl");
         let pronunciation_to_word_file = target_language_dir.join("pronunciation_to_words.jsonl");
-        if !word_to_pronunciation_file.exists() || !pronunciation_to_word_file.exists() {
+        {
             // Create a set of words that appear in our frequency list for quick lookup
             let frequent_words = &frequent_heteronym_words;
 
@@ -967,24 +975,55 @@ async fn main() -> anyhow::Result<()> {
                 .into_iter()
                 .collect::<BTreeMap<_, _>>();
 
-            let pronunciation_to_words: std::collections::BTreeMap<
-                String,
-                std::collections::BTreeSet<String>,
-            > = word_to_pronunciation
+            // Build word -> max frequency map for sorting
+            let word_max_freq: std::collections::HashMap<&str, u32> = gram_frequencies
+                .iter()
+                .filter_map(|entry| {
+                    let h = entry.gram.heteronym()?;
+                    Some((h.word.as_str(), entry.count))
+                })
+                .into_group_map()
+                .into_iter()
+                .map(|(word, counts)| (word, counts.into_iter().max().unwrap_or(0)))
+                .collect();
+
+            let pronunciation_to_words: BTreeMap<String, Vec<String>> = word_to_pronunciation
                 .iter()
                 .map(|(word, pronunciation)| (pronunciation.clone(), word.clone()))
                 .into_group_map()
                 .into_iter()
-                .map(|(ipa, words)| (ipa, words.into_iter().collect()))
+                .map(|(ipa, mut words)| {
+                    // Sort by frequency descending, then alphabetically for ties
+                    words.sort_by(|a, b| {
+                        let freq_a = word_max_freq.get(a.as_str()).copied().unwrap_or(0);
+                        let freq_b = word_max_freq.get(b.as_str()).copied().unwrap_or(0);
+                        freq_b.cmp(&freq_a).then_with(|| a.cmp(b))
+                    });
+                    (ipa, words)
+                })
                 .collect();
 
-            // Convert to Vec format for ConsolidatedLanguageData
-            let word_to_pronunciation: Vec<(String, String)> =
+            // Convert to Vec format for ConsolidatedLanguageData, sorted by frequency descending
+            let mut word_to_pronunciation: Vec<(String, String)> =
                 word_to_pronunciation.into_iter().collect();
-            let pronunciation_to_words: Vec<(String, Vec<String>)> = pronunciation_to_words
-                .into_iter()
-                .map(|(ipa, words)| (ipa, words.into_iter().collect()))
-                .collect();
+            word_to_pronunciation.sort_by(|a, b| {
+                let freq_a = word_max_freq.get(a.0.as_str()).copied().unwrap_or(0);
+                let freq_b = word_max_freq.get(b.0.as_str()).copied().unwrap_or(0);
+                freq_b.cmp(&freq_a).then_with(|| a.0.cmp(&b.0))
+            });
+            let mut pronunciation_to_words: Vec<(String, Vec<String>)> =
+                pronunciation_to_words.into_iter().collect();
+            pronunciation_to_words.sort_by(|a, b| {
+                let freq_a =
+                    a.1.first()
+                        .and_then(|w| word_max_freq.get(w.as_str()).copied())
+                        .unwrap_or(0);
+                let freq_b =
+                    b.1.first()
+                        .and_then(|w| word_max_freq.get(w.as_str()).copied())
+                        .unwrap_or(0);
+                freq_b.cmp(&freq_a).then_with(|| a.0.cmp(&b.0))
+            });
 
             let mut file = File::create(word_to_pronunciation_file)
                 .context("Failed to create word to pronunciation file")?;

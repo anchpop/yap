@@ -312,13 +312,14 @@ function LoadingProgress({ message, progress }: { message: string; progress: num
 function ReviewPage() {
   const { userInfo, accessToken } = useOutletContext<AppContextType>()
   const deck = useDeck()
+  const deckSelection = useDeckSelection()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (deck?.type === 'noLanguageSelected') {
+    if (deckSelection?.type === 'noLanguageSelected') {
       navigate('/select-language')
     }
-  }, [deck, navigate])
+  }, [deckSelection, navigate])
 
   return (
     <div className="flex flex-col gap-6">
@@ -1022,11 +1023,11 @@ function App() {
 function SelectLanguagePage() {
   const { userInfo } = useOutletContext<AppContextType>()
   const weapon = useWeapon()
-  const deck = useDeck()
+  const deckSelection = useDeckSelection()
   const navigate = useNavigate()
 
-  return match(deck)
-    .with({ type: "deck", deck: P.not(P.nullish) }, ({ targetLanguage }) => (
+  return match(deckSelection)
+    .with({ type: "languageSelected" }, ({ targetLanguage }) => (
       <LanguageSelector
         skipOnboarding={true}
         currentTargetLanguage={targetLanguage}
@@ -1056,7 +1057,7 @@ function SelectLanguagePage() {
         userInfo={userInfo}
       />
     ))
-    .otherwise(() => (
+    .with(null, () => (
       <TopPageLayout
         userInfo={userInfo}
         headerProps={{
@@ -1068,8 +1069,49 @@ function SelectLanguagePage() {
         </div>
       </TopPageLayout>
     ))
+    .exhaustive()
 }
 
+
+function useDeckSelection():
+  | { type: "languageSelected", nativeLanguage: Language, targetLanguage: Language, startingFresh: boolean | undefined }
+  | { type: "noLanguageSelected" }
+  | null {
+  const weapon = useWeapon()
+
+  useEffect(() => {
+    weapon.request_deck_selection()
+  }, [weapon])
+
+  const getSnapshot = useCallback(() => {
+    try {
+      return weapon.get_stream_num_events("deck_selection") ?? null
+    } catch {
+      return null
+    }
+  }, [weapon])
+
+  const subscribe = useCallback((callback: () => void) => {
+    const handle = weapon.subscribe_to_stream("deck_selection", () => { callback() })
+    return () => { weapon.unsubscribe(handle) }
+  }, [weapon])
+
+  const numEvents = useSyncExternalStore(subscribe, getSnapshot)
+
+  if (numEvents === null) return null
+
+  const deckSelection = weapon.get_deck_selection_state()
+  if (!deckSelection?.targetLanguage || !deckSelection?.nativeLanguage) {
+    return { type: "noLanguageSelected" }
+  }
+
+  return {
+    type: "languageSelected",
+    nativeLanguage: deckSelection.nativeLanguage,
+    targetLanguage: deckSelection.targetLanguage,
+    startingFresh: deckSelection.startingFresh,
+  }
+}
 
 function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
   const weapon = useWeapon()

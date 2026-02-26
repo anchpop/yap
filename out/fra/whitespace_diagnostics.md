@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2425467
-Total errors: 551
+Total predictions: 2419831
+Total errors: 540
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -134,14 +134,6 @@ Accuracy: 99.98%
   - Combien de temps restez—vous ?
   - Dans mon quartier, il faut prendre rendez—vous.
 
-### " " + "!" (3 occurrences)
-- Predicted: NarrowNbsp
-- Actual: None
-- Examples:
-  - Bore se !
-  - Lâche le !
-  - Smiri se !
-
 ### "'" + "?" (2 occurrences)
 - Predicted: None
 - Actual: NarrowNbsp
@@ -169,13 +161,6 @@ Accuracy: 99.98%
 - Examples:
   - Et moi,je le voyais à la mienne.
   - ToiaussL -Tais-toi,je te dis !
-
-### "," + "«" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Comment ça, « Quoi ?
-  - Non, « solution finale ».
 
 ### "-" + "ce" (2 occurrences)
 - Predicted: None
@@ -296,13 +281,6 @@ Accuracy: 99.98%
   - Je suis scientifique , vous vous en souvenez ?
   - Tommy était le scientifique , pas moi.
 
-### "se" + " " (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bore se !
-  - Smiri se !
-
 ### "t" + "'" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -351,6 +329,13 @@ Accuracy: 99.98%
 - Examples:
   - Retourne—toi sur ton maître.
   - Tire—toi !
+
+### " " + "!" (2 occurrences)
+- Predicted: NarrowNbsp
+- Actual: None
+- Examples:
+  - Bore se !
+  - Lâche le !
 
 ### "'" + "Bonne" (1 occurrences)
 - Predicted: None
@@ -526,6 +511,12 @@ Accuracy: 99.98%
 - Examples:
   - Non, non, non,rien.
 
+### "," + "«" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Comment ça, « Quoi ?
+
 ### "," + "à" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -603,12 +594,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Le cochon lui saute dessus - chut.
-
-### "-" + "da" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Oni su muškarci - da, gospodine !
 
 ### "-" + "deux" (1 occurrences)
 - Predicted: None
@@ -705,12 +690,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Chacun pour soi -- Dieu pour tous.
-
-### "--" + "Douglas Kelley" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Je suis -- Douglas Kelley.
 
 ### "--" + "Je" (1 occurrences)
 - Predicted: None
@@ -1125,12 +1104,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Pro�iri.
-
-### "Profesor" + "i" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Profesori će napraviti najbolje veterinare od vas.
 
 ### "R" + "'" (1 occurrences)
 - Predicted: Space
@@ -1978,12 +1951,6 @@ Accuracy: 99.98%
 - Examples:
   - La physique ne décrit pas le monde ; elle décrit ce que nous savons du monde.
 
-### "muškarci" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Oni su muškarci - da, gospodine !
-
 ### "n" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2320,11 +2287,11 @@ Accuracy: 99.98%
 - Examples:
   - Encore des trucs merdiques de scientifiques .
 
-### "se" + " !" (1 occurrences)
+### "se" + " " (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Makni se !
+  - Bore se !
 
 ### "serait" + "-" (1 occurrences)
 - Predicted: None
@@ -2373,12 +2340,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - La jeune fille se tut et sourit ; le jeune homme se tut et soupira.
-
-### "suis" + "--" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Je suis -- Douglas Kelley.
 
 ### "suivant" + "." (1 occurrences)
 - Predicted: None
@@ -2674,12 +2635,6 @@ Accuracy: 99.98%
 - Examples:
   - Puis dites « ah ».
 
-### "«" + "brillant" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Que vous êtes un « brillant spécialiste des têtes ».
-
 ### "«" + "bœuf" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2775,12 +2730,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Pourquoi ai-je obtenu un « satisfaisant » ?
-
-### "«" + "solution" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Non, « solution finale ».
 
 ### "«" + "subway" (1 occurrences)
 - Predicted: None

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2029796
-Total errors: 2518
+Total predictions: 2022088
+Total errors: 2507
 Accuracy: 99.88%
 
 ## Error Patterns (sorted by frequency)
@@ -70,14 +70,6 @@ Accuracy: 99.88%
   - Come no ?
   - Hai parlato con Ming o no ?
 
-### "po’" + "di" (12 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Abbiamo parlato un po’ di cosa avremmo fatto quel giorno.
-  - Che noiosi, un po’ di foresta bruciata, e gridano subito vendetta!
-  - Con una vite o… un po’ di colla, o una corda.
-
 ### "eh" + "?" (11 occurrences)
 - Predicted: None
 - Actual: Space
@@ -125,6 +117,14 @@ Accuracy: 99.88%
   - Dai, finiscila!
   - E dai, finiscila, Marcus!
   - Fuss, finiscila di parlare di mia sorella!
+
+### "po’" + "di" (10 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Abbiamo parlato un po’ di cosa avremmo fatto quel giorno.
+  - Che noiosi, un po’ di foresta bruciata, e gridano subito vendetta!
+  - Con una vite o… un po’ di colla, o una corda.
 
 ### "bene" + "?" (9 occurrences)
 - Predicted: None
@@ -2713,12 +2713,6 @@ Accuracy: 99.88%
 - Examples:
   - Mi dispiace, io- - io non so nulla di tutto ciò.
 
-### "-" + "leggi" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Allora non fare domande - leggi.
-
 ### "-" + "mai" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2766,12 +2760,6 @@ Accuracy: 99.88%
 - Actual: Space
 - Examples:
   - Cerco una persona italiana per fare uno scambio italiano - spagnolo.
-
-### "-" + "tipo" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sparare - tipo cacciare?
 
 ### "-" + "una" (1 occurrences)
 - Predicted: None
@@ -5065,12 +5053,6 @@ Accuracy: 99.88%
 - Examples:
   - Lavori per Soyeong ?
 
-### "Sparare" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sparare - tipo cacciare?
-
 ### "Sparito" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6876,12 +6858,6 @@ Accuracy: 99.88%
 - Actual: Space
 - Examples:
   - Questo è il tuo dolore !
-
-### "domande" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Allora non fare domande - leggi.
 
 ### "donna" + "!" (1 occurrences)
 - Predicted: None
@@ -8911,12 +8887,6 @@ Accuracy: 99.88%
 - Examples:
   - Un po’ anarchica, no?
 
-### "po’" + "che" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - È da un po’ che penso di prendermi una pausa.
-
 ### "po’" + "consumata" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8965,12 +8935,6 @@ Accuracy: 99.88%
 - Examples:
   - Quindi sono un po’ irlandese?
 
-### "po’" + "ovunque" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Il mio documentario viene proiettato un po’ ovunque.
-
 ### "po’" + "pazza" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8995,29 +8959,11 @@ Accuracy: 99.88%
 - Examples:
   - È sempre stata… un po’ selettiva con la verità.
 
-### "po’" + "sola" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - È solo un po’ sola, in questo periodo.
-
-### "po’" + "stanca" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sono solo un po’ stanca.
-
 ### "po’" + "strano" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Però il tuo accento pernambucano è un po’ strano.
-
-### "po’" + "su" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ammetto che contavamo un po’ su quei soldi.
 
 ### "po’" + "tardi" (1 occurrences)
 - Predicted: None
