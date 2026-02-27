@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 230784
-Total errors: 2003
-Accuracy: 99.13%
+Total predictions: 235869
+Total errors: 2019
+Accuracy: 99.14%
 
 ## Error Patterns (sorted by frequency)
 
@@ -390,6 +390,14 @@ Accuracy: 99.13%
   - 누구시죠?
   - 몇 살이시죠?
 
+### "어디" + "예요" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어디예요?
+  - 종수 씨, 어디예요?
+  - 출구가 어디예요?
+
 ### "어디" + "있는지" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -645,14 +653,6 @@ Accuracy: 99.13%
   - 그러니까 딴소리 말고 집결지가 어디야?
   - 기지가 어디야?
   - 친정은 어디야?
-
-### "어디" + "예요" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 어디예요?
-  - 종수 씨, 어디예요?
-  - 화장실은 어디예요?
 
 ### "어딜" + "가" (3 occurrences)
 - Predicted: None
@@ -1207,6 +1207,13 @@ Accuracy: 99.13%
 - Examples:
   - 당장 병원으로 가!
   - 어느 병원으로 가?
+
+### "분" + "이세요" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 둘 다 러시아 분이세요?
+  - 몇 분이세요?
 
 ### "사" + "와" (2 occurrences)
 - Predicted: None
@@ -2163,6 +2170,12 @@ Accuracy: 99.13%
 - Examples:
   - 이 여자 같으면 같이 자겠어요?
 
+### "같은" + "과" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 같은 과 친구예요.
+
 ### "같은거" + "하고" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2619,6 +2632,12 @@ Accuracy: 99.13%
 - Examples:
   - 여기서 절차를 포기하면 전쟁 억지력에 금이 가!
 
+### "금지" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 출입 금지예요.
+
 ### "기다려" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2780,6 +2799,12 @@ Accuracy: 99.13%
 - Actual: Space
 - Examples:
   - 날 이 늪으로 끌고 왔어요!
+
+### "날" + "이에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 조상을 모시는 날이에요.
 
 ### "날" + "인데" (1 occurrences)
 - Predicted: Space
@@ -3891,6 +3916,12 @@ Accuracy: 99.13%
 - Examples:
   - 무엇을 하고 있습니까?
 
+### "무인도에" + "가" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 무인도에 가 보고 싶어요.
+
 ### "묶어" + "이" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4017,6 +4048,12 @@ Accuracy: 99.13%
 - Examples:
   - 바에서 같이 있던 여자는 누구죠?
 
+### "반" + "이다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 인사가 반이다.
+
 ### "반복되는" + "이" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4058,6 +4095,12 @@ Accuracy: 99.13%
 - Actual: None
 - Examples:
   - 지금 나와 기유 상은 공격과 방어를交替하고 있어.
+
+### "방은" + "이" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 제 방은 이 층에 있어요.
 
 ### "배" + "라도" (1 occurrences)
 - Predicted: Space
@@ -4130,6 +4173,12 @@ Accuracy: 99.13%
 - Actual: Space
 - Examples:
   - 한 번만 가 보자, 한 번만!
+
+### "번째" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 세 번째예요.
 
 ### "벌써" + "와" (1 occurrences)
 - Predicted: None
@@ -4293,12 +4342,6 @@ Accuracy: 99.13%
 - Examples:
   - 언제부터지?
 
-### "분" + "이세요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 둘 다 러시아 분이세요?
-
 ### "분명히" + "하고" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4401,6 +4444,12 @@ Accuracy: 99.13%
 - Examples:
   - 한 사간쯤 걸려요.
 
+### "사람" + "에게" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그 사람에게 빠졌어요.
+
 ### "사람이" + "이" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4490,6 +4539,12 @@ Accuracy: 99.13%
 - Actual: None
 - Examples:
   - 아동 살인범이래?
+
+### "삼십" + "도" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 삼십 도 이상 올라갔어요.
 
 ### "상상이" + "가" (1 occurrences)
 - Predicted: None
@@ -4724,6 +4779,12 @@ Accuracy: 99.13%
 - Actual: None
 - Examples:
   - 몇 시입니까?
+
+### "시간" + "이면" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 한 시간이면 돼요.
 
 ### "시간" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -5552,6 +5613,12 @@ Accuracy: 99.13%
 - Actual: Space
 - Examples:
   - 영주님과 이 사제 말로는 재주가 출중하다고?
+
+### "영화" + "이" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 이 영화 이 편을 봤어요.
 
 ### "영화를" + "같이" (1 occurrences)
 - Predicted: None
@@ -6441,6 +6508,12 @@ Accuracy: 99.13%
 - Examples:
   - 절대 이 버튼을 누르지 마.
 
+### "점수" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 합격 점수예요.
+
 ### "점심" + "같이" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6464,6 +6537,12 @@ Accuracy: 99.13%
 - Actual: None
 - Examples:
   - 정말이죠?
+
+### "제도" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 사회 보장 제도예요.
 
 ### "제발" + "나" (1 occurrences)
 - Predicted: None
@@ -6572,6 +6651,12 @@ Accuracy: 99.13%
 - Actual: Space
 - Examples:
   - 몸을 전율하게 만들고 강한 힘을 주는 이 행복은 뭔가?
+
+### "주말에" + "같이" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 주말에 같이 놀래요?
 
 ### "주문" + "이라니" (1 occurrences)
 - Predicted: Space

@@ -7,8 +7,9 @@ use language_utils::{
     PhrasebookDefinitionEntry, SentenceGram, SentenceGrams,
 };
 use rustc_hash::FxHashMap;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use std::fs::File;
+use std::hash::Hash;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
@@ -27,6 +28,61 @@ struct PhraseData {
     entry: PhrasebookDefinitionEntry,
 }
 type PhraseDataMap = BTreeMap<Gram<String>, PhraseData>;
+
+/// Deduplicates a pattern map where multiple grams may produce the same matcher pattern.
+/// When exactly one gram in a duplicate group is from wiktionary, keeps that one.
+/// When multiple are from wiktionary, keeps the shortest (then alphabetically first).
+/// When none are from wiktionary, warns and skips the pattern entirely.
+fn deduplicate_patterns<P: Eq + Hash + Clone>(
+    patterns: BTreeMap<Gram<String>, P>,
+    wiktionary_grams: &HashSet<Gram<String>>,
+    pattern_type: &str,
+    lang: language_utils::Language,
+) -> BTreeMap<Gram<String>, P> {
+    // Invert: group grams by their pattern value
+    let mut by_pattern: rustc_hash::FxHashMap<P, Vec<Gram<String>>> =
+        rustc_hash::FxHashMap::default();
+    for (gram, pattern) in &patterns {
+        by_pattern
+            .entry(pattern.clone())
+            .or_default()
+            .push(gram.clone());
+    }
+
+    let mut result = BTreeMap::new();
+    for (pattern, grams) in by_pattern {
+        if grams.len() == 1 {
+            result.insert(grams.into_iter().next().unwrap(), pattern);
+            continue;
+        }
+        let wiktionary_entries: Vec<_> = grams
+            .iter()
+            .filter(|g| wiktionary_grams.contains(g))
+            .cloned()
+            .collect();
+        let candidates = if wiktionary_entries.is_empty() {
+            let display_grams: Vec<String> =
+                grams.iter().map(|g| g.to_display_string(lang)).collect();
+            println!(
+                "Warning: duplicate {pattern_type} pattern for grams {display_grams:?} \
+                 (none from wiktionary), skipping all",
+            );
+            continue;
+        } else {
+            wiktionary_entries
+        };
+        // Pick shortest display string, breaking ties alphabetically
+        let best = candidates
+            .into_iter()
+            .min_by_key(|g| {
+                let s = g.to_display_string(lang);
+                (s.chars().count(), s)
+            })
+            .unwrap();
+        result.insert(best, pattern);
+    }
+    result
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -328,6 +384,7 @@ async fn main() -> anyhow::Result<()> {
                 Gram::from(atoms)
             })
             .collect();
+        let wiktionary_grams: HashSet<Gram<String>> = seed_grams.iter().cloned().collect();
 
         // Train supertokens and write whitespace diagnostics
         generate_data::tokenize::train_supertokens_and_write_diagnostics(
@@ -459,6 +516,10 @@ async fn main() -> anyhow::Result<()> {
                     Some((gram.clone(), tree))
                 })
                 .collect();
+
+        // Deduplicate patterns: if two grams produce the same matcher, prefer the wiktionary one
+        let lemma_patterns = deduplicate_patterns(lemma_patterns, &wiktionary_grams, "lemma", lang);
+        let tree_patterns = deduplicate_patterns(tree_patterns, &wiktionary_grams, "tree", lang);
 
         // Run multiword detection (after omnigram training)
         let mut nlp_sentences = generate_data::nlp::generate_nlp_sentences(
@@ -625,8 +686,6 @@ async fn main() -> anyhow::Result<()> {
 
         // Create gram phrasebook (for multi-atom grams), excluding grams that already
         // have MWE phrasebook entries
-        let existing_phrase_grams: std::collections::HashSet<Gram<String>> =
-            seed_grams.iter().cloned().collect();
         let gram_phrasebook_file = native_specific_dir.join("gram_phrasebook.jsonl");
         let gram_sentences_file = native_specific_dir.join("gram_sentences.jsonl");
 
@@ -649,7 +708,7 @@ async fn main() -> anyhow::Result<()> {
             *course,
             &filtered_gram_frequencies,
             &encoded_sentences_with_grams,
-            &existing_phrase_grams,
+            &wiktionary_grams,
             &mut gram_sentences,
         )
         .await
