@@ -151,6 +151,175 @@ impl Deck {
 mod tests {
     use super::*;
     use chrono::TimeZone;
+    use language_utils::SentenceGram;
+    use language_utils::language_pack::LanguagePack;
+    use std::sync::Arc;
+
+    fn load_language_pack(course: &language_utils::Course) -> Arc<LanguagePack> {
+        let path = format!(
+            "../out/{}_for_{}/language_data.rkyv",
+            course.target_language.iso_639_3(),
+            course.native_language.iso_639_3()
+        );
+        let bytes =
+            std::fs::read(&path).unwrap_or_else(|e| panic!("Failed to read {path}: {e}"));
+        let archived = rkyv::access::<
+            language_utils::language_pack::ArchivedLanguagePack,
+            rkyv::rancor::Error,
+        >(&bytes)
+        .unwrap();
+        let language_pack: LanguagePack =
+            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        Arc::new(language_pack)
+    }
+
+    fn validate_language_pack(lp: &LanguagePack, course: &language_utils::Course) {
+        let lang = course.target_language;
+        let label = format!(
+            "{} -> {}",
+            course.native_language.iso_639_3(),
+            course.target_language.iso_639_3()
+        );
+
+        // Every gram in gram_frequencies should have a definition
+        for gram_spur in lp.gram_frequencies.keys() {
+            assert!(
+                lp.gram_definitions.contains_key(gram_spur),
+                "[{label}] Gram {:?} is in gram_frequencies but has no definition",
+                lp.gram_rodeo.resolve(gram_spur)
+            );
+        }
+
+        // Every gram should produce a non-empty display string
+        for gram_spur in lp.gram_frequencies.keys() {
+            let resolved = lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo);
+            let display = resolved.to_display_string(lang);
+            assert!(
+                !display.is_empty(),
+                "[{label}] Gram {:?} produced an empty display string",
+                lp.gram_rodeo.resolve(gram_spur)
+            );
+        }
+
+        for (sentence_spur, sentence_grams) in &lp.encoded_sentences {
+            // Every sentence should have at least one translation
+            let translations = lp.translations.get(sentence_spur);
+            assert!(
+                translations.is_some_and(|t| !t.is_empty()),
+                "[{label}] Sentence {:?} has no translations",
+                lp.string_rodeo.resolve(sentence_spur)
+            );
+
+            // Every sentence should render to a non-empty sequence of literals
+            let literals = lp.sentence_to_literals(sentence_spur, lang);
+            assert!(
+                literals.as_ref().is_some_and(|l| !l.is_empty()),
+                "[{label}] Sentence {:?} produced no literals",
+                lp.string_rodeo.resolve(sentence_spur)
+            );
+
+            // Every learnable gram in a sentence should have a definition
+            for gram in &sentence_grams.grams {
+                if let SentenceGram::Learnable(gram_spur) = gram {
+                    assert!(
+                        lp.gram_definitions.contains_key(gram_spur),
+                        "[{label}] Learnable gram {:?} in sentence {:?} has no definition",
+                        lp.gram_rodeo.resolve(gram_spur),
+                        lp.string_rodeo.resolve(sentence_spur)
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_simulate_365_days_default_deck_all_courses() {
+        let fixed_time = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
+
+        for course in language_utils::COURSES {
+            let language_pack = load_language_pack(course);
+            validate_language_pack(&language_pack, course);
+
+            let context = crate::Context {
+                language_pack,
+                course: course.clone(),
+            };
+            let state = crate::DeckState::new();
+            let deck: Deck = <Deck as weapon::AppState>::finalize(state, &context);
+            let mut simulator = deck.simulate_usage(fixed_time);
+
+            for _ in 0..365 {
+                let (next_sim, _challenges) = simulator.next();
+                simulator = next_sim;
+            }
+        }
+    }
+
+    fn load_test_data_deck(language_pack: Arc<LanguagePack>) -> Deck {
+        use std::collections::BTreeMap;
+        use weapon::data_model::{EventStore, EventType, Timestamped};
+        use weapon::opfs::parse_event_log_records;
+
+        let mut store: EventStore<String, String> = EventStore::default();
+        store.get_or_insert_default::<EventType<crate::DeckEvent>>(
+            "reviews".to_string(),
+            None,
+        );
+
+        let reviews_blob = std::fs::read(
+            "test-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__reviews/events.blob",
+        )
+        .expect("Failed to read reviews events blob");
+        let review_records = parse_event_log_records(&reviews_blob);
+
+        let mut reviews_by_device: BTreeMap<String, Vec<Timestamped<serde_json::Value>>> =
+            BTreeMap::new();
+        for record in &review_records {
+            reviews_by_device
+                .entry(record.device_id.clone())
+                .or_default()
+                .push(record.event.clone());
+        }
+        for (device_id, events) in reviews_by_device {
+            store.add_device_events_jsons(
+                "reviews".to_string(),
+                device_id,
+                events,
+                None,
+            );
+        }
+
+        let context = crate::Context {
+            language_pack,
+            course: language_utils::Course {
+                target_language: language_utils::Language::French,
+                native_language: language_utils::Language::English,
+            },
+        };
+        let initial_state = crate::DeckState::new();
+        let stream = store
+            .get::<EventType<crate::DeckEvent>>("reviews".to_string())
+            .expect("reviews stream should exist");
+        stream.state(initial_state, &context)
+    }
+
+    #[test]
+    fn test_simulate_365_days_test_data_deck() {
+        let fixed_time = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
+
+        let course = language_utils::Course {
+            target_language: language_utils::Language::French,
+            native_language: language_utils::Language::English,
+        };
+        let language_pack = load_language_pack(&course);
+        let deck = load_test_data_deck(language_pack);
+
+        let mut simulator = deck.simulate_usage(fixed_time);
+        for _ in 0..365 {
+            let (next_sim, _challenges) = simulator.next();
+            simulator = next_sim;
+        }
+    }
 
     #[test]
     fn test_simulator_is_deterministic() {

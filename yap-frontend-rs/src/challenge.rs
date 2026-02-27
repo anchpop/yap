@@ -298,9 +298,14 @@ impl ReviewInfo {
             .get(&gram)
             .cloned()
             .unwrap_or_else(|| {
+                let resolved = language_pack
+                    .gram_rodeo
+                    .resolve(&gram)
+                    .resolve(&language_pack.string_rodeo);
                 panic!(
-                    "Gram {:?} has no definition",
-                    language_pack.gram_rodeo.resolve(&gram)
+                    "Gram {:?} (display: {:?}) has no definition",
+                    resolved,
+                    resolved.to_display_string(deck.context.course.target_language)
                 )
             });
 

@@ -22,7 +22,10 @@ yap-frontend/dev-dist
 .direnv
 .envrc
 
-# Perf profiling data
+# Profiling artifacts
 perf.data
 perf.data.old
 perf-*.data
+*.trace/
+flamegraph.svg
+profile.json.gz

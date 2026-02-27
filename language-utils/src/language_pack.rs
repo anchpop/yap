@@ -407,6 +407,24 @@ impl LanguagePack {
                 .collect()
         };
 
+        // Propagate dictionary definitions to all surface-form variants of the same heteronym.
+        // E.g., "le" (det) has a definition, but "l'" (det, same heteronym) also needs one.
+        let gram_definitions = {
+            let mut map = gram_definitions;
+            for (_heteronym, gram_spurs) in &heteronym_to_grams {
+                // Find the definition from any variant of this heteronym
+                let definition = gram_spurs
+                    .iter()
+                    .find_map(|spur| map.get(spur).cloned());
+                if let Some(definition) = definition {
+                    for &gram_spur in gram_spurs {
+                        map.entry(gram_spur).or_insert_with(|| definition.clone());
+                    }
+                }
+            }
+            map
+        };
+
         // Build index from gram to sentences containing it
         // All grams, multiword_terms, and low_confidence_multiword_terms are now unified as SpurGram
         let sentences_containing_gram_index: FxHashMap<SpurGram, Vec<Spur>> = {

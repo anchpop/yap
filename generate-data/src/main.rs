@@ -937,6 +937,24 @@ async fn main() -> anyhow::Result<()> {
             gram_frequencies.len()
         );
 
+        // Filter gram_vocabulary to remove learnable grams without definitions
+        let defined_gram_set: std::collections::HashSet<Gram<String>> = gram_frequencies
+            .iter()
+            .map(|entry| entry.gram.clone())
+            .collect();
+        let gram_vocabulary_count_before = gram_vocabulary.len();
+        let gram_vocabulary: Vec<GramVocabEntry<String>> = gram_vocabulary
+            .into_iter()
+            .filter(|entry| !entry.atoms.is_learnable() || defined_gram_set.contains(&entry.atoms))
+            .collect();
+        let removed_vocab_count = gram_vocabulary_count_before - gram_vocabulary.len();
+        if removed_vocab_count > 0 {
+            println!(
+                "Removed {removed_vocab_count} grams from vocabulary without definitions ({gram_vocabulary_count_before} -> {})",
+                gram_vocabulary.len()
+            );
+        }
+
         // Validate that all grams in gram_frequencies have definitions
         {
             let mut missing_grams = Vec::new();
