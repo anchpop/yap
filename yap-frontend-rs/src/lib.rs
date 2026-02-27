@@ -46,7 +46,7 @@ use language_utils::{
 };
 use lasso::Spur;
 use opfs::persistent::{self};
-use pav_regression::{IsotonicRegression, Point, SmoothRegression};
+use pav_regression::{IsotonicRegression, Point, SmoothRegression, UnitWeight};
 use rs_fsrs::FSRS;
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
@@ -696,13 +696,13 @@ enum CardData {
 
 impl CardData {
     /// Returns positive surprise if there are no lapses, or negative surprise otherwise
-    pub fn pre_existing_knowledge(&self) -> f64 {
+    pub fn pre_existing_knowledge(&self) -> f32 {
         match self {
             CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
                 if fsrs_card.lapses == 0 {
-                    fsrs_card.accumulated_positive_surprise
+                    fsrs_card.accumulated_positive_surprise as f32
                 } else {
-                    -fsrs_card.accumulated_negative_surprise
+                    -fsrs_card.accumulated_negative_surprise as f32
                 }
             }
         }
@@ -803,8 +803,8 @@ pub struct Deck {
 
 #[derive(Clone, Debug)]
 pub(crate) struct Regressions {
-    target_language_regression: Option<SmoothRegression<f64>>,
-    listening_regression: Option<SmoothRegression<f64>>,
+    target_language_regression: Option<SmoothRegression<f32>>,
+    listening_regression: Option<SmoothRegression<f32>>,
 }
 
 struct ComprehensibleSentence {
@@ -1400,7 +1400,11 @@ impl weapon::AppState for Deck {
 
             if let Some(frequency) = context.get_card_frequency(card_indicator) {
                 let pre_existing_knowledge = card_data.pre_existing_knowledge();
-                let point = Point::new(frequency.ln_frequency(), pre_existing_knowledge);
+                let point = Point::new_with_weight(
+                    frequency.ln_frequency(),
+                    pre_existing_knowledge,
+                    UnitWeight,
+                );
 
                 match card_indicator {
                     CardIndicator::WrittenGram { .. } => {
@@ -1417,31 +1421,67 @@ impl weapon::AppState for Deck {
         // Add bias points at (0, -10) and (10, -10) to ensure the curve slopes down
         // This represents a word with 0 occurrences being very difficult. We'll give them a weight of 10 to ensure it's not ignored
 
-        let bias_points = if let Some(placement_test_results) = &state.placement_test_results {
-            // Use placement test results to create bias points
-            let mut points = context.get_placement_test_points(placement_test_results);
-            points.extend_from_slice(&[
-                Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
-                Point::new_with_weight(Frequency { count: 25 }.ln_frequency(), 0.0, 5.0),
-                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 5.0),
-            ]);
-            points
-        } else {
-            vec![
-                Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
-                Point::new_with_weight(Frequency { count: 25 }.ln_frequency(), 0.0, 5.0),
-                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 5.0),
-                Point::new_with_weight(Frequency { count: 400 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 800 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 1000 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 1500 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 2000 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 2500 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 3000 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 3500 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 4000 }.ln_frequency(), 0.0, 2.0),
-            ]
-        };
+        /// Create N unit-weight points spaced 0.01 apart around a center x,
+        /// to approximate a single weighted point.
+        fn bias_points(x: f32, y: f32, n: usize) -> impl Iterator<Item = Point<f32, UnitWeight>> {
+            (0..n).map(move |i| {
+                let offset = (i as f32 - (n as f32 - 1.0) / 2.0) * 0.01;
+                Point::new_with_weight(x + offset, y, UnitWeight)
+            })
+        }
+
+        let bias_points: Vec<_> =
+            if let Some(placement_test_results) = &state.placement_test_results {
+                // Use placement test results to create bias points
+                let mut points = context.get_placement_test_points(placement_test_results);
+                points.extend(bias_points(Frequency { count: 1 }.ln_frequency(), -10.0, 5));
+                points.extend(bias_points(Frequency { count: 25 }.ln_frequency(), 0.0, 5));
+                points.extend(bias_points(Frequency { count: 64 }.ln_frequency(), 0.0, 5));
+                points
+            } else {
+                let mut points = Vec::new();
+                points.extend(bias_points(Frequency { count: 1 }.ln_frequency(), -10.0, 5));
+                points.extend(bias_points(Frequency { count: 25 }.ln_frequency(), 0.0, 5));
+                points.extend(bias_points(Frequency { count: 64 }.ln_frequency(), 0.0, 5));
+                points.extend(bias_points(Frequency { count: 400 }.ln_frequency(), 0.0, 3));
+                points.extend(bias_points(Frequency { count: 800 }.ln_frequency(), 0.0, 3));
+                points.extend(bias_points(
+                    Frequency { count: 1000 }.ln_frequency(),
+                    0.0,
+                    3,
+                ));
+                points.extend(bias_points(
+                    Frequency { count: 1500 }.ln_frequency(),
+                    0.0,
+                    3,
+                ));
+                points.extend(bias_points(
+                    Frequency { count: 2000 }.ln_frequency(),
+                    0.0,
+                    2,
+                ));
+                points.extend(bias_points(
+                    Frequency { count: 2500 }.ln_frequency(),
+                    0.0,
+                    2,
+                ));
+                points.extend(bias_points(
+                    Frequency { count: 3000 }.ln_frequency(),
+                    0.0,
+                    2,
+                ));
+                points.extend(bias_points(
+                    Frequency { count: 3500 }.ln_frequency(),
+                    0.0,
+                    2,
+                ));
+                points.extend(bias_points(
+                    Frequency { count: 4000 }.ln_frequency(),
+                    0.0,
+                    2,
+                ));
+                points
+            };
 
         // Calculate smoothing window as 20% of max ln_frequency
         let smoothing_window = context
@@ -2535,7 +2575,7 @@ impl Deck {
                     let entry = frequency_buckets
                         .entry(bucket_key)
                         .or_insert((vec![], vec![]));
-                    entry.0.push(knowledge_probability);
+                    entry.0.push(f64::from(knowledge_probability));
                     if entry.1.len() < 5 {
                         // Limit to 5 example words per bucket
                         entry.1.push(display_text);
@@ -2768,10 +2808,10 @@ impl Context {
         &self,
         card: &CardIndicator<SpurGram, Spur>,
         regressions: &Regressions,
-    ) -> Option<ordered_float::NotNan<f64>> {
+    ) -> Option<ordered_float::NotNan<f32>> {
         let (knowledge_probability, frequency) =
             self.get_card_knowledge_probability(card, regressions)?;
-        ordered_float::NotNan::new((1.0 - knowledge_probability) * (frequency.ln_frequency())).ok()
+        ordered_float::NotNan::new((1.0 - knowledge_probability) * frequency.ln_frequency()).ok()
     }
 
     fn get_card_value_with_status(
@@ -2779,7 +2819,7 @@ impl Context {
         card: &CardIndicator<SpurGram, Spur>,
         status: &CardStatus,
         regressions: &Regressions,
-    ) -> Option<ordered_float::NotNan<f64>> {
+    ) -> Option<ordered_float::NotNan<f32>> {
         let frequency = self.get_card_frequency(card)?;
 
         // Check if we have a reviewed card (ghost or added)
@@ -2795,10 +2835,10 @@ impl Context {
                 let predicted_knowledge = regressions.predict_card_knowledge(card, frequency)?;
 
                 // Calculate observed knowledge from FSRS data
-                let observed_knowledge = if fsrs_card.lapses == 0 {
-                    fsrs_card.accumulated_positive_surprise
+                let observed_knowledge: f32 = if fsrs_card.lapses == 0 {
+                    fsrs_card.accumulated_positive_surprise as f32
                 } else {
-                    -fsrs_card.accumulated_negative_surprise
+                    -fsrs_card.accumulated_negative_surprise as f32
                 };
 
                 // For ghost cards, combine observed and predicted
@@ -2834,7 +2874,7 @@ impl Context {
         &self,
         card: &CardIndicator<SpurGram, Spur>,
         regressions: &Regressions,
-    ) -> Option<(f64, Frequency)> {
+    ) -> Option<(f32, Frequency)> {
         let frequency = self.get_card_frequency(card)?;
 
         let knowledge_probability = match card {
@@ -2957,7 +2997,7 @@ impl Regressions {
         &self,
         card: &CardIndicator<SpurGram, Spur>,
         frequency: Frequency,
-    ) -> Option<f64> {
+    ) -> Option<f32> {
         let regression = match card {
             CardIndicator::WrittenGram { .. } => self.target_language_regression.as_ref(),
             CardIndicator::ListeningGram { .. } => self.listening_regression.as_ref(),
@@ -2983,14 +3023,14 @@ impl Regressions {
         &self,
         card: &CardIndicator<SpurGram, Spur>,
         frequency: Frequency,
-    ) -> f64 {
+    ) -> f32 {
         let Some(knowledge) = self.predict_card_knowledge(card, frequency) else {
             return 0.0;
         };
         Self::knowledge_to_probability(knowledge)
     }
 
-    fn knowledge_to_probability(knowledge: f64) -> f64 {
+    fn knowledge_to_probability(knowledge: f32) -> f32 {
         // With pre-existing knowledge:
         // - Positive values indicate easier cards (higher probability)
         // - Negative values indicate harder cards (lower probability)
@@ -3027,8 +3067,8 @@ impl Regressions {
         } else {
             // Card has never been failed (positive knowledge)
             // Map positive surprise to higher probability
-            const EASY_THRESHOLD: f64 = 4.4; // Easy review level (~4.6)
-            const GOOD_THRESHOLD: f64 = 2.0; // Good review level (~2.3)
+            const EASY_THRESHOLD: f32 = 4.4; // Easy review level (~4.6)
+            const GOOD_THRESHOLD: f32 = 2.0; // Good review level (~2.3)
 
             if knowledge >= EASY_THRESHOLD {
                 // Easy-level knowledge: 90-95% probability

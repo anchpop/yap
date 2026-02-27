@@ -1159,8 +1159,8 @@ pub struct Frequency {
 }
 
 impl Frequency {
-    pub fn ln_frequency(&self) -> f64 {
-        (self.count as f64).ln()
+    pub fn ln_frequency(&self) -> f32 {
+        (self.count as f32).ln()
     }
 }
 

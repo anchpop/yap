@@ -161,8 +161,7 @@ mod tests {
             course.target_language.iso_639_3(),
             course.native_language.iso_639_3()
         );
-        let bytes =
-            std::fs::read(&path).unwrap_or_else(|e| panic!("Failed to read {path}: {e}"));
+        let bytes = std::fs::read(&path).unwrap_or_else(|e| panic!("Failed to read {path}: {e}"));
         let archived = rkyv::access::<
             language_utils::language_pack::ArchivedLanguagePack,
             rkyv::rancor::Error,
@@ -242,7 +241,7 @@ mod tests {
 
             let context = crate::Context {
                 language_pack,
-                course: course.clone(),
+                course: *course,
             };
             let state = crate::DeckState::new();
             let deck: Deck = <Deck as weapon::AppState>::finalize(state, &context);
@@ -261,10 +260,7 @@ mod tests {
         use weapon::opfs::parse_event_log_records;
 
         let mut store: EventStore<String, String> = EventStore::default();
-        store.get_or_insert_default::<EventType<crate::DeckEvent>>(
-            "reviews".to_string(),
-            None,
-        );
+        store.get_or_insert_default::<EventType<crate::DeckEvent>>("reviews".to_string(), None);
 
         let reviews_blob = std::fs::read(
             "test-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__reviews/events.blob",
@@ -281,12 +277,7 @@ mod tests {
                 .push(record.event.clone());
         }
         for (device_id, events) in reviews_by_device {
-            store.add_device_events_jsons(
-                "reviews".to_string(),
-                device_id,
-                events,
-                None,
-            );
+            store.add_device_events_jsons("reviews".to_string(), device_id, events, None);
         }
 
         let context = crate::Context {

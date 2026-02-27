@@ -411,11 +411,9 @@ impl LanguagePack {
         // E.g., "le" (det) has a definition, but "l'" (det, same heteronym) also needs one.
         let gram_definitions = {
             let mut map = gram_definitions;
-            for (_heteronym, gram_spurs) in &heteronym_to_grams {
+            for gram_spurs in heteronym_to_grams.values() {
                 // Find the definition from any variant of this heteronym
-                let definition = gram_spurs
-                    .iter()
-                    .find_map(|spur| map.get(spur).cloned());
+                let definition = gram_spurs.iter().find_map(|spur| map.get(spur).cloned());
                 if let Some(definition) = definition {
                     for &gram_spur in gram_spurs {
                         map.entry(gram_spur).or_insert_with(|| definition.clone());

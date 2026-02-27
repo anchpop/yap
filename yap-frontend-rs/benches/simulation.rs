@@ -14,11 +14,11 @@ fn load_deck_from_test_data() -> Deck {
     // Load language pack
     let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
         .expect("Failed to read language data - run `cargo run --bin generate-data` first");
-    let archived =
-        rkyv::access::<language_utils::language_pack::ArchivedLanguagePack, rkyv::rancor::Error>(
-            &bytes,
-        )
-        .unwrap();
+    let archived = rkyv::access::<
+        language_utils::language_pack::ArchivedLanguagePack,
+        rkyv::rancor::Error,
+    >(&bytes)
+    .unwrap();
     let language_pack: LanguagePack =
         rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
     let language_pack = Arc::new(language_pack);
@@ -84,7 +84,6 @@ fn bench_simulation(c: &mut Criterion) {
             criterion::BatchSize::SmallInput,
         )
     });
-
 }
 
 criterion_group!(benches, bench_simulation);

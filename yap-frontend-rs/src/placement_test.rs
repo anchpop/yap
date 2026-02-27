@@ -1,7 +1,7 @@
 use crate::{Context, Deck, PlacementTest};
 use language_utils::{Atom, GramDefinition, Heteronym, PartOfSpeech};
 use lasso::Spur;
-use pav_regression::{IsotonicRegression, Point, SmoothRegression};
+use pav_regression::{IsotonicRegression, Point, SmoothRegression, UnitWeight};
 
 /// Extract a single heteronym from a gram, if it's a single-word gram.
 /// Returns None for multi-word grams.
@@ -31,20 +31,20 @@ impl Context {
     pub(crate) fn get_placement_test_points(
         &self,
         placement_test: &PlacementTest,
-    ) -> Vec<Point<f64>> {
+    ) -> Vec<Point<f32, UnitWeight>> {
         let mut points = Vec::new();
 
         // Add points for known words (y = 5.0)
         for word_str in &placement_test.known_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
-                points.push(Point::new(freq.ln_frequency(), 5.0));
+                points.push(Point::new_with_weight(freq.ln_frequency(), 5.0, UnitWeight));
             }
         }
 
         // Add points for unknown words (y = 0.0)
         for word_str in &placement_test.unknown_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
-                points.push(Point::new(freq.ln_frequency(), 0.0));
+                points.push(Point::new_with_weight(freq.ln_frequency(), 0.0, UnitWeight));
             }
         }
 
@@ -83,7 +83,7 @@ impl Deck {
     /// Returns None if all words at that frequency are excluded
     pub(crate) fn find_heteronym_near_ln_frequency_for_placement_test(
         &self,
-        target_ln_freq: f64,
+        target_ln_freq: f32,
         excluded_lemmas: &std::collections::HashSet<Spur>,
     ) -> Option<(Heteronym<Spur>, language_utils::Frequency)> {
         let frequencies = &self.context.language_pack.gram_frequencies;
@@ -236,10 +236,18 @@ impl Deck {
         let mut points = Vec::new();
 
         // Add most common word as known (y = 1.0)
-        points.push(Point::new(most_common_freq.ln_frequency(), 1.0));
+        points.push(Point::new_with_weight(
+            most_common_freq.ln_frequency(),
+            1.0,
+            UnitWeight,
+        ));
 
         // Add least common word as unknown (y = 0.0)
-        points.push(Point::new(least_common_freq.ln_frequency(), 0.0));
+        points.push(Point::new_with_weight(
+            least_common_freq.ln_frequency(),
+            0.0,
+            UnitWeight,
+        ));
 
         // Add all known words
         for &heteronym in &known {
@@ -251,7 +259,7 @@ impl Deck {
                 && let Some(gram) = grams.first()
                 && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
             {
-                points.push(Point::new(freq.ln_frequency(), 1.0));
+                points.push(Point::new_with_weight(freq.ln_frequency(), 1.0, UnitWeight));
             }
         }
 
@@ -265,7 +273,7 @@ impl Deck {
                 && let Some(gram) = grams.first()
                 && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
             {
-                points.push(Point::new(freq.ln_frequency(), 0.0));
+                points.push(Point::new_with_weight(freq.ln_frequency(), 0.0, UnitWeight));
             }
         }
 
