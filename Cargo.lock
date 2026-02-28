@@ -2323,7 +2323,7 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 [[package]]
 name = "lexide"
 version = "0.1.0"
-source = "git+https://github.com/anchpop/lexide.git?rev=d4a0403783a7bda7a19fa2d638416e0b37ec5fe8#d4a0403783a7bda7a19fa2d638416e0b37ec5fe8"
+source = "git+https://github.com/anchpop/lexide.git?rev=4d0ba9a#4d0ba9a5d1c3561eff020e2df3820cc79be50dee"
 dependencies = [
  "anyhow",
  "futures",
@@ -2974,7 +2974,7 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 [[package]]
 name = "pav_regression"
 version = "0.5.2"
-source = "git+https://github.com/anchpop/pav.rs.git?rev=8b3aa69cce6b940fc6ee99eaabaf67874bfe06cf#8b3aa69cce6b940fc6ee99eaabaf67874bfe06cf"
+source = "git+https://github.com/anchpop/pav.rs.git?rev=776cc7d47b66156cca60d56bcf6956eba4b3b777#776cc7d47b66156cca60d56bcf6956eba4b3b777"
 dependencies = [
  "eytzinger",
  "ordered-float 3.9.2",
@@ -5197,7 +5197,7 @@ version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0978bf7171b3d90bac376700cb56d606feb40f251a475a5d6634613564460b22"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

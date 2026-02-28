@@ -214,7 +214,7 @@
 {"count":424,"disambiguation_key":3699718189,"gram":[{"Tok":{"text":"grazie","word_type":{"type":"Heteronym","word":"grazie","lemma":"grazie","pos":"INTJ"}}}]}
 {"count":422,"disambiguation_key":1531116279,"gram":[{"Tok":{"text":"uno","word_type":{"type":"Heteronym","word":"uno","lemma":"uno","pos":"PRON"}}}]}
 {"count":422,"disambiguation_key":1192520116,"gram":[{"Tok":{"text":"sulla","word_type":{"type":"Heteronym","word":"sulla","lemma":"su il","pos":"ADP"}}}]}
-{"count":422,"disambiguation_key":729291244,"gram":[{"Tok":{"text":"lo Gioco","word_type":{"type":"Heteronym","word":"lo gioco","lemma":"giocare","pos":"VERB"}}}]}
+{"count":421,"disambiguation_key":729291244,"gram":[{"Tok":{"text":"lo Gioco","word_type":{"type":"Heteronym","word":"lo gioco","lemma":"giocare","pos":"VERB"}}}]}
 {"count":418,"disambiguation_key":2912724877,"gram":[{"Tok":{"text":"vai","word_type":{"type":"Heteronym","word":"vai","lemma":"andare","pos":"VERB"}}}]}
 {"count":418,"disambiguation_key":234798315,"gram":[{"Tok":{"text":"odio","word_type":{"type":"Heteronym","word":"odio","lemma":"odiare","pos":"VERB"}}}]}
 {"count":415,"disambiguation_key":2708792961,"gram":[{"Tok":{"text":"sarebbe","word_type":{"type":"Heteronym","word":"sarebbe","lemma":"essere","pos":"AUX"}}}]}

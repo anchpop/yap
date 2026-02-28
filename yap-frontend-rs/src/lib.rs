@@ -1362,6 +1362,11 @@ impl weapon::AppState for Deck {
             }
 
             if let Some(frequency) = context.get_card_frequency(card_indicator) {
+                // Easy cards (cognates with single-word definitions) don't contribute
+                // meaningful signal to the regression, so skip them.
+                if frequency.easy {
+                    continue;
+                }
                 let pre_existing_knowledge = card_data.pre_existing_knowledge();
                 let point = Point::new_with_weight(
                     frequency.ln_frequency(),
@@ -1397,49 +1402,141 @@ impl weapon::AppState for Deck {
             if let Some(placement_test_results) = &state.placement_test_results {
                 // Use placement test results to create bias points
                 let mut points = context.get_placement_test_points(placement_test_results);
-                points.extend(bias_points(Frequency { count: 1 }.ln_frequency(), -10.0, 5));
-                points.extend(bias_points(Frequency { count: 25 }.ln_frequency(), 0.0, 5));
-                points.extend(bias_points(Frequency { count: 64 }.ln_frequency(), 0.0, 5));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 1,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    -10.0,
+                    5,
+                ));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 25,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    0.0,
+                    5,
+                ));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 64,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    0.0,
+                    5,
+                ));
                 points
             } else {
                 let mut points = Vec::new();
-                points.extend(bias_points(Frequency { count: 1 }.ln_frequency(), -10.0, 5));
-                points.extend(bias_points(Frequency { count: 25 }.ln_frequency(), 0.0, 5));
-                points.extend(bias_points(Frequency { count: 64 }.ln_frequency(), 0.0, 5));
-                points.extend(bias_points(Frequency { count: 400 }.ln_frequency(), 0.0, 3));
-                points.extend(bias_points(Frequency { count: 800 }.ln_frequency(), 0.0, 3));
                 points.extend(bias_points(
-                    Frequency { count: 1000 }.ln_frequency(),
+                    Frequency {
+                        count: 1,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    -10.0,
+                    5,
+                ));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 25,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    0.0,
+                    5,
+                ));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 64,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    0.0,
+                    5,
+                ));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 400,
+                        easy: false,
+                    }
+                    .ln_frequency(),
                     0.0,
                     3,
                 ));
                 points.extend(bias_points(
-                    Frequency { count: 1500 }.ln_frequency(),
+                    Frequency {
+                        count: 800,
+                        easy: false,
+                    }
+                    .ln_frequency(),
                     0.0,
                     3,
                 ));
                 points.extend(bias_points(
-                    Frequency { count: 2000 }.ln_frequency(),
+                    Frequency {
+                        count: 1000,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    0.0,
+                    3,
+                ));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 1500,
+                        easy: false,
+                    }
+                    .ln_frequency(),
+                    0.0,
+                    3,
+                ));
+                points.extend(bias_points(
+                    Frequency {
+                        count: 2000,
+                        easy: false,
+                    }
+                    .ln_frequency(),
                     0.0,
                     2,
                 ));
                 points.extend(bias_points(
-                    Frequency { count: 2500 }.ln_frequency(),
+                    Frequency {
+                        count: 2500,
+                        easy: false,
+                    }
+                    .ln_frequency(),
                     0.0,
                     2,
                 ));
                 points.extend(bias_points(
-                    Frequency { count: 3000 }.ln_frequency(),
+                    Frequency {
+                        count: 3000,
+                        easy: false,
+                    }
+                    .ln_frequency(),
                     0.0,
                     2,
                 ));
                 points.extend(bias_points(
-                    Frequency { count: 3500 }.ln_frequency(),
+                    Frequency {
+                        count: 3500,
+                        easy: false,
+                    }
+                    .ln_frequency(),
                     0.0,
                     2,
                 ));
                 points.extend(bias_points(
-                    Frequency { count: 4000 }.ln_frequency(),
+                    Frequency {
+                        count: 4000,
+                        easy: false,
+                    }
+                    .ln_frequency(),
                     0.0,
                     2,
                 ));
@@ -2792,7 +2889,7 @@ impl Context {
                     .get(&(*pattern, *position))
                     .copied()
                     .unwrap_or(0);
-                Some(Frequency { count })
+                Some(Frequency { count, easy: false })
             }
         }
     }
@@ -2835,35 +2932,15 @@ impl Context {
     }
 
     pub(crate) fn is_word_easy(&self, word: &Heteronym<Spur>) -> bool {
-        // todo: probably move this to frequency entry?
-        if word.pos == PartOfSpeech::Intj {
-            return false;
-        }
         let Some(grams) = self.language_pack.heteronym_to_grams.get(word) else {
             return false;
         };
-        let Some(gram_def) = grams
-            .iter()
-            .find_map(|g| self.language_pack.gram_definitions.get(g))
-        else {
-            return false;
-        };
-        let GramDefinition::Dictionary(entry) = gram_def else {
-            return false;
-        };
-        if entry.definitions.len() > 1 {
-            return false;
-        }
-        let Some(definition) = entry.definitions.first() else {
-            return false;
-        };
-        if definition.native.contains(" ") {
-            return false;
-        }
-        if definition.native == entry.target_language_word {
-            return false;
-        }
-        definition.cognate && !definition.false_cognate
+        grams.iter().any(|g| {
+            self.language_pack
+                .gram_frequencies
+                .get(g)
+                .is_some_and(|f| f.easy)
+        })
     }
 }
 

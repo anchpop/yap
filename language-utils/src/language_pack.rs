@@ -1,9 +1,9 @@
 use crate::indexmap::IndexMap;
 use crate::{
-    Atom, ConsolidatedLanguageData, Frequency, Gram, GramDefinition, Heteronym, HomophonePractice,
-    HomophoneWordPair, Language, Lexeme, Literal, MovieMetadata, PatternPosition,
-    PronunciationData, ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram,
-    WordType,
+    Atom, ConsolidatedLanguageData, Course, DictionaryEntry, Frequency, Gram, GramDefinition,
+    Heteronym, HomophonePractice, HomophoneWordPair, Lexeme, Literal, MovieMetadata, PartOfSpeech,
+    PatternPosition, PronunciationData, ProperNounDefinition, SentenceGram, SentenceGrams,
+    SentenceSource, SpurGram, WordType, grm,
 };
 use lasso::Spur;
 use rustc_hash::FxHashMap;
@@ -132,7 +132,8 @@ impl LanguagePack {
             .copied()
     }
 
-    pub fn new(language_data: ConsolidatedLanguageData, target_language: Language) -> Self {
+    pub fn new(language_data: ConsolidatedLanguageData, course: Course) -> Self {
+        let target_language = course.target_language;
         let rodeo = {
             let mut rodeo = lasso::Rodeo::new();
             language_data.intern(&mut rodeo);
@@ -337,14 +338,15 @@ impl LanguagePack {
 
         // Convert gram frequencies (pre-computed in generate-data)
         // Each entry now has a `gram` field (Gram<String>) which we intern
-        let gram_frequencies: IndexMap<SpurGram, Frequency> = {
+        // Build as counts first; we'll compute the `easy` flag after gram_definitions is available.
+        let gram_counts: IndexMap<SpurGram, u32> = {
             let mut map = IndexMap::new();
             for entry in &language_data.gram_frequencies {
                 let interned_gram = entry.gram.get_interned(&rodeo);
                 if let Some(interned_gram) = interned_gram
                     && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
                 {
-                    map.insert(gram_spur, Frequency { count: entry.count });
+                    map.insert(gram_spur, entry.count);
                 }
             }
             map
@@ -376,6 +378,24 @@ impl LanguagePack {
                 }
             }
 
+            map
+        };
+
+        // Now that we have definitions, convert gram_counts into gram_frequencies with `easy` computed.
+        let gram_frequencies: IndexMap<SpurGram, Frequency> = {
+            let mut map = IndexMap::new();
+            for (gram_spur, count) in gram_counts.iter() {
+                let gram = gram_rodeo.resolve(gram_spur);
+                let easy = !course.teaches_new_writing_system()
+                    && is_gram_easy(gram, gram_definitions.get(gram_spur));
+                map.insert(
+                    *gram_spur,
+                    Frequency {
+                        count: *count,
+                        easy,
+                    },
+                );
+            }
             map
         };
 
@@ -438,7 +458,14 @@ impl LanguagePack {
                         if let Some(interned_gram) = interned_gram
                             && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
                         {
-                            map.insert(gram_spur, Frequency { count: entry.count });
+                            // Movie frequencies don't need easy classification
+                            map.insert(
+                                gram_spur,
+                                Frequency {
+                                    count: entry.count,
+                                    easy: gram_frequencies.get(&gram_spur).is_some_and(|f| f.easy),
+                                },
+                            );
                         }
                     }
                     (movie_id.clone(), map)
@@ -508,4 +535,43 @@ impl LanguagePack {
             string_to_grams,
         }
     }
+}
+
+/// Check if a resolved gram is "easy" based on its definition.
+/// Easy grams are single-word cognates with a single-word definition.
+fn is_gram_easy(gram: &grm<Spur>, definition: Option<&GramDefinition>) -> bool {
+    // Must be a single-word gram with a heteronym
+    if gram.len() != 1 {
+        return false;
+    }
+    let Some(Atom::Tok(word)) = gram.iter().next() else {
+        return false;
+    };
+    let WordType::Heteronym(h) = &word.word_type else {
+        return false;
+    };
+    if h.pos == PartOfSpeech::Intj {
+        return false;
+    }
+
+    let Some(GramDefinition::Dictionary(entry)) = definition else {
+        return false;
+    };
+    is_dictionary_entry_easy(entry)
+}
+
+fn is_dictionary_entry_easy(entry: &DictionaryEntry) -> bool {
+    if entry.definitions.len() != 1 {
+        return false;
+    }
+    let Some(definition) = entry.definitions.first() else {
+        return false;
+    };
+    if definition.native.contains(' ') {
+        return false;
+    }
+    if definition.native == entry.target_language_word {
+        return false;
+    }
+    definition.cognate && !definition.false_cognate
 }

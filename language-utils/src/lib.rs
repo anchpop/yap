@@ -1156,6 +1156,9 @@ pub struct GramFrequencyEntry<S> {
 )]
 pub struct Frequency {
     pub count: u32,
+    /// Whether this gram is considered "easy" (cognate with single-word definition).
+    /// Easy grams are excluded from the isotonic regression.
+    pub easy: bool,
 }
 
 impl Frequency {

@@ -1,7 +1,7 @@
 {"count":568,"disambiguation_key":1368496516,"gram":[{"Tok":{"text":"있다","word_type":{"type":"Heteronym","word":"있다","lemma":"있다","pos":"VERB"}}}]}
 {"count":423,"disambiguation_key":202067578,"gram":[{"Tok":{"text":"하다","word_type":{"type":"Heteronym","word":"하다","lemma":"하다","pos":"VERB"}}}]}
-{"count":390,"disambiguation_key":2312385704,"gram":[{"Tok":{"text":"나니까","word_type":{"type":"Heteronym","word":"나니까","lemma":"나","pos":"PRON"}}}]}
-{"count":390,"disambiguation_key":457060829,"gram":[{"Tok":{"text":"나요","word_type":{"type":"Heteronym","word":"나요","lemma":"나","pos":"PRON"}}}]}
+{"count":389,"disambiguation_key":2312385704,"gram":[{"Tok":{"text":"나니까","word_type":{"type":"Heteronym","word":"나니까","lemma":"나","pos":"PRON"}}}]}
+{"count":389,"disambiguation_key":457060829,"gram":[{"Tok":{"text":"나요","word_type":{"type":"Heteronym","word":"나요","lemma":"나","pos":"PRON"}}}]}
 {"count":386,"disambiguation_key":414690463,"gram":[{"Tok":{"text":"왜","word_type":{"type":"Heteronym","word":"왜","lemma":"왜","pos":"ADV"}}}]}
 {"count":278,"disambiguation_key":1778498700,"gram":[{"Tok":{"text":"뭘","word_type":{"type":"Heteronym","word":"뭘","lemma":"무엇","pos":"PRON"}}}]}
 {"count":261,"disambiguation_key":4065554452,"gram":[{"Tok":{"text":"거야","word_type":{"type":"Heteronym","word":"거야","lemma":"것이다","pos":"AUX"}}}]}

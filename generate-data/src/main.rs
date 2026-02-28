@@ -1633,10 +1633,8 @@ async fn main() -> anyhow::Result<()> {
             gram_dictionary: gram_keyed_dictionary,
         };
 
-        let language_pack = language_utils::language_pack::LanguagePack::new(
-            consolidated_data,
-            course.target_language,
-        );
+        let language_pack =
+            language_utils::language_pack::LanguagePack::new(consolidated_data, *course);
 
         // Serialize with rkyv
         let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&language_pack)
