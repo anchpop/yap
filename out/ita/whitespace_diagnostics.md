@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2022088
-Total errors: 2507
+Total predictions: 2021104
+Total errors: 2506
 Accuracy: 99.88%
 
 ## Error Patterns (sorted by frequency)
@@ -7650,12 +7650,6 @@ Accuracy: 99.88%
 - Actual: Space
 - Examples:
   - Perché mi hai imprigionato ?
-
-### "in" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - In esperanto, gli avverbi derivati terminano in -e.
 
 ### "in" + "-e" (1 occurrences)
 - Predicted: None

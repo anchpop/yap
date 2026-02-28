@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2336153
-Total errors: 1258
+Total predictions: 2334469
+Total errors: 1257
 Accuracy: 99.95%
 
 ## Error Patterns (sorted by frequency)
@@ -501,13 +501,6 @@ Accuracy: 99.95%
 - Examples:
   - Und … Nick?
   - Und … kennen Sie eins?
-
-### "auf" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich pass auf -Verpiss dich!
-  - Irgendwas auf -ix?
 
 ### "die" + "Tür" (2 occurrences)
 - Predicted: Space
@@ -2886,6 +2879,12 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - Ich habe vergessen, auf „abschicken“ zu klicken.
+
+### "auf" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich pass auf -Verpiss dich!
 
 ### "auf" + "-e" (1 occurrences)
 - Predicted: None

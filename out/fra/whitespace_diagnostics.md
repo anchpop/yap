@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2420994
-Total errors: 540
+Total predictions: 2420380
+Total errors: 532
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -427,12 +427,6 @@ Accuracy: 99.98%
 - Examples:
   - Je peux m arrêter,Monsieur ?
 
-### "," + "Nou" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Comme des découvertes,Nou des créations.
-
 ### "," + "Ntu" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -697,29 +691,11 @@ Accuracy: 99.98%
 - Examples:
   - J'étais marié avec-- Je peux m'asseoir là ?
 
-### "----------" + "pas" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Si j----is---------- pas fait exp-------.
-
 ### "." + "Retry" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - La durée moyenne d'un appel, soit sept minutes.Retry
-
-### "." + "i" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - On ne peut pas ha.i.r son père ?
-
-### "." + "r" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - On ne peut pas ha.i.r son père ?
 
 ### "/" + "Allemandes" (1 occurrences)
 - Predicted: Space
@@ -822,12 +798,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Accélération C)h, ça fait du bien, ça.
-
-### "C)" + "k" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - C)k, on décale.
 
 ### "Cherche" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
@@ -960,12 +930,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Son ventre me rappelle les cartes postales du Japon - plat et joli.
-
-### "Ka" + "�e" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ka�e da po�tujemo Toruk Makta, mais nos méthodes sont dépassées.
 
 ### "L" + "-" (1 occurrences)
 - Predicted: None
@@ -1879,12 +1843,6 @@ Accuracy: 99.98%
 - Examples:
   - Notre voiture est là ; où est la tienne ?
 
-### "ma" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Oui, ma'am.
-
 ### "mais" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2130,12 +2088,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Mo�emo po�eti.
-
-### "po" + "�tujemo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ka�e da po�tujemo Toruk Makta, mais nos méthodes sont dépassées.
 
 ### "possible" + "'" (1 occurrences)
 - Predicted: Space

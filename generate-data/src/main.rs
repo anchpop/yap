@@ -372,6 +372,22 @@ async fn main() -> anyhow::Result<()> {
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect();
 
+        // Filter out sentences containing unknown (X) POS tags
+        let sentence_literals: BTreeMap<String, Vec<language_utils::Literal<String>>> =
+            sentence_literals
+                .into_iter()
+                .filter(|(_, words)| {
+                    !words.iter().any(|word| {
+                        matches!(
+                            &word.word.word_type,
+                            language_utils::WordType::Other(language_utils::OtherWord {
+                                other_tag: language_utils::OtherWordType::X
+                            })
+                        )
+                    })
+                })
+                .collect();
+
         // Convert multiword term tokenizations to grams for seeding into omnigram
         let multiword_term_literals = generate_data::nlp::convert_tokens_to_literals(
             &multiword_terms_tokenizations,

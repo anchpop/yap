@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1537199
-Total errors: 1041
+Total predictions: 1536426
+Total errors: 1033
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -174,14 +174,6 @@ Accuracy: 99.93%
   - Haveyou got parents?
   - Haveyou heard anything about her?
 
-### "\/" + "litsuha" (6 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hey, i\/litsuha?
-  - L\/litsuha has finally lost it.
-  - Oh, i\/litsuha.
-
 ### "of" + "you" (6 occurrences)
 - Predicted: Space
 - Actual: None
@@ -213,14 +205,6 @@ Accuracy: 99.93%
   - How doyou want to celebrateyour birthday?
   - What doyou expect me to do?
   - What doyou think?
-
-### "i" + "\/" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hey, i\/litsuha?
-  - Oh, i\/litsuha.
-  - What did i\/litsuha do this time?
 
 ### "of" + "your" (5 occurrences)
 - Predicted: Space
@@ -656,6 +640,13 @@ Accuracy: 99.93%
 - Examples:
   - What´s happening?
   - What´s that noise outside?
+
+### "\/" + "litsuha" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hey, i\/litsuha?
+  - L\/litsuha has finally lost it.
 
 ### "\h" + "BUT" (2 occurrences)
 - Predicted: Space
@@ -2677,6 +2668,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - That is a hypothesis\nthat has not been confirmed.
+
+### "i" + "\/" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hey, i\/litsuha?
 
 ### "if" + "Vitya" (1 occurrences)
 - Predicted: Space

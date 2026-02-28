@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2132762
-Total errors: 635
+Total predictions: 2132259
+Total errors: 630
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -1016,12 +1016,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ordeñadores de chivas, tienta - gallinas, cazadores de pulgas!
-
-### "-" + "gente" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - No, ustedes ca- gente acuática, como los zorros, son mamíferos inferiores.
 
 ### "-" + "he" (1 occurrences)
 - Predicted: None
@@ -2259,12 +2253,6 @@ Accuracy: 99.97%
 - Examples:
   - Tienes que leerte este libro.
 
-### "león" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Tú eres la miel en el león'.
-
 ### "llamada" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2493,12 +2481,6 @@ Accuracy: 99.97%
 - Examples:
   - El titulado Para entender la poesía.
 
-### "principiantes" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Esto sólo lo usan los principiantes'.
-
 ### "problema" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2696,12 +2678,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Mi hijo no está en una obra teatral.
-
-### "termo" + "‑" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Una víbora de foseta termo‑sensible.
 
 ### "ti" + "-" (1 occurrences)
 - Predicted: None
@@ -2930,12 +2906,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Solía ​​ser una mujer amable e inteligente.
-
-### "‑" + "sensible" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Una víbora de foseta termo‑sensible.
 
 ### "–" + "a" (1 occurrences)
 - Predicted: Space
