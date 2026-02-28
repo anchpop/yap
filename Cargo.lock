@@ -2974,11 +2974,10 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 [[package]]
 name = "pav_regression"
 version = "0.5.2"
+source = "git+https://github.com/anchpop/pav.rs.git?rev=8b3aa69cce6b940fc6ee99eaabaf67874bfe06cf#8b3aa69cce6b940fc6ee99eaabaf67874bfe06cf"
 dependencies = [
- "criterion",
  "eytzinger",
  "ordered-float 3.9.2",
- "rand 0.8.5",
  "serde",
  "thiserror 1.0.69",
 ]

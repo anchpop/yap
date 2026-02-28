@@ -175,10 +175,9 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
 
     // Collect up to SENTENCES_TO_ANALYZE unique sentences from the simulator
     for _day in 0..200 {
-        let (next_simulator, challenges) = simulator.next();
-        simulator = next_simulator;
+        let mut day = simulator.next_day();
 
-        for challenge in challenges {
+        for challenge in day.by_ref() {
             let (sentence, language, multiword_terms) = match challenge {
                 Challenge::TranslateComprehensibleSentence(TranslateComprehensibleSentence {
                     target_language_literals,
@@ -236,6 +235,8 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
                 }
             }
         }
+
+        simulator = day.finish_day();
 
         if all_sentences.len() >= SENTENCES_TO_ANALYZE {
             break;

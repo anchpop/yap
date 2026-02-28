@@ -14,7 +14,9 @@ fn apply_event(deck: Deck, event: &Timestamped<crate::DeckEvent>) -> Deck {
     Deck::finalize(state, &context)
 }
 
-/// Iterator that simulates daily usage of a deck, yielding all challenges for each day
+/// Iterator that simulates daily usage of a deck.
+/// Call `next_day()` to get a `DayChallengeIterator` for one day's challenges,
+/// then call `finish_day()` on it to advance to the next day.
 pub struct DailySimulationIterator {
     deck: Deck,
     current_time: DateTime<Utc>,
@@ -29,108 +31,148 @@ impl DailySimulationIterator {
             event_index: 0,
         }
     }
+
+    /// Start iterating over one day's challenges.
+    /// Exhaust the returned iterator (or not), then call `finish_day()` to advance.
+    pub fn next_day(self) -> DayChallengeIterator {
+        DayChallengeIterator {
+            deck: Some(self.deck),
+            current_time: self.current_time,
+            event_index: self.event_index,
+            done: false,
+        }
+    }
 }
 
-impl DailySimulationIterator {
-    pub fn next(mut self) -> (Self, Vec<Challenge<Gram<String>>>) {
-        let mut day_challenges = Vec::new();
+/// Iterator over individual challenges within a single simulated day.
+/// After consuming (or partially consuming) challenges, call `finish_day()`
+/// to add new cards, advance time, and get back the `DailySimulationIterator`.
+pub struct DayChallengeIterator {
+    // Option used internally so we can temporarily take ownership in Iterator::next
+    deck: Option<Deck>,
+    current_time: DateTime<Utc>,
+    event_index: usize,
+    done: bool,
+}
 
-        // Process all due reviews for the day (max 20 cards to keep simulation fast)
-        const MAX_DAILY_CARDS: usize = 20;
-        loop {
-            if day_challenges.len() >= MAX_DAILY_CARDS {
-                break;
-            }
+impl DayChallengeIterator {
+    fn deck(&self) -> &Deck {
+        self.deck.as_ref().unwrap()
+    }
 
-            let review_info = self
-                .deck
-                .get_review_info(vec![], self.current_time.timestamp_millis() as f64);
-            if let Some(challenge) = review_info.get_next_challenge(&self.deck) {
-                day_challenges.push(challenge.clone());
+    fn deck_mut(&mut self) -> &mut Deck {
+        self.deck.as_mut().unwrap()
+    }
 
-                // Answer the challenge, marking new flashcards as forgotten once
-                let event = match challenge {
-                    Challenge::FlashCardReview {
-                        indicator, is_new, ..
-                    } => {
-                        let rating = if is_new {
-                            Rating::Again
-                        } else {
-                            Rating::Remembered
-                        };
-                        self.deck.review_card(indicator, rating)
-                    }
-                    Challenge::TranslateComprehensibleSentence(
-                        TranslateComprehensibleSentence {
-                            target_language, ..
-                        },
-                    ) => self
-                        .deck
-                        .translate_sentence_perfect(vec![], target_language),
-                    Challenge::TranscribeComprehensibleSentence(
-                        TranscribeComprehensibleSentence { parts, .. },
-                    ) => {
-                        let graded = parts
-                            .into_iter()
-                            .map(|part| match part {
-                                transcription_challenge::Part::AskedToTranscribe { parts } => {
-                                    let submission = parts
-                                        .iter()
-                                        .map(|p| p.word.text.clone())
-                                        .collect::<Vec<_>>()
-                                        .join(" ");
-                                    transcription_challenge::PartGraded::AskedToTranscribe {
-                                        submission,
-                                        parts: parts
-                                            .into_iter()
-                                            .map(|p| transcription_challenge::PartGradedPart {
-                                                grade:
-                                                    transcription_challenge::WordGrade::Perfect {
-                                                        wrote: Some(p.word.text.clone()),
-                                                    },
-                                                heard: p,
-                                            })
-                                            .collect(),
-                                    }
-                                }
-                                transcription_challenge::Part::Provided { part } => {
-                                    transcription_challenge::PartGraded::Provided { part }
-                                }
-                            })
-                            .collect();
-                        self.deck.transcribe_sentence(graded)
-                    }
-                };
+    fn take_deck(&mut self) -> Deck {
+        self.deck.take().unwrap()
+    }
 
-                if let Some(event) = event {
-                    let ts = Timestamped {
-                        timestamp: self.current_time,
-                        within_device_events_index: self.event_index,
-                        event,
-                    };
-                    self.deck = apply_event(self.deck, &ts);
-                    self.event_index += 1;
-                }
-            } else {
-                break;
-            }
-        }
+    /// Finish this day: add 10 new cards, advance time, and return the simulation iterator.
+    pub fn finish_day(mut self) -> DailySimulationIterator {
+        let mut deck = self.take_deck();
 
         // Add 10 new cards at the end of the day
-        if let Some(event) = self.deck.add_next_unknown_cards(None, 10, vec![]) {
+        if let Some(event) = deck.add_next_unknown_cards(None, 10, vec![]) {
             let ts = Timestamped {
                 timestamp: self.current_time,
                 within_device_events_index: self.event_index,
                 event,
             };
-            self.deck = apply_event(self.deck, &ts);
+            deck = apply_event(deck, &ts);
             self.event_index += 1;
         }
 
-        // Advance to next day
-        self.current_time += Duration::days(1);
+        DailySimulationIterator {
+            deck,
+            current_time: self.current_time + Duration::days(1),
+            event_index: self.event_index,
+        }
+    }
+}
 
-        (self, day_challenges)
+impl Iterator for DayChallengeIterator {
+    type Item = Challenge<Gram<String>>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.done {
+            return None;
+        }
+
+        let review_info = self
+            .deck()
+            .get_review_info(vec![], self.current_time.timestamp_millis() as f64);
+        if let Some(challenge) = review_info.get_next_challenge(self.deck()) {
+            let to_return = challenge.clone();
+            // Answer the challenge, marking new flashcards as forgotten once
+            let event = match challenge {
+                Challenge::FlashCardReview {
+                    indicator, is_new, ..
+                } => {
+                    let rating = if is_new {
+                        Rating::Again
+                    } else {
+                        Rating::Remembered
+                    };
+                    self.deck_mut().review_card(indicator, rating)
+                }
+                Challenge::TranslateComprehensibleSentence(TranslateComprehensibleSentence {
+                    target_language,
+                    ..
+                }) => self
+                    .deck_mut()
+                    .translate_sentence_perfect(vec![], target_language),
+                Challenge::TranscribeComprehensibleSentence(TranscribeComprehensibleSentence {
+                    parts,
+                    ..
+                }) => {
+                    let graded = parts
+                        .into_iter()
+                        .map(|part| match part {
+                            transcription_challenge::Part::AskedToTranscribe { parts } => {
+                                let submission = parts
+                                    .iter()
+                                    .map(|p| p.word.text.clone())
+                                    .collect::<Vec<_>>()
+                                    .join(" ");
+                                transcription_challenge::PartGraded::AskedToTranscribe {
+                                    submission,
+                                    parts: parts
+                                        .into_iter()
+                                        .map(|p| transcription_challenge::PartGradedPart {
+                                            grade: transcription_challenge::WordGrade::Perfect {
+                                                wrote: Some(p.word.text.clone()),
+                                            },
+                                            heard: p,
+                                        })
+                                        .collect(),
+                                }
+                            }
+                            transcription_challenge::Part::Provided { part } => {
+                                transcription_challenge::PartGraded::Provided { part }
+                            }
+                        })
+                        .collect();
+                    self.deck_mut().transcribe_sentence(graded)
+                }
+            };
+
+            if let Some(event) = event {
+                let ts = Timestamped {
+                    timestamp: self.current_time,
+                    within_device_events_index: self.event_index,
+                    event,
+                };
+                let deck = self.take_deck();
+                self.deck = Some(apply_event(deck, &ts));
+                self.event_index += 1;
+            }
+
+            Some(to_return)
+        } else {
+            self.done = true;
+            None
+        }
     }
 }
 
@@ -250,8 +292,9 @@ mod tests {
             let mut simulator = deck.simulate_usage(fixed_time);
 
             for _ in 0..365 {
-                let (next_sim, _challenges) = simulator.next();
-                simulator = next_sim;
+                let day = simulator.next_day();
+                // Exhaust challenges then advance
+                simulator = day.finish_day();
             }
         }
     }
@@ -309,8 +352,8 @@ mod tests {
 
         let mut simulator = deck.simulate_usage(fixed_time);
         for _ in 0..365 {
-            let (next_sim, _challenges) = simulator.next();
-            simulator = next_sim;
+            let day = simulator.next_day();
+            simulator = day.finish_day();
         }
     }
 
@@ -329,15 +372,14 @@ mod tests {
             // Collect challenges for first 5 days
             let mut challenges_per_day = Vec::new();
             for _ in 0..5 {
-                let (next_sim, challenges) = simulator.next();
-                simulator = next_sim;
+                let mut day = simulator.next_day();
 
                 // Convert challenges to a comparable format (just count by type for simplicity)
                 let mut flash_count = 0;
                 let mut translate_count = 0;
                 let mut transcribe_count = 0;
 
-                for challenge in challenges {
+                for challenge in day.by_ref() {
                     match challenge {
                         Challenge::FlashCardReview { .. } => flash_count += 1,
                         Challenge::TranslateComprehensibleSentence(_) => translate_count += 1,
@@ -346,6 +388,7 @@ mod tests {
                 }
 
                 challenges_per_day.push((flash_count, translate_count, transcribe_count));
+                simulator = day.finish_day();
             }
 
             results.push(challenges_per_day);

@@ -63,15 +63,16 @@ fn main() {
     let mut sim = deck.simulate_usage(fixed_time);
     for day in 0..5 {
         let start = std::time::Instant::now();
-        let (next, challenges) = sim.next();
+        let mut day_iter = sim.next_day();
+        let challenge_count = day_iter.by_ref().count();
+        sim = day_iter.finish_day();
         let elapsed = start.elapsed();
         eprintln!(
             "Day {}: {:>8.2}ms  ({} challenges)",
             day + 1,
             elapsed.as_secs_f64() * 1000.0,
-            challenges.len()
+            challenge_count
         );
-        sim = next;
     }
 
     // Then run a few more iterations for profiling signal
@@ -79,8 +80,8 @@ fn main() {
     for _ in 0..2 {
         let mut sim = deck.simulate_usage(fixed_time);
         for _ in 0..5 {
-            let (next, _challenges) = sim.next();
-            sim = next;
+            let day = sim.next_day();
+            sim = day.finish_day();
         }
     }
 }

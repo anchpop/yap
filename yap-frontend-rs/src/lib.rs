@@ -25,11 +25,10 @@ use language_utils::HomophoneWordPair;
 use language_utils::ProperNounDefinition;
 use language_utils::SentenceGrams;
 use language_utils::SpurGram;
-pub use simulation::DailySimulationIterator;
+pub use simulation::{DailySimulationIterator, DayChallengeIterator};
 
 use chrono::{DateTime, Utc};
 use deck_selection::DeckSelectionEvent;
-use futures::StreamExt;
 use language_utils::Frequency;
 use language_utils::Literal;
 use language_utils::PartOfSpeech;
@@ -1824,63 +1823,52 @@ impl Deck {
         };
         let access_token = access_token.as_ref();
 
-        const SIMULATION_DAYS: u32 = 0; // set to 0 right now in case it's causing our memory issues
+        const SIMULATION_CHALLENGES: usize = 30;
         let mut requested_filenames = BTreeSet::new();
         let mut simulation_iterator = self.simulate_usage(chrono::Utc::now());
-        #[expect(clippy::reversed_empty_ranges)] // Intentionally disabled (SIMULATION_DAYS = 0)
-        for _ in 0..SIMULATION_DAYS {
-            // Sleep for 1 second using JavaScript's setTimeout via JsFuture
-            let promise = js_sys::Promise::new(&mut |resolve, _| {
-                web_sys::window()
-                    .unwrap()
-                    .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 1000)
-                    .unwrap();
-            });
-            wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+        let mut challenges_fetched = 0;
 
-            // Check if aborted before progressing
-            if let Some(ref signal) = abort_signal
-                && signal.aborted()
-            {
-                return;
+        'outer: loop {
+            let mut day = simulation_iterator.next_day();
+
+            loop {
+                // Yield to the main thread to avoid blocking old devices
+                let promise = js_sys::Promise::new(&mut |resolve, _| {
+                    web_sys::window()
+                        .unwrap()
+                        .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 200)
+                        .unwrap();
+                });
+                wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+
+                // Early return (not just break) so we skip the audio cleanup below,
+                // preserving any previously cached files that may still be useful.
+                if let Some(ref signal) = abort_signal
+                    && signal.aborted()
+                {
+                    return;
+                }
+
+                let Some(challenge) = day.next() else {
+                    break;
+                };
+                challenges_fetched += 1;
+
+                // Pre-fetch the audio file
+                let request = challenge.audio_request();
+                if let Some(request) = request {
+                    let cache_filename =
+                        audio::AudioCache::get_cache_filename(&request.request, &request.provider);
+                    let _ = audio_cache.fetch_and_cache(&request, access_token).await;
+                    requested_filenames.insert(cache_filename);
+                }
+
+                if challenges_fetched >= SIMULATION_CHALLENGES {
+                    break 'outer;
+                }
             }
 
-            let challenges;
-            (simulation_iterator, challenges) = simulation_iterator.next();
-
-            // get the audio files
-            requested_filenames.extend(
-                futures::stream::iter(challenges)
-                    .map(|challenge| {
-                        let request = challenge.audio_request();
-                        let audio_cache = audio_cache.clone();
-                        let abort_signal = abort_signal.clone();
-                        async move {
-                            let request = request?;
-                            // Check if aborted before processing
-                            if let Some(ref signal) = abort_signal
-                                && signal.aborted()
-                            {
-                                return None;
-                            }
-
-                            // Generate the cache filename for this request
-                            let cache_filename = audio::AudioCache::get_cache_filename(
-                                &request.request,
-                                &request.provider,
-                            );
-
-                            // Just try to fetch and cache, ignoring errors for individual requests
-                            let _ = audio_cache.fetch_and_cache(&request, access_token).await;
-                            Some(cache_filename)
-                        }
-                    })
-                    .buffered(3)
-                    .filter_map(|x| async { x })
-                    .collect::<BTreeSet<_>>()
-                    .await,
-            );
-            // sleep for 1 second
+            simulation_iterator = day.finish_day();
         }
 
         // Check if aborted before cleanup

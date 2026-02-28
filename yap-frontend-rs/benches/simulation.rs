@@ -66,7 +66,7 @@ fn bench_simulation(c: &mut Criterion) {
     c.bench_function("simulate_1_day", |b| {
         b.iter_batched(
             || deck.simulate_usage(fixed_time),
-            |sim| sim.next(),
+            |sim| sim.next_day().finish_day(),
             criterion::BatchSize::SmallInput,
         )
     });
@@ -76,8 +76,7 @@ fn bench_simulation(c: &mut Criterion) {
             || deck.simulate_usage(fixed_time),
             |mut sim| {
                 for _ in 0..5 {
-                    let (next, _challenges) = sim.next();
-                    sim = next;
+                    sim = sim.next_day().finish_day();
                 }
                 sim
             },
