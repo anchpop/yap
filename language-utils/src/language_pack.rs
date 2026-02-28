@@ -354,18 +354,13 @@ impl LanguagePack {
         let gram_definitions: FxHashMap<SpurGram, GramDefinition> = {
             let mut map = FxHashMap::default();
 
-            // Add dictionary entries (single-atom grams)
-            for (heteronym, definition) in &language_data.gram_dictionary {
-                let interned_heteronym = heteronym.get_interned(&rodeo).unwrap_or_else(|| {
-                    panic!("gram dictionary heteronym not in rodeo: {heteronym:?}")
-                });
-                // Create a single-atom gram from this heteronym
-                let word = crate::Word {
-                    text: interned_heteronym.word,
-                    word_type: WordType::Heteronym(interned_heteronym),
-                };
-                let gram = Gram::new(vec![Atom::Tok(word)]);
-                if let Some(gram_spur) = gram_rodeo.get(&gram) {
+            // Add dictionary entries (keyed by Gram directly)
+            for (gram, definition) in &language_data.gram_dictionary {
+                let interned_gram: Option<Gram<Spur>> =
+                    gram.iter().map(|atom| atom.get_interned(&rodeo)).collect();
+                if let Some(interned_gram) = interned_gram
+                    && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
+                {
                     map.insert(gram_spur, GramDefinition::Dictionary(definition.clone()));
                 }
             }
@@ -405,22 +400,6 @@ impl LanguagePack {
                     (k, v.into_iter().map(|(spur, _)| spur).collect())
                 })
                 .collect()
-        };
-
-        // Propagate dictionary definitions to all surface-form variants of the same heteronym.
-        // E.g., "le" (det) has a definition, but "l'" (det, same heteronym) also needs one.
-        let gram_definitions = {
-            let mut map = gram_definitions;
-            for gram_spurs in heteronym_to_grams.values() {
-                // Find the definition from any variant of this heteronym
-                let definition = gram_spurs.iter().find_map(|spur| map.get(spur).cloned());
-                if let Some(definition) = definition {
-                    for &gram_spur in gram_spurs {
-                        map.entry(gram_spur).or_insert_with(|| definition.clone());
-                    }
-                }
-            }
-            map
         };
 
         // Build index from gram to sentences containing it

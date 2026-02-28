@@ -2758,6 +2758,7 @@
 {"count":4,"disambiguation_key":2826181470,"gram":[{"Tok":{"text":"왜","word_type":{"type":"Heteronym","word":"왜","lemma":"왜","pos":"ADV"}}},{"Tok":{"text":"못","word_type":{"type":"Heteronym","word":"못","lemma":"못","pos":"ADV"}}}]}
 {"count":4,"disambiguation_key":2819780507,"gram":[{"Tok":{"text":"줄","word_type":{"type":"Heteronym","word":"줄","lemma":"주다","pos":"VERB"}}},{"Tok":{"text":"수","word_type":{"type":"Heteronym","word":"수","lemma":"수","pos":"NOUN"}}}]}
 {"count":4,"disambiguation_key":2819780507,"gram":[{"Tok":{"text":"줄","word_type":{"type":"Heteronym","word":"줄","lemma":"주다","pos":"AUX"}}},{"Tok":{"text":"수","word_type":{"type":"Heteronym","word":"수","lemma":"수","pos":"NOUN"}}}]}
+{"count":4,"disambiguation_key":2818649067,"gram":[{"Tok":{"text":"몇","word_type":{"type":"Heteronym","word":"몇","lemma":"몇","pos":"DET"}}},{"Tok":{"text":"개나","word_type":{"type":"Heteronym","word":"개나","lemma":"개","pos":"NOUN"}}}]}
 {"count":4,"disambiguation_key":2818137740,"gram":[{"Tok":{"text":"그거야","word_type":{"type":"Heteronym","word":"그거야","lemma":"그것","pos":"PRON"}}}]}
 {"count":4,"disambiguation_key":2817848913,"gram":[{"Tok":{"text":"이겼다","word_type":{"type":"Heteronym","word":"이겼다","lemma":"이겼다","pos":"VERB"}}}]}
 {"count":4,"disambiguation_key":2810664987,"gram":[{"Tok":{"text":"무슨","word_type":{"type":"Heteronym","word":"무슨","lemma":"무슨","pos":"DET"}}},{"Tok":{"text":"문제라도","word_type":{"type":"Heteronym","word":"문제라도","lemma":"문제","pos":"NOUN"}}}]}
@@ -2936,6 +2937,7 @@
 {"count":4,"disambiguation_key":1901051308,"gram":[{"Tok":{"text":"이걸로","word_type":{"type":"Heteronym","word":"이걸로","lemma":"이것","pos":"PRON"}}}]}
 {"count":4,"disambiguation_key":1900376452,"gram":[{"Tok":{"text":"뻔","word_type":{"type":"Heteronym","word":"뻔","lemma":"뻔","pos":"NOUN"}}}]}
 {"count":4,"disambiguation_key":1896295194,"gram":[{"Tok":{"text":"이겨","word_type":{"type":"Heteronym","word":"이겨","lemma":"이겨","pos":"VERB"}}}]}
+{"count":4,"disambiguation_key":1892046422,"gram":[{"Tok":{"text":"누구","word_type":{"type":"Heteronym","word":"누구","lemma":"누구","pos":"PRON"}}},{"Control":"None"},{"Tok":{"text":"에게","word_type":{"type":"Heteronym","word":"에게","lemma":"에게","pos":"ADP"}}}]}
 {"count":4,"disambiguation_key":1880288147,"gram":[{"Tok":{"text":"기억하고","word_type":{"type":"Heteronym","word":"기억하고","lemma":"기억하다","pos":"VERB"}}},{"Tok":{"text":"있어","word_type":{"type":"Heteronym","word":"있어","lemma":"있다","pos":"AUX"}}}]}
 {"count":4,"disambiguation_key":1866909954,"gram":[{"Tok":{"text":"좋은","word_type":{"type":"Heteronym","word":"좋은","lemma":"좋다","pos":"ADJ"}}},{"Tok":{"text":"하루","word_type":{"type":"Heteronym","word":"하루","lemma":"하루","pos":"NOUN"}}}]}
 {"count":4,"disambiguation_key":1863806940,"gram":[{"Tok":{"text":"어디에","word_type":{"type":"Heteronym","word":"어디에","lemma":"어디","pos":"PRON"}}}]}

@@ -704,11 +704,23 @@ async fn main() -> anyhow::Result<()> {
             BTreeMap::new()
         };
 
+        // Build the set of grams that actually have MWE phrasebook entries
+        // (not all wiktionary_grams get MWE entries — some fail the multiword_term_counts > 3 filter)
+        let mwe_phrasebook_grams: HashSet<Gram<String>> = raw_phrasebook_entries
+            .iter()
+            .filter_map(|(phrase, _)| {
+                let literals = multiword_term_literals.get(phrase)?;
+                let (atoms, _) =
+                    language_utils::literals_to_atoms(literals, course.target_language);
+                Some(Gram::from(atoms))
+            })
+            .collect();
+
         let gram_phrasebook = generate_data::dict::create_gram_phrasebook(
             *course,
             &filtered_gram_frequencies,
             &encoded_sentences_with_grams,
-            &wiktionary_grams,
+            &mwe_phrasebook_grams,
             &mut gram_sentences,
         )
         .await
@@ -913,6 +925,7 @@ async fn main() -> anyhow::Result<()> {
             gram_dictionary.keys().cloned().collect();
 
         // Filter gram_frequencies to only include grams that have definitions
+        let gram_frequencies_count_before = gram_frequencies.len();
         let gram_frequencies: Vec<GramFrequencyEntry<String>> = gram_frequencies
             .into_iter()
             .filter(|entry| {
@@ -932,10 +945,31 @@ async fn main() -> anyhow::Result<()> {
             })
             .collect();
 
-        println!(
-            "Filtered gram_frequencies to {} entries with definitions",
-            gram_frequencies.len()
-        );
+        {
+            let removed_count = gram_frequencies_count_before - gram_frequencies.len();
+            println!(
+                "Filtered gram_frequencies: removed {removed_count} grams without definitions ({gram_frequencies_count_before} -> {})",
+                gram_frequencies.len()
+            );
+        }
+
+        // Build gram-keyed dictionary from filtered gram_frequencies
+        // For each single-atom gram, look up its heteronym in gram_dictionary
+        let gram_keyed_dictionary: BTreeMap<Gram<String>, language_utils::DictionaryEntry> = {
+            let mut map = BTreeMap::new();
+            for entry in &gram_frequencies {
+                let gram = &entry.gram;
+                if gram.len() == 1
+                    && let Some(Atom::Tok(word)) = gram.first()
+                    && let language_utils::WordType::Heteronym(heteronym) = &word.word_type
+                {
+                    if let Some(dict_entry) = gram_dictionary.get(heteronym) {
+                        map.insert(gram.clone(), dict_entry.clone());
+                    }
+                }
+            }
+            map
+        };
 
         // Filter gram_vocabulary to remove learnable grams without definitions
         let defined_gram_set: std::collections::HashSet<Gram<String>> = gram_frequencies
@@ -1596,7 +1630,7 @@ async fn main() -> anyhow::Result<()> {
             gram_vocabulary,
             gram_frequencies,
             encoded_sentences: encoded_sentences_with_grams,
-            gram_dictionary,
+            gram_dictionary: gram_keyed_dictionary,
         };
 
         let language_pack = language_utils::language_pack::LanguagePack::new(

@@ -1940,8 +1940,8 @@ pub struct ConsolidatedLanguageData {
     pub gram_frequencies: Vec<GramFrequencyEntry<String>>,
     /// Encoded sentences: sentence text -> grams with learnability and capitalize_first
     pub encoded_sentences: Vec<(String, SentenceGrams<Gram<String>>)>,
-    /// Gram dictionary: definitions for single-atom grams (individual words)
-    pub gram_dictionary: BTreeMap<Heteronym<String>, DictionaryEntry>,
+    /// Gram dictionary: definitions for grams (keyed by Gram for correct surface-form matching)
+    pub gram_dictionary: BTreeMap<Gram<String>, DictionaryEntry>,
 }
 
 impl ConsolidatedLanguageData {
@@ -1963,9 +1963,16 @@ impl ConsolidatedLanguageData {
             }
         }
 
-        for heteronym in self.gram_dictionary.keys() {
-            rodeo.get_or_intern(&heteronym.word);
-            rodeo.get_or_intern(&heteronym.lemma);
+        for gram in self.gram_dictionary.keys() {
+            for atom in gram.iter() {
+                if let Atom::Tok(word) = atom {
+                    rodeo.get_or_intern(&word.text);
+                    if let WordType::Heteronym(h) = &word.word_type {
+                        rodeo.get_or_intern(&h.word);
+                        rodeo.get_or_intern(&h.lemma);
+                    }
+                }
+            }
         }
         for entry in self.phrasebook.values() {
             rodeo.get_or_intern(&entry.target_language_multi_word_term);

@@ -5,9 +5,7 @@ use language_utils::{Atom, GramDefinition, TargetToNativeWord, WordType};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-use crate::{
-    CardData, CardIndicator, CardStatus, Deck, DeckEvent, LanguageEvent, LanguageEventContent,
-};
+use crate::{CardData, CardIndicator, Deck, DeckEvent, LanguageEvent, LanguageEventContent};
 
 /// Get gram dictionary entries ordered by frequency (most common first).
 /// Optionally filters by search query (accent-insensitive) and limits results.
@@ -71,10 +69,7 @@ impl Deck {
                 };
 
                 let card = CardIndicator::WrittenGram { gram: *spur_gram };
-                let is_in_deck = matches!(
-                    self.cards.get(&card),
-                    Some(CardStatus::Tracked(CardData::Added { .. }))
-                );
+                let is_in_deck = matches!(self.cards.get(&card), Some(CardData::Added { .. }));
 
                 let entry = match gram_def {
                     GramDefinition::Dictionary(dict_def) => {

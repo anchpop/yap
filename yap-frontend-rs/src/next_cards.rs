@@ -8,7 +8,7 @@ use lasso::Spur;
 use ordered_float::NotNan;
 
 use crate::{
-    CARD_TYPES, CardIndicator, CardStatus, CardType, ChallengeRequirements, Context, Deck,
+    CARD_TYPES, CardData, CardIndicator, CardType, ChallengeRequirements, Context, Deck,
     Regressions,
 };
 
@@ -28,7 +28,8 @@ fn gram_single_word(gram: &grm<Spur>) -> Option<&Word<Spur>> {
 }
 
 pub(crate) struct NextCardsIterator<'a> {
-    pub(crate) cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardStatus>,
+    /// Only tracked cards (Added/Ghost). Unadded cards are derived from context.
+    pub(crate) cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardData>,
     pub(crate) allowed_cards: AllowedCards,
     pub(crate) context: &'a Context,
     pub(crate) regressions: &'a Regressions,
@@ -50,19 +51,17 @@ impl<'a> NextCardsIterator<'a> {
     pub fn new(deck: &'a Deck, allowed_cards: AllowedCards) -> Self {
         let cards = deck.cards.clone();
 
-        // Initialize counts by iterating once
+        // Initialize counts by iterating once over tracked cards
         let mut added_count = 0;
         let mut card_type_counts: FxHashMap<CardType, u32> =
             CARD_TYPES.iter().map(|card_type| (*card_type, 0)).collect();
 
-        for (card, status) in &cards {
-            if matches!(status, CardStatus::Tracked(_)) {
-                added_count += 1;
-                let card_type = card.card_type();
-                card_type_counts
-                    .entry(card_type)
-                    .and_modify(|count| *count += 1);
-            }
+        for card in cards.keys() {
+            added_count += 1;
+            let card_type = card.card_type();
+            card_type_counts
+                .entry(card_type)
+                .and_modify(|count| *count += 1);
         }
 
         Self {
@@ -81,78 +80,80 @@ impl<'a> NextCardsIterator<'a> {
         let prefer_single_word = self.added_count < 20;
         let easy_only = self.added_count < 5 && !self.context.course.teaches_new_writing_system();
 
-        self.cards
-            .iter()
-            .filter_map(|(card, status)| {
-                status.unadded()?;
+        // Iterate all grams from context, skip ones already tracked
+        self.context
+            .language_pack
+            .gram_frequencies
+            .keys()
+            .filter_map(|gram| {
+                let card = CardIndicator::WrittenGram { gram: *gram };
+                // Skip if already tracked
+                if self.cards.contains_key(&card) {
+                    return None;
+                }
 
                 let mut preferred = true;
 
-                match card {
-                    CardIndicator::WrittenGram { gram } => {
-                        if let Some(word) =
-                            gram_single_word(self.context.language_pack.gram_rodeo.resolve(gram))
-                        {
-                            // Single-word gram: check if it's easy
-                            if easy_only
-                                && let WordType::Heteronym(h) = &word.word_type
-                                && !self.context.is_word_easy(h)
-                            {
-                                preferred = false;
-                            }
-                        } else {
-                            // Multi-word gram: deprioritize during early onboarding
-                            if prefer_single_word {
-                                preferred = false;
-                            }
-                        }
+                if let Some(word) =
+                    gram_single_word(self.context.language_pack.gram_rodeo.resolve(gram))
+                {
+                    // Single-word gram: check if it's easy
+                    if easy_only
+                        && let WordType::Heteronym(h) = &word.word_type
+                        && !self.context.is_word_easy(h)
+                    {
+                        preferred = false;
                     }
-                    _ => return None, // Not a text card
+                } else {
+                    // Multi-word gram: deprioritize during early onboarding
+                    if prefer_single_word {
+                        preferred = false;
+                    }
                 }
 
                 let value =
                     self.context
-                        .get_card_value_with_status(card, status, self.regressions)?;
+                        .get_card_value_with_status(&card, None, self.regressions)?;
 
-                let fsrs_card = rs_fsrs::Card::new(Utc::now());
-
-                Some((*card, fsrs_card, (preferred, value)))
+                Some((card, (preferred, value)))
             })
-            .max_by_key(|(_, _, value)| *value)
-            .map(|(card, fsrs_card, _)| (card, fsrs_card))
+            .max_by_key(|(_, value)| *value)
+            .map(|(card, _)| (card, rs_fsrs::Card::new(Utc::now())))
     }
 
     fn next_letter_pronunciation_card(
         &self,
     ) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
         // Find pronunciation patterns that haven't been added yet
-        self.cards
+        self.context
+            .language_pack
+            .pronunciation_data
+            .guides
             .iter()
-            .filter_map(|(card, status)| {
-                let CardIndicator::LetterPronunciation { pattern, position } = card else {
-                    return None;
+            .filter_map(|guide| {
+                let pattern = self
+                    .context
+                    .language_pack
+                    .string_rodeo
+                    .get(&guide.pattern)?;
+                let card = CardIndicator::LetterPronunciation {
+                    pattern,
+                    position: guide.position,
                 };
 
-                status.unadded()?;
+                // Skip if already tracked
+                if self.cards.contains_key(&card) {
+                    return None;
+                }
 
                 let value =
                     self.context
-                        .get_card_value_with_status(card, status, self.regressions)?;
+                        .get_card_value_with_status(&card, None, self.regressions)?;
 
-                let fsrs_card = rs_fsrs::Card::new(Utc::now());
-
-                Some((pattern, position, fsrs_card, value))
+                Some((card, value))
             })
-            .max_by_key(|(_, _, _, value)| *value)
-            .map(|(pattern, position, fsrs_card, _)| {
-                (
-                    CardIndicator::LetterPronunciation {
-                        pattern: *pattern,
-                        position: *position,
-                    },
-                    fsrs_card,
-                )
-            })
+            .max_by_key(|(_, value)| *value)
+            .map(|(card, _)| (card, rs_fsrs::Card::new(Utc::now())))
     }
 
     fn next_listening_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
@@ -160,43 +161,46 @@ impl<'a> NextCardsIterator<'a> {
         let known_grams: BTreeSet<SpurGram> = self
             .cards
             .iter()
-            .filter_map(|(card, status)| {
+            .filter_map(|(card, _)| {
                 if let CardIndicator::WrittenGram { gram } = card {
-                    if matches!(status, CardStatus::Tracked(_)) {
-                        Some(*gram)
-                    } else {
-                        None
-                    }
+                    Some(*gram)
                 } else {
                     None
                 }
             })
             .collect();
 
-        self.cards
-            .iter()
-            .filter_map(|(card, status)| {
-                let CardIndicator::ListeningGram { gram } = card else {
+        // Iterate all grams from context, skip ones already tracked
+        self.context
+            .language_pack
+            .gram_frequencies
+            .keys()
+            .filter_map(|gram| {
+                let card = CardIndicator::ListeningGram { gram: *gram };
+
+                // Skip if already tracked
+                if self.cards.contains_key(&card) {
                     return None;
-                };
-
-                status.unadded()?;
-
-                let value =
-                    self.context
-                        .get_card_value_with_status(card, status, self.regressions)?;
+                }
 
                 // Only include if we already know this gram as a written card
                 if !known_grams.contains(gram) {
                     return None;
                 }
 
-                let fsrs_card = rs_fsrs::Card::new(Utc::now());
+                let value =
+                    self.context
+                        .get_card_value_with_status(&card, None, self.regressions)?;
 
-                Some((*gram, fsrs_card, value))
+                Some((*gram, value))
             })
-            .max_by_key(|(_, _, value)| *value)
-            .map(|(gram, fsrs_card, _)| (CardIndicator::ListeningGram { gram }, fsrs_card))
+            .max_by_key(|(_, value)| *value)
+            .map(|(gram, _)| {
+                (
+                    CardIndicator::ListeningGram { gram },
+                    rs_fsrs::Card::new(Utc::now()),
+                )
+            })
     }
 }
 
@@ -268,10 +272,8 @@ impl Iterator for NextCardsIterator<'_> {
             // Get card_type before moving the card
             let card_type = card.card_type();
 
-            self.cards.insert(
-                card,
-                CardStatus::Tracked(crate::CardData::Added { fsrs_card }),
-            );
+            self.cards
+                .insert(card, crate::CardData::Added { fsrs_card });
 
             // Update incremental counts
             self.added_count += 1;

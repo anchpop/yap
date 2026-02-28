@@ -182,10 +182,12 @@ mod tests {
 
         // Every gram in gram_frequencies should have a definition
         for gram_spur in lp.gram_frequencies.keys() {
+            let resolved = lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo);
             assert!(
                 lp.gram_definitions.contains_key(gram_spur),
-                "[{label}] Gram {:?} is in gram_frequencies but has no definition",
-                lp.gram_rodeo.resolve(gram_spur)
+                "[{label}] Gram '{}' ({:?}) is in gram_frequencies but has no definition",
+                resolved.to_display_string(lang),
+                resolved
             );
         }
 

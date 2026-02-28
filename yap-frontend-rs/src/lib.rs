@@ -653,40 +653,6 @@ impl CardType {
 }
 
 #[derive(Clone, Debug)]
-enum CardStatus {
-    Tracked(CardData),
-    Unadded(Unadded),
-}
-
-impl CardStatus {
-    pub(crate) fn is_new(&self) -> bool {
-        match self {
-            CardStatus::Tracked(CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card }) => {
-                fsrs_card.state == rs_fsrs::State::New
-            }
-            CardStatus::Unadded(_) => false,
-        }
-    }
-
-    pub(crate) fn reviewed(&self) -> Option<&CardData> {
-        match self {
-            CardStatus::Tracked(card_data) => Some(card_data),
-            CardStatus::Unadded(_) => None,
-        }
-    }
-
-    pub(crate) fn unadded(&self) -> Option<&Unadded> {
-        match self {
-            CardStatus::Unadded(unadded) => Some(unadded),
-            CardStatus::Tracked(_) => None,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-struct Unadded {}
-
-#[derive(Clone, Debug)]
 enum CardData {
     /// Card that has been formally added to the deck
     Added { fsrs_card: rs_fsrs::Card },
@@ -695,6 +661,14 @@ enum CardData {
 }
 
 impl CardData {
+    pub(crate) fn is_new(&self) -> bool {
+        match self {
+            CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
+                fsrs_card.state == rs_fsrs::State::New
+            }
+        }
+    }
+
     /// Returns positive surprise if there are no lapses, or negative surprise otherwise
     pub fn pre_existing_knowledge(&self) -> f32 {
         match self {
@@ -792,7 +766,7 @@ pub struct DeckState {
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct Deck {
     placement_test_results: Option<PlacementTest>,
-    cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardStatus>,
+    cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardData>,
     fsrs: FSRS,
     pub(crate) stats: Stats,
     pub(crate) context: Context,
@@ -816,19 +790,9 @@ struct ComprehensibleSentence {
 
 impl From<Deck> for DeckState {
     fn from(deck: Deck) -> Self {
-        // Convert cards from CardStatus to CardData, only keeping Added cards
-        let cards = deck
-            .cards
-            .iter()
-            .filter_map(|(indicator, status)| match status {
-                CardStatus::Tracked(data) => Some((*indicator, data.clone())),
-                CardStatus::Unadded { .. } => None,
-            })
-            .collect();
-
         DeckState {
             placement_test_results: deck.placement_test_results,
-            cards,
+            cards: deck.cards,
             fsrs: deck.fsrs,
             stats: deck.stats,
             leeches: deck.leeches,
@@ -1498,7 +1462,7 @@ impl weapon::AppState for Deck {
                 IsotonicRegression::new_ascending(&target_language_points)
                     .inspect_err(|e| log::error!("regression error: {e:?}"))
                     .ok()
-                    .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
+                    .map(|reg| SmoothRegression::from_regression(reg, smoothing_window))
             } else {
                 None
             };
@@ -1509,7 +1473,7 @@ impl weapon::AppState for Deck {
                 IsotonicRegression::new_ascending(&listening_points)
                     .inspect_err(|e| log::error!("regression error: {e:?}"))
                     .ok()
-                    .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
+                    .map(|reg| SmoothRegression::from_regression(reg, smoothing_window))
             } else {
                 None
             };
@@ -1519,60 +1483,9 @@ impl weapon::AppState for Deck {
             listening_regression,
         };
 
-        // Convert existing cards to CardStatus and calculate probabilities for unadded cards
-        let added_cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardData> = state.cards;
-
-        // Create all cards as Unadded first, then update with Added status
-        let mut all_cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardStatus> = context
-            .language_pack
-            .gram_frequencies
-            .keys()
-            .map(|gram| {
-                (
-                    CardIndicator::WrittenGram { gram: *gram },
-                    CardStatus::Unadded(Unadded {}),
-                )
-            })
-            .chain(context.language_pack.gram_frequencies.keys().map(|gram| {
-                (
-                    CardIndicator::ListeningGram { gram: *gram },
-                    CardStatus::Unadded(Unadded {}),
-                )
-            }))
-            .chain(
-                // Add pronunciation pattern cards
-                context
-                    .language_pack
-                    .pronunciation_data
-                    .guides
-                    .iter()
-                    .filter_map(|guide| {
-                        // Only create cards for patterns that exist in the rodeo
-                        context
-                            .language_pack
-                            .string_rodeo
-                            .get(&guide.pattern)
-                            .map(|pattern| {
-                                (
-                                    CardIndicator::LetterPronunciation {
-                                        pattern,
-                                        position: guide.position,
-                                    },
-                                    CardStatus::Unadded(Unadded {}),
-                                )
-                            })
-                    }),
-            )
-            .collect();
-
-        // Update the cards that have been added
-        for (indicator, card_data) in added_cards {
-            all_cards.insert(indicator, CardStatus::Tracked(card_data));
-        }
-
         Deck {
             placement_test_results: state.placement_test_results,
-            cards: all_cards,
+            cards: state.cards,
             fsrs: state.fsrs,
             stats: state.stats,
             context: context.clone(),
@@ -1708,13 +1621,13 @@ impl DeckState {
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl Deck {
-    /// Helper function to create a CardSummary from a card indicator and status
+    /// Helper function to create a CardSummary from a card indicator and card data
     fn card_to_summary(
         &self,
         card_indicator: &CardIndicator<SpurGram, Spur>,
-        card_status: &CardStatus,
+        card_data: &CardData,
     ) -> Option<CardSummary> {
-        if let CardStatus::Tracked(CardData::Added { fsrs_card }) = card_status {
+        if let CardData::Added { fsrs_card } = card_data {
             let state = match fsrs_card.state {
                 rs_fsrs::State::New => "new".to_string(),
                 rs_fsrs::State::Learning => "learning".to_string(),
@@ -1774,10 +1687,10 @@ impl Deck {
         }
     }
 
-    /// Returns an iterator over cards (excluding leeches)
+    /// Returns an iterator over tracked cards (excluding leeches)
     fn cards_excluding_leeches(
         &self,
-    ) -> impl Iterator<Item = (&CardIndicator<SpurGram, Spur>, &CardStatus)> {
+    ) -> impl Iterator<Item = (&CardIndicator<SpurGram, Spur>, &CardData)> {
         self.cards
             .iter()
             .filter(|(card_indicator, _)| !self.leeches.contains_key(card_indicator))
@@ -1787,15 +1700,13 @@ impl Deck {
     fn get_comprehensible_written_grams(&self) -> BTreeSet<SpurGram> {
         let mut comprehensible_grams = BTreeSet::new();
 
-        for (card_indicator, card_status) in self.cards.iter() {
-            if !self
+        for gram in self.context.language_pack.gram_frequencies.keys() {
+            let card_indicator = CardIndicator::WrittenGram { gram: *gram };
+            let card_data = self.cards.get(&card_indicator);
+            if self
                 .context
-                .is_comprehensible(card_indicator, card_status, &self.regressions)
+                .is_comprehensible(&card_indicator, card_data, &self.regressions)
             {
-                continue;
-            }
-
-            if let CardIndicator::WrittenGram { gram } = card_indicator {
                 comprehensible_grams.insert(*gram);
             }
         }
@@ -1849,8 +1760,8 @@ impl Deck {
         let no_text_cards = banned_challenge_types.contains(&ChallengeRequirements::Text);
         let no_speaking_cards = banned_challenge_types.contains(&ChallengeRequirements::Speaking);
 
-        for (card, card_status) in self.cards_excluding_leeches() {
-            if let CardStatus::Tracked(CardData::Added { fsrs_card }) = card_status {
+        for (card, card_data) in self.cards_excluding_leeches() {
+            if let CardData::Added { fsrs_card } = card_data {
                 let due_date = fsrs_card.due;
 
                 if due_date <= now {
@@ -1874,32 +1785,20 @@ impl Deck {
 
         // sort by due date, then by card indicator for deterministic ordering
         due_cards.sort_by_key(|card_indicator| {
-            let card_status = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = if let CardStatus::Tracked(card_data) = card_status {
-                ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap()
-            } else {
-                ordered_float::NotNan::new(0.0).unwrap()
-            };
+            let card_data = self.cards.get(card_indicator).unwrap();
+            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
             (due_timestamp, *card_indicator)
         });
 
         due_but_banned_cards.sort_by_key(|card_indicator| {
-            let card_status = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = if let CardStatus::Tracked(card_data) = card_status {
-                ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap()
-            } else {
-                ordered_float::NotNan::new(0.0).unwrap()
-            };
+            let card_data = self.cards.get(card_indicator).unwrap();
+            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
             (due_timestamp, *card_indicator)
         });
 
         future_cards.sort_by_key(|card_indicator| {
-            let card_status = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = if let CardStatus::Tracked(card_data) = card_status {
-                ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap()
-            } else {
-                ordered_float::NotNan::new(0.0).unwrap()
-            };
+            let card_data = self.cards.get(card_indicator).unwrap();
+            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
             (due_timestamp, *card_indicator)
         });
 
@@ -2001,22 +1900,18 @@ impl Deck {
     pub fn get_percent_of_words_known(&self) -> f64 {
         let total_words_reviewed: u64 = self
             .cards_excluding_leeches()
-            .filter_map(|(card_indicator, card_status)| {
-                if let CardStatus::Tracked(card_data) = card_status {
-                    let is_reviewed = match card_data {
-                        CardData::Added { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
-                        CardData::Ghost { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
-                    };
-                    if is_reviewed {
-                        match card_indicator {
-                            CardIndicator::WrittenGram { .. } => {
-                                self.context.get_card_frequency(card_indicator)
-                            }
-                            CardIndicator::ListeningGram { .. }
-                            | CardIndicator::LetterPronunciation { .. } => None,
+            .filter_map(|(card_indicator, card_data)| {
+                let is_reviewed = match card_data {
+                    CardData::Added { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
+                    CardData::Ghost { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
+                };
+                if is_reviewed {
+                    match card_indicator {
+                        CardIndicator::WrittenGram { .. } => {
+                            self.context.get_card_frequency(card_indicator)
                         }
-                    } else {
-                        None
+                        CardIndicator::ListeningGram { .. }
+                        | CardIndicator::LetterPronunciation { .. } => None,
                     }
                 } else {
                     None
@@ -2303,12 +2198,12 @@ impl Deck {
             &self.context.language_pack.string_rodeo,
             &self.context.language_pack.gram_rodeo,
         )?;
-        self.cards.get(&indicator).and_then(|status| {
-            matches!(status, CardStatus::Tracked(_)).then_some(DeckEvent::Language(LanguageEvent {
+        self.cards.get(&indicator).map(|_| {
+            DeckEvent::Language(LanguageEvent {
                 target_language: self.context.course.target_language,
                 native_language: self.context.course.native_language,
                 content: LanguageEventContent::ReviewCard { reviewed, rating },
-            }))
+            })
         })
     }
 
@@ -2463,7 +2358,7 @@ impl Deck {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn num_cards(&self) -> usize {
-        self.cards.values().filter_map(CardStatus::reviewed).count()
+        self.cards.len()
     }
 
     /// Get the average number of challenges completed per day in the past week
@@ -2484,8 +2379,8 @@ impl Deck {
         let mut daily_counts: FxHashMap<i64, u32> = FxHashMap::default();
         let mut total_reviews = 0u32;
 
-        for (_, card_status) in self.cards.iter() {
-            if let CardStatus::Tracked(CardData::Added { fsrs_card }) = card_status {
+        for card_data in self.cards.values() {
+            if let CardData::Added { fsrs_card } = card_data {
                 let due_date = fsrs_card.due;
 
                 // Skip new cards (they haven't been reviewed yet)
@@ -2525,8 +2420,8 @@ impl Deck {
 
         self.cards
             .values()
-            .filter_map(|card_status| match card_status {
-                CardStatus::Tracked(CardData::Added { fsrs_card }) => Some(fsrs_card),
+            .filter_map(|card_data| match card_data {
+                CardData::Added { fsrs_card } => Some(fsrs_card),
                 _ => None,
             })
             .filter(|fsrs_card| fsrs_card.created_at >= cutoff)
@@ -2747,11 +2642,9 @@ impl Deck {
 
     fn is_listened_gram_comprehensible(&self, gram: &SpurGram) -> bool {
         let card_indicator = CardIndicator::ListeningGram { gram: *gram };
-        let Some(fsrs_card) = self.cards.get(&card_indicator) else {
-            return false;
-        };
+        let card_data = self.cards.get(&card_indicator);
         self.context
-            .is_comprehensible(&card_indicator, fsrs_card, &self.regressions)
+            .is_comprehensible(&card_indicator, card_data, &self.regressions)
     }
 }
 
@@ -2775,21 +2668,17 @@ impl Context {
     fn is_comprehensible(
         &self,
         card_indicator: &CardIndicator<SpurGram, Spur>,
-        card_status: &CardStatus,
+        card_data: Option<&CardData>,
         regressions: &Regressions,
     ) -> bool {
-        match card_status {
+        match card_data {
             // For tracked cards (both Added and Ghost), check if they're in review state
-            CardStatus::Tracked(card_data) => {
-                match card_data {
-                    CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
-                        // Card is comprehensible if it's in review state (not new, learning, or relearning)
-                        fsrs_card.state == rs_fsrs::State::Review
-                    }
-                }
+            Some(CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card }) => {
+                // Card is comprehensible if it's in review state (not new, learning, or relearning)
+                fsrs_card.state == rs_fsrs::State::Review
             }
             // For unadded cards, use regression predictions
-            CardStatus::Unadded(_) => {
+            None => {
                 // Check if we have high confidence they would be known
                 // Use 80% probability threshold for considering a card comprehensible
                 // 80% was not chosen in a super scientific way, it's just a number that seemed to work well
@@ -2817,13 +2706,13 @@ impl Context {
     fn get_card_value_with_status(
         &self,
         card: &CardIndicator<SpurGram, Spur>,
-        status: &CardStatus,
+        card_data: Option<&CardData>,
         regressions: &Regressions,
     ) -> Option<ordered_float::NotNan<f32>> {
         let frequency = self.get_card_frequency(card)?;
 
         // Check if we have a reviewed card (ghost or added)
-        if let CardStatus::Tracked(card_data) = status {
+        if let Some(card_data) = card_data {
             // Get the FSRS card using explicit pattern match
             let fsrs_card = match card_data {
                 CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => fsrs_card,
@@ -4334,12 +4223,9 @@ mod tests {
                 CardIndicator::ListeningGram { .. } => "Listening",
                 CardIndicator::LetterPronunciation { .. } => "Pronunciation",
             };
-            let card_status = deck.cards.get(due_card).map(|s| match s {
-                CardStatus::Tracked(cd) => match cd {
-                    CardData::Added { fsrs_card } => format!("Added/{:?}", fsrs_card.state),
-                    CardData::Ghost { fsrs_card } => format!("Ghost/{:?}", fsrs_card.state),
-                },
-                CardStatus::Unadded(_) => "Unadded".to_string(),
+            let card_status = deck.cards.get(due_card).map(|cd| match cd {
+                CardData::Added { fsrs_card } => format!("Added/{:?}", fsrs_card.state),
+                CardData::Ghost { fsrs_card } => format!("Ghost/{:?}", fsrs_card.state),
             });
             println!("  {i}: {card_type} '{card_text}' status={card_status:?}");
 

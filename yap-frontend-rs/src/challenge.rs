@@ -8,9 +8,8 @@ use language_utils::{
 use lasso::Spur;
 
 use crate::{
-    AudioRequest, CardContent, CardData, CardIndicator, CardStatus, Challenge,
-    ComprehensibleSentence, Deck, FlashCard, ReviewInfo, TranscribeComprehensibleSentence,
-    TranslateComprehensibleSentence,
+    AudioRequest, CardContent, CardIndicator, Challenge, ComprehensibleSentence, Deck, FlashCard,
+    ReviewInfo, TranscribeComprehensibleSentence, TranslateComprehensibleSentence,
 };
 
 /// Metadata computed from a CardIndicator and Deck, used to build FlashCardReview
@@ -110,13 +109,7 @@ impl ReviewInfo {
                         let gram_known = deck
                             .cards
                             .get(&CardIndicator::WrittenGram { gram: other_gram })
-                            .is_some_and(|status| match status {
-                                CardStatus::Tracked(CardData::Added { fsrs_card })
-                                | CardStatus::Tracked(CardData::Ghost { fsrs_card }) => {
-                                    fsrs_card.state != rs_fsrs::State::New
-                                }
-                                _ => false,
-                            });
+                            .is_some_and(|card_data| !card_data.is_new());
 
                         // Convert gram to literals (already String)
                         let gram_resolved = language_pack
