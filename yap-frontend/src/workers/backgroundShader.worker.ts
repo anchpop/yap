@@ -168,7 +168,7 @@ function initWebGL(
   `;
 
   const fragmentShaderSrc = `
-    precision highp float;
+    precision mediump float;
 
     varying vec2 v_uv;
     uniform float u_time;
@@ -461,7 +461,8 @@ self.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
         devicePixelRatio !== undefined
       ) {
         const dpr = Math.min(devicePixelRatio, 1.5);
-        const scale = 0.75;
+        const isMobile = width < 768;
+        const scale = isMobile ? 0.35 : 0.75;
         canvas.width = width * dpr * scale;
         canvas.height = height * dpr * scale;
         gl.viewport(0, 0, canvas.width, canvas.height);

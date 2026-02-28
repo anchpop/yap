@@ -113,7 +113,8 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
 
     // Set initial size
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const scale = 0.75;
+    const isMobile = window.innerWidth < 768;
+    const scale = isMobile ? 0.35 : 0.75;
     offscreenCanvas.width = window.innerWidth * dpr * scale;
     offscreenCanvas.height = window.innerHeight * dpr * scale;
 
