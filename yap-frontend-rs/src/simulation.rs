@@ -166,6 +166,21 @@ impl Iterator for DayChallengeIterator {
                 let deck = self.take_deck();
                 self.deck = Some(apply_event(deck, &ts));
                 self.event_index += 1;
+            } else {
+                // No event means the deck state didn't change (e.g. sentence
+                // not found after cleanup). Stop to avoid an infinite loop.
+                eprintln!(
+                    "BUG: Simulation produced a challenge that returned no event: {to_return:?}"
+                );
+                #[cfg(debug_assertions)]
+                panic!(
+                    "Simulation produced a challenge that returned no event when answered — this would cause an infinite loop"
+                );
+                #[cfg(not(debug_assertions))]
+                {
+                    self.done = true;
+                    return None;
+                }
             }
 
             Some(to_return)

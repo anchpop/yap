@@ -1293,7 +1293,6 @@ impl weapon::AppState for Deck {
                             }
                         }
 
-                        // Log reviews with proper precedence (again > hard > remembered)
                         any_again = !again_grams.is_empty();
 
                         for gram in &again_grams {

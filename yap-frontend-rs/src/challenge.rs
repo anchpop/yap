@@ -184,12 +184,25 @@ impl ReviewInfo {
         let language_pack: &Arc<LanguagePack> = &deck.context.language_pack;
         let sentence = {
             let comprehensible_grams = deck.get_comprehensible_written_grams();
-            deck.get_comprehensible_sentence_containing(
+            let sentence = deck.get_comprehensible_sentence_containing(
                 Some(&gram),
                 comprehensible_grams,
                 &deck.stats.sentences_reviewed,
                 language_pack,
-            )?
+            )?;
+            // Only use sentences where the gram is a regular sentence gram,
+            // not just a multiword term. The transcription event handler only
+            // reviews regular grams, so multiword-term-only matches would
+            // never mark the card as reviewed.
+            if !sentence
+                .target_language_sentence_grams
+                .grams
+                .iter()
+                .any(|g| g.learnable() == Some(&gram))
+            {
+                return None;
+            }
+            sentence
         };
 
         let sentence_grams = sentence.target_language_sentence_grams.to_literals(

@@ -737,6 +737,7 @@ dependencies = [
  "chrono",
  "env_logger",
  "futures",
+ "indicatif",
  "language-utils",
  "log 0.4.27",
  "rkyv",
