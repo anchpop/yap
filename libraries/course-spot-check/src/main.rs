@@ -17,7 +17,8 @@ use yap_frontend_rs::{
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5-mini")
         .unwrap()
-        .with_cache_directory("./.cache")
+        .with_cache_directory("./.course-spot-check-cache")
+        .with_backup_cache_directory("./.cache")
     //.with_service_tier("flex")
 });
 
@@ -619,9 +620,15 @@ fn print_summary(analyses: Vec<CourseAnalysis>) {
 async fn main() -> Result<()> {
     env_logger::init();
 
+    let filter = std::env::args().nth(1);
     let mut analyses = Vec::new();
 
     for course in language_utils::COURSES {
+        if let Some(ref filter) = filter {
+            if course.target_language.iso_639_3() != filter {
+                continue;
+            }
+        }
         match analyze_course(*course).await {
             Ok(analysis) => analyses.push(analysis),
             Err(e) => eprintln!("Failed to analyze course {course:?}: {e}"),

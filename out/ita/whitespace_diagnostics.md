@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2021104
-Total errors: 2506
+Total predictions: 2019242
+Total errors: 2495
 Accuracy: 99.88%
 
 ## Error Patterns (sorted by frequency)
@@ -350,22 +350,6 @@ Accuracy: 99.88%
   - Mettetemi giù !
   - Più giù !
 
-### "io" + "?" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Allora vai a cercarlo o vuoi che lo faccia io ?
-  - Perchè io sono io ?
-  - Perchè sono sempre io ?
-
-### "lì" + "?" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Che cosa fate lì ?
-  - Chi è lì ?
-  - E perchè non sono lì ?
-
 ### "male" + "?" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -486,21 +470,21 @@ Accuracy: 99.88%
   - Nawal, torna indietro !
   - Torni indietro !
 
-### "lavoro" + "!" (4 occurrences)
+### "io" + "?" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Al lavoro !
-  - Tornate a lavoro !
-  - Tornate al lavoro !
+  - Allora vai a cercarlo o vuoi che lo faccia io ?
+  - Perchè sono sempre io ?
+  - Perché io ?
 
-### "me" + "!" (4 occurrences)
+### "lì" + "?" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Come a me !
-  - Non scaricarla a me !
-  - Se non vuoi farlo per lei o per te stesso, fallo per me !
+  - Che cosa fate lì ?
+  - Chi è lì ?
+  - E perchè non sono lì ?
 
 ### "merda" + "!" (4 occurrences)
 - Predicted: None
@@ -910,6 +894,14 @@ Accuracy: 99.88%
   - Papà, Mamma, Sono io !
   - Sono io !
 
+### "lavoro" + "!" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tornate a lavoro !
+  - Tornate al lavoro !
+  - Tu non sei il tuo lavoro !
+
 ### "là" + "?" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -933,6 +925,14 @@ Accuracy: 99.88%
   - Come mai ?
   - E come mai ?
   - La prima regola del Fight Club è di non parlarne mai ?
+
+### "me" + "!" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Non scaricarla a me !
+  - Se non vuoi farlo per lei o per te stesso, fallo per me !
+  - State lontano da me !
 
 ### "meraviglia" + "!" (3 occurrences)
 - Predicted: None
@@ -1266,13 +1266,6 @@ Accuracy: 99.88%
   - Padron Haku !
   - Padron Haku, Padron Haku !
 
-### "Han" + "!" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ho detto signor Han !
-  - Signor Han !
-
 ### "Ho" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1342,13 +1335,6 @@ Accuracy: 99.88%
 - Examples:
   - BUSSANO ALLA PORTA - Ofelia?
   - BUSSANO ALLA PORTA - Venga.
-
-### "Pak Chorung" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - E la mano di Pak Chorung ?
-  - Pak Chorung ?
 
 ### "Pat" + "!" (2 occurrences)
 - Predicted: None
@@ -4099,11 +4085,11 @@ Accuracy: 99.88%
 - Examples:
   - Guardami !
 
-### "Guardate" + "!" (1 occurrences)
+### "Han" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Guardate !
+  - Signor Han !
 
 ### "Harmanni" + "?" (1 occurrences)
 - Predicted: None
@@ -4555,6 +4541,12 @@ Accuracy: 99.88%
 - Examples:
   - Torna nel tuo Paese !
 
+### "Pak Chorung" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Pak Chorung ?
+
 ### "Papà" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4687,12 +4679,6 @@ Accuracy: 99.88%
 - Examples:
   - Prendi !
 
-### "Prima" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Prima ?
-
 ### "Prometti" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4722,12 +4708,6 @@ Accuracy: 99.88%
 - Actual: Space
 - Examples:
   - Quale ?
-
-### "Quando" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Quando ?
 
 ### "Questa" + "è" (1 occurrences)
 - Predicted: Space
@@ -6391,12 +6371,6 @@ Accuracy: 99.88%
 - Examples:
   - Che cazzo avete combinato ?
 
-### "come" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Nawal come ?
-
 ### "cominciato" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7938,12 +7912,6 @@ Accuracy: 99.88%
 - Actual: Space
 - Examples:
   - Accendete le luci !
-
-### "lui" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Pensa come sta lui !
 
 ### "lum" + ";" (1 occurrences)
 - Predicted: None

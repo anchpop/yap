@@ -2869,7 +2869,12 @@ pub fn capitalize_first_letter(s: &str) -> String {
 /// This is used to avoid lowercasing words that carry meaning through their capitalization:
 /// - Proper nouns in any language (e.g. "Paris", "Marie")
 /// - All nouns in German (German capitalizes every noun)
-pub fn first_letter_always_capitalized<S>(word: &Word<S>, language: Language) -> bool {
+/// - The pronoun "I" in English
+pub fn first_letter_always_capitalized<S: AsRef<str>>(word: &Word<S>, language: Language) -> bool {
+    // English "I" is always capitalized
+    if language == Language::English && word.text.as_ref() == "I" {
+        return true;
+    }
     match &word.word_type {
         WordType::Other(other) => matches!(other.other_tag, OtherWordType::Propn),
         WordType::Heteronym(h) => language == Language::German && h.pos == PartOfSpeech::Noun,

@@ -71,12 +71,27 @@ fn deduplicate_patterns<P: Eq + Hash + Clone>(
         } else {
             wiktionary_entries
         };
-        // Pick shortest display string, breaking ties alphabetically
+        // Prefer: no punctuation, closer to lemmas, shorter, then alphabetical
         let best = candidates
             .into_iter()
             .min_by_key(|g| {
                 let s = g.to_display_string(lang);
-                (s.chars().count(), s)
+                let has_punct = s
+                    .chars()
+                    .any(|c| c.is_ascii_punctuation() && c != '\'' && c != '-');
+                // Count tokens whose surface form differs from their lemma
+                // (dialectal forms like "po favó" diverge more than standard "por favor")
+                let lemma_mismatches: usize = g
+                    .iter()
+                    .filter(|atom| match atom {
+                        language_utils::Atom::Tok(word) => match &word.word_type {
+                            language_utils::WordType::Heteronym(h) => word.text != h.lemma,
+                            _ => false,
+                        },
+                        _ => false,
+                    })
+                    .count();
+                (has_punct, lemma_mismatches, s.chars().count(), s)
             })
             .unwrap();
         result.insert(best, pattern);
@@ -324,6 +339,25 @@ async fn main() -> anyhow::Result<()> {
         )
         .await
         .context("Failed to process multiword terms tokenization")?;
+
+        // Filter out "multiword terms" that tokenized to a single token —
+        // these are inflected forms or bad tokenizations, not real multi-word expressions
+        let multiword_terms_tokenizations: BTreeMap<String, Vec<lexide::Token>> =
+            multiword_terms_tokenizations
+                .into_iter()
+                .filter(|(term, tokens)| {
+                    if tokens.len() <= 1 {
+                        log::info!(
+                            "Dropping single-token multiword term: {:?} ({} tokens)",
+                            term,
+                            tokens.len()
+                        );
+                        false
+                    } else {
+                        true
+                    }
+                })
+                .collect();
 
         // Process sentences with lexide
         let target_language_tokenization_file =

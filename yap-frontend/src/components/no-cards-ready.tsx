@@ -179,7 +179,7 @@ export function NoCardsReady({
           </p>
           {isEmptyDeck ? (
             <p className="text-muted-foreground">
-              We'll start with the most important words.
+              We'll start with a couple words you might know.
             </p>
           ) : (
             <p className="text-muted-foreground">

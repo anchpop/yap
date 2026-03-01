@@ -29,15 +29,15 @@ pub async fn ensure_multiword_terms_file(
     let banned_terms = match target_language {
         Language::French => vec!["de le", "de les", "à le", "à les", "fait que"],
         Language::Spanish => vec!["de el", "a el"], // Spanish contractions that become "del" and "al"
-        Language::English => vec![],
+        Language::English => vec!["me thinketh"],
         Language::Korean => vec![],
         Language::German => vec!["daß"],
 
         Language::Chinese
         | Language::Japanese
         | Language::Russian
-        | Language::Portuguese
-        | Language::Italian => vec![],
+        | Language::Portuguese => vec![],
+        Language::Italian => vec![],
     };
     let banned_terms = banned_terms
         .into_iter()

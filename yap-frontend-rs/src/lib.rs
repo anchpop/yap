@@ -2619,7 +2619,7 @@ pub struct MovieStats {
 }
 
 impl Deck {
-    pub(crate) fn next_unknown_cards(&self, allowed_cards: AllowedCards) -> NextCardsIterator<'_> {
+    pub(crate) fn next_unknown_cards(&self, allowed_cards: AllowedCards) -> NextCardsIterator {
         NextCardsIterator::new(self, allowed_cards)
     }
 

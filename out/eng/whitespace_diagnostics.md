@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1536426
-Total errors: 1033
+Total predictions: 1534202
+Total errors: 1024
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -197,14 +197,6 @@ Accuracy: 99.93%
   - Fechner died a magnificent death\nand Guibariane was a coward.
   - Suppose we opened all the windows\nand yelled down as loud as we could?
   - The fog was too dense\nand we had to call the search off.
-
-### "do" + "you" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - How doyou want to celebrateyour birthday?
-  - What doyou expect me to do?
-  - What doyou think?
 
 ### "of" + "your" (5 occurrences)
 - Predicted: Space
@@ -414,6 +406,14 @@ Accuracy: 99.93%
   - If you don´t, interests will start accumulating.
   - Why don´t we use this break to cut the cake?
 
+### "do" + "you" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - How doyou want to celebrateyour birthday?
+  - What doyou expect me to do?
+  - Why doyou dislike Lola so much?
+
 ### "h" + "\" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -437,14 +437,6 @@ Accuracy: 99.93%
   - Can I helpyou?
   - Let me helpyou.
   - Shall I helpyou?
-
-### "if" + "you" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I guess that was the attraction, ifyou know what I mean.
-  - Right now, ifyou can.
-  - Well, just let me know ifyou need somebody to talk to, okay?
 
 ### "there" + "´s" (3 occurrences)
 - Predicted: Space
@@ -724,6 +716,13 @@ Accuracy: 99.93%
 - Examples:
   - Well, ifshe says so.
   - What ifshe told me the truth?
+
+### "if" + "you" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - I guess that was the attraction, ifyou know what I mean.
+  - Well, just let me know ifyou need somebody to talk to, okay?
 
 ### "isn" + "´t" (2 occurrences)
 - Predicted: Space
@@ -1006,12 +1005,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - YoU dig in one place - eUreka!
-
-### "-" + "everybody" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - There are Shevchuk, Kinchev, Nastya - everybody.
 
 ### "-" + "flat" (1 occurrences)
 - Predicted: None
@@ -1558,12 +1551,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Mother - she never was my mother.
-
-### "Nastya" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - There are Shevchuk, Kinchev, Nastya - everybody.
 
 ### "Now" + "you" (1 occurrences)
 - Predicted: Space
@@ -2453,12 +2440,6 @@ Accuracy: 99.93%
 - Examples:
   - My father - my father was my father.
 
-### "father" + "was" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Your fatherwas Kowalski.
-
 ### "felt" + "\nor" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2891,12 +2872,6 @@ Accuracy: 99.93%
 - Examples:
   - And myprovoleta .
 
-### "myself" + "more" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I see myselfmore as Blanche.
-
 ### "name" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3011,12 +2986,6 @@ Accuracy: 99.93%
 - Examples:
   - Ask her to let go ofme!
 
-### "of" + "my" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Soyou knew Lola was the father ofmy son too.
-
 ### "of" + "others" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3052,12 +3021,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - On my count ofthree your hands will become immobile.
-
-### "of" + "time" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You have lots oftime.
 
 ### "of" + "us" (1 occurrences)
 - Predicted: Space

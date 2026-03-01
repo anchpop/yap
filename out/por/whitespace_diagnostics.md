@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2106170
-Total errors: 310
+Total predictions: 2103589
+Total errors: 309
 Accuracy: 99.99%
 
 ## Error Patterns (sorted by frequency)
@@ -728,12 +728,6 @@ Accuracy: 99.99%
 - Actual: Space
 - Examples:
   - Sassy Lassy !
-
-### "Lá" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Lá ?
 
 ### "Maoses" + "?" (1 occurrences)
 - Predicted: None

@@ -1,34 +1,26 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2132259
-Total errors: 630
+Total predictions: 2129872
+Total errors: 625
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "," + "¿" (21 occurrences)
+### "," + "¿" (20 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Bien,¿eh?
   - Bueno,esa es la pregunta que plantea la película,¿no?
   - Bueno,¿por qué lo preguntas?
+  - Bueno,¿qué te parece?
 
-### "…" + "-" (11 occurrences)
+### "…" + "-" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - A dónde… -Vanya, espera.
   - Bueno… -Sí.
   - Deja tu mensaje… -Directo al buzón.
-
-### "¿" + "verdad" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Así Ezequiel puede conseguir más crack, ¿ verdad, tío?
-  - Claro que sí, ¿ verdad?
-  - Hermosa, ¿ verdad?
+  - Necesito hablar con él… -Hace frío.
 
 ### "," + "'" (8 occurrences)
 - Predicted: None
@@ -37,6 +29,14 @@ Accuracy: 99.97%
   - Ella siempre dijo, 'Cásate, cásate con alguien grande.'
   - Le dije, 'Has buscado abajo del respaldo del sofá?'
   - Le he dado el nombre de Génesis, 'Nacimiento'.
+
+### "¿" + "verdad" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Así Ezequiel puede conseguir más crack, ¿ verdad, tío?
+  - Claro que sí, ¿ verdad?
+  - Hermosa, ¿ verdad?
 
 ### "'" + "y" (7 occurrences)
 - Predicted: None
@@ -166,14 +166,6 @@ Accuracy: 99.97%
   - Tengo que hacerte un par de preguntas.
   - Tengo que hacerte una confesión.
 
-### "¿" + "qué" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Además, ¿ qué tenía yo que ver con eso?
-  - Cleopatra, por ejemplo, ¿ qué sabe de ella?
-  - Señor, ¿ qué está mirando?
-
 ### "'" + "es" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -269,6 +261,14 @@ Accuracy: 99.97%
   - La pregunta correcta no es 'qué', sino 'a quién'.
   - Más importante que 'qué' es 'cuándo' .
   - Pues no saben dónde van, ni por qué'.
+
+### "¿" + "qué" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Además, ¿ qué tenía yo que ver con eso?
+  - Cleopatra, por ejemplo, ¿ qué sabe de ella?
+  - Señor, ¿ qué está mirando?
 
 ### "'" + "." (2 occurrences)
 - Predicted: None
@@ -2048,12 +2048,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Es sólo eso: una historia.
-
-### "este" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Así debo usar este ?
 
 ### "esto" + "'" (1 occurrences)
 - Predicted: Space
