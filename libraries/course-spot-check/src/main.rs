@@ -266,11 +266,13 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
     pb.finish_with_message("done");
     println!(
         "Collected {} unique sentences for analysis ({} challenges across {} days in {:?})",
-        all_sentences.len(), total_challenges, total_days, sim_start.elapsed()
+        all_sentences.len(),
+        total_challenges,
+        total_days,
+        sim_start.elapsed()
     );
     println!(
-        "  next_day: {:?}, challenge iteration: {:?}, finish_day: {:?}",
-        next_day_time, challenge_iter_time, finish_day_time
+        "  next_day: {next_day_time:?}, challenge iteration: {challenge_iter_time:?}, finish_day: {finish_day_time:?}"
     );
 
     // Analyze each sentence

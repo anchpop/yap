@@ -59,27 +59,33 @@ fn main() {
     let deck = load_deck_from_test_data();
     let fixed_time = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
 
-    // Measure per-day timing to show scaling behavior
+    // Measure per-day timing with next_day vs finish_day split
     let mut sim = deck.simulate_usage(fixed_time);
-    for day in 0..5 {
+    for day in 0..10 {
         let start = std::time::Instant::now();
         let mut day_iter = sim.next_day();
         let challenge_count = day_iter.by_ref().count();
+        let challenges_elapsed = start.elapsed();
+
+        let start2 = std::time::Instant::now();
         sim = day_iter.finish_day();
-        let elapsed = start.elapsed();
+        let finish_elapsed = start2.elapsed();
+
         eprintln!(
-            "Day {}: {:>8.2}ms  ({} challenges)",
+            "Day {:>3}: challenges {:>8.2}ms ({:>3} challenges), finish_day {:>8.2}ms, total {:>8.2}ms",
             day + 1,
-            elapsed.as_secs_f64() * 1000.0,
-            challenge_count
+            challenges_elapsed.as_secs_f64() * 1000.0,
+            challenge_count,
+            finish_elapsed.as_secs_f64() * 1000.0,
+            (challenges_elapsed + finish_elapsed).as_secs_f64() * 1000.0,
         );
     }
 
-    // Then run a few more iterations for profiling signal
-    eprintln!("\nRunning 2 more full 5-day simulations for profiling...");
-    for _ in 0..2 {
+    // Then run more iterations for profiling signal
+    eprintln!("\nRunning 10 more full 10-day simulations for profiling...");
+    for _ in 0..10 {
         let mut sim = deck.simulate_usage(fixed_time);
-        for _ in 0..5 {
+        for _ in 0..10 {
             let day = sim.next_day();
             sim = day.finish_day();
         }

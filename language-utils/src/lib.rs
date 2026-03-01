@@ -538,43 +538,67 @@ impl SentenceGrams<SpurGram> {
         gram_rodeo: &lasso::RodeoReader<Gram<lasso::Spur>>,
         language: Language,
     ) -> Vec<SentenceGram<(SpurGram, Vec<Literal<String>>)>> {
-        // First pass: collect all words with their gram index
-        let mut all_words: Vec<(usize, Word<String>)> = Vec::new();
+        // First pass: collect all atoms with their gram index, preserving
+        // Control tokens so whitespace corrections are honored.
+        let mut all_atoms: Vec<(usize, Atom<String>)> = Vec::new();
         for (gram_idx, gram) in self.grams.iter().enumerate() {
             let gram_spur = match gram {
                 SentenceGram::Learnable(g) | SentenceGram::Obvious(g) => g,
             };
             let gram_resolved = gram_rodeo.resolve(gram_spur).resolve(string_rodeo);
             for atom in gram_resolved.iter() {
-                if let Atom::Tok(word) = atom {
-                    all_words.push((gram_idx, word.clone()));
-                }
+                all_atoms.push((gram_idx, atom.clone()));
             }
         }
 
-        // Capitalize first word if needed
-        if self.capitalize_first
-            && let Some((_, first_word)) = all_words.first_mut()
-        {
-            first_word.text = capitalize_first_letter(&first_word.text);
+        // Collect just the words for capitalization
+        if self.capitalize_first {
+            if let Some((_, Atom::Tok(first_word))) = all_atoms
+                .iter_mut()
+                .find(|(_, a)| matches!(a, Atom::Tok(_)))
+            {
+                first_word.text = capitalize_first_letter(&first_word.text);
+            }
         }
 
-        // Build literals with proper cross-gram whitespace prediction
-        let literals_with_gram_idx: Vec<(usize, Literal<String>)> = all_words
-            .iter()
-            .enumerate()
-            .map(|(i, (gram_idx, word))| {
-                let next_word = all_words.get(i + 1).map(|(_, w)| w);
-                let whitespace = predict_whitespace(word, next_word, language);
-                (
-                    *gram_idx,
-                    Literal {
-                        word: word.clone(),
-                        whitespace: whitespace.to_str().to_string(),
-                    },
-                )
-            })
-            .collect();
+        // Build literals using control tokens for whitespace correction.
+        // We need to look ahead across gram boundaries for correct whitespace,
+        // so we iterate over the flat atom list, then group by gram index.
+        let mut literals_with_gram_idx: Vec<(usize, Literal<String>)> = Vec::new();
+        let mut i = 0;
+        while i < all_atoms.len() {
+            let (gram_idx, atom) = &all_atoms[i];
+            match atom {
+                Atom::Tok(word) => {
+                    // Determine whitespace: check if next atom is a Control token
+                    let whitespace = if i + 1 < all_atoms.len() {
+                        match &all_atoms[i + 1].1 {
+                            Atom::Control(ctrl) => {
+                                i += 1; // consume the control token
+                                ctrl.0
+                            }
+                            Atom::Tok(next_word) => {
+                                predict_whitespace(word, Some(next_word), language)
+                            }
+                        }
+                    } else {
+                        predict_whitespace(word, None, language)
+                    };
+
+                    literals_with_gram_idx.push((
+                        *gram_idx,
+                        Literal {
+                            word: word.clone(),
+                            whitespace: whitespace.to_str().to_string(),
+                        },
+                    ));
+                }
+                Atom::Control(_) => {
+                    // Standalone control token (not preceded by Tok) — skip
+                }
+            }
+            i += 1;
+        }
 
         // Group literals back into their grams
         self.grams
@@ -2965,9 +2989,17 @@ pub fn predict_whitespace(
         return Whitespace::None;
     }
 
-    // Korean: particles attach directly to the preceding word
+    // Korean: particles attach directly to the preceding word, but only when
+    // the POS actually indicates a particle/adposition (not a verb or other POS
+    // that happens to share the same text as a particle).
     if language == Language::Korean && KOREAN_PARTICLES.contains(&right_text.as_str()) {
-        return Whitespace::None;
+        let is_particle_pos = match &right.word_type {
+            WordType::Heteronym(h) => matches!(h.pos, PartOfSpeech::Part | PartOfSpeech::Adp),
+            WordType::Other(_) => true, // Non-heteronym tokens that match particle text are likely particles
+        };
+        if is_particle_pos {
+            return Whitespace::None;
+        }
     }
 
     // Default: regular space
