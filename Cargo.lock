@@ -4772,6 +4772,7 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 [[package]]
 name = "tysm"
 version = "0.16.0"
+source = "git+https://github.com/not-pizza/tysm.git?branch=sharded-cache#39c72a38094c3222ce5d6e221859352b5cd10407"
 dependencies = [
  "dashmap",
  "dotenvy",

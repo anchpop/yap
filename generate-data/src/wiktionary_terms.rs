@@ -33,10 +33,7 @@ pub async fn ensure_multiword_terms_file(
         Language::Korean => vec![],
         Language::German => vec!["daß"],
 
-        Language::Chinese
-        | Language::Japanese
-        | Language::Russian
-        | Language::Portuguese => vec![],
+        Language::Chinese | Language::Japanese | Language::Russian | Language::Portuguese => vec![],
         Language::Italian => vec![],
     };
     let banned_terms = banned_terms
