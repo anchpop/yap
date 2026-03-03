@@ -1,26 +1,42 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 235017
-Total errors: 857
-Accuracy: 99.64%
+Total predictions: 331014
+Total errors: 1384
+Accuracy: 99.58%
 
 ## Error Patterns (sorted by frequency)
 
-### "은" + "요" (45 occurrences)
+### "은" + "요" (77 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
+  - 고향은요?
   - 관장님은요?
   - 관현악단은요?
-  - 국장님은요?
 
-### "는" + "요" (33 occurrences)
+### "는" + "요" (50 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 그 외에는요?
+  - 그 후에는요?
   - 그거는요?
-  - 그녀는요?
+
+### "이" + "요" (48 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 감상이상이요?
+  - 결혼이요?
+  - 군복이요?
+
+### "뭐" + "야" (22 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그 상처는 뭐야?
+  - 그 웃음은 뭐야?
+  - 그 코스튬은 뭐야?
 
 ### "제작" + "-" (20 occurrences)
 - Predicted: None
@@ -30,21 +46,37 @@ Accuracy: 99.64%
   - 프란 월쉬 작가, 제작 - 왜 그랬죠?
   - 프란 월쉬 작가, 제작 - 요금을 청구했었나요?
 
-### "이" + "요" (18 occurrences)
+### "도" + "요" (12 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 결혼이요?
-  - 내일이요?
-  - 당신이요?
+  - 단 한 번도요?
+  - 당신도요?
+  - 삼겹살도요.
 
-### "뭐" + "야" (14 occurrences)
+### "누구" + "요" (10 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 그 웃음은 뭐야?
-  - 마늘냄새는 또 뭐야?
-  - 메타포는 또 뭐야?
+  - 공작 저 여자는 누구요?
+  - 네이딘 제니스 시장이 누구요?
+  - 당신 누구요?
+
+### "안" + "돼" (10 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /안돼!
+  - 그럼 안돼!
+  - 데려간다 /안돼!
+
+### "누구" + "예요" (9 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그게 누구예요?
+  - 당신 누구예요?
+  - 대체 누구예요?
 
 ### "작가" + "-" (9 occurrences)
 - Predicted: None
@@ -54,14 +86,6 @@ Accuracy: 99.64%
   - 필리파 보이옌 작가 - 냇 리스죠, 그렇지 않아요?
   - 필리파 보이옌 작가 - 당신 때문이었어요!
 
-### "누구" + "요" (8 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 공작 저 여자는 누구요?
-  - 네이딘 제니스 시장이 누구요?
-  - 당신들은 누구요?
-
 ### "도" + "발" (7 occurrences)
 - Predicted: Space
 - Actual: None
@@ -70,29 +94,61 @@ Accuracy: 99.64%
   - 산도발 봤나?
   - 산도발 알죠?
 
-### "도" + "요" (7 occurrences)
-- Predicted: Space
-- Actual: None
+### "안" + "나" (7 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - 단 한 번도요?
-  - 당신도요?
-  - 삼겹살도요.
+  - 가게에서, 기억 안 나?
+  - 그거 말곤 기억 안 나?
+  - 기억, 기억 안 나?
 
-### "누구" + "예요" (5 occurrences)
+### "누구" + "야" (6 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 당신 누구예요?
-  - 대체 누구예요?
-  - 애나, 이 사람 누구예요?
+  - 두 번째 질문 아줌마는 누구야?
+  - 딜러는 누구야?
+  - 문을 두드리는 자식은 누구야?
 
-### "안" + "돼" (5 occurrences)
+### "/" + "왜" (5 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 마일로, 안돼!
-  - 물 닿으면 안돼!
-  - 뭐가 안돼?
+  - /왜 소리 질러?
+  - /왜 이래요?
+  - 불편하실텐데 /왜?
+
+### "뭐" + "죠" (5 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 마녀는 뭐죠?
+  - 비밀번호는 뭐죠?
+  - 이 차는 뭐죠?
+
+### "시" + "죠" (5 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 가족이시죠?
+  - 농담이시죠?
+  - 누구시죠?
+
+### "처럼" + "요" (5 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 나처럼요?
+  - 당신처럼요?
+  - 바클리 박사님처럼요?
+
+### "/" + "뭐" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /뭐 고장났어요?
+  - 내 안주인이야 /뭐?
+  - 살았나봐요 /뭐?
 
 ### "누구" + "에게" (4 occurrences)
 - Predicted: Space
@@ -102,21 +158,29 @@ Accuracy: 99.64%
   - 누구에게?
   - 누구에게요?
 
-### "시" + "죠" (4 occurrences)
+### "당신" + "에게" (4 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 가족이시죠?
-  - 누구시죠?
-  - 몇 살이시죠?
+  - 당신에게 말했소?
+  - 당신에게 면목이 없겠죠!
+  - 당신에게 부탁합니다.
 
-### "안" + "나" (4 occurrences)
-- Predicted: None
-- Actual: Space
+### "번" + "이라도" (4 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - 가게에서, 기억 안 나?
-  - 기억, 기억 안 나?
-  - 아니, 기억 안 나!
+  - 우리 한 번이라도 같이 잔 적이 있나?
+  - 이백 번이라도 더 말해!
+  - 한 번이라도 네 잘못을 인정한 적 있어?
+
+### "부터" + "요" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아침부터요?
+  - 어디부터요?
+  - 언제부터요?
 
 ### "어디" + "예요" (4 occurrences)
 - Predicted: Space
@@ -126,6 +190,14 @@ Accuracy: 99.64%
   - 종수 씨, 어디예요?
   - 출구가 어디예요?
 
+### "어디" + "있는지" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그가 어디있는지 알아.
+  - 왜 그가 어디있는지 말해야 돼?
+  - 왜 내가 어디있는지 너한테 이야기해야 돼?
+
 ### "이" + "냐" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -133,6 +205,30 @@ Accuracy: 99.64%
   - 그곳이냐?
   - 누구 짓이냐?
   - 모튼 과는 처음이냐?
+
+### "이" + "시" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 가족이시죠?
+  - 농담이시죠?
+  - 몇 살이시죠?
+
+### "일" + "이라도" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 무슨 일이라도?
+  - 안 좋은 일이라도 있어요?
+  - 할 일이라도 있대요?
+
+### "있" + "나요" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 구명정도 선실 등급이 있나요?
+  - 자녀가 있나요?
+  - 장애가 있나요?
 
 ### "-" + "왜" (3 occurrences)
 - Predicted: None
@@ -142,6 +238,46 @@ Accuracy: 99.64%
   - 플렌 씨 - 왜?
   - 필리파 보이옌 작가 - 왜 그랬죠?
 
+### "/" + "그래" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /그래!
+  - 나도 취직했어요 /그래?
+  - 없어요 /그래?
+
+### "/" + "난" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /난 여기서 살아, 넌?
+  - 내일 가면 되잖아요 /난 바쁘니 빼줘!
+  - 우린 신세를 졌잖아요 /난 신세진 것 없어!
+
+### "/" + "안" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /안 돼!
+  - /안돼!
+  - 데려간다 /안돼!
+
+### "/" + "오케" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /오케!
+  - 이상없어요, 오케이에요 /오케!
+  - 전등을 갖다 드리죠 /오케!
+
+### "/" + "왜요" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /왜요?
+  - 너 말조심해 /왜요?
+  - 여보, 이리 와 /왜요?
+
 ### "·" + "지" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -149,6 +285,22 @@ Accuracy: 99.64%
   - 진·지!
   - 진·지·하!
   - 진·지·하·게!
+
+### "거" + "요" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 뉴저지로 갈 거요?
+  - 차우 씨, 옷장도 여기 거요?
+  - 희소식이라도 있는 거요?
+
+### "그랬" + "더니" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그랬더니 뭐라 하세요?
+  - 그랬더니 뭐랬지?
+  - 그랬더니?
 
 ### "까지" + "요" (3 occurrences)
 - Predicted: Space
@@ -182,6 +334,14 @@ Accuracy: 99.64%
   - 누구보고 머저리래!
   - 누구보고 진정하래!
 
+### "누구" + "지" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 사부가 누구지?
+  - 이 아이는 누구지?
+  - 이자는 누구지?
+
 ### "누구" + "한테" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -214,13 +374,13 @@ Accuracy: 99.64%
   - 도데체 무슨일이야?
   - 무슨일이야 요오헤이!
 
-### "뭐" + "죠" (3 occurrences)
+### "뭐" + "지" (3 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 마녀는 뭐죠?
-  - 비밀번호는 뭐죠?
-  - 이 차는 뭐죠?
+  - 번호가 뭐지?
+  - 요지가 뭐지?
+  - 저녁은 뭐지?
 
 ### "뭐" + "하고" (3 occurrences)
 - Predicted: Space
@@ -230,21 +390,13 @@ Accuracy: 99.64%
   - 뭐하고 있어?
   - 뭐하고 있어요?
 
-### "번" + "이라도" (3 occurrences)
-- Predicted: Space
-- Actual: None
+### "바보" + "같이" (3 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - 우리 한 번이라도 같이 잔 적이 있나?
-  - 한 번이라도 네 잘못을 인정한 적 있어?
-  - 한 번이라도 믿어봐!
-
-### "부터" + "요" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아침부터요?
-  - 어디부터요?
-  - 언제부터요?
+  - 끝까지 해야지, 바보 같이.
+  - 놈이 있으면 기적이지 바보 같이.
+  - 바보 같이 왜 그랬어요?
 
 ### "살" + "이" (3 occurrences)
 - Predicted: Space
@@ -262,29 +414,29 @@ Accuracy: 99.64%
   - 기지가 어디야?
   - 친정은 어디야?
 
-### "어디" + "있는지" (3 occurrences)
+### "어서" + "오세요" (3 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 왜 그가 어디있는지 말해야 돼?
-  - 왜 내가 어디있는지 너한테 이야기해야 돼?
-  - 우리가 지금 어디있는지 봐!
+  - 어서오세요 뭘 도와드릴까요?
+  - 어서오세요!
+  - 어서오세요.
 
-### "이" + "시" (3 occurrences)
+### "여기" + "예요" (3 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 가족이시죠?
-  - 몇 살이시죠?
-  - 석 장이시죠?
+  - 로즈, 여기예요!
+  - 여기예요!
+  - 여기예요?
 
-### "일" + "이라도" (3 occurrences)
+### "여자" + "와" (3 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 무슨 일이라도?
-  - 안 좋은 일이라도 있어요?
-  - 할 일이라도 있어?
+  - 여자와 아이는 없습니까?
+  - 여자와 아이들만!
+  - 여자와 아이들은?
 
 ### "진" + "·" (3 occurrences)
 - Predicted: Space
@@ -293,6 +445,14 @@ Accuracy: 99.64%
   - 진·지!
   - 진·지·하!
   - 진·지·하·게!
+
+### "진심" + "이" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 진심이쇼?
+  - 진심이요!
+  - 진심이요?
 
 ### "쯤" + "이야" (3 occurrences)
 - Predicted: Space
@@ -315,6 +475,13 @@ Accuracy: 99.64%
 - Examples:
   - 타 -가, 가, 가!
   - 타 -가, 가, 가!
+
+### "," + "안" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 안 돼,안 돼,안 돼, 너무 빨라,너무 빨라 꽉 잡아!
+  - 안 돼,안 돼,안 돼, 너무 빨라,너무 빨라 꽉 잡아!
 
 ### "," + "제작" (2 occurrences)
 - Predicted: Space
@@ -379,12 +546,47 @@ Accuracy: 99.64%
   - 피터 잭슨 감독, 작가, 제작 - 잘려진 나무들이요?
   - 필리파 보이옌 작가 - 잘려진 나무들이요?
 
-### "/" + "난" (2 occurrences)
+### "/" + "네" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - /난 여기서 살아, 넌?
-  - 우린 신세를 졌잖아요 /난 신세진 것 없어!
+  - 말을 타고 사라졌어요 /네?
+  - 좋아, 먼저 마셔 /네?
+
+### "/" + "어서" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /어서 성으로 돌아가자!
+  - 형 건반 연습판은 안 버리면서 /어서 자!
+
+### "/" + "여긴" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 기름 좀 쳐라 /여긴 왜 들어왔어?
+  - 쫓겨날텐데 /여긴 내 집안의 소유야!
+
+### "/" + "웬" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /웬 의상이지?
+  - 자넷트가 결혼하재요 /웬 건달이지?
+
+### "/" + "이럴수가" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /이럴수가!
+  - 갈수록 말썽이군 /이럴수가!
+
+### "/" + "잠깐만" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /잠깐만!
+  - 멈춰요 토하려나봐요 /잠깐만 참아!
 
 ### "/" + "정말" (2 occurrences)
 - Predicted: Space
@@ -392,6 +594,13 @@ Accuracy: 99.64%
 - Examples:
   - /정말?
   - 넌 선발 명단에 들었어 /정말?
+
+### "/" + "집에" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /집에!
+  - 이제 집에 갈 수 있어 /집에?
 
 ### "·" + "툰드라타운" (2 occurrences)
 - Predicted: Space
@@ -421,12 +630,12 @@ Accuracy: 99.64%
   - 난… - 넌 할 수 있는 건 다 했어.
   - 난… - 말로 사는 사람인 줄 알았는데요, 선생님.
 
-### "거" + "요" (2 occurrences)
+### "나" + "하고" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 차우 씨, 옷장도 여기 거요?
-  - 희소식이라도 있는 거요?
+  - 나하고 출까?
+  - 나하고요?
 
 ### "냐" + "고" (2 occurrences)
 - Predicted: Space
@@ -456,12 +665,12 @@ Accuracy: 99.64%
   - 누구시우?
   - 누구시죠?
 
-### "누구" + "야" (2 occurrences)
+### "로" + "군" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 딜러는 누구야?
-  - 문을 두드리는 자식은 누구야?
+  - 당신이로군!
+  - 여자로군!
 
 ### "로" + "요" (2 occurrences)
 - Predicted: Space
@@ -470,12 +679,47 @@ Accuracy: 99.64%
   - 무슨 수로요?
   - 어디 길로요?
 
-### "뭐" + "지" (2 occurrences)
+### "먹다" + "만" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 먹다 만 빅맥을 버리는 세상을 지켜야겠지!
+  - 뭐, 먹다 만 걸 뱉을까?
+
+### "명" + "이죠" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 번호가 뭐지?
-  - 저녁은 뭐지?
+  - 왜 두 명이죠?
+  - 총 몇 명이죠?
+
+### "몇" + "이야" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 신발 사이즈는 몇이야?
+  - 형제는 몇이야?
+
+### "무슨" + "일이" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 무슨일이 있었구나?
+  - 무슨일이 있었지요?
+
+### "뭐" + "예요" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아줌마는 직업이 뭐예요?
+  - 이 냄새는 뭐예요?
+
+### "뭐" + "하려고" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 너희 뭐하려고?
+  - 뭐하려고?
 
 ### "박스터" + "가" (2 occurrences)
 - Predicted: None
@@ -505,6 +749,13 @@ Accuracy: 99.64%
   - 몇 살이죠?
   - 아그라도는 몇 살이죠?
 
+### "안녕하세요" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 안녕하세요 -네, 잘 지내요?
+  - 안녕하세요 -뭐 드릴까요?
+
 ### "어디" + "가니" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -512,12 +763,33 @@ Accuracy: 99.64%
   - 아나스타샤, 어디가니?
   - 어디가니?
 
+### "어디" + "냐" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 기지가 어디냐고?
+  - 여기가 어디냐?
+
 ### "어디" + "죠" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 여기가 어디죠?
   - 트로페아가 어디죠?
+
+### "얼마" + "죠" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 액수가 얼마죠?
+  - 의사 선생 진료비는 얼마죠?
+
+### "없" + "나요" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 남자 자리는 없나요?
+  - 생명력은 없나요?
 
 ### "엉망" + "이야" (2 occurrences)
 - Predicted: Space
@@ -533,12 +805,19 @@ Accuracy: 99.64%
   - 이 집에선 뛰지 마라.
   - 이 집에선 안 돼.
 
-### "여기" + "예요" (2 occurrences)
+### "에서" + "요" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 여기예요!
-  - 여기예요?
+  - 구석에서요?
+  - 어느 가게에서요?
+
+### "여" + "" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 여 다!
+  - 여 어요 액수는 아시죠?
 
 ### "와일드" + "와" (2 occurrences)
 - Predicted: Space
@@ -568,12 +847,19 @@ Accuracy: 99.64%
   - 몇 살이오?
   - 사르완 마르완이오?
 
-### "있" + "나요" (2 occurrences)
+### "이거" + "예요" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 자녀가 있나요?
-  - 제안이라도 있나요?
+  - 이 냄새가 이거예요?
+  - 이거예요?
+
+### "일" + "예요" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 무슨 일예요?
+  - 어쩐 일예요?
 
 ### "있었" + "나요" (2 occurrences)
 - Predicted: Space
@@ -589,12 +875,26 @@ Accuracy: 99.64%
   - 잘자!
   - 잘자, 내 강아지.
 
+### "잠" + "이라도" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 잠이라도 설쳤나?
+  - 잠이라도 자나?
+
 ### "좀만" + "좀만" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 그렇지 좀만좀만좀만 치켜!
   - 그렇지 좀만좀만좀만 치켜!
+
+### "중" + "입니다" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 인쇄가 진행 중입니다.
+  - 착륙 중입니다!
 
 ### "지" + "·" (2 occurrences)
 - Predicted: Space
@@ -617,12 +917,93 @@ Accuracy: 99.64%
   - 곤도르 출신인가?
   - 여기 출신인가?
 
+### "컷" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 컷 -컷 해!
+  - 컷, 컷, 컷 -컷 해!
+
 ### "하" + "고" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 아이는 어떻게 하고요?
   - 학교는 어떻하고?
+
+### "해" + "보라고" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 해보라고!
+  - 해보라고, 쎈척하긴!
+
+### "했어" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 말하려고 했어 -언제?
+  - 말하려고 했어 -존!
+
+### "," + "‘" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ‘굉장했죠 ‘라이프’, ‘타임’에 실리고!
+
+### "," + "그래" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그래 ,그래 그만떠들어, 조용히 해!
+
+### "," + "금룡은" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아,금룡은 왜 안뿜어져 나오는거야?
+
+### "," + "꼬마" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 구경 좀/했지, 우리꼬마야 /안녕,꼬마?
+
+### "," + "너무" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 안 돼,안 돼,안 돼, 너무 빨라,너무 빨라 꽉 잡아!
+
+### "," + "너의" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 괜찮지 않은데,너의 귀가 축 처졌어.
+
+### "," + "매번" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 봐봐,매번 소리가 다르지?
+
+### "," + "서장님" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 맞아 그거 때문입니다,서장님!
+
+### "," + "수영" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 왜,수영 못하나?
+
+### "," + "아가씨" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어디 가세요,아가씨?
 
 ### "," + "어떻게" (1 occurrences)
 - Predicted: Space
@@ -636,6 +1017,18 @@ Accuracy: 99.64%
 - Examples:
   - 당신이 치료한 십대들이 얼마나 많아,에바?
 
+### "," + "여보" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 알겠지요,여보?
+
+### "," + "오렌지다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 우와,오렌지다!
+
 ### "," + "이" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -647,6 +1040,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 피터 잭슨 감독,작가,제작 - 기억나요?
+
+### ",’" + "알죠" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ‘난 꿈이 있다,’ 알죠?
 
 ### "-" + "갑시다" (1 occurrences)
 - Predicted: None
@@ -732,6 +1131,12 @@ Accuracy: 99.64%
 - Examples:
   - 필리파 보이옌 작가 - 꽤 어렸었는데요 - 몇 살이었죠?
 
+### "-" + "뭐하는" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 공짜로 재워줘서 고마워요 - 뭐하는 거야?
+
 ### "-" + "미안해요" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -743,6 +1148,12 @@ Accuracy: 99.64%
 - Actual: Space
 - Examples:
   - 피터 잭슨 감독, 작가, 제작 - 벽에 있는 병사들을 찍었죠?
+
+### "-" + "안돼요" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 아직 테스트가 더 필요하다고요 - 안돼요!
 
 ### "-" + "알았죠" (1 occurrences)
 - Predicted: None
@@ -780,6 +1191,12 @@ Accuracy: 99.64%
 - Examples:
   - 프란 월쉬 작가, 제작 - 이건 우리가 피자라고 불렀죠?
 
+### "-" + "저" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 이 여자애 통금인데 밖에 있어요 - 저 집에 간다고요!
+
 ### "-" + "죄라는" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -792,11 +1209,47 @@ Accuracy: 99.64%
 - Examples:
   - 툭스판은 베라크루스 근처야 - 해변도 있어요?
 
+### "-" + "후" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 우 - 후!
+
 ### "--" + "-어서" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 엘피-- -어서.
+
+### "--" + "카멜레온" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 그-- 카멜레온?
+
+### "/" + "가져와" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /가져와!
+
+### "/" + "걸레" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /걸레 받아!
+
+### "/" + "경찰에" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /경찰에 가서 얘기해!
+
+### "/" + "고마워요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /고마워요!
 
 ### "/" + "과격파" (1 occurrences)
 - Predicted: Space
@@ -804,11 +1257,23 @@ Accuracy: 99.64%
 - Examples:
   - 그래 /과격파!
 
-### "/" + "그래" (1 occurrences)
+### "/" + "그" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 나도 취직했어요 /그래?
+  - 주인님을 바보처럼 그렸네 /그 멍청한게 나라구?
+
+### "/" + "그대는" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 평생을 기다렸소 /그대는?
+
+### "/" + "그럼" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 난 동생 없소 /그럼 형?
 
 ### "/" + "그리고" (1 occurrences)
 - Predicted: Space
@@ -816,11 +1281,95 @@ Accuracy: 99.64%
 - Examples:
   - /그리고?
 
+### "/" + "그만" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /그만!
+
+### "/" + "끔찍한거" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /끔찍한거 오케!
+
+### "/" + "끔찍해" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 끔찍하네요 /끔찍해?
+
+### "/" + "날" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /날 알아?
+
+### "/" + "내" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /내 귀!
+
+### "/" + "농부를" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 공지그 몽미라 /농부를 도운 사람?
+
+### "/" + "놔요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /놔요, 왜 그래요?
+
 ### "/" + "누가" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 오히려 사람들이 날 겁줘 /누가 겁주는데?
+
+### "/" + "누군가" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /누군가 꺼내겠지, 마셔!
+
+### "/" + "다행이라구" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 다행히 차만 망가졌어요 /다행이라구?
+
+### "/" + "당신" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 활을 잘 닦아놔 /당신 왜 이래요?
+
+### "/" + "당장" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 카페트도 망쳐놨어요 /당장 안나가면 경찰 부른다!
+
+### "/" + "따끈한" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 식사하자구 /따끈한 수프!
+
+### "/" + "떠나신다고" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 나는 집으로 곧 돌아가겠다 /떠나신다고?
+
+### "/" + "또" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 돌아갈 방법을 연구해야지 /또 약을 먹어요?
 
 ### "/" + "만지지" (1 occurrences)
 - Predicted: Space
@@ -828,35 +1377,245 @@ Accuracy: 99.64%
 - Examples:
   - 몸은 보지 않기/만지지 않기!
 
+### "/" + "만지지마" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 착하다, 내맘을 아는군 /만지지마!
+
+### "/" + "맥주" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 난 안갈래요 /맥주 달라고 하셨죠?
+
+### "/" + "멀미" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /멀미 나요?
+
+### "/" + "모두" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 난 피곤해 /모두 자요!
+
+### "/" + "무서운" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /무서운 마녀가 있대요!
+
+### "/" + "뭐라구요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /뭐라구요?
+
+### "/" + "뭐야" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 나도 묵어요 /뭐야?
+
+### "/" + "뭐요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /뭐요?
+
+### "/" + "뭔데" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /뭔데?
+
+### "/" + "밖으로" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아무도 없잖아요 /밖으로 나갔나?
+
+### "/" + "발목만" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /발목만!
+
+### "/" + "밤에" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /밤에 떠나요?
+
+### "/" + "방문" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 한 번 방문한거지 /방문?
+
+### "/" + "방해하지마" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /방해하지마, 지금 바빠!
+
+### "/" + "불이" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 당신 동생이 또 야단하겠네 /불이 필요해!
+
+### "/" + "빨리" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /빨리!
+
+### "/" + "사장의" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /사장의 형이래!
+
+### "/" + "상관없어" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 손님들이 많은데요 /상관없어!
+
+### "/" + "손자의" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 내 손자의 손자의 손자의 손녀 /손자의 손자의 손자의 손녀?
+
+### "/" + "숙부님이에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /숙부님이에요!
+
+### "/" + "시끄러" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 거기는 사무실이에요 /시끄러!
+
+### "/" + "실감나" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 얘기를 실감나게 하네요 /실감나?
+
+### "/" + "아가씨" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /아가씨!
+
+### "/" + "아뇨" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /아뇨!
+
+### "/" + "아니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /아니!
+
+### "/" + "아니요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /아니요!
+
+### "/" + "악" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 여보, 악쓰지 마세요 /악 안써!
+
 ### "/" + "악기요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - /악기요?
 
-### "/" + "안" (1 occurrences)
+### "/" + "안녕" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - /안 돼!
+  - 구경 좀/했지, 우리꼬마야 /안녕,꼬마?
 
-### "/" + "어서" (1 occurrences)
+### "/" + "어떤" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 형 건반 연습판은 안 버리면서 /어서 자!
+  - 여보, 테이블 차려요 /어떤 접시를 꺼낼까?
 
-### "/" + "왜요" (1 occurrences)
+### "/" + "옛" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 너 말조심해 /왜요?
+  - 통채로 우물에 던져넣었지 /옛 추억은 아름다워!
+
+### "/" + "오즈가" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 오즈의 마법사 밖에 몰라요 /오즈가 어디지?
+
+### "/" + "우리" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 네, 사촌님 /우리 성에는 누가 살지?
+
+### "/" + "위베르" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /위베르 몽미라가 사촌이에요?
+
+### "/" + "이리" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /이리 와!
+
+### "/" + "인장" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 나의 인장 /인장?
+
+### "/" + "자기가" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 너희들은 좀 나가 있거라 /자기가 뭔데?
+
+### "/" + "잔뜩" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 화가 나니까 배가 고프다 /잔뜩 먹었잖소?
 
 ### "/" + "조금도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 아니 /조금도 기억 안 나?
+
+### "/" + "조심해요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /조심해요!
 
 ### "/" + "조와" (1 occurrences)
 - Predicted: Space
@@ -870,11 +1629,35 @@ Accuracy: 99.64%
 - Examples:
   - /좀더 구체적인 차이는?
 
+### "/" + "죄다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /죄다 내 엉덩이 구경하네!
+
+### "/" + "주민등록증" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /주민등록증 내놔 봐!
+
+### "/" + "주인님" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 난 주인님 불 기다리는데 /주인님?
+
 ### "/" + "지방" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 맥아더와 트루먼의 논쟁요 /지방 신문에 그게 났을까요?
+
+### "/" + "지하감옥은" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /지하감옥은 있을까?
 
 ### "/" + "진짜" (1 occurrences)
 - Predicted: Space
@@ -888,17 +1671,71 @@ Accuracy: 99.64%
 - Examples:
   - 기가 막혀라 /진짜야, 가지마!
 
+### "/" + "징징대지마" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 안나갔어요 /징징대지마!
+
 ### "/" + "철자는" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 폴 맨필드 /철자는?
 
+### "/" + "택시여보" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /택시여보, 어찌된거죠?
+
+### "/" + "폐하" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /폐하 납시오!
+
+### "/" + "프레드" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /프레드, 살려줘!
+
+### "/" + "하수도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이럴 때 오시다니 /하수도 넘쳤소?
+
+### "/" + "하이힐" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 저 여자랑 같이 왔어 /하이힐 신었잖아!
+
 ### "/" + "할머니고" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 그래 /할머니고?
+
+### "/" + "했지" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 구경 좀/했지, 우리꼬마야 /안녕,꼬마?
+
+### "/" + "형이라니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /형이라니?
+
+### "/" + "형제" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - /형제?
 
 ### "[" + "테레사" (1 occurrences)
 - Predicted: None
@@ -984,6 +1821,12 @@ Accuracy: 99.64%
 - Examples:
   - ‎- 돌려줘요 ‎- 하루에 목욕도 두 번은 할걸?
 
+### "‘감사합니다’" + "하면서" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 너는 그냥 내가 좋아 해주면 ‘감사합니다’ 하면서…응?
+
 ### "‘차우’" + "씨" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1002,17 +1845,41 @@ Accuracy: 99.64%
 - Examples:
   - ‘첸’ 부인, 또 국수 사러 가려고?
 
+### "’" + "광고하냐" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ‘날 잡아가시오’ 광고하냐?
+
 ### "’" + "때문이야" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ‘토끼 히어로 콤플렉스’ 때문이야.
 
+### "’" + "란" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ‘미안해’ 란 말은 모르냐?
+
+### "’" + "맞지요" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 어머님 성함이 ‘놀라’ 맞지요?
+
 ### "’" + "부인은" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 옆집 ‘손’ 부인은?
+
+### "’" + "사세요" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ‘예언자 일보’ 사세요!
 
 ### "’" + "원본" (1 occurrences)
 - Predicted: None
@@ -1068,6 +1935,42 @@ Accuracy: 99.64%
 - Examples:
   - · 자… · 안 돼!
 
+### "…" + "괴물은" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - …괴물은 죽였어요?
+
+### "…" + "그냥" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 엄마…그냥 제가 알아서 할게요.
+
+### "…" + "너는" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아직…너는 어디야?
+
+### "…" + "뭐라고요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - …뭐라고요?
+
+### "…" + "뭘요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - …뭘요?
+
+### "…" + "복수" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - …복수!
+
 ### "…" + "생일이에요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1079,6 +1982,18 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 그 당시…아닙니다!
+
+### "…" + "아빠가" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - …아빠가 약속할게.
+
+### "…" + "카멜레온이" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - …카멜레온이 우리가 온다는 것을 안다면 어떻게 될까?
 
 ### "∼" + "요" (1 occurrences)
 - Predicted: Space
@@ -1110,6 +2025,12 @@ Accuracy: 99.64%
 - Examples:
   - 엄마가요?
 
+### "가격" + "에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이 가격에요?
+
 ### "가르세스" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1140,6 +2061,24 @@ Accuracy: 99.64%
 - Examples:
   - 가족이시죠?
 
+### "강간씬" + "이라니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 강간씬이라니!
+
+### "강도" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 강도라도 들었수?
+
+### "강력하다" + "고요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 우리보다 강력하다고요?
+
 ### "강아지" + "와" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1158,17 +2097,35 @@ Accuracy: 99.64%
 - Examples:
   - 제목은 「놈들에겐 엄지가 네 개다」.
 
+### "개인적" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그 중 일부는 매우 개인적입니다.
+
 ### "거" + "다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 이제 이 버스는 우리 거다!
 
+### "거" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 누구 떠오르는 거라도 있어?
+
 ### "거" + "에요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 귀가 빨개지면 흥분한 거에요?
+
+### "거기" + "있어" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 거기있어!
 
 ### "거래" + "라뇨" (1 occurrences)
 - Predicted: Space
@@ -1206,6 +2163,12 @@ Accuracy: 99.64%
 - Examples:
   - 우리를 위한 것일까?
 
+### "것" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 모든 것이 용서될 것입니다.
+
 ### "겠" + "냐" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1224,6 +2187,12 @@ Accuracy: 99.64%
 - Examples:
   - 누구겠어요?
 
+### "결혼" + "이라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 결혼이라도 하나?
+
 ### "경주" + "다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1241,6 +2210,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 아이는 어떻게 하고요?
+
+### "고마워요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 공짜로 재워줘서 고마워요 - 뭐하는 거야?
 
 ### "고민" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -1266,6 +2241,18 @@ Accuracy: 99.64%
 - Examples:
   - 히틀러 정권과요?
 
+### "과제" + "인데" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 무슨 과제인데?
+
+### "괜찮네" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 괜찮네 -그렇지?
+
 ### "괜찮아" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1284,6 +2271,12 @@ Accuracy: 99.64%
 - Examples:
   - 말 좀 하 라 구 !
 
+### "구명" + "정도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 구명정도 선실 등급이 있나요?
+
 ### "구축함" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1296,11 +2289,35 @@ Accuracy: 99.64%
 - Examples:
   - 최고형을 구형하겠대요 - 근데?
 
+### "군대" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 러시아 군대입니다!
+
+### "군집" + "일까요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 명부터가 군집일까요?
+
+### "귀엽구나" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 우와 너는 내 예상보다 훨씬 귀엽구나 .
+
 ### "그" + "게" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 아가씨는 그게 필요 없겠는데요?
+
+### "그" + "보다" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 이젠 그 보다 더 한게 됐다고요, 상병님!
 
 ### "그" + "뿐" (1 occurrences)
 - Predicted: Space
@@ -1314,17 +2331,47 @@ Accuracy: 99.64%
 - Examples:
   - 그자를 생각하오?
 
+### "그거" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그거예요!
+
+### "그것" + "뿐" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어디, 그것뿐 인가!
+
 ### "그것" + "쯤" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 그것쯤이야 나도 알어 / 알면서도 너 이 자식!
 
-### "그랬" + "더니" (1 occurrences)
+### "그녀" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 그랬더니?
+  - 그녀예요?
+
+### "그래" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 그래 ,그래 그만떠들어, 조용히 해!
+
+### "그런" + "일이" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그런일이 있었다고?
+
+### "그렇게" + "까지" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 아 진짜, 그렇게 까지 했는데?
 
 ### "그렇게" + "밖에" (1 occurrences)
 - Predicted: Space
@@ -1338,6 +2385,12 @@ Accuracy: 99.64%
 - Examples:
   - 그렇구말구!
 
+### "그렇지" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 그렇지 -그럼 전 뭐가 되나요?
+
 ### "그렇지" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1350,6 +2403,12 @@ Accuracy: 99.64%
 - Examples:
   - 툭스판은 베라크루스 근처야 - 해변도 있어요?
 
+### "금시초문" + "인데" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그런 얘기는 금시초문인데?
+
 ### "금지" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1361,6 +2420,12 @@ Accuracy: 99.64%
 - Actual: Space
 - Examples:
   - 잠깐, 기다려 - 어쩐 일이야, 클레오?
+
+### "기사" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 기사예요?
 
 ### "기술" + "이잖아" (1 occurrences)
 - Predicted: Space
@@ -1386,6 +2451,12 @@ Accuracy: 99.64%
 - Examples:
   - 깐다 이!
 
+### "깡패" + "밖에" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 동네 깡패밖에 더 되겠냐구!
+
 ### "께" + "선" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1404,11 +2475,11 @@ Accuracy: 99.64%
 - Examples:
   - 나예요?
 
-### "나" + "하고" (1 occurrences)
+### "나선" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 나하고요?
+  - 이중 나선입니다.
 
 ### "난장판" + "이라뇨" (1 occurrences)
 - Predicted: Space
@@ -1428,6 +2499,12 @@ Accuracy: 99.64%
 - Examples:
   - 무슨 날인데?
 
+### "남자잖아" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 걘 남자잖아 -그래서?
+
 ### "너" + "두" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1440,17 +2517,53 @@ Accuracy: 99.64%
 - Examples:
   - 너랑?
 
+### "너" + "처럼" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 내가 어렸을 때 너 처럼 감정적으로 힘들었을 때가 있었지.
+
+### "네" + "게" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 네게 질려버렸어!
+
 ### "네" + "사" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 네사.
 
+### "녀석" + "에게" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 녀석에게?
+
+### "녀석" + "일세" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 저 녀석일세!
+
+### "년" + "쯤" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 일 년쯤?
+
 ### "놈" + "이다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 애초부터 없는 놈이다, 이거지?
+
+### "농담" + "이" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 농담이시죠?
 
 ### "농담이죠" + "?" (1 occurrences)
 - Predicted: None
@@ -1488,11 +2601,23 @@ Accuracy: 99.64%
 - Examples:
   - 누구라니?
 
+### "누구" + "라니요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 누구라니요?
+
 ### "누구" + "랑" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 누구랑?
+
+### "누구" + "랬죠" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아까 누구랬죠?
 
 ### "누구" + "세요" (1 occurrences)
 - Predicted: Space
@@ -1506,6 +2631,12 @@ Accuracy: 99.64%
 - Examples:
   - 누구쇼?
 
+### "누구" + "시오" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 누구시오?
+
 ### "누구" + "에요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1518,17 +2649,17 @@ Accuracy: 99.64%
 - Examples:
   - 크리스티 러브는 누구였는데?
 
-### "누구" + "지" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 사부가 누구지?
-
 ### "누구" + "하고" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 누구하고?
+
+### "누나" + "고" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 네 누나고?
 
 ### "는" + "디" (1 occurrences)
 - Predicted: Space
@@ -1590,6 +2721,18 @@ Accuracy: 99.64%
 - Examples:
   - 이제 그 얘기가 다음과 같이 이어진다는 것을 알게 되었어.
 
+### "단서" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 사건 단서라도 잡았나?
+
+### "단지" + "인데" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어느 아파트 단지인데?
+
 ### "달러" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1601,12 +2744,6 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 마마, 당신마저!
-
-### "당신" + "에게" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 당신에게 면목이 없겠죠!
 
 ### "당신" + "이야" (1 occurrences)
 - Predicted: Space
@@ -1632,17 +2769,35 @@ Accuracy: 99.64%
 - Examples:
   - 당신이나 가.
 
+### "당연하지" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 당연하지 -그래서?
+
 ### "대박" + "이네" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 대박이네!
 
+### "대작" + "인가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 대작인가요?
+
 ### "대지" + "좀" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 캐런, 징징 대지좀 마!
+
+### "대해서" + "요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 당신에 대해서요?
 
 ### "데이트" + "에요" (1 occurrences)
 - Predicted: Space
@@ -1674,11 +2829,29 @@ Accuracy: 99.64%
 - Examples:
   - 뒷 산에 돋아 나 있던게야?
 
+### "돌아왔습니다" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 타이렁이 돌아왔습니다 -타이렁이 돌아왔다고?
+
+### "동정" + "이라니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 동정이라니?
+
 ### "돼" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 말도 안 돼 -여기서 벗어나야 해!
+
+### "돼" + "로" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 안 도와줘도 돼 로, 괜찮지?
 
 ### "돼지" + "지" (1 occurrences)
 - Predicted: Space
@@ -1692,11 +2865,23 @@ Accuracy: 99.64%
 - Examples:
   - 처음에 어떻게 오크가 저렇게 됐는지 아는가?
 
+### "됐" + "지" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 루치아는 어떻게 됐지?
+
 ### "되" + "지" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 말도 안되지.
+
+### "되는" + "겄인가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 육식동물들이 야수가 되는겄인가요?
 
 ### "될걸" + "∼" (1 occurrences)
 - Predicted: Space
@@ -1722,6 +2907,12 @@ Accuracy: 99.64%
 - Examples:
   - 저 뒤에도!
 
+### "들" + "고" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 죄책감도 들고?
+
 ### "들" + "에게" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1740,11 +2931,29 @@ Accuracy: 99.64%
 - Examples:
   - 등신이냐?
 
+### "디드릭슨" + "에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 롤라 디드릭슨에요 기억하시죠?
+
+### "딴짓" + "하지" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 다시는 내 뒤에서 딴짓하지 마!
+
 ### "때" + "까지" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 이건 추수 때 까지 정리해 줬으면 하네 / 네?
+
+### "때" + "부터" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 네가 어렸을 때 부터 바래왔던 일이잖아.
 
 ### "때" + "인가" (1 occurrences)
 - Predicted: Space
@@ -1770,17 +2979,23 @@ Accuracy: 99.64%
 - Examples:
   - 수류탄 자폭남이로구만.
 
-### "로" + "군" (1 occurrences)
+### "로버츠" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 여자로군!
+  - 리치 로버츠입니다 전화 받으셨죠?
 
 ### "록시예요" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 플렌 씨, 록시예요 - 누구?
+
+### "룸서비스" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 룸서비스입니다 어디다 놓을까요?
 
 ### "리모콘" + "이네" (1 occurrences)
 - Predicted: Space
@@ -1794,11 +3009,23 @@ Accuracy: 99.64%
 - Examples:
   - 무례하게 굴지 마 -뭐?
 
+### "마" + "시" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 다시는 그러지 마시오 알아 들었소?
+
 ### "마녀" + "야" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 언니는 마녀야!
+
+### "마누라" + "와" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 피에르, 마누라와 애들은 잘 지낸대?
 
 ### "마법봉" + "이잖아" (1 occurrences)
 - Predicted: Space
@@ -1806,11 +3033,23 @@ Accuracy: 99.64%
 - Examples:
   - 마법봉이잖아!
 
+### "마약" + "이라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 마약이라도 하나?
+
 ### "만" + "요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 어머니만요.
+
+### "만약" + "이라니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 만약이라니?
 
 ### "많이" + "-" (1 occurrences)
 - Predicted: None
@@ -1848,11 +3087,23 @@ Accuracy: 99.64%
 - Examples:
   - 만지지 말고영화나 봐!
 
-### "먹다" + "만" (1 occurrences)
+### "말씀" + "이죠" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이해가 잘 안 가네요 무슨 말씀이죠?
+
+### "말은" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 뭐, 먹다 만 걸 뱉을까?
+  - 이거 정말 신나는데, 내 말은 , 그게.
+
+### "매트리스" + "에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 공기 기반 매트리스에요?
 
 ### "메리트" + "가" (1 occurrences)
 - Predicted: Space
@@ -1866,6 +3117,12 @@ Accuracy: 99.64%
 - Examples:
   - 무슨 메시지인데?
 
+### "명" + "뿐이었나요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 한 명뿐이었나요?
+
 ### "명" + "이나요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1878,11 +3135,17 @@ Accuracy: 99.64%
 - Examples:
   - 세 명이라니?
 
-### "명" + "이죠" (1 occurrences)
+### "명" + "이라면서요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 총 몇 명이죠?
+  - 세 명이라면서요!
+
+### "명" + "인데요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 명인데요?
 
 ### "명" + "한테서" (1 occurrences)
 - Predicted: Space
@@ -1896,6 +3159,18 @@ Accuracy: 99.64%
 - Examples:
   - 몇인데?
 
+### "몇회" + "에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - ‘몇회에요?
+
+### "모든" + "선원들" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 모든선원들 자기위치로!
+
 ### "무료" + "야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1907,6 +3182,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 입장은 무료입니다.
+
+### "무릎" + "이라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 무릎이라도 꿇을까?
 
 ### "무술감독" + "/" (1 occurrences)
 - Predicted: Space
@@ -1920,11 +3201,17 @@ Accuracy: 99.64%
 - Examples:
   - 무슨일이지?
 
-### "무슨" + "일이" (1 occurrences)
+### "무엇" + "이냐" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 무슨일이 있었구나?
+  - 목적이 무엇이냐?
+
+### "무엇을" + "합니까" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 편집증 환자는 무엇을합니까?
 
 ### "문제" + "라도" (1 occurrences)
 - Predicted: Space
@@ -1938,11 +3225,17 @@ Accuracy: 99.64%
 - Examples:
   - 물론이네, 먼로!
 
-### "뭐" + "예요" (1 occurrences)
+### "물론" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 이 냄새는 뭐예요?
+  - 당신에게 있습니다, 물론입니다, 주인님.
+
+### "뭐" + "요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 목적이 뭐요?
 
 ### "뭐" + "하는데" (1 occurrences)
 - Predicted: Space
@@ -1950,11 +3243,23 @@ Accuracy: 99.64%
 - Examples:
   - 뭐하는데?
 
-### "뭐" + "하려고" (1 occurrences)
+### "뭐" + "하지" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 뭐하려고?
+  - 가족은 뭐하지?
+
+### "뭔" + "일" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 뭔일이냐 이거?
+
+### "뭘" + "하고" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 요즘 뭘하고 지내죠?
 
 ### "뭘" + "해야" (1 occurrences)
 - Predicted: Space
@@ -1968,17 +3273,29 @@ Accuracy: 99.64%
 - Examples:
   - 어떻게 믿을 만 안하죠?
 
-### "바보" + "같이" (1 occurrences)
+### "바다로" + "부터" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 놈이 있으면 기적이지 바보 같이.
+  - 바다로 부터 이동 중입니다.
+
+### "바라는" + "가" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 제일 처음보는 얼굴이 육식동물이 아니길 바라는 가 봐.
 
 ### "바보" + "야" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 언니가 바보야!
+
+### "박물관이네" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 여전히 박물관이네 -그래서?
 
 ### "반" + "이다" (1 occurrences)
 - Predicted: Space
@@ -1991,6 +3308,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 산도발요?
+
+### "밤" + "에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이 밤에요?
 
 ### "방" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -2010,6 +3333,12 @@ Accuracy: 99.64%
 - Examples:
   - 야쇼, 배라도 아픈 거야?
 
+### "배치시키겠다" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 중앙 구역에 배치시키겠다 .
+
 ### "백작님" + "이죠" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2028,6 +3357,12 @@ Accuracy: 99.64%
 - Examples:
   - 지금까지 한 번 도 그런 걸 들어본 적이 없어.
 
+### "번" + "씩" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 번씩이나, 정말요?
+
 ### "번" + "이냐고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2039,6 +3374,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 다툼 중엔 한 번이라면서요?
+
+### "번" + "이야" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 번이야?
 
 ### "번" + "이지" (1 occurrences)
 - Predicted: Space
@@ -2058,11 +3399,35 @@ Accuracy: 99.64%
 - Examples:
   - 세 번째예요.
 
+### "번호" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 번호라도 땄어?
+
+### "번호" + "인가" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 비행기 번호인가?
+
+### "별로네요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 어린이 집으로는 좀 별로네요 -기다려!
+
 ### "병" + "에도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 엄마 병에도 좋아요?
+
+### "보" + "도록" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 우리를 못 보도록 보초에게 말을 걸어, 알았나?
 
 ### "보석함" + "이잖아" (1 occurrences)
 - Predicted: Space
@@ -2070,11 +3435,29 @@ Accuracy: 99.64%
 - Examples:
   - 이모 보석함이잖아!
 
+### "보이네요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 좀 피곤해 보이네요 -피곤하세요?
+
+### "보초" + "에게" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 우리를 못 보도록 보초에게 말을 걸어, 알았나?
+
 ### "복권" + "이라도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 복권이라도 당첨됐나!
+
+### "봐" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 말해 봐 -내가 왜 그래야 하지?
 
 ### "봤" + "는" (1 occurrences)
 - Predicted: Space
@@ -2099,6 +3482,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 웬 부채시오?
+
+### "부터" + "야" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 언제부터야?
 
 ### "부터" + "였" (1 occurrences)
 - Predicted: Space
@@ -2130,11 +3519,23 @@ Accuracy: 99.64%
 - Examples:
   - 뷁―!
 
+### "비위" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 비위라도 맞춰줄까?
+
 ### "빌리야" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 구세주는 빌리야 - 누구?
+
+### "빠르게" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 더 빠르게 !
 
 ### "빨리" + "하고" (1 occurrences)
 - Predicted: Space
@@ -2148,6 +3549,12 @@ Accuracy: 99.64%
 - Examples:
   - 이제 이 집에 남자는 조나스뿐이겠네요?
 
+### "뿐" + "이라고요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 한 통뿐이라고요?
+
 ### "사간" + "쯤" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2159,6 +3566,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 그 사람에게 빠졌어요.
+
+### "사람" + "인가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 영국 사람인가요?
 
 ### "사무소" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -2208,6 +3621,12 @@ Accuracy: 99.64%
 - Examples:
   - 몇 살인데?
 
+### "살" + "쯤" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 살쯤이었죠?
+
 ### "살인범" + "이래" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2219,6 +3638,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 개팔자가 상팔자야!
+
+### "상황" + "입니까" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 응급 상황입니까?
 
 ### "상황" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -2237,6 +3662,18 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 샴페인이라니?
+
+### "서명" + "이라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 돈 통 말야 서명이라도 해둘까?
+
+### "서민" + "이라" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 나 같은 서민이라?
 
 ### "선물" + "이라니" (1 occurrences)
 - Predicted: Space
@@ -2268,17 +3705,35 @@ Accuracy: 99.64%
 - Examples:
   - 준비됐어요 하나, 둘, 셋 - 갑시다!
 
+### "소세지" + "와" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 소세지와 콩도!
+
 ### "소식" + "이라도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 장군, 무슨 소식이라도 있소?
 
+### "속보" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 속보입니다.
+
 ### "손" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 그러니까 작은 손 -그게 되나?
+
+### "손가락" + "인가" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 엄지가 손가락인가?
 
 ### "손님들" + "껜" (1 occurrences)
 - Predicted: Space
@@ -2304,6 +3759,24 @@ Accuracy: 99.64%
 - Examples:
   - 이번에는 죽을 수 도 있네, 그래도?
 
+### "수" + "밖에" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 쓸 수밖에!
+
+### "수배" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 지명 수배라도 당했어?
+
+### "수술" + "이라뇨" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 수술이라뇨?
+
 ### "수입" + "이라니" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2315,6 +3788,18 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 수학과에 다녀요.
+
+### "숙모" + "랑" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 숙모랑 일해요?
+
+### "술" + "이잖아" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 술이잖아?
 
 ### "쉔크" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -2328,6 +3813,12 @@ Accuracy: 99.64%
 - Examples:
   - 숨이 안 쉬어져 -다친 데 있어?
 
+### "스퀘어에" + "있는" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 사하라 스퀘어에있는 치타요?
+
 ### "시" + "노" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2340,11 +3831,23 @@ Accuracy: 99.64%
 - Examples:
   - 몇 시야?
 
+### "시" + "에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 시에요?
+
 ### "시" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 몇 시예요?
+
+### "시" + "오" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 다시는 그러지 마시오 알아 들었소?
 
 ### "시" + "우" (1 occurrences)
 - Predicted: Space
@@ -2370,17 +3873,35 @@ Accuracy: 99.64%
 - Examples:
   - 휴식 시간입니다.
 
+### "시간" + "쯤이라고" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 샘, 한 시간쯤이라고 했죠?
+
 ### "시간문제" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 시간문제입니다.
 
+### "시무스" + "보다는" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 시무스보다는!
+
 ### "시치로오지" + "와" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 시치로오지와 카츠로오지는 서쪽을!
+
+### "시푸" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 마스터 시푸 !
 
 ### "식구" + "죠" (1 occurrences)
 - Predicted: Space
@@ -2400,6 +3921,12 @@ Accuracy: 99.64%
 - Examples:
   - 난 이 더러운 체제가 신물 나!
 
+### "신물이" + "나" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 자네 뒤치다꺼리도 이젠 신물이 나!
+
 ### "신발" + "부터" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2411,6 +3938,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 데이트 신청인가요?
+
+### "싶었어요" + "-고맙다고" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 고맙다고 말하고 싶었어요 -고맙다고?
 
 ### "싸치" + "로부터" (1 occurrences)
 - Predicted: Space
@@ -2429,6 +3962,30 @@ Accuracy: 99.64%
 - Actual: Space
 - Examples:
   - 플렌 씨 - 왜?
+
+### "씨" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 크리스 존스 씨입니다!
+
+### "씹다" + "만" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 씹다 만 복숭아 씨?
+
+### "아" + "ㄱㄱㄱ" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아ㄱㄱㄱ!
+
+### "아니" + "라뇨" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아니라뇨?
 
 ### "아니야" + "!" (1 occurrences)
 - Predicted: None
@@ -2454,6 +4011,18 @@ Accuracy: 99.64%
 - Examples:
   - 아무데나요?
 
+### "아버님" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아버님예요?
+
+### "아버지" + "랑" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 엄마, 아버지랑은 어떻게 됐어요?
+
 ### "아빠한테" + "보다" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2465,6 +4034,24 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 여자와 아이들은?
+
+### "아줌마" + "다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아줌마다!
+
+### "아직" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 아니, 아직 -왜?
+
+### "아테나" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아테나입니다.
 
 ### "악당" + "이죠" (1 occurrences)
 - Predicted: Space
@@ -2489,6 +4076,18 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 별로 배가 안고파.
+
+### "안" + "돼요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 말도 안돼요?
+
+### "안" + "됐네요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 안됐네요.
 
 ### "안" + "됐다고" (1 occurrences)
 - Predicted: Space
@@ -2520,6 +4119,12 @@ Accuracy: 99.64%
 - Examples:
   - 엄마가 말 안해주신 이유가 있을 거야.
 
+### "안가" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 아무도 감옥에 안가 -확실해?
+
 ### "안녕" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2537,6 +4142,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 몸은 보지 않기/만지지 않기!
+
+### "않는것" + "처럼" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 맞아, 그는 내일이 오지 않는것 처럼 나를 속였지.
 
 ### "않는데요" + "-까탈스럽게" (1 occurrences)
 - Predicted: None
@@ -2556,11 +4167,23 @@ Accuracy: 99.64%
 - Examples:
   - 알겠어 -괜찮지, 네이선?
 
+### "애나씨" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 애나씨 -응?
+
 ### "야단" + "좀" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 저 녀석 야단좀 쳤어.
+
+### "약국" + "에요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 당신 집 근처 약국에요 지금 가도 돼요?
 
 ### "얘기" + "하는데" (1 occurrences)
 - Predicted: Space
@@ -2580,6 +4203,12 @@ Accuracy: 99.64%
 - Examples:
   - 어디가세요?
 
+### "어디" + "가셨니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어디가셨니?
+
 ### "어디" + "가요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2591,12 +4220,6 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 여왕폐하는 어디계시지?
-
-### "어디" + "냐" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 기지가 어디냐고?
 
 ### "어디" + "요" (1 occurrences)
 - Predicted: Space
@@ -2615,6 +4238,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 어디있는거야?
+
+### "어디" + "있어" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어디있어?
 
 ### "어디" + "있어요" (1 occurrences)
 - Predicted: Space
@@ -2646,11 +4275,11 @@ Accuracy: 99.64%
 - Examples:
   - 필리파 보이옌 작가 - 꽤 어렸었는데요 - 몇 살이었죠?
 
-### "어서" + "오세요" (1 occurrences)
+### "어머니" + "라고요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 어서오세요.
+  - 이분이 저희 어머니라고요?
 
 ### "언제" + "야" (1 occurrences)
 - Predicted: Space
@@ -2663,6 +4292,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 두 번째는 언제였나?
+
+### "언제" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 언제예요?
 
 ### "언제" + "죠" (1 occurrences)
 - Predicted: Space
@@ -2694,17 +4329,53 @@ Accuracy: 99.64%
 - Examples:
   - 수고비는 얼마니?
 
+### "얼마" + "야" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 제이디, 액수가 얼마야?
+
+### "얼마" + "인데" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 얼마인데?
+
+### "얼마" + "인지" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 액수가 얼마인지 알고 있나?
+
+### "얼마" + "입니까" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 처음에 지갑에 들어있던 돈은 얼마입니까?
+
+### "얼마만" + "이죠" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 좋아보여요 얼마만이죠?
+
 ### "얼음" + "이라니" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 얼음이라니?
 
-### "없" + "나요" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "없어" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - 생명력은 없나요?
+  - 없어 -여행객이라도 돼요?
+
+### "없어요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 할 말 없어요 -정말요?
 
 ### "없을" + "정도야" (1 occurrences)
 - Predicted: Space
@@ -2724,17 +4395,23 @@ Accuracy: 99.64%
 - Examples:
   - 누구에게요?
 
-### "여" + "" (1 occurrences)
+### "에드" + "하고" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 여 다!
+  - 클로이, 에드하고 포드 봤어요?
 
 ### "여기" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 여기입니다, 상사님!
+
+### "여기" + "있는" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 오옷, 여기있는 것은?
 
 ### "여기까지" + "다" (1 occurrences)
 - Predicted: Space
@@ -2748,11 +4425,11 @@ Accuracy: 99.64%
 - Examples:
   - 육지야, 여러분 -저게 뭐야?
 
-### "여자" + "와" (1 occurrences)
+### "여자" + "라도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 여자와 아이들은?
+  - 여자라도 생겼나?
 
 ### "여친" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -2772,17 +4449,41 @@ Accuracy: 99.64%
 - Examples:
   - 언제부터였죠?
 
+### "예" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 예 -아하!
+
+### "오늘" + "부터" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 오늘 부터 함께할 신입이다.
+
 ### "오랜만" + "이죠" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 오랜만이죠?
 
+### "옥탑방" + "이라니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 옥탑방이라니?
+
 ### "온도" + "조차" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 온도조차 몰라?
+
+### "올게요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 금방 올게요 -어디 가요?
 
 ### "와우" + "-" (1 occurrences)
 - Predicted: None
@@ -2795,6 +4496,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 어디까지 왔죠?
+
+### "왜" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 왜 , 왜그래?
 
 ### "왜" + "그려" (1 occurrences)
 - Predicted: Space
@@ -2814,6 +4521,18 @@ Accuracy: 99.64%
 - Examples:
   - 외우주로부터의 방문?
 
+### "우" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 우 - 후!
+
+### "우리" + "라니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 우리라니?
+
 ### "우리" + "라니요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2825,6 +4544,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 우승이라도 했어?
+
+### "웬일" + "이" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 웬일이요?
 
 ### "위베르" + "야" (1 occurrences)
 - Predicted: Space
@@ -2862,6 +4587,12 @@ Accuracy: 99.64%
 - Examples:
   - 유기농이래.
 
+### "육식동물로" + "부터" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 홉스 형사님, 저 육식동물로 부터 위협을 받으셨습니까?
+
 ### "음향통신" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2892,11 +4623,29 @@ Accuracy: 99.64%
 - Examples:
   - 명언이네!
 
+### "이" + "로군요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 당신이로군요.
+
 ### "이" + "사람들은" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 이사람들은 누구야?
+
+### "이" + "상" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 감상이상이요?
+
+### "이" + "쇼" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 진심이쇼?
 
 ### "이" + "유" (1 occurrences)
 - Predicted: Space
@@ -2916,11 +4665,17 @@ Accuracy: 99.64%
 - Examples:
   - 이거다!
 
-### "이거" + "예요" (1 occurrences)
+### "이거" + "밖에" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 이 냄새가 이거예요?
+  - 너 이거밖에 안 돼?
+
+### "이것" + "밖에" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이것밖에 없는데 되겠어?
 
 ### "이라서" + "죠" (1 occurrences)
 - Predicted: Space
@@ -2934,11 +4689,29 @@ Accuracy: 99.64%
 - Examples:
   - 이론상이라뇨?
 
+### "이봐" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 이봐 -왔어?
+
+### "이브" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이브입니다.
+
 ### "이었" + "어요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 경찰 중 하나는 흑인이었어요!
+
+### "이었" + "죠" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 살쯤이었죠?
 
 ### "이쪽" + "이라뇨" (1 occurrences)
 - Predicted: Space
@@ -2946,11 +4719,23 @@ Accuracy: 99.64%
 - Examples:
   - 이쪽이라뇨?
 
-### "일" + "예요" (1 occurrences)
+### "이쪽" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 어쩐 일예요?
+  - 이쪽입니다.
+
+### "인간이" + "되는" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 인간이되는 것은 어렵습니다.
+
+### "일" + "이냐" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 뭔일이냐 이거?
 
 ### "일" + "이죠" (1 occurrences)
 - Predicted: Space
@@ -2976,6 +4761,18 @@ Accuracy: 99.64%
 - Examples:
   - 일자리라니?
 
+### "입양" + "이라니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 입양이라니?
+
+### "있" + "느냐" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 그 자는 어디 있느냐?
+
 ### "있" + "는지" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2988,11 +4785,23 @@ Accuracy: 99.64%
 - Examples:
   - 현장에 있지도 않았어!
 
+### "있기" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 지팡이 스스로 생각을 할 수 있기라도 한 것처럼 말이죠.
+
 ### "있다" + "해도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 할 수 있다해도 뭐 하러요?
+
+### "있다고요" + "—" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 탈출할 방법이 있다고요—!
 
 ### "있어" + "-" (1 occurrences)
 - Predicted: None
@@ -3000,11 +4809,23 @@ Accuracy: 99.64%
 - Examples:
   - 내가 잡고 있어 -어서!
 
+### "있어" + "-진짜" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 안 돼, 감옥에 있어 -진짜?
+
 ### "있어" + "이" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 니 여서 쪼매만 기달리고 있어 이?
+
+### "있어요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 이 여자애 통금인데 밖에 있어요 - 저 집에 간다고요!
 
 ### "있었" + "는가" (1 occurrences)
 - Predicted: Space
@@ -3023,6 +4844,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 우리를 이렇게 만든 자들에게 계속 불타오를 것이다.
+
+### "자기" + "위치로" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 모든선원들 자기위치로!
 
 ### "자살" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -3054,6 +4881,18 @@ Accuracy: 99.64%
 - Examples:
   - 작가라!
 
+### "잔다르크" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 잔다르크 ?
+
+### "잘" + "계시니" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 엄마 잘계시니?
+
 ### "잘" + "돼" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3065,6 +4904,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 잘돼가니?
+
+### "잘" + "돼가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 잘돼가요?
 
 ### "잘" + "되고" (1 occurrences)
 - Predicted: Space
@@ -3078,17 +4923,23 @@ Accuracy: 99.64%
 - Examples:
   - 잘있어요!
 
+### "잘" + "자렴" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 잘자렴.
+
+### "잘" + "자요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 잘자요.
+
 ### "잘하" + "고" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 공부는 잘하고?
-
-### "잠" + "이라도" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 잠이라도 설쳤나?
 
 ### "잠그" + "고" (1 occurrences)
 - Predicted: Space
@@ -3108,17 +4959,35 @@ Accuracy: 99.64%
 - Examples:
   - 잠깐만 -나 가도 돼요?
 
+### "잠시만요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 잠시만요 -네?
+
 ### "장" + "이" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 석 장이시죠?
 
+### "재난" + "이죠" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 문제가 아니라 재난이죠!
+
 ### "저" + "들" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 다시는 저들을 돕지 않을 테니 살려만 주세요!
+
+### "저" + "사람들" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 저사람들 데리고 뭐 하는 거에요?
 
 ### "저" + "역시" (1 occurrences)
 - Predicted: Space
@@ -3144,11 +5013,23 @@ Accuracy: 99.64%
 - Examples:
   - 우리는 잘못을 저질렀어요 -잘못요?
 
+### "저쪽으로" + "죠" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 지난번처럼 저쪽으로죠?
+
 ### "전" + "처럼" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 조금 전 처럼?
+
+### "전부" + "하고요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 아니면 독일군 전부하고요?
 
 ### "전쟁때" + "마다" (1 occurrences)
 - Predicted: None
@@ -3168,6 +5049,12 @@ Accuracy: 99.64%
 - Examples:
   - 합격 점수예요.
 
+### "정도" + "인데" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어느 정도인데?
+
 ### "정도" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3180,11 +5067,23 @@ Accuracy: 99.64%
 - Examples:
   - 이 정도쯤이야!
 
+### "정말" + "이냐" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 정말이냐?
+
 ### "정말" + "이죠" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 정말이죠?
+
+### "정원" + "인가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 당신 정원인가요?
 
 ### "제도" + "예요" (1 occurrences)
 - Predicted: Space
@@ -3197,6 +5096,18 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 제안이라도 있나요?
+
+### "제정신" + "이세요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 제정신이세요?
+
+### "조각" + "이라뇨" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 벽돌 조각이라뇨?
 
 ### "조나스" + "뿐" (1 occurrences)
 - Predicted: Space
@@ -3216,6 +5127,12 @@ Accuracy: 99.64%
 - Examples:
   - 조정이라뇨?
 
+### "좀" + "/" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 구경 좀/했지, 우리꼬마야 /안녕,꼬마?
+
 ### "좀" + "―" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3233,6 +5150,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 당신 때문에 재즈가 좋아졌다구요!
+
+### "좋아해" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 난 그냥 쿵푸를 좋아해 -뭐가 되야하지?
 
 ### "좋았어" + "-" (1 occurrences)
 - Predicted: None
@@ -3264,11 +5187,29 @@ Accuracy: 99.64%
 - Examples:
   - 정의는 죽었다고?
 
+### "중" + "에도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 수술 중에도 얼마나 잘 견뎠다고!
+
 ### "중력" + "이란" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 중력이란?
+
+### "중요" + "한가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이유가 중요한가요?
+
+### "중좌" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 요시오카 중좌입니다!
 
 ### "중허냐고" + "!" (1 occurrences)
 - Predicted: None
@@ -3276,11 +5217,29 @@ Accuracy: 99.64%
 - Examples:
   - 그케 중허냐고 !
 
+### "증인" + "이라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 증인이라도 있소?
+
+### "지금" + "이요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 지금이요?
+
 ### "지금" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 지금입니다!
+
+### "지랄" + "이" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 지랄이요?
 
 ### "지만" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -3300,17 +5259,35 @@ Accuracy: 99.64%
 - Examples:
   - 알로하, 지피스입니다 뭘 드릴까요?
 
-### "진심" + "이" (1 occurrences)
+### "직감" + "이라도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 진심이요!
+  - 직감이라도 없나?
+
+### "진심" + "이세요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 말도 안 돼 지금 진심이세요?
+
+### "진저리" + "나" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 이 방도 진저리 나고 더위도, 전화도 진저리 나!
 
 ### "짓" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 이거 미친 짓예요.
+
+### "짓" + "이" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 무슨 짓이요?
 
 ### "짓" + "이죠" (1 occurrences)
 - Predicted: Space
@@ -3324,17 +5301,23 @@ Accuracy: 99.64%
 - Examples:
   - 자정쯤요?
 
+### "쯤" + "이었" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 몇 살쯤이었죠?
+
 ### "차종" + "과" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 차종과 기간은요?
 
-### "처럼" + "요" (1 occurrences)
+### "책임" + "요" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 아까 당신 가게처럼요?
+  - 가장의 책임요?
 
 ### "처음" + "이" (1 occurrences)
 - Predicted: Space
@@ -3348,11 +5331,23 @@ Accuracy: 99.64%
 - Examples:
   - 엠마가 처음이야?
 
+### "천식" + "이라며" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 천식이라며?
+
 ### "총" + "밖에" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 총밖에 없다면서?
+
+### "축배" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 축배라도 들까요?
 
 ### "출신" + "이" (1 occurrences)
 - Predicted: Space
@@ -3372,17 +5367,35 @@ Accuracy: 99.64%
 - Examples:
   - 영국 어디 출신이지?
 
+### "출신" + "인가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 스탠퍼드 출신인가요?
+
 ### "출장" + "이라도" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 출장이라도?
 
+### "충돌" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 충돌입니다!
+
 ### "친구" + "』" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 『친구』 같아!
+
+### "친척" + "인가요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 저 분도 친척인가요?
 
 ### "침묵" + "-" (1 occurrences)
 - Predicted: None
@@ -3432,6 +5445,18 @@ Accuracy: 99.64%
 - Examples:
   - 큰일나셨네!
 
+### "큰일" + "났군" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 큰일났군!
+
+### "큰일" + "났네" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 큰일났네!
+
 ### "큰일" + "났어" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3468,17 +5493,47 @@ Accuracy: 99.64%
 - Examples:
   - 탐문이라도 하란 거야!
 
+### "탱크" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 탱크입니다!
+
+### "통" + "뿐" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 한 통뿐이라고요?
+
 ### "파라다이스" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 파라다이스입니다!
 
+### "포탈" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 환승 포탈입니다.
+
 ### "포트로스키" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 한나 포트로스키입니다, 베를린에서 태어나 자랐죠.
+
+### "폭설" + "이라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 폭설이라도 와요?
+
+### "폭파" + "되고" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 집까지 폭파되고 싶소?
 
 ### "표범" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -3510,11 +5565,29 @@ Accuracy: 99.64%
 - Examples:
   - 핀이라뇨?
 
+### "필요하거든요" + "-네" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 특수자석이 필요하거든요 -네?
+
+### "필요하다고요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 아직 테스트가 더 필요하다고요 - 안돼요!
+
 ### "하" + "·" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 진·지·하·게!
+
+### "하고" + "들" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 도대체 무슨 얘기를 하고들 있는 거지?
 
 ### "하고" + "요" (1 occurrences)
 - Predicted: Space
@@ -3528,11 +5601,23 @@ Accuracy: 99.64%
 - Examples:
   - 하나라도 더 찾아!
 
+### "하나" + "밖에" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 하나밖에 없어?
+
 ### "하나" + "쯤은" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 부탁인데, 쟤 하나쯤은 내가 만나게 해주면 안 돼?
+
+### "하더군" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 멋지다고 하더군 -그래요?
 
 ### "하일" + "!" (1 occurrences)
 - Predicted: None
@@ -3564,11 +5649,23 @@ Accuracy: 99.64%
 - Examples:
   - 할인권입니다!
 
+### "핫" + "입니다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 퀵 앤 핫입니다 주문 도와드릴까요?
+
 ### "항복" + "이" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 항복이요!
+
+### "해" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 그만 해 !
 
 ### "해" + "보겠나" (1 occurrences)
 - Predicted: Space
@@ -3581,12 +5678,6 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 해보겠습니까?
-
-### "해" + "보라고" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 해보라고, 쎈척하긴!
 
 ### "해" + "보라고요" (1 occurrences)
 - Predicted: Space
@@ -3612,11 +5703,11 @@ Accuracy: 99.64%
 - Examples:
   - 햄이라니?
 
-### "했어" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
+### "했" + "죠" (1 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - 말하려고 했어 -존!
+  - 어디까지 했죠?
 
 ### "허락" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -3635,6 +5726,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 헬기입니다!
+
+### "혁명" + "이라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 혁명이라도 났나?
 
 ### "혁명사령부" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -3659,6 +5756,12 @@ Accuracy: 99.64%
 - Actual: None
 - Examples:
   - 기장 홀로웨이입니다.
+
+### "화가" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 화가라도 돼요?
 
 ### "활용" + "-" (1 occurrences)
 - Predicted: None

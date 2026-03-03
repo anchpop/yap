@@ -34,7 +34,7 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0805564",  // Lars and the Real Girl
     "tt0460989",  // Juno
     "tt0320661",  // Kung Fu Hustle
-    "tt0363163",  // Catch Me If You Can
+    "tt0264464",  // Catch Me If You Can
     "tt0120737",  // LOTR: Fellowship
     "tt0167261",  // LOTR: Two Towers
     "tt0167260",  // LOTR: Return of the King
@@ -76,6 +76,23 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0053198",  // The 400 Blows
     "tt7458762",  // The Wolf's Call
     "tt5078204",  // Two Is a Family
+    "tt0092593",  // Au Revoir Les Enfants
+    "tt0101765",  // Delicatessen
+    "tt0106856",  // Three Colors: Blue
+    "tt0338135",  // Caché (Hidden)
+    "tt0363589",  // The Diving Bell and the Butterfly
+    "tt0401711",  // Tell No One (Ne le dis à personne)
+    "tt0756683",  // A Prophet (Un prophète)
+    "tt14444726", // Titane
+    "tt0070460",  // Day for Night (La Nuit américaine)
+    "tt0048491",  // Les Diaboliques
+    "tt0046268",  // The Wages of Fear (Le Salaire de la peur)
+    "tt0082085",  // Diva
+    "tt0120202",  // Taxi
+    "tt0091288",  // Jean de Florette
+    "tt0091480",  // Manon des Sources
+    "tt0060474",  // La Grande Vadrouille
+    "tt0108500",  // Les Visiteurs
     // Spanish
     "tt0457430",  // Pan's Labyrinth
     "tt4857264",  // The Invisible Guest
@@ -92,6 +109,18 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt8291806",  // Pain and Glory
     "tt0441909",  // Volver
     "tt0245574",  // Y Tu Mamá También
+    "tt0117093",  // Open Your Eyes (Abre los ojos)
+    "tt0091670",  // Women on the Verge of a Nervous Breakdown
+    "tt0234853",  // The Devil's Backbone
+    "tt5765280",  // A Fantastic Woman (Una mujer fantástica)
+    "tt7549996",  // The Platform (El hoyo)
+    "tt0314331",  // Mondays in the Sun (Los lunes al sol)
+    "tt1530509",  // No (2012, Chilean)
+    "tt1650048",  // Even the Rain (También la lluvia)
+    "tt0327056",  // The Motorcycle Diaries
+    "tt0070040",  // The Spirit of the Beehive (El espíritu de la colmena)
+    "tt0287467",  // Talk to Her (Hable con ella)
+    "tt0117883",  // Tesis
     // German
     "tt1016150", // All Quiet on the Western Front
     "tt0088323", // The NeverEnding Story
@@ -109,6 +138,18 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0093191", // Wings of Desire
     "tt4226388", // Victoria
     "tt0068182", // Aguirre, the Wrath of God
+    "tt3104988", // Toni Erdmann
+    "tt3615160", // Look Who's Back (Er ist wieder da)
+    "tt4530422", // The Captain (Der Hauptmann)
+    "tt0421082", // The Counterfeiters (Die Fälscher)
+    "tt1186830", // The White Ribbon (Das weiße Band)
+    "tt0076085", // The Tin Drum (Die Blechtrommel)
+    "tt6710474", // System Crasher (Systemsprenger)
+    "tt0250258", // The Experiment (Das Experiment)
+    "tt0363163", // Downfall (Der Untergang)
+    "tt0765432", // The Baader Meinhof Complex (Der Baader Meinhof Komplex)
+    "tt0347048", // Head-On (Gegen die Wand)
+    "tt1954701", // A Coffee in Berlin (Oh Boy)
     // Korean
     "tt0364569",  // Oldboy
     "tt5700672",  // Train to Busan
@@ -124,6 +165,15 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt12477480", // Decision to Leave
     "tt0365376",  // A Tale of Two Sisters
     "tt0423866",  // 3-Iron
+    "tt0468492",  // The Host
+    "tt6644200",  // A Taxi Driver
+    "tt0469903",  // Thirst
+    "tt1133985",  // Spring, Summer, Fall, Winter... and Spring
+    "tt1278060",  // Secret Sunshine (Milyang)
+    "tt4334266",  // The Age of Shadows
+    "tt13384586", // Broker
+    "tt3622120",  // Assassination
+    "tt0310775",  // Sympathy for Mr. Vengeance
     // Chinese
     "tt0190332",  // Crouching Tiger, Hidden Dragon
     "tt0299977",  // Hero
@@ -138,21 +188,43 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0118694",  // In the Mood for Love
     "tt0109424",  // Chungking Express
     "tt0338564",  // Infernal Affairs
+    "tt0112725",  // Eat Drink Man Woman
+    "tt0765429",  // Ip Man
+    "tt0460780",  // Curse of the Golden Flower
+    "tt3810626",  // The Mermaid (Mei ren yu)
+    "tt0112913",  // To Live (Huozhe)
+    "tt0115857",  // Happy Together
+    "tt0093389",  // A Chinese Ghost Story
+    "tt0408664",  // The World (Shìjiè)
+    "tt0859765",  // Still Life (Sānxiá hǎorén)
     // Japanese
-    "tt5311514", // Your Name.
-    "tt0096283", // My Neighbor Totoro
-    "tt0095327", // Grave of the Fireflies
-    "tt0876563", // Ponyo
-    "tt0094625", // Akira
-    "tt0092067", // Castle in the Sky
-    "tt0097814", // Kiki's Delivery Service
-    "tt5323662", // A Silent Voice
-    "tt0047478", // Seven Samurai
-    "tt0087544", // Nausicaä of the Valley of the Wind
-    "tt0113568", // Ghost in the Shell
-    "tt0266308", // Battle Royale
-    "tt0104652", // Porco Rosso
-    "tt2013293", // The Wind Rises
+    "tt5311514",  // Your Name.
+    "tt0096283",  // My Neighbor Totoro
+    "tt0095327",  // Grave of the Fireflies
+    "tt0876563",  // Ponyo
+    "tt0094625",  // Akira
+    "tt0092067",  // Castle in the Sky
+    "tt0097814",  // Kiki's Delivery Service
+    "tt5323662",  // A Silent Voice
+    "tt0047478",  // Seven Samurai
+    "tt0087544",  // Nausicaä of the Valley of the Wind
+    "tt0113568",  // Ghost in the Shell
+    "tt0266308",  // Battle Royale
+    "tt0104652",  // Porco Rosso
+    "tt2013293",  // The Wind Rises
+    "tt6587046",  // Shoplifters
+    "tt1568921",  // The Tale of the Princess Kaguya
+    "tt5462602",  // Weathering with You
+    "tt14564098", // Suzume
+    "tt12593682", // Demon Slayer: Mugen Train
+    "tt0831887",  // Departures (Okuribito)
+    "tt0044741",  // Ikiru
+    "tt0032976",  // Rashomon
+    "tt0054215",  // Yojimbo
+    "tt0092048",  // Tampopo
+    "tt0166924",  // Audition
+    "tt0046438",  // Tokyo Story
+    "tt0156887",  // Perfect Blue
     // Russian
     "tt0079944", // Stalker
     "tt0069293", // Solaris
@@ -165,6 +237,15 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0318034", // Russian Ark
     "tt6537238", // Salyut-7
     "tt0118767", // Brother
+    "tt0050986", // The Cranes Are Flying
+    "tt0112883", // Burnt by the Sun
+    "tt0084726", // Kin-dza-dza!
+    "tt0079579", // Moscow Does Not Believe in Tears
+    "tt1234530", // Elena
+    "tt0363187", // Night Watch
+    "tt0488074", // Day Watch
+    "tt0015648", // Battleship Potemkin
+    "tt0056111", // Ivan's Childhood (Ivanovo detstvo)
     // Portuguese
     "tt0317248",  // City of God
     "tt0861739",  // Elite Squad
@@ -176,6 +257,12 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt3742378",  // The Second Mother
     "tt5221584",  // Aquarius
     "tt0293007",  // Carandiru
+    "tt0082912",  // Pixote
+    "tt1424432",  // Neighboring Sounds (O Som ao Redor)
+    "tt3398268",  // The Way He Looks (Hoje Eu Quero Voltar Sozinho)
+    "tt0361862",  // City of Men (Cidade dos Homens)
+    "tt0212985",  // Behind the Sun (Abril Despedaçado)
+    "tt0367110",  // Madame Satã
     // Italian
     "tt0118799", // Life Is Beautiful
     "tt0060196", // The Good, the Bad and the Ugly
@@ -190,6 +277,18 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0213847", // Malèna
     "tt0120731", // The Legend of 1900
     "tt0053779", // La Dolce Vita
+    "tt0048673", // La Strada
+    "tt0036775", // Rome, Open City
+    "tt0116209", // Il Postino
+    "tt5164214", // Happy as Lazzaro (Lazzaro felice)
+    "tt7304534", // The Hand of God (È stata la mano di Dio)
+    "tt0050783", // Nights of Cabiria
+    "tt0057091", // The Leopard (Il Gattopardo)
+    "tt7026672", // Pinocchio (2019, Garrone)
+    "tt0065571", // The Conformist (Il conformista)
+    "tt0071129", // Amarcord
+    "tt0055913", // Divorce Italian Style (Divorzio all'italiana)
+    "tt0065889", // Investigation of a Citizen Above Suspicion
 ];
 
 /// OMDB API response
