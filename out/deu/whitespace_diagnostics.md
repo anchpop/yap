@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2709365
-Total errors: 2113
+Total predictions: 2708580
+Total errors: 2112
 Accuracy: 99.92%
 
 ## Error Patterns (sorted by frequency)
@@ -5088,12 +5088,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Weiter !
-
-### "Weiter" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Weiter .
 
 ### "Welche" + "?" (1 occurrences)
 - Predicted: None

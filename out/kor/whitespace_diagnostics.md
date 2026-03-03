@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 331014
-Total errors: 1384
+Total predictions: 330753
+Total errors: 1380
 Accuracy: 99.58%
 
 ## Error Patterns (sorted by frequency)
@@ -358,22 +358,6 @@ Accuracy: 99.58%
   - 볼 때 마다 예뻐지네.
   - 일어날 때 마다 어지러워.
 
-### "를" + "요" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 누구를요?
-  - 매직 지표를요?
-  - 어디를요?
-
-### "무슨" + "일이야" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 거기 무슨일이야?
-  - 도데체 무슨일이야?
-  - 무슨일이야 요오헤이!
-
 ### "뭐" + "지" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -679,6 +663,13 @@ Accuracy: 99.58%
   - 무슨 수로요?
   - 어디 길로요?
 
+### "를" + "요" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 누구를요?
+  - 매직 지표를요?
+
 ### "먹다" + "만" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -706,6 +697,13 @@ Accuracy: 99.58%
 - Examples:
   - 무슨일이 있었구나?
   - 무슨일이 있었지요?
+
+### "무슨" + "일이야" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 도데체 무슨일이야?
+  - 무슨일이야 요오헤이!
 
 ### "뭐" + "예요" (2 occurrences)
 - Predicted: Space
@@ -853,13 +851,6 @@ Accuracy: 99.58%
 - Examples:
   - 이 냄새가 이거예요?
   - 이거예요?
-
-### "일" + "예요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 무슨 일예요?
-  - 어쩐 일예요?
 
 ### "있었" + "나요" (2 occurrences)
 - Predicted: Space
@@ -2120,12 +2111,6 @@ Accuracy: 99.58%
 - Actual: None
 - Examples:
   - 귀가 빨개지면 흥분한 거에요?
-
-### "거기" + "있어" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 거기있어!
 
 ### "거래" + "라뇨" (1 occurrences)
 - Predicted: Space
@@ -4730,6 +4715,12 @@ Accuracy: 99.58%
 - Actual: None
 - Examples:
   - 인간이되는 것은 어렵습니다.
+
+### "일" + "예요" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 어쩐 일예요?
 
 ### "일" + "이냐" (1 occurrences)
 - Predicted: Space

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1796526
-Total errors: 1264
+Total predictions: 1795844
+Total errors: 1262
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -542,14 +542,6 @@ Accuracy: 99.93%
   - He has never had any trouble with the law and he´s the father of two.
   - No, he´s not famous.
 
-### "help" + "you" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Can I helpyou?
-  - Let me helpyou.
-  - Shall I helpyou?
-
 ### "there" + "´s" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -842,6 +834,13 @@ Accuracy: 99.93%
 - Examples:
   - Why haven’t you called me?
   - You haven’t seen nothing yet.
+
+### "help" + "you" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Can I helpyou?
+  - Shall I helpyou?
 
 ### "here" + "-" (2 occurrences)
 - Predicted: None
@@ -1787,12 +1786,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Beforeyou came, we were saying thatyou could take my place.
-
-### "Boss" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Boss !
 
 ### "Clara" + "-" (1 occurrences)
 - Predicted: None

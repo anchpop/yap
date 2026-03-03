@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2489952
-Total errors: 575
+Total predictions: 2489370
+Total errors: 574
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -54,14 +54,6 @@ Accuracy: 99.98%
   - Olá, Mu/th/ur!
   - Sabe por que a Mu/th/ur nos deu sentimentos?
 
-### "não" + "?" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Foi bem com ele, não ?
-  - Linda, não ?
-  - Oh, não ?
-
 ### "," + "e" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -85,6 +77,14 @@ Accuracy: 99.98%
   - Desculpe Mu/th/ur, o Yautja está morto.
   - Olá, Mu/th/ur!
   - Sabe por que a Mu/th/ur nos deu sentimentos?
+
+### "não" + "?" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Foi bem com ele, não ?
+  - Oh, não ?
+  - Por que não ?
 
 ### "th" + "/" (4 occurrences)
 - Predicted: Space

@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2430685
-Total errors: 788
+Total predictions: 2430074
+Total errors: 786
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "," + "?" (40 occurrences)
+### "," + "?" (39 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -22,7 +22,7 @@ Accuracy: 99.97%
   - Bueno,¿por qué lo preguntas?
   - Bueno,¿qué te parece?
 
-### "¿" + "verdad" (11 occurrences)
+### "¿" + "verdad" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:

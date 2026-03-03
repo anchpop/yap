@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2333171
-Total errors: 2969
+Total predictions: 2332679
+Total errors: 2962
 Accuracy: 99.87%
 
 ## Error Patterns (sorted by frequency)
@@ -166,14 +166,6 @@ Accuracy: 99.87%
   - Come immaginare che avrebbero provato a violentarla mentre stava con lei ?
   - Come può essere lei ?
 
-### "molto" + "?" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ayrton lottò molto ?
-  - Ci vuole molto ?
-  - Mamma Wong, manca molto ?
-
 ### "adesso" + "?" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -206,13 +198,13 @@ Accuracy: 99.87%
   - Ero in ?
   - Hai già vinto tre volte, qui, in ?
 
-### "la" + "?" (8 occurrences)
+### "molto" + "?" (8 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Io la ?
-  - Io molte volte ho usato la ?
-  - La rivalità fra Ayrton e Prost è la ?
+  - Ayrton lottò molto ?
+  - Ci vuole molto ?
+  - Mamma Wong, manca molto ?
 
 ### "sei" + "?" (8 occurrences)
 - Predicted: None
@@ -269,6 +261,14 @@ Accuracy: 99.87%
   - Su , continua, vai fino in fondo.
   - Su , dite qualcosa anche voi.
   - Su , fatemi vedere.
+
+### "la" + "?" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Io la ?
+  - Io molte volte ho usato la ?
+  - La rivalità fra Ayrton e Prost è la ?
 
 ### "prego" + "!" (7 occurrences)
 - Predicted: None
@@ -661,14 +661,6 @@ Accuracy: 99.87%
   - Che ne Sappiamo noi ?
   - Perché non viene a cena con noi ?
   - Si tratta di noi ?
-
-### "non" + "?" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ma certe volte le battaglie non ?
-  - Quando non ?
-  - Quello che Senna non ?
 
 ### "oggi" + "?" (4 occurrences)
 - Predicted: None
@@ -1189,6 +1181,14 @@ Accuracy: 99.87%
   - E il suo nome ?
   - La bella persona ha un nome ?
   - Sa almeno il nome ?
+
+### "non" + "?" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ma certe volte le battaglie non ?
+  - Quando non ?
+  - Quello che Senna non ?
 
 ### "ouzi" + "," (3 occurrences)
 - Predicted: None
@@ -1875,13 +1875,6 @@ Accuracy: 99.87%
 - Examples:
   - Ma certo !
   - Sì, certo !
-
-### "che" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Credo che ?
-  - Quando è normale che ?
 
 ### "chiama" + "?" (2 occurrences)
 - Predicted: None
@@ -3303,12 +3296,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Sparare - tipo cacciare?
-
-### "-" + "via" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Va- via!
 
 ### "-" + "è" (1 occurrences)
 - Predicted: None
@@ -7426,6 +7413,12 @@ Accuracy: 99.87%
 - Examples:
   - Non puoi proteggere la tua donna con quel cervello !
 
+### "che" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Quando è normale che ?
+
 ### "che" + "Jeancojon" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7479,12 +7472,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Ragazzi, ecco qui le chiavi !
-
-### "chiedere" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Che posso chiedere ?
 
 ### "chiedetevi" + "?" (1 occurrences)
 - Predicted: None
@@ -9609,12 +9596,6 @@ Accuracy: 99.87%
 - Actual: None
 - Examples:
   - Entro mezzora.
-
-### "mi" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Su-mi !
 
 ### "mi" + "?" (1 occurrences)
 - Predicted: None
