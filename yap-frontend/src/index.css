@@ -110,10 +110,18 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+@supports (corner-shape: squircle) {
+  :root {
+    --radius: 2.5rem;
+  }
+  * {
+    corner-shape: squircle;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    corner-shape: squircle;
   }
   body {
     @apply bg-background text-foreground;

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1795844
-Total errors: 1262
+Total predictions: 1795382
+Total errors: 1260
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -198,14 +198,6 @@ Accuracy: 99.93%
   - Haveyou got parents?
   - Haveyou heard anything about her?
 
-### "of" + "you" (6 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - All ofyou.
-  - An animal, but who takes care ofyou like I do?
-  - Congratulations to both ofyou.
-
 ### "-" + "and" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -245,6 +237,14 @@ Accuracy: 99.93%
   - Fechner died a magnificent death\nand Guibariane was a coward.
   - Suppose we opened all the windows\nand yelled down as loud as we could?
   - The fog was too dense\nand we had to call the search off.
+
+### "of" + "you" (5 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - An animal, but who takes care ofyou like I do?
+  - Congratulations to both ofyou.
+  - I just dreamed ofyou in my sleep.
 
 ### "of" + "your" (5 occurrences)
 - Predicted: Space
@@ -1786,12 +1786,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Beforeyou came, we were saying thatyou could take my place.
-
-### "Clara" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Clara -yeah?
 
 ### "Did" + "n´t" (1 occurrences)
 - Predicted: Space

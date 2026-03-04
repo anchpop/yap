@@ -590,6 +590,8 @@ pub struct TranslateComprehensibleSentence {
     /// Definition for each gram group (indexed by group number). None if no definition is available.
     pub gram_definitions_for_lookup: Vec<Option<GramDefinition>>,
     pub unique_target_language_phrases: Vec<Gram<String>>,
+    /// Definition for each phrase in unique_target_language_phrases (indexed in parallel).
+    pub phrase_definitions: Vec<Option<GramDefinition>>,
     pub native_translations: Vec<String>,
     pub movie_titles: Vec<(String, String)>,
     pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
@@ -3294,6 +3296,7 @@ pub fn find_closest_translation(
     find_closest_match(&user_translation, &candidates, language)
 }
 
+#[allow(clippy::too_many_arguments)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub async fn autograde_translation(
     challenge_sentence: String,
@@ -3303,7 +3306,12 @@ pub async fn autograde_translation(
     phrases: Vec<Gram<String>>,
     access_token: Option<String>,
     course: Course,
+    gram_definitions: autograde::GramDefinitions,
+    literal_gram_indices: Vec<usize>,
+    phrase_definitions: autograde::GramDefinitions,
 ) -> Result<autograde::AutoGradeTranslationResponse, JsValue> {
+    let gram_definitions = gram_definitions.0;
+    let phrase_definitions = phrase_definitions.0;
     // Check if the user's translation matches any of the acceptable translations
     let normalized_user = normalize_for_grading(&user_sentence, course.native_language);
     let is_perfect = native_translations.iter().any(|translation| {
@@ -3330,41 +3338,157 @@ pub async fn autograde_translation(
             phrases_forgot: vec![],
             encouragement: Some("Perfect! You translated it correctly!".to_string()),
             explanation: None,
+            autograding_error: None,
         });
     }
 
     let request = autograde::AutoGradeTranslationRequest {
         challenge_sentence,
-        user_sentence,
-        literals,
-        phrases,
+        user_sentence: user_sentence.clone(),
+        literals: literals.clone(),
+        phrases: phrases.clone(),
         course,
     };
 
-    let response = hit_ai_server(
-        fetch_happen::Method::POST,
-        "/autograde-translation",
-        Some(request),
-        access_token.as_ref(),
-    )
-    .await
-    .map_err(|e| JsValue::from_str(&format!("Request error: {e:?}")))?;
+    let llm_result = async {
+        let response = hit_ai_server(
+            fetch_happen::Method::POST,
+            "/autograde-translation",
+            Some(request),
+            access_token.as_ref(),
+        )
+        .await
+        .map_err(|e| format!("Request error: {e:?}"))?;
 
-    if !response.ok() {
-        return Err(JsValue::from_str(&format!(
-            "HTTP error: {}",
-            response.status()
-        )));
+        if !response.ok() {
+            return Err(format!("HTTP error: {}", response.status()));
+        }
+
+        response
+            .json::<autograde::AutoGradeTranslationResponse>()
+            .await
+            .map_err(|e| format!("Response parsing error: {e:?}"))
+    }
+    .await;
+
+    match llm_result {
+        Ok(response) => {
+            log::info!("Autograde response: {response:#?}");
+            Ok(response)
+        }
+        Err(error_msg) => {
+            log::warn!("LLM autograde failed, using heuristic fallback: {error_msg}");
+            Ok(heuristic_grade_translation(
+                &user_sentence,
+                &literals,
+                &phrases,
+                &gram_definitions,
+                &literal_gram_indices,
+                &phrase_definitions,
+                course.native_language,
+                error_msg,
+            ))
+        }
+    }
+}
+
+fn extract_native_words(definition: &GramDefinition) -> Vec<String> {
+    match definition {
+        GramDefinition::Dictionary(entry) => {
+            entry.definitions.iter().map(|d| d.native.clone()).collect()
+        }
+        GramDefinition::Phrasebook(entry) => {
+            // The meaning field is the native translation for phrasebook entries
+            vec![entry.meaning.clone()]
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn heuristic_grade_translation(
+    user_sentence: &str,
+    literals: &[Literal<String>],
+    phrases: &[Gram<String>],
+    gram_definitions: &[Option<GramDefinition>],
+    literal_gram_indices: &[usize],
+    phrase_definitions: &[Option<GramDefinition>],
+    native_language: Language,
+    error_msg: String,
+) -> autograde::AutoGradeTranslationResponse {
+    let normalized_user = normalize_for_grading(user_sentence, native_language);
+    let user_words: Vec<&str> = normalized_user.split_whitespace().collect();
+
+    // Grade each literal
+    let literal_grades = literals
+        .iter()
+        .enumerate()
+        .map(|(i, lit)| {
+            // Only grade heteronyms
+            lit.word.heteronym()?;
+
+            let gram_idx = literal_gram_indices.get(i)?;
+            let Some(definition) = gram_definitions.get(*gram_idx)? else {
+                return None;
+            };
+
+            let native_words = extract_native_words(definition);
+            if native_words.is_empty() {
+                return None;
+            }
+
+            let found = native_words.iter().any(|native| {
+                let normalized_native = normalize_for_grading(native, native_language);
+                // Check if any word from the native translation appears in the user's translation
+                normalized_native
+                    .split_whitespace()
+                    .any(|word| user_words.contains(&word))
+            });
+
+            if found {
+                Some(autograde::Remembered::Remembered)
+            } else {
+                Some(autograde::Remembered::Forgot)
+            }
+        })
+        .collect();
+
+    // Grade phrases
+    let mut phrases_remembered = Vec::new();
+    let mut phrases_forgot = Vec::new();
+
+    for (i, phrase) in phrases.iter().enumerate() {
+        let Some(Some(definition)) = phrase_definitions.get(i) else {
+            // No definition available — can't grade, skip (won't appear in either list)
+            continue;
+        };
+
+        let native_words = extract_native_words(definition);
+        if native_words.is_empty() {
+            continue;
+        }
+
+        let found = native_words.iter().any(|native| {
+            let normalized_native = normalize_for_grading(native, native_language);
+            normalized_native
+                .split_whitespace()
+                .any(|word| user_words.contains(&word))
+        });
+
+        if found {
+            phrases_remembered.push(phrase.clone());
+        } else {
+            phrases_forgot.push(phrase.clone());
+        }
     }
 
-    let response: autograde::AutoGradeTranslationResponse = response
-        .json()
-        .await
-        .map_err(|e| JsValue::from_str(&format!("Response parsing error: {e:?}")))?;
-
-    log::info!("Autograde response: {response:#?}");
-
-    Ok(response)
+    autograde::AutoGradeTranslationResponse {
+        encouragement: None,
+        explanation: None,
+        literal_grades,
+        phrases_remembered,
+        phrases_forgot,
+        autograding_error: Some(error_msg),
+    }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]

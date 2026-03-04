@@ -481,6 +481,50 @@ pub mod wiktionary_morphology {
         }
     }
 
+    /// Convert a NounGender (from Wiktionary) to morphology entries.
+    /// For single-gender nouns, sets the gender. For dual-gender nouns, sets gender to None
+    /// (the full gender info is preserved in the NounGender struct for downstream use).
+    fn noun_gender_to_morphology(
+        lemma: &str,
+        noun_gender: &crate::wiktionary_conjugations::NounGender,
+    ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+        use language_utils::features::Gender;
+
+        let mut morphology = BTreeMap::new();
+
+        // If there's exactly one gender, use it; otherwise None (ambiguous)
+        let gender = if noun_gender.gender.genders.len() == 1 {
+            match noun_gender.gender.genders[0] {
+                Gender::Masculine => Some(Gender::Masculine),
+                Gender::Feminine => Some(Gender::Feminine),
+                Gender::Neuter => Some(Gender::Neuter),
+                Gender::Common => Some(Gender::Common),
+            }
+        } else {
+            None
+        };
+
+        let heteronym = Heteronym {
+            word: lemma.to_string(),
+            lemma: lemma.to_string(),
+            pos: PartOfSpeech::Noun,
+        };
+        morphology
+            .entry(heteronym)
+            .or_insert_with(Vec::new)
+            .push(Morphology {
+                gender,
+                number: None,
+                politeness: None,
+                tense: None,
+                person: None,
+                case: None,
+                mood: None,
+            });
+
+        morphology
+    }
+
     pub mod french {
         use super::*;
         use crate::wiktionary_conjugations::french::FrenchVerbConjugation;
@@ -491,17 +535,25 @@ pub mod wiktionary_morphology {
         pub async fn create_french_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
-            // Step 1: Extract all verb lemmas from frequencies (including auxiliaries)
+            // Step 1: Extract all verb and noun lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
+            let mut noun_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym()
-                    && (heteronym.pos == PartOfSpeech::Verb || heteronym.pos == PartOfSpeech::Aux)
-                {
-                    verb_lemmas.insert(heteronym.lemma.clone());
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        PartOfSpeech::Verb | PartOfSpeech::Aux => {
+                            verb_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Noun => {
+                            noun_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
                 }
             }
 
             let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+            let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch and parse Wiktionary pages with HTML caching
             let cache_dir = Path::new(".cache/wiktionary/french");
@@ -524,6 +576,19 @@ pub mod wiktionary_morphology {
                 let aux_morphology =
                     conjugation_to_morphology(infinitive, conjugation, PartOfSpeech::Aux);
                 morphology.extend(aux_morphology);
+            }
+
+            // Step 4: Fetch noun genders
+            let noun_genders = crate::wiktionary_conjugations::french::fetch_french_noun_genders(
+                &noun_lemmas_vec,
+                cache_dir,
+            )
+            .await?;
+
+            // Step 5: Convert noun genders to morphology entries
+            for (lemma, noun_gender) in noun_genders.iter() {
+                let noun_morphology = super::noun_gender_to_morphology(lemma, noun_gender);
+                morphology.extend(noun_morphology);
             }
 
             Ok(morphology)
@@ -814,17 +879,25 @@ pub mod wiktionary_morphology {
         pub async fn create_spanish_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
-            // Step 1: Extract all verb lemmas from frequencies
+            // Step 1: Extract all verb and noun lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
+            let mut noun_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym()
-                    && heteronym.pos == PartOfSpeech::Verb
-                {
-                    verb_lemmas.insert(heteronym.lemma.clone());
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        PartOfSpeech::Verb => {
+                            verb_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Noun => {
+                            noun_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
                 }
             }
 
             let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+            let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch Wiktionary pages with HTML caching
             let cache_dir = Path::new(".cache/wiktionary/spanish");
@@ -837,6 +910,19 @@ pub mod wiktionary_morphology {
             for (infinitive, conjugation) in conjugations.iter() {
                 let verb_morphology = conjugation_to_morphology(infinitive, conjugation);
                 morphology.extend(verb_morphology);
+            }
+
+            // Step 4: Fetch noun genders
+            let noun_genders = crate::wiktionary_conjugations::spanish::fetch_spanish_noun_genders(
+                &noun_lemmas_vec,
+                cache_dir,
+            )
+            .await?;
+
+            // Step 5: Convert noun genders to morphology entries
+            for (lemma, noun_gender) in noun_genders.iter() {
+                let noun_morphology = super::noun_gender_to_morphology(lemma, noun_gender);
+                morphology.extend(noun_morphology);
             }
 
             Ok(morphology)
@@ -1102,17 +1188,25 @@ pub mod wiktionary_morphology {
         pub async fn create_portuguese_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
-            // Step 1: Extract all verb lemmas from frequencies
+            // Step 1: Extract all verb and noun lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
+            let mut noun_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym()
-                    && heteronym.pos == PartOfSpeech::Verb
-                {
-                    verb_lemmas.insert(heteronym.lemma.clone());
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        PartOfSpeech::Verb => {
+                            verb_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Noun => {
+                            noun_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
                 }
             }
 
             let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+            let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch Wiktionary pages with HTML caching
             let cache_dir = Path::new(".cache/wiktionary/portuguese");
@@ -1126,6 +1220,20 @@ pub mod wiktionary_morphology {
             for (infinitive, conjugation) in conjugations.iter() {
                 let verb_morphology = conjugation_to_morphology(infinitive, conjugation);
                 morphology.extend(verb_morphology);
+            }
+
+            // Step 4: Fetch noun genders
+            let noun_genders =
+                crate::wiktionary_conjugations::portuguese::fetch_portuguese_noun_genders(
+                    &noun_lemmas_vec,
+                    cache_dir,
+                )
+                .await?;
+
+            // Step 5: Convert noun genders to morphology entries
+            for (lemma, noun_gender) in noun_genders.iter() {
+                let noun_morphology = super::noun_gender_to_morphology(lemma, noun_gender);
+                morphology.extend(noun_morphology);
             }
 
             Ok(morphology)
@@ -1394,17 +1502,25 @@ pub mod wiktionary_morphology {
         pub async fn create_italian_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
         ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
-            // Step 1: Extract all verb lemmas from frequencies
+            // Step 1: Extract all verb and noun lemmas from frequencies
             let mut verb_lemmas = HashSet::new();
+            let mut noun_lemmas = HashSet::new();
             for entry in gram_frequencies {
-                if let Some(heteronym) = entry.gram.heteronym()
-                    && heteronym.pos == PartOfSpeech::Verb
-                {
-                    verb_lemmas.insert(heteronym.lemma.clone());
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        PartOfSpeech::Verb => {
+                            verb_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Noun => {
+                            noun_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
                 }
             }
 
             let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+            let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch Wiktionary pages with HTML caching
             let cache_dir = Path::new(".cache/wiktionary/italian");
@@ -1417,6 +1533,19 @@ pub mod wiktionary_morphology {
             for (infinitive, conjugation) in conjugations.iter() {
                 let verb_morphology = conjugation_to_morphology(infinitive, conjugation);
                 morphology.extend(verb_morphology);
+            }
+
+            // Step 4: Fetch noun genders
+            let noun_genders = crate::wiktionary_conjugations::italian::fetch_italian_noun_genders(
+                &noun_lemmas_vec,
+                cache_dir,
+            )
+            .await?;
+
+            // Step 5: Convert noun genders to morphology entries
+            for (lemma, noun_gender) in noun_genders.iter() {
+                let noun_morphology = super::noun_gender_to_morphology(lemma, noun_gender);
+                morphology.extend(noun_morphology);
             }
 
             Ok(morphology)
@@ -1893,60 +2022,68 @@ pub mod wiktionary_morphology {
                     .push(morph);
             };
 
-            // Singular forms
-            add_morph(
-                &declension.nominative_singular,
-                Morphology {
-                    gender: Some(gender),
-                    number: Some(Number::Singular),
-                    politeness: None,
-                    tense: None,
-                    person: None,
-                    case: Some(Case::Nominative),
-                    mood: None,
-                },
-            );
+            // Singular forms (optional - some pages lack a full declension table)
+            if let Some(nom_sg) = &declension.nominative_singular {
+                add_morph(
+                    nom_sg,
+                    Morphology {
+                        gender: Some(gender),
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: Some(Case::Nominative),
+                        mood: None,
+                    },
+                );
+            }
 
-            add_morph(
-                &declension.genitive_singular,
-                Morphology {
-                    gender: Some(gender),
-                    number: Some(Number::Singular),
-                    politeness: None,
-                    tense: None,
-                    person: None,
-                    case: Some(Case::Genitive),
-                    mood: None,
-                },
-            );
+            if let Some(gen_sg) = &declension.genitive_singular {
+                add_morph(
+                    gen_sg,
+                    Morphology {
+                        gender: Some(gender),
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: Some(Case::Genitive),
+                        mood: None,
+                    },
+                );
+            }
 
-            add_morph(
-                &declension.dative_singular,
-                Morphology {
-                    gender: Some(gender),
-                    number: Some(Number::Singular),
-                    politeness: None,
-                    tense: None,
-                    person: None,
-                    case: Some(Case::Dative),
-                    mood: None,
-                },
-            );
+            if let Some(dat_sg) = &declension.dative_singular {
+                add_morph(
+                    dat_sg,
+                    Morphology {
+                        gender: Some(gender),
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: Some(Case::Dative),
+                        mood: None,
+                    },
+                );
+            }
 
-            add_morph(
-                &declension.accusative_singular,
-                Morphology {
-                    gender: Some(gender),
-                    number: Some(Number::Singular),
-                    politeness: None,
-                    tense: None,
-                    person: None,
-                    case: Some(Case::Accusative),
-                    mood: None,
-                },
-            );
+            if let Some(acc_sg) = &declension.accusative_singular {
+                add_morph(
+                    acc_sg,
+                    Morphology {
+                        gender: Some(gender),
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: Some(Case::Accusative),
+                        mood: None,
+                    },
+                );
+            }
 
-            // Plural forms (optional - some nouns are uncountable/sg-only)
+            // Plural forms (optional - some nouns are uncountable/sg-only or lack a declension table)
             if let Some(nom_pl) = &declension.nominative_plural {
                 add_morph(
                     nom_pl,

@@ -362,6 +362,7 @@ async fn autograde_translation(
             literal_grades: vec![],
             phrases_remembered: vec![],
             phrases_forgot: vec![],
+            autograding_error: None,
         }));
     }
 
@@ -557,6 +558,7 @@ Phrases:
         literal_grades: positional_grades,
         phrases_remembered,
         phrases_forgot,
+        autograding_error: None,
     };
 
     eprintln!("Response: {autograde_response:?}");

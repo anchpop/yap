@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2430074
-Total errors: 786
+Total predictions: 2429759
+Total errors: 785
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -3417,12 +3417,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Anastasia, ¿ adónde vas?
-
-### "¿" + "como" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ah, ¿ como Lenin en Rusia?
 
 ### "¿" + "crecemos" (1 occurrences)
 - Predicted: None

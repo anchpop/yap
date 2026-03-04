@@ -444,6 +444,10 @@ impl ReviewInfo {
                             .resolve(&language_pack.string_rodeo)
                     })
                     .collect(),
+                phrase_definitions: unique_target_language_phrases
+                    .iter()
+                    .map(|p| language_pack.gram_definitions.get(p).cloned())
+                    .collect(),
                 native_translations: native_languages
                     .iter()
                     .map(|n| language_pack.string_rodeo.resolve(n).to_string())

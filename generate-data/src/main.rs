@@ -104,6 +104,9 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
     dotenvy::dotenv().ok();
 
+    // Optional: filter to a specific target language (e.g. "deu", "fra", "spa")
+    let lang_filter = std::env::args().nth(1);
+
     // Check and raise the file descriptor limit (macOS often defaults to 256)
     unsafe {
         let mut rl = libc::rlimit {
@@ -127,6 +130,12 @@ async fn main() -> anyhow::Result<()> {
     }
 
     for course in COURSES {
+        if let Some(ref filter) = lang_filter {
+            if course.target_language.iso_639_3() != filter {
+                continue;
+            }
+        }
+
         println!();
         println!();
         println!(

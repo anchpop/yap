@@ -317,6 +317,7 @@ pub struct DictionaryDefinition {
     Debug,
     serde::Deserialize,
     serde::Serialize,
+    tsify::Tsify,
     Eq,
     PartialEq,
     Ord,
@@ -325,6 +326,7 @@ pub struct DictionaryDefinition {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum GramDefinition {
     Dictionary(DictionaryEntry),
     Phrasebook(PhrasebookDefinitionEntry),
@@ -1234,6 +1236,8 @@ pub mod autograde {
         pub literal_grades: Vec<Option<Remembered>>,
         pub phrases_remembered: Vec<Gram<String>>,
         pub phrases_forgot: Vec<Gram<String>>,
+        /// Set when heuristic grading was used instead of the LLM.
+        pub autograding_error: Option<String>,
     }
 
     #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
@@ -1248,6 +1252,11 @@ pub mod autograde {
     #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
     #[tsify(into_wasm_abi, from_wasm_abi)]
     pub struct LiteralGrades(pub Vec<Option<Remembered>>);
+
+    /// Wrapper for passing gram definitions across the WASM boundary.
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+    #[tsify(into_wasm_abi, from_wasm_abi)]
+    pub struct GramDefinitions(pub Vec<Option<GramDefinition>>);
 }
 
 pub mod transcription_challenge {

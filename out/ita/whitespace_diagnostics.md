@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2332679
-Total errors: 2962
+Total predictions: 2332307
+Total errors: 2956
 Accuracy: 99.87%
 
 ## Error Patterns (sorted by frequency)
@@ -134,14 +134,6 @@ Accuracy: 99.87%
   - Jerry, così va bene ?
   - Signore, non si sente bene ?
 
-### "fatto" + "?" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Che cosa hai fatto ?
-  - Che mi hanno fatto ?
-  - Cosa ha fatto ?
-
 ### "sono" + "?" (10 occurrences)
 - Predicted: None
 - Actual: Space
@@ -157,6 +149,14 @@ Accuracy: 99.87%
   - Che avrebbe detto ?
   - Che cosa hai detto ?
   - Che ha detto ?
+
+### "fatto" + "?" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Che cosa hai fatto ?
+  - Che mi hanno fatto ?
+  - Cosa ha fatto ?
 
 ### "lei" + "?" (9 occurrences)
 - Predicted: None
@@ -494,14 +494,6 @@ Accuracy: 99.87%
   - Infatti venne lui stesso, con un ?
   - Ma se non sei un ?
 
-### "una" + "?" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Da giornalista e da frequentatore di una ?
-  - Era lì da diverse stagioni, aveva una ?
-  - Era una ?
-
 ### "via" + "!" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -757,6 +749,14 @@ Accuracy: 99.87%
   - Dove comincia il tempo ?
   - Forse come attore sono più bravo di quello che ero un tempo ?
   - Per quanto tempo ?
+
+### "una" + "?" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Da giornalista e da frequentatore di una ?
+  - Era lì da diverse stagioni, aveva una ?
+  - Era una ?
 
 ### "voi" + "?" (4 occurrences)
 - Predicted: None
@@ -1181,14 +1181,6 @@ Accuracy: 99.87%
   - E il suo nome ?
   - La bella persona ha un nome ?
   - Sa almeno il nome ?
-
-### "non" + "?" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ma certe volte le battaglie non ?
-  - Quando non ?
-  - Quello che Senna non ?
 
 ### "ouzi" + "," (3 occurrences)
 - Predicted: None
@@ -2317,6 +2309,13 @@ Accuracy: 99.87%
   - Dovete restare con noi !
   - Lasciatene anche a noi !
 
+### "non" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ma certe volte le battaglie non ?
+  - Quando non ?
+
 ### "odiano" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2421,13 +2420,6 @@ Accuracy: 99.87%
 - Examples:
   - Continuate, tutti quanti !
   - Tutti assieme, tutti quanti !
-
-### "quella" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - E quella ?
-  - Sono io quella ?
 
 ### "quello" + "?" (2 occurrences)
 - Predicted: None
@@ -2694,13 +2686,6 @@ Accuracy: 99.87%
 - Examples:
   - Ancora vino ?
   - Magnifica dieta, ti danno anche il vino ?
-
-### "vita" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - La vita ?
-  - Se morissi adesso, che penseresti della tua vita ?
 
 ### "vivere" + "?" (2 occurrences)
 - Predicted: None
@@ -3704,12 +3689,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Avanti !
-
-### "Avevo" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Avevo ?
 
 ### "Avro" + "" (1 occurrences)
 - Predicted: Space
@@ -10695,6 +10674,12 @@ Accuracy: 99.87%
 - Examples:
   - Questa e quella !
 
+### "quella" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sono io quella ?
+
 ### "questa" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12488,6 +12473,12 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Forza, Clara, mettici più vita !
+
+### "vita" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Se morissi adesso, che penseresti della tua vita ?
 
 ### "voce" + "?" (1 occurrences)
 - Predicted: None

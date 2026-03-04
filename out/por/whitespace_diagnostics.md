@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2489370
-Total errors: 574
+Total predictions: 2488864
+Total errors: 572
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -354,13 +354,6 @@ Accuracy: 99.98%
 - Examples:
   - Quando a mamãe volta para a casa ?
   - Quando o papai volta para a casa ?
-
-### "de" + "Ia" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - O cachorro é deIa?
-  - O chefe precisa deIa para o baIanço.
 
 ### "e" + "Ie" (2 occurrences)
 - Predicted: Space
@@ -1859,12 +1852,6 @@ Accuracy: 99.98%
 - Examples:
   - Bonito, inteligente e charmoso - isso descreve o que ele não é.
 
-### "chave" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Pegou a chave ?
-
 ### "cidade" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1912,6 +1899,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Gosto da cor daquela camisa.
+
+### "de" + "Ia" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - O chefe precisa deIa para o baIanço.
 
 ### "dentes" + "?" (1 occurrences)
 - Predicted: None

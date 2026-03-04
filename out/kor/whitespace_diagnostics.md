@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 330753
-Total errors: 1380
+Total predictions: 330677
+Total errors: 1376
 Accuracy: 99.58%
 
 ## Error Patterns (sorted by frequency)
@@ -22,7 +22,7 @@ Accuracy: 99.58%
   - 그 후에는요?
   - 그거는요?
 
-### "이" + "요" (48 occurrences)
+### "이" + "요" (47 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -746,13 +746,6 @@ Accuracy: 99.58%
 - Examples:
   - 몇 살이죠?
   - 아그라도는 몇 살이죠?
-
-### "안녕하세요" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 안녕하세요 -네, 잘 지내요?
-  - 안녕하세요 -뭐 드릴까요?
 
 ### "어디" + "가니" (2 occurrences)
 - Predicted: Space
@@ -1512,12 +1505,6 @@ Accuracy: 99.58%
 - Examples:
   - /아뇨!
 
-### "/" + "아니" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - /아니!
-
 ### "/" + "아니요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1571,12 +1558,6 @@ Accuracy: 99.58%
 - Actual: None
 - Examples:
   - /위베르 몽미라가 사촌이에요?
-
-### "/" + "이리" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - /이리 와!
 
 ### "/" + "인장" (1 occurrences)
 - Predicted: Space
@@ -4115,6 +4096,12 @@ Accuracy: 99.58%
 - Actual: Space
 - Examples:
   - 그럼 안녕 -어디로 연결되었을까?
+
+### "안녕하세요" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 안녕하세요 -네, 잘 지내요?
 
 ### "앉아" + "주세요" (1 occurrences)
 - Predicted: Space

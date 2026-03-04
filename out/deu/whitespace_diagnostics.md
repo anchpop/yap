@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2708580
-Total errors: 2112
+Total predictions: 2708043
+Total errors: 2109
 Accuracy: 99.92%
 
 ## Error Patterns (sorted by frequency)
@@ -2184,12 +2184,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Mercedes - glaubst du an Feen?
-
-### "-" + "gleich" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Du, ich - gleich!
 
 ### "-" + "ha" (1 occurrences)
 - Predicted: None
@@ -5089,12 +5083,6 @@ Accuracy: 99.92%
 - Examples:
   - Weiter !
 
-### "Welche" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Welche ?
-
 ### "Welt" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6282,12 +6270,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Ich kann das nicht mehr hören !
-
-### "ich" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Du, ich - gleich!
 
 ### "ich" + "…" (1 occurrences)
 - Predicted: None

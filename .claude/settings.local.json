@@ -32,7 +32,8 @@
       "WebFetch(domain:android.googlesource.com)",
       "Bash(pnpm exec tsc:*)",
       "Bash(tee:*)",
-      "Bash(ps:*)"
+      "Bash(ps:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }

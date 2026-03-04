@@ -721,17 +721,20 @@ export function TranslationChallenge({
 
     // Add each gradable heteronym literal
     if ("literalGrades" in grade.graded) {
+      const hasAutogradingError = "autogradingError" in grade.graded && grade.graded.autogradingError;
       sentence.target_language_literals.forEach((literal, i) => {
         if ((literal.word.word_type as { type?: string })?.type !== "Heteronym") return;
         const literalGrade = grade.graded && "literalGrades" in grade.graded
           ? grade.graded.literalGrades[i]
           : undefined;
-        if (literalGrade === undefined) return; // ungradable
+        // When autograde failed, undefined heteronym grades need manual grading;
+        // when autograde succeeded, undefined means ungradable.
+        if (literalGrade === undefined && !hasAutogradingError) return;
         items.push({
           kind: "literal",
           literalIndex: i,
           display: literal.word.text,
-          status: literalGrade === "Remembered" ? true : false,
+          status: literalGrade === "Remembered" ? true : literalGrade === "Forgot" ? false : null,
         });
       });
     }
@@ -758,13 +761,7 @@ export function TranslationChallenge({
     grade &&
     "graded" in grade &&
     ("perfect" in grade.graded ||
-      sentence.unique_target_language_phrases.every(
-        (gram) =>
-          ("phrasesRemembered" in grade.graded &&
-            grade.graded.phrasesRemembered.some((p) => gramEq(p, gram))) ||
-          ("phrasesForgot" in grade.graded &&
-            grade.graded.phrasesForgot.some((p) => gramEq(p, gram)))
-      ));
+      gradeItems.some((item) => item.status !== null));
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -798,7 +795,10 @@ export function TranslationChallenge({
           sentence.target_language_literals,
           sentence.unique_target_language_phrases,
           accessToken,
-          course
+          course,
+          sentence.gram_definitions_for_lookup,
+          new Uint32Array(sentence.literal_gram_indices),
+          sentence.phrase_definitions
         );
 
         const encouragement = response.encouragement;
@@ -806,7 +806,19 @@ export function TranslationChallenge({
 
         playSoundEffect("aiDoneGrading");
 
-        if (response.phrases_forgot.length === 0 && !response.literal_grades.some(g => g === "Forgot")) {
+        if (response.autograding_error) {
+          // Heuristic fallback was used — show grades for manual review
+          setGrade({
+            graded: {
+              literalGrades: response.literal_grades,
+              phrasesRemembered: response.phrases_remembered,
+              phrasesForgot: response.phrases_forgot,
+              encouragement,
+              explanation,
+              autogradingError: response.autograding_error,
+            },
+          });
+        } else if (response.phrases_forgot.length === 0 && !response.literal_grades.some(g => g === "Forgot")) {
           setGrade({ graded: { perfect: null, encouragement, explanation } });
           playSoundEffect("perfect");
         } else {
