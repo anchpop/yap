@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 330677
-Total errors: 1376
+Total predictions: 330626
+Total errors: 1375
 Accuracy: 99.58%
 
 ## Error Patterns (sorted by frequency)
@@ -4210,12 +4210,6 @@ Accuracy: 99.58%
 - Actual: None
 - Examples:
   - 어디있는거야?
-
-### "어디" + "있어" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 어디있어?
 
 ### "어디" + "있어요" (1 occurrences)
 - Predicted: Space

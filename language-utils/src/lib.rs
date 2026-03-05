@@ -234,46 +234,6 @@ pub struct PhrasebookDefinitionEntry {
     PartialEq,
     Ord,
     PartialOrd,
-    rkyv::Archive,
-    rkyv::Serialize,
-    rkyv::Deserialize,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct PhrasebookEntry {
-    pub target_language_multi_word_term: String,
-    pub meaning: String,
-    pub additional_notes: String,
-    pub target_language_example: String,
-    pub native_language_example: String,
-    pub cognate: bool,
-    pub false_cognate: bool,
-}
-
-impl From<PhrasebookDefinitionEntry> for PhrasebookEntry {
-    fn from(entry: PhrasebookDefinitionEntry) -> Self {
-        Self {
-            target_language_multi_word_term: entry.target_language_multi_word_term,
-            meaning: entry.meaning,
-            additional_notes: entry.additional_notes,
-            target_language_example: entry.target_language_example,
-            native_language_example: entry.native_language_example,
-            cognate: entry.cognate,
-            false_cognate: entry.false_cognate,
-        }
-    }
-}
-
-#[derive(
-    Clone,
-    Debug,
-    serde::Deserialize,
-    schemars::JsonSchema,
-    serde::Serialize,
-    tsify::Tsify,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
     Hash,
     rkyv::Archive,
     rkyv::Serialize,

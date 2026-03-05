@@ -27,94 +27,6 @@ static CHAT_CLIENT_HEAVY: LazyLock<ChatClient> = LazyLock::new(|| {
         .with_service_tier("flex")
 });
 
-pub async fn create_phrasebook(
-    course: Course,
-    target_language_multi_word_terms: &BTreeMap<String, u32>,
-) -> anyhow::Result<Vec<(String, PhrasebookDefinitionEntry)>> {
-    let Course {
-        native_language,
-        target_language,
-        ..
-    } = course;
-
-    let count = target_language_multi_word_terms.len();
-
-    let pb = ProgressBar::new(count as u64);
-    pb.set_style(
-        ProgressStyle::default_bar()
-            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} phrasebook entries ({per_sec}, ${msg}, {eta})")
-            .unwrap()
-            .progress_chars("#>-"),
-    );
-    pb.enable_steady_tick(std::time::Duration::from_millis(100));
-
-    let mut phrasebook = futures::stream::iter(target_language_multi_word_terms.iter()).map(|(multiword_term, &freq)| {
-        let pb = pb.clone();
-        let cost = CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHT.cost().unwrap_or(0.0);
-        pb.set_message(format!("{cost:.2} ({multiword_term})"));
-        async move {
-        let chat_client = if freq > 500 { &*CHAT_CLIENT_HEAVY } else { &*CHAT_CLIENT_LIGHT };
-        let response: Result<PhrasebookDefinitionEntry, _> = chat_client.chat_with_system_prompt(
-            format!(r#"The input is a {target_language} multi-word term. Generate a phrasebook entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}). Think about the word and its meaning, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning in a concise way. (Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just get straight to the meaning.) Then, provide additional context for how the term is used in the "additional_notes" field. Finally, provide an example of the term's usage in a natural sentence.
-            
-If the term is informal/slang, you can also set the "informal" field to true. For example, the english phrase "kick the bucket" is informal. If the term makes sense from the component words, you can also set the "compositional" field to true. (E.g. "Être sur son 31" makes no sense from its individual words, nor does "Altes Haus" in german. But "C'est" does make sense from its individual words) More examples: "pass away" is non-compositional (it's a phrasal verb whose meaning isn't obvious from "pass" + "away") but not informal. And "it is what it is" is informal but compositional.
-
-"Cognate" and "false_cognate" are boolean fields that indicate whether the {target_language} word is a cognate or false cognate in {native_language}. 
-
-For our purposes, a phrase is a cognate to a definition if it looks similar to the {native_language} phrase. So "carte de crédit" is a cognate for "credit card", and "en général" is a cognate for "in general".
-And a phrase is a false cognate to a definition if it looks similar to a different {native_language} phrase and might be easily confused, a classic example being the spanish phrase "en absoluto" which looks like "absolutely" but means "not at all". (Another example is French "passer un examen" which looks like "pass an exam" but actually means "take an exam" with no implication of success).
-
-Lastly, "can_be_translated_literally" should be set to true if the phrase can be translated literally into the {native_language} phrase. For example, "carte de crédit" can be translated literally into "credit card", and "en général" can be translated literally into "in general".
-
-More french/english examples:
-"ce que" → not a cognate, but can be translated literally ("that which")
-"avoir lieu" → not a cognate, cannot be translated literally ("to have place" ≠ "to take place")
-
-Example:
-Input: multiword term: `ce que`
-Output: {{
-    "target_language_multi_word_term":"ce que",
-    "meaning":"'what' or 'that which'.", // this field should be super concise
-    "additional_notes": "Refers to something previously mentioned or understood from context.",
-    "target_language_example":"Dis-moi ce que tu veux.",
-    "native_language_example":"Tell me what you want.",
-    "informal": false,
-    "compositional": true,
-    "cognate": false,
-    "false_cognate": false,
-    "can_be_translated_literally": true
-}}
-
-Of course, their native language is {native_language}, so you should write the meaning and additional notes in {native_language}.
-"#),
-            format!("multiword term: `{multiword_term}`"),
-        ).await.inspect_err(|e| {
-            println!("error: {e:#?}");
-        });
-
-        pb.inc(1);
-
-        (response, multiword_term)
-    }})
-    .buffer_unordered(15)
-    .collect::<Vec<_>>()
-    .await
-    .into_iter()
-    .filter_map(|(response, multiword_term)| {
-        response.ok().map(|entry| (multiword_term.clone(), entry))
-    })
-    .collect::<Vec<_>>();
-
-    phrasebook.sort_by(|(a, _), (b, _)| a.cmp(b));
-
-    pb.finish_with_message(format!(
-        "{:.2}",
-        CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHT.cost().unwrap_or(0.0)
-    ));
-
-    Ok(phrasebook)
-}
-
 /// Internal helper that generates dictionary definitions for a map of heteronyms with frequencies.
 /// Used by both `create_dictionary` and `create_gram_dictionary`.
 async fn generate_dictionary_definitions(
@@ -305,8 +217,7 @@ pub async fn create_gram_phrasebook(
     course: Course,
     gram_frequencies: &[GramFrequencyEntry<String>],
     encoded_sentences: &[(String, SentenceGrams<Gram<String>>)],
-    existing_phrase_grams: &std::collections::HashSet<Gram<String>>,
-    gram_sentences: &mut BTreeMap<String, Vec<String>>,
+    gram_sentences: &mut BTreeMap<Gram<String>, Vec<String>>,
 ) -> anyhow::Result<Vec<(Gram<String>, PhrasebookDefinitionEntry)>> {
     let Course {
         native_language,
@@ -317,20 +228,18 @@ pub async fn create_gram_phrasebook(
     // Build index from gram -> sentences (O(n) where n = total grams across all sentences)
     let gram_to_sentences = build_gram_to_sentences_index(encoded_sentences);
 
-    // Extract multi-atom grams with their frequencies, skipping grams that already
-    // have phrasebook entries from the MWE phrasebook
+    // Extract multi-atom grams with their frequencies
     let mut multi_atom_grams: BTreeMap<Gram<String>, u32> = BTreeMap::new();
     for entry in gram_frequencies {
         let gram = &entry.gram;
-        if gram.len() > 1 && !existing_phrase_grams.contains(gram) {
+        if gram.len() > 1 {
             multi_atom_grams.entry(gram.clone()).or_insert(entry.count);
         }
     }
 
     // Populate gram_sentences for any grams not already cached
     for gram in multi_atom_grams.keys() {
-        let gram_text = gram.to_display_string(target_language);
-        gram_sentences.entry(gram_text).or_insert_with(|| {
+        gram_sentences.entry(gram.clone()).or_insert_with(|| {
             let sentences: Vec<&str> = gram_to_sentences.get(gram).cloned().unwrap_or_default();
             let selected = sample_to_target(sentences, 5, |s: &&str| *s);
             selected.into_iter().map(|s| s.to_owned()).collect()
@@ -357,7 +266,7 @@ pub async fn create_gram_phrasebook(
             pb.set_message(format!("{cost:.2} ({gram_text})"));
 
             let example_sentences = gram_sentences
-                .get(&gram_text)
+                .get(gram)
                 .cloned()
                 .unwrap_or_default();
 

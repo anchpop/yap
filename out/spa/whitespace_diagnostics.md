@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2429759
-Total errors: 785
+Total predictions: 2429500
+Total errors: 782
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "," + "?" (39 occurrences)
+### "," + "?" (37 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -1635,12 +1635,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Est¡Estuve a punto!
-
-### "Está" + "muerto" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Estámuerto.
 
 ### "Ficción" + "-" (1 occurrences)
 - Predicted: None

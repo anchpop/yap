@@ -476,10 +476,10 @@ function GramDefinitionDisplay({
   if ("Dictionary" in definition) {
     const dict = definition.Dictionary;
     return (
-      <div className="space-y-1">
+      <div className="p-3 border border-card/50 bg-card/30 rounded-md space-y-2">
+        <p className="text-sm font-semibold">{dict.target_language_word}:</p>
         {dict.definitions.map((def: TargetToNativeWord, i: number) => (
-          <div key={i} className="p-3 border border-card/50 bg-card/30 rounded-md">
-            <p className="text-sm font-semibold">{dict.target_language_word}:</p>
+          <div key={i}>
             <p className="text-sm">
               {def.native}
               {def.note && (

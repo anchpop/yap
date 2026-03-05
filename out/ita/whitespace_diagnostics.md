@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2332307
-Total errors: 2956
+Total predictions: 2332095
+Total errors: 2955
 Accuracy: 99.87%
 
 ## Error Patterns (sorted by frequency)
@@ -5423,12 +5423,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Pefetto !
-
-### "Perchè" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Perchè ?
 
 ### "Perché" + "?" (1 occurrences)
 - Predicted: None

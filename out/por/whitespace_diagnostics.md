@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2488864
-Total errors: 572
+Total predictions: 2488565
+Total errors: 571
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -14,14 +14,6 @@ Accuracy: 99.98%
   - Anote o depoimento deIe.
   - Mas, eu vi a coragem deIe com meus próprios oIhos.
 
-### "Maxim" + "?" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Algum problema, Maxim ?
-  - Idéia de Maxim ?
-  - Pronto, Maxim ?
-
 ### "-" + "Não" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29,6 +21,14 @@ Accuracy: 99.98%
   - A melhor coisa do meu trabalho - Não preciso fazer decisões.
   - Eu não vou contar- Não vou contar nada.
   - Não quero mudar - Não é verdade.
+
+### "Maxim" + "?" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Algum problema, Maxim ?
+  - Idéia de Maxim ?
+  - Pronto, Maxim ?
 
 ### "-" + "um" (5 occurrences)
 - Predicted: None

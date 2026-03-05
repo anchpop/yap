@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2708043
-Total errors: 2109
+Total predictions: 2707620
+Total errors: 2105
 Accuracy: 99.92%
 
 ## Error Patterns (sorted by frequency)
@@ -198,14 +198,6 @@ Accuracy: 99.92%
   - Durchs Büro im ersten Stock, und geht durch die Decke.
   - Durchs Gitter?
 
-### "Gradisca" + "!" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Alles Gute, Gradisca !
-  - Da ist Gradisca !
-  - Ein Hurra für Gradisca !
-
 ### "Terzi" + "-" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -261,6 +253,14 @@ Accuracy: 99.92%
   - Ausgeschlossen - sie ist die beste Kellnerin.
   - Ihrer Musik zuzuhören - sie ging so ans Herz.
   - Nimm meine Haustiere - sie werden dich leiten.
+
+### "Gradisca" + "!" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Alles Gute, Gradisca !
+  - Da ist Gradisca !
+  - Ein Hurra für Gradisca !
 
 ### "Hexe" + "!" (4 occurrences)
 - Predicted: None
@@ -4789,12 +4789,6 @@ Accuracy: 99.92%
 - Examples:
   - Was hast du da in deiner Tasche ?
 
-### "Teo" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Wie geht es, Teo ?
-
 ### "Teufel" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6331,12 +6325,6 @@ Accuracy: 99.92%
 - Examples:
   - Kommt irgendwer aus Picton?
 
-### "ist" + "los" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Was istlos?
-
 ### "ist" + "’ne" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7278,12 +7266,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Oh dumme Frage, verzeihe - kein verzeihe.
-
-### "viel" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich will viel !
 
 ### "vielleicht" + "-" (1 occurrences)
 - Predicted: None

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2639886
-Total errors: 635
+Total predictions: 2639561
+Total errors: 634
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -506,12 +506,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - ALLONS,ALLONS !
-
-### "," + "Gita" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Pourquoi es-tu en retard,Gita ?
 
 ### "," + "Jeremy" (1 occurrences)
 - Predicted: Space

@@ -4,7 +4,7 @@ use indexmap::IndexSet;
 use itertools::Itertools;
 use language_utils::{
     Atom, COURSES, EncodedSentence, Gram, GramFrequencyEntry, GramVocabEntry, HomophonePractice,
-    PhrasebookDefinitionEntry, SentenceGram, SentenceGrams,
+    SentenceGram, SentenceGrams,
 };
 use rustc_hash::FxHashMap;
 use std::collections::{BTreeMap, HashSet};
@@ -23,11 +23,6 @@ struct PhraseDetectionData {
     tokens: Option<Vec<lexide::Token>>, // we don't have this for grams
 }
 type PhraseDetectionDataMap = BTreeMap<Gram<String>, PhraseDetectionData>;
-
-struct PhraseData {
-    entry: PhrasebookDefinitionEntry,
-}
-type PhraseDataMap = BTreeMap<Gram<String>, PhraseData>;
 
 /// Deduplicates a pattern map where multiple grams may produce the same matcher pattern.
 /// When exactly one gram in a duplicate group is from wiktionary, keeps that one.
@@ -590,53 +585,6 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("Failed to generate NLP sentences")?;
 
-        // Extract multiword term counts from nlp_sentences for phrasebook generation
-        let multiword_term_counts: BTreeMap<String, u32> = {
-            let mut counts: BTreeMap<String, f32> = BTreeMap::new();
-            for sentence in nlp_sentences.values() {
-                for gram in &sentence.multiword_terms.high_confidence {
-                    let phrase = gram.to_display_string(lang);
-                    *counts.entry(phrase).or_insert(0.0) += 0.7;
-                }
-                for gram in &sentence.multiword_terms.low_confidence {
-                    let phrase = gram.to_display_string(lang);
-                    let weight =
-                        if lang == language_utils::Language::French && phrase.starts_with("ne ") {
-                            1.0
-                        } else {
-                            0.3
-                        };
-                    *counts.entry(phrase).or_insert(0.0) += weight;
-                }
-            }
-            counts
-                .into_iter()
-                .map(|(phrase, count)| (phrase, count.ceil() as u32))
-                .filter(|(_, count)| *count > 3)
-                .collect()
-        };
-
-        // create and write phrasebook
-        let phrasebook_file = native_specific_dir.join("phrasebook.jsonl");
-        let raw_phrasebook_entries =
-            generate_data::dict::create_phrasebook(*course, &multiword_term_counts)
-                .await
-                .context("Failed to create phrasebook")?;
-        {
-            let mut file =
-                File::create(phrasebook_file).context("Failed to create phrasebook file")?;
-            let phrasebook: BTreeMap<String, language_utils::PhrasebookEntry> =
-                raw_phrasebook_entries
-                    .iter()
-                    .map(|(phrase, entry)| (phrase.clone(), entry.clone().into()))
-                    .collect();
-            for entry in phrasebook.iter() {
-                let json = serde_json::to_string(&entry)
-                    .context("Failed to serialize phrasebook entry")?;
-                writeln!(file, "{json}").context("Failed to write phrasebook entry to file")?;
-            }
-        }
-
         // Convert encoded sentences to use SentenceGram<Gram<String>> instead of token IDs
         let encoded_sentences_with_grams: Vec<(String, SentenceGrams<Gram<String>>)> =
             encoded_sentences
@@ -749,37 +697,78 @@ async fn main() -> anyhow::Result<()> {
         let gram_sentences_file = native_specific_dir.join("gram_sentences.jsonl");
 
         // Load cached gram -> example sentences mapping
-        let mut gram_sentences: BTreeMap<String, Vec<String>> = if gram_sentences_file.exists() {
+        // Try new format (keyed by Gram) first, fall back to old format (keyed by display text)
+        let mut gram_sentences: BTreeMap<Gram<String>, Vec<String>> = if gram_sentences_file
+            .exists()
+        {
             let file =
                 File::open(&gram_sentences_file).context("Failed to open gram sentences file")?;
-            BufReader::new(file)
-                .lines()
-                .filter_map(|line| {
-                    let line = line.ok()?;
-                    serde_json::from_str::<(String, Vec<String>)>(&line).ok()
-                })
-                .collect()
+            let mut lines = BufReader::new(file).lines();
+
+            // Check first line to detect format
+            let first_line = lines.next().and_then(|l| l.ok());
+            let is_new_format = first_line.as_ref().is_some_and(|line| {
+                serde_json::from_str::<(Gram<String>, Vec<String>)>(line).is_ok()
+            });
+
+            let all_lines = first_line.into_iter().chain(lines.filter_map(|l| l.ok()));
+
+            if is_new_format {
+                all_lines
+                    .filter_map(|line| {
+                        serde_json::from_str::<(Gram<String>, Vec<String>)>(&line).ok()
+                    })
+                    .collect()
+            } else {
+                // Migrate from old format (display text keys):
+                // For monosemantic grams, reuse old sentences; polysemantic ones will be re-sampled
+                let old_format: BTreeMap<String, Vec<String>> = all_lines
+                    .filter_map(|line| serde_json::from_str::<(String, Vec<String>)>(&line).ok())
+                    .collect();
+
+                // Count how many multi-atom grams share each display text
+                let mut display_text_counts: BTreeMap<String, u32> = BTreeMap::new();
+                for entry in &filtered_gram_frequencies {
+                    if entry.gram.len() > 1 {
+                        *display_text_counts
+                            .entry(entry.gram.to_display_string(lang))
+                            .or_default() += 1;
+                    }
+                }
+
+                // Only migrate monosemantic entries
+                let mut migrated = BTreeMap::new();
+                for entry in &filtered_gram_frequencies {
+                    if entry.gram.len() > 1 {
+                        let display_text = entry.gram.to_display_string(lang);
+                        let is_monosemantic =
+                            display_text_counts.get(&display_text).copied().unwrap_or(0) <= 1;
+                        if is_monosemantic {
+                            if let Some(sentences) = old_format.get(&display_text) {
+                                migrated.insert(entry.gram.clone(), sentences.clone());
+                            }
+                        }
+                    }
+                }
+                let polysemantic_count = display_text_counts
+                    .values()
+                    .filter(|&&count| count > 1)
+                    .count();
+                println!(
+                    "Migrated {} gram sentence entries from old format (display text keys), {} polysemantic display texts will be re-sampled",
+                    migrated.len(),
+                    polysemantic_count
+                );
+                migrated
+            }
         } else {
             BTreeMap::new()
         };
-
-        // Build the set of grams that actually have MWE phrasebook entries
-        // (not all wiktionary_grams get MWE entries — some fail the multiword_term_counts > 3 filter)
-        let mwe_phrasebook_grams: HashSet<Gram<String>> = raw_phrasebook_entries
-            .iter()
-            .filter_map(|(phrase, _)| {
-                let literals = multiword_term_literals.get(phrase)?;
-                let (atoms, _) =
-                    language_utils::literals_to_atoms(literals, course.target_language);
-                Some(Gram::from(atoms))
-            })
-            .collect();
 
         let gram_phrasebook = generate_data::dict::create_gram_phrasebook(
             *course,
             &filtered_gram_frequencies,
             &encoded_sentences_with_grams,
-            &mwe_phrasebook_grams,
             &mut gram_sentences,
         )
         .await
@@ -789,8 +778,8 @@ async fn main() -> anyhow::Result<()> {
         {
             let mut file = File::create(&gram_sentences_file)
                 .context("Failed to create gram sentences file")?;
-            for (gram_text, sentences) in &gram_sentences {
-                let json = serde_json::to_string(&(gram_text, sentences))
+            for (gram, sentences) in &gram_sentences {
+                let json = serde_json::to_string(&(gram, sentences))
                     .context("Failed to serialize gram sentences entry")?;
                 writeln!(file, "{json}").context("Failed to write gram sentences entry to file")?;
             }
@@ -818,52 +807,9 @@ async fn main() -> anyhow::Result<()> {
             );
         }
 
-        // Build phrase data map from both phrasebooks
-        let phrase_data_map: PhraseDataMap = {
-            let mut map = PhraseDataMap::new();
-
-            // Add MWE phrase entries (with tokens from multiword_terms_tokenizations)
-            let mut no_literals_count = 0;
-            for (phrase, entry) in &raw_phrasebook_entries {
-                let Some(literals) = multiword_term_literals.get(phrase) else {
-                    no_literals_count += 1;
-                    continue;
-                };
-                let (atoms, _) =
-                    language_utils::literals_to_atoms(literals, course.target_language);
-                let gram = Gram::from(atoms);
-                map.insert(
-                    gram,
-                    PhraseData {
-                        entry: entry.clone(),
-                    },
-                );
-            }
-
-            // Add gram phrasebook entries (without tokens)
-            for (gram, entry) in &gram_phrasebook {
-                map.insert(
-                    gram.clone(),
-                    PhraseData {
-                        entry: entry.clone(),
-                    },
-                );
-            }
-
-            if no_literals_count > 200 {
-                println!(
-                    "No literals found for {no_literals_count} phrases - this is alarming and probably a bug"
-                );
-            }
-            map
-        };
-
-        // Derive unified phrasebook from phrase_data_map (strips tokens, keeps entries)
+        // Build phrasebook from gram phrasebook entries
         let phrasebook: BTreeMap<Gram<String>, language_utils::PhrasebookDefinitionEntry> =
-            phrase_data_map
-                .iter()
-                .map(|(gram, data)| (gram.clone(), data.entry.clone()))
-                .collect();
+            gram_phrasebook.into_iter().collect();
 
         // Generate proper noun definitions
         let proper_noun_definitions_file =
@@ -999,7 +945,7 @@ async fn main() -> anyhow::Result<()> {
                     false
                 } else {
                     // Multi-atom gram: check if it's in gram_phrasebook
-                    phrase_data_map.contains_key(gram)
+                    phrasebook.contains_key(gram)
                 }
             })
             .collect();
@@ -1064,7 +1010,7 @@ async fn main() -> anyhow::Result<()> {
                         false
                     }
                 } else {
-                    phrase_data_map.contains_key(gram)
+                    phrasebook.contains_key(gram)
                 };
                 if !has_definition {
                     missing_grams.push(format!(
@@ -1658,7 +1604,7 @@ async fn main() -> anyhow::Result<()> {
                                     }
                                     false
                                 } else {
-                                    phrase_data_map.contains_key(gram)
+                                    phrasebook.contains_key(gram)
                                 }
                             })
                             .collect();
