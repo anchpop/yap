@@ -142,7 +142,10 @@ struct GoogleTtsRequest {
 
 #[derive(Serialize)]
 struct GoogleTtsInput {
-    text: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    ssml: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -273,8 +276,20 @@ async fn google_text_to_speech(
         Language::Chinese | Language::Japanese | Language::Russian => todo!(),
     };
 
+    let input = if request.is_ssml {
+        GoogleTtsInput {
+            text: None,
+            ssml: Some(request.text),
+        }
+    } else {
+        GoogleTtsInput {
+            text: Some(request.text),
+            ssml: None,
+        }
+    };
+
     let google_request = GoogleTtsRequest {
-        input: GoogleTtsInput { text: request.text },
+        input,
         voice: GoogleTtsVoice {
             language_code: language_code.to_string(),
             name: voice_name.to_string(),

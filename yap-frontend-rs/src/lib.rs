@@ -216,7 +216,8 @@ impl Weapon {
                     DeckSelectionPartial {
                         target_language: None,
                         native_language: None,
-                        starting_fresh: BTreeMap::new(),
+                        onboarding_selections: BTreeMap::new(),
+                        heard_about: None,
                     },
                     &(),
                 )
@@ -3055,10 +3056,6 @@ pub enum CardContent {
     Listening {
         possible_grams: Vec<(bool, Vec<Literal<String>>)>,
     },
-    LetterPronunciation {
-        pattern: String,
-        guide: PronunciationGuide,
-    },
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -3087,6 +3084,13 @@ pub enum Challenge<G> {
         is_new: bool,
         times_type_seen: u32,
     },
+    PronunciationChallenge {
+        indicator: CardIndicator<G, String>,
+        pattern: String,
+        guide: PronunciationGuide,
+        is_new: bool,
+        times_type_seen: u32,
+    },
     TranslateComprehensibleSentence(TranslateComprehensibleSentence),
     TranscribeComprehensibleSentence(TranscribeComprehensibleSentence),
 }
@@ -3095,6 +3099,7 @@ impl<G> Challenge<G> {
     fn audio_request(&self) -> Option<AudioRequest> {
         match self {
             Challenge::FlashCardReview { flashcard, .. } => flashcard.audio.clone(),
+            Challenge::PronunciationChallenge { .. } => None,
             Challenge::TranslateComprehensibleSentence(translate_comprehensible_sentence) => {
                 Some(translate_comprehensible_sentence.audio.clone())
             }
@@ -3140,8 +3145,7 @@ impl ReviewInfo {
             }
             CardIndicator::WrittenGram { gram } => self.written_challenge(deck, &ctx, gram),
             CardIndicator::LetterPronunciation { pattern, position } => {
-                let flashcard = self.pronunciation_pattern_flashcard(deck, pattern, position);
-                ctx.wrap_flashcard(deck, flashcard)
+                self.pronunciation_challenge(deck, &ctx, pattern, position)
             }
         };
 
@@ -4458,6 +4462,7 @@ mod tests {
                         "    Challenge type: {:?}",
                         challenge.as_ref().map(|c| match c {
                             Challenge::FlashCardReview { .. } => "FlashCardReview",
+                            Challenge::PronunciationChallenge { .. } => "PronunciationChallenge",
                             Challenge::TranslateComprehensibleSentence(_) => "Translate",
                             Challenge::TranscribeComprehensibleSentence(_) => "Transcribe",
                         })

@@ -76,7 +76,9 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
 
   return (
     <Card className="max-w w-full p-0 gap-0 select-none" animate>
-      <Progress value={(round / (NUM_ROUNDS + 1)) * 100} />
+      <div className="px-[5px]">
+        <Progress value={(round / (NUM_ROUNDS + 1)) * 100} />
+      </div>
       <div className="p-6 space-y-4">
         {round > NUM_ROUNDS ? (
           (() => {

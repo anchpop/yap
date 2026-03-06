@@ -4,12 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
 import { useBackground } from "@/components/BackgroundShader";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
+import { OnboardingFlow, type OnboardingSelections, type HeardAbout } from "@/components/OnboardingFlow";
 import {
   Command,
   CommandEmpty,
@@ -31,18 +26,16 @@ import { TopPageLayout } from "@/components/TopPageLayout";
 import type { UserInfo } from "@/App";
 
 type LanguageSelectionState =
+  | { stage: "intro" }
   | { stage: "selectingNative" }
   | { stage: "selectingTarget"; nativeLanguage: Language }
-  | {
-      stage: "askingExperience";
-      nativeLanguage: Language;
-      targetLanguage: Language;
-    }
   | { stage: "onboarding"; nativeLanguage: Language; targetLanguage: Language };
 
 interface LanguageSelectorProps {
   onLanguagesConfirmed: (native: Language, target: Language) => void;
-  onExperience: (fresh: boolean, target: Language) => void;
+  onOnboardingComplete: (selections: OnboardingSelections, target: Language) => void;
+  onHeardAbout: (value: HeardAbout) => void;
+  hasHeardAbout: boolean;
   skipOnboarding: boolean;
   currentTargetLanguage?: Language;
   showResumeButton?: boolean;
@@ -53,7 +46,9 @@ interface LanguageSelectorProps {
 
 export function LanguageSelector({
   onLanguagesConfirmed,
-  onExperience,
+  onOnboardingComplete,
+  onHeardAbout,
+  hasHeardAbout,
   skipOnboarding,
   currentTargetLanguage,
   showResumeButton,
@@ -62,14 +57,9 @@ export function LanguageSelector({
   onBack,
 }: LanguageSelectorProps) {
   const [selectionState, setSelectionState] = useState<LanguageSelectionState>({
-    stage: "selectingNative",
+    stage: skipOnboarding ? "selectingNative" : "intro",
   });
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
   const [comboboxOpen, setComboboxOpen] = useState(false);
-  const [userKnowsLanguage, setUserKnowsLanguage] = useState<
-    "knows_some" | "beginner" | null
-  >(null);
   const weapon = useWeapon();
   const { bumpBackground } = useBackground();
 
@@ -113,9 +103,8 @@ export function LanguageSelector({
       : null;
   }, [nativeLanguages]);
 
-  // Auto-select detected language on mount
+  // Auto-select detected language when entering native selection stage
   useEffect(() => {
-    // Only run on initial mount when in native selection stage
     if (selectionState.stage !== "selectingNative") return;
 
     if (detectedLanguage) {
@@ -124,7 +113,7 @@ export function LanguageSelector({
         nativeLanguage: detectedLanguage,
       });
     }
-  }, []); // Only run on mount
+  }, [selectionState.stage, detectedLanguage]);
 
   // Determine language stability level
   const getLanguageStatus = (lang: Language): "stable" | "alpha" | "beta" => {
@@ -139,7 +128,7 @@ export function LanguageSelector({
 
   // Get target languages available for selected native language
   const targetLanguages =
-    selectionState.stage === "selectingNative"
+    selectionState.stage === "intro" || selectionState.stage === "selectingNative"
       ? []
       : availableCourses
           .filter(
@@ -157,32 +146,6 @@ export function LanguageSelector({
   const betaLanguages = targetLanguages.filter(
     (lang) => getLanguageStatus(lang) === "beta"
   );
-
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    setCurrent(api.selectedScrollSnap());
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
-  }, [api]);
-
-  // Type-safe language configuration - TypeScript will error if a language is missing
-  const languageConfirmTexts: Record<Language, string> = {
-    French: "Allons-y",
-    Spanish: "Vamos",
-    Korean: "가자",
-    English: "Let's go",
-    German: "Los geht's",
-    Chinese: "走吧",
-    Japanese: "行こう",
-    Russian: "Пойдем",
-    Portuguese: "Vamos lá",
-    Italian: "Andiamo",
-  };
 
   // "I speak [language]" in each language
   const iSpeakPhrases: Record<Language, string> = {
@@ -294,54 +257,8 @@ export function LanguageSelector({
     }
   }, [selectionState, weapon]);
 
-  const acknowledgeExperience =
-    userKnowsLanguage === "knows_some"
-      ? {
-          title: "Great! Let's find your level.",
-          content:
-            "You'll start with a quick placement test to help us understand what you already know. It'll take less than 2 minutes!",
-        }
-      : {
-          title: "Perfect! Welcome aboard.",
-          content:
-            "We'll start you at the very beginning and build your foundation step by step.",
-        };
-
-  const introScreens = skipOnboarding
-    ? [acknowledgeExperience]
-    : [
-        acknowledgeExperience,
-        {
-          title: "Yap values your time.",
-          content:
-            "Every design decision in Yap is based on helping you learn the most in the time you spend.",
-        },
-        userKnowsLanguage === "knows_some"
-          ? {
-              title: "Yap adapts to your skill level.",
-              content:
-                "So you don't waste time reviewing what you already learned on Duolingo.",
-            }
-          : {
-              title: "Yap teaches you the most common words first.",
-              content:
-                "It'll surprise you how much you can say with just a few words.",
-            },
-        {
-          title: "Yap has no lesson plan.",
-          content:
-            "Every lesson adapts to what YOU struggle with, not what lesson 47 says you should know.",
-        },
-        {
-          title: "Yap reminds you of words just before you forget them.",
-          content:
-            "We use spaced repetition to review each word at the perfect time.",
-        },
-      ];
-
   // Determine the Yaptown title to display based on selection state
   const yaptownTitle =
-    selectionState.stage === "askingExperience" ||
     selectionState.stage === "onboarding"
       ? yaptownNames[selectionState.targetLanguage]
       : "Yap.Town";
@@ -356,9 +273,86 @@ export function LanguageSelector({
       }}
     >
       {/* Main content */}
-      <div className="relative z-10 flex items-center justify-center mt-8">
+      <div className="relative z-10 flex items-center justify-center">
         <AnimatePresence mode="wait">
-          {selectionState.stage === "selectingNative" ? (
+          {selectionState.stage === "intro" ? (
+            // Step 0: Intro / landing page
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full max-w-2xl flex flex-col items-center text-center"
+            >
+              <div className="flex flex-col items-center justify-center gap-8 h-[calc(100dvh-6rem)]">
+                <h1
+                  className="text-5xl md:text-6xl font-black tracking-tight"
+                  style={{ textWrap: "balance" }}
+                >
+                  Spaced repetition with{" "}
+                  <span className="text-accent-foreground italic squiggly-underline">actual sentences.</span>
+                </h1>
+
+                <p className="text-lg text-muted-foreground max-w-lg" style={{ textWrap: "balance" }}>
+                  SRS works. But isolated flashcards only get you so far.<br />
+                  <span className="text-foreground font-semibold">
+                    Every word in Yap lives inside a real sentence.
+                  </span>
+                </p>
+
+                <div className="flex items-center gap-4">
+                  <Button
+                    size="lg"
+                    variant="ghost"
+                    onClick={() => {
+                      document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                    className="text-lg"
+                  >
+                    How it works
+                  </Button>
+                  <Button
+                    size="lg"
+                    onClick={() => setSelectionState({ stage: "selectingNative" })}
+                    className="text-lg px-8"
+                  >
+                    Start learning
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+
+              <div
+                id="how-it-works"
+                className="min-h-dvh flex flex-col items-center justify-center w-full gap-16 py-24"
+              >
+                <div className="flex flex-col items-center gap-6 max-w-lg">
+                  <h2 className="text-4xl md:text-5xl font-black tracking-tight" style={{ textWrap: "balance" }}>
+                    Language modelling that goes deeper.
+                  </h2>
+                  <div className="flex flex-col gap-4">
+                    <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
+                      Yap understands <span className="text-foreground font-semibold">phrases and polysemy</span>, so every card targets a precise meaning in context.
+                    </p>
+                    <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
+                      And every deck is <span className="text-foreground font-semibold">premade and ready to go</span>.<br /> Just pick a language and start learning immediately.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-lg text-muted-foreground">Powered by FSRS</span>
+                    <Button
+                      size="lg"
+                      onClick={() => setSelectionState({ stage: "selectingNative" })}
+                      className="text-lg px-8"
+                    >
+                      Start learning
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ) : selectionState.stage === "selectingNative" ? (
             // Step 1: Select native language
             <motion.div
               key="native-selection"
@@ -423,7 +417,7 @@ export function LanguageSelector({
             >
               <div className="text-center">
                 <h1
-                  className="text-5xl font-bold mb-4"
+                  className="text-5xl font-bold mb-4 mt-16"
                   style={{ textWrap: "balance" }}
                 >
                   <span className="highlight animate-fade-in">
@@ -498,7 +492,7 @@ export function LanguageSelector({
                         onClick={() => {
                           bumpBackground(50.0);
                           setSelectionState({
-                            stage: "askingExperience",
+                            stage: "onboarding",
                             nativeLanguage: selectionState.nativeLanguage,
                             targetLanguage: lang,
                           });
@@ -553,7 +547,7 @@ export function LanguageSelector({
                         onClick={() => {
                           bumpBackground(50.0);
                           setSelectionState({
-                            stage: "askingExperience",
+                            stage: "onboarding",
                             nativeLanguage: selectionState.nativeLanguage,
                             targetLanguage: lang,
                           });
@@ -603,7 +597,7 @@ export function LanguageSelector({
                           onClick={() => {
                             bumpBackground(50.0);
                             setSelectionState({
-                              stage: "askingExperience",
+                              stage: "onboarding",
                               nativeLanguage: selectionState.nativeLanguage,
                               targetLanguage: lang,
                             });
@@ -699,188 +693,26 @@ export function LanguageSelector({
                 </p>
               </div>
             </div>
-          ) : selectionState.stage === "askingExperience" ? (
-            // Step 3: Ask about experience level
-            <div
-              key="experience-question"
-              className="w-full max-w-2xl gap-4 flex flex-col items-center"
-            >
-              <div className="text-center animate-fade-in">
-                <h1
-                  className="text-5xl font-bold mb-4"
-                  style={{ textWrap: "balance" }}
-                >
-                  Do you already know some{" "}
-                  {nativeLanguageNames[selectionState.targetLanguage]}?
-                </h1>
-              </div>
-
-              <div className="flex flex-col gap-4 w-full max-w-md">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => {
-                    setUserKnowsLanguage("knows_some");
-                    onExperience(false, selectionState.targetLanguage);
-                    setSelectionState({
-                      stage: "onboarding",
-                      nativeLanguage: selectionState.nativeLanguage,
-                      targetLanguage: selectionState.targetLanguage,
-                    });
-                  }}
-                  className="text-lg py-8 hover:scale-105 transition-transform animate-fade-in"
-                >
-                  Yes, I know some
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => {
-                    setUserKnowsLanguage("beginner");
-                    onExperience(true, selectionState.targetLanguage);
-                    setSelectionState({
-                      stage: "onboarding",
-                      nativeLanguage: selectionState.nativeLanguage,
-                      targetLanguage: selectionState.targetLanguage,
-                    });
-                  }}
-                  className="text-lg py-8 hover:scale-105 transition-transform animate-fade-in"
-                >
-                  No, I'm starting fresh
-                </Button>
-              </div>
-
-              <Button
-                variant="ghost"
-                className="mt-6 animate-fade-in"
-                onClick={() => {
-                  setSelectionState({
-                    stage: "selectingTarget",
-                    nativeLanguage: selectionState.nativeLanguage,
-                  });
-                }}
-              >
-                Back
-              </Button>
-            </div>
           ) : selectionState.stage === "onboarding" ? (
-            // Step 4: Onboarding screens (if not skipping)
-            <div className="flex flex-col items-center justify-center w-full max-w-4xl">
-              <Carousel
-                setApi={setApi}
-                className="w-full"
-                opts={{
-                  align: "start",
-                }}
-              >
-                <CarouselContent>
-                  {introScreens.map((screen, index) => (
-                    <CarouselItem key={index}>
-                      <Card className="p-4 pt-12 pb-12" animate>
-                        <div className="text-center">
-                          <h2
-                            className="text-3xl font-bold mb-6"
-                            style={{ textWrap: "balance" }}
-                          >
-                            {screen.title}
-                          </h2>
-                          <p
-                            className="text-lg mb-8"
-                            style={{ textWrap: "balance" }}
-                          >
-                            {screen.content}
-                          </p>
-                        </div>
-                      </Card>
-                    </CarouselItem>
-                  ))}
-                  <CarouselItem>
-                    <Card className="p-12" animate>
-                      <div className="text-center">
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 200,
-                            damping: 15,
-                          }}
-                          className="text-9xl mb-6"
-                        >
-                          {languageFlags[selectionState.targetLanguage]}
-                        </motion.div>
-                        <h2 className="text-3xl font-semibold mb-6">
-                          {selectionState.targetLanguage ===
-                            currentTargetLanguage ||
-                          userKnowsLanguage == "knows_some"
-                            ? `Ready to continue learning`
-                            : `Ready to start learning`}{" "}
-                          <span>
-                            {nativeLanguageNames[selectionState.targetLanguage]}
-                          </span>
-                          ?
-                        </h2>
-                      </div>
-                    </Card>
-                  </CarouselItem>
-                </CarouselContent>
-              </Carousel>
-              <div className="flex gap-4 justify-center mt-6">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    if (current === 0) {
-                      setSelectionState({
-                        stage: "selectingTarget",
-                        nativeLanguage: selectionState.nativeLanguage,
-                      });
-                    } else {
-                      api?.scrollPrev();
-                    }
-                  }}
-                  className="min-w-[120px]"
-                >
-                  Back
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    if (current === introScreens.length) {
-                      onLanguagesConfirmed(
-                        selectionState.nativeLanguage,
-                        selectionState.targetLanguage
-                      );
-                    } else {
-                      api?.scrollNext();
-                    }
-                  }}
-                  className={`min-w-[120px] flex items-center gap-2 ${
-                    current === introScreens.length
-                      ? "text-white hover:opacity-90 active:scale-95 transition-all"
-                      : ""
-                  }`}
-                  style={{
-                    ...(current === introScreens.length
-                      ? {
-                          background: `linear-gradient(135deg, ${
-                            languageColors[selectionState.targetLanguage]
-                              ?.primary
-                          }, ${
-                            languageColors[selectionState.targetLanguage]
-                              ?.accent
-                          })`,
-                        }
-                      : {}),
-                  }}
-                >
-                  {current === introScreens.length
-                    ? languageConfirmTexts[selectionState.targetLanguage]
-                    : "Next"}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            <OnboardingFlow
+              targetLanguage={selectionState.targetLanguage}
+              nativeLanguage={selectionState.nativeLanguage}
+              hasHeardAbout={hasHeardAbout}
+              onHeardAbout={onHeardAbout}
+              onComplete={(selections) => {
+                onOnboardingComplete(selections, selectionState.targetLanguage);
+                onLanguagesConfirmed(
+                  selectionState.nativeLanguage,
+                  selectionState.targetLanguage
+                );
+              }}
+              onBack={() => {
+                setSelectionState({
+                  stage: "selectingTarget",
+                  nativeLanguage: selectionState.nativeLanguage,
+                });
+              }}
+            />
           ) : null}
         </AnimatePresence>
       </div>

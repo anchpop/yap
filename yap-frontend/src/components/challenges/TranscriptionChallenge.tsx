@@ -611,27 +611,27 @@ export function TranscriptionChallenge({
             (gradingState === null && !allBlanksFilledOut) ||
             (gradingState !== null && "grading" in gradingState)
           }
-          className="w-full h-14"
+          className="w-full h-14 text-lg"
           size="lg"
         >
           {gradingState === null ? (
-            <>
+            <span className="relative flex items-center justify-center">
               Check Answer
-              <span className="ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
                 (⏎)
               </span>
-            </>
+            </span>
           ) : "grading" in gradingState ? (
             "AI is grading..."
           ) : "error" in gradingState ? (
             "Error"
           ) : (
-            <>
+            <span className="relative flex items-center justify-center">
               {isAllCorrect ? "Nailed it!" : "Continue"}
-              <span className="ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
                 (⏎)
               </span>
-            </>
+            </span>
           )}
         </Button>
       </div>

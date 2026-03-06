@@ -2793,6 +2793,8 @@ impl HomophonePractice<lasso::Spur> {
 pub struct TtsRequest {
     pub text: String,
     pub language: Language,
+    #[serde(default)]
+    pub is_ssml: bool,
 }
 
 // ============================================================================

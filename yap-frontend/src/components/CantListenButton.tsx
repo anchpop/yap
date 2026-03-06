@@ -12,8 +12,10 @@ export function CantListenButton({ onClick }: CantListenButtonProps) {
       variant="outline"
       className="w-full h-12 text-base font-medium backdrop-blur-sm"
     >
-      <VolumeX className="mr-2 h-5 w-5" />
-      Can't listen now
+      <span className="relative flex items-center justify-center">
+        <VolumeX className="absolute right-full mr-2 h-5 w-5" />
+        Can't listen now
+      </span>
     </Button>
   );
 }

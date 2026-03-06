@@ -9,7 +9,6 @@ import {
   type TargetToNativeWord,
   get_word_prefix,
 } from "../../../yap-frontend-rs/pkg";
-import Markdown from "react-markdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +30,6 @@ import "./Flashcard.css";
 import { AudioButton } from "./AudioButton";
 import { ReportIssueModal } from "./challenges/ReportIssueModal";
 import { CantListenButton } from "./CantListenButton";
-import { CantSpeakButton } from "./CantSpeakButton";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { formatMorphology } from "@/utils/formatMorphology";
@@ -55,7 +53,6 @@ interface FlashcardProps {
   onRating?: (rating: Rating) => void;
   accessToken: string | undefined;
   onCantListen?: () => void;
-  onCantSpeak?: () => void;
   isNew: boolean;
   targetLanguage: Language;
   nativeLanguage: Language;
@@ -117,18 +114,6 @@ const CardFront = ({
         return <h2 className="text-3xl font-semibold">{text}</h2>;
       }
     })
-    .with({ type: "LetterPronunciation" }, (content) => {
-      const guide = content.guide;
-      const pattern = content.pattern;
-
-      const displayPattern = match(guide.position)
-        .with("Beginning", () => `${pattern}___`)
-        .with("End", () => `___${pattern}`)
-        .with("Anywhere", () => pattern)
-        .exhaustive();
-
-      return <h2 className="text-4xl font-bold">🗣️ "{displayPattern}"</h2>;
-    })
     .exhaustive();
 };
 
@@ -137,25 +122,6 @@ const CardFrontSubtitle = ({ content }: { content: CardContent }) => {
     .with({ type: "Listening" }, () => (
       <span className="text-sm text-muted-foreground"> Fill in the blank!</span>
     ))
-    .with({ type: "LetterPronunciation" }, (content) => {
-      const guide = content.guide;
-      const positionText = match(guide.position)
-        .with("Beginning", () => "Appears at the beginning of words")
-        .with("End", () => "Appears at the end of words")
-        .with("Anywhere", () => null)
-        .exhaustive();
-
-      return (
-        <div className="flex flex-col gap-1 items-center">
-          <span className="text-sm text-muted-foreground">Say it out loud!</span>
-          {positionText && (
-            <span className="text-xs text-muted-foreground/80">
-              {positionText}
-            </span>
-          )}
-        </div>
-      );
-    })
     .with({ type: "Gram" }, (content) => {
       const definition = content.definition as GramDefinition;
       if ("Dictionary" in definition) {
@@ -335,126 +301,6 @@ const CardBack = ({
         );
       }
     })
-    .with({ type: "LetterPronunciation" }, (content) => {
-      const guide = content.guide;
-      const pattern = content.pattern;
-
-      const connector = match(targetLanguage)
-        .with("French", () => "comme dans")
-        .with("Spanish", () => "como en")
-        .with("Korean", () => "처럼")
-        .with("English", () => "as in")
-        .with("German", () => "wie in")
-        .with("Chinese", () => "如")
-        .with("Japanese", () => "のように")
-        .with("Russian", () => "как в")
-        .with("Portuguese", () => "como em")
-        .with("Italian", () => "come in")
-        .exhaustive();
-
-      return (
-        <div className="space-y-4">
-          <div className="text-left bg-muted/30 rounded-lg p-4 space-y-4">
-            {guide.example_words && guide.example_words.length > 0 && (
-              <div className="space-y-3">
-                <div className="text-sm text-muted-foreground">Examples:</div>
-                <div className="grid gap-3">
-                  {guide.example_words
-                    .slice(0, 3)
-                    .map((example: { target: string; cultural_context?: string }, index: number) => {
-                      const lowerPattern = pattern.toLowerCase();
-                      const lowerWord = example.target.toLowerCase();
-
-                      let patternIndex = -1;
-                      const matchLength = pattern.length;
-
-                      if (guide.position === "Beginning") {
-                        if (lowerWord.startsWith(lowerPattern)) {
-                          patternIndex = 0;
-                        }
-                      } else if (guide.position === "End") {
-                        if (lowerWord.endsWith(lowerPattern)) {
-                          patternIndex =
-                            example.target.length - pattern.length;
-                        }
-                      } else {
-                        patternIndex = lowerWord.indexOf(lowerPattern);
-                      }
-
-                      let highlightedWord;
-                      if (patternIndex !== -1) {
-                        const before = example.target.slice(0, patternIndex);
-                        const matched = example.target.slice(
-                          patternIndex,
-                          patternIndex + matchLength
-                        );
-                        const after = example.target.slice(
-                          patternIndex + matchLength
-                        );
-                        highlightedWord = (
-                          <>
-                            {before}
-                            <span className="bg-yellow-500/30 rounded px-0.5">
-                              {matched}
-                            </span>
-                            {after}
-                          </>
-                        );
-                      } else {
-                        highlightedWord = example.target;
-                      }
-
-                      return (
-                        <div
-                          key={index}
-                          className="bg-background/50 rounded p-3 flex items-center justify-between"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div className="flex-1">
-                            <div className="text-base">
-                              <span className="font-medium">{pattern}</span>
-                              <span className="text-muted-foreground mx-2">
-                                {connector}
-                              </span>
-                              <span className="font-semibold">
-                                {highlightedWord}
-                              </span>
-                            </div>
-                            {example.cultural_context && (
-                              <div className="text-xs text-muted-foreground mt-1">
-                                {example.cultural_context}
-                              </div>
-                            )}
-                          </div>
-                          <AudioButton
-                            audioRequest={{
-                              request: {
-                                text: `"${pattern}" ${connector} "${example.target}"`,
-                                language: targetLanguage,
-                              },
-                              provider: "Google",
-                            }}
-                            accessToken={accessToken}
-                            autoPlay={false}
-                          />
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-            )}
-
-            {guide.description && (
-              <div className="pt-3 border-t border-muted/20">
-                <div className="text-sm text-muted-foreground">
-                  <Markdown>{guide.description}</Markdown>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    })
     .exhaustive();
 };
 
@@ -465,7 +311,6 @@ export const Flashcard = function Flashcard({
   onRating,
   accessToken,
   onCantListen,
-  onCantSpeak,
   isNew,
   targetLanguage,
   nativeLanguage,
@@ -498,13 +343,11 @@ export const Flashcard = function Flashcard({
   const tutorialText = match(content)
     .with({ type: "Gram" }, (c) => `Guess what "${gramDisplayText(c.gram)}" means…`)
     .with({ type: "Listening" }, () => `Guess what ${targetLanguage} word is missing`)
-    .with({ type: "LetterPronunciation" }, (c) => `Say "${c.pattern}" like you would in ${targetLanguage}`)
     .exhaustive();
 
   const showAnswerText = match(content)
     .with({ type: "Gram" }, () => `Show ${nativeLanguage}`)
     .with({ type: "Listening" }, () => "Show missing word")
-    .with({ type: "LetterPronunciation" }, () => "Show pronunciation")
     .exhaustive();
 
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
@@ -650,7 +493,6 @@ export const Flashcard = function Flashcard({
       .with({ type: "Listening" }, (c) =>
         c.possible_grams.length > 0 ? gramDisplayText(c.possible_grams[0][1]) : undefined
       )
-      .with({ type: "LetterPronunciation" }, (c) => c.pattern)
       .exhaustive();
 
     if (word) {
@@ -736,7 +578,7 @@ export const Flashcard = function Flashcard({
                   className="flex items-center justify-between w-full"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {!(content.type === "LetterPronunciation") && audioRequest ? (
+                  {audioRequest ? (
                     <AudioButton
                       audioRequest={audioRequest}
                       accessToken={accessToken}
@@ -864,13 +706,10 @@ export const Flashcard = function Flashcard({
                 {onCantListen && content.type === "Listening" && (
                   <CantListenButton onClick={onCantListen} />
                 )}
-                {onCantSpeak && content.type === "LetterPronunciation" && (
-                  <CantSpeakButton onClick={onCantSpeak} />
-                )}
               </>
             )}
             <div className={!canGrade ? "hidden" : "quick-fade-in"}>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2">
                 <Button
                   onClick={() => {
                     if (!canGrade) return;
@@ -880,11 +719,11 @@ export const Flashcard = function Flashcard({
                   }}
                   variant="destructive"
                   size="lg"
-                  className="h-14 group"
+                  className="h-14 text-lg rounded-r-none group"
                   disabled={!canGrade}
                 >
-                  <span className="flex items-center gap-2">
-                    <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="relative flex items-center justify-center">
+                    <kbd className="absolute right-full mr-2 h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowLeft className="h-3 w-3" />
                     </kbd>
                     {leftLabel}
@@ -899,12 +738,12 @@ export const Flashcard = function Flashcard({
                   }}
                   variant="default"
                   size="lg"
-                  className="h-14 group"
+                  className="h-14 text-lg rounded-l-none group"
                   disabled={!canGrade}
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="relative flex items-center justify-center">
                     {rightLabel}
-                    <kbd className="h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
+                    <kbd className="absolute left-full ml-2 h-6 w-6 text-xs font-semibold border rounded bg-background/20 border-background/40 flex items-center justify-center hide-kbd-mobile opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowRight className="h-3 w-3" />
                     </kbd>
                   </span>

@@ -108,6 +108,9 @@ impl Iterator for DayChallengeIterator {
             let event = match challenge {
                 Challenge::FlashCardReview {
                     indicator, is_new, ..
+                }
+                | Challenge::PronunciationChallenge {
+                    indicator, is_new, ..
                 } => {
                     let rating = if is_new {
                         Rating::Again
@@ -396,7 +399,8 @@ mod tests {
 
                 for challenge in day.by_ref() {
                     match challenge {
-                        Challenge::FlashCardReview { .. } => flash_count += 1,
+                        Challenge::FlashCardReview { .. }
+                        | Challenge::PronunciationChallenge { .. } => flash_count += 1,
                         Challenge::TranslateComprehensibleSentence(_) => translate_count += 1,
                         Challenge::TranscribeComprehensibleSentence(_) => transcribe_count += 1,
                     }

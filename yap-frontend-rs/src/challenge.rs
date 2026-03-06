@@ -165,6 +165,7 @@ impl ReviewInfo {
             request: TtsRequest {
                 text: format!("{listening_prefix}... \"{audio_text}\"."),
                 language: deck.context.course.target_language,
+                is_ssml: false,
             },
             provider: TtsProvider::Google,
         };
@@ -273,6 +274,7 @@ impl ReviewInfo {
                             .resolve(&sentence.target_language)
                             .to_string(),
                         language: deck.context.course.target_language,
+                        is_ssml: false,
                     },
                     provider: TtsProvider::Google,
                 },
@@ -332,6 +334,7 @@ impl ReviewInfo {
             request: TtsRequest {
                 text: audio_text,
                 language: deck.context.course.target_language,
+                is_ssml: false,
             },
             provider: TtsProvider::Google,
         };
@@ -459,6 +462,7 @@ impl ReviewInfo {
                             .resolve(&target_language)
                             .to_string(),
                         language: deck.context.course.target_language,
+                        is_ssml: false,
                     },
                     provider: TtsProvider::ElevenLabs,
                 },
@@ -486,21 +490,16 @@ impl ReviewInfo {
         ctx.wrap_flashcard(deck, flashcard)
     }
 
-    pub fn pronunciation_pattern_flashcard(
+    pub fn pronunciation_challenge(
         &self,
         deck: &Deck,
+        ctx: &CardContext,
         pattern: Spur,
         position: PatternPosition,
-    ) -> FlashCard {
-        let pattern_str = deck
-            .context
-            .language_pack
-            .string_rodeo
-            .resolve(&pattern)
-            .to_string();
-        let Some(guide) = deck
-            .context
-            .language_pack
+    ) -> Challenge<Gram<String>> {
+        let language_pack = &deck.context.language_pack;
+        let pattern_str = language_pack.string_rodeo.resolve(&pattern).to_string();
+        let Some(guide) = language_pack
             .pronunciation_data
             .guides
             .iter()
@@ -511,15 +510,15 @@ impl ReviewInfo {
                 "Pattern {pattern_str} with position {position:?} was in the deck, but was not found in pronunciation guides"
             );
         };
-        let content = CardContent::LetterPronunciation {
+
+        Challenge::PronunciationChallenge {
+            indicator: ctx
+                .indicator
+                .resolve(&language_pack.string_rodeo, &language_pack.gram_rodeo),
             pattern: pattern_str,
             guide,
-        };
-
-        FlashCard {
-            content,
-            audio: None,
-            listening_prefix: None,
+            is_new: ctx.is_new,
+            times_type_seen: ctx.times_type_seen,
         }
     }
 }

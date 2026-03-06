@@ -8,6 +8,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { useLocation } from "react-router-dom";
 import { useTheme } from "./theme-provider";
 
 interface BackgroundContextType {
@@ -32,6 +33,8 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const { theme, animatedBackground } = useTheme();
+  const location = useLocation();
+  const blurBackground = location.pathname === "/select-language";
   
   // Determine actual theme (resolve "system") - memoized to prevent recalculation
   const actualTheme = useMemo(
@@ -93,7 +96,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
 
     // Create a fresh canvas element for this worker
     const canvas = document.createElement("canvas");
-    canvas.className = "fixed inset-0 w-full h-full -z-10";
+    canvas.className = "fixed inset-0 w-full h-full";
     canvas.style.pointerEvents = "none";
     canvas.style.willChange = "contents";
     canvas.style.transform = "translateZ(0)";
@@ -162,10 +165,13 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   return (
     <BackgroundContext.Provider value={{ bumpBackground }}>
       {shouldRender && (
-        <>
+        <div
+          className="fixed -inset-10 -z-10 transition-[filter] duration-700 ease-in-out"
+          style={{ filter: blurBackground ? "blur(20px)" : "blur(0px)", pointerEvents: "none" }}
+        >
           <div ref={containerRef} className="contents" />
           <div
-            className="fixed inset-0 w-full h-full -z-10 opacity-[0.30]"
+            className="fixed inset-0 w-full h-full opacity-[0.30]"
             style={{
               pointerEvents: "none",
               backgroundImage: actualTheme === "dark" || actualTheme === "oled" ? "url(/fog.webp)" : "url(/noise2.webp)",
@@ -183,7 +189,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
             }}
           />
           <div
-            className="fixed inset-0 w-full h-full -z-10 opacity-[0.20]"
+            className="fixed inset-0 w-full h-full opacity-[0.20]"
             style={{
               pointerEvents: "none",
               backgroundImage: "url(/noise.webp)",
@@ -200,7 +206,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
                   : "none",
             }}
           />
-        </>
+        </div>
       )}
       {children}
     </BackgroundContext.Provider>

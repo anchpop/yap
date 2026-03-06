@@ -7,7 +7,7 @@ use language_utils::{
 use rustc_hash::FxHashMap;
 use sentence_sampler::sample_to_target;
 use std::{collections::BTreeMap, sync::LazyLock};
-use tysm::chat_completions::ChatClient;
+use tysm::chat_completions::{ChatClient, ChatMessage};
 
 static CHAT_CLIENT_LIGHT: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.2")
@@ -88,6 +88,32 @@ Output the result as a JSON object containing an array of one or more definition
             ).await.inspect_err(|e| {
                 println!("error: {e:#?}");
             });
+
+            // If any example sentence doesn't contain the word, retry with feedback
+            let response = if let Ok(ref resp) = response {
+                let bad_examples: Vec<_> = resp.definitions.iter()
+                    .filter(|d| !d.example_sentence_target_language.to_lowercase().contains(&heteronym.word.to_lowercase()))
+                    .map(|d| d.example_sentence_target_language.as_str())
+                    .collect();
+                if !bad_examples.is_empty() {
+                    let previous_json = serde_json::to_string(resp).unwrap_or_default();
+                    chat_client.chat_with_messages(vec![
+                        ChatMessage::system(format!("You are a {target_language} dictionary entry generator for {native_language} speakers.")),
+                        ChatMessage::user(format!(
+                            "I asked you to generate a dictionary entry for the {target_language} word `{word}`, and you gave me this response:\n\n{previous_json}\n\nHowever, some of the example sentences don't contain the exact word `{word}`. The following sentences are missing it: {bad}\n\nPlease regenerate the entire response with the same format, making sure every example_sentence_target_language contains the exact word `{word}`.",
+                            word = heteronym.word,
+                            bad = bad_examples.join("; "),
+                        )),
+                    ]).await.inspect_err(|e| {
+                        println!("retry error: {e:#?}");
+                    })
+                } else {
+                    response
+                }
+            } else {
+                response
+            };
+
             response
         };
 
@@ -338,6 +364,26 @@ Of course, their native language is {native_language}, so you should write the m
                     .inspect_err(|e| {
                         println!("error: {e:#?}");
                     });
+
+                // If the example doesn't contain the term, retry with feedback
+                let response = if let Ok(ref resp) = response {
+                    if !resp.target_language_example.to_lowercase().contains(&gram_text.to_lowercase()) {
+                        let previous_json = serde_json::to_string(resp).unwrap_or_default();
+                        chat_client.chat_with_messages(vec![
+                            ChatMessage::system(format!("You are a {target_language} phrasebook entry generator for {native_language} speakers.")),
+                            ChatMessage::user(format!(
+                                "I asked you to generate a phrasebook entry for the {target_language} multi-word term `{gram_text}`, and you gave me this response:\n\n{previous_json}\n\nHowever, your target_language_example `{example}` does not contain the exact term `{gram_text}`. Please regenerate the entire response with the same format, making sure target_language_example contains the exact term `{gram_text}`. Here are some example sentences for inspiration that use the term:\n{examples_text}",
+                                example = resp.target_language_example,
+                            )),
+                        ]).await.inspect_err(|e| {
+                            println!("retry error: {e:#?}");
+                        })
+                    } else {
+                        response
+                    }
+                } else {
+                    response
+                };
 
                 pb.inc(1);
 

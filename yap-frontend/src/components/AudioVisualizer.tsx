@@ -5,7 +5,7 @@ export function AudioVisualizer() {
       style={{ contain: "strict", width: "80px", height: "48px" }}
     >
       <svg width="48" height="32" viewBox="0 0 48 32" className="inline-block">
-        <g fill="currentColor" className="text-primary opacity-60">
+        <g fill="currentColor" className="text-accent-foreground opacity-60">
           <rect x="2" y="8" width="4" height="16" rx="2">
             <animate
               attributeName="height"

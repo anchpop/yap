@@ -277,6 +277,7 @@ interface PhraseStatusesProps {
   gradeItems: GradeItem[];
   phraseRefs: React.RefObject<Map<number, SwipeableWordHandle>>;
   handleGradeSwipe: (item: GradeItem, remembered: boolean) => void;
+  openByDefault: boolean;
 }
 
 function PhraseStatuses({
@@ -285,8 +286,9 @@ function PhraseStatuses({
   gradeItems,
   phraseRefs,
   handleGradeSwipe,
+  openByDefault,
 }: PhraseStatusesProps) {
-  const [isAnswerOpen, setIsAnswerOpen] = useState(false);
+  const [isAnswerOpen, setIsAnswerOpen] = useState(openByDefault);
 
   useEffect(() => {
     if (
@@ -1135,6 +1137,10 @@ export function TranslationChallenge({
                       handleGradeSwipe={handleGradeSwipe}
                       selectedPhraseIndex={selectedPhraseIndex}
                       setSelectedPhraseIndex={setSelectedPhraseIndex}
+                      openByDefault={
+                        "autogradingError" in grade.graded &&
+                        grade.graded.autogradingError !== undefined
+                      }
                     />
                   </>
                 )}
@@ -1169,7 +1175,7 @@ export function TranslationChallenge({
       {grade === null ? (
         <Button
           onClick={handleCheckAnswer}
-          className="w-full mt-4 h-14"
+          className="w-full mt-4 h-14 text-lg"
           size="lg"
           disabled={!userTranslation.trim()}
         >
@@ -1178,19 +1184,19 @@ export function TranslationChallenge({
       ) : (
         <Button
           onClick={handleContinue}
-          className="w-full h-14"
+          className="w-full h-14 text-lg"
           size="lg"
           disabled={!canContinue}
         >
           {"grading" in grade ? (
             "AI is grading..."
           ) : (
-            <>
+            <span className="relative flex items-center justify-center">
               {"perfect" in grade.graded ? "Nailed it!" : "Continue"}
-              <span className="ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
                 (⏎)
               </span>
-            </>
+            </span>
           )}
         </Button>
       )}
