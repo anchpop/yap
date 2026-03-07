@@ -610,6 +610,8 @@ async fn main() -> anyhow::Result<()> {
             .collect();
 
         // Deduplicate patterns: if two grams produce the same matcher, prefer the wiktionary one
+        let lemma_patterns_before: std::collections::HashSet<Gram<String>> =
+            lemma_patterns.keys().cloned().collect();
         let lemma_patterns = deduplicate_patterns(
             lemma_patterns,
             &wiktionary_grams,
@@ -617,6 +619,16 @@ async fn main() -> anyhow::Result<()> {
             &wiktionary_alt_forms,
             lang,
         );
+        // Remove tree_patterns for grams that were deduplicated away by lemma dedup
+        let lemma_survivors: std::collections::HashSet<Gram<String>> =
+            lemma_patterns.keys().cloned().collect();
+        let tree_patterns: BTreeMap<_, _> = tree_patterns
+            .into_iter()
+            .filter(|(gram, _)| {
+                // Keep if it wasn't in lemma_patterns to begin with, or if it survived dedup
+                !lemma_patterns_before.contains(gram) || lemma_survivors.contains(gram)
+            })
+            .collect();
         let tree_patterns = deduplicate_patterns(
             tree_patterns,
             &wiktionary_grams,

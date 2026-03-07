@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2488565
-Total errors: 571
+Total predictions: 2486529
+Total errors: 570
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -110,14 +110,6 @@ Accuracy: 99.98%
   - Perdão,mas é meu primeiro trabalho e quero fazer bem.
   - Possivelmente não,mas seria justo.
 
-### "," + "não" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - E A Dom Ciccio Tumeo, quem graças a Deus,não esta casado.
-  - Então,não contel?
-  - Estaéumahistóriasimples; no entanto,não é fácilcontá-la.
-
 ### "," + "um" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -193,6 +185,13 @@ Accuracy: 99.98%
 - Examples:
   - Não,já os mandei de volta.
   - Quando engrossa,já sabe que o negócio vai ficar feio.
+
+### "," + "não" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Então,não contel?
+  - Estaéumahistóriasimples; no entanto,não é fácilcontá-la.
 
 ### "," + "que" (2 occurrences)
 - Predicted: Space

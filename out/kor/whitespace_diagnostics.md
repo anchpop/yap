@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 330626
-Total errors: 1375
+Total predictions: 330544
+Total errors: 1372
 Accuracy: 99.58%
 
 ## Error Patterns (sorted by frequency)
@@ -697,13 +697,6 @@ Accuracy: 99.58%
 - Examples:
   - 무슨일이 있었구나?
   - 무슨일이 있었지요?
-
-### "무슨" + "일이야" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 도데체 무슨일이야?
-  - 무슨일이야 요오헤이!
 
 ### "뭐" + "예요" (2 occurrences)
 - Predicted: Space
@@ -3167,6 +3160,12 @@ Accuracy: 99.58%
 - Examples:
   - 무슨일이지?
 
+### "무슨" + "일이야" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 도데체 무슨일이야?
+
 ### "무엇" + "이냐" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -4139,12 +4138,6 @@ Accuracy: 99.58%
 - Examples:
   - 알겠어 -괜찮지, 네이선?
 
-### "애나씨" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 애나씨 -응?
-
 ### "야단" + "좀" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -4594,12 +4587,6 @@ Accuracy: 99.58%
 - Actual: None
 - Examples:
   - 당신이로군요.
-
-### "이" + "사람들은" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 이사람들은 누구야?
 
 ### "이" + "상" (1 occurrences)
 - Predicted: Space

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2707620
-Total errors: 2105
+Total predictions: 2706349
+Total errors: 2101
 Accuracy: 99.92%
 
 ## Error Patterns (sorted by frequency)
@@ -2880,12 +2880,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Don Calogero - Ritter von Sedara.
-
-### "Campari" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Weiss ich selbst, das war Campari !
 
 ### "Christus" + "!" (1 occurrences)
 - Predicted: None
@@ -6205,12 +6199,6 @@ Accuracy: 99.92%
 - Examples:
   - Habt ihr nicht auch heiss ?
 
-### "heissen" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Was soll das heissen ?
-
 ### "her" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6991,12 +6979,6 @@ Accuracy: 99.92%
 - Examples:
   - Nick ist ja nicht so … redselig.
 
-### "soll" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Was das heissen soll ?
-
 ### "sonst" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7356,12 +7338,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Das tut weh !
-
-### "weiss" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Berge sind schon weiss !
 
 ### "weiter" + "!" (1 occurrences)
 - Predicted: None

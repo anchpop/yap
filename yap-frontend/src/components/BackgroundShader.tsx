@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useLocation } from "react-router-dom";
 import { useTheme } from "./theme-provider";
+import { getShaderBackgroundCss } from "@/lib/shader-colors";
 
 interface BackgroundContextType {
   bumpBackground: (multiplier?: number) => void;
@@ -109,8 +110,6 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     );
     workerRef.current = worker;
 
-
-
     // Transfer canvas control to worker
     const offscreenCanvas = canvas.transferControlToOffscreen();
 
@@ -162,14 +161,20 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     }
   }, [actualTheme, shouldRender]);
 
+  const shaderBgColor = useMemo(
+    () => getShaderBackgroundCss(actualTheme),
+    [actualTheme]
+  );
+
   return (
     <BackgroundContext.Provider value={{ bumpBackground }}>
-      {shouldRender && (
-        <div
-          className="fixed -inset-10 -z-10 transition-[filter] duration-700 ease-in-out"
-          style={{ filter: blurBackground ? "blur(20px)" : "blur(0px)", pointerEvents: "none" }}
-        >
-          <div ref={containerRef} className="contents" />
+      <div
+        className="fixed -inset-10 -z-10 transition-[filter] duration-700 ease-in-out"
+        style={{ filter: blurBackground ? "blur(20px)" : "blur(0px)", pointerEvents: "none", backgroundColor: shaderBgColor }}
+      >
+        {shouldRender && (
+          <>
+            <div ref={containerRef} className="contents" />
           <div
             className="fixed inset-0 w-full h-full opacity-[0.30]"
             style={{
@@ -206,8 +211,9 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
                   : "none",
             }}
           />
-        </div>
-      )}
+          </>
+        )}
+      </div>
       {children}
     </BackgroundContext.Provider>
   );

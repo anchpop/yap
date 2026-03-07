@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2332095
-Total errors: 2955
+Total predictions: 2330232
+Total errors: 2943
 Accuracy: 99.87%
 
 ## Error Patterns (sorted by frequency)
@@ -390,14 +390,6 @@ Accuracy: 99.87%
   - Ragazzi, tornate a casa !
   - Tornate a casa !
 
-### "cazzo" + "!" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Basta, cazzo !
-  - Levati dal cazzo !
-  - Simon, non me ne frega un cazzo !
-
 ### "dei" + "?" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -549,6 +541,14 @@ Accuracy: 99.87%
   - Con quale personaggio ti batteresti ?
   - Se potessi, con chi ti batteresti ?
   - Tra quelli famosi con chi ti batteresti ?
+
+### "cazzo" + "!" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Basta, cazzo !
+  - Levati dal cazzo !
+  - Simon, non me ne frega un cazzo !
 
 ### "così" + "?" (4 occurrences)
 - Predicted: None
@@ -781,14 +781,6 @@ Accuracy: 99.87%
   - No,no, non sono stato io!
   - Oh,no!
   - Per il bene delle persone, situò,no?
-
-### "," + "si" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Si,si,, ho commesso degli errori.
-  - Si,si,si!
-  - Si,si,si!
 
 ### "," + "tu" (3 occurrences)
 - Predicted: Space
@@ -1077,14 +1069,6 @@ Accuracy: 99.87%
   - Era molto turbato e la cosa gli ?
   - Se rimuoviamo gli ?
   - Secondo me, è meglio rimuovere gli ?
-
-### "ha" + "?" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Che ha ?
-  - Invece che a metà curva, ha ?
-  - Signore, che ha ?
 
 ### "hai" + "?" (3 occurrences)
 - Predicted: None
@@ -1924,26 +1908,12 @@ Accuracy: 99.87%
   - A chi non è consentito ?
   - Che cosa non è consentito ?
 
-### "continui" + "amo" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Allora ti do un braccio, cosi continuiamo.
-  - Suggerisco che continuiamo.
-
 ### "corpo" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Che ne hai fatto del corpo ?
   - E il corpo ?
-
-### "cosi" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ho detto cosi ?
-  - Una cosa cosi ?
 
 ### "cravatta" + "?" (2 occurrences)
 - Predicted: None
@@ -2133,6 +2103,13 @@ Accuracy: 99.87%
 - Examples:
   - I grandi ?
   - Perciò fece quello che aveva già fatto, che i grandi ?
+
+### "ha" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Invece che a metà curva, ha ?
+  - Signore, che ha ?
 
 ### "impazziti" + "?" (2 occurrences)
 - Predicted: None
@@ -2371,13 +2348,6 @@ Accuracy: 99.87%
 - Examples:
   - Era soltanto il vento, ti sei messa paura ?
   - Hai paura ?
-
-### "piu" + "" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Prendi tutto il tempo che ti serve Quanto piu te ne serve?
-  - Qual è la piu bella che avete mai visto?
 
 ### "polizia" + "!" (2 occurrences)
 - Predicted: None
@@ -2837,12 +2807,6 @@ Accuracy: 99.87%
 - Actual: None
 - Examples:
   - A proposito,che film proiettano?
-
-### "," + "chi" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Oh,chi e?
 
 ### "," + "da" (1 occurrences)
 - Predicted: Space
@@ -5448,12 +5412,6 @@ Accuracy: 99.87%
 - Examples:
   - Sapete qual è la fonte dei pettegolezzi di Pernambuco ?
 
-### "Pero" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Pero sto bene.
-
 ### "Peter" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7686,6 +7644,12 @@ Accuracy: 99.87%
 - Examples:
   - Sei contento ?
 
+### "continui" + "amo" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suggerisco che continuiamo.
+
 ### "conto" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7751,6 +7715,12 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Basta cosi !
+
+### "cosi" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ho detto cosi ?
 
 ### "costoro" + "?" (1 occurrences)
 - Predicted: None
@@ -9881,12 +9851,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Dio lo benedica e lo protegga finché lo riterrà opportuno !
-
-### "ora" + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Un ora , per favore.
 
 ### "orchestra" + "!" (1 occurrences)
 - Predicted: None

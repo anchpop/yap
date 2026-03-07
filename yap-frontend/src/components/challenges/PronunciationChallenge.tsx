@@ -98,7 +98,7 @@ export function PronunciationChallenge({
           </div>
         )}
 
-        <Card className="pt-4 pb-4 pl-4 pr-4">
+        <Card animate className="pt-4 pb-4 pl-4 pr-4">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
               <div className="text-center text-3xl font-bold">
