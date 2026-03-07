@@ -1,7 +1,8 @@
 use anyhow::Context as _;
+use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{Course, Language};
 use serde_json::Value;
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs::File;
 use std::io::{BufRead as _, BufReader, Write};
 use std::path::{Path, PathBuf};
@@ -125,6 +126,188 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
         .context(format!("Failed to download {category}"))?;
 
     Ok(terms)
+}
+
+/// For each multiword term, check if its wiktionary page says it's an
+/// "alternative form of" or "misconstruction of" another term.
+/// Returns a map from alt-form term → canonical term.
+pub async fn download_alt_forms(
+    terms: &[String],
+    cache_dir: &Path,
+) -> anyhow::Result<BTreeMap<String, String>> {
+    let cache_file = cache_dir.join("multiword_alt_forms.jsonl");
+
+    // Load cached results
+    let mut alt_forms: BTreeMap<String, String> = BTreeMap::new();
+    let mut already_checked: BTreeSet<String> = BTreeSet::new();
+    if cache_file.exists() {
+        let file = File::open(&cache_file)?;
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            let line = line?;
+            if let Ok(entry) = serde_json::from_str::<Value>(&line) {
+                if let Some(term) = entry["term"].as_str() {
+                    already_checked.insert(term.to_string());
+                    if let Some(canonical) = entry["canonical"].as_str() {
+                        alt_forms.insert(term.to_string(), canonical.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    let to_check: Vec<&String> = terms
+        .iter()
+        .filter(|t| !already_checked.contains(*t))
+        .collect();
+
+    if to_check.is_empty() {
+        return Ok(alt_forms);
+    }
+
+    let pb = ProgressBar::new(to_check.len() as u64);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} alt-form check ({per_sec}, {eta})")
+            .unwrap()
+            .progress_chars("#>-"),
+    );
+
+    // Open cache file in append mode
+    let cache_handle = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&cache_file)?;
+    let mut writer = std::io::BufWriter::new(cache_handle);
+
+    let client = reqwest::Client::builder()
+        .user_agent("YapBot/1.0 (https://yap.town) reqwest/0.11")
+        .build()
+        .context("Failed to build HTTP client")?;
+
+    // Batch fetch wikitext via MediaWiki API (up to 50 pages per request)
+    for batch in to_check.chunks(50) {
+        let titles: String = batch
+            .iter()
+            .map(|t| t.replace(' ', "_"))
+            .collect::<Vec<_>>()
+            .join("|");
+
+        let response = client
+            .get("https://en.wiktionary.org/w/api.php")
+            .query(&[
+                ("action", "query"),
+                ("titles", &titles),
+                ("prop", "revisions"),
+                ("rvprop", "content"),
+                ("format", "json"),
+            ])
+            .send()
+            .await
+            .context("Failed to fetch wikitext batch")?;
+
+        let data: Value = response
+            .json()
+            .await
+            .context("Failed to parse wikitext response")?;
+
+        // Build a map from normalized title back to original term
+        let title_to_term: BTreeMap<String, &str> = batch
+            .iter()
+            .map(|t| (t.replace(' ', "_"), t.as_str()))
+            .collect();
+
+        // Also handle MediaWiki title normalization (e.g. first letter capitalization)
+        let mut normalized_map: BTreeMap<String, String> = BTreeMap::new();
+        if let Some(normalizations) = data["query"]["normalized"].as_array() {
+            for n in normalizations {
+                if let (Some(from), Some(to)) = (n["from"].as_str(), n["to"].as_str()) {
+                    normalized_map.insert(to.to_string(), from.to_string());
+                }
+            }
+        }
+
+        if let Some(pages) = data["query"]["pages"].as_object() {
+            for (_page_id, page) in pages {
+                let page_title = page["title"].as_str().unwrap_or_default();
+                // Resolve back to the original term
+                let lookup_title = normalized_map
+                    .get(page_title)
+                    .cloned()
+                    .unwrap_or_else(|| page_title.to_string());
+                let original_term = title_to_term
+                    .get(&lookup_title)
+                    .or_else(|| title_to_term.get(page_title));
+
+                let Some(term) = original_term else {
+                    continue;
+                };
+
+                let wikitext = page
+                    .get("revisions")
+                    .and_then(|r| r.as_array())
+                    .and_then(|r| r.first())
+                    .and_then(|r| r["*"].as_str())
+                    .unwrap_or_default();
+
+                let canonical = parse_alt_form_wikitext(wikitext);
+                let entry = if let Some(ref canonical) = canonical {
+                    serde_json::json!({"term": *term, "canonical": canonical})
+                } else {
+                    serde_json::json!({"term": *term})
+                };
+                writeln!(writer, "{}", serde_json::to_string(&entry)?)?;
+
+                if let Some(canonical) = canonical {
+                    alt_forms.insert(term.to_string(), canonical);
+                }
+
+                pb.inc(1);
+            }
+        }
+
+        // Small delay between batches
+        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    }
+
+    writer.flush()?;
+    pb.finish_and_clear();
+
+    Ok(alt_forms)
+}
+
+/// Parse wikitext for {{alternative form of|LANG|TARGET}} or {{misconstruction of|LANG|TARGET}}
+fn parse_alt_form_wikitext(wikitext: &str) -> Option<String> {
+    for line in wikitext.lines() {
+        let trimmed = line.trim().trim_start_matches('#').trim();
+        for template in [
+            "alternative form of",
+            "Alternative form of",
+            "alt form of",
+            "misconstruction of",
+            "Misconstruction of",
+        ] {
+            // Match {{template|lang|term}} or {{template|lang|term|...}}
+            let pattern = format!("{{{{{template}|");
+            if let Some(rest) = trimmed
+                .strip_prefix(&pattern)
+                .or_else(|| trimmed.strip_prefix(&format!("{{{{  {template}|")))
+            {
+                // Skip the language code (first parameter)
+                let after_lang = rest.split_once('|')?.1;
+                // Extract the term (up to next | or }})
+                let term = after_lang
+                    .split(['|', '}'])
+                    .next()?
+                    .trim()
+                    .replace('_', " ");
+                if !term.is_empty() {
+                    return Some(term);
+                }
+            }
+        }
+    }
+    None
 }
 
 async fn download_category(category_name: &str) -> anyhow::Result<Vec<String>> {

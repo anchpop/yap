@@ -7,14 +7,16 @@ interface AccentedCharacterKeyboardProps {
   onCharacterInsert: (char: string) => void;
   language: Language;
   className?: string;
+  uppercase?: boolean;
 }
 
 export function AccentedCharacterKeyboard({
   onCharacterInsert,
   language,
   className = "",
+  uppercase = false,
 }: AccentedCharacterKeyboardProps) {
-  const characters = match(language)
+  const baseCharacters = match(language)
     .with("French", () => [
       "à",
       "â",
@@ -55,6 +57,10 @@ export function AccentedCharacterKeyboard({
     ])
     .with("Italian", () => ["à", "è", "é", "ì", "ò", "ù"])
     .exhaustive();
+
+  const characters = uppercase
+    ? [...new Set(baseCharacters.map((c) => c.toUpperCase()))]
+    : baseCharacters;
 
   // Split characters into rows of at most 8 characters each
   const rows: string[][] = [];

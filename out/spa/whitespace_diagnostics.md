@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2429500
-Total errors: 782
+Total predictions: 2424550
+Total errors: 779
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -246,14 +246,6 @@ Accuracy: 99.97%
   - Sí,eso ayuda un poco.
   - Sí,eso dices tú.
 
-### "," + "pero" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Claro,pero aun así me dejarían hacerlo, ¿no?
-  - No voy a dar un discurso,pero siento esta gratitud brotando en mí.
-  - Sé que piensas que eres incapaz de cuidar,pero tú estabas ahí para mí.
-
 ### "," + "sí" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -336,6 +328,13 @@ Accuracy: 99.97%
 - Examples:
   - Hola,papá.
   - No vamos a trabajar juntos,papá.
+
+### "," + "pero" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - No voy a dar un discurso,pero siento esta gratitud brotando en mí.
+  - Sé que piensas que eres incapaz de cuidar,pero tú estabas ahí para mí.
 
 ### "," + "por" (2 occurrences)
 - Predicted: Space
@@ -1258,12 +1257,6 @@ Accuracy: 99.97%
 - Examples:
   - Ser calvo tiene al menos una ventaja - se ahorra mucho en champú.
 
-### "-" + "sopa" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - A mi me gusta un desayuno básico - sopa miso y arroz.
-
 ### "-" + "suaves" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2157,12 +2150,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Estar en un cartel de 'se busca'.
-
-### "básico" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - A mi me gusta un desayuno básico - sopa miso y arroz.
 
 ### "béisbol" + "'" (1 occurrences)
 - Predicted: Space

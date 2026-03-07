@@ -606,6 +606,7 @@ pub struct TranscribeComprehensibleSentence {
     pub native_language: String,
     pub parts: Vec<transcription_challenge::Part>,
     pub movie_titles: Vec<(String, String)>,
+    pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
@@ -1812,20 +1813,21 @@ impl Deck {
         comprehensible_grams
     }
 
-    /// First, the frontend calls get_all_cards_summary to get a view of what cards are due and what cards are going to be due in the future.
+    /// Returns all cards as summaries, ordered consistently with get_review_info
+    /// (due cards first, then future cards, each sorted by due date and card indicator).
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_all_cards_summary(&self) -> Vec<CardSummary> {
-        let mut summaries: Vec<CardSummary> = self
-            .cards_excluding_leeches()
-            .filter_map(|(card_indicator, card_status)| {
-                self.card_to_summary(card_indicator, card_status)
+        let now = Utc::now().timestamp_millis() as f64;
+        let review_info = self.get_review_info(vec![], now);
+        review_info
+            .due_cards
+            .iter()
+            .chain(review_info.future_cards.iter())
+            .filter_map(|card_indicator| {
+                let card_data = self.cards.get(card_indicator)?;
+                self.card_to_summary(card_indicator, card_data)
             })
-            .collect();
-
-        // Sort by due date
-        summaries.sort_by(|a, b| a.due_timestamp_ms.partial_cmp(&b.due_timestamp_ms).unwrap());
-
-        summaries
+            .collect()
     }
 
     /// Get all cards that have been detected as leeches (12+ lapses)
@@ -1841,7 +1843,6 @@ impl Deck {
             .collect()
     }
 
-    /// TODO: get_review_info and get_all_cards_summary can probably be combined.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_review_info(
         &self,
@@ -2666,8 +2667,12 @@ impl Deck {
                 }
             }
 
-            // Check that all high-confidence multiword terms are comprehensible
-            for multiword_gram in &sentence_grams.multiword_terms {
+            // Check that all multiword terms (high and low confidence) are comprehensible
+            for multiword_gram in sentence_grams
+                .multiword_terms
+                .iter()
+                .chain(sentence_grams.low_confidence_multiword_terms.iter())
+            {
                 if !comprehensible_grams.contains(multiword_gram) {
                     continue 'checkSentences; // Early exit!
                 }
@@ -2696,12 +2701,16 @@ impl Deck {
                 .encoded_sentences
                 .get(&target_language_sentence)?;
 
-            // Collect unique phrases (high-confidence multiword terms)
+            // Collect unique phrases (high and low confidence multiword terms)
             let unique_target_language_phrases = {
                 let mut unique_phrases = vec![];
                 let mut phrases_set = BTreeSet::new();
 
-                for phrase in &sentence_grams.multiword_terms {
+                for phrase in sentence_grams
+                    .multiword_terms
+                    .iter()
+                    .chain(sentence_grams.low_confidence_multiword_terms.iter())
+                {
                     if !phrases_set.contains(phrase) {
                         unique_phrases.push(*phrase);
                         phrases_set.insert(*phrase);
@@ -4327,234 +4336,5 @@ mod tests {
             ),
             "Listening challenge for common word 'à' should be a transcription, not a flashcard"
         );
-    }
-
-    #[test]
-    fn test_debug_desktop_most_due_card() {
-        use std::collections::BTreeMap;
-        use weapon::data_model::{EventStore, EventType, Timestamped};
-        use weapon::opfs::parse_event_log_records;
-
-        let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
-            .expect("Failed to read language data");
-        let archived = rkyv::access::<
-            language_utils::language_pack::ArchivedLanguagePack,
-            rkyv::rancor::Error,
-        >(&bytes)
-        .unwrap();
-        let language_pack: LanguagePack =
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
-        let language_pack = Arc::new(language_pack);
-
-        let mut store: EventStore<String, String> = EventStore::default();
-        store.get_or_insert_default::<EventType<DeckEvent>>("reviews".to_string(), None);
-
-        let reviews_blob = std::fs::read(
-            "/Users/andrepopovitch/Desktop/test-weapon-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__reviews/events.blob",
-        ).expect("Failed to read desktop reviews events blob");
-        let review_records = parse_event_log_records(&reviews_blob);
-        println!("Parsed {} review event records", review_records.len());
-
-        let mut reviews_by_device: BTreeMap<String, Vec<Timestamped<serde_json::Value>>> =
-            BTreeMap::new();
-        for record in &review_records {
-            reviews_by_device
-                .entry(record.device_id.clone())
-                .or_default()
-                .push(record.event.clone());
-        }
-        for (device_id, events) in reviews_by_device {
-            let added =
-                store.add_device_events_jsons("reviews".to_string(), device_id, events, None);
-            println!("Added {added} review events");
-        }
-
-        let context = Context {
-            language_pack: language_pack.clone(),
-            course: Course {
-                target_language: Language::French,
-                native_language: Language::English,
-            },
-        };
-        let initial_state = DeckState::new();
-        let stream = store
-            .get::<EventType<DeckEvent>>("reviews".to_string())
-            .expect("reviews stream should exist");
-        let deck: Deck = stream.state(initial_state, &context);
-
-        println!(
-            "Deck has {} tracked cards, {} total reviews",
-            deck.num_cards(),
-            deck.stats.total_reviews
-        );
-
-        let now = chrono::Utc::now().timestamp_millis() as f64;
-        let review_info = deck.get_review_info(vec![], now);
-
-        // Show first 5 due cards
-        println!("\nFirst 5 due cards:");
-        for (i, due_card) in review_info.due_cards.iter().take(5).enumerate() {
-            let card_text = match due_card {
-                CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
-                    let resolved = language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&language_pack.string_rodeo);
-                    resolved.to_display_string(Language::French)
-                }
-                CardIndicator::LetterPronunciation { pattern, position } => {
-                    format!(
-                        "[{} {:?}]",
-                        language_pack.string_rodeo.resolve(pattern),
-                        position
-                    )
-                }
-            };
-            let card_type = match due_card {
-                CardIndicator::WrittenGram { .. } => "Written",
-                CardIndicator::ListeningGram { .. } => "Listening",
-                CardIndicator::LetterPronunciation { .. } => "Pronunciation",
-            };
-            let card_status = deck.cards.get(due_card).map(|cd| match cd {
-                CardData::Added { fsrs_card } => format!("Added/{:?}", fsrs_card.state),
-                CardData::Ghost { fsrs_card } => format!("Ghost/{:?}", fsrs_card.state),
-            });
-            println!("  {i}: {card_type} '{card_text}' status={card_status:?}");
-
-            // Debug 'faire' listening card in detail
-            if matches!(due_card, CardIndicator::ListeningGram { .. }) && card_text == "faire" {
-                if let CardIndicator::ListeningGram { gram } | CardIndicator::WrittenGram { gram } =
-                    due_card
-                {
-                    let resolved = language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&language_pack.string_rodeo);
-                    println!("    Full gram: {resolved:?}");
-
-                    let sentence_count = language_pack
-                        .sentences_containing_gram_index
-                        .get(gram)
-                        .map(|s| s.len())
-                        .unwrap_or(0);
-                    println!("    Sentences containing gram: {sentence_count}");
-
-                    let comprehensible_grams = deck.get_comprehensible_written_grams();
-                    println!(
-                        "    Comprehensible written grams: {}",
-                        comprehensible_grams.len()
-                    );
-
-                    let sentence = deck.get_comprehensible_sentence_containing(
-                        Some(gram),
-                        comprehensible_grams.clone(),
-                        &deck.stats.sentences_reviewed,
-                        &language_pack,
-                    );
-                    println!("    Comprehensible sentence: {}", sentence.is_some());
-                    if let Some(ref s) = sentence {
-                        let text = language_pack.string_rodeo.resolve(&s.target_language);
-                        println!("    -> {text}");
-                    }
-
-                    let challenge = review_info.get_challenge_for_card(&deck, *due_card);
-                    println!(
-                        "    Challenge type: {:?}",
-                        challenge.as_ref().map(|c| match c {
-                            Challenge::FlashCardReview { .. } => "FlashCardReview",
-                            Challenge::PronunciationChallenge { .. } => "PronunciationChallenge",
-                            Challenge::TranslateComprehensibleSentence(_) => "Translate",
-                            Challenge::TranscribeComprehensibleSentence(_) => "Transcribe",
-                        })
-                    );
-
-                    // If flashcard and sentence was found, debug further
-                    if sentence.is_some()
-                        && matches!(challenge, Some(Challenge::FlashCardReview { .. }))
-                    {
-                        let s = sentence.as_ref().unwrap();
-                        println!("    BUG: sentence found but got flashcard!");
-                        println!("    native_languages: {}", s.native_languages.len());
-                    }
-
-                    // If no sentence, show blocking grams
-                    if sentence.is_none() {
-                        if let Some(sentences) =
-                            language_pack.sentences_containing_gram_index.get(gram)
-                        {
-                            let check_count = sentences.len().min(10);
-                            println!("    First {check_count} sentences:");
-                            let mut comprehensible_with_target = comprehensible_grams.clone();
-                            comprehensible_with_target.insert(*gram);
-                            for &ss in sentences.iter().take(check_count) {
-                                let text = language_pack.string_rodeo.resolve(&ss);
-                                if let Some(sg) = language_pack.encoded_sentences.get(&ss) {
-                                    let mut blocking = Vec::new();
-                                    for g in &sg.grams {
-                                        if let SentenceGram::Learnable(g) = g {
-                                            if !comprehensible_with_target.contains(g) {
-                                                let r = language_pack
-                                                    .gram_rodeo
-                                                    .resolve(g)
-                                                    .resolve(&language_pack.string_rodeo);
-                                                blocking
-                                                    .push(r.to_display_string(Language::French));
-                                            }
-                                        }
-                                    }
-                                    for mw in &sg.multiword_terms {
-                                        if !comprehensible_with_target.contains(mw) {
-                                            let r = language_pack
-                                                .gram_rodeo
-                                                .resolve(mw)
-                                                .resolve(&language_pack.string_rodeo);
-                                            blocking.push(format!(
-                                                "(MW) {}",
-                                                r.to_display_string(Language::French)
-                                            ));
-                                        }
-                                    }
-                                    let has_trans = language_pack
-                                        .translations
-                                        .get(&ss)
-                                        .is_some_and(|t| !t.is_empty());
-                                    if blocking.is_empty() {
-                                        println!(
-                                            "      '{text}' -> comprehensible! (has_trans={has_trans})"
-                                        );
-                                    } else {
-                                        println!(
-                                            "      '{text}' -> blocked by: {}",
-                                            blocking.join(", ")
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Also list all grams for "faire"
-        println!("\nAll grams for 'faire':");
-        if let Some(grams) = language_pack.string_to_grams.get("faire") {
-            for g in grams {
-                let resolved = language_pack
-                    .gram_rodeo
-                    .resolve(g)
-                    .resolve(&language_pack.string_rodeo);
-                let sentence_count = language_pack
-                    .sentences_containing_gram_index
-                    .get(g)
-                    .map(|s| s.len())
-                    .unwrap_or(0);
-                let card_status = deck.cards.get(&CardIndicator::ListeningGram { gram: *g });
-                let written_status = deck.cards.get(&CardIndicator::WrittenGram { gram: *g });
-                println!(
-                    "  {resolved:?} - {sentence_count} sentences, listening={card_status:?}, written={written_status:?}"
-                );
-            }
-        }
     }
 }

@@ -44,6 +44,7 @@ import { ReportIssueModal } from "./ReportIssueModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MoviePosterCard } from "./MoviePosterCard";
 import { InlineTextarea } from "../ui/textarea";
+import { ProperNounDefinitions } from "./TranslationChallenge";
 
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence;
@@ -125,6 +126,7 @@ export function TranscriptionChallenge({
   const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(
     null
   );
+  const [shiftHeld, setShiftHeld] = useState(false);
   const inputRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
   const { bumpBackground } = useBackground();
 
@@ -150,6 +152,36 @@ export function TranscriptionChallenge({
     // Reset translation reveal state for new challenge
     setIsTranslationRevealed(false);
   }, [blankIndices]);
+
+  // Track shift key state for uppercase accent keyboard
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "Shift") setShiftHeld(true);
+    };
+    const up = (e: KeyboardEvent) => {
+      if (e.key === "Shift") setShiftHeld(false);
+    };
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+    };
+  }, []);
+
+  // Determine if accent keyboard should show uppercase
+  const accentUppercase = useMemo(() => {
+    if (shiftHeld) return true;
+    // Uppercase when cursor is at position 0 of the first blank and it's the first part
+    const firstBlank = blankIndices[0];
+    if (firstBlank === undefined) return false;
+    const activeIndex = focusedInputIndex ?? firstBlank;
+    if (activeIndex !== firstBlank || firstBlank !== 0) return false;
+    const value = userInputs.get(activeIndex) || "";
+    const input = inputRefs.current[activeIndex];
+    const cursorPos = input?.selectionStart ?? 0;
+    return cursorPos === 0 && value === "";
+  }, [shiftHeld, focusedInputIndex, blankIndices, userInputs]);
 
   const handleInputChange = (index: number, value: string) => {
     const newInputs = new Map(userInputs);
@@ -460,6 +492,12 @@ export function TranscriptionChallenge({
               </div>
             </div>
 
+            {gradingState === null && (
+              <ProperNounDefinitions
+                definitions={challenge.proper_noun_definitions}
+              />
+            )}
+
             {/* Result feedback */}
             {gradingState && (
               <div className="space-y-2 animate-feedback-in">
@@ -567,6 +605,7 @@ export function TranscriptionChallenge({
             <AccentedCharacterKeyboard
               onCharacterInsert={handleCharacterInsert}
               language={targetLanguage}
+              uppercase={accentUppercase}
               className="hidden md:flex mt-3 p-3 border rounded-lg bg-muted/30"
             />
           )}

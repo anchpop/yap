@@ -31,7 +31,8 @@ type PhraseDetectionDataMap = BTreeMap<Gram<String>, PhraseDetectionData>;
 fn deduplicate_patterns<P: Eq + Hash + Clone>(
     patterns: BTreeMap<Gram<String>, P>,
     wiktionary_grams: &HashSet<Gram<String>>,
-    pattern_type: &str,
+    gram_frequencies: &rustc_hash::FxHashMap<Gram<String>, u32>,
+    alt_forms: &BTreeMap<String, String>,
     lang: language_utils::Language,
 ) -> BTreeMap<Gram<String>, P> {
     // Invert: group grams by their pattern value
@@ -55,40 +56,40 @@ fn deduplicate_patterns<P: Eq + Hash + Clone>(
             .filter(|g| wiktionary_grams.contains(g))
             .cloned()
             .collect();
+        // Prefer wiktionary entries, but fall back to all candidates
         let candidates = if wiktionary_entries.is_empty() {
-            let display_grams: Vec<String> =
-                grams.iter().map(|g| g.to_display_string(lang)).collect();
-            println!(
-                "Warning: duplicate {pattern_type} pattern for grams {display_grams:?} \
-                 (none from wiktionary), skipping all",
-            );
-            continue;
+            grams
         } else {
             wiktionary_entries
         };
-        // Prefer: no punctuation, closer to lemmas, shorter, then alphabetical
-        let best = candidates
-            .into_iter()
-            .min_by_key(|g| {
-                let s = g.to_display_string(lang);
-                let has_punct = s
-                    .chars()
-                    .any(|c| c.is_ascii_punctuation() && c != '\'' && c != '-');
-                // Count tokens whose surface form differs from their lemma
-                // (dialectal forms like "po favó" diverge more than standard "por favor")
-                let lemma_mismatches: usize = g
-                    .iter()
-                    .filter(|atom| match atom {
-                        language_utils::Atom::Tok(word) => match &word.word_type {
-                            language_utils::WordType::Heteronym(h) => word.text != h.lemma,
-                            _ => false,
-                        },
+        // Score each candidate: (is_alt_form, has_punct, lemma_mismatches, -frequency, char_count, text)
+        let score = |g: &Gram<String>| {
+            let s = g.to_display_string(lang);
+            let is_alt_form = alt_forms.contains_key(&s);
+            let has_punct = s
+                .chars()
+                .any(|c| c.is_ascii_punctuation() && c != '\'' && c != '-');
+            let lemma_mismatches: usize = g
+                .iter()
+                .filter(|atom| match atom {
+                    language_utils::Atom::Tok(word) => match &word.word_type {
+                        language_utils::WordType::Heteronym(h) => word.text != h.lemma,
                         _ => false,
-                    })
-                    .count();
-                (has_punct, lemma_mismatches, s.chars().count(), s)
-            })
-            .unwrap();
+                    },
+                    _ => false,
+                })
+                .count();
+            let freq = gram_frequencies.get(g).copied().unwrap_or(0);
+            (
+                is_alt_form,
+                has_punct,
+                lemma_mismatches,
+                std::cmp::Reverse(freq),
+                s.chars().count(),
+                s,
+            )
+        };
+        let best = candidates.into_iter().min_by_key(score).unwrap();
         result.insert(best, pattern);
     }
     result
@@ -335,6 +336,14 @@ async fn main() -> anyhow::Result<()> {
                 .collect::<Vec<String>>()
         };
 
+        // Download alt-form info from wiktionary
+        let wiktionary_alt_forms = generate_data::wiktionary_terms::download_alt_forms(
+            &multiword_terms,
+            &target_language_dir,
+        )
+        .await
+        .context("Failed to download alt forms")?;
+
         // Process multiword terms and get tokenizations
         let multiword_terms_tokenizations = generate_data::nlp::process_sentences(
             multiword_terms,
@@ -547,14 +556,37 @@ async fn main() -> anyhow::Result<()> {
         let lemma_patterns: BTreeMap<Gram<String>, Vec<String>> = phrase_detection_map
             .iter()
             .filter_map(|(gram, data)| {
-                let tokens = data.tokens.as_ref()?;
-                if tokens.len() <= 1 {
+                // If we have lexide tokens, use their lemmas
+                if let Some(tokens) = data.tokens.as_ref() {
+                    if tokens.len() <= 1 {
+                        return None;
+                    }
+                    return Some((
+                        gram.clone(),
+                        tokens.iter().map(|t| t.lemma.lemma.clone()).collect(),
+                    ));
+                }
+                // For omnigram-discovered grams without lexide tokens,
+                // build lemma patterns from the gram's atoms directly
+                if gram.len() <= 1 {
                     return None;
                 }
-                Some((
-                    gram.clone(),
-                    tokens.iter().map(|t| t.lemma.lemma.clone()).collect(),
-                ))
+                let lemmas: Vec<String> = gram
+                    .iter()
+                    .filter_map(|atom| match atom {
+                        language_utils::Atom::Tok(word) => match &word.word_type {
+                            language_utils::WordType::Heteronym(h) => Some(h.lemma.clone()),
+                            _ => None,
+                        },
+                        _ => None,
+                    })
+                    .collect();
+                // Only include if we got a lemma for every atom
+                if lemmas.len() == gram.len() {
+                    Some((gram.clone(), lemmas))
+                } else {
+                    None
+                }
             })
             .collect();
 
@@ -571,9 +603,27 @@ async fn main() -> anyhow::Result<()> {
                 })
                 .collect();
 
+        // Build frequency map for deduplication heuristic
+        let gram_freq_map: rustc_hash::FxHashMap<Gram<String>, u32> = gram_vocabulary
+            .iter()
+            .map(|entry| (entry.atoms.clone(), entry.frequency))
+            .collect();
+
         // Deduplicate patterns: if two grams produce the same matcher, prefer the wiktionary one
-        let lemma_patterns = deduplicate_patterns(lemma_patterns, &wiktionary_grams, "lemma", lang);
-        let tree_patterns = deduplicate_patterns(tree_patterns, &wiktionary_grams, "tree", lang);
+        let lemma_patterns = deduplicate_patterns(
+            lemma_patterns,
+            &wiktionary_grams,
+            &gram_freq_map,
+            &wiktionary_alt_forms,
+            lang,
+        );
+        let tree_patterns = deduplicate_patterns(
+            tree_patterns,
+            &wiktionary_grams,
+            &gram_freq_map,
+            &wiktionary_alt_forms,
+            lang,
+        );
 
         // Run multiword detection (after omnigram training)
         let mut nlp_sentences = generate_data::nlp::generate_nlp_sentences(

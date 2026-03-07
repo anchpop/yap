@@ -377,7 +377,7 @@ function ProperNounDefinitionCard({
   );
 }
 
-function ProperNounDefinitions({
+export function ProperNounDefinitions({
   definitions,
 }: {
   definitions: [string, ProperNounDefinition][];

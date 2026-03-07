@@ -90,7 +90,9 @@ Output the result as a JSON object containing an array of one or more definition
             });
 
             // If any example sentence doesn't contain the word, retry with feedback
-            let response = if let Ok(ref resp) = response {
+
+
+            if let Ok(ref resp) = response {
                 let bad_examples: Vec<_> = resp.definitions.iter()
                     .filter(|d| !d.example_sentence_target_language.to_lowercase().contains(&heteronym.word.to_lowercase()))
                     .map(|d| d.example_sentence_target_language.as_str())
@@ -112,9 +114,7 @@ Output the result as a JSON object containing an array of one or more definition
                 }
             } else {
                 response
-            };
-
-            response
+            }
         };
 
         pb.inc(1);

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,7 +12,6 @@ import {
   Video,
   Search,
   Youtube,
-  Twitter,
   HelpCircle,
   Clock,
   GraduationCap,
@@ -854,7 +853,6 @@ function OnboardingProgress({ current, total }: { current: number; total: number
 
 export function OnboardingFlow({
   targetLanguage,
-  nativeLanguage,
   hasHeardAbout,
   onHeardAbout,
   onComplete,
@@ -900,9 +898,9 @@ export function OnboardingFlow({
     (startFromScratch: boolean) => {
       onComplete({
         startingFresh: startFromScratch,
-        motivation: data.motivation,
-        experienceLevel: data.experience,
-        studyGoal: data.studyGoal,
+        motivation: data.motivation ?? undefined,
+        experienceLevel: data.experience ?? undefined,
+        studyGoal: data.studyGoal ?? undefined,
       });
     },
     [onComplete, data]

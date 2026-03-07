@@ -27,7 +27,7 @@ schemars = "1"
 futures = "0.3.31"
 env_logger = "0.11.8"
 tsify = { version = "0.5.5", features = ["js"], default-features = false }
-tysm = { git = "https://github.com/not-pizza/tysm.git", branch = "sharded-cache" }
+tysm = "0.17.0"
 reqwest = { version = "0.12", features = ["json"] }
 tokio = { version = "1.45.1", features = ["full"] }
 opfs = { version = "0.1.4" }

@@ -256,6 +256,30 @@ impl ReviewInfo {
             })
             .unwrap_or_default();
 
+        // Get proper noun definitions from all literals in the parts
+        let proper_noun_definitions: Vec<(String, language_utils::ProperNounDefinition)> = parts
+            .iter()
+            .flat_map(|part| match part {
+                transcription_challenge::Part::AskedToTranscribe { parts } => parts.iter(),
+                transcription_challenge::Part::Provided { part } => {
+                    std::slice::from_ref(part).iter()
+                }
+            })
+            .filter_map(|literal| {
+                if let language_utils::WordType::Other(other) = &literal.word.word_type
+                    && other.other_tag == language_utils::OtherWordType::Propn
+                {
+                    let text_spur = language_pack.string_rodeo.get(&literal.word.text)?;
+                    language_pack
+                        .proper_noun_definitions
+                        .get(&text_spur)
+                        .map(|def| (literal.word.text.clone(), def.clone()))
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         Some(Challenge::TranscribeComprehensibleSentence(
             TranscribeComprehensibleSentence {
                 target_language: language_pack
@@ -279,6 +303,7 @@ impl ReviewInfo {
                     provider: TtsProvider::Google,
                 },
                 movie_titles,
+                proper_noun_definitions,
             },
         ))
     }
