@@ -1365,17 +1365,14 @@ impl weapon::AppState for Deck {
             }
 
             if let Some(frequency) = context.get_card_frequency(card_indicator) {
-                // Easy cards (cognates with single-word definitions) don't contribute
+                // Easy cards (cognates) and compositional multi-word grams don't contribute
                 // meaningful signal to the regression, so skip them.
-                if frequency.easy {
+                if frequency.exclude_from_regression() {
                     continue;
                 }
                 let pre_existing_knowledge = card_data.pre_existing_knowledge();
-                let point = Point::new_with_weight(
-                    frequency.ln_frequency(),
-                    pre_existing_knowledge,
-                    UnitWeight,
-                );
+                let point =
+                    Point::new_with_weight(frequency.ease, pre_existing_knowledge, UnitWeight);
 
                 match card_indicator {
                     CardIndicator::WrittenGram { .. } => {
@@ -1405,153 +1402,33 @@ impl weapon::AppState for Deck {
             if let Some(placement_test_results) = &state.placement_test_results {
                 // Use placement test results to create bias points
                 let mut points = context.get_placement_test_points(placement_test_results);
-                points.extend(bias_points(
-                    Frequency {
-                        count: 1,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    -10.0,
-                    5,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 25,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    5,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 64,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    5,
-                ));
+                points.extend(bias_points(1_f32.ln(), -10.0, 5));
+                points.extend(bias_points(25_f32.ln(), 0.0, 5));
+                points.extend(bias_points(64_f32.ln(), 0.0, 5));
                 points
             } else {
                 let mut points = Vec::new();
-                points.extend(bias_points(
-                    Frequency {
-                        count: 1,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    -10.0,
-                    5,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 25,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    5,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 64,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    5,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 400,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    3,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 800,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    3,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 1000,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    3,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 1500,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    3,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 2000,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    2,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 2500,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    2,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 3000,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    2,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 3500,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    2,
-                ));
-                points.extend(bias_points(
-                    Frequency {
-                        count: 4000,
-                        easy: false,
-                    }
-                    .ln_frequency(),
-                    0.0,
-                    2,
-                ));
+                points.extend(bias_points(1_f32.ln(), -10.0, 5));
+                points.extend(bias_points(25_f32.ln(), 0.0, 5));
+                points.extend(bias_points(64_f32.ln(), 0.0, 5));
+                points.extend(bias_points(400_f32.ln(), 0.0, 3));
+                points.extend(bias_points(800_f32.ln(), 0.0, 3));
+                points.extend(bias_points(1000_f32.ln(), 0.0, 3));
+                points.extend(bias_points(1500_f32.ln(), 0.0, 3));
+                points.extend(bias_points(2000_f32.ln(), 0.0, 2));
+                points.extend(bias_points(2500_f32.ln(), 0.0, 2));
+                points.extend(bias_points(3000_f32.ln(), 0.0, 2));
+                points.extend(bias_points(3500_f32.ln(), 0.0, 2));
+                points.extend(bias_points(4000_f32.ln(), 0.0, 2));
                 points
             };
 
-        // Calculate smoothing window as 20% of max ln_frequency
+        // Calculate smoothing window as 20% of max ease
         let smoothing_window = context
             .language_pack
             .gram_frequencies
             .get_index(0)
-            .map(|(_, freq)| freq.ln_frequency() * 0.2)
+            .map(|(_, freq)| freq.ease * 0.2)
             .unwrap_or(1.0); // Fallback if no frequencies exist
 
         // Create isotonic regressions (need at least 2 non-new cards)
@@ -2789,6 +2666,15 @@ impl Context {
         }
     }
 
+    /// Returns the appropriate ln(frequency) for value calculation.
+    /// Listening grams use actual sentence frequency; other cards use full frequency.
+    fn card_value_frequency(card: &CardIndicator<SpurGram, Spur>, frequency: Frequency) -> f32 {
+        match card {
+            CardIndicator::ListeningGram { .. } => frequency.ln_direct_frequency(),
+            _ => frequency.ln_frequency(),
+        }
+    }
+
     fn get_card_value(
         &self,
         card: &CardIndicator<SpurGram, Spur>,
@@ -2796,7 +2682,8 @@ impl Context {
     ) -> Option<ordered_float::NotNan<f32>> {
         let (knowledge_probability, frequency) =
             self.get_card_knowledge_probability(card, regressions)?;
-        ordered_float::NotNan::new((1.0 - knowledge_probability) * frequency.ln_frequency()).ok()
+        let ln_freq = Self::card_value_frequency(card, frequency);
+        ordered_float::NotNan::new((1.0 - knowledge_probability) * ln_freq).ok()
     }
 
     fn get_card_value_with_status(
@@ -2806,6 +2693,7 @@ impl Context {
         regressions: &Regressions,
     ) -> Option<ordered_float::NotNan<f32>> {
         let frequency = self.get_card_frequency(card)?;
+        let ln_freq = Self::card_value_frequency(card, frequency);
 
         // Check if we have a reviewed card (ghost or added)
         if let Some(card_data) = card_data {
@@ -2846,8 +2734,7 @@ impl Context {
 
                 // Convert knowledge to probability and then to value
                 let probability = Regressions::knowledge_to_probability(combined_knowledge);
-                return ordered_float::NotNan::new((1.0 - probability) * frequency.ln_frequency())
-                    .ok();
+                return ordered_float::NotNan::new((1.0 - probability) * ln_freq).ok();
             }
         }
 
@@ -2900,7 +2787,13 @@ impl Context {
                     .get(&(*pattern, *position))
                     .copied()
                     .unwrap_or(0);
-                Some(Frequency { count, easy: false })
+                Some(Frequency {
+                    count,
+                    direct_count: count,
+                    easy: false,
+                    compositional: false,
+                    ease: (count as f32).ln(),
+                })
             }
         }
     }
@@ -2973,7 +2866,7 @@ impl Regressions {
             }
         }?;
 
-        regression.interpolate(frequency.ln_frequency())
+        regression.interpolate(frequency.ease)
     }
 
     /// Get the predicted probability of knowing a card (0.0 to 1.0).

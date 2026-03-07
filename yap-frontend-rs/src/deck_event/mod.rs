@@ -31,8 +31,8 @@ impl Event for current::DeckEvent {
 
     fn from_versioned(versioned: &Self::Versioned, context: &Self::Context) -> Option<Self> {
         match versioned {
-            VersionedDeckEvent::V1(event) => event.clone().to_v2()?.to_v3(context),
-            VersionedDeckEvent::V2(event) => event.clone().to_v3(context),
+            VersionedDeckEvent::V1(event) => event.clone().into_v2()?.into_v3(context),
+            VersionedDeckEvent::V2(event) => event.clone().into_v3(context),
             VersionedDeckEvent::V3(event) => Some(event.clone()),
         }
     }

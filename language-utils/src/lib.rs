@@ -1120,6 +1120,9 @@ impl Lexeme<lasso::Spur> {
 pub struct GramFrequencyEntry<S> {
     pub count: u32,
 
+    /// Count of occurrences in actual sentences only (not including multi-word term occurrences).
+    pub direct_count: u32,
+
     /// This key is different for each gram, which allows a consistent ordering with the same frequency.
     pub disambiguation_key: u32,
 
@@ -1130,10 +1133,6 @@ pub struct GramFrequencyEntry<S> {
     Copy,
     Clone,
     Debug,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
     serde::Serialize,
     serde::Deserialize,
     rkyv::Archive,
@@ -1142,14 +1141,33 @@ pub struct GramFrequencyEntry<S> {
 )]
 pub struct Frequency {
     pub count: u32,
+    /// Count of occurrences in actual sentences only (not including multi-word term occurrences).
+    pub direct_count: u32,
     /// Whether this gram is considered "easy" (cognate with single-word definition).
-    /// Easy grams are excluded from the isotonic regression.
+    /// Easy grams are excluded from the isotonic regression and preferred during onboarding.
     pub easy: bool,
+    /// Whether this is a compositional/literally-translatable multi-word gram.
+    /// These are excluded from the isotonic regression (their difficulty depends on
+    /// component words, violating the regression's independence assumption).
+    pub compositional: bool,
+    /// Estimated ease of this gram (higher = easier to already know).
+    /// For single-atom grams: ln(count), with a cognate bonus.
+    /// For multi-atom grams: depends on compositionality and component word ease.
+    /// Used as the x-axis in the isotonic regression (instead of raw ln_frequency).
+    pub ease: f32,
 }
 
 impl Frequency {
     pub fn ln_frequency(&self) -> f32 {
         (self.count as f32).ln()
+    }
+
+    pub fn ln_direct_frequency(&self) -> f32 {
+        (self.direct_count as f32).ln()
+    }
+
+    pub fn exclude_from_regression(&self) -> bool {
+        self.easy || self.compositional
     }
 }
 

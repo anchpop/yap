@@ -18,6 +18,7 @@ use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _, persi
 /// A vector of (gram, matched_statuses) pairs for each learnable gram in the sentence.
 /// `matched_statuses` contains references to the status values for literals that matched
 /// atoms in the gram.
+#[allow(clippy::type_complexity)]
 pub fn match_grams_to_literals<'a, T>(
     encoded_sentence: &SentenceGrams<SpurGram>,
     literals: &'a [(Literal<Spur>, T)],

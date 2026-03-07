@@ -60,6 +60,32 @@ pub async fn ensure_multiword_terms_file(
         .context("Failed to canonicalize multiword terms file path")
 }
 
+/// Returns the set of multiword terms that are discontinuous (contained `...` in the
+/// original extra_multiword_terms files). These patterns have gaps where other tokens
+/// appear between the anchors (e.g., French "ne...que", German "weder...noch").
+pub fn get_discontinuous_terms(course: &Course) -> BTreeSet<String> {
+    let language_code = course.target_language.iso_639_3();
+    let mut discontinuous = BTreeSet::new();
+
+    for suffix in ["extra_multiword_terms.txt", "extra_multiword_terms_ai.txt"] {
+        let path = format!("./generate-data/data/{language_code}/{suffix}");
+        if let Ok(file) = File::open(Path::new(&path)) {
+            let reader = BufReader::new(file);
+            for line in reader.lines().map_while(Result::ok) {
+                let raw = line.trim().to_string();
+                if raw.contains("...") {
+                    let cleaned = raw.replace("...", "").replace("  ", " ").trim().to_string();
+                    if !cleaned.is_empty() {
+                        discontinuous.insert(cleaned);
+                    }
+                }
+            }
+        }
+    }
+
+    discontinuous
+}
+
 async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>> {
     let language_code = language.iso_639_3();
     let mut terms = Vec::new();

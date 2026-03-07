@@ -1,9 +1,7 @@
 //! V2 deck event types.
 
 use crate::transcription_challenge;
-use crate::{CardType, FlashcardType};
 use language_utils::{Heteronym, Language, Lexeme, PatternPosition};
-use lasso::Spur;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 use std::hash::Hash;
@@ -27,102 +25,6 @@ pub(super) enum CardIndicator<S> {
         pattern: S,
         position: PatternPosition,
     },
-}
-
-impl<S> CardIndicator<S> {
-    pub(super) fn target_language(&self) -> Option<&Lexeme<S>> {
-        match self {
-            CardIndicator::TargetLanguage { lexeme } => Some(lexeme),
-            _ => None,
-        }
-    }
-
-    pub(super) fn listening_homophonous(&self) -> Option<&S> {
-        match self {
-            CardIndicator::ListeningHomophonous { pronunciation } => Some(pronunciation),
-            _ => None,
-        }
-    }
-
-    pub(super) fn listening_heteronym(&self) -> Option<&Heteronym<S>> {
-        match self {
-            CardIndicator::ListeningHeteronym { heteronym } => Some(heteronym),
-            _ => None,
-        }
-    }
-
-    pub(super) fn letter_pronunciation(&self) -> Option<&S> {
-        match self {
-            CardIndicator::LetterPronunciation { pattern, .. } => Some(pattern),
-            _ => None,
-        }
-    }
-
-    pub(super) fn card_type(&self) -> CardType {
-        match self {
-            CardIndicator::TargetLanguage { .. } => CardType::TargetLanguage,
-            CardIndicator::ListeningHomophonous { .. } => CardType::Listening,
-            CardIndicator::ListeningHeteronym { .. } => CardType::Listening,
-            CardIndicator::LetterPronunciation { .. } => CardType::LetterPronunciation,
-        }
-    }
-}
-
-impl CardIndicator<String> {
-    pub(super) fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<CardIndicator<Spur>> {
-        Some(match self {
-            CardIndicator::TargetLanguage { lexeme } => CardIndicator::TargetLanguage {
-                lexeme: lexeme.get_interned(rodeo)?,
-            },
-            CardIndicator::ListeningHomophonous { pronunciation } => {
-                CardIndicator::ListeningHomophonous {
-                    pronunciation: rodeo.get(pronunciation)?,
-                }
-            }
-            CardIndicator::ListeningHeteronym { heteronym } => CardIndicator::ListeningHeteronym {
-                heteronym: heteronym.get_interned(rodeo)?,
-            },
-            CardIndicator::LetterPronunciation { pattern, position } => {
-                CardIndicator::LetterPronunciation {
-                    pattern: rodeo.get(pattern)?,
-                    position: *position,
-                }
-            }
-        })
-    }
-}
-
-impl CardIndicator<Spur> {
-    pub(super) fn get_flashcard_type(&self) -> Option<FlashcardType> {
-        match self {
-            CardIndicator::TargetLanguage { .. } => Some(FlashcardType::WrittenGram),
-            CardIndicator::ListeningHomophonous { .. }
-            | CardIndicator::ListeningHeteronym { .. } => Some(FlashcardType::Listening),
-            CardIndicator::LetterPronunciation { .. } => Some(FlashcardType::LetterPronunciation),
-        }
-    }
-
-    pub(super) fn resolve(&self, rodeo: &lasso::RodeoReader) -> CardIndicator<String> {
-        match self {
-            CardIndicator::TargetLanguage { lexeme } => CardIndicator::TargetLanguage {
-                lexeme: lexeme.resolve(rodeo),
-            },
-            CardIndicator::ListeningHomophonous { pronunciation } => {
-                CardIndicator::ListeningHomophonous {
-                    pronunciation: rodeo.resolve(pronunciation).to_string(),
-                }
-            }
-            CardIndicator::ListeningHeteronym { heteronym } => CardIndicator::ListeningHeteronym {
-                heteronym: heteronym.resolve(rodeo),
-            },
-            CardIndicator::LetterPronunciation { pattern, position } => {
-                CardIndicator::LetterPronunciation {
-                    pattern: rodeo.resolve(pattern).to_string(),
-                    position: *position,
-                }
-            }
-        }
-    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
@@ -332,7 +234,7 @@ fn convert_sentence_review(
 
 impl DeckEvent {
     /// Migrate a V2 DeckEvent to V3 (current) format.
-    pub(super) fn to_v3(self, context: &crate::Context) -> Option<super::current::DeckEvent> {
+    pub(super) fn into_v3(self, context: &crate::Context) -> Option<super::current::DeckEvent> {
         match self {
             DeckEvent::Language(lang_event) => Some(super::current::DeckEvent::Language(
                 super::current::LanguageEvent {
@@ -349,11 +251,14 @@ impl DeckEvent {
                         }
                         LanguageEventContent::AddCards { cards } => {
                             super::current::LanguageEventContent::AddCards {
-                                cards: cards.into_iter().filter_map(|c| c.to_v3(context)).collect(),
+                                cards: cards
+                                    .into_iter()
+                                    .filter_map(|c| c.into_v3(context))
+                                    .collect(),
                             }
                         }
                         LanguageEventContent::ReviewCard { reviewed, rating } => {
-                            let reviewed = reviewed.to_v3(context)?;
+                            let reviewed = reviewed.into_v3(context)?;
                             super::current::LanguageEventContent::ReviewCard {
                                 reviewed,
                                 rating: match rating {
@@ -414,7 +319,7 @@ impl DeckEvent {
 impl CardIndicator<String> {
     /// Convert V2 CardIndicator to V3 (current).
     /// Returns None if the card can't be converted (e.g., pronunciation/heteronym not found).
-    pub(super) fn to_v3(
+    pub(super) fn into_v3(
         self,
         context: &crate::Context,
     ) -> Option<super::current::CardIndicator<language_utils::Gram<String>, String>> {

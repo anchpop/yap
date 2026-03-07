@@ -37,14 +37,14 @@ impl Context {
         // Add points for known words (y = 5.0)
         for word_str in &placement_test.known_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
-                points.push(Point::new_with_weight(freq.ln_frequency(), 5.0, UnitWeight));
+                points.push(Point::new_with_weight(freq.ease, 5.0, UnitWeight));
             }
         }
 
         // Add points for unknown words (y = 0.0)
         for word_str in &placement_test.unknown_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
-                points.push(Point::new_with_weight(freq.ln_frequency(), 0.0, UnitWeight));
+                points.push(Point::new_with_weight(freq.ease, 0.0, UnitWeight));
             }
         }
 
@@ -100,7 +100,7 @@ impl Deck {
         while left < right {
             let mid = (left + right) / 2;
             let (_, freq) = frequencies.get_index(mid)?;
-            let mid_ln_freq = freq.ln_frequency();
+            let mid_ln_freq = freq.ease;
 
             if mid_ln_freq > target_ln_freq {
                 left = mid + 1;
@@ -123,7 +123,7 @@ impl Deck {
                 if !self.context.is_word_good_for_placement_test(&heteronym) {
                     return None;
                 }
-                let distance = (freq.ln_frequency() - target_ln_freq).abs();
+                let distance = (freq.ease - target_ln_freq).abs();
                 Some((heteronym, *freq, distance))
             })
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal))
@@ -237,14 +237,14 @@ impl Deck {
 
         // Add most common word as known (y = 1.0)
         points.push(Point::new_with_weight(
-            most_common_freq.ln_frequency(),
+            most_common_freq.ease,
             1.0,
             UnitWeight,
         ));
 
         // Add least common word as unknown (y = 0.0)
         points.push(Point::new_with_weight(
-            least_common_freq.ln_frequency(),
+            least_common_freq.ease,
             0.0,
             UnitWeight,
         ));
@@ -259,7 +259,7 @@ impl Deck {
                 && let Some(gram) = grams.first()
                 && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
             {
-                points.push(Point::new_with_weight(freq.ln_frequency(), 1.0, UnitWeight));
+                points.push(Point::new_with_weight(freq.ease, 1.0, UnitWeight));
             }
         }
 
@@ -273,7 +273,7 @@ impl Deck {
                 && let Some(gram) = grams.first()
                 && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
             {
-                points.push(Point::new_with_weight(freq.ln_frequency(), 0.0, UnitWeight));
+                points.push(Point::new_with_weight(freq.ease, 0.0, UnitWeight));
             }
         }
 
@@ -292,7 +292,7 @@ impl Deck {
         };
 
         // Calculate smoothing window (10% of max ln_frequency)
-        let smoothing_window = most_common_freq.ln_frequency() * 0.1;
+        let smoothing_window = most_common_freq.ease * 0.1;
         let smooth_regression = SmoothRegression::from_regression(regression, smoothing_window);
 
         // Target knowledge probabilities
@@ -307,8 +307,8 @@ impl Deck {
             // Invert the regression to find x for this y value
             if let Some(target_ln_freq) = smooth_regression.invert(target_prob) {
                 // Make sure it's within bounds
-                if target_ln_freq >= least_common_freq.ln_frequency()
-                    && target_ln_freq <= most_common_freq.ln_frequency()
+                if target_ln_freq >= least_common_freq.ease
+                    && target_ln_freq <= most_common_freq.ease
                 {
                     // Find a heteronym near this ln_frequency using binary search
                     if let Some((heteronym, _freq)) = self

@@ -339,14 +339,14 @@ impl LanguagePack {
         // Convert gram frequencies (pre-computed in generate-data)
         // Each entry now has a `gram` field (Gram<String>) which we intern
         // Build as counts first; we'll compute the `easy` flag after gram_definitions is available.
-        let gram_counts: IndexMap<SpurGram, u32> = {
+        let gram_counts: IndexMap<SpurGram, (u32, u32)> = {
             let mut map = IndexMap::new();
             for entry in &language_data.gram_frequencies {
                 let interned_gram = entry.gram.get_interned(&rodeo);
                 if let Some(interned_gram) = interned_gram
                     && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
                 {
-                    map.insert(gram_spur, entry.count);
+                    map.insert(gram_spur, (entry.count, entry.direct_count));
                 }
             }
             map
@@ -381,18 +381,96 @@ impl LanguagePack {
             map
         };
 
-        // Now that we have definitions, convert gram_counts into gram_frequencies with `easy` computed.
+        // Now that we have definitions, convert gram_counts into gram_frequencies with `easy` and `ease` computed.
         let gram_frequencies: IndexMap<SpurGram, Frequency> = {
+            const COGNATE_BONUS: f32 = 2.0;
+
+            // First pass: compute base ease for single-atom grams so we can reference them
+            // when computing multi-atom gram ease.
+            let mut single_atom_ease: FxHashMap<Atom<Spur>, f32> = FxHashMap::default();
+            for (gram_spur, (count, _direct_count)) in gram_counts.iter() {
+                let gram = gram_rodeo.resolve(gram_spur);
+                if gram.len() == 1 {
+                    if let Some(atom) = gram.iter().next() {
+                        let base_ease = (*count as f32).ln();
+                        let has_cognate = !course.teaches_new_writing_system()
+                            && has_cognate_definition(gram_definitions.get(gram_spur));
+                        let ease = if has_cognate {
+                            base_ease + COGNATE_BONUS
+                        } else {
+                            base_ease
+                        };
+                        single_atom_ease.insert(*atom, ease);
+                    }
+                }
+            }
+
+            // Second pass: build frequency entries with ease for all grams.
             let mut map = IndexMap::new();
-            for (gram_spur, count) in gram_counts.iter() {
+            for (gram_spur, (count, direct_count)) in gram_counts.iter() {
                 let gram = gram_rodeo.resolve(gram_spur);
                 let easy = !course.teaches_new_writing_system()
                     && is_gram_easy(gram, gram_definitions.get(gram_spur));
+
+                let ln_count = (*count as f32).ln();
+
+                // Extract phrasebook properties for multi-atom grams
+                let definition = gram_definitions.get(gram_spur);
+                let (is_compositional, is_literally_translatable, is_cognate) = match definition {
+                    Some(GramDefinition::Phrasebook(entry)) => (
+                        entry.compositional,
+                        entry.can_be_translated_literally,
+                        entry.cognate && !entry.false_cognate,
+                    ),
+                    _ => (false, false, false),
+                };
+                let compositional = is_compositional || is_literally_translatable;
+
+                let ease = if gram.len() <= 1 {
+                    // Single-atom gram: use pre-computed ease from first pass.
+                    gram.iter()
+                        .next()
+                        .and_then(|atom| single_atom_ease.get(atom).copied())
+                        .unwrap_or(ln_count)
+                } else {
+                    // Multi-atom gram: ease depends on compositionality and component word ease.
+                    let min_component_ease = gram
+                        .iter()
+                        .filter_map(|atom| single_atom_ease.get(atom).copied())
+                        .reduce(f32::min);
+
+                    let base_ease = match (
+                        is_literally_translatable,
+                        is_compositional,
+                        min_component_ease,
+                    ) {
+                        // Can be translated word-for-word: as easy as the hardest component.
+                        (true, _, Some(min_ease)) => min_ease.max(ln_count),
+                        // Compositional but not literal: blend component ease with own frequency.
+                        (false, true, Some(min_ease)) => {
+                            (0.7 * min_ease + 0.3 * ln_count).max(ln_count)
+                        }
+                        // Non-compositional (idiom) or no component data: own frequency only.
+                        _ => ln_count,
+                    };
+
+                    let cognate_bonus = if is_cognate && !course.teaches_new_writing_system() {
+                        COGNATE_BONUS
+                    } else {
+                        0.0
+                    };
+
+                    base_ease + cognate_bonus
+                };
+
                 map.insert(
                     *gram_spur,
                     Frequency {
                         count: *count,
+                        direct_count: *direct_count,
                         easy,
+                        compositional,
+                        ease,
                     },
                 );
             }
@@ -416,7 +494,7 @@ impl LanguagePack {
             // Sort each list by frequency (highest first) and extract just the spurs
             map.into_iter()
                 .map(|(k, mut v)| {
-                    v.sort_by(|a, b| b.1.cmp(&a.1));
+                    v.sort_by(|a, b| b.1.count.cmp(&a.1.count));
                     (k, v.into_iter().map(|(spur, _)| spur).collect())
                 })
                 .collect()
@@ -458,12 +536,18 @@ impl LanguagePack {
                         if let Some(interned_gram) = interned_gram
                             && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
                         {
-                            // Movie frequencies don't need easy classification
+                            // Use ease from global gram_frequencies; fall back to ln(count)
+                            let global_freq = gram_frequencies.get(&gram_spur);
                             map.insert(
                                 gram_spur,
                                 Frequency {
                                     count: entry.count,
-                                    easy: gram_frequencies.get(&gram_spur).is_some_and(|f| f.easy),
+                                    direct_count: entry.direct_count,
+                                    easy: global_freq.is_some_and(|f| f.easy),
+                                    compositional: global_freq.is_some_and(|f| f.compositional),
+                                    ease: global_freq
+                                        .map(|f| f.ease)
+                                        .unwrap_or_else(|| (entry.count as f32).ln()),
                                 },
                             );
                         }
@@ -493,9 +577,9 @@ impl LanguagePack {
                             .get(heteronym)?
                             .iter()
                             .filter_map(|gram_spur| gram_frequencies.get(gram_spur).copied())
-                            .max()
+                            .max_by_key(|f| f.count)
                     })
-                    .max()?;
+                    .max_by_key(|f| f.count)?;
                 Some((*pronunciation, max_freq))
             })
             .collect();
@@ -558,6 +642,18 @@ fn is_gram_easy(gram: &grm<Spur>, definition: Option<&GramDefinition>) -> bool {
         return false;
     };
     is_dictionary_entry_easy(entry)
+}
+
+/// Check if a gram has any cognate definition (more permissive than is_gram_easy).
+pub fn has_cognate_definition(definition: Option<&GramDefinition>) -> bool {
+    match definition {
+        Some(GramDefinition::Dictionary(entry)) => entry
+            .definitions
+            .iter()
+            .any(|d| d.cognate && !d.false_cognate),
+        Some(GramDefinition::Phrasebook(entry)) => entry.cognate && !entry.false_cognate,
+        None => false,
+    }
 }
 
 fn is_dictionary_entry_easy(entry: &DictionaryEntry) -> bool {

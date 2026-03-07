@@ -285,10 +285,12 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
     let analysis_pb = indicatif::ProgressBar::new(total_count as u64);
     analysis_pb.set_style(
         indicatif::ProgressStyle::default_bar()
-            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} analyzed ({per_sec}, {eta})")
+            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} analyzed ({per_sec}, ${msg}, {eta})")
             .unwrap()
             .progress_chars("#>-"),
     );
+    analysis_pb.set_message("0.00");
+    analysis_pb.enable_steady_tick(std::time::Duration::from_millis(100));
     let analysis_stream = futures::stream::iter(&all_sentences)
         .map(|(sentence, language, multiword_terms)| {
             let analysis_pb = analysis_pb.clone();
@@ -325,6 +327,7 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
                 };
 
                 analysis_pb.inc(1);
+                analysis_pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
 
                 SentenceAnalysis {
                     sentence: sentence.to_string(),
@@ -340,7 +343,7 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
         .buffer_unordered(50) // Process 50 sentences concurrently
         .collect::<Vec<_>>()
         .await;
-    analysis_pb.finish_with_message("done");
+    analysis_pb.finish_with_message(format!("done, ${:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
 
     // Aggregate results and collect all issues
     let mut all_issues = Vec::new();

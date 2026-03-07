@@ -189,11 +189,11 @@ where
 
 impl Literal<String> {
     /// Convert v1 Literal to current (language_utils) Literal.
-    pub(super) fn to_v2(self) -> language_utils::Literal<String> {
+    pub(super) fn into_v2(self) -> language_utils::Literal<String> {
         language_utils::Literal {
             word: language_utils::Word {
                 text: self.word.text,
-                word_type: self.word.word_type.to_v2(),
+                word_type: self.word.word_type.into_v2(),
             },
             whitespace: self.whitespace,
         }
@@ -202,7 +202,7 @@ impl Literal<String> {
 
 impl WordType<String> {
     /// Convert v1 WordType to current (language_utils) WordType.
-    pub(super) fn to_v2(self) -> language_utils::WordType<String> {
+    pub(super) fn into_v2(self) -> language_utils::WordType<String> {
         match self {
             WordType::Heteronym(h) => h.pos.to_word_type(h.word, h.lemma),
             WordType::Other(o) => language_utils::WordType::Other(language_utils::OtherWord {
@@ -248,10 +248,10 @@ pub(super) enum CardIndicator<S> {
 }
 
 impl CardIndicator<String> {
-    pub(super) fn to_v2(self) -> Option<super::v2::CardIndicator<String>> {
+    pub(super) fn into_v2(self) -> Option<super::v2::CardIndicator<String>> {
         Some(match self {
             CardIndicator::TargetLanguage { lexeme } => super::v2::CardIndicator::TargetLanguage {
-                lexeme: lexeme.to_lexeme()?,
+                lexeme: lexeme.into_lexeme()?,
             },
             CardIndicator::ListeningHomophonous { pronunciation } => {
                 super::v2::CardIndicator::ListeningHomophonous { pronunciation }
@@ -279,24 +279,8 @@ impl CardIndicator<String> {
 }
 
 impl Lexeme<String> {
-    /// Convert to the current WordType representation.
-    /// Returns Heteronym for valid heteronym POS, Other for non-heteronym POS.
-    pub(super) fn to_word_type(self) -> language_utils::WordType<String> {
-        match self {
-            Lexeme::Heteronym(h) => h.pos.to_word_type(h.word, h.lemma),
-            Lexeme::Multiword(s) => {
-                // Multiword -> treat as a noun heteronym
-                language_utils::WordType::Heteronym(language_utils::Heteronym {
-                    word: s.clone(),
-                    lemma: s,
-                    pos: language_utils::PartOfSpeech::Noun,
-                })
-            }
-        }
-    }
-
     /// Try to convert to a current Lexeme. Returns None if conversion results in non-heteronym.
-    pub(super) fn to_lexeme(self) -> Option<language_utils::Lexeme<String>> {
+    pub(super) fn into_lexeme(self) -> Option<language_utils::Lexeme<String>> {
         match self {
             Lexeme::Heteronym(h) => {
                 let pos = h.pos.to_heteronym_pos()?;
@@ -443,7 +427,7 @@ pub(super) enum WordGrade {
 }
 
 impl WordGrade {
-    pub(super) fn to_v2(self) -> language_utils::transcription_challenge::WordGrade {
+    pub(super) fn into_v2(self) -> language_utils::transcription_challenge::WordGrade {
         use language_utils::transcription_challenge::WordGrade as Current;
         match self {
             WordGrade::Perfect { wrote } => Current::Perfect { wrote },
@@ -467,10 +451,10 @@ pub(super) struct PartGradedPart {
 }
 
 impl PartGradedPart {
-    pub(super) fn to_v2(self) -> language_utils::transcription_challenge::PartGradedPart {
+    pub(super) fn into_v2(self) -> language_utils::transcription_challenge::PartGradedPart {
         language_utils::transcription_challenge::PartGradedPart {
-            heard: self.heard.to_v2(),
-            grade: self.grade.to_v2(),
+            heard: self.heard.into_v2(),
+            grade: self.grade.into_v2(),
         }
     }
 }
@@ -487,14 +471,16 @@ pub(super) enum PartGraded {
 }
 
 impl PartGraded {
-    pub(super) fn to_v2(self) -> language_utils::transcription_challenge::PartGraded {
+    pub(super) fn into_v2(self) -> language_utils::transcription_challenge::PartGraded {
         use language_utils::transcription_challenge::PartGraded as Current;
         match self {
             PartGraded::AskedToTranscribe { parts, submission } => Current::AskedToTranscribe {
-                parts: parts.into_iter().map(|p| p.to_v2()).collect(),
+                parts: parts.into_iter().map(|p| p.into_v2()).collect(),
                 submission,
             },
-            PartGraded::Provided { part } => Current::Provided { part: part.to_v2() },
+            PartGraded::Provided { part } => Current::Provided {
+                part: part.into_v2(),
+            },
         }
     }
 }
@@ -528,7 +514,7 @@ pub(super) enum DeckEvent {
 impl DeckEvent {
     /// Migrate a V1 DeckEvent to V2 format.
     /// Returns None if the event cannot be converted (e.g., card type no longer exists).
-    pub(super) fn to_v2(self) -> Option<super::v2::DeckEvent> {
+    pub(super) fn into_v2(self) -> Option<super::v2::DeckEvent> {
         match self {
             DeckEvent::Language(lang_event) => {
                 let content = match lang_event.content {
@@ -542,12 +528,12 @@ impl DeckEvent {
                     }
                     LanguageEventContent::AddCards { cards } => {
                         super::v2::LanguageEventContent::AddCards {
-                            cards: cards.into_iter().filter_map(|c| c.to_v2()).collect(),
+                            cards: cards.into_iter().filter_map(|c| c.into_v2()).collect(),
                         }
                     }
                     LanguageEventContent::ReviewCard { reviewed, rating } => {
                         // If card can't be converted, skip this entire event
-                        let reviewed = reviewed.to_v2()?;
+                        let reviewed = reviewed.into_v2()?;
                         super::v2::LanguageEventContent::ReviewCard {
                             reviewed,
                             rating: match rating {
@@ -573,7 +559,7 @@ impl DeckEvent {
                                         } => super::v2::SentenceReviewResult::Perfect {
                                             heteronyms_needed_hint: lexemes_needed_hint
                                                 .into_iter()
-                                                .filter_map(|l| l.to_lexeme())
+                                                .filter_map(|l| l.into_lexeme())
                                                 .flat_map(|l| l.heteronym().cloned())
                                                 .collect(),
                                         },
@@ -586,15 +572,15 @@ impl DeckEvent {
                                             submission,
                                             lexemes_remembered: lexemes_remembered
                                                 .into_iter()
-                                                .filter_map(|l| l.to_lexeme())
+                                                .filter_map(|l| l.into_lexeme())
                                                 .collect(),
                                             lexemes_forgotten: lexemes_forgotten
                                                 .into_iter()
-                                                .filter_map(|l| l.to_lexeme())
+                                                .filter_map(|l| l.into_lexeme())
                                                 .collect(),
                                             heteronyms_needed_hint: lexemes_needed_hint
                                                 .into_iter()
-                                                .filter_map(|l| l.to_lexeme())
+                                                .filter_map(|l| l.into_lexeme())
                                                 .flat_map(|l| l.heteronym().cloned())
                                                 .collect(),
                                         },
@@ -605,7 +591,7 @@ impl DeckEvent {
                     }
                     LanguageEventContent::TranscriptionChallenge { challenge } => {
                         super::v2::LanguageEventContent::TranscriptionChallenge {
-                            challenge: challenge.into_iter().map(|p| p.to_v2()).collect(),
+                            challenge: challenge.into_iter().map(|p| p.into_v2()).collect(),
                         }
                     }
                 };

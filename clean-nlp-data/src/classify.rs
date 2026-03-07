@@ -485,8 +485,15 @@ impl SentenceClassifier for PortugueseClassifier {
                 ));
             }
 
-            // Check for lemmas containing spaces (parsing error)
-            if token.lemma.contains(' ') {
+            // Check for "à" with incorrect lemma "a o" (spaCy bug: should be "a a")
+            if text_lower == "à" && token.lemma == "a o" {
+                reasons.push(
+                    "'à' has lemma 'a o' but should have lemma 'a a' — spaCy incorrectly treats à (a+a) the same as ao (a+o)".to_string()
+                );
+            }
+
+            // Check for lemmas containing spaces (parsing error), excluding known cases handled above
+            if token.lemma.contains(' ') && !(text_lower == "à" && token.lemma == "a o") {
                 reasons.push(format!(
                     "'{}' has lemma with space: '{}'",
                     token.text, token.lemma
@@ -589,6 +596,21 @@ impl SentenceClassifier for PortugueseClassifier {
                             token.text, token.lemma, expected_infinitive
                         ));
                     }
+                }
+
+                // "fosse" is the past subjunctive of BOTH "ser" (to be) and "ir" (to go)
+                // spaCy often defaults to "ir" but it's frequently "ser" in context
+                // e.g., "Se eu fosse rico" = ser, "Se eu fosse ao mercado" = ir
+                if text_lower == "fosse"
+                    || text_lower == "fôssemos"
+                    || text_lower == "fossem"
+                    || text_lower == "fosses"
+                    || text_lower == "fôsseis"
+                {
+                    reasons.push(format!(
+                        "'{}' is the past subjunctive of both 'ser' (to be) and 'ir' (to go). Currently lemmatized as '{}'. Check context: 'Se eu fosse rico' → ser; 'Se eu fosse ao mercado' → ir",
+                        token.text, token.lemma
+                    ));
                 }
             }
 
@@ -933,6 +955,43 @@ impl SentenceClassifier for KoreanClassifier {
             {
                 reasons.push(format!(
                     "Verb/Aux '{}' has itself as lemma (no morphological analysis)",
+                    token.text
+                ));
+            }
+
+            let text = &token.text;
+
+            // Check for copula contractions tagged as VERB with surface form as lemma
+            // These are forms of 이다 (to be) and should be decomposed
+            // e.g., 뭐야 = 뭐 + 이다, 누구야 = 누구 + 이다, 뭐죠/뭐예요 = 뭐 + 이다
+            let copula_forms = ["뭐야", "뭐죠", "뭐예요", "누구야", "누구죠", "누구예요"];
+            if copula_forms.contains(&text.as_str()) && token.pos == PartOfSpeechTag::Verb {
+                reasons.push(format!(
+                    "'{}' is a copula contraction (contains 이다 'to be') but is tagged as VERB with surface form as lemma. Should be decomposed or have a proper lemma",
+                    token.text
+                ));
+            }
+
+            // Check for 어때/어때요 tagged as VERB — should be ADJ (from 어떻다/어떠하다)
+            if (text == "어때" || text == "어때요") && token.pos == PartOfSpeechTag::Verb {
+                reasons.push(format!(
+                    "'{}' is a conjugation of 어떻다 (adjective 'how is it') but is tagged as VERB. Should be ADJ with lemma 어떻다",
+                    token.text
+                ));
+            }
+
+            // Check for 봐 with wrong lemma (should be 보다)
+            if text == "봐" && token.lemma == "봐" {
+                reasons.push(
+                    "'봐' has itself as lemma but should have lemma '보다' (to see/look)"
+                        .to_string(),
+                );
+            }
+
+            // Data source is subtitle/dialogue-heavy, so flag any PROPN as potentially over-classified
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns",
                     token.text
                 ));
             }

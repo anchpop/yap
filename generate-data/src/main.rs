@@ -486,7 +486,12 @@ async fn main() -> anyhow::Result<()> {
             vocab
         };
 
+        // Get set of terms that are known to be discontinuous (had "..." in source files)
+        let discontinuous_terms = generate_data::wiktionary_terms::get_discontinuous_terms(course);
+
         // Build phrase detection map from both Wiktionary multiword terms and unigram-learned multi-atom grams
+        let mut discontinuous_grams: std::collections::HashSet<Gram<String>> =
+            std::collections::HashSet::new();
         let phrase_detection_map: PhraseDetectionDataMap = {
             let mut map = PhraseDetectionDataMap::new();
             // Wiktionary/lexide multiword terms (with tokens)
@@ -494,6 +499,9 @@ async fn main() -> anyhow::Result<()> {
                 let (atoms, _) = language_utils::literals_to_atoms(lits, course.target_language);
                 let gram = Gram::from(atoms);
                 let tokens = multiword_terms_tokenizations.get(phrase).cloned();
+                if discontinuous_terms.contains(phrase) {
+                    discontinuous_grams.insert(gram.clone());
+                }
                 map.insert(gram, PhraseDetectionData { tokens });
             }
             // Unigram-learned multi-atom grams (no tokens)
@@ -513,6 +521,7 @@ async fn main() -> anyhow::Result<()> {
             .filter(|entry| entry.atoms.is_learnable())
             .map(|entry| GramFrequencyEntry {
                 count: entry.frequency,
+                direct_count: entry.frequency,
                 disambiguation_key: entry.atoms.disambiguation_key(),
                 gram: entry.atoms.clone(),
             })
@@ -637,11 +646,22 @@ async fn main() -> anyhow::Result<()> {
             lang,
         );
 
+        // Split discontinuous patterns into their own map, but keep them in the
+        // contiguous map too so truly contiguous occurrences still get high confidence
+        // from the LemmaMatcher.
+        let discontinuous_lemma_patterns: BTreeMap<Gram<String>, Vec<String>> = lemma_patterns
+            .iter()
+            .filter(|(gram, _)| discontinuous_grams.contains(gram))
+            .map(|(gram, lemmas)| (gram.clone(), lemmas.clone()))
+            .collect();
+        let contiguous_lemma_patterns = lemma_patterns;
+
         // Run multiword detection (after omnigram training)
         let mut nlp_sentences = generate_data::nlp::generate_nlp_sentences(
             &sentence_literals,
             &sentences_tokenizations,
-            &lemma_patterns,
+            &contiguous_lemma_patterns,
+            &discontinuous_lemma_patterns,
             &tree_patterns,
         )
         .await
@@ -773,7 +793,7 @@ async fn main() -> anyhow::Result<()> {
                 serde_json::from_str::<(Gram<String>, Vec<String>)>(line).is_ok()
             });
 
-            let all_lines = first_line.into_iter().chain(lines.filter_map(|l| l.ok()));
+            let all_lines = first_line.into_iter().chain(lines.map_while(Result::ok));
 
             if is_new_format {
                 all_lines
@@ -1266,7 +1286,8 @@ async fn main() -> anyhow::Result<()> {
             let nlp = generate_data::nlp::generate_nlp_sentences(
                 &homophone_literals,
                 &tokenizations,
-                &lemma_patterns,
+                &contiguous_lemma_patterns,
+                &discontinuous_lemma_patterns,
                 &tree_patterns,
             )
             .await

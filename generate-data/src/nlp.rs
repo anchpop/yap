@@ -252,11 +252,13 @@ pub fn convert_tokens_to_literals(
 }
 
 /// Generate NLP analyzed sentences by matching multiword terms against sentences
-/// using lemma matcher (high confidence) and dependency matcher (low confidence)
+/// using lemma matcher (high confidence), discontinuous lemma matcher (low confidence),
+/// and dependency matcher (low confidence).
 ///
 /// Takes pre-computed literals (from `convert_tokens_to_literals`), the raw
 /// sentence tokenizations, and pre-computed matcher data:
-/// - `lemma_patterns`: maps multiword term labels to their lemma sequences
+/// - `lemma_patterns`: maps multiword term labels to their lemma sequences (contiguous)
+/// - `discontinuous_lemma_patterns`: maps multiword term labels to their lemma sequences (gapped)
 /// - `tree_patterns`: maps multiword term labels to their dependency tree patterns
 ///
 /// This is fast since it only involves local pattern matching (no API calls).
@@ -266,10 +268,11 @@ pub async fn generate_nlp_sentences(
     sentence_literals: &BTreeMap<String, Vec<language_utils::Literal<String>>>,
     sentences_tokenizations: &BTreeMap<String, Vec<lexide::Token>>,
     lemma_patterns: &BTreeMap<Gram<String>, Vec<String>>,
+    discontinuous_lemma_patterns: &BTreeMap<Gram<String>, Vec<String>>,
     tree_patterns: &BTreeMap<Gram<String>, lexide::matching::TreeNode>,
 ) -> Result<BTreeMap<String, language_utils::SentenceInfo>> {
     use language_utils::{MultiwordTerms, SentenceInfo};
-    use lexide::matching::{DependencyMatcher, LemmaMatcher, TreeNode};
+    use lexide::matching::{DependencyMatcher, DiscontinuousLemmaMatcher, LemmaMatcher, TreeNode};
 
     // Build lemma matcher (high confidence) — use Gram<String> keys directly
     let lemma_patterns: Vec<(Gram<String>, Vec<&str>)> = lemma_patterns
@@ -277,6 +280,13 @@ pub async fn generate_nlp_sentences(
         .map(|(gram, lemmas)| (gram.clone(), lemmas.iter().map(|s| s.as_str()).collect()))
         .collect();
     let lemma_matcher = LemmaMatcher::new(&lemma_patterns);
+
+    // Build discontinuous lemma matcher (low confidence) — max gap of 5 tokens between anchors
+    let disc_patterns: Vec<(Gram<String>, Vec<&str>)> = discontinuous_lemma_patterns
+        .iter()
+        .map(|(gram, lemmas)| (gram.clone(), lemmas.iter().map(|s| s.as_str()).collect()))
+        .collect();
+    let discontinuous_matcher = DiscontinuousLemmaMatcher::new(&disc_patterns, Some(5));
 
     // Build dependency matcher (low confidence) — use Gram<String> keys directly
     let tree_patterns: Vec<(Gram<String>, TreeNode)> = tree_patterns
@@ -300,20 +310,40 @@ pub async fn generate_nlp_sentences(
             .map(|m| m.matched_label.clone())
             .collect();
 
-        // Find low confidence matches using dependency matcher
-        let low_confidence: Vec<Gram<String>> =
-            if let Ok(tree) = TreeNode::try_from(tokenization.clone()) {
-                let dep_matches = dependency_matcher.find_all(&tree);
-
-                dep_matches
-                    .iter()
-                    .map(|m| m.matched_label.clone())
-                    // Filter out high confidence matches
-                    .filter(|gram| !high_confidence.contains(gram))
-                    .collect()
+        // Find matches using discontinuous lemma matcher
+        // Gap ≤ 1 → high confidence, gap > 1 → low confidence
+        let disc_matches = discontinuous_matcher.find_all(&tokenization);
+        let mut high_confidence = high_confidence;
+        let mut low_confidence: Vec<Gram<String>> = Vec::new();
+        for m in &disc_matches {
+            if high_confidence.contains(&m.matched_label) {
+                continue;
+            }
+            let max_gap = m
+                .positions
+                .windows(2)
+                .map(|w| w[1] - w[0] - 1)
+                .max()
+                .unwrap_or(0);
+            if max_gap <= 1 {
+                high_confidence.push(m.matched_label.clone());
             } else {
-                Vec::new()
-            };
+                low_confidence.push(m.matched_label.clone());
+            }
+        }
+
+        // Find low confidence matches using dependency matcher
+        if let Ok(tree) = TreeNode::try_from(tokenization.clone()) {
+            let dep_matches = dependency_matcher.find_all(&tree);
+
+            for m in &dep_matches {
+                if !high_confidence.contains(&m.matched_label)
+                    && !low_confidence.contains(&m.matched_label)
+                {
+                    low_confidence.push(m.matched_label.clone());
+                }
+            }
+        }
 
         // Use pre-computed literals
         let words = sentence_literals

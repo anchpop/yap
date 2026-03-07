@@ -61,6 +61,7 @@ pub fn compute_movie_gram_frequencies(
     for movie_id in movie_ids {
         // Count grams in sentences for this movie with weighted contributions
         let mut gram_counts: BTreeMap<Gram<String>, f32> = BTreeMap::new();
+        let mut gram_actual_counts: BTreeMap<Gram<String>, u32> = BTreeMap::new();
 
         for (sentence, sentence_grams) in encoded_sentences {
             // Check if this sentence is from this movie
@@ -85,6 +86,7 @@ pub fn compute_movie_gram_frequencies(
             // Count learnable grams from the encoded sentence (weight 1.0)
             for gram in &encoded_grams {
                 *gram_counts.entry((*gram).clone()).or_insert(0.0) += 1.0;
+                *gram_actual_counts.entry((*gram).clone()).or_insert(0) += 1;
             }
 
             // Count high-confidence multiword term grams (weight 0.7),
@@ -109,12 +111,14 @@ pub fn compute_movie_gram_frequencies(
         // Add gram frequencies, rounding up to integers
         for (gram, count) in gram_counts {
             let count = count.ceil() as u32;
+            let direct_count = gram_actual_counts.get(&gram).copied().unwrap_or(0);
             // Only include grams that are in the vocabulary and are learnable
             if let Some(vocab_entry) = gram_to_vocab.get(&gram)
                 && vocab_entry.atoms.is_learnable()
             {
                 freq_entries.push(GramFrequencyEntry {
                     count,
+                    direct_count,
                     disambiguation_key: gram.disambiguation_key(),
                     gram,
                 });
@@ -144,8 +148,9 @@ pub fn compute_gram_frequencies(
         .map(|entry| (&entry.atoms, entry))
         .collect();
 
-    // Count grams with weighted contributions
+    // Count grams with weighted contributions, and actual sentence counts separately
     let mut gram_counts: BTreeMap<Gram<String>, f32> = BTreeMap::new();
+    let mut gram_actual_counts: BTreeMap<Gram<String>, u32> = BTreeMap::new();
 
     for (_sentence, sentence_grams) in encoded_sentences {
         // Collect the set of learnable grams in the encoded sentence
@@ -161,6 +166,7 @@ pub fn compute_gram_frequencies(
         // Count learnable grams from the encoded sentence (weight 1.0)
         for gram in &encoded_grams {
             *gram_counts.entry((*gram).clone()).or_insert(0.0) += 1.0;
+            *gram_actual_counts.entry((*gram).clone()).or_insert(0) += 1;
         }
 
         // Count high-confidence multiword term grams (weight 0.7),
@@ -185,12 +191,14 @@ pub fn compute_gram_frequencies(
     // Add gram frequencies, rounding up to integers
     for (gram, count) in gram_counts {
         let count = count.ceil() as u32;
+        let direct_count = gram_actual_counts.get(&gram).copied().unwrap_or(0);
         // Only include grams that are in the vocabulary and are learnable
         if let Some(vocab_entry) = gram_to_vocab.get(&gram)
             && vocab_entry.atoms.is_learnable()
         {
             freq_entries.push(GramFrequencyEntry {
                 count,
+                direct_count,
                 disambiguation_key: gram.disambiguation_key(),
                 gram,
             });

@@ -1,16 +1,16 @@
 c'est
 c'est-ce
 ce que
-ne que
-ne pas
-ne plus
-ne jamais
-ne guère
-ne point
-ne rien
-ne personne
-ne aucun
-ne nulle part
+ne ... que
+ne ... pas
+ne ... plus
+ne ... jamais
+ne ... guère
+ne ... point
+ne ... rien
+ne ... personne
+ne ... aucun
+ne ... nulle part
 rien que
 s'en aller
 quelque chose
