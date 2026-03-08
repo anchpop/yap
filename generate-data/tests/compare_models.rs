@@ -133,6 +133,7 @@ struct PhrasebookTestCase {
     examples: &'static [&'static str],
 }
 
+#[ignore]
 #[tokio::test]
 async fn compare_dictionary_definitions() {
     let clients = make_clients();
@@ -209,6 +210,7 @@ async fn compare_dictionary_definitions() {
     }
 }
 
+#[ignore]
 #[tokio::test]
 async fn compare_phrasebook_definitions() {
     let clients = make_clients();
