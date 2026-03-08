@@ -36,6 +36,7 @@ import { formatMorphology } from "@/utils/formatMorphology";
 import { useBackground } from "./BackgroundShader";
 import { PlayfulArrow } from "./PlayfulArrow";
 import { cn } from "@/lib/utils";
+import { highlightTermInSentence } from "@/utils/highlightTermInSentence";
 
 // GramDefinition is missing from the .d.ts due to a type generator bug
 type GramDefinition =
@@ -207,6 +208,7 @@ const CardBack = ({
     })
     .with({ type: "Gram" }, (content) => {
       const definition = content.definition as GramDefinition;
+      const term = gramDisplayText(content.gram);
 
       if ("Dictionary" in definition) {
         const dict = definition.Dictionary;
@@ -250,7 +252,7 @@ const CardBack = ({
                       </div>
                       <div>
                         <p className="text-muted-foreground italic flex-1">
-                          "{def.example_sentence_target_language}"
+                          "{highlightTermInSentence(def.example_sentence_target_language, term)}"
                         </p>
                         <p className="text-muted-foreground">
                           "{def.example_sentence_native_language}"
@@ -272,11 +274,16 @@ const CardBack = ({
             </div>
 
             {pb.target_language_example && (
-              <div className="space-y-1 text-sm">
+              <div className="text-sm">
                 <div className="flex items-start gap-2">
-                  <p className="text-muted-foreground italic flex-1">
-                    "{pb.target_language_example}"
-                  </p>
+                  <div>
+                    <p className="text-muted-foreground italic">
+                      "{highlightTermInSentence(pb.target_language_example, term)}"
+                    </p>
+                    <p className="text-muted-foreground">
+                      "{pb.native_language_example}"
+                    </p>
+                  </div>
                   <div onClick={(e) => e.stopPropagation()}>
                     <AudioButton
                       audioRequest={{
@@ -292,9 +299,6 @@ const CardBack = ({
                     />
                   </div>
                 </div>
-                <p className="text-muted-foreground">
-                  "{pb.native_language_example}"
-                </p>
               </div>
             )}
           </div>

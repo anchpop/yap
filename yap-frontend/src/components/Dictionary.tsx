@@ -3,6 +3,7 @@ import { type Deck, type Weapon, type Language, type GramDictionaryEntry } from 
 import { CirclePlus, CircleCheckBig } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatMorphology } from '@/utils/formatMorphology'
+import { highlightTermInSentence } from '@/utils/highlightTermInSentence'
 import { Card } from '@/components/ui/card'
 
 const RESULTS_LIMIT = 100
@@ -151,7 +152,7 @@ export function Dictionary({ deck, weapon, targetLanguage, nativeLanguage }: { d
                       )}
                       <div className="mt-2 text-sm space-y-1">
                         <div className="text-foreground">
-                          <span className="text-muted-foreground">{targetLangCode}:</span> {def.example_sentence_target_language}
+                          <span className="text-muted-foreground">{targetLangCode}:</span> {highlightTermInSentence(def.example_sentence_target_language, entry.display_text)}
                         </div>
                         <div className="text-muted-foreground">
                           <span>{nativeLangCode}:</span> {def.example_sentence_native_language}
@@ -166,7 +167,7 @@ export function Dictionary({ deck, weapon, targetLanguage, nativeLanguage }: { d
                       <div className="mt-2 text-sm space-y-1">
                         {entry.definition.Phrasebook.target_language_example && (
                           <div className="text-foreground">
-                            <span className="text-muted-foreground">{targetLangCode}:</span> {entry.definition.Phrasebook.target_language_example}
+                            <span className="text-muted-foreground">{targetLangCode}:</span> {highlightTermInSentence(entry.definition.Phrasebook.target_language_example, entry.display_text)}
                           </div>
                         )}
                         {entry.definition.Phrasebook.native_language_example && (
