@@ -8,18 +8,27 @@ interface MovieWithMetadata {
   cards_to_next_milestone: number | null | undefined
   title?: string
   year?: number
+  original_language?: string
   poster_bytes?: number[]
 }
 
 interface MoviesProps {
   moviesWithMetadata: MovieWithMetadata[]
+  targetLanguageIso?: string
 }
 
-export function Movies({ moviesWithMetadata: moviesWithMetadataProp }: MoviesProps) {
+export function Movies({ moviesWithMetadata: moviesWithMetadataProp, targetLanguageIso }: MoviesProps) {
   const moviesWithMetadata = useDeferredValue(moviesWithMetadataProp);
   const [showAllMovies, setShowAllMovies] = useState(false)
 
-  const visibleMovies = showAllMovies ? moviesWithMetadata : moviesWithMetadata.slice(0, 8)
+  const sortedMovies = targetLanguageIso
+    ? [...moviesWithMetadata].sort((a, b) => {
+        const aIsNative = a.original_language === targetLanguageIso ? 0 : 1
+        const bIsNative = b.original_language === targetLanguageIso ? 0 : 1
+        return aIsNative - bIsNative
+      })
+    : moviesWithMetadata
+  const visibleMovies = showAllMovies ? sortedMovies : sortedMovies.slice(0, 8)
 
   if (moviesWithMetadata.length === 0) {
     return null
@@ -29,9 +38,8 @@ export function Movies({ moviesWithMetadata: moviesWithMetadataProp }: MoviesPro
     <div className="mt-6">
       <h2 className="text-2xl font-semibold mb-3">Movies</h2>
       <p className="text-sm text-muted-foreground mb-4">
-        These movies are sorted by how much of the dialogue you already know. You can usually watch a movie comfortably once you know 95% of the words.
+        You can usually watch a movie comfortably once you know 95% of the words.
       </p>
-
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {visibleMovies.map((movie) => {
           const posterDataUrl = getPosterDataUrl(movie.poster_bytes)
@@ -87,13 +95,13 @@ export function Movies({ moviesWithMetadata: moviesWithMetadataProp }: MoviesPro
           );
         })}
       </div>
-      {!showAllMovies && moviesWithMetadata.length > 10 && (
+      {!showAllMovies && sortedMovies.length > 10 && (
         <div className="mt-4">
           <button
             onClick={() => setShowAllMovies(true)}
             className="w-full py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200 font-medium rounded-md border border-border"
           >
-            Show all {moviesWithMetadata.length} movies
+            Show all {sortedMovies.length} movies
           </button>
         </div>
       )}

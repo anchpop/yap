@@ -13,7 +13,7 @@ import { useInterval, useNetworkState } from 'react-use';
 import { Flashcard } from '@/components/Flashcard'
 import { TranslationChallenge } from '@/components/challenges/TranslationChallenge'
 import { PronunciationChallenge } from '@/components/challenges/PronunciationChallenge'
-import { profilerOnRender } from './lib/utils'
+import { profilerOnRender, languageToIso6391 } from './lib/utils'
 import { ResetPassword } from '@/pages/reset-password'
 import { ConfirmEmail } from '@/pages/confirm-email'
 import { AcceptInvite } from '@/pages/accept-invite'
@@ -385,7 +385,7 @@ function ReviewPage() {
                 />
               </TopPageLayout>
               <Tools deck={deck} />
-              <Movies moviesWithMetadata={moviesWithMetadata} />
+              <Movies moviesWithMetadata={moviesWithMetadata} targetLanguageIso={languageToIso6391(targetLanguage)} />
               <Stats deck={deck} />
             </>
             );
@@ -601,6 +601,7 @@ interface MovieWithMetadata {
   cards_to_next_milestone: number | null | undefined
   title?: string
   year?: number
+  original_language?: string
   poster_bytes?: number[]
 }
 
@@ -632,12 +633,13 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
   const nextDueCard = findNextDueCard(deck)
 
-  // Find movie closest to next milestone for NoCardsReady component
+  // Find movie closest to next milestone for NoCardsReady component (native language only)
+  const targetLanguageIso = languageToIso6391(targetLanguage)
   const closestToMilestone = useMemo(() => {
     return moviesWithMetadata
-      .filter(m => m.cards_to_next_milestone !== null && m.cards_to_next_milestone !== undefined)
+      .filter(m => m.cards_to_next_milestone !== null && m.cards_to_next_milestone !== undefined && m.original_language === targetLanguageIso)
       .sort((a, b) => (a.cards_to_next_milestone || 0) - (b.cards_to_next_milestone || 0))[0]
-  }, [moviesWithMetadata])
+  }, [moviesWithMetadata, targetLanguageIso])
 
   // Update scheduled push notifications and language stats when the deck state changes
   useEffect(() => {
