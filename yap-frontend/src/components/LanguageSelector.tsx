@@ -26,7 +26,6 @@ import { TopPageLayout } from "@/components/TopPageLayout";
 import type { UserInfo } from "@/App";
 
 type LanguageSelectionState =
-  | { stage: "intro" }
   | { stage: "selectingNative" }
   | { stage: "selectingTarget"; nativeLanguage: Language }
   | { stage: "onboarding"; nativeLanguage: Language; targetLanguage: Language };
@@ -36,7 +35,6 @@ interface LanguageSelectorProps {
   onOnboardingComplete: (selections: OnboardingSelections, target: Language) => void;
   onHeardAbout: (value: HeardAbout) => void;
   hasHeardAbout: boolean;
-  skipOnboarding: boolean;
   currentTargetLanguage?: Language;
   showResumeButton?: boolean;
   onResume?: () => void;
@@ -49,7 +47,6 @@ export function LanguageSelector({
   onOnboardingComplete,
   onHeardAbout,
   hasHeardAbout,
-  skipOnboarding,
   currentTargetLanguage,
   showResumeButton,
   onResume,
@@ -57,7 +54,7 @@ export function LanguageSelector({
   onBack,
 }: LanguageSelectorProps) {
   const [selectionState, setSelectionState] = useState<LanguageSelectionState>({
-    stage: skipOnboarding ? "selectingNative" : "intro",
+    stage: "selectingNative",
   });
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const weapon = useWeapon();
@@ -128,7 +125,7 @@ export function LanguageSelector({
 
   // Get target languages available for selected native language
   const targetLanguages =
-    selectionState.stage === "intro" || selectionState.stage === "selectingNative"
+    selectionState.stage === "selectingNative"
       ? []
       : availableCourses
           .filter(
@@ -275,84 +272,7 @@ export function LanguageSelector({
       {/* Main content */}
       <div className="relative z-10 flex items-center justify-center">
         <AnimatePresence mode="wait">
-          {selectionState.stage === "intro" ? (
-            // Step 0: Intro / landing page
-            <motion.div
-              key="intro"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-2xl flex flex-col items-center text-center"
-            >
-              <div className="flex flex-col items-center justify-center gap-8 h-[calc(100dvh-6rem)]">
-                <h1
-                  className="text-5xl md:text-6xl font-black tracking-tight"
-                  style={{ textWrap: "balance" }}
-                >
-                  Spaced repetition with{" "}
-                  <span className="text-accent-foreground italic squiggly-underline">actual sentences.</span>
-                </h1>
-
-                <p className="text-lg text-muted-foreground max-w-lg" style={{ textWrap: "balance" }}>
-                  SRS works. But isolated flashcards only get you so far.<br />
-                  <span className="text-foreground font-semibold">
-                    Every word in Yap lives inside a real sentence.
-                  </span>
-                </p>
-
-                <div className="flex items-center gap-4">
-                  <Button
-                    size="lg"
-                    variant="ghost"
-                    onClick={() => {
-                      document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
-                    }}
-                    className="text-lg"
-                  >
-                    How it works
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={() => setSelectionState({ stage: "selectingNative" })}
-                    className="text-lg px-8"
-                  >
-                    Start learning
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-
-              <div
-                id="how-it-works"
-                className="min-h-dvh flex flex-col items-center justify-center w-full gap-16 py-24"
-              >
-                <div className="flex flex-col items-center gap-6 max-w-lg">
-                  <h2 className="text-4xl md:text-5xl font-black tracking-tight" style={{ textWrap: "balance" }}>
-                    Language modelling that goes deeper.
-                  </h2>
-                  <div className="flex flex-col gap-4">
-                    <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
-                      Yap understands <span className="text-foreground font-semibold">phrases and polysemy</span>, so every card targets a precise meaning in context.
-                    </p>
-                    <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
-                      And every deck is <span className="text-foreground font-semibold">premade and ready to go</span>.<br /> Just pick a language and start learning immediately.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-lg text-muted-foreground">Powered by FSRS</span>
-                    <Button
-                      size="lg"
-                      onClick={() => setSelectionState({ stage: "selectingNative" })}
-                      className="text-lg px-8"
-                    >
-                      Start learning
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ) : selectionState.stage === "selectingNative" ? (
+          {selectionState.stage === "selectingNative" ? (
             // Step 1: Select native language
             <motion.div
               key="native-selection"

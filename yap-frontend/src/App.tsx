@@ -14,6 +14,7 @@ import { Flashcard } from '@/components/Flashcard'
 import { TranslationChallenge } from '@/components/challenges/TranslationChallenge'
 import { PronunciationChallenge } from '@/components/challenges/PronunciationChallenge'
 import { profilerOnRender, languageToIso6391 } from './lib/utils'
+import { ArrowRight } from 'lucide-react'
 import { ResetPassword } from '@/pages/reset-password'
 import { ConfirmEmail } from '@/pages/confirm-email'
 import { AcceptInvite } from '@/pages/accept-invite'
@@ -310,6 +311,101 @@ function LoadingProgress({ message, progress }: { message: string; progress: num
   )
 }
 
+function LandingPage() {
+  const { userInfo } = useOutletContext<AppContextType>()
+  const deckSelection = useDeckSelection()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (deckSelection?.type === 'languageSelected') {
+      navigate('/learn', { replace: true })
+    }
+  }, [deckSelection, navigate])
+
+  if (deckSelection?.type === 'languageSelected') {
+    return null
+  }
+
+  return (
+    <TopPageLayout
+      userInfo={userInfo}
+      headerProps={{ showSignupNag: false, title: "Yap.Town" }}
+    >
+      <div className="relative z-10 flex items-center justify-center">
+        <div className="w-full max-w-2xl flex flex-col items-center text-center">
+          <div className="flex flex-col items-center justify-center gap-8 h-[calc(100dvh-6rem)]">
+            <h1
+              className="text-5xl md:text-6xl font-black tracking-tight"
+              style={{ textWrap: "balance" }}
+            >
+              Spaced repetition with{" "}
+              <span className="text-accent-foreground italic squiggly-underline">actual sentences.</span>
+            </h1>
+
+            <p className="text-lg text-muted-foreground max-w-lg" style={{ textWrap: "balance" }}>
+              SRS works. But isolated flashcards only get you so far.<br />
+              <span className="text-foreground font-semibold">
+                Every word in Yap lives inside a real sentence.
+              </span>
+            </p>
+
+            <div className="flex items-center gap-4">
+              <Button
+                size="lg"
+                variant="ghost"
+                onClick={() => {
+                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="text-lg"
+              >
+                How it works
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => navigate('/select-language')}
+                className="text-lg px-8"
+              >
+                Start learning
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div
+            id="how-it-works"
+            className="min-h-dvh flex flex-col items-center justify-center w-full gap-16 py-24"
+          >
+            <div className="flex flex-col items-center gap-6 max-w-lg">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight" style={{ textWrap: "balance" }}>
+                Language modelling that goes deeper.
+              </h2>
+              <div className="flex flex-col gap-4">
+                <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
+                  Yap understands <span className="text-foreground font-semibold">phrases and polysemy</span>, so every card targets a precise meaning in context.
+                </p>
+                <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
+                  And every deck is <span className="text-foreground font-semibold">premade and ready to go</span>.<br /> Just pick a language and start learning immediately.
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-lg text-muted-foreground">Powered by FSRS</span>
+                <Button
+                  size="lg"
+                  onClick={() => navigate('/select-language')}
+                  className="text-lg px-8"
+                >
+                  Start learning
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </TopPageLayout>
+  )
+}
+
 function ReviewPage() {
   const { userInfo, accessToken } = useOutletContext<AppContextType>()
   const deck = useDeck()
@@ -318,7 +414,7 @@ function ReviewPage() {
 
   useEffect(() => {
     if (deckSelection?.type === 'noLanguageSelected') {
-      navigate('/select-language')
+      navigate('/', { replace: true })
     }
   }, [deckSelection, navigate])
 
@@ -494,7 +590,7 @@ function DictionaryPage() {
       <TopPageLayout
         userInfo={userInfo}
         headerProps={{
-          backButton: { label: 'Dictionary', onBack: () => navigate('/') }
+          backButton: { label: 'Dictionary', onBack: () => navigate('/learn') }
         }}
       >
         <div className="flex-1 flex items-center justify-center">
@@ -509,7 +605,7 @@ function DictionaryPage() {
       <TopPageLayout
         userInfo={userInfo}
         headerProps={{
-          backButton: { label: 'Dictionary', onBack: () => navigate('/') }
+          backButton: { label: 'Dictionary', onBack: () => navigate('/learn') }
         }}
       >
         <div className="flex-1 bg-background flex items-center justify-center">
@@ -523,7 +619,7 @@ function DictionaryPage() {
     <TopPageLayout
       userInfo={userInfo}
       headerProps={{
-        backButton: { label: 'Dictionary', onBack: () => navigate('/') }
+        backButton: { label: 'Dictionary', onBack: () => navigate('/learn') }
       }}
     >
       <Dictionary deck={deck.deck} weapon={weapon} targetLanguage={deck.targetLanguage} nativeLanguage={deck.nativeLanguage} />
@@ -551,7 +647,7 @@ function LeechesPage() {
       <TopPageLayout
         userInfo={userInfo}
         headerProps={{
-          backButton: { label: 'Leeches', onBack: () => navigate('/') }
+          backButton: { label: 'Leeches', onBack: () => navigate('/learn') }
         }}
       >
         <div className="flex-1 flex items-center justify-center">
@@ -566,7 +662,7 @@ function LeechesPage() {
       <TopPageLayout
         userInfo={userInfo}
         headerProps={{
-          backButton: { label: 'Leeches', onBack: () => navigate('/') }
+          backButton: { label: 'Leeches', onBack: () => navigate('/learn') }
         }}
       >
         <div className="flex-1 bg-background flex items-center justify-center">
@@ -580,7 +676,7 @@ function LeechesPage() {
     <TopPageLayout
       userInfo={userInfo}
       headerProps={{
-        backButton: { label: 'Leeches', onBack: () => navigate('/') }
+        backButton: { label: 'Leeches', onBack: () => navigate('/learn') }
       }}
     >
       <Leeches deck={deck.deck} />
@@ -1020,7 +1116,8 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/*" element={<AppMain />}>
-              <Route index element={<ReviewPage />} />
+              <Route index element={<LandingPage />} />
+              <Route path="learn" element={<ReviewPage />} />
               <Route path="dictionary" element={<DictionaryPage />} />
               <Route path="leeches" element={<LeechesPage />} />
               <Route path="select-language" element={<SelectLanguagePage />} />
@@ -1043,13 +1140,13 @@ function SelectLanguagePage() {
   return match(deckSelection)
     .with({ type: "languageSelected" }, ({ targetLanguage, hasHeardAbout }) => (
       <LanguageSelector
-        skipOnboarding={true}
+
         currentTargetLanguage={targetLanguage}
         showResumeButton={true}
-        onResume={() => navigate('/')}
+        onResume={() => navigate('/learn')}
         onLanguagesConfirmed={(native, target) => {
           weapon.add_deck_selection_event({ SelectBothLanguages: { native, target } })
-          navigate('/')
+          navigate('/learn')
         }}
         onOnboardingComplete={(selections, language) => {
           weapon.add_deck_selection_event({ SetOnboardingSelections: { selections, target_language: language } })
@@ -1059,15 +1156,15 @@ function SelectLanguagePage() {
           weapon.add_deck_selection_event({ SetHeardAbout: { heard_about } })
         }}
         userInfo={userInfo}
-        onBack={() => navigate('/')}
+        onBack={() => navigate('/learn')}
       />
     ))
     .with({ type: "noLanguageSelected" }, ({ hasHeardAbout }) => (
       <LanguageSelector
-        skipOnboarding={false}
+
         onLanguagesConfirmed={(native, target) => {
           weapon.add_deck_selection_event({ SelectBothLanguages: { native, target } })
-          navigate('/')
+          navigate('/learn')
         }}
         onOnboardingComplete={(selections, language) => {
           weapon.add_deck_selection_event({ SetOnboardingSelections: { selections, target_language: language } })

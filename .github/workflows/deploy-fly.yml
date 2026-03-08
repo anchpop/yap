@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'yap-ai-backend/**'
+      - 'language-utils/**'
+      - 'generate-data/**'
+      - 'out/**/*.rkyv'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
 
 jobs:
   deploy:
