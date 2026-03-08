@@ -15,10 +15,28 @@ jobs:
         with:
           lfs: true
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Set up Fly.io CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
 
+      - name: Auth to Fly registry
+        run: flyctl auth docker
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: yap-ai-backend/Dockerfile
+          push: true
+          tags: registry.fly.io/yap-ai-backend:${{ github.sha }}
+          cache-from: type=registry,ref=registry.fly.io/yap-ai-backend:cache
+          cache-to: type=registry,ref=registry.fly.io/yap-ai-backend:cache,mode=max
+
       - name: Deploy to Fly.io
-        run: flyctl deploy
+        run: flyctl deploy --image registry.fly.io/yap-ai-backend:${{ github.sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
