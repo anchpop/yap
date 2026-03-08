@@ -70,10 +70,8 @@ export function NoCardsReady({
         }
       : addCardOptionsRaw;
   let nextTargetLanguageWord: string | null = null;
-  if (nextDueCard && "TargetLanguage" in nextDueCard.card_indicator) {
-    const lexeme = nextDueCard.card_indicator.TargetLanguage.lexeme;
-    nextTargetLanguageWord =
-      "Heteronym" in lexeme ? lexeme.Heteronym.word : lexeme.Multiword;
+  if (nextDueCard && (nextDueCard.card_indicator.type === "WrittenPhrase" || nextDueCard.card_indicator.type === "WrittenGram")) {
+    nextTargetLanguageWord = nextDueCard?.card_text;
   }
 
   const numCanAddTargetLanguage =
@@ -181,7 +179,7 @@ export function NoCardsReady({
           </p>
           {isEmptyDeck ? (
             <p className="text-muted-foreground">
-              We'll start with the most important words.
+              We'll start with a couple words you might know.
             </p>
           ) : (
             <p className="text-muted-foreground">

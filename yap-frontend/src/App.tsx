@@ -1,7 +1,7 @@
 import { useState, useEffect, Profiler, useSyncExternalStore, useMemo, useCallback } from 'react'
 import { useZeno } from '@/hooks/useZeno'
 import { BrowserRouter, Routes, Route, Outlet, useNavigate, useOutletContext } from 'react-router-dom'
-import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Language, type Lexeme, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
+import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Heteronym, type Language, type LiteralGrades, type Gram, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
 import { Button } from "@/components/ui/button.tsx"
 import { Progress } from "@/components/ui/progress.tsx"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -12,6 +12,7 @@ import type { Session as SupabaseSession } from '@supabase/supabase-js'
 import { useInterval, useNetworkState } from 'react-use';
 import { Flashcard } from '@/components/Flashcard'
 import { TranslationChallenge } from '@/components/challenges/TranslationChallenge'
+import { PronunciationChallenge } from '@/components/challenges/PronunciationChallenge'
 import { profilerOnRender } from './lib/utils'
 import { ResetPassword } from '@/pages/reset-password'
 import { ConfirmEmail } from '@/pages/confirm-email'
@@ -312,13 +313,14 @@ function LoadingProgress({ message, progress }: { message: string; progress: num
 function ReviewPage() {
   const { userInfo, accessToken } = useOutletContext<AppContextType>()
   const deck = useDeck()
+  const deckSelection = useDeckSelection()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (deck?.type === 'noLanguageSelected') {
+    if (deckSelection?.type === 'noLanguageSelected') {
       navigate('/select-language')
     }
-  }, [deck, navigate])
+  }, [deckSelection, navigate])
 
   return (
     <div className="flex flex-col gap-6">
@@ -705,7 +707,39 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
   useInterval(() => setCardsBecameDue(cardsBecameDue => cardsBecameDue + 1), reviewInfo.due_count === 0 ? 1000 : 60000);
 
-  const currentChallenge: Challenge<string> | undefined = useMemo(() => reviewInfo.get_next_challenge(deck), [reviewInfo, deck]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const currentChallenge: Challenge<any> | undefined = useMemo(() => reviewInfo.get_next_challenge(deck), [reviewInfo, deck]);
+
+  useEffect(() => {
+    if (!currentChallenge) {
+      setBannedChallengeTypes(computeBannedChallengeTypes());
+    }
+  }, [currentChallenge, computeBannedChallengeTypes]);
+
+  useEffect(() => {
+    if (currentChallenge) return;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    const scheduleRefresh = (storageKey: string) => {
+      const timestamp = localStorage.getItem(storageKey);
+      if (!timestamp) return;
+      const elapsed = Date.now() - parseInt(timestamp);
+      const remaining = CANT_LISTEN_DURATION_MS - elapsed;
+
+      if (remaining > 0) {
+        timeouts.push(setTimeout(() => {
+          setBannedChallengeTypes(computeBannedChallengeTypes());
+        }, remaining));
+      } else {
+        setBannedChallengeTypes(computeBannedChallengeTypes());
+      }
+    };
+
+    scheduleRefresh('yap-cant-listen-timestamp');
+    scheduleRefresh('yap-cant-speak-timestamp');
+
+    return () => timeouts.forEach(timeout => clearTimeout(timeout));
+  }, [currentChallenge, bannedChallengeTypes, CANT_LISTEN_DURATION_MS, computeBannedChallengeTypes]);
 
   useEffect(() => {
     if (!currentChallenge) {
@@ -757,8 +791,8 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
   }, [deck, weapon, bannedChallengeTypes])
 
   const handleRating = async (rating: Rating) => {
-    if (!currentChallenge || currentChallenge.type !== 'FlashCardReview') {
-      console.error("handleRating called with no current challenge or no FlashCardReview in current challenge");
+    if (!currentChallenge || (currentChallenge.type !== 'FlashCardReview' && currentChallenge.type !== 'PronunciationChallenge')) {
+      console.error("handleRating called with no current challenge or incompatible challenge type");
       return
     };
 
@@ -775,7 +809,11 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
     }
   }
 
-  const handleTranslationComplete = useCallback(async (grade: { wordStatuses: [Lexeme<string>, boolean | null][] } | { perfect: string | null }, wordsTapped: Lexeme<string>[], submission: string) => {
+  const handleTranslationComplete = useCallback(async (
+    grade: { literalGrades: LiteralGrades, phrasesRemembered: Gram<string>[], phrasesForgot: Gram<string>[] } | { perfect: string | null },
+    wordsTapped: Heteronym<string>[],
+    submission: string
+  ) => {
     if (!currentChallenge || currentChallenge.type !== 'TranslateComprehensibleSentence') {
       console.error("handleTranslationComplete called with no current challenge or no TranslateComprehensibleSentence in current challenge");
       return
@@ -791,24 +829,14 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
         weapon.add_deck_event(event);
       }
     } else {
-      // Wrong sentence review with word statuses
-      const wordsRemembered: Lexeme<string>[] = [];
-      const wordsForgotten: Lexeme<string>[] = [];
-
-      grade.wordStatuses.forEach(([word, status]) => {
-        if (status === true) {
-          wordsRemembered.push(word);
-        } else if (status === false) {
-          wordsForgotten.push(word);
-        }
-      });
-
+      // Wrong sentence review - pass literal grades directly to Rust
       const event = deck.translate_sentence_wrong(
         currentChallenge.target_language,
         submission,
-        wordsRemembered,
-        wordsForgotten,
-        wordsTapped
+        grade.literalGrades,
+        wordsTapped,
+        grade.phrasesRemembered,
+        grade.phrasesForgot
       );
       if (event) {
         weapon.add_deck_event(event);
@@ -827,6 +855,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
     const event = deck.transcribe_sentence(grade);
     if (event) {
+      console.log("event", event);
       weapon.add_deck_event(event);
     }
   }, [deck, currentChallenge, weapon])
@@ -912,20 +941,31 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
             closestToMilestone={closestToMilestone}
           />
         ) : currentChallenge ? (
-          (currentChallenge.type === 'FlashCardReview') ? (
+          (currentChallenge.type === 'PronunciationChallenge') ? (
+            <PronunciationChallenge
+              pattern={currentChallenge.pattern}
+              guide={currentChallenge.guide}
+              onRating={handleRating}
+              accessToken={accessToken}
+              onCantSpeak={handleCantSpeak}
+              targetLanguage={targetLanguage}
+              isNew={currentChallenge.is_new}
+              timesTypeSeen={currentChallenge.times_type_seen}
+              key={totalReviewsCompleted}
+            />
+          ) : (currentChallenge.type === 'FlashCardReview') ? (
             <Flashcard
-              audioRequest={currentChallenge.audio}
-              content={currentChallenge.content}
+              audioRequest={currentChallenge.flashcard.audio}
+              content={currentChallenge.flashcard.content}
               isNew={currentChallenge.is_new}
               totalCount={reviewInfo.total_count}
               onRating={handleRating}
               accessToken={accessToken}
               key={totalReviewsCompleted}
               onCantListen={handleCantListen}
-              onCantSpeak={handleCantSpeak}
               targetLanguage={targetLanguage}
               nativeLanguage={nativeLanguage}
-              listeningPrefix={currentChallenge.listening_prefix}
+              listeningPrefix={currentChallenge.flashcard.listening_prefix}
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
               timesTypeSeen={currentChallenge.times_type_seen}
@@ -936,7 +976,6 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
               onComplete={handleTranslationComplete}
               accessToken={accessToken}
               key={totalReviewsCompleted}
-              unique_target_language_lexeme_definitions={currentChallenge.unique_target_language_lexeme_definitions}
               targetLanguage={targetLanguage}
               nativeLanguage={nativeLanguage}
               autoplayed={autoplayed}
@@ -996,11 +1035,11 @@ function App() {
 function SelectLanguagePage() {
   const { userInfo } = useOutletContext<AppContextType>()
   const weapon = useWeapon()
-  const deck = useDeck()
+  const deckSelection = useDeckSelection()
   const navigate = useNavigate()
 
-  return match(deck)
-    .with({ type: "deck", deck: P.not(P.nullish) }, ({ targetLanguage }) => (
+  return match(deckSelection)
+    .with({ type: "languageSelected" }, ({ targetLanguage, hasHeardAbout }) => (
       <LanguageSelector
         skipOnboarding={true}
         currentTargetLanguage={targetLanguage}
@@ -1010,27 +1049,35 @@ function SelectLanguagePage() {
           weapon.add_deck_selection_event({ SelectBothLanguages: { native, target } })
           navigate('/')
         }}
-        onExperience={(starting_fresh, language) => {
-          weapon.add_deck_selection_event({ SetStartingFresh: { starting_fresh, target_language: language } })
+        onOnboardingComplete={(selections, language) => {
+          weapon.add_deck_selection_event({ SetOnboardingSelections: { selections, target_language: language } })
+        }}
+        hasHeardAbout={hasHeardAbout}
+        onHeardAbout={(heard_about) => {
+          weapon.add_deck_selection_event({ SetHeardAbout: { heard_about } })
         }}
         userInfo={userInfo}
         onBack={() => navigate('/')}
       />
     ))
-    .with({ type: "noLanguageSelected" }, () => (
+    .with({ type: "noLanguageSelected" }, ({ hasHeardAbout }) => (
       <LanguageSelector
         skipOnboarding={false}
         onLanguagesConfirmed={(native, target) => {
           weapon.add_deck_selection_event({ SelectBothLanguages: { native, target } })
           navigate('/')
         }}
-        onExperience={(starting_fresh, language) => {
-          weapon.add_deck_selection_event({ SetStartingFresh: { starting_fresh, target_language: language } })
+        onOnboardingComplete={(selections, language) => {
+          weapon.add_deck_selection_event({ SetOnboardingSelections: { selections, target_language: language } })
+        }}
+        hasHeardAbout={hasHeardAbout}
+        onHeardAbout={(heard_about) => {
+          weapon.add_deck_selection_event({ SetHeardAbout: { heard_about } })
         }}
         userInfo={userInfo}
       />
     ))
-    .otherwise(() => (
+    .with(null, () => (
       <TopPageLayout
         userInfo={userInfo}
         headerProps={{
@@ -1042,8 +1089,52 @@ function SelectLanguagePage() {
         </div>
       </TopPageLayout>
     ))
+    .exhaustive()
 }
 
+
+function useDeckSelection():
+  | { type: "languageSelected", nativeLanguage: Language, targetLanguage: Language, startingFresh: boolean | undefined, hasHeardAbout: boolean }
+  | { type: "noLanguageSelected", hasHeardAbout: boolean }
+  | null {
+  const weapon = useWeapon()
+
+  useEffect(() => {
+    weapon.request_deck_selection()
+  }, [weapon])
+
+  const getSnapshot = useCallback(() => {
+    try {
+      return weapon.get_stream_num_events("deck_selection") ?? null
+    } catch {
+      return null
+    }
+  }, [weapon])
+
+  const subscribe = useCallback((callback: () => void) => {
+    const handle = weapon.subscribe_to_stream("deck_selection", () => { callback() })
+    return () => { weapon.unsubscribe(handle) }
+  }, [weapon])
+
+  const numEvents = useSyncExternalStore(subscribe, getSnapshot)
+
+  if (numEvents === null) return null
+
+  const deckSelection = weapon.get_deck_selection_state()
+  const hasHeardAbout = deckSelection?.heardAbout != null;
+
+  if (!deckSelection?.targetLanguage || !deckSelection?.nativeLanguage) {
+    return { type: "noLanguageSelected", hasHeardAbout }
+  }
+
+  return {
+    type: "languageSelected",
+    nativeLanguage: deckSelection.nativeLanguage,
+    targetLanguage: deckSelection.targetLanguage,
+    startingFresh: deckSelection.onboardingSelections?.startingFresh,
+    hasHeardAbout,
+  }
+}
 
 function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
   const weapon = useWeapon()
@@ -1108,7 +1199,7 @@ function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: La
         setLoadingState(null)
         return {
           type: "deck",
-          startingFresh: deck_selection.startingFresh,
+          startingFresh: deck_selection.onboardingSelections?.startingFresh,
           nativeLanguage: deck_selection.nativeLanguage,
           targetLanguage: deck_selection.targetLanguage,
           deck: await weapon.get_deck_state(languagePack, course),

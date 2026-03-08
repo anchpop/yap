@@ -61,11 +61,18 @@ lasso = { workspace = true }
 unicode-normalization = "0.1.24"
 wasm-logger.workspace = true
 log.workspace = true
-pav_regression = { git = "https://github.com/anchpop/pav.rs.git", rev = "033a36103c094cdd52bcc32f41c1794aa70bb301" }
+pav_regression = { git = "https://github.com/anchpop/pav.rs.git", rev = "776cc7d47b66156cca60d56bcf6956eba4b3b777" }
 rustc-hash = "2.0"
+itertools = "0.14.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "simulation"
+harness = false
+
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false

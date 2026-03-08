@@ -25,7 +25,15 @@
       "Bash(cat:*)",
       "Bash(curl:*)",
       "Bash(ls:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "WebFetch(domain:crates.io)",
+      "mcp__ide__getDiagnostics",
+      "Bash(strings:*)",
+      "WebFetch(domain:android.googlesource.com)",
+      "Bash(pnpm exec tsc:*)",
+      "Bash(tee:*)",
+      "Bash(ps:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }

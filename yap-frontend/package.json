@@ -14,6 +14,8 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/yap.svg"
   },
   "dependencies": {
+    "@fontsource-variable/nunito": "^5.2.7",
+    "@fontsource-variable/nunito-sans": "^5.2.7",
     "@fontsource/rock-salt": "^5.2.8",
     "@radix-ui/react-collapsible": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.14",

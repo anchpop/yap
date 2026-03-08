@@ -18,3 +18,4 @@ anyhow = "1.0"
 env_logger = { workspace = true }
 log = { workspace = true }
 rkyv = { workspace = true }
+indicatif = { workspace = true }

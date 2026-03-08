@@ -90,102 +90,85 @@ export function Stats({ deck: deckProp }: StatsProps) {
             </tr>
           </thead>
           <tbody>
-            {visibleCards.map((card, index) => {
-              let shortDescription = "";
-              let pos = "";
-              const tags: string[] = [];
-
-              const isListeningLexeme =
-                "ListeningLexeme" in card.card_indicator;
-              let listeningCardKey: string | null = null;
-
-              if ("TargetLanguage" in card.card_indicator) {
-                if ("Heteronym" in card.card_indicator.TargetLanguage.lexeme) {
-                  shortDescription =
-                    card.card_indicator.TargetLanguage.lexeme.Heteronym.word;
-                  pos = card.card_indicator.TargetLanguage.lexeme.Heteronym.pos;
-                } else {
-                  shortDescription =
-                    card.card_indicator.TargetLanguage.lexeme.Multiword;
-                }
-              } else if ("ListeningHomophonous" in card.card_indicator) {
-                shortDescription = `/${card.card_indicator.ListeningHomophonous.pronunciation}/`;
-              } else if (isListeningLexeme) {
-                if ("Heteronym" in card.card_indicator.ListeningLexeme.lexeme) {
-                  shortDescription =
-                    card.card_indicator.ListeningLexeme.lexeme.Heteronym.word;
-                } else {
-                  shortDescription =
-                    card.card_indicator.ListeningLexeme.lexeme.Multiword;
-                }
-                tags.push("listening");
-                listeningCardKey = JSON.stringify(card.card_indicator);
-              } else if ("LetterPronunciation" in card.card_indicator) {
-                shortDescription = `[${card.card_indicator.LetterPronunciation.pattern}]`;
+            {(() => {
+              // Find card_text values that appear more than once
+              const textCounts = new Map<string, number>();
+              for (const card of visibleCards) {
+                textCounts.set(card.card_text, (textCounts.get(card.card_text) || 0) + 1);
               }
-
-              const isReady = card.due_timestamp_ms <= currentTimestamp;
-              const isListeningCardRevealed = listeningCardKey
-                ? revealedListeningCards.has(listeningCardKey)
-                : false;
-
-              const wordCellContent = isListeningLexeme ? (
-                isListeningCardRevealed ? (
-                  shortDescription
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      listeningCardKey &&
-                      handleRevealListeningCard(listeningCardKey)
-                    }
-                    className="inline-flex items-center gap-2 rounded-sm bg-transparent p-0 text-left text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                    aria-label="Reveal listening lexeme"
-                  >
-                    <span className="select-none blur-sm">
-                      {shortDescription}
-                    </span>
-                    <span className="text-xs italic text-muted-foreground">
-                      Tap to reveal
-                    </span>
-                  </button>
-                )
-              ) : (
-                shortDescription
+              const duplicateTexts = new Set(
+                [...textCounts.entries()].filter(([, count]) => count > 1).map(([text]) => text)
               );
-              return (
-                <tr
-                  key={index}
-                  className={`border-b ${isReady ? "bg-green-500/10" : ""}`}
-                >
-                  <td className="p-3 font-medium">
-                    {wordCellContent}
-                    {[pos && pos.toLowerCase(), ...tags]
-                      .filter(Boolean)
-                      .map((tag, idx) => (
-                        <span
-                          key={`${shortDescription}-${tag}-${idx}`}
-                          className="ml-2 text-muted-foreground text-sm"
-                        >
-                          ({tag})
+
+              return visibleCards.map((card, index) => {
+                const shortDescription = card.card_text;
+                const subtitle = card.card_subtitle;
+                const showSubtitle = subtitle && duplicateTexts.has(shortDescription);
+
+                const isListeningGram =
+                  card.card_indicator.type === "ListeningGram";
+                const listeningCardKey = isListeningGram
+                  ? JSON.stringify(card.card_indicator)
+                  : null;
+
+                const isReady = card.due_timestamp_ms <= currentTimestamp;
+                const isListeningCardRevealed = listeningCardKey
+                  ? revealedListeningCards.has(listeningCardKey)
+                  : false;
+
+                const wordCellContent = isListeningGram ? (
+                  isListeningCardRevealed ? (
+                    shortDescription
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        listeningCardKey &&
+                        handleRevealListeningCard(listeningCardKey)
+                      }
+                      className="inline-flex items-center gap-2 rounded-sm bg-transparent p-0 text-left text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                      aria-label="Reveal listening lexeme"
+                    >
+                      <span className="select-none blur-sm">
+                        {shortDescription}
+                      </span>
+                      <span className="text-xs italic text-muted-foreground">
+                        Tap to reveal
+                      </span>
+                    </button>
+                  )
+                ) : (
+                  shortDescription
+                );
+                return (
+                  <tr
+                    key={index}
+                    className={`border-b ${isReady ? "bg-green-500/10" : ""}`}
+                  >
+                    <td className="p-3 font-medium">
+                      {wordCellContent}
+                      {showSubtitle && (
+                        <span className="ml-2 text-muted-foreground text-sm">
+                          ({subtitle})
                         </span>
-                      ))}
-                  </td>
+                      )}
+                    </td>
                   <td className="p-3">
                     <Badge variant="outline">{card.state}</Badge>
                   </td>
                   <td className="p-3 text-sm text-muted-foreground">
                     {isReady ? (
-                      <span className="text-green-500 font-medium">
+                      <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">
                         Ready now
-                      </span>
+                      </Badge>
                     ) : (
                       <TimeAgo date={new Date(card.due_timestamp_ms)} />
                     )}
                   </td>
                 </tr>
               );
-            })}
+              });
+            })()}
           </tbody>
         </table>
         {allCards.length > visibleCount && (

@@ -153,10 +153,10 @@ impl Deck {
                 .filter(|card| card.due_timestamp_ms > now_millis)
                 .min_by_key(|card| card.due_timestamp_ms as i64);
 
-            if let Some(next_card) = next_due_card {
-                if let Some(notification) = NotificationType::DueNow.show(&[next_card]) {
-                    notifications.push(notification.at(next_card.due_timestamp_ms));
-                }
+            if let Some(next_card) = next_due_card
+                && let Some(notification) = NotificationType::DueNow.show(&[next_card])
+            {
+                notifications.push(notification.at(next_card.due_timestamp_ms));
             }
         }
 

@@ -1,7 +1,9 @@
 use anyhow::Context;
 use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use language_utils::{Course, HomophonePractice, HomophoneSentencePair, HomophoneWordPair};
+use language_utils::{
+    Course, GramFrequencyEntry, HomophonePractice, HomophoneSentencePair, HomophoneWordPair,
+};
 use std::collections::{BTreeMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
@@ -36,7 +38,7 @@ static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
 pub fn generate_homophones(
     _course: Course,
     target_language_dir: &Path,
-    frequencies: &[language_utils::FrequencyEntry<String>],
+    gram_frequencies: &[GramFrequencyEntry<String>],
     top_n: usize,
 ) -> anyhow::Result<BTreeMap<String, Vec<String>>> {
     let homophones_file = target_language_dir.join(format!("homophones_top_{top_n}.jsonl"));
@@ -54,11 +56,12 @@ pub fn generate_homophones(
             .collect::<BTreeMap<_, _>>());
     }
 
-    // Get the top N words from the frequencies
-    let top_words: HashSet<String> = frequencies
+    // Get the top N words from the gram frequencies (single-atom heteronym grams)
+    let top_words: HashSet<String> = gram_frequencies
         .iter()
+        .filter_map(|entry| entry.gram.heteronym())
         .take(top_n)
-        .filter_map(|entry| entry.lexeme.heteronym().map(|h| h.word.clone()))
+        .map(|h| h.word.clone())
         .collect();
 
     // Load word_to_pronunciation data

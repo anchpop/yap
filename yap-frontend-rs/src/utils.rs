@@ -1,4 +1,64 @@
+use language_utils::language_pack::LanguagePack;
+use language_utils::{Atom, Literal, SentenceGrams, SpurGram};
+use lasso::Spur;
 use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _, persistent};
+
+/// Matches sentence grams to literals, returning each learnable gram
+/// with references to the matched literal statuses.
+///
+/// The function handles "used literal" tracking internally - each literal
+/// is matched to at most one atom across all grams.
+///
+/// # Arguments
+/// * `sentence_spur` - The interned sentence to look up
+/// * `literals` - Slice of (text_spur, status) pairs for each literal
+/// * `language_pack` - The language pack containing encoded sentences and gram data
+///
+/// # Returns
+/// A vector of (gram, matched_statuses) pairs for each learnable gram in the sentence.
+/// `matched_statuses` contains references to the status values for literals that matched
+/// atoms in the gram.
+#[allow(clippy::type_complexity)]
+pub fn match_grams_to_literals<'a, T>(
+    encoded_sentence: &SentenceGrams<SpurGram>,
+    literals: &'a [(Literal<Spur>, T)],
+    language_pack: &LanguagePack,
+) -> Vec<(SpurGram, Vec<(Literal<Spur>, &'a T)>)> {
+    // Track which literals have been used
+    let mut used_literals = vec![false; literals.len()];
+    let mut results = Vec::new();
+
+    for sentence_gram in &encoded_sentence.grams {
+        // Only process learnable grams
+        let Some(gram_spur) = sentence_gram.learnable().copied() else {
+            continue;
+        };
+
+        let gram = language_pack.gram_rodeo.resolve(&gram_spur);
+
+        let mut matched_statuses = Vec::new();
+
+        for atom in gram.iter() {
+            let Atom::Tok(word) = atom else {
+                continue; // Skip control tokens
+            };
+            let word_spur = word.text;
+
+            // Find next unused literal matching this word's Spur
+            for (i, (literal, status)) in literals.iter().enumerate() {
+                if !used_literals[i] && literal.word.text == word_spur {
+                    used_literals[i] = true;
+                    matched_statuses.push((*literal, status));
+                    break;
+                }
+            }
+        }
+
+        results.push((gram_spur, matched_statuses));
+    }
+
+    results
+}
 
 /// Performance instrumentation helper that measures time from creation to drop.
 /// Logs the duration to the console when dropped.
@@ -24,11 +84,11 @@ impl PerfTimer {
 
 impl Drop for PerfTimer {
     fn drop(&mut self) {
-        if let Some(window) = web_sys::window() {
-            if let Some(performance) = window.performance() {
-                let duration = performance.now() - self.start_time;
-                log::info!("[PERF] {}: {:.2}ms", self.label, duration);
-            }
+        if let Some(window) = web_sys::window()
+            && let Some(performance) = window.performance()
+        {
+            let duration = performance.now() - self.start_time;
+            log::info!("[PERF] {}: {:.2}ms", self.label, duration);
         }
     }
 }

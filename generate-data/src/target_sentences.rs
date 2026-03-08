@@ -1,8 +1,7 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 use anyhow::Context;
-use indexmap::IndexSet;
 use language_utils::{Course, Language, SentenceSource};
 use serde::Deserialize;
 
@@ -46,12 +45,8 @@ pub fn get_target_sentences(
 
     // Get all data sources
     let all_cards = crate::read_anki::get_all_cards(&source_data_path);
-    let target_sentence_count = match course.target_language.writing_system() {
-        language_utils::WritingSystem::Latin => DEFAULT_TARGET_SENTENCE_COUNT,
-        _ => DEFAULT_TARGET_SENTENCE_COUNT / 4, // these courses are low-quality anyway, so let's save money
-    };
     let tatoeba_pairs =
-        crate::tatoeba::get_tatoeba_pairs(&source_data_path, course, target_sentence_count);
+        crate::tatoeba::get_tatoeba_pairs(&source_data_path, course, DEFAULT_TARGET_SENTENCE_COUNT);
 
     // Extract target sentences from Anki cards with their native translations
     let use_native_card_side = course.native_language == language_utils::Language::English;
@@ -131,27 +126,21 @@ pub fn get_target_sentences(
         .chain(manual_sentences_iter)
         .collect();
 
-    // Use IndexSet to deduplicate by target sentence while preserving order
+    // Deduplicate by target sentence while preserving order
     // When there are duplicates, prefer entries with translations and merge sources
-    let mut seen_targets: IndexSet<String> = IndexSet::new();
     let mut result: Vec<(String, Option<String>, SentenceSource)> = Vec::new();
-    let mut target_to_index: std::collections::HashMap<String, usize> =
-        std::collections::HashMap::new();
+    let mut target_to_index: HashMap<String, usize> = HashMap::new();
 
     for (target, native, source) in all_sentences {
         if let Some(&existing_index) = target_to_index.get(&target) {
-            // If we already have this target sentence:
-            // 1. Merge the sources
             result[existing_index].2.merge(&source);
-            // 2. Update translation if the existing entry has no translation and this one does
             if result[existing_index].1.is_none() && native.is_some() {
                 result[existing_index].1 = native;
             }
-        } else if seen_targets.insert(target.clone()) {
-            // New target sentence
+        } else {
             let index = result.len();
-            result.push((target.clone(), native, source));
-            target_to_index.insert(target, index);
+            target_to_index.insert(target.clone(), index);
+            result.push((target, native, source));
         }
     }
 
@@ -202,10 +191,10 @@ fn load_banned_sentences(source_data_path: &std::path::Path) -> anyhow::Result<H
             .context("Failed to read AI banned sentences file")?;
         for line in content.lines() {
             // Parse JSON to extract just the sentence
-            if let Ok(banned_entry) = serde_json::from_str::<serde_json::Value>(line) {
-                if let Some(sentence) = banned_entry.get("sentence").and_then(|s| s.as_str()) {
-                    banned_sentences.insert(sentence.to_lowercase());
-                }
+            if let Ok(banned_entry) = serde_json::from_str::<serde_json::Value>(line)
+                && let Some(sentence) = banned_entry.get("sentence").and_then(|s| s.as_str())
+            {
+                banned_sentences.insert(sentence.to_lowercase());
             }
         }
     }
@@ -290,11 +279,51 @@ fn load_movie_sentences(
             parsed_subtitles.extend(split_subtitles);
         }
 
+        // Sanity check: verify subtitles are actually in the target language
+        if !passes_language_sanity_check(&parsed_subtitles, language) {
+            eprintln!(
+                "Warning: subtitles for movie {} failed language sanity check, skipping",
+                movie.id
+            );
+            continue;
+        }
+
         let movie_sentences = filter_subtitle_sentences(&parsed_subtitles, &movie.id, language);
         all_movie_sentences.extend(movie_sentences);
     }
 
     Ok(all_movie_sentences)
+}
+
+/// Check if subtitle lines pass the language sanity check.
+/// All sanity words for the language must appear at least once.
+fn passes_language_sanity_check(subtitles: &[Subtitle], language: Language) -> bool {
+    let sanity_words = language.subtitle_sanity_words();
+    if sanity_words.is_empty() {
+        return true;
+    }
+
+    let all_text: String = subtitles
+        .iter()
+        .map(|s| s.sentence.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    let all_text_lower = all_text.to_lowercase();
+
+    for &word in sanity_words {
+        let found = match language.writing_system() {
+            language_utils::WritingSystem::Latin | language_utils::WritingSystem::Cyrillic => {
+                all_text_lower
+                    .split(|c: char| !c.is_alphanumeric() && c != '\'')
+                    .any(|w| w == word)
+            }
+            _ => all_text_lower.contains(word),
+        };
+        if !found {
+            return false;
+        }
+    }
+    true
 }
 
 /// Split subtitles that contain multiple speakers' dialogue or multiple sentences.

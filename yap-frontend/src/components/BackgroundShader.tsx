@@ -8,7 +8,9 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { useLocation } from "react-router-dom";
 import { useTheme } from "./theme-provider";
+import { getShaderBackgroundCss } from "@/lib/shader-colors";
 
 interface BackgroundContextType {
   bumpBackground: (multiplier?: number) => void;
@@ -32,6 +34,8 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const { theme, animatedBackground } = useTheme();
+  const location = useLocation();
+  const blurBackground = location.pathname === "/select-language";
   
   // Determine actual theme (resolve "system") - memoized to prevent recalculation
   const actualTheme = useMemo(
@@ -93,7 +97,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
 
     // Create a fresh canvas element for this worker
     const canvas = document.createElement("canvas");
-    canvas.className = "fixed inset-0 w-full h-full -z-10";
+    canvas.className = "fixed inset-0 w-full h-full";
     canvas.style.pointerEvents = "none";
     canvas.style.willChange = "contents";
     canvas.style.transform = "translateZ(0)";
@@ -106,14 +110,13 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     );
     workerRef.current = worker;
 
-
-
     // Transfer canvas control to worker
     const offscreenCanvas = canvas.transferControlToOffscreen();
 
     // Set initial size
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const scale = 0.75;
+    const isMobile = window.innerWidth < 768;
+    const scale = isMobile ? 0.35 : 0.75;
     offscreenCanvas.width = window.innerWidth * dpr * scale;
     offscreenCanvas.height = window.innerHeight * dpr * scale;
 
@@ -158,13 +161,22 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     }
   }, [actualTheme, shouldRender]);
 
+  const shaderBgColor = useMemo(
+    () => getShaderBackgroundCss(actualTheme),
+    [actualTheme]
+  );
+
   return (
     <BackgroundContext.Provider value={{ bumpBackground }}>
-      {shouldRender && (
-        <>
-          <div ref={containerRef} className="contents" />
+      <div
+        className="fixed -inset-10 -z-10 transition-[filter] duration-700 ease-in-out"
+        style={{ filter: blurBackground ? "blur(20px)" : "blur(0px)", pointerEvents: "none", backgroundColor: shaderBgColor }}
+      >
+        {shouldRender && (
+          <>
+            <div ref={containerRef} className="contents" />
           <div
-            className="fixed inset-0 w-full h-full -z-10 opacity-[0.30]"
+            className="fixed inset-0 w-full h-full opacity-[0.30]"
             style={{
               pointerEvents: "none",
               backgroundImage: actualTheme === "dark" || actualTheme === "oled" ? "url(/fog.webp)" : "url(/noise2.webp)",
@@ -182,7 +194,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
             }}
           />
           <div
-            className="fixed inset-0 w-full h-full -z-10 opacity-[0.20]"
+            className="fixed inset-0 w-full h-full opacity-[0.20]"
             style={{
               pointerEvents: "none",
               backgroundImage: "url(/noise.webp)",
@@ -199,8 +211,9 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
                   : "none",
             }}
           />
-        </>
-      )}
+          </>
+        )}
+      </div>
       {children}
     </BackgroundContext.Provider>
   );

@@ -1,8 +1,10 @@
 #![deny(clippy::string_slice)]
 
 mod audio;
-mod challenges;
+mod challenge;
+mod deck_event;
 mod deck_selection;
+mod dictionary;
 mod directories;
 mod language_pack;
 mod next_cards;
@@ -14,15 +16,19 @@ pub mod simulation;
 mod supabase;
 mod utils;
 
+pub use deck_event::*;
+
+use language_utils::Atom;
 use language_utils::HomophonePractice;
 use language_utils::HomophoneSentencePair;
 use language_utils::HomophoneWordPair;
 use language_utils::ProperNounDefinition;
-pub use simulation::DailySimulationIterator;
+use language_utils::SentenceGrams;
+use language_utils::SpurGram;
+pub use simulation::{DailySimulationIterator, DayChallengeIterator};
 
 use chrono::{DateTime, Utc};
 use deck_selection::DeckSelectionEvent;
-use futures::StreamExt;
 use language_utils::Frequency;
 use language_utils::Literal;
 use language_utils::PartOfSpeech;
@@ -35,12 +41,11 @@ use language_utils::text_cleanup::{find_closest_match, normalize_for_grading};
 use language_utils::transcription_challenge;
 use language_utils::{Course, Language};
 use language_utils::{
-    DictionaryEntry, Heteronym, Lexeme, MovieMetadata, PatternPosition, PronunciationGuide,
-    TargetToNativeWord,
+    Gram, GramDefinition, Heteronym, MovieMetadata, PronunciationGuide, SentenceGram, WordType,
 };
 use lasso::Spur;
 use opfs::persistent::{self};
-use pav_regression::{IsotonicRegression, Point, SmoothRegression};
+use pav_regression::{IsotonicRegression, Point, SmoothRegression, UnitWeight};
 use rs_fsrs::FSRS;
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
@@ -50,8 +55,7 @@ use std::hash::Hash;
 use std::sync::Arc;
 use std::sync::LazyLock;
 use wasm_bindgen::prelude::*;
-use weapon::PartialAppState as _;
-use weapon::data_model::Event;
+use weapon::AppState as _;
 use weapon::data_model::{EventStore, EventType, ListenerKey, Timestamped};
 
 use crate::deck_selection::DeckSelection;
@@ -208,11 +212,15 @@ impl Weapon {
         store
             .get::<EventType<DeckSelectionEvent>>("deck_selection".to_string())
             .map(|s| {
-                s.state(DeckSelectionPartial {
-                    target_language: None,
-                    native_language: None,
-                    starting_fresh: BTreeMap::new(),
-                })
+                s.state(
+                    DeckSelectionPartial {
+                        target_language: None,
+                        native_language: None,
+                        onboarding_selections: BTreeMap::new(),
+                        heard_about: None,
+                    },
+                    &(),
+                )
             })
     }
 
@@ -228,12 +236,19 @@ impl Weapon {
             .and_then(|s| s.native_language)
             .unwrap_or(course.native_language);
 
-        let initial_state = DeckState::new(language_pack, target_language, native_language);
+        let context = Context {
+            language_pack,
+            course: Course {
+                target_language,
+                native_language,
+            },
+        };
+        let initial_state = DeckState::new();
         let store = self.store.borrow_mut();
         let Some(stream) = store.get::<EventType<DeckEvent>>("reviews".to_string()) else {
-            return Ok(Deck::finalize(initial_state));
+            return Ok(Deck::finalize(initial_state, &context));
         };
-        Ok(stream.state(initial_state))
+        Ok(stream.state(initial_state, &context))
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -455,13 +470,14 @@ impl Weapon {
     ) -> Result<(), JsValue> {
         let event: serde_json::Value =
             serde_json::from_str(&event).map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
-        let event =
-            <Timestamped<EventType<DeckEvent>> as weapon::data_model::Event>::from_json(&event)
-                .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+        let versioned_event: Timestamped<EventType<VersionedDeckEvent>> =
+            serde_json::from_value(event).map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
 
+        // Add the versioned event directly - it will be stored on disk.
+        // Events that can't convert to current form will be skipped during state computation.
         self.store
             .borrow_mut()
-            .add_device_event(stream_id, device_id, event, None);
+            .add_device_event(stream_id, device_id, versioned_event, None);
         self.flush_notifications();
         Ok(())
     }
@@ -566,95 +582,31 @@ impl<'a> Drop for FlushLater<'a> {
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct TranslateComprehensibleSentence<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-    <Option<Heteronym<S>> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
+pub struct TranslateComprehensibleSentence {
     pub audio: AudioRequest,
-    pub target_language: S,
-    pub target_language_literals: Vec<Literal<S>>,
-    pub primary_expression: Lexeme<S>,
-    pub unique_target_language_lexemes: Vec<Lexeme<S>>,
-    pub unique_target_language_lexeme_definitions: Vec<(Lexeme<S>, Vec<TargetToNativeWord>)>,
-    pub native_translations: Vec<S>,
+    pub target_language: String,
+    pub target_language_literals: Vec<Literal<String>>,
+    /// For each literal, the index of the gram group it belongs to.
+    pub literal_gram_indices: Vec<usize>,
+    /// Definition for each gram group (indexed by group number). None if no definition is available.
+    pub gram_definitions_for_lookup: Vec<Option<GramDefinition>>,
+    pub unique_target_language_phrases: Vec<Gram<String>>,
+    /// Definition for each phrase in unique_target_language_phrases (indexed in parallel).
+    pub phrase_definitions: Vec<Option<GramDefinition>>,
+    pub native_translations: Vec<String>,
     pub movie_titles: Vec<(String, String)>,
-    pub proper_noun_definitions: Vec<(S, ProperNounDefinition)>,
-}
-
-impl TranslateComprehensibleSentence<Spur> {
-    fn resolve(&self, rodeo: &lasso::RodeoReader) -> TranslateComprehensibleSentence<String> {
-        TranslateComprehensibleSentence {
-            audio: self.audio.clone(),
-            target_language: rodeo.resolve(&self.target_language).to_string(),
-            target_language_literals: self
-                .target_language_literals
-                .iter()
-                .map(|l| l.resolve(rodeo))
-                .collect(),
-            primary_expression: self.primary_expression.resolve(rodeo),
-            unique_target_language_lexemes: self
-                .unique_target_language_lexemes
-                .iter()
-                .map(|l| l.resolve(rodeo))
-                .collect(),
-            unique_target_language_lexeme_definitions: self
-                .unique_target_language_lexeme_definitions
-                .iter()
-                .map(|(l, d)| (l.resolve(rodeo), d.clone()))
-                .collect(),
-            native_translations: self
-                .native_translations
-                .iter()
-                .map(|t| rodeo.resolve(t).to_string())
-                .collect(),
-            movie_titles: self.movie_titles.clone(),
-            proper_noun_definitions: self
-                .proper_noun_definitions
-                .iter()
-                .map(|(s, def)| (rodeo.resolve(s).to_string(), def.clone()))
-                .collect(),
-        }
-    }
+    pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
 }
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct TranscribeComprehensibleSentence<S> {
-    pub target_language: S,
+pub struct TranscribeComprehensibleSentence {
+    pub target_language: String,
     pub audio: AudioRequest,
-    pub native_language: S,
+    pub native_language: String,
     pub parts: Vec<transcription_challenge::Part>,
     pub movie_titles: Vec<(String, String)>,
-}
-
-impl TranscribeComprehensibleSentence<Spur> {
-    fn resolve(&self, rodeo: &lasso::RodeoReader) -> TranscribeComprehensibleSentence<String> {
-        TranscribeComprehensibleSentence {
-            target_language: rodeo.resolve(&self.target_language).to_string(),
-            audio: self.audio.clone(),
-            native_language: rodeo.resolve(&self.native_language).to_string(),
-            parts: self.parts.clone(),
-            movie_titles: self.movie_titles.clone(),
-        }
-    }
-}
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum SentenceReviewResult {
-    Perfect {
-        #[serde(default)]
-        lexemes_needed_hint: BTreeSet<Lexeme<String>>,
-    },
-    Wrong {
-        submission: String,
-        lexemes_remembered: BTreeSet<Lexeme<String>>,
-        lexemes_forgotten: BTreeSet<Lexeme<String>>,
-        #[serde(default)]
-        lexemes_needed_hint: BTreeSet<Lexeme<String>>,
-    },
+    pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
@@ -691,79 +643,7 @@ pub struct AddCardOptions {
     pub manual_add: Vec<(u32, CardType)>,
 }
 
-#[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify, Hash,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum CardIndicator<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
-    TargetLanguage {
-        lexeme: Lexeme<S>,
-    },
-    ListeningHomophonous {
-        pronunciation: S,
-    },
-    ListeningLexeme {
-        lexeme: Lexeme<S>,
-    },
-    LetterPronunciation {
-        pattern: S,
-        position: PatternPosition,
-    },
-    // should work on this
-    // UnderstandingDifferenceText {
-    //     distinguish: S,
-    //     from: S,
-    // },
-}
-
-impl<S> CardIndicator<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
-    pub fn target_language(&self) -> Option<&Lexeme<S>> {
-        match self {
-            CardIndicator::TargetLanguage { lexeme } => Some(lexeme),
-            _ => None,
-        }
-    }
-
-    pub fn listening_homophonous(&self) -> Option<&S> {
-        match self {
-            CardIndicator::ListeningHomophonous { pronunciation } => Some(pronunciation),
-            _ => None,
-        }
-    }
-
-    pub fn listening_lexeme(&self) -> Option<&Lexeme<S>> {
-        match self {
-            CardIndicator::ListeningLexeme { lexeme } => Some(lexeme),
-            _ => None,
-        }
-    }
-
-    pub fn letter_pronunciation(&self) -> Option<&S> {
-        match self {
-            CardIndicator::LetterPronunciation { pattern, .. } => Some(pattern),
-            _ => None,
-        }
-    }
-
-    pub fn card_type(&self) -> CardType {
-        match self {
-            CardIndicator::TargetLanguage { .. } => CardType::TargetLanguage,
-            CardIndicator::ListeningHomophonous { .. } => CardType::Listening,
-            CardIndicator::ListeningLexeme { .. } => CardType::Listening,
-            CardIndicator::LetterPronunciation { .. } => CardType::LetterPronunciation,
-        }
-    }
-}
+pub use deck_event::current::CardIndicator;
 
 impl CardType {
     pub fn challenge_type(&self) -> ChallengeRequirements {
@@ -775,203 +655,6 @@ impl CardType {
     }
 }
 
-impl CardIndicator<String> {
-    pub fn get_interned(&self, rodeo: &lasso::RodeoReader) -> Option<CardIndicator<Spur>> {
-        Some(match self {
-            CardIndicator::TargetLanguage { lexeme } => CardIndicator::TargetLanguage {
-                lexeme: lexeme.get_interned(rodeo)?,
-            },
-            CardIndicator::ListeningHomophonous { pronunciation } => {
-                CardIndicator::ListeningHomophonous {
-                    pronunciation: rodeo.get(pronunciation)?,
-                }
-            }
-            CardIndicator::ListeningLexeme { lexeme } => CardIndicator::ListeningLexeme {
-                lexeme: lexeme.get_interned(rodeo)?,
-            },
-            CardIndicator::LetterPronunciation { pattern, position } => {
-                CardIndicator::LetterPronunciation {
-                    pattern: rodeo.get(pattern)?,
-                    position: *position,
-                }
-            }
-        })
-    }
-}
-
-impl CardIndicator<Spur> {
-    pub fn get_flashcard_type(&self) -> Option<FlashcardType> {
-        match self {
-            CardIndicator::TargetLanguage { lexeme } => match lexeme {
-                Lexeme::Heteronym(_) => Some(FlashcardType::Heteronym),
-                Lexeme::Multiword(_) => Some(FlashcardType::Multiword),
-            },
-            CardIndicator::ListeningHomophonous { .. } | CardIndicator::ListeningLexeme { .. } => {
-                Some(FlashcardType::Listening)
-            }
-            CardIndicator::LetterPronunciation { .. } => Some(FlashcardType::LetterPronunciation),
-        }
-    }
-
-    pub fn resolve(&self, rodeo: &lasso::RodeoReader) -> CardIndicator<String> {
-        match self {
-            CardIndicator::TargetLanguage { lexeme } => CardIndicator::TargetLanguage {
-                lexeme: lexeme.resolve(rodeo),
-            },
-            CardIndicator::ListeningHomophonous { pronunciation } => {
-                CardIndicator::ListeningHomophonous {
-                    pronunciation: rodeo.resolve(pronunciation).to_string(),
-                }
-            }
-            CardIndicator::ListeningLexeme { lexeme } => CardIndicator::ListeningLexeme {
-                lexeme: lexeme.resolve(rodeo),
-            },
-            CardIndicator::LetterPronunciation { pattern, position } => {
-                CardIndicator::LetterPronunciation {
-                    pattern: rodeo.resolve(pattern).to_string(),
-                    position: *position,
-                }
-            }
-        }
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum SentenceReviewIndicator {
-    TargetToNative {
-        challenge_sentence: String,
-        result: SentenceReviewResult,
-    },
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct LanguageEvent {
-    #[serde(alias = "language")]
-    pub target_language: Language,
-    #[serde(default = "default_native_language")]
-    pub native_language: Language,
-    pub content: LanguageEventContent,
-}
-
-fn default_native_language() -> Language {
-    Language::English
-}
-
-#[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-#[serde(rename_all = "lowercase")]
-pub enum Rating {
-    Again,
-    Remembered, // generic rating for when the user picked "remembered" without choosing a specific rating
-
-    Hard,
-    Good,
-    Easy,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct PlacementTest {
-    known_words: Vec<String>,
-    unknown_words: Vec<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum LanguageEventContent {
-    CompletePlacementTest {
-        results: PlacementTest,
-    },
-    AddCards {
-        cards: Vec<CardIndicator<String>>,
-    },
-    ReviewCard {
-        reviewed: CardIndicator<String>,
-        rating: Rating,
-    },
-    #[serde(rename = "ReviewSentence")]
-    TranslationChallenge {
-        review: SentenceReviewIndicator,
-    },
-    TranscriptionChallenge {
-        challenge: Vec<transcription_challenge::PartGraded>,
-    },
-}
-
-// Event types
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum DeckEvent {
-    Language(LanguageEvent),
-}
-#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-#[serde(tag = "version")]
-pub enum VersionedDeckEvent {
-    V1(DeckEvent),
-}
-
-impl Event for DeckEvent {
-    fn to_json(&self) -> Result<serde_json::Value, serde_json::Error> {
-        let versioned = VersionedDeckEvent::from(self.clone());
-        serde_json::to_value(versioned)
-    }
-
-    fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error> {
-        serde_json::from_value::<VersionedDeckEvent>(json.clone()).map(|versioned| versioned.into())
-    }
-}
-impl From<DeckEvent> for VersionedDeckEvent {
-    fn from(event: DeckEvent) -> Self {
-        VersionedDeckEvent::V1(event)
-    }
-}
-impl From<VersionedDeckEvent> for DeckEvent {
-    fn from(event: VersionedDeckEvent) -> Self {
-        match event {
-            VersionedDeckEvent::V1(event) => event,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-enum CardStatus {
-    Tracked(CardData),
-    Unadded(Unadded),
-}
-
-impl CardStatus {
-    pub(crate) fn is_new(&self) -> bool {
-        match self {
-            CardStatus::Tracked(CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card }) => {
-                fsrs_card.state == rs_fsrs::State::New
-            }
-            CardStatus::Unadded(_) => false,
-        }
-    }
-
-    pub(crate) fn reviewed(&self) -> Option<&CardData> {
-        match self {
-            CardStatus::Tracked(card_data) => Some(card_data),
-            CardStatus::Unadded(_) => None,
-        }
-    }
-
-    pub(crate) fn unadded(&self) -> Option<&Unadded> {
-        match self {
-            CardStatus::Unadded(unadded) => Some(unadded),
-            CardStatus::Tracked(_) => None,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-struct Unadded {}
-
 #[derive(Clone, Debug)]
 enum CardData {
     /// Card that has been formally added to the deck
@@ -981,14 +664,22 @@ enum CardData {
 }
 
 impl CardData {
+    pub(crate) fn is_new(&self) -> bool {
+        match self {
+            CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
+                fsrs_card.state == rs_fsrs::State::New
+            }
+        }
+    }
+
     /// Returns positive surprise if there are no lapses, or negative surprise otherwise
-    pub fn pre_existing_knowledge(&self) -> f64 {
+    pub fn pre_existing_knowledge(&self) -> f32 {
         match self {
             CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
                 if fsrs_card.lapses == 0 {
-                    fsrs_card.accumulated_positive_surprise
+                    fsrs_card.accumulated_positive_surprise as f32
                 } else {
-                    -fsrs_card.accumulated_negative_surprise
+                    -fsrs_card.accumulated_negative_surprise as f32
                 }
             }
         }
@@ -1031,8 +722,7 @@ pub struct Context {
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum FlashcardType {
-    Heteronym,
-    Multiword,
+    WrittenGram,
     Listening,
     LetterPronunciation,
 }
@@ -1068,68 +758,60 @@ pub enum UserStatedExperience {
 #[derive(Clone, Debug)]
 pub struct DeckState {
     placement_test_results: Option<PlacementTest>,
-    cards: FxHashMap<CardIndicator<Spur>, CardData>,
+    cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardData>,
     fsrs: FSRS,
     stats: Stats,
-    context: Context,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
-    leeches: BTreeMap<CardIndicator<Spur>, u64>,
+    leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
 }
 
 #[derive(Clone, Debug)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct Deck {
     placement_test_results: Option<PlacementTest>,
-    cards: FxHashMap<CardIndicator<Spur>, CardStatus>,
+    cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardData>,
     fsrs: FSRS,
     pub(crate) stats: Stats,
     pub(crate) context: Context,
     regressions: Regressions,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
-    leeches: BTreeMap<CardIndicator<Spur>, u64>,
+    leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
 }
 
 #[derive(Clone, Debug)]
 pub(crate) struct Regressions {
-    target_language_regression: Option<SmoothRegression<f64>>,
-    listening_regression: Option<SmoothRegression<f64>>,
+    target_language_regression: Option<SmoothRegression<f32>>,
+    listening_regression: Option<SmoothRegression<f32>>,
 }
 
 struct ComprehensibleSentence {
     target_language: Spur,
-    target_language_literals: Vec<Literal<Spur>>,
-    unique_target_language_lexemes: Vec<Lexeme<Spur>>,
+    target_language_sentence_grams: SentenceGrams<SpurGram>,
+    unique_target_language_phrases: Vec<SpurGram>,
     native_languages: Vec<Spur>,
 }
 
 impl From<Deck> for DeckState {
     fn from(deck: Deck) -> Self {
-        // Convert cards from CardStatus to CardData, only keeping Added cards
-        let cards = deck
-            .cards
-            .iter()
-            .filter_map(|(indicator, status)| match status {
-                CardStatus::Tracked(data) => Some((*indicator, data.clone())),
-                CardStatus::Unadded { .. } => None,
-            })
-            .collect();
-
         DeckState {
             placement_test_results: deck.placement_test_results,
-            cards,
+            cards: deck.cards,
             fsrs: deck.fsrs,
             stats: deck.stats,
-            context: deck.context,
             leeches: deck.leeches,
         }
     }
 }
 
-impl weapon::PartialAppState for Deck {
+impl weapon::AppState for Deck {
     type Event = DeckEvent;
     type Partial = DeckState;
 
-    fn process_event(mut deck: Self::Partial, event: &Timestamped<Self::Event>) -> Self::Partial {
+    fn process_event(
+        mut deck: Self::Partial,
+        context: &<Self::Event as weapon::data_model::Event>::Context,
+        event: &Timestamped<Self::Event>,
+    ) -> Self::Partial {
         let Timestamped::<DeckEvent> {
             event,
             timestamp,
@@ -1155,7 +837,7 @@ impl weapon::PartialAppState for Deck {
         deck.leeches
             .retain(|_, detected_at| current_reviews - *detected_at <= 250);
 
-        if *event_language != deck.context.course.target_language {
+        if *event_language != context.course.target_language {
             return deck;
         }
 
@@ -1185,9 +867,12 @@ impl weapon::PartialAppState for Deck {
             }
             LanguageEventContent::AddCards { cards } => {
                 for (index, card) in cards.iter().enumerate() {
-                    if let Some(card) = card.get_interned(&deck.context.language_pack.rodeo) {
+                    if let Some(card) = card.get_interned(
+                        &context.language_pack.string_rodeo,
+                        &context.language_pack.gram_rodeo,
+                    ) {
                         // Make sure the card is valid and can be added
-                        if !deck.context.is_card_valid(&card) {
+                        if !context.is_card_valid(&card) {
                             continue;
                         }
                         // Add the card to the deck if it's not already in it, or transition ghost to added
@@ -1214,7 +899,10 @@ impl weapon::PartialAppState for Deck {
                 }
             }
             LanguageEventContent::ReviewCard { reviewed, rating } => {
-                if let Some(reviewed) = reviewed.get_interned(&deck.context.language_pack.rodeo) {
+                if let Some(reviewed) = reviewed.get_interned(
+                    &context.language_pack.string_rodeo,
+                    &context.language_pack.gram_rodeo,
+                ) {
                     // Track flashcard type for tutorial purposes
                     if let Some(flashcard_type) = reviewed.get_flashcard_type() {
                         *deck
@@ -1223,204 +911,257 @@ impl weapon::PartialAppState for Deck {
                             .entry(flashcard_type)
                             .or_insert(0) += 1;
                     }
-                    deck.log_review(reviewed, *rating, *timestamp);
+                    deck.log_review(reviewed, *rating, *timestamp, context);
                 }
             }
-            LanguageEventContent::TranslationChallenge {
-                review:
-                    SentenceReviewIndicator::TargetToNative {
-                        challenge_sentence,
-                        result:
-                            SentenceReviewResult::Perfect {
-                                lexemes_needed_hint,
-                            },
-                    },
-            } => {
-                // Clean the sentence before lookup to ensure old sentences with incorrect spacing
-                // can be mapped to new sentences with correct spacing
+            LanguageEventContent::TranslationChallenge { review, legacy } => {
+                // Status: (hinted, remembered)
+                type TranslationStatus = (bool, Option<bool>);
+
+                // Extract literals into (Spur, status) pairs
+                let literals: Vec<(Literal<Spur>, TranslationStatus)> = {
+                    let mut statuses: Vec<_> = match &review {
+                        current::SentenceReviewResult::Perfect { literals, .. } => literals
+                            .iter()
+                            .map(|(literal, hinted)| {
+                                let hinted = hinted.unwrap_or(false);
+                                (literal.clone(), (hinted, Some(true)))
+                            })
+                            .collect(),
+                        current::SentenceReviewResult::Graded { literals, .. } => literals
+                            .iter()
+                            .map(|(literal, result)| match result {
+                                None => (literal.clone(), (false, None)),
+                                Some(learnable) => {
+                                    (literal.clone(), (learnable.hinted, learnable.remembered))
+                                }
+                            })
+                            .collect(),
+                    };
+                    // Lowercase the first letter to match encoded grams
+                    if let Some((first_literal, _)) = statuses.first_mut() {
+                        language_utils::normalize_word_capitalization_for_gram_matching(
+                            &mut first_literal.word,
+                            context.course.target_language,
+                        );
+                    }
+                    // Intern all texts, skipping any not found
+                    statuses
+                        .into_iter()
+                        .filter_map(|(literal, status)| {
+                            match literal.get_interned(&context.language_pack.string_rodeo) {
+                                Some(spur) => Some((spur, status)),
+                                None => {
+                                    log::warn!("Literal text not found in rodeo: {literal:?}");
+                                    None
+                                }
+                            }
+                        })
+                        .collect()
+                };
+
+                // Get the challenge sentence
+                let challenge_sentence = match &review {
+                    current::SentenceReviewResult::Perfect { challenge, .. } => challenge,
+                    current::SentenceReviewResult::Graded { challenge, .. } => challenge,
+                };
+
+                // Clean the sentence before lookup
                 let cleaned_sentence = language_utils::text_cleanup::cleanup_sentence(
                     challenge_sentence.clone(),
-                    deck.context.course.target_language,
+                    context.course.target_language,
                 );
-                if let Some(challenge_sentence) =
-                    deck.context.language_pack.rodeo.get(&cleaned_sentence)
+
+                if let Some(sentence_spur) =
+                    context.language_pack.string_rodeo.get(&cleaned_sentence)
+                    && let Some(encoded_sentence) =
+                        context.language_pack.encoded_sentences.get(&sentence_spur)
                 {
-                    if let Some(lexemes) = deck
-                        .context
-                        .language_pack
-                        .sentences_to_lexemes
-                        .get(&challenge_sentence)
+                    // Update sentence review count
+                    *deck
+                        .stats
+                        .sentences_reviewed
+                        .entry(sentence_spur)
+                        .or_insert(0) += 1;
+
+                    let mut remembered_grams = BTreeSet::new();
+                    let mut forgotten_grams = BTreeSet::new();
+
+                    // Phrases are now unified as grams - legacy multiword terms get interned into gram_rodeo
+
+                    // Match grams to literals and log reviews for multi-word grams
+                    for (gram, matched) in utils::match_grams_to_literals(
+                        encoded_sentence,
+                        &literals,
+                        &context.language_pack,
+                    ) {
+                        let any_hinted = matched.iter().any(|(_, (h, _))| *h);
+                        let any_forgotten = matched.iter().any(|(_, (_, r))| *r == Some(false));
+                        let all_remembered = matched.iter().all(|(_, (_, r))| *r == Some(true));
+
+                        if any_forgotten || any_hinted {
+                            forgotten_grams.insert(gram);
+                        } else if all_remembered {
+                            remembered_grams.insert(gram);
+                        }
+
+                        let gram = context.language_pack.gram_rodeo.resolve(&gram);
+                        if gram.len() > 1 {
+                            for (literal, (hinted, remembered)) in matched {
+                                let language_utils::WordType::Heteronym(_) =
+                                    &literal.word.word_type
+                                else {
+                                    continue;
+                                };
+
+                                let gram = Gram(vec![Atom::Tok(literal.word)]);
+                                if let Some(gram) = context.language_pack.gram_rodeo.get(&gram) {
+                                    if *hinted || *remembered == Some(false) {
+                                        forgotten_grams.insert(gram);
+                                    } else if *remembered == Some(true) {
+                                        remembered_grams.insert(gram);
+                                    }
+                                }
+                            }
+                        }
+                        // else: Unknown state, skip this gram
+                    }
+
+                    // Handle phrases (multiword terms) via remembered_grams/forgotten_grams
+                    match &review {
+                        current::SentenceReviewResult::Perfect { .. } => {
+                            for gram_spur in encoded_sentence
+                                .multiword_terms
+                                .iter()
+                                .chain(encoded_sentence.low_confidence_multiword_terms.iter())
+                            {
+                                remembered_grams.insert(*gram_spur);
+                            }
+                        }
+                        current::SentenceReviewResult::Graded { phrases, .. } => {
+                            for (phrase, remembered) in phrases {
+                                let matching_gram = encoded_sentence
+                                    .multiword_terms
+                                    .iter()
+                                    .chain(encoded_sentence.low_confidence_multiword_terms.iter())
+                                    .find(|gram_spur| {
+                                        let resolved = context
+                                            .language_pack
+                                            .gram_rodeo
+                                            .resolve(gram_spur)
+                                            .resolve(&context.language_pack.string_rodeo);
+                                        let display = resolved
+                                            .to_display_string(context.course.target_language);
+                                        display == *phrase
+                                    });
+                                if let Some(gram_spur) = matching_gram {
+                                    match remembered {
+                                        Some(true) => {
+                                            remembered_grams.insert(*gram_spur);
+                                        }
+                                        Some(false) => {
+                                            forgotten_grams.insert(*gram_spur);
+                                        }
+                                        None => {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     {
-                        let sentence_review_count = deck
-                            .stats
-                            .sentences_reviewed
-                            .entry(challenge_sentence)
-                            .or_insert(0);
-                        *sentence_review_count += 1;
-
-                        let lexemes = lexemes.clone().into_iter().collect::<BTreeSet<_>>();
-                        let lexemes_needed_hint = lexemes_needed_hint
-                            .clone()
-                            .into_iter()
-                            .flat_map(|lexeme| {
-                                lexeme.get_interned(&deck.context.language_pack.rodeo)
-                            })
-                            .collect::<BTreeSet<_>>();
-                        for lexeme in lexemes.difference(&lexemes_needed_hint) {
-                            deck.log_review(
-                                CardIndicator::TargetLanguage { lexeme: *lexeme },
-                                Rating::Remembered,
-                                *timestamp,
-                            );
+                        for lexeme in &legacy.lexemes_remembered {
+                            match lexeme {
+                                language_utils::Lexeme::Heteronym { heteronym } => {
+                                    let Some(heteronym) =
+                                        heteronym.get_interned(&context.language_pack.string_rodeo)
+                                    else {
+                                        continue;
+                                    };
+                                    let Some(grams) =
+                                        context.language_pack.heteronym_to_grams.get(&heteronym)
+                                    else {
+                                        continue;
+                                    };
+                                    let Some(gram) = grams.first() else {
+                                        continue;
+                                    };
+                                    remembered_grams.insert(*gram);
+                                }
+                                language_utils::Lexeme::Multiword { phrase } => {
+                                    if let Some(grams) =
+                                        context.language_pack.string_to_grams.get(phrase)
+                                        && let Some(gram) = grams.first()
+                                    {
+                                        remembered_grams.insert(*gram);
+                                    }
+                                }
+                            }
                         }
-                        for lexeme in lexemes_needed_hint {
-                            deck.log_review(
-                                CardIndicator::TargetLanguage { lexeme },
-                                Rating::Again,
-                                *timestamp,
-                            );
+                        for lexeme in &legacy.lexemes_forgotten {
+                            match lexeme {
+                                language_utils::Lexeme::Heteronym { heteronym } => {
+                                    let Some(heteronym) =
+                                        heteronym.get_interned(&context.language_pack.string_rodeo)
+                                    else {
+                                        continue;
+                                    };
+                                    let Some(grams) =
+                                        context.language_pack.heteronym_to_grams.get(&heteronym)
+                                    else {
+                                        continue;
+                                    };
+                                    let Some(gram) = grams.first() else {
+                                        continue;
+                                    };
+                                    forgotten_grams.insert(*gram);
+                                }
+                                language_utils::Lexeme::Multiword { phrase } => {
+                                    if let Some(grams) =
+                                        context.language_pack.string_to_grams.get(phrase)
+                                        && let Some(gram) = grams.first()
+                                    {
+                                        forgotten_grams.insert(*gram);
+                                    }
+                                }
+                            }
+                        }
+                        for heteronym in &legacy.heteronyms_needed_hint {
+                            let Some(heteronym) =
+                                heteronym.get_interned(&context.language_pack.string_rodeo)
+                            else {
+                                continue;
+                            };
+                            let Some(grams) =
+                                context.language_pack.heteronym_to_grams.get(&heteronym)
+                            else {
+                                continue;
+                            };
+                            let Some(gram) = grams.first() else {
+                                continue;
+                            };
+                            forgotten_grams.insert(*gram);
                         }
                     }
-                }
-            }
-            LanguageEventContent::TranslationChallenge {
-                review:
-                    SentenceReviewIndicator::TargetToNative {
-                        challenge_sentence: _,
-                        result:
-                            SentenceReviewResult::Wrong {
-                                submission: _,
-                                lexemes_remembered,
-                                lexemes_forgotten,
-                                lexemes_needed_hint,
-                            },
-                    },
-            } => {
-                for lexeme in lexemes_remembered.difference(lexemes_needed_hint) {
-                    if let Some(lexeme) = lexeme.get_interned(&deck.context.language_pack.rodeo) {
-                        deck.log_review(
-                            CardIndicator::TargetLanguage { lexeme },
-                            Rating::Remembered,
-                            *timestamp,
-                        );
-                    }
-                }
 
-                for lexeme in lexemes_forgotten.union(lexemes_needed_hint) {
-                    if let Some(lexeme) = lexeme.get_interned(&deck.context.language_pack.rodeo) {
-                        deck.log_review(
-                            CardIndicator::TargetLanguage { lexeme },
-                            Rating::Again,
-                            *timestamp,
-                        );
+                    for gram in remembered_grams.difference(&forgotten_grams) {
+                        let card = CardIndicator::WrittenGram { gram: *gram };
+                        if context.is_card_valid(&card) {
+                            deck.log_review(card, current::Rating::Remembered, *timestamp, context);
+                        }
+                    }
+                    for gram in &forgotten_grams {
+                        let card = CardIndicator::WrittenGram { gram: *gram };
+                        if context.is_card_valid(&card) {
+                            deck.log_review(card, current::Rating::Again, *timestamp, context);
+                        }
                     }
                 }
             }
             LanguageEventContent::TranscriptionChallenge { challenge } => {
-                let mut perfect = true;
-
-                // Check if this is a full sentence transcription
-                // (no Provided parts with heteronyms - only punctuation is provided)
-                let is_full_sentence_transcription = !challenge.iter().any(|part| {
-                    matches!(part, transcription_challenge::PartGraded::Provided { part } if part.heteronym().is_some())
-                });
-
-                // First pass: collect worst grade for each heteronym (word with its specific meaning)
-                // Using HashMap to track worst grade per heteronym
-                let mut worst_grades: FxHashMap<
-                    Heteronym<lasso::Spur>,
-                    transcription_challenge::WordGrade,
-                > = FxHashMap::default();
-
-                for part in challenge {
-                    if let transcription_challenge::PartGraded::AskedToTranscribe {
-                        parts, ..
-                    } = part
-                    {
-                        for graded_part in parts {
-                            if let Some(heteronym) = graded_part.heard.heteronym()
-                                && let Some(heteronym) =
-                                    heteronym.get_interned(&deck.context.language_pack.rodeo)
-                            {
-                                // Update with worse grade (remember: worse grade > better grade in Ord)
-                                worst_grades
-                                    .entry(heteronym)
-                                    .and_modify(|existing_grade| {
-                                        if graded_part.grade > *existing_grade {
-                                            *existing_grade = graded_part.grade.clone();
-                                        }
-                                    })
-                                    .or_insert_with(|| graded_part.grade.clone());
-                            }
-                        }
-                    }
-                }
-
-                // Process each heteronym with its worst grade
-                for (heteronym, grade) in worst_grades {
-                    if let Some(&pronunciation) = deck
-                        .context
-                        .language_pack
-                        .word_to_pronunciation
-                        .get(&heteronym.word)
-                    {
-                        let listening_homophonous_card =
-                            CardIndicator::ListeningHomophonous { pronunciation };
-                        let listening_lexeme_card = CardIndicator::ListeningLexeme {
-                            lexeme: Lexeme::Heteronym(heteronym),
-                        };
-
-                        // Map the grade to a FSRS rating
-                        // We should make use of the wrote and should_have_written fields, e.g. to give the user disambiguation practice
-                        // but we don't do anything with them for now
-                        let rating = match grade.clone() {
-                            transcription_challenge::WordGrade::Perfect { wrote: _ } => Rating::Remembered,
-                            transcription_challenge::WordGrade::CorrectWithTypo { wrote: _ } => {
-                                Rating::Remembered
-                            }
-                            transcription_challenge::WordGrade::PhoneticallyIdenticalButContextuallyIncorrect { wrote: _ } => {
-                                Rating::Hard
-                            }
-                            transcription_challenge::WordGrade::PhoneticallySimilarButContextuallyIncorrect { wrote: _ } => {
-                                Rating::Again
-                            }
-                            transcription_challenge::WordGrade::Incorrect { wrote: _ } => Rating::Again,
-                            transcription_challenge::WordGrade::Missed {} => Rating::Again,
-                        };
-
-                        if rating != Rating::Again {
-                            *deck.stats.words_listened_to.entry(heteronym).or_insert(0) += 1;
-                        } else {
-                            perfect = false;
-                        }
-
-                        // Always log review for ListeningHomophonous card
-                        deck.log_review(listening_homophonous_card, rating, *timestamp);
-
-                        if rating == Rating::Remembered
-                            && deck.context.is_card_valid(&listening_lexeme_card)
-                        {
-                            if let std::collections::hash_map::Entry::Vacant(e) =
-                                deck.cards.entry(listening_lexeme_card)
-                            {
-                                // Add the card as a new card
-                                let mut fsrs_card = rs_fsrs::Card::new(*timestamp);
-                                fsrs_card.due = *timestamp;
-                                e.insert(CardData::Added { fsrs_card });
-                            }
-                        }
-
-                        // For full sentence transcriptions with successful transcription,
-                        // add or review the ListeningLexeme card
-                        if is_full_sentence_transcription {
-                            // Log a review for the existing card
-                            deck.log_review(listening_lexeme_card, rating, *timestamp);
-                        }
-                    }
-                }
-
-                if perfect {
-                    let challenge_sentence = challenge
+                // Extract literals with grades as (Spur, WordGrade) pairs
+                let literals: Vec<(Literal<Spur>, transcription_challenge::WordGrade)> = {
+                    let mut grades: Vec<_> = challenge
                         .iter()
                         .flat_map(|part| match part {
                             transcription_challenge::PartGraded::AskedToTranscribe {
@@ -1428,28 +1169,173 @@ impl weapon::PartialAppState for Deck {
                                 ..
                             } => parts
                                 .iter()
-                                .flat_map(|part| {
-                                    vec![
-                                        part.heard.word.text.clone(),
-                                        part.heard.whitespace.clone(),
-                                    ]
-                                })
+                                .map(|p| (p.heard.clone(), Some(p.grade.clone())))
                                 .collect::<Vec<_>>(),
                             transcription_challenge::PartGraded::Provided { part } => {
-                                vec![part.word.text.clone(), part.whitespace.clone()]
+                                // Provided parts (punctuation) don't have grades
+                                vec![(part.clone(), None)]
                             }
                         })
-                        .collect::<Vec<String>>()
-                        .join("");
-                    if let Some(challenge_sentence) =
-                        deck.context.language_pack.rodeo.get(&challenge_sentence)
-                    {
-                        let sentence_review_count = deck
+                        .collect();
+
+                    // Lowercase the first letter to match encoded grams
+                    if let Some((first_literal, _)) = grades.first_mut() {
+                        language_utils::normalize_word_capitalization_for_gram_matching(
+                            &mut first_literal.word,
+                            context.course.target_language,
+                        );
+                    }
+
+                    // Intern all texts and filter to only graded parts
+                    grades
+                        .into_iter()
+                        .filter_map(|(literal, grade)| {
+                            let grade = grade?; // Skip provided parts without grades
+                            match literal.get_interned(&context.language_pack.string_rodeo) {
+                                Some(spur) => Some((spur, grade)),
+                                None => {
+                                    log::warn!(
+                                        "Transcription literal text not found in rodeo: {literal:?}"
+                                    );
+                                    None
+                                }
+                            }
+                        })
+                        .collect()
+                };
+
+                // Reconstruct the challenge sentence for lookup
+                let challenge_sentence: String = challenge
+                    .iter()
+                    .flat_map(|part| match part {
+                        transcription_challenge::PartGraded::AskedToTranscribe {
+                            parts, ..
+                        } => parts
+                            .iter()
+                            .flat_map(|part| {
+                                vec![part.heard.word.text.clone(), part.heard.whitespace.clone()]
+                            })
+                            .collect::<Vec<_>>(),
+                        transcription_challenge::PartGraded::Provided { part } => {
+                            vec![part.word.text.clone(), part.whitespace.clone()]
+                        }
+                    })
+                    .collect::<Vec<String>>()
+                    .join("");
+
+                // Clean the sentence before lookup (e.g., French punctuation spacing)
+                let cleaned_sentence = language_utils::text_cleanup::cleanup_sentence(
+                    challenge_sentence,
+                    context.course.target_language,
+                );
+
+                if let Some(sentence_spur) =
+                    context.language_pack.string_rodeo.get(&cleaned_sentence)
+                {
+                    let mut any_again = false;
+
+                    let encoded_sentence =
+                        context.language_pack.encoded_sentences.get(&sentence_spur);
+                    if let Some(encoded_sentence) = encoded_sentence {
+                        // Collect grams by rating (worse ratings take precedence)
+                        let mut again_grams = BTreeSet::new();
+                        let mut hard_grams = BTreeSet::new();
+                        let mut remembered_grams = BTreeSet::new();
+
+                        // Match grams to literals and categorize by rating
+                        for (gram, matched) in utils::match_grams_to_literals(
+                            encoded_sentence,
+                            &literals,
+                            &context.language_pack,
+                        ) {
+                            // Find worst grade (WordGrade is Ord: worse > better)
+                            let worst_grade = matched.iter().max();
+
+                            if let Some((_, grade)) = worst_grade {
+                                match grade {
+                                    transcription_challenge::WordGrade::Perfect { .. }
+                                    | transcription_challenge::WordGrade::CorrectWithTypo { .. } => {
+                                        remembered_grams.insert(gram);
+                                    }
+                                    transcription_challenge::WordGrade::PhoneticallyIdenticalButContextuallyIncorrect { .. } => {
+                                        hard_grams.insert(gram);
+                                    }
+                                    _ => {
+                                        again_grams.insert(gram);
+                                    }
+                                };
+                            }
+
+                            // Also categorize individual words from multi-word grams
+                            let resolved_gram = context.language_pack.gram_rodeo.resolve(&gram);
+                            if resolved_gram.len() > 1 {
+                                for (literal, grade) in matched {
+                                    let language_utils::WordType::Heteronym(_) =
+                                        &literal.word.word_type
+                                    else {
+                                        continue;
+                                    };
+
+                                    let word_gram = Gram(vec![Atom::Tok(literal.word)]);
+                                    if let Some(word_gram) =
+                                        context.language_pack.gram_rodeo.get(&word_gram)
+                                    {
+                                        match grade {
+                                            transcription_challenge::WordGrade::Perfect { .. }
+                                            | transcription_challenge::WordGrade::CorrectWithTypo { .. } => {
+                                                remembered_grams.insert(word_gram);
+                                            }
+                                            transcription_challenge::WordGrade::PhoneticallyIdenticalButContextuallyIncorrect { .. } => {
+                                                hard_grams.insert(word_gram);
+                                            }
+                                            _ => {
+                                                again_grams.insert(word_gram);
+                                            }
+                                        };
+                                    }
+                                }
+                            }
+                        }
+
+                        any_again = !again_grams.is_empty();
+
+                        for gram in &again_grams {
+                            deck.log_review(
+                                current::CardIndicator::ListeningGram { gram: *gram },
+                                current::Rating::Again,
+                                *timestamp,
+                                context,
+                            );
+                        }
+                        for gram in hard_grams.difference(&again_grams) {
+                            deck.log_review(
+                                current::CardIndicator::ListeningGram { gram: *gram },
+                                current::Rating::Hard,
+                                *timestamp,
+                                context,
+                            );
+                        }
+                        for gram in remembered_grams
+                            .difference(&again_grams)
+                            .copied()
+                            .collect::<BTreeSet<_>>()
+                            .difference(&hard_grams)
+                        {
+                            deck.log_review(
+                                current::CardIndicator::ListeningGram { gram: *gram },
+                                current::Rating::Remembered,
+                                *timestamp,
+                                context,
+                            );
+                        }
+                    }
+                    // Update sentence review count if perfect (no Again ratings)
+                    if !any_again {
+                        *deck
                             .stats
                             .sentences_reviewed
-                            .entry(challenge_sentence)
-                            .or_insert(0);
-                        *sentence_review_count += 1;
+                            .entry(sentence_spur)
+                            .or_insert(0) += 1;
                     }
                 }
             }
@@ -1458,7 +1344,10 @@ impl weapon::PartialAppState for Deck {
         deck
     }
 
-    fn finalize(state: Self::Partial) -> Self {
+    fn finalize(
+        state: Self::Partial,
+        context: &<Self::Event as weapon::data_model::Event>::Context,
+    ) -> Self {
         // Collect data points for isotonic regression
         let mut target_language_points = Vec::new();
         let mut listening_points = Vec::new();
@@ -1475,16 +1364,21 @@ impl weapon::PartialAppState for Deck {
                 _ => {}
             }
 
-            if let Some(frequency) = state.context.get_card_frequency(card_indicator) {
+            if let Some(frequency) = context.get_card_frequency(card_indicator) {
+                // Easy cards (cognates) and compositional multi-word grams don't contribute
+                // meaningful signal to the regression, so skip them.
+                if frequency.exclude_from_regression() {
+                    continue;
+                }
                 let pre_existing_knowledge = card_data.pre_existing_knowledge();
-                let point = Point::new(frequency.ln_frequency(), pre_existing_knowledge);
+                let point =
+                    Point::new_with_weight(frequency.ease, pre_existing_knowledge, UnitWeight);
 
                 match card_indicator {
-                    CardIndicator::TargetLanguage { .. } => {
+                    CardIndicator::WrittenGram { .. } => {
                         target_language_points.push(point);
                     }
-                    CardIndicator::ListeningHomophonous { .. }
-                    | CardIndicator::ListeningLexeme { .. } => {
+                    CardIndicator::ListeningGram { .. } => {
                         listening_points.push(point);
                     }
                     CardIndicator::LetterPronunciation { .. } => {}
@@ -1495,41 +1389,46 @@ impl weapon::PartialAppState for Deck {
         // Add bias points at (0, -10) and (10, -10) to ensure the curve slopes down
         // This represents a word with 0 occurrences being very difficult. We'll give them a weight of 10 to ensure it's not ignored
 
-        let bias_points = if let Some(placement_test_results) = &state.placement_test_results {
-            // Use placement test results to create bias points
-            let mut points = state
-                .context
-                .get_placement_test_points(placement_test_results);
-            points.extend_from_slice(&[
-                Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
-                Point::new_with_weight(Frequency { count: 25 }.ln_frequency(), 0.0, 5.0),
-                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 5.0),
-            ]);
-            points
-        } else {
-            vec![
-                Point::new_with_weight(Frequency { count: 1 }.ln_frequency(), -10.0, 5.0),
-                Point::new_with_weight(Frequency { count: 25 }.ln_frequency(), 0.0, 5.0),
-                Point::new_with_weight(Frequency { count: 64 }.ln_frequency(), 0.0, 5.0),
-                Point::new_with_weight(Frequency { count: 400 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 800 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 1000 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 1500 }.ln_frequency(), 0.0, 3.0),
-                Point::new_with_weight(Frequency { count: 2000 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 2500 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 3000 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 3500 }.ln_frequency(), 0.0, 2.0),
-                Point::new_with_weight(Frequency { count: 4000 }.ln_frequency(), 0.0, 2.0),
-            ]
-        };
+        /// Create N unit-weight points spaced 0.01 apart around a center x,
+        /// to approximate a single weighted point.
+        fn bias_points(x: f32, y: f32, n: usize) -> impl Iterator<Item = Point<f32, UnitWeight>> {
+            (0..n).map(move |i| {
+                let offset = (i as f32 - (n as f32 - 1.0) / 2.0) * 0.01;
+                Point::new_with_weight(x + offset, y, UnitWeight)
+            })
+        }
 
-        // Calculate smoothing window as 20% of max ln_frequency
-        let smoothing_window = state
-            .context
+        let bias_points: Vec<_> =
+            if let Some(placement_test_results) = &state.placement_test_results {
+                // Use placement test results to create bias points
+                let mut points = context.get_placement_test_points(placement_test_results);
+                points.extend(bias_points(1_f32.ln(), -10.0, 5));
+                points.extend(bias_points(25_f32.ln(), 0.0, 5));
+                points.extend(bias_points(64_f32.ln(), 0.0, 5));
+                points
+            } else {
+                let mut points = Vec::new();
+                points.extend(bias_points(1_f32.ln(), -10.0, 5));
+                points.extend(bias_points(25_f32.ln(), 0.0, 5));
+                points.extend(bias_points(64_f32.ln(), 0.0, 5));
+                points.extend(bias_points(400_f32.ln(), 0.0, 3));
+                points.extend(bias_points(800_f32.ln(), 0.0, 3));
+                points.extend(bias_points(1000_f32.ln(), 0.0, 3));
+                points.extend(bias_points(1500_f32.ln(), 0.0, 3));
+                points.extend(bias_points(2000_f32.ln(), 0.0, 2));
+                points.extend(bias_points(2500_f32.ln(), 0.0, 2));
+                points.extend(bias_points(3000_f32.ln(), 0.0, 2));
+                points.extend(bias_points(3500_f32.ln(), 0.0, 2));
+                points.extend(bias_points(4000_f32.ln(), 0.0, 2));
+                points
+            };
+
+        // Calculate smoothing window as 20% of max ease
+        let smoothing_window = context
             .language_pack
-            .word_frequencies
+            .gram_frequencies
             .get_index(0)
-            .map(|(_, freq)| freq.ln_frequency() * 0.2)
+            .map(|(_, freq)| freq.ease * 0.2)
             .unwrap_or(1.0); // Fallback if no frequencies exist
 
         // Create isotonic regressions (need at least 2 non-new cards)
@@ -1539,7 +1438,7 @@ impl weapon::PartialAppState for Deck {
                 IsotonicRegression::new_ascending(&target_language_points)
                     .inspect_err(|e| log::error!("regression error: {e:?}"))
                     .ok()
-                    .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
+                    .map(|reg| SmoothRegression::from_regression(reg, smoothing_window))
             } else {
                 None
             };
@@ -1550,7 +1449,7 @@ impl weapon::PartialAppState for Deck {
                 IsotonicRegression::new_ascending(&listening_points)
                     .inspect_err(|e| log::error!("regression error: {e:?}"))
                     .ok()
-                    .map(|reg| SmoothRegression::from_regression(&reg, smoothing_window))
+                    .map(|reg| SmoothRegression::from_regression(reg, smoothing_window))
             } else {
                 None
             };
@@ -1560,102 +1459,27 @@ impl weapon::PartialAppState for Deck {
             listening_regression,
         };
 
-        // Convert existing cards to CardStatus and calculate probabilities for unadded cards
-        let added_cards: FxHashMap<CardIndicator<Spur>, CardData> = state.cards;
-
-        // Create all cards as Unadded first, then update with Added status
-        let mut all_cards: FxHashMap<CardIndicator<Spur>, CardStatus> = state
-            .context
-            .language_pack
-            .word_frequencies
-            .keys()
-            .map(|lexeme| {
-                (
-                    CardIndicator::TargetLanguage { lexeme: *lexeme },
-                    CardStatus::Unadded(Unadded {}),
-                )
-            })
-            .chain(
-                state
-                    .context
-                    .language_pack
-                    .pronunciation_to_words
-                    .keys()
-                    .map(|pronunciation| {
-                        (
-                            CardIndicator::ListeningHomophonous {
-                                pronunciation: *pronunciation,
-                            },
-                            CardStatus::Unadded(Unadded {}),
-                        )
-                    }),
-            )
-            .chain(
-                // Add ListeningLexeme cards for all words
-                state
-                    .context
-                    .language_pack
-                    .word_frequencies
-                    .keys()
-                    .map(|lexeme| {
-                        (
-                            CardIndicator::ListeningLexeme { lexeme: *lexeme },
-                            CardStatus::Unadded(Unadded {}),
-                        )
-                    }),
-            )
-            .chain(
-                // Add pronunciation pattern cards
-                state
-                    .context
-                    .language_pack
-                    .pronunciation_data
-                    .guides
-                    .iter()
-                    .filter_map(|guide| {
-                        // Only create cards for patterns that exist in the rodeo
-                        state
-                            .context
-                            .language_pack
-                            .rodeo
-                            .get(&guide.pattern)
-                            .map(|pattern| {
-                                (
-                                    CardIndicator::LetterPronunciation {
-                                        pattern,
-                                        position: guide.position,
-                                    },
-                                    CardStatus::Unadded(Unadded {}),
-                                )
-                            })
-                    }),
-            )
-            .collect();
-
-        // Update the cards that have been added
-        for (indicator, card_data) in added_cards {
-            all_cards.insert(indicator, CardStatus::Tracked(card_data));
-        }
-
         Deck {
             placement_test_results: state.placement_test_results,
-            cards: all_cards,
+            cards: state.cards,
             fsrs: state.fsrs,
             stats: state.stats,
-            context: state.context,
+            context: context.clone(),
             regressions,
             leeches: state.leeches,
         }
     }
 }
 
+impl Default for DeckState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DeckState {
-    /// Create a new DeckState with the given language pack and target language
-    pub fn new(
-        language_pack: Arc<LanguagePack>,
-        target_language: Language,
-        native_language: Language,
-    ) -> Self {
+    /// Create a new empty DeckState
+    pub fn new() -> Self {
         Self {
             placement_test_results: None,
             cards: FxHashMap::default(),
@@ -1674,20 +1498,19 @@ impl DeckState {
                 start_time: None,
                 flashcard_type_seen_count: BTreeMap::new(),
             },
-            context: Context {
-                language_pack,
-                course: Course {
-                    target_language,
-                    native_language,
-                },
-            },
             leeches: BTreeMap::new(),
         }
     }
 
-    fn log_review(&mut self, card: CardIndicator<Spur>, rating: Rating, timestamp: DateTime<Utc>) {
+    fn log_review(
+        &mut self,
+        card: CardIndicator<SpurGram, Spur>,
+        rating: Rating,
+        timestamp: DateTime<Utc>,
+        context: &Context,
+    ) {
         // Make sure the card is valid before logging a review
-        if !self.context.is_card_valid(&card) {
+        if !context.is_card_valid(&card) {
             return;
         }
 
@@ -1774,50 +1597,114 @@ impl DeckState {
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl Deck {
-    /// Helper function to create a CardSummary from a card indicator and status
+    /// Helper function to create a CardSummary from a card indicator and card data
     fn card_to_summary(
         &self,
-        card_indicator: &CardIndicator<Spur>,
-        card_status: &CardStatus,
+        card_indicator: &CardIndicator<SpurGram, Spur>,
+        card_data: &CardData,
     ) -> Option<CardSummary> {
-        if let CardStatus::Tracked(CardData::Added { fsrs_card }) = card_status {
+        if let CardData::Added { fsrs_card } = card_data {
             let state = match fsrs_card.state {
                 rs_fsrs::State::New => "new".to_string(),
                 rs_fsrs::State::Learning => "learning".to_string(),
                 rs_fsrs::State::Review => "review".to_string(),
                 rs_fsrs::State::Relearning => "relearning".to_string(),
             };
+
+            // Compute card_text and card_subtitle based on card type
+            let (card_text, card_subtitle) = match card_indicator {
+                CardIndicator::WrittenGram { gram } => {
+                    let gram_resolved = self
+                        .context
+                        .language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&self.context.language_pack.string_rodeo);
+                    let text = gram_resolved.to_display_string(self.context.course.target_language);
+                    // Get POS from first heteronym if available for subtitle
+                    let subtitle = gram_resolved.0.first().and_then(|atom| {
+                        if let language_utils::Atom::Tok(word) = atom
+                            && let language_utils::WordType::Heteronym(h) = &word.word_type
+                        {
+                            return Some(h.pos.to_string().to_lowercase());
+                        }
+                        None
+                    });
+                    (text, subtitle)
+                }
+                CardIndicator::ListeningGram { gram } => {
+                    let gram_resolved = self
+                        .context
+                        .language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&self.context.language_pack.string_rodeo);
+                    let text = gram_resolved.to_display_string(self.context.course.target_language);
+                    (text, Some("listening".to_string()))
+                }
+                CardIndicator::LetterPronunciation { pattern, .. } => {
+                    let text = self.context.language_pack.string_rodeo.resolve(pattern);
+                    (format!("[{text}]"), Some("pronunciation".to_string()))
+                }
+            };
+
             Some(CardSummary {
-                card_indicator: card_indicator.resolve(&self.context.language_pack.rodeo),
+                card_indicator: card_indicator.resolve(
+                    &self.context.language_pack.string_rodeo,
+                    &self.context.language_pack.gram_rodeo,
+                ),
                 due_timestamp_ms: fsrs_card.due.timestamp_millis() as f64,
                 state,
+                card_text,
+                card_subtitle,
             })
         } else {
             None
         }
     }
 
-    /// Returns an iterator over cards (excluding leeches)
-    fn cards_excluding_leeches(&self) -> impl Iterator<Item = (&CardIndicator<Spur>, &CardStatus)> {
+    /// Returns an iterator over tracked cards (excluding leeches)
+    fn cards_excluding_leeches(
+        &self,
+    ) -> impl Iterator<Item = (&CardIndicator<SpurGram, Spur>, &CardData)> {
         self.cards
             .iter()
             .filter(|(card_indicator, _)| !self.leeches.contains_key(card_indicator))
     }
 
-    /// First, the frontend calls get_all_cards_summary to get a view of what cards are due and what cards are going to be due in the future.
+    /// Get the set of comprehensible written grams (includes both single-word and multiword grams).
+    fn get_comprehensible_written_grams(&self) -> BTreeSet<SpurGram> {
+        let mut comprehensible_grams = BTreeSet::new();
+
+        for gram in self.context.language_pack.gram_frequencies.keys() {
+            let card_indicator = CardIndicator::WrittenGram { gram: *gram };
+            let card_data = self.cards.get(&card_indicator);
+            if self
+                .context
+                .is_comprehensible(&card_indicator, card_data, &self.regressions)
+            {
+                comprehensible_grams.insert(*gram);
+            }
+        }
+
+        comprehensible_grams
+    }
+
+    /// Returns all cards as summaries, ordered consistently with get_review_info
+    /// (due cards first, then future cards, each sorted by due date and card indicator).
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_all_cards_summary(&self) -> Vec<CardSummary> {
-        let mut summaries: Vec<CardSummary> = self
-            .cards_excluding_leeches()
-            .filter_map(|(card_indicator, card_status)| {
-                self.card_to_summary(card_indicator, card_status)
+        let now = Utc::now().timestamp_millis() as f64;
+        let review_info = self.get_review_info(vec![], now);
+        review_info
+            .due_cards
+            .iter()
+            .chain(review_info.future_cards.iter())
+            .filter_map(|card_indicator| {
+                let card_data = self.cards.get(card_indicator)?;
+                self.card_to_summary(card_indicator, card_data)
             })
-            .collect();
-
-        // Sort by due date
-        summaries.sort_by(|a, b| a.due_timestamp_ms.partial_cmp(&b.due_timestamp_ms).unwrap());
-
-        summaries
+            .collect()
     }
 
     /// Get all cards that have been detected as leeches (12+ lapses)
@@ -1833,7 +1720,6 @@ impl Deck {
             .collect()
     }
 
-    /// TODO: get_review_info and get_all_cards_summary can probably be combined.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_review_info(
         &self,
@@ -1850,8 +1736,8 @@ impl Deck {
         let no_text_cards = banned_challenge_types.contains(&ChallengeRequirements::Text);
         let no_speaking_cards = banned_challenge_types.contains(&ChallengeRequirements::Speaking);
 
-        for (card, card_status) in self.cards_excluding_leeches() {
-            if let CardStatus::Tracked(CardData::Added { fsrs_card }) = card_status {
+        for (card, card_data) in self.cards_excluding_leeches() {
+            if let CardData::Added { fsrs_card } = card_data {
                 let due_date = fsrs_card.due;
 
                 if due_date <= now {
@@ -1875,32 +1761,20 @@ impl Deck {
 
         // sort by due date, then by card indicator for deterministic ordering
         due_cards.sort_by_key(|card_indicator| {
-            let card_status = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = if let CardStatus::Tracked(card_data) = card_status {
-                ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap()
-            } else {
-                ordered_float::NotNan::new(0.0).unwrap()
-            };
+            let card_data = self.cards.get(card_indicator).unwrap();
+            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
             (due_timestamp, *card_indicator)
         });
 
         due_but_banned_cards.sort_by_key(|card_indicator| {
-            let card_status = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = if let CardStatus::Tracked(card_data) = card_status {
-                ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap()
-            } else {
-                ordered_float::NotNan::new(0.0).unwrap()
-            };
+            let card_data = self.cards.get(card_indicator).unwrap();
+            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
             (due_timestamp, *card_indicator)
         });
 
         future_cards.sort_by_key(|card_indicator| {
-            let card_status = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = if let CardStatus::Tracked(card_data) = card_status {
-                ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap()
-            } else {
-                ordered_float::NotNan::new(0.0).unwrap()
-            };
+            let card_data = self.cards.get(card_indicator).unwrap();
+            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
             (due_timestamp, *card_indicator)
         });
 
@@ -1926,71 +1800,59 @@ impl Deck {
         };
         let access_token = access_token.as_ref();
 
-        const SIMULATION_DAYS: u32 = 0; // set to 0 right now in case it's causing our memory issues
+        const SIMULATION_CHALLENGES: usize = 30;
         let mut requested_filenames = BTreeSet::new();
         let mut simulation_iterator = self.simulate_usage(chrono::Utc::now());
-        #[expect(clippy::reversed_empty_ranges)]
-        // because we set to 0 right now in case it's causing our memory issues
-        for _ in 0..SIMULATION_DAYS {
-            // Sleep for 1 second using JavaScript's setTimeout via JsFuture
-            let promise = js_sys::Promise::new(&mut |resolve, _| {
-                web_sys::window()
-                    .unwrap()
-                    .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 1000)
-                    .unwrap();
-            });
-            wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+        let mut challenges_fetched = 0;
 
-            // Check if aborted before progressing
-            if let Some(ref signal) = abort_signal {
-                if signal.aborted() {
+        'outer: loop {
+            let mut day = simulation_iterator.next_day();
+
+            loop {
+                // Yield to the main thread to avoid blocking old devices
+                let promise = js_sys::Promise::new(&mut |resolve, _| {
+                    web_sys::window()
+                        .unwrap()
+                        .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 200)
+                        .unwrap();
+                });
+                wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+
+                // Early return (not just break) so we skip the audio cleanup below,
+                // preserving any previously cached files that may still be useful.
+                if let Some(ref signal) = abort_signal
+                    && signal.aborted()
+                {
                     return;
+                }
+
+                let Some(challenge) = day.next() else {
+                    break;
+                };
+                challenges_fetched += 1;
+
+                // Pre-fetch the audio file
+                let request = challenge.audio_request();
+                if let Some(request) = request {
+                    let cache_filename =
+                        audio::AudioCache::get_cache_filename(&request.request, &request.provider);
+                    let _ = audio_cache.fetch_and_cache(&request, access_token).await;
+                    requested_filenames.insert(cache_filename);
+                }
+
+                if challenges_fetched >= SIMULATION_CHALLENGES {
+                    break 'outer;
                 }
             }
 
-            let challenges;
-            (simulation_iterator, challenges) = simulation_iterator.next();
-
-            // get the audio files
-            requested_filenames.extend(
-                futures::stream::iter(challenges)
-                    .map(|challenge| {
-                        let request = challenge.audio_request();
-                        let audio_cache = audio_cache.clone();
-                        let abort_signal = abort_signal.clone();
-                        async move {
-                            let request = request?;
-                            // Check if aborted before processing
-                            if let Some(ref signal) = abort_signal {
-                                if signal.aborted() {
-                                    return None;
-                                }
-                            }
-
-                            // Generate the cache filename for this request
-                            let cache_filename = audio::AudioCache::get_cache_filename(
-                                &request.request,
-                                &request.provider,
-                            );
-
-                            // Just try to fetch and cache, ignoring errors for individual requests
-                            let _ = audio_cache.fetch_and_cache(&request, access_token).await;
-                            Some(cache_filename)
-                        }
-                    })
-                    .buffered(3)
-                    .filter_map(|x| async { x })
-                    .collect::<BTreeSet<_>>()
-                    .await,
-            );
-            // sleep for 1 second
+            simulation_iterator = day.finish_day();
         }
 
         // Check if aborted before cleanup
-        if let Some(ref signal) = abort_signal {
-            if signal.aborted() {
-                return;
-            }
+        if let Some(ref signal) = abort_signal
+            && signal.aborted()
+        {
+            return;
         }
 
         // Clean up any files that weren't in the requested set
@@ -2003,22 +1865,18 @@ impl Deck {
     pub fn get_percent_of_words_known(&self) -> f64 {
         let total_words_reviewed: u64 = self
             .cards_excluding_leeches()
-            .filter_map(|(card_indicator, card_status)| match card_indicator {
-                CardIndicator::TargetLanguage { lexeme } => Some((lexeme, card_status)),
-                CardIndicator::ListeningHomophonous { .. } => None,
-                CardIndicator::ListeningLexeme { .. } => None,
-                CardIndicator::LetterPronunciation { .. } => None,
-            })
-            .filter_map(|(lexeme, card_status)| {
-                if let CardStatus::Tracked(card_data) = card_status {
-                    let is_reviewed = match card_data {
-                        CardData::Added { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
-                        CardData::Ghost { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
-                    };
-                    if is_reviewed {
-                        self.context.language_pack.word_frequencies.get(lexeme)
-                    } else {
-                        None
+            .filter_map(|(card_indicator, card_data)| {
+                let is_reviewed = match card_data {
+                    CardData::Added { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
+                    CardData::Ghost { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
+                };
+                if is_reviewed {
+                    match card_indicator {
+                        CardIndicator::WrittenGram { .. } => {
+                            self.context.get_card_frequency(card_indicator)
+                        }
+                        CardIndicator::ListeningGram { .. }
+                        | CardIndicator::LetterPronunciation { .. } => None,
                     }
                 } else {
                     None
@@ -2059,35 +1917,13 @@ impl Deck {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_movie_stats(&self) -> Vec<MovieStats> {
-        use rustc_hash::FxHashSet;
-
         let language_pack = &self.context.language_pack;
         let mut stats = Vec::new();
 
-        // Pre-compute set of all comprehensible lexemes - this is the key optimization
-        // Instead of looking up cards for every word in every movie, we build this set once
-        let comprehensible_lexemes: FxHashSet<Lexeme<Spur>> = self
-            .cards
-            .iter()
-            .filter_map(|(indicator, status)| {
-                if let CardIndicator::TargetLanguage { lexeme } = indicator {
-                    if self
-                        .context
-                        .is_comprehensible(indicator, status, &self.regressions)
-                    {
-                        Some(*lexeme)
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
-            })
-            .collect();
+        let comprehensible_grams = self.get_comprehensible_written_grams();
 
         for movie_id in language_pack.movies.keys() {
-            // Get the movie's word frequencies
-            let Some(movie_frequencies) = language_pack.movie_word_frequencies.get(movie_id) else {
+            let Some(movie_frequencies) = language_pack.movie_gram_frequencies.get(movie_id) else {
                 continue;
             };
 
@@ -2095,15 +1931,15 @@ impl Deck {
                 continue;
             }
 
-            // Calculate total words and comprehensible words using the pre-computed set
+            // Calculate total units and comprehensible units from gram frequencies.
             let mut total_word_count = 0u64;
             let mut comprehensible_word_count = 0u64;
 
-            for (lexeme, frequency) in movie_frequencies.iter() {
+            for (gram, frequency) in movie_frequencies.iter() {
                 let word_count = frequency.count as u64;
                 total_word_count += word_count;
 
-                if comprehensible_lexemes.contains(lexeme) {
+                if comprehensible_grams.contains(gram) {
                     comprehensible_word_count += word_count;
                 }
             }
@@ -2122,19 +1958,19 @@ impl Deck {
                 let words_needed = target_word_count.saturating_sub(comprehensible_word_count);
 
                 if words_needed > 0 {
-                    // Collect unknown words with their frequencies - also using pre-computed set
-                    let mut unknown_words: Vec<(Lexeme<Spur>, u64)> = movie_frequencies
+                    // Collect unknown grams with their frequencies.
+                    let mut unknown_words: Vec<(SpurGram, u64)> = movie_frequencies
                         .iter()
-                        .filter_map(|(lexeme, frequency)| {
-                            if !comprehensible_lexemes.contains(lexeme) {
-                                Some((*lexeme, frequency.count as u64))
-                            } else {
+                        .filter_map(|(gram, frequency)| {
+                            if comprehensible_grams.contains(gram) {
                                 None
+                            } else {
+                                Some((*gram, frequency.count as u64))
                             }
                         })
                         .collect();
 
-                    // Sort by frequency descending (most common words first)
+                    // Sort by frequency descending (most common first).
                     unknown_words.sort_by(|a, b| b.1.cmp(&a.1));
 
                     // Count how many cards we need to learn to reach target
@@ -2181,6 +2017,8 @@ impl Deck {
                     id: movie_id.clone(),
                     title: movie_metadata.title.clone(),
                     year: movie_metadata.year,
+                    original_language: movie_metadata.original_language.clone(),
+                    rotten_tomatoes_score: movie_metadata.rotten_tomatoes_score,
                     poster_bytes: movie_metadata.poster_bytes.clone(),
                 });
             }
@@ -2272,10 +2110,6 @@ impl Deck {
             return None;
         }
 
-        log::info!(
-            "add_next_unknown_cards: card_type={card_type:?}, count={count:?}, banned_types_set={banned_types_set:?}"
-        );
-
         let allowed_cards = match (card_type, banned_types_set) {
             (Some(card_type), _) => AllowedCards::Type(card_type),
             (None, banned_types_set) => AllowedCards::BannedRequirements(banned_types_set),
@@ -2284,7 +2118,12 @@ impl Deck {
         let cards = self
             .next_unknown_cards(allowed_cards)
             .take(count)
-            .map(|card| card.resolve(&self.context.language_pack.rodeo))
+            .map(|card| {
+                card.resolve(
+                    &self.context.language_pack.string_rodeo,
+                    &self.context.language_pack.gram_rodeo,
+                )
+            })
             .collect::<Vec<_>>();
 
         (!cards.is_empty()).then_some({
@@ -2317,61 +2156,155 @@ impl Deck {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn review_card(
         &self,
-        reviewed: CardIndicator<String>,
+        reviewed: CardIndicator<Gram<String>, String>,
         rating: Rating,
     ) -> Option<DeckEvent> {
-        let indicator = reviewed.get_interned(&self.context.language_pack.rodeo)?;
-        self.cards.get(&indicator).and_then(|status| {
-            matches!(status, CardStatus::Tracked(_)).then_some(DeckEvent::Language(LanguageEvent {
+        let indicator = reviewed.get_interned(
+            &self.context.language_pack.string_rodeo,
+            &self.context.language_pack.gram_rodeo,
+        )?;
+        self.cards.get(&indicator).map(|_| {
+            DeckEvent::Language(LanguageEvent {
                 target_language: self.context.course.target_language,
                 native_language: self.context.course.native_language,
                 content: LanguageEventContent::ReviewCard { reviewed, rating },
-            }))
+            })
         })
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn translate_sentence_perfect(
         &self,
-        words_tapped: Vec<Lexeme<String>>,
+        words_tapped: Vec<Heteronym<String>>,
         challenge_sentence: String,
     ) -> Option<DeckEvent> {
+        let hinted_heteronyms: BTreeSet<Heteronym<String>> = words_tapped.into_iter().collect();
+
+        let cleaned_sentence = language_utils::text_cleanup::cleanup_sentence(
+            challenge_sentence.clone(),
+            self.context.course.target_language,
+        );
+        let sentence_spur = self
+            .context
+            .language_pack
+            .string_rodeo
+            .get(&cleaned_sentence)?;
+        let sentence_literals = self
+            .context
+            .language_pack
+            .sentence_to_literals(&sentence_spur, self.context.course.target_language)?;
+
+        let literals = sentence_literals
+            .into_iter()
+            .map(|literal| {
+                let hinted = match &literal.word.word_type {
+                    WordType::Heteronym(h) => Some(hinted_heteronyms.contains(h)),
+                    WordType::Other(_) => None,
+                };
+                (literal, hinted)
+            })
+            .collect();
+
+        let review = SentenceReviewResult::Perfect {
+            challenge: challenge_sentence.clone(),
+            submission: challenge_sentence,
+            literals,
+        };
+
         Some(DeckEvent::Language(LanguageEvent {
             target_language: self.context.course.target_language,
             native_language: self.context.course.native_language,
             content: LanguageEventContent::TranslationChallenge {
-                review: SentenceReviewIndicator::TargetToNative {
-                    challenge_sentence,
-                    result: SentenceReviewResult::Perfect {
-                        lexemes_needed_hint: words_tapped.into_iter().collect(),
-                    },
-                },
+                review,
+                legacy: LegacyTranslationChallenge::default(),
             },
         }))
     }
 
+    /// Create a Graded translation challenge event.
+    ///
+    /// `literal_grades` should have one entry per literal in the sentence (same order as
+    /// `target_language_literals` from the challenge). None for Other word types or unknown,
+    /// Some(Remembered/Forgot) for heteronyms.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn translate_sentence_wrong(
         &self,
         challenge_sentence: String,
         submission: String,
-        words_remembered: Vec<Lexeme<String>>,
-        words_forgotten: Vec<Lexeme<String>>,
-        words_tapped: Vec<Lexeme<String>>,
+        literal_grades: autograde::LiteralGrades,
+        words_tapped: Vec<Heteronym<String>>,
+        phrases_remembered: Vec<Gram<String>>,
+        phrases_forgot: Vec<Gram<String>>,
     ) -> Option<DeckEvent> {
+        let literal_grades = literal_grades.0;
+        let hinted_heteronyms: BTreeSet<Heteronym<String>> = words_tapped.into_iter().collect();
+
+        let cleaned_sentence = language_utils::text_cleanup::cleanup_sentence(
+            challenge_sentence.clone(),
+            self.context.course.target_language,
+        );
+        let sentence_spur = self
+            .context
+            .language_pack
+            .string_rodeo
+            .get(&cleaned_sentence)?;
+        let sentence_literals = self
+            .context
+            .language_pack
+            .sentence_to_literals(&sentence_spur, self.context.course.target_language)?;
+
+        // Zip literal_grades with sentence_literals to build the event
+        let literals: Vec<_> = sentence_literals
+            .into_iter()
+            .zip(literal_grades.iter())
+            .map(|(literal, grade)| {
+                let result = match (&literal.word.word_type, grade) {
+                    (WordType::Heteronym(h), Some(remembered)) => Some(current::LiteralResult {
+                        remembered: Some(*remembered == autograde::Remembered::Remembered),
+                        hinted: hinted_heteronyms.contains(h),
+                    }),
+                    (WordType::Heteronym(h), None) => {
+                        // Grade is unknown/indeterminate
+                        Some(current::LiteralResult {
+                            remembered: None,
+                            hinted: hinted_heteronyms.contains(h),
+                        })
+                    }
+                    (WordType::Other(_), _) => None,
+                };
+                (literal, result)
+            })
+            .collect();
+
+        let target_language = self.context.course.target_language;
+
+        // Build phrases list - forgot takes precedence over remembered
+        // Deck event stores display strings for backward compatibility
+        let forgot_set: BTreeSet<&Gram<String>> = phrases_forgot.iter().collect();
+        let phrases: Vec<_> = phrases_forgot
+            .iter()
+            .map(|p| (p.to_display_string(target_language), Some(false)))
+            .chain(
+                phrases_remembered
+                    .iter()
+                    .filter(|p| !forgot_set.contains(p))
+                    .map(|p| (p.to_display_string(target_language), Some(true))),
+            )
+            .collect();
+
+        let review = SentenceReviewResult::Graded {
+            challenge: challenge_sentence,
+            submission,
+            literals,
+            phrases,
+        };
+
         Some(DeckEvent::Language(LanguageEvent {
             target_language: self.context.course.target_language,
             native_language: self.context.course.native_language,
             content: LanguageEventContent::TranslationChallenge {
-                review: SentenceReviewIndicator::TargetToNative {
-                    challenge_sentence,
-                    result: SentenceReviewResult::Wrong {
-                        submission,
-                        lexemes_remembered: words_remembered.into_iter().collect(),
-                        lexemes_forgotten: words_forgotten.into_iter().collect(),
-                        lexemes_needed_hint: words_tapped.into_iter().collect(),
-                    },
-                },
+                review,
+                legacy: LegacyTranslationChallenge::default(),
             },
         }))
     }
@@ -2390,7 +2323,7 @@ impl Deck {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn num_cards(&self) -> usize {
-        self.cards.values().filter_map(CardStatus::reviewed).count()
+        self.cards.len()
     }
 
     /// Get the average number of challenges completed per day in the past week
@@ -2411,8 +2344,8 @@ impl Deck {
         let mut daily_counts: FxHashMap<i64, u32> = FxHashMap::default();
         let mut total_reviews = 0u32;
 
-        for (_, card_status) in self.cards.iter() {
-            if let CardStatus::Tracked(CardData::Added { fsrs_card }) = card_status {
+        for card_data in self.cards.values() {
+            if let CardData::Added { fsrs_card } = card_data {
                 let due_date = fsrs_card.due;
 
                 // Skip new cards (they haven't been reviewed yet)
@@ -2452,8 +2385,8 @@ impl Deck {
 
         self.cards
             .values()
-            .filter_map(|card_status| match card_status {
-                CardStatus::Tracked(CardData::Added { fsrs_card }) => Some(fsrs_card),
+            .filter_map(|card_data| match card_data {
+                CardData::Added { fsrs_card } => Some(fsrs_card),
                 _ => None,
             })
             .filter(|fsrs_card| fsrs_card.created_at >= cutoff)
@@ -2474,35 +2407,38 @@ impl Deck {
         let mut frequency_buckets: FxHashMap<String, (Vec<f64>, Vec<String>)> =
             FxHashMap::default();
 
-        // Iterate through actual lexemes in the language pack and find ones matching our target frequencies
-        for (lexeme, frequency) in self.context.language_pack.word_frequencies.iter() {
+        // Iterate through actual grams/phrases in the language pack and find ones matching our target frequencies
+        for (gram, frequency) in self.context.language_pack.gram_frequencies.iter() {
             let freq_value = frequency.count as f64;
 
             // Check if this frequency is close to one of our target frequencies
             for &target_freq in &target_frequencies {
                 if (freq_value - target_freq).abs() < target_freq * 0.1 {
                     // Within 10% of target
-                    let card_indicator = CardIndicator::TargetLanguage { lexeme: *lexeme };
+                    let card_indicator = CardIndicator::WrittenGram { gram: *gram };
 
                     // Use the regression to predict knowledge at this frequency
                     let knowledge_probability = self
                         .regressions
                         .predict_card_knowledge_probability(&card_indicator, *frequency);
 
-                    // Get the word string for display
-                    let word_str = match lexeme {
-                        Lexeme::Heteronym(h) => self.context.language_pack.rodeo.resolve(&h.word),
-                        Lexeme::Multiword(s) => self.context.language_pack.rodeo.resolve(s),
-                    };
+                    // Get display text for the card
+                    let display_text = self
+                        .context
+                        .language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&self.context.language_pack.string_rodeo)
+                        .to_display_string(self.context.course.target_language);
 
                     let bucket_key = format!("{target_freq}");
                     let entry = frequency_buckets
                         .entry(bucket_key)
                         .or_insert((vec![], vec![]));
-                    entry.0.push(knowledge_probability);
+                    entry.0.push(f64::from(knowledge_probability));
                     if entry.1.len() < 5 {
                         // Limit to 5 example words per bucket
-                        entry.1.push(word_str.to_string());
+                        entry.1.push(display_text);
                     }
 
                     break;
@@ -2514,62 +2450,27 @@ impl Deck {
         let mut chart_data = Vec::new();
         for &target_freq in &target_frequencies {
             let bucket_key = format!("{target_freq}");
-            if let Some((probabilities, words)) = frequency_buckets.get(&bucket_key) {
-                if !probabilities.is_empty() {
-                    let avg_probability =
-                        probabilities.iter().sum::<f64>() / probabilities.len() as f64;
-                    chart_data.push(FrequencyKnowledgePoint {
-                        frequency: target_freq,
-                        predicted_knowledge: avg_probability,
-                        word_count: probabilities.len() as u32,
-                        example_words: words.join(", "),
-                    });
-                }
+            if let Some((probabilities, words)) = frequency_buckets.get(&bucket_key)
+                && !probabilities.is_empty()
+            {
+                let avg_probability =
+                    probabilities.iter().sum::<f64>() / probabilities.len() as f64;
+                chart_data.push(FrequencyKnowledgePoint {
+                    frequency: target_freq,
+                    predicted_knowledge: avg_probability,
+                    word_count: probabilities.len() as u32,
+                    example_words: words.join(", "),
+                });
             }
         }
 
         chart_data
     }
 
-    /// Get all dictionary entries ordered by frequency (most common first)
-    /// Returns entries in frequency order (already sorted in word_frequencies)
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_dictionary_entries(&self) -> Vec<DictionaryEntryResolved> {
-        let language_pack = &self.context.language_pack;
-        let rodeo = &language_pack.rodeo;
-
-        // word_frequencies is already sorted by frequency, so iterate in order
-        language_pack
-            .word_frequencies
-            .keys()
-            .filter_map(|lexeme| {
-                if let Lexeme::Heteronym(heteronym) = lexeme {
-                    let entry = language_pack.dictionary.get(heteronym)?;
-                    Some(DictionaryEntryResolved {
-                        word: rodeo.resolve(&heteronym.word).to_string(),
-                        entry: entry.clone(),
-                        heteronym: heteronym.resolve(rodeo),
-                    })
-                } else {
-                    None
-                }
-            })
-            .collect()
-    }
-
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn has_taken_placement_test(&self) -> bool {
         self.placement_test_results.is_some()
     }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
-pub struct DictionaryEntryResolved {
-    pub word: String,
-    pub entry: DictionaryEntry,
-    pub heteronym: Heteronym<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -2599,41 +2500,30 @@ pub struct MovieStats {
 }
 
 impl Deck {
-    pub(crate) fn next_unknown_cards(&self, allowed_cards: AllowedCards) -> NextCardsIterator<'_> {
+    pub(crate) fn next_unknown_cards(&self, allowed_cards: AllowedCards) -> NextCardsIterator {
         NextCardsIterator::new(self, allowed_cards)
-    }
-
-    fn card_known(&self, card_indicator: &CardIndicator<Spur>) -> bool {
-        self.cards
-            .get(card_indicator)
-            .and_then(|status| status.reviewed())
-            .is_some()
-    }
-
-    fn lexeme_known(&self, lexeme: &Lexeme<Spur>) -> bool {
-        self.card_known(&CardIndicator::TargetLanguage { lexeme: *lexeme })
     }
 
     fn get_comprehensible_sentence_containing(
         &self,
-        required_lexeme: Option<&Lexeme<Spur>>,
-        mut comprehensible_words: BTreeSet<Lexeme<Spur>>,
+        required_gram: Option<&SpurGram>,
+        mut comprehensible_grams: BTreeSet<SpurGram>,
         sentences_reviewed: &BTreeMap<Spur, u32>,
         language_pack: &LanguagePack,
     ) -> Option<ComprehensibleSentence> {
-        // Add the target word to comprehensible words if provided
-        if let Some(required_lexeme) = required_lexeme {
-            comprehensible_words.insert(*required_lexeme);
+        // Add the target gram to comprehensible set if provided
+        if let Some(required) = required_gram {
+            comprehensible_grams.insert(*required);
         }
 
-        // Search through all sentences - if we have a required lexeme, only look at sentences containing it
-        let candidate_sentences: Vec<Spur> = if let Some(required_lexeme) = required_lexeme {
+        // Search through all sentences - if we have a required gram, only look at sentences containing it
+        let candidate_sentences: Vec<Spur> = if let Some(required) = required_gram {
             language_pack
-                .sentences_containing_lexeme_index
-                .get(required_lexeme)?
+                .sentences_containing_gram_index
+                .get(required)?
                 .clone()
         } else {
-            // If no required lexeme, consider all sentences
+            // If no required gram/phrase, consider all sentences
             language_pack.translations.keys().cloned().collect()
         };
 
@@ -2641,14 +2531,37 @@ impl Deck {
 
         // Warning: this loop is HOT!
         'checkSentences: for sentence in &candidate_sentences {
-            let Some(lexemes) = language_pack.sentences_to_all_lexemes.get(sentence) else {
+            let Some(sentence_grams) = language_pack.encoded_sentences.get(sentence) else {
                 continue;
             };
 
-            for lexeme in lexemes {
-                if !comprehensible_words.contains(lexeme) {
+            // Check that all learnable grams are comprehensible
+            for sentence_gram in &sentence_grams.grams {
+                if let SentenceGram::Learnable(gram) = sentence_gram
+                    && !comprehensible_grams.contains(gram)
+                {
                     continue 'checkSentences; // Early exit!
                 }
+            }
+
+            // Check that all multiword terms (high and low confidence) are comprehensible
+            for multiword_gram in sentence_grams
+                .multiword_terms
+                .iter()
+                .chain(sentence_grams.low_confidence_multiword_terms.iter())
+            {
+                if !comprehensible_grams.contains(multiword_gram) {
+                    continue 'checkSentences; // Early exit!
+                }
+            }
+
+            // Check that the sentence has at least one translation
+            if language_pack
+                .translations
+                .get(sentence)
+                .is_none_or(|t| t.is_empty())
+            {
+                continue 'checkSentences;
             }
 
             possible_sentences.push(sentence);
@@ -2661,21 +2574,26 @@ impl Deck {
             });
             let target_language_sentence = **possible_sentences.first()?;
 
-            let lexemes = language_pack
-                .sentences_to_all_lexemes
+            let sentence_grams = language_pack
+                .encoded_sentences
                 .get(&target_language_sentence)?;
 
-            let unique_target_language_lexemes = {
-                let mut unique_target_language_lexemes = vec![];
-                let mut lexemes_set = BTreeSet::new();
+            // Collect unique phrases (high and low confidence multiword terms)
+            let unique_target_language_phrases = {
+                let mut unique_phrases = vec![];
+                let mut phrases_set = BTreeSet::new();
 
-                for lexeme in lexemes {
-                    if !lexemes_set.contains(&lexeme) {
-                        unique_target_language_lexemes.push(*lexeme);
-                        lexemes_set.insert(lexeme);
+                for phrase in sentence_grams
+                    .multiword_terms
+                    .iter()
+                    .chain(sentence_grams.low_confidence_multiword_terms.iter())
+                {
+                    if !phrases_set.contains(phrase) {
+                        unique_phrases.push(*phrase);
+                        phrases_set.insert(*phrase);
                     }
                 }
-                unique_target_language_lexemes
+                unique_phrases
             };
 
             let native_languages = language_pack
@@ -2684,21 +2602,22 @@ impl Deck {
                 .unwrap()
                 .clone();
 
-            let target_language_literals = language_pack
-                .sentences_to_literals
-                .get(&target_language_sentence)
-                .unwrap()
-                .clone();
-
             return Some(ComprehensibleSentence {
                 target_language: target_language_sentence,
-                target_language_literals,
-                unique_target_language_lexemes,
+                target_language_sentence_grams: sentence_grams.clone(),
+                unique_target_language_phrases,
                 native_languages,
             });
         }
 
         None
+    }
+
+    fn is_listened_gram_comprehensible(&self, gram: &SpurGram) -> bool {
+        let card_indicator = CardIndicator::ListeningGram { gram: *gram };
+        let card_data = self.cards.get(&card_indicator);
+        self.context
+            .is_comprehensible(&card_indicator, card_data, &self.regressions)
     }
 }
 
@@ -2707,37 +2626,10 @@ impl Context {
     /// For lexeme cards: checks if they exist in word_frequencies (which guarantees they have definitions)
     /// For listening cards: checks if the pronunciation exists
     /// For letter pronunciation cards: checks if the pattern exists in the frequency map
-    pub fn is_card_valid(&self, card: &CardIndicator<Spur>) -> bool {
+    pub fn is_card_valid(&self, card: &CardIndicator<SpurGram, Spur>) -> bool {
         match card {
-            CardIndicator::TargetLanguage { lexeme } => {
-                // Check if lexeme exists in word_frequencies (which guarantees it has a definition)
-                self.language_pack.word_frequencies.contains_key(lexeme)
-            }
-            CardIndicator::ListeningHomophonous { pronunciation } => self
-                .language_pack
-                .pronunciation_to_words
-                .contains_key(pronunciation),
-            CardIndicator::ListeningLexeme { lexeme } => {
-                // Check if lexeme exists in word_frequencies (which guarantees it has a definition)
-                if !self.language_pack.word_frequencies.contains_key(lexeme) {
-                    return false;
-                }
-                match lexeme {
-                    Lexeme::Heteronym(heteronym) => {
-                        if !self
-                            .language_pack
-                            .word_to_pronunciation
-                            .contains_key(&heteronym.word)
-                        {
-                            return false;
-                        }
-                    }
-                    Lexeme::Multiword(_) => {
-                        // Multiword lexemes are not valid for ListeningLexeme cards yet
-                        return false;
-                    }
-                }
-                true
+            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                self.language_pack.gram_frequencies.contains_key(gram)
             }
             CardIndicator::LetterPronunciation { pattern, position } => self
                 .language_pack
@@ -2748,22 +2640,18 @@ impl Context {
 
     fn is_comprehensible(
         &self,
-        card_indicator: &CardIndicator<Spur>,
-        card_status: &CardStatus,
+        card_indicator: &CardIndicator<SpurGram, Spur>,
+        card_data: Option<&CardData>,
         regressions: &Regressions,
     ) -> bool {
-        match card_status {
+        match card_data {
             // For tracked cards (both Added and Ghost), check if they're in review state
-            CardStatus::Tracked(card_data) => {
-                match card_data {
-                    CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
-                        // Card is comprehensible if it's in review state (not new, learning, or relearning)
-                        fsrs_card.state == rs_fsrs::State::Review
-                    }
-                }
+            Some(CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card }) => {
+                // Card is comprehensible if it's in review state (not new, learning, or relearning)
+                fsrs_card.state == rs_fsrs::State::Review
             }
             // For unadded cards, use regression predictions
-            CardStatus::Unadded(_) => {
+            None => {
                 // Check if we have high confidence they would be known
                 // Use 80% probability threshold for considering a card comprehensible
                 // 80% was not chosen in a super scientific way, it's just a number that seemed to work well
@@ -2778,26 +2666,37 @@ impl Context {
         }
     }
 
+    /// Returns the appropriate ln(frequency) for value calculation.
+    /// Listening grams use actual sentence frequency; other cards use full frequency.
+    fn card_value_frequency(card: &CardIndicator<SpurGram, Spur>, frequency: Frequency) -> f32 {
+        match card {
+            CardIndicator::ListeningGram { .. } => frequency.ln_direct_frequency(),
+            _ => frequency.ln_frequency(),
+        }
+    }
+
     fn get_card_value(
         &self,
-        card: &CardIndicator<Spur>,
+        card: &CardIndicator<SpurGram, Spur>,
         regressions: &Regressions,
-    ) -> Option<ordered_float::NotNan<f64>> {
+    ) -> Option<ordered_float::NotNan<f32>> {
         let (knowledge_probability, frequency) =
             self.get_card_knowledge_probability(card, regressions)?;
-        ordered_float::NotNan::new((1.0 - knowledge_probability) * (frequency.ln_frequency())).ok()
+        let ln_freq = Self::card_value_frequency(card, frequency);
+        ordered_float::NotNan::new((1.0 - knowledge_probability) * ln_freq).ok()
     }
 
     fn get_card_value_with_status(
         &self,
-        card: &CardIndicator<Spur>,
-        status: &CardStatus,
+        card: &CardIndicator<SpurGram, Spur>,
+        card_data: Option<&CardData>,
         regressions: &Regressions,
-    ) -> Option<ordered_float::NotNan<f64>> {
+    ) -> Option<ordered_float::NotNan<f32>> {
         let frequency = self.get_card_frequency(card)?;
+        let ln_freq = Self::card_value_frequency(card, frequency);
 
         // Check if we have a reviewed card (ghost or added)
-        if let CardStatus::Tracked(card_data) = status {
+        if let Some(card_data) = card_data {
             // Get the FSRS card using explicit pattern match
             let fsrs_card = match card_data {
                 CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => fsrs_card,
@@ -2809,10 +2708,10 @@ impl Context {
                 let predicted_knowledge = regressions.predict_card_knowledge(card, frequency)?;
 
                 // Calculate observed knowledge from FSRS data
-                let observed_knowledge = if fsrs_card.lapses == 0 {
-                    fsrs_card.accumulated_positive_surprise
+                let observed_knowledge: f32 = if fsrs_card.lapses == 0 {
+                    fsrs_card.accumulated_positive_surprise as f32
                 } else {
-                    -fsrs_card.accumulated_negative_surprise
+                    -fsrs_card.accumulated_negative_surprise as f32
                 };
 
                 // For ghost cards, combine observed and predicted
@@ -2835,8 +2734,7 @@ impl Context {
 
                 // Convert knowledge to probability and then to value
                 let probability = Regressions::knowledge_to_probability(combined_knowledge);
-                return ordered_float::NotNan::new((1.0 - probability) * frequency.ln_frequency())
-                    .ok();
+                return ordered_float::NotNan::new((1.0 - probability) * ln_freq).ok();
             }
         }
 
@@ -2846,15 +2744,15 @@ impl Context {
 
     fn get_card_knowledge_probability(
         &self,
-        card: &CardIndicator<Spur>,
+        card: &CardIndicator<SpurGram, Spur>,
         regressions: &Regressions,
-    ) -> Option<(f64, Frequency)> {
+    ) -> Option<(f32, Frequency)> {
         let frequency = self.get_card_frequency(card)?;
 
         let knowledge_probability = match card {
             CardIndicator::LetterPronunciation { pattern, position } => {
                 // For pronunciation patterns, use the LLM's familiarity assessment
-                let pattern_str = self.language_pack.rodeo.resolve(pattern);
+                let pattern_str = self.language_pack.string_rodeo.resolve(pattern);
                 let guide = self
                     .language_pack
                     .pronunciation_data
@@ -2876,19 +2774,10 @@ impl Context {
     }
 
     /// Get the frequency count for a card (used for isotonic regression)
-    fn get_card_frequency(&self, card: &CardIndicator<Spur>) -> Option<Frequency> {
+    fn get_card_frequency(&self, card: &CardIndicator<SpurGram, Spur>) -> Option<Frequency> {
         match card {
-            CardIndicator::TargetLanguage { lexeme } => {
-                self.language_pack.word_frequencies.get(lexeme).copied()
-            }
-            CardIndicator::ListeningHomophonous { pronunciation } => {
-                // For listening cards, use the maximum frequency of any word it could be
-                self.language_pack
-                    .pronunciation_max_frequency(pronunciation)
-            }
-            CardIndicator::ListeningLexeme { lexeme } => {
-                // For listening lexeme cards, use the same frequency as the target language card
-                self.language_pack.word_frequencies.get(lexeme).copied()
+            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                self.language_pack.gram_frequencies.get(gram).copied()
             }
             CardIndicator::LetterPronunciation { pattern, position } => {
                 // Look up the actual frequency of this pattern from our calculated data
@@ -2898,7 +2787,13 @@ impl Context {
                     .get(&(*pattern, *position))
                     .copied()
                     .unwrap_or(0);
-                Some(Frequency { count })
+                Some(Frequency {
+                    count,
+                    direct_count: count,
+                    easy: false,
+                    compositional: false,
+                    ease: (count as f32).ln(),
+                })
             }
         }
     }
@@ -2918,58 +2813,38 @@ impl Context {
             })
     }
 
-    /// Look up a word string and return the most common lexeme with its frequency
-    /// Tries heteronyms first (most common), then multiword
-    pub(crate) fn lookup_word(&self, word_str: &str) -> Option<(Lexeme<Spur>, Frequency)> {
-        let rodeo = &self.language_pack.rodeo;
+    /// Look up a word string and return the most common heteronym with its frequency.
+    pub(crate) fn lookup_word(&self, word_str: &str) -> Option<(Heteronym<Spur>, Frequency)> {
+        let rodeo = &self.language_pack.string_rodeo;
         let words_to_heteronyms = &self.language_pack.words_to_heteronyms;
-        let word_frequencies = &self.language_pack.word_frequencies;
 
         let word_spur = rodeo.get(word_str)?;
 
-        // Try heteronyms first (most common)
+        // Try heteronyms - find the first one that has a gram in gram_frequencies
         if let Some(heteronyms) = words_to_heteronyms.get(&word_spur) {
-            // Find the first heteronym that appears in word_frequencies (most common)
-            if let Some(most_common) = heteronyms
-                .iter()
-                .find(|h| word_frequencies.contains_key(&Lexeme::Heteronym(**h)))
-            {
-                let lexeme = Lexeme::Heteronym(*most_common);
-                let freq = *word_frequencies.get(&lexeme)?;
-                return Some((lexeme, freq));
+            for heteronym in heteronyms {
+                if let Some(grams) = self.language_pack.heteronym_to_grams.get(heteronym)
+                    && let Some(gram) = grams.first()
+                    && let Some(freq) = self.language_pack.gram_frequencies.get(gram)
+                {
+                    return Some((*heteronym, *freq));
+                }
             }
-        }
-
-        // Try as multiword
-        let lexeme = Lexeme::Multiword(word_spur);
-        if let Some(&freq) = word_frequencies.get(&lexeme) {
-            return Some((lexeme, freq));
         }
 
         None
     }
 
     pub(crate) fn is_word_easy(&self, word: &Heteronym<Spur>) -> bool {
-        // todo: probably move this to frequency entry?
-        if word.pos == PartOfSpeech::Intj {
-            return false;
-        }
-        let Some(entry) = self.language_pack.dictionary.get(word) else {
+        let Some(grams) = self.language_pack.heteronym_to_grams.get(word) else {
             return false;
         };
-        if entry.definitions.len() > 1 {
-            return false;
-        }
-        let Some(definition) = entry.definitions.first() else {
-            return false;
-        };
-        if definition.native.contains(" ") {
-            return false;
-        }
-        if definition.native == entry.target_language_word {
-            return false;
-        }
-        definition.cognate && !definition.false_cognate
+        grams.iter().any(|g| {
+            self.language_pack
+                .gram_frequencies
+                .get(g)
+                .is_some_and(|f| f.easy)
+        })
     }
 }
 
@@ -2978,14 +2853,12 @@ impl Regressions {
     /// Returns None if the card type has no regression model or frequency can't be determined
     pub(crate) fn predict_card_knowledge(
         &self,
-        card: &CardIndicator<Spur>,
+        card: &CardIndicator<SpurGram, Spur>,
         frequency: Frequency,
-    ) -> Option<f64> {
+    ) -> Option<f32> {
         let regression = match card {
-            CardIndicator::TargetLanguage { .. } => self.target_language_regression.as_ref(),
-            CardIndicator::ListeningHomophonous { .. } | CardIndicator::ListeningLexeme { .. } => {
-                self.listening_regression.as_ref()
-            }
+            CardIndicator::WrittenGram { .. } => self.target_language_regression.as_ref(),
+            CardIndicator::ListeningGram { .. } => self.listening_regression.as_ref(),
             CardIndicator::LetterPronunciation { .. } => {
                 // For pronunciation patterns, we don't use regression
                 // Instead we use the LLM's familiarity assessment in predict_card_knowledge_probability
@@ -2993,7 +2866,7 @@ impl Regressions {
             }
         }?;
 
-        regression.interpolate(frequency.ln_frequency())
+        regression.interpolate(frequency.ease)
     }
 
     /// Get the predicted probability of knowing a card (0.0 to 1.0).
@@ -3006,16 +2879,16 @@ impl Regressions {
     /// - Linear interpolation between these points
     pub(crate) fn predict_card_knowledge_probability(
         &self,
-        card: &CardIndicator<Spur>,
+        card: &CardIndicator<SpurGram, Spur>,
         frequency: Frequency,
-    ) -> f64 {
+    ) -> f32 {
         let Some(knowledge) = self.predict_card_knowledge(card, frequency) else {
             return 0.0;
         };
         Self::knowledge_to_probability(knowledge)
     }
 
-    fn knowledge_to_probability(knowledge: f64) -> f64 {
+    fn knowledge_to_probability(knowledge: f32) -> f32 {
         // With pre-existing knowledge:
         // - Positive values indicate easier cards (higher probability)
         // - Negative values indicate harder cards (lower probability)
@@ -3052,8 +2925,8 @@ impl Regressions {
         } else {
             // Card has never been failed (positive knowledge)
             // Map positive surprise to higher probability
-            const EASY_THRESHOLD: f64 = 4.4; // Easy review level (~4.6)
-            const GOOD_THRESHOLD: f64 = 2.0; // Good review level (~2.3)
+            const EASY_THRESHOLD: f32 = 4.4; // Easy review level (~4.6)
+            const GOOD_THRESHOLD: f32 = 2.0; // Good review level (~2.3)
 
             if knowledge >= EASY_THRESHOLD {
                 // Easy-level knowledge: 90-95% probability
@@ -3076,145 +2949,64 @@ impl Regressions {
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct MultiwordCardContent {
-    meaning: String,
-    example_sentence_target_language: String,
-    example_sentence_native_language: String,
-}
-
-#[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum CardContent<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-{
-    Heteronym {
-        heteronym: Heteronym<S>,
-        definitions: Vec<TargetToNativeWord>,
-        morphology: Morphology,
+#[serde(tag = "type")]
+pub enum CardContent {
+    Gram {
+        gram: Vec<Literal<String>>,
+        definition: GramDefinition,
     },
-    Multiword(S, MultiwordCardContent),
     Listening {
-        pronunciation: S,
-        possible_words: Vec<(bool, S)>,
+        possible_grams: Vec<(bool, Vec<Literal<String>>)>,
     },
-    LetterPronunciation {
-        pattern: S,
-        guide: PronunciationGuide,
-    },
-}
-
-impl CardContent<Spur> {
-    fn resolve(&self, rodeo: &lasso::RodeoReader) -> CardContent<String> {
-        match self {
-            CardContent::Heteronym {
-                heteronym,
-                definitions,
-                morphology,
-            } => CardContent::Heteronym {
-                heteronym: heteronym.resolve(rodeo),
-                definitions: definitions.clone(),
-                morphology: morphology.clone(),
-            },
-            CardContent::Multiword(multiword, content) => {
-                CardContent::Multiword(rodeo.resolve(multiword).to_string(), content.clone())
-            }
-            CardContent::Listening {
-                pronunciation,
-                possible_words,
-            } => CardContent::Listening {
-                pronunciation: rodeo.resolve(pronunciation).to_string(),
-                possible_words: possible_words
-                    .iter()
-                    .map(|(known, word)| (*known, rodeo.resolve(word).to_string()))
-                    .collect(),
-            },
-            CardContent::LetterPronunciation { pattern, guide } => {
-                CardContent::LetterPronunciation {
-                    pattern: rodeo.resolve(pattern).to_string(),
-                    guide: guide.clone(),
-                }
-            }
-        }
-    }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone)]
 pub struct ReviewInfo {
-    due_cards: Vec<CardIndicator<Spur>>,
-    due_but_banned_cards: Vec<CardIndicator<Spur>>,
-    future_cards: Vec<CardIndicator<Spur>>,
+    due_cards: Vec<CardIndicator<SpurGram, Spur>>,
+    due_but_banned_cards: Vec<CardIndicator<SpurGram, Spur>>,
+    future_cards: Vec<CardIndicator<SpurGram, Spur>>,
+}
+
+#[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct FlashCard {
+    pub content: CardContent,
+    pub audio: Option<AudioRequest>,
+    pub listening_prefix: Option<String>,
 }
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
-pub enum Challenge<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
+pub enum Challenge<G> {
     FlashCardReview {
-        indicator: CardIndicator<S>,
-        content: CardContent<S>,
-        audio: Option<AudioRequest>,
+        indicator: CardIndicator<G, String>,
+        flashcard: FlashCard,
         is_new: bool,
-        listening_prefix: Option<String>, // TODO: move into content probably lol
         times_type_seen: u32,
     },
-    TranslateComprehensibleSentence(TranslateComprehensibleSentence<S>),
-    TranscribeComprehensibleSentence(TranscribeComprehensibleSentence<S>),
+    PronunciationChallenge {
+        indicator: CardIndicator<G, String>,
+        pattern: String,
+        guide: PronunciationGuide,
+        is_new: bool,
+        times_type_seen: u32,
+    },
+    TranslateComprehensibleSentence(TranslateComprehensibleSentence),
+    TranscribeComprehensibleSentence(TranscribeComprehensibleSentence),
 }
 
-impl<S> Challenge<S>
-where
-    S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Heteronym<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
+impl<G> Challenge<G> {
     fn audio_request(&self) -> Option<AudioRequest> {
         match self {
-            Challenge::FlashCardReview { audio, .. } => audio.clone(),
+            Challenge::FlashCardReview { flashcard, .. } => flashcard.audio.clone(),
+            Challenge::PronunciationChallenge { .. } => None,
             Challenge::TranslateComprehensibleSentence(translate_comprehensible_sentence) => {
                 Some(translate_comprehensible_sentence.audio.clone())
             }
             Challenge::TranscribeComprehensibleSentence(transcribe_comprehensible_sentence) => {
                 Some(transcribe_comprehensible_sentence.audio.clone())
-            }
-        }
-    }
-}
-
-impl Challenge<Spur> {
-    fn resolve(&self, rodeo: &lasso::RodeoReader) -> Challenge<String> {
-        match self {
-            Challenge::FlashCardReview {
-                indicator,
-                content,
-                audio,
-                is_new,
-                listening_prefix,
-                times_type_seen,
-            } => Challenge::FlashCardReview {
-                indicator: indicator.resolve(rodeo),
-                content: content.resolve(rodeo),
-                audio: audio.clone(),
-                is_new: *is_new,
-                listening_prefix: listening_prefix.clone(),
-                times_type_seen: *times_type_seen,
-            },
-            Challenge::TranslateComprehensibleSentence(translate_comprehensible_sentence) => {
-                Challenge::TranslateComprehensibleSentence(
-                    translate_comprehensible_sentence.resolve(rodeo),
-                )
-            }
-            Challenge::TranscribeComprehensibleSentence(transcribe_comprehensible_sentence) => {
-                Challenge::TranscribeComprehensibleSentence(
-                    transcribe_comprehensible_sentence.resolve(rodeo),
-                )
             }
         }
     }
@@ -3241,378 +3033,25 @@ pub enum ChallengeRequirements {
 }
 
 impl ReviewInfo {
-    /// Get the set of comprehensible lexemes (words that are known/in review state)
-    fn get_comprehensible_written_lexemes(&self, deck: &Deck) -> BTreeSet<Lexeme<Spur>> {
-        deck.cards
-            .iter()
-            .filter_map(|(card_indicator, card_status)| match card_indicator {
-                CardIndicator::TargetLanguage { lexeme } => {
-                    Some((card_indicator, *lexeme, card_status))
-                }
-                _ => None,
-            })
-            .filter(|(card_indicator, _lexeme, card_status)| {
-                deck.context
-                    .is_comprehensible(card_indicator, card_status, &deck.regressions)
-            })
-            .map(|(_card_indicator, lexeme, _card_status)| lexeme)
-            .collect()
-    }
-
-    /// Find a sentence where all lexemes have ListeningLexeme cards
-    fn find_listening_lexeme_sentence(
-        &self,
-        required_lexeme: &Lexeme<Spur>,
-        deck: &Deck,
-    ) -> Option<ComprehensibleSentence> {
-        let language_pack = &deck.context.language_pack;
-        // Get all lexemes that have ListeningLexeme cards
-        let listening_lexeme_set: BTreeSet<Lexeme<Spur>> = deck
-            .cards
-            .keys()
-            .filter_map(|card| match card {
-                CardIndicator::ListeningLexeme { lexeme } => Some(*lexeme),
-                _ => None,
-            })
-            .collect();
-
-        // If no ListeningLexeme cards exist, return None
-        if listening_lexeme_set.is_empty() {
-            return None;
-        }
-
-        // Use the refactored function to find a sentence containing the required lexeme
-        // where all lexemes are in the ListeningLexeme set
-        deck.get_comprehensible_sentence_containing(
-            Some(required_lexeme), // Pass the specific lexeme we're testing
-            listening_lexeme_set,
-            &deck.stats.sentences_reviewed,
-            language_pack,
-        )
-    }
-
+    // TODO: make this more resillient by separating it into a function that fallibly a real challenge and a function that tries to call the previous and returns a flashcard if it fails
     pub fn get_challenge_for_card(
         &self,
         deck: &Deck,
-        card_indicator: CardIndicator<Spur>,
-    ) -> Option<Challenge<String>> {
-        let is_new = deck.cards.get(&card_indicator)?.is_new();
-        let language_pack: &Arc<LanguagePack> = &deck.context.language_pack;
+        card_indicator: CardIndicator<SpurGram, Spur>,
+    ) -> Option<Challenge<Gram<String>>> {
+        let ctx = challenge::CardContext::new(deck, card_indicator)?;
 
         let challenge = match card_indicator {
-            CardIndicator::ListeningLexeme { lexeme } => {
-                // For ListeningLexeme cards, find a sentence containing this specific lexeme
-                if let Some(sentence) = self.find_listening_lexeme_sentence(&lexeme, deck) {
-                    // Create a transcription challenge where only words are transcribed, punctuation is provided
-                    // Group consecutive words together and consecutive punctuation together
-                    let mut parts: Vec<transcription_challenge::Part> = Vec::new();
-                    let mut current_words: Vec<language_utils::Literal<String>> = Vec::new();
-
-                    for literal in &sentence.target_language_literals {
-                        let resolved = literal.resolve(&language_pack.rodeo);
-
-                        if resolved.heteronym().is_some() {
-                            // This is a word - add to current words group
-                            current_words.push(resolved);
-                        } else {
-                            // This is punctuation - flush any accumulated words first
-                            if !current_words.is_empty() {
-                                parts.push(transcription_challenge::Part::AskedToTranscribe {
-                                    parts: current_words.clone(),
-                                });
-                                current_words.clear();
-                            }
-                            // Add the punctuation as provided
-                            parts.push(transcription_challenge::Part::Provided { part: resolved });
-                        }
-                    }
-
-                    // Flush any remaining words
-                    if !current_words.is_empty() {
-                        parts.push(transcription_challenge::Part::AskedToTranscribe {
-                            parts: current_words,
-                        });
-                    }
-
-                    // Get movie titles from sentence_sources and movie metadata
-                    let movie_titles = language_pack
-                        .sentence_sources
-                        .get(&sentence.target_language)
-                        .map(|source| {
-                            source
-                                .movie_ids
-                                .iter()
-                                .filter_map(|movie_id| {
-                                    language_pack
-                                        .movies
-                                        .get(movie_id)
-                                        .map(|metadata| (movie_id.clone(), metadata.title.clone()))
-                                })
-                                .collect()
-                        })
-                        .unwrap_or_default();
-
-                    Challenge::TranscribeComprehensibleSentence(TranscribeComprehensibleSentence {
-                        target_language: sentence.target_language,
-                        native_language: *sentence.native_languages.first().unwrap(),
-                        parts,
-                        audio: AudioRequest {
-                            request: TtsRequest {
-                                text: language_pack
-                                    .rodeo
-                                    .resolve(&sentence.target_language)
-                                    .to_string(),
-                                language: deck.context.course.target_language,
-                            },
-                            provider: TtsProvider::Google,
-                        },
-                        movie_titles,
-                    })
-                } else {
-                    match lexeme {
-                        Lexeme::Heteronym(heteronym) => {
-                            let pronunciation = deck
-                                .context
-                                .language_pack
-                                .word_to_pronunciation
-                                .get(&heteronym.word)
-                                .unwrap();
-                            deck.get_homophonous_listening_challenge(
-                                self,
-                                card_indicator,
-                                is_new,
-                                *pronunciation,
-                            )
-                        }
-                        Lexeme::Multiword(_multiword) => {
-                            unreachable!(
-                                "Multiword lexemes should not be in ListeningLexeme cards for now"
-                            );
-                        }
-                    }
-                }
+            CardIndicator::ListeningGram { gram } => {
+                self.listening_gram_challenge(deck, &ctx, gram)
             }
-            CardIndicator::ListeningHomophonous { pronunciation } => deck
-                .get_homophonous_listening_challenge(self, card_indicator, is_new, pronunciation),
-            CardIndicator::TargetLanguage { lexeme } => {
-                let flashcard = {
-                    let content = match lexeme {
-                        Lexeme::Heteronym(heteronym) => {
-                            let Some(entry) = deck
-                                .context
-                                .language_pack
-                                .dictionary
-                                .get(&heteronym)
-                                .cloned()
-                            else {
-                                panic!(
-                                    "Heteronym {:?} was in the deck, but was not found in dictionary",
-                                    heteronym.resolve(&deck.context.language_pack.rodeo)
-                                );
-                            };
-                            CardContent::Heteronym {
-                                heteronym,
-                                definitions: entry.definitions.clone(),
-                                morphology: entry.morphology.first().cloned().unwrap_or_default(),
-                            }
-                        }
-                        Lexeme::Multiword(multiword_term) => {
-                            let Some(entry) = deck
-                                .context
-                                .language_pack
-                                .phrasebook
-                                .get(&multiword_term)
-                                .cloned()
-                            else {
-                                panic!(
-                                    "Multiword term {:?} was in the deck, but was not found in phrasebook",
-                                    deck.context.language_pack.rodeo.resolve(&multiword_term)
-                                );
-                            };
-                            CardContent::Multiword(
-                                multiword_term,
-                                MultiwordCardContent {
-                                    meaning: entry.meaning.clone(),
-                                    example_sentence_target_language: entry
-                                        .target_language_example
-                                        .clone(),
-                                    example_sentence_native_language: entry
-                                        .native_language_example
-                                        .clone(),
-                                },
-                            )
-                        }
-                    };
-                    let audio = match lexeme {
-                        Lexeme::Heteronym(heteronym) => AudioRequest {
-                            request: TtsRequest {
-                                text: language_pack.rodeo.resolve(&heteronym.word).to_string(),
-                                language: deck.context.course.target_language,
-                            },
-                            provider: TtsProvider::Google,
-                        },
-                        Lexeme::Multiword(multiword_term) => AudioRequest {
-                            request: TtsRequest {
-                                text: language_pack.rodeo.resolve(&multiword_term).to_string(),
-                                language: deck.context.course.target_language,
-                            },
-                            provider: TtsProvider::Google,
-                        },
-                    };
-
-                    let times_type_seen = card_indicator
-                        .get_flashcard_type()
-                        .and_then(|ft| deck.stats.flashcard_type_seen_count.get(&ft).copied())
-                        .unwrap_or(0);
-
-                    Challenge::<Spur>::FlashCardReview {
-                        indicator: card_indicator,
-                        content,
-                        audio: Some(audio),
-                        is_new,
-                        listening_prefix: None,
-                        times_type_seen,
-                    }
-                };
-                if is_new {
-                    flashcard
-                } else if let Some(ComprehensibleSentence {
-                    target_language,
-                    target_language_literals,
-                    unique_target_language_lexemes,
-                    native_languages,
-                }) = {
-                    let comprehensible_lexemes = self.get_comprehensible_written_lexemes(deck);
-                    deck.get_comprehensible_sentence_containing(
-                        Some(&lexeme),
-                        comprehensible_lexemes,
-                        &deck.stats.sentences_reviewed,
-                        language_pack,
-                    )
-                } {
-                    let unique_target_language_lexeme_definitions = unique_target_language_lexemes
-                        .iter()
-                        .map(|lexeme| {
-                            let definitions = match lexeme {
-                                Lexeme::Heteronym(heteronym) => language_pack
-                                    .dictionary
-                                    .get(heteronym)
-                                    .map(|entry| entry.definitions.clone())
-                                    .unwrap_or_default(),
-                                Lexeme::Multiword(term) => language_pack
-                                    .phrasebook
-                                    .get(term)
-                                    .map(|entry| {
-                                        vec![TargetToNativeWord {
-                                            native: entry.meaning.clone(),
-                                            note: Some(entry.additional_notes.clone()),
-                                            example_sentence_target_language: entry
-                                                .target_language_example
-                                                .clone(),
-                                            example_sentence_native_language: entry
-                                                .native_language_example
-                                                .clone(),
-                                            cognate: entry.cognate,
-                                            false_cognate: entry.false_cognate,
-                                        }]
-                                    })
-                                    .unwrap_or_default(),
-                            };
-                            (*lexeme, definitions)
-                        })
-                        .collect();
-
-                    // Get movie titles from sentence_sources and movie metadata
-                    let movie_titles = language_pack
-                        .sentence_sources
-                        .get(&target_language)
-                        .map(|source| {
-                            source
-                                .movie_ids
-                                .iter()
-                                .filter_map(|movie_id| {
-                                    language_pack
-                                        .movies
-                                        .get(movie_id)
-                                        .map(|metadata| (movie_id.clone(), metadata.title.clone()))
-                                })
-                                .collect()
-                        })
-                        .unwrap_or_default();
-
-                    // Get proper noun definitions by looking at the literals and checking the global definitions map
-                    let proper_noun_definitions: Vec<(Spur, ProperNounDefinition)> =
-                        target_language_literals
-                            .iter()
-                            .filter_map(|literal| {
-                                if let language_utils::WordType::Other(other) =
-                                    &literal.word.word_type
-                                {
-                                    if other.other_tag == language_utils::OtherWordType::Propn {
-                                        let text_spur = literal.word.text;
-                                        return language_pack
-                                            .proper_noun_definitions
-                                            .get(&text_spur)
-                                            .map(|def| (text_spur, def.clone()));
-                                    }
-                                }
-                                None
-                            })
-                            .collect();
-
-                    Challenge::TranslateComprehensibleSentence(TranslateComprehensibleSentence {
-                        target_language,
-                        target_language_literals,
-                        unique_target_language_lexemes,
-                        native_translations: native_languages,
-                        primary_expression: lexeme,
-                        unique_target_language_lexeme_definitions,
-                        audio: AudioRequest {
-                            request: TtsRequest {
-                                text: language_pack.rodeo.resolve(&target_language).to_string(),
-                                language: deck.context.course.target_language,
-                            },
-                            provider: TtsProvider::ElevenLabs,
-                        },
-                        movie_titles,
-                        proper_noun_definitions,
-                    })
-                } else {
-                    flashcard
-                }
-            }
+            CardIndicator::WrittenGram { gram } => self.written_challenge(deck, &ctx, gram),
             CardIndicator::LetterPronunciation { pattern, position } => {
-                let pattern_str = deck.context.language_pack.rodeo.resolve(&pattern);
-                let Some(guide) = deck
-                    .context
-                    .language_pack
-                    .pronunciation_data
-                    .guides
-                    .iter()
-                    .find(|g| g.pattern == pattern_str && g.position == position)
-                    .cloned()
-                else {
-                    panic!(
-                        "Pattern {pattern_str} with position {position:?} was in the deck, but was not found in pronunciation guides"
-                    );
-                };
-                let content = CardContent::LetterPronunciation { pattern, guide };
-                let times_type_seen = card_indicator
-                    .get_flashcard_type()
-                    .and_then(|ft| deck.stats.flashcard_type_seen_count.get(&ft).copied())
-                    .unwrap_or(0);
-                Challenge::FlashCardReview {
-                    indicator: card_indicator,
-                    content,
-                    audio: None,
-                    is_new,
-                    listening_prefix: None,
-                    times_type_seen,
-                }
+                self.pronunciation_challenge(deck, &ctx, pattern, position)
             }
         };
 
-        Some(challenge.resolve(&language_pack.rodeo))
+        Some(challenge)
     }
 }
 
@@ -3634,7 +3073,7 @@ impl ReviewInfo {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_next_challenge(&self, deck: &Deck) -> Option<Challenge<String>> {
+    pub fn get_next_challenge(&self, deck: &Deck) -> Option<Challenge<Gram<String>>> {
         if let Some(due_card) = self.due_cards.first() {
             Some(self.get_challenge_for_card(deck, *due_card)?)
         } else {
@@ -3668,15 +3107,19 @@ impl ReviewInfo {
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct CardSummary {
-    card_indicator: CardIndicator<String>,
+    card_indicator: CardIndicator<Gram<String>, String>,
     due_timestamp_ms: f64,
     state: String,
+    /// Primary display text for the card (e.g., the word or phrase)
+    card_text: String,
+    /// Optional subtitle for disambiguation (e.g., POS tag when multiple cards have same text)
+    card_subtitle: Option<String>,
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl CardSummary {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
-    pub fn card_indicator(&self) -> CardIndicator<String> {
+    pub fn card_indicator(&self) -> CardIndicator<Gram<String>, String> {
         self.card_indicator.clone()
     }
 
@@ -3688,6 +3131,16 @@ impl CardSummary {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
     pub fn state(&self) -> String {
         self.state.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn card_text(&self) -> String {
+        self.card_text.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn card_subtitle(&self) -> Option<String> {
+        self.card_subtitle.clone()
     }
 }
 
@@ -3736,6 +3189,11 @@ pub async fn invalidate_audio_cache(request: AudioRequest) -> Result<(), JsValue
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn gram_to_display_string(gram: Gram<String>, language: Language) -> String {
+    gram.to_display_string(language)
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn find_closest_translation(
     user_translation: String,
     candidates: Vec<String>,
@@ -3744,16 +3202,22 @@ pub fn find_closest_translation(
     find_closest_match(&user_translation, &candidates, language)
 }
 
+#[allow(clippy::too_many_arguments)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub async fn autograde_translation(
     challenge_sentence: String,
     user_sentence: String,
     native_translations: Vec<String>,
-    primary_expression: Lexeme<String>,
-    lexemes: Vec<Lexeme<String>>,
+    literals: Vec<Literal<String>>,
+    phrases: Vec<Gram<String>>,
     access_token: Option<String>,
     course: Course,
+    gram_definitions: autograde::GramDefinitions,
+    literal_gram_indices: Vec<usize>,
+    phrase_definitions: autograde::GramDefinitions,
 ) -> Result<autograde::AutoGradeTranslationResponse, JsValue> {
+    let gram_definitions = gram_definitions.0;
+    let phrase_definitions = phrase_definitions.0;
     // Check if the user's translation matches any of the acceptable translations
     let normalized_user = normalize_for_grading(&user_sentence, course.native_language);
     let is_perfect = native_translations.iter().any(|translation| {
@@ -3762,60 +3226,175 @@ pub async fn autograde_translation(
 
     if is_perfect {
         // Skip server call and return perfect response
+        // One entry per literal: Some(Remembered) for heteronyms, None for Other types
+        let literal_grades = literals
+            .iter()
+            .map(|lit| {
+                if lit.word.heteronym().is_some() {
+                    Some(autograde::Remembered::Remembered)
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         return Ok(autograde::AutoGradeTranslationResponse {
-            primary_expression_status: autograde::Remembered::Remembered,
-            expressions_remembered: lexemes.clone(),
-            expressions_forgot: vec![],
+            literal_grades,
+            phrases_remembered: phrases,
+            phrases_forgot: vec![],
             encouragement: Some("Perfect! You translated it correctly!".to_string()),
             explanation: None,
+            autograding_error: None,
         });
     }
 
     let request = autograde::AutoGradeTranslationRequest {
         challenge_sentence,
-        user_sentence,
-        primary_expression: primary_expression.clone(),
-        lexemes,
+        user_sentence: user_sentence.clone(),
+        literals: literals.clone(),
+        phrases: phrases.clone(),
         course,
     };
 
-    let response = hit_ai_server(
-        fetch_happen::Method::POST,
-        "/autograde-translation",
-        Some(request),
-        access_token.as_ref(),
-    )
-    .await
-    .map_err(|e| JsValue::from_str(&format!("Request error: {e:?}")))?;
-
-    if !response.ok() {
-        return Err(JsValue::from_str(&format!(
-            "HTTP error: {}",
-            response.status()
-        )));
-    }
-
-    let mut response: autograde::AutoGradeTranslationResponse = response
-        .json()
+    let llm_result = async {
+        let response = hit_ai_server(
+            fetch_happen::Method::POST,
+            "/autograde-translation",
+            Some(request),
+            access_token.as_ref(),
+        )
         .await
-        .map_err(|e| JsValue::from_str(&format!("Response parsing error: {e:?}")))?;
+        .map_err(|e| format!("Request error: {e:?}"))?;
 
-    // make sure the primary expression is in the appropriate array:
-    if response.primary_expression_status == autograde::Remembered::Forgot
-        && !response.expressions_forgot.contains(&primary_expression)
-    {
-        response.expressions_forgot.push(primary_expression);
-    } else if response.primary_expression_status == autograde::Remembered::Remembered
-        && !response
-            .expressions_remembered
-            .contains(&primary_expression)
-    {
-        response.expressions_remembered.push(primary_expression);
+        if !response.ok() {
+            return Err(format!("HTTP error: {}", response.status()));
+        }
+
+        response
+            .json::<autograde::AutoGradeTranslationResponse>()
+            .await
+            .map_err(|e| format!("Response parsing error: {e:?}"))
+    }
+    .await;
+
+    match llm_result {
+        Ok(response) => {
+            log::info!("Autograde response: {response:#?}");
+            Ok(response)
+        }
+        Err(error_msg) => {
+            log::warn!("LLM autograde failed, using heuristic fallback: {error_msg}");
+            Ok(heuristic_grade_translation(
+                &user_sentence,
+                &literals,
+                &phrases,
+                &gram_definitions,
+                &literal_gram_indices,
+                &phrase_definitions,
+                course.native_language,
+                error_msg,
+            ))
+        }
+    }
+}
+
+fn extract_native_words(definition: &GramDefinition) -> Vec<String> {
+    match definition {
+        GramDefinition::Dictionary(entry) => {
+            entry.definitions.iter().map(|d| d.native.clone()).collect()
+        }
+        GramDefinition::Phrasebook(entry) => {
+            // The meaning field is the native translation for phrasebook entries
+            vec![entry.meaning.clone()]
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn heuristic_grade_translation(
+    user_sentence: &str,
+    literals: &[Literal<String>],
+    phrases: &[Gram<String>],
+    gram_definitions: &[Option<GramDefinition>],
+    literal_gram_indices: &[usize],
+    phrase_definitions: &[Option<GramDefinition>],
+    native_language: Language,
+    error_msg: String,
+) -> autograde::AutoGradeTranslationResponse {
+    let normalized_user = normalize_for_grading(user_sentence, native_language);
+    let user_words: Vec<&str> = normalized_user.split_whitespace().collect();
+
+    // Grade each literal
+    let literal_grades = literals
+        .iter()
+        .enumerate()
+        .map(|(i, lit)| {
+            // Only grade heteronyms
+            lit.word.heteronym()?;
+
+            let gram_idx = literal_gram_indices.get(i)?;
+            let Some(definition) = gram_definitions.get(*gram_idx)? else {
+                return None;
+            };
+
+            let native_words = extract_native_words(definition);
+            if native_words.is_empty() {
+                return None;
+            }
+
+            let found = native_words.iter().any(|native| {
+                let normalized_native = normalize_for_grading(native, native_language);
+                // Check if any word from the native translation appears in the user's translation
+                normalized_native
+                    .split_whitespace()
+                    .any(|word| user_words.contains(&word))
+            });
+
+            if found {
+                Some(autograde::Remembered::Remembered)
+            } else {
+                Some(autograde::Remembered::Forgot)
+            }
+        })
+        .collect();
+
+    // Grade phrases
+    let mut phrases_remembered = Vec::new();
+    let mut phrases_forgot = Vec::new();
+
+    for (i, phrase) in phrases.iter().enumerate() {
+        let Some(Some(definition)) = phrase_definitions.get(i) else {
+            // No definition available — can't grade, skip (won't appear in either list)
+            continue;
+        };
+
+        let native_words = extract_native_words(definition);
+        if native_words.is_empty() {
+            continue;
+        }
+
+        let found = native_words.iter().any(|native| {
+            let normalized_native = normalize_for_grading(native, native_language);
+            normalized_native
+                .split_whitespace()
+                .any(|word| user_words.contains(&word))
+        });
+
+        if found {
+            phrases_remembered.push(phrase.clone());
+        } else {
+            phrases_forgot.push(phrase.clone());
+        }
     }
 
-    log::info!("Autograde response: {response:#?}");
-
-    Ok(response)
+    autograde::AutoGradeTranslationResponse {
+        encouragement: None,
+        explanation: None,
+        literal_grades,
+        phrases_remembered,
+        phrases_forgot,
+        autograding_error: Some(error_msg),
+    }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -4024,8 +3603,15 @@ mod tests {
 
             let language_pack = Arc::new(language_pack);
 
-            let state = DeckState::new(language_pack, Language::French, Language::English);
-            <Deck as weapon::PartialAppState>::finalize(state)
+            let context = Context {
+                language_pack,
+                course: Course {
+                    target_language: Language::French,
+                    native_language: Language::English,
+                },
+            };
+            let state = DeckState::new();
+            <Deck as weapon::AppState>::finalize(state, &context)
         }
     }
 
@@ -4275,7 +3861,7 @@ mod tests {
 
     #[test]
     fn test_default_deck_can_add_cards() {
-        use crate::Deck;
+        use crate::{Deck, DeckState};
         use weapon::AppState;
 
         let mut deck = Deck::default();
@@ -4287,10 +3873,13 @@ mod tests {
                 within_device_events_index: 0,
                 event,
             };
-            deck = deck.apply_event(&ts);
+            let context = deck.context.clone();
+            let state = DeckState::from(deck);
+            let state = Deck::process_event(state, &context, &ts);
+            deck = Deck::finalize(state, &context);
 
             // If language pack has data, we should have added a card
-            if !deck.context.language_pack.word_frequencies.is_empty() {
+            if !context.language_pack.gram_frequencies.is_empty() {
                 assert!(!deck.cards.is_empty());
                 println!("✓ Successfully added card to default deck");
             } else {
@@ -4303,7 +3892,7 @@ mod tests {
 
     #[test]
     fn test_add_card_limits_scale_with_deck_size() {
-        use crate::Deck;
+        use crate::{Deck, DeckState};
         use weapon::AppState;
         use weapon::data_model::Timestamped;
 
@@ -4342,7 +3931,10 @@ mod tests {
             };
 
             let previous_cards = deck.num_cards();
-            deck = deck.apply_event(&timestamped);
+            let context = deck.context.clone();
+            let state = DeckState::from(deck);
+            let state = Deck::process_event(state, &context, &timestamped);
+            deck = Deck::finalize(state, &context);
             assert!(
                 deck.num_cards() <= previous_cards + 5,
                 "deck should not grow by more than the requested amount"
@@ -4439,11 +4031,18 @@ mod tests {
         }
 
         // 5. Compute the deck state by replaying all events
-        let initial_state = DeckState::new(language_pack, Language::French, Language::English);
+        let context = Context {
+            language_pack,
+            course: Course {
+                target_language: Language::French,
+                native_language: Language::English,
+            },
+        };
+        let initial_state = DeckState::new();
         let stream = store
             .get::<EventType<DeckEvent>>("reviews".to_string())
             .expect("reviews stream should exist");
-        let deck: Deck = stream.state(initial_state);
+        let deck: Deck = stream.state(initial_state, &context);
 
         // 6. Verify the computed state looks reasonable
         let num_cards = deck.num_cards();
@@ -4471,6 +4070,164 @@ mod tests {
         assert!(
             deck.stats.start_time.is_some(),
             "Expected start_time to be set"
+        );
+    }
+
+    #[test]
+    fn test_savoir_sentence_cleanup_and_lookup() {
+        // Load language pack
+        let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
+            .expect("Failed to read language data - run `cargo run --bin generate-data` first");
+        let archived = rkyv::access::<
+            language_utils::language_pack::ArchivedLanguagePack,
+            rkyv::rancor::Error,
+        >(&bytes)
+        .unwrap();
+        let language_pack: LanguagePack =
+            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+
+        // The sentence from v1 events (without proper French punctuation spacing)
+        let raw_sentence = "Qu'est-ce que tu veux savoir?";
+
+        // The raw sentence should NOT be in the language pack
+        let raw_in_rodeo = language_pack.string_rodeo.get(raw_sentence).is_some();
+        println!("Raw sentence '{raw_sentence}' in string_rodeo: {raw_in_rodeo}");
+        assert!(
+            !raw_in_rodeo,
+            "Raw sentence should NOT be in language pack (it lacks proper French spacing)"
+        );
+
+        // After cleanup, it should match the language pack
+        let cleaned_sentence = language_utils::text_cleanup::cleanup_sentence(
+            raw_sentence.to_string(),
+            Language::French,
+        );
+        println!("Cleaned sentence: '{cleaned_sentence}'");
+
+        // The cleaned sentence should be in all structures
+        let cleaned_in_rodeo = language_pack.string_rodeo.get(&cleaned_sentence).is_some();
+        let cleaned_in_encoded = language_pack
+            .string_rodeo
+            .get(&cleaned_sentence)
+            .and_then(|spur| language_pack.encoded_sentences.get(&spur))
+            .is_some();
+        let cleaned_has_literals = language_pack
+            .string_rodeo
+            .get(&cleaned_sentence)
+            .and_then(|spur| language_pack.sentence_to_literals(&spur, Language::French))
+            .is_some();
+
+        println!("Cleaned sentence in string_rodeo: {cleaned_in_rodeo}");
+        println!("Cleaned sentence in encoded_sentences: {cleaned_in_encoded}");
+        println!("Cleaned sentence has literals: {cleaned_has_literals}");
+
+        assert!(
+            cleaned_in_rodeo,
+            "Cleaned sentence should be in string_rodeo"
+        );
+        assert!(
+            cleaned_in_encoded,
+            "Cleaned sentence should be in encoded_sentences"
+        );
+        assert!(
+            cleaned_has_literals,
+            "Cleaned sentence should produce literals"
+        );
+    }
+
+    /// Regression test: sentences with empty translations should not be selected
+    /// as comprehensible sentences, because they cause listening/translation challenges
+    /// to silently fall back to flashcards.
+    #[test]
+    fn test_comprehensible_sentence_has_translation() {
+        use std::collections::BTreeMap;
+        use weapon::data_model::{EventStore, EventType, Timestamped};
+        use weapon::opfs::parse_event_log_records;
+
+        // Load language pack and replay events to get deck state
+        let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
+            .expect("Failed to read language data");
+        let archived = rkyv::access::<
+            language_utils::language_pack::ArchivedLanguagePack,
+            rkyv::rancor::Error,
+        >(&bytes)
+        .unwrap();
+        let language_pack: LanguagePack =
+            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        let language_pack = Arc::new(language_pack);
+
+        let mut store: EventStore<String, String> = EventStore::default();
+        store.get_or_insert_default::<EventType<DeckEvent>>("reviews".to_string(), None);
+
+        let reviews_blob = std::fs::read(
+            "test-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__reviews/events.blob",
+        ).expect("Failed to read reviews events blob");
+        let review_records = parse_event_log_records(&reviews_blob);
+        let mut reviews_by_device: BTreeMap<String, Vec<Timestamped<serde_json::Value>>> =
+            BTreeMap::new();
+        for record in &review_records {
+            reviews_by_device
+                .entry(record.device_id.clone())
+                .or_default()
+                .push(record.event.clone());
+        }
+        for (device_id, events) in reviews_by_device {
+            store.add_device_events_jsons("reviews".to_string(), device_id, events, None);
+        }
+
+        let context = Context {
+            language_pack: language_pack.clone(),
+            course: Course {
+                target_language: Language::French,
+                native_language: Language::English,
+            },
+        };
+        let initial_state = DeckState::new();
+        let stream = store
+            .get::<EventType<DeckEvent>>("reviews".to_string())
+            .expect("reviews stream should exist");
+        let deck: Deck = stream.state(initial_state, &context);
+
+        // Look up the "à" (Adp) gram - it has 7000+ sentences
+        let a_grams = language_pack.string_to_grams.get("à").unwrap();
+        let adp_gram = a_grams
+            .iter()
+            .find(|g| {
+                let resolved = language_pack
+                    .gram_rodeo
+                    .resolve(g)
+                    .resolve(&language_pack.string_rodeo);
+                format!("{resolved:?}").contains("Adp")
+            })
+            .expect("Should have an Adp gram for 'à'");
+
+        let comprehensible_grams = deck.get_comprehensible_written_grams();
+        let sentence = deck.get_comprehensible_sentence_containing(
+            Some(adp_gram),
+            comprehensible_grams,
+            &deck.stats.sentences_reviewed,
+            &language_pack,
+        );
+
+        // The selected sentence must have non-empty translations
+        if let Some(ref s) = sentence {
+            assert!(
+                !s.native_languages.is_empty(),
+                "Comprehensible sentence should have at least one translation"
+            );
+        }
+
+        // The listening challenge should produce a transcription, not a flashcard
+        let review_info =
+            deck.get_review_info(vec![], chrono::Utc::now().timestamp_millis() as f64);
+        let listening_card = CardIndicator::ListeningGram { gram: *adp_gram };
+        let challenge = review_info.get_challenge_for_card(&deck, listening_card);
+        assert!(
+            matches!(
+                challenge,
+                Some(Challenge::TranscribeComprehensibleSentence(_))
+            ),
+            "Listening challenge for common word 'à' should be a transcription, not a flashcard"
         );
     }
 }

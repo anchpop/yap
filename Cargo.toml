@@ -27,7 +27,7 @@ schemars = "1"
 futures = "0.3.31"
 env_logger = "0.11.8"
 tsify = { version = "0.5.5", features = ["js"], default-features = false }
-tysm = { version = "0.15.0" }
+tysm = "0.17.0"
 reqwest = { version = "0.12", features = ["json"] }
 tokio = { version = "1.45.1", features = ["full"] }
 opfs = { version = "0.1.4" }
@@ -44,18 +44,20 @@ slotmap = { version = "1.0", features = ["serde"] }
 wasm-logger = "0.2.0"
 unicode-normalization = "0.1.24"
 weblocks = { version = "0.1.0" }
-lexide = { git = "https://github.com/anchpop/lexide.git", rev = "b3780b1e643d31d007ecc5962bf17cff8391718f", features = [
+lexide = { git = "https://github.com/anchpop/lexide.git", rev = "08a8e0b", features = [
     "remote",
 ] }
 indicatif = "0.17"
 
 [workspace.dependencies.rkyv]
+# path = "../tmp/rkyv/rkyv"
 git = "https://github.com/anchpop/rkyv.git"
-rev = "8a558ca3e043432dc55b0fc7bcce1068f9777ac8"
+rev = "3639e126c26b6071dea12eeab8b6376196eb9f59"
 
 [workspace.dependencies.lasso]
+# path = "../tmp/lasso"
 git = "https://github.com/anchpop/lasso.git"
-rev = "1e6acbbcf74a8ff7af9df29ccaee1bef9d14297c"
+rev = "babd734da2646353c0924f16882bc61888ae3ba1"
 
 [workspace.dependencies.serde]
 version = "1.0"

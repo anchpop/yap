@@ -1,64 +1,290 @@
-{"id":"tt0241527","title":"Harry Potter und der Stein der Weisen","year":2001}
-{"id":"tt0373889","title":"Harry Potter und der Orden des Phönix","year":2007}
-{"id":"tt12300742","title":"Bugonia","year":2025}
-{"id":"tt19847976","title":"Wicked: Teil 2","year":2025}
-{"id":"tt0167261","title":"Der Herr der Ringe - Die zwei Türme","year":2002}
-{"id":"tt1757678","title":"Avatar: Fire and Ash","year":2025}
-{"id":"tt0133093","title":"Matrix","year":1999}
-{"id":"tt0330373","title":"Harry Potter und der Feuerkelch","year":2005}
-{"id":"tt1853728","title":"Django Unchained","year":2012}
-{"id":"tt0383574","title":"Pirates of the Caribbean - Fluch der Karibik 2","year":2006}
-{"id":"tt1630029","title":"Avatar: The Way of Water","year":2022}
-{"id":"tt2096673","title":"Alles steht Kopf","year":2015}
-{"id":"tt29567915","title":"Nürnberg","year":2025}
-{"id":"tt30144839","title":"One Battle After Another","year":2025}
-{"id":"tt32642706","title":"The Rip","year":2026}
-{"id":"tt0417741","title":"Harry Potter und der Halbblutprinz","year":2009}
-{"id":"tt0295297","title":"Harry Potter und die Kammer des Schreckens","year":2002}
-{"id":"tt1392190","title":"Mad Max: Fury Road","year":2015}
-{"id":"tt15239678","title":"Dune: Part Two","year":2024}
-{"id":"tt0120737","title":"Der Herr der Ringe - Die Gefährten","year":2001}
-{"id":"tt6604188","title":"Tron: Ares","year":2025}
-{"id":"tt0167260","title":"Der Herr der Ringe - Die Rückkehr des Königs","year":2003}
-{"id":"tt0816692","title":"Interstellar","year":2014}
-{"id":"tt0499549","title":"Avatar - Aufbruch nach Pandora","year":2009}
-{"id":"tt31227572","title":"Predator: Badlands","year":2025}
-{"id":"tt6751668","title":"Parasite","year":2019}
-{"id":"tt20215234","title":"Konklave","year":2024}
-{"id":"tt2584384","title":"Jojo Rabbit","year":2019}
-{"id":"tt4468740","title":"Paddington 2","year":2017}
-{"id":"tt1856101","title":"Blade Runner 2049","year":2017}
-{"id":"tt4263482","title":"The Witch","year":2016}
-{"id":"tt28607951","title":"Anora","year":2024}
-{"id":"tt2582802","title":"Whiplash","year":2014}
-{"id":"tt0382932","title":"Ratatouille","year":2007}
-{"id":"tt0347149","title":"Das wandelnde Schloss","year":2004}
-{"id":"tt0299658","title":"Chicago","year":2002}
-{"id":"tt0245429","title":"Chihiros Reise ins Zauberland","year":2001}
-{"id":"tt0230011","title":"Atlantis - Das Geheimnis der verlorenen Stadt","year":2001}
-{"id":"tt0805564","title":"Lars und die Frauen","year":2007}
-{"id":"tt0460989","title":"The Wind That Shakes the Barley","year":2006}
-{"id":"tt0320661","title":"Königreich der Himmel","year":2005}
-{"id":"tt0363163","title":"Der Untergang","year":2004}
-{"id":"tt0120737","title":"Der Herr der Ringe - Die Gefährten","year":2001}
-{"id":"tt0167261","title":"Der Herr der Ringe - Die zwei Türme","year":2002}
-{"id":"tt0167260","title":"Der Herr der Ringe - Die Rückkehr des Königs","year":2003}
-{"id":"tt0265666","title":"Die Royal Tenenbaums","year":2001}
-{"id":"tt0137523","title":"Fight Club","year":1999}
-{"id":"tt0128445","title":"Rushmore","year":1998}
-{"id":"tt0120338","title":"Titanic","year":1997}
-{"id":"tt0119698","title":"Prinzessin Mononoke","year":1997}
-{"id":"tt0104797","title":"Malcolm X","year":1992}
-{"id":"tt0105236","title":"Reservoir Dogs - Wilde Hunde","year":1992}
-{"id":"tt3783958","title":"La La Land","year":2016}
-{"id":"tt0099685","title":"GoodFellas","year":1990}
-{"id":"tt0097499","title":"Henry V","year":1989}
-{"id":"tt0097165","title":"Der Club der toten Dichter","year":1989}
-{"id":"tt0097576","title":"Indiana Jones und der letzte Kreuzzug","year":1989}
-{"id":"tt0097216","title":"Do the Right Thing","year":1989}
-{"id":"tt0093779","title":"Die Braut des Prinzen","year":1987}
-{"id":"tt0096018","title":"Die Flucht ins Ungewisse","year":1988}
-{"id":"tt0181875","title":"Almost Famous - Fast berühmt","year":2000}
-{"id":"tt2194499","title":"Alles eine Frage der Zeit","year":2013}
-{"id":"tt0780504","title":"Drive","year":2011}
-{"id":"tt7131622","title":"Once Upon a Time... in Hollywood","year":2019}
+{"id":"tt0241527","title":"Harry Potter und der Stein der Weisen","year":2001,"original_language":"en","rotten_tomatoes_score":80}
+{"id":"tt0167261","title":"Der Herr der Ringe - Die zwei Türme","year":2002,"original_language":"en","rotten_tomatoes_score":95}
+{"id":"tt0926084","title":"Harry Potter und die Heiligtümer des Todes - Teil 1","year":2010,"original_language":"en","rotten_tomatoes_score":76}
+{"id":"tt0373889","title":"Harry Potter und der Orden des Phönix","year":2007,"original_language":"en","rotten_tomatoes_score":78}
+{"id":"tt0903624","title":"Der Hobbit - Eine unerwartete Reise","year":2012,"original_language":"en","rotten_tomatoes_score":64}
+{"id":"tt14905854","title":"Hamnet","year":2025,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt15398776","title":"Oppenheimer","year":2023,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt1853728","title":"Django Unchained","year":2012,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt2096673","title":"Alles steht Kopf","year":2015,"original_language":"en","rotten_tomatoes_score":98}
+{"id":"tt14142060","title":"Rental Family","year":2025,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt14850054","title":"Greenland 2","year":2026,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt0295297","title":"Harry Potter und die Kammer des Schreckens","year":2002,"original_language":"en","rotten_tomatoes_score":82}
+{"id":"tt1392190","title":"Mad Max: Fury Road","year":2015,"original_language":"en","rotten_tomatoes_score":97}
+{"id":"tt0816692","title":"Interstellar","year":2014,"original_language":"en","rotten_tomatoes_score":73}
+{"id":"tt2911666","title":"John Wick","year":2014,"original_language":"en","rotten_tomatoes_score":86}
+{"id":"tt1631867","title":"Edge of Tomorrow","year":2014,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt31227572","title":"Predator: Badlands","year":2025,"original_language":"en","rotten_tomatoes_score":86}
+{"id":"tt0417741","title":"Harry Potter und der Halbblutprinz","year":2009,"original_language":"en","rotten_tomatoes_score":83}
+{"id":"tt0167260","title":"Der Herr der Ringe - Die Rückkehr des Königs","year":2003,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0120737","title":"Der Herr der Ringe - Die Gefährten","year":2001,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt6019206","title":"Kill Bill: The Whole Bloody Affair","year":2011,"original_language":"en","rotten_tomatoes_score":100}
+{"id":"tt4627382","title":"Der Hochstapler - Roofman","year":2025,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt6751668","title":"Parasite","year":2019,"original_language":"ko","rotten_tomatoes_score":99}
+{"id":"tt20215234","title":"Konklave","year":2024,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt2584384","title":"Jojo Rabbit","year":2019,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt4468740","title":"Paddington 2","year":2017,"original_language":"en","rotten_tomatoes_score":99}
+{"id":"tt1856101","title":"Blade Runner 2049","year":2017,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt4263482","title":"The Witch","year":2016,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt28607951","title":"Anora","year":2024,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt2582802","title":"Whiplash","year":2014,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0382932","title":"Ratatouille","year":2007,"original_language":"en","rotten_tomatoes_score":96}
+{"id":"tt0347149","title":"Das wandelnde Schloss","year":2004,"original_language":"ja","rotten_tomatoes_score":88}
+{"id":"tt0299658","title":"Chicago","year":2002,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt0245429","title":"Chihiros Reise ins Zauberland","year":2001,"original_language":"ja","rotten_tomatoes_score":96}
+{"id":"tt0230011","title":"Atlantis - Das Geheimnis der verlorenen Stadt","year":2001,"original_language":"en","rotten_tomatoes_score":48}
+{"id":"tt0805564","title":"Lars und die Frauen","year":2007,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0460989","title":"The Wind That Shakes the Barley","year":2006,"original_language":"en","rotten_tomatoes_score":90}
+{"id":"tt0320661","title":"Königreich der Himmel","year":2005,"original_language":"en","rotten_tomatoes_score":39}
+{"id":"tt0264464","title":"Catch Me If You Can","year":2002,"original_language":"en","rotten_tomatoes_score":96}
+{"id":"tt0120737","title":"Der Herr der Ringe - Die Gefährten","year":2001,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt0167261","title":"Der Herr der Ringe - Die zwei Türme","year":2002,"original_language":"en","rotten_tomatoes_score":95}
+{"id":"tt0167260","title":"Der Herr der Ringe - Die Rückkehr des Königs","year":2003,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0265666","title":"Die Royal Tenenbaums","year":2001,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0137523","title":"Fight Club","year":1999,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0128445","title":"Rushmore","year":1998,"original_language":"en","rotten_tomatoes_score":90}
+{"id":"tt0120338","title":"Titanic","year":1997,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt0119698","title":"Prinzessin Mononoke","year":1997,"original_language":"ja","rotten_tomatoes_score":93}
+{"id":"tt0104797","title":"Malcolm X","year":1992,"original_language":"en","rotten_tomatoes_score":89}
+{"id":"tt0105236","title":"Reservoir Dogs - Wilde Hunde","year":1992,"original_language":"en","rotten_tomatoes_score":90}
+{"id":"tt3783958","title":"La La Land","year":2016,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt0099685","title":"GoodFellas","year":1990,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt0097499","title":"Henry V","year":1989,"original_language":"en","rotten_tomatoes_score":98}
+{"id":"tt0097165","title":"Der Club der toten Dichter","year":1989,"original_language":"en","rotten_tomatoes_score":85}
+{"id":"tt0097576","title":"Indiana Jones und der letzte Kreuzzug","year":1989,"original_language":"en","rotten_tomatoes_score":84}
+{"id":"tt0097216","title":"Do the Right Thing","year":1989,"original_language":"en","rotten_tomatoes_score":92}
+{"id":"tt0093779","title":"Die Braut des Prinzen","year":1987,"original_language":"en","rotten_tomatoes_score":96}
+{"id":"tt0096018","title":"Die Flucht ins Ungewisse","year":1988,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0181875","title":"Almost Famous - Fast berühmt","year":2000,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt2194499","title":"Alles eine Frage der Zeit","year":2013,"original_language":"en","rotten_tomatoes_score":71}
+{"id":"tt0780504","title":"Drive","year":2011,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt7131622","title":"Once Upon a Time... in Hollywood","year":2019,"original_language":"en","rotten_tomatoes_score":86}
+{"id":"tt1675434","title":"Ziemlich beste Freunde","year":2011,"original_language":"fr","rotten_tomatoes_score":75}
+{"id":"tt0110413","title":"Léon - Der Profi","year":1994,"original_language":"fr","rotten_tomatoes_score":76}
+{"id":"tt0211915","title":"Die fabelhafte Welt der Amélie","year":2001,"original_language":"fr","rotten_tomatoes_score":90}
+{"id":"tt0119116","title":"Das fünfte Element","year":1997,"original_language":"fr","rotten_tomatoes_score":71}
+{"id":"tt2278871","title":"Blau ist eine warme Farbe","year":2013,"original_language":"fr","rotten_tomatoes_score":88}
+{"id":"tt0113247","title":"Hass","year":1995,"original_language":"fr","rotten_tomatoes_score":96}
+{"id":"tt0250223","title":"Asterix & Obelix - Mission Kleopatra","year":2002,"original_language":"fr","rotten_tomatoes_score":86}
+{"id":"tt1655442","title":"The Artist","year":2011,"original_language":"fr","rotten_tomatoes_score":95}
+{"id":"tt4954522","title":"Raw","year":2017,"original_language":"fr","rotten_tomatoes_score":92}
+{"id":"tt0290673","title":"Irreversibel","year":2002,"original_language":"fr","rotten_tomatoes_score":59}
+{"id":"tt1255953","title":"Die Frau die singt - Incendies","year":2010,"original_language":"fr","rotten_tomatoes_score":91}
+{"id":"tt17009710","title":"Anatomie eines Falls","year":2023,"original_language":"fr","rotten_tomatoes_score":96}
+{"id":"tt8613070","title":"Porträt einer jungen Frau in Flammen","year":2019,"original_language":"fr","rotten_tomatoes_score":97}
+{"id":"tt3612616","title":"Mommy","year":2014,"original_language":"fr","rotten_tomatoes_score":89}
+{"id":"tt0372824","title":"Die Kinder des Monsieur Mathieu","year":2004,"original_language":"fr","rotten_tomatoes_score":68}
+{"id":"tt0053198","title":"Sie küssten und sie schlugen ihn","year":1959,"original_language":"fr","rotten_tomatoes_score":99}
+{"id":"tt7458762","title":"The Wolf's Call - Entscheidung in der Tiefe","year":2019,"original_language":"fr","rotten_tomatoes_score":null}
+{"id":"tt5078204","title":"Plötzlich Papa","year":2016,"original_language":"fr","rotten_tomatoes_score":43}
+{"id":"tt0092593","title":"Auf Wiedersehen, Kinder","year":1987,"original_language":"fr","rotten_tomatoes_score":97}
+{"id":"tt0106856","title":"Falling Down - Ein ganz normaler Tag","year":1993,"original_language":"en","rotten_tomatoes_score":75}
+{"id":"tt0363589","title":"Elephant","year":2003,"original_language":"en","rotten_tomatoes_score":74}
+{"id":"tt0401711","title":"Paris, je t'aime","year":2006,"original_language":"fr","rotten_tomatoes_score":85}
+{"id":"tt0756683","title":"The Man from Earth","year":2007,"original_language":"en","rotten_tomatoes_score":100}
+{"id":"tt14444726","title":"TÁR","year":2022,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt0070460","title":"Die amerikanische Nacht","year":1973,"original_language":"fr","rotten_tomatoes_score":98}
+{"id":"tt0048491","title":"Picknick","year":1955,"original_language":"en","rotten_tomatoes_score":45}
+{"id":"tt0046268","title":"Lohn der Angst","year":1953,"original_language":"fr","rotten_tomatoes_score":100}
+{"id":"tt0082085","title":"Blow Out - Der Tod löscht alle Spuren","year":1981,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt0120202","title":"State and Main","year":2000,"original_language":"en","rotten_tomatoes_score":84}
+{"id":"tt0091288","title":"Jean Florette","year":1986,"original_language":"fr","rotten_tomatoes_score":93}
+{"id":"tt0091480","title":"Manons Rache","year":1986,"original_language":"fr","rotten_tomatoes_score":81}
+{"id":"tt0060474","title":"Drei Bruchpiloten in Paris","year":1966,"original_language":"fr","rotten_tomatoes_score":null}
+{"id":"tt0108500","title":"Die Besucher","year":1993,"original_language":"fr","rotten_tomatoes_score":31}
+{"id":"tt0457430","title":"Pans Labyrinth","year":2006,"original_language":"es","rotten_tomatoes_score":95}
+{"id":"tt4857264","title":"Der unsichtbare Gast","year":2017,"original_language":"es","rotten_tomatoes_score":67}
+{"id":"tt1189073","title":"Die Haut, in der ich wohne","year":2011,"original_language":"es","rotten_tomatoes_score":81}
+{"id":"tt6155172","title":"Roma","year":2018,"original_language":"es","rotten_tomatoes_score":96}
+{"id":"tt3011894","title":"Wild Tales - Jeder dreht mal durch!","year":2014,"original_language":"es","rotten_tomatoes_score":94}
+{"id":"tt16277242","title":"Die Schneegesellschaft","year":2023,"original_language":"es","rotten_tomatoes_score":90}
+{"id":"tt0464141","title":"Das Waisenhaus","year":2007,"original_language":"es","rotten_tomatoes_score":87}
+{"id":"tt0245712","title":"Amores perros","year":2000,"original_language":"es","rotten_tomatoes_score":93}
+{"id":"tt1305806","title":"In ihren Augen","year":2009,"original_language":"es","rotten_tomatoes_score":89}
+{"id":"tt0185125","title":"Alles über meine Mutter","year":1999,"original_language":"es","rotten_tomatoes_score":98}
+{"id":"tt6908274","title":"Parallelwelten","year":2018,"original_language":"es","rotten_tomatoes_score":null}
+{"id":"tt8291806","title":"Leid und Herrlichkeit","year":2019,"original_language":"es","rotten_tomatoes_score":96}
+{"id":"tt0441909","title":"Volver - Zurückkehren","year":2006,"original_language":"es","rotten_tomatoes_score":91}
+{"id":"tt0245574","title":"Y Tu Mama Tambien - Lust for Life","year":2001,"original_language":"es","rotten_tomatoes_score":90}
+{"id":"tt0091670","title":"Opfer","year":1986,"original_language":"sv","rotten_tomatoes_score":88}
+{"id":"tt7549996","title":"Judy","year":2019,"original_language":"en","rotten_tomatoes_score":82}
+{"id":"tt0314331","title":"Tatsächlich... Liebe","year":2003,"original_language":"en","rotten_tomatoes_score":65}
+{"id":"tt1530509","title":"The Human Centipede 2 (Full Sequence)","year":2011,"original_language":"en","rotten_tomatoes_score":28}
+{"id":"tt1650048","title":"Laurence Anyways","year":2012,"original_language":"fr","rotten_tomatoes_score":84}
+{"id":"tt0327056","title":"Mystic River","year":2003,"original_language":"en","rotten_tomatoes_score":89}
+{"id":"tt0070040","title":"Der Geist des Bienenstocks","year":1973,"original_language":"es","rotten_tomatoes_score":93}
+{"id":"tt0287467","title":"Sprich mit ihr","year":2002,"original_language":"es","rotten_tomatoes_score":91}
+{"id":"tt0117883","title":"Tesis - Faszination des Grauens","year":1996,"original_language":"es","rotten_tomatoes_score":83}
+{"id":"tt1016150","title":"Im Westen nichts Neues","year":2022,"original_language":"de","rotten_tomatoes_score":90}
+{"id":"tt0088323","title":"Die unendliche Geschichte","year":1984,"original_language":"de","rotten_tomatoes_score":84}
+{"id":"tt0405094","title":"Das Leben der Anderen","year":2006,"original_language":"de","rotten_tomatoes_score":92}
+{"id":"tt1063669","title":"Die Welle","year":2008,"original_language":"de","rotten_tomatoes_score":67}
+{"id":"tt0017136","title":"Metropolis","year":1927,"original_language":"de","rotten_tomatoes_score":97}
+{"id":"tt0301357","title":"Good Bye, Lenin!","year":2003,"original_language":"de","rotten_tomatoes_score":91}
+{"id":"tt0130827","title":"Lola rennt","year":1998,"original_language":"de","rotten_tomatoes_score":93}
+{"id":"tt0082096","title":"Das Boot","year":1981,"original_language":"de","rotten_tomatoes_score":98}
+{"id":"tt0022100","title":"M - Eine Stadt sucht einen Mörder","year":1931,"original_language":"de","rotten_tomatoes_score":100}
+{"id":"tt2987732","title":"Fack ju Göhte","year":2013,"original_language":"de","rotten_tomatoes_score":null}
+{"id":"tt3042408","title":"Who Am I – Kein System ist sicher","year":2014,"original_language":"de","rotten_tomatoes_score":null}
+{"id":"tt0093191","title":"Der Himmel über Berlin","year":1987,"original_language":"de","rotten_tomatoes_score":95}
+{"id":"tt4226388","title":"Victoria","year":2015,"original_language":"de","rotten_tomatoes_score":82}
+{"id":"tt0068182","title":"Aguirre, der Zorn Gottes","year":1972,"original_language":"de","rotten_tomatoes_score":96}
+{"id":"tt3104988","title":"Crazy Rich","year":2018,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt4530422","title":"Operation: Overlord","year":2018,"original_language":"en","rotten_tomatoes_score":82}
+{"id":"tt0421082","title":"Control","year":2007,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt1186830","title":"Agora - Die Säulen des Himmels","year":2009,"original_language":"en","rotten_tomatoes_score":56}
+{"id":"tt6710474","title":"Everything Everywhere All at Once","year":2022,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt0250258","title":"Das Experiment","year":2001,"original_language":"de","rotten_tomatoes_score":72}
+{"id":"tt0363163","title":"Der Untergang","year":2004,"original_language":"de","rotten_tomatoes_score":90}
+{"id":"tt0765432","title":"Der Baader Meinhof Komplex","year":2008,"original_language":"de","rotten_tomatoes_score":85}
+{"id":"tt0347048","title":"Gegen die Wand","year":2004,"original_language":"de","rotten_tomatoes_score":null}
+{"id":"tt1954701","title":"Oh Boy","year":2012,"original_language":"de","rotten_tomatoes_score":77}
+{"id":"tt0364569","title":"Oldboy","year":2003,"original_language":"ko","rotten_tomatoes_score":82}
+{"id":"tt5700672","title":"Train to Busan","year":2016,"original_language":"ko","rotten_tomatoes_score":95}
+{"id":"tt0353969","title":"Memories of Murder","year":2003,"original_language":"ko","rotten_tomatoes_score":null}
+{"id":"tt4016934","title":"Die Taschendiebin","year":2016,"original_language":"ko","rotten_tomatoes_score":96}
+{"id":"tt1588170","title":"I Saw the Devil","year":2010,"original_language":"ko","rotten_tomatoes_score":83}
+{"id":"tt5215952","title":"The Wailing: Die Besessenen","year":2016,"original_language":"ko","rotten_tomatoes_score":99}
+{"id":"tt0451094","title":"Lady Vengeance","year":2005,"original_language":"ko","rotten_tomatoes_score":76}
+{"id":"tt7282468","title":"Burning","year":2018,"original_language":"ko","rotten_tomatoes_score":95}
+{"id":"tt1216496","title":"Mother","year":2009,"original_language":"ko","rotten_tomatoes_score":96}
+{"id":"tt1190539","title":"The Chaser","year":2008,"original_language":"ko","rotten_tomatoes_score":82}
+{"id":"tt1527788","title":"The Man from Nowhere","year":2010,"original_language":"ko","rotten_tomatoes_score":100}
+{"id":"tt12477480","title":"Die Frau im Nebel","year":2022,"original_language":"ko","rotten_tomatoes_score":94}
+{"id":"tt0365376","title":"A Tale of Two Sisters","year":2003,"original_language":"ko","rotten_tomatoes_score":86}
+{"id":"tt0423866","title":"Bin-Jip - Leere Häuser","year":2004,"original_language":"ko","rotten_tomatoes_score":87}
+{"id":"tt0468492","title":"The Host","year":2006,"original_language":"ko","rotten_tomatoes_score":93}
+{"id":"tt6644200","title":"A Quiet Place","year":2018,"original_language":"en","rotten_tomatoes_score":96}
+{"id":"tt0469903","title":"The Express","year":2008,"original_language":"en","rotten_tomatoes_score":63}
+{"id":"tt1133985","title":"Green Lantern","year":2011,"original_language":"en","rotten_tomatoes_score":26}
+{"id":"tt1278060","title":"The Garden of Sinners: Paradoxe Helix","year":2008,"original_language":"ja","rotten_tomatoes_score":null}
+{"id":"tt4334266","title":"The Bad Batch","year":2017,"original_language":"en","rotten_tomatoes_score":45}
+{"id":"tt0310775","title":"Sympathy for Mr. Vengeance","year":2002,"original_language":"ko","rotten_tomatoes_score":53}
+{"id":"tt0190332","title":"Tiger & Dragon","year":2000,"original_language":"zh","rotten_tomatoes_score":98}
+{"id":"tt0299977","title":"Hero","year":2002,"original_language":"zh","rotten_tomatoes_score":null}
+{"id":"tt0385004","title":"House of Flying Daggers","year":2004,"original_language":"zh","rotten_tomatoes_score":87}
+{"id":"tt0446059","title":"Fearless","year":2006,"original_language":"zh","rotten_tomatoes_score":73}
+{"id":"tt0425637","title":"Red Cliff","year":2008,"original_language":"zh","rotten_tomatoes_score":89}
+{"id":"tt1410063","title":"The Flowers of War","year":2011,"original_language":"zh","rotten_tomatoes_score":41}
+{"id":"tt0101640","title":"Rote Laterne","year":1991,"original_language":"zh","rotten_tomatoes_score":97}
+{"id":"tt0808357","title":"Gefahr und Begierde","year":2007,"original_language":"zh","rotten_tomatoes_score":73}
+{"id":"tt0106332","title":"Lebewohl, meine Konkubine","year":1993,"original_language":"zh","rotten_tomatoes_score":90}
+{"id":"tt0118694","title":"In The Mood For Love","year":2000,"original_language":"cn","rotten_tomatoes_score":92}
+{"id":"tt0109424","title":"Chungking Express","year":1994,"original_language":"cn","rotten_tomatoes_score":89}
+{"id":"tt0338564","title":"Infernal Affairs","year":2002,"original_language":"cn","rotten_tomatoes_score":94}
+{"id":"tt0765429","title":"American Gangster","year":2007,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0460780","title":"Schwerter des Königs - Dungeon Siege","year":2007,"original_language":"en","rotten_tomatoes_score":4}
+{"id":"tt0112913","title":"Fallen Angels","year":1995,"original_language":"cn","rotten_tomatoes_score":95}
+{"id":"tt0115857","title":"Außer Kontrolle","year":1996,"original_language":"en","rotten_tomatoes_score":18}
+{"id":"tt0093389","title":"Der letzte Kaiser","year":1987,"original_language":"en","rotten_tomatoes_score":86}
+{"id":"tt0408664","title":"Nobody Knows","year":2004,"original_language":"ja","rotten_tomatoes_score":92}
+{"id":"tt0859765","title":"Still Life","year":2006,"original_language":"zh","rotten_tomatoes_score":91}
+{"id":"tt5311514","title":"Your Name. - Gestern, heute und für immer","year":2016,"original_language":"ja","rotten_tomatoes_score":98}
+{"id":"tt0096283","title":"Mein Nachbar Totoro","year":1988,"original_language":"ja","rotten_tomatoes_score":94}
+{"id":"tt0095327","title":"Die letzten Glühwürmchen","year":1988,"original_language":"ja","rotten_tomatoes_score":100}
+{"id":"tt0876563","title":"Ponyo - Das große Abenteuer am Meer","year":2008,"original_language":"ja","rotten_tomatoes_score":91}
+{"id":"tt0094625","title":"Akira","year":1988,"original_language":"ja","rotten_tomatoes_score":91}
+{"id":"tt0092067","title":"Das Schloss im Himmel","year":1986,"original_language":"ja","rotten_tomatoes_score":96}
+{"id":"tt0097814","title":"Kikis kleiner Lieferservice","year":1989,"original_language":"ja","rotten_tomatoes_score":null}
+{"id":"tt0047478","title":"Die sieben Samurai","year":1954,"original_language":"ja","rotten_tomatoes_score":100}
+{"id":"tt0087544","title":"Nausicaä aus dem Tal der Winde","year":1984,"original_language":"ja","rotten_tomatoes_score":91}
+{"id":"tt0113568","title":"Ghost in The Shell","year":1995,"original_language":"ja","rotten_tomatoes_score":95}
+{"id":"tt0266308","title":"Battle Royale","year":2000,"original_language":"ja","rotten_tomatoes_score":90}
+{"id":"tt0104652","title":"Porco Rosso","year":1992,"original_language":"ja","rotten_tomatoes_score":96}
+{"id":"tt2013293","title":"Wie der Wind sich hebt","year":2013,"original_language":"ja","rotten_tomatoes_score":88}
+{"id":"tt6587046","title":"Der Junge und der Reiher","year":2023,"original_language":"ja","rotten_tomatoes_score":96}
+{"id":"tt1568921","title":"Arrietty - Die wundersame Welt der Borger","year":2010,"original_language":"ja","rotten_tomatoes_score":94}
+{"id":"tt5462602","title":"The Big Sick","year":2017,"original_language":"en","rotten_tomatoes_score":98}
+{"id":"tt12593682","title":"Bullet Train","year":2022,"original_language":"en","rotten_tomatoes_score":52}
+{"id":"tt0831887","title":"The Spirit","year":2008,"original_language":"en","rotten_tomatoes_score":14}
+{"id":"tt0044741","title":"Ikiru - Einmal wirklich leben","year":1952,"original_language":"ja","rotten_tomatoes_score":98}
+{"id":"tt0032976","title":"Rebecca","year":1940,"original_language":"en","rotten_tomatoes_score":98}
+{"id":"tt0054215","title":"Psycho","year":1960,"original_language":"en","rotten_tomatoes_score":97}
+{"id":"tt0092048","title":"Tampopo","year":1985,"original_language":"ja","rotten_tomatoes_score":100}
+{"id":"tt0166924","title":"Mulholland Drive - Straße der Finsternis","year":2001,"original_language":"en","rotten_tomatoes_score":84}
+{"id":"tt0046438","title":"Die Reise nach Tokio","year":1953,"original_language":"ja","rotten_tomatoes_score":100}
+{"id":"tt0156887","title":"Perfect Blue","year":1998,"original_language":"ja","rotten_tomatoes_score":84}
+{"id":"tt0079944","title":"Stalker","year":1979,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0069293","title":"Solaris","year":1972,"original_language":"ru","rotten_tomatoes_score":92}
+{"id":"tt0091251","title":"Komm und sieh","year":1985,"original_language":"ru","rotten_tomatoes_score":90}
+{"id":"tt0072443","title":"Der Spiegel","year":1975,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt2802154","title":"Leviathan","year":2014,"original_language":"ru","rotten_tomatoes_score":97}
+{"id":"tt0060107","title":"Andrej Rubljow","year":1966,"original_language":"ru","rotten_tomatoes_score":96}
+{"id":"tt6304162","title":"Loveless","year":2017,"original_language":"ru","rotten_tomatoes_score":94}
+{"id":"tt0376968","title":"The Return - Die Rückkehr","year":2003,"original_language":"ru","rotten_tomatoes_score":null}
+{"id":"tt6537238","title":"Salyut-7","year":2017,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0118767","title":"Der Bruder","year":1997,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0050986","title":"Wilde Erdbeeren","year":1957,"original_language":"sv","rotten_tomatoes_score":94}
+{"id":"tt0112883","title":"Don Juan DeMarco","year":1994,"original_language":"en","rotten_tomatoes_score":70}
+{"id":"tt0084726","title":"Star Trek II - Der Zorn des Khan","year":1982,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt0079579","title":"Moskau glaubt den Tränen nicht","year":1980,"original_language":"ru","rotten_tomatoes_score":40}
+{"id":"tt0015648","title":"Panzerkreuzer Potemkin","year":1925,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0056111","title":"Iwans Kindheit","year":1962,"original_language":"ru","rotten_tomatoes_score":100}
+{"id":"tt0317248","title":"City of God","year":2002,"original_language":"pt","rotten_tomatoes_score":91}
+{"id":"tt0861739","title":"Elite Squad","year":2007,"original_language":"pt","rotten_tomatoes_score":51}
+{"id":"tt1555149","title":"Elite Squad: Im Sumpf der Korruption","year":2010,"original_language":"pt","rotten_tomatoes_score":91}
+{"id":"tt2762506","title":"Bacurau","year":2019,"original_language":"pt","rotten_tomatoes_score":93}
+{"id":"tt0140888","title":"Central Station","year":1998,"original_language":"pt","rotten_tomatoes_score":94}
+{"id":"tt14961016","title":"Für immer hier","year":2024,"original_language":"pt","rotten_tomatoes_score":null}
+{"id":"tt3742378","title":"Der Sommer mit Mamã","year":2015,"original_language":"pt","rotten_tomatoes_score":98}
+{"id":"tt5221584","title":"Aquarius","year":2016,"original_language":"pt","rotten_tomatoes_score":97}
+{"id":"tt0293007","title":"Carandiru","year":2003,"original_language":"pt","rotten_tomatoes_score":68}
+{"id":"tt0082912","title":"Asphalt-Haie","year":1980,"original_language":"pt","rotten_tomatoes_score":94}
+{"id":"tt1424432","title":"Senna","year":2010,"original_language":"en","rotten_tomatoes_score":93}
+{"id":"tt3398268","title":"Erinnerungen an Marnie","year":2014,"original_language":"ja","rotten_tomatoes_score":92}
+{"id":"tt0361862","title":"Der Maschinist","year":2004,"original_language":"en","rotten_tomatoes_score":77}
+{"id":"tt0212985","title":"Hannibal","year":2001,"original_language":"en","rotten_tomatoes_score":39}
+{"id":"tt0367110","title":"Swades - Heimat","year":2004,"original_language":"hi","rotten_tomatoes_score":89}
+{"id":"tt0118799","title":"Das Leben ist schön","year":1997,"original_language":"it","rotten_tomatoes_score":80}
+{"id":"tt0060196","title":"Zwei glorreiche Halunken","year":1966,"original_language":"it","rotten_tomatoes_score":97}
+{"id":"tt0064116","title":"Spiel mir das Lied vom Tod","year":1968,"original_language":"it","rotten_tomatoes_score":96}
+{"id":"tt0095765","title":"Cinema Paradiso","year":1988,"original_language":"it","rotten_tomatoes_score":90}
+{"id":"tt0058461","title":"Für eine Handvoll Dollar","year":1964,"original_language":"it","rotten_tomatoes_score":98}
+{"id":"tt4901306","title":"Perfect Strangers - Wie viele Geheimnisse verträgt eine Freundschaft?","year":2016,"original_language":"it","rotten_tomatoes_score":79}
+{"id":"tt2358891","title":"La Grande Bellezza - Die große Schönheit","year":2013,"original_language":"it","rotten_tomatoes_score":91}
+{"id":"tt0076786","title":"Suspiria - In den Krallen des Bösen","year":1977,"original_language":"it","rotten_tomatoes_score":94}
+{"id":"tt0040522","title":"Fahrraddiebe","year":1948,"original_language":"it","rotten_tomatoes_score":99}
+{"id":"tt0056801","title":"Achteinhalb","year":1963,"original_language":"it","rotten_tomatoes_score":97}
+{"id":"tt0213847","title":"Der Zauber von Malèna","year":2000,"original_language":"it","rotten_tomatoes_score":54}
+{"id":"tt0120731","title":"Die Legende vom Ozeanpianisten","year":1998,"original_language":"it","rotten_tomatoes_score":58}
+{"id":"tt0053779","title":"Das süße Leben","year":1960,"original_language":"it","rotten_tomatoes_score":95}
+{"id":"tt0048673","title":"Traum meines Lebens","year":1955,"original_language":"en","rotten_tomatoes_score":92}
+{"id":"tt0036775","title":"Frau ohne Gewissen","year":1944,"original_language":"en","rotten_tomatoes_score":97}
+{"id":"tt0116209","title":"Der englische Patient","year":1996,"original_language":"en","rotten_tomatoes_score":86}
+{"id":"tt5164214","title":"Ocean's 8","year":2018,"original_language":"en","rotten_tomatoes_score":69}
+{"id":"tt0050783","title":"Die Nächte der Cabiria","year":1957,"original_language":"it","rotten_tomatoes_score":100}
+{"id":"tt0057091","title":"Der Leopard","year":1963,"original_language":"it","rotten_tomatoes_score":100}
+{"id":"tt7026672","title":"Letztendlich sind wir dem Universum egal","year":2018,"original_language":"en","rotten_tomatoes_score":64}
+{"id":"tt0071129","title":"Amarcord","year":1973,"original_language":"it","rotten_tomatoes_score":88}
+{"id":"tt0065889","title":"Ermittlungen gegen einen über jeden Verdacht erhabenen Bürger","year":1970,"original_language":"it","rotten_tomatoes_score":100}
+{"id":"tt0383574","title":"Pirates of the Caribbean - Fluch der Karibik 2","year":2006,"original_language":"en","rotten_tomatoes_score":53}
+{"id":"tt29927663","title":"The Great Flood","year":2025,"original_language":"ko","rotten_tomatoes_score":null}
+{"id":"tt4712810","title":"Die Unfassbaren 3 - Now you see me","year":2025,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt19847976","title":"Wicked: Teil 2","year":2025,"original_language":"en","rotten_tomatoes_score":66}
+{"id":"tt0499549","title":"Avatar - Aufbruch nach Pandora","year":2009,"original_language":"en","rotten_tomatoes_score":81}
+{"id":"tt0099785","title":"Kevin - Allein zu Haus","year":1990,"original_language":"en","rotten_tomatoes_score":66}
+{"id":"tt33028778","title":"Primate","year":2026,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt30144839","title":"One Battle After Another","year":2025,"original_language":"en","rotten_tomatoes_score":95}
+{"id":"tt11539996","title":"The Negotiator","year":2025,"original_language":"en","rotten_tomatoes_score":82}
+{"id":"tt1757678","title":"Avatar: Fire and Ash","year":2025,"original_language":"en","rotten_tomatoes_score":66}
+{"id":"tt32642706","title":"The Rip","year":2026,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt0076759","title":"Krieg der Sterne","year":1977,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0097958","title":"Schöne Bescherung","year":1989,"original_language":"en","rotten_tomatoes_score":72}
+{"id":"tt29567915","title":"Nürnberg","year":2025,"original_language":"en","rotten_tomatoes_score":72}
+{"id":"tt0330373","title":"Harry Potter und der Feuerkelch","year":2005,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt26443597","title":"Zoomania 2","year":2025,"original_language":"en","rotten_tomatoes_score":91}
+{"id":"tt31434030","title":"Dracula - Die Auferstehung","year":2025,"original_language":"fr","rotten_tomatoes_score":75}
+{"id":"tt30972054","title":"Das Kanu des Manitu","year":2025,"original_language":"de","rotten_tomatoes_score":null}
+{"id":"tt1446714","title":"Prometheus - Dunkle Zeichen","year":2012,"original_language":"en","rotten_tomatoes_score":73}
+{"id":"tt10374610","title":"The Long Walk - Todesmarsch","year":2025,"original_language":"en","rotten_tomatoes_score":88}
+{"id":"tt33244668","title":"Anaconda","year":2025,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt30274401","title":"Five Nights at Freddy's 2","year":2025,"original_language":"en","rotten_tomatoes_score":16}
+{"id":"tt14107334","title":"The Running Man","year":2025,"original_language":"en","rotten_tomatoes_score":63}
+{"id":"tt1375666","title":"Inception","year":2010,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt15239678","title":"Dune: Part Two","year":2024,"original_language":"en","rotten_tomatoes_score":92}
+{"id":"tt1630029","title":"Avatar: The Way of Water","year":2022,"original_language":"en","rotten_tomatoes_score":76}
+{"id":"tt0381061","title":"James Bond 007 - Casino Royale","year":2006,"original_language":"en","rotten_tomatoes_score":94}
+{"id":"tt0133093","title":"Matrix","year":1999,"original_language":"en","rotten_tomatoes_score":83}
+{"id":"tt12300742","title":"Bugonia","year":2025,"original_language":"en","rotten_tomatoes_score":87}
+{"id":"tt32141377","title":"28 Years Later: The Bone Temple","year":2026,"original_language":"en","rotten_tomatoes_score":null}
+{"id":"tt0104431","title":"Kevin - Allein in New York","year":1992,"original_language":"en","rotten_tomatoes_score":35}

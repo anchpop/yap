@@ -5422,7 +5422,6 @@ i lungo
 i panni sporchi si lavano in famiglia
 i pro e i contro
 i soldi non crescono sugli alberi
-i suoi
 i-esimo
 ibis eremita
 identità di Eulero
@@ -6022,7 +6021,6 @@ lavoro d'intarsio
 lavoro d'ornato
 lavoro occasionale
 le acque chete rovinano i ponti
-le sue
 lecca lecca
 lecca-lecca
 leccarsi i baffi
@@ -10302,3 +10300,7 @@ zuppa inglese
 è un piacere
 è una parola
 “ ”
+i suoi
+le sue
+il suo
+la sua

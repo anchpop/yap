@@ -10,16 +10,26 @@ import {
 import { getMovieMetadata } from "@/lib/movie-cache";
 import {
   type TranslateComprehensibleSentence,
-  type Lexeme,
   type Literal,
-  type TargetToNativeWord,
   type ProperNounDefinition,
+  type LiteralGrades,
+  type Gram,
+  type DictionaryEntry,
+  type PhrasebookDefinitionEntry,
+  type TargetToNativeWord,
   autograde_translation,
   find_closest_translation,
+  gram_to_display_string,
   type Language,
   type Course,
   type Deck,
+  type Heteronym,
 } from "../../../../yap-frontend-rs/pkg/yap_frontend_rs";
+
+// GramDefinition is missing from the .d.ts due to a type generator bug
+type GramDefinition =
+  | { Dictionary: DictionaryEntry }
+  | { Phrasebook: PhrasebookDefinitionEntry };
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
@@ -52,18 +62,18 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 
 interface SentenceChallengeProps {
-  sentence: TranslateComprehensibleSentence<string>;
+  sentence: TranslateComprehensibleSentence;
   onComplete: (
     grade:
-      | { wordStatuses: [Lexeme<string>, boolean | null][] }
+      | {
+          literalGrades: LiteralGrades;
+          phrasesRemembered: Gram<string>[];
+          phrasesForgot: Gram<string>[];
+        }
       | { perfect: string | null },
-    lexemesTapped: Lexeme<string>[],
+    heteronymsTapped: Heteronym<string>[],
     submission: string
   ) => void;
-  unique_target_language_lexeme_definitions: [
-    Lexeme<string>,
-    TargetToNativeWord[]
-  ][];
   accessToken: string | undefined;
   targetLanguage: Language;
   nativeLanguage: Language;
@@ -75,26 +85,30 @@ interface SentenceChallengeProps {
 interface ChallengeSentenceProps {
   literals: Literal<string>[];
   onWordTap: (index: number) => void;
-  wordStatuses?: [Lexeme<string>, boolean | null][];
+  literalGrades?: LiteralGrades;
   isPerfect?: boolean;
   tappedWords: Set<number>;
-  uniqueTargetLanguageLexemes: Lexeme<string>[];
+  literalGramIndices: number[];
+  tappedGramGroups: Set<number>;
 }
 
-interface SwipeableWordProps {
-  lexeme: Lexeme<string>;
-  aliased: boolean;
-  onSwipe: (lexeme: Lexeme<string>, remembered: boolean) => void;
+type GradeItem =
+  | { kind: "phrase"; gram: Gram<string>; display: string; status: boolean | null }
+  | { kind: "literal"; literalIndex: number; display: string; status: boolean | null };
+
+interface SwipeablePhraseProps {
+  item: GradeItem;
+  onSwipe: (item: GradeItem, remembered: boolean) => void;
   isSelected?: boolean;
-  status?: boolean | null; // true = remembered, false = forgot, null = not graded
 }
 
 export interface SwipeableWordHandle {
   handleButtonClick: (remembered: boolean) => void;
 }
 
-const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
-  ({ lexeme, aliased, onSwipe, isSelected = false, status = null }, ref) => {
+const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
+  ({ item, onSwipe, isSelected = false }, ref) => {
+    const status = item.status;
     const x = useMotionValue(0);
     const controls = animationControls();
     const { bumpBackground } = useBackground();
@@ -102,7 +116,11 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
     const background = useTransform(
       x,
       [-150, 0, 150],
-      ["rgba(239, 68, 68, 0.2)", "rgba(0, 0, 0, 0)", "rgba(34, 197, 94, 0.2)"]
+      [
+        "rgba(239, 68, 68, 0.2)",
+        "rgba(0, 0, 0, 0)",
+        "rgba(34, 197, 94, 0.2)",
+      ]
     );
 
     const handleDragEnd = async (
@@ -117,17 +135,15 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
         (info.velocity.x > velocityThreshold &&
           info.offset.x < -positionThreshold)
       ) {
-        // Swiped left - forgot
         await controls.start({ x: -60 });
-        onSwipe(lexeme, false);
+        onSwipe(item, false);
       } else if (
         info.velocity.x > velocityThreshold ||
         (info.velocity.x < -velocityThreshold &&
           info.offset.x > positionThreshold)
       ) {
-        // Swiped right - remembered
         await controls.start({ x: 60 });
-        onSwipe(lexeme, true);
+        onSwipe(item, true);
       }
     };
 
@@ -136,13 +152,13 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
         bumpBackground(30.0);
         if (remembered) {
           await controls.start({ x: 60 });
-          onSwipe(lexeme, true);
+          onSwipe(item, true);
         } else {
           await controls.start({ x: -60 });
-          onSwipe(lexeme, false);
+          onSwipe(item, false);
         }
       },
-      [controls, onSwipe, lexeme, bumpBackground]
+      [controls, onSwipe, item, bumpBackground]
     );
 
     useImperativeHandle(
@@ -153,16 +169,12 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
       [handleButtonClick]
     );
 
-    // Set initial position based on status
     useEffect(() => {
       if (status === true) {
-        // Remembered - move right
         controls.start({ x: 60 });
       } else if (status === false) {
-        // Forgot - move left
         controls.start({ x: -60 });
       } else {
-        // Not graded - center
         controls.start({ x: 0 });
       }
     }, [status, controls]);
@@ -175,7 +187,6 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
         transition={{ duration: 0.2 }}
         data-word-index
       >
-        {/* Left button - Forgot */}
         <button
           onClick={() => handleButtonClick(false)}
           className="p-2 rounded-full hover:bg-green-500/10 transition-colors"
@@ -184,7 +195,6 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
           <X className="w-5 h-5 text-red-500" />
         </button>
 
-        {/* Swipeable word container */}
         <div className="flex-1 relative overflow-hidden">
           <motion.div
             drag="x"
@@ -196,20 +206,10 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
               isSelected ? "ring-2 ring-primary" : ""
             }`}
           >
-            <p className="text-lg font-medium text-center">
-              {"Heteronym" in lexeme ? lexeme.Heteronym.word : lexeme.Multiword}
-              <span className="text-sm text-muted-foreground">
-                {aliased
-                  ? "Heteronym" in lexeme
-                    ? ` (${lexeme.Heteronym.pos})`
-                    : ""
-                  : ""}
-              </span>
-            </p>
+            <p className="text-lg font-medium text-center">{item.display}</p>
           </motion.div>
         </div>
 
-        {/* Right button - Remembered */}
         <button
           onClick={() => handleButtonClick(true)}
           className="p-2 rounded-full hover:bg-red-500/10 transition-colors"
@@ -222,7 +222,7 @@ const SwipeableWord = forwardRef<SwipeableWordHandle, SwipeableWordProps>(
   }
 );
 
-SwipeableWord.displayName = "SwipeableWord";
+SwipeablePhrase.displayName = "SwipeablePhrase";
 
 function YourTranslation({ userTranslation }: { userTranslation: string }) {
   return (
@@ -271,47 +271,77 @@ function AutogradeError() {
   );
 }
 
-interface WordStatusesProps {
-  selectedWordIndex: number;
-  sentence: TranslateComprehensibleSentence<string>;
-  setSelectedWordIndex: (index: number) => void;
-  wordStatuses: [Lexeme<string>, boolean | null][];
-  wordRefs: React.RefObject<Map<number, SwipeableWordHandle>>;
-  handleWordSwipe: (lexeme: Lexeme<string>, remembered: boolean) => void;
-  definitions: [Lexeme<string>, TargetToNativeWord[]][];
+interface PhraseStatusesProps {
+  selectedPhraseIndex: number;
+  setSelectedPhraseIndex: (index: number) => void;
+  gradeItems: GradeItem[];
+  phraseRefs: React.RefObject<Map<number, SwipeableWordHandle>>;
+  handleGradeSwipe: (item: GradeItem, remembered: boolean) => void;
+  openByDefault: boolean;
 }
 
-function WordDefinition({
-  lexeme,
-  definitions,
-}: {
-  lexeme: Lexeme<string>;
-  definitions: TargetToNativeWord[];
-}) {
-  if (!definitions || definitions.length === 0) {
-    return null;
-  }
+function PhraseStatuses({
+  selectedPhraseIndex,
+  setSelectedPhraseIndex,
+  gradeItems,
+  phraseRefs,
+  handleGradeSwipe,
+  openByDefault,
+}: PhraseStatusesProps) {
+  const [isAnswerOpen, setIsAnswerOpen] = useState(openByDefault);
 
-  const lexemeText =
-    "Heteronym" in lexeme ? lexeme.Heteronym.word : lexeme.Multiword;
+  useEffect(() => {
+    if (
+      isAnswerOpen &&
+      selectedPhraseIndex === -1 &&
+      gradeItems.length > 0
+    ) {
+      setSelectedPhraseIndex(0);
+    }
+  }, [
+    isAnswerOpen,
+    selectedPhraseIndex,
+    gradeItems.length,
+    setSelectedPhraseIndex,
+  ]);
 
   return (
-    <div className="p-3 border border-card/50 bg-card/30 rounded-md">
-      <p className="text-sm font-semibold">{lexemeText}:</p>
-      <ul className="list-disc list-inside text-sm">
-        {definitions.map((def, i) => (
-          <li key={i}>
-            {def.native}
-            {def.note && (
-              <span className="text-xs text-muted-foreground">
-                {" "}
-                ({def.note})
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Collapsible open={isAnswerOpen} onOpenChange={setIsAnswerOpen}>
+      <CollapsibleTrigger asChild>
+        <Button variant="ghost" className="w-full justify-between p-0">
+          <span className="text-sm font-medium">Grade Words</span>
+          <span className="text-xs text-muted-foreground">
+            {isAnswerOpen ? "Hide" : "Show"}
+          </span>
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="text-center space-y-1">
+          <p className="text-sm font-medium text-muted-foreground pb-2">
+            Mark as remembered (✓) or forgot (✗).
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          {gradeItems.map((item, index: number) => (
+            <div key={index}>
+              <SwipeablePhrase
+                ref={(el) => {
+                  if (el) {
+                    phraseRefs.current.set(index, el);
+                  } else {
+                    phraseRefs.current.delete(index);
+                  }
+                }}
+                item={item}
+                onSwipe={handleGradeSwipe}
+                isSelected={selectedPhraseIndex === index}
+              />
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 
@@ -347,7 +377,7 @@ function ProperNounDefinitionCard({
   );
 }
 
-function ProperNounDefinitions({
+export function ProperNounDefinitions({
   definitions,
 }: {
   definitions: [string, ProperNounDefinition][];
@@ -356,7 +386,6 @@ function ProperNounDefinitions({
     return null;
   }
 
-  // Group proper nouns by type
   const personNames: string[] = [];
   const placeNames: string[] = [];
   const organizationNames: string[] = [];
@@ -414,6 +443,7 @@ function ProperNounDefinitions({
       {transliterationAndDescription.map(
         ([noun, transliteration, description]) => (
           <ProperNounDefinitionCard
+            key={noun}
             words={[noun]}
             type_singular={`${transliteration} (${description})`}
             type_plural=""
@@ -422,6 +452,7 @@ function ProperNounDefinitions({
       )}
       {transliterations.map(([noun, transliteration]) => (
         <ProperNounDefinitionCard
+          key={noun}
           words={[noun]}
           type_singular={transliteration}
           type_plural=""
@@ -429,6 +460,7 @@ function ProperNounDefinitions({
       ))}
       {descriptionOnly.map(([noun, description]) => (
         <ProperNounDefinitionCard
+          key={noun}
           words={[noun]}
           type_singular={description}
           type_plural=""
@@ -438,146 +470,118 @@ function ProperNounDefinitions({
   );
 }
 
-function WordStatuses({
-  selectedWordIndex,
-  sentence,
-  setSelectedWordIndex,
-  wordStatuses,
-  wordRefs,
-  handleWordSwipe,
-}: WordStatusesProps) {
-  const [isAnswerOpen, setIsAnswerOpen] = useState(false);
-
-  // Initialize selection when collapsible opens
-  useEffect(() => {
-    if (
-      isAnswerOpen &&
-      selectedWordIndex === -1 &&
-      sentence.unique_target_language_lexemes.length > 0
-    ) {
-      setSelectedWordIndex(0);
-    }
-  }, [
-    isAnswerOpen,
-    selectedWordIndex,
-    sentence.unique_target_language_lexemes.length,
-    setSelectedWordIndex,
-  ]);
-
-  return (
-    <Collapsible open={isAnswerOpen} onOpenChange={setIsAnswerOpen}>
-      <CollapsibleTrigger asChild>
-        <Button variant="ghost" className="w-full justify-between p-0">
-          <span className="text-sm font-medium">Grade Words</span>
-          <span className="text-xs text-muted-foreground">
-            {isAnswerOpen ? "Hide" : "Show"}
-          </span>
-        </Button>
-      </CollapsibleTrigger>
-      <CollapsibleContent>
-        <div className="text-center space-y-1">
-          <p className="text-sm font-medium text-muted-foreground pb-2">
-            Mark as remembered (✓) or forgot (✗). Tap a word to see its
-            definition.
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          {wordStatuses.map(([lexeme, status], index) => (
-            <div key={index}>
-              <SwipeableWord
-                ref={(el) => {
-                  if (el) {
-                    wordRefs.current.set(index, el);
-                  } else {
-                    wordRefs.current.delete(index);
-                  }
-                }}
-                lexeme={lexeme}
-                aliased={false} // TODO: need to fix this
-                onSwipe={handleWordSwipe}
-                isSelected={selectedWordIndex === index}
-                status={status}
-              />
-            </div>
-          ))}
-        </div>
-      </CollapsibleContent>
-    </Collapsible>
-  );
+function GramDefinitionDisplay({
+  definition,
+}: {
+  definition: GramDefinition;
+}) {
+  if ("Dictionary" in definition) {
+    const dict = definition.Dictionary;
+    return (
+      <div className="p-3 border border-card/50 bg-card/30 rounded-md space-y-2">
+        <p className="text-sm font-semibold">{dict.target_language_word}:</p>
+        {dict.definitions.map((def: TargetToNativeWord, i: number) => (
+          <div key={i}>
+            <p className="text-sm">
+              {def.native}
+              {def.note && (
+                <span className="text-xs text-muted-foreground"> ({def.note})</span>
+              )}
+            </p>
+            {def.example_sentence_target_language && (
+              <div className="text-xs text-muted-foreground mt-1">
+                <p className="italic">"{def.example_sentence_target_language}"</p>
+                <p>"{def.example_sentence_native_language}"</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  } else {
+    const pb = definition.Phrasebook;
+    return (
+      <div className="p-3 border border-card/50 bg-card/30 rounded-md">
+        <p className="text-sm font-semibold">
+          {pb.target_language_multi_word_term}:
+        </p>
+        <p className="text-sm">{pb.meaning}</p>
+        {pb.target_language_example && (
+          <div className="text-xs text-muted-foreground mt-1">
+            <p className="italic">"{pb.target_language_example}"</p>
+            <p>"{pb.native_language_example}"</p>
+          </div>
+        )}
+      </div>
+    );
+  }
 }
 
 function ChallengeSentence({
   literals,
-  wordStatuses,
+  literalGrades,
   isPerfect,
   onWordTap,
   tappedWords,
+  literalGramIndices,
+  tappedGramGroups,
 }: ChallengeSentenceProps) {
-  // Helper function to get the color class for a literal
   const getLiteralColorClass = (literal: Literal<string>, i: number) => {
-    // If perfect, all literals are green
     if (isPerfect) {
       return "text-green-600 dark:text-green-400";
     }
 
-    const heteronym =
-      "word" in literal.word_type && literal.word_type !== undefined
-        ? literal.word_type
-        : undefined;
+    const isHeteronym =
+      (literal.word.word_type as { type?: string })?.type === "Heteronym";
 
-    if (heteronym && tappedWords.has(i)) {
-      return "text-yellow-500 dark:text-yellow-400"; // Color for tapped words
+    // Highlight all literals in a tapped gram group
+    const gramGroup = literalGramIndices[i];
+    if (gramGroup !== undefined && tappedGramGroups.has(gramGroup)) {
+      return "text-yellow-500 dark:text-yellow-400";
     }
 
-    // If no word statuses, use default color
-    if (!wordStatuses || !heteronym) {
+    // Also highlight individually tapped words (backwards compat)
+    if (isHeteronym && tappedWords.has(i)) {
+      return "text-yellow-500 dark:text-yellow-400";
+    }
+
+    if (!literalGrades || !isHeteronym) {
       return "";
     }
 
-    // Find if this literal belongs to any of the graded lexemes
-    const lexeme: Lexeme<string> = { Heteronym: heteronym };
-    const statusEntry = wordStatuses.find(
-      ([l]) => JSON.stringify(l) === JSON.stringify(lexeme)
-    );
-    if (statusEntry) {
-      const status = statusEntry[1];
-      if (status === true) return "text-green-600 dark:text-green-400";
-      if (status === false) return "text-red-600 dark:text-red-400";
-    }
+    const grade = literalGrades[i];
+    if (grade === "Remembered") return "text-green-600 dark:text-green-400";
+    if (grade === "Forgot") return "text-red-600 dark:text-red-400";
 
     return "";
   };
 
   return (
     <h2 className="text-2xl font-semibold">
-      {literals.map((literal, i) => {
+      {literals.map((literal: Literal<string>, i: number) => {
         const colorClass = getLiteralColorClass(literal, i);
-        const heteronym =
-          "word" in literal.word_type && literal.word_type !== undefined
-            ? literal.word_type
-            : undefined;
+        const isHeteronym =
+          (literal.word.word_type as { type?: string })?.type === "Heteronym";
 
         return (
-          <>
+          <span key={i}>
             <span
-              key={i}
               className={cn(
                 colorClass,
-                heteronym
+                isHeteronym
                   ? "cursor-pointer underline-offset-3 underline decoration-dotted hover:decoration-solid hover:decoration-3 transition-transform hover:scale-105 inline-block"
                   : ""
               )}
               onClick={() => {
-                if (heteronym) {
+                if (isHeteronym) {
                   onWordTap(i);
                 }
               }}
             >
-              {literal.text}
+              {literal.word.text}
             </span>
             {literal.whitespace}
-          </>
+          </span>
         );
       })}
     </h2>
@@ -587,7 +591,6 @@ function ChallengeSentence({
 export function TranslationChallenge({
   sentence,
   onComplete,
-  unique_target_language_lexeme_definitions,
   accessToken,
   targetLanguage,
   nativeLanguage,
@@ -602,20 +605,22 @@ export function TranslationChallenge({
     if (!sentence.movie_titles || sentence.movie_titles.length === 0) {
       return [];
     }
-    const movieIds = sentence.movie_titles.map(([id]) => id);
+    const movieIds = sentence.movie_titles.map(([id]: [string, string]) => id);
     return getMovieMetadata(deck, movieIds);
   }, [sentence.movie_titles, deck]);
   const [correctTranslation, setCorrectTranslation] = useState(
     sentence.native_translations[0]
   );
-  const [selectedWordIndex, setSelectedWordIndex] = useState<number>(-1);
+  const [selectedPhraseIndex, setSelectedPhraseIndex] = useState<number>(-1);
   const [showReportModal, setShowReportModal] = useState(false);
   const [tappedWords, setTappedWords] = useState<Set<number>>(new Set());
   const [grade, setGrade] = useState<
     | {
         graded:
           | {
-              wordStatuses: [Lexeme<string>, boolean | null][];
+              literalGrades: LiteralGrades;
+              phrasesRemembered: Gram<string>[];
+              phrasesForgot: Gram<string>[];
               encouragement?: string;
               explanation?: string;
               autogradingError?: string;
@@ -630,11 +635,11 @@ export function TranslationChallenge({
     | null
   >(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const wordRefs = useRef<Map<number, SwipeableWordHandle>>(new Map());
+  const phraseRefs = useRef<Map<number, SwipeableWordHandle>>(new Map());
   const { bumpBackground } = useBackground();
 
-  // No need for useEffect to reset state - the component gets a new key when the challenge changes,
-  // causing React to unmount and remount it with fresh state
+  const literalGramIndices: number[] = sentence.literal_gram_indices;
+  const gramDefinitions = sentence.gram_definitions_for_lookup as (GramDefinition | undefined)[];
 
   const handleWordTap = (index: number) => {
     if (!grade) {
@@ -642,17 +647,124 @@ export function TranslationChallenge({
     }
   };
 
+  // Compute which gram groups have been tapped (for highlighting all words in the gram)
+  const tappedGramGroups = useMemo(() => {
+    const groups = new Set<number>();
+    for (const i of tappedWords) {
+      const group = literalGramIndices[i];
+      if (group !== undefined) {
+        groups.add(group);
+      }
+    }
+    return groups;
+  }, [tappedWords, literalGramIndices]);
+
+  // Map from gram group display string → group index (for phrase matching)
+  const groupDisplayToIndex = useMemo(() => {
+    const map = new Map<string, number>();
+    let i = 0;
+    while (i < sentence.target_language_literals.length) {
+      const group = literalGramIndices[i];
+      let text = sentence.target_language_literals[i].word.text;
+      let j = i + 1;
+      while (j < sentence.target_language_literals.length && literalGramIndices[j] === group) {
+        text += sentence.target_language_literals[j - 1].whitespace + sentence.target_language_literals[j].word.text;
+        j++;
+      }
+      map.set(text, group);
+      i = j;
+    }
+    return map;
+  }, [sentence.target_language_literals, literalGramIndices]);
+
+  // Definitions to show for tapped gram groups, forgot literals, and forgot phrases
+  const tappedDefinitions = useMemo(() => {
+    const defs: GramDefinition[] = [];
+    const seen = new Set<number>();
+
+    const addGroup = (group: number) => {
+      if (seen.has(group)) return;
+      seen.add(group);
+      const def = gramDefinitions[group];
+      if (def) defs.push(def);
+    };
+
+    for (const group of tappedGramGroups) {
+      addGroup(group);
+    }
+
+    if (grade && "graded" in grade && "literalGrades" in grade.graded) {
+      // Show definitions for literals graded as "Forgot"
+      grade.graded.literalGrades.forEach((literalGrade, i) => {
+        if (literalGrade === "Forgot") {
+          const group = literalGramIndices[i];
+          if (group !== undefined) addGroup(group);
+        }
+      });
+
+      // Show definitions for phrases graded as "Forgot"
+      for (const phrase of grade.graded.phrasesForgot) {
+        const displayStr = gram_to_display_string(phrase, targetLanguage);
+        const groupIdx = groupDisplayToIndex.get(displayStr);
+        if (groupIdx !== undefined) addGroup(groupIdx);
+      }
+    }
+
+    return defs;
+  }, [tappedGramGroups, gramDefinitions, grade, literalGramIndices, groupDisplayToIndex, targetLanguage]);
+
+  const gramEq = (a: Gram<string>, b: Gram<string>) =>
+    JSON.stringify(a) === JSON.stringify(b);
+
+  // Build grade items for manual grading UI (literals first, then phrases)
+  const gradeItems: GradeItem[] = useMemo(() => {
+    if (!grade || !("graded" in grade) || "perfect" in grade.graded) return [];
+    const items: GradeItem[] = [];
+
+    // Add each gradable heteronym literal
+    if ("literalGrades" in grade.graded) {
+      const hasAutogradingError = "autogradingError" in grade.graded && grade.graded.autogradingError;
+      sentence.target_language_literals.forEach((literal, i) => {
+        if ((literal.word.word_type as { type?: string })?.type !== "Heteronym") return;
+        const literalGrade = grade.graded && "literalGrades" in grade.graded
+          ? grade.graded.literalGrades[i]
+          : undefined;
+        // When autograde failed, undefined heteronym grades need manual grading;
+        // when autograde succeeded, undefined means ungradable.
+        if (literalGrade === undefined && !hasAutogradingError) return;
+        items.push({
+          kind: "literal",
+          literalIndex: i,
+          display: literal.word.text,
+          status: literalGrade === "Remembered" ? true : literalGrade === "Forgot" ? false : null,
+        });
+      });
+    }
+
+    // Add multiword phrases
+    if ("phrasesRemembered" in grade.graded) {
+      for (const gram of sentence.unique_target_language_phrases) {
+        const display = gram_to_display_string(gram, targetLanguage);
+        const remembered = grade.graded.phrasesRemembered.some((p) => gramEq(p, gram));
+        const forgot = grade.graded.phrasesForgot.some((p) => gramEq(p, gram));
+        items.push({
+          kind: "phrase",
+          gram,
+          display,
+          status: remembered ? true : forgot ? false : null,
+        });
+      }
+    }
+
+    return items;
+  }, [grade, sentence.target_language_literals, sentence.unique_target_language_phrases, targetLanguage]);
+
   const canContinue =
     grade &&
     "graded" in grade &&
     ("perfect" in grade.graded ||
-      grade.graded.wordStatuses.every(
-        ([lexeme, status]) =>
-          JSON.stringify(lexeme) !==
-            JSON.stringify(sentence.primary_expression) || status !== null
-      ));
+      gradeItems.some((item) => item.status !== null));
 
-  // Focus when input should be visible (component mount or when returning to input)
   useEffect(() => {
     const timer = setTimeout(() => {
       inputRef.current?.focus();
@@ -663,7 +775,6 @@ export function TranslationChallenge({
   const handleCheckAnswer = useCallback(async () => {
     if (userTranslation.trim()) {
       bumpBackground(30.0);
-      // Use Rust function to find closest match with normalization and Levenshtein distance
       const closest =
         find_closest_translation(
           userTranslation,
@@ -683,45 +794,41 @@ export function TranslationChallenge({
           sentence.target_language,
           userTranslation,
           sentence.native_translations,
-          sentence.primary_expression,
-          sentence.unique_target_language_lexemes,
+          sentence.target_language_literals,
+          sentence.unique_target_language_phrases,
           accessToken,
-          course
+          course,
+          sentence.gram_definitions_for_lookup,
+          new Uint32Array(sentence.literal_gram_indices),
+          sentence.phrase_definitions
         );
 
         const encouragement = response.encouragement;
         const explanation = response.explanation;
-        let finalWordStatuses: [Lexeme<string>, boolean | null][] = [];
 
         playSoundEffect("aiDoneGrading");
 
-        if (response.expressions_forgot.length === 0) {
+        if (response.autograding_error) {
+          // Heuristic fallback was used — show grades for manual review
+          setGrade({
+            graded: {
+              literalGrades: response.literal_grades,
+              phrasesRemembered: response.phrases_remembered,
+              phrasesForgot: response.phrases_forgot,
+              encouragement,
+              explanation,
+              autogradingError: response.autograding_error,
+            },
+          });
+        } else if (response.phrases_forgot.length === 0 && !response.literal_grades.some(g => g === "Forgot")) {
           setGrade({ graded: { perfect: null, encouragement, explanation } });
           playSoundEffect("perfect");
         } else {
-          finalWordStatuses = sentence.unique_target_language_lexemes.map(
-            (lexeme) => {
-              const lexemeStr = JSON.stringify(lexeme);
-              if (
-                response.expressions_remembered.some(
-                  (rememberedLexeme) =>
-                    JSON.stringify(rememberedLexeme) === lexemeStr
-                )
-              ) {
-                return [lexeme, true];
-              } else if (
-                response.expressions_forgot.some(
-                  (forgotLexeme) => JSON.stringify(forgotLexeme) === lexemeStr
-                )
-              ) {
-                return [lexeme, false];
-              }
-              return [lexeme, null];
-            }
-          );
           setGrade({
             graded: {
-              wordStatuses: finalWordStatuses,
+              literalGrades: response.literal_grades,
+              phrasesRemembered: response.phrases_remembered,
+              phrasesForgot: response.phrases_forgot,
               encouragement,
               explanation,
             },
@@ -729,14 +836,12 @@ export function TranslationChallenge({
         }
       } catch (error) {
         console.error("Autograde failed:", error);
-        const fallbackStatuses: [Lexeme<string>, boolean | null][] =
-          sentence.unique_target_language_lexemes.map((lexeme) => {
-            return [lexeme, null];
-          });
         playSoundEffect("aiDoneGrading");
         setGrade({
           graded: {
-            wordStatuses: fallbackStatuses,
+            literalGrades: sentence.target_language_literals.map(() => undefined),
+            phrasesRemembered: [],
+            phrasesForgot: [],
             encouragement: undefined,
             explanation: undefined,
             autogradingError:
@@ -756,50 +861,40 @@ export function TranslationChallenge({
     bumpBackground,
   ]);
 
-  const lexemesTapped = useMemo(() => {
-    const lexemesTapped = new Array<Lexeme<string>>();
+  const heteronymsTapped = useMemo(() => {
+    const result = new Array<Heteronym<string>>();
     for (const index of tappedWords.values()) {
       const literal = sentence.target_language_literals[index];
-      if ("word" in literal.word_type) {
-        const lexeme: Lexeme<string> = { Heteronym: literal.word_type };
-        lexemesTapped.push(lexeme);
+      if (literal.word.word_type.type === "Heteronym") {
+        const heteronym = literal.word.word_type as Heteronym<string>;
+        result.push(heteronym);
       }
     }
-    return lexemesTapped;
+    return result;
   }, [sentence, tappedWords]);
-
-  const wordsToGradeManually = new Array<[Lexeme<string>, boolean | null]>();
-  if (grade && "graded" in grade && "wordStatuses" in grade.graded) {
-    for (const [lexeme, status] of grade.graded.wordStatuses) {
-      if (
-        !lexemesTapped.some((l) => JSON.stringify(l) === JSON.stringify(lexeme))
-      ) {
-        wordsToGradeManually.push([lexeme, status]);
-      }
-    }
-  }
-  const definitionsToShow = [...lexemesTapped];
-  if (grade && "graded" in grade && "wordStatuses" in grade.graded) {
-    for (const [lexeme, status] of grade.graded.wordStatuses) {
-      if (status === false) {
-        if (
-          !definitionsToShow.some(
-            (l) => JSON.stringify(l) === JSON.stringify(lexeme)
-          )
-        ) {
-          definitionsToShow.push(lexeme);
-        }
-      }
-    }
-  }
 
   const handleContinue = useCallback(() => {
     if (canContinue) {
       if (grade && "graded" in grade) {
-        // Scroll to top when continuing
         bumpBackground(30.0);
         window.scrollTo({ top: 0, behavior: "smooth" });
-        onComplete(grade.graded, lexemesTapped, userTranslation);
+        if ("perfect" in grade.graded) {
+          onComplete(
+            { perfect: grade.graded.perfect },
+            heteronymsTapped,
+            userTranslation
+          );
+        } else {
+          onComplete(
+            {
+              literalGrades: grade.graded.literalGrades,
+              phrasesRemembered: grade.graded.phrasesRemembered,
+              phrasesForgot: grade.graded.phrasesForgot,
+            },
+            heteronymsTapped,
+            userTranslation
+          );
+        }
       }
     }
   }, [
@@ -807,33 +902,44 @@ export function TranslationChallenge({
     onComplete,
     grade,
     userTranslation,
-    lexemesTapped,
+    heteronymsTapped,
     bumpBackground,
   ]);
 
-  const handleWordSwipe = useCallback(
-    (lexeme: Lexeme<string>, remembered: boolean) => {
+  const handleGradeSwipe = useCallback(
+    (item: GradeItem, remembered: boolean) => {
       setGrade((prevGrade) => {
-        if (
-          prevGrade &&
-          "graded" in prevGrade &&
-          "wordStatuses" in prevGrade.graded
-        ) {
-          const newStatuses = [...prevGrade.graded.wordStatuses];
-          const index = newStatuses.findIndex(
-            ([lexeme_other]) => lexeme_other === lexeme
+        if (!prevGrade || !("graded" in prevGrade)) return prevGrade;
+
+        if (item.kind === "phrase" && "phrasesRemembered" in prevGrade.graded) {
+          const newRemembered = prevGrade.graded.phrasesRemembered.filter(
+            (p) => !gramEq(p, item.gram)
           );
-          if (index !== -1) {
-            newStatuses[index] = [lexeme, remembered];
-          }
+          const newForgot = prevGrade.graded.phrasesForgot.filter(
+            (p) => !gramEq(p, item.gram)
+          );
+          if (remembered) newRemembered.push(item.gram);
+          else newForgot.push(item.gram);
           return {
             graded: {
-              wordStatuses: newStatuses,
-              encouragement: prevGrade.graded.encouragement,
-              explanation: prevGrade.graded.explanation,
+              ...prevGrade.graded,
+              phrasesRemembered: newRemembered,
+              phrasesForgot: newForgot,
             },
           };
         }
+
+        if (item.kind === "literal" && "literalGrades" in prevGrade.graded) {
+          const newLiteralGrades = [...prevGrade.graded.literalGrades];
+          newLiteralGrades[item.literalIndex] = remembered ? "Remembered" : "Forgot";
+          return {
+            graded: {
+              ...prevGrade.graded,
+              literalGrades: newLiteralGrades,
+            },
+          };
+        }
+
         return prevGrade;
       });
     },
@@ -862,46 +968,45 @@ export function TranslationChallenge({
         return;
       }
 
-      const wordStatuses =
+      const hasGradeItems =
         grade &&
         "graded" in grade &&
-        "wordStatuses" in grade.graded &&
-        grade.graded.wordStatuses;
+        "literalGrades" in grade.graded &&
+        gradeItems.length > 0;
 
-      // Only handle arrow keys when words are shown and not all correct
-      if (wordStatuses && wordStatuses.length > 0) {
-        const lexemeCount = sentence.unique_target_language_lexemes.length;
+      if (hasGradeItems) {
+        const itemCount = gradeItems.length;
 
         switch (e.key) {
           case "ArrowUp":
             e.preventDefault();
-            setSelectedWordIndex((prev) => {
-              if (prev <= 0) return lexemeCount - 1;
+            setSelectedPhraseIndex((prev) => {
+              if (prev <= 0) return itemCount - 1;
               return prev - 1;
             });
             break;
 
           case "ArrowDown":
             e.preventDefault();
-            setSelectedWordIndex((prev) => {
-              if (prev >= lexemeCount - 1) return 0;
+            setSelectedPhraseIndex((prev) => {
+              if (prev >= itemCount - 1) return 0;
               return prev + 1;
             });
             break;
 
           case "ArrowLeft":
             e.preventDefault();
-            if (selectedWordIndex >= 0 && selectedWordIndex < lexemeCount) {
-              const wordRef = wordRefs.current.get(selectedWordIndex);
-              wordRef?.handleButtonClick(false);
+            if (selectedPhraseIndex >= 0 && selectedPhraseIndex < itemCount) {
+              const ref = phraseRefs.current.get(selectedPhraseIndex);
+              ref?.handleButtonClick(false);
             }
             break;
 
           case "ArrowRight":
             e.preventDefault();
-            if (selectedWordIndex >= 0 && selectedWordIndex < lexemeCount) {
-              const wordRef = wordRefs.current.get(selectedWordIndex);
-              wordRef?.handleButtonClick(true);
+            if (selectedPhraseIndex >= 0 && selectedPhraseIndex < itemCount) {
+              const ref = phraseRefs.current.get(selectedPhraseIndex);
+              ref?.handleButtonClick(true);
             }
             break;
         }
@@ -912,13 +1017,13 @@ export function TranslationChallenge({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
     handleContinue,
-    sentence.unique_target_language_lexemes,
-    selectedWordIndex,
-    handleWordSwipe,
+    selectedPhraseIndex,
+    handleGradeSwipe,
     canContinue,
     userTranslation,
     handleCheckAnswer,
     grade,
+    gradeItems.length,
   ]);
 
   return (
@@ -940,11 +1045,11 @@ export function TranslationChallenge({
                   <ChallengeSentence
                     literals={sentence.target_language_literals}
                     onWordTap={handleWordTap}
-                    wordStatuses={
+                    literalGrades={
                       grade &&
                       "graded" in grade &&
-                      "wordStatuses" in grade.graded
-                        ? grade.graded.wordStatuses
+                      "literalGrades" in grade.graded
+                        ? grade.graded.literalGrades
                         : undefined
                     }
                     isPerfect={
@@ -954,9 +1059,8 @@ export function TranslationChallenge({
                       undefined
                     }
                     tappedWords={tappedWords}
-                    uniqueTargetLanguageLexemes={
-                      sentence.unique_target_language_lexemes
-                    }
+                    literalGramIndices={literalGramIndices}
+                    tappedGramGroups={tappedGramGroups}
                   />
                 </div>
 
@@ -1027,15 +1131,15 @@ export function TranslationChallenge({
                       explanation={grade.graded.explanation}
                     />
 
-                    <WordStatuses
-                      wordStatuses={wordsToGradeManually}
-                      wordRefs={wordRefs}
-                      handleWordSwipe={handleWordSwipe}
-                      selectedWordIndex={selectedWordIndex}
-                      sentence={sentence}
-                      setSelectedWordIndex={setSelectedWordIndex}
-                      definitions={
-                        sentence.unique_target_language_lexeme_definitions
+                    <PhraseStatuses
+                      gradeItems={gradeItems}
+                      phraseRefs={phraseRefs}
+                      handleGradeSwipe={handleGradeSwipe}
+                      selectedPhraseIndex={selectedPhraseIndex}
+                      setSelectedPhraseIndex={setSelectedPhraseIndex}
+                      openByDefault={
+                        "autogradingError" in grade.graded &&
+                        grade.graded.autogradingError !== undefined
                       }
                     />
                   </>
@@ -1043,19 +1147,13 @@ export function TranslationChallenge({
               </div>
             )}
           </div>
-          <div className="space-y-2">
-            {definitionsToShow.map((lexeme, i) => (
-              <WordDefinition
-                key={i}
-                lexeme={lexeme}
-                definitions={
-                  unique_target_language_lexeme_definitions.find(
-                    ([l]) => JSON.stringify(l) === JSON.stringify(lexeme)
-                  )?.[1] || []
-                }
-              />
-            ))}
-          </div>
+          {tappedDefinitions.length > 0 && (
+            <div className="space-y-2">
+              {tappedDefinitions.map((def, i) => (
+                <GramDefinitionDisplay key={i} definition={def} />
+              ))}
+            </div>
+          )}
         </Card>
 
         {/* Movie posters */}
@@ -1077,7 +1175,7 @@ export function TranslationChallenge({
       {grade === null ? (
         <Button
           onClick={handleCheckAnswer}
-          className="w-full mt-4 h-14"
+          className="w-full mt-4 h-14 text-lg"
           size="lg"
           disabled={!userTranslation.trim()}
         >
@@ -1086,19 +1184,19 @@ export function TranslationChallenge({
       ) : (
         <Button
           onClick={handleContinue}
-          className="w-full h-14"
+          className="w-full h-14 text-lg"
           size="lg"
           disabled={!canContinue}
         >
           {"grading" in grade ? (
             "AI is grading..."
           ) : (
-            <>
+            <span className="relative flex items-center justify-center">
               {"perfect" in grade.graded ? "Nailed it!" : "Continue"}
-              <span className="ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
                 (⏎)
               </span>
-            </>
+            </span>
           )}
         </Button>
       )}

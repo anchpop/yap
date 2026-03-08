@@ -104,16 +104,14 @@ impl AudioCache {
                 &opfs::GetFileHandleOptions { create: true },
             )
             .await
-        {
-            if let Ok(mut writable) = file_handle
+            && let Ok(mut writable) = file_handle
                 .create_writable_with_options(&opfs::CreateWritableOptions {
                     keep_existing_data: false,
                 })
                 .await
-            {
-                let _ = writable.write_at_cursor_pos(bytes).await;
-                let _ = writable.close().await;
-            }
+        {
+            let _ = writable.write_at_cursor_pos(bytes).await;
+            let _ = writable.close().await;
         }
     }
 

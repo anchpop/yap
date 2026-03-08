@@ -1,5 +1,6 @@
 import { useState, useDeferredValue } from 'react'
 import { Card } from "@/components/ui/card"
+import { getPosterDataUrl } from "@/lib/poster-utils"
 
 interface MovieWithMetadata {
   id: string
@@ -19,19 +20,6 @@ export function Movies({ moviesWithMetadata: moviesWithMetadataProp }: MoviesPro
   const [showAllMovies, setShowAllMovies] = useState(false)
 
   const visibleMovies = showAllMovies ? moviesWithMetadata : moviesWithMetadata.slice(0, 8)
-
-  // Helper function to convert poster bytes to data URL
-  const getPosterDataUrl = (posterBytes: number[] | undefined) => {
-    if (!posterBytes) return null
-    const uint8Array = new Uint8Array(posterBytes)
-    let binaryString = ''
-    const chunkSize = 8192
-    for (let i = 0; i < uint8Array.length; i += chunkSize) {
-      const chunk = uint8Array.subarray(i, i + chunkSize)
-      binaryString += String.fromCharCode(...chunk)
-    }
-    return `data:image/jpeg;base64,${btoa(binaryString)}`
-  }
 
   if (moviesWithMetadata.length === 0) {
     return null

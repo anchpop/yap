@@ -30,6 +30,14 @@ impl<E> Timestamped<E> {
             event: &self.event,
         }
     }
+
+    pub fn map_ref<G, F: Fn(&E) -> G>(&self, f: F) -> Timestamped<G> {
+        Timestamped {
+            timestamp: self.timestamp,
+            within_device_events_index: self.within_device_events_index,
+            event: f(&self.event),
+        }
+    }
 }
 
 impl<E, Error> Timestamped<Result<E, Error>> {
@@ -48,14 +56,19 @@ impl<E, Error> Timestamped<Result<E, Error>> {
 }
 
 impl<E: crate::Event> crate::Event for Timestamped<E> {
-    fn to_json(&self) -> Result<serde_json::Value, serde_json::Error> {
-        let s = self.as_ref().map(|e| e.to_json()).transpose()?;
-        serde_json::to_value(&s)
+    type Versioned = Timestamped<E::Versioned>;
+    type Context = E::Context;
+
+    fn to_versioned(&self) -> Self::Versioned {
+        self.map_ref(|e| e.to_versioned())
     }
 
-    fn from_json(json: &serde_json::Value) -> Result<Self, serde_json::Error> {
-        let s = serde_json::from_value::<Timestamped<serde_json::Value>>(json.clone())?;
-        s.map(|e| E::from_json(&e)).transpose()
+    fn from_versioned(versioned: &Self::Versioned, context: &Self::Context) -> Option<Self> {
+        E::from_versioned(&versioned.event, context).map(|event| Timestamped {
+            timestamp: versioned.timestamp,
+            within_device_events_index: versioned.within_device_events_index,
+            event,
+        })
     }
 }
 

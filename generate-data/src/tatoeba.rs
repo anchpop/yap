@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use rustc_hash::{FxHashMap, FxHashSet};
 use std::path::Path;
 
 use language_utils::Course;
@@ -9,12 +7,6 @@ use sentence_sampler::sample_to_target_with_stats;
 pub struct TatoebaPair {
     pub target: String,
     pub native: String,
-}
-
-#[derive(Debug)]
-struct Sentence {
-    lang: String,
-    text: String,
 }
 
 /// Read Tatoeba master dump and extract sentence pairs matching the course languages
@@ -51,138 +43,117 @@ pub fn get_tatoeba_pairs(
     let target_lang_code = course.target_language.iso_639_3();
     let native_lang_code = course.native_language.iso_639_3();
 
-    // First pass: read all sentences and build a map by ID and language
-    let mut sentences_by_id: HashMap<u64, Sentence> = HashMap::new();
-    let mut target_sentence_ids: Vec<u64> = Vec::new();
-
-    let file = match File::open(&sentences_file) {
-        Ok(f) => f,
+    // Read entire sentences file at once to avoid per-line allocations
+    let sentences_data = match std::fs::read_to_string(&sentences_file) {
+        Ok(d) => d,
         Err(e) => {
-            eprintln!("Failed to open sentences file: {e}");
+            eprintln!("Failed to read sentences file: {e}");
             return vec![];
         }
     };
 
-    let reader = BufReader::new(file);
-    for line in reader.lines() {
-        let line = match line {
-            Ok(l) => l,
-            Err(_) => continue,
-        };
+    // Strip BOM once at the start
+    let sentences_data = sentences_data
+        .strip_prefix('\u{feff}')
+        .unwrap_or(&sentences_data);
 
-        // Skip BOM if present
-        let line = if let Some(line) = line.strip_prefix('\u{feff}') {
-            line
-        } else {
-            &line
-        };
+    // Parse sentences: only store IDs + text for target/native languages
+    // Use separate maps for target and native to avoid storing a language tag per entry
+    let mut target_texts: FxHashMap<u64, String> = FxHashMap::default();
+    let mut native_texts: FxHashMap<u64, String> = FxHashMap::default();
+    // Collect all relevant IDs for fast link filtering
+    let mut relevant_ids: FxHashSet<u64> = FxHashSet::default();
 
+    for line in sentences_data.lines() {
         // Parse: id [tab] lang [tab] text
-        let parts: Vec<&str> = line.split('\t').collect();
-        if parts.len() < 3 {
+        let Some((id_str, rest)) = line.split_once('\t') else {
+            continue;
+        };
+        let Some((lang, text)) = rest.split_once('\t') else {
+            continue;
+        };
+
+        if lang != target_lang_code && lang != native_lang_code {
             continue;
         }
 
-        let id = match parts[0].parse::<u64>() {
-            Ok(id) => id,
-            Err(_) => continue,
+        let Ok(id) = id_str.parse::<u64>() else {
+            continue;
         };
 
-        let lang = parts[1].trim().to_string();
-        let text = parts[2].trim().to_string();
-
-        // Only store sentences in our target or native language
-        if lang == target_lang_code || lang == native_lang_code {
-            if lang == target_lang_code {
-                target_sentence_ids.push(id);
-            }
-            sentences_by_id.insert(id, Sentence { lang, text });
+        let text = text.trim();
+        relevant_ids.insert(id);
+        if lang == target_lang_code {
+            target_texts.insert(id, text.to_string());
+        } else {
+            native_texts.insert(id, text.to_string());
         }
     }
 
-    let file = match File::open(&links_file) {
-        Ok(f) => f,
+    // Read entire links file at once
+    let links_data = match std::fs::read_to_string(&links_file) {
+        Ok(d) => d,
         Err(e) => {
-            eprintln!("Failed to open links file: {e}");
+            eprintln!("Failed to read links file: {e}");
             return vec![];
         }
     };
 
-    // Build a map of target_id -> vec of linked sentence IDs
-    let mut links_map: HashMap<u64, Vec<u64>> = HashMap::new();
-    let reader = BufReader::new(file);
-    for line in reader.lines() {
-        let line = match line {
-            Ok(l) => l,
-            Err(_) => continue,
-        };
+    let links_data = links_data.strip_prefix('\u{feff}').unwrap_or(&links_data);
 
-        // Skip BOM if present
-        let line = if let Some(line) = line.strip_prefix('\u{feff}') {
-            line
-        } else {
-            &line
-        };
-
+    // Build target_id -> native_ids links (only for relevant pairs)
+    let mut links_map: FxHashMap<u64, Vec<u64>> = FxHashMap::default();
+    for line in links_data.lines() {
         // Parse: id1 [tab] id2
-        let parts: Vec<&str> = line.split('\t').collect();
-        if parts.len() < 2 {
+        let Some((id1_str, id2_str)) = line.split_once('\t') else {
+            continue;
+        };
+
+        // Fast reject: check first char before parsing
+        let Ok(id1) = id1_str.parse::<u64>() else {
+            continue;
+        };
+
+        // Only care about links FROM a relevant sentence
+        if !relevant_ids.contains(&id1) {
             continue;
         }
 
-        let id1 = match parts[0].parse::<u64>() {
-            Ok(id) => id,
-            Err(_) => continue,
-        };
-
-        let id2 = match parts[1].parse::<u64>() {
-            Ok(id) => id,
-            Err(_) => continue,
+        let Ok(id2) = id2_str.trim().parse::<u64>() else {
+            continue;
         };
 
         links_map.entry(id1).or_default().push(id2);
     }
 
-    // Third pass: create pairs from target sentences that have native translations
+    // Drop to free memory before building pairs
+    drop(relevant_ids);
+
+    // Create pairs from target sentences that have native translations
     let mut pairs = Vec::new();
 
-    for target_id in target_sentence_ids {
-        let target_sentence = match sentences_by_id.get(&target_id) {
-            Some(s) => s,
-            None => continue,
+    for (&target_id, target_text) in &target_texts {
+        let Some(linked_ids) = links_map.get(&target_id) else {
+            continue;
         };
 
-        // Find linked sentences
-        let linked_ids = match links_map.get(&target_id) {
-            Some(ids) => ids,
-            None => continue,
-        };
-
-        // Look for a native language translation
-        for linked_id in linked_ids {
-            if let Some(native_sentence) = sentences_by_id.get(linked_id) {
-                if native_sentence.lang == native_lang_code {
-                    // Apply filtering criteria
-                    if !crate::target_sentences::should_include_pair(
-                        &target_sentence.text,
-                        &native_sentence.text,
-                        course,
-                    ) {
-                        continue;
-                    }
-
-                    pairs.push(TatoebaPair {
-                        target: target_sentence.text.clone(),
-                        native: native_sentence.text.clone(),
-                    });
-                    break; // Only take the first native translation
+        for &linked_id in linked_ids {
+            if let Some(native_text) = native_texts.get(&linked_id) {
+                if !crate::target_sentences::should_include_pair(target_text, native_text, course) {
+                    continue;
                 }
+
+                pairs.push(TatoebaPair {
+                    target: target_text.clone(),
+                    native: native_text.clone(),
+                });
+                break; // Only take the first native translation
             }
         }
     }
 
     // Deduplicate based on target sentences
-    let mut seen_targets = std::collections::HashSet::new();
+    let mut seen_targets = FxHashSet::default();
     let unique_pairs: Vec<TatoebaPair> = pairs
         .into_iter()
         .filter(|pair| seen_targets.insert(pair.target.clone()))

@@ -89,18 +89,24 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         self.streams.get(&stream).map(|s| s.store().as_ref())
     }
 
+    /// Get an event stream store. The store internally holds `Event::Versioned` to preserve
+    /// version information on disk.
     pub fn get<Event: Ord + Clone + crate::Event + 'static>(
         &self,
         stream: Stream,
-    ) -> Option<&EventStreamStore<Device, Timestamped<Event>>> {
+    ) -> Option<&EventStreamStore<Device, Timestamped<Event::Versioned>>>
+    where
+        Event::Versioned: 'static,
+    {
         self.get_raw(stream).map(|s| {
             let s: &dyn Any = s;
             s
-                .downcast_ref::<EventStreamStore<Device, Timestamped<Event>>>()
+                .downcast_ref::<EventStreamStore<Device, Timestamped<Event::Versioned>>>()
                 .unwrap_or_else(||
                     panic!(
-                        "Type mismatch: expected an EventStreamStore<Device, Timestamped<Event>>, but got one that was different somehow from the expectation. Note: Event = {:?}", 
-                        std::any::type_name::<Event>()
+                        "Type mismatch: expected an EventStreamStore<Device, Timestamped<Event::Versioned>>, but got one that was different somehow from the expectation. Note: Event = {:?}, Versioned = {:?}",
+                        std::any::type_name::<Event>(),
+                        std::any::type_name::<Event::Versioned>()
                     )
                 )
         })
@@ -119,16 +125,20 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         &mut self,
         stream: &Stream,
         modifier: Option<ListenerKey>,
-    ) -> Option<DirtyOnDerefMut<'_, EventStreamStore<Device, Timestamped<Event>>>> {
+    ) -> Option<DirtyOnDerefMut<'_, EventStreamStore<Device, Timestamped<Event::Versioned>>>>
+    where
+        Event::Versioned: 'static,
+    {
         self.get_mut_raw(stream, modifier).map(|s| {
             s.map(|s| {
                 let s: &mut dyn Any = s.as_mut();
                 s
-                    .downcast_mut::<EventStreamStore<Device, Timestamped<Event>>>()
+                    .downcast_mut::<EventStreamStore<Device, Timestamped<Event::Versioned>>>()
                     .unwrap_or_else(||
                         panic!(
-                            "Type mismatch: expected an EventStreamStore<Device, Timestamped<Event>>, but got one that was different somehow from the expectation. Note: Event = {:?}", 
-                            std::any::type_name::<Event>()
+                            "Type mismatch: expected an EventStreamStore<Device, Timestamped<Event::Versioned>>, but got one that was different somehow from the expectation. Note: Event = {:?}, Versioned = {:?}",
+                            std::any::type_name::<Event>(),
+                            std::any::type_name::<Event::Versioned>()
                         )
                     )
             })
@@ -139,9 +149,13 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         &mut self,
         stream: Stream,
         modifier: Option<ListenerKey>,
-    ) -> DirtyOnDerefMut<'_, EventStreamStore<Device, Timestamped<Event>>> {
+    ) -> DirtyOnDerefMut<'_, EventStreamStore<Device, Timestamped<Event::Versioned>>>
+    where
+        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
+    {
         if !self.streams.contains_key(&stream) {
-            let store = DirtyTracker::<EventStreamStore<Device, Timestamped<Event>>>::default();
+            let store =
+                DirtyTracker::<EventStreamStore<Device, Timestamped<Event::Versioned>>>::default();
             let store = store.map(|s| Box::new(s) as Box<dyn StreamStore<Device>>);
             self.streams.insert(stream.clone(), store);
         }
@@ -187,15 +201,16 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
 impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
     EventStore<Stream, Device>
 {
-    pub fn add_events<Event, EventsIter>(
+    /// Add versioned events to a stream from multiple devices.
+    pub fn add_events<VersionedEvent, EventsIter>(
         &mut self,
         stream: Stream,
         events: EventsIter,
         modifier: Option<ListenerKey>,
     ) -> usize
     where
-        Event: Ord + Clone + crate::Event + 'static,
-        EventsIter: IntoIterator<Item = (Device, Vec<Timestamped<Event>>)>,
+        VersionedEvent: Ord + Clone + serde::Serialize + serde::de::DeserializeOwned + 'static,
+        EventsIter: IntoIterator<Item = (Device, Vec<Timestamped<VersionedEvent>>)>,
     {
         let mut events_added = 0;
         for (device, events) in events {
@@ -204,44 +219,31 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         events_added
     }
 
-    pub fn add_device_events<Event>(
+    /// Add versioned events to a stream. Events should already be in their versioned form.
+    pub fn add_device_events<VersionedEvent>(
         &mut self,
         stream: Stream,
         device: Device,
-        events: Vec<Timestamped<Event>>,
+        events: Vec<Timestamped<VersionedEvent>>,
         modifier: Option<ListenerKey>,
     ) -> usize
     where
-        Event: Ord + Clone + crate::Event + 'static,
+        VersionedEvent: Ord + Clone + serde::Serialize + serde::de::DeserializeOwned + 'static,
     {
-        let store = self.get_or_insert_default(stream, modifier);
-
-        let Some(valid_to_add) = store.valid_to_add_events(&device, events) else {
-            return 0;
-        };
-
-        let mut store = store;
-
-        store.add_device_events(device, valid_to_add)
-    }
-
-    pub fn add_device_events_jsons(
-        &mut self,
-        stream: Stream,
-        device: Device,
-        events: Vec<Timestamped<serde_json::Value>>,
-        modifier: Option<ListenerKey>,
-    ) -> usize {
-        let Some(store) = self.get_mut_raw(&stream, modifier) else {
+        let Some(mut store) = self.get_mut_raw(&stream, modifier) else {
             log::error!("Cannot insert events for stream as it does not exist");
             return 0;
         };
 
-        let Some(valid_to_add) = store.valid_to_add_event_jsons(&device, events) else {
+        let Some(valid_to_add) = store.valid_to_add_event_jsons(
+            &device,
+            events
+                .into_iter()
+                .map(|e| e.map_ref(|ev| serde_json::to_value(ev).unwrap()))
+                .collect(),
+        ) else {
             return 0;
         };
-
-        let mut store = store;
 
         store
             .add_device_event_jsons(device, valid_to_add)
@@ -251,15 +253,40 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
             .unwrap_or(0)
     }
 
-    pub fn add_device_event<Event>(
+    pub fn add_device_events_jsons(
         &mut self,
         stream: Stream,
         device: Device,
-        event: Timestamped<Event>,
+        events: Vec<Timestamped<serde_json::Value>>,
+        modifier: Option<ListenerKey>,
+    ) -> usize {
+        let Some(mut store) = self.get_mut_raw(&stream, modifier) else {
+            log::error!("Cannot insert events for stream as it does not exist");
+            return 0;
+        };
+
+        let Some(valid_to_add) = store.valid_to_add_event_jsons(&device, events) else {
+            return 0;
+        };
+
+        store
+            .add_device_event_jsons(device, valid_to_add)
+            .inspect_err(|e| {
+                log::error!("Error deserializing event JSON into event type: {e:?}");
+            })
+            .unwrap_or(0)
+    }
+
+    /// Add a versioned event to a stream. The event should already be in its versioned form.
+    pub fn add_device_event<VersionedEvent>(
+        &mut self,
+        stream: Stream,
+        device: Device,
+        event: Timestamped<VersionedEvent>,
         modifier: Option<ListenerKey>,
     ) -> usize
     where
-        Event: Ord + Clone + crate::Event + 'static,
+        VersionedEvent: Ord + Clone + serde::Serialize + serde::de::DeserializeOwned + 'static,
     {
         self.add_device_events(stream, device, vec![event], modifier)
     }
@@ -268,6 +295,8 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
 impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
     EventStore<Stream, Device>
 {
+    /// Add a raw event (not timestamped). The event is automatically timestamped and
+    /// converted to its versioned form for storage.
     pub fn add_raw_event<Event>(
         &mut self,
         stream: Stream,
@@ -276,16 +305,20 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         modifier: Option<ListenerKey>,
     ) where
         Event: Ord + Clone + crate::Event + 'static,
+        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
     {
-        let event = Timestamped {
-            event: EventType::User(event),
+        let within_device_events_index = self
+            .get_or_insert_default::<EventType<Event>>(stream.clone(), modifier)
+            .len_device(&device);
+
+        // Convert to versioned form for storage
+        let versioned_event = Timestamped {
+            event: EventType::User(event.to_versioned()),
             timestamp: chrono::Utc::now(),
-            within_device_events_index: self
-                .get_or_insert_default::<EventType<Event>>(stream.clone(), modifier)
-                .len_device(&device),
+            within_device_events_index,
         };
 
-        self.add_device_event(stream, device, event, modifier);
+        self.add_device_event(stream, device, versioned_event, modifier);
     }
 
     /// Returns None if there are no unsynced events

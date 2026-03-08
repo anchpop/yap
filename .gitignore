@@ -19,3 +19,13 @@ out.txt
 
 yap-frontend/dev-dist
 .vercel
+.direnv
+.envrc
+
+# Profiling artifacts
+perf.data
+perf.data.old
+perf-*.data
+*.trace/
+flamegraph.svg
+profile.json.gz

@@ -17,7 +17,8 @@ use yap_frontend_rs::{
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5-mini")
         .unwrap()
-        .with_cache_directory("./.cache")
+        .with_cache_directory("./.course-spot-check-cache")
+        .with_backup_cache_directory("./.cache")
     //.with_service_tier("flex")
 });
 
@@ -167,25 +168,39 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
     // Create a deck for this course
     let deck = create_deck_for_course(course)?;
 
-    // Use the simulator to get sentences with a fixed time for determinism
     let fixed_time = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let sim_start = std::time::Instant::now();
     let mut simulator = deck.simulate_usage(fixed_time);
     let mut all_sentences = Vec::new();
     let mut unique_sentences = HashSet::new();
+    let mut total_challenges = 0u64;
+    let mut total_days = 0u32;
+    let mut next_day_time = std::time::Duration::ZERO;
+    let mut challenge_iter_time = std::time::Duration::ZERO;
+    let mut finish_day_time = std::time::Duration::ZERO;
 
     // Collect up to SENTENCES_TO_ANALYZE unique sentences from the simulator
+    let pb = indicatif::ProgressBar::new(SENTENCES_TO_ANALYZE as u64);
+    pb.set_style(
+        indicatif::ProgressStyle::default_bar()
+            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} sentences ({per_sec}, {eta})")
+            .unwrap()
+            .progress_chars("#>-"),
+    );
     for _day in 0..200 {
-        let (next_simulator, challenges) = simulator.next();
-        simulator = next_simulator;
+        let t = std::time::Instant::now();
+        let mut day = simulator.next_day();
+        next_day_time += t.elapsed();
 
-        for challenge in challenges {
+        let t = std::time::Instant::now();
+        for challenge in day.by_ref() {
+            total_challenges += 1;
             let (sentence, language, multiword_terms) = match challenge {
                 Challenge::TranslateComprehensibleSentence(TranslateComprehensibleSentence {
                     target_language_literals,
-                    unique_target_language_lexemes,
+                    unique_target_language_phrases,
                     ..
                 }) => {
-                    // Reconstruct sentence from literals
                     let sentence_text = target_language_literals
                         .iter()
                         .flat_map(|literal| {
@@ -194,10 +209,9 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
                         .collect::<Vec<_>>()
                         .join("");
 
-                    // Extract multiword terms from lexemes
-                    let multiword_terms: Vec<String> = unique_target_language_lexemes
+                    let multiword_terms: Vec<String> = unique_target_language_phrases
                         .iter()
-                        .filter_map(|lexeme| lexeme.multiword().cloned())
+                        .map(|g| g.to_display_string(course.target_language))
                         .collect();
 
                     (sentence_text, course.target_language, multiword_terms)
@@ -222,33 +236,45 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
                         .collect::<Vec<_>>()
                         .join("");
 
-                    // For transcription challenges, we'll just use empty multiword terms for now
                     let multiword_terms = Vec::new();
 
                     (sentence_text, course.target_language, multiword_terms)
                 }
-                _ => continue, // Skip flashcard reviews
+                _ => continue,
             };
 
             if unique_sentences.insert(sentence.clone()) {
                 all_sentences.push((sentence, language, multiword_terms));
+                pb.set_position(all_sentences.len() as u64);
                 if all_sentences.len() >= SENTENCES_TO_ANALYZE {
                     break;
                 }
             }
         }
 
+        challenge_iter_time += t.elapsed();
+
+        let t = std::time::Instant::now();
+        simulator = day.finish_day();
+        finish_day_time += t.elapsed();
+        total_days += 1;
+
         if all_sentences.len() >= SENTENCES_TO_ANALYZE {
             break;
         }
     }
 
+    pb.finish_with_message("done");
     println!(
-        "Collected {} unique sentences for analysis",
-        all_sentences.len()
+        "Collected {} unique sentences for analysis ({} challenges across {} days in {:?})",
+        all_sentences.len(),
+        total_challenges,
+        total_days,
+        sim_start.elapsed()
     );
-
-    println!("all_sentences: {all_sentences:?}");
+    println!(
+        "  next_day: {next_day_time:?}, challenge iteration: {challenge_iter_time:?}, finish_day: {finish_day_time:?}"
+    );
 
     // Analyze each sentence
     let mut sentences_with_quality_issues = 0;
@@ -256,59 +282,68 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
     let mut sample_issues = Vec::new();
 
     let total_count = all_sentences.len();
+    let analysis_pb = indicatif::ProgressBar::new(total_count as u64);
+    analysis_pb.set_style(
+        indicatif::ProgressStyle::default_bar()
+            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} analyzed ({per_sec}, ${msg}, {eta})")
+            .unwrap()
+            .progress_chars("#>-"),
+    );
+    analysis_pb.set_message("0.00");
+    analysis_pb.enable_steady_tick(std::time::Duration::from_millis(100));
     let analysis_stream = futures::stream::iter(&all_sentences)
-        .enumerate()
-        .map(|(i, (sentence, language, multiword_terms))| async move {
-            if i % 100 == 0 {
-                println!(
-                    "Progress: {i}/{total_count} (${cost:.2})",
-                    cost = CHAT_CLIENT.cost().unwrap()
-                );
-            }
+        .map(|(sentence, language, multiword_terms)| {
+            let analysis_pb = analysis_pb.clone();
+            async move {
+                // Check sentence quality
+                let quality_result = analyze_sentence_quality(sentence, *language).await;
 
-            // Check sentence quality
-            let quality_result = analyze_sentence_quality(sentence, *language).await;
-
-            let (has_quality_issues, quality_issues, corrected_sentence) = match quality_result {
-                Ok(response) => {
-                    let has_issues =
-                        !response.is_grammatically_correct || !response.makes_sense_standalone;
-                    (has_issues, response.issues, response.corrected_sentence)
-                }
-                Err(e) => {
-                    eprintln!("Error analyzing quality for sentence '{sentence}': {e:?}");
-                    (false, Vec::new(), None)
-                }
-            };
-
-            // Check for missing multiword terms only if sentence is okay
-            let missing_multiword_terms = if !has_quality_issues {
-                match analyze_multiword_terms(sentence, *language, multiword_terms).await {
-                    Ok(response) => response.missing_multiword_terms,
-                    Err(e) => {
-                        eprintln!(
-                            "Error analyzing multiword terms for sentence '{sentence}': {e:?}"
-                        );
-                        Vec::new()
+                let (has_quality_issues, quality_issues, corrected_sentence) = match quality_result
+                {
+                    Ok(response) => {
+                        let has_issues =
+                            !response.is_grammatically_correct || !response.makes_sense_standalone;
+                        (has_issues, response.issues, response.corrected_sentence)
                     }
-                }
-            } else {
-                Vec::new()
-            };
+                    Err(e) => {
+                        eprintln!("Error analyzing quality for sentence '{sentence}': {e:?}");
+                        (false, Vec::new(), None)
+                    }
+                };
 
-            SentenceAnalysis {
-                sentence: sentence.to_string(),
-                language: *language,
-                has_quality_issues,
-                quality_issues,
-                corrected_sentence,
-                existing_multiword_terms: multiword_terms.to_vec(),
-                missing_multiword_terms,
+                // Check for missing multiword terms only if sentence is okay
+                let missing_multiword_terms = if !has_quality_issues {
+                    match analyze_multiword_terms(sentence, *language, multiword_terms).await {
+                        Ok(response) => response.missing_multiword_terms,
+                        Err(e) => {
+                            eprintln!(
+                                "Error analyzing multiword terms for sentence '{sentence}': {e:?}"
+                            );
+                            Vec::new()
+                        }
+                    }
+                } else {
+                    Vec::new()
+                };
+
+                analysis_pb.inc(1);
+                analysis_pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+
+                SentenceAnalysis {
+                    sentence: sentence.to_string(),
+                    language: *language,
+                    has_quality_issues,
+                    quality_issues,
+                    corrected_sentence,
+                    existing_multiword_terms: multiword_terms.to_vec(),
+                    missing_multiword_terms,
+                }
             }
         })
         .buffer_unordered(50) // Process 50 sentences concurrently
         .collect::<Vec<_>>()
         .await;
+    analysis_pb.finish_with_message(format!("done, ${:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
 
     // Aggregate results and collect all issues
     let mut all_issues = Vec::new();
@@ -346,7 +381,6 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
 }
 
 fn create_deck_for_course(course: Course) -> Result<Deck> {
-    // Load the appropriate language data based on the course
     let language_data = match (course.native_language, course.target_language) {
         (Language::English, Language::French) => {
             include_bytes!("../../../out/fra_for_eng/language_data.rkyv").to_vec()
@@ -378,7 +412,6 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
         }
     };
 
-    // Deserialize the language data
     let archived = rkyv::access::<
         language_utils::language_pack::ArchivedLanguagePack,
         rkyv::rancor::Error,
@@ -391,22 +424,22 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
 
     let language_pack = std::sync::Arc::new(language_pack);
 
-    // Create deck state and finalize to get a Deck
-    let state = DeckState::new(
+    let context = yap_frontend_rs::Context {
         language_pack,
-        course.target_language,
-        course.native_language,
-    );
-    let mut deck = <Deck as weapon::PartialAppState>::finalize(state);
+        course,
+    };
+    let state = DeckState::new();
+    let mut deck = <Deck as weapon::AppState>::finalize(state, &context);
 
-    // Add initial cards to the deck
     if let Some(event) = deck.add_next_unknown_cards(None, 100, vec![]) {
         let ts = Timestamped {
             timestamp: Utc::now(),
             within_device_events_index: 0,
             event,
         };
-        deck = deck.apply_event(&ts);
+        let state = DeckState::from(deck);
+        let state = Deck::process_event(state, &context, &ts);
+        deck = Deck::finalize(state, &context);
     }
 
     Ok(deck)
@@ -590,9 +623,15 @@ fn print_summary(analyses: Vec<CourseAnalysis>) {
 async fn main() -> Result<()> {
     env_logger::init();
 
+    let filter = std::env::args().nth(1);
     let mut analyses = Vec::new();
 
     for course in language_utils::COURSES {
+        if let Some(ref filter) = filter {
+            if course.target_language.iso_639_3() != filter {
+                continue;
+            }
+        }
         match analyze_course(*course).await {
             Ok(analysis) => analyses.push(analysis),
             Err(e) => eprintln!("Failed to analyze course {course:?}: {e}"),

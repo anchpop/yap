@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { getPosterDataUrl } from "@/lib/poster-utils";
 
 interface MovieWithMetadata {
   id: string;
@@ -14,26 +15,15 @@ interface AlmostThereMovieProps {
 }
 
 export function AlmostThereMovie({ movie }: AlmostThereMovieProps) {
-  // Helper function to convert poster bytes to data URL
-  const getPosterDataUrl = (posterBytes: number[] | undefined) => {
-    if (!posterBytes) return null;
-    const uint8Array = new Uint8Array(posterBytes);
-    let binaryString = "";
-    const chunkSize = 8192;
-    for (let i = 0; i < uint8Array.length; i += chunkSize) {
-      const chunk = uint8Array.subarray(i, i + chunkSize);
-      binaryString += String.fromCharCode(...chunk);
-    }
-    return `data:image/jpeg;base64,${btoa(binaryString)}`;
-  };
+  const posterDataUrl = getPosterDataUrl(movie.poster_bytes);
 
   return (
     <Card variant="light" className="overflow-hidden p-0" animate>
       <div className="flex flex-row gap-0">
         <div className="w-24 sm:w-32 aspect-[2/3] bg-muted relative flex-shrink-0">
-          {getPosterDataUrl(movie.poster_bytes) ? (
+          {posterDataUrl ? (
             <img
-              src={getPosterDataUrl(movie.poster_bytes)!}
+              src={posterDataUrl}
               alt={movie.title}
               className="w-full h-full object-cover opacity-90 saturate-70 dark:opacity-70 dark:saturate-80"
             />

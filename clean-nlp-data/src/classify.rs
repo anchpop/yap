@@ -485,8 +485,15 @@ impl SentenceClassifier for PortugueseClassifier {
                 ));
             }
 
-            // Check for lemmas containing spaces (parsing error)
-            if token.lemma.contains(' ') {
+            // Check for "à" with incorrect lemma "a o" (spaCy bug: should be "a a")
+            if text_lower == "à" && token.lemma == "a o" {
+                reasons.push(
+                    "'à' has lemma 'a o' but should have lemma 'a a' — spaCy incorrectly treats à (a+a) the same as ao (a+o)".to_string()
+                );
+            }
+
+            // Check for lemmas containing spaces (parsing error), excluding known cases handled above
+            if token.lemma.contains(' ') && !(text_lower == "à" && token.lemma == "a o") {
                 reasons.push(format!(
                     "'{}' has lemma with space: '{}'",
                     token.text, token.lemma
@@ -589,6 +596,21 @@ impl SentenceClassifier for PortugueseClassifier {
                             token.text, token.lemma, expected_infinitive
                         ));
                     }
+                }
+
+                // "fosse" is the past subjunctive of BOTH "ser" (to be) and "ir" (to go)
+                // spaCy often defaults to "ir" but it's frequently "ser" in context
+                // e.g., "Se eu fosse rico" = ser, "Se eu fosse ao mercado" = ir
+                if text_lower == "fosse"
+                    || text_lower == "fôssemos"
+                    || text_lower == "fossem"
+                    || text_lower == "fosses"
+                    || text_lower == "fôsseis"
+                {
+                    reasons.push(format!(
+                        "'{}' is the past subjunctive of both 'ser' (to be) and 'ir' (to go). Currently lemmatized as '{}'. Check context: 'Se eu fosse rico' → ser; 'Se eu fosse ao mercado' → ir",
+                        token.text, token.lemma
+                    ));
                 }
             }
 
@@ -936,6 +958,43 @@ impl SentenceClassifier for KoreanClassifier {
                     token.text
                 ));
             }
+
+            let text = &token.text;
+
+            // Check for copula contractions tagged as VERB with surface form as lemma
+            // These are forms of 이다 (to be) and should be decomposed
+            // e.g., 뭐야 = 뭐 + 이다, 누구야 = 누구 + 이다, 뭐죠/뭐예요 = 뭐 + 이다
+            let copula_forms = ["뭐야", "뭐죠", "뭐예요", "누구야", "누구죠", "누구예요"];
+            if copula_forms.contains(&text.as_str()) && token.pos == PartOfSpeechTag::Verb {
+                reasons.push(format!(
+                    "'{}' is a copula contraction (contains 이다 'to be') but is tagged as VERB with surface form as lemma. Should be decomposed or have a proper lemma",
+                    token.text
+                ));
+            }
+
+            // Check for 어때/어때요 tagged as VERB — should be ADJ (from 어떻다/어떠하다)
+            if (text == "어때" || text == "어때요") && token.pos == PartOfSpeechTag::Verb {
+                reasons.push(format!(
+                    "'{}' is a conjugation of 어떻다 (adjective 'how is it') but is tagged as VERB. Should be ADJ with lemma 어떻다",
+                    token.text
+                ));
+            }
+
+            // Check for 봐 with wrong lemma (should be 보다)
+            if text == "봐" && token.lemma == "봐" {
+                reasons.push(
+                    "'봐' has itself as lemma but should have lemma '보다' (to see/look)"
+                        .to_string(),
+                );
+            }
+
+            // Data source is subtitle/dialogue-heavy, so flag any PROPN as potentially over-classified
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns",
+                    token.text
+                ));
+            }
         }
 
         if reasons.is_empty() {
@@ -962,8 +1021,54 @@ impl WordCorrector for KoreanCorrector {
 struct EnglishClassifier;
 
 impl SentenceClassifier for EnglishClassifier {
-    fn classify(&self, _sentence: &NlpAnalyzedSentence) -> SentenceClassification {
-        SentenceClassification::Unknown
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        // Check for split contractions - the tokenizer sometimes splits "don't" into "do" + "n't"
+        // or "gonna" into "gon" + "na", which creates incorrect separate tokens
+        let suspicious_suffixes = [
+            "n't", "'t", "'s", "'m", "'re", "'ve", "'ll", "'d", "na", "'",
+        ];
+
+        for token in &sentence.doc {
+            let text_lower = token.text.to_lowercase();
+
+            // Check if token is a split contraction suffix
+            if suspicious_suffixes.contains(&text_lower.as_str()) {
+                reasons.push(format!(
+                    "Token '{}' looks like a split contraction suffix - should probably be merged with the previous word (e.g., \"don't\" not \"do\" + \"n't\")",
+                    token.text
+                ));
+            }
+
+            // Check for "gon" which is likely from "gonna" being split
+            if text_lower == "gon" {
+                reasons.push(
+                    "Token 'gon' is likely from 'gonna' being incorrectly split into 'gon' + 'na'"
+                        .to_string(),
+                );
+            }
+
+            // Check for "wan" which is likely from "wanna" being split
+            if text_lower == "wan" {
+                reasons.push(
+                    "Token 'wan' is likely from 'wanna' being incorrectly split into 'wan' + 'na'"
+                        .to_string(),
+                );
+            }
+
+            // Check for "got" followed by "ta" (gotta)
+            if text_lower == "ta" {
+                reasons
+                    .push("Token 'ta' might be from 'gotta' being incorrectly split".to_string());
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
     }
 }
 
@@ -1560,27 +1665,24 @@ impl SentenceClassifier for GermanClassifier {
             if token.pos != PartOfSpeechTag::Noun
                 && token.pos != PartOfSpeechTag::Propn
                 && token.pos != PartOfSpeechTag::Punct
+                && let Some(first_char) = token.lemma.chars().next()
+                && first_char.is_uppercase()
             {
-                if let Some(first_char) = token.lemma.chars().next() {
-                    if first_char.is_uppercase() {
-                        reasons.push(format!(
-                            "Non-noun '{}' has capitalized lemma '{}'",
-                            token.text, token.lemma
-                        ));
-                    }
-                }
+                reasons.push(format!(
+                    "Non-noun '{}' has capitalized lemma '{}'",
+                    token.text, token.lemma
+                ));
             }
 
             // Check for nouns with lowercase lemmas (nouns are capitalized in German)
-            if token.pos == PartOfSpeechTag::Noun || token.pos == PartOfSpeechTag::Propn {
-                if let Some(first_char) = token.lemma.chars().next() {
-                    if first_char.is_lowercase() {
-                        reasons.push(format!(
-                            "Noun '{}' has lowercase lemma '{}'",
-                            token.text, token.lemma
-                        ));
-                    }
-                }
+            if (token.pos == PartOfSpeechTag::Noun || token.pos == PartOfSpeechTag::Propn)
+                && let Some(first_char) = token.lemma.chars().next()
+                && first_char.is_lowercase()
+            {
+                reasons.push(format!(
+                    "Noun '{}' has lowercase lemma '{}'",
+                    token.text, token.lemma
+                ));
             }
 
             // Check common past-tense verbs are lemmatized to infinitive

@@ -4,6 +4,8 @@ interface MovieMetadata {
   id: string;
   title: string;
   year: number | undefined;
+  original_language: string | undefined;
+  rotten_tomatoes_score: number | undefined;
   poster_bytes: number[] | undefined;
 }
 

@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { getPosterDataUrl } from "@/lib/poster-utils";
 import type { ReactNode } from "react";
 
 interface MoviePosterCardProps {
@@ -16,24 +17,6 @@ export function MoviePosterCard({
   posterBytes,
   children,
 }: MoviePosterCardProps) {
-  const getPosterDataUrl = (posterBytes: number[] | undefined) => {
-    if (!posterBytes) return null;
-
-    try {
-      const uint8Array = new Uint8Array(posterBytes);
-      let binaryString = '';
-      const chunkSize = 8192;
-      for (let i = 0; i < uint8Array.length; i += chunkSize) {
-        const chunk = uint8Array.subarray(i, i + chunkSize);
-        binaryString += String.fromCharCode(...chunk);
-      }
-      return `data:image/jpeg;base64,${btoa(binaryString)}`;
-    } catch (error) {
-      console.error("Failed to convert poster bytes to data URL:", error);
-      return null;
-    }
-  };
-
   const posterDataUrl = getPosterDataUrl(posterBytes);
 
   return (

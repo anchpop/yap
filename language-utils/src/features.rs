@@ -79,7 +79,6 @@ pub enum Clusivity {}
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Gender {
     /// Nouns denoting male persons are masculine. Other nouns may be also grammatically masculine, without any relation to sex.
@@ -146,7 +145,6 @@ pub enum NounClass {}
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Number {
     /// Singular number: denotes one person, animal or thing
@@ -207,7 +205,6 @@ pub enum Number {
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Case {
     /// The base form of the noun, typically used as citation form (lemma). In many languages this is the word form used for subjects of clauses. If the language has only two cases, which are called “direct” and “oblique”, the direct case will be marked Nom.
@@ -339,7 +336,6 @@ pub enum VerbForm {}
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Mood {
     /// The indicative can be considered the default mood. A verb in indicative merely states that something happens, has happened or will happen, without adding any attitude of the speaker.
@@ -394,7 +390,6 @@ pub enum Mood {
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Tense {
     /// The past tense denotes actions that happened before a reference point. In the prototypical case, the reference point is the moment of producing the sentence and the past event happened before the speaker speaks about it. However, Tense=Past is also used to distinguish past participles from other kinds of participles, and past converbs from other kinds of converbs; in these cases, the reference point may itself be in past or future, when compared to the moment of speaking. For instance, the Czech converb spatřivše “having seen” in the sentence spatřivše vojáky, velmi se ulekli “having seen the soldiers, they got very scared” describes an event that is anterior to the event of getting scared. It also happens to be anterior to the moment of speaking, but that fact is not encoded in the converb itself, it is rather a consequence of “getting scared” being in the past tense.
@@ -471,7 +466,6 @@ pub enum Polarity {}
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Person {
     /// Zero person is for impersonal statements, appears in Finnish as well as in Santa Ana Pueblo Keres. (The construction is distinctive in Finnish but it does not use unique morphology that would necessarily require a feature. However, it is morphologically distinct in Keres (Davis 1964:75): The fourth (zero) person is used “when the subject of the action is obscure, as when the speaker is telling of something that he himself did not observe. It is also used when the subject of the action is inferior to the object, as when an animal is the subject and a human being the object.”
@@ -514,7 +508,6 @@ pub enum Person {
     rkyv::Deserialize,
     tsify::Tsify,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Polite {
     /// Usage varies but if the language distinguishes levels of politeness, then the informal register is usually meant for communication with family members and close friends.
@@ -1148,7 +1141,6 @@ impl FeatureSet for Polite {
     tsify::Tsify,
     Default,
 )]
-#[rkyv(compare(PartialEq), derive(Debug))]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Morphology {
     pub gender: Option<Gender>,

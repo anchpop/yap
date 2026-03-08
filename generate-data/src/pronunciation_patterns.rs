@@ -1,9 +1,7 @@
 use futures::StreamExt;
-use language_utils::Lexeme;
 use language_utils::{Course, Language, PatternPosition, PronunciationGuideThoughts};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::hash::Hash;
 use std::sync::LazyLock;
 use tysm::chat_completions::ChatClient;
 use unicode_normalization::UnicodeNormalization;
@@ -185,16 +183,11 @@ Good examples for French "ch" and English speakers:
 
 /// Calculate the frequency of each pronunciation pattern based on word frequency data
 /// Returns a HashMap mapping each pattern to its total frequency across all words containing it
-pub fn calculate_pattern_frequencies<S>(
+pub fn calculate_pattern_frequencies(
     sounds: &[(String, PatternPosition)],
-    word_frequencies: &[language_utils::FrequencyEntry<S>],
-) -> HashMap<(String, PatternPosition), u32>
-where
-    S: AsRef<str>,
-    S: rkyv::Archive + PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <S as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash + std::fmt::Debug,
-    <Lexeme<S> as rkyv::Archive>::Archived: PartialEq + PartialOrd + Eq + Ord + Hash,
-{
+    gram_frequencies: &[language_utils::GramFrequencyEntry<String>],
+    language: Language,
+) -> HashMap<(String, PatternPosition), u32> {
     let mut frequencies = HashMap::new();
 
     // Initialize all patterns with 0
@@ -216,11 +209,12 @@ where
     });
 
     // Sum up frequencies for each pattern based on word occurrences
-    for freq_entry in word_frequencies {
-        // Get the actual word string from the lexeme
-        let word = match &freq_entry.lexeme {
-            language_utils::Lexeme::Heteronym(h) => h.word.as_ref(),
-            language_utils::Lexeme::Multiword(s) => s.as_ref(),
+    for freq_entry in gram_frequencies {
+        // Get the word text from the gram
+        let word: String = if let Some(heteronym) = freq_entry.gram.heteronym() {
+            heteronym.word.clone()
+        } else {
+            freq_entry.gram.to_display_string(language)
         };
 
         // For Korean, use NFKD (compatibility decomposition) to handle jamo
