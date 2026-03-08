@@ -1,0 +1,320 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import courses from '../../data/courses.json';
+import type { GetStaticPaths } from 'astro';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = [];
+
+  for (const course of courses) {
+    const indexPath = join(process.cwd(), 'src', 'data', `${(course as any).slug}.json`);
+    const courseIndex = JSON.parse(readFileSync(indexPath, 'utf-8'));
+
+    for (const entry of courseIndex.pages) {
+      paths.push({
+        params: { course: (course as any).slug, entry: entry.slug },
+        props: {
+          pageSlug: entry.slug,
+          courseMeta: course,
+        },
+      });
+    }
+  }
+
+  return paths;
+};
+
+const { pageSlug, courseMeta } = Astro.props;
+
+// Load per-page JSON with full data (including sentences)
+const pagePath = join(process.cwd(), 'src', 'data', (courseMeta as any).slug, `${pageSlug}.json`);
+const page = JSON.parse(readFileSync(pagePath, 'utf-8'));
+const mainSense = page.senses[0];
+const targetCode = (courseMeta as any).target_language.slice(0, 2).toUpperCase();
+const nativeCode = (courseMeta as any).native_language.slice(0, 2).toUpperCase();
+
+const pageTitle = mainSense.is_phrase
+  ? `"${page.display_text}" — ${(courseMeta as any).target_language} phrase`
+  : `${page.display_text} — ${(courseMeta as any).target_language}`;
+
+function getSummary(): string {
+  const defs = page.senses.flatMap((s: any) => {
+    if (s.definition.type === 'Dictionary') {
+      return s.definition.definitions.map((d: any) => d.native);
+    }
+    return [s.definition.meaning];
+  });
+  return defs.slice(0, 3).join('; ');
+}
+
+function posLabel(pos: string): string {
+  const labels: Record<string, string> = {
+    Adj: 'adjective', Adp: 'preposition', Adv: 'adverb', Aux: 'auxiliary',
+    Cconj: 'conjunction', Det: 'determiner', Intj: 'interjection', Noun: 'noun',
+    Num: 'numeral', Part: 'particle', Pron: 'pronoun', Sconj: 'conjunction',
+    Sym: 'symbol', Verb: 'verb',
+  };
+  return labels[pos] || pos.toLowerCase();
+}
+---
+
+<Layout
+  title={pageTitle}
+  description={`${page.display_text}: ${getSummary()}. #${page.best_frequency_rank} most common in ${(courseMeta as any).target_language}.`}
+>
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/d/" class="hover:text-accent-foreground">Dictionaries</a>
+    <span class="mx-1.5 opacity-50">›</span>
+    <a href={`/d/${(courseMeta as any).slug}/`} class="hover:text-accent-foreground">{(courseMeta as any).target_language} → {(courseMeta as any).native_language}</a>
+    <span class="mx-1.5 opacity-50">›</span>
+    {page.display_text}
+  </nav>
+
+  <div class="mb-6">
+    <h1 class="text-4xl font-bold">{page.display_text}</h1>
+    {mainSense.pronunciation && (
+      <p class="text-muted-foreground mt-1">{mainSense.pronunciation}</p>
+    )}
+  </div>
+
+  <div class="space-y-4">
+    {page.senses.map((sense: any, senseIdx: number) => (
+      <div class="rounded-lg border bg-card p-4">
+        <div class="flex items-baseline justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2 flex-wrap">
+            {sense.is_phrase && (
+              <span class="text-sm text-muted-foreground/60 font-normal">(phrase)</span>
+            )}
+            {sense.pos && !sense.is_phrase && (
+              <span class="text-sm text-muted-foreground italic">{posLabel(sense.pos)}</span>
+            )}
+            {sense.lemma && sense.lemma !== page.display_text && (
+              <span class="text-sm text-muted-foreground">lemma: {sense.lemma}</span>
+            )}
+          </div>
+        </div>
+
+        {sense.definition.type === 'Dictionary' && (
+          <div class="space-y-3">
+            {sense.definition.definitions.map((def: any) => (
+              <div class="pl-4 border-l-2 border-muted">
+                <div class="font-medium text-primary">{def.native}</div>
+                {def.note && (
+                  <div class="text-sm text-muted-foreground italic mt-1">{def.note}</div>
+                )}
+                {(def.example_target || def.example_native) && (
+                  <div class="mt-2 text-sm space-y-1">
+                    {def.example_target && (
+                      <div class="text-foreground">
+                        <span class="text-muted-foreground">{targetCode}:</span> {def.example_target}
+                      </div>
+                    )}
+                    {def.example_native && (
+                      <div class="text-muted-foreground">
+                        <span>{nativeCode}:</span> {def.example_native}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {sense.definition.type === 'Phrasebook' && (
+          <div class="pl-4 border-l-2 border-muted">
+            <div class="font-medium text-primary">{sense.definition.meaning}</div>
+            {sense.definition.additional_notes && (
+              <div class="text-sm text-muted-foreground italic mt-1">{sense.definition.additional_notes}</div>
+            )}
+            {(sense.definition.target_language_example || sense.definition.native_language_example) && (
+              <div class="mt-2 text-sm space-y-1">
+                {sense.definition.target_language_example && (
+                  <div class="text-foreground">
+                    <span class="text-muted-foreground">{targetCode}:</span> {sense.definition.target_language_example}
+                  </div>
+                )}
+                {sense.definition.native_language_example && (
+                  <div class="text-muted-foreground">
+                    <span>{nativeCode}:</span> {sense.definition.native_language_example}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {sense.example_sentences.length > 0 && (
+          <div class="mt-4 space-y-2">
+            <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
+              Example sentences
+            </h4>
+            {sense.example_sentences.map((sentence: any, sentIdx: number) => (
+              <div class={`rounded-md border border-border/50 bg-card/50 px-4 py-3 sentence-card ${sentIdx >= 10 ? 'hidden-sentence' : ''}`}>
+                <p class="leading-relaxed">
+                  {sentence.segments.map((seg: any) => {
+                    const isCurrent = seg.slug === pageSlug;
+                    if (seg.slug) {
+                      return <>{isCurrent ? <mark><a
+                        href={`/d/${(courseMeta as any).slug}/${seg.slug}/`}
+                        class="gram-word"
+                        data-gloss={seg.gloss || undefined}
+                      >{seg.text}</a></mark> : <a
+                        href={`/d/${(courseMeta as any).slug}/${seg.slug}/`}
+                        class="gram-word text-accent-foreground"
+                        data-gloss={seg.gloss || undefined}
+                      >{seg.text}</a>}{seg.whitespace}</>;
+                    }
+                    return <><span class="text-muted-foreground/70">{seg.text}</span>{seg.whitespace}</>;
+                  })}
+                </p>
+                {sentence.translation && (
+                  <p class="text-sm text-muted-foreground/50 mt-1 leading-relaxed italic">
+                    {sentence.translation}
+                  </p>
+                )}
+              </div>
+            ))}
+            {sense.example_sentences.length > 10 && (
+              <button
+                class="show-more-btn w-full text-center text-sm text-accent-foreground hover:text-foreground py-2 rounded-md border border-border/50 hover:bg-card/50 transition-colors cursor-pointer"
+                data-total={sense.example_sentences.length}
+              >
+                Show {sense.example_sentences.length - 10} more sentences
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+  <div id="gram-tooltip" popover></div>
+
+  <style>
+    .hidden-sentence { display: none; }
+
+    /* Highlighted current word */
+    mark {
+      background: oklch(0.8 0.12 328.6 / 20%);
+      color: var(--foreground);
+      padding: 0.05em 0.15em;
+      border-radius: 3px;
+    }
+
+    /* Word links in sentences */
+    .gram-word {
+      text-decoration: none;
+      text-underline-offset: 3px;
+    }
+    .gram-word:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+    }
+
+    /* Tooltip */
+    #gram-tooltip {
+      --d: 0.5em;
+      --s: 0.8em;
+      position: fixed;
+      margin: 0;
+      padding: 0.35em 0.65em;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--muted-foreground);
+      font-size: 0.8rem;
+      line-height: 1.3;
+      white-space: nowrap;
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 0.12s;
+    }
+    #gram-tooltip.visible {
+      opacity: 1;
+    }
+
+    /* Anchor positioning (modern browsers) */
+    @supports (anchor-name: --a) {
+      #gram-tooltip {
+        position-anchor: --active-word;
+        position-area: top;
+        bottom: var(--d);
+        margin-top: var(--d);
+        position-try: flip-block;
+        anchor-name: --gram-tooltip;
+      }
+      #gram-tooltip::before {
+        content: "";
+        position: fixed;
+        z-index: -1;
+        width: var(--s);
+        background: inherit;
+        border: inherit;
+        top: calc(anchor(--gram-tooltip top) - var(--d));
+        bottom: calc(anchor(--gram-tooltip bottom) - var(--d));
+        left: calc(anchor(--active-word center) - var(--s) / 2);
+        margin: inherit;
+        clip-path: polygon(50% 0.15em, 100% var(--d), 100% calc(100% - var(--d)), 50% calc(100% - 0.15em), 0 calc(100% - var(--d)), 0 var(--d));
+      }
+    }
+  </style>
+
+  <script>
+    const tooltip = document.getElementById('gram-tooltip')!;
+    const supportsAnchor = CSS.supports('anchor-name: --a');
+
+    let activeEl: HTMLElement | null = null;
+
+    document.addEventListener('pointerenter', (e) => {
+      const el = (e.target as HTMLElement).closest<HTMLElement>('[data-gloss]');
+      if (!el) return;
+
+      tooltip.textContent = el.dataset.gloss!;
+
+      if (supportsAnchor) {
+        if (activeEl) activeEl.style.removeProperty('anchor-name');
+        el.style.anchorName = '--active-word';
+        activeEl = el;
+        // Ensure popover is showing
+        try { tooltip.showPopover(); } catch {}
+      } else {
+        const rect = el.getBoundingClientRect();
+        tooltip.style.left = `${rect.left + rect.width / 2}px`;
+        tooltip.style.top = `${rect.top + window.scrollY - 6}px`;
+        tooltip.style.transform = 'translate(-50%, -100%)';
+      }
+
+      tooltip.classList.add('visible');
+    }, true);
+
+    document.addEventListener('pointerleave', (e) => {
+      if ((e.target as HTMLElement).closest?.('[data-gloss]')) {
+        tooltip.classList.remove('visible');
+        if (supportsAnchor) {
+          try { tooltip.hidePopover(); } catch {}
+          if (activeEl) {
+            activeEl.style.removeProperty('anchor-name');
+            activeEl = null;
+          }
+        }
+      }
+    }, true);
+
+    // Show more sentences
+    document.querySelectorAll('.show-more-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const container = btn.parentElement!;
+        container.querySelectorAll('.hidden-sentence').forEach(el => {
+          el.classList.remove('hidden-sentence');
+        });
+        btn.remove();
+      });
+    });
+  </script>
+</Layout>

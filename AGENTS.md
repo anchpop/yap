@@ -20,6 +20,8 @@ Yap.Town is a language learning application with a Rust-based backend and React 
 - **yap-frontend**: React/TypeScript frontend using Vite, with Tailwind CSS and Radix UI components
 - **generate-data**: Rust binary that extracts sentences from Anki decks and generates dictionary data using Python NLP
 - **language-utils**: Shared Rust library containing language processing types and utilities
+- **generate-dictionary-data**: Rust binary that reads `.rkyv` language pack archives and outputs structured JSON for the public dictionary site
+- **dictionary-site**: Astro static site generator that builds ~178k dictionary pages from the JSON data, using Tailwind CSS v4
 - **yap-ai-backend**: Rust backend service for AI features (deployed on Fly.io)
 - **modal-llm-server**: Python FastAPI service for LLM inference using Modal. (Not currently used.)
 - **supabase/**: Database and authentication configuration
@@ -33,6 +35,21 @@ Vercel for hosting.
 3. Frontend uses WASM module for offline-first language learning features
 4. Supabase handles user authentication and event syncing
 5. AI features are handled by separate backend services
+
+### Public Dictionary Site
+
+The public dictionary lives at `/d/` and is built as a static site that gets copied into the Vite frontend's `public/` directory. The pipeline:
+
+1. **Rust** (`generate-dictionary-data`): Reads `.rkyv` language pack archives → outputs JSON to `dictionary-site/src/data/`. Produces a lightweight index JSON per course (for listing pages) and individual per-page JSON files (with full sentence data including cross-linked glosses). Data is split this way because loading everything into one JSON would OOM Node during Astro build.
+2. **Astro** (`dictionary-site`): Reads the JSON and generates ~178k static HTML pages with Tailwind CSS v4 (`@tailwindcss/vite`). Output goes directly to `yap-frontend/public/d/` via Astro's `outDir` config.
+3. **Vite**: A custom plugin (`dictionaryStaticPlugin` in `yap-frontend/vite.config.ts`) intercepts `/d/` routes before the SPA fallback, serving the pre-built static HTML instead.
+4. **Vercel**: Serves the static dictionary pages alongside the SPA. The CI workflow builds dictionary data → Astro → then the Vite frontend.
+
+Key details:
+- Sentences are cross-linked: each gram in a sentence links to its dictionary page and includes a native-language gloss
+- The Astro build needs `NODE_OPTIONS="--max-old-space-size=8192"` due to the volume of pages
+- All generated data (`dictionary-site/src/data/`, `yap-frontend/public/d/`) is gitignored
+- Must run `cargo run --release --bin generate-dictionary-data` from the repo root (not from `dictionary-site/`) since it looks for `.rkyv` files in `out/`
 
 ## Essential Commands
 
@@ -50,6 +67,16 @@ cd yap-frontend-rs && wasm-pack build --release
 
 # Install frontend dependencies and build
 cd yap-frontend && pnpm install && pnpm build
+```
+
+### Dictionary Site
+
+```bash
+# Generate dictionary JSON from language pack archives (run from repo root!)
+cargo run --release --bin generate-dictionary-data
+
+# Build static dictionary pages (outputs to yap-frontend/public/d/)
+cd dictionary-site && pnpm install && NODE_OPTIONS="--max-old-space-size=8192" npx astro build
 ```
 
 ### Development

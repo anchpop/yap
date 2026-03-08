@@ -4,7 +4,6 @@
 {"count":282,"direct_count":282,"disambiguation_key":441971611,"gram":[{"Tok":{"text":"이","word_type":{"type":"Heteronym","word":"이","lemma":"이","pos":"DET"}}}]}
 {"count":281,"direct_count":281,"disambiguation_key":1647839269,"gram":[{"Tok":{"text":"안","word_type":{"type":"Heteronym","word":"안","lemma":"안","pos":"ADV"}}}]}
 {"count":280,"direct_count":280,"disambiguation_key":2371062988,"gram":[{"Tok":{"text":"내가","word_type":{"type":"Heteronym","word":"내가","lemma":"나","pos":"PRON"}}}]}
-{"count":264,"direct_count":2,"disambiguation_key":1973293610,"gram":[{"Tok":{"text":"수","word_type":{"type":"Heteronym","word":"수","lemma":"수","pos":"NOUN"}}},{"Tok":{"text":"있다","word_type":{"type":"Heteronym","word":"있다","lemma":"있다","pos":"AUX"}}}]}
 {"count":258,"direct_count":258,"disambiguation_key":920755406,"gram":[{"Tok":{"text":"내","word_type":{"type":"Heteronym","word":"내","lemma":"나","pos":"DET"}}}]}
 {"count":233,"direct_count":233,"disambiguation_key":1778498700,"gram":[{"Tok":{"text":"뭘","word_type":{"type":"Heteronym","word":"뭘","lemma":"무엇","pos":"PRON"}}}]}
 {"count":230,"direct_count":12,"disambiguation_key":2260468665,"gram":[{"Tok":{"text":"뭐","word_type":{"type":"Heteronym","word":"뭐","lemma":"무엇","pos":"PRON"}}},{"Tok":{"text":"하러","word_type":{"type":"Heteronym","word":"하러","lemma":"하다","pos":"VERB"}}}]}

@@ -12,6 +12,7 @@ members = [
     "clean-nlp-data",
     "libraries/enumap",
     "opensubtitles-downloader", "omnigram",
+    "generate-dictionary-data",
 ]
 resolver = "3"
 

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2423400
-Total errors: 777
+Total predictions: 2423149
+Total errors: 747
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -349,13 +349,6 @@ Accuracy: 99.97%
 - Examples:
   - Eh,sólo un café.
   - No quiero entrometerme,sólo siento que podría ser relevante.
-
-### "," + "" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - O si se atreven, Oh Capitán, Mi Capitán.
-  - Y, Ahí, hermosa Hermia, ¿de acuerdo?
 
 ### "," + "¡" (2 occurrences)
 - Predicted: Space
@@ -1539,18 +1532,6 @@ Accuracy: 99.97%
 - Examples:
   - RE-CONECTANDO - fueras tú.
 
-### "Capitán" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - O si se atreven, Oh Capitán, Mi Capitán.
-
-### "Carpe Diem" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El término en latín para este sentimiento es Carpe Diem.
-
 ### "Casa de Huéspedes" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1653,18 +1634,6 @@ Accuracy: 99.97%
 - Examples:
   - Su nombre es Gorro -Para con eso.
 
-### "Hermia" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Y, Ahí, hermosa Hermia, ¿de acuerdo?
-
-### "Herramienta" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Stanley La Herramienta Wilson.
-
 ### "Hércules" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1760,12 +1729,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - No -¿Quieres algo especial?
-
-### "Oberón" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Aquí viene Oberón.
 
 ### "Paga" + "rá" (1 occurrences)
 - Predicted: Space
@@ -2007,12 +1970,6 @@ Accuracy: 99.97%
 - Examples:
   - Se decidió a adoptar .
 
-### "aedificium" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El edificio entero es aedificium.
-
 ### "aficiones" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2228,18 +2185,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Por si 'mirar' se vuelve 'comprar'.
-
-### "conmigo" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Así que aprende a amar conmigo.
-
-### "consumen" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Todos los chicos del Medio Oeste la consumen.
 
 ### "consumiste" + "?" (1 occurrences)
 - Predicted: None
@@ -2523,12 +2468,6 @@ Accuracy: 99.97%
 - Examples:
   - Oye, muchísimas gracias -por tu tiempo.
 
-### "gramen" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El zacate es gramen o herba.
-
 ### "gris" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2558,12 +2497,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - La carne no está lo bastante hecha/cocinada/pasada.
-
-### "herba" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El zacate es gramen o herba.
 
 ### "hielo" + "'" (1 occurrences)
 - Predicted: Space
@@ -2835,12 +2768,6 @@ Accuracy: 99.97%
 - Examples:
   - A otra persona, pero a mí no'.
 
-### "no" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ahora no.
-
 ### "no" + "‑" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2937,12 +2864,6 @@ Accuracy: 99.97%
 - Examples:
   - Espero poderte ver mañana.
 
-### "poesía" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El titulado Para entender la poesía.
-
 ### "problema" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2979,12 +2900,6 @@ Accuracy: 99.97%
 - Examples:
   - No quiero que -reescribas.
 
-### "que" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Segundo, la Palabra de Dios, solo en los pasos de Dios que procederas.
-
 ### "quejaré" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3015,23 +2930,11 @@ Accuracy: 99.97%
 - Examples:
   - Como podrán haber notado, todas contienen 'recuerdos'.
 
-### "robare" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Entonces mañana le robare otra.
-
 ### "rodeen" + "lo" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Todos, corran hasta ese árbol, rodeenlo y regresen.
-
-### "rojo" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dinos, Charlie, ¿qué es esto de hacerse rojo?
 
 ### "rollo" + "'" (1 occurrences)
 - Predicted: Space
@@ -3105,12 +3008,6 @@ Accuracy: 99.97%
 - Examples:
   - Sena, serámejor que te vayas.
 
-### "será" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Siempre ha sido así y así siempre será.
-
 ### "señal" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3165,12 +3062,6 @@ Accuracy: 99.97%
 - Examples:
   - Por favor, avise que llegaré tarde'.
 
-### "teatral" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mi hijo no está en una obra teatral.
-
 ### "tema" + "muy" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3194,12 +3085,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ordeñadores de chivas, tienta - gallinas, cazadores de pulgas!
-
-### "todo" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Y eso lo cambió todo.
 
 ### "todos" + "'" (1 occurrences)
 - Predicted: Space
@@ -3285,12 +3170,6 @@ Accuracy: 99.97%
 - Examples:
   - Le dijimos: 'Así es la vida'.
 
-### "vida" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Para frenar todo lo que no fuera vida.
-
 ### "virgen" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3303,12 +3182,6 @@ Accuracy: 99.97%
 - Examples:
   - Rosa, mira, visitas .
 
-### "vivido" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Y no que, cuando fuera a morir, descubrir que no había vivido.
-
 ### "yo" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3320,54 +3193,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Me gusta hacer las cosas como las hago yo .
-
-### "" + "Ahí" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Y, Ahí, hermosa Hermia, ¿de acuerdo?
-
-### "" + "Carpe Diem" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El término en latín para este sentimiento es Carpe Diem.
-
-### "" + "La" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Stanley La Herramienta Wilson.
-
-### "" + "Oh" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - O si se atreven, Oh Capitán, Mi Capitán.
-
-### "" + "aedificium" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El edificio entero es aedificium.
-
-### "" + "gramen" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El zacate es gramen o herba.
-
-### "" + "hacerse" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dinos, Charlie, ¿qué es esto de hacerse rojo?
-
-### "" + "herba" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El zacate es gramen o herba.
 
 ### "­" + "alaikum" (1 occurrences)
 - Predicted: Space

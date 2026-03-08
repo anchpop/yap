@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2329611
-Total errors: 2936
-Accuracy: 99.87%
+Total predictions: 2329378
+Total errors: 2909
+Accuracy: 99.88%
 
 ## Error Patterns (sorted by frequency)
 
@@ -245,14 +245,6 @@ Accuracy: 99.87%
   - Punto, punto, trattino, punto, trattino, trattino, punto.
   - Punto, punto, trattino, punto, trattino, trattino, punto.
   - Punto, punto, trattino, punto, trattino, trattino, punto.
-
-### "E" + "" (7 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - E SPETTACOLARE!
-  - E fottutamente spaventato di andare a Londra.
-  - E questo che vuoi veramente?
 
 ### "Su" + "," (7 occurrences)
 - Predicted: None
@@ -1984,13 +1976,6 @@ Accuracy: 99.87%
   - Che tipo duro !
   - Fai il duro !
 
-### "e" + "" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Il mio guadagno e lo stesso degli altri.
-  - No, non e vero.
-
 ### "entrare" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3653,12 +3638,6 @@ Accuracy: 99.87%
 - Examples:
   - Avanti !
 
-### "Avro" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Avro cura di te quando uscità il nuovo album.
-
 ### "Ayrton Senna" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3833,12 +3812,6 @@ Accuracy: 99.87%
 - Examples:
   - Ritorna a casa tua, in Canada !
 
-### "Cani" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - E per quanto riguarda Cazzi Enormi Dei Cani?
-
 ### "Cannibale" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4007,12 +3980,6 @@ Accuracy: 99.87%
 - Examples:
   - Comparse ?
 
-### "Com" + "è" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Comè che vi chiamate?
-
 ### "Concentrazione" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4114,12 +4081,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Cucù !
-
-### "Culo" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Fuori di qui Culo non è una parolaccia Qui in TV-Landia lo è.
 
 ### "Cuá" + "I" (1 occurrences)
 - Predicted: Space
@@ -5861,12 +5822,6 @@ Accuracy: 99.87%
 - Examples:
   - Silenzio !
 
-### "Silvia North Stoy" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sul sedi Silvia North Stoy.
-
 ### "Simon" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6448,12 +6403,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Un albergo ?
-
-### "all" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ci vediamo lunedi allaereoporto.
 
 ### "allora" + "?" (1 occurrences)
 - Predicted: None
@@ -7259,12 +7208,6 @@ Accuracy: 99.87%
 - Examples:
   - Avanzate nella vostra caverna !
 
-### "cazzi" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Si, ma la parola cazzi è sempre li.
-
 ### "cazzo" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7816,12 +7759,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - M a dai , che dici?
-
-### "dall" + "auto" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Usciamolo dallauto.
 
 ### "dall’" + "ospedale" (1 occurrences)
 - Predicted: None
@@ -9515,23 +9452,11 @@ Accuracy: 99.87%
 - Examples:
   - Quello lo lasci cosi a metà ?
 
-### "mezz" + "ora" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Entro mezzora.
-
 ### "mi" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Niente mi ?
-
-### "miele" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Repliche di Luna di miele?
 
 ### "miglior" + "?" (1 occurrences)
 - Predicted: None
@@ -10540,12 +10465,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Madame Blanc lo ha dovuto portare a mettere i punti !
-
-### "puo" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Come puo odiarti Natalie?
 
 ### "puttanata" + "!" (1 occurrences)
 - Predicted: None
@@ -11741,12 +11660,6 @@ Accuracy: 99.87%
 - Examples:
   - Di un suino ?
 
-### "sulla" + "\Nterrazza" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La donna vestita di bianco sulla\Nterrazza?
-
 ### "superbabysitter" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12088,12 +12001,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Dove sono spariti tutti ?
-
-### "t" + "han" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - A che ora than detto che verranno a trovarti?
 
 ### "ubriacata" + "!" (1 occurrences)
 - Predicted: None
@@ -12532,36 +12439,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Con latte e zucchero ?
-
-### "" + "aereoporto" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ci vediamo lunedi allaereoporto.
-
-### "" + "Culo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Fuori di qui Culo non è una parolaccia Qui in TV-Landia lo è.
-
-### "" + "Luna" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Repliche di Luna di miele?
-
-### "" + "Silvia North Stoy" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sul sedi Silvia North Stoy.
-
-### "" + "cazzi" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Si, ma la parola cazzi è sempre li.
 
 ### "È" + "Jorge" (1 occurrences)
 - Predicted: Space

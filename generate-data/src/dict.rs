@@ -2,7 +2,7 @@ use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{
     Atom, Course, DictionaryDefinition, Gram, GramFrequencyEntry, Heteronym,
-    PhrasebookDefinitionEntry, SentenceGram, SentenceGrams, WordType,
+    PhrasebookDefinitionEntry, PhrasebookDefinitionEntryV2, SentenceGram, SentenceGrams, WordType,
 };
 use rustc_hash::FxHashMap;
 use sentence_sampler::sample_to_target;
@@ -318,7 +318,7 @@ pub async fn create_gram_phrasebook(
                 let system_prompt = if freq > 250 {
                     format!(r#"The input is a {target_language} multi-word term along with example sentences showing its usage. Generate a phrasebook entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}).
 
-Think about the word and its meaning based on how it's used in the example sentences, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning as the closest {native_language} equivalent word or short phrase — just like a dictionary translation (e.g. "just did (something)", "what" or "that which", "as soon as"). Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just give the {native_language} equivalent. Any grammatical notes belong in the "additional_notes" field, not the meaning. Then, provide additional context for how the term is used in the "additional_notes" field. Finally, provide your own example of the term's usage in a natural sentence.
+Think about the word and its meaning based on how it's used in the example sentences, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning as the closest {native_language} equivalent word or short phrase — just like a dictionary translation (e.g. "just did", "what" or "that which", "as soon as"). Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just give the {native_language} equivalent. Any grammatical notes belong in the "additional_notes" field, not the meaning. Then, provide additional context for how the term is used in the "additional_notes" field. Finally, provide your own example of the term's usage in a natural sentence.
 
 If the term is informal/slang, you can also set the "informal" field to true. For example, the english phrase "kick the bucket" is informal. If the term makes sense from the component words, you can also set the "compositional" field to true. (E.g. "Être sur son 31" makes no sense from its individual words, nor does "Altes Haus" in german. But "C'est" does make sense from its individual words) More examples: "pass away" is non-compositional (it's a phrasal verb whose meaning isn't obvious from "pass" + "away") but not informal. And "it is what it is" is informal but compositional.
 
@@ -341,7 +341,7 @@ Example sentences:
 
 Output: {{
     "target_language_multi_word_term":"ce que",
-    "meaning":"'what' or 'that which'.", // this field should be super concise
+    "meaning": ["what", "that which"], // this field should be super concise - ideally include 1, maybe 2 of the most common meanings
     "additional_notes": "Refers to something previously mentioned or understood from context.",
     "target_language_example":"C'est ce que je pensais.",
     "native_language_example":"That's what I thought.",
@@ -396,17 +396,44 @@ Output: {{
 Of course, their native language is {native_language}, so you should write the meaning and additional notes in {native_language}.
 "#
                 )};
-                let response: Result<PhrasebookDefinitionEntry, _> = chat_client
-                    .chat_with_system_prompt(
-                        system_prompt,
-                        format!(
-                            "multiword term: `{gram_text}`\n\nExample sentences:\n{examples_text}"
-                        ),
-                    )
-                    .await
-                    .inspect_err(|e| {
-                        println!("error: {e:#?}");
-                    });
+
+                let response: Result<PhrasebookDefinitionEntry, _> = if freq > 250  {
+                    let response: Result<PhrasebookDefinitionEntryV2, _> = chat_client
+                        .chat_with_system_prompt(
+                            system_prompt,
+                            format!(
+                                "multiword term: `{gram_text}`\n\nExample sentences:\n{examples_text}"
+                            ),
+                        )
+                        .await
+                        .inspect_err(|e| {
+                            println!("error: {e:#?}");
+                        });
+                    response.map(|entry| PhrasebookDefinitionEntry {
+                        target_language_multi_word_term: entry.target_language_multi_word_term,
+                        meaning: entry.meanings.first().cloned().unwrap_or_default(),
+                        additional_notes: entry.additional_notes,
+                        target_language_example: entry.target_language_example,
+                        native_language_example: entry.native_language_example,
+                        informal: entry.informal,
+                        compositional: entry.compositional,
+                        cognate: entry.cognate,
+                        false_cognate: entry.false_cognate,
+                        can_be_translated_literally: entry.can_be_translated_literally,
+                    })
+                } else {
+                    chat_client
+                        .chat_with_system_prompt(
+                            system_prompt,
+                            format!(
+                                "multiword term: `{gram_text}`\n\nExample sentences:\n{examples_text}"
+                            ),
+                        )
+                        .await
+                        .inspect_err(|e| {
+                            println!("error: {e:#?}");
+                        })
+                };
 
                 // If the example doesn't contain the term, retry with feedback
                 let response = if let Ok(ref resp) = response {

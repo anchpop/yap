@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2485884
-Total errors: 570
+Total predictions: 2485822
+Total errors: 558
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -746,12 +746,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - O que chega primeiro,vota primeiro.
-
-### "," + "" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ele me disse, Sabe, ele pode ficar doente.
 
 ### "," + "élnútll" (1 occurrences)
 - Predicted: Space
@@ -1833,12 +1827,6 @@ Accuracy: 99.98%
 - Examples:
   - Tem certeza ?
 
-### "certo" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - E pare de falar certo!
-
 ### "chamar" + "justo" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1868,12 +1856,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - O céu está nublado e cinzento - um céu típico da estação das chuvas.
-
-### "coco" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - É Trudy Cabbagepatch, e a senha é coco.
 
 ### "comer" + "?" (1 occurrences)
 - Predicted: None
@@ -1934,12 +1916,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Não voltará até meio-dia ?
-
-### "dia" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dissemos meio-dia.
 
 ### "dizendo" + "?" (1 occurrences)
 - Predicted: None
@@ -2529,12 +2505,6 @@ Accuracy: 99.98%
 - Examples:
   - As pessoas - eles se parecem com lixo.
 
-### "petisco" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Então Dave, ouvi dizer que tem um petisco na fila pra este fim de semana.
-
 ### "plano" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2666,12 +2636,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Não vai sentar ?
-
-### "serviço" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Um serviço?
 
 ### "seu" + "/" (1 occurrences)
 - Predicted: Space
@@ -2822,42 +2786,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Substitua estes números por ´x´ e ´y´.
-
-### "" + "Sabe" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ele me disse, Sabe, ele pode ficar doente.
-
-### "" + "certo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - E pare de falar certo!
-
-### "" + "coco" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - É Trudy Cabbagepatch, e a senha é coco.
-
-### "" + "meio" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dissemos meio-dia.
-
-### "" + "petisco" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Então Dave, ouvi dizer que tem um petisco na fila pra este fim de semana.
-
-### "" + "serviço" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Um serviço?
 
 ### "¡" + "o" (1 occurrences)
 - Predicted: None

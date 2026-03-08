@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 330512
-Total errors: 1372
-Accuracy: 99.58%
+Total predictions: 330502
+Total errors: 1370
+Accuracy: 99.59%
 
 ## Error Patterns (sorted by frequency)
 
@@ -795,13 +795,6 @@ Accuracy: 99.58%
 - Examples:
   - 구석에서요?
   - 어느 가게에서요?
-
-### "여" + "" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 여 다!
-  - 여 어요 액수는 아시죠?
 
 ### "와일드" + "와" (2 occurrences)
 - Predicted: Space

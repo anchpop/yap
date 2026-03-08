@@ -223,6 +223,21 @@ pub struct PhrasebookDefinitionEntry {
     pub can_be_translated_literally: bool,
 }
 
+#[derive(Clone, Debug, serde::Deserialize, schemars::JsonSchema)]
+#[schemars(rename = "PhrasebookDefinitionEntry")]
+pub struct PhrasebookDefinitionEntryV2 {
+    pub target_language_multi_word_term: String,
+    pub meanings: Vec<String>,
+    pub additional_notes: String,
+    pub target_language_example: String,
+    pub native_language_example: String,
+    pub informal: bool,
+    pub compositional: bool,
+    pub cognate: bool,
+    pub false_cognate: bool,
+    pub can_be_translated_literally: bool,
+}
+
 #[derive(
     Clone,
     Debug,

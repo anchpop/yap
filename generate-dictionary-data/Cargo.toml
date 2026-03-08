@@ -1,0 +1,14 @@
+[package]
+name = "generate-dictionary-data"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+language-utils = { path = "../language-utils" }
+rkyv.workspace = true
+lasso.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow = "1.0.98"
+rustc-hash = "2.1"
+indexmap.workspace = true

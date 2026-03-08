@@ -56,6 +56,19 @@ jobs:
         run: wasm-pack build --release
         working-directory: yap-frontend-rs
 
+      - name: Generate dictionary data from language packs
+        run: cargo run --release --bin generate-dictionary-data
+
+      - name: Install dictionary site dependencies
+        run: pnpm install
+        working-directory: dictionary-site
+
+      - name: Build dictionary static pages
+        run: npx astro build
+        working-directory: dictionary-site
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
+
       - name: Install frontend dependencies
         run: pnpm install
         working-directory: yap-frontend

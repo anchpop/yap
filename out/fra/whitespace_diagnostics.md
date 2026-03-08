@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2638621
-Total errors: 634
+Total predictions: 2636322
+Total errors: 622
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -194,13 +194,6 @@ Accuracy: 99.98%
   - Ne poussez pas,vous allez me foutre,en dehors de la carriole !
   - Nous sommes des aviateurs anglais,en fuite !
 
-### "," + "si" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Est-ce Žtrange,si je dis que je ne peux pas le supporter ?
-  - Maintenant,si tu me permets, je veux faire la toilette bien sûr monsieur.
-
 ### "," + "tu" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -270,13 +263,6 @@ Accuracy: 99.98%
 - Examples:
   - Non , non , non !
   - Non , non !
-
-### "O" + "" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - O est Dutschke maintenant ?
-  - O est le bon c™tŽ ?
 
 ### "Rire" + "-" (2 occurrences)
 - Predicted: None
@@ -603,12 +589,6 @@ Accuracy: 99.98%
 - Examples:
   - Je lui procure des vêtements,et on se retrouve chez mon grand-père !
 
-### "," + "euh" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bon,euh.
-
 ### "," + "faisons" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -692,6 +672,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Non, non, non,rien.
+
+### "," + "si" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Maintenant,si tu me permets, je veux faire la toilette bien sûr monsieur.
 
 ### "," + "sir" (1 occurrences)
 - Predicted: Space
@@ -1389,12 +1375,6 @@ Accuracy: 99.98%
 - Examples:
   - Ça, c’était une parade avec un «P» majuscule.
 
-### "Paris" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Les Žtudiants appellent ˆ la rŽvolution culturelle ˆ Paris .
-
 ### "Passez" + "—" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1514,12 +1494,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Tu --aptes ?
-
-### "T" + "inquiète" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Tinquiète.
 
 ### "Uni" + "�tit" (1 occurrences)
 - Predicted: Space
@@ -2007,12 +1981,6 @@ Accuracy: 99.98%
 - Examples:
   - Je souffle un instant etje prépare à manger.
 
-### "euh" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bon,euh.
-
 ### "explose" + "—" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2289,12 +2257,6 @@ Accuracy: 99.98%
 - Examples:
   - Erina est là; il faut que je sorte.
 
-### "m" + "me" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Vous ne pouvez pas provoquer une rŽvolution, mme avec une kalachnikov.
-
 ### "maintenant" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2426,12 +2388,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Oui, c'est une grande nuit; vous avez raison.
-
-### "n" + "emportait" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - On avait dit quon nemportait rien, les imprimantes étaient notre but !
 
 ### "n’" + "y" (1 occurrences)
 - Predicted: None
@@ -2649,12 +2605,6 @@ Accuracy: 99.98%
 - Examples:
   - Est-ce queje sais ?
 
-### "qu" + "on" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - On avait dit quon nemportait rien, les imprimantes étaient notre but !
-
 ### "rabbit" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2829,12 +2779,6 @@ Accuracy: 99.98%
 - Examples:
   - Il y aura une réunion avec des gens 'sûrs'.
 
-### "t" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mais y a til beaucoup de montagnes dans les environs ?
-
 ### "tapette" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3002,12 +2946,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Equipe mech allez y .
-
-### "" + "il" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mais y a til beaucoup de montagnes dans les environs ?
 
 ### "«" + "BR" (1 occurrences)
 - Predicted: None
