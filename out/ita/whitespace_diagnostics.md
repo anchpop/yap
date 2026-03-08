@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2330232
-Total errors: 2943
+Total predictions: 2329611
+Total errors: 2936
 Accuracy: 99.87%
 
 ## Error Patterns (sorted by frequency)
@@ -30,7 +30,7 @@ Accuracy: 99.87%
   - Lei ha una figlia, vero ?
   - Lei è incredula, vero ?
 
-### "cosa" + "?" (17 occurrences)
+### "cosa" + "?" (16 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -262,14 +262,6 @@ Accuracy: 99.87%
   - Su , dite qualcosa anche voi.
   - Su , fatemi vedere.
 
-### "la" + "?" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Io la ?
-  - Io molte volte ho usato la ?
-  - La rivalità fra Ayrton e Prost è la ?
-
 ### "prego" + "!" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -301,6 +293,14 @@ Accuracy: 99.87%
   - Allora finalmente hai capito ?
   - Ascoltami bene, io sono tua madre, capito ?
   - Farla sparire, capito ?
+
+### "la" + "?" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Io la ?
+  - Io molte volte ho usato la ?
+  - La rivalità fra Ayrton e Prost è la ?
 
 ### "solo" + "?" (6 occurrences)
 - Predicted: None
@@ -829,14 +829,6 @@ Accuracy: 99.87%
   - Bevila piano, è roba forte.
   - Bevila tutta.
   - Bevila.
-
-### "Cheng" + "," (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Signor Cheng , lo sapevo che sareste tornato.
-  - Signor Cheng , no, che fate?
-  - Signor Cheng , prego.
 
 ### "Colombo" + "!" (3 occurrences)
 - Predicted: None
@@ -1459,6 +1451,13 @@ Accuracy: 99.87%
 - Examples:
   - Bob !
   - Sono Bob !
+
+### "Cheng" + "," (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Signor Cheng , lo sapevo che sareste tornato.
+  - Signor Cheng , prego.
 
 ### "Chow" + "?" (2 occurrences)
 - Predicted: None
@@ -4302,12 +4301,6 @@ Accuracy: 99.87%
 - Examples:
   - Dolore !
 
-### "Dove" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Dove ?
-
 ### "Dove" + "facciamo" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -5826,12 +5819,6 @@ Accuracy: 99.87%
 - Examples:
   - Seduto !
 
-### "Senape" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Senape !
-
 ### "Sentito" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5939,12 +5926,6 @@ Accuracy: 99.87%
 - Actual: Space
 - Examples:
   - Sparare - tipo cacciare?
-
-### "Spariti" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Spariti !
 
 ### "Sparito" + "!" (1 occurrences)
 - Predicted: None
@@ -10589,12 +10570,6 @@ Accuracy: 99.87%
 - Actual: None
 - Examples:
   - Lui dice che con la volontà si puòfare tutto.
-
-### "pò" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ne vuole un pò ?
 
 ### "qua" + "!" (1 occurrences)
 - Predicted: None

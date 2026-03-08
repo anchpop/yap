@@ -40,3 +40,5 @@ percent-encoding = "2.3.2"
 dotenvy = "0.15.7"
 libc = "0.2"
 gcp_auth = "0.12"
+image = { version = "0.25.9", default-features = false, features = ["jpeg"] }
+webp = "0.3.1"

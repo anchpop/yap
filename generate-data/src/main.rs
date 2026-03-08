@@ -1628,7 +1628,30 @@ async fn main() -> anyhow::Result<()> {
                     if poster_path.exists()
                         && let Ok(bytes) = std::fs::read(&poster_path)
                     {
-                        movie.poster_bytes = Some(bytes);
+                        // Resize and encode as lossy WebP for smaller file size
+                        match image::load_from_memory_with_format(&bytes, image::ImageFormat::Jpeg)
+                        {
+                            Ok(img) => {
+                                let resized =
+                                    img.resize(200, 300, image::imageops::FilterType::Lanczos3);
+                                let resized = image::DynamicImage::ImageRgb8(resized.to_rgb8());
+                                let encoder = webp::Encoder::from_image(&resized)
+                                    .expect("Failed to create WebP encoder");
+                                let mut config =
+                                    webp::WebPConfig::new().expect("Failed to create WebP config");
+                                config.quality = 15.0;
+                                config.method = 6;
+                                movie.poster_bytes = Some(
+                                    encoder
+                                        .encode_advanced(&config)
+                                        .expect("Failed to encode WebP")
+                                        .to_vec(),
+                                );
+                            }
+                            Err(_) => {
+                                movie.poster_bytes = Some(bytes);
+                            }
+                        }
                     }
 
                     movies.insert(movie.id.clone(), movie);

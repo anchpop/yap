@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2706349
-Total errors: 2101
+Total predictions: 2705429
+Total errors: 2099
 Accuracy: 99.92%
 
 ## Error Patterns (sorted by frequency)
@@ -1614,12 +1614,6 @@ Accuracy: 99.92%
 - Actual: None
 - Examples:
   - Nein, du spielst ,mit deinem Leben!
-
-### "," + "so" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Was,so?
 
 ### "," + "was" (1 occurrences)
 - Predicted: Space
@@ -5940,12 +5934,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Er sagte, ich hätte Glück gehabt - der Arzt.
-
-### "gehe" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ja, gehe !
 
 ### "geheiratet" + "?" (1 occurrences)
 - Predicted: None

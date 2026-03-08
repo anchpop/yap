@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1794202
-Total errors: 1260
+Total predictions: 1793581
+Total errors: 1259
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -4426,12 +4426,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - I wasjoking.
-
-### "was" + "missing" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Halfofit wasmissing.
 
 ### "wasn" + "´t" (1 occurrences)
 - Predicted: Space

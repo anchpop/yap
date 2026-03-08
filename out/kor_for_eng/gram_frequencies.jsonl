@@ -2,8 +2,8 @@
 {"count":357,"direct_count":357,"disambiguation_key":4065554452,"gram":[{"Tok":{"text":"거야","word_type":{"type":"Heteronym","word":"거야","lemma":"것이다","pos":"AUX"}}}]}
 {"count":286,"direct_count":286,"disambiguation_key":3981540648,"gram":[{"Tok":{"text":"어떻게","word_type":{"type":"Heteronym","word":"어떻게","lemma":"어떻게","pos":"ADV"}}}]}
 {"count":282,"direct_count":282,"disambiguation_key":441971611,"gram":[{"Tok":{"text":"이","word_type":{"type":"Heteronym","word":"이","lemma":"이","pos":"DET"}}}]}
-{"count":281,"direct_count":281,"disambiguation_key":2371062988,"gram":[{"Tok":{"text":"내가","word_type":{"type":"Heteronym","word":"내가","lemma":"나","pos":"PRON"}}}]}
 {"count":281,"direct_count":281,"disambiguation_key":1647839269,"gram":[{"Tok":{"text":"안","word_type":{"type":"Heteronym","word":"안","lemma":"안","pos":"ADV"}}}]}
+{"count":280,"direct_count":280,"disambiguation_key":2371062988,"gram":[{"Tok":{"text":"내가","word_type":{"type":"Heteronym","word":"내가","lemma":"나","pos":"PRON"}}}]}
 {"count":264,"direct_count":2,"disambiguation_key":1973293610,"gram":[{"Tok":{"text":"수","word_type":{"type":"Heteronym","word":"수","lemma":"수","pos":"NOUN"}}},{"Tok":{"text":"있다","word_type":{"type":"Heteronym","word":"있다","lemma":"있다","pos":"AUX"}}}]}
 {"count":258,"direct_count":258,"disambiguation_key":920755406,"gram":[{"Tok":{"text":"내","word_type":{"type":"Heteronym","word":"내","lemma":"나","pos":"DET"}}}]}
 {"count":233,"direct_count":233,"disambiguation_key":1778498700,"gram":[{"Tok":{"text":"뭘","word_type":{"type":"Heteronym","word":"뭘","lemma":"무엇","pos":"PRON"}}}]}
@@ -42,7 +42,7 @@
 {"count":128,"direct_count":128,"disambiguation_key":2314415364,"gram":[{"Tok":{"text":"날","word_type":{"type":"Heteronym","word":"날","lemma":"나","pos":"PRON"}}}]}
 {"count":127,"direct_count":127,"disambiguation_key":509811166,"gram":[{"Tok":{"text":"없어","word_type":{"type":"Heteronym","word":"없어","lemma":"없다","pos":"ADJ"}}}]}
 {"count":126,"direct_count":126,"disambiguation_key":3661175599,"gram":[{"Tok":{"text":"어디","word_type":{"type":"Heteronym","word":"어디","lemma":"어디","pos":"PRON"}}}]}
-{"count":124,"direct_count":124,"disambiguation_key":1765074826,"gram":[{"Tok":{"text":"해","word_type":{"type":"Heteronym","word":"해","lemma":"하다","pos":"VERB"}}}]}
+{"count":123,"direct_count":123,"disambiguation_key":1765074826,"gram":[{"Tok":{"text":"해","word_type":{"type":"Heteronym","word":"해","lemma":"하다","pos":"VERB"}}}]}
 {"count":121,"direct_count":121,"disambiguation_key":3838193312,"gram":[{"Tok":{"text":"엄마","word_type":{"type":"Heteronym","word":"엄마","lemma":"엄마","pos":"NOUN"}}}]}
 {"count":121,"direct_count":121,"disambiguation_key":2657777489,"gram":[{"Tok":{"text":"네","word_type":{"type":"Heteronym","word":"네","lemma":"너","pos":"DET"}}}]}
 {"count":121,"direct_count":121,"disambiguation_key":2465284884,"gram":[{"Tok":{"text":"저","word_type":{"type":"Heteronym","word":"저","lemma":"저","pos":"DET"}}}]}
@@ -90,11 +90,10 @@
 {"count":75,"direct_count":75,"disambiguation_key":3716679627,"gram":[{"Tok":{"text":"그거","word_type":{"type":"Heteronym","word":"그거","lemma":"그것","pos":"PRON"}}}]}
 {"count":75,"direct_count":75,"disambiguation_key":3703769118,"gram":[{"Tok":{"text":"그래서","word_type":{"type":"Heteronym","word":"그래서","lemma":"그래서","pos":"ADV"}}}]}
 {"count":75,"direct_count":75,"disambiguation_key":2780775282,"gram":[{"Tok":{"text":"야","word_type":{"type":"Heteronym","word":"야","lemma":"야","pos":"INTJ"}}}]}
-{"count":75,"direct_count":75,"disambiguation_key":934413109,"gram":[{"Tok":{"text":"누구","word_type":{"type":"Heteronym","word":"누구","lemma":"누구","pos":"PRON"}}}]}
 {"count":75,"direct_count":7,"disambiguation_key":267806094,"gram":[{"Tok":{"text":"여기","word_type":{"type":"Heteronym","word":"여기","lemma":"여기","pos":"PRON"}}},{"Tok":{"text":"있다","word_type":{"type":"Heteronym","word":"있다","lemma":"있다","pos":"VERB"}}}]}
 {"count":74,"direct_count":27,"disambiguation_key":4140801151,"gram":[{"Tok":{"text":"무슨","word_type":{"type":"Heteronym","word":"무슨","lemma":"무슨","pos":"DET"}}},{"Tok":{"text":"일","word_type":{"type":"Heteronym","word":"일","lemma":"일","pos":"NOUN"}}}]}
 {"count":73,"direct_count":73,"disambiguation_key":2599952530,"gram":[{"Tok":{"text":"마","word_type":{"type":"Heteronym","word":"마","lemma":"말다","pos":"AUX"}}}]}
-{"count":73,"direct_count":73,"disambiguation_key":1047155979,"gram":[{"Tok":{"text":"아직","word_type":{"type":"Heteronym","word":"아직","lemma":"아직","pos":"ADV"}}}]}
+{"count":73,"direct_count":73,"disambiguation_key":934413109,"gram":[{"Tok":{"text":"누구","word_type":{"type":"Heteronym","word":"누구","lemma":"누구","pos":"PRON"}}}]}
 {"count":73,"direct_count":73,"disambiguation_key":870826224,"gram":[{"Tok":{"text":"어때","word_type":{"type":"Heteronym","word":"어때","lemma":"어때","pos":"VERB"}}}]}
 {"count":73,"direct_count":73,"disambiguation_key":601793993,"gram":[{"Tok":{"text":"계속","word_type":{"type":"Heteronym","word":"계속","lemma":"계속","pos":"ADV"}}}]}
 {"count":73,"direct_count":27,"disambiguation_key":2238158783,"gram":[{"Tok":{"text":"그","word_type":{"type":"Heteronym","word":"그","lemma":"그","pos":"DET"}}},{"Tok":{"text":"사람","word_type":{"type":"Heteronym","word":"사람","lemma":"사람","pos":"NOUN"}}}]}
@@ -102,6 +101,7 @@
 {"count":72,"direct_count":72,"disambiguation_key":3233920814,"gram":[{"Tok":{"text":"있어요","word_type":{"type":"Heteronym","word":"있어요","lemma":"있다","pos":"AUX"}}}]}
 {"count":72,"direct_count":72,"disambiguation_key":3131543066,"gram":[{"Tok":{"text":"봐","word_type":{"type":"Heteronym","word":"봐","lemma":"봐","pos":"VERB"}}}]}
 {"count":72,"direct_count":72,"disambiguation_key":2221492982,"gram":[{"Tok":{"text":"그런","word_type":{"type":"Heteronym","word":"그런","lemma":"그렇다","pos":"DET"}}}]}
+{"count":72,"direct_count":72,"disambiguation_key":1047155979,"gram":[{"Tok":{"text":"아직","word_type":{"type":"Heteronym","word":"아직","lemma":"아직","pos":"ADV"}}}]}
 {"count":72,"direct_count":72,"disambiguation_key":280981646,"gram":[{"Tok":{"text":"누구야","word_type":{"type":"Heteronym","word":"누구야","lemma":"누구야","pos":"VERB"}}}]}
 {"count":71,"direct_count":71,"disambiguation_key":397815710,"gram":[{"Tok":{"text":"혹시","word_type":{"type":"Heteronym","word":"혹시","lemma":"혹시","pos":"ADV"}}}]}
 {"count":70,"direct_count":70,"disambiguation_key":3584448920,"gram":[{"Tok":{"text":"같이","word_type":{"type":"Heteronym","word":"같이","lemma":"같이","pos":"ADV"}}}]}
@@ -137,7 +137,6 @@
 {"count":61,"direct_count":61,"disambiguation_key":3620312530,"gram":[{"Tok":{"text":"좋아","word_type":{"type":"Heteronym","word":"좋아","lemma":"좋다","pos":"INTJ"}}}]}
 {"count":61,"direct_count":39,"disambiguation_key":3611950957,"gram":[{"Tok":{"text":"무슨","word_type":{"type":"Heteronym","word":"무슨","lemma":"무슨","pos":"DET"}}},{"Tok":{"text":"일이야","word_type":{"type":"Heteronym","word":"일이야","lemma":"일이다","pos":"VERB"}}}]}
 {"count":60,"direct_count":60,"disambiguation_key":3996398435,"gram":[{"Tok":{"text":"모두","word_type":{"type":"Heteronym","word":"모두","lemma":"모두","pos":"PRON"}}}]}
-{"count":60,"direct_count":60,"disambiguation_key":1705024653,"gram":[{"Tok":{"text":"어","word_type":{"type":"Heteronym","word":"어","lemma":"어","pos":"INTJ"}}}]}
 {"count":60,"direct_count":60,"disambiguation_key":1258466412,"gram":[{"Tok":{"text":"건가","word_type":{"type":"Heteronym","word":"건가","lemma":"건가","pos":"AUX"}}}]}
 {"count":60,"direct_count":60,"disambiguation_key":965640830,"gram":[{"Tok":{"text":"이렇게","word_type":{"type":"Heteronym","word":"이렇게","lemma":"이렇게","pos":"ADV"}}}]}
 {"count":60,"direct_count":60,"disambiguation_key":666958959,"gram":[{"Tok":{"text":"그건","word_type":{"type":"Heteronym","word":"그건","lemma":"그것","pos":"PRON"}}}]}
@@ -147,6 +146,7 @@
 {"count":58,"direct_count":58,"disambiguation_key":3327424494,"gram":[{"Tok":{"text":"할","word_type":{"type":"Heteronym","word":"할","lemma":"하다","pos":"VERB"}}}]}
 {"count":58,"direct_count":58,"disambiguation_key":2098948074,"gram":[{"Tok":{"text":"응","word_type":{"type":"Heteronym","word":"응","lemma":"응","pos":"INTJ"}}}]}
 {"count":58,"direct_count":58,"disambiguation_key":1766772546,"gram":[{"Tok":{"text":"잠깐","word_type":{"type":"Heteronym","word":"잠깐","lemma":"잠깐","pos":"INTJ"}}}]}
+{"count":58,"direct_count":58,"disambiguation_key":1705024653,"gram":[{"Tok":{"text":"어","word_type":{"type":"Heteronym","word":"어","lemma":"어","pos":"INTJ"}}}]}
 {"count":58,"direct_count":58,"disambiguation_key":1308052032,"gram":[{"Tok":{"text":"하나","word_type":{"type":"Heteronym","word":"하나","lemma":"하나","pos":"NUM"}}}]}
 {"count":58,"direct_count":58,"disambiguation_key":1053389415,"gram":[{"Tok":{"text":"너는","word_type":{"type":"Heteronym","word":"너는","lemma":"너","pos":"PRON"}}}]}
 {"count":58,"direct_count":0,"disambiguation_key":3876923525,"gram":[{"Tok":{"text":"그러면","word_type":{"type":"Heteronym","word":"그러면","lemma":"그러면","pos":"ADV"}}},{"Tok":{"text":"안","word_type":{"type":"Heteronym","word":"안","lemma":"안","pos":"ADV"}}},{"Tok":{"text":"되다","word_type":{"type":"Heteronym","word":"되다","lemma":"되다","pos":"VERB"}}}]}
@@ -172,20 +172,20 @@
 {"count":52,"direct_count":52,"disambiguation_key":963560842,"gram":[{"Tok":{"text":"사람","word_type":{"type":"Heteronym","word":"사람","lemma":"사람","pos":"NOUN"}}}]}
 {"count":52,"direct_count":26,"disambiguation_key":3892552802,"gram":[{"Tok":{"text":"뭐","word_type":{"type":"Heteronym","word":"뭐","lemma":"무엇","pos":"PRON"}}},{"Tok":{"text":"하는","word_type":{"type":"Heteronym","word":"하는","lemma":"하다","pos":"VERB"}}},{"Tok":{"text":"거야","word_type":{"type":"Heteronym","word":"거야","lemma":"것이다","pos":"AUX"}}}]}
 {"count":52,"direct_count":9,"disambiguation_key":1055766474,"gram":[{"Tok":{"text":"말","word_type":{"type":"Heteronym","word":"말","lemma":"말","pos":"NOUN"}}},{"Tok":{"text":"안","word_type":{"type":"Heteronym","word":"안","lemma":"안","pos":"ADV"}}}]}
-{"count":51,"direct_count":51,"disambiguation_key":3056899873,"gram":[{"Tok":{"text":"당신이","word_type":{"type":"Heteronym","word":"당신이","lemma":"당신","pos":"PRON"}}}]}
-{"count":51,"direct_count":51,"disambiguation_key":2389171111,"gram":[{"Tok":{"text":"말","word_type":{"type":"Heteronym","word":"말","lemma":"말","pos":"NOUN"}}}]}
 {"count":51,"direct_count":51,"disambiguation_key":1777359959,"gram":[{"Tok":{"text":"줘","word_type":{"type":"Heteronym","word":"줘","lemma":"줘","pos":"AUX"}}}]}
 {"count":51,"direct_count":51,"disambiguation_key":866369621,"gram":[{"Tok":{"text":"게","word_type":{"type":"Heteronym","word":"게","lemma":"것이","pos":"NOUN"}}}]}
 {"count":51,"direct_count":11,"disambiguation_key":1779758162,"gram":[{"Tok":{"text":"있는","word_type":{"type":"Heteronym","word":"있는","lemma":"있다","pos":"VERB"}}},{"Tok":{"text":"거야","word_type":{"type":"Heteronym","word":"거야","lemma":"것이다","pos":"AUX"}}}]}
 {"count":51,"direct_count":5,"disambiguation_key":568389227,"gram":[{"Tok":{"text":"일","word_type":{"type":"Heteronym","word":"일","lemma":"일","pos":"NOUN"}}},{"Tok":{"text":"있었어","word_type":{"type":"Heteronym","word":"있었어","lemma":"있다","pos":"VERB"}}}]}
 {"count":51,"direct_count":3,"disambiguation_key":1586387721,"gram":[{"Tok":{"text":"할","word_type":{"type":"Heteronym","word":"할","lemma":"하다","pos":"VERB"}}},{"Tok":{"text":"수","word_type":{"type":"Heteronym","word":"수","lemma":"수","pos":"NOUN"}}}]}
-{"count":51,"direct_count":0,"disambiguation_key":4087088434,"gram":[{"Tok":{"text":"말을","word_type":{"type":"Heteronym","word":"말을","lemma":"말","pos":"NOUN"}}},{"Tok":{"text":"하다","word_type":{"type":"Heteronym","word":"하다","lemma":"하다","pos":"VERB"}}}]}
 {"count":50,"direct_count":50,"disambiguation_key":4085705611,"gram":[{"Tok":{"text":"해요","word_type":{"type":"Heteronym","word":"해요","lemma":"하다","pos":"VERB"}}}]}
 {"count":50,"direct_count":50,"disambiguation_key":3576188352,"gram":[{"Tok":{"text":"이름이","word_type":{"type":"Heteronym","word":"이름이","lemma":"이름","pos":"NOUN"}}}]}
 {"count":50,"direct_count":50,"disambiguation_key":3475253660,"gram":[{"Tok":{"text":"아냐","word_type":{"type":"Heteronym","word":"아냐","lemma":"아니다","pos":"AUX"}}}]}
 {"count":50,"direct_count":50,"disambiguation_key":3114015996,"gram":[{"Tok":{"text":"어딨어","word_type":{"type":"Heteronym","word":"어딨어","lemma":"어디있다","pos":"VERB"}}}]}
+{"count":50,"direct_count":50,"disambiguation_key":3056899873,"gram":[{"Tok":{"text":"당신이","word_type":{"type":"Heteronym","word":"당신이","lemma":"당신","pos":"PRON"}}}]}
+{"count":50,"direct_count":50,"disambiguation_key":2389171111,"gram":[{"Tok":{"text":"말","word_type":{"type":"Heteronym","word":"말","lemma":"말","pos":"NOUN"}}}]}
 {"count":50,"direct_count":50,"disambiguation_key":704655302,"gram":[{"Tok":{"text":"자네","word_type":{"type":"Heteronym","word":"자네","lemma":"자네","pos":"PRON"}}}]}
 {"count":50,"direct_count":3,"disambiguation_key":2082950428,"gram":[{"Tok":{"text":"알고","word_type":{"type":"Heteronym","word":"알고","lemma":"알다","pos":"VERB"}}},{"Tok":{"text":"있다","word_type":{"type":"Heteronym","word":"있다","lemma":"있다","pos":"AUX"}}}]}
+{"count":50,"direct_count":0,"disambiguation_key":4087088434,"gram":[{"Tok":{"text":"말을","word_type":{"type":"Heteronym","word":"말을","lemma":"말","pos":"NOUN"}}},{"Tok":{"text":"하다","word_type":{"type":"Heteronym","word":"하다","lemma":"하다","pos":"VERB"}}}]}
 {"count":48,"direct_count":48,"disambiguation_key":3697513298,"gram":[{"Tok":{"text":"뭐죠","word_type":{"type":"Heteronym","word":"뭐죠","lemma":"뭐죠","pos":"VERB"}}}]}
 {"count":48,"direct_count":48,"disambiguation_key":2494419387,"gram":[{"Tok":{"text":"뭐예요","word_type":{"type":"Heteronym","word":"뭐예요","lemma":"뭐예요","pos":"VERB"}}}]}
 {"count":48,"direct_count":48,"disambiguation_key":1055255822,"gram":[{"Tok":{"text":"그만해","word_type":{"type":"Heteronym","word":"그만해","lemma":"그만하다","pos":"VERB"}}}]}
@@ -434,7 +434,6 @@
 {"count":25,"direct_count":25,"disambiguation_key":2465284884,"gram":[{"Tok":{"text":"저","word_type":{"type":"Heteronym","word":"저","lemma":"저","pos":"PRON"}}}]}
 {"count":25,"direct_count":25,"disambiguation_key":2370042040,"gram":[{"Tok":{"text":"그럴","word_type":{"type":"Heteronym","word":"그럴","lemma":"그러다","pos":"VERB"}}}]}
 {"count":25,"direct_count":25,"disambiguation_key":2259331183,"gram":[{"Tok":{"text":"봤어요","word_type":{"type":"Heteronym","word":"봤어요","lemma":"봤어요","pos":"VERB"}}}]}
-{"count":25,"direct_count":25,"disambiguation_key":1977610752,"gram":[{"Tok":{"text":"없나요","word_type":{"type":"Heteronym","word":"없나요","lemma":"없다","pos":"ADJ"}}}]}
 {"count":25,"direct_count":25,"disambiguation_key":1900922031,"gram":[{"Tok":{"text":"바로","word_type":{"type":"Heteronym","word":"바로","lemma":"바로","pos":"ADV"}}}]}
 {"count":25,"direct_count":25,"disambiguation_key":1824182806,"gram":[{"Tok":{"text":"아니에요","word_type":{"type":"Heteronym","word":"아니에요","lemma":"아니다","pos":"AUX"}}}]}
 {"count":25,"direct_count":25,"disambiguation_key":1785683367,"gram":[{"Tok":{"text":"들었지","word_type":{"type":"Heteronym","word":"들었지","lemma":"들었지","pos":"VERB"}}}]}
@@ -460,6 +459,7 @@
 {"count":24,"direct_count":24,"disambiguation_key":3180604472,"gram":[{"Tok":{"text":"있죠","word_type":{"type":"Heteronym","word":"있죠","lemma":"있다","pos":"AUX"}}}]}
 {"count":24,"direct_count":24,"disambiguation_key":3164292878,"gram":[{"Tok":{"text":"해봐","word_type":{"type":"Heteronym","word":"해봐","lemma":"해봐","pos":"VERB"}}}]}
 {"count":24,"direct_count":24,"disambiguation_key":3079398680,"gram":[{"Tok":{"text":"이쪽으로","word_type":{"type":"Heteronym","word":"이쪽으로","lemma":"이쪽으로","pos":"ADV"}}}]}
+{"count":24,"direct_count":24,"disambiguation_key":1977610752,"gram":[{"Tok":{"text":"없나요","word_type":{"type":"Heteronym","word":"없나요","lemma":"없다","pos":"ADJ"}}}]}
 {"count":24,"direct_count":24,"disambiguation_key":1925799239,"gram":[{"Tok":{"text":"나쁜","word_type":{"type":"Heteronym","word":"나쁜","lemma":"나쁘다","pos":"ADJ"}}}]}
 {"count":24,"direct_count":24,"disambiguation_key":1899476084,"gram":[{"Tok":{"text":"무엇을","word_type":{"type":"Heteronym","word":"무엇을","lemma":"무엇","pos":"PRON"}}}]}
 {"count":24,"direct_count":24,"disambiguation_key":1526523826,"gram":[{"Tok":{"text":"뭐","word_type":{"type":"Heteronym","word":"뭐","lemma":"무엇","pos":"PRON"}}},{"Tok":{"text":"하는","word_type":{"type":"Heteronym","word":"하는","lemma":"하다","pos":"VERB"}}}]}
@@ -521,7 +521,6 @@
 {"count":22,"direct_count":22,"disambiguation_key":310262437,"gram":[{"Tok":{"text":"어딨지","word_type":{"type":"Heteronym","word":"어딨지","lemma":"어디있다","pos":"VERB"}}}]}
 {"count":22,"direct_count":22,"disambiguation_key":309632907,"gram":[{"Tok":{"text":"서둘러","word_type":{"type":"Heteronym","word":"서둘러","lemma":"서둘러","pos":"ADV"}}}]}
 {"count":22,"direct_count":22,"disambiguation_key":138787932,"gram":[{"Tok":{"text":"녀석","word_type":{"type":"Heteronym","word":"녀석","lemma":"녀석","pos":"NOUN"}}}]}
-{"count":22,"direct_count":22,"disambiguation_key":65839214,"gram":[{"Tok":{"text":"왔나","word_type":{"type":"Heteronym","word":"왔나","lemma":"오다","pos":"VERB"}}}]}
 {"count":22,"direct_count":15,"disambiguation_key":1045392703,"gram":[{"Tok":{"text":"어디","word_type":{"type":"Heteronym","word":"어디","lemma":"어디","pos":"PRON"}}},{"Tok":{"text":"가","word_type":{"type":"Heteronym","word":"가","lemma":"가","pos":"VERB"}}}]}
 {"count":22,"direct_count":10,"disambiguation_key":3734070510,"gram":[{"Tok":{"text":"여기서","word_type":{"type":"Heteronym","word":"여기서","lemma":"여기","pos":"PRON"}}},{"Tok":{"text":"뭐","word_type":{"type":"Heteronym","word":"뭐","lemma":"무엇","pos":"PRON"}}}]}
 {"count":22,"direct_count":8,"disambiguation_key":838387677,"gram":[{"Tok":{"text":"왜","word_type":{"type":"Heteronym","word":"왜","lemma":"왜","pos":"ADV"}}},{"Tok":{"text":"왔어","word_type":{"type":"Heteronym","word":"왔어","lemma":"오다","pos":"VERB"}}}]}
@@ -539,7 +538,6 @@
 {"count":21,"direct_count":21,"disambiguation_key":3273227771,"gram":[{"Tok":{"text":"가지고","word_type":{"type":"Heteronym","word":"가지고","lemma":"가지다","pos":"VERB"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":3073362477,"gram":[{"Tok":{"text":"무슨","word_type":{"type":"Heteronym","word":"무슨","lemma":"무슨","pos":"DET"}}},{"Tok":{"text":"일이죠","word_type":{"type":"Heteronym","word":"일이죠","lemma":"일이죠","pos":"VERB"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":2813334663,"gram":[{"Tok":{"text":"도망쳐","word_type":{"type":"Heteronym","word":"도망쳐","lemma":"도망치다","pos":"VERB"}}}]}
-{"count":21,"direct_count":21,"disambiguation_key":2813168027,"gram":[{"Tok":{"text":"못","word_type":{"type":"Heteronym","word":"못","lemma":"못","pos":"ADV"}}},{"Tok":{"text":"봤어","word_type":{"type":"Heteronym","word":"봤어","lemma":"봤어","pos":"VERB"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":2778761788,"gram":[{"Tok":{"text":"맞아요","word_type":{"type":"Heteronym","word":"맞아요","lemma":"맞다","pos":"VERB"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":2676734979,"gram":[{"Tok":{"text":"오래","word_type":{"type":"Heteronym","word":"오래","lemma":"오래","pos":"ADV"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":2473214643,"gram":[{"Tok":{"text":"지금은","word_type":{"type":"Heteronym","word":"지금은","lemma":"지금","pos":"ADV"}}}]}
@@ -552,6 +550,7 @@
 {"count":21,"direct_count":21,"disambiguation_key":183231296,"gram":[{"Tok":{"text":"들었어요","word_type":{"type":"Heteronym","word":"들었어요","lemma":"들었어요","pos":"VERB"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":118707037,"gram":[{"Tok":{"text":"새끼","word_type":{"type":"Heteronym","word":"새끼","lemma":"새끼","pos":"NOUN"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":77952316,"gram":[{"Tok":{"text":"손을","word_type":{"type":"Heteronym","word":"손을","lemma":"손","pos":"NOUN"}}}]}
+{"count":21,"direct_count":21,"disambiguation_key":65839214,"gram":[{"Tok":{"text":"왔나","word_type":{"type":"Heteronym","word":"왔나","lemma":"오다","pos":"VERB"}}}]}
 {"count":21,"direct_count":21,"disambiguation_key":45757217,"gram":[{"Tok":{"text":"일어나","word_type":{"type":"Heteronym","word":"일어나","lemma":"일어나다","pos":"VERB"}}}]}
 {"count":21,"direct_count":20,"disambiguation_key":2023629869,"gram":[{"Tok":{"text":"왜","word_type":{"type":"Heteronym","word":"왜","lemma":"왜","pos":"ADV"}}},{"Tok":{"text":"그래요","word_type":{"type":"Heteronym","word":"그래요","lemma":"그래요","pos":"VERB"}}}]}
 {"count":21,"direct_count":16,"disambiguation_key":1320361360,"gram":[{"Tok":{"text":"집","word_type":{"type":"Heteronym","word":"집","lemma":"집","pos":"NOUN"}}},{"Tok":{"text":"에","word_type":{"type":"Heteronym","word":"에","lemma":"에","pos":"ADP"}}}]}
@@ -575,6 +574,7 @@
 {"count":20,"direct_count":20,"disambiguation_key":3043192663,"gram":[{"Tok":{"text":"맞죠","word_type":{"type":"Heteronym","word":"맞죠","lemma":"맞다","pos":"VERB"}}}]}
 {"count":20,"direct_count":20,"disambiguation_key":2946946606,"gram":[{"Tok":{"text":"망할","word_type":{"type":"Heteronym","word":"망할","lemma":"망하다","pos":"VERB"}}}]}
 {"count":20,"direct_count":20,"disambiguation_key":2862493599,"gram":[{"Tok":{"text":"치워","word_type":{"type":"Heteronym","word":"치워","lemma":"치우다","pos":"VERB"}}}]}
+{"count":20,"direct_count":20,"disambiguation_key":2813168027,"gram":[{"Tok":{"text":"못","word_type":{"type":"Heteronym","word":"못","lemma":"못","pos":"ADV"}}},{"Tok":{"text":"봤어","word_type":{"type":"Heteronym","word":"봤어","lemma":"봤어","pos":"VERB"}}}]}
 {"count":20,"direct_count":20,"disambiguation_key":2694280555,"gram":[{"Tok":{"text":"문","word_type":{"type":"Heteronym","word":"문","lemma":"문","pos":"NOUN"}}}]}
 {"count":20,"direct_count":20,"disambiguation_key":2652719570,"gram":[{"Tok":{"text":"죽을","word_type":{"type":"Heteronym","word":"죽을","lemma":"죽다","pos":"VERB"}}}]}
 {"count":20,"direct_count":20,"disambiguation_key":2623656491,"gram":[{"Tok":{"text":"알겠어","word_type":{"type":"Heteronym","word":"알겠어","lemma":"알겠어","pos":"VERB"}}}]}
@@ -1093,7 +1093,6 @@
 {"count":12,"direct_count":12,"disambiguation_key":3992988001,"gram":[{"Tok":{"text":"보게","word_type":{"type":"Heteronym","word":"보게","lemma":"보다","pos":"VERB"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":3865717333,"gram":[{"Tok":{"text":"찾고","word_type":{"type":"Heteronym","word":"찾고","lemma":"찾다","pos":"VERB"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":3854640876,"gram":[{"Tok":{"text":"빠져","word_type":{"type":"Heteronym","word":"빠져","lemma":"빠지다","pos":"VERB"}}}]}
-{"count":12,"direct_count":12,"disambiguation_key":3830711376,"gram":[{"Tok":{"text":"소식","word_type":{"type":"Heteronym","word":"소식","lemma":"소식","pos":"NOUN"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":3665536577,"gram":[{"Tok":{"text":"칼","word_type":{"type":"Heteronym","word":"칼","lemma":"칼","pos":"NOUN"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":3594463422,"gram":[{"Tok":{"text":"밖으로","word_type":{"type":"Heteronym","word":"밖으로","lemma":"밖으로","pos":"ADV"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":3526033307,"gram":[{"Tok":{"text":"누굴","word_type":{"type":"Heteronym","word":"누굴","lemma":"누구","pos":"PRON"}}}]}
@@ -1104,7 +1103,6 @@
 {"count":12,"direct_count":12,"disambiguation_key":3154282478,"gram":[{"Tok":{"text":"그렇죠","word_type":{"type":"Heteronym","word":"그렇죠","lemma":"그렇다","pos":"ADJ"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":3081208627,"gram":[{"Tok":{"text":"만약","word_type":{"type":"Heteronym","word":"만약","lemma":"만약","pos":"ADV"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":3021721708,"gram":[{"Tok":{"text":"좋아하세요","word_type":{"type":"Heteronym","word":"좋아하세요","lemma":"좋아하세요","pos":"VERB"}}}]}
-{"count":12,"direct_count":12,"disambiguation_key":2928101421,"gram":[{"Tok":{"text":"자네도","word_type":{"type":"Heteronym","word":"자네도","lemma":"자네","pos":"PRON"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":2899540832,"gram":[{"Tok":{"text":"애들은","word_type":{"type":"Heteronym","word":"애들은","lemma":"애","pos":"NOUN"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":2896562932,"gram":[{"Tok":{"text":"살","word_type":{"type":"Heteronym","word":"살","lemma":"살다","pos":"VERB"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":2735662654,"gram":[{"Tok":{"text":"마셔","word_type":{"type":"Heteronym","word":"마셔","lemma":"마셔","pos":"VERB"}}}]}
@@ -1152,7 +1150,6 @@
 {"count":12,"direct_count":12,"disambiguation_key":1213338871,"gram":[{"Tok":{"text":"나가요","word_type":{"type":"Heteronym","word":"나가요","lemma":"나가요","pos":"VERB"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":1186475635,"gram":[{"Tok":{"text":"그","word_type":{"type":"Heteronym","word":"그","lemma":"그","pos":"DET"}}},{"Tok":{"text":"사람을","word_type":{"type":"Heteronym","word":"사람을","lemma":"사람","pos":"NOUN"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":1147686032,"gram":[{"Tok":{"text":"나보다","word_type":{"type":"Heteronym","word":"나보다","lemma":"나","pos":"PRON"}}}]}
-{"count":12,"direct_count":12,"disambiguation_key":1031013479,"gram":[{"Tok":{"text":"근데","word_type":{"type":"Heteronym","word":"근데","lemma":"근데","pos":"CCONJ"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":963073597,"gram":[{"Tok":{"text":"먹는","word_type":{"type":"Heteronym","word":"먹는","lemma":"먹다","pos":"VERB"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":959031435,"gram":[{"Tok":{"text":"것은","word_type":{"type":"Heteronym","word":"것은","lemma":"것","pos":"NOUN"}}}]}
 {"count":12,"direct_count":12,"disambiguation_key":950135833,"gram":[{"Tok":{"text":"그만","word_type":{"type":"Heteronym","word":"그만","lemma":"그만","pos":"INTJ"}}}]}
@@ -1236,6 +1233,7 @@
 {"count":11,"direct_count":11,"disambiguation_key":3994812954,"gram":[{"Tok":{"text":"왔니","word_type":{"type":"Heteronym","word":"왔니","lemma":"오다","pos":"VERB"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":3948240451,"gram":[{"Tok":{"text":"라디오","word_type":{"type":"Heteronym","word":"라디오","lemma":"라디오","pos":"NOUN"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":3836056209,"gram":[{"Tok":{"text":"마지막","word_type":{"type":"Heteronym","word":"마지막","lemma":"마지막","pos":"DET"}}}]}
+{"count":11,"direct_count":11,"disambiguation_key":3830711376,"gram":[{"Tok":{"text":"소식","word_type":{"type":"Heteronym","word":"소식","lemma":"소식","pos":"NOUN"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":3830509616,"gram":[{"Tok":{"text":"닫아","word_type":{"type":"Heteronym","word":"닫아","lemma":"닫다","pos":"VERB"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":3757920189,"gram":[{"Tok":{"text":"어떻게","word_type":{"type":"Heteronym","word":"어떻게","lemma":"어떻게","pos":"ADV"}}},{"Tok":{"text":"하죠","word_type":{"type":"Heteronym","word":"하죠","lemma":"하다","pos":"VERB"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":3753108877,"gram":[{"Tok":{"text":"있었어요","word_type":{"type":"Heteronym","word":"있었어요","lemma":"있다","pos":"AUX"}}}]}
@@ -1258,6 +1256,7 @@
 {"count":11,"direct_count":11,"disambiguation_key":3174387170,"gram":[{"Tok":{"text":"하려고","word_type":{"type":"Heteronym","word":"하려고","lemma":"하다","pos":"VERB"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":3157030927,"gram":[{"Tok":{"text":"정신","word_type":{"type":"Heteronym","word":"정신","lemma":"정신","pos":"NOUN"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":2976379683,"gram":[{"Tok":{"text":"어디를","word_type":{"type":"Heteronym","word":"어디를","lemma":"어디","pos":"PRON"}}}]}
+{"count":11,"direct_count":11,"disambiguation_key":2928101421,"gram":[{"Tok":{"text":"자네도","word_type":{"type":"Heteronym","word":"자네도","lemma":"자네","pos":"PRON"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":2867922802,"gram":[{"Tok":{"text":"음악","word_type":{"type":"Heteronym","word":"음악","lemma":"음악","pos":"NOUN"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":2864695413,"gram":[{"Tok":{"text":"전화를","word_type":{"type":"Heteronym","word":"전화를","lemma":"전화","pos":"NOUN"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":2852972650,"gram":[{"Tok":{"text":"되나요","word_type":{"type":"Heteronym","word":"되나요","lemma":"되다","pos":"AUX"}}}]}
@@ -1316,6 +1315,7 @@
 {"count":11,"direct_count":11,"disambiguation_key":1167770350,"gram":[{"Tok":{"text":"혼자서","word_type":{"type":"Heteronym","word":"혼자서","lemma":"혼자서","pos":"ADV"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":1130037737,"gram":[{"Tok":{"text":"한다","word_type":{"type":"Heteronym","word":"한다","lemma":"하다","pos":"AUX"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":1069721721,"gram":[{"Tok":{"text":"카메라","word_type":{"type":"Heteronym","word":"카메라","lemma":"카메라","pos":"NOUN"}}}]}
+{"count":11,"direct_count":11,"disambiguation_key":1031013479,"gram":[{"Tok":{"text":"근데","word_type":{"type":"Heteronym","word":"근데","lemma":"근데","pos":"CCONJ"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":990163387,"gram":[{"Tok":{"text":"아닌가","word_type":{"type":"Heteronym","word":"아닌가","lemma":"아니다","pos":"AUX"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":966679567,"gram":[{"Tok":{"text":"여기","word_type":{"type":"Heteronym","word":"여기","lemma":"여기","pos":"PRON"}}},{"Tok":{"text":"있어요","word_type":{"type":"Heteronym","word":"있어요","lemma":"있다","pos":"VERB"}}}]}
 {"count":11,"direct_count":11,"disambiguation_key":920755406,"gram":[{"Tok":{"text":"내","word_type":{"type":"Heteronym","word":"내","lemma":"내","pos":"VERB"}}}]}
