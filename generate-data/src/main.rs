@@ -737,7 +737,7 @@ async fn main() -> anyhow::Result<()> {
 
         // Filter encoded sentences to only include those where we have all the learnable grams
         let encoded_sentences_count_before = encoded_sentences_with_grams.len();
-        let encoded_sentences_with_grams: Vec<(String, SentenceGrams<Gram<String>>)> =
+        let mut encoded_sentences_with_grams: Vec<(String, SentenceGrams<Gram<String>>)> =
             encoded_sentences_with_grams
                 .into_iter()
                 .filter(|(_, sentence_grams)| {
@@ -1108,6 +1108,31 @@ async fn main() -> anyhow::Result<()> {
                     "Found {} grams in gram_frequencies that don't have definitions:\n{}",
                     missing_grams.len(),
                     missing_grams.join("\n")
+                );
+            }
+        }
+
+        // Clean up multiword terms referencing grams that were removed from the vocabulary.
+        // Omnigram-discovered multi-atom grams may have been used for NLP detection but then
+        // filtered out because they lacked definitions or had too few occurrences.
+        {
+            let vocab_gram_set: std::collections::HashSet<&Gram<String>> =
+                gram_vocabulary.iter().map(|entry| &entry.atoms).collect();
+            let mut removed_high = 0usize;
+            let mut removed_low = 0usize;
+            for (_text, sg) in &mut encoded_sentences_with_grams {
+                let before_high = sg.multiword_terms.len();
+                let before_low = sg.low_confidence_multiword_terms.len();
+                sg.multiword_terms
+                    .retain(|term| vocab_gram_set.contains(term));
+                sg.low_confidence_multiword_terms
+                    .retain(|term| vocab_gram_set.contains(term));
+                removed_high += before_high - sg.multiword_terms.len();
+                removed_low += before_low - sg.low_confidence_multiword_terms.len();
+            }
+            if removed_high > 0 || removed_low > 0 {
+                println!(
+                    "Cleaned multiword terms: removed {removed_high} high-confidence and {removed_low} low-confidence terms referencing undefined grams"
                 );
             }
         }
