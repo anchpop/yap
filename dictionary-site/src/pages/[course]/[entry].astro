@@ -61,10 +61,31 @@ function posLabel(pos: string): string {
   </nav>
 
   <div class="mb-6">
-    <h1 class="text-4xl font-bold">{page.display_text}</h1>
+    <h1 class="text-4xl font-bold">
+      {mainSense.prefix && !mainSense.is_phrase && (
+        <span class="text-muted-foreground font-normal">{mainSense.prefix}</span>
+      )}{page.display_text}
+    </h1>
     {mainSense.pronunciation && (
       <p class="text-muted-foreground mt-1">{mainSense.pronunciation}</p>
     )}
+    {(() => {
+      const rank = page.best_frequency_rank;
+      const total = courseMeta.total_pages;
+      const pct = rank / total;
+      let label: string, color: string;
+      if (pct <= 0.01) { label = 'Extremely common'; color = 'bg-green-500/15 text-green-700 dark:text-green-400'; }
+      else if (pct <= 0.05) { label = 'Very common'; color = 'bg-green-500/10 text-green-600 dark:text-green-500'; }
+      else if (pct <= 0.20) { label = 'Common'; color = 'bg-blue-500/10 text-blue-700 dark:text-blue-400'; }
+      else if (pct <= 0.50) { label = 'Uncommon'; color = 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'; }
+      else { label = 'Rare'; color = 'bg-orange-500/10 text-orange-700 dark:text-orange-400'; }
+      return (
+        <p class="mt-1.5 flex items-center gap-2">
+          <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${color}`}>{label}</span>
+          <span class="text-sm text-muted-foreground">#{rank.toLocaleString()}</span>
+        </p>
+      );
+    })()}
   </div>
 
   <div class="space-y-4">
@@ -80,6 +101,13 @@ function posLabel(pos: string): string {
             )}
             {sense.lemma && sense.lemma !== page.display_text && (
               <span class="text-sm text-muted-foreground">lemma: {sense.lemma}</span>
+            )}
+            {sense.morphology && !sense.is_phrase && (
+              Object.entries(sense.morphology)
+                .filter(([_, v]: [string, any]) => v != null)
+                .map(([_, v]: [string, any]) => (
+                  <span class="text-xs bg-muted/50 text-muted-foreground px-1.5 py-0.5 rounded">{v}</span>
+                ))
             )}
           </div>
         </div>
@@ -161,6 +189,11 @@ function posLabel(pos: string): string {
                 {sentence.translation && (
                   <p class="text-sm text-muted-foreground/50 mt-1 leading-relaxed italic">
                     {sentence.translation}
+                  </p>
+                )}
+                {sentence.source && (
+                  <p class="text-xs text-muted-foreground/40 mt-1">
+                    — {sentence.source}
                   </p>
                 )}
               </div>

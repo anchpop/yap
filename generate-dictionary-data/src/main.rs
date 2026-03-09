@@ -16,6 +16,23 @@ struct PageEntry {
     senses: Vec<Sense>,
 }
 
+/// Morphological information for a word sense.
+#[derive(Serialize)]
+struct MorphologyInfo {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    gender: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    number: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tense: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    person: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    mood: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    case: Option<String>,
+}
+
 /// A single word sense or phrase meaning.
 #[derive(Serialize)]
 struct Sense {
@@ -28,6 +45,10 @@ struct Sense {
     lemma: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pronunciation: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    prefix: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    morphology: Option<MorphologyInfo>,
     definition: Definition,
     /// Sentence spurs stored temporarily during extraction, replaced with rich
     /// segments in a second pass once we have the gram→slug map.
@@ -43,6 +64,8 @@ struct ExampleSentence {
     segments: Vec<SentenceSegment>,
     #[serde(skip_serializing_if = "Option::is_none")]
     translation: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    source: Option<String>,
 }
 
 /// A segment of a sentence — one or more words belonging to a single gram,
@@ -205,7 +228,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
         let resolved = gram.resolve(string_rodeo);
         let display_text = resolved.to_display_string(target_language);
 
-        let (pos, lemma) = gram
+        let (pos, lemma, het_pos) = gram
             .atoms()
             .iter()
             .find_map(|atom| {
@@ -215,12 +238,13 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                     Some((
                         Some(format!("{:?}", h.pos)),
                         Some(string_rodeo.resolve(&h.lemma).to_string()),
+                        Some(h.pos),
                     ))
                 } else {
                     None
                 }
             })
-            .unwrap_or((None, None));
+            .unwrap_or((None, None, None));
 
         let pronunciation = gram
             .atoms()
@@ -248,6 +272,32 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
             .collect();
 
         let is_phrase = gram.len() > 1;
+
+        // Extract morphology and prefix for single-word dictionary entries
+        let (morphology, prefix) = if !is_phrase {
+            if let GramDefinition::Dictionary(dict) = gram_def {
+                let morph = dict.morphology.first().map(|m| MorphologyInfo {
+                    gender: m.gender.map(|g| format!("{g:?}").to_lowercase()),
+                    number: m.number.map(|n| format!("{n:?}").to_lowercase()),
+                    tense: m.tense.map(|t| format!("{t:?}").to_lowercase()),
+                    person: m.person.map(|p| format!("{p:?}").to_lowercase()),
+                    mood: m.mood.map(|md| format!("{md:?}").to_lowercase()),
+                    case: m.case.map(|c| format!("{c:?}").to_lowercase()),
+                });
+                let pfx = dict
+                    .morphology
+                    .first()
+                    .and_then(|m| {
+                        het_pos.and_then(|p| m.get_prefix(&display_text, p, target_language))
+                    })
+                    .map(|wp| format!("{}{}", wp.prefix, wp.separator));
+                (morph, pfx)
+            } else {
+                (None, None)
+            }
+        } else {
+            (None, None)
+        };
 
         let definition = match gram_def {
             GramDefinition::Dictionary(dict) => Definition::Dictionary {
@@ -284,6 +334,8 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
             pos,
             lemma,
             pronunciation,
+            prefix,
+            morphology,
             definition,
             sentence_spurs,
             example_sentences: Vec::new(),
@@ -462,9 +514,24 @@ fn resolve_sentence(
         .and_then(|ts| ts.first())
         .map(|t| language_pack.string_rodeo.resolve(t).to_string());
 
+    // Look up sentence source for attribution
+    let source = language_pack
+        .sentence_sources
+        .get(sentence_spur)
+        .and_then(|ss| ss.movie_ids.first())
+        .and_then(|movie_id| language_pack.movies.get(movie_id))
+        .map(|movie| {
+            if let Some(year) = movie.year {
+                format!("{} ({})", movie.title, year)
+            } else {
+                movie.title.clone()
+            }
+        });
+
     Some(ExampleSentence {
         segments,
         translation,
+        source,
     })
 }
 
