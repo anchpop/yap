@@ -140,6 +140,8 @@ struct SensePreview {
     is_phrase: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pronunciation: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    prefix: Option<String>,
     definition_preview: String,
 }
 
@@ -262,13 +264,46 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
             })
             .filter(|p| !p.is_empty());
 
-        let sentence_spurs: Vec<Spur> = language_pack
-            .sentences_containing_gram_index
-            .get(spur_gram)
-            .into_iter()
-            .flat_map(|sentences| sentences.iter().copied())
-            .take(200)
-            .collect();
+        // Collect example sentences, prioritizing those where the gram appears
+        // as a direct encoded gram over those where it only appears via multiword terms.
+        let sentence_spurs: Vec<Spur> = {
+            let all_sentences: Vec<Spur> = language_pack
+                .sentences_containing_gram_index
+                .get(spur_gram)
+                .into_iter()
+                .flat_map(|sentences| sentences.iter().copied())
+                .collect();
+
+            // Partition: direct gram matches first, then multiword matches
+            let mut direct = Vec::new();
+            let mut multiword = Vec::new();
+            for sentence_spur in all_sentences {
+                if let Some(sg) = language_pack.encoded_sentences.get(&sentence_spur) {
+                    let is_direct = sg.grams.iter().any(|g| {
+                        let s = match g {
+                            SentenceGram::Learnable(s) | SentenceGram::Obvious(s) => s,
+                        };
+                        s == spur_gram
+                    });
+                    if is_direct {
+                        direct.push(sentence_spur);
+                    } else {
+                        multiword.push(sentence_spur);
+                    }
+                }
+            }
+
+            // For multi-atom grams, skip multiword term matches entirely
+            if gram.len() > 1 {
+                direct.truncate(200);
+                direct
+            } else {
+                let remaining = 200usize.saturating_sub(direct.len());
+                direct.extend(multiword.into_iter().take(remaining));
+                direct.truncate(200);
+                direct
+            }
+        };
 
         let is_phrase = gram.len() > 1;
         let pronunciation = if is_phrase { None } else { pronunciation };
@@ -583,6 +618,7 @@ fn main() -> Result<()> {
                 first_sense_preview: p.senses.first().map(|s| SensePreview {
                     is_phrase: s.is_phrase,
                     pronunciation: s.pronunciation.clone(),
+                    prefix: s.prefix.clone(),
                     definition_preview: get_definition_preview(s),
                 }),
             })

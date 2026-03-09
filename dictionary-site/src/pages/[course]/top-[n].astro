@@ -43,7 +43,7 @@ function getPreview(page: any): string {
     {pages.map((page: any, i: number) => (
       <a href={`/d/${courseSlug}/${page.slug}/`} class="flex items-baseline gap-3 rounded-md px-3 py-2 hover:bg-secondary transition-colors no-underline text-card-foreground">
         <span class="text-xs text-muted-foreground/50 w-8 text-right shrink-0">{i + 1}</span>
-        <span class="font-medium">{page.display_text}</span>
+        <span class="font-medium">{page.first_sense_preview?.prefix && !page.first_sense_preview?.is_phrase && (<span class="text-muted-foreground/60 font-normal">{page.first_sense_preview.prefix}</span>)}{page.display_text}</span>
         <span class="text-sm text-muted-foreground truncate">{getPreview(page)}</span>
       </a>
     ))}

@@ -43,10 +43,9 @@ for (const file of fs.readdirSync(SEARCH_DIR)) {
 }
 
 // Upload per-course data
-for (const file of fs.readdirSync(DATA_DIR)) {
-  if (!file.endsWith('.json') || file === 'courses.json') continue;
-
-  const courseSlug = file.replace('.json', '');
+const coursesData = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'courses.json'), 'utf-8'));
+for (const course of coursesData) {
+  const courseSlug = course.slug;
   const courseDir = path.join(DATA_DIR, courseSlug);
   if (!fs.existsSync(courseDir) || !fs.statSync(courseDir).isDirectory()) continue;
 

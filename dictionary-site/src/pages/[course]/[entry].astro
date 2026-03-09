@@ -177,14 +177,14 @@ function grammarSummary(sense: any): string {
                           data-gloss={seg.gloss || undefined}
                         >{seg.text}</a>}{seg.whitespace}</>;
                       }
-                      return <><span class="text-muted-foreground/60">{seg.text}</span>{seg.whitespace}</>;
+                      return <><span class="text-muted-foreground">{seg.text}</span>{seg.whitespace}</>;
                     })}
                   </p>
                   {sentence.translation && (
-                    <p class="text-sm text-muted-foreground/40 mt-0.5 italic">{sentence.translation}</p>
+                    <p class="text-sm text-muted-foreground mt-0.5 italic">{sentence.translation}</p>
                   )}
                   {sentence.source && (
-                    <p class="text-xs text-muted-foreground/30 mt-0.5">— {sentence.source}</p>
+                    <p class="text-xs text-muted-foreground/60 mt-0.5">— {sentence.source}</p>
                   )}
                 </div>
               ))}
@@ -224,8 +224,6 @@ function grammarSummary(sense: any): string {
     }
 
     #gram-tooltip {
-      --d: 0.5em;
-      --s: 0.8em;
       position: fixed;
       margin: 0;
       padding: 0.35em 0.65em;
@@ -233,7 +231,7 @@ function grammarSummary(sense: any): string {
       border-radius: 6px;
       background: var(--card);
       color: var(--muted-foreground);
-      font-size: 0.8rem;
+      font-size: 0.875rem;
       line-height: 1.3;
       white-space: nowrap;
       max-width: 280px;
@@ -252,23 +250,8 @@ function grammarSummary(sense: any): string {
       #gram-tooltip {
         position-anchor: --active-word;
         position-area: top;
-        bottom: var(--d);
-        margin-top: var(--d);
+        margin-bottom: 4px;
         position-try: flip-block;
-        anchor-name: --gram-tooltip;
-      }
-      #gram-tooltip::before {
-        content: "";
-        position: fixed;
-        z-index: -1;
-        width: var(--s);
-        background: inherit;
-        border: inherit;
-        top: calc(anchor(--gram-tooltip top) - var(--d));
-        bottom: calc(anchor(--gram-tooltip bottom) - var(--d));
-        left: calc(anchor(--active-word center) - var(--s) / 2);
-        margin: inherit;
-        clip-path: polygon(50% 0.15em, 100% var(--d), 100% calc(100% - var(--d)), 50% calc(100% - 0.15em), 0 calc(100% - var(--d)), 0 var(--d));
       }
     }
   </style>
