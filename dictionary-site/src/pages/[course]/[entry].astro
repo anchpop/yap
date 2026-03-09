@@ -4,7 +4,6 @@ import Layout from '../../layouts/Layout.astro';
 const { course: courseSlug, entry: pageSlug } = Astro.params;
 const kv = Astro.locals.runtime.env.DICTIONARY_KV;
 
-// Load page data and course metadata in parallel
 const [pageJson, coursesJson] = await Promise.all([
   kv.get(`page:${courseSlug}:${pageSlug}`),
   kv.get('courses'),
@@ -57,6 +56,28 @@ function posLabel(pos: string): string {
   };
   return labels[pos] || pos.toLowerCase();
 }
+
+/** Build a grammar summary line like "verb, 2nd person plural · present indicative" */
+function grammarSummary(sense: any): string {
+  const parts: string[] = [];
+  if (sense.pos && !sense.is_phrase) parts.push(posLabel(sense.pos));
+  if (sense.morphology && !sense.is_phrase) {
+    const m = sense.morphology;
+    // Group: gender/number, then tense/mood/person
+    const inflection: string[] = [];
+    if (m.person) inflection.push(m.person);
+    if (m.gender) inflection.push(m.gender);
+    if (m.number) inflection.push(m.number);
+    if (inflection.length > 0) parts.push(inflection.join(' '));
+    const verbInfo: string[] = [];
+    if (m.tense) verbInfo.push(m.tense);
+    if (m.mood) verbInfo.push(m.mood);
+    if (m.case) verbInfo.push(m.case);
+    if (verbInfo.length > 0) parts.push(verbInfo.join(' '));
+  }
+  if (sense.is_phrase) parts.push('phrase');
+  return parts.join(' · ');
+}
 ---
 
 <Layout
@@ -71,150 +92,121 @@ function posLabel(pos: string): string {
     {page.display_text}
   </nav>
 
-  <div class="mb-6">
+  <!-- Header: word + primary translation -->
+  <div class="mb-8">
     <h1 class="text-4xl font-bold">
       {mainSense.prefix && !mainSense.is_phrase && (
-        <span class="text-muted-foreground font-normal">{mainSense.prefix}</span>
+        <span class="text-muted-foreground/60 font-normal">{mainSense.prefix}</span>
       )}{page.display_text}
     </h1>
-    {mainSense.pronunciation && (
-      <p class="text-muted-foreground mt-1">{mainSense.pronunciation}</p>
-    )}
-    <p class="mt-1.5 flex items-center gap-2">
-      <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${frequencyTier.color}`}>{frequencyTier.label}</span>
-      <span class="text-sm text-muted-foreground">#{page.best_frequency_rank.toLocaleString()}</span>
-    </p>
+    <p class="text-xl text-primary mt-1">{getSummary()}</p>
+    <div class="flex items-center gap-3 mt-2 text-sm text-muted-foreground/60">
+      {mainSense.pronunciation && (
+        <span>{mainSense.pronunciation}</span>
+      )}
+      <span class={`text-xs font-medium px-1.5 py-0.5 rounded-full ${frequencyTier.color}`}>{frequencyTier.label}</span>
+      <span>#{page.best_frequency_rank.toLocaleString()}</span>
+      {mainSense.lemma && mainSense.lemma !== page.display_text && (
+        <span>→ {mainSense.lemma}</span>
+      )}
+    </div>
   </div>
 
-  <div class="space-y-4">
-    {page.senses.map((sense: any, senseIdx: number) => (
-      <div class="rounded-lg border bg-card p-4">
-        <div class="flex items-baseline justify-between gap-2 mb-3">
-          <div class="flex items-center gap-2 flex-wrap">
-            {sense.is_phrase && (
-              <span class="text-sm text-muted-foreground/60 font-normal">(phrase)</span>
-            )}
-            {sense.pos && !sense.is_phrase && (
-              <span class="text-sm text-muted-foreground italic">{posLabel(sense.pos)}</span>
-            )}
-            {sense.lemma && sense.lemma !== page.display_text && (
-              <span class="text-sm text-muted-foreground">lemma: {sense.lemma}</span>
-            )}
-            {sense.morphology && !sense.is_phrase && (
-              Object.entries(sense.morphology)
-                .filter(([_, v]: [string, any]) => v != null)
-                .map(([_, v]: [string, any]) => (
-                  <span class="text-xs bg-muted/50 text-muted-foreground px-1.5 py-0.5 rounded">{v}</span>
-                ))
-            )}
-          </div>
+  <!-- Senses -->
+  <div class="space-y-8">
+    {page.senses.map((sense: any, senseIdx: number) => {
+      const grammar = grammarSummary(sense);
+      return (
+        <div>
+          {/* Grammar line */}
+          {grammar && (
+            <p class="text-sm text-muted-foreground/60 mb-2">{grammar}</p>
+          )}
+
+          {/* Definitions */}
+          {sense.definition.type === 'Dictionary' && (
+            <div class="space-y-2">
+              {sense.definition.definitions.map((def: any) => (
+                <div class="pl-3 border-l-2 border-muted">
+                  <span class="font-medium text-primary">{def.native}</span>
+                  {def.note && (
+                    <span class="text-sm text-muted-foreground/60 italic ml-2">{def.note}</span>
+                  )}
+                  {(def.example_target || def.example_native) && (
+                    <div class="mt-1 text-sm text-muted-foreground">
+                      {def.example_target && <div><span class="opacity-50">{targetCode}:</span> {def.example_target}</div>}
+                      {def.example_native && <div><span class="opacity-50">{nativeCode}:</span> {def.example_native}</div>}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {sense.definition.type === 'Phrasebook' && (
+            <div class="pl-3 border-l-2 border-muted">
+              <span class="font-medium text-primary">{sense.definition.meaning}</span>
+              {sense.definition.additional_notes && (
+                <span class="text-sm text-muted-foreground/60 italic ml-2">{sense.definition.additional_notes}</span>
+              )}
+              {(sense.definition.target_language_example || sense.definition.native_language_example) && (
+                <div class="mt-1 text-sm text-muted-foreground">
+                  {sense.definition.target_language_example && <div><span class="opacity-50">{targetCode}:</span> {sense.definition.target_language_example}</div>}
+                  {sense.definition.native_language_example && <div><span class="opacity-50">{nativeCode}:</span> {sense.definition.native_language_example}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Example sentences — flat list */}
+          {sense.example_sentences.length > 0 && (
+            <div class="mt-4 space-y-3">
+              {sense.example_sentences.map((sentence: any, sentIdx: number) => (
+                <div class={`sentence-card ${sentIdx >= 10 ? 'hidden-sentence' : ''}`}>
+                  <p class="leading-relaxed">
+                    {sentence.segments.map((seg: any) => {
+                      const isCurrent = seg.slug === pageSlug;
+                      if (seg.slug) {
+                        return <>{isCurrent ? <mark><a
+                          href={`/d/${courseSlug}/${seg.slug}/`}
+                          class="gram-word"
+                          data-gloss={seg.gloss || undefined}
+                        >{seg.text}</a></mark> : <a
+                          href={`/d/${courseSlug}/${seg.slug}/`}
+                          class="gram-word text-accent-foreground"
+                          data-gloss={seg.gloss || undefined}
+                        >{seg.text}</a>}{seg.whitespace}</>;
+                      }
+                      return <><span class="text-muted-foreground/60">{seg.text}</span>{seg.whitespace}</>;
+                    })}
+                  </p>
+                  {sentence.translation && (
+                    <p class="text-sm text-muted-foreground/40 mt-0.5 italic">{sentence.translation}</p>
+                  )}
+                  {sentence.source && (
+                    <p class="text-xs text-muted-foreground/30 mt-0.5">— {sentence.source}</p>
+                  )}
+                </div>
+              ))}
+              {sense.example_sentences.length > 10 && (
+                <button
+                  class="show-more-btn text-sm text-accent-foreground hover:text-foreground cursor-pointer"
+                  data-total={sense.example_sentences.length}
+                >
+                  Show {sense.example_sentences.length - 10} more
+                </button>
+              )}
+            </div>
+          )}
         </div>
-
-        {sense.definition.type === 'Dictionary' && (
-          <div class="space-y-3">
-            {sense.definition.definitions.map((def: any) => (
-              <div class="pl-4 border-l-2 border-muted">
-                <div class="font-medium text-primary">{def.native}</div>
-                {def.note && (
-                  <div class="text-sm text-muted-foreground italic mt-1">{def.note}</div>
-                )}
-                {(def.example_target || def.example_native) && (
-                  <div class="mt-2 text-sm space-y-1">
-                    {def.example_target && (
-                      <div class="text-foreground">
-                        <span class="text-muted-foreground">{targetCode}:</span> {def.example_target}
-                      </div>
-                    )}
-                    {def.example_native && (
-                      <div class="text-muted-foreground">
-                        <span>{nativeCode}:</span> {def.example_native}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {sense.definition.type === 'Phrasebook' && (
-          <div class="pl-4 border-l-2 border-muted">
-            <div class="font-medium text-primary">{sense.definition.meaning}</div>
-            {sense.definition.additional_notes && (
-              <div class="text-sm text-muted-foreground italic mt-1">{sense.definition.additional_notes}</div>
-            )}
-            {(sense.definition.target_language_example || sense.definition.native_language_example) && (
-              <div class="mt-2 text-sm space-y-1">
-                {sense.definition.target_language_example && (
-                  <div class="text-foreground">
-                    <span class="text-muted-foreground">{targetCode}:</span> {sense.definition.target_language_example}
-                  </div>
-                )}
-                {sense.definition.native_language_example && (
-                  <div class="text-muted-foreground">
-                    <span>{nativeCode}:</span> {sense.definition.native_language_example}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {sense.example_sentences.length > 0 && (
-          <div class="mt-4 space-y-2">
-            <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Example sentences
-            </h4>
-            {sense.example_sentences.map((sentence: any, sentIdx: number) => (
-              <div class={`rounded-md border border-border/50 bg-card/50 px-4 py-3 sentence-card ${sentIdx >= 10 ? 'hidden-sentence' : ''}`}>
-                <p class="leading-relaxed">
-                  {sentence.segments.map((seg: any) => {
-                    const isCurrent = seg.slug === pageSlug;
-                    if (seg.slug) {
-                      return <>{isCurrent ? <mark><a
-                        href={`/d/${courseSlug}/${seg.slug}/`}
-                        class="gram-word"
-                        data-gloss={seg.gloss || undefined}
-                      >{seg.text}</a></mark> : <a
-                        href={`/d/${courseSlug}/${seg.slug}/`}
-                        class="gram-word text-accent-foreground"
-                        data-gloss={seg.gloss || undefined}
-                      >{seg.text}</a>}{seg.whitespace}</>;
-                    }
-                    return <><span class="text-muted-foreground/70">{seg.text}</span>{seg.whitespace}</>;
-                  })}
-                </p>
-                {sentence.translation && (
-                  <p class="text-sm text-muted-foreground/50 mt-1 leading-relaxed italic">
-                    {sentence.translation}
-                  </p>
-                )}
-                {sentence.source && (
-                  <p class="text-xs text-muted-foreground/40 mt-1">
-                    — {sentence.source}
-                  </p>
-                )}
-              </div>
-            ))}
-            {sense.example_sentences.length > 10 && (
-              <button
-                class="show-more-btn w-full text-center text-sm text-accent-foreground hover:text-foreground py-2 rounded-md border border-border/50 hover:bg-card/50 transition-colors cursor-pointer"
-                data-total={sense.example_sentences.length}
-              >
-                Show {sense.example_sentences.length - 10} more sentences
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    ))}
+      );
+    })}
   </div>
   <div id="gram-tooltip" popover></div>
 
   <style>
     .hidden-sentence { display: none; }
 
-    /* Highlighted current word */
     mark {
       background: oklch(0.8 0.12 328.6 / 20%);
       color: var(--foreground);
@@ -222,7 +214,6 @@ function posLabel(pos: string): string {
       border-radius: 3px;
     }
 
-    /* Word links in sentences */
     .gram-word {
       text-decoration: none;
       text-underline-offset: 3px;
@@ -232,7 +223,6 @@ function posLabel(pos: string): string {
       text-decoration-thickness: 1px;
     }
 
-    /* Tooltip */
     #gram-tooltip {
       --d: 0.5em;
       --s: 0.8em;
@@ -258,7 +248,6 @@ function posLabel(pos: string): string {
       opacity: 1;
     }
 
-    /* Anchor positioning (modern browsers) */
     @supports (anchor-name: --a) {
       #gram-tooltip {
         position-anchor: --active-word;
@@ -300,7 +289,6 @@ function posLabel(pos: string): string {
         if (activeEl) activeEl.style.removeProperty('anchor-name');
         el.style.anchorName = '--active-word';
         activeEl = el;
-        // Ensure popover is showing
         try { tooltip.showPopover(); } catch {}
       } else {
         const rect = el.getBoundingClientRect();
@@ -325,7 +313,6 @@ function posLabel(pos: string): string {
       }
     }, true);
 
-    // Show more sentences
     document.querySelectorAll('.show-more-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const container = btn.parentElement!;

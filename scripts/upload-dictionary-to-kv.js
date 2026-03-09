@@ -42,26 +42,51 @@ for (const file of fs.readdirSync(SEARCH_DIR)) {
   wranglerPut(`search:${courseSlug}`, path.join(SEARCH_DIR, file));
 }
 
-// Upload course indexes and per-page data
+// Upload per-course data
 for (const file of fs.readdirSync(DATA_DIR)) {
   if (!file.endsWith('.json') || file === 'courses.json') continue;
 
   const courseSlug = file.replace('.json', '');
-  console.log(`Uploading course index: ${courseSlug}`);
-  wranglerPut(`index:${courseSlug}`, path.join(DATA_DIR, file));
+  const courseDir = path.join(DATA_DIR, courseSlug);
+  if (!fs.existsSync(courseDir) || !fs.statSync(courseDir).isDirectory()) continue;
 
-  const pageDir = path.join(DATA_DIR, courseSlug);
-  if (!fs.existsSync(pageDir) || !fs.statSync(pageDir).isDirectory()) continue;
+  // Upload letters manifest
+  const lettersFile = path.join(courseDir, 'letters.json');
+  if (fs.existsSync(lettersFile)) {
+    console.log(`Uploading letters manifest: ${courseSlug}`);
+    wranglerPut(`letters:${courseSlug}`, lettersFile);
+  }
 
+  // Upload top-N lists
+  for (const n of [100, 1000]) {
+    const topFile = path.join(courseDir, `top-${n}.json`);
+    if (fs.existsSync(topFile)) {
+      console.log(`Uploading top-${n}: ${courseSlug}`);
+      wranglerPut(`top:${courseSlug}:${n}`, topFile);
+    }
+  }
+
+  // Upload per-letter indexes
+  const letterDir = path.join(courseDir, 'letter');
+  if (fs.existsSync(letterDir)) {
+    for (const letterFile of fs.readdirSync(letterDir)) {
+      if (!letterFile.endsWith('.json')) continue;
+      const letter = letterFile.replace('.json', '');
+      wranglerPut(`letter:${courseSlug}:${letter}`, path.join(letterDir, letterFile));
+    }
+    console.log(`Uploaded letter indexes for ${courseSlug}`);
+  }
+
+  // Upload per-page data
   console.log(`Uploading pages for ${courseSlug}...`);
-  const pageFiles = fs.readdirSync(pageDir).filter(f => f.endsWith('.json'));
+  const pageFiles = fs.readdirSync(courseDir).filter(f => f.endsWith('.json') && f !== 'letters.json' && f !== 'top-100.json' && f !== 'top-1000.json');
 
   let batch = [];
   let total = 0;
 
   for (const pageFile of pageFiles) {
     const pageSlug = pageFile.replace('.json', '');
-    const value = fs.readFileSync(path.join(pageDir, pageFile), 'utf-8');
+    const value = fs.readFileSync(path.join(courseDir, pageFile), 'utf-8');
 
     batch.push({ key: `page:${courseSlug}:${pageSlug}`, value });
     total++;

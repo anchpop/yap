@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2636322
-Total errors: 622
+Total predictions: 2636229
+Total errors: 621
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -1866,12 +1866,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Tom mange le riz à la cuillère ; Marion, en revanche, préfère les baguettes.
-
-### "c´" + "est" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La dame, assise sur le canapé, c´est ma grand-mère.
 
 ### "de" + "Josie" (1 occurrences)
 - Predicted: Space

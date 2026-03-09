@@ -125,18 +125,8 @@ struct WordDefinition {
     false_cognate: bool,
 }
 
-/// Lightweight course index for the listing page (no sentences).
-#[derive(Serialize)]
-struct CourseIndex {
-    course_slug: String,
-    target_language: String,
-    native_language: String,
-    total_pages: usize,
-    total_senses: usize,
-    pages: Vec<PageIndexEntry>,
-}
-
-#[derive(Serialize)]
+/// Lightweight page entry for listing pages (no sentences).
+#[derive(Serialize, Clone)]
 struct PageIndexEntry {
     slug: String,
     display_text: String,
@@ -145,12 +135,21 @@ struct PageIndexEntry {
     first_sense_preview: Option<SensePreview>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 struct SensePreview {
     is_phrase: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pronunciation: Option<String>,
     definition_preview: String,
+}
+
+/// Letter manifest entry for the course landing page.
+#[derive(Serialize)]
+struct LetterEntry {
+    letter: String,
+    count: usize,
+    /// A few of the most common words starting with this letter.
+    preview_words: Vec<String>,
 }
 
 fn get_definition_preview(sense: &Sense) -> String {
@@ -573,37 +572,86 @@ fn main() -> Result<()> {
             std::fs::write(&page_path, page_json)?;
         }
 
-        // Write index file without example_sentences (for the course listing page)
-        let index_data = CourseIndex {
-            course_slug: course_data.course_slug.clone(),
-            target_language: course_data.target_language.clone(),
-            native_language: course_data.native_language.clone(),
-            total_pages: course_data.total_pages,
-            total_senses: course_data.total_senses,
-            pages: course_data
-                .pages
+        // Build PageIndexEntry list for all pages
+        let all_index_entries: Vec<PageIndexEntry> = course_data
+            .pages
+            .iter()
+            .map(|p| PageIndexEntry {
+                slug: p.slug.clone(),
+                display_text: p.display_text.clone(),
+                best_frequency_rank: p.best_frequency_rank,
+                first_sense_preview: p.senses.first().map(|s| SensePreview {
+                    is_phrase: s.is_phrase,
+                    pronunciation: s.pronunciation.clone(),
+                    definition_preview: get_definition_preview(s),
+                }),
+            })
+            .collect();
+
+        // Write top-100 and top-1000 JSON files (pages are already frequency-sorted)
+        let listing_dir = data_out_dir.join(&slug);
+        for n in [100, 1000] {
+            let top_n: Vec<_> = all_index_entries.iter().take(n).cloned().collect();
+            let top_path = listing_dir.join(format!("top-{n}.json"));
+            std::fs::write(&top_path, serde_json::to_string(&top_n)?)?;
+            eprintln!("Wrote top-{n} to {}", top_path.display());
+        }
+
+        // Group pages by first letter and write per-letter JSON files
+        let letter_dir = listing_dir.join("letter");
+        std::fs::create_dir_all(&letter_dir)?;
+
+        let mut letter_groups: indexmap::IndexMap<String, Vec<PageIndexEntry>> =
+            indexmap::IndexMap::new();
+        for entry in &all_index_entries {
+            let first_char = entry.display_text.chars().next().unwrap_or('?');
+            let letter = if first_char.is_alphabetic() {
+                use unicode_normalization::UnicodeNormalization;
+                first_char
+                    .to_uppercase()
+                    .to_string()
+                    .nfd()
+                    .next()
+                    .unwrap_or(first_char)
+                    .to_uppercase()
+                    .to_string()
+            } else {
+                first_char.to_string()
+            };
+            letter_groups.entry(letter).or_default().push(entry.clone());
+        }
+
+        let mut letters_manifest: Vec<LetterEntry> = Vec::new();
+        for (letter, entries) in &letter_groups {
+            // Write per-letter file
+            let letter_path = letter_dir.join(format!("{letter}.json"));
+            std::fs::write(&letter_path, serde_json::to_string(&entries)?)?;
+
+            // Top 3 most common words for this letter (already frequency-sorted)
+            let preview_words: Vec<String> = entries
                 .iter()
-                .map(|p| PageIndexEntry {
-                    slug: p.slug.clone(),
-                    display_text: p.display_text.clone(),
-                    best_frequency_rank: p.best_frequency_rank,
-                    first_sense_preview: p.senses.first().map(|s| SensePreview {
-                        is_phrase: s.is_phrase,
-                        pronunciation: s.pronunciation.clone(),
-                        definition_preview: get_definition_preview(s),
-                    }),
-                })
-                .collect(),
-        };
-        let output_path = data_out_dir.join(format!("{slug}.json"));
+                .filter(|e| e.first_sense_preview.as_ref().is_none_or(|p| !p.is_phrase))
+                .take(3)
+                .map(|e| e.display_text.clone())
+                .collect();
+
+            letters_manifest.push(LetterEntry {
+                letter: letter.clone(),
+                count: entries.len(),
+                preview_words,
+            });
+        }
+        letters_manifest.sort_by(|a, b| a.letter.cmp(&b.letter));
+
+        let letters_path = listing_dir.join("letters.json");
+        std::fs::write(&letters_path, serde_json::to_string(&letters_manifest)?)?;
+
         eprintln!(
-            "Writing {} pages ({} senses), index to {} ...",
+            "Wrote {} letter indexes + letters manifest ({} pages, {} senses)",
+            letter_groups.len(),
             course_data.total_pages,
             course_data.total_senses,
-            output_path.display()
         );
-        let json = serde_json::to_string(&index_data)?;
-        std::fs::write(&output_path, json)?;
 
         // Generate search index
         let search_dir = Path::new("dictionary-site/public/search");

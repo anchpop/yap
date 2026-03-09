@@ -4,87 +4,56 @@ import Layout from '../../layouts/Layout.astro';
 const { course: courseSlug } = Astro.params;
 const kv = Astro.locals.runtime.env.DICTIONARY_KV;
 
-const courseDataJson = await kv.get(`index:${courseSlug}`);
-if (!courseDataJson) return Astro.redirect('/d/');
-const courseData = JSON.parse(courseDataJson);
+const [lettersJson, coursesJson] = await Promise.all([
+  kv.get(`letters:${courseSlug}`),
+  kv.get('courses'),
+]);
 
-const course = {
-  slug: courseData.course_slug,
-  target_language: courseData.target_language,
-  native_language: courseData.native_language,
-  total_pages: courseData.total_pages,
-};
+if (!lettersJson || !coursesJson) return Astro.redirect('/d/');
 
-// Group pages by first letter
-const letterGroups: Record<string, any[]> = {};
-for (const page of courseData.pages) {
-  const firstChar = page.display_text.charAt(0).toUpperCase();
-  const letter = /[A-ZÀ-Ö]/.test(firstChar) ? firstChar.normalize('NFD').charAt(0).toUpperCase() : firstChar;
-  if (!letterGroups[letter]) letterGroups[letter] = [];
-  letterGroups[letter].push(page);
-}
+const letters = JSON.parse(lettersJson);
+const courses = JSON.parse(coursesJson);
+const courseMeta = courses.find((c: any) => c.slug === courseSlug);
+if (!courseMeta) return Astro.redirect('/d/');
 
-const sortedLetters = Object.keys(letterGroups).sort((a, b) => a.localeCompare(b));
-
-function getDefinitionPreview(page: any): string {
-  return page.first_sense_preview?.definition_preview ?? '';
-}
+const totalPages = letters.reduce((sum: number, l: any) => sum + l.count, 0);
 ---
 
 <Layout
-  title={`${course.target_language} → ${course.native_language} Dictionary`}
-  description={`Browse ${course.total_pages.toLocaleString()} ${course.target_language} words and phrases with ${course.native_language} translations, examples, and pronunciation.`}
+  title={`${courseMeta.target_language} → ${courseMeta.native_language} Dictionary`}
+  description={`Browse ${totalPages.toLocaleString()} ${courseMeta.target_language} words and phrases with ${courseMeta.native_language} translations, examples, and pronunciation.`}
 >
   <nav class="text-sm text-muted-foreground mb-4">
     <a href="/d/" class="hover:text-accent-foreground">Dictionaries</a>
     <span class="mx-1.5 opacity-50">›</span>
-    {course.target_language} → {course.native_language}
+    {courseMeta.target_language} → {courseMeta.native_language}
   </nav>
 
   <div class="mb-6">
-    <h1 class="text-3xl font-bold">{course.target_language} → {course.native_language} Dictionary</h1>
-    <p class="text-muted-foreground mt-1">{course.total_pages.toLocaleString()} words and phrases, ordered by frequency</p>
+    <h1 class="text-3xl font-bold">{courseMeta.target_language} → {courseMeta.native_language} Dictionary</h1>
+    <p class="text-muted-foreground mt-1">{totalPages.toLocaleString()} words and phrases</p>
   </div>
 
-  <nav class="flex flex-wrap gap-1 mb-6">
-    {sortedLetters.map((letter) => (
-      <a href={`#${letter}`} class="inline-flex items-center justify-center w-8 h-8 rounded-sm bg-card border text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors no-underline">
-        {letter}
+  <div class="flex gap-3 mb-8">
+    <a href={`/d/${courseSlug}/top-100/`} class="inline-flex items-center gap-1.5 rounded-lg border bg-card px-4 py-2 text-sm font-medium hover:bg-secondary transition-colors no-underline text-card-foreground">
+      Top 100
+    </a>
+    <a href={`/d/${courseSlug}/top-1000/`} class="inline-flex items-center gap-1.5 rounded-lg border bg-card px-4 py-2 text-sm font-medium hover:bg-secondary transition-colors no-underline text-card-foreground">
+      Top 1000
+    </a>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+    {letters.map((l: any) => (
+      <a href={`/d/${courseSlug}/letter/${l.letter}/`} class="rounded-lg border bg-card p-3 hover:bg-secondary transition-colors no-underline text-card-foreground group">
+        <div class="flex items-baseline justify-between mb-1">
+          <span class="text-lg font-bold">{l.letter}</span>
+          <span class="text-xs text-muted-foreground">{l.count}</span>
+        </div>
+        {l.preview_words.length > 0 && (
+          <p class="text-xs text-muted-foreground truncate">{l.preview_words.join(', ')}</p>
+        )}
       </a>
     ))}
-  </nav>
-
-  {sortedLetters.map((letter) => (
-    <section id={letter} class="mb-8">
-      <h2 class="text-lg font-bold mb-3">
-        {letter}
-        <span class="text-sm font-normal text-muted-foreground ml-2">({letterGroups[letter].length})</span>
-      </h2>
-      <div class="space-y-2">
-        {letterGroups[letter].slice(0, 200).map((page: any) => (
-          <a href={`/d/${course.slug}/${page.slug}/`} class="block rounded-lg border bg-card p-4 hover:bg-secondary transition-colors no-underline text-card-foreground">
-            <div class="flex items-baseline justify-between gap-2 mb-1">
-              <h3 class="text-xl font-semibold">
-                {page.display_text}
-                {page.first_sense_preview?.is_phrase && (
-                  <span class="text-sm text-muted-foreground/60 font-normal ml-2">(phrase)</span>
-                )}
-              </h3>
-              {page.first_sense_preview?.pronunciation && (
-                <span class="text-sm text-muted-foreground shrink-0">{page.first_sense_preview.pronunciation}</span>
-              )}
-            </div>
-            <div class="pl-4 border-l-2 border-muted">
-              <div class="font-medium text-primary">{getDefinitionPreview(page)}</div>
-            </div>
-          </a>
-        ))}
-      </div>
-      {letterGroups[letter].length > 200 && (
-        <p class="text-sm text-muted-foreground py-3">
-          ...and {letterGroups[letter].length - 200} more entries starting with "{letter}"
-        </p>
-      )}
-    </section>
-  ))}
+  </div>
 </Layout>

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2705426
-Total errors: 2099
+Total predictions: 2705381
+Total errors: 2094
 Accuracy: 99.92%
 
 ## Error Patterns (sorted by frequency)
@@ -2689,12 +2689,6 @@ Accuracy: 99.92%
 - Examples:
   - Nein, sie verließ die Stadt in ihrem eigenen Auto - ihr Chef sah sie.
 
-### "Azevedo" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Azevedo´s Team geht zum Bischoffshaus.
-
 ### "B" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2742,12 +2736,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Ein ausgewogenes Verhältnis zwischen Berufs- und Privatleben ist wichtig.
-
-### "Bira" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bira´s.
 
 ### "Blinden" + "-" (1 occurrences)
 - Predicted: None
@@ -4177,12 +4165,6 @@ Accuracy: 99.92%
 - Examples:
   - Oliva !
 
-### "Oliveira" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ich habe schon Oliveira´s Jungs bezahlt.
-
 ### "Onkel" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4362,12 +4344,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Und dann schrieb Vater, er könne mir die Reise - nach England nicht bezahlen.
-
-### "Renan" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Renan´s nimmt Tamandare Street.
 
 ### "Richie" + "-" (1 occurrences)
 - Predicted: None
@@ -7308,12 +7284,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Müssen wir noch lange warten ?
-
-### "warten" + "`" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wollte Tom, dass wir auf ihn warten`?
 
 ### "weg" + "." (1 occurrences)
 - Predicted: None

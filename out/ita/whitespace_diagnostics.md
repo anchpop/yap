@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2329378
-Total errors: 2909
+Total predictions: 2329390
+Total errors: 2907
 Accuracy: 99.88%
 
 ## Error Patterns (sorted by frequency)
@@ -6248,12 +6248,6 @@ Accuracy: 99.88%
 - Examples:
   - Zitti !
 
-### "`" + "è" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ecco cos`è!
-
 ### "a" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7615,12 +7609,6 @@ Accuracy: 99.88%
 - Actual: Space
 - Examples:
   - Damon Hill aveva vinto delle gare ed era in corsa ?
-
-### "cos" + "`" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ecco cos`è!
 
 ### "coscienza" + "!" (1 occurrences)
 - Predicted: None

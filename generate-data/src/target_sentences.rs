@@ -518,37 +518,26 @@ pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
 }
 
 /// Check if a sentence has encoding corruption or garbage characters that make it unusable.
-///
-/// This catches:
-/// - Literal backslash escapes (`\n`, `\h`) from corrupted subtitle data
-/// - MacRoman encoding artifacts (`ˆ` U+02C6 instead of `à`, `Ž` U+017D instead of `é`)
-/// - C1 control characters (U+0080-U+009F) indicating mojibake (e.g., U+009C instead of `œ`)
-/// - `@` symbol which is not a real word
 fn has_encoding_corruption(sentence: &str) -> bool {
-    // Literal backslash escapes (e.g., \n, \h from corrupted subtitles)
-    if sentence.contains('\\') {
-        return true;
-    }
-
-    // @ symbol (not a real word)
-    if sentence.contains('@') {
-        return true;
-    }
-
-    // MacRoman encoding artifacts
-    if sentence.contains('\u{02C6}') || sentence.contains('\u{017D}') {
-        return true;
-    }
-
-    // C1 control characters (U+0080-U+009F) indicate mojibake
-    if sentence
-        .chars()
-        .any(|c| ('\u{0080}'..='\u{009F}').contains(&c))
-    {
-        return true;
-    }
-
-    false
+    sentence.chars().any(|c| {
+        matches!(
+            c,
+            // Literal backslash (from corrupted subtitle escapes like \n, \h)
+            '\\' |
+        // @ symbol (not a real word)
+        '@' |
+        // MacRoman encoding artifacts (ˆ instead of à, Ž instead of é)
+        '\u{02C6}' | '\u{017D}' |
+        // Backtick and acute accent used as apostrophe in corrupted subtitles
+        '`' | '\u{00B4}'
+        ) || matches!(c,
+            // C1 control characters indicate mojibake (e.g., U+009C instead of œ)
+            '\u{0080}'..='\u{009F}' |
+            // Greek letter homoglyphs mixed into Latin text (subtitle copy-protection).
+            // These look identical to Latin letters but are different Unicode codepoints.
+            '\u{0370}'..='\u{03FF}'
+        )
+    })
 }
 
 /// Check if a sentence is "proper" - language-specific validation

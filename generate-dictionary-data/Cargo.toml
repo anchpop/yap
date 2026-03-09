@@ -12,3 +12,4 @@ serde_json.workspace = true
 anyhow = "1.0.98"
 rustc-hash = "2.1"
 indexmap.workspace = true
+unicode-normalization.workspace = true

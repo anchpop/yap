@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2485822
-Total errors: 558
+Total predictions: 2485770
+Total errors: 552
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -1635,12 +1635,6 @@ Accuracy: 99.98%
 - Examples:
   - Sou o Xia Xiang -Sou o Xu Da Shan.
 
-### "Zhu" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Chama-se Zhu´s, em Kowloon.
-
 ### "a" + "Igo" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2409,12 +2403,6 @@ Accuracy: 99.98%
 - Examples:
   - Apanhou de novo ?
 
-### "n´" + "ão" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Tom disse à Mary que n´ão havia nada na geladeira.
-
 ### "não" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2775,35 +2763,11 @@ Accuracy: 99.98%
 - Examples:
   - Como vão ?
 
-### "x" + "´" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Substitua estes números por ´x´ e ´y´.
-
-### "y" + "´" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Substitua estes números por ´x´ e ´y´.
-
 ### "¡" + "o" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Não acione¡ o Cronômetro na torre.
-
-### "´" + "x" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Substitua estes números por ´x´ e ´y´.
-
-### "´" + "y" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Substitua estes números por ´x´ e ´y´.
 
 ### "É" + "verdade" (1 occurrences)
 - Predicted: Space

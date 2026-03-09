@@ -1517,6 +1517,7 @@ dependencies = [
  "rustc-hash",
  "serde",
  "serde_json",
+ "unicode-normalization",
 ]
 
 [[package]]

@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1791973
-Total errors: 1080
-Accuracy: 99.94%
+Total predictions: 1788985
+Total errors: 827
+Accuracy: 99.95%
 
 ## Error Patterns (sorted by frequency)
 
@@ -13,14 +13,6 @@ Accuracy: 99.94%
   - And l cannot live out of this country.
   - And we can no longer stay silent when he tells us that we cannot speak.
   - And you cannot track that, not with a thousand bloodhounds.
-
-### "do" + "n´t" (20 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Come on, girls, don´t leave me hanging here.
-  - Fine, but l don´t know if I have that much cash.
-  - I don´t handle her schedule.
 
 ### "do" + "n’t" (16 occurrences)
 - Predicted: Space
@@ -38,30 +30,6 @@ Accuracy: 99.94%
   - Hello, how areyou?
   - How areyou, Sister Rosa?
 
-### "I" + "´ll" (14 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Answer me or I´ll ask her myself.
-  - I´ll be there on time, don´t worry.
-  - I´ll be watching.
-
-### "I" + "´m" (14 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - For going to prison, I´m getting the same as your lawyer?
-  - I´m being polite, sir.
-  - I´m describing reality, where do you see violence?
-
-### "It" + "´s" (12 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - It´s a nightclub for gays.
-  - It´s about a rape.
-  - It´s been a terrible night, but now l want to relax and enjoy my wedding.
-
 ### "gon" + "na" (11 occurrences)
 - Predicted: Space
 - Actual: None
@@ -69,14 +37,6 @@ Accuracy: 99.94%
   - Everybody is gonna know about this sooner or later.
   - Haters gonna hate.
   - How are you gonna deal with it?
-
-### "won" + "´t" (10 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I won´t do you anything.
-  - I won´t pay one more penny.
-  - It´s shatterproof, you won´t break it!
 
 ### "does" + "n’t" (9 occurrences)
 - Predicted: Space
@@ -86,14 +46,6 @@ Accuracy: 99.94%
   - Gustavo doesn’t remember.
   - He doesn’t get the responsibilities he’s been entrusted with.
 
-### "didn" + "´t" (8 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - And didn´t you have a fight with Marcus?
-  - I didn´t do anything!
-  - I didn´t use anything.
-
 ### "do" + "n't" (8 occurrences)
 - Predicted: Space
 - Actual: None
@@ -101,14 +53,6 @@ Accuracy: 99.94%
   - I don't believe it.
   - I don't know the answer.
   - I don't think so.
-
-### "it" + "´s" (8 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No, I think it´s fine.
-  - Stay out or it´s hell!
-  - Tell daddy it´s nice.
 
 ### "-" + "the" (7 occurrences)
 - Predicted: None
@@ -125,38 +69,6 @@ Accuracy: 99.94%
   - Areyou all right?
   - Areyou alone?
   - Areyou doing everything the doctor told you?
-
-### "Don" + "´t" (7 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t move, dammit!
-  - Don´t move, don´t move.
-  - Don´t tell me this is all mommy´s idea.
-
-### "That" + "´s" (7 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - That´s awful.
-  - That´s horrible!
-  - That´s okay.
-
-### "n" + "´t" (7 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t get so upset.
-  - Don´t move, don´t move.
-  - Don´t say a word!
-
-### "you" + "´re" (7 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Clearly you´re not all right.
-  - For once in your miserable life, you´re doing something worthwhile.
-  - I don´t know what you´re talking about.
 
 ### "-" + "I" (6 occurrences)
 - Predicted: None
@@ -214,14 +126,6 @@ Accuracy: 99.94%
   - For several months, so-- You know.
   - I told you -- You can go piss yourself.
 
-### "Let" + "´s" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Let´s do it.
-  - Let´s do something else.
-  - Let´s go!
-
 ### "of" + "you" (5 occurrences)
 - Predicted: Space
 - Actual: None
@@ -237,14 +141,6 @@ Accuracy: 99.94%
   - Are you out ofyour mind?
   - He was a friend ofyour husband.
   - None ofyour business.
-
-### "that" + "´s" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - But it sounded like that´s what you were implying.
-  - Damn, that´s nice.
-  - Now that´s an answer.
 
 ### "," + "“" (4 occurrences)
 - Predicted: None
@@ -294,14 +190,6 @@ Accuracy: 99.94%
   - But it takes a long time-- a very long time.
   - There was a man there-- a queer sort of person.
 
-### "Do" + "n" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t get so upset.
-  - Don´t say a word!
-  - Don´t touch him, please.
-
 ### "I" + "'m" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -310,14 +198,6 @@ Accuracy: 99.94%
   - I'm gonna make dinner.
   - I'm gonna tell you a secret.
 
-### "I" + "´ve" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I´ve been paying for everything for years.
-  - I´ve been trying to get your attention for a while.
-  - I´ve got one thing to say.
-
 ### "If" + "you" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -325,38 +205,6 @@ Accuracy: 99.94%
   - Ifyou know, why ask?
   - Ifyou need money, just ask me.
   - Ifyou only knew.
-
-### "It" + "`s" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - It`s a gay bar.
-  - It`s god damn impossible, they are everywhere.
-  - It`s going totally wrong.
-
-### "There" + "´s" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - There´s a cosmic connection here.
-  - There´s a taxi!
-  - There´s no expiration date.
-
-### "You" + "´re" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You´re not being fair.
-  - You´re not?
-  - You´re ruining the party the whole evening.
-
-### "can" + "´t" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I can´t see it, can you send a patrol car, please?
-  - I swear l can´t remember.
-  - José, l can´t thank you enough.
 
 ### "did" + "n’t" (4 occurrences)
 - Predicted: Space
@@ -454,46 +302,6 @@ Accuracy: 99.94%
   - Should I call Dr Vega; -Carry on with what you are doing.
   - Who named you Lydia; -My father.
 
-### "Can" + "´t" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Can´t we do it again?
-  - Can´t we leave him out?
-  - Can´t you get them to put me down!
-
-### "Do" + "n`t" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don`t insult me or I will beat you up.
-  - Don`t you know him?
-  - Don`t you know some bars?
-
-### "Don" + "`t" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don`t you have a phone?
-  - Don`t you have slit-eye friends?
-  - Don`t you know him either?
-
-### "couldn" + "´t" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - And l bumped into something, l couldn´t tell what it was.
-  - He couldn´t stand it.
-  - The eye witnesses couldn´t identify the car brand nor the license plate.
-
-### "do" + "n" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t move, don´t move.
-  - If you don´t, interests will start accumulating.
-  - Why don´t we use this break to cut the cake?
-
 ### "do" + "you" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -501,22 +309,6 @@ Accuracy: 99.94%
   - How doyou want to celebrateyour birthday?
   - What doyou expect me to do?
   - Why doyou dislike Lola so much?
-
-### "he" + "´s" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - And he´s running for mayor!
-  - He has never had any trouble with the law and he´s the father of two.
-  - No, he´s not famous.
-
-### "there" + "´s" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - And there´s my cut too.
-  - Gentlemen, there´s no time for arguing.
-  - Sir, there´s a lot of people here.
 
 ### "to" + "your" (3 occurrences)
 - Predicted: Space
@@ -526,22 +318,6 @@ Accuracy: 99.94%
   - Haveyou spoken toyour mother?
   - What happened toyour face?
 
-### "we" + "´ll" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - But we´ll take her in just to make sure that no tendons are torn.
-  - My client and l are finished here, we´ll see each other again in court.
-  - Your mom is right, we´ll fix this.
-
-### "wouldn" + "´t" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - He wouldn´t leave her alone so we moved here.
-  - He wouldn´t survive in prison.
-  - You wouldn´t earn that in a lifetime.
-
 ### "you" + "-" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -549,14 +325,6 @@ Accuracy: 99.94%
   - And you -you call that clean?
   - That young man who was with you - where can I find him?
   - We - or rather you - will be drawn in.
-
-### "you" + "´ll" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - And l´m such a fool to think one day you´ll change.
-  - From now on, you´ll be the middle man.
-  - Maybe no one told you that, but you´ll go to jail anyway.
 
 ### "-" + "The" (2 occurrences)
 - Predicted: None
@@ -656,27 +424,6 @@ Accuracy: 99.94%
   - Don't be late.
   - Don't touch that.
 
-### "Here" + "´s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Here´s the cake.
-  - Here´s your prince.
-
-### "I" + "`m" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I`m not a fag.
-  - Well, I`m waiting.
-
-### "I" + "´d" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I´d like to discuss it with my wife.
-  - I´d like to know, how quick can you get here?
-
 ### "It" + "'s" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -705,26 +452,12 @@ Accuracy: 99.94%
   - They're gonna need help.
   - They're gonna win the game.
 
-### "They" + "´re" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - They´re all vultures!
-  - They´re letting you go, Simón.
-
 ### "We" + "'re" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - We're gonna be late.
   - We're gonna miss the bus.
-
-### "What" + "´s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - What´s happening?
-  - What´s that noise outside?
 
 ### "about" + "you" (2 occurrences)
 - Predicted: Space
@@ -739,13 +472,6 @@ Accuracy: 99.94%
 - Examples:
   - How doyou want to celebrateyour birthday?
   - To celebrateyour success last night, bitch.
-
-### "company" + "´s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - There are questions about the tow truck company´s concession.
-  - Your name is all over the news, along with the company´s name.
 
 ### "credentials" + "?" (2 occurrences)
 - Predicted: None
@@ -803,34 +529,6 @@ Accuracy: 99.94%
   - I guess that was the attraction, ifyou know what I mean.
   - Well, just let me know ifyou need somebody to talk to, okay?
 
-### "isn" + "´t" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - This isn´t a joke.
-  - You that isn´t him .
-
-### "it" + "`s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Guys who fool around a bit and then hear it`s something bad.
-  - That it`s dramatic.
-
-### "l" + "´m" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - And l´m such a fool to think one day you´ll change.
-  - And l´m tired.
-
-### "let" + "´s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - All the rest may be bullshit, but let´s prove the ring tradition comes true!
-  - Romi, please, let´s not make a scene here.
-
 ### "men" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -886,20 +584,6 @@ Accuracy: 99.94%
 - Examples:
   - I thoughtyou were alone.
   - I thoughtyou were dead, bitch!
-
-### "victim" + "´s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Now we´re going to speak to the victim´s husband.
-  - Right, so who will compensate the victim´s family?
-
-### "we" + "´re" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Attention, we´re detonating!
-  - Now we´re going to speak to the victim´s husband.
 
 ### "world" + "-" (2 occurrences)
 - Predicted: None
@@ -1063,12 +747,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - This is - This is bullshit.
-
-### "-" + "We" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You won´t get through - We want a taxi.
 
 ### "-" + "Where" (1 occurrences)
 - Predicted: None
@@ -1664,12 +1342,6 @@ Accuracy: 99.94%
 - Examples:
   - In real life I was an Omega among Alphas .
 
-### "Aren" + "`t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Aren`t you a fag?
-
 ### "Bastard" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1687,18 +1359,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Beforeyou came, we were saying thatyou could take my place.
-
-### "Did" + "n´t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Didn´t you live together?
-
-### "Do" + "n´t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t play naive, as if you hadn´t noticed.
 
 ### "Don Ciccio Matara" + "-" (1 occurrences)
 - Predicted: None
@@ -1741,18 +1401,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - He's gonna be angry.
-
-### "He" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - He´s worked for the family for what?
-
-### "How" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - How´s it going outside?
 
 ### "Howl" + "!" (1 occurrences)
 - Predicted: None
@@ -1934,18 +1582,6 @@ Accuracy: 99.94%
 - Examples:
   - Really !
 
-### "Romi" + "´´" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t ´´Romi´´ me!
-
-### "Roni" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Roni´s wallet was stolen last night and he didn´t even realize it.
-
 ### "Rosalia" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1958,29 +1594,11 @@ Accuracy: 99.94%
 - Examples:
   - Hi, Schutte - No names!
 
-### "Seijas" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Seijas´s partners aren´t too happy.
-
-### "She" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - She´s out for lunch.
-
 ### "Shooting" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Shooting - as in, hunting?
-
-### "Somebody" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Somebody´s got to be responsible.
 
 ### "Special" + "-" (1 occurrences)
 - Predicted: None
@@ -1999,12 +1617,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - See, the sun-synch orbit needs to be in alignment with the radiometers of TRMM .
-
-### "That" + "`s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - That`s clear.
 
 ### "The" + "jacket" (1 occurrences)
 - Predicted: Space
@@ -2042,18 +1654,6 @@ Accuracy: 99.94%
 - Examples:
   - Theywere all missing a half.
 
-### "They" + "´ll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - They´ll think the cholesterol killed him.
-
-### "Today" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Today´s special is lentils and rice stew.
-
 ### "Want" + "your" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2072,24 +1672,6 @@ Accuracy: 99.94%
 - Examples:
   - We - or rather you - will be drawn in.
 
-### "We" + "´d" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - We´d better wipe out the whole family tree.
-
-### "We" + "´ll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - We´ll do everything we can.
-
-### "We" + "´re" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - We´re going to The rectum!
-
 ### "West" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2101,12 +1683,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Wh— why?
-
-### "What" + "`s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - What`s happening?
 
 ### "Whywere" + "you" (1 occurrences)
 - Predicted: Space
@@ -2156,29 +1732,11 @@ Accuracy: 99.94%
 - Examples:
   - You're gonna be fine.
 
-### "You" + "`ll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You`ll get aids straigh away, fag.
-
 ### "You" + "could" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Youcouldgivehim a transplant?
-
-### "You" + "´d" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You´d had some whiskey.
-
-### "You" + "´ve" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You´ve never been fucked in your ass like this, huh?
 
 ### "a" + "joyous" (1 occurrences)
 - Predicted: Space
@@ -2276,12 +1834,6 @@ Accuracy: 99.94%
 - Examples:
   - We areJew-haters because we are proud to be Aryans.
 
-### "aren" + "´t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Seijas´s partners aren´t too happy.
-
 ### "audience" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2347,12 +1899,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - You think you can ?
-
-### "can" + "`t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - But you can`t forget the joy and the happiness.
 
 ### "can" + "jump" (1 occurrences)
 - Predicted: Space
@@ -2420,12 +1966,6 @@ Accuracy: 99.94%
 - Examples:
   - How dareyou bring a whore here!
 
-### "daughter" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You missed your daughter´s birthday!
-
 ### "day" + "you" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2468,12 +2008,6 @@ Accuracy: 99.94%
 - Examples:
   - Dahm dahm, dahm do dahm, ooby do - No.
 
-### "do" + "n`t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I don`t know a Rectum.
-
 ### "doctorate" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2497,12 +2031,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Do you want a drink ?
-
-### "driver" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - José, can you please sit in the driver´s seat?
 
 ### "dump" + "you" (1 occurrences)
 - Predicted: Space
@@ -2540,23 +2068,11 @@ Accuracy: 99.94%
 - Examples:
   - What can cheer up, soften, color everything - a big love.
 
-### "everything" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No, everything´s fine.
-
 ### "extraordinary" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - It was extraordinary !
-
-### "family" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - My family´s lawyer even suggested I press charges against you.
 
 ### "far" + "!" (1 occurrences)
 - Predicted: None
@@ -2666,23 +2182,11 @@ Accuracy: 99.94%
 - Examples:
   - I gotyou a spring for the gramophone at HQ.
 
-### "groundskeeper" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - The groundskeeper´s?
-
 ### "guy" + "/" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - White guy/black man.
-
-### "guy" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - That guy´s from my hometown.
 
 ### "ha" + "-" (1 occurrences)
 - Predicted: None
@@ -2714,12 +2218,6 @@ Accuracy: 99.94%
 - Examples:
   - Here, let me haveJasper.
 
-### "haven" + "´t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Besides, we still haven´t had the hot pastrami.
-
 ### "heretic" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2731,12 +2229,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Nina hates everyone, including herselfand me.
-
-### "him" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You that isn´t him .
 
 ### "homeland" + "—" (1 occurrences)
 - Predicted: Space
@@ -2827,12 +2319,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - You call ityour face?
-
-### "it" + "´ll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Today was the tow truck, yesterday was traffic, tomorrow it´ll be the rally.
 
 ### "jury" + "-" (1 occurrences)
 - Predicted: None
@@ -2935,12 +2421,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - None of this ping-pong mishegoss , okay?
-
-### "mommy" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t tell me this is all mommy´s idea.
 
 ### "moral" + "-" (1 occurrences)
 - Predicted: None
@@ -3194,12 +2674,6 @@ Accuracy: 99.94%
 - Examples:
   - Nobody has a preference ?
 
-### "prison" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Besides, prison´s not that bad.
-
 ### "quarter" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3278,12 +2752,6 @@ Accuracy: 99.94%
 - Examples:
   - Anti-Epidémic section ?
 
-### "she" + "´ll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Yes, she´ll love it.
-
 ### "shot" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3296,23 +2764,11 @@ Accuracy: 99.94%
 - Examples:
   - Maybe you shouldjust take a break.
 
-### "shouldn" + "´t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You shouldn´t have.
-
 ### "sick" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - That makes me sick !
-
-### "sir" + "´´" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You said ´´sir´´ and I sank to the fifth circle of hell.
 
 ### "sliced" + "-" (1 occurrences)
 - Predicted: None
@@ -3362,12 +2818,6 @@ Accuracy: 99.94%
 - Examples:
   - Howam Igoing to tellhim?
 
-### "that" + "`s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Fist me, that`s much better.
-
 ### "that" + "must" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3379,12 +2829,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Beforeyou came, we were saying thatyou could take my place.
-
-### "that" + "´d" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Yes, that´d be the best.
 
 ### "that" + "—" (1 occurrences)
 - Predicted: Space
@@ -3434,29 +2878,11 @@ Accuracy: 99.94%
 - Examples:
   - Is my daughter in there⁈ Motherfuckers!
 
-### "they" + "´ll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Most of the cuts are superficial, they´ll heal quickly.
-
-### "they" + "´re" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - We have to do something, they´re both eating.
-
 ### "think" + "you" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Manuela, I thinkyou owe us an explanation.
-
-### "through" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You won´t get through - We want a taxi.
 
 ### "to" + "join" (1 occurrences)
 - Predicted: Space
@@ -3536,12 +2962,6 @@ Accuracy: 99.94%
 - Examples:
   - I wasjoking.
 
-### "wasn" + "´t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - The curb wasn´t painted.
-
 ### "waves" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3553,12 +2973,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - What wereyou thinking?
-
-### "who" + "´s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ariel, who´s that girl with the long hair?
 
 ### "wicked" + "!" (1 occurrences)
 - Predicted: None
@@ -3584,12 +2998,6 @@ Accuracy: 99.94%
 - Examples:
   - You will join us, won’t you?
 
-### "won" + "`t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I won`t save you.
-
 ### "work" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3601,12 +3009,6 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - And with both of us working - You know how it is.
-
-### "wouldn" + "`t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I told you those bastards wouldn`t pay.
 
 ### "years" + "I" (1 occurrences)
 - Predicted: Space
@@ -3632,12 +3034,6 @@ Accuracy: 99.94%
 - Examples:
   - Who are you ?
 
-### "you" + "`ll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I hope you`ll be miserable in jail and that they fuck you in the ass.
-
 ### "you" + "do" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3655,12 +3051,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - No, youlookbetterthan ever.
-
-### "you" + "´d" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You end up with no deal and you´d go to prison for perjury.
 
 ### "your" + "jacket" (1 occurrences)
 - Predicted: Space
@@ -3697,18 +3087,6 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - Pushing yourselfhard is the only way to become famous one day.
-
-### "´´" + "Romi" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Don´t ´´Romi´´ me!
-
-### "´´" + "sir" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - You said ´´sir´´ and I sank to the fifth circle of hell.
 
 ### "‐" + "hand" (1 occurrences)
 - Predicted: Space
