@@ -112,6 +112,7 @@ export function TranscriptionChallenge({
   deck,
 }: TranscriptionChallengeProps) {
   const [userInputs, setUserInputs] = useState<Map<number, string>>(new Map());
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   const movieData = useMemo(() => {
     if (!challenge.movie_titles || challenge.movie_titles.length === 0) {
@@ -475,9 +476,10 @@ export function TranscriptionChallenge({
                   autoplayed={autoplayed}
                   setAutoplayed={setAutoplayed}
                   playPreAudio={true}
+                  onPlayingChange={setIsAudioPlaying}
                 />
 
-                <AudioVisualizer />
+                <AudioVisualizer isPlaying={isAudioPlaying} />
               </div>
 
               <p className="text-sm text-muted-foreground">

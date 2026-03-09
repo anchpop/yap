@@ -22,6 +22,7 @@ interface AudioButtonProps {
   autoplayed?: boolean;
   setAutoplayed?: () => void;
   playPreAudio?: boolean;
+  onPlayingChange?: (isPlaying: boolean) => void;
 }
 
 export function AudioButton({
@@ -34,6 +35,7 @@ export function AudioButton({
   autoplayed,
   setAutoplayed,
   playPreAudio = false,
+  onPlayingChange,
 }: AudioButtonProps) {
   "use memo";
   const [isPlaying, setIsPlaying] = useState(false);
@@ -41,10 +43,11 @@ export function AudioButton({
   const isPlayingRef = useRef(isPlaying);
   const clickedRef = useRef(false);
 
-  // Keep ref in sync with state
+  // Keep ref in sync with state and notify parent
   useEffect(() => {
     isPlayingRef.current = isPlaying;
-  }, [isPlaying]);
+    onPlayingChange?.(isPlaying);
+  }, [isPlaying, onPlayingChange]);
 
   // Show toast when authentication is needed
   useEffect(() => {

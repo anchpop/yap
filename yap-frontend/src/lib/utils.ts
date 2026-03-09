@@ -107,7 +107,15 @@ export async function playAudio(audioRequest: AudioRequest, accessToken: string 
     const audioUrl = URL.createObjectURL(audioBlob);
     
     const audio = new Audio(audioUrl);
-    
+
+    // Connect to Web Audio API analyser for visualizations
+    try {
+      const { connectAudioElement } = await import('@/lib/audio-analyser');
+      connectAudioElement(audio);
+    } catch {
+      // Analyser is optional - audio still plays without it
+    }
+
     return new Promise((resolve, reject) => {
       let errorHandled = false;
 
