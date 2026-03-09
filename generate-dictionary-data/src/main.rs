@@ -272,6 +272,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
             .collect();
 
         let is_phrase = gram.len() > 1;
+        let pronunciation = if is_phrase { None } else { pronunciation };
 
         // Extract morphology and prefix for single-word dictionary entries
         let (morphology, prefix) = if !is_phrase {
