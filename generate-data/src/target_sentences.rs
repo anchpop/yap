@@ -297,34 +297,14 @@ fn load_movie_sentences(
 }
 
 /// Check if subtitle lines pass the language sanity check.
-/// All sanity words for the language must appear at least once.
 fn passes_language_sanity_check(subtitles: &[Subtitle], language: Language) -> bool {
-    let sanity_words = language.subtitle_sanity_words();
-    if sanity_words.is_empty() {
-        return true;
-    }
-
-    let all_text: String = subtitles
-        .iter()
-        .map(|s| s.sentence.as_str())
-        .collect::<Vec<_>>()
-        .join(" ");
-    let all_text_lower = all_text.to_lowercase();
-
-    for &word in sanity_words {
-        let found = match language.writing_system() {
-            language_utils::WritingSystem::Latin | language_utils::WritingSystem::Cyrillic => {
-                all_text_lower
-                    .split(|c: char| !c.is_alphanumeric() && c != '\'')
-                    .any(|w| w == word)
-            }
-            _ => all_text_lower.contains(word),
-        };
-        if !found {
-            return false;
+    match language.check_subtitle_sanity(subtitles.iter().map(|s| s.sentence.as_str())) {
+        Ok(()) => true,
+        Err(reason) => {
+            eprintln!("  Sanity check failed: {reason}");
+            false
         }
     }
-    true
 }
 
 /// Split subtitles that contain multiple speakers' dialogue or multiple sentences.

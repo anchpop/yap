@@ -2548,6 +2548,160 @@ impl Language {
             Language::Italian => &["che", "di", "non", "il"],
         }
     }
+
+    /// Substrings that should NEVER appear in properly-encoded subtitles for this language.
+    /// Used to detect systematic character corruption (e.g. t→r substitution from bad OCR/encoding).
+    /// If ANY of these substrings appear frequently, the subtitle file is corrupt.
+    /// Returns (forbidden_substring, what_it_should_be) pairs.
+    pub fn subtitle_corruption_markers(&self) -> &'static [(&'static str, &'static str)] {
+        match self {
+            // t→r corruption: "est"→"esr", "être"→"êrre", "tout"→"rour", "cette"→"cerre"
+            // OCR corruption: "Il"→"II" (two capital I's), "Il"→"ll", "l'"→"I'" (capital I for l)
+            Language::French => &[
+                ("c'esr", "c'est"),
+                ("qu'esr", "qu'est"),
+                ("êrre", "être"),
+                ("rour", "tout"),
+                ("cerre", "cette"),
+                ("conrre", "contre"),
+                ("enrre", "entre"),
+                ("aurre", "autre"),
+                ("perir", "petit"),
+                ("norre", "notre"),
+                ("vorre", "votre"),
+                // OCR: two capital I's instead of "Il"
+                ("II ", "Il "),
+                // OCR: two lowercase l's instead of "Il"
+                (" ll ", " Il "),
+                // OCR: capital I instead of lowercase l before apostrophe
+                // Detected separately via ocr_i_apostrophe check in check_subtitle_sanity
+            ],
+            // t→r corruption: "the"→"rhe", "that"→"rhar", "this"→"rhis", "it"→"ir"
+            Language::English => &[
+                (" rhe ", " the "),
+                ("rhar", "that"),
+                ("rhis", "this"),
+                ("rhere", "there"),
+                ("rhey", "they"),
+                ("whar", "what"),
+                ("abour", "about"),
+                ("jusr", "just"),
+                ("righr", "right"),
+                ("don'r", "don't"),
+            ],
+            // t→r corruption: "está"→"esrá", "todo"→"rodo", "tiene"→"riene"
+            Language::Spanish => &[
+                ("esrá", "está"),
+                ("esro", "esto"),
+                ("riene", "tiene"),
+                ("riempo", "tiempo"),
+                ("rambién", "también"),
+                ("conrra", "contra"),
+                ("nuesrro", "nuestro"),
+                ("orro", "otro"),
+                ("parr", "part"),
+            ],
+            // t→r corruption: "nicht"→"nichr", "ist"→"isr", "mit"→"mir" (ambiguous)
+            Language::German => &[
+                ("nichr", "nicht"),
+                ("nichrs", "nichts"),
+                ("jerzt", "jetzt"),
+                ("harre", "hatte"),
+                ("birer", "bitte"),
+                ("lerzr", "letzt"),
+                ("mussr", "musst"),
+                ("kannsr", "kannst"),
+            ],
+            // t→r corruption: "tutto"→"rurro", "questo"→"quesr-", "fatto"→"farro"
+            // OCR: "Il"→"II" or "ll"
+            Language::Italian => &[
+                ("rurro", "tutto"),
+                ("rurra", "tutta"),
+                ("quesr", "quest"),
+                ("farro", "fatto"),
+                ("derro", "detto"),
+                ("sraro", "stato"),
+                ("conrro", "contro"),
+                ("nienre", "niente"),
+                // OCR: two capital I's or two lowercase l's instead of "Il"
+                ("II ", "Il "),
+                (" ll ", " Il "),
+            ],
+            // t→r corruption: "está"→"esrá", "tudo"→"rudo", "tem"→"rem" (ambiguous)
+            Language::Portuguese => &[
+                ("esrá", "está"),
+                ("esre", "este"),
+                ("rudo", "tudo"),
+                ("conrra", "contra"),
+                ("ourro", "outro"),
+                ("denrro", "dentro"),
+                ("enrão", "então"),
+            ],
+            // No Latin script subtitles for these
+            Language::Korean | Language::Chinese | Language::Japanese | Language::Russian => &[],
+        }
+    }
+
+    /// Unified subtitle sanity check. Takes an iterator of subtitle sentence strings.
+    /// Returns `Ok(())` if the subtitles pass, or `Err(reason)` describing why they failed.
+    pub fn check_subtitle_sanity<'a>(
+        &self,
+        sentences: impl Iterator<Item = &'a str>,
+    ) -> Result<(), String> {
+        let all_text: String = sentences.collect::<Vec<_>>().join(" ");
+        let all_text_lower = all_text.to_lowercase();
+
+        // 1. Check that all required sanity words appear
+        let sanity_words = self.subtitle_sanity_words();
+        for &word in sanity_words {
+            let found = match self.writing_system() {
+                WritingSystem::Latin | WritingSystem::Cyrillic => all_text_lower
+                    .split(|c: char| !c.is_alphanumeric() && c != '\'')
+                    .any(|w| w == word),
+                _ => all_text_lower.contains(word),
+            };
+            if !found {
+                return Err(format!("missing required word \"{word}\""));
+            }
+        }
+
+        // 2. Check for systematic character corruption (e.g. t→r)
+        let corruption_markers = self.subtitle_corruption_markers();
+        for &(marker, expected) in corruption_markers {
+            // Some markers are case-sensitive (OCR patterns like "II"), check against original
+            let count = if marker.chars().any(|c| c.is_uppercase()) {
+                all_text.matches(marker).count()
+            } else {
+                all_text_lower.matches(marker).count()
+            };
+            if count >= 3 {
+                return Err(format!(
+                    "corruption: found \"{marker}\" {count} times (should be \"{expected}\")"
+                ));
+            }
+        }
+
+        // 3. French-specific: check for OCR "I'" where "l'" should be (I followed by ' then lowercase)
+        if matches!(self, Language::French) {
+            let mut i_apos_count = 0usize;
+            let chars: Vec<char> = all_text.chars().collect();
+            for i in 0..chars.len().saturating_sub(2) {
+                if chars[i] == 'I'
+                    && (chars[i + 1] == '\'' || chars[i + 1] == '\u{2019}')
+                    && chars[i + 2].is_lowercase()
+                {
+                    i_apos_count += 1;
+                }
+            }
+            if i_apos_count >= 5 {
+                return Err(format!(
+                    "OCR corruption: found \"I'\" followed by lowercase {i_apos_count} times (should be \"l'\")"
+                ));
+            }
+        }
+
+        Ok(())
+    }
 }
 
 impl std::fmt::Display for Language {

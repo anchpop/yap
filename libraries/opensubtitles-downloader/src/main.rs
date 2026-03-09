@@ -696,40 +696,14 @@ fn strip_html_tags(text: &str) -> String {
 }
 
 /// Check if subtitle lines pass the language sanity check.
-/// All sanity words for the language must appear at least once as whole words.
 fn passes_language_sanity_check(lines: &[SubtitleLineJson], language: Language) -> bool {
-    let sanity_words = language.subtitle_sanity_words();
-    if sanity_words.is_empty() {
-        return true;
-    }
-
-    // Concatenate all subtitle text for checking
-    let all_text: String = lines
-        .iter()
-        .map(|l| l.sentence.as_str())
-        .collect::<Vec<_>>()
-        .join(" ");
-    let all_text_lower = all_text.to_lowercase();
-
-    for &word in sanity_words {
-        // For CJK languages, just check substring containment
-        let found = match language.writing_system() {
-            language_utils::WritingSystem::Latin | language_utils::WritingSystem::Cyrillic => {
-                // Check for whole-word match using word boundaries
-                all_text_lower
-                    .split(|c: char| !c.is_alphanumeric() && c != '\'')
-                    .any(|w| w == word)
-            }
-            _ => {
-                // For CJK/Hangul, substring is fine
-                all_text_lower.contains(word)
-            }
-        };
-        if !found {
-            return false;
+    match language.check_subtitle_sanity(lines.iter().map(|l| l.sentence.as_str())) {
+        Ok(()) => true,
+        Err(reason) => {
+            eprintln!("  Sanity check failed: {reason}");
+            false
         }
     }
-    true
 }
 
 /// Download subtitles for a single movie and return metadata
