@@ -1,6 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import courses from '../data/courses.json';
+
+const kv = Astro.locals.runtime.env.DICTIONARY_KV;
+const coursesJson = await kv.get('courses');
+if (!coursesJson) return Astro.redirect('/');
+const courses = JSON.parse(coursesJson);
 
 const languageFlags: Record<string, string> = {
   French: '\u{1F1EB}\u{1F1F7}',

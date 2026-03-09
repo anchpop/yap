@@ -1,21 +1,19 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import courses from '../../data/courses.json';
-import type { GetStaticPaths } from 'astro';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return courses.map((course: any) => ({
-    params: { course: course.slug },
-    props: { course },
-  }));
+const { course: courseSlug } = Astro.params;
+const kv = Astro.locals.runtime.env.DICTIONARY_KV;
+
+const courseDataJson = await kv.get(`index:${courseSlug}`);
+if (!courseDataJson) return Astro.redirect('/d/');
+const courseData = JSON.parse(courseDataJson);
+
+const course = {
+  slug: courseData.course_slug,
+  target_language: courseData.target_language,
+  native_language: courseData.native_language,
+  total_pages: courseData.total_pages,
 };
-
-const { course } = Astro.props;
-
-const dataPath = join(process.cwd(), 'src', 'data', `${course.slug}.json`);
-const courseData = JSON.parse(readFileSync(dataPath, 'utf-8'));
 
 // Group pages by first letter
 const letterGroups: Record<string, any[]> = {};

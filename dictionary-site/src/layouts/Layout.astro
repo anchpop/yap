@@ -58,7 +58,7 @@ const { title, description } = Astro.props;
           if (data || loading) return;
           loading = true;
           try {
-            const resp = await fetch(`/d/search/${courseSlug}.json`);
+            const resp = await fetch(`/d/search/${courseSlug}.json`, { cache: 'force-cache' });
             data = await resp.json();
           } catch { loading = false; }
         }

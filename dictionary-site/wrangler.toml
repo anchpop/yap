@@ -1,0 +1,7 @@
+name = "yap"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "../deploy-output"
+
+[[kv_namespaces]]
+binding = "DICTIONARY_KV"
+id = "4f0627a5baf348e19fd656fc0a3896cd"

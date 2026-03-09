@@ -36,3 +36,5 @@ dictionary-site/dist/
 dictionary-site/node_modules/
 dictionary-site/.astro/
 yap-frontend/public/d/
+deploy-output/
+.wrangler/

@@ -1,0 +1,116 @@
+name: Cloudflare Production Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  Deploy-Production:
+    runs-on: big-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 2
+
+      - name: Check what changed
+        id: changes
+        run: |
+          # Check if dictionary data sources changed
+          if git diff --name-only HEAD~1 HEAD | grep -qE '^(out/|generate-dictionary-data/|language-utils/|scripts/upload-dictionary-to-kv)'; then
+            echo "dictionary=true" >> $GITHUB_OUTPUT
+          else
+            echo "dictionary=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown, x86_64-unknown-linux-gnu
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-cf-production
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Build WASM module
+        run: wasm-pack build --release
+        working-directory: yap-frontend-rs
+
+      - name: Generate dictionary data from language packs
+        if: steps.changes.outputs.dictionary == 'true'
+        run: cargo run --release --bin generate-dictionary-data
+
+      - name: Upload dictionary data to KV
+        if: steps.changes.outputs.dictionary == 'true'
+        run: node scripts/upload-dictionary-to-kv.js
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Install dictionary site dependencies
+        run: pnpm install
+        working-directory: dictionary-site
+
+      - name: Build dictionary site (SSR)
+        run: pnpm build
+        working-directory: dictionary-site
+
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: yap-frontend
+
+      - name: Build frontend (SPA)
+        run: pnpm build
+        working-directory: yap-frontend
+
+      - name: Merge SPA and dictionary into single deploy directory
+        run: |
+          # Start with dictionary SSR output (has _worker.js for /d/* routes)
+          DEPLOY_DIR=deploy-output
+          cp -r dictionary-site/dist "$DEPLOY_DIR"
+
+          # Copy SPA static files into deploy dir (won't overwrite _worker.js)
+          cp -r yap-frontend/dist/* "$DEPLOY_DIR/"
+
+          # Update _routes.json: only send /d/* to the worker, serve SPA files statically
+          node -e "
+            const fs = require('fs');
+            const routes = JSON.parse(fs.readFileSync('$DEPLOY_DIR/_routes.json', 'utf-8'));
+            routes.include = ['/d/*'];
+            fs.writeFileSync('$DEPLOY_DIR/_routes.json', JSON.stringify(routes, null, 2));
+          "
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: deploy-output
+          command: pages deploy . --project-name=yap

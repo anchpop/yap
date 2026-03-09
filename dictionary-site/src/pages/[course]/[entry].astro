@@ -1,43 +1,31 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import courses from '../../data/courses.json';
-import type { GetStaticPaths } from 'astro';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = [];
+const { course: courseSlug, entry: pageSlug } = Astro.params;
+const kv = Astro.locals.runtime.env.DICTIONARY_KV;
 
-  for (const course of courses) {
-    const indexPath = join(process.cwd(), 'src', 'data', `${(course as any).slug}.json`);
-    const courseIndex = JSON.parse(readFileSync(indexPath, 'utf-8'));
+// Load page data and course metadata in parallel
+const [pageJson, coursesJson] = await Promise.all([
+  kv.get(`page:${courseSlug}:${pageSlug}`),
+  kv.get('courses'),
+]);
 
-    for (const entry of courseIndex.pages) {
-      paths.push({
-        params: { course: (course as any).slug, entry: entry.slug },
-        props: {
-          pageSlug: entry.slug,
-          courseMeta: course,
-        },
-      });
-    }
-  }
+if (!pageJson || !coursesJson) {
+  return new Response('Not found', { status: 404 });
+}
 
-  return paths;
-};
+const page = JSON.parse(pageJson);
+const courses = JSON.parse(coursesJson);
+const courseMeta = courses.find((c: any) => c.slug === courseSlug);
+if (!courseMeta) return new Response('Not found', { status: 404 });
 
-const { pageSlug, courseMeta } = Astro.props;
-
-// Load per-page JSON with full data (including sentences)
-const pagePath = join(process.cwd(), 'src', 'data', (courseMeta as any).slug, `${pageSlug}.json`);
-const page = JSON.parse(readFileSync(pagePath, 'utf-8'));
 const mainSense = page.senses[0];
-const targetCode = (courseMeta as any).target_language.slice(0, 2).toUpperCase();
-const nativeCode = (courseMeta as any).native_language.slice(0, 2).toUpperCase();
+const targetCode = courseMeta.target_language.slice(0, 2).toUpperCase();
+const nativeCode = courseMeta.native_language.slice(0, 2).toUpperCase();
 
 const pageTitle = mainSense.is_phrase
-  ? `"${page.display_text}" — ${(courseMeta as any).target_language} phrase`
-  : `${page.display_text} — ${(courseMeta as any).target_language}`;
+  ? `"${page.display_text}" — ${courseMeta.target_language} phrase`
+  : `${page.display_text} — ${courseMeta.target_language}`;
 
 function getSummary(): string {
   const defs = page.senses.flatMap((s: any) => {
@@ -62,12 +50,12 @@ function posLabel(pos: string): string {
 
 <Layout
   title={pageTitle}
-  description={`${page.display_text}: ${getSummary()}. #${page.best_frequency_rank} most common in ${(courseMeta as any).target_language}.`}
+  description={`${page.display_text}: ${getSummary()}. #${page.best_frequency_rank} most common in ${courseMeta.target_language}.`}
 >
   <nav class="text-sm text-muted-foreground mb-4">
     <a href="/d/" class="hover:text-accent-foreground">Dictionaries</a>
     <span class="mx-1.5 opacity-50">›</span>
-    <a href={`/d/${(courseMeta as any).slug}/`} class="hover:text-accent-foreground">{(courseMeta as any).target_language} → {(courseMeta as any).native_language}</a>
+    <a href={`/d/${courseSlug}/`} class="hover:text-accent-foreground">{courseMeta.target_language} → {courseMeta.native_language}</a>
     <span class="mx-1.5 opacity-50">›</span>
     {page.display_text}
   </nav>
@@ -158,11 +146,11 @@ function posLabel(pos: string): string {
                     const isCurrent = seg.slug === pageSlug;
                     if (seg.slug) {
                       return <>{isCurrent ? <mark><a
-                        href={`/d/${(courseMeta as any).slug}/${seg.slug}/`}
+                        href={`/d/${courseSlug}/${seg.slug}/`}
                         class="gram-word"
                         data-gloss={seg.gloss || undefined}
                       >{seg.text}</a></mark> : <a
-                        href={`/d/${(courseMeta as any).slug}/${seg.slug}/`}
+                        href={`/d/${courseSlug}/${seg.slug}/`}
                         class="gram-word text-accent-foreground"
                         data-gloss={seg.gloss || undefined}
                       >{seg.text}</a>}{seg.whitespace}</>;
