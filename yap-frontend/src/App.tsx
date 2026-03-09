@@ -21,6 +21,7 @@ import { AcceptInvite } from '@/pages/accept-invite'
 import { ForgotPassword } from '@/pages/forgot-password'
 import { UserProfilePage } from '@/pages/user-profile'
 import { AboutPage } from '@/pages/about'
+import { NotFoundPage } from '@/pages/not-found'
 import { playSoundEffect } from '@/lib/sound-effects'
 import { registerSW } from 'virtual:pwa-register'
 import { NoCardsReady } from '@/components/no-cards-ready'
@@ -1122,6 +1123,7 @@ function App() {
               <Route path="leeches" element={<LeechesPage />} />
               <Route path="select-language" element={<SelectLanguagePage />} />
               <Route path="user/id/:id" element={<UserProfilePage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
           <Toaster />

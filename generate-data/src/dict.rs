@@ -315,7 +315,7 @@ pub async fn create_gram_phrasebook(
                 };
 
                 // kind of ugly, but the old system prompt is bad, but it's too expensive to regenerate all of them so i'll just do it for the most important words
-                let system_prompt = if freq > 150 {
+                let system_prompt = if freq > 100 {
                     format!(r#"The input is a {target_language} multi-word term along with example sentences showing its usage. Generate a phrasebook entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}).
 
 Think about the word and its meaning based on how it's used in the example sentences, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning as the closest {native_language} equivalent word or short phrase — just like a dictionary translation (e.g. "just did", "what" or "that which", "as soon as"). Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just give the {native_language} equivalent. Any grammatical notes belong in the "additional_notes" field, not the meaning. Then, provide additional context for how the term is used in the "additional_notes" field. Finally, provide your own example of the term's usage in a natural sentence.
@@ -397,7 +397,7 @@ Of course, their native language is {native_language}, so you should write the m
 "#
                 )};
 
-                let response: Result<PhrasebookDefinitionEntry, _> = if freq > 150  {
+                let response: Result<PhrasebookDefinitionEntry, _> = if freq > 100  {
                     let response: Result<PhrasebookDefinitionEntryV2, _> = chat_client
                         .chat_with_system_prompt(
                             system_prompt,

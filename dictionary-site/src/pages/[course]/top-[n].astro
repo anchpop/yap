@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import SearchBar from '../../components/SearchBar.astro';
 
 const { course: courseSlug, n } = Astro.params;
 const kv = Astro.locals.runtime.env.DICTIONARY_KV;
@@ -27,6 +28,7 @@ function getPreview(page: any): string {
   title={`Top ${n} ${courseMeta.target_language} Words`}
   description={`The ${n} most common ${courseMeta.target_language} words with ${courseMeta.native_language} translations.`}
 >
+  <SearchBar courseSlug={courseSlug!} />
   <nav class="text-sm text-muted-foreground mb-4">
     <a href="/d/" class="hover:text-accent-foreground">Dictionaries</a>
     <span class="mx-1.5 opacity-50">›</span>

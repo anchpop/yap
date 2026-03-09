@@ -9,9 +9,10 @@ members = [
     "libraries/eyedee",
     "libraries/course-spot-check",
     "libraries/sentence-sampler",
-    "clean-nlp-data",
+    "libraries/clean-nlp-data",
     "libraries/enumap",
-    "opensubtitles-downloader", "omnigram",
+    "libraries/opensubtitles-downloader",
+    "libraries/omnigram",
     "generate-dictionary-data",
 ]
 resolver = "3"

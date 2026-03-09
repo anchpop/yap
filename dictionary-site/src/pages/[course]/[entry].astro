@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import SearchBar from '../../components/SearchBar.astro';
 
 const { course: courseSlug, entry: pageSlug } = Astro.params;
 const kv = Astro.locals.runtime.env.DICTIONARY_KV;
@@ -100,6 +101,7 @@ function grammarSummary(sense: any): string {
   title={pageTitle}
   description={`${page.display_text}: ${getSummary()}. #${page.best_frequency_rank} most common in ${courseMeta.target_language}.`}
 >
+  <SearchBar courseSlug={courseSlug!} />
   <nav class="text-sm text-muted-foreground mb-4">
     <a href="/d/" class="hover:text-accent-foreground">Dictionaries</a>
     <span class="mx-1.5 opacity-50">›</span>
