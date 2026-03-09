@@ -514,6 +514,14 @@ pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
         return false;
     }
 
+    // 9. Skip ALL_CAPS sentences (shouting in subtitles)
+    {
+        let alpha_chars: Vec<char> = sentence.chars().filter(|c| c.is_alphabetic()).collect();
+        if alpha_chars.len() >= 2 && alpha_chars.iter().all(|c| c.is_uppercase()) {
+            return false;
+        }
+    }
+
     true
 }
 

@@ -1135,6 +1135,7 @@ impl FeatureSet for Polite {
     PartialEq,
     Ord,
     PartialOrd,
+    Hash,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2705381
-Total errors: 2094
+Total predictions: 2691862
+Total errors: 2023
 Accuracy: 99.92%
 
 ## Error Patterns (sorted by frequency)
@@ -21,14 +21,6 @@ Accuracy: 99.92%
   - Kommt Gas in den Abfluss rein, dann Gnade dem, der ein Zündholz anmacht.
   - Kommt Ihr Mann auch aus Australien?
   - Kommt Lars zurecht?
-
-### "durch" + "s" (32 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bei Tagesanbruch müssten wir schon halb durchs Gebirge durch sein.
-  - Dadurch wird das Fliegen durchs All sehr gefährlich.
-  - Das Licht scheint durchs Glas.
 
 ### "-" + "oder" (31 occurrences)
 - Predicted: None
@@ -110,14 +102,6 @@ Accuracy: 99.92%
   - Du bleibst zu Hause !
   - Geh nach Hause !
 
-### "hinter" + "s" (8 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ich ärgerte mich darüber, dass man mich hinters Licht geführt hatte.
-  - Ihr habt die Plätze getauscht, um mich wieder hinters Licht zu führen, ja?
-  - Maria strich sich eine Haarsträhne hinters Ohr.
-
 ### "“" + "oder" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -134,14 +118,6 @@ Accuracy: 99.92%
   - Es dauerte von Sonnenauf- bis Sonnenuntergang.
   - Es gibt fünfzehn- bis zwanzigtausend Zuschauer.
 
-### "gemacht" + "?" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Was hab ihr mit ihm gemacht ?
-  - Was habe ich gemacht ?
-  - Was hast du da gemacht ?
-
 ### "nicht" + "?" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -149,6 +125,14 @@ Accuracy: 99.92%
   - Das ist ein hübsches Ei, nicht ?
   - Er ist gewachsen, nicht ?
   - Es ist heiss heute, nicht ?
+
+### "gemacht" + "?" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Was habe ich gemacht ?
+  - Was hast du da gemacht ?
+  - Was hast du denn gemacht ?
 
 ### "“" + "ist" (6 occurrences)
 - Predicted: None
@@ -189,14 +173,6 @@ Accuracy: 99.92%
   - Du vielleicht - ich nicht!
   - Es war mein Ernst - ich weiß nicht, wo es ist.
   - Hab keine Angst - ich bin es nur!
-
-### "Durch" + "s" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Durchs All zu galoppieren ist etwas für junge Leute.
-  - Durchs Büro im ersten Stock, und geht durch die Decke.
-  - Durchs Gitter?
 
 ### "Terzi" + "-" (5 occurrences)
 - Predicted: None
@@ -414,14 +390,6 @@ Accuracy: 99.92%
   - Aktion - Reaktion!
   - Aktion - Reaktion.
 
-### "Auf" + "s" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Aufs Genaueste nachzulesen in meinen Veröffentlichungen.
-  - Aufs Meer fahren ist nicht möglich.
-  - Aufs Zählen vorbereiten.
-
 ### "Duce" + "!" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -438,14 +406,6 @@ Accuracy: 99.92%
   - Habt ihr „Import“ oder „Export“ gesagt?
   - Hast du „Import“ oder „Export“ gesagt?
 
-### "Für" + "s" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Fürs Erste.
-  - Fürs Nötigste?
-  - Fürs Protokoll, sie war nicht verstimmt.
-
 ### "Hm" + "…" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -453,14 +413,6 @@ Accuracy: 99.92%
   - Hm … Eingeladen?
   - Hm … das Tagebuch ist im abgesperrten Bereich.
   - Hm … so warm.
-
-### "Ich" + "…" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich … Ich bin wirklich … ein dumm… dumm… dummes Häschen.
-  - Ich … hab nicht … geholfen.
-  - Ich … helf eurer Freundin.
 
 ### "Import" + "“" (3 occurrences)
 - Predicted: Space
@@ -605,14 +557,6 @@ Accuracy: 99.92%
   - Wie ist sie ?
   - Willst du sie ?
   - Wo ist sie ?
-
-### "’" + "schon" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Das wär’ schon was!
-  - Ich dachte, das wär’ schon unter Dach und Fach.
-  - Ich dachte, der wär’ schon lange tot.
 
 ### "“" + "bedeutet" (3 occurrences)
 - Predicted: None
@@ -862,6 +806,13 @@ Accuracy: 99.92%
 - Examples:
   - Es lebe Giudizio !
   - Viva Giudizio !
+
+### "Ich" + "…" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich … Ich bin wirklich … ein dumm… dumm… dummes Häschen.
+  - Ich … helf eurer Freundin.
 
 ### "Ja" + "“" (2 occurrences)
 - Predicted: Space
@@ -1135,13 +1086,6 @@ Accuracy: 99.92%
 - Examples:
   - Wohin alle diese Leute gehen ?
   - Wohin sie mit Herzklopfen gehen ?
-
-### "getan" + "!" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab doch nichts getan !
-  - Was hat er getan !
 
 ### "haben" + "-" (2 occurrences)
 - Predicted: None
@@ -1741,12 +1685,6 @@ Accuracy: 99.92%
 - Examples:
   - Versuchen Sie bitte mein Frühstück - Frühstück?
 
-### "-" + "FÜHREND" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - CYBO SEMENTIS - FÜHREND BEI PFLANZLICHEN TECHNOLOGIEN.
-
 ### "-" + "Glück" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1830,12 +1768,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Na, Schütte - Keine Namen!
-
-### "-" + "LUST" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Y TU MAMÁ TAMBIÉN - LUST FOR LIFE!
 
 ### "-" + "Lass" (1 occurrences)
 - Predicted: None
@@ -2851,12 +2783,6 @@ Accuracy: 99.92%
 - Examples:
   - VW werden Sie in die C—Kompanie eingliedern.
 
-### "CYBO SEMENTIS" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - CYBO SEMENTIS - FÜHREND BEI PFLANZLICHEN TECHNOLOGIEN.
-
 ### "Calogero" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3534,12 +3460,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Ihr Idioten !
-
-### "In" + "s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ins Schwimmbad!
 
 ### "Inge" + "!" (1 occurrences)
 - Predicted: None
@@ -4711,12 +4631,6 @@ Accuracy: 99.92%
 - Examples:
   - AlleSündenwerden bestraft.
 
-### "TAMBIÉN" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Y TU MAMÁ TAMBIÉN - LUST FOR LIFE!
-
 ### "Tabakfrau" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5779,12 +5693,6 @@ Accuracy: 99.92%
 - Examples:
   - Genau das ist es .
 
-### "etwas" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Also dann iss etwas !
-
 ### "etwas" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5989,6 +5897,12 @@ Accuracy: 99.92%
 - Examples:
   - Hast du das Meer schon gesehen ?
 
+### "getan" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Was hat er getan !
+
 ### "getan" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6072,12 +5986,6 @@ Accuracy: 99.92%
 - Actual: Space
 - Examples:
   - Nein, ich hab ’ne Idee und brauche Geld.
-
-### "hab" + "’nen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab ’nen Fehler gemacht?
 
 ### "haben" + "kein" (1 occurrences)
 - Predicted: Space
@@ -6600,12 +6508,6 @@ Accuracy: 99.92%
 - Actual: None
 - Examples:
   - Wieso <<entsprechen meine Angaben der Wirklichkeit fast gar nicht>>?
-
-### "nicht" + "…" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich … hab nicht … geholfen.
 
 ### "nichts" + "!" (1 occurrences)
 - Predicted: None
@@ -7447,12 +7349,6 @@ Accuracy: 99.92%
 - Examples:
   - Wie wunderbar !
 
-### "wär" + "‘s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wie wär‘s, wenn ich dich auf einen Kaffee einlade?
-
 ### "wär’" + "mir" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7615,12 +7511,6 @@ Accuracy: 99.92%
 - Examples:
   - Gut’ Nacht, und Freude sei bei euch!
 
-### "’" + "allein" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich dachte, ich wär’ allein.
-
 ### "’" + "an" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7639,23 +7529,11 @@ Accuracy: 99.92%
 - Examples:
   - Will man einen Menschen kennen, beobachte man, wie er eine Katz’ behandelt.
 
-### "’" + "das" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ohne Tom wär’ das Leben leer.
-
 ### "’" + "dran" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Denk’ dran, die Fenster zu schließen.
-
-### "’" + "ein" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich wünscht’, ich wär’ ein Vögelein.
 
 ### "’" + "früh" (1 occurrences)
 - Predicted: None
@@ -7669,23 +7547,11 @@ Accuracy: 99.92%
 - Examples:
   - Der Vogel, der am Morgen singt, wird am Abend von der Katz’ gefangen.
 
-### "’" + "gesagt" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab’ gesagt, das hier ist ein Besprechungszimmer, kein Schlafzimmer!
-
 ### "’" + "mich" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ich fühl’ mich voll entspannt.
-
-### "’" + "–" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Wenn er ein Vöglein wär’ – sagt er –, flöge er zu mir.
 
 ### "“" + "(" (1 occurrences)
 - Predicted: None

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2636229
-Total errors: 621
+Total predictions: 2634643
+Total errors: 615
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -487,12 +487,6 @@ Accuracy: 99.98%
 - Examples:
   - Ne perdons pas de temps, en bavardages,ALLEZ en avant, allons !
 
-### "," + "ALLONS" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - ALLONS,ALLONS !
-
 ### "," + "Jeremy" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -516,12 +510,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Je peux m arrêter,Monsieur ?
-
-### "," + "NON" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - TU TE RENDS PAS COMPTE QUE TU TE DONNES EN SPECTACLE,NON ?
 
 ### "," + "Ntu" (1 occurrences)
 - Predicted: Space
@@ -726,18 +714,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Sully,ça fait comment de trahir sa propre espèce ?
-
-### "-" + "APPEL" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - NINA WINCHESTER - APPEL MANQUÉ LA CHAMBRE DE CECILIA DOIT ÊTRE NETTOYÉE.
-
-### "-" + "AS" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - MÈRE - AS-TU SIGNIFIÉ LES PAPIERS DE DIVORCE, MON BEAU GARÇON ?
 
 ### "-" + "Allez" (1 occurrences)
 - Predicted: None
@@ -1321,12 +1297,6 @@ Accuracy: 99.98%
 - Examples:
   - Et le désir me talonne et me mord, car je vous aime, ô Madame la Mort .
 
-### "MÈRE" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - MÈRE - AS-TU SIGNIFIÉ LES PAPIERS DE DIVORCE, MON BEAU GARÇON ?
-
 ### "N" + "Bien" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1518,12 +1488,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Voussa suivez ?
-
-### "WINCHESTER" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - NINA WINCHESTER - APPEL MANQUÉ LA CHAMBRE DE CECILIA DOIT ÊTRE NETTOYÉE.
 
 ### "Workman" + "." (1 occurrences)
 - Predicted: None

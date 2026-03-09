@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
+use language_utils::features::Morphology;
 use language_utils::language_pack::LanguagePack;
-use language_utils::{Atom, COURSES, Course, GramDefinition, SentenceGram, WordType};
+use language_utils::{Atom, COURSES, Course, GramDefinition, PartOfSpeech, SentenceGram, WordType};
 use lasso::Spur;
 use rustc_hash::FxHashMap;
 use serde::Serialize;
@@ -33,6 +34,34 @@ struct MorphologyInfo {
     case: Option<String>,
 }
 
+/// A conjugation/declension table for a lemma.
+#[derive(Serialize)]
+struct ConjugationTable {
+    lemma: String,
+    pos: String,
+    forms: Vec<ConjugationForm>,
+}
+
+/// A single inflected form in a conjugation/declension table.
+#[derive(Serialize)]
+struct ConjugationForm {
+    word: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    slug: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tense: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    mood: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    person: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    number: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    gender: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    case: Option<String>,
+}
+
 /// A single word sense or phrase meaning.
 #[derive(Serialize)]
 struct Sense {
@@ -49,6 +78,8 @@ struct Sense {
     prefix: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     morphology: Option<MorphologyInfo>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    conjugation: Option<ConjugationTable>,
     definition: Definition,
     /// Sentence spurs stored temporarily during extraction, replaced with rich
     /// segments in a second pass once we have the gram→slug map.
@@ -219,6 +250,10 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
     // We use a map from display_text -> Vec<Sense>.
     let mut pages_map: indexmap::IndexMap<String, Vec<Sense>> = indexmap::IndexMap::new();
 
+    // Conjugation index: (lemma, pos) → Vec<(display_text, morphology)>
+    let mut conjugation_index: FxHashMap<(String, PartOfSpeech), Vec<(String, Morphology)>> =
+        FxHashMap::default();
+
     for (frequency_index, (spur_gram, freq)) in language_pack.gram_frequencies.iter().enumerate() {
         let gram_def = match language_pack.gram_definitions.get(spur_gram) {
             Some(def) => def,
@@ -229,7 +264,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
         let resolved = gram.resolve(string_rodeo);
         let display_text = resolved.to_display_string(target_language);
 
-        let (pos, lemma, het_pos) = gram
+        let (pos, lemma, het_pos, het_word) = gram
             .atoms()
             .iter()
             .find_map(|atom| {
@@ -240,12 +275,13 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                         Some(format!("{:?}", h.pos)),
                         Some(string_rodeo.resolve(&h.lemma).to_string()),
                         Some(h.pos),
+                        Some(string_rodeo.resolve(&h.word).to_string()),
                     ))
                 } else {
                     None
                 }
             })
-            .unwrap_or((None, None, None));
+            .unwrap_or((None, None, None, None));
 
         let pronunciation = gram
             .atoms()
@@ -334,6 +370,24 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
             (None, None)
         };
 
+        // Populate conjugation index for single-word dictionary entries with morphology.
+        // Use het_word (the normalized heteronym word) rather than display_text (raw surface
+        // form which may be capitalized from sentence-initial position).
+        if !is_phrase {
+            if let GramDefinition::Dictionary(dict) = gram_def {
+                if let Some(morph) = dict.morphology.first() {
+                    if let (Some(lemma_str), Some(pos_val), Some(word)) =
+                        (&lemma, het_pos, &het_word)
+                    {
+                        conjugation_index
+                            .entry((lemma_str.clone(), pos_val))
+                            .or_default()
+                            .push((word.clone(), morph.clone()));
+                    }
+                }
+            }
+        }
+
         let definition = match gram_def {
             GramDefinition::Dictionary(dict) => Definition::Dictionary {
                 definitions: dict
@@ -371,6 +425,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
             pronunciation,
             prefix,
             morphology,
+            conjugation: None,
             definition,
             sentence_spurs,
             example_sentences: Vec::new(),
@@ -460,6 +515,91 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                 })
                 .collect();
             sense.sentence_spurs.clear();
+        }
+    }
+
+    // Dedup assertion: no (lemma, pos, morphology) triple should map to two different words
+    {
+        let mut seen: std::collections::HashMap<(&str, PartOfSpeech, &Morphology), &str> =
+            std::collections::HashMap::new();
+        for ((lemma, pos), forms) in &conjugation_index {
+            for (word, morph) in forms {
+                if let Some(existing) = seen.get(&(lemma.as_str(), *pos, morph)) {
+                    if *existing != word {
+                        eprintln!(
+                            "Warning: conjugation conflict for lemma={lemma}, pos={pos:?}, morph={morph:?}: \
+                             {existing} vs {word} — keeping first"
+                        );
+                    }
+                } else {
+                    seen.insert((lemma.as_str(), *pos, morph), word.as_str());
+                }
+            }
+        }
+    }
+
+    // Attach conjugation tables to senses (single-word only)
+    for page in &mut pages {
+        for sense in &mut page.senses {
+            if sense.is_phrase {
+                continue;
+            }
+            if let (Some(lemma), Some(pos_str)) = (&sense.lemma, &sense.pos) {
+                // Parse pos string back to PartOfSpeech
+                let pos_val = match pos_str.as_str() {
+                    "Adj" => Some(PartOfSpeech::Adj),
+                    "Adp" => Some(PartOfSpeech::Adp),
+                    "Adv" => Some(PartOfSpeech::Adv),
+                    "Aux" => Some(PartOfSpeech::Aux),
+                    "Cconj" => Some(PartOfSpeech::Cconj),
+                    "Det" => Some(PartOfSpeech::Det),
+                    "Intj" => Some(PartOfSpeech::Intj),
+                    "Noun" => Some(PartOfSpeech::Noun),
+                    "Num" => Some(PartOfSpeech::Num),
+                    "Part" => Some(PartOfSpeech::Part),
+                    "Pron" => Some(PartOfSpeech::Pron),
+                    "Sconj" => Some(PartOfSpeech::Sconj),
+                    "Sym" => Some(PartOfSpeech::Sym),
+                    "Verb" => Some(PartOfSpeech::Verb),
+                    _ => None,
+                };
+                if let Some(pos) = pos_val {
+                    if let Some(forms) = conjugation_index.get(&(lemma.clone(), pos)) {
+                        // Deduplicate forms by (word, morphology) and by
+                        // case-insensitive word (keep the first/most-frequent)
+                        let mut seen_forms: std::collections::HashSet<(&str, &Morphology)> =
+                            std::collections::HashSet::new();
+                        let mut seen_words_lower: std::collections::HashSet<String> =
+                            std::collections::HashSet::new();
+                        let mut unique_forms: Vec<ConjugationForm> = Vec::new();
+                        for (word, morph) in forms {
+                            if !seen_words_lower.insert(word.to_lowercase()) {
+                                continue;
+                            }
+                            if seen_forms.insert((word.as_str(), morph)) {
+                                unique_forms.push(ConjugationForm {
+                                    word: word.clone(),
+                                    slug: display_text_to_slug.get(word).cloned(),
+                                    tense: morph.tense.map(|t| format!("{t:?}").to_lowercase()),
+                                    mood: morph.mood.map(|m| format!("{m:?}").to_lowercase()),
+                                    person: morph.person.map(|p| format!("{p:?}").to_lowercase()),
+                                    number: morph.number.map(|n| format!("{n:?}").to_lowercase()),
+                                    gender: morph.gender.map(|g| format!("{g:?}").to_lowercase()),
+                                    case: morph.case.map(|c| format!("{c:?}").to_lowercase()),
+                                });
+                            }
+                        }
+                        // Only attach if there's more than 1 form
+                        if unique_forms.len() > 1 {
+                            sense.conjugation = Some(ConjugationTable {
+                                lemma: lemma.clone(),
+                                pos: pos_str.clone(),
+                                forms: unique_forms,
+                            });
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -746,4 +886,292 @@ fn main() -> Result<()> {
 
     eprintln!("Done!");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use language_utils::{Course, Language};
+
+    fn repo_root() -> std::path::PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .to_path_buf()
+    }
+
+    fn load_and_extract(course: &Course) -> CourseData {
+        let dir_name = course_dir_name(course);
+        let rkyv_path = repo_root()
+            .join("out")
+            .join(&dir_name)
+            .join("language_data.rkyv");
+        let language_pack = load_language_pack(&rkyv_path)
+            .unwrap_or_else(|e| panic!("Failed to load {}: {e}", rkyv_path.display()));
+        extract_pages(&language_pack, course)
+    }
+
+    fn find_page_by_display<'a>(data: &'a CourseData, display_text: &str) -> &'a PageEntry {
+        data.pages
+            .iter()
+            .find(|p| p.display_text == display_text)
+            .unwrap_or_else(|| panic!("Page with display_text '{display_text}' not found"))
+    }
+
+    fn conjugation_words(table: &ConjugationTable) -> Vec<&str> {
+        table.forms.iter().map(|f| f.word.as_str()).collect()
+    }
+
+    // --- French verb tests ---
+
+    #[test]
+    #[ignore]
+    fn french_etre_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::French,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "est");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("être"))
+            .expect("No sense with lemma 'être'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "être");
+        let words = conjugation_words(table);
+        for expected in &["suis", "es", "est", "sommes", "êtes", "sont"] {
+            assert!(
+                words.contains(expected),
+                "Missing form '{expected}' in être conjugation. Found: {words:?}"
+            );
+        }
+    }
+
+    #[test]
+    #[ignore]
+    fn french_avoir_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::French,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "a");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("avoir"))
+            .expect("No sense with lemma 'avoir'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "avoir");
+        let words = conjugation_words(table);
+        for expected in &["ai", "as", "a", "avons", "avez", "ont"] {
+            assert!(
+                words.contains(expected),
+                "Missing form '{expected}' in avoir conjugation. Found: {words:?}"
+            );
+        }
+    }
+
+    #[test]
+    #[ignore]
+    fn french_faire_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::French,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "fait");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("faire"))
+            .expect("No sense with lemma 'faire'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "faire");
+        assert!(table.forms.len() > 3, "Expected multiple forms for faire");
+    }
+
+    // --- French adjective test ---
+
+    #[test]
+    #[ignore]
+    fn french_beau_adjective() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::French,
+        };
+        let data = load_and_extract(&course);
+        // Find any page with lemma "beau" and pos Adj
+        let page = data
+            .pages
+            .iter()
+            .find(|p| {
+                p.senses
+                    .iter()
+                    .any(|s| s.lemma.as_deref() == Some("beau") && s.pos.as_deref() == Some("Adj"))
+            })
+            .expect("No page with lemma 'beau' as Adj");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("beau") && s.pos.as_deref() == Some("Adj"))
+            .unwrap();
+        let table = sense
+            .conjugation
+            .as_ref()
+            .expect("No conjugation table for beau");
+        let words = conjugation_words(table);
+        // Should have gender/number forms
+        assert!(
+            words.len() >= 2,
+            "Expected multiple forms for beau. Found: {words:?}"
+        );
+    }
+
+    // --- Spanish verb tests ---
+
+    #[test]
+    #[ignore]
+    fn spanish_ser_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::Spanish,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "es");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("ser"))
+            .expect("No sense with lemma 'ser'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "ser");
+        let words = conjugation_words(table);
+        for expected in &["soy", "eres", "es", "somos"] {
+            assert!(
+                words.contains(expected),
+                "Missing form '{expected}' in ser conjugation. Found: {words:?}"
+            );
+        }
+    }
+
+    // --- German verb test ---
+
+    #[test]
+    #[ignore]
+    fn german_sein_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::German,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "ist");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("sein"))
+            .expect("No sense with lemma 'sein'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "sein");
+        let words = conjugation_words(table);
+        for expected in &["bin", "bist", "ist", "sind"] {
+            assert!(
+                words.contains(expected),
+                "Missing form '{expected}' in sein conjugation. Found: {words:?}"
+            );
+        }
+    }
+
+    // --- Italian verb test ---
+
+    #[test]
+    #[ignore]
+    fn italian_essere_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::Italian,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "è");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("essere"))
+            .expect("No sense with lemma 'essere'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "essere");
+        assert!(table.forms.len() > 3, "Expected multiple forms for essere");
+    }
+
+    // --- Portuguese verb test ---
+
+    #[test]
+    #[ignore]
+    fn portuguese_ser_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::Portuguese,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "é");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("ser"))
+            .expect("No sense with lemma 'ser'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "ser");
+        assert!(table.forms.len() > 3, "Expected multiple forms for ser");
+    }
+
+    // --- Negative tests ---
+
+    #[test]
+    #[ignore]
+    fn phrase_has_no_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::French,
+        };
+        let data = load_and_extract(&course);
+        // Find a phrase entry
+        let phrase_page = data
+            .pages
+            .iter()
+            .find(|p| p.senses.iter().any(|s| s.is_phrase))
+            .expect("No phrase page found");
+        for sense in &phrase_page.senses {
+            if sense.is_phrase {
+                assert!(
+                    sense.conjugation.is_none(),
+                    "Phrase should not have conjugation table"
+                );
+            }
+        }
+    }
+
+    #[test]
+    #[ignore]
+    fn single_form_no_conjugation() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::French,
+        };
+        let data = load_and_extract(&course);
+        // Find a word that is its own lemma and has no other forms
+        // Adverbs typically have only one form
+        let adv_page = data.pages.iter().find(|p| {
+            p.senses.iter().any(|s| {
+                s.pos.as_deref() == Some("Adv")
+                    && s.lemma.as_deref() == Some(&p.display_text)
+                    && s.conjugation.is_none()
+            })
+        });
+        assert!(
+            adv_page.is_some(),
+            "Expected to find at least one adverb with no conjugation table"
+        );
+    }
 }

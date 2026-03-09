@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1788985
-Total errors: 827
+Total predictions: 1782233
+Total errors: 818
 Accuracy: 99.95%
 
 ## Error Patterns (sorted by frequency)
@@ -70,14 +70,6 @@ Accuracy: 99.95%
   - Areyou alone?
   - Areyou doing everything the doctor told you?
 
-### "-" + "I" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - F- I-E-L-D.
-  - Finally, he got- I suspect- an infected jaw, and he was abandoned.
-  - I- I manage the estate for Maxim.
-
 ### "--" + "I" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101,6 +93,14 @@ Accuracy: 99.95%
   - Haveyou got a car?
   - Haveyou got parents?
   - Haveyou heard anything about her?
+
+### "-" + "I" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Finally, he got- I suspect- an infected jaw, and he was abandoned.
+  - I- I manage the estate for Maxim.
+  - I- I only arranged the meeting.
 
 ### "-" + "and" (5 occurrences)
 - Predicted: None
@@ -1024,12 +1024,6 @@ Accuracy: 99.95%
 - Examples:
   - Even holidays-- Easter, Christmas.
 
-### "--" + "GET" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - B DECK-- GET IN THERE, GET IN THERE.
-
 ### "--" + "Go" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1053,18 +1047,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - It will not sti-- It will not stick!
-
-### "--" + "LAUNCHING" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - YEAH, BROCK-- LAUNCHING DUNKIN NOW.
-
-### "--" + "MURDOCH" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - STAY WITH THIS ONE-- MURDOCH.
 
 ### "--" + "Might" (1 occurrences)
 - Predicted: None
@@ -1108,12 +1090,6 @@ Accuracy: 99.95%
 - Examples:
   - S-- Stop here.
 
-### "--" + "THE" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - NO-- THE CHIPPEWA FALLS DAWSONS, ACTUALLY.
-
 ### "--" + "These" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1126,12 +1102,6 @@ Accuracy: 99.95%
 - Examples:
   - This is what your-- This is what the script is saying?
 
-### "--" + "WHO" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - FREUD-- WHO IS HE?
-
 ### "--" + "Wah" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1143,12 +1113,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - The Lord of the Rings, we had-- We were on as a Hobbit quite a bit.
-
-### "--" + "YOU" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - THAT WAS BETTER-- YOU GOT TO WORK ON IT.
 
 ### "--" + "ages" (1 occurrences)
 - Predicted: None
@@ -1276,12 +1240,6 @@ Accuracy: 99.95%
 - Examples:
   - This is what-- you see?
 
-### "/" + "OR" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - ACCIDENTAL AND/OR DELIBERATE.
-
 ### "/" + "Orc" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1323,12 +1281,6 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - Awoman was screaming.
-
-### "AND" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - ACCIDENTAL AND/OR DELIBERATE.
 
 ### "Age" + "?" (1 occurrences)
 - Predicted: None

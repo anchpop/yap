@@ -11,3 +11,6 @@
 {"word":"nettoie","lemma":"nettoier","pos":"VERB"}
 {"word":"à","lemma":"avoir","pos":"AUX"}
 {"word":"à","lemma":"avoir","pos":"VERB"}
+{"word":"er","lemma":"et","pos":"CCONJ"}
+{"word":"esr","lemma":"être","pos":"AUX"}
+{"word":"etre","lemma":"être","pos":"AUX"}

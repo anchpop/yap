@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2423132
-Total errors: 747
+Total predictions: 2421926
+Total errors: 740
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -46,14 +46,6 @@ Accuracy: 99.97%
   - Decía - ¡Basta ya!
   - EDIFICIO DEL SERVICIO DE IMPUESTOS INTERNOS - ¡Rápido, rápido!
 
-### "-" + "¿" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ARCHIVOS TYRELL - ¿Es artificial?
-  - Algo a lo que usted llama daño deliberado a la propiedad - ¿y qué?
-  - Dice - ¿Quién se cree que es ese Rubliov?
-
 ### "," + "'" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85,6 +77,14 @@ Accuracy: 99.97%
   - Bueno,no lo estaba.
   - No sé,no es exactamente el tipo actor.
   - No,no es eso.
+
+### "-" + "¿" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ARCHIVOS TYRELL - ¿Es artificial?
+  - Algo a lo que usted llama daño deliberado a la propiedad - ¿y qué?
+  - Dice - ¿Quién se cree que es ese Rubliov?
 
 ### "¿" + "no" (6 occurrences)
 - Predicted: None
@@ -1082,12 +1082,6 @@ Accuracy: 99.97%
 - Examples:
   - Bienvenidos a Londres- Heathrow.
 
-### "-" + "I" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - F- I-E-L-D.
-
 ### "-" + "Laraña" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1520,12 +1514,6 @@ Accuracy: 99.97%
 - Examples:
   - EL CAIRO - ¡Sí, entrenador, sí!
 
-### "CATÓLICO" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - MUNDO CATÓLICO - ¿QUÉ ES LA VIDA SIN ALGO DE CULPA?
-
 ### "CONECTANDO" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1772,23 +1760,11 @@ Accuracy: 99.97%
 - Examples:
   - Pero todo esto cambia con la Quinta .
 
-### "RACHEL CHU" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - RACHEL CHU - ¿HAY UN ANILLO?
-
 ### "RECHAZADO" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - RECHAZADO - ¡Evelyn, espera!
-
-### "RECLUSA" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - RECLUSA - ¿DÓNDE ESTÁ EL MALDITO CEMENTERIO?
 
 ### "Repito" + ":" (1 occurrences)
 - Predicted: Space

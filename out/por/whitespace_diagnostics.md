@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2485770
-Total errors: 552
+Total predictions: 2483194
+Total errors: 541
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -441,29 +441,11 @@ Accuracy: 99.98%
 - Examples:
   - Oh,Deus meu!
 
-### "," + "I" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ú,L,I,O.
-
 ### "," + "Jasper" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Vamos ,Jasper.
-
-### "," + "L" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ú,L,I,O.
-
-### "," + "O" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ú,L,I,O.
 
 ### "," + "Padre" (1 occurrences)
 - Predicted: Space
@@ -795,24 +777,6 @@ Accuracy: 99.98%
 - Examples:
   - Eu não estou amaldiçoando a minha reputação - Dê uma cadeirada!
 
-### "-" + "JACQUES COUSTEAU" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - EXTRAORDINÁRIA, ELE NÃO TEM DIREITO DE MANTÊ-LA PARA SI - JACQUES COUSTEAU.
-
-### "-" + "MALS" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - GAROTOS RICOS - MALS?
-
-### "-" + "MELHOR" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ESTE CARA - MELHOR ORADOR QUE JÁ VI.
-
 ### "-" + "Meu" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1077,12 +1041,6 @@ Accuracy: 99.98%
 - Examples:
   - Passou, C+.
 
-### "CARA" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ESTE CARA - MELHOR ORADOR QUE JÁ VI.
-
 ### "Cerveja" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1311,12 +1269,6 @@ Accuracy: 99.98%
 - Examples:
   - Kelly -Kelly, certo.
 
-### "LIVRE" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - MOVIMENTO CINEMA LIVRE .
-
 ### "Laid" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1503,12 +1455,6 @@ Accuracy: 99.98%
 - Examples:
   - O estacionamento cobra R$20 por hora.
 
-### "RICOS" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - GAROTOS RICOS - MALS?
-
 ### "ROSE" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1544,12 +1490,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Não somos os Rockfellers .
-
-### "SI" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - EXTRAORDINÁRIA, ELE NÃO TEM DIREITO DE MANTÊ-LA PARA SI - JACQUES COUSTEAU.
 
 ### "Senhor" + "," (1 occurrences)
 - Predicted: None
@@ -2684,12 +2624,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Venham tomarcafé conosco!
-
-### "toquel" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Não me toquel -lsso é para eu ter medo?
 
 ### "trabalho" + "-" (1 occurrences)
 - Predicted: None

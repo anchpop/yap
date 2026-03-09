@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2329390
-Total errors: 2907
+Total predictions: 2327292
+Total errors: 2905
 Accuracy: 99.88%
 
 ## Error Patterns (sorted by frequency)
@@ -3056,12 +3056,6 @@ Accuracy: 99.88%
 - Examples:
   - Lei è Suzy Shafer… - Piacere di conoscerla.
 
-### "-" + "SOPRAVVISSERO" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - CON LONGEVITÀ INDEFINITA - SOPRAVVISSERO.
-
 ### "-" + "Salam" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4765,12 +4759,6 @@ Accuracy: 99.88%
 - Actual: Space
 - Examples:
   - Hwang Joo-Yeon ?
-
-### "INDEFINITA" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - CON LONGEVITÀ INDEFINITA - SOPRAVVISSERO.
 
 ### "Impedisci" + "gli" (1 occurrences)
 - Predicted: Space
