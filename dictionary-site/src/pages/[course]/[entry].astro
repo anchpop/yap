@@ -37,6 +37,17 @@ function getSummary(): string {
   return defs.slice(0, 3).join('; ');
 }
 
+function getFrequencyTier(rank: number, total: number): { label: string; color: string } {
+  const pct = rank / total;
+  if (pct <= 0.01) return { label: 'Extremely common', color: 'bg-green-500/15 text-green-700 dark:text-green-400' };
+  if (pct <= 0.05) return { label: 'Very common', color: 'bg-green-500/10 text-green-600 dark:text-green-500' };
+  if (pct <= 0.20) return { label: 'Common', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400' };
+  if (pct <= 0.50) return { label: 'Uncommon', color: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400' };
+  return { label: 'Rare', color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400' };
+}
+
+const frequencyTier = getFrequencyTier(page.best_frequency_rank, courseMeta.total_pages);
+
 function posLabel(pos: string): string {
   const labels: Record<string, string> = {
     Adj: 'adjective', Adp: 'preposition', Adv: 'adverb', Aux: 'auxiliary',
@@ -69,23 +80,10 @@ function posLabel(pos: string): string {
     {mainSense.pronunciation && (
       <p class="text-muted-foreground mt-1">{mainSense.pronunciation}</p>
     )}
-    {(() => {
-      const rank = page.best_frequency_rank;
-      const total = courseMeta.total_pages;
-      const pct = rank / total;
-      let label: string, color: string;
-      if (pct <= 0.01) { label = 'Extremely common'; color = 'bg-green-500/15 text-green-700 dark:text-green-400'; }
-      else if (pct <= 0.05) { label = 'Very common'; color = 'bg-green-500/10 text-green-600 dark:text-green-500'; }
-      else if (pct <= 0.20) { label = 'Common'; color = 'bg-blue-500/10 text-blue-700 dark:text-blue-400'; }
-      else if (pct <= 0.50) { label = 'Uncommon'; color = 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'; }
-      else { label = 'Rare'; color = 'bg-orange-500/10 text-orange-700 dark:text-orange-400'; }
-      return (
-        <p class="mt-1.5 flex items-center gap-2">
-          <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${color}`}>{label}</span>
-          <span class="text-sm text-muted-foreground">#{rank.toLocaleString()}</span>
-        </p>
-      );
-    })()}
+    <p class="mt-1.5 flex items-center gap-2">
+      <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${frequencyTier.color}`}>{frequencyTier.label}</span>
+      <span class="text-sm text-muted-foreground">#{page.best_frequency_rank.toLocaleString()}</span>
+    </p>
   </div>
 
   <div class="space-y-4">
