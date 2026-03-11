@@ -2577,6 +2577,7 @@ impl Language {
                 // Detected separately via ocr_i_apostrophe check in check_subtitle_sanity
             ],
             // t→r corruption: "the"→"rhe", "that"→"rhar", "this"→"rhis", "it"→"ir"
+            // OCR: lowercase l for uppercase I: "l'm" for "I'm", "lt" for "It"
             Language::English => &[
                 (" rhe ", " the "),
                 ("rhar", "that"),
@@ -2588,6 +2589,13 @@ impl Language {
                 ("jusr", "just"),
                 ("righr", "right"),
                 ("don'r", "don't"),
+                // OCR: lowercase l for uppercase I
+                (" l'm", " I'm"),
+                (" l'd", " I'd"),
+                (" l'll", " I'll"),
+                (" lt ", " It "),
+                (" ln ", " In "),
+                (" lf ", " If "),
             ],
             // t→r corruption: "está"→"esrá", "todo"→"rodo", "tiene"→"riene"
             Language::Spanish => &[
@@ -2598,10 +2606,11 @@ impl Language {
                 ("rambién", "también"),
                 ("conrra", "contra"),
                 ("nuesrro", "nuestro"),
-                ("orro", "otro"),
-                ("parr", "part"),
+                // NOTE: "orro" and "parr" omitted — too many false positives from
+                // legitimate Spanish words (socorro, horror, zorro, parrilla, parroquia, etc.)
             ],
             // t→r corruption: "nicht"→"nichr", "ist"→"isr", "mit"→"mir" (ambiguous)
+            // OCR: lowercase l for uppercase I: "lch" for "Ich", "lhr" for "Ihr"
             Language::German => &[
                 ("nichr", "nicht"),
                 ("nichrs", "nichts"),
@@ -2611,9 +2620,16 @@ impl Language {
                 ("lerzr", "letzt"),
                 ("mussr", "musst"),
                 ("kannsr", "kannst"),
+                // OCR: lowercase l for uppercase I
+                (" lch ", " Ich "),
+                (" lhr", " Ihr"),
+                (" lhm", " Ihm"),
+                (" lhn", " Ihn"),
+                (" lst ", " Ist "),
+                (" ln ", " In "),
             ],
             // t→r corruption: "tutto"→"rurro", "questo"→"quesr-", "fatto"→"farro"
-            // OCR: "Il"→"II" or "ll"
+            // OCR: "Il"→"II" or "ll", "In"→"ln", zz→e'e'
             Language::Italian => &[
                 ("rurro", "tutto"),
                 ("rurra", "tutta"),
@@ -2626,8 +2642,18 @@ impl Language {
                 // OCR: two capital I's or two lowercase l's instead of "Il"
                 ("II ", "Il "),
                 (" ll ", " Il "),
+                // OCR: "In" → "ln"
+                (" ln ", " In "),
+                // OCR: zz→e'e' (bizarre but systematic): "soluzione"→"solue'ione"
+                ("e'e'", "zz"),
+                // OCR: í (accented i) replacing normal i in common words
+                ("Grazíe", "Grazie"),
+                ("prímo", "primo"),
+                ("díre", "dire"),
             ],
             // t→r corruption: "está"→"esrá", "tudo"→"rudo", "tem"→"rem" (ambiguous)
+            // OCR: uppercase I for lowercase l: "paIavra" for "palavra"
+            // OCR: "-Io" for "-lo" (clitic), "Ihe" for "lhe"
             Language::Portuguese => &[
                 ("esrá", "está"),
                 ("esre", "este"),
@@ -2636,6 +2662,20 @@ impl Language {
                 ("ourro", "outro"),
                 ("denrro", "dentro"),
                 ("enrão", "então"),
+                // OCR: uppercase I substituted for lowercase l
+                ("eIe", "ele"),
+                ("paIavra", "palavra"),
+                ("fIor", "flor"),
+                ("Iugar", "lugar"),
+                ("Iindo", "lindo"),
+                ("reaImente", "realmente"),
+                // OCR: I for l in clitics and common words
+                ("-Io ", "-lo "),
+                ("á-Io", "á-lo"),
+                ("ê-Io", "ê-lo"),
+                ("Ihe ", "lhe "),
+                ("Ihes ", "lhes "),
+                ("úItim", "últim"),
             ],
             // No Latin script subtitles for these
             Language::Korean | Language::Chinese | Language::Japanese | Language::Russian => &[],
@@ -2644,11 +2684,22 @@ impl Language {
 
     /// Unified subtitle sanity check. Takes an iterator of subtitle sentence strings.
     /// Returns `Ok(())` if the subtitles pass, or `Err(reason)` describing why they failed.
+    /// `skip_markers` allows whitelisting specific corruption markers for files with known
+    /// false positives (e.g., a character named "Rourke" triggering the "rour" marker).
     pub fn check_subtitle_sanity<'a>(
         &self,
         sentences: impl Iterator<Item = &'a str>,
+        skip_markers: &[&str],
     ) -> Result<(), String> {
-        let all_text: String = sentences.collect::<Vec<_>>().join(" ");
+        let lines: Vec<&str> = sentences.collect();
+        let total_lines = lines.len();
+
+        // 0. Minimum line count — reject fragments
+        if total_lines < 75 {
+            return Err(format!("too few lines ({total_lines}), likely a fragment"));
+        }
+
+        let all_text: String = lines.join(" ");
         let all_text_lower = all_text.to_lowercase();
 
         // 1. Check that all required sanity words appear
@@ -2668,6 +2719,9 @@ impl Language {
         // 2. Check for systematic character corruption (e.g. t→r)
         let corruption_markers = self.subtitle_corruption_markers();
         for &(marker, expected) in corruption_markers {
+            if skip_markers.contains(&marker) {
+                continue;
+            }
             // Some markers are case-sensitive (OCR patterns like "II"), check against original
             let count = if marker.chars().any(|c| c.is_uppercase()) {
                 all_text.matches(marker).count()
@@ -2681,8 +2735,8 @@ impl Language {
             }
         }
 
-        // 3. French-specific: check for OCR "I'" where "l'" should be (I followed by ' then lowercase)
-        if matches!(self, Language::French) {
+        // 3. OCR "I'" where "l'" should be (I followed by ' then lowercase) — French and Italian
+        if matches!(self, Language::French | Language::Italian) {
             let mut i_apos_count = 0usize;
             let chars: Vec<char> = all_text.chars().collect();
             for i in 0..chars.len().saturating_sub(2) {
@@ -2698,6 +2752,163 @@ impl Language {
                     "OCR corruption: found \"I'\" followed by lowercase {i_apos_count} times (should be \"l'\")"
                 ));
             }
+        }
+
+        // 4. SSA/ASS subtitle formatting codes that should have been stripped
+        let ssa_count = all_text.matches("{\\an").count()
+            + all_text.matches("{\\i1}").count()
+            + all_text.matches("{\\i0}").count()
+            + all_text.matches("{\\fs").count()
+            + all_text.matches("{\\pos").count()
+            + all_text.matches("{\\c&").count()
+            + all_text.matches("{\\frz").count()
+            + all_text.matches("\\h").count();
+        if ssa_count >= 10 {
+            return Err(format!(
+                "SSA/ASS formatting codes found {ssa_count} times (should be stripped)"
+            ));
+        }
+
+        // 5. BOM characters in text
+        let bom_count = all_text.matches('\u{FEFF}').count();
+        if bom_count >= 5 {
+            return Err(format!("BOM characters (U+FEFF) found {bom_count} times"));
+        }
+
+        // 6. C1 control characters (U+0080-U+009F) indicate Windows-1252 mojibake
+        let c1_count = all_text
+            .chars()
+            .filter(|&c| ('\u{0080}'..='\u{009F}').contains(&c))
+            .count();
+        if c1_count >= 5 {
+            return Err(format!(
+                "C1 control characters found {c1_count} times (Windows-1252 encoding corruption)"
+            ));
+        }
+
+        // 7. Greek homoglyphs mixed into Latin text (subtitle copy-protection)
+        if matches!(
+            self.writing_system(),
+            WritingSystem::Latin | WritingSystem::Cyrillic
+        ) {
+            let greek_count = all_text
+                .chars()
+                .filter(|&c| ('\u{0370}'..='\u{03FF}').contains(&c))
+                .count();
+            if greek_count >= 5 {
+                return Err(format!(
+                    "Greek homoglyph characters found {greek_count} times (copy-protection corruption)"
+                ));
+            }
+        }
+
+        // 8. Backtick or acute accent used as apostrophe
+        let bad_apostrophe_count = all_text
+            .chars()
+            .filter(|&c| c == '`' || c == '\u{00B4}')
+            .count();
+        if bad_apostrophe_count >= 10 {
+            return Err(format!(
+                "Backtick/acute accent used as apostrophe {bad_apostrophe_count} times"
+            ));
+        }
+
+        // 9. CJK characters in non-CJK subtitle files
+        if !matches!(
+            self,
+            Language::Chinese | Language::Japanese | Language::Korean
+        ) {
+            let cjk_count = all_text
+                .chars()
+                .filter(|&c| {
+                    ('\u{4E00}'..='\u{9FFF}').contains(&c)
+                        || ('\u{3400}'..='\u{4DBF}').contains(&c)
+                        || ('\u{F900}'..='\u{FAFF}').contains(&c)
+                })
+                .count();
+            if cjk_count >= 20 {
+                return Err(format!(
+                    "CJK characters found {cjk_count} times in {self} subtitles (wrong language content)"
+                ));
+            }
+        }
+
+        // 10. Invisible directional Unicode markers (LRM U+200E, RLE U+202B, etc.)
+        let invisible_dir_count = all_text
+            .chars()
+            .filter(|&c| {
+                c == '\u{200E}'
+                    || c == '\u{200F}'
+                    || c == '\u{202A}'
+                    || c == '\u{202B}'
+                    || c == '\u{202C}'
+                    || c == '\u{202D}'
+                    || c == '\u{202E}'
+                    || c == '\u{2066}'
+                    || c == '\u{2067}'
+                    || c == '\u{2068}'
+                    || c == '\u{2069}'
+                    || c == '\u{3164}'
+            })
+            .count();
+        if invisible_dir_count >= 20 {
+            return Err(format!(
+                "Invisible directional/filler Unicode characters found {invisible_dir_count} times"
+            ));
+        }
+
+        // 11. Spanish: missing inverted punctuation ¿ and ¡
+        if matches!(self, Language::Spanish) && total_lines >= 100 {
+            let questions = all_text.matches('?').count();
+            let inv_questions = all_text.matches('¿').count();
+            // If there are many questions but zero or near-zero inverted marks
+            if questions >= 20 && inv_questions * 5 < questions {
+                return Err(format!(
+                    "Spanish missing ¿: {questions} questions but only {inv_questions} inverted marks"
+                ));
+            }
+        }
+
+        // 14. OCR: "fii" for "fi" (ligature mangling)
+        if matches!(
+            self,
+            Language::English | Language::French | Language::Italian
+        ) {
+            let fii_count = all_text_lower.matches("fii").count();
+            if fii_count >= 5 {
+                return Err(format!(
+                    "OCR ligature corruption: \"fii\" found {fii_count} times (should be \"fi\")"
+                ));
+            }
+        }
+
+        // 15. OCR: "0" for "O" at word boundaries (0lá, 0brigado, etc.)
+        if matches!(self.writing_system(), WritingSystem::Latin) {
+            let zero_for_o: usize = lines
+                .iter()
+                .map(|line| {
+                    line.split_whitespace()
+                        .filter(|w| {
+                            w.starts_with('0')
+                                && w.len() > 1
+                                && w.chars().nth(1).is_some_and(|c| c.is_alphabetic())
+                        })
+                        .count()
+                })
+                .sum();
+            if zero_for_o >= 5 {
+                return Err(format!(
+                    "OCR: digit 0 used for letter O found {zero_for_o} times"
+                ));
+            }
+        }
+
+        // 16. SRT timecodes leaked into text (e.g. "00:12:34,567 --> 00:12:36,789")
+        let timecode_count = lines.iter().filter(|line| line.contains("-->")).count();
+        if timecode_count >= 3 {
+            return Err(format!(
+                "SRT timecodes found in {timecode_count} lines (format conversion error)"
+            ));
         }
 
         Ok(())

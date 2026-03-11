@@ -28,13 +28,24 @@ const pageTitle = mainSense.is_phrase
   : `${page.display_text} — ${courseMeta.target_language}`;
 
 function getSummary(): string {
-  const defs = page.senses.flatMap((s: any) => {
-    if (s.definition.type === 'Dictionary') {
-      return s.definition.definitions.map((d: any) => d.native);
+  const seen = new Set<string>();
+  const words: string[] = [];
+  for (const s of page.senses) {
+    const natives: string[] = s.definition.type === 'Dictionary'
+      ? s.definition.definitions.map((d: any) => d.native)
+      : [s.definition.meaning];
+    for (const n of natives) {
+      for (const part of n.split(',')) {
+        const word = part.trim();
+        const key = word.toLowerCase();
+        if (key && !seen.has(key)) {
+          seen.add(key);
+          words.push(word);
+        }
+      }
     }
-    return [s.definition.meaning];
-  });
-  return defs.slice(0, 3).join('; ');
+  }
+  return words.slice(0, 5).join(', ');
 }
 
 function getFrequencyTier(rank: number, total: number): { label: string; color: string } {
@@ -46,7 +57,6 @@ function getFrequencyTier(rank: number, total: number): { label: string; color: 
   return { label: 'Rare', color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400' };
 }
 
-const frequencyTier = getFrequencyTier(page.best_frequency_rank, courseMeta.total_pages);
 
 function posLabel(pos: string): string {
   const labels: Record<string, string> = {
@@ -122,8 +132,6 @@ function grammarSummary(sense: any): string {
       {mainSense.pronunciation && (
         <span>{mainSense.pronunciation}</span>
       )}
-      <span class={`text-xs font-medium px-1.5 py-0.5 rounded-full ${frequencyTier.color}`}>{frequencyTier.label}</span>
-      <span>#{page.best_frequency_rank.toLocaleString()}</span>
       {mainSense.lemma && mainSense.lemma !== page.display_text && (
         <span>→ {mainSense.lemma}</span>
       )}
@@ -134,12 +142,15 @@ function grammarSummary(sense: any): string {
   <div class="space-y-8">
     {page.senses.map((sense: any, senseIdx: number) => {
       const grammar = grammarSummary(sense);
+      const senseTier = getFrequencyTier(sense.frequency_rank, courseMeta.total_pages);
       return (
         <div>
-          {/* Grammar line */}
-          {grammar && (
-            <p class="text-sm text-muted-foreground/60 mb-2">{grammar}</p>
-          )}
+          {/* Grammar + frequency line */}
+          <div class="flex items-center gap-2 text-sm text-muted-foreground/60 mb-2">
+            {grammar && <span>{grammar}</span>}
+            <span class={`text-xs font-medium px-1.5 py-0.5 rounded-full ${senseTier.color}`}>{senseTier.label}</span>
+            <span class="text-xs">#{sense.frequency_rank.toLocaleString()}</span>
+          </div>
 
           {/* Definitions */}
           {sense.definition.type === 'Dictionary' && (
@@ -194,7 +205,12 @@ function grammarSummary(sense: any): string {
 
                   // Verb tables: group by (mood, tense)
                   if (pos === 'Verb' || pos === 'Aux') {
-                    const groups = groupVerbForms(forms);
+                    const allGroups = groupVerbForms(forms);
+                    // Only show groups that contain the current word, or infinitive
+                    const groups = new Map([...allGroups.entries()].filter(([label, groupForms]) =>
+                      label.includes('infinitive') || groupForms.some((f: any) => f.word === page.display_text)
+                    ));
+                    if (groups.size === 0) return null;
                     const renderFormLink = (f: any) => (
                       f.word === page.display_text
                         ? <mark>{f.word}</mark>
@@ -261,7 +277,7 @@ function grammarSummary(sense: any): string {
                   }
 
                   // Nouns with case declension
-                  if (pos === 'Noun' && forms.some((f: any) => f.case)) {
+                  if (pos === 'Noun' && forms.some((f: any) => f.case) && forms.some((f: any) => f.word === page.display_text)) {
                     const cases = ['nominative', 'accusative', 'dative', 'genitive'];
                     const numbers = ['singular', 'plural'];
                     return (
@@ -299,7 +315,7 @@ function grammarSummary(sense: any): string {
                   }
 
                   // Adjectives: gender × number grid
-                  if (pos === 'Adj' && forms.some((f: any) => f.gender)) {
+                  if (pos === 'Adj' && forms.some((f: any) => f.gender) && forms.some((f: any) => f.word === page.display_text)) {
                     const genders = ['masculine', 'feminine'];
                     const numbers = ['singular', 'plural'];
                     return (
@@ -337,6 +353,7 @@ function grammarSummary(sense: any): string {
                   }
 
                   // Fallback: flat list of forms
+                  if (!forms.some((f: any) => f.word === page.display_text)) return null;
                   return (
                     <div class="flex flex-wrap gap-2">
                       {forms.map((f: any) => (

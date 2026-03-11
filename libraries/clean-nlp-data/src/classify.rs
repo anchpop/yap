@@ -1,5 +1,25 @@
+use crate::polysemous_words;
 use language_utils::{Language, NlpAnalyzedSentence, PartOfSpeechTag};
 use tysm::chat_completions::ChatClient;
+
+/// Check a token against the polysemous word list for a language, returning a reason if it matches.
+fn check_polysemous(language: Language, text_lower: &str) -> Option<String> {
+    let words = polysemous_words::polysemous_words(language);
+    for (surface_form, meanings) in words {
+        if text_lower == *surface_form {
+            let desc: Vec<String> = meanings
+                .iter()
+                .map(|(lemma, pos)| format!("{lemma}/{pos:?}"))
+                .collect();
+            return Some(format!(
+                "'{}' is polysemous: {}. Please tag it appropriately.",
+                surface_form,
+                desc.join(", ")
+            ));
+        }
+    }
+    None
+}
 
 /// Classification result for a sentence
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -35,6 +55,102 @@ pub trait WordCorrector {
     /// Apply post-processing corrections to simplified tokens
     fn post_corrections(&self, _tokens: &mut Vec<SimplifiedTokenPrime>) {
         // Default implementation does nothing
+    }
+}
+
+/// Returns the expected contraction lemma for a given language, text, and POS.
+/// If the word is a contraction, returns Some(expected_lemma). Otherwise None.
+fn contraction_lemma(
+    language: Language,
+    text_lower: &str,
+    pos: PartOfSpeechTag,
+) -> Option<&'static str> {
+    match language {
+        Language::French => match text_lower {
+            "au" => Some("au"),
+            "aux" => Some("aux"),
+            "du" => Some("du"),
+            "des" => Some("des"),
+            _ => None,
+        },
+        Language::Spanish => match text_lower {
+            "al" => Some("al"),
+            "del" => Some("del"),
+            _ => None,
+        },
+        Language::Portuguese => match text_lower {
+            "do" => Some("do"),
+            "da" => Some("da"),
+            "dos" => Some("dos"),
+            "das" => Some("das"),
+            "no" => Some("no"),
+            "na" => Some("na"),
+            "nos" if pos != PartOfSpeechTag::Pron => Some("nos"),
+            "nas" => Some("nas"),
+            "ao" => Some("ao"),
+            "aos" => Some("aos"),
+            "à" => Some("à"),
+            "às" => Some("às"),
+            "pelo" if pos != PartOfSpeechTag::Noun => Some("pelo"),
+            "pela" => Some("pela"),
+            "pelos" if pos != PartOfSpeechTag::Noun => Some("pelos"),
+            "pelas" => Some("pelas"),
+            "num" => Some("num"),
+            "numa" => Some("numa"),
+            "nuns" => Some("nuns"),
+            "numas" => Some("numas"),
+            _ => None,
+        },
+        Language::German => match text_lower {
+            "im" => Some("im"),
+            "am" => Some("am"),
+            "zum" => Some("zum"),
+            "zur" => Some("zur"),
+            "vom" => Some("vom"),
+            "beim" => Some("beim"),
+            "ins" => Some("ins"),
+            "ans" => Some("ans"),
+            "aufs" => Some("aufs"),
+            "durchs" => Some("durchs"),
+            "fürs" => Some("fürs"),
+            "ums" => Some("ums"),
+            _ => None,
+        },
+        Language::Italian => match text_lower {
+            "al" => Some("al"),
+            "allo" => Some("allo"),
+            "alla" => Some("alla"),
+            "ai" => Some("ai"),
+            "agli" => Some("agli"),
+            "alle" => Some("alle"),
+            "del" => Some("del"),
+            "dello" => Some("dello"),
+            "della" => Some("della"),
+            "dei" => Some("dei"),
+            "degli" => Some("degli"),
+            "delle" => Some("delle"),
+            "nel" => Some("nel"),
+            "nello" => Some("nello"),
+            "nella" => Some("nella"),
+            "nei" => Some("nei"),
+            "negli" => Some("negli"),
+            "nelle" => Some("nelle"),
+            "sul" => Some("sul"),
+            "sullo" => Some("sullo"),
+            "sulla" => Some("sulla"),
+            "sui" => Some("sui"),
+            "sugli" => Some("sugli"),
+            "sulle" => Some("sulle"),
+            "dal" => Some("dal"),
+            "dallo" => Some("dallo"),
+            "dalla" => Some("dalla"),
+            "dai" => Some("dai"),
+            "dagli" => Some("dagli"),
+            "dalle" => Some("dalle"),
+            "col" => Some("col"),
+            _ => None,
+        },
+        _ => None,
     }
 }
 
@@ -300,6 +416,90 @@ impl SentenceClassifier for SpanishClassifier {
                 "sabrían",
             ];
 
+            let ser_forms = [
+                // Present
+                "soy",
+                "eres",
+                "es",
+                "somos",
+                "sois",
+                "son", // Imperfect
+                "era",
+                "eras",
+                "éramos",
+                "erais",
+                "eran", // Preterite
+                "fui",
+                "fuiste",
+                "fue",
+                "fuimos",
+                "fuisteis",
+                "fueron", // Future
+                "seré",
+                "serás",
+                "será",
+                "seremos",
+                "seréis",
+                "serán", // Conditional
+                "sería",
+                "serías",
+                "seríamos",
+                "seríais",
+                "serían",
+            ];
+
+            let estar_forms = [
+                // Present
+                "estoy",
+                "estás",
+                "está",
+                "estamos",
+                "estáis",
+                "están", // Imperfect
+                "estaba",
+                "estabas",
+                "estábamos",
+                "estabais",
+                "estaban", // Preterite
+                "estuve",
+                "estuviste",
+                "estuvo",
+                "estuvimos",
+                "estuvisteis",
+                "estuvieron", // Future
+                "estaré",
+                "estarás",
+                "estará",
+                "estaremos",
+                "estaréis",
+                "estarán", // Conditional
+                "estaría",
+                "estarías",
+                "estaríamos",
+                "estaríais",
+                "estarían",
+            ];
+
+            if ser_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "ser"
+            {
+                reasons.push(format!(
+                    "'{}' (ser) can be either AUX or VERB depending on context. Rule: AUX when forming passive voice with past participles (e.g., 'fue construido'), VERB when used as a copula expressing identity/characteristics (e.g., 'es grande', 'soy profesor')",
+                    token.text
+                ));
+            }
+
+            if estar_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "estar"
+            {
+                reasons.push(format!(
+                    "'{}' (estar) can be either AUX or VERB depending on context. Rule: AUX when forming progressive tenses with gerund (e.g., 'estoy comiendo'), VERB when used as a copula expressing state/location (e.g., 'está bien', 'estoy en casa')",
+                    token.text
+                ));
+            }
+
             if haber_forms.contains(&text_lower.as_str())
                 && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "haber"
@@ -336,6 +536,179 @@ impl SentenceClassifier for SpanishClassifier {
             {
                 reasons.push(format!(
                     "'{}' (saber) can be either AUX or VERB depending on context. Rule: AUX when expressing ability with infinitive (e.g., 'sé nadar'), VERB when expressing knowledge of facts (e.g., 'sé la respuesta')",
+                    token.text
+                ));
+            }
+
+            let tener_forms = [
+                // Present
+                "tengo",
+                "tienes",
+                "tiene",
+                "tenemos",
+                "tenéis",
+                "tienen", // Imperfect
+                "tenía",
+                "tenías",
+                "teníamos",
+                "teníais",
+                "tenían", // Preterite
+                "tuve",
+                "tuviste",
+                "tuvo",
+                "tuvimos",
+                "tuvisteis",
+                "tuvieron", // Future
+                "tendré",
+                "tendrás",
+                "tendrá",
+                "tendremos",
+                "tendréis",
+                "tendrán", // Conditional
+                "tendría",
+                "tendrías",
+                "tendríamos",
+                "tendríais",
+                "tendrían",
+            ];
+
+            let ir_forms = [
+                // Present
+                "voy", "vas", "va", "vamos", "vais", "van", // Imperfect
+                "iba", "ibas", "íbamos", "ibais", "iban", // Preterite (shared with ser)
+                "fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron", // Future
+                "iré", "irás", "irá", "iremos", "iréis", "irán", // Conditional
+                "iría", "irías", "iríamos", "iríais", "irían",
+            ];
+
+            let soler_forms = [
+                // Present
+                "suelo",
+                "sueles",
+                "suele",
+                "solemos",
+                "soléis",
+                "suelen", // Imperfect
+                "solía",
+                "solías",
+                "solíamos",
+                "solíais",
+                "solían",
+            ];
+
+            let acabar_forms = [
+                // Present
+                "acabo",
+                "acabas",
+                "acaba",
+                "acabamos",
+                "acabáis",
+                "acaban", // Imperfect
+                "acababa",
+                "acababas",
+                "acabábamos",
+                "acababais",
+                "acababan", // Preterite
+                "acabé",
+                "acabaste",
+                "acabó",
+                "acabamos",
+                "acabasteis",
+                "acabaron",
+            ];
+
+            let llevar_forms = [
+                // Present
+                "llevo",
+                "llevas",
+                "lleva",
+                "llevamos",
+                "lleváis",
+                "llevan", // Imperfect
+                "llevaba",
+                "llevabas",
+                "llevábamos",
+                "llevabais",
+                "llevaban",
+            ];
+
+            let andar_forms_es = [
+                // Present
+                "ando",
+                "andas",
+                "anda",
+                "andamos",
+                "andáis",
+                "andan", // Imperfect
+                "andaba",
+                "andabas",
+                "andábamos",
+                "andabais",
+                "andaban", // Preterite
+                "anduve",
+                "anduviste",
+                "anduvo",
+                "anduvimos",
+                "anduvisteis",
+                "anduvieron",
+            ];
+
+            if tener_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "tener"
+            {
+                reasons.push(format!(
+                    "'{}' (tener) can be either AUX or VERB depending on context. Rule: AUX when expressing obligation with 'que' + infinitive (e.g., 'tengo que ir'), VERB when expressing possession (e.g., 'tengo un perro')",
+                    token.text
+                ));
+            }
+
+            if ir_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "ir"
+            {
+                reasons.push(format!(
+                    "'{}' (ir) can be either AUX or VERB depending on context. Rule: AUX when forming near future with 'a' + infinitive (e.g., 'voy a comer'), VERB when expressing movement (e.g., 'voy a Madrid')",
+                    token.text
+                ));
+            }
+
+            if soler_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "soler"
+            {
+                reasons.push(format!(
+                    "'{}' (soler) can be either AUX or VERB depending on context. Rule: AUX when expressing habitual action with infinitive (e.g., 'suelo correr'), VERB usage is rare",
+                    token.text
+                ));
+            }
+
+            if acabar_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "acabar"
+            {
+                reasons.push(format!(
+                    "'{}' (acabar) can be either AUX or VERB depending on context. Rule: AUX when forming recent past with 'de' + infinitive (e.g., 'acabo de llegar'), VERB when meaning to finish (e.g., 'acabé el libro')",
+                    token.text
+                ));
+            }
+
+            if llevar_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "llevar"
+            {
+                reasons.push(format!(
+                    "'{}' (llevar) can be either AUX or VERB depending on context. Rule: AUX when expressing duration (e.g., 'llevo dos años aquí'), VERB when meaning to carry/wear (e.g., 'llevo una camisa')",
+                    token.text
+                ));
+            }
+
+            if andar_forms_es.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "andar"
+            {
+                reasons.push(format!(
+                    "'{}' (andar) can be either AUX or VERB depending on context. Rule: AUX when forming progressive with gerund (e.g., 'ando buscando trabajo'), VERB when meaning to walk (e.g., 'ando por la calle')",
                     token.text
                 ));
             }
@@ -418,6 +791,69 @@ impl SentenceClassifier for SpanishClassifier {
                     ));
                 }
             }
+
+            // Detect verbs with broken lemmas
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma_lower = token.lemma.to_lowercase();
+                // Spanish infinitives must end in -ar, -er, -ir, or -ír
+                // If the lemma doesn't, the lemmatizer failed (e.g., clitic-attached imperatives
+                // like "acostúmbrese" → lemma "acostúmbrese", or just garbage)
+                if !lemma_lower.ends_with("ar")
+                    && !lemma_lower.ends_with("er")
+                    && !lemma_lower.ends_with("ir")
+                    && !lemma_lower.ends_with("ír")
+                    && lemma_lower != "ser"
+                    && lemma_lower != "ir"
+                    && lemma_lower != "ver"
+                    && text_lower.len() > 3
+                {
+                    reasons.push(format!(
+                        "'{}' has lemma '{}' which doesn't look like a Spanish infinitive — likely a failed lemmatization",
+                        token.text, token.lemma
+                    ));
+                }
+
+                // Detect bogus infinitives with accents in the stem (e.g., "deberiar", "estár")
+                if (lemma_lower.ends_with("ar")
+                    || lemma_lower.ends_with("er")
+                    || lemma_lower.ends_with("ir"))
+                    && lemma_lower.len() > 2
+                {
+                    let stem = &lemma_lower[..lemma_lower.len() - 2];
+                    if stem.contains('á')
+                        || stem.contains('é')
+                        || stem.contains('í')
+                        || stem.contains('ó')
+                        || stem.contains('ú')
+                    {
+                        reasons.push(format!(
+                            "'{}' has lemma '{}' which looks like a bogus infinitive (accent in stem)",
+                            token.text, token.lemma
+                        ));
+                    }
+                }
+            }
+
+            // "siquiera" is always an adverb, not a noun
+            if text_lower == "siquiera" && token.pos != PartOfSpeechTag::Adv {
+                reasons.push(format!(
+                    "'siquiera' tagged as {:?} but it's an adverb meaning 'even/at least'",
+                    token.pos
+                ));
+            }
+
+            // "menos" — lemma should be "menos", not "meno" (not a real Spanish word)
+            if text_lower == "menos" && token.lemma == "meno" {
+                reasons.push(
+                    "'menos' has lemma 'meno' which is not a real Spanish word — lemma should be 'menos'"
+                        .to_string(),
+                );
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Spanish, &text_lower) {
+                reasons.push(reason);
+            }
         }
 
         if reasons.is_empty() {
@@ -439,17 +875,142 @@ impl WordCorrector for SpanishCorrector {
         for token in &mut sentence.doc {
             let text_lower = token.text.to_lowercase();
 
+            // Fix "no" POS - should always be Adv, not Part
+            if text_lower == "no" && token.pos == PartOfSpeechTag::Part {
+                corrections.push(format!("Fixed '{}' POS from Part to Adv", token.text));
+                token.pos = PartOfSpeechTag::Adv;
+                corrected = true;
+            }
+
             // Fix "ella" lemma - should always be "ella", not "él"
             if text_lower == "ella" && token.lemma == "él" {
                 corrections.push(format!("Fixed '{}' lemma from 'él' to 'ella'", token.text));
                 token.lemma = "ella".to_string();
                 corrected = true;
             }
+
+            // Fix "menos" lemma - "meno" is not a real Spanish word
+            if text_lower == "menos" && token.lemma == "meno" {
+                corrections.push("Fixed 'menos' lemma from 'meno' to 'menos'".to_string());
+                token.lemma = "menos".to_string();
+                corrected = true;
+            }
+
+            // Normalize demonstrative pronoun lemmas to masculine form
+            let demonstrative_fixes: &[(&str, &str)] = &[
+                ("esto", "este"),
+                ("eso", "ese"),
+                ("aquello", "aquel"),
+                ("esta", "este"),
+                ("estas", "este"),
+                ("estos", "este"),
+                ("esa", "ese"),
+                ("esas", "ese"),
+                ("esos", "ese"),
+                ("aquella", "aquel"),
+                ("aquellas", "aquel"),
+                ("aquellos", "aquel"),
+            ];
+            for &(form, expected_lemma) in demonstrative_fixes {
+                if text_lower == form
+                    && (token.pos == PartOfSpeechTag::Pron || token.pos == PartOfSpeechTag::Det)
+                    && token.lemma != expected_lemma
+                {
+                    corrections.push(format!(
+                        "Fixed demonstrative '{}' lemma from '{}' to '{}'",
+                        token.text, token.lemma, expected_lemma
+                    ));
+                    token.lemma = expected_lemma.to_string();
+                    corrected = true;
+                    break;
+                }
+            }
+
+            // Normalize indefinite article lemmas to "uno"
+            if (text_lower == "un"
+                || text_lower == "una"
+                || text_lower == "unos"
+                || text_lower == "unas")
+                && token.pos == PartOfSpeechTag::Det
+                && token.lemma != "uno"
+            {
+                corrections.push(format!(
+                    "Fixed indefinite article '{}' lemma from '{}' to 'uno'",
+                    token.text, token.lemma
+                ));
+                token.lemma = "uno".to_string();
+                corrected = true;
+            }
+
+            // Contractions keep their contracted form as lemma
+            if let Some(expected) = contraction_lemma(Language::Spanish, &text_lower, token.pos) {
+                if token.lemma != expected {
+                    corrections.push(format!(
+                        "Fixed '{}' lemma from '{}' to '{expected}'",
+                        token.text, token.lemma
+                    ));
+                    token.lemma = expected.to_string();
+                    corrected = true;
+                }
+            }
         }
 
         CorrectionResult {
             corrected,
             corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            let text_lower = token.text.to_lowercase();
+
+            // Fix "no" POS
+            if text_lower == "no" && token.pos == PartOfSpeechTag::Part {
+                token.pos = PartOfSpeechTag::Adv;
+            }
+
+            // Normalize demonstrative lemmas
+            let demonstrative_fixes: &[(&str, &str)] = &[
+                ("esto", "este"),
+                ("eso", "ese"),
+                ("aquello", "aquel"),
+                ("esta", "este"),
+                ("estas", "este"),
+                ("estos", "este"),
+                ("esa", "ese"),
+                ("esas", "ese"),
+                ("esos", "ese"),
+                ("aquella", "aquel"),
+                ("aquellas", "aquel"),
+                ("aquellos", "aquel"),
+            ];
+            for &(form, expected_lemma) in demonstrative_fixes {
+                if text_lower == form
+                    && (token.pos == PartOfSpeechTag::Pron || token.pos == PartOfSpeechTag::Det)
+                    && token.lemma != expected_lemma
+                {
+                    token.lemma = expected_lemma.to_string();
+                    break;
+                }
+            }
+
+            // Normalize indefinite article lemmas
+            if (text_lower == "un"
+                || text_lower == "una"
+                || text_lower == "unos"
+                || text_lower == "unas")
+                && token.pos == PartOfSpeechTag::Det
+                && token.lemma != "uno"
+            {
+                token.lemma = "uno".to_string();
+            }
+
+            if let Some(expected) = contraction_lemma(Language::Spanish, &text_lower, token.pos) {
+                if token.lemma != expected {
+                    token.lemma = expected.to_string();
+                }
+            }
         }
     }
 }
@@ -777,6 +1338,90 @@ impl SentenceClassifier for PortugueseClassifier {
                 "saberiam",
             ];
 
+            let ser_forms = [
+                // Present
+                "sou",
+                "és",
+                "é",
+                "somos",
+                "sois",
+                "são", // Imperfect
+                "era",
+                "eras",
+                "éramos",
+                "éreis",
+                "eram", // Preterite
+                "fui",
+                "foste",
+                "foi",
+                "fomos",
+                "fostes",
+                "foram", // Future
+                "serei",
+                "serás",
+                "será",
+                "seremos",
+                "sereis",
+                "serão", // Conditional
+                "seria",
+                "serias",
+                "seríamos",
+                "seríeis",
+                "seriam",
+            ];
+
+            let estar_forms = [
+                // Present
+                "estou",
+                "estás",
+                "está",
+                "estamos",
+                "estais",
+                "estão", // Imperfect
+                "estava",
+                "estavas",
+                "estávamos",
+                "estáveis",
+                "estavam", // Preterite
+                "estive",
+                "estiveste",
+                "esteve",
+                "estivemos",
+                "estivestes",
+                "estiveram", // Future
+                "estarei",
+                "estarás",
+                "estará",
+                "estaremos",
+                "estareis",
+                "estarão", // Conditional
+                "estaria",
+                "estarias",
+                "estaríamos",
+                "estaríeis",
+                "estariam",
+            ];
+
+            if ser_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "ser"
+            {
+                reasons.push(format!(
+                    "'{}' (ser) can be either AUX or VERB depending on context. Rule: AUX when forming passive voice with past participles (e.g., 'foi construído'), VERB when used as a copula expressing identity/characteristics (e.g., 'é grande', 'sou professor')",
+                    token.text
+                ));
+            }
+
+            if estar_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "estar"
+            {
+                reasons.push(format!(
+                    "'{}' (estar) can be either AUX or VERB depending on context. Rule: AUX when forming progressive tenses with gerund (e.g., 'estou comendo'), VERB when used as a copula expressing state/location (e.g., 'está bem', 'estou em casa')",
+                    token.text
+                ));
+            }
+
             if ter_forms.contains(&text_lower.as_str())
                 && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "ter"
@@ -826,6 +1471,213 @@ impl SentenceClassifier for PortugueseClassifier {
                     token.text
                 ));
             }
+
+            let ir_forms = [
+                // Present
+                "vou", "vais", "vai", "vamos", "ides", "vão", // Imperfect
+                "ia", "ias", "íamos", "íeis", "iam", // Preterite (shared with ser)
+                "fui", "foste", "foi", "fomos", "fostes", "foram", // Future
+                "irei", "irás", "irá", "iremos", "ireis", "irão", // Conditional
+                "iria", "irias", "iríamos", "iríeis", "iriam",
+            ];
+
+            let acabar_forms = [
+                // Present
+                "acabo",
+                "acabas",
+                "acaba",
+                "acabamos",
+                "acabais",
+                "acabam", // Imperfect
+                "acabava",
+                "acabavas",
+                "acabávamos",
+                "acabáveis",
+                "acabavam", // Preterite
+                "acabei",
+                "acabaste",
+                "acabou",
+                "acabámos",
+                "acabastes",
+                "acabaram",
+            ];
+
+            let andar_forms = [
+                // Present
+                "ando",
+                "andas",
+                "anda",
+                "andamos",
+                "andais",
+                "andam", // Imperfect
+                "andava",
+                "andavas",
+                "andávamos",
+                "andáveis",
+                "andavam", // Preterite
+                "andei",
+                "andaste",
+                "andou",
+                "andámos",
+                "andastes",
+                "andaram",
+            ];
+
+            let ficar_forms = [
+                // Present
+                "fico",
+                "ficas",
+                "fica",
+                "ficamos",
+                "ficais",
+                "ficam", // Imperfect
+                "ficava",
+                "ficavas",
+                "ficávamos",
+                "ficáveis",
+                "ficavam", // Preterite
+                "fiquei",
+                "ficaste",
+                "ficou",
+                "ficámos",
+                "ficastes",
+                "ficaram",
+            ];
+
+            if ir_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "ir"
+            {
+                reasons.push(format!(
+                    "'{}' (ir) can be either AUX or VERB depending on context. Rule: AUX when forming near future with infinitive (e.g., 'vou comer'), VERB when expressing movement (e.g., 'vou a Lisboa')",
+                    token.text
+                ));
+            }
+
+            if acabar_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "acabar"
+            {
+                reasons.push(format!(
+                    "'{}' (acabar) can be either AUX or VERB depending on context. Rule: AUX when forming recent past with 'de' + infinitive (e.g., 'acabo de chegar'), VERB when meaning to finish (e.g., 'acabei o livro')",
+                    token.text
+                ));
+            }
+
+            if andar_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "andar"
+            {
+                reasons.push(format!(
+                    "'{}' (andar) can be either AUX or VERB depending on context. Rule: AUX when forming progressive with 'a' + infinitive (e.g., 'ando a estudar'), VERB when meaning to walk (e.g., 'ando pela rua')",
+                    token.text
+                ));
+            }
+
+            if ficar_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "ficar"
+            {
+                reasons.push(format!(
+                    "'{}' (ficar) can be either AUX or VERB depending on context. Rule: AUX when expressing resultative state (e.g., 'fiquei surpreso'), VERB when meaning to stay/remain (e.g., 'fico em casa')",
+                    token.text
+                ));
+            }
+
+            // Detect verbs with broken lemmas — Portuguese infinitives must end in -ar, -er, -ir, -or (pôr)
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma_lower = token.lemma.to_lowercase();
+                if !lemma_lower.ends_with("ar")
+                    && !lemma_lower.ends_with("er")
+                    && !lemma_lower.ends_with("ir")
+                    && !lemma_lower.ends_with("or")  // pôr and derivatives
+                    && lemma_lower != "ir"
+                    && lemma_lower != "ser"
+                    && lemma_lower != "ter"
+                    && lemma_lower != "ver"
+                    && lemma_lower != "vir"
+                    && lemma_lower != "pôr"
+                    && text_lower.len() > 2
+                {
+                    reasons.push(format!(
+                        "'{}' has lemma '{}' which doesn't look like a Portuguese infinitive — likely a failed lemmatization",
+                        token.text, token.lemma
+                    ));
+                }
+
+                // Detect bogus infinitives with accents in the stem
+                if lemma_lower.ends_with("ar")
+                    || lemma_lower.ends_with("er")
+                    || lemma_lower.ends_with("ir")
+                {
+                    // Get the stem by removing last 2 chars (char-safe)
+                    let stem: String = lemma_lower
+                        .chars()
+                        .take(lemma_lower.chars().count().saturating_sub(2))
+                        .collect();
+                    if stem.contains('á')
+                        || stem.contains('é')
+                        || stem.contains('í')
+                        || stem.contains('ó')
+                        || stem.contains('ú')
+                    {
+                        reasons.push(format!(
+                            "'{}' has lemma '{}' which looks like a bogus infinitive (accent in stem)",
+                            token.text, token.lemma
+                        ));
+                    }
+                }
+            }
+
+            // Imperatives mistagged as Noun or Intj
+            // Sentence-initial capitalized words that look like verb conjugations
+            // but get tagged as Noun/Intj due to capitalization
+            if (token.pos == PartOfSpeechTag::Noun || token.pos == PartOfSpeechTag::Intj)
+                && token.text.chars().next().is_some_and(|c| c.is_uppercase())
+                && token.text.to_lowercase() == token.lemma.to_lowercase()
+            {
+                // If the surface form looks like it could be an imperative
+                // (ends in common Portuguese verb endings: -a, -e, -i, -ai, -ei, -am, -em)
+                let endings = ["a", "e", "i", "ai", "ei", "am", "em", "ão"];
+                let could_be_verb = endings.iter().any(|e| text_lower.ends_with(e));
+                if could_be_verb && text_lower.len() > 3 {
+                    reasons.push(format!(
+                        "'{}' tagged as {:?} with lemma '{}' but could be an imperative verb form. Capitalization at sentence start may be misleading the tagger.",
+                        token.text, token.pos, token.lemma
+                    ));
+                }
+            }
+
+            // Uppercase lemmas should be normalized to lowercase for verbs
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                reasons.push(format!(
+                    "'{}' has uppercase lemma '{}' — verb lemmas should be lowercase",
+                    token.text, token.lemma
+                ));
+            }
+
+            // "Milhões" should have lemma "milhão" (singular), not itself
+            if text_lower == "milhões" && token.lemma != "milhão" {
+                reasons.push(format!(
+                    "'milhões' has lemma '{}' but should be 'milhão' (singular form)",
+                    token.lemma
+                ));
+            }
+
+            // "quantas" should have lemma "quanto", like "quantos"
+            if (text_lower == "quantas" || text_lower == "quanta") && token.lemma != "quanto" {
+                reasons.push(format!(
+                    "'{}' has lemma '{}' but should be 'quanto' (masculine singular base form)",
+                    token.text, token.lemma
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Portuguese, &text_lower) {
+                reasons.push(reason);
+            }
         }
 
         if reasons.is_empty() {
@@ -859,6 +1711,109 @@ impl WordCorrector for PortugueseCorrector {
                     ));
                     token.lemma = "ela".to_string();
                     corrected = true;
+                }
+
+                // Fix clitic pronoun lemma consistency
+                let portuguese_pronoun_fixes: &[(&str, &str)] = &[
+                    ("me", "me"),
+                    ("te", "te"),
+                    ("se", "se"),
+                    ("lhe", "lhe"),
+                    ("nos", "nos"),
+                    ("vos", "vos"),
+                    ("lhes", "lhes"),
+                ];
+                for &(form, expected_lemma) in portuguese_pronoun_fixes {
+                    if text_lower == form
+                        && token.pos == PartOfSpeechTag::Pron
+                        && token.lemma != expected_lemma
+                    {
+                        // Don't fix "nos" if lemma is "nós" — that might be correct (subject pronoun)
+                        // The classifier flags this for the LLM to review
+                        if form == "nos" && token.lemma == "nós" {
+                            break;
+                        }
+                        corrections.push(format!(
+                            "Fixed pronoun '{}' lemma from '{}' to '{}'",
+                            token.text, token.lemma, expected_lemma
+                        ));
+                        token.lemma = expected_lemma.to_string();
+                        corrected = true;
+                        break;
+                    }
+                }
+
+                // Fix feminine noun lemmas — these should keep their feminine form
+                let feminine_noun_fixes: &[(&str, &str)] = &[
+                    ("irmã", "irmã"),
+                    ("irmãs", "irmã"),
+                    ("filha", "filha"),
+                    ("filhas", "filha"),
+                    ("mãe", "mãe"),
+                    ("mães", "mãe"),
+                    ("avó", "avó"),
+                    ("avós", "avó"),
+                ];
+                for &(form, expected_lemma) in feminine_noun_fixes {
+                    if text_lower == form
+                        && token.pos == PartOfSpeechTag::Noun
+                        && token.lemma != expected_lemma
+                    {
+                        corrections.push(format!(
+                            "Fixed feminine noun '{}' lemma from '{}' to '{}'",
+                            token.text, token.lemma, expected_lemma
+                        ));
+                        token.lemma = expected_lemma.to_string();
+                        corrected = true;
+                        break;
+                    }
+                }
+
+                // Normalize uppercase verb lemmas to lowercase
+                if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                    && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+                {
+                    let lower = token.lemma.to_lowercase();
+                    corrections.push(format!(
+                        "Normalized verb lemma '{}' to lowercase '{}'",
+                        token.lemma, lower
+                    ));
+                    token.lemma = lower;
+                    corrected = true;
+                }
+
+                // Fix "milhões" lemma
+                if text_lower == "milhões" && token.lemma != "milhão" {
+                    corrections.push(format!(
+                        "Fixed 'milhões' lemma from '{}' to 'milhão'",
+                        token.lemma
+                    ));
+                    token.lemma = "milhão".to_string();
+                    corrected = true;
+                }
+
+                // Fix "quantas"/"quanta" lemma
+                if (text_lower == "quantas" || text_lower == "quanta") && token.lemma != "quanto" {
+                    corrections.push(format!(
+                        "Fixed '{}' lemma from '{}' to 'quanto'",
+                        token.text, token.lemma
+                    ));
+                    token.lemma = "quanto".to_string();
+                    corrected = true;
+                }
+
+                // Contractions keep their contracted form as lemma
+                if let Some(expected) =
+                    contraction_lemma(Language::Portuguese, &text_lower, token.pos)
+                {
+                    if token.lemma != expected {
+                        corrections.push(format!(
+                            "Fixed '{}' lemma from '{}' to '{expected}'",
+                            token.text, token.lemma
+                        ));
+                        token.lemma = expected.to_string();
+                        corrected = true;
+                    }
                 }
 
                 // Split words starting with hyphen (e.g., "-me" from "Deixe-me")
@@ -927,73 +1882,427 @@ impl WordCorrector for PortugueseCorrector {
             corrections,
         }
     }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            let text_lower = token.text.to_lowercase();
+
+            // Clitic pronoun lemma consistency
+            let portuguese_pronoun_fixes: &[(&str, &str)] = &[
+                ("me", "me"),
+                ("te", "te"),
+                ("se", "se"),
+                ("lhe", "lhe"),
+                ("nos", "nos"),
+                ("vos", "vos"),
+                ("lhes", "lhes"),
+            ];
+            for &(form, expected_lemma) in portuguese_pronoun_fixes {
+                if text_lower == form
+                    && token.pos == PartOfSpeechTag::Pron
+                    && token.lemma != expected_lemma
+                {
+                    if form == "nos" && token.lemma == "nós" {
+                        break;
+                    }
+                    token.lemma = expected_lemma.to_string();
+                    break;
+                }
+            }
+
+            // Feminine noun lemma consistency
+            let feminine_noun_fixes: &[(&str, &str)] = &[
+                ("irmã", "irmã"),
+                ("irmãs", "irmã"),
+                ("filha", "filha"),
+                ("filhas", "filha"),
+                ("mãe", "mãe"),
+                ("mães", "mãe"),
+                ("avó", "avó"),
+                ("avós", "avó"),
+            ];
+            for &(form, expected_lemma) in feminine_noun_fixes {
+                if text_lower == form
+                    && token.pos == PartOfSpeechTag::Noun
+                    && token.lemma != expected_lemma
+                {
+                    token.lemma = expected_lemma.to_string();
+                    break;
+                }
+            }
+
+            if let Some(expected) = contraction_lemma(Language::Portuguese, &text_lower, token.pos)
+            {
+                if token.lemma != expected {
+                    token.lemma = expected.to_string();
+                }
+            }
+        }
+    }
 }
 
 /// Korean-specific classifier
 struct KoreanClassifier;
-
 impl SentenceClassifier for KoreanClassifier {
     fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
         let mut reasons = Vec::new();
 
-        // Check for Space tokens which indicate NLP parsing issues
-        for token in &sentence.doc {
+        for (idx, token) in sentence.doc.iter().enumerate() {
+            let text = &token.text;
+            let lemma = &token.lemma;
+
+            // --- Universal bad signals ---
+
             if token.pos == PartOfSpeechTag::Space {
                 reasons.push(format!("Contains Space token: '{}'", sentence.sentence));
             }
 
-            // Check for X (unknown) POS tags
             if token.pos == PartOfSpeechTag::X {
-                reasons.push(format!("Token '{}' has unknown POS (X)", token.text));
+                reasons.push(format!("Token '{text}' has unknown POS (X)"));
             }
 
-            // Check for verbs/auxiliaries with themselves as lemma (no morphological analysis)
-            // Properly analyzed Korean should have lemmas with "+" morpheme boundaries
-            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
-                && token.text == token.lemma
-                && !token.lemma.contains('+')
+            // --- Lemmatization checks ---
+
+            // Verb/Adj/Aux lemmas should end in -다 (dictionary form).
+            // Exception: contracted forms use "+" notation (e.g., "것+은").
+            if matches!(
+                token.pos,
+                PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Aux
+            ) {
+                let is_contraction_lemma = lemma.contains('+');
+                if !is_contraction_lemma && !lemma.ends_with('다') {
+                    reasons.push(format!(
+                        "'{}' ({:?}) has lemma '{}' which doesn't end in -다 — lemma should be the dictionary form",
+                        text, token.pos, lemma
+                    ));
+                }
+            }
+
+            // Verb/Adj with surface form as lemma (no lemmatization happened)
+            if matches!(
+                token.pos,
+                PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Aux
+            ) && text == lemma
+                && !lemma.ends_with('다')
             {
                 reasons.push(format!(
-                    "Verb/Aux '{}' has itself as lemma (no morphological analysis)",
-                    token.text
+                    "'{}' ({:?}) has itself as lemma — should be lemmatized to -다 dictionary form",
+                    text, token.pos
                 ));
             }
 
-            let text = &token.text;
-
-            // Check for copula contractions tagged as VERB with surface form as lemma
-            // These are forms of 이다 (to be) and should be decomposed
-            // e.g., 뭐야 = 뭐 + 이다, 누구야 = 누구 + 이다, 뭐죠/뭐예요 = 뭐 + 이다
-            let copula_forms = ["뭐야", "뭐죠", "뭐예요", "누구야", "누구죠", "누구예요"];
-            if copula_forms.contains(&text.as_str()) && token.pos == PartOfSpeechTag::Verb {
+            // Lemmas should not contain "+" for verbs/adjectives.
+            // Only contracted noun/pronoun+particle forms use "+".
+            if matches!(
+                token.pos,
+                PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Aux
+            ) && lemma.contains('+')
+            {
                 reasons.push(format!(
-                    "'{}' is a copula contraction (contains 이다 'to be') but is tagged as VERB with surface form as lemma. Should be decomposed or have a proper lemma",
-                    token.text
+                    "'{}' ({:?}) has lemma '{}' with '+' morpheme notation — verb/adj lemmas should be clean -다 dictionary forms",
+                    text, token.pos, lemma
                 ));
             }
 
-            // Check for 어때/어때요 tagged as VERB — should be ADJ (from 어떻다/어떠하다)
-            if (text == "어때" || text == "어때요") && token.pos == PartOfSpeechTag::Verb {
+            // --- Proper noun mangling ---
+
+            if token.pos == PartOfSpeechTag::Propn && lemma.contains('+') {
                 reasons.push(format!(
-                    "'{}' is a conjugation of 어떻다 (adjective 'how is it') but is tagged as VERB. Should be ADJ with lemma 어떻다",
-                    token.text
+                    "Proper noun '{text}' has lemma '{lemma}' with morpheme decomposition — proper nouns should never be decomposed"
                 ));
             }
 
-            // Check for 봐 with wrong lemma (should be 보다)
-            if text == "봐" && token.lemma == "봐" {
+            // Subtitle data often over-classifies common words as proper nouns
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{text}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns"
+                ));
+            }
+
+            // --- SCONJ/CCONJ dumping ground detection ---
+
+            // Standalone dictionary forms should be VERB/ADJ, not SCONJ/CCONJ/ADV
+            if matches!(token.pos, PartOfSpeechTag::Sconj | PartOfSpeechTag::Cconj) {
+                // If the lemma looks like a verb (ends in -다) but is tagged as conjunction
+                let base_lemma = lemma.split('+').next().unwrap_or(lemma);
+                if base_lemma.ends_with('다') && base_lemma.chars().count() >= 2 {
+                    reasons.push(format!(
+                        "'{}' (lemma '{}') tagged as {:?} but lemma ends in -다, suggesting it's a verb/adjective. Should likely be VERB or ADJ",
+                        text, lemma, token.pos
+                    ));
+                }
+
+                // Specific known misclassifications
+                let sconj_victims = ["있잖아", "얘들아"];
+                if sconj_victims.contains(&text.as_str()) {
+                    reasons.push(format!(
+                        "'{}' tagged as {:?} but this is not a conjunction",
+                        text, token.pos
+                    ));
+                }
+            }
+
+            // Dictionary forms tagged as ADV
+            if token.pos == PartOfSpeechTag::Adv
+                && lemma.ends_with('다')
+                && lemma.chars().count() >= 2
+            {
+                reasons.push(format!(
+                    "'{text}' (lemma '{lemma}') tagged as ADV but lemma ends in -다 — likely a VERB or ADJ"
+                ));
+            }
+
+            // --- Particle / tokenization checks ---
+
+            // Particles that should have been split: noun+particle as single token
+            // Check for common unsplit particle patterns
+            let unsplit_particle_words = [("너한테", "너", "한테"), ("이것을", "이것", "을")];
+            for (surface, _noun, _particle) in &unsplit_particle_words {
+                if text.as_str() == *surface {
+                    reasons.push(format!(
+                        "'{surface}' should be split into two tokens: '{_noun}' + '{_particle}'"
+                    ));
+                }
+            }
+
+            // 나랑 tagged as CCONJ — should be split: 나 + 랑
+            if text == "나랑" && token.pos == PartOfSpeechTag::Cconj {
                 reasons.push(
-                    "'봐' has itself as lemma but should have lemma '보다' (to see/look)"
+                    "'나랑' tagged as CCONJ — should be split: '나' (PRON) + '랑' (ADP)"
                         .to_string(),
                 );
             }
 
-            // Data source is subtitle/dialogue-heavy, so flag any PROPN as potentially over-classified
-            if token.pos == PartOfSpeechTag::Propn {
+            // --- Copula not split ---
+
+            // Detect copula forms that should be split: noun + copula
+            // Common pattern: token is VERB with lemma containing +이+ or ending in copula form
+            let copula_endings = [
+                "입니다",
+                "입니까",
+                "이에요",
+                "이야",
+                "이다",
+                "이라고",
+                "이야",
+            ];
+            if token.pos == PartOfSpeechTag::Verb {
+                // Check if the text ends with a copula form and the lemma has morpheme notation
+                for ending in &copula_endings {
+                    if text.ends_with(ending) && text.len() > ending.len() {
+                        reasons.push(format!(
+                            "'{text}' appears to contain copula 이다 — should be split into noun + copula (AUX, lemma '이다')"
+                        ));
+                        break;
+                    }
+                }
+
+                // Copula contractions tagged as VERB: 거야, 남자지, etc.
+                // These have lemma patterns like X+이+야
+                if lemma.contains("+이+") && !lemma.starts_with("것+") {
+                    reasons.push(format!(
+                        "'{text}' (lemma '{lemma}') contains copula 이다 — should be split into noun/pronoun + copula (AUX)"
+                    ));
+                }
+            }
+
+            // Doubled copula 이 in lemma
+            if lemma.contains("+이+이+") || lemma.contains("+이+이다") {
                 reasons.push(format!(
-                    "Contains '{}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns",
-                    token.text
+                    "'{text}' has lemma '{lemma}' with doubled copula 이 — likely a morpheme boundary error"
                 ));
+            }
+
+            // --- 하다-adjective checks ---
+
+            let hada_adjectives = [
+                "필요하다",
+                "건강하다",
+                "창피하다",
+                "중요하다",
+                "유명하다",
+                "행복하다",
+                "불행하다",
+                "위험하다",
+                "안전하다",
+                "편리하다",
+                "불편하다",
+                "깨끗하다",
+                "복잡하다",
+                "간단하다",
+                "정확하다",
+                "불가능하다",
+                "가능하다",
+                "충분하다",
+                "부족하다",
+                "심각하다",
+                "급하다",
+                "조용하다",
+                "시끄럽다",
+                "친절하다",
+                "불친절하다",
+                "성실하다",
+                "솔직하다",
+                "자유하다",
+                "특별하다",
+                "평범하다",
+                "단단하다",
+                "궁금하다",
+            ];
+
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && hada_adjectives.contains(&lemma.as_str())
+            {
+                reasons.push(format!(
+                        "'{}' (lemma '{}') tagged as {:?} but '{}' is a 하다-adjective (descriptive). Should be ADJ",
+                        text, lemma, token.pos, lemma
+                    ));
+            }
+
+            // --- Specific POS corrections ---
+
+            // 어떻게 is always ADV
+            if text == "어떻게" && token.pos != PartOfSpeechTag::Adv {
+                reasons.push(format!(
+                    "'어떻게' tagged as {:?} but it's an adverb meaning 'how'. Should be ADV",
+                    token.pos
+                ));
+            }
+
+            // 이렇게 is always ADV
+            if text == "이렇게" && token.pos != PartOfSpeechTag::Adv {
+                reasons.push(format!(
+                    "'이렇게' tagged as {:?} but it's an adverb meaning 'like this'. Should be ADV",
+                    token.pos
+                ));
+            }
+
+            // 이걸 should be PRON (contracted 이것+을)
+            if text == "이걸" && token.pos != PartOfSpeechTag::Pron {
+                reasons.push(format!(
+                    "'이걸' tagged as {:?} but it's a pronoun (contracted 이것+을). Should be PRON",
+                    token.pos
+                ));
+            }
+
+            // 그게 should be PRON (contracted 그것+이)
+            if text == "그게" && token.pos != PartOfSpeechTag::Pron {
+                reasons.push(format!(
+                    "'그게' tagged as {:?} but it's a pronoun (contracted 그것+이). Should be PRON",
+                    token.pos
+                ));
+            }
+
+            // 제 before a noun should be DET (possessive "my"), not ADJ or PRON
+            if text == "제" && token.pos == PartOfSpeechTag::Adj {
+                if let Some(next) = sentence.doc.get(idx + 1) {
+                    if next.pos == PartOfSpeechTag::Noun {
+                        reasons.push(format!(
+                            "'제' before noun '{}' is a possessive determiner ('my'). Should be DET, not ADJ",
+                            next.text
+                        ));
+                    }
+                }
+            }
+
+            // 저 before a noun is demonstrative DET, not PRON
+            if text == "저" && token.pos == PartOfSpeechTag::Pron {
+                if let Some(next) = sentence.doc.get(idx + 1) {
+                    if next.pos == PartOfSpeechTag::Noun {
+                        reasons.push(format!(
+                            "'저' before noun '{}' is likely a demonstrative determiner ('that'), not a pronoun. Should be DET",
+                            next.text
+                        ));
+                    }
+                }
+            }
+
+            // 봐 with wrong lemma
+            if text == "봐" && lemma != "보다" {
+                reasons.push(format!(
+                    "'봐' has lemma '{lemma}' but should have lemma '보다'"
+                ));
+            }
+
+            // --- Auxiliary verb checks ---
+
+            if token.pos == PartOfSpeechTag::Aux {
+                // Main verbs mistagged as AUX
+                let always_main_verbs = [
+                    "찾다",
+                    "잊다",
+                    "넣다",
+                    "먹다",
+                    "쓰다",
+                    "읽다",
+                    "듣다",
+                    "만들다",
+                    "살다",
+                    "죽다",
+                    "잡다",
+                    "놓다",
+                    "열다",
+                    "닫다",
+                    "타다",
+                ];
+                if always_main_verbs.contains(&lemma.as_str()) {
+                    reasons.push(format!(
+                        "'{text}' (lemma '{lemma}') tagged as AUX but '{lemma}' is a main verb. Should be VERB"
+                    ));
+                }
+
+                // 수 is a bound noun, not AUX
+                if text == "수" || text == "수가" || text == "수는" || text == "수도" {
+                    reasons.push(format!(
+                        "'{text}' tagged as AUX but 수 is a bound noun (의존명사). Should be NOUN"
+                    ));
+                }
+            }
+
+            // --- Contraction lemma checks ---
+
+            // 우린 should have lemma "우리+는", not "우+린"
+            if text == "우린" && lemma == "우+린" {
+                reasons.push(
+                    "'우린' has lemma '우+린' but should be '우리+는' (우리 is the base pronoun)"
+                        .to_string(),
+                );
+            }
+
+            // 날 as pronoun contraction (나+를) — check if tagged wrong
+            if text == "날" && token.pos == PartOfSpeechTag::Noun {
+                // Look at context: if preceded by a verb or followed by a verb, likely 나+를 (PRON)
+                let likely_pronoun = if idx > 0 {
+                    // After a subject or at sentence start, 날 is often "me"
+                    true
+                } else {
+                    false
+                };
+                if likely_pronoun {
+                    reasons.push(
+                        "'날' tagged as NOUN but may be a pronoun contraction (나+를, 'me'). Consider PRON with lemma '나+를'"
+                            .to_string(),
+                    );
+                }
+            }
+
+            // --- Foreign name detection ---
+
+            // Names being treated as Korean morphemes
+            if token.pos == PartOfSpeechTag::Verb && !lemma.ends_with('다') && !lemma.contains('+')
+            {
+                // Might be a foreign name misclassified as verb
+                let has_only_hangul = text.chars().all(|c| {
+                    let code = c as u32;
+                    (0xAC00..=0xD7A3).contains(&code)
+                        || (0x3131..=0x318E).contains(&code)
+                        || (0x1100..=0x11FF).contains(&code)
+                });
+                if has_only_hangul && text.chars().count() >= 3 {
+                    reasons.push(format!(
+                        "'{text}' tagged as VERB with lemma '{lemma}' — possible foreign name misclassified as verb"
+                    ));
+                }
             }
         }
 
@@ -1032,6 +2341,55 @@ impl SentenceClassifier for EnglishClassifier {
 
         for token in &sentence.doc {
             let text_lower = token.text.to_lowercase();
+
+            // Check for be/have AUX vs VERB disambiguation
+            let be_forms = ["am", "is", "are", "was", "were", "be", "been", "being"];
+
+            let have_forms_en = ["have", "has", "had", "having"];
+
+            if be_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "be"
+            {
+                reasons.push(format!(
+                    "'{}' (be) can be either AUX or VERB depending on context. Rule: AUX when forming progressive (e.g., 'is running') or passive (e.g., 'was built'), VERB when used as a copula (e.g., 'she is tall', 'it is late') or existential (e.g., 'there is a problem')",
+                    token.text
+                ));
+            }
+
+            if have_forms_en.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "have"
+            {
+                reasons.push(format!(
+                    "'{}' (have) can be either AUX or VERB depending on context. Rule: AUX when forming perfect tenses (e.g., 'have eaten'), VERB when expressing possession (e.g., 'I have a book') or other meanings (e.g., 'have lunch')",
+                    token.text
+                ));
+            }
+
+            let do_forms = ["do", "does", "did", "doing", "done"];
+
+            let get_forms = ["get", "gets", "got", "gotten", "getting"];
+
+            if do_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "do"
+            {
+                reasons.push(format!(
+                    "'{}' (do) can be either AUX or VERB depending on context. Rule: AUX when used for emphasis (e.g., 'I do like it'), questions (e.g., 'do you know?'), or negation (e.g., 'I don't know'), VERB when meaning to perform/carry out (e.g., 'I did the work')",
+                    token.text
+                ));
+            }
+
+            if get_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "get"
+            {
+                reasons.push(format!(
+                    "'{}' (get) can be either AUX or VERB depending on context. Rule: AUX when forming get-passive (e.g., 'got fired', 'getting married'), VERB when meaning to obtain/receive (e.g., 'I got a letter') or become (e.g., 'it got cold')",
+                    token.text
+                ));
+            }
 
             // Check if token is a split contraction suffix
             if suspicious_suffixes.contains(&text_lower.as_str()) {
@@ -1092,7 +2450,7 @@ impl SentenceClassifier for FrenchClassifier {
         let mut reasons = Vec::new();
 
         // Check for Space tokens which indicate NLP parsing issues
-        for token in &sentence.doc {
+        for (idx, token) in sentence.doc.iter().enumerate() {
             if token.pos == PartOfSpeechTag::Space {
                 reasons.push("Contains Space token, which is usually not necessary due to the `whitespace` field".to_string());
             }
@@ -1301,6 +2659,15 @@ impl SentenceClassifier for FrenchClassifier {
                 "surent",
             ];
 
+            let etre_forms = [
+                // Present
+                "suis", "es", "est", "sommes", "êtes", "sont", // Imperfect
+                "étais", "était", "étions", "étiez", "étaient", // Future
+                "serai", "seras", "sera", "serons", "serez", "seront", // Conditional
+                "serais", "serait", "serions", "seriez", "seraient", // Passé simple
+                "fus", "fut", "fûmes", "fûtes", "furent",
+            ];
+
             let falloir_forms = [
                 // Present
                 "faut",     // Imperfect
@@ -1350,6 +2717,16 @@ impl SentenceClassifier for FrenchClassifier {
                 ));
             }
 
+            if etre_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "être"
+            {
+                reasons.push(format!(
+                    "'{}' (être) can be either AUX or VERB depending on context. Rule: AUX when forming compound tenses with past participles (e.g., 'elle est partie'), VERB when used as a copula or existential verb (e.g., 'elle est belle', 'il est tard', 'c'est vrai')",
+                    token.text
+                ));
+            }
+
             if falloir_forms.contains(&text_lower.as_str())
                 && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "falloir"
@@ -1360,25 +2737,166 @@ impl SentenceClassifier for FrenchClassifier {
                 ));
             }
 
-            // Check for "du" which can be partitive article OR contraction of "de + le"
-            // Partitive article: Je bois du café → lemma should be "du"
-            // Contraction of "de + le": Je viens du marché → lemma should be "de"
-            // If "du" appears after a verb that takes "de" as preposition → likely contraction → lemma "de"
-            if text_lower == "du" {
+            let aller_forms = [
+                // Present
+                "vais",
+                "vas",
+                "va",
+                "allons",
+                "allez",
+                "vont", // Imperfect
+                "allais",
+                "allait",
+                "allions",
+                "alliez",
+                "allaient", // Passé simple
+                "allai",
+                "allas",
+                "alla",
+                "allâmes",
+                "allâtes",
+                "allèrent", // Future
+                "irai",
+                "iras",
+                "ira",
+                "irons",
+                "irez",
+                "iront", // Conditional
+                "irais",
+                "irait",
+                "irions",
+                "iriez",
+                "iraient",
+            ];
+
+            let venir_forms = [
+                // Present
+                "viens",
+                "vient",
+                "venons",
+                "venez",
+                "viennent", // Imperfect
+                "venais",
+                "venait",
+                "venions",
+                "veniez",
+                "venaient", // Passé simple
+                "vins",
+                "vint",
+                "vînmes",
+                "vîntes",
+                "vinrent", // Future
+                "viendrai",
+                "viendras",
+                "viendra",
+                "viendrons",
+                "viendrez",
+                "viendront", // Conditional
+                "viendrais",
+                "viendrait",
+                "viendrions",
+                "viendriez",
+                "viendraient",
+            ];
+
+            let faire_forms = [
+                // Present
+                "fais",
+                "fait",
+                "faisons",
+                "faites",
+                "font", // Imperfect
+                "faisais",
+                "faisait",
+                "faisions",
+                "faisiez",
+                "faisaient", // Passé simple
+                "fis",
+                "fit",
+                "fîmes",
+                "fîtes",
+                "firent", // Future
+                "ferai",
+                "feras",
+                "fera",
+                "ferons",
+                "ferez",
+                "feront", // Conditional
+                "ferais",
+                "ferait",
+                "ferions",
+                "feriez",
+                "feraient",
+            ];
+
+            let laisser_forms = [
+                // Present
+                "laisse",
+                "laisses",
+                "laissons",
+                "laissez",
+                "laissent", // Imperfect
+                "laissais",
+                "laissait",
+                "laissions",
+                "laissiez",
+                "laissaient", // Passé simple
+                "laissai",
+                "laissas",
+                "laissa",
+                "laissâmes",
+                "laissâtes",
+                "laissèrent", // Future
+                "laisserai",
+                "laisseras",
+                "laissera",
+                "laisserons",
+                "laisserez",
+                "laisseront", // Conditional
+                "laisserais",
+                "laisserait",
+                "laisserions",
+                "laisseriez",
+                "laisseraient",
+            ];
+
+            if aller_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "aller"
+            {
                 reasons.push(format!(
-                    "'du' can be: (1) Partitive article meaning 'some/any' (e.g., 'Je bois du café') → lemma 'du', OR (2) Contraction of 'de + le' preposition (e.g., 'Je viens du marché') → lemma 'de'. Current lemma: '{}'. Rule: If 'du' appears after a verb that takes 'de' as a preposition → likely contraction → lemmatize to 'de'",
-                    token.lemma
+                    "'{}' (aller) can be either AUX or VERB depending on context. Rule: AUX when forming near future with infinitive (e.g., 'je vais manger'), VERB when expressing movement (e.g., 'je vais à Paris', 'comment allez-vous?')",
+                    token.text
                 ));
             }
 
-            // Check for "des" which can be indefinite article, partitive, OR contraction of "de + les"
-            // Indefinite article: J'ai vu des oiseaux → lemma should be "un"
-            // Partitive article: Je mange des pommes → lemma should be "des"
-            // Contraction of "de + les": Je parle des enfants → lemma should be "de"
-            if text_lower == "des" {
+            if venir_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "venir"
+            {
                 reasons.push(format!(
-                    "'des' can be: (1) Indefinite article/plural (e.g., 'J'ai vu des oiseaux') → lemma 'des', (2) Partitive article (e.g., 'Je mange des pommes') → lemma 'des', OR (3) Contraction of 'de + les' (e.g., 'Je parle des enfants') → lemma 'de'. Current lemma: '{}'. Rule: If 'des' appears before a noun without a preceding preposition → likely indefinite article → lemmatize to 'un'",
-                    token.lemma
+                    "'{}' (venir) can be either AUX or VERB depending on context. Rule: AUX when forming recent past with 'de' + infinitive (e.g., 'il vient de manger'), VERB when expressing coming/arriving (e.g., 'il vient demain')",
+                    token.text
+                ));
+            }
+
+            if faire_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "faire"
+            {
+                reasons.push(format!(
+                    "'{}' (faire) can be either AUX or VERB depending on context. Rule: AUX when used as causative with infinitive (e.g., 'je fais réparer la voiture'), VERB when meaning to do/make (e.g., 'je fais un gâteau', 'il fait beau')",
+                    token.text
+                ));
+            }
+
+            if laisser_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "laisser"
+            {
+                reasons.push(format!(
+                    "'{}' (laisser) can be either AUX or VERB depending on context. Rule: AUX when used as semi-auxiliary with infinitive (e.g., 'laisse-moi parler'), VERB when meaning to leave/let go (e.g., 'laisse-moi tranquille')",
+                    token.text
                 ));
             }
 
@@ -1407,6 +2925,45 @@ impl SentenceClassifier for FrenchClassifier {
                 reasons.push(format!(
                     "'soit' can be: (1) Subjunctive verb from 'être' (e.g., 'il faut qu'il soit', 'quoi qu'il en soit') → lemma 'être', POS VERB, (2) Jussive subjunctive, still a verb (e.g., 'soit x un nombre') → lemma 'être', POS VERB, (3) Coordinating conjunction in 'soit... soit...' constructions → lemma 'soit', POS CCONJ, OR (4) Explanatory adverb meaning 'that is'/'namely' (e.g., 'soit dix euros') → lemma 'soit', POS ADV. Current lemma: '{}', POS: {:?}.",
                     token.lemma, token.pos
+                ));
+            }
+
+            // Check for "s'" which can be either "se" (reflexive) or "si" (conjunction)
+            // In "s'il te plaît", "s'il vous plaît", "s'il y a", etc., s' = si (if), not se (reflexive)
+            if text_lower == "s'" || text_lower == "s\u{2019}" {
+                // Look ahead for "il" to detect "s'il" constructions
+                let next_text = sentence
+                    .doc
+                    .get(idx + 1)
+                    .map(|t| t.text.to_lowercase())
+                    .unwrap_or_default();
+                if next_text == "il" || next_text == "ils" {
+                    if token.lemma != "si" || token.pos != PartOfSpeechTag::Sconj {
+                        reasons.push(format!(
+                            "'s'' before '{}' is a contraction of 'si' (if), not 'se' (reflexive). Current lemma: '{}', POS: {:?}. Should be lemma 'si', POS SCONJ.",
+                            next_text, token.lemma, token.pos
+                        ));
+                    }
+                } else {
+                    // Before other words, s' is typically the reflexive pronoun "se"
+                    if token.lemma != "se" {
+                        reasons.push(format!(
+                            "'s'' has lemma '{}' but is likely the reflexive pronoun 'se'. Current POS: {:?}.",
+                            token.lemma, token.pos
+                        ));
+                    }
+                }
+            }
+
+            // Check for "là" mistagged as Noun — it's almost always an adverb
+            // "là" = "there" (demonstrative/locative adverb), e.g., "là-bas", "celui-là", "ce jour-là"
+            if text_lower == "là"
+                && token.pos != PartOfSpeechTag::Adv
+                && token.pos != PartOfSpeechTag::Punct
+            {
+                reasons.push(format!(
+                    "'là' tagged as {:?} with lemma '{}', but 'là' is almost always an adverb meaning 'there'. Should be POS ADV, lemma 'là'.",
+                    token.pos, token.lemma
                 ));
             }
 
@@ -1453,6 +3010,11 @@ impl SentenceClassifier for FrenchClassifier {
                         token.text, token.pos, token.lemma
                     ));
                 }
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::French, &text_lower) {
+                reasons.push(reason);
             }
         }
 
@@ -1793,6 +3355,38 @@ impl SentenceClassifier for GermanClassifier {
                 "möchtet",
             ];
 
+            let sein_forms = [
+                // Present
+                "bin", "bist", "ist", "sind", "seid", // Past
+                "war", "warst", "waren", "wart",
+            ];
+
+            let werden_forms = [
+                // Present
+                "werde", "wirst", "wird", "werden", "werdet", // Past
+                "wurde", "wurdest", "wurden", "wurdet", "ward", // archaic past
+            ];
+
+            if sein_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "sein"
+            {
+                reasons.push(format!(
+                    "'{}' (sein) can be either AUX or VERB depending on context. Rule: AUX when forming perfect tenses with past participles (e.g., 'ich bin gegangen'), VERB when used as a copula expressing identity/state (e.g., 'er ist groß', 'ich bin müde')",
+                    token.text
+                ));
+            }
+
+            if werden_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "werden"
+            {
+                reasons.push(format!(
+                    "'{}' (werden) can be either AUX or VERB depending on context. Rule: AUX when forming future tense (e.g., 'ich werde gehen') or passive voice (e.g., 'es wird gemacht'), VERB when meaning 'to become' (e.g., 'er wird alt', 'es wird kalt')",
+                    token.text
+                ));
+            }
+
             if haben_forms.contains(&text_lower.as_str())
                 && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
                 && token.lemma == "haben"
@@ -1872,6 +3466,352 @@ impl SentenceClassifier for GermanClassifier {
                     token.text
                 ));
             }
+
+            let lassen_forms = [
+                // Present
+                "lasse", "lässt", "lässt", "lassen", "lasst", // Past
+                "ließ", "ließt", "ließen", "ließt",
+            ];
+
+            if lassen_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "lassen"
+            {
+                reasons.push(format!(
+                    "'{}' (lassen) can be either AUX or VERB depending on context. Rule: AUX when used as causative with infinitive (e.g., 'ich lasse ihn arbeiten'), VERB when meaning to leave/let go (e.g., 'lass das!')",
+                    token.text
+                ));
+            }
+
+            // Check for modal/auxiliary verbs where the lemma is the inflected form itself
+            // instead of the proper infinitive. This catches errors like magst→magen, willst→willen,
+            // kannst→kannst, musst→musst, etc.
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let modal_forms_to_infinitive: &[(&[&str], &str)] = &[
+                    (
+                        &[
+                            "mag",
+                            "magst",
+                            "mögt",
+                            "mochte",
+                            "mochtest",
+                            "mochten",
+                            "mochtet",
+                            "möchte",
+                            "möchtest",
+                            "möchten",
+                            "möchtet",
+                        ],
+                        "mögen",
+                    ),
+                    (
+                        &[
+                            "will", "willst", "wollt", "wollte", "wolltest", "wollten", "wolltet",
+                        ],
+                        "wollen",
+                    ),
+                    (
+                        &[
+                            "kann", "kannst", "könnt", "konnte", "konntest", "konnten", "konntet",
+                        ],
+                        "können",
+                    ),
+                    (
+                        &[
+                            "muss", "musst", "müsst", "musste", "musstest", "mussten", "musstet",
+                        ],
+                        "müssen",
+                    ),
+                    (
+                        &[
+                            "soll", "sollst", "sollt", "sollte", "solltest", "sollten", "solltet",
+                        ],
+                        "sollen",
+                    ),
+                    (
+                        &[
+                            "darf", "darfst", "dürft", "durfte", "durftest", "durften", "durftet",
+                        ],
+                        "dürfen",
+                    ),
+                    (
+                        &[
+                            "bin", "bist", "ist", "sind", "seid", "war", "warst", "waren", "wart",
+                        ],
+                        "sein",
+                    ),
+                    (
+                        &[
+                            "habe", "hast", "hat", "habt", "hatte", "hattest", "hatten", "hattet",
+                        ],
+                        "haben",
+                    ),
+                    (
+                        &[
+                            "werde", "wirst", "wird", "werdet", "wurde", "wurdest", "wurden",
+                            "wurdet",
+                        ],
+                        "werden",
+                    ),
+                    (
+                        &["lasse", "lässt", "lasst", "ließ", "ließt", "ließen"],
+                        "lassen",
+                    ),
+                ];
+                for (forms, expected_infinitive) in modal_forms_to_infinitive {
+                    if forms.contains(&text_lower.as_str()) && token.lemma != *expected_infinitive {
+                        reasons.push(format!(
+                            "Verb/Aux '{}' has lemma '{}' but should likely be '{}'. Modal and auxiliary verbs must be lemmatized to their dictionary infinitive form.",
+                            token.text, token.lemma, expected_infinitive
+                        ));
+                    }
+                }
+
+                // Check for verbs where the lemma equals the inflected form (no lemmatization happened)
+                // German infinitives end in -en, -ern, -eln, or -n. If the lemma doesn't end in
+                // one of these, it's likely the inflected form was kept as-is.
+                let lemma_lower = token.lemma.to_lowercase();
+                if lemma_lower == text_lower
+                    && !lemma_lower.ends_with("en")
+                    && !lemma_lower.ends_with("ern")
+                    && !lemma_lower.ends_with("eln")
+                    && !lemma_lower.ends_with('n')
+                    && lemma_lower.len() > 2
+                {
+                    reasons.push(format!(
+                        "Verb/Aux '{}' has itself as lemma '{}' which doesn't look like a German infinitive (should end in -en/-ern/-eln/-n). The lemma should be the infinitive form.",
+                        token.text, token.lemma
+                    ));
+                }
+            }
+
+            // Check for common irregular verb lemmatization errors
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let irregular_forms: &[(&str, &str)] = &[
+                    ("biss", "beißen"),
+                    ("bissen", "beißen"),
+                    ("lief", "laufen"),
+                    ("liefen", "laufen"),
+                    ("fiel", "fallen"),
+                    ("fielen", "fallen"),
+                    ("hielt", "halten"),
+                    ("hielten", "halten"),
+                    ("rief", "rufen"),
+                    ("riefen", "rufen"),
+                    ("schlief", "schlafen"),
+                    ("schliefen", "schlafen"),
+                    ("trug", "tragen"),
+                    ("trugen", "tragen"),
+                    ("fand", "finden"),
+                    ("fanden", "finden"),
+                    ("gab", "geben"),
+                    ("gaben", "geben"),
+                    ("nahm", "nehmen"),
+                    ("nahmen", "nehmen"),
+                    ("sprach", "sprechen"),
+                    ("sprachen", "sprechen"),
+                    ("trank", "trinken"),
+                    ("tranken", "trinken"),
+                    ("aß", "essen"),
+                    ("aßen", "essen"),
+                    ("las", "lesen"),
+                    ("lasen", "lesen"),
+                    ("saß", "sitzen"),
+                    ("saßen", "sitzen"),
+                    ("stand", "stehen"),
+                    ("standen", "stehen"),
+                    ("lag", "liegen"),
+                    ("lagen", "liegen"),
+                    ("schlug", "schlagen"),
+                    ("schlugen", "schlagen"),
+                    ("fuhr", "fahren"),
+                    ("fuhren", "fahren"),
+                    ("schrieb", "schreiben"),
+                    ("schrieben", "schreiben"),
+                    ("schwamm", "schwimmen"),
+                    ("schwammen", "schwimmen"),
+                    ("begann", "beginnen"),
+                    ("begannen", "beginnen"),
+                    ("gewann", "gewinnen"),
+                    ("gewannen", "gewinnen"),
+                    ("vergaß", "vergessen"),
+                    ("vergaßen", "vergessen"),
+                    ("verließ", "verlassen"),
+                    ("verließen", "verlassen"),
+                ];
+                for (form, expected) in irregular_forms {
+                    if text_lower == *form && token.lemma != *expected {
+                        reasons.push(format!(
+                            "Irregular verb '{}' has lemma '{}' but should be '{}'",
+                            token.text, token.lemma, expected
+                        ));
+                    }
+                }
+            }
+
+            // Check for predicative adjectives mistagged as ADV
+            // In German, adjectives in predicative position (after sein/werden/bleiben)
+            // are often mistagged as ADV. e.g. "Er ist reich" → reich should be ADJ not ADV
+            if token.pos == PartOfSpeechTag::Adv {
+                let common_predicative_adjs = [
+                    "reich",
+                    "arm",
+                    "alt",
+                    "jung",
+                    "groß",
+                    "klein",
+                    "gut",
+                    "schlecht",
+                    "schön",
+                    "hässlich",
+                    "schnell",
+                    "langsam",
+                    "wütend",
+                    "traurig",
+                    "glücklich",
+                    "müde",
+                    "krank",
+                    "gesund",
+                    "leer",
+                    "voll",
+                    "warm",
+                    "kalt",
+                    "heiß",
+                    "nass",
+                    "trocken",
+                    "sauber",
+                    "schmutzig",
+                    "stark",
+                    "schwach",
+                    "laut",
+                    "leise",
+                    "hell",
+                    "dunkel",
+                    "neu",
+                    "fertig",
+                    "bereit",
+                    "sicher",
+                    "gefährlich",
+                    "möglich",
+                    "unmöglich",
+                    "nötig",
+                    "wichtig",
+                    "richtig",
+                    "falsch",
+                    "frei",
+                    "offen",
+                    "geschlossen",
+                    "kaputt",
+                    "zufrieden",
+                    "eifersüchtig",
+                ];
+                if common_predicative_adjs.contains(&text_lower.as_str()) {
+                    reasons.push(format!(
+                        "'{}' is tagged as ADV but could be ADJ in predicative position (e.g., after sein/werden/bleiben). Check context: if it describes a state/quality of the subject, it should be ADJ.",
+                        token.text
+                    ));
+                }
+            }
+
+            // Check for possessive determiners mistagged as ADV
+            // e.g. "euer" in "Ich verstehe euer Französisch" should be DET, not ADV
+            let possessive_forms = ["euer", "eure", "euren", "eurem", "eurer", "eures"];
+            if possessive_forms.contains(&text_lower.as_str())
+                && token.pos != PartOfSpeechTag::Det
+                && token.pos != PartOfSpeechTag::Pron
+            {
+                reasons.push(format!(
+                    "'{}' is tagged as {:?} but is likely a possessive determiner (DET) or pronoun (PRON)",
+                    token.text, token.pos
+                ));
+            }
+
+            // Check for dative/accusative pronouns with wrong lemma
+            // In German, object pronouns should lemmatize to the nominative subject form:
+            // mich/mir → ich, dich/dir → du, ihn/ihm → er, sie/ihr → sie,
+            // uns → wir, euch → ihr, ihnen/Ihnen → sie/Sie
+            let pronoun_lemma_checks: &[(&str, &[&str])] = &[
+                ("mich", &["ich"]),
+                ("mir", &["ich"]),
+                ("dich", &["du"]),
+                ("dir", &["du"]),
+                ("ihn", &["er"]),
+                ("ihm", &["er"]),
+                ("uns", &["wir"]),
+                ("euch", &["ihr"]),
+                ("ihnen", &["sie", "Sie"]),
+            ];
+            if token.pos == PartOfSpeechTag::Pron {
+                for (form, expected_lemmas) in pronoun_lemma_checks {
+                    if text_lower == *form && !expected_lemmas.contains(&token.lemma.as_str()) {
+                        reasons.push(format!(
+                            "Pronoun '{}' has lemma '{}' but should be one of {:?}. Object/dative pronouns should lemmatize to the nominative form.",
+                            token.text, token.lemma, expected_lemmas
+                        ));
+                    }
+                }
+            }
+
+            // Check for plural nouns where the lemma is the plural form instead of singular
+            // Common German plural patterns: -e, -er, -en, -n, -s, umlaut+e, etc.
+            if token.pos == PartOfSpeechTag::Noun {
+                let lemma = &token.lemma;
+                // Nouns ending in common plural suffixes where the lemma matches the text
+                // (suggesting no lemmatization happened)
+                if lemma == &token.text && token.text.len() > 3 {
+                    // Check for umlaut plurals (Äpfel, Bücher, Häuser, etc.)
+                    let has_umlaut = token.text.contains('ä')
+                        || token.text.contains('ö')
+                        || token.text.contains('ü');
+                    let ends_with_plural_suffix = token.text.ends_with('n')
+                        || token.text.ends_with("er")
+                        || token.text.ends_with('e')
+                        || token.text.ends_with('s');
+                    if has_umlaut && ends_with_plural_suffix {
+                        reasons.push(format!(
+                            "Noun '{}' has itself as lemma but contains an umlaut and a plural suffix — check if this is a plural form that should be lemmatized to its singular (e.g., Äpfel→Apfel, Bücher→Buch).",
+                            token.text
+                        ));
+                    }
+                    // Check for compound nouns with case endings (e.g., Holzgriffen → Holzgriff)
+                    if token.text.ends_with("en")
+                        || token.text.ends_with("ern")
+                        || token.text.ends_with("eln")
+                    {
+                        reasons.push(format!(
+                            "Noun '{}' has itself as lemma but ends in a common case/plural ending (-en/-ern/-eln) — check if this should be lemmatized to the base form (e.g., Holzgriffen→Holzgriff).",
+                            token.text
+                        ));
+                    }
+                }
+            }
+
+            // Check for möchte lemmatized to "möchten" instead of "mögen"
+            if (text_lower == "möchte"
+                || text_lower == "möchtest"
+                || text_lower == "möchten"
+                || text_lower == "möchtet")
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma != "mögen"
+            {
+                reasons.push(format!(
+                    "'{}' has lemma '{}' but conventional German lemmatization uses 'mögen' (not 'möchten'). The Konjunktiv II form 'möchte' is lemmatized to its parent verb 'mögen'.",
+                    token.text, token.lemma
+                ));
+            }
+
+            // Check for "als" which can be SCONJ, ADP, or CCONJ depending on context
+            if text_lower == "als" {
+                reasons.push(format!(
+                    "'als' can be: (1) SCONJ in temporal clauses ('als ich jung war'), (2) comparative particle after comparatives ('größer als'), (3) SCONJ meaning 'as/in the capacity of' ('als Lehrer'). Current POS: {:?}, lemma: '{}'.",
+                    token.pos, token.lemma
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::German, &text_lower) {
+                reasons.push(reason);
+            }
         }
 
         if reasons.is_empty() {
@@ -1926,6 +3866,24 @@ impl WordCorrector for GermanCorrector {
                 }
             }
 
+            // Lowercase sentence-initial lemmas for non-noun, non-propn words
+            // German nouns are always capitalized, but verbs/aux/det/adv/adj should have lowercase lemmas
+            if token.pos != PartOfSpeechTag::Noun
+                && token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                let lower = token.lemma.to_lowercase();
+                if lower != token.lemma {
+                    corrections.push(format!(
+                        "Lowercased {:?} lemma '{}' to '{}'",
+                        token.pos, token.lemma, lower
+                    ));
+                    token.lemma = lower;
+                    corrected = true;
+                }
+            }
+
             // Fix punctuation with lemma "--"
             if token.pos == PartOfSpeechTag::Punct && token.lemma == "--" {
                 corrections.push(format!(
@@ -1935,11 +3893,44 @@ impl WordCorrector for GermanCorrector {
                 token.lemma = token.text.clone();
                 corrected = true;
             }
+
+            // Contractions keep their contracted form as lemma
+            if let Some(expected) = contraction_lemma(Language::German, &text_lower, token.pos) {
+                if token.lemma != expected {
+                    corrections.push(format!(
+                        "Fixed '{}' lemma from '{}' to '{expected}'",
+                        token.text, token.lemma
+                    ));
+                    token.lemma = expected.to_string();
+                    corrected = true;
+                }
+            }
         }
 
         CorrectionResult {
             corrected,
             corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            let text_lower = token.text.to_lowercase();
+
+            // Lowercase non-noun, non-propn lemmas
+            if token.pos != PartOfSpeechTag::Noun
+                && token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                token.lemma = token.lemma.to_lowercase();
+            }
+
+            if let Some(expected) = contraction_lemma(Language::German, &text_lower, token.pos) {
+                if token.lemma != expected {
+                    token.lemma = expected.to_string();
+                }
+            }
         }
     }
 }
@@ -1951,8 +3942,43 @@ impl WordCorrector for FrenchCorrector {
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
         for token in tokens {
             let text_lower = token.text.to_lowercase();
+
+            // Fix "non" POS
+            if (text_lower == "ne" || text_lower == "n'" || text_lower == "non")
+                && token.pos == PartOfSpeechTag::Part
+            {
+                token.pos = PartOfSpeechTag::Adv;
+            }
+
             if text_lower == "ça" && token.lemma != "cela" {
                 token.lemma = "cela".to_string();
+            }
+
+            // Pronoun lemma consistency
+            let french_pronoun_fixes: &[(&str, &str)] = &[
+                ("me", "me"),
+                ("m'", "me"),
+                ("te", "te"),
+                ("t'", "te"),
+                ("moi", "moi"),
+                ("toi", "toi"),
+                ("lui", "lui"),
+                ("soi", "soi"),
+            ];
+            for &(form, expected_lemma) in french_pronoun_fixes {
+                if text_lower == form
+                    && token.pos == PartOfSpeechTag::Pron
+                    && token.lemma != expected_lemma
+                {
+                    token.lemma = expected_lemma.to_string();
+                    break;
+                }
+            }
+
+            if let Some(expected) = contraction_lemma(Language::French, &text_lower, token.pos) {
+                if token.lemma != expected {
+                    token.lemma = expected.to_string();
+                }
             }
         }
     }
@@ -1968,8 +3994,9 @@ impl WordCorrector for FrenchCorrector {
             .fold(Vec::new(), |mut acc, mut token| {
                 let text_lower = token.text.to_lowercase();
 
-                // Fix "ne" and "n'" - should always be Adv, not Part
-                if (text_lower == "ne" || text_lower == "n'") && token.pos == PartOfSpeechTag::Part
+                // Fix "ne", "n'", and "non" - should always be Adv, not Part
+                if (text_lower == "ne" || text_lower == "n'" || text_lower == "non")
+                    && token.pos == PartOfSpeechTag::Part
                 {
                     corrections.push(format!("Fixed '{}' POS from Part to Adv", token.text));
                     token.pos = PartOfSpeechTag::Adv;
@@ -1994,6 +4021,32 @@ impl WordCorrector for FrenchCorrector {
                     ));
                     token.lemma = "elle".to_string();
                     corrected = true;
+                }
+
+                // Fix pronoun lemma consistency: clitic and disjunctive pronouns keep their own form
+                let french_pronoun_fixes: &[(&str, &str)] = &[
+                    ("me", "me"),
+                    ("m'", "me"),
+                    ("te", "te"),
+                    ("t'", "te"),
+                    ("moi", "moi"),
+                    ("toi", "toi"),
+                    ("lui", "lui"),
+                    ("soi", "soi"),
+                ];
+                for &(form, expected_lemma) in french_pronoun_fixes {
+                    if text_lower == form
+                        && token.pos == PartOfSpeechTag::Pron
+                        && token.lemma != expected_lemma
+                    {
+                        corrections.push(format!(
+                            "Fixed pronoun '{}' lemma from '{}' to '{}'",
+                            token.text, token.lemma, expected_lemma
+                        ));
+                        token.lemma = expected_lemma.to_string();
+                        corrected = true;
+                        break;
+                    }
                 }
 
                 // Fix contractions with themselves as lemma
@@ -2022,6 +4075,19 @@ impl WordCorrector for FrenchCorrector {
                     corrections.push(format!("Fixed '{}' lemma from '-là' to 'là'", token.text));
                     token.lemma = "là".to_string();
                     corrected = true;
+                }
+
+                // Contractions keep their contracted form as lemma
+                if let Some(expected) = contraction_lemma(Language::French, &text_lower, token.pos)
+                {
+                    if token.lemma != expected {
+                        corrections.push(format!(
+                            "Fixed '{}' lemma from '{}' to '{expected}'",
+                            token.text, token.lemma
+                        ));
+                        token.lemma = expected.to_string();
+                        corrected = true;
+                    }
                 }
 
                 // Fix "a" in "il y a" construction - should always be Verb
@@ -2162,7 +4228,7 @@ impl SentenceClassifier for ItalianClassifier {
         let mut reasons = Vec::new();
 
         // Check for Space tokens which indicate NLP parsing issues
-        for token in &sentence.doc {
+        for (idx, token) in sentence.doc.iter().enumerate() {
             if token.pos == PartOfSpeechTag::Space {
                 reasons.push(format!("Contains Space token: '{}'", sentence.sentence));
             }
@@ -2234,6 +4300,434 @@ impl SentenceClassifier for ItalianClassifier {
                 reasons.push(format!(
                     "Check whether 'ne' is really {:?} (often a pronoun or adverb)",
                     token.pos
+                ));
+            }
+
+            // Check for essere conjugations which can be either AUX or VERB depending on context
+            let essere_forms = [
+                // Present
+                "sono",
+                "sei",
+                "è",
+                "siamo",
+                "siete", // Imperfect
+                "ero",
+                "eri",
+                "era",
+                "eravamo",
+                "eravate",
+                "erano", // Passato remoto
+                "fui",
+                "fosti",
+                "fu",
+                "fummo",
+                "foste",
+                "furono", // Future
+                "sarò",
+                "sarai",
+                "sarà",
+                "saremo",
+                "sarete",
+                "saranno", // Conditional
+                "sarei",
+                "saresti",
+                "sarebbe",
+                "saremmo",
+                "sareste",
+                "sarebbero",
+            ];
+
+            let avere_forms = [
+                // Present
+                "ho",
+                "hai",
+                "ha",
+                "abbiamo",
+                "avete",
+                "hanno", // Imperfect
+                "avevo",
+                "avevi",
+                "aveva",
+                "avevamo",
+                "avevate",
+                "avevano", // Passato remoto
+                "ebbi",
+                "avesti",
+                "ebbe",
+                "avemmo",
+                "aveste",
+                "ebbero", // Future
+                "avrò",
+                "avrai",
+                "avrà",
+                "avremo",
+                "avrete",
+                "avranno", // Conditional
+                "avrei",
+                "avresti",
+                "avrebbe",
+                "avremmo",
+                "avreste",
+                "avrebbero",
+            ];
+
+            let potere_forms = [
+                // Present
+                "posso",
+                "puoi",
+                "può",
+                "possiamo",
+                "potete",
+                "possono", // Imperfect
+                "potevo",
+                "potevi",
+                "poteva",
+                "potevamo",
+                "potevate",
+                "potevano", // Passato remoto
+                "potei",
+                "potesti",
+                "poté",
+                "potemmo",
+                "poteste",
+                "poterono", // Future
+                "potrò",
+                "potrai",
+                "potrà",
+                "potremo",
+                "potrete",
+                "potranno", // Conditional
+                "potrei",
+                "potresti",
+                "potrebbe",
+                "potremmo",
+                "potreste",
+                "potrebbero",
+            ];
+
+            let dovere_forms = [
+                // Present
+                "devo",
+                "devi",
+                "deve",
+                "dobbiamo",
+                "dovete",
+                "devono", // Imperfect
+                "dovevo",
+                "dovevi",
+                "doveva",
+                "dovevamo",
+                "dovevate",
+                "dovevano", // Future
+                "dovrò",
+                "dovrai",
+                "dovrà",
+                "dovremo",
+                "dovrete",
+                "dovranno", // Conditional
+                "dovrei",
+                "dovresti",
+                "dovrebbe",
+                "dovremmo",
+                "dovreste",
+                "dovrebbero",
+            ];
+
+            let volere_forms = [
+                // Present
+                "voglio",
+                "vuoi",
+                "vuole",
+                "vogliamo",
+                "volete",
+                "vogliono", // Imperfect
+                "volevo",
+                "volevi",
+                "voleva",
+                "volevamo",
+                "volevate",
+                "volevano", // Future
+                "vorrò",
+                "vorrai",
+                "vorrà",
+                "vorremo",
+                "vorrete",
+                "vorranno", // Conditional
+                "vorrei",
+                "vorresti",
+                "vorrebbe",
+                "vorremmo",
+                "vorreste",
+                "vorrebbero",
+            ];
+
+            let stare_forms = [
+                // Present
+                "sto",
+                "stai",
+                "sta",
+                "stiamo",
+                "state",
+                "stanno", // Imperfect
+                "stavo",
+                "stavi",
+                "stava",
+                "stavamo",
+                "stavate",
+                "stavano", // Passato remoto
+                "stetti",
+                "stesti",
+                "stette",
+                "stemmo",
+                "steste",
+                "stettero", // Future
+                "starò",
+                "starai",
+                "starà",
+                "staremo",
+                "starete",
+                "staranno", // Conditional
+                "starei",
+                "staresti",
+                "starebbe",
+                "staremmo",
+                "stareste",
+                "starebbero",
+            ];
+
+            if essere_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "essere"
+            {
+                reasons.push(format!(
+                    "'{}' (essere) can be either AUX or VERB depending on context. Rule: AUX when forming compound tenses with past participles (e.g., 'è andato'), VERB when used as a copula expressing identity/state (e.g., 'è bello', 'sono stanco', 'è tardi')",
+                    token.text
+                ));
+            }
+
+            if avere_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "avere"
+            {
+                reasons.push(format!(
+                    "'{}' (avere) can be either AUX or VERB depending on context. Rule: AUX when forming compound tenses with past participles (e.g., 'ho mangiato'), VERB when expressing possession or other meanings (e.g., 'ho un libro', 'ha fame')",
+                    token.text
+                ));
+            }
+
+            if potere_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "potere"
+            {
+                reasons.push(format!(
+                    "'{}' (potere) can be either AUX or VERB depending on context. Rule: AUX when expressing ability/possibility with infinitive (e.g., 'posso venire'), VERB when used standalone",
+                    token.text
+                ));
+            }
+
+            if dovere_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "dovere"
+            {
+                reasons.push(format!(
+                    "'{}' (dovere) can be either AUX or VERB depending on context. Rule: AUX when expressing obligation with infinitive (e.g., 'devo andare'), VERB when expressing owing (e.g., 'mi deve dei soldi')",
+                    token.text
+                ));
+            }
+
+            if volere_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "volere"
+            {
+                reasons.push(format!(
+                    "'{}' (volere) can be either AUX or VERB depending on context. Rule: AUX when expressing desire with infinitive (e.g., 'voglio andare'), VERB when used with direct object (e.g., 'voglio un caffè')",
+                    token.text
+                ));
+            }
+
+            if stare_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "stare"
+            {
+                reasons.push(format!(
+                    "'{}' (stare) can be either AUX or VERB depending on context. Rule: AUX when forming progressive tenses with gerund (e.g., 'sto mangiando'), VERB when expressing state/location (e.g., 'sto bene', 'sta a casa')",
+                    token.text
+                ));
+            }
+
+            let andare_forms = [
+                // Present
+                "vado",
+                "vai",
+                "va",
+                "andiamo",
+                "andate",
+                "vanno", // Imperfect
+                "andavo",
+                "andavi",
+                "andava",
+                "andavamo",
+                "andavate",
+                "andavano", // Passato remoto
+                "andai",
+                "andasti",
+                "andò",
+                "andammo",
+                "andaste",
+                "andarono", // Future
+                "andrò",
+                "andrai",
+                "andrà",
+                "andremo",
+                "andrete",
+                "andranno", // Conditional
+                "andrei",
+                "andresti",
+                "andrebbe",
+                "andremmo",
+                "andreste",
+                "andrebbero",
+            ];
+
+            let venire_forms = [
+                // Present
+                "vengo",
+                "vieni",
+                "viene",
+                "veniamo",
+                "venite",
+                "vengono", // Imperfect
+                "venivo",
+                "venivi",
+                "veniva",
+                "venivamo",
+                "venivate",
+                "venivano", // Passato remoto
+                "venni",
+                "venisti",
+                "venne",
+                "venimmo",
+                "veniste",
+                "vennero", // Future
+                "verrò",
+                "verrai",
+                "verrà",
+                "verremo",
+                "verrete",
+                "verranno", // Conditional
+                "verrei",
+                "verresti",
+                "verrebbe",
+                "verremmo",
+                "verreste",
+                "verrebbero",
+            ];
+
+            let fare_forms = [
+                // Present
+                "faccio",
+                "fai",
+                "fa",
+                "facciamo",
+                "fate",
+                "fanno", // Imperfect
+                "facevo",
+                "facevi",
+                "faceva",
+                "facevamo",
+                "facevate",
+                "facevano", // Passato remoto
+                "feci",
+                "facesti",
+                "fece",
+                "facemmo",
+                "faceste",
+                "fecero", // Future
+                "farò",
+                "farai",
+                "farà",
+                "faremo",
+                "farete",
+                "faranno", // Conditional
+                "farei",
+                "faresti",
+                "farebbe",
+                "faremmo",
+                "fareste",
+                "farebbero",
+            ];
+
+            let sapere_forms = [
+                // Present
+                "so",
+                "sai",
+                "sa",
+                "sappiamo",
+                "sapete",
+                "sanno", // Imperfect
+                "sapevo",
+                "sapevi",
+                "sapeva",
+                "sapevamo",
+                "sapevate",
+                "sapevano", // Passato remoto
+                "seppi",
+                "sapesti",
+                "seppe",
+                "sapemmo",
+                "sapeste",
+                "seppero", // Future
+                "saprò",
+                "saprai",
+                "saprà",
+                "sapremo",
+                "saprete",
+                "sapranno", // Conditional
+                "saprei",
+                "sapresti",
+                "saprebbe",
+                "sapremmo",
+                "sapreste",
+                "saprebbero",
+            ];
+
+            if andare_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "andare"
+            {
+                reasons.push(format!(
+                    "'{}' (andare) can be either AUX or VERB depending on context. Rule: AUX when forming passive-obligation (e.g., 'va fatto' = it must be done), VERB when expressing movement (e.g., 'vado a Roma')",
+                    token.text
+                ));
+            }
+
+            if venire_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "venire"
+            {
+                reasons.push(format!(
+                    "'{}' (venire) can be either AUX or VERB depending on context. Rule: AUX when forming alternative passive (e.g., 'viene visto'), VERB when expressing coming/arriving (e.g., 'viene domani')",
+                    token.text
+                ));
+            }
+
+            if fare_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "fare"
+            {
+                reasons.push(format!(
+                    "'{}' (fare) can be either AUX or VERB depending on context. Rule: AUX when used as causative with infinitive (e.g., 'faccio lavare la macchina'), VERB when meaning to do/make (e.g., 'faccio un dolce', 'fa caldo')",
+                    token.text
+                ));
+            }
+
+            if sapere_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "sapere"
+            {
+                reasons.push(format!(
+                    "'{}' (sapere) can be either AUX or VERB depending on context. Rule: AUX when expressing ability with infinitive (e.g., 'so nuotare'), VERB when expressing knowledge (e.g., 'so la risposta')",
+                    token.text
                 ));
             }
 
@@ -2335,6 +4829,143 @@ impl SentenceClassifier for ItalianClassifier {
                     ));
                 }
             }
+
+            // Detect verbs with broken lemmas — Italian infinitives end in -are, -ere, -ire, -rre (porre/trarre/etc.)
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma_lower = token.lemma.to_lowercase();
+                if !lemma_lower.ends_with("are")
+                    && !lemma_lower.ends_with("ere")
+                    && !lemma_lower.ends_with("ire")
+                    && !lemma_lower.ends_with("rre")  // porre, trarre, durre
+                    && !lemma_lower.ends_with("rsi")  // reflexive infinitives
+                    && lemma_lower != "essere"
+                    && lemma_lower != "avere"
+                    && lemma_lower != "fare"
+                    && lemma_lower != "dare"
+                    && lemma_lower != "dire"
+                    && lemma_lower != "stare"
+                    && text_lower.len() > 2
+                {
+                    reasons.push(format!(
+                        "'{}' has lemma '{}' which doesn't look like an Italian infinitive — likely a failed lemmatization",
+                        token.text, token.lemma
+                    ));
+                }
+
+                // Detect -are → -ere corruption (e.g., "amare" → "amere")
+                // This is a systematic issue where 1st conjugation (-are) gets turned into 2nd (-ere)
+                if lemma_lower.ends_with("ere") && lemma_lower.len() > 4 {
+                    let as_are = format!("{}are", &lemma_lower[..lemma_lower.len() - 3]);
+                    // Common -are verbs that might get corrupted to -ere
+                    let common_are_stems = [
+                        "amare",
+                        "parlare",
+                        "mangiare",
+                        "guardare",
+                        "chiamare",
+                        "trovare",
+                        "pensare",
+                        "lavorare",
+                        "giocare",
+                        "comprare",
+                        "pagare",
+                        "portare",
+                        "provare",
+                        "cambiare",
+                        "sparare",
+                        "mostrare",
+                        "telefonare",
+                        "darere",
+                    ];
+                    // If the -ere form matches a known -are verb pattern, flag it
+                    if common_are_stems.contains(&lemma_lower.as_str())
+                        || common_are_stems
+                            .iter()
+                            .any(|v| v.replace("are", "ere") == lemma_lower)
+                    {
+                        reasons.push(format!(
+                            "'{}' has lemma '{}' — possible -are/-ere conjugation class confusion. Should it be '{}'?",
+                            token.text, token.lemma, as_are
+                        ));
+                    }
+                }
+            }
+
+            // Clitic-attached verb forms mistagged as Noun/Intj
+            // e.g., "telefonami" (call me), "dimmi" (tell me), "dacci" (give us)
+            if (token.pos == PartOfSpeechTag::Noun || token.pos == PartOfSpeechTag::Intj)
+                && token.text.to_lowercase() == token.lemma.to_lowercase()
+                && text_lower.len() > 4
+            {
+                // Common Italian clitic endings
+                let clitic_endings = [
+                    "mi", "ti", "ci", "vi", "lo", "la", "li", "le", "ne", "gli", "si",
+                ];
+                let has_clitic = clitic_endings.iter().any(|c| text_lower.ends_with(c));
+                if has_clitic {
+                    reasons.push(format!(
+                        "'{}' tagged as {:?} with lemma '{}' — could be a verb+clitic form (imperative with attached pronoun)",
+                        token.text, token.pos, token.lemma
+                    ));
+                }
+            }
+
+            // "sia" can be Cconj ("either...or") or Verb (subjunctive of essere)
+            if text_lower == "sia" {
+                reasons.push(format!(
+                    "'sia' can be: (1) VERB — subjunctive/imperative of 'essere' (e.g., 'sia crudele' = be cruel), or (2) CCONJ — in 'sia...sia/che' constructions (e.g., 'sia l'uno sia l'altro'). Current POS: {:?}, lemma: '{}'.",
+                    token.pos, token.lemma
+                ));
+            }
+
+            // "sei" can be Num (6) or Verb (you are, from essere)
+            if text_lower == "sei" {
+                reasons.push(format!(
+                    "'sei' can be: (1) AUX/VERB — 'you are' from 'essere' (e.g., 'sei impegnata?'), or (2) NUM — the number 6. Current POS: {:?}, lemma: '{}'.",
+                    token.pos, token.lemma
+                ));
+            }
+
+            // "Le" as Det vs Pron — when before a verb, it's usually a pronoun (her/to her)
+            if text_lower == "le" && token.pos == PartOfSpeechTag::Det {
+                if let Some(next) = sentence.doc.get(idx + 1) {
+                    if next.pos == PartOfSpeechTag::Verb || next.pos == PartOfSpeechTag::Aux {
+                        reasons.push(format!(
+                            "'Le' tagged as DET but followed by verb '{}' — likely a pronoun (her/to her), not an article",
+                            next.text
+                        ));
+                    }
+                }
+            }
+
+            // Adjectives mistagged as Verb — e.g., "vive" (alive) tagged as Verb/vivere
+            // when it follows a copula like "sembrare", "essere", "restare"
+            if token.pos == PartOfSpeechTag::Verb && idx > 0 {
+                let prev = &sentence.doc[idx - 1];
+                let prev_lemma = prev.lemma.to_lowercase();
+                let copulas = [
+                    "sembrare",
+                    "essere",
+                    "restare",
+                    "diventare",
+                    "rimanere",
+                    "parere",
+                    "apparire",
+                ];
+                if (prev.pos == PartOfSpeechTag::Verb || prev.pos == PartOfSpeechTag::Aux)
+                    && copulas.iter().any(|c| prev_lemma == *c)
+                {
+                    reasons.push(format!(
+                        "'{}' (lemma '{}') tagged as VERB after copula '{}' — could be an adjective used as predicate complement",
+                        token.text, token.lemma, prev.text
+                    ));
+                }
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Italian, &text_lower) {
+                reasons.push(reason);
+            }
         }
 
         if reasons.is_empty() {
@@ -2355,6 +4986,36 @@ impl WordCorrector for ItalianCorrector {
 
         for token in &mut sentence.doc {
             let text_lower = token.text.to_lowercase();
+
+            // Fix "non" POS - should always be Adv, not Part
+            if text_lower == "non" && token.pos == PartOfSpeechTag::Part {
+                corrections.push(format!("Fixed '{}' POS from Part to Adv", token.text));
+                token.pos = PartOfSpeechTag::Adv;
+                corrected = true;
+            }
+
+            // Fix clitic pronoun lemma consistency
+            let italian_clitic_fixes: &[(&str, &str)] = &[
+                ("mi", "mi"),
+                ("ti", "ti"),
+                ("si", "si"),
+                ("ci", "ci"),
+                ("vi", "vi"),
+            ];
+            for &(form, expected_lemma) in italian_clitic_fixes {
+                if text_lower == form
+                    && token.pos == PartOfSpeechTag::Pron
+                    && token.lemma != expected_lemma
+                {
+                    corrections.push(format!(
+                        "Fixed clitic pronoun '{}' lemma from '{}' to '{}'",
+                        token.text, token.lemma, expected_lemma
+                    ));
+                    token.lemma = expected_lemma.to_string();
+                    corrected = true;
+                    break;
+                }
+            }
 
             // Fix "lei" (she) lemma - should be "lei", not "lui" (he)
             if text_lower == "lei" && token.lemma == "lui" && token.pos == PartOfSpeechTag::Pron {
@@ -2408,11 +5069,58 @@ impl WordCorrector for ItalianCorrector {
                 token.lemma = lowercase_lemma;
                 corrected = true;
             }
+
+            // Contractions keep their contracted form as lemma
+            if let Some(expected) = contraction_lemma(Language::Italian, &text_lower, token.pos) {
+                if token.lemma != expected {
+                    corrections.push(format!(
+                        "Fixed '{}' lemma from '{}' to '{expected}'",
+                        token.text, token.lemma
+                    ));
+                    token.lemma = expected.to_string();
+                    corrected = true;
+                }
+            }
         }
 
         CorrectionResult {
             corrected,
             corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            let text_lower = token.text.to_lowercase();
+
+            // Fix "non" POS
+            if text_lower == "non" && token.pos == PartOfSpeechTag::Part {
+                token.pos = PartOfSpeechTag::Adv;
+            }
+
+            // Clitic pronoun lemma consistency
+            let italian_clitic_fixes: &[(&str, &str)] = &[
+                ("mi", "mi"),
+                ("ti", "ti"),
+                ("si", "si"),
+                ("ci", "ci"),
+                ("vi", "vi"),
+            ];
+            for &(form, expected_lemma) in italian_clitic_fixes {
+                if text_lower == form
+                    && token.pos == PartOfSpeechTag::Pron
+                    && token.lemma != expected_lemma
+                {
+                    token.lemma = expected_lemma.to_string();
+                    break;
+                }
+            }
+
+            if let Some(expected) = contraction_lemma(Language::Italian, &text_lower, token.pos) {
+                if token.lemma != expected {
+                    token.lemma = expected.to_string();
+                }
+            }
         }
     }
 }
@@ -2664,6 +5372,368 @@ pub struct MultiwordTermValidationResponse {
     pub validated_multiword_terms: Vec<String>,
 }
 
+/// Returns language-specific tips for the LLM correction prompt.
+fn language_specific_tips(language: Language) -> &'static str {
+    match language {
+        Language::Korean => {
+            r#"Korean-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses.
+
+## Lemmatization
+
+The most important rule: every verb and adjective lemma should be the dictionary form ending in -다. Please don't leave a conjugated form as the lemma. Common mistakes to watch for:
+- 사랑해요 → lemma should be "사랑하다" (not "사랑해요")
+- 공부해요 → lemma should be "공부하다" (not "공부해요")
+- 마셨어요 → lemma should be "마시다" (not "마셨어요")
+- 일어났어요 → lemma should be "일어나다" (not "일어났어요")
+- 자야겠어요 → lemma should be "자다" (not "자야겠어요")
+- 골랐다 → lemma should be "고르다" (not "골랐다")
+- 누웠다 → lemma should be "눕다" (not "누웠다")
+- 도와야 → lemma should be "돕다" (not "도와야")
+- 추웠다 → lemma should be "춥다" (not "추웠다")
+- 오신다 → lemma should be "오다" (not "오신다")
+- 돼요 → lemma should be "되다" (not "돼요")
+- 조심하세요 → lemma should be "조심하다" (not "조심하세요")
+- 얘기했어 → lemma should be "얘기하다" (not "얘기했어")
+- 복잡해요 → lemma should be "복잡하다" (not "복잡해요")
+- 중요해요 → lemma should be "중요하다" (not "중요해요")
+- 무시하면요 → lemma should be "무시하다" (not "무시하면요")
+- 괴롭혔어 → lemma should be "괴롭히다" (not "괴롭혔+어" or "괴롭혔어")
+- 꺼버려 → lemma should be "꺼버리다" (not "꺼버려")
+- 놀려봐 → lemma should be "놀리다" (not "놀려봐")
+This applies to all conjugated forms: -요 polite, -았/었 past, -겠 future, -ㅂ니까 formal question, -시 honorific, -야 informal, -는/은/ㄴ adnominal, etc.
+
+Please don't use "+" morpheme notation in lemmas — the lemma should be a single clean dictionary form. The one exception is contracted forms (described below in the tokenization section), where "+" notation is used to show which morphemes fused together.
+- 보호하다 (correct) not 보호+하+여야
+- 생각하다 (correct) not 생각+하+었+는+데
+- 나 (correct) not 나+는
+- 톰 (correct) not 톰+에게
+
+## Tokenization
+
+### Particles
+
+Particles (조사) like 은/는, 이/가, 을/를, 에, 에서, 의, 도, 만, 까지, 에게, 한테, 랑, 처럼, 라도, etc. should always be split into separate tokens from their noun or pronoun, as long as both pieces are visible in the surface form. This is critical for language learners who need to see and learn particles as independent grammatical units. All particles should be tagged ADP.
+- "나는" → two tokens: "나" (PRON, lemma "나") + "는" (ADP, lemma "는")
+- "사람들을" → two tokens: "사람들" (NOUN, lemma "사람") + "을" (ADP, lemma "을")
+- "학교에서" → two tokens: "학교" (NOUN, lemma "학교") + "에서" (ADP, lemma "에서")
+- "친구의" → two tokens: "친구" (NOUN, lemma "친구") + "의" (ADP, lemma "의")
+- "톰에게" → two tokens: "톰" (PROPN, lemma "톰") + "에게" (ADP, lemma "에게")
+- "학교도" → two tokens: "학교" (NOUN, lemma "학교") + "도" (ADP, lemma "도")
+- "너한테" → two tokens: "너" (PRON, lemma "너") + "한테" (ADP, lemma "한테")
+- "나랑" → two tokens: "나" (PRON, lemma "나") + "랑" (ADP, lemma "랑")
+- "그때처럼" → two tokens: "그때" (NOUN, lemma "그때") + "처럼" (ADP, lemma "처럼")
+
+Be mindful of ambiguous splits — use the sentence context to determine the correct tokenization. For example, "나라도" could be "나라" (country) + "도" (also), or "나" (me) + "라도" (even/at least). The surrounding sentence should make the intended meaning clear.
+
+Note on particle variants: 이/가 subject particles and 을/를 object particles have two forms depending on whether the preceding syllable ends in a consonant or vowel. Both forms are valid particles. The lemma of the particle should be the particle itself (e.g., lemma of "는" is "는", lemma of "은" is "은").
+
+### Uncontracted noun+particle eojeol
+
+When a noun and particle are written together but haven't contracted, split them into two tokens as above. The pieces are already visible and no special handling is needed:
+- "것은" → two tokens: "것" (NOUN, lemma "것") + "은" (ADP, lemma "은")
+- "나를" → two tokens: "나" (PRON, lemma "나") + "를" (ADP, lemma "를")
+- "것이" → two tokens: "것" (NOUN, lemma "것") + "이" (ADP, lemma "이")
+
+### Contracted forms
+
+Sometimes a noun/pronoun and particle fuse together into a new syllable that no longer visually contains the original pieces. When this happens, please keep it as one token — don't try to split it. The surface text must be preserved exactly. Use the lemma to show the components with "+" notation (this is the one place where "+" in lemmas is appropriate):
+- "건" → one token: "건" (NOUN, lemma "것+은")
+- "걸" → one token: "걸" (NOUN, lemma "것+을")
+- "게" → one token: "게" (NOUN, lemma "것+이")
+- "거" → one token: "거" (NOUN, lemma "것") — casual form of 것
+- "건데" → one token: "건데" (NOUN, lemma "것+인데")
+- "뭘" → one token: "뭘" (PRON, lemma "뭐+를")
+- "뭔데요" → one token: "뭔데요" (PRON, lemma "뭐+인데+요")
+- "난" → one token: "난" (PRON, lemma "나+는")
+- "날" → one token: "날" (PRON, lemma "나+를") — when 날 means "me" (object), not the noun "day"
+- "널" → one token: "널" (PRON, lemma "너+를")
+- "전" → one token: "전" (PRON, lemma "저+는") — when 전 is a contraction of 저는, not the noun "before"
+- "절" → one token: "절" (PRON, lemma "저+를")
+- "우린" → one token: "우린" (PRON, lemma "우리+는")
+
+Similarly for multi-syllable contracted forms:
+- "이건" → one token: "이건" (PRON, lemma "이것+은")
+- "이걸" → one token: "이걸" (PRON, lemma "이것+을")
+- "그건" → one token: "그건" (PRON, lemma "그것+은")
+- "그게" → one token: "그게" (PRON, lemma "그것+이")
+- "저건" → one token: "저건" (PRON, lemma "저것+은")
+
+The key principle: the text field must always match the original surface form. Never decompose a contraction in the text field (e.g., never output "이거" + "ㄴ" for "이건"). The morphological decomposition belongs only in the lemma.
+
+### Verb conjugations
+
+Conjugated verb forms should stay as one token with the dictionary form (-다) as the lemma. Don't split the stem from its endings, and don't use "+" in the lemma:
+- "해요" → one token: "해요" (VERB, lemma "하다")
+- "봐요" → one token: "봐요" (VERB, lemma "보다")
+- "와요" → one token: "와요" (VERB, lemma "오다")
+- "마셔요" → one token: "마셔요" (VERB, lemma "마시다")
+- "먹었어요" → one token: "먹었어요" (VERB, lemma "먹다")
+- "돼요" → one token: "돼요" (VERB, lemma "되다")
+- "조심하세요" → one token: "조심하세요" (VERB, lemma "조심하다")
+
+This applies even when vowel contraction has occurred (하+여→해, 보+아→봐, 오+아→와). The lemma is always the clean -다 dictionary form.
+
+### Copula 이다
+
+When 이다 is attached to a noun (입니다, 이에요, 이야, 이다, etc.), please split it into the noun + the copula as separate tokens. Tag the copula part as AUX with lemma "이다":
+- "학생입니다" → two tokens: "학생" (NOUN, lemma "학생") + "입니다" (AUX, lemma "이다")
+- "문제입니까" → two tokens: "문제" (NOUN, lemma "문제") + "입니까" (AUX, lemma "이다")
+- "친구야" → two tokens: "친구" (NOUN, lemma "친구") + "야" (AUX, lemma "이다")
+- "사실이에요" → two tokens: "사실" (NOUN, lemma "사실") + "이에요" (AUX, lemma "이다")
+- "무엇입니까" → two tokens: "무엇" (PRON, lemma "무엇") + "입니까" (AUX, lemma "이다")
+- "끝이다" → two tokens: "끝" (NOUN, lemma "끝") + "이다" (AUX, lemma "이다")
+- "남자지" → two tokens: "남자" (NOUN, lemma "남자") + "지" (AUX, lemma "이다")
+- "거야" → two tokens: "거" (NOUN, lemma "것") + "야" (AUX, lemma "이다")
+- "샘이야" → two tokens: "샘" (PROPN, lemma "샘") + "이야" (AUX, lemma "이다")
+- "살인범이라고" → two tokens: "살인범" (NOUN, lemma "살인범") + "이라고" (AUX, lemma "이다")
+
+When 이다 appears as a separate word, also tag it as AUX with lemma "이다".
+
+### Proper nouns
+
+Proper nouns (names of people, places, etc.) should never be morphologically decomposed. Keep the name intact as one token. If a particle is attached, split only the particle:
+- "톰에게" → "톰" (PROPN) + "에게" (ADP)
+- "카즈토요를" → "카즈토요" (PROPN) + "를" (ADP)
+- "레스트랭" → one token: "레스트랭" (PROPN, lemma "레스트랭") — not "레스트+이+랭"
+- "나호코" → one token: "나호코" (PROPN, lemma "나호코") — not VERB with lemma "나호+코"
+- "탄크레디" → one token: "탄크레디" (PROPN, lemma "탄크레디")
+
+If you're unsure whether something is a proper noun, consider the context — names often appear in vocative position (calling someone), after titles (마담, 씨), or before 아/야 (informal address).
+
+### Standalone dictionary forms and sentence fragments
+
+Sometimes the input may be a standalone dictionary form (like "앉다", "좋아하다", "하다") rather than a sentence. In these cases, tag them with their correct POS (VERB, ADJ, etc.), not as SCONJ, CCONJ, or ADV. The lemma should be the word itself:
+- "앉다" → VERB, lemma "앉다" (not ADV)
+- "좋아하다" → VERB, lemma "좋아하다" (not CCONJ)
+- "하다" → VERB, lemma "하다" (not SCONJ)
+- "되다" → VERB, lemma "되다" (not SCONJ)
+- "벗다" → VERB, lemma "벗다" (not SCONJ)
+
+## Part of Speech
+
+### 하다-adjectives vs 하다-verbs
+
+Korean has descriptive verbs (형용사) that should be tagged ADJ, not VERB. These describe states or qualities rather than actions:
+- ADJ: 행복하다, 필요하다, 중요하다, 유명하다, 위험하다, 안전하다, 편리하다, 깨끗하다, 복잡하다, 간단하다, 충분하다, 부족하다, 심각하다, 조용하다, 특별하다, 죄송하다, 감사하다, 안녕하다, 건강하다, 불편하다, 가능하다, 불가능하다, 친절하다, 솔직하다, 성실하다, 궁금하다
+- Also ADJ: native Korean adjectives like 좋다, 나쁘다, 크다, 작다, 많다, 적다, 높다, 낮다, 길다, 짧다, 아프다, 싫다, 쉽다, 어렵다, 춥다, 덥다, 바쁘다, 예쁘다, 아름답다, 무섭다, 슬프다, 기쁘다
+
+These are commonly mistagged as VERB. When you see a conjugated form like 복잡해요, 중요해요, 위험한, 궁금하겠소 — these are all ADJ, not VERB.
+
+### 있다/없다
+
+있다 is VERB when indicating existence or possession; 없다 is ADJ when indicating non-existence or lack. However, compound adjectives like 재미있다 (interesting) and 맛있다 (delicious) should be tagged ADJ as a whole. In auxiliary constructions like V-고 있다, tag 있다 as AUX.
+
+### Auxiliary verbs
+
+In compound verb constructions, the first verb is the main VERB, the second is AUX:
+- V-고 있다: 먹고(VERB) 있다(AUX)
+- V-고 싶다: 보고(VERB) 싶다(AUX) — note: 싶다 is AUX here
+- V-아/어 주다: 도와(VERB) 주다(AUX)
+- V-아/어 보다: 먹어(VERB) 보다(AUX)
+In "V-ㄹ 수 있다": 수 is a bound noun (NOUN), not AUX.
+
+### 어떻게 and 이렇게
+
+어떻게 is always an adverb meaning "how" — tag as ADV, not VERB or SCONJ.
+이렇게 is always an adverb meaning "like this" — tag as ADV, not SCONJ.
+
+### 제 as determiner
+
+제 before a noun is a possessive determiner meaning "my" (humble) — tag as DET, not ADJ or PRON:
+- "제 편지" → "제" (DET, lemma "제") + "편지" (NOUN)
+
+### 얘들아 as vocative
+
+얘들아 is the vocative form of 얘들 (kids/guys) — tag as NOUN or INTJ, not SCONJ.
+
+### 있잖아 as discourse marker
+
+있잖아 ("you know" / "listen") functions as a discourse marker — tag as VERB (lemma "있다") or INTJ, not SCONJ.
+
+### Final note
+
+Just remember that the Spacy tokenization output that you will see is just terrible. It gets maybe 60% of tokens correct. So you will likely need to make a lot of changes."#
+        }
+        Language::French => {
+            r#"
+
+French-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses:
+
+## Lemmatization
+
+Past participles used as adjectives: when a past participle functions as an adjective (e.g., "fatigué", "désolé", "occupé", "terminé", "ouvert"), the lemma should be the verb infinitive, not the participle form. This is important for language learners who need to discover the connection to the source verb.
+- "désolé" → lemma should be "désoler" (not "désolé")
+- "fatigué" → lemma should be "fatiguer" (not "fatigué")
+- "occupé" → lemma should be "occuper" (not "occupé")
+- "terminé" → lemma should be "terminer" (not "terminé")
+- "ouvert" → lemma should be "ouvrir" (not "ouvert")
+- "reçu" → lemma should be "recevoir" (not "reçu")
+- "perdu" → lemma should be "perdre" (not "perdu")
+
+Contraction lemmas: contractions should use the contraction itself as the lemma, since these are treated as single dictionary entries for learners:
+- "au" → lemma "au" (not "à le" or "à")
+- "aux" → lemma "aux"
+- "du" (partitive or contraction) → lemma "du" (not "de le" or "de")
+- "des" → lemma "des"
+
+Pronoun lemmas: please be consistent with pronoun lemmatization:
+- Disjunctive/stressed pronouns keep their own form: "moi" → lemma "moi", "toi" → lemma "toi"
+- Clitic object pronouns also keep their own form: "me"/"m'" → lemma "me", "te"/"t'" → lemma "te"
+- Please don't map "me" to "se" or "moi" to "je" — keep each form as its own lemma.
+
+## Part of Speech
+
+"non" should consistently be tagged ADV (not PART).
+
+être as copula (e.g., "il est grand", "c'est bon") should be tagged AUX, not VERB."#
+        }
+        Language::German => {
+            r#"
+
+German-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses:
+
+## Lemmatization
+
+The most important rule: lemmas should always be lowercase (except for nouns and proper nouns, which are capitalized in German). When a word appears at the start of a sentence, do not copy the capitalized surface form as the lemma.
+- "Haben" (sentence-initial) → lemma should be "haben" (not "Haben")
+- "Sei" (sentence-initial) → lemma should be "sein" (not "Sei")
+- "Muss" (sentence-initial) → lemma should be "müssen" (not "Muss")
+- "Meine" (sentence-initial DET) → lemma should be "mein" (not "Meine")
+- "Morgen" (sentence-initial ADV) → lemma should be "morgen" (not "Morgen")
+This applies to all word classes: verbs, auxiliaries, determiners, adverbs, adjectives, pronouns, etc. Only nouns and proper nouns get capitalized lemmas.
+
+Nominalized verbs/adjectives: when a verb or adjective is used as a noun (substantivized), it should be tagged NOUN and the lemma should be the capitalized noun form, not the lowercase verb/adjective:
+- "das Schweigen" → NOUN, lemma "Schweigen" (not "schweigen")
+- "das Essen" → NOUN, lemma "Essen" (not "essen")
+- "das Rauchen" → NOUN, lemma "Rauchen" (not "rauchen")
+- "der Vorsitzende" → NOUN, lemma "Vorsitzender" (not "vorsitzend")
+
+Contraction lemmas: German contractions should use the contraction itself as the lemma:
+- "im" → lemma "im" (not "in" or "in dem")
+- "zum" → lemma "zum" (not "zu" or "zu dem")
+- "vom" → lemma "vom", "beim" → lemma "beim", "ins" → lemma "ins", etc.
+
+The formal pronoun "Sie" (you, formal) should have lemma "Sie" (capitalized) to distinguish it from "sie" (she/they).
+
+"haben" as auxiliary: please make sure the lemma is "haben" — we've seen a corrupted lemma "Haen" appear for "haben" forms. Double-check that "hast", "hat", "hatte", etc. all get lemma "haben"."#
+        }
+        Language::Spanish => {
+            r#"
+
+Spanish-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses:
+
+## Lemmatization
+
+Past participles used as adjectives: when a past participle functions as an adjective (e.g., "cansado", "ocupado", "cerrado"), the lemma should be the verb infinitive, not the participle form:
+- "acostumbrado" → lemma should be "acostumbrar" (not "acostumbrado")
+- "ocupado" → lemma should be "ocupar" (not "ocupado")
+- "jubilado" → lemma should be "jubilar" (not "jubilado")
+- "equivocado" → lemma should be "equivocar" (not "equivocado")
+- "cerrado" → lemma should be "cerrar" (not "cerrado")
+
+Contraction lemmas: contractions should use the contraction itself as the lemma:
+- "al" → lemma "al" (not "a el" or "a")
+- "del" → lemma "del" (not "de el" or "de")
+
+Enclitic reflexive verbs: when a verb has an enclitic pronoun attached (e.g., "irse", "casarse", "quedarse"), the lemma should be the base verb without the pronoun:
+- "irse" / "irnos" / "irme" → lemma "ir" (not "irse")
+- "quedarse" → lemma "quedar" (not "quedarse")
+- "casarse" / "casate" → lemma "casar" (not "casarse")
+- "hacerlo" → lemma "hacer"
+- "hablarte" → lemma "hablar"
+
+Pronoun lemmas: clitic pronouns should keep their own form as the lemma:
+- "me" → lemma "me", "te" → lemma "te", "se" → lemma "se", "le" → lemma "le"
+- "conmigo" → lemma "conmigo", "contigo" → lemma "contigo"
+
+Demonstrative pronouns: neuter demonstratives should lemmatize to the masculine form:
+- "esto" → lemma "este", "eso" → lemma "ese", "aquello" → lemma "aquel"
+
+Indefinite article: "un"/"una"/"unos"/"unas" should all lemmatize to "uno".
+
+## Part of Speech
+
+"no" (negation) should consistently be tagged ADV."#
+        }
+        Language::Italian => {
+            r#"
+
+Italian-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses:
+
+## Lemmatization
+
+Articulated preposition lemmas: this is the most important issue. Articulated prepositions (nel, del, al, sul, dal, etc.) should use the contraction itself as the lemma. Please be consistent:
+- "del" → lemma "del" (not "di il", "di", or "di+il")
+- "della" → lemma "della" (not "di il", "di la", "di", or "di+la")
+- "al" → lemma "al" (not "a il", "a", or "a+il")
+- "alla" → lemma "alla" (not "a la", "a il", or "a")
+- "nel" → lemma "nel" (not "in il" or "in")
+- "nella" → lemma "nella" (not "in la", "in il", or "in")
+- "sul" → lemma "sul", "sulla" → lemma "sulla"
+- "dal" → lemma "dal", "dalla" → lemma "dalla"
+- Same for apostrophed forms: "dell'" → lemma "del", "all'" → lemma "al", "nell'" → lemma "nel"
+- Partitive articles (del/dello/della/etc. as DET) should also use the contraction as lemma: "dello" → lemma "dello", "delle" → lemma "delle"
+
+Verb+clitic lemmas: when a verb has an enclitic pronoun attached (e.g., "farlo", "dirsi", "aiutarla"), the lemma should be just the bare infinitive, not a space-separated fusion:
+- "farlo" → lemma "fare" (not "fare lo")
+- "dirsi" → lemma "dire" (not "dire si")
+- "parlarle" → lemma "parlare" (not "parlare le")
+- "ucciderlo" → lemma "uccidere" (not "uccidere lo")
+
+Past participles used as adjectives: the lemma should be the verb infinitive:
+- "impressionato" → lemma "impressionare" (not "impressionato")
+- "arrabbiato" → lemma "arrabbiare" (not "arrabbiato")
+- "affamato" → lemma "affamare" (not "affamato")
+
+Clitic pronoun lemmas: please be consistent. "mi" → lemma "mi", "ti" → lemma "ti", "si" → lemma "si", "ci" → lemma "ci", "vi" → lemma "vi".
+
+## Part of Speech
+
+"non" should consistently be tagged ADV (not PART)."#
+        }
+        Language::Portuguese => {
+            r#"
+
+Portuguese-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses:
+
+## Lemmatization
+
+Contraction lemmas: this is the most important issue. Portuguese contractions should use the contraction itself as the lemma. Please be consistent and respect the gender of the contraction:
+- "do" → lemma "do" (not "de o", "de", or "de+o")
+- "da" → lemma "da" (not "de a", "de o", "de", or "de+a")
+- "dos" → lemma "dos", "das" → lemma "das"
+- "no" → lemma "no" (not "em o" or "em")
+- "na" → lemma "na" (not "em a", "em o", or "em") — especially don't use a masculine lemma for a feminine contraction
+- "nos" → lemma "nos", "nas" → lemma "nas"
+- "ao" → lemma "ao", "aos" → lemma "aos", "à" → lemma "à", "às" → lemma "às"
+- "pelo" → lemma "pelo", "pela" → lemma "pela", "pelos" → lemma "pelos", "pelas" → lemma "pelas"
+- "num" → lemma "num", "numa" → lemma "numa"
+- "dele"/"dela" → lemma "dele"/"dela" (not "de ele"/"de ela")
+- "nele"/"nela" → lemma "nele"/"nela"
+
+Past participles used as adjectives: the lemma should be the verb infinitive:
+- "cansado" → lemma "cansar" (not "cansado")
+- "ocupado" → lemma "ocupar" (not "ocupado")
+- "coberto" → lemma "cobrir" (not "coberto")
+- "aberto" → lemma "abrir" (not "aberto")
+- "morto" → lemma "morrer" (not "morto")
+
+Pronoun lemmas: clitic pronouns should keep their own form as the lemma:
+- "me" → lemma "me" (not "eu"), "te" → lemma "te" (not "tu"), "se" → lemma "se"
+
+Feminine noun lemmas: please be consistent. Feminine nouns that have a distinct masculine counterpart should keep the feminine form as lemma:
+- "irmã" → lemma "irmã" (not "irmão"), "filha" → lemma "filha" (not "filho")
+- "mãe" → lemma "mãe", "avó" → lemma "avó"
+
+## Part of Speech
+
+estar as copula (with adjective complement) should be tagged AUX (not VERB).
+saber should always be tagged VERB, even in "saber + infinitive" constructions."#
+        }
+        _ => "",
+    }
+}
+
 /// Use GPT to clean/correct an NLP analyzed sentence
 pub async fn clean_sentence_with_llm(
     language: Language,
@@ -2690,6 +5760,8 @@ pub async fn clean_sentence_with_llm(
     } else {
         String::new()
     };
+
+    let language_tips = language_specific_tips(language);
 
     let system_prompt = format!(
         r#"You are an expert in {language} NLP analysis. Your task is to review and potentially correct an automatically-generated NLP analysis of a {language} sentence.
@@ -2719,7 +5791,7 @@ The text of the word should always be the same as it appears in the sentence (in
 
 Hyphenated words should usually be split into three separate tokens. For example, "can-do" should be split into "can", "-", "do". "toi-même" should be split into "toi", "-", "même".
 
-Review the analysis carefully. If you find errors, correct them. If the analysis is already correct, return it unchanged. In either case, you will return all tokens in the sentence. You are the ultimate authority on the correct analysis of the sentence, and your response should stand alone.{suspicion_context} 
+Review the analysis carefully. If you find errors, correct them. If the analysis is already correct, return it unchanged. In either case, you will return all tokens in the sentence. You are the ultimate authority on the correct analysis of the sentence, and your response should stand alone.{suspicion_context}{language_tips}
 
 Think through your analysis, and finally provide the corrected token list. Remember, the provided analysis likely has errors. If it was likely to be good, we would not need you!"#
     );

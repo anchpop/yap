@@ -2940,10 +2940,12 @@ dependencies = [
  "regex 1.11.2",
  "reqwest 0.12.23",
  "rustc-hash",
+ "schemars",
  "serde",
  "serde_json",
  "subparse",
  "tokio",
+ "tysm",
 ]
 
 [[package]]

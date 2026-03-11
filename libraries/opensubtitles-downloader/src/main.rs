@@ -7,6 +7,15 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
+use std::sync::LazyLock;
+use tysm::chat_completions::ChatClient;
+
+static QUALITY_CHECK_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
+    ChatClient::from_env("gpt-5.4")
+        .unwrap()
+        .with_cache_directory("./.sub-cache")
+        .with_service_tier("flex")
+});
 
 /// Fetch an image from a URL and return the bytes
 async fn fetch_image_bytes(client: &reqwest::Client, url: &str) -> Result<Vec<u8>> {
@@ -697,11 +706,81 @@ fn strip_html_tags(text: &str) -> String {
 
 /// Check if subtitle lines pass the language sanity check.
 fn passes_language_sanity_check(lines: &[SubtitleLineJson], language: Language) -> bool {
-    match language.check_subtitle_sanity(lines.iter().map(|l| l.sentence.as_str())) {
+    match language.check_subtitle_sanity(lines.iter().map(|l| l.sentence.as_str()), &[]) {
         Ok(()) => true,
         Err(reason) => {
             eprintln!("  Sanity check failed: {reason}");
             false
+        }
+    }
+}
+
+#[derive(Deserialize, schemars::JsonSchema)]
+struct SubtitleQualityResponse {
+    /// Whether the subtitles look like clean, properly-encoded text
+    clean: bool,
+    /// Brief explanation if not clean
+    reason: String,
+}
+
+/// Use an LLM to check if subtitle samples look clean and properly encoded.
+/// Samples 3 blocks from the subtitle file (beginning, middle, end).
+async fn passes_llm_quality_check(lines: &[SubtitleLineJson], language: Language) -> bool {
+    if lines.len() < 10 {
+        return true; // Too short to meaningfully check
+    }
+
+    // Sample 8 lines from 5 evenly-spaced blocks for broader coverage
+    let block_size = 8;
+    let len = lines.len();
+    let offsets = [
+        5.min(len),
+        len / 4,
+        len / 2,
+        3 * len / 4,
+        len.saturating_sub(block_size),
+    ];
+
+    let mut sample = String::new();
+    for (i, &start) in offsets.iter().enumerate() {
+        sample.push_str(&format!("--- BLOCK {i} ---\n"));
+        for line in lines.iter().skip(start).take(block_size) {
+            sample.push_str(&line.sentence);
+            sample.push('\n');
+        }
+        sample.push('\n');
+    }
+
+    let prompt = format!(
+        "These are samples from a {language} movie subtitle file. \
+         Are these subtitles clean and properly encoded? \
+         Look for any SYSTEMIC problems:\n\
+         - OCR errors: 'rhe'/'rhat' for 'the'/'that', 'II' for 'Il', 'l' (lowercase L) for 'I' \
+           (e.g. 'lo' for 'Io' in Italian, 'ln' for 'In', 'l'' for 'l''), \
+           'I' (capital I) for 'l' (e.g. 'I'' for 'l'' in French/Italian)\n\
+         - Missing diacritics: text in ASCII when the language requires accents \
+           (e.g. Spanish without á/é/í/ó/ú/ñ, French without é/è/ê/à/ç)\n\
+         - Wrong language or bilingual: subtitles in a different language, or two languages interleaved\n\
+         - Encoding corruption: mojibake, garbled accents, control characters, \
+           Greek lookalike characters mixed into Latin text\n\
+         - Formatting artifacts: {{\\an8}}, SSA/ASS tags, HTML tags\n\n\
+         A few minor issues in individual lines are OK — flag it only if there's a \
+         SYSTEMIC problem affecting many lines.\n\n{sample}"
+    );
+
+    match QUALITY_CHECK_CLIENT
+        .chat::<SubtitleQualityResponse>(prompt)
+        .await
+    {
+        Ok(response) => {
+            if !response.clean {
+                println!("  ✗ LLM quality check failed: {}", response.reason);
+            }
+            response.clean
+        }
+        Err(e) => {
+            println!("  ⚠ LLM quality check error (allowing): {e}");
+            true // Don't block on LLM errors
         }
     }
 }
@@ -805,6 +884,12 @@ async fn download_movie_subtitles(
             println!(
                 "  ✗ Subtitles failed language sanity check (wrong language?), trying next..."
             );
+            continue;
+        }
+
+        // LLM quality check: sample blocks and verify they look clean
+        if !passes_llm_quality_check(&subtitle_lines, language).await {
+            println!("  ✗ Subtitles failed LLM quality check, trying next...");
             continue;
         }
 

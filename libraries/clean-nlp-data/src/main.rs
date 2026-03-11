@@ -1,4 +1,5 @@
 mod classify;
+mod polysemous_words;
 mod utils;
 
 use anyhow::{Context, anyhow};
@@ -12,6 +13,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{Course, Language, NlpAnalyzedSentence};
 use rand::prelude::IndexedRandom;
 use sentence_sampler::sample_to_target;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader, BufWriter, Write as _};
 use std::path::{Path, PathBuf};
@@ -21,7 +23,7 @@ use tysm::chat_completions::ChatClient;
 use utils::{ValidationResult, validate_and_fix_whitespace};
 
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-5")
+    ChatClient::from_env("gpt-5.4")
         .unwrap()
         .with_cache_directory("./.cache")
         .with_service_tier("flex")
@@ -176,6 +178,8 @@ fn load_manual_sentences(language: Language) -> anyhow::Result<std::collections:
     Ok(manual_sentences)
 }
 
+/// Load NLP-analyzed sentences from cache. Used by the `print` command which
+/// needs ALL sentences analyzed (not just a sample).
 async fn load_nlp_sentences(language: Language) -> anyhow::Result<Vec<NlpAnalyzedSentence>> {
     let nlp_file_path = ensure_nlp_file(language).await?;
 
@@ -196,81 +200,138 @@ async fn load_nlp_sentences(language: Language) -> anyhow::Result<Vec<NlpAnalyze
     Ok(sentences)
 }
 
-async fn load_multiword_terms(language: Language) -> anyhow::Result<Vec<NlpAnalyzedSentence>> {
-    let base_dir = base_output_directory(language);
-    std::fs::create_dir_all(&base_dir).context("Failed to create output directory")?;
-    let base_dir = base_dir
-        .canonicalize()
-        .context("Failed to canonicalize output directory")?;
-
-    let course = Course {
-        native_language: default_native_language(language),
-        target_language: language,
-    };
-
-    // Ensure multiword terms file exists
-    let multiword_terms_file =
-        generate_data::wiktionary_terms::ensure_multiword_terms_file(&course, &base_dir)
-            .await
-            .context("Failed to ensure multiword terms file")?;
-
-    // Create a file with the terms as sentences (one per line, JSON string format)
-    let terms_as_sentences_path = base_dir.join("multiword_terms_as_sentences.jsonl");
-    if !terms_as_sentences_path.exists() {
-        let terms_file =
-            File::open(&multiword_terms_file).context("Failed to open multiword terms file")?;
-        let reader = BufReader::new(terms_file);
-
-        let output_file = File::create(&terms_as_sentences_path)
-            .context("Failed to create terms as sentences file")?;
-        let mut writer = BufWriter::new(output_file);
-
-        for line in reader.lines() {
-            let term = line.context("Failed to read line from multiword terms")?;
-            let term = term.trim();
-            if !term.is_empty() {
-                writeln!(writer, "{}", serde_json::to_string(&term)?)
-                    .context("Failed to write term as sentence")?;
-            }
-        }
-        writer.flush().context("Failed to flush writer")?;
-    }
-
-    // Process the terms with NLP
-    let terms_nlp_path = base_dir.join("multiword_terms_nlp.jsonl");
-    if !terms_nlp_path.exists() {
-        println!("Running Python NLP on multiword terms for {language:?}...");
-        // Create an empty multiword terms file for the NLP (since we're analyzing the terms themselves)
-        let empty_terms_file = base_dir.join("empty_multiword_terms.jsonl");
-        if !empty_terms_file.exists() {
-            File::create(&empty_terms_file)
-                .context("Failed to create empty multiword terms file")?;
-        }
-
-        run_python_nlp(
-            language,
-            &terms_as_sentences_path,
-            &empty_terms_file,
-            &terms_nlp_path,
-        )?;
-    }
-
-    // Load the analyzed terms
-    let file = File::open(&terms_nlp_path)
-        .context(format!("Failed to open terms NLP file: {terms_nlp_path:?}"))?;
+/// Load multiword term strings from the wiktionary terms file (plain text, one per line).
+fn load_multiword_term_strings(multiword_terms_file: &Path) -> anyhow::Result<Vec<String>> {
+    let file = File::open(multiword_terms_file).context("Failed to open multiword terms file")?;
     let reader = BufReader::new(file);
 
-    let terms: Vec<NlpAnalyzedSentence> = reader
+    let terms: Vec<String> = reader
         .lines()
-        .enumerate()
-        .map(|(idx, line)| {
-            let line = line.context(format!("Failed to read line {idx}"))?;
-            serde_json::from_str::<NlpAnalyzedSentence>(&line)
-                .context(format!("Failed to deserialize line {idx}: {line}"))
+        .filter_map(|line| {
+            let line = line.ok()?;
+            let trimmed = line.trim().to_string();
+            if trimmed.is_empty() {
+                None
+            } else {
+                Some(trimmed)
+            }
+        })
+        .collect();
+
+    Ok(terms)
+}
+
+/// Run spaCy NLP on a set of sentences, using a persistent cache so we only
+/// process sentences we haven't seen before.
+///
+/// Returns NLP-analyzed sentences in the same order as the input.
+fn run_nlp_cached(
+    language: Language,
+    sentences: &[String],
+    multiword_terms_file: &Path,
+    cache_file: &Path,
+) -> anyhow::Result<Vec<NlpAnalyzedSentence>> {
+    // Load existing cache
+    let mut cache: HashMap<String, NlpAnalyzedSentence> = if cache_file.exists() {
+        let file =
+            File::open(cache_file).context(format!("Failed to open NLP cache: {cache_file:?}"))?;
+        let reader = BufReader::new(file);
+        reader
+            .lines()
+            .filter_map(|line| {
+                let line = line.ok()?;
+                let sentence: NlpAnalyzedSentence = serde_json::from_str(&line).ok()?;
+                Some((sentence.sentence.clone(), sentence))
+            })
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
+    // Find sentences not in cache
+    let uncached: Vec<&String> = sentences
+        .iter()
+        .filter(|s| !cache.contains_key(s.as_str()))
+        .collect();
+
+    let uncached_unique: Vec<String> = {
+        let mut seen = std::collections::HashSet::new();
+        uncached
+            .into_iter()
+            .filter(|s| seen.insert(s.as_str().to_string()))
+            .cloned()
+            .collect()
+    };
+
+    if uncached_unique.is_empty() {
+        println!(
+            "All {} sentences found in NLP cache, skipping spaCy",
+            sentences.len()
+        );
+    } else {
+        println!(
+            "NLP cache hit: {}/{} sentences cached, running spaCy on {} new sentences",
+            sentences.len() - uncached_unique.len(),
+            sentences.len(),
+            uncached_unique.len()
+        );
+
+        // Write uncached sentences to a temp file
+        let cache_dir = cache_file
+            .parent()
+            .context("Cache file has no parent directory")?;
+        let temp_input = cache_dir.join("_temp_nlp_input.jsonl");
+        let temp_output = cache_dir.join("_temp_nlp_output.jsonl");
+
+        {
+            let file = File::create(&temp_input).context("Failed to create temp NLP input file")?;
+            let mut writer = BufWriter::new(file);
+            for sentence in &uncached_unique {
+                writeln!(writer, "{}", serde_json::to_string(sentence)?)
+                    .context("Failed to write temp sentence")?;
+            }
+            writer.flush()?;
+        }
+
+        // Run spaCy
+        run_python_nlp(language, &temp_input, multiword_terms_file, &temp_output)?;
+
+        // Read results and add to cache
+        let file = File::open(&temp_output).context("Failed to open temp NLP output file")?;
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            let line = line.context("Failed to read NLP output line")?;
+            let sentence: NlpAnalyzedSentence = serde_json::from_str(&line)
+                .context(format!("Failed to parse NLP output: {line}"))?;
+            cache.insert(sentence.sentence.clone(), sentence);
+        }
+
+        // Write updated cache
+        let file = File::create(cache_file).context("Failed to write NLP cache")?;
+        let mut writer = BufWriter::new(file);
+        for sentence in cache.values() {
+            writeln!(writer, "{}", serde_json::to_string(sentence)?)
+                .context("Failed to write cache entry")?;
+        }
+        writer.flush()?;
+
+        // Clean up temp files
+        let _ = std::fs::remove_file(&temp_input);
+        let _ = std::fs::remove_file(&temp_output);
+    }
+
+    // Return results in input order
+    let results: Vec<NlpAnalyzedSentence> = sentences
+        .iter()
+        .map(|s| {
+            cache
+                .get(s.as_str())
+                .cloned()
+                .with_context(|| format!("Sentence missing from cache after NLP run: '{s}'"))
         })
         .collect::<anyhow::Result<Vec<_>>>()?;
 
-    Ok(terms)
+    Ok(results)
 }
 
 fn print_random_sentences(sentences: &[NlpAnalyzedSentence], count: usize) {
@@ -340,6 +401,9 @@ fn ensure_target_sentences_file(
     Ok(())
 }
 
+/// Ensure all NLP data exists for a language (used by the `print` command).
+/// This runs spaCy on ALL sentences — for the `clean` command, use
+/// `run_nlp_cached` instead which only processes the sampled subset.
 async fn ensure_nlp_file(language: Language) -> anyhow::Result<PathBuf> {
     let base_dir = base_output_directory(language);
     std::fs::create_dir_all(&base_dir).context("Failed to create NLP output directory")?;
@@ -440,63 +504,90 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     let mut manual_sentences = load_manual_sentences(language)?;
 
     if language == Language::French {
-        manual_sentences.insert("Bois-le !".to_string());
+        manual_sentences.insert("Bois-le !".to_string());
         manual_sentences.insert("Bois-le.".to_string());
         manual_sentences.insert("Bois un coup à ma santé.".to_string());
-        manual_sentences.insert("Est-ce que Robin des Bois est vivant ?".to_string());
+        manual_sentences.insert("Est-ce que Robin des Bois est vivant ?".to_string());
     }
 
-    let samples = {
-        let sample_size: usize = 6_000
-            + match language {
-                Language::French | Language::German | Language::Spanish => 2_000,
-                _ => 0,
-            };
-        const TERM_SAMPLE_SIZE: usize = 5_000;
+    let sample_size: usize = 8_000;
+    const TERM_SAMPLE_SIZE: usize = 5_000;
 
-        println!("Loading NLP data for {language:?}...");
-        let mut sentences = load_nlp_sentences(language).await?;
-        println!("Loaded {} sentences", sentences.len());
-
-        // Separate manual sentences from other sentences
-        let (manual_nlp_sentences, other_sentences): (Vec<_>, Vec<_>) = sentences
-            .into_iter()
-            .partition(|s| manual_sentences.contains(&s.sentence));
-
-        println!(
-            "Found {} manual sentences, {} other sentences",
-            manual_nlp_sentences.len(),
-            other_sentences.len()
-        );
-
-        // Use other sentences for sampling, then add ALL manual sentences back
-        sentences = other_sentences;
-
-        let terms = load_multiword_terms(language).await?;
-        println!("Loaded {} multiword terms", terms.len());
-
-        let sampled_sentences =
-            sample_to_target(sentences, sample_size, |s: &NlpAnalyzedSentence| {
-                s.sentence.clone()
-            });
-
-        let sampled_terms = sample_to_target(terms, TERM_SAMPLE_SIZE, |t: &NlpAnalyzedSentence| {
-            t.sentence.clone()
-        });
-
-        println!("Sampled {} sentences", sampled_sentences.len());
-        println!("Sampled {} multiword terms", sampled_terms.len());
-
-        // Add ALL manual sentences back (they should always be included)
-        sampled_sentences
-            .into_iter()
-            .chain(sampled_terms.into_iter())
-            .chain(manual_nlp_sentences.into_iter())
-            .collect::<Vec<_>>()
+    // Step 1: Load all raw sentence strings (no spaCy yet)
+    let course = Course {
+        native_language: default_native_language(language),
+        target_language: language,
     };
-    let sample_count = samples.len();
 
-    println!("Total samples for cleaning: {sample_count} (including all manual sentences)");
+    println!("Loading target sentences for {language:?}...");
+    let all_raw_sentences: Vec<String> = target_sentences::get_target_sentences(course)
+        .context("Failed to load target sentences")?
+        .into_iter()
+        .map(|(s, _, _)| s)
+        .collect();
+    println!("Loaded {} raw sentences", all_raw_sentences.len());
+
+    // Step 2: Separate manual from non-manual, sample BEFORE running spaCy
+    let (manual_texts, other_texts): (Vec<_>, Vec<_>) = all_raw_sentences
+        .into_iter()
+        .partition(|s| manual_sentences.contains(s));
+
+    println!(
+        "Found {} manual sentences, {} other sentences",
+        manual_texts.len(),
+        other_texts.len()
+    );
+
+    let sampled_texts = sample_to_target(other_texts, sample_size, |s: &String| s.clone());
+    println!("Sampled {} sentences", sampled_texts.len());
+
+    // Step 3: Load and sample multiword terms (as raw strings)
+    let base_dir = base_output_directory(language);
+    std::fs::create_dir_all(&base_dir).context("Failed to create output directory")?;
+    let base_dir = base_dir
+        .canonicalize()
+        .context("Failed to canonicalize output directory")?;
+
+    let multiword_terms_file =
+        generate_data::wiktionary_terms::ensure_multiword_terms_file(&course, &base_dir)
+            .await
+            .context("Failed to ensure multiword terms file")?;
+
+    let term_strings = load_multiword_term_strings(&multiword_terms_file)?;
+    println!("Loaded {} multiword terms", term_strings.len());
+
+    let sampled_term_strings =
+        sample_to_target(term_strings, TERM_SAMPLE_SIZE, |s: &String| s.clone());
+    println!("Sampled {} multiword terms", sampled_term_strings.len());
+
+    // Step 4: Combine all sentences that need NLP processing
+    let all_needed: Vec<String> = sampled_texts
+        .into_iter()
+        .chain(sampled_term_strings)
+        .chain(manual_texts)
+        .collect();
+
+    println!(
+        "Total sentences for NLP processing: {} (including all manual sentences)",
+        all_needed.len()
+    );
+
+    // Step 5: Run spaCy with caching — only processes new/unseen sentences
+    let nlp_cache_file = base_dir.join("nlp_cache.jsonl");
+
+    // For multiword terms being analyzed, we use an empty terms file
+    // For regular sentences, we use the actual multiword terms file
+    // Since we mix both, use the multiword terms file (terms themselves
+    // won't be affected by the matcher in practice)
+    let samples = run_nlp_cached(
+        language,
+        &all_needed,
+        &multiword_terms_file,
+        &nlp_cache_file,
+    )?;
+
+    let sample_count = samples.len();
+    println!("Total samples for cleaning: {sample_count}");
 
     // Classify each sentence to get suspicious reasons
     let classifier = get_classifier(language);

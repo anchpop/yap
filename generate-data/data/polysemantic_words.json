@@ -1,0 +1,9139 @@
+{
+  "fra": [
+    {
+      "word": "pas",
+      "meanings": [
+        {
+          "lemma": "pas",
+          "pos": "ADV",
+          "count": 6612
+        },
+        {
+          "lemma": "pas",
+          "pos": "NOUN",
+          "count": 105
+        }
+      ],
+      "total_count": 6717
+    },
+    {
+      "word": "un",
+      "meanings": [
+        {
+          "lemma": "un",
+          "pos": "DET",
+          "count": 5699
+        },
+        {
+          "lemma": "un",
+          "pos": "PRON",
+          "count": 274
+        },
+        {
+          "lemma": "un",
+          "pos": "NUM",
+          "count": 169
+        }
+      ],
+      "total_count": 6142
+    },
+    {
+      "word": "une",
+      "meanings": [
+        {
+          "lemma": "un",
+          "pos": "DET",
+          "count": 4051
+        },
+        {
+          "lemma": "un",
+          "pos": "PRON",
+          "count": 239
+        },
+        {
+          "lemma": "un",
+          "pos": "NUM",
+          "count": 66
+        }
+      ],
+      "total_count": 4356
+    },
+    {
+      "word": "a",
+      "meanings": [
+        {
+          "lemma": "avoir",
+          "pos": "AUX",
+          "count": 2948
+        },
+        {
+          "lemma": "avoir",
+          "pos": "VERB",
+          "count": 966
+        },
+        {
+          "lemma": "a",
+          "pos": "ADP",
+          "count": 102
+        }
+      ],
+      "total_count": 4016
+    },
+    {
+      "word": "bien",
+      "meanings": [
+        {
+          "lemma": "bien",
+          "pos": "ADV",
+          "count": 2695
+        },
+        {
+          "lemma": "bien",
+          "pos": "INTJ",
+          "count": 175
+        },
+        {
+          "lemma": "bien",
+          "pos": "NOUN",
+          "count": 106
+        },
+        {
+          "lemma": "bien",
+          "pos": "ADJ",
+          "count": 52
+        }
+      ],
+      "total_count": 3028
+    },
+    {
+      "word": "tout",
+      "meanings": [
+        {
+          "lemma": "tout",
+          "pos": "PRON",
+          "count": 1875
+        },
+        {
+          "lemma": "tout",
+          "pos": "DET",
+          "count": 413
+        },
+        {
+          "lemma": "tout",
+          "pos": "ADV",
+          "count": 284
+        }
+      ],
+      "total_count": 2572
+    },
+    {
+      "word": "son",
+      "meanings": [
+        {
+          "lemma": "son",
+          "pos": "DET",
+          "count": 2238
+        },
+        {
+          "lemma": "son",
+          "pos": "NOUN",
+          "count": 38
+        }
+      ],
+      "total_count": 2276
+    },
+    {
+      "word": "non",
+      "meanings": [
+        {
+          "lemma": "non",
+          "pos": "INTJ",
+          "count": 1286
+        },
+        {
+          "lemma": "non",
+          "pos": "ADV",
+          "count": 491
+        }
+      ],
+      "total_count": 1777
+    },
+    {
+      "word": "si",
+      "meanings": [
+        {
+          "lemma": "si",
+          "pos": "SCONJ",
+          "count": 853
+        },
+        {
+          "lemma": "si",
+          "pos": "ADV",
+          "count": 605
+        },
+        {
+          "lemma": "si",
+          "pos": "INTJ",
+          "count": 133
+        }
+      ],
+      "total_count": 1591
+    },
+    {
+      "word": "fait",
+      "meanings": [
+        {
+          "lemma": "faire",
+          "pos": "VERB",
+          "count": 1427
+        },
+        {
+          "lemma": "fait",
+          "pos": "NOUN",
+          "count": 51
+        },
+        {
+          "lemma": "fait",
+          "pos": "ADJ",
+          "count": 37
+        }
+      ],
+      "total_count": 1515
+    },
+    {
+      "word": "va",
+      "meanings": [
+        {
+          "lemma": "aller",
+          "pos": "VERB",
+          "count": 852
+        },
+        {
+          "lemma": "aller",
+          "pos": "AUX",
+          "count": 562
+        }
+      ],
+      "total_count": 1414
+    },
+    {
+      "word": "quoi",
+      "meanings": [
+        {
+          "lemma": "quoi",
+          "pos": "PRON",
+          "count": 1190
+        },
+        {
+          "lemma": "quoi",
+          "pos": "INTJ",
+          "count": 144
+        }
+      ],
+      "total_count": 1334
+    },
+    {
+      "word": "tous",
+      "meanings": [
+        {
+          "lemma": "tout",
+          "pos": "PRON",
+          "count": 685
+        },
+        {
+          "lemma": "tout",
+          "pos": "DET",
+          "count": 391
+        },
+        {
+          "lemma": "tout",
+          "pos": "ADV",
+          "count": 236
+        }
+      ],
+      "total_count": 1312
+    },
+    {
+      "word": "être",
+      "meanings": [
+        {
+          "lemma": "être",
+          "pos": "AUX",
+          "count": 995
+        },
+        {
+          "lemma": "être",
+          "pos": "VERB",
+          "count": 215
+        }
+      ],
+      "total_count": 1210
+    },
+    {
+      "word": "ont",
+      "meanings": [
+        {
+          "lemma": "avoir",
+          "pos": "AUX",
+          "count": 766
+        },
+        {
+          "lemma": "avoir",
+          "pos": "VERB",
+          "count": 323
+        }
+      ],
+      "total_count": 1089
+    },
+    {
+      "word": "juste",
+      "meanings": [
+        {
+          "lemma": "juste",
+          "pos": "ADV",
+          "count": 944
+        },
+        {
+          "lemma": "juste",
+          "pos": "ADJ",
+          "count": 98
+        }
+      ],
+      "total_count": 1042
+    },
+    {
+      "word": "demain",
+      "meanings": [
+        {
+          "lemma": "demain",
+          "pos": "ADV",
+          "count": 871
+        },
+        {
+          "lemma": "demain",
+          "pos": "NOUN",
+          "count": 52
+        }
+      ],
+      "total_count": 923
+    },
+    {
+      "word": "après",
+      "meanings": [
+        {
+          "lemma": "après",
+          "pos": "ADP",
+          "count": 557
+        },
+        {
+          "lemma": "après",
+          "pos": "ADV",
+          "count": 155
+        }
+      ],
+      "total_count": 712
+    },
+    {
+      "word": "avoir",
+      "meanings": [
+        {
+          "lemma": "avoir",
+          "pos": "VERB",
+          "count": 399
+        },
+        {
+          "lemma": "avoir",
+          "pos": "AUX",
+          "count": 301
+        }
+      ],
+      "total_count": 700
+    },
+    {
+      "word": "bonjour",
+      "meanings": [
+        {
+          "lemma": "bonjour",
+          "pos": "INTJ",
+          "count": 644
+        },
+        {
+          "lemma": "bonjour",
+          "pos": "NOUN",
+          "count": 54
+        }
+      ],
+      "total_count": 698
+    },
+    {
+      "word": "mieux",
+      "meanings": [
+        {
+          "lemma": "mieux",
+          "pos": "ADV",
+          "count": 625
+        },
+        {
+          "lemma": "mieux",
+          "pos": "NOUN",
+          "count": 72
+        }
+      ],
+      "total_count": 697
+    },
+    {
+      "word": "même",
+      "meanings": [
+        {
+          "lemma": "même",
+          "pos": "ADV",
+          "count": 542
+        },
+        {
+          "lemma": "même",
+          "pos": "ADJ",
+          "count": 121
+        }
+      ],
+      "total_count": 663
+    },
+    {
+      "word": "voilà",
+      "meanings": [
+        {
+          "lemma": "voilà",
+          "pos": "VERB",
+          "count": 547
+        },
+        {
+          "lemma": "voilà",
+          "pos": "INTJ",
+          "count": 92
+        }
+      ],
+      "total_count": 639
+    },
+    {
+      "word": "avant",
+      "meanings": [
+        {
+          "lemma": "avant",
+          "pos": "ADP",
+          "count": 408
+        },
+        {
+          "lemma": "avant",
+          "pos": "ADV",
+          "count": 206
+        }
+      ],
+      "total_count": 614
+    },
+    {
+      "word": "peut",
+      "meanings": [
+        {
+          "lemma": "pouvoir",
+          "pos": "AUX",
+          "count": 529
+        },
+        {
+          "lemma": "pouvoir",
+          "pos": "VERB",
+          "count": 49
+        }
+      ],
+      "total_count": 578
+    },
+    {
+      "word": "avait",
+      "meanings": [
+        {
+          "lemma": "avoir",
+          "pos": "VERB",
+          "count": 306
+        },
+        {
+          "lemma": "avoir",
+          "pos": "AUX",
+          "count": 216
+        }
+      ],
+      "total_count": 522
+    },
+    {
+      "word": "petit",
+      "meanings": [
+        {
+          "lemma": "petit",
+          "pos": "ADJ",
+          "count": 434
+        },
+        {
+          "lemma": "petit",
+          "pos": "NOUN",
+          "count": 74
+        }
+      ],
+      "total_count": 508
+    },
+    {
+      "word": "voici",
+      "meanings": [
+        {
+          "lemma": "voici",
+          "pos": "VERB",
+          "count": 211
+        },
+        {
+          "lemma": "voici",
+          "pos": "ADV",
+          "count": 135
+        },
+        {
+          "lemma": "voici",
+          "pos": "INTJ",
+          "count": 132
+        }
+      ],
+      "total_count": 478
+    },
+    {
+      "word": "personne",
+      "meanings": [
+        {
+          "lemma": "personne",
+          "pos": "PRON",
+          "count": 274
+        },
+        {
+          "lemma": "personne",
+          "pos": "NOUN",
+          "count": 171
+        }
+      ],
+      "total_count": 445
+    },
+    {
+      "word": "vieux",
+      "meanings": [
+        {
+          "lemma": "vieux",
+          "pos": "ADJ",
+          "count": 319
+        },
+        {
+          "lemma": "vieux",
+          "pos": "NOUN",
+          "count": 98
+        }
+      ],
+      "total_count": 417
+    },
+    {
+      "word": "toutes",
+      "meanings": [
+        {
+          "lemma": "tout",
+          "pos": "DET",
+          "count": 212
+        },
+        {
+          "lemma": "tout",
+          "pos": "PRON",
+          "count": 135
+        },
+        {
+          "lemma": "tout",
+          "pos": "ADV",
+          "count": 70
+        }
+      ],
+      "total_count": 417
+    },
+    {
+      "word": "soit",
+      "meanings": [
+        {
+          "lemma": "être",
+          "pos": "AUX",
+          "count": 359
+        },
+        {
+          "lemma": "soit",
+          "pos": "CCONJ",
+          "count": 52
+        }
+      ],
+      "total_count": 411
+    },
+    {
+      "word": "toute",
+      "meanings": [
+        {
+          "lemma": "tout",
+          "pos": "DET",
+          "count": 332
+        },
+        {
+          "lemma": "tout",
+          "pos": "ADV",
+          "count": 76
+        }
+      ],
+      "total_count": 408
+    },
+    {
+      "word": "fort",
+      "meanings": [
+        {
+          "lemma": "fort",
+          "pos": "ADV",
+          "count": 219
+        },
+        {
+          "lemma": "fort",
+          "pos": "ADJ",
+          "count": 187
+        }
+      ],
+      "total_count": 406
+    },
+    {
+      "word": "derrière",
+      "meanings": [
+        {
+          "lemma": "derrière",
+          "pos": "ADP",
+          "count": 297
+        },
+        {
+          "lemma": "derrière",
+          "pos": "ADV",
+          "count": 104
+        }
+      ],
+      "total_count": 401
+    },
+    {
+      "word": "sait",
+      "meanings": [
+        {
+          "lemma": "savoir",
+          "pos": "AUX",
+          "count": 199
+        },
+        {
+          "lemma": "savoir",
+          "pos": "VERB",
+          "count": 190
+        }
+      ],
+      "total_count": 389
+    },
+    {
+      "word": "entre",
+      "meanings": [
+        {
+          "lemma": "entre",
+          "pos": "ADP",
+          "count": 267
+        },
+        {
+          "lemma": "entrer",
+          "pos": "VERB",
+          "count": 119
+        }
+      ],
+      "total_count": 386
+    },
+    {
+      "word": "devant",
+      "meanings": [
+        {
+          "lemma": "devant",
+          "pos": "ADP",
+          "count": 303
+        },
+        {
+          "lemma": "devant",
+          "pos": "ADV",
+          "count": 78
+        }
+      ],
+      "total_count": 381
+    },
+    {
+      "word": "vient",
+      "meanings": [
+        {
+          "lemma": "venir",
+          "pos": "VERB",
+          "count": 341
+        },
+        {
+          "lemma": "venir",
+          "pos": "AUX",
+          "count": 38
+        }
+      ],
+      "total_count": 379
+    },
+    {
+      "word": "français",
+      "meanings": [
+        {
+          "lemma": "français",
+          "pos": "NOUN",
+          "count": 266
+        },
+        {
+          "lemma": "français",
+          "pos": "ADJ",
+          "count": 86
+        }
+      ],
+      "total_count": 352
+    },
+    {
+      "word": "pouvoir",
+      "meanings": [
+        {
+          "lemma": "pouvoir",
+          "pos": "AUX",
+          "count": 175
+        },
+        {
+          "lemma": "pouvoir",
+          "pos": "VERB",
+          "count": 89
+        },
+        {
+          "lemma": "pouvoir",
+          "pos": "NOUN",
+          "count": 79
+        }
+      ],
+      "total_count": 343
+    },
+    {
+      "word": "garde",
+      "meanings": [
+        {
+          "lemma": "garder",
+          "pos": "VERB",
+          "count": 268
+        },
+        {
+          "lemma": "garde",
+          "pos": "NOUN",
+          "count": 65
+        }
+      ],
+      "total_count": 333
+    },
+    {
+      "word": "petite",
+      "meanings": [
+        {
+          "lemma": "petit",
+          "pos": "ADJ",
+          "count": 295
+        },
+        {
+          "lemma": "petite",
+          "pos": "NOUN",
+          "count": 33
+        }
+      ],
+      "total_count": 328
+    },
+    {
+      "word": "vont",
+      "meanings": [
+        {
+          "lemma": "aller",
+          "pos": "AUX",
+          "count": 160
+        },
+        {
+          "lemma": "aller",
+          "pos": "VERB",
+          "count": 157
+        }
+      ],
+      "total_count": 317
+    },
+    {
+      "word": "super",
+      "meanings": [
+        {
+          "lemma": "super",
+          "pos": "ADJ",
+          "count": 199
+        },
+        {
+          "lemma": "super",
+          "pos": "ADV",
+          "count": 82
+        },
+        {
+          "lemma": "super",
+          "pos": "INTJ",
+          "count": 34
+        }
+      ],
+      "total_count": 315
+    },
+    {
+      "word": "demande",
+      "meanings": [
+        {
+          "lemma": "demander",
+          "pos": "VERB",
+          "count": 243
+        },
+        {
+          "lemma": "demande",
+          "pos": "NOUN",
+          "count": 60
+        }
+      ],
+      "total_count": 303
+    },
+    {
+      "word": "faut",
+      "meanings": [
+        {
+          "lemma": "falloir",
+          "pos": "AUX",
+          "count": 189
+        },
+        {
+          "lemma": "falloir",
+          "pos": "VERB",
+          "count": 93
+        }
+      ],
+      "total_count": 282
+    },
+    {
+      "word": "mort",
+      "meanings": [
+        {
+          "lemma": "mort",
+          "pos": "ADJ",
+          "count": 148
+        },
+        {
+          "lemma": "mort",
+          "pos": "NOUN",
+          "count": 78
+        },
+        {
+          "lemma": "mourir",
+          "pos": "VERB",
+          "count": 49
+        }
+      ],
+      "total_count": 275
+    },
+    {
+      "word": "rouge",
+      "meanings": [
+        {
+          "lemma": "rouge",
+          "pos": "ADJ",
+          "count": 205
+        },
+        {
+          "lemma": "rouge",
+          "pos": "NOUN",
+          "count": 66
+        }
+      ],
+      "total_count": 271
+    },
+    {
+      "word": "été",
+      "meanings": [
+        {
+          "lemma": "être",
+          "pos": "AUX",
+          "count": 162
+        },
+        {
+          "lemma": "être",
+          "pos": "VERB",
+          "count": 73
+        },
+        {
+          "lemma": "été",
+          "pos": "NOUN",
+          "count": 36
+        }
+      ],
+      "total_count": 271
+    },
+    {
+      "word": "part",
+      "meanings": [
+        {
+          "lemma": "part",
+          "pos": "NOUN",
+          "count": 141
+        },
+        {
+          "lemma": "partir",
+          "pos": "VERB",
+          "count": 130
+        }
+      ],
+      "total_count": 271
+    },
+    {
+      "word": "passé",
+      "meanings": [
+        {
+          "lemma": "passer",
+          "pos": "VERB",
+          "count": 205
+        },
+        {
+          "lemma": "passé",
+          "pos": "NOUN",
+          "count": 63
+        }
+      ],
+      "total_count": 268
+    },
+    {
+      "word": "aide",
+      "meanings": [
+        {
+          "lemma": "aider",
+          "pos": "VERB",
+          "count": 158
+        },
+        {
+          "lemma": "aide",
+          "pos": "NOUN",
+          "count": 107
+        }
+      ],
+      "total_count": 265
+    },
+    {
+      "word": "voyage",
+      "meanings": [
+        {
+          "lemma": "voyage",
+          "pos": "NOUN",
+          "count": 210
+        },
+        {
+          "lemma": "voyager",
+          "pos": "VERB",
+          "count": 49
+        }
+      ],
+      "total_count": 259
+    },
+    {
+      "word": "vit",
+      "meanings": [
+        {
+          "lemma": "vivre",
+          "pos": "VERB",
+          "count": 220
+        },
+        {
+          "lemma": "voir",
+          "pos": "VERB",
+          "count": 36
+        }
+      ],
+      "total_count": 256
+    },
+    {
+      "word": "fini",
+      "meanings": [
+        {
+          "lemma": "finir",
+          "pos": "VERB",
+          "count": 191
+        },
+        {
+          "lemma": "fini",
+          "pos": "ADJ",
+          "count": 64
+        }
+      ],
+      "total_count": 255
+    },
+    {
+      "word": "calme",
+      "meanings": [
+        {
+          "lemma": "calme",
+          "pos": "ADJ",
+          "count": 155
+        },
+        {
+          "lemma": "calme",
+          "pos": "NOUN",
+          "count": 47
+        },
+        {
+          "lemma": "calmer",
+          "pos": "VERB",
+          "count": 44
+        }
+      ],
+      "total_count": 246
+    },
+    {
+      "word": "suis",
+      "meanings": [
+        {
+          "lemma": "être",
+          "pos": "AUX",
+          "count": 173
+        },
+        {
+          "lemma": "suivre",
+          "pos": "VERB",
+          "count": 68
+        }
+      ],
+      "total_count": 241
+    },
+    {
+      "word": "dîner",
+      "meanings": [
+        {
+          "lemma": "dîner",
+          "pos": "NOUN",
+          "count": 181
+        },
+        {
+          "lemma": "dîner",
+          "pos": "VERB",
+          "count": 53
+        }
+      ],
+      "total_count": 234
+    },
+    {
+      "word": "anglais",
+      "meanings": [
+        {
+          "lemma": "anglais",
+          "pos": "NOUN",
+          "count": 159
+        },
+        {
+          "lemma": "anglais",
+          "pos": "ADJ",
+          "count": 63
+        }
+      ],
+      "total_count": 222
+    },
+    {
+      "word": "possible",
+      "meanings": [
+        {
+          "lemma": "possible",
+          "pos": "ADJ",
+          "count": 180
+        },
+        {
+          "lemma": "possible",
+          "pos": "NOUN",
+          "count": 37
+        }
+      ],
+      "total_count": 217
+    },
+    {
+      "word": "aurait",
+      "meanings": [
+        {
+          "lemma": "avoir",
+          "pos": "AUX",
+          "count": 176
+        },
+        {
+          "lemma": "avoir",
+          "pos": "VERB",
+          "count": 38
+        }
+      ],
+      "total_count": 214
+    },
+    {
+      "word": "cours",
+      "meanings": [
+        {
+          "lemma": "cours",
+          "pos": "NOUN",
+          "count": 141
+        },
+        {
+          "lemma": "courir",
+          "pos": "VERB",
+          "count": 71
+        }
+      ],
+      "total_count": 212
+    },
+    {
+      "word": "pardon",
+      "meanings": [
+        {
+          "lemma": "pardon",
+          "pos": "INTJ",
+          "count": 166
+        },
+        {
+          "lemma": "pardon",
+          "pos": "NOUN",
+          "count": 38
+        }
+      ],
+      "total_count": 204
+    },
+    {
+      "word": "merde",
+      "meanings": [
+        {
+          "lemma": "merde",
+          "pos": "INTJ",
+          "count": 155
+        },
+        {
+          "lemma": "merde",
+          "pos": "NOUN",
+          "count": 46
+        }
+      ],
+      "total_count": 201
+    },
+    {
+      "word": "bienvenue",
+      "meanings": [
+        {
+          "lemma": "bienvenue",
+          "pos": "INTJ",
+          "count": 164
+        },
+        {
+          "lemma": "bienvenue",
+          "pos": "NOUN",
+          "count": 32
+        }
+      ],
+      "total_count": 196
+    },
+    {
+      "word": "téléphone",
+      "meanings": [
+        {
+          "lemma": "téléphone",
+          "pos": "NOUN",
+          "count": 142
+        },
+        {
+          "lemma": "téléphoner",
+          "pos": "VERB",
+          "count": 52
+        }
+      ],
+      "total_count": 194
+    },
+    {
+      "word": "occupé",
+      "meanings": [
+        {
+          "lemma": "occupé",
+          "pos": "ADJ",
+          "count": 158
+        },
+        {
+          "lemma": "occuper",
+          "pos": "VERB",
+          "count": 32
+        }
+      ],
+      "total_count": 190
+    },
+    {
+      "word": "debout",
+      "meanings": [
+        {
+          "lemma": "debout",
+          "pos": "ADV",
+          "count": 140
+        },
+        {
+          "lemma": "debout",
+          "pos": "INTJ",
+          "count": 30
+        }
+      ],
+      "total_count": 170
+    }
+  ],
+  "spa": [
+    {
+      "word": "no",
+      "meanings": [
+        {
+          "lemma": "no",
+          "pos": "ADV",
+          "count": 7898
+        },
+        {
+          "lemma": "no",
+          "pos": "INTJ",
+          "count": 892
+        },
+        {
+          "lemma": "no",
+          "pos": "PART",
+          "count": 574
+        }
+      ],
+      "total_count": 9364
+    },
+    {
+      "word": "que",
+      "meanings": [
+        {
+          "lemma": "que",
+          "pos": "SCONJ",
+          "count": 5022
+        },
+        {
+          "lemma": "que",
+          "pos": "PRON",
+          "count": 2780
+        },
+        {
+          "lemma": "qué",
+          "pos": "PRON",
+          "count": 101
+        },
+        {
+          "lemma": "qué",
+          "pos": "DET",
+          "count": 77
+        }
+      ],
+      "total_count": 7980
+    },
+    {
+      "word": "para",
+      "meanings": [
+        {
+          "lemma": "para",
+          "pos": "ADP",
+          "count": 4557
+        },
+        {
+          "lemma": "parar",
+          "pos": "VERB",
+          "count": 44
+        }
+      ],
+      "total_count": 4601
+    },
+    {
+      "word": "lo",
+      "meanings": [
+        {
+          "lemma": "lo",
+          "pos": "PRON",
+          "count": 3956
+        },
+        {
+          "lemma": "lo",
+          "pos": "DET",
+          "count": 455
+        },
+        {
+          "lemma": "el",
+          "pos": "DET",
+          "count": 64
+        }
+      ],
+      "total_count": 4475
+    },
+    {
+      "word": "se",
+      "meanings": [
+        {
+          "lemma": "se",
+          "pos": "PRON",
+          "count": 4354
+        },
+        {
+          "lemma": "saber",
+          "pos": "VERB",
+          "count": 50
+        }
+      ],
+      "total_count": 4404
+    },
+    {
+      "word": "está",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 3284
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 437
+        }
+      ],
+      "total_count": 3721
+    },
+    {
+      "word": "eso",
+      "meanings": [
+        {
+          "lemma": "ese",
+          "pos": "PRON",
+          "count": 2883
+        },
+        {
+          "lemma": "eso",
+          "pos": "PRON",
+          "count": 104
+        }
+      ],
+      "total_count": 2987
+    },
+    {
+      "word": "más",
+      "meanings": [
+        {
+          "lemma": "más",
+          "pos": "ADV",
+          "count": 2394
+        },
+        {
+          "lemma": "más",
+          "pos": "DET",
+          "count": 411
+        }
+      ],
+      "total_count": 2805
+    },
+    {
+      "word": "esto",
+      "meanings": [
+        {
+          "lemma": "esto",
+          "pos": "PRON",
+          "count": 2362
+        },
+        {
+          "lemma": "este",
+          "pos": "PRON",
+          "count": 152
+        }
+      ],
+      "total_count": 2514
+    },
+    {
+      "word": "bien",
+      "meanings": [
+        {
+          "lemma": "bien",
+          "pos": "ADV",
+          "count": 1937
+        },
+        {
+          "lemma": "bien",
+          "pos": "INTJ",
+          "count": 478
+        }
+      ],
+      "total_count": 2415
+    },
+    {
+      "word": "sí",
+      "meanings": [
+        {
+          "lemma": "sí",
+          "pos": "INTJ",
+          "count": 1781
+        },
+        {
+          "lemma": "sí",
+          "pos": "ADV",
+          "count": 588
+        }
+      ],
+      "total_count": 2369
+    },
+    {
+      "word": "ya",
+      "meanings": [
+        {
+          "lemma": "ya",
+          "pos": "ADV",
+          "count": 2020
+        },
+        {
+          "lemma": "ya",
+          "pos": "INTJ",
+          "count": 32
+        }
+      ],
+      "total_count": 2052
+    },
+    {
+      "word": "estaba",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 1617
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 329
+        }
+      ],
+      "total_count": 1946
+    },
+    {
+      "word": "las",
+      "meanings": [
+        {
+          "lemma": "el",
+          "pos": "DET",
+          "count": 1506
+        },
+        {
+          "lemma": "él",
+          "pos": "PRON",
+          "count": 256
+        },
+        {
+          "lemma": "el",
+          "pos": "PRON",
+          "count": 63
+        },
+        {
+          "lemma": "ella",
+          "pos": "PRON",
+          "count": 46
+        }
+      ],
+      "total_count": 1871
+    },
+    {
+      "word": "solo",
+      "meanings": [
+        {
+          "lemma": "solo",
+          "pos": "ADV",
+          "count": 1328
+        },
+        {
+          "lemma": "solo",
+          "pos": "ADJ",
+          "count": 484
+        }
+      ],
+      "total_count": 1812
+    },
+    {
+      "word": "este",
+      "meanings": [
+        {
+          "lemma": "este",
+          "pos": "DET",
+          "count": 1495
+        },
+        {
+          "lemma": "este",
+          "pos": "PRON",
+          "count": 182
+        },
+        {
+          "lemma": "este",
+          "pos": "NOUN",
+          "count": 31
+        }
+      ],
+      "total_count": 1708
+    },
+    {
+      "word": "esta",
+      "meanings": [
+        {
+          "lemma": "este",
+          "pos": "DET",
+          "count": 1262
+        },
+        {
+          "lemma": "este",
+          "pos": "PRON",
+          "count": 149
+        },
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 102
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 33
+        }
+      ],
+      "total_count": 1546
+    },
+    {
+      "word": "estoy",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 1369
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 125
+        }
+      ],
+      "total_count": 1494
+    },
+    {
+      "word": "qué",
+      "meanings": [
+        {
+          "lemma": "qué",
+          "pos": "PRON",
+          "count": 639
+        },
+        {
+          "lemma": "qué",
+          "pos": "DET",
+          "count": 635
+        },
+        {
+          "lemma": "qué",
+          "pos": "ADV",
+          "count": 201
+        }
+      ],
+      "total_count": 1475
+    },
+    {
+      "word": "mucho",
+      "meanings": [
+        {
+          "lemma": "mucho",
+          "pos": "ADV",
+          "count": 1124
+        },
+        {
+          "lemma": "mucho",
+          "pos": "DET",
+          "count": 192
+        },
+        {
+          "lemma": "mucho",
+          "pos": "PRON",
+          "count": 114
+        }
+      ],
+      "total_count": 1430
+    },
+    {
+      "word": "están",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 1110
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 196
+        }
+      ],
+      "total_count": 1306
+    },
+    {
+      "word": "estás",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 873
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 87
+        }
+      ],
+      "total_count": 960
+    },
+    {
+      "word": "mañana",
+      "meanings": [
+        {
+          "lemma": "mañana",
+          "pos": "ADV",
+          "count": 859
+        },
+        {
+          "lemma": "mañana",
+          "pos": "NOUN",
+          "count": 76
+        }
+      ],
+      "total_count": 935
+    },
+    {
+      "word": "ser",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 692
+        },
+        {
+          "lemma": "ser",
+          "pos": "VERB",
+          "count": 222
+        }
+      ],
+      "total_count": 914
+    },
+    {
+      "word": "puede",
+      "meanings": [
+        {
+          "lemma": "poder",
+          "pos": "AUX",
+          "count": 842
+        },
+        {
+          "lemma": "poder",
+          "pos": "VERB",
+          "count": 61
+        }
+      ],
+      "total_count": 903
+    },
+    {
+      "word": "mejor",
+      "meanings": [
+        {
+          "lemma": "mejor",
+          "pos": "ADV",
+          "count": 551
+        },
+        {
+          "lemma": "mejor",
+          "pos": "ADJ",
+          "count": 306
+        }
+      ],
+      "total_count": 857
+    },
+    {
+      "word": "puedo",
+      "meanings": [
+        {
+          "lemma": "poder",
+          "pos": "AUX",
+          "count": 768
+        },
+        {
+          "lemma": "poder",
+          "pos": "VERB",
+          "count": 79
+        }
+      ],
+      "total_count": 847
+    },
+    {
+      "word": "puedes",
+      "meanings": [
+        {
+          "lemma": "poder",
+          "pos": "AUX",
+          "count": 779
+        },
+        {
+          "lemma": "poder",
+          "pos": "VERB",
+          "count": 65
+        }
+      ],
+      "total_count": 844
+    },
+    {
+      "word": "sobre",
+      "meanings": [
+        {
+          "lemma": "sobre",
+          "pos": "ADP",
+          "count": 795
+        },
+        {
+          "lemma": "sobre",
+          "pos": "NOUN",
+          "count": 46
+        }
+      ],
+      "total_count": 841
+    },
+    {
+      "word": "uno",
+      "meanings": [
+        {
+          "lemma": "uno",
+          "pos": "PRON",
+          "count": 733
+        },
+        {
+          "lemma": "uno",
+          "pos": "NUM",
+          "count": 55
+        }
+      ],
+      "total_count": 788
+    },
+    {
+      "word": "estamos",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 683
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 32
+        }
+      ],
+      "total_count": 715
+    },
+    {
+      "word": "hasta",
+      "meanings": [
+        {
+          "lemma": "hasta",
+          "pos": "ADP",
+          "count": 599
+        },
+        {
+          "lemma": "hasta",
+          "pos": "ADV",
+          "count": 34
+        }
+      ],
+      "total_count": 633
+    },
+    {
+      "word": "demasiado",
+      "meanings": [
+        {
+          "lemma": "demasiado",
+          "pos": "ADV",
+          "count": 492
+        },
+        {
+          "lemma": "demasiado",
+          "pos": "DET",
+          "count": 55
+        }
+      ],
+      "total_count": 547
+    },
+    {
+      "word": "había",
+      "meanings": [
+        {
+          "lemma": "haber",
+          "pos": "VERB",
+          "count": 334
+        },
+        {
+          "lemma": "haber",
+          "pos": "AUX",
+          "count": 203
+        }
+      ],
+      "total_count": 537
+    },
+    {
+      "word": "juntos",
+      "meanings": [
+        {
+          "lemma": "junto",
+          "pos": "ADJ",
+          "count": 423
+        },
+        {
+          "lemma": "junto",
+          "pos": "ADV",
+          "count": 39
+        }
+      ],
+      "total_count": 462
+    },
+    {
+      "word": "estar",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 287
+        },
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 174
+        }
+      ],
+      "total_count": 461
+    },
+    {
+      "word": "sea",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 385
+        },
+        {
+          "lemma": "ser",
+          "pos": "VERB",
+          "count": 55
+        }
+      ],
+      "total_count": 440
+    },
+    {
+      "word": "debe",
+      "meanings": [
+        {
+          "lemma": "deber",
+          "pos": "AUX",
+          "count": 389
+        },
+        {
+          "lemma": "deber",
+          "pos": "VERB",
+          "count": 46
+        }
+      ],
+      "total_count": 435
+    },
+    {
+      "word": "mal",
+      "meanings": [
+        {
+          "lemma": "mal",
+          "pos": "ADV",
+          "count": 365
+        },
+        {
+          "lemma": "malo",
+          "pos": "ADJ",
+          "count": 64
+        }
+      ],
+      "total_count": 429
+    },
+    {
+      "word": "sigue",
+      "meanings": [
+        {
+          "lemma": "seguir",
+          "pos": "VERB",
+          "count": 340
+        },
+        {
+          "lemma": "seguir",
+          "pos": "AUX",
+          "count": 89
+        }
+      ],
+      "total_count": 429
+    },
+    {
+      "word": "sabes",
+      "meanings": [
+        {
+          "lemma": "saber",
+          "pos": "VERB",
+          "count": 388
+        },
+        {
+          "lemma": "saber",
+          "pos": "AUX",
+          "count": 39
+        }
+      ],
+      "total_count": 427
+    },
+    {
+      "word": "podemos",
+      "meanings": [
+        {
+          "lemma": "poder",
+          "pos": "AUX",
+          "count": 382
+        },
+        {
+          "lemma": "poder",
+          "pos": "VERB",
+          "count": 33
+        }
+      ],
+      "total_count": 415
+    },
+    {
+      "word": "pues",
+      "meanings": [
+        {
+          "lemma": "pues",
+          "pos": "CCONJ",
+          "count": 212
+        },
+        {
+          "lemma": "pues",
+          "pos": "INTJ",
+          "count": 193
+        }
+      ],
+      "total_count": 405
+    },
+    {
+      "word": "entre",
+      "meanings": [
+        {
+          "lemma": "entre",
+          "pos": "ADP",
+          "count": 333
+        },
+        {
+          "lemma": "entrar",
+          "pos": "VERB",
+          "count": 71
+        }
+      ],
+      "total_count": 404
+    },
+    {
+      "word": "tanto",
+      "meanings": [
+        {
+          "lemma": "tanto",
+          "pos": "ADV",
+          "count": 311
+        },
+        {
+          "lemma": "tanto",
+          "pos": "DET",
+          "count": 76
+        }
+      ],
+      "total_count": 387
+    },
+    {
+      "word": "va",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 321
+        },
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 56
+        }
+      ],
+      "total_count": 377
+    },
+    {
+      "word": "fuera",
+      "meanings": [
+        {
+          "lemma": "fuera",
+          "pos": "ADV",
+          "count": 231
+        },
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 112
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 32
+        }
+      ],
+      "total_count": 375
+    },
+    {
+      "word": "vino",
+      "meanings": [
+        {
+          "lemma": "venir",
+          "pos": "VERB",
+          "count": 268
+        },
+        {
+          "lemma": "vino",
+          "pos": "NOUN",
+          "count": 103
+        }
+      ],
+      "total_count": 371
+    },
+    {
+      "word": "francés",
+      "meanings": [
+        {
+          "lemma": "francés",
+          "pos": "NOUN",
+          "count": 331
+        },
+        {
+          "lemma": "francés",
+          "pos": "ADJ",
+          "count": 39
+        }
+      ],
+      "total_count": 370
+    },
+    {
+      "word": "ve",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 197
+        },
+        {
+          "lemma": "ver",
+          "pos": "VERB",
+          "count": 171
+        }
+      ],
+      "total_count": 368
+    },
+    {
+      "word": "estaban",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 311
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 54
+        }
+      ],
+      "total_count": 365
+    },
+    {
+      "word": "sabe",
+      "meanings": [
+        {
+          "lemma": "saber",
+          "pos": "VERB",
+          "count": 284
+        },
+        {
+          "lemma": "saber",
+          "pos": "AUX",
+          "count": 76
+        }
+      ],
+      "total_count": 360
+    },
+    {
+      "word": "menos",
+      "meanings": [
+        {
+          "lemma": "menos",
+          "pos": "ADV",
+          "count": 222
+        },
+        {
+          "lemma": "menos",
+          "pos": "ADP",
+          "count": 68
+        },
+        {
+          "lemma": "menos",
+          "pos": "DET",
+          "count": 65
+        }
+      ],
+      "total_count": 355
+    },
+    {
+      "word": "bastante",
+      "meanings": [
+        {
+          "lemma": "bastante",
+          "pos": "ADV",
+          "count": 319
+        },
+        {
+          "lemma": "bastante",
+          "pos": "DET",
+          "count": 31
+        }
+      ],
+      "total_count": 350
+    },
+    {
+      "word": "fuerte",
+      "meanings": [
+        {
+          "lemma": "fuerte",
+          "pos": "ADJ",
+          "count": 275
+        },
+        {
+          "lemma": "fuerte",
+          "pos": "ADV",
+          "count": 74
+        }
+      ],
+      "total_count": 349
+    },
+    {
+      "word": "ven",
+      "meanings": [
+        {
+          "lemma": "venir",
+          "pos": "VERB",
+          "count": 296
+        },
+        {
+          "lemma": "ver",
+          "pos": "VERB",
+          "count": 51
+        }
+      ],
+      "total_count": 347
+    },
+    {
+      "word": "claro",
+      "meanings": [
+        {
+          "lemma": "claro",
+          "pos": "INTJ",
+          "count": 191
+        },
+        {
+          "lemma": "claro",
+          "pos": "ADJ",
+          "count": 107
+        },
+        {
+          "lemma": "claro",
+          "pos": "ADV",
+          "count": 47
+        }
+      ],
+      "total_count": 345
+    },
+    {
+      "word": "rápido",
+      "meanings": [
+        {
+          "lemma": "rápido",
+          "pos": "ADV",
+          "count": 262
+        },
+        {
+          "lemma": "rápido",
+          "pos": "ADJ",
+          "count": 79
+        }
+      ],
+      "total_count": 341
+    },
+    {
+      "word": "estas",
+      "meanings": [
+        {
+          "lemma": "este",
+          "pos": "DET",
+          "count": 269
+        },
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 65
+        }
+      ],
+      "total_count": 334
+    },
+    {
+      "word": "estuvo",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 219
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 115
+        }
+      ],
+      "total_count": 334
+    },
+    {
+      "word": "joven",
+      "meanings": [
+        {
+          "lemma": "joven",
+          "pos": "ADJ",
+          "count": 228
+        },
+        {
+          "lemma": "joven",
+          "pos": "NOUN",
+          "count": 102
+        }
+      ],
+      "total_count": 330
+    },
+    {
+      "word": "voy",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 271
+        },
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 58
+        }
+      ],
+      "total_count": 329
+    },
+    {
+      "word": "quien",
+      "meanings": [
+        {
+          "lemma": "quien",
+          "pos": "PRON",
+          "count": 285
+        },
+        {
+          "lemma": "quién",
+          "pos": "PRON",
+          "count": 35
+        }
+      ],
+      "total_count": 320
+    },
+    {
+      "word": "vale",
+      "meanings": [
+        {
+          "lemma": "valer",
+          "pos": "VERB",
+          "count": 212
+        },
+        {
+          "lemma": "vale",
+          "pos": "INTJ",
+          "count": 105
+        }
+      ],
+      "total_count": 317
+    },
+    {
+      "word": "ayuda",
+      "meanings": [
+        {
+          "lemma": "ayuda",
+          "pos": "NOUN",
+          "count": 234
+        },
+        {
+          "lemma": "ayudar",
+          "pos": "VERB",
+          "count": 63
+        }
+      ],
+      "total_count": 297
+    },
+    {
+      "word": "seguro",
+      "meanings": [
+        {
+          "lemma": "seguro",
+          "pos": "ADJ",
+          "count": 168
+        },
+        {
+          "lemma": "seguro",
+          "pos": "ADV",
+          "count": 72
+        },
+        {
+          "lemma": "seguro",
+          "pos": "NOUN",
+          "count": 47
+        }
+      ],
+      "total_count": 287
+    },
+    {
+      "word": "esté",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 177
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 107
+        }
+      ],
+      "total_count": 284
+    },
+    {
+      "word": "estará",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 189
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 88
+        }
+      ],
+      "total_count": 277
+    },
+    {
+      "word": "odio",
+      "meanings": [
+        {
+          "lemma": "odiar",
+          "pos": "VERB",
+          "count": 228
+        },
+        {
+          "lemma": "odio",
+          "pos": "NOUN",
+          "count": 46
+        }
+      ],
+      "total_count": 274
+    },
+    {
+      "word": "tarde",
+      "meanings": [
+        {
+          "lemma": "tarde",
+          "pos": "ADV",
+          "count": 239
+        },
+        {
+          "lemma": "tarde",
+          "pos": "NOUN",
+          "count": 34
+        }
+      ],
+      "total_count": 273
+    },
+    {
+      "word": "haber",
+      "meanings": [
+        {
+          "lemma": "haber",
+          "pos": "AUX",
+          "count": 231
+        },
+        {
+          "lemma": "haber",
+          "pos": "VERB",
+          "count": 41
+        }
+      ],
+      "total_count": 272
+    },
+    {
+      "word": "extraño",
+      "meanings": [
+        {
+          "lemma": "extraño",
+          "pos": "ADJ",
+          "count": 168
+        },
+        {
+          "lemma": "extrañar",
+          "pos": "VERB",
+          "count": 72
+        },
+        {
+          "lemma": "extraño",
+          "pos": "NOUN",
+          "count": 32
+        }
+      ],
+      "total_count": 272
+    },
+    {
+      "word": "justo",
+      "meanings": [
+        {
+          "lemma": "justo",
+          "pos": "ADV",
+          "count": 197
+        },
+        {
+          "lemma": "justo",
+          "pos": "ADJ",
+          "count": 73
+        }
+      ],
+      "total_count": 270
+    },
+    {
+      "word": "fui",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 168
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 102
+        }
+      ],
+      "total_count": 270
+    },
+    {
+      "word": "recuerdo",
+      "meanings": [
+        {
+          "lemma": "recordar",
+          "pos": "VERB",
+          "count": 214
+        },
+        {
+          "lemma": "recuerdo",
+          "pos": "NOUN",
+          "count": 40
+        }
+      ],
+      "total_count": 254
+    },
+    {
+      "word": "bajo",
+      "meanings": [
+        {
+          "lemma": "bajo",
+          "pos": "ADP",
+          "count": 187
+        },
+        {
+          "lemma": "bajo",
+          "pos": "ADJ",
+          "count": 64
+        }
+      ],
+      "total_count": 251
+    },
+    {
+      "word": "poco",
+      "meanings": [
+        {
+          "lemma": "poco",
+          "pos": "ADV",
+          "count": 145
+        },
+        {
+          "lemma": "poco",
+          "pos": "DET",
+          "count": 50
+        },
+        {
+          "lemma": "poco",
+          "pos": "PRON",
+          "count": 46
+        }
+      ],
+      "total_count": 241
+    },
+    {
+      "word": "estaré",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 131
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 109
+        }
+      ],
+      "total_count": 240
+    },
+    {
+      "word": "vaya",
+      "meanings": [
+        {
+          "lemma": "vaya",
+          "pos": "INTJ",
+          "count": 137
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 95
+        }
+      ],
+      "total_count": 232
+    },
+    {
+      "word": "estuve",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 127
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 105
+        }
+      ],
+      "total_count": 232
+    },
+    {
+      "word": "habrá",
+      "meanings": [
+        {
+          "lemma": "haber",
+          "pos": "VERB",
+          "count": 132
+        },
+        {
+          "lemma": "haber",
+          "pos": "AUX",
+          "count": 92
+        }
+      ],
+      "total_count": 224
+    },
+    {
+      "word": "estabas",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 133
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 89
+        }
+      ],
+      "total_count": 222
+    },
+    {
+      "word": "frío",
+      "meanings": [
+        {
+          "lemma": "frío",
+          "pos": "NOUN",
+          "count": 124
+        },
+        {
+          "lemma": "frío",
+          "pos": "ADJ",
+          "count": 98
+        }
+      ],
+      "total_count": 222
+    },
+    {
+      "word": "fueron",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 178
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 41
+        }
+      ],
+      "total_count": 219
+    },
+    {
+      "word": "solía",
+      "meanings": [
+        {
+          "lemma": "soler",
+          "pos": "AUX",
+          "count": 146
+        },
+        {
+          "lemma": "soler",
+          "pos": "VERB",
+          "count": 71
+        }
+      ],
+      "total_count": 217
+    },
+    {
+      "word": "vivo",
+      "meanings": [
+        {
+          "lemma": "vivo",
+          "pos": "ADJ",
+          "count": 123
+        },
+        {
+          "lemma": "vivir",
+          "pos": "VERB",
+          "count": 93
+        }
+      ],
+      "total_count": 216
+    },
+    {
+      "word": "blanco",
+      "meanings": [
+        {
+          "lemma": "blanco",
+          "pos": "ADJ",
+          "count": 146
+        },
+        {
+          "lemma": "blanco",
+          "pos": "NOUN",
+          "count": 65
+        }
+      ],
+      "total_count": 211
+    },
+    {
+      "word": "peor",
+      "meanings": [
+        {
+          "lemma": "peor",
+          "pos": "ADJ",
+          "count": 167
+        },
+        {
+          "lemma": "peor",
+          "pos": "ADV",
+          "count": 43
+        }
+      ],
+      "total_count": 210
+    },
+    {
+      "word": "muerto",
+      "meanings": [
+        {
+          "lemma": "muerto",
+          "pos": "ADJ",
+          "count": 164
+        },
+        {
+          "lemma": "morir",
+          "pos": "VERB",
+          "count": 46
+        }
+      ],
+      "total_count": 210
+    },
+    {
+      "word": "duro",
+      "meanings": [
+        {
+          "lemma": "duro",
+          "pos": "ADJ",
+          "count": 153
+        },
+        {
+          "lemma": "duro",
+          "pos": "ADV",
+          "count": 55
+        }
+      ],
+      "total_count": 208
+    },
+    {
+      "word": "hubiera",
+      "meanings": [
+        {
+          "lemma": "haber",
+          "pos": "AUX",
+          "count": 169
+        },
+        {
+          "lemma": "haber",
+          "pos": "VERB",
+          "count": 34
+        }
+      ],
+      "total_count": 203
+    },
+    {
+      "word": "negro",
+      "meanings": [
+        {
+          "lemma": "negro",
+          "pos": "ADJ",
+          "count": 138
+        },
+        {
+          "lemma": "negro",
+          "pos": "NOUN",
+          "count": 65
+        }
+      ],
+      "total_count": 203
+    },
+    {
+      "word": "estábamos",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 167
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 33
+        }
+      ],
+      "total_count": 200
+    },
+    {
+      "word": "haya",
+      "meanings": [
+        {
+          "lemma": "haber",
+          "pos": "AUX",
+          "count": 146
+        },
+        {
+          "lemma": "haber",
+          "pos": "VERB",
+          "count": 52
+        }
+      ],
+      "total_count": 198
+    },
+    {
+      "word": "adelante",
+      "meanings": [
+        {
+          "lemma": "adelante",
+          "pos": "ADV",
+          "count": 148
+        },
+        {
+          "lemma": "adelante",
+          "pos": "INTJ",
+          "count": 48
+        }
+      ],
+      "total_count": 196
+    },
+    {
+      "word": "chico",
+      "meanings": [
+        {
+          "lemma": "chico",
+          "pos": "NOUN",
+          "count": 160
+        },
+        {
+          "lemma": "chico",
+          "pos": "ADJ",
+          "count": 34
+        }
+      ],
+      "total_count": 194
+    },
+    {
+      "word": "pregunta",
+      "meanings": [
+        {
+          "lemma": "pregunta",
+          "pos": "NOUN",
+          "count": 123
+        },
+        {
+          "lemma": "preguntar",
+          "pos": "VERB",
+          "count": 71
+        }
+      ],
+      "total_count": 194
+    },
+    {
+      "word": "japonés",
+      "meanings": [
+        {
+          "lemma": "japonés",
+          "pos": "NOUN",
+          "count": 130
+        },
+        {
+          "lemma": "japonés",
+          "pos": "ADJ",
+          "count": 56
+        }
+      ],
+      "total_count": 186
+    },
+    {
+      "word": "rojo",
+      "meanings": [
+        {
+          "lemma": "rojo",
+          "pos": "ADJ",
+          "count": 141
+        },
+        {
+          "lemma": "rojo",
+          "pos": "NOUN",
+          "count": 42
+        }
+      ],
+      "total_count": 183
+    },
+    {
+      "word": "alto",
+      "meanings": [
+        {
+          "lemma": "alto",
+          "pos": "ADJ",
+          "count": 132
+        },
+        {
+          "lemma": "alto",
+          "pos": "ADV",
+          "count": 39
+        }
+      ],
+      "total_count": 171
+    },
+    {
+      "word": "iba",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 130
+        },
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 40
+        }
+      ],
+      "total_count": 170
+    },
+    {
+      "word": "amo",
+      "meanings": [
+        {
+          "lemma": "amar",
+          "pos": "VERB",
+          "count": 122
+        },
+        {
+          "lemma": "amo",
+          "pos": "NOUN",
+          "count": 45
+        }
+      ],
+      "total_count": 167
+    },
+    {
+      "word": "atención",
+      "meanings": [
+        {
+          "lemma": "atención",
+          "pos": "NOUN",
+          "count": 123
+        },
+        {
+          "lemma": "atención",
+          "pos": "INTJ",
+          "count": 42
+        }
+      ],
+      "total_count": 165
+    },
+    {
+      "word": "cara",
+      "meanings": [
+        {
+          "lemma": "cara",
+          "pos": "NOUN",
+          "count": 119
+        },
+        {
+          "lemma": "caro",
+          "pos": "ADJ",
+          "count": 44
+        }
+      ],
+      "total_count": 163
+    },
+    {
+      "word": "alemán",
+      "meanings": [
+        {
+          "lemma": "alemán",
+          "pos": "NOUN",
+          "count": 120
+        },
+        {
+          "lemma": "alemán",
+          "pos": "ADJ",
+          "count": 42
+        }
+      ],
+      "total_count": 162
+    }
+  ],
+  "deu": [
+    {
+      "word": "sie",
+      "meanings": [
+        {
+          "lemma": "sie",
+          "pos": "PRON",
+          "count": 12488
+        },
+        {
+          "lemma": "Sie",
+          "pos": "PRON",
+          "count": 50
+        }
+      ],
+      "total_count": 12538
+    },
+    {
+      "word": "das",
+      "meanings": [
+        {
+          "lemma": "der",
+          "pos": "PRON",
+          "count": 6485
+        },
+        {
+          "lemma": "der",
+          "pos": "DET",
+          "count": 2511
+        },
+        {
+          "lemma": "das",
+          "pos": "PRON",
+          "count": 503
+        }
+      ],
+      "total_count": 9499
+    },
+    {
+      "word": "hat",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 4251
+        },
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 1930
+        }
+      ],
+      "total_count": 6181
+    },
+    {
+      "word": "was",
+      "meanings": [
+        {
+          "lemma": "was",
+          "pos": "PRON",
+          "count": 4404
+        },
+        {
+          "lemma": "etwas",
+          "pos": "PRON",
+          "count": 117
+        },
+        {
+          "lemma": "was",
+          "pos": "INTJ",
+          "count": 99
+        },
+        {
+          "lemma": "was",
+          "pos": "DET",
+          "count": 80
+        }
+      ],
+      "total_count": 4700
+    },
+    {
+      "word": "zu",
+      "meanings": [
+        {
+          "lemma": "zu",
+          "pos": "PART",
+          "count": 3169
+        },
+        {
+          "lemma": "zu",
+          "pos": "ADP",
+          "count": 987
+        },
+        {
+          "lemma": "zu",
+          "pos": "ADV",
+          "count": 284
+        }
+      ],
+      "total_count": 4440
+    },
+    {
+      "word": "ein",
+      "meanings": [
+        {
+          "lemma": "ein",
+          "pos": "DET",
+          "count": 3282
+        },
+        {
+          "lemma": "ein",
+          "pos": "PART",
+          "count": 722
+        }
+      ],
+      "total_count": 4004
+    },
+    {
+      "word": "ihr",
+      "meanings": [
+        {
+          "lemma": "ihr",
+          "pos": "PRON",
+          "count": 1803
+        },
+        {
+          "lemma": "ihr",
+          "pos": "DET",
+          "count": 851
+        },
+        {
+          "lemma": "sie",
+          "pos": "PRON",
+          "count": 767
+        }
+      ],
+      "total_count": 3421
+    },
+    {
+      "word": "mich",
+      "meanings": [
+        {
+          "lemma": "ich",
+          "pos": "PRON",
+          "count": 2567
+        },
+        {
+          "lemma": "sich",
+          "pos": "PRON",
+          "count": 428
+        }
+      ],
+      "total_count": 2995
+    },
+    {
+      "word": "aber",
+      "meanings": [
+        {
+          "lemma": "aber",
+          "pos": "CCONJ",
+          "count": 2626
+        },
+        {
+          "lemma": "aber",
+          "pos": "ADV",
+          "count": 233
+        },
+        {
+          "lemma": "aber",
+          "pos": "PART",
+          "count": 121
+        }
+      ],
+      "total_count": 2980
+    },
+    {
+      "word": "sein",
+      "meanings": [
+        {
+          "lemma": "sein",
+          "pos": "AUX",
+          "count": 1958
+        },
+        {
+          "lemma": "sein",
+          "pos": "DET",
+          "count": 806
+        },
+        {
+          "lemma": "sein",
+          "pos": "VERB",
+          "count": 129
+        }
+      ],
+      "total_count": 2893
+    },
+    {
+      "word": "eine",
+      "meanings": [
+        {
+          "lemma": "ein",
+          "pos": "DET",
+          "count": 2533
+        },
+        {
+          "lemma": "ein",
+          "pos": "PRON",
+          "count": 206
+        },
+        {
+          "lemma": "einer",
+          "pos": "PRON",
+          "count": 101
+        }
+      ],
+      "total_count": 2840
+    },
+    {
+      "word": "so",
+      "meanings": [
+        {
+          "lemma": "so",
+          "pos": "ADV",
+          "count": 2507
+        },
+        {
+          "lemma": "so",
+          "pos": "DET",
+          "count": 88
+        },
+        {
+          "lemma": "so",
+          "pos": "INTJ",
+          "count": 86
+        }
+      ],
+      "total_count": 2681
+    },
+    {
+      "word": "haben",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 1347
+        },
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 1142
+        }
+      ],
+      "total_count": 2489
+    },
+    {
+      "word": "wird",
+      "meanings": [
+        {
+          "lemma": "werden",
+          "pos": "AUX",
+          "count": 2330
+        },
+        {
+          "lemma": "werden",
+          "pos": "VERB",
+          "count": 89
+        }
+      ],
+      "total_count": 2419
+    },
+    {
+      "word": "noch",
+      "meanings": [
+        {
+          "lemma": "noch",
+          "pos": "ADV",
+          "count": 2257
+        },
+        {
+          "lemma": "noch",
+          "pos": "CCONJ",
+          "count": 131
+        }
+      ],
+      "total_count": 2388
+    },
+    {
+      "word": "uns",
+      "meanings": [
+        {
+          "lemma": "wir",
+          "pos": "PRON",
+          "count": 2125
+        },
+        {
+          "lemma": "sich",
+          "pos": "PRON",
+          "count": 196
+        },
+        {
+          "lemma": "uns",
+          "pos": "PRON",
+          "count": 41
+        }
+      ],
+      "total_count": 2362
+    },
+    {
+      "word": "bitte",
+      "meanings": [
+        {
+          "lemma": "bitte",
+          "pos": "INTJ",
+          "count": 1679
+        },
+        {
+          "lemma": "bitte",
+          "pos": "ADV",
+          "count": 591
+        },
+        {
+          "lemma": "bitten",
+          "pos": "VERB",
+          "count": 40
+        }
+      ],
+      "total_count": 2310
+    },
+    {
+      "word": "einen",
+      "meanings": [
+        {
+          "lemma": "ein",
+          "pos": "DET",
+          "count": 1967
+        },
+        {
+          "lemma": "ein",
+          "pos": "PRON",
+          "count": 177
+        },
+        {
+          "lemma": "einer",
+          "pos": "PRON",
+          "count": 138
+        }
+      ],
+      "total_count": 2282
+    },
+    {
+      "word": "ja",
+      "meanings": [
+        {
+          "lemma": "ja",
+          "pos": "INTJ",
+          "count": 1517
+        },
+        {
+          "lemma": "ja",
+          "pos": "PART",
+          "count": 476
+        },
+        {
+          "lemma": "ja",
+          "pos": "ADV",
+          "count": 67
+        }
+      ],
+      "total_count": 2060
+    },
+    {
+      "word": "doch",
+      "meanings": [
+        {
+          "lemma": "doch",
+          "pos": "PART",
+          "count": 1342
+        },
+        {
+          "lemma": "doch",
+          "pos": "ADV",
+          "count": 384
+        },
+        {
+          "lemma": "doch",
+          "pos": "CCONJ",
+          "count": 205
+        },
+        {
+          "lemma": "doch",
+          "pos": "INTJ",
+          "count": 73
+        }
+      ],
+      "total_count": 2004
+    },
+    {
+      "word": "kann",
+      "meanings": [
+        {
+          "lemma": "können",
+          "pos": "AUX",
+          "count": 1719
+        },
+        {
+          "lemma": "können",
+          "pos": "VERB",
+          "count": 153
+        }
+      ],
+      "total_count": 1872
+    },
+    {
+      "word": "etwas",
+      "meanings": [
+        {
+          "lemma": "etwas",
+          "pos": "PRON",
+          "count": 1200
+        },
+        {
+          "lemma": "etwas",
+          "pos": "DET",
+          "count": 400
+        },
+        {
+          "lemma": "etwas",
+          "pos": "ADV",
+          "count": 269
+        }
+      ],
+      "total_count": 1869
+    },
+    {
+      "word": "um",
+      "meanings": [
+        {
+          "lemma": "um",
+          "pos": "SCONJ",
+          "count": 962
+        },
+        {
+          "lemma": "um",
+          "pos": "ADP",
+          "count": 578
+        },
+        {
+          "lemma": "um",
+          "pos": "PART",
+          "count": 282
+        }
+      ],
+      "total_count": 1822
+    },
+    {
+      "word": "werden",
+      "meanings": [
+        {
+          "lemma": "werden",
+          "pos": "AUX",
+          "count": 1378
+        },
+        {
+          "lemma": "werden",
+          "pos": "VERB",
+          "count": 372
+        }
+      ],
+      "total_count": 1750
+    },
+    {
+      "word": "meine",
+      "meanings": [
+        {
+          "lemma": "mein",
+          "pos": "DET",
+          "count": 1529
+        },
+        {
+          "lemma": "mein",
+          "pos": "PRON",
+          "count": 83
+        },
+        {
+          "lemma": "meinen",
+          "pos": "VERB",
+          "count": 43
+        }
+      ],
+      "total_count": 1655
+    },
+    {
+      "word": "wurde",
+      "meanings": [
+        {
+          "lemma": "werden",
+          "pos": "AUX",
+          "count": 1486
+        },
+        {
+          "lemma": "werden",
+          "pos": "VERB",
+          "count": 37
+        }
+      ],
+      "total_count": 1523
+    },
+    {
+      "word": "sehen",
+      "meanings": [
+        {
+          "lemma": "sehen",
+          "pos": "VERB",
+          "count": 1285
+        },
+        {
+          "lemma": "ansehen",
+          "pos": "VERB",
+          "count": 34
+        }
+      ],
+      "total_count": 1319
+    },
+    {
+      "word": "hatte",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 699
+        },
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 618
+        }
+      ],
+      "total_count": 1317
+    },
+    {
+      "word": "deine",
+      "meanings": [
+        {
+          "lemma": "dein",
+          "pos": "DET",
+          "count": 901
+        },
+        {
+          "lemma": "deine",
+          "pos": "DET",
+          "count": 218
+        },
+        {
+          "lemma": "dein",
+          "pos": "PRON",
+          "count": 56
+        }
+      ],
+      "total_count": 1175
+    },
+    {
+      "word": "mehr",
+      "meanings": [
+        {
+          "lemma": "mehr",
+          "pos": "ADV",
+          "count": 636
+        },
+        {
+          "lemma": "mehr",
+          "pos": "DET",
+          "count": 265
+        },
+        {
+          "lemma": "viel",
+          "pos": "ADV",
+          "count": 152
+        },
+        {
+          "lemma": "mehr",
+          "pos": "PRON",
+          "count": 85
+        }
+      ],
+      "total_count": 1138
+    },
+    {
+      "word": "will",
+      "meanings": [
+        {
+          "lemma": "wollen",
+          "pos": "AUX",
+          "count": 870
+        },
+        {
+          "lemma": "wollen",
+          "pos": "VERB",
+          "count": 258
+        }
+      ],
+      "total_count": 1128
+    },
+    {
+      "word": "sei",
+      "meanings": [
+        {
+          "lemma": "sein",
+          "pos": "AUX",
+          "count": 832
+        },
+        {
+          "lemma": "sei",
+          "pos": "AUX",
+          "count": 167
+        }
+      ],
+      "total_count": 999
+    },
+    {
+      "word": "kommt",
+      "meanings": [
+        {
+          "lemma": "kommen",
+          "pos": "VERB",
+          "count": 962
+        },
+        {
+          "lemma": "ankommen",
+          "pos": "VERB",
+          "count": 35
+        }
+      ],
+      "total_count": 997
+    },
+    {
+      "word": "geht",
+      "meanings": [
+        {
+          "lemma": "gehen",
+          "pos": "VERB",
+          "count": 958
+        },
+        {
+          "lemma": "angehen",
+          "pos": "VERB",
+          "count": 38
+        }
+      ],
+      "total_count": 996
+    },
+    {
+      "word": "viel",
+      "meanings": [
+        {
+          "lemma": "viel",
+          "pos": "ADV",
+          "count": 437
+        },
+        {
+          "lemma": "viel",
+          "pos": "DET",
+          "count": 276
+        },
+        {
+          "lemma": "viel",
+          "pos": "PRON",
+          "count": 266
+        }
+      ],
+      "total_count": 979
+    },
+    {
+      "word": "denn",
+      "meanings": [
+        {
+          "lemma": "denn",
+          "pos": "PART",
+          "count": 573
+        },
+        {
+          "lemma": "denn",
+          "pos": "ADV",
+          "count": 222
+        },
+        {
+          "lemma": "denn",
+          "pos": "CCONJ",
+          "count": 182
+        }
+      ],
+      "total_count": 977
+    },
+    {
+      "word": "ab",
+      "meanings": [
+        {
+          "lemma": "ab",
+          "pos": "PART",
+          "count": 907
+        },
+        {
+          "lemma": "ab",
+          "pos": "INTJ",
+          "count": 32
+        }
+      ],
+      "total_count": 939
+    },
+    {
+      "word": "einfach",
+      "meanings": [
+        {
+          "lemma": "einfach",
+          "pos": "ADV",
+          "count": 801
+        },
+        {
+          "lemma": "einfach",
+          "pos": "ADJ",
+          "count": 125
+        }
+      ],
+      "total_count": 926
+    },
+    {
+      "word": "können",
+      "meanings": [
+        {
+          "lemma": "können",
+          "pos": "AUX",
+          "count": 811
+        },
+        {
+          "lemma": "können",
+          "pos": "VERB",
+          "count": 91
+        }
+      ],
+      "total_count": 902
+    },
+    {
+      "word": "weg",
+      "meanings": [
+        {
+          "lemma": "weg",
+          "pos": "ADV",
+          "count": 490
+        },
+        {
+          "lemma": "weg",
+          "pos": "PART",
+          "count": 373
+        },
+        {
+          "lemma": "weg",
+          "pos": "INTJ",
+          "count": 37
+        }
+      ],
+      "total_count": 900
+    },
+    {
+      "word": "habe",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 612
+        },
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 217
+        }
+      ],
+      "total_count": 829
+    },
+    {
+      "word": "allein",
+      "meanings": [
+        {
+          "lemma": "allein",
+          "pos": "ADV",
+          "count": 596
+        },
+        {
+          "lemma": "allein",
+          "pos": "ADJ",
+          "count": 222
+        }
+      ],
+      "total_count": 818
+    },
+    {
+      "word": "komm",
+      "meanings": [
+        {
+          "lemma": "komm",
+          "pos": "VERB",
+          "count": 397
+        },
+        {
+          "lemma": "kommen",
+          "pos": "VERB",
+          "count": 393
+        }
+      ],
+      "total_count": 790
+    },
+    {
+      "word": "hast",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 564
+        },
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 189
+        }
+      ],
+      "total_count": 753
+    },
+    {
+      "word": "kam",
+      "meanings": [
+        {
+          "lemma": "kommen",
+          "pos": "VERB",
+          "count": 688
+        },
+        {
+          "lemma": "ankommen",
+          "pos": "VERB",
+          "count": 63
+        }
+      ],
+      "total_count": 751
+    },
+    {
+      "word": "besser",
+      "meanings": [
+        {
+          "lemma": "gut",
+          "pos": "ADV",
+          "count": 535
+        },
+        {
+          "lemma": "gut",
+          "pos": "ADJ",
+          "count": 182
+        }
+      ],
+      "total_count": 717
+    },
+    {
+      "word": "wollte",
+      "meanings": [
+        {
+          "lemma": "wollen",
+          "pos": "AUX",
+          "count": 560
+        },
+        {
+          "lemma": "wollen",
+          "pos": "VERB",
+          "count": 122
+        }
+      ],
+      "total_count": 682
+    },
+    {
+      "word": "weiter",
+      "meanings": [
+        {
+          "lemma": "weiter",
+          "pos": "PART",
+          "count": 287
+        },
+        {
+          "lemma": "weiter",
+          "pos": "ADV",
+          "count": 261
+        },
+        {
+          "lemma": "weit",
+          "pos": "ADV",
+          "count": 133
+        }
+      ],
+      "total_count": 681
+    },
+    {
+      "word": "meinen",
+      "meanings": [
+        {
+          "lemma": "mein",
+          "pos": "DET",
+          "count": 538
+        },
+        {
+          "lemma": "meinen",
+          "pos": "VERB",
+          "count": 67
+        },
+        {
+          "lemma": "mein",
+          "pos": "PRON",
+          "count": 30
+        }
+      ],
+      "total_count": 635
+    },
+    {
+      "word": "gleich",
+      "meanings": [
+        {
+          "lemma": "gleich",
+          "pos": "ADV",
+          "count": 556
+        },
+        {
+          "lemma": "gleich",
+          "pos": "ADJ",
+          "count": 73
+        }
+      ],
+      "total_count": 629
+    },
+    {
+      "word": "schnell",
+      "meanings": [
+        {
+          "lemma": "schnell",
+          "pos": "ADV",
+          "count": 573
+        },
+        {
+          "lemma": "schnell",
+          "pos": "ADJ",
+          "count": 50
+        }
+      ],
+      "total_count": 623
+    },
+    {
+      "word": "sollte",
+      "meanings": [
+        {
+          "lemma": "sollen",
+          "pos": "AUX",
+          "count": 578
+        },
+        {
+          "lemma": "sollte",
+          "pos": "AUX",
+          "count": 34
+        }
+      ],
+      "total_count": 612
+    },
+    {
+      "word": "hätte",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 446
+        },
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 134
+        }
+      ],
+      "total_count": 580
+    },
+    {
+      "word": "verloren",
+      "meanings": [
+        {
+          "lemma": "verlieren",
+          "pos": "VERB",
+          "count": 503
+        },
+        {
+          "lemma": "verloren",
+          "pos": "ADJ",
+          "count": 68
+        }
+      ],
+      "total_count": 571
+    },
+    {
+      "word": "soll",
+      "meanings": [
+        {
+          "lemma": "sollen",
+          "pos": "AUX",
+          "count": 530
+        },
+        {
+          "lemma": "soll",
+          "pos": "AUX",
+          "count": 39
+        }
+      ],
+      "total_count": 569
+    },
+    {
+      "word": "welche",
+      "meanings": [
+        {
+          "lemma": "welch",
+          "pos": "DET",
+          "count": 222
+        },
+        {
+          "lemma": "welcher",
+          "pos": "DET",
+          "count": 190
+        },
+        {
+          "lemma": "welcher",
+          "pos": "PRON",
+          "count": 136
+        }
+      ],
+      "total_count": 548
+    },
+    {
+      "word": "wollen",
+      "meanings": [
+        {
+          "lemma": "wollen",
+          "pos": "AUX",
+          "count": 412
+        },
+        {
+          "lemma": "wollen",
+          "pos": "VERB",
+          "count": 130
+        }
+      ],
+      "total_count": 542
+    },
+    {
+      "word": "sah",
+      "meanings": [
+        {
+          "lemma": "sehen",
+          "pos": "VERB",
+          "count": 348
+        },
+        {
+          "lemma": "aussehen",
+          "pos": "VERB",
+          "count": 111
+        },
+        {
+          "lemma": "ansehen",
+          "pos": "VERB",
+          "count": 69
+        }
+      ],
+      "total_count": 528
+    },
+    {
+      "word": "mach",
+      "meanings": [
+        {
+          "lemma": "machen",
+          "pos": "VERB",
+          "count": 427
+        },
+        {
+          "lemma": "mach",
+          "pos": "VERB",
+          "count": 90
+        }
+      ],
+      "total_count": 517
+    },
+    {
+      "word": "nun",
+      "meanings": [
+        {
+          "lemma": "nun",
+          "pos": "ADV",
+          "count": 469
+        },
+        {
+          "lemma": "nun",
+          "pos": "INTJ",
+          "count": 47
+        }
+      ],
+      "total_count": 516
+    },
+    {
+      "word": "weiß",
+      "meanings": [
+        {
+          "lemma": "wissen",
+          "pos": "VERB",
+          "count": 431
+        },
+        {
+          "lemma": "weiß",
+          "pos": "ADJ",
+          "count": 84
+        }
+      ],
+      "total_count": 515
+    },
+    {
+      "word": "gewesen",
+      "meanings": [
+        {
+          "lemma": "sein",
+          "pos": "AUX",
+          "count": 449
+        },
+        {
+          "lemma": "sein",
+          "pos": "VERB",
+          "count": 64
+        }
+      ],
+      "total_count": 513
+    },
+    {
+      "word": "geh",
+      "meanings": [
+        {
+          "lemma": "gehen",
+          "pos": "VERB",
+          "count": 391
+        },
+        {
+          "lemma": "geh",
+          "pos": "VERB",
+          "count": 112
+        }
+      ],
+      "total_count": 503
+    },
+    {
+      "word": "raus",
+      "meanings": [
+        {
+          "lemma": "raus",
+          "pos": "PART",
+          "count": 327
+        },
+        {
+          "lemma": "raus",
+          "pos": "ADV",
+          "count": 134
+        },
+        {
+          "lemma": "raus",
+          "pos": "INTJ",
+          "count": 36
+        }
+      ],
+      "total_count": 497
+    },
+    {
+      "word": "sicher",
+      "meanings": [
+        {
+          "lemma": "sicher",
+          "pos": "ADV",
+          "count": 313
+        },
+        {
+          "lemma": "sicher",
+          "pos": "ADJ",
+          "count": 168
+        }
+      ],
+      "total_count": 481
+    },
+    {
+      "word": "richtig",
+      "meanings": [
+        {
+          "lemma": "richtig",
+          "pos": "ADV",
+          "count": 307
+        },
+        {
+          "lemma": "richtig",
+          "pos": "ADJ",
+          "count": 126
+        },
+        {
+          "lemma": "richtig",
+          "pos": "INTJ",
+          "count": 40
+        }
+      ],
+      "total_count": 473
+    },
+    {
+      "word": "eure",
+      "meanings": [
+        {
+          "lemma": "euer",
+          "pos": "DET",
+          "count": 363
+        },
+        {
+          "lemma": "eure",
+          "pos": "DET",
+          "count": 98
+        }
+      ],
+      "total_count": 461
+    },
+    {
+      "word": "schön",
+      "meanings": [
+        {
+          "lemma": "schön",
+          "pos": "ADJ",
+          "count": 331
+        },
+        {
+          "lemma": "schön",
+          "pos": "ADV",
+          "count": 126
+        }
+      ],
+      "total_count": 457
+    },
+    {
+      "word": "mag",
+      "meanings": [
+        {
+          "lemma": "mögen",
+          "pos": "VERB",
+          "count": 401
+        },
+        {
+          "lemma": "mögen",
+          "pos": "AUX",
+          "count": 47
+        }
+      ],
+      "total_count": 448
+    },
+    {
+      "word": "lieber",
+      "meanings": [
+        {
+          "lemma": "gern",
+          "pos": "ADV",
+          "count": 401
+        },
+        {
+          "lemma": "lieb",
+          "pos": "ADJ",
+          "count": 46
+        }
+      ],
+      "total_count": 447
+    },
+    {
+      "word": "genau",
+      "meanings": [
+        {
+          "lemma": "genau",
+          "pos": "ADV",
+          "count": 400
+        },
+        {
+          "lemma": "genau",
+          "pos": "INTJ",
+          "count": 41
+        }
+      ],
+      "total_count": 441
+    },
+    {
+      "word": "möchte",
+      "meanings": [
+        {
+          "lemma": "mögen",
+          "pos": "AUX",
+          "count": 390
+        },
+        {
+          "lemma": "mögen",
+          "pos": "VERB",
+          "count": 45
+        }
+      ],
+      "total_count": 435
+    },
+    {
+      "word": "früher",
+      "meanings": [
+        {
+          "lemma": "früh",
+          "pos": "ADV",
+          "count": 358
+        },
+        {
+          "lemma": "früher",
+          "pos": "ADV",
+          "count": 65
+        }
+      ],
+      "total_count": 423
+    },
+    {
+      "word": "gefallen",
+      "meanings": [
+        {
+          "lemma": "gefallen",
+          "pos": "VERB",
+          "count": 303
+        },
+        {
+          "lemma": "fallen",
+          "pos": "VERB",
+          "count": 94
+        }
+      ],
+      "total_count": 397
+    },
+    {
+      "word": "konnte",
+      "meanings": [
+        {
+          "lemma": "können",
+          "pos": "AUX",
+          "count": 353
+        },
+        {
+          "lemma": "können",
+          "pos": "VERB",
+          "count": 40
+        }
+      ],
+      "total_count": 393
+    },
+    {
+      "word": "okay",
+      "meanings": [
+        {
+          "lemma": "okay",
+          "pos": "INTJ",
+          "count": 302
+        },
+        {
+          "lemma": "okay",
+          "pos": "ADJ",
+          "count": 88
+        }
+      ],
+      "total_count": 390
+    },
+    {
+      "word": "andere",
+      "meanings": [
+        {
+          "lemma": "ander",
+          "pos": "PRON",
+          "count": 203
+        },
+        {
+          "lemma": "ander",
+          "pos": "ADJ",
+          "count": 109
+        },
+        {
+          "lemma": "ander",
+          "pos": "DET",
+          "count": 67
+        }
+      ],
+      "total_count": 379
+    },
+    {
+      "word": "klar",
+      "meanings": [
+        {
+          "lemma": "klar",
+          "pos": "ADJ",
+          "count": 222
+        },
+        {
+          "lemma": "klar",
+          "pos": "INTJ",
+          "count": 93
+        },
+        {
+          "lemma": "klar",
+          "pos": "ADV",
+          "count": 40
+        }
+      ],
+      "total_count": 355
+    },
+    {
+      "word": "anderen",
+      "meanings": [
+        {
+          "lemma": "ander",
+          "pos": "PRON",
+          "count": 130
+        },
+        {
+          "lemma": "ander",
+          "pos": "ADJ",
+          "count": 124
+        },
+        {
+          "lemma": "andere",
+          "pos": "PRON",
+          "count": 34
+        },
+        {
+          "lemma": "Andere",
+          "pos": "NOUN",
+          "count": 34
+        }
+      ],
+      "total_count": 322
+    },
+    {
+      "word": "langsam",
+      "meanings": [
+        {
+          "lemma": "langsam",
+          "pos": "ADV",
+          "count": 285
+        },
+        {
+          "lemma": "langsam",
+          "pos": "ADJ",
+          "count": 32
+        }
+      ],
+      "total_count": 317
+    },
+    {
+      "word": "genug",
+      "meanings": [
+        {
+          "lemma": "genug",
+          "pos": "ADV",
+          "count": 230
+        },
+        {
+          "lemma": "genug",
+          "pos": "DET",
+          "count": 42
+        },
+        {
+          "lemma": "genug",
+          "pos": "PRON",
+          "count": 34
+        }
+      ],
+      "total_count": 306
+    },
+    {
+      "word": "schlecht",
+      "meanings": [
+        {
+          "lemma": "schlecht",
+          "pos": "ADJ",
+          "count": 155
+        },
+        {
+          "lemma": "schlecht",
+          "pos": "ADV",
+          "count": 145
+        }
+      ],
+      "total_count": 300
+    },
+    {
+      "word": "echt",
+      "meanings": [
+        {
+          "lemma": "echt",
+          "pos": "ADV",
+          "count": 220
+        },
+        {
+          "lemma": "echt",
+          "pos": "ADJ",
+          "count": 59
+        }
+      ],
+      "total_count": 279
+    },
+    {
+      "word": "seid",
+      "meanings": [
+        {
+          "lemma": "sein",
+          "pos": "AUX",
+          "count": 171
+        },
+        {
+          "lemma": "seid",
+          "pos": "AUX",
+          "count": 104
+        }
+      ],
+      "total_count": 275
+    },
+    {
+      "word": "ruhig",
+      "meanings": [
+        {
+          "lemma": "ruhig",
+          "pos": "ADJ",
+          "count": 166
+        },
+        {
+          "lemma": "ruhig",
+          "pos": "ADV",
+          "count": 105
+        }
+      ],
+      "total_count": 271
+    },
+    {
+      "word": "leicht",
+      "meanings": [
+        {
+          "lemma": "leicht",
+          "pos": "ADV",
+          "count": 167
+        },
+        {
+          "lemma": "leicht",
+          "pos": "ADJ",
+          "count": 101
+        }
+      ],
+      "total_count": 268
+    },
+    {
+      "word": "stand",
+      "meanings": [
+        {
+          "lemma": "stehen",
+          "pos": "VERB",
+          "count": 231
+        },
+        {
+          "lemma": "aufstehen",
+          "pos": "VERB",
+          "count": 36
+        }
+      ],
+      "total_count": 267
+    },
+    {
+      "word": "kurz",
+      "meanings": [
+        {
+          "lemma": "kurz",
+          "pos": "ADV",
+          "count": 225
+        },
+        {
+          "lemma": "kurz",
+          "pos": "ADJ",
+          "count": 40
+        }
+      ],
+      "total_count": 265
+    },
+    {
+      "word": "verdammt",
+      "meanings": [
+        {
+          "lemma": "verdammt",
+          "pos": "INTJ",
+          "count": 197
+        },
+        {
+          "lemma": "verdammt",
+          "pos": "ADV",
+          "count": 64
+        }
+      ],
+      "total_count": 261
+    },
+    {
+      "word": "hört",
+      "meanings": [
+        {
+          "lemma": "hören",
+          "pos": "VERB",
+          "count": 186
+        },
+        {
+          "lemma": "aufhören",
+          "pos": "VERB",
+          "count": 73
+        }
+      ],
+      "total_count": 259
+    },
+    {
+      "word": "gib",
+      "meanings": [
+        {
+          "lemma": "geben",
+          "pos": "VERB",
+          "count": 209
+        },
+        {
+          "lemma": "gib",
+          "pos": "VERB",
+          "count": 45
+        }
+      ],
+      "total_count": 254
+    },
+    {
+      "word": "lange",
+      "meanings": [
+        {
+          "lemma": "lang",
+          "pos": "ADV",
+          "count": 198
+        },
+        {
+          "lemma": "lang",
+          "pos": "ADJ",
+          "count": 56
+        }
+      ],
+      "total_count": 254
+    },
+    {
+      "word": "warte",
+      "meanings": [
+        {
+          "lemma": "warten",
+          "pos": "VERB",
+          "count": 138
+        },
+        {
+          "lemma": "warte",
+          "pos": "VERB",
+          "count": 116
+        }
+      ],
+      "total_count": 254
+    },
+    {
+      "word": "eins",
+      "meanings": [
+        {
+          "lemma": "eins",
+          "pos": "NUM",
+          "count": 206
+        },
+        {
+          "lemma": "eins",
+          "pos": "PRON",
+          "count": 47
+        }
+      ],
+      "total_count": 253
+    },
+    {
+      "word": "habt",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 197
+        },
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 52
+        }
+      ],
+      "total_count": 249
+    },
+    {
+      "word": "schwer",
+      "meanings": [
+        {
+          "lemma": "schwer",
+          "pos": "ADJ",
+          "count": 152
+        },
+        {
+          "lemma": "schwer",
+          "pos": "ADV",
+          "count": 96
+        }
+      ],
+      "total_count": 248
+    },
+    {
+      "word": "bestimmt",
+      "meanings": [
+        {
+          "lemma": "bestimmt",
+          "pos": "ADV",
+          "count": 182
+        },
+        {
+          "lemma": "bestimmen",
+          "pos": "VERB",
+          "count": 32
+        },
+        {
+          "lemma": "bestimmt",
+          "pos": "ADJ",
+          "count": 31
+        }
+      ],
+      "total_count": 245
+    },
+    {
+      "word": "geboren",
+      "meanings": [
+        {
+          "lemma": "gebären",
+          "pos": "VERB",
+          "count": 204
+        },
+        {
+          "lemma": "geboren",
+          "pos": "ADJ",
+          "count": 36
+        }
+      ],
+      "total_count": 240
+    },
+    {
+      "word": "hatten",
+      "meanings": [
+        {
+          "lemma": "haben",
+          "pos": "VERB",
+          "count": 127
+        },
+        {
+          "lemma": "haben",
+          "pos": "AUX",
+          "count": 102
+        }
+      ],
+      "total_count": 229
+    },
+    {
+      "word": "anders",
+      "meanings": [
+        {
+          "lemma": "anders",
+          "pos": "ADV",
+          "count": 173
+        },
+        {
+          "lemma": "anders",
+          "pos": "ADJ",
+          "count": 53
+        }
+      ],
+      "total_count": 226
+    },
+    {
+      "word": "falsch",
+      "meanings": [
+        {
+          "lemma": "falsch",
+          "pos": "ADV",
+          "count": 134
+        },
+        {
+          "lemma": "falsch",
+          "pos": "ADJ",
+          "count": 90
+        }
+      ],
+      "total_count": 224
+    },
+    {
+      "word": "nahm",
+      "meanings": [
+        {
+          "lemma": "nehmen",
+          "pos": "VERB",
+          "count": 178
+        },
+        {
+          "lemma": "annehmen",
+          "pos": "VERB",
+          "count": 30
+        }
+      ],
+      "total_count": 208
+    },
+    {
+      "word": "welcher",
+      "meanings": [
+        {
+          "lemma": "welcher",
+          "pos": "DET",
+          "count": 141
+        },
+        {
+          "lemma": "welcher",
+          "pos": "PRON",
+          "count": 35
+        },
+        {
+          "lemma": "welch",
+          "pos": "DET",
+          "count": 32
+        }
+      ],
+      "total_count": 208
+    },
+    {
+      "word": "willst",
+      "meanings": [
+        {
+          "lemma": "wollen",
+          "pos": "AUX",
+          "count": 169
+        },
+        {
+          "lemma": "wollen",
+          "pos": "VERB",
+          "count": 37
+        }
+      ],
+      "total_count": 206
+    },
+    {
+      "word": "verliebt",
+      "meanings": [
+        {
+          "lemma": "verliebt",
+          "pos": "ADJ",
+          "count": 141
+        },
+        {
+          "lemma": "verlieben",
+          "pos": "VERB",
+          "count": 62
+        }
+      ],
+      "total_count": 203
+    },
+    {
+      "word": "stark",
+      "meanings": [
+        {
+          "lemma": "stark",
+          "pos": "ADJ",
+          "count": 121
+        },
+        {
+          "lemma": "stark",
+          "pos": "ADV",
+          "count": 75
+        }
+      ],
+      "total_count": 196
+    },
+    {
+      "word": "verletzt",
+      "meanings": [
+        {
+          "lemma": "verletzen",
+          "pos": "VERB",
+          "count": 159
+        },
+        {
+          "lemma": "verletzen",
+          "pos": "ADJ",
+          "count": 33
+        }
+      ],
+      "total_count": 192
+    },
+    {
+      "word": "voll",
+      "meanings": [
+        {
+          "lemma": "voll",
+          "pos": "ADJ",
+          "count": 124
+        },
+        {
+          "lemma": "voll",
+          "pos": "ADV",
+          "count": 68
+        }
+      ],
+      "total_count": 192
+    },
+    {
+      "word": "schau",
+      "meanings": [
+        {
+          "lemma": "schauen",
+          "pos": "VERB",
+          "count": 160
+        },
+        {
+          "lemma": "anschauen",
+          "pos": "VERB",
+          "count": 30
+        }
+      ],
+      "total_count": 190
+    },
+    {
+      "word": "halte",
+      "meanings": [
+        {
+          "lemma": "halten",
+          "pos": "VERB",
+          "count": 155
+        },
+        {
+          "lemma": "halte",
+          "pos": "VERB",
+          "count": 30
+        }
+      ],
+      "total_count": 185
+    },
+    {
+      "word": "weit",
+      "meanings": [
+        {
+          "lemma": "weit",
+          "pos": "ADV",
+          "count": 138
+        },
+        {
+          "lemma": "weit",
+          "pos": "ADJ",
+          "count": 31
+        }
+      ],
+      "total_count": 169
+    },
+    {
+      "word": "sieh",
+      "meanings": [
+        {
+          "lemma": "sehen",
+          "pos": "VERB",
+          "count": 118
+        },
+        {
+          "lemma": "ansehen",
+          "pos": "VERB",
+          "count": 49
+        }
+      ],
+      "total_count": 167
+    }
+  ],
+  "ita": [
+    {
+      "word": "che",
+      "meanings": [
+        {
+          "lemma": "che",
+          "pos": "SCONJ",
+          "count": 2817
+        },
+        {
+          "lemma": "che",
+          "pos": "PRON",
+          "count": 2299
+        },
+        {
+          "lemma": "che",
+          "pos": "DET",
+          "count": 1613
+        },
+        {
+          "lemma": "che",
+          "pos": "CCONJ",
+          "count": 128
+        }
+      ],
+      "total_count": 6857
+    },
+    {
+      "word": "ha",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 2702
+        },
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 1600
+        }
+      ],
+      "total_count": 4302
+    },
+    {
+      "word": "le",
+      "meanings": [
+        {
+          "lemma": "il",
+          "pos": "DET",
+          "count": 1708
+        },
+        {
+          "lemma": "lei",
+          "pos": "PRON",
+          "count": 975
+        },
+        {
+          "lemma": "le",
+          "pos": "PRON",
+          "count": 961
+        }
+      ],
+      "total_count": 3644
+    },
+    {
+      "word": "come",
+      "meanings": [
+        {
+          "lemma": "come",
+          "pos": "ADV",
+          "count": 1468
+        },
+        {
+          "lemma": "come",
+          "pos": "ADP",
+          "count": 1167
+        },
+        {
+          "lemma": "come",
+          "pos": "SCONJ",
+          "count": 834
+        }
+      ],
+      "total_count": 3469
+    },
+    {
+      "word": "si",
+      "meanings": [
+        {
+          "lemma": "si",
+          "pos": "PRON",
+          "count": 2801
+        },
+        {
+          "lemma": "si",
+          "pos": "INTJ",
+          "count": 153
+        }
+      ],
+      "total_count": 2954
+    },
+    {
+      "word": "ti",
+      "meanings": [
+        {
+          "lemma": "tu",
+          "pos": "PRON",
+          "count": 2589
+        },
+        {
+          "lemma": "ti",
+          "pos": "PRON",
+          "count": 139
+        }
+      ],
+      "total_count": 2728
+    },
+    {
+      "word": "ho",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 1316
+        },
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 986
+        }
+      ],
+      "total_count": 2302
+    },
+    {
+      "word": "ora",
+      "meanings": [
+        {
+          "lemma": "ora",
+          "pos": "ADV",
+          "count": 2204
+        },
+        {
+          "lemma": "ora",
+          "pos": "NOUN",
+          "count": 65
+        }
+      ],
+      "total_count": 2269
+    },
+    {
+      "word": "del",
+      "meanings": [
+        {
+          "lemma": "di il",
+          "pos": "ADP",
+          "count": 1778
+        },
+        {
+          "lemma": "di il",
+          "pos": "DET",
+          "count": 280
+        },
+        {
+          "lemma": "di",
+          "pos": "ADP",
+          "count": 110
+        },
+        {
+          "lemma": "di",
+          "pos": "DET",
+          "count": 94
+        }
+      ],
+      "total_count": 2262
+    },
+    {
+      "word": "cosa",
+      "meanings": [
+        {
+          "lemma": "cosa",
+          "pos": "PRON",
+          "count": 2117
+        },
+        {
+          "lemma": "cosa",
+          "pos": "NOUN",
+          "count": 120
+        }
+      ],
+      "total_count": 2237
+    },
+    {
+      "word": "molto",
+      "meanings": [
+        {
+          "lemma": "molto",
+          "pos": "ADV",
+          "count": 1902
+        },
+        {
+          "lemma": "molto",
+          "pos": "DET",
+          "count": 214
+        },
+        {
+          "lemma": "molto",
+          "pos": "PRON",
+          "count": 48
+        }
+      ],
+      "total_count": 2164
+    },
+    {
+      "word": "più",
+      "meanings": [
+        {
+          "lemma": "più",
+          "pos": "ADV",
+          "count": 1820
+        },
+        {
+          "lemma": "più",
+          "pos": "DET",
+          "count": 297
+        }
+      ],
+      "total_count": 2117
+    },
+    {
+      "word": "tutto",
+      "meanings": [
+        {
+          "lemma": "tutto",
+          "pos": "PRON",
+          "count": 1710
+        },
+        {
+          "lemma": "tutto",
+          "pos": "DET",
+          "count": 173
+        },
+        {
+          "lemma": "tutto",
+          "pos": "ADV",
+          "count": 62
+        }
+      ],
+      "total_count": 1945
+    },
+    {
+      "word": "al",
+      "meanings": [
+        {
+          "lemma": "a il",
+          "pos": "ADP",
+          "count": 1700
+        },
+        {
+          "lemma": "a",
+          "pos": "ADP",
+          "count": 177
+        }
+      ],
+      "total_count": 1877
+    },
+    {
+      "word": "solo",
+      "meanings": [
+        {
+          "lemma": "solo",
+          "pos": "ADV",
+          "count": 1582
+        },
+        {
+          "lemma": "solo",
+          "pos": "ADJ",
+          "count": 283
+        }
+      ],
+      "total_count": 1865
+    },
+    {
+      "word": "no",
+      "meanings": [
+        {
+          "lemma": "no",
+          "pos": "INTJ",
+          "count": 1736
+        },
+        {
+          "lemma": "no",
+          "pos": "ADV",
+          "count": 101
+        }
+      ],
+      "total_count": 1837
+    },
+    {
+      "word": "hai",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 981
+        },
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 811
+        }
+      ],
+      "total_count": 1792
+    },
+    {
+      "word": "alla",
+      "meanings": [
+        {
+          "lemma": "a il",
+          "pos": "ADP",
+          "count": 1179
+        },
+        {
+          "lemma": "a la",
+          "pos": "ADP",
+          "count": 355
+        },
+        {
+          "lemma": "a",
+          "pos": "ADP",
+          "count": 222
+        }
+      ],
+      "total_count": 1756
+    },
+    {
+      "word": "bene",
+      "meanings": [
+        {
+          "lemma": "bene",
+          "pos": "ADV",
+          "count": 1373
+        },
+        {
+          "lemma": "bene",
+          "pos": "INTJ",
+          "count": 268
+        },
+        {
+          "lemma": "bene",
+          "pos": "NOUN",
+          "count": 53
+        }
+      ],
+      "total_count": 1694
+    },
+    {
+      "word": "della",
+      "meanings": [
+        {
+          "lemma": "di il",
+          "pos": "ADP",
+          "count": 1291
+        },
+        {
+          "lemma": "di",
+          "pos": "ADP",
+          "count": 179
+        },
+        {
+          "lemma": "di il",
+          "pos": "DET",
+          "count": 158
+        },
+        {
+          "lemma": "di",
+          "pos": "DET",
+          "count": 58
+        }
+      ],
+      "total_count": 1686
+    },
+    {
+      "word": "hanno",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 1089
+        },
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 419
+        }
+      ],
+      "total_count": 1508
+    },
+    {
+      "word": "vuole",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 827
+        },
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 681
+        }
+      ],
+      "total_count": 1508
+    },
+    {
+      "word": "dei",
+      "meanings": [
+        {
+          "lemma": "di il",
+          "pos": "ADP",
+          "count": 524
+        },
+        {
+          "lemma": "di il",
+          "pos": "DET",
+          "count": 522
+        },
+        {
+          "lemma": "di",
+          "pos": "DET",
+          "count": 353
+        },
+        {
+          "lemma": "di",
+          "pos": "ADP",
+          "count": 70
+        }
+      ],
+      "total_count": 1469
+    },
+    {
+      "word": "sia",
+      "meanings": [
+        {
+          "lemma": "essere",
+          "pos": "AUX",
+          "count": 1303
+        },
+        {
+          "lemma": "sia",
+          "pos": "CCONJ",
+          "count": 129
+        }
+      ],
+      "total_count": 1432
+    },
+    {
+      "word": "abbiamo",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 866
+        },
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 547
+        }
+      ],
+      "total_count": 1413
+    },
+    {
+      "word": "voglio",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 830
+        },
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 512
+        }
+      ],
+      "total_count": 1342
+    },
+    {
+      "word": "sì",
+      "meanings": [
+        {
+          "lemma": "sì",
+          "pos": "INTJ",
+          "count": 1277
+        },
+        {
+          "lemma": "sì",
+          "pos": "ADV",
+          "count": 56
+        }
+      ],
+      "total_count": 1333
+    },
+    {
+      "word": "avete",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 788
+        },
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 531
+        }
+      ],
+      "total_count": 1319
+    },
+    {
+      "word": "sta",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 953
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 240
+        }
+      ],
+      "total_count": 1193
+    },
+    {
+      "word": "devo",
+      "meanings": [
+        {
+          "lemma": "dovere",
+          "pos": "AUX",
+          "count": 1100
+        },
+        {
+          "lemma": "dovere",
+          "pos": "VERB",
+          "count": 69
+        }
+      ],
+      "total_count": 1169
+    },
+    {
+      "word": "delle",
+      "meanings": [
+        {
+          "lemma": "di",
+          "pos": "DET",
+          "count": 426
+        },
+        {
+          "lemma": "di il",
+          "pos": "ADP",
+          "count": 360
+        },
+        {
+          "lemma": "di il",
+          "pos": "DET",
+          "count": 340
+        },
+        {
+          "lemma": "di",
+          "pos": "ADP",
+          "count": 39
+        }
+      ],
+      "total_count": 1165
+    },
+    {
+      "word": "nel",
+      "meanings": [
+        {
+          "lemma": "in il",
+          "pos": "ADP",
+          "count": 971
+        },
+        {
+          "lemma": "in",
+          "pos": "ADP",
+          "count": 161
+        }
+      ],
+      "total_count": 1132
+    },
+    {
+      "word": "posso",
+      "meanings": [
+        {
+          "lemma": "potere",
+          "pos": "AUX",
+          "count": 1073
+        },
+        {
+          "lemma": "potere",
+          "pos": "VERB",
+          "count": 45
+        }
+      ],
+      "total_count": 1118
+    },
+    {
+      "word": "vuoi",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 592
+        },
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 427
+        }
+      ],
+      "total_count": 1019
+    },
+    {
+      "word": "essere",
+      "meanings": [
+        {
+          "lemma": "essere",
+          "pos": "AUX",
+          "count": 901
+        },
+        {
+          "lemma": "essere",
+          "pos": "VERB",
+          "count": 114
+        }
+      ],
+      "total_count": 1015
+    },
+    {
+      "word": "deve",
+      "meanings": [
+        {
+          "lemma": "dovere",
+          "pos": "AUX",
+          "count": 914
+        },
+        {
+          "lemma": "dovere",
+          "pos": "VERB",
+          "count": 57
+        }
+      ],
+      "total_count": 971
+    },
+    {
+      "word": "li",
+      "meanings": [
+        {
+          "lemma": "li",
+          "pos": "PRON",
+          "count": 894
+        },
+        {
+          "lemma": "lo",
+          "pos": "PRON",
+          "count": 76
+        }
+      ],
+      "total_count": 970
+    },
+    {
+      "word": "uno",
+      "meanings": [
+        {
+          "lemma": "uno",
+          "pos": "PRON",
+          "count": 523
+        },
+        {
+          "lemma": "uno",
+          "pos": "DET",
+          "count": 385
+        },
+        {
+          "lemma": "uno",
+          "pos": "NUM",
+          "count": 52
+        }
+      ],
+      "total_count": 960
+    },
+    {
+      "word": "puoi",
+      "meanings": [
+        {
+          "lemma": "potere",
+          "pos": "AUX",
+          "count": 890
+        },
+        {
+          "lemma": "potere",
+          "pos": "VERB",
+          "count": 59
+        }
+      ],
+      "total_count": 949
+    },
+    {
+      "word": "quanto",
+      "meanings": [
+        {
+          "lemma": "quanto",
+          "pos": "ADV",
+          "count": 674
+        },
+        {
+          "lemma": "quanto",
+          "pos": "DET",
+          "count": 125
+        },
+        {
+          "lemma": "quanto",
+          "pos": "PRON",
+          "count": 74
+        },
+        {
+          "lemma": "quanto",
+          "pos": "SCONJ",
+          "count": 57
+        }
+      ],
+      "total_count": 930
+    },
+    {
+      "word": "nella",
+      "meanings": [
+        {
+          "lemma": "in il",
+          "pos": "ADP",
+          "count": 740
+        },
+        {
+          "lemma": "in",
+          "pos": "ADP",
+          "count": 187
+        }
+      ],
+      "total_count": 927
+    },
+    {
+      "word": "devi",
+      "meanings": [
+        {
+          "lemma": "dovere",
+          "pos": "AUX",
+          "count": 809
+        },
+        {
+          "lemma": "dovere",
+          "pos": "VERB",
+          "count": 38
+        }
+      ],
+      "total_count": 847
+    },
+    {
+      "word": "dalla",
+      "meanings": [
+        {
+          "lemma": "da il",
+          "pos": "ADP",
+          "count": 673
+        },
+        {
+          "lemma": "da",
+          "pos": "ADP",
+          "count": 99
+        },
+        {
+          "lemma": "da la",
+          "pos": "ADP",
+          "count": 58
+        }
+      ],
+      "total_count": 830
+    },
+    {
+      "word": "prima",
+      "meanings": [
+        {
+          "lemma": "prima",
+          "pos": "ADV",
+          "count": 730
+        },
+        {
+          "lemma": "primo",
+          "pos": "ADJ",
+          "count": 41
+        },
+        {
+          "lemma": "prima",
+          "pos": "ADP",
+          "count": 30
+        }
+      ],
+      "total_count": 801
+    },
+    {
+      "word": "fa",
+      "meanings": [
+        {
+          "lemma": "fare",
+          "pos": "VERB",
+          "count": 718
+        },
+        {
+          "lemma": "fa",
+          "pos": "ADV",
+          "count": 83
+        }
+      ],
+      "total_count": 801
+    },
+    {
+      "word": "troppo",
+      "meanings": [
+        {
+          "lemma": "troppo",
+          "pos": "ADV",
+          "count": 707
+        },
+        {
+          "lemma": "troppo",
+          "pos": "DET",
+          "count": 84
+        }
+      ],
+      "total_count": 791
+    },
+    {
+      "word": "fuori",
+      "meanings": [
+        {
+          "lemma": "fuori",
+          "pos": "ADV",
+          "count": 729
+        },
+        {
+          "lemma": "fuori",
+          "pos": "ADP",
+          "count": 55
+        }
+      ],
+      "total_count": 784
+    },
+    {
+      "word": "già",
+      "meanings": [
+        {
+          "lemma": "già",
+          "pos": "ADV",
+          "count": 656
+        },
+        {
+          "lemma": "già",
+          "pos": "INTJ",
+          "count": 85
+        }
+      ],
+      "total_count": 741
+    },
+    {
+      "word": "dal",
+      "meanings": [
+        {
+          "lemma": "da il",
+          "pos": "ADP",
+          "count": 653
+        },
+        {
+          "lemma": "da",
+          "pos": "ADP",
+          "count": 50
+        }
+      ],
+      "total_count": 703
+    },
+    {
+      "word": "aveva",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 466
+        },
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 232
+        }
+      ],
+      "total_count": 698
+    },
+    {
+      "word": "stai",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 417
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 249
+        }
+      ],
+      "total_count": 666
+    },
+    {
+      "word": "via",
+      "meanings": [
+        {
+          "lemma": "via",
+          "pos": "ADV",
+          "count": 531
+        },
+        {
+          "lemma": "via",
+          "pos": "INTJ",
+          "count": 89
+        },
+        {
+          "lemma": "via",
+          "pos": "NOUN",
+          "count": 39
+        }
+      ],
+      "total_count": 659
+    },
+    {
+      "word": "voleva",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 494
+        },
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 146
+        }
+      ],
+      "total_count": 640
+    },
+    {
+      "word": "sto",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 517
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 103
+        }
+      ],
+      "total_count": 620
+    },
+    {
+      "word": "alle",
+      "meanings": [
+        {
+          "lemma": "a le",
+          "pos": "ADP",
+          "count": 370
+        },
+        {
+          "lemma": "a",
+          "pos": "ADP",
+          "count": 151
+        },
+        {
+          "lemma": "a il",
+          "pos": "ADP",
+          "count": 95
+        }
+      ],
+      "total_count": 616
+    },
+    {
+      "word": "sul",
+      "meanings": [
+        {
+          "lemma": "su il",
+          "pos": "ADP",
+          "count": 521
+        },
+        {
+          "lemma": "su",
+          "pos": "ADP",
+          "count": 94
+        }
+      ],
+      "total_count": 615
+    },
+    {
+      "word": "cazzo",
+      "meanings": [
+        {
+          "lemma": "cazzo",
+          "pos": "INTJ",
+          "count": 417
+        },
+        {
+          "lemma": "cazzo",
+          "pos": "NOUN",
+          "count": 192
+        }
+      ],
+      "total_count": 609
+    },
+    {
+      "word": "grazie",
+      "meanings": [
+        {
+          "lemma": "grazie",
+          "pos": "INTJ",
+          "count": 551
+        },
+        {
+          "lemma": "grazia",
+          "pos": "NOUN",
+          "count": 31
+        }
+      ],
+      "total_count": 582
+    },
+    {
+      "word": "sai",
+      "meanings": [
+        {
+          "lemma": "sapere",
+          "pos": "VERB",
+          "count": 517
+        },
+        {
+          "lemma": "sapere",
+          "pos": "AUX",
+          "count": 62
+        }
+      ],
+      "total_count": 579
+    },
+    {
+      "word": "va",
+      "meanings": [
+        {
+          "lemma": "andare",
+          "pos": "VERB",
+          "count": 541
+        },
+        {
+          "lemma": "andare",
+          "pos": "AUX",
+          "count": 35
+        }
+      ],
+      "total_count": 576
+    },
+    {
+      "word": "sulla",
+      "meanings": [
+        {
+          "lemma": "su il",
+          "pos": "ADP",
+          "count": 506
+        },
+        {
+          "lemma": "su",
+          "pos": "ADP",
+          "count": 68
+        }
+      ],
+      "total_count": 574
+    },
+    {
+      "word": "dopo",
+      "meanings": [
+        {
+          "lemma": "dopo",
+          "pos": "ADP",
+          "count": 312
+        },
+        {
+          "lemma": "dopo",
+          "pos": "ADV",
+          "count": 260
+        }
+      ],
+      "total_count": 572
+    },
+    {
+      "word": "volete",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 331
+        },
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 232
+        }
+      ],
+      "total_count": 563
+    },
+    {
+      "word": "proprio",
+      "meanings": [
+        {
+          "lemma": "proprio",
+          "pos": "ADV",
+          "count": 519
+        },
+        {
+          "lemma": "proprio",
+          "pos": "DET",
+          "count": 32
+        }
+      ],
+      "total_count": 551
+    },
+    {
+      "word": "stanno",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 473
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 66
+        }
+      ],
+      "total_count": 539
+    },
+    {
+      "word": "stava",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 496
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 41
+        }
+      ],
+      "total_count": 537
+    },
+    {
+      "word": "giusto",
+      "meanings": [
+        {
+          "lemma": "giusto",
+          "pos": "ADJ",
+          "count": 414
+        },
+        {
+          "lemma": "giusto",
+          "pos": "INTJ",
+          "count": 63
+        },
+        {
+          "lemma": "giusto",
+          "pos": "ADV",
+          "count": 51
+        }
+      ],
+      "total_count": 528
+    },
+    {
+      "word": "sa",
+      "meanings": [
+        {
+          "lemma": "sapere",
+          "pos": "VERB",
+          "count": 357
+        },
+        {
+          "lemma": "sapere",
+          "pos": "AUX",
+          "count": 143
+        }
+      ],
+      "total_count": 500
+    },
+    {
+      "word": "volevo",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 344
+        },
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 148
+        }
+      ],
+      "total_count": 492
+    },
+    {
+      "word": "signore",
+      "meanings": [
+        {
+          "lemma": "signore",
+          "pos": "NOUN",
+          "count": 434
+        },
+        {
+          "lemma": "signora",
+          "pos": "NOUN",
+          "count": 33
+        }
+      ],
+      "total_count": 467
+    },
+    {
+      "word": "state",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 254
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 199
+        }
+      ],
+      "total_count": 453
+    },
+    {
+      "word": "lavoro",
+      "meanings": [
+        {
+          "lemma": "lavoro",
+          "pos": "NOUN",
+          "count": 327
+        },
+        {
+          "lemma": "lavorare",
+          "pos": "VERB",
+          "count": 112
+        }
+      ],
+      "total_count": 439
+    },
+    {
+      "word": "forte",
+      "meanings": [
+        {
+          "lemma": "forte",
+          "pos": "ADJ",
+          "count": 334
+        },
+        {
+          "lemma": "forte",
+          "pos": "ADV",
+          "count": 89
+        }
+      ],
+      "total_count": 423
+    },
+    {
+      "word": "ai",
+      "meanings": [
+        {
+          "lemma": "a il",
+          "pos": "ADP",
+          "count": 371
+        },
+        {
+          "lemma": "a",
+          "pos": "ADP",
+          "count": 49
+        }
+      ],
+      "total_count": 420
+    },
+    {
+      "word": "degli",
+      "meanings": [
+        {
+          "lemma": "di il",
+          "pos": "ADP",
+          "count": 174
+        },
+        {
+          "lemma": "di il",
+          "pos": "DET",
+          "count": 158
+        },
+        {
+          "lemma": "di",
+          "pos": "DET",
+          "count": 88
+        }
+      ],
+      "total_count": 420
+    },
+    {
+      "word": "dentro",
+      "meanings": [
+        {
+          "lemma": "dentro",
+          "pos": "ADV",
+          "count": 342
+        },
+        {
+          "lemma": "dentro",
+          "pos": "ADP",
+          "count": 59
+        }
+      ],
+      "total_count": 401
+    },
+    {
+      "word": "tanto",
+      "meanings": [
+        {
+          "lemma": "tanto",
+          "pos": "ADV",
+          "count": 348
+        },
+        {
+          "lemma": "tanto",
+          "pos": "DET",
+          "count": 40
+        }
+      ],
+      "total_count": 388
+    },
+    {
+      "word": "vorrei",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 274
+        },
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 107
+        }
+      ],
+      "total_count": 381
+    },
+    {
+      "word": "abbia",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 210
+        },
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 168
+        }
+      ],
+      "total_count": 378
+    },
+    {
+      "word": "certo",
+      "meanings": [
+        {
+          "lemma": "certo",
+          "pos": "INTJ",
+          "count": 266
+        },
+        {
+          "lemma": "certo",
+          "pos": "ADV",
+          "count": 61
+        },
+        {
+          "lemma": "certo",
+          "pos": "ADJ",
+          "count": 46
+        }
+      ],
+      "total_count": 373
+    },
+    {
+      "word": "avanti",
+      "meanings": [
+        {
+          "lemma": "avanti",
+          "pos": "INTJ",
+          "count": 210
+        },
+        {
+          "lemma": "avanti",
+          "pos": "ADV",
+          "count": 162
+        }
+      ],
+      "total_count": 372
+    },
+    {
+      "word": "faccia",
+      "meanings": [
+        {
+          "lemma": "fare",
+          "pos": "VERB",
+          "count": 277
+        },
+        {
+          "lemma": "faccia",
+          "pos": "NOUN",
+          "count": 93
+        }
+      ],
+      "total_count": 370
+    },
+    {
+      "word": "viene",
+      "meanings": [
+        {
+          "lemma": "venire",
+          "pos": "VERB",
+          "count": 287
+        },
+        {
+          "lemma": "venire",
+          "pos": "AUX",
+          "count": 82
+        }
+      ],
+      "total_count": 369
+    },
+    {
+      "word": "avere",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 281
+        },
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 70
+        }
+      ],
+      "total_count": 351
+    },
+    {
+      "word": "forza",
+      "meanings": [
+        {
+          "lemma": "forza",
+          "pos": "INTJ",
+          "count": 287
+        },
+        {
+          "lemma": "forza",
+          "pos": "NOUN",
+          "count": 63
+        }
+      ],
+      "total_count": 350
+    },
+    {
+      "word": "stiamo",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 289
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 58
+        }
+      ],
+      "total_count": 347
+    },
+    {
+      "word": "francese",
+      "meanings": [
+        {
+          "lemma": "francese",
+          "pos": "NOUN",
+          "count": 233
+        },
+        {
+          "lemma": "francese",
+          "pos": "ADJ",
+          "count": 114
+        }
+      ],
+      "total_count": 347
+    },
+    {
+      "word": "fatto",
+      "meanings": [
+        {
+          "lemma": "fare",
+          "pos": "VERB",
+          "count": 307
+        },
+        {
+          "lemma": "fatto",
+          "pos": "NOUN",
+          "count": 33
+        }
+      ],
+      "total_count": 340
+    },
+    {
+      "word": "avevo",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 217
+        },
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 119
+        }
+      ],
+      "total_count": 336
+    },
+    {
+      "word": "vogliono",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 211
+        },
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 102
+        }
+      ],
+      "total_count": 313
+    },
+    {
+      "word": "altro",
+      "meanings": [
+        {
+          "lemma": "altro",
+          "pos": "PRON",
+          "count": 195
+        },
+        {
+          "lemma": "altro",
+          "pos": "DET",
+          "count": 72
+        },
+        {
+          "lemma": "altro",
+          "pos": "ADJ",
+          "count": 39
+        }
+      ],
+      "total_count": 306
+    },
+    {
+      "word": "abbastanza",
+      "meanings": [
+        {
+          "lemma": "abbastanza",
+          "pos": "ADV",
+          "count": 252
+        },
+        {
+          "lemma": "abbastanza",
+          "pos": "DET",
+          "count": 44
+        }
+      ],
+      "total_count": 296
+    },
+    {
+      "word": "stia",
+      "meanings": [
+        {
+          "lemma": "stare",
+          "pos": "AUX",
+          "count": 155
+        },
+        {
+          "lemma": "stare",
+          "pos": "VERB",
+          "count": 126
+        }
+      ],
+      "total_count": 281
+    },
+    {
+      "word": "vogliamo",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 177
+        },
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 98
+        }
+      ],
+      "total_count": 275
+    },
+    {
+      "word": "sotto",
+      "meanings": [
+        {
+          "lemma": "sotto",
+          "pos": "ADP",
+          "count": 175
+        },
+        {
+          "lemma": "sotto",
+          "pos": "ADV",
+          "count": 84
+        }
+      ],
+      "total_count": 259
+    },
+    {
+      "word": "stato",
+      "meanings": [
+        {
+          "lemma": "essere",
+          "pos": "AUX",
+          "count": 126
+        },
+        {
+          "lemma": "essere",
+          "pos": "VERB",
+          "count": 69
+        },
+        {
+          "lemma": "stato",
+          "pos": "NOUN",
+          "count": 62
+        }
+      ],
+      "total_count": 257
+    },
+    {
+      "word": "giovane",
+      "meanings": [
+        {
+          "lemma": "giovane",
+          "pos": "ADJ",
+          "count": 221
+        },
+        {
+          "lemma": "giovane",
+          "pos": "NOUN",
+          "count": 32
+        }
+      ],
+      "total_count": 253
+    },
+    {
+      "word": "vorrebbe",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 149
+        },
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 104
+        }
+      ],
+      "total_count": 253
+    },
+    {
+      "word": "parte",
+      "meanings": [
+        {
+          "lemma": "parte",
+          "pos": "NOUN",
+          "count": 199
+        },
+        {
+          "lemma": "partire",
+          "pos": "VERB",
+          "count": 51
+        }
+      ],
+      "total_count": 250
+    },
+    {
+      "word": "scusa",
+      "meanings": [
+        {
+          "lemma": "scusa",
+          "pos": "INTJ",
+          "count": 214
+        },
+        {
+          "lemma": "scusa",
+          "pos": "NOUN",
+          "count": 34
+        }
+      ],
+      "total_count": 248
+    },
+    {
+      "word": "vecchio",
+      "meanings": [
+        {
+          "lemma": "vecchio",
+          "pos": "ADJ",
+          "count": 197
+        },
+        {
+          "lemma": "vecchio",
+          "pos": "NOUN",
+          "count": 46
+        }
+      ],
+      "total_count": 243
+    },
+    {
+      "word": "piacere",
+      "meanings": [
+        {
+          "lemma": "piacere",
+          "pos": "NOUN",
+          "count": 188
+        },
+        {
+          "lemma": "piacere",
+          "pos": "VERB",
+          "count": 46
+        }
+      ],
+      "total_count": 234
+    },
+    {
+      "word": "caldo",
+      "meanings": [
+        {
+          "lemma": "caldo",
+          "pos": "ADJ",
+          "count": 167
+        },
+        {
+          "lemma": "caldo",
+          "pos": "NOUN",
+          "count": 64
+        }
+      ],
+      "total_count": 231
+    },
+    {
+      "word": "bravo",
+      "meanings": [
+        {
+          "lemma": "bravo",
+          "pos": "ADJ",
+          "count": 166
+        },
+        {
+          "lemma": "bravo",
+          "pos": "INTJ",
+          "count": 60
+        }
+      ],
+      "total_count": 226
+    },
+    {
+      "word": "farmi",
+      "meanings": [
+        {
+          "lemma": "fare",
+          "pos": "VERB",
+          "count": 136
+        },
+        {
+          "lemma": "fare mi",
+          "pos": "VERB",
+          "count": 89
+        }
+      ],
+      "total_count": 225
+    },
+    {
+      "word": "vivo",
+      "meanings": [
+        {
+          "lemma": "vivo",
+          "pos": "ADJ",
+          "count": 137
+        },
+        {
+          "lemma": "vivere",
+          "pos": "VERB",
+          "count": 85
+        }
+      ],
+      "total_count": 222
+    },
+    {
+      "word": "vorresti",
+      "meanings": [
+        {
+          "lemma": "volere",
+          "pos": "AUX",
+          "count": 143
+        },
+        {
+          "lemma": "volere",
+          "pos": "VERB",
+          "count": 78
+        }
+      ],
+      "total_count": 221
+    },
+    {
+      "word": "venne",
+      "meanings": [
+        {
+          "lemma": "venire",
+          "pos": "VERB",
+          "count": 128
+        },
+        {
+          "lemma": "venire",
+          "pos": "AUX",
+          "count": 93
+        }
+      ],
+      "total_count": 221
+    },
+    {
+      "word": "freddo",
+      "meanings": [
+        {
+          "lemma": "freddo",
+          "pos": "NOUN",
+          "count": 121
+        },
+        {
+          "lemma": "freddo",
+          "pos": "ADJ",
+          "count": 94
+        }
+      ],
+      "total_count": 215
+    },
+    {
+      "word": "letto",
+      "meanings": [
+        {
+          "lemma": "letto",
+          "pos": "NOUN",
+          "count": 156
+        },
+        {
+          "lemma": "leggere",
+          "pos": "VERB",
+          "count": 58
+        }
+      ],
+      "total_count": 214
+    },
+    {
+      "word": "inglese",
+      "meanings": [
+        {
+          "lemma": "inglese",
+          "pos": "NOUN",
+          "count": 140
+        },
+        {
+          "lemma": "inglese",
+          "pos": "ADJ",
+          "count": 73
+        }
+      ],
+      "total_count": 213
+    },
+    {
+      "word": "verrà",
+      "meanings": [
+        {
+          "lemma": "venire",
+          "pos": "VERB",
+          "count": 152
+        },
+        {
+          "lemma": "venire",
+          "pos": "AUX",
+          "count": 59
+        }
+      ],
+      "total_count": 211
+    },
+    {
+      "word": "ricordi",
+      "meanings": [
+        {
+          "lemma": "ricordare",
+          "pos": "VERB",
+          "count": 148
+        },
+        {
+          "lemma": "ricordo",
+          "pos": "NOUN",
+          "count": 61
+        }
+      ],
+      "total_count": 209
+    },
+    {
+      "word": "veloce",
+      "meanings": [
+        {
+          "lemma": "veloce",
+          "pos": "ADJ",
+          "count": 125
+        },
+        {
+          "lemma": "veloce",
+          "pos": "ADV",
+          "count": 78
+        }
+      ],
+      "total_count": 203
+    },
+    {
+      "word": "aiuto",
+      "meanings": [
+        {
+          "lemma": "aiuto",
+          "pos": "NOUN",
+          "count": 140
+        },
+        {
+          "lemma": "aiutare",
+          "pos": "VERB",
+          "count": 62
+        }
+      ],
+      "total_count": 202
+    },
+    {
+      "word": "meno",
+      "meanings": [
+        {
+          "lemma": "meno",
+          "pos": "ADV",
+          "count": 169
+        },
+        {
+          "lemma": "meno",
+          "pos": "DET",
+          "count": 32
+        }
+      ],
+      "total_count": 201
+    },
+    {
+      "word": "sposato",
+      "meanings": [
+        {
+          "lemma": "sposato",
+          "pos": "ADJ",
+          "count": 132
+        },
+        {
+          "lemma": "sposare",
+          "pos": "VERB",
+          "count": 57
+        }
+      ],
+      "total_count": 189
+    },
+    {
+      "word": "venga",
+      "meanings": [
+        {
+          "lemma": "venire",
+          "pos": "VERB",
+          "count": 157
+        },
+        {
+          "lemma": "venire",
+          "pos": "AUX",
+          "count": 30
+        }
+      ],
+      "total_count": 187
+    },
+    {
+      "word": "ricordo",
+      "meanings": [
+        {
+          "lemma": "ricordare",
+          "pos": "VERB",
+          "count": 150
+        },
+        {
+          "lemma": "ricordo",
+          "pos": "NOUN",
+          "count": 37
+        }
+      ],
+      "total_count": 187
+    },
+    {
+      "word": "piano",
+      "meanings": [
+        {
+          "lemma": "piano",
+          "pos": "NOUN",
+          "count": 136
+        },
+        {
+          "lemma": "piano",
+          "pos": "ADV",
+          "count": 49
+        }
+      ],
+      "total_count": 185
+    },
+    {
+      "word": "poco",
+      "meanings": [
+        {
+          "lemma": "poco",
+          "pos": "ADV",
+          "count": 153
+        },
+        {
+          "lemma": "poco",
+          "pos": "DET",
+          "count": 30
+        }
+      ],
+      "total_count": 183
+    },
+    {
+      "word": "blu",
+      "meanings": [
+        {
+          "lemma": "blu",
+          "pos": "ADJ",
+          "count": 146
+        },
+        {
+          "lemma": "blu",
+          "pos": "NOUN",
+          "count": 34
+        }
+      ],
+      "total_count": 180
+    },
+    {
+      "word": "sbagliato",
+      "meanings": [
+        {
+          "lemma": "sbagliato",
+          "pos": "ADJ",
+          "count": 118
+        },
+        {
+          "lemma": "sbagliare",
+          "pos": "VERB",
+          "count": 58
+        }
+      ],
+      "total_count": 176
+    },
+    {
+      "word": "bisogna",
+      "meanings": [
+        {
+          "lemma": "bisognare",
+          "pos": "AUX",
+          "count": 124
+        },
+        {
+          "lemma": "bisognare",
+          "pos": "VERB",
+          "count": 49
+        }
+      ],
+      "total_count": 173
+    },
+    {
+      "word": "avevano",
+      "meanings": [
+        {
+          "lemma": "avere",
+          "pos": "VERB",
+          "count": 127
+        },
+        {
+          "lemma": "avere",
+          "pos": "AUX",
+          "count": 39
+        }
+      ],
+      "total_count": 166
+    },
+    {
+      "word": "bianco",
+      "meanings": [
+        {
+          "lemma": "bianco",
+          "pos": "ADJ",
+          "count": 120
+        },
+        {
+          "lemma": "bianco",
+          "pos": "NOUN",
+          "count": 39
+        }
+      ],
+      "total_count": 159
+    },
+    {
+      "word": "prego",
+      "meanings": [
+        {
+          "lemma": "prego",
+          "pos": "INTJ",
+          "count": 118
+        },
+        {
+          "lemma": "pregare",
+          "pos": "VERB",
+          "count": 36
+        }
+      ],
+      "total_count": 154
+    }
+  ],
+  "por": [
+    {
+      "word": "a",
+      "meanings": [
+        {
+          "lemma": "o",
+          "pos": "DET",
+          "count": 8955
+        },
+        {
+          "lemma": "a",
+          "pos": "ADP",
+          "count": 3593
+        },
+        {
+          "lemma": "ela",
+          "pos": "PRON",
+          "count": 627
+        },
+        {
+          "lemma": "o",
+          "pos": "PRON",
+          "count": 76
+        }
+      ],
+      "total_count": 13251
+    },
+    {
+      "word": "não",
+      "meanings": [
+        {
+          "lemma": "não",
+          "pos": "ADV",
+          "count": 8653
+        },
+        {
+          "lemma": "não",
+          "pos": "INTJ",
+          "count": 548
+        }
+      ],
+      "total_count": 9201
+    },
+    {
+      "word": "é",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 8627
+        },
+        {
+          "lemma": "é",
+          "pos": "INTJ",
+          "count": 199
+        }
+      ],
+      "total_count": 8826
+    },
+    {
+      "word": "que",
+      "meanings": [
+        {
+          "lemma": "que",
+          "pos": "SCONJ",
+          "count": 3572
+        },
+        {
+          "lemma": "que",
+          "pos": "PRON",
+          "count": 3108
+        },
+        {
+          "lemma": "que",
+          "pos": "DET",
+          "count": 1668
+        },
+        {
+          "lemma": "que",
+          "pos": "ADV",
+          "count": 132
+        }
+      ],
+      "total_count": 8480
+    },
+    {
+      "word": "para",
+      "meanings": [
+        {
+          "lemma": "para",
+          "pos": "ADP",
+          "count": 5890
+        },
+        {
+          "lemma": "para",
+          "pos": "SCONJ",
+          "count": 139
+        },
+        {
+          "lemma": "parar",
+          "pos": "VERB",
+          "count": 44
+        }
+      ],
+      "total_count": 6073
+    },
+    {
+      "word": "isso",
+      "meanings": [
+        {
+          "lemma": "isso",
+          "pos": "PRON",
+          "count": 4700
+        },
+        {
+          "lemma": "isso",
+          "pos": "INTJ",
+          "count": 42
+        }
+      ],
+      "total_count": 4742
+    },
+    {
+      "word": "está",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 4265
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 377
+        }
+      ],
+      "total_count": 4642
+    },
+    {
+      "word": "um",
+      "meanings": [
+        {
+          "lemma": "um",
+          "pos": "DET",
+          "count": 3876
+        },
+        {
+          "lemma": "um",
+          "pos": "PRON",
+          "count": 353
+        },
+        {
+          "lemma": "um",
+          "pos": "NUM",
+          "count": 269
+        }
+      ],
+      "total_count": 4498
+    },
+    {
+      "word": "me",
+      "meanings": [
+        {
+          "lemma": "me",
+          "pos": "PRON",
+          "count": 3509
+        },
+        {
+          "lemma": "eu",
+          "pos": "PRON",
+          "count": 950
+        }
+      ],
+      "total_count": 4459
+    },
+    {
+      "word": "como",
+      "meanings": [
+        {
+          "lemma": "como",
+          "pos": "ADV",
+          "count": 1821
+        },
+        {
+          "lemma": "como",
+          "pos": "ADP",
+          "count": 1248
+        },
+        {
+          "lemma": "como",
+          "pos": "SCONJ",
+          "count": 884
+        },
+        {
+          "lemma": "comer",
+          "pos": "VERB",
+          "count": 69
+        }
+      ],
+      "total_count": 4022
+    },
+    {
+      "word": "da",
+      "meanings": [
+        {
+          "lemma": "de a",
+          "pos": "ADP",
+          "count": 3286
+        },
+        {
+          "lemma": "de o",
+          "pos": "ADP",
+          "count": 419
+        },
+        {
+          "lemma": "de",
+          "pos": "ADP",
+          "count": 47
+        }
+      ],
+      "total_count": 3752
+    },
+    {
+      "word": "na",
+      "meanings": [
+        {
+          "lemma": "em a",
+          "pos": "ADP",
+          "count": 2935
+        },
+        {
+          "lemma": "em o",
+          "pos": "ADP",
+          "count": 755
+        }
+      ],
+      "total_count": 3690
+    },
+    {
+      "word": "mais",
+      "meanings": [
+        {
+          "lemma": "mais",
+          "pos": "ADV",
+          "count": 2959
+        },
+        {
+          "lemma": "mais",
+          "pos": "DET",
+          "count": 436
+        },
+        {
+          "lemma": "mais",
+          "pos": "CCONJ",
+          "count": 30
+        }
+      ],
+      "total_count": 3425
+    },
+    {
+      "word": "uma",
+      "meanings": [
+        {
+          "lemma": "um",
+          "pos": "DET",
+          "count": 3016
+        },
+        {
+          "lemma": "um",
+          "pos": "PRON",
+          "count": 258
+        },
+        {
+          "lemma": "um",
+          "pos": "NUM",
+          "count": 119
+        }
+      ],
+      "total_count": 3393
+    },
+    {
+      "word": "muito",
+      "meanings": [
+        {
+          "lemma": "muito",
+          "pos": "ADV",
+          "count": 2206
+        },
+        {
+          "lemma": "muito",
+          "pos": "DET",
+          "count": 177
+        },
+        {
+          "lemma": "muito",
+          "pos": "PRON",
+          "count": 43
+        }
+      ],
+      "total_count": 2426
+    },
+    {
+      "word": "só",
+      "meanings": [
+        {
+          "lemma": "só",
+          "pos": "ADV",
+          "count": 2213
+        },
+        {
+          "lemma": "só",
+          "pos": "ADJ",
+          "count": 154
+        }
+      ],
+      "total_count": 2367
+    },
+    {
+      "word": "tem",
+      "meanings": [
+        {
+          "lemma": "ter",
+          "pos": "VERB",
+          "count": 2092
+        },
+        {
+          "lemma": "ter",
+          "pos": "AUX",
+          "count": 207
+        }
+      ],
+      "total_count": 2299
+    },
+    {
+      "word": "bem",
+      "meanings": [
+        {
+          "lemma": "bem",
+          "pos": "ADV",
+          "count": 1864
+        },
+        {
+          "lemma": "bem",
+          "pos": "INTJ",
+          "count": 432
+        }
+      ],
+      "total_count": 2296
+    },
+    {
+      "word": "estava",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 1977
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 265
+        }
+      ],
+      "total_count": 2242
+    },
+    {
+      "word": "eles",
+      "meanings": [
+        {
+          "lemma": "ele",
+          "pos": "PRON",
+          "count": 1438
+        },
+        {
+          "lemma": "eles",
+          "pos": "PRON",
+          "count": 631
+        }
+      ],
+      "total_count": 2069
+    },
+    {
+      "word": "vamos",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 1134
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 736
+        },
+        {
+          "lemma": "vamos",
+          "pos": "INTJ",
+          "count": 122
+        }
+      ],
+      "total_count": 1992
+    },
+    {
+      "word": "vai",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 1211
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 625
+        }
+      ],
+      "total_count": 1836
+    },
+    {
+      "word": "estou",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 1565
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 121
+        }
+      ],
+      "total_count": 1686
+    },
+    {
+      "word": "estão",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 1405
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 141
+        }
+      ],
+      "total_count": 1546
+    },
+    {
+      "word": "sim",
+      "meanings": [
+        {
+          "lemma": "sim",
+          "pos": "INTJ",
+          "count": 1079
+        },
+        {
+          "lemma": "sim",
+          "pos": "ADV",
+          "count": 449
+        }
+      ],
+      "total_count": 1528
+    },
+    {
+      "word": "nada",
+      "meanings": [
+        {
+          "lemma": "nada",
+          "pos": "PRON",
+          "count": 1388
+        },
+        {
+          "lemma": "nada",
+          "pos": "ADV",
+          "count": 54
+        },
+        {
+          "lemma": "nadar",
+          "pos": "VERB",
+          "count": 53
+        }
+      ],
+      "total_count": 1495
+    },
+    {
+      "word": "te",
+      "meanings": [
+        {
+          "lemma": "tu",
+          "pos": "PRON",
+          "count": 1413
+        },
+        {
+          "lemma": "te",
+          "pos": "PRON",
+          "count": 78
+        }
+      ],
+      "total_count": 1491
+    },
+    {
+      "word": "pra",
+      "meanings": [
+        {
+          "lemma": "para",
+          "pos": "ADP",
+          "count": 1268
+        },
+        {
+          "lemma": "para a",
+          "pos": "ADP",
+          "count": 33
+        }
+      ],
+      "total_count": 1301
+    },
+    {
+      "word": "vou",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 1113
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 187
+        }
+      ],
+      "total_count": 1300
+    },
+    {
+      "word": "mesmo",
+      "meanings": [
+        {
+          "lemma": "mesmo",
+          "pos": "ADV",
+          "count": 1131
+        },
+        {
+          "lemma": "mesmo",
+          "pos": "ADJ",
+          "count": 85
+        },
+        {
+          "lemma": "mesmo",
+          "pos": "DET",
+          "count": 66
+        }
+      ],
+      "total_count": 1282
+    },
+    {
+      "word": "à",
+      "meanings": [
+        {
+          "lemma": "a o",
+          "pos": "ADP",
+          "count": 1030
+        },
+        {
+          "lemma": "a",
+          "pos": "ADP",
+          "count": 118
+        },
+        {
+          "lemma": "a a",
+          "pos": "ADP",
+          "count": 111
+        }
+      ],
+      "total_count": 1259
+    },
+    {
+      "word": "pode",
+      "meanings": [
+        {
+          "lemma": "poder",
+          "pos": "AUX",
+          "count": 1118
+        },
+        {
+          "lemma": "poder",
+          "pos": "VERB",
+          "count": 78
+        }
+      ],
+      "total_count": 1196
+    },
+    {
+      "word": "tenho",
+      "meanings": [
+        {
+          "lemma": "ter",
+          "pos": "VERB",
+          "count": 974
+        },
+        {
+          "lemma": "ter",
+          "pos": "AUX",
+          "count": 67
+        }
+      ],
+      "total_count": 1041
+    },
+    {
+      "word": "certo",
+      "meanings": [
+        {
+          "lemma": "certo",
+          "pos": "ADJ",
+          "count": 738
+        },
+        {
+          "lemma": "certo",
+          "pos": "INTJ",
+          "count": 286
+        }
+      ],
+      "total_count": 1024
+    },
+    {
+      "word": "nem",
+      "meanings": [
+        {
+          "lemma": "nem",
+          "pos": "ADV",
+          "count": 655
+        },
+        {
+          "lemma": "nem",
+          "pos": "CCONJ",
+          "count": 356
+        }
+      ],
+      "total_count": 1011
+    },
+    {
+      "word": "ser",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 859
+        },
+        {
+          "lemma": "ser",
+          "pos": "VERB",
+          "count": 128
+        }
+      ],
+      "total_count": 987
+    },
+    {
+      "word": "até",
+      "meanings": [
+        {
+          "lemma": "até",
+          "pos": "ADP",
+          "count": 755
+        },
+        {
+          "lemma": "até",
+          "pos": "ADV",
+          "count": 195
+        }
+      ],
+      "total_count": 950
+    },
+    {
+      "word": "estamos",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 770
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 52
+        }
+      ],
+      "total_count": 822
+    },
+    {
+      "word": "sabe",
+      "meanings": [
+        {
+          "lemma": "saber",
+          "pos": "VERB",
+          "count": 699
+        },
+        {
+          "lemma": "saber",
+          "pos": "AUX",
+          "count": 120
+        }
+      ],
+      "total_count": 819
+    },
+    {
+      "word": "posso",
+      "meanings": [
+        {
+          "lemma": "poder",
+          "pos": "AUX",
+          "count": 763
+        },
+        {
+          "lemma": "poder",
+          "pos": "VERB",
+          "count": 54
+        }
+      ],
+      "total_count": 817
+    },
+    {
+      "word": "tá",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 455
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 253
+        },
+        {
+          "lemma": "tá",
+          "pos": "INTJ",
+          "count": 104
+        }
+      ],
+      "total_count": 812
+    },
+    {
+      "word": "bom",
+      "meanings": [
+        {
+          "lemma": "bom",
+          "pos": "ADJ",
+          "count": 594
+        },
+        {
+          "lemma": "bom",
+          "pos": "INTJ",
+          "count": 198
+        }
+      ],
+      "total_count": 792
+    },
+    {
+      "word": "quanto",
+      "meanings": [
+        {
+          "lemma": "quanto",
+          "pos": "ADV",
+          "count": 436
+        },
+        {
+          "lemma": "quanto",
+          "pos": "SCONJ",
+          "count": 210
+        },
+        {
+          "lemma": "quanto",
+          "pos": "CCONJ",
+          "count": 72
+        },
+        {
+          "lemma": "quanto",
+          "pos": "PRON",
+          "count": 31
+        }
+      ],
+      "total_count": 749
+    },
+    {
+      "word": "pela",
+      "meanings": [
+        {
+          "lemma": "por a",
+          "pos": "ADP",
+          "count": 543
+        },
+        {
+          "lemma": "por o",
+          "pos": "ADP",
+          "count": 197
+        }
+      ],
+      "total_count": 740
+    },
+    {
+      "word": "senhor",
+      "meanings": [
+        {
+          "lemma": "senhor",
+          "pos": "NOUN",
+          "count": 655
+        },
+        {
+          "lemma": "senhor",
+          "pos": "PRON",
+          "count": 31
+        }
+      ],
+      "total_count": 686
+    },
+    {
+      "word": "ter",
+      "meanings": [
+        {
+          "lemma": "ter",
+          "pos": "VERB",
+          "count": 474
+        },
+        {
+          "lemma": "ter",
+          "pos": "AUX",
+          "count": 184
+        }
+      ],
+      "total_count": 658
+    },
+    {
+      "word": "tinha",
+      "meanings": [
+        {
+          "lemma": "ter",
+          "pos": "VERB",
+          "count": 404
+        },
+        {
+          "lemma": "ter",
+          "pos": "AUX",
+          "count": 216
+        }
+      ],
+      "total_count": 620
+    },
+    {
+      "word": "vá",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 549
+        },
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 57
+        }
+      ],
+      "total_count": 606
+    },
+    {
+      "word": "ir",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 535
+        },
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 50
+        }
+      ],
+      "total_count": 585
+    },
+    {
+      "word": "das",
+      "meanings": [
+        {
+          "lemma": "de o",
+          "pos": "ADP",
+          "count": 474
+        },
+        {
+          "lemma": "de a",
+          "pos": "ADP",
+          "count": 67
+        },
+        {
+          "lemma": "de",
+          "pos": "ADP",
+          "count": 34
+        }
+      ],
+      "total_count": 575
+    },
+    {
+      "word": "vão",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 393
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 177
+        }
+      ],
+      "total_count": 570
+    },
+    {
+      "word": "deles",
+      "meanings": [
+        {
+          "lemma": "de eles",
+          "pos": "PRON",
+          "count": 326
+        },
+        {
+          "lemma": "de ele",
+          "pos": "PRON",
+          "count": 210
+        }
+      ],
+      "total_count": 536
+    },
+    {
+      "word": "vem",
+      "meanings": [
+        {
+          "lemma": "vir",
+          "pos": "VERB",
+          "count": 503
+        },
+        {
+          "lemma": "vir",
+          "pos": "AUX",
+          "count": 30
+        }
+      ],
+      "total_count": 533
+    },
+    {
+      "word": "estavam",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 426
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 79
+        }
+      ],
+      "total_count": 505
+    },
+    {
+      "word": "estar",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 310
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 192
+        }
+      ],
+      "total_count": 502
+    },
+    {
+      "word": "fala",
+      "meanings": [
+        {
+          "lemma": "falar",
+          "pos": "VERB",
+          "count": 466
+        },
+        {
+          "lemma": "fala",
+          "pos": "NOUN",
+          "count": 34
+        }
+      ],
+      "total_count": 500
+    },
+    {
+      "word": "seja",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 437
+        },
+        {
+          "lemma": "ser",
+          "pos": "VERB",
+          "count": 36
+        }
+      ],
+      "total_count": 473
+    },
+    {
+      "word": "nossa",
+      "meanings": [
+        {
+          "lemma": "nosso",
+          "pos": "DET",
+          "count": 363
+        },
+        {
+          "lemma": "nossa",
+          "pos": "INTJ",
+          "count": 70
+        },
+        {
+          "lemma": "nosso",
+          "pos": "PRON",
+          "count": 35
+        }
+      ],
+      "total_count": 468
+    },
+    {
+      "word": "francês",
+      "meanings": [
+        {
+          "lemma": "francês",
+          "pos": "NOUN",
+          "count": 407
+        },
+        {
+          "lemma": "francês",
+          "pos": "ADJ",
+          "count": 48
+        }
+      ],
+      "total_count": 455
+    },
+    {
+      "word": "tanto",
+      "meanings": [
+        {
+          "lemma": "tanto",
+          "pos": "ADV",
+          "count": 372
+        },
+        {
+          "lemma": "tanto",
+          "pos": "DET",
+          "count": 74
+        }
+      ],
+      "total_count": 446
+    },
+    {
+      "word": "mal",
+      "meanings": [
+        {
+          "lemma": "mal",
+          "pos": "ADV",
+          "count": 388
+        },
+        {
+          "lemma": "mal",
+          "pos": "NOUN",
+          "count": 54
+        }
+      ],
+      "total_count": 442
+    },
+    {
+      "word": "rápido",
+      "meanings": [
+        {
+          "lemma": "rápido",
+          "pos": "ADV",
+          "count": 305
+        },
+        {
+          "lemma": "rápido",
+          "pos": "ADJ",
+          "count": 136
+        }
+      ],
+      "total_count": 441
+    },
+    {
+      "word": "num",
+      "meanings": [
+        {
+          "lemma": "em um",
+          "pos": "ADP",
+          "count": 388
+        },
+        {
+          "lemma": "em",
+          "pos": "ADP",
+          "count": 51
+        }
+      ],
+      "total_count": 439
+    },
+    {
+      "word": "foram",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 332
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 98
+        }
+      ],
+      "total_count": 430
+    },
+    {
+      "word": "fui",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 269
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 105
+        },
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 56
+        }
+      ],
+      "total_count": 430
+    },
+    {
+      "word": "primeiro",
+      "meanings": [
+        {
+          "lemma": "primeiro",
+          "pos": "ADV",
+          "count": 348
+        },
+        {
+          "lemma": "primeiro",
+          "pos": "ADJ",
+          "count": 69
+        }
+      ],
+      "total_count": 417
+    },
+    {
+      "word": "havia",
+      "meanings": [
+        {
+          "lemma": "haver",
+          "pos": "VERB",
+          "count": 233
+        },
+        {
+          "lemma": "haver",
+          "pos": "AUX",
+          "count": 175
+        }
+      ],
+      "total_count": 408
+    },
+    {
+      "word": "inglês",
+      "meanings": [
+        {
+          "lemma": "inglês",
+          "pos": "NOUN",
+          "count": 371
+        },
+        {
+          "lemma": "inglês",
+          "pos": "ADJ",
+          "count": 32
+        }
+      ],
+      "total_count": 403
+    },
+    {
+      "word": "numa",
+      "meanings": [
+        {
+          "lemma": "em um",
+          "pos": "ADP",
+          "count": 333
+        },
+        {
+          "lemma": "em",
+          "pos": "ADP",
+          "count": 66
+        }
+      ],
+      "total_count": 399
+    },
+    {
+      "word": "ajuda",
+      "meanings": [
+        {
+          "lemma": "ajuda",
+          "pos": "NOUN",
+          "count": 290
+        },
+        {
+          "lemma": "ajudar",
+          "pos": "VERB",
+          "count": 102
+        }
+      ],
+      "total_count": 392
+    },
+    {
+      "word": "deve",
+      "meanings": [
+        {
+          "lemma": "dever",
+          "pos": "AUX",
+          "count": 335
+        },
+        {
+          "lemma": "dever",
+          "pos": "VERB",
+          "count": 45
+        }
+      ],
+      "total_count": 380
+    },
+    {
+      "word": "todo",
+      "meanings": [
+        {
+          "lemma": "todo",
+          "pos": "DET",
+          "count": 341
+        },
+        {
+          "lemma": "todo",
+          "pos": "ADV",
+          "count": 34
+        }
+      ],
+      "total_count": 375
+    },
+    {
+      "word": "trabalho",
+      "meanings": [
+        {
+          "lemma": "trabalho",
+          "pos": "NOUN",
+          "count": 280
+        },
+        {
+          "lemma": "trabalhar",
+          "pos": "VERB",
+          "count": 95
+        }
+      ],
+      "total_count": 375
+    },
+    {
+      "word": "porra",
+      "meanings": [
+        {
+          "lemma": "porra",
+          "pos": "INTJ",
+          "count": 325
+        },
+        {
+          "lemma": "porra",
+          "pos": "NOUN",
+          "count": 48
+        }
+      ],
+      "total_count": 373
+    },
+    {
+      "word": "devo",
+      "meanings": [
+        {
+          "lemma": "dever",
+          "pos": "AUX",
+          "count": 298
+        },
+        {
+          "lemma": "dever",
+          "pos": "VERB",
+          "count": 61
+        }
+      ],
+      "total_count": 359
+    },
+    {
+      "word": "velho",
+      "meanings": [
+        {
+          "lemma": "velho",
+          "pos": "ADJ",
+          "count": 276
+        },
+        {
+          "lemma": "velho",
+          "pos": "NOUN",
+          "count": 71
+        }
+      ],
+      "total_count": 347
+    },
+    {
+      "word": "né",
+      "meanings": [
+        {
+          "lemma": "né",
+          "pos": "INTJ",
+          "count": 213
+        },
+        {
+          "lemma": "né",
+          "pos": "PART",
+          "count": 130
+        }
+      ],
+      "total_count": 343
+    },
+    {
+      "word": "irá",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 259
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 82
+        }
+      ],
+      "total_count": 341
+    },
+    {
+      "word": "tenha",
+      "meanings": [
+        {
+          "lemma": "ter",
+          "pos": "VERB",
+          "count": 236
+        },
+        {
+          "lemma": "ter",
+          "pos": "AUX",
+          "count": 102
+        }
+      ],
+      "total_count": 338
+    },
+    {
+      "word": "claro",
+      "meanings": [
+        {
+          "lemma": "claro",
+          "pos": "INTJ",
+          "count": 190
+        },
+        {
+          "lemma": "claro",
+          "pos": "ADJ",
+          "count": 103
+        },
+        {
+          "lemma": "claro",
+          "pos": "ADV",
+          "count": 44
+        }
+      ],
+      "total_count": 337
+    },
+    {
+      "word": "ia",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 247
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 80
+        }
+      ],
+      "total_count": 327
+    },
+    {
+      "word": "pessoal",
+      "meanings": [
+        {
+          "lemma": "pessoal",
+          "pos": "NOUN",
+          "count": 252
+        },
+        {
+          "lemma": "pessoal",
+          "pos": "ADJ",
+          "count": 67
+        }
+      ],
+      "total_count": 319
+    },
+    {
+      "word": "esteja",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 223
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 96
+        }
+      ],
+      "total_count": 319
+    },
+    {
+      "word": "bastante",
+      "meanings": [
+        {
+          "lemma": "bastante",
+          "pos": "ADV",
+          "count": 252
+        },
+        {
+          "lemma": "bastante",
+          "pos": "DET",
+          "count": 61
+        }
+      ],
+      "total_count": 313
+    },
+    {
+      "word": "desculpe",
+      "meanings": [
+        {
+          "lemma": "desculpar",
+          "pos": "VERB",
+          "count": 263
+        },
+        {
+          "lemma": "desculpe",
+          "pos": "INTJ",
+          "count": 40
+        }
+      ],
+      "total_count": 303
+    },
+    {
+      "word": "menos",
+      "meanings": [
+        {
+          "lemma": "menos",
+          "pos": "ADV",
+          "count": 205
+        },
+        {
+          "lemma": "menos",
+          "pos": "ADP",
+          "count": 55
+        },
+        {
+          "lemma": "menos",
+          "pos": "DET",
+          "count": 43
+        }
+      ],
+      "total_count": 303
+    },
+    {
+      "word": "merda",
+      "meanings": [
+        {
+          "lemma": "merda",
+          "pos": "NOUN",
+          "count": 236
+        },
+        {
+          "lemma": "merda",
+          "pos": "INTJ",
+          "count": 58
+        }
+      ],
+      "total_count": 294
+    },
+    {
+      "word": "sabia",
+      "meanings": [
+        {
+          "lemma": "saber",
+          "pos": "VERB",
+          "count": 254
+        },
+        {
+          "lemma": "saber",
+          "pos": "AUX",
+          "count": 32
+        }
+      ],
+      "total_count": 286
+    },
+    {
+      "word": "idiota",
+      "meanings": [
+        {
+          "lemma": "idiota",
+          "pos": "NOUN",
+          "count": 173
+        },
+        {
+          "lemma": "idiota",
+          "pos": "ADJ",
+          "count": 111
+        }
+      ],
+      "total_count": 284
+    },
+    {
+      "word": "conta",
+      "meanings": [
+        {
+          "lemma": "conta",
+          "pos": "NOUN",
+          "count": 168
+        },
+        {
+          "lemma": "contar",
+          "pos": "VERB",
+          "count": 111
+        }
+      ],
+      "total_count": 279
+    },
+    {
+      "word": "fosse",
+      "meanings": [
+        {
+          "lemma": "ser",
+          "pos": "AUX",
+          "count": 158
+        },
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 80
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 37
+        }
+      ],
+      "total_count": 275
+    },
+    {
+      "word": "forte",
+      "meanings": [
+        {
+          "lemma": "forte",
+          "pos": "ADJ",
+          "count": 231
+        },
+        {
+          "lemma": "forte",
+          "pos": "ADV",
+          "count": 42
+        }
+      ],
+      "total_count": 273
+    },
+    {
+      "word": "tarde",
+      "meanings": [
+        {
+          "lemma": "tarde",
+          "pos": "ADV",
+          "count": 159
+        },
+        {
+          "lemma": "tarde",
+          "pos": "NOUN",
+          "count": 112
+        }
+      ],
+      "total_count": 271
+    },
+    {
+      "word": "errado",
+      "meanings": [
+        {
+          "lemma": "errado",
+          "pos": "ADJ",
+          "count": 209
+        },
+        {
+          "lemma": "errado",
+          "pos": "ADV",
+          "count": 58
+        }
+      ],
+      "total_count": 267
+    },
+    {
+      "word": "espera",
+      "meanings": [
+        {
+          "lemma": "esperar",
+          "pos": "VERB",
+          "count": 210
+        },
+        {
+          "lemma": "espera",
+          "pos": "NOUN",
+          "count": 46
+        }
+      ],
+      "total_count": 256
+    },
+    {
+      "word": "jovem",
+      "meanings": [
+        {
+          "lemma": "jovem",
+          "pos": "ADJ",
+          "count": 166
+        },
+        {
+          "lemma": "jovem",
+          "pos": "NOUN",
+          "count": 78
+        }
+      ],
+      "total_count": 244
+    },
+    {
+      "word": "andar",
+      "meanings": [
+        {
+          "lemma": "andar",
+          "pos": "VERB",
+          "count": 175
+        },
+        {
+          "lemma": "andar",
+          "pos": "NOUN",
+          "count": 67
+        }
+      ],
+      "total_count": 242
+    },
+    {
+      "word": "escolha",
+      "meanings": [
+        {
+          "lemma": "escolha",
+          "pos": "NOUN",
+          "count": 171
+        },
+        {
+          "lemma": "escolher",
+          "pos": "VERB",
+          "count": 61
+        }
+      ],
+      "total_count": 232
+    },
+    {
+      "word": "leve",
+      "meanings": [
+        {
+          "lemma": "levar",
+          "pos": "VERB",
+          "count": 188
+        },
+        {
+          "lemma": "leve",
+          "pos": "ADJ",
+          "count": 40
+        }
+      ],
+      "total_count": 228
+    },
+    {
+      "word": "sei",
+      "meanings": [
+        {
+          "lemma": "saber",
+          "pos": "VERB",
+          "count": 175
+        },
+        {
+          "lemma": "saber",
+          "pos": "AUX",
+          "count": 52
+        }
+      ],
+      "total_count": 227
+    },
+    {
+      "word": "pergunta",
+      "meanings": [
+        {
+          "lemma": "pergunta",
+          "pos": "NOUN",
+          "count": 171
+        },
+        {
+          "lemma": "perguntar",
+          "pos": "VERB",
+          "count": 54
+        }
+      ],
+      "total_count": 225
+    },
+    {
+      "word": "jogo",
+      "meanings": [
+        {
+          "lemma": "jogo",
+          "pos": "NOUN",
+          "count": 166
+        },
+        {
+          "lemma": "jogar",
+          "pos": "VERB",
+          "count": 50
+        }
+      ],
+      "total_count": 216
+    },
+    {
+      "word": "azul",
+      "meanings": [
+        {
+          "lemma": "azul",
+          "pos": "ADJ",
+          "count": 180
+        },
+        {
+          "lemma": "azul",
+          "pos": "NOUN",
+          "count": 33
+        }
+      ],
+      "total_count": 213
+    },
+    {
+      "word": "presente",
+      "meanings": [
+        {
+          "lemma": "presente",
+          "pos": "NOUN",
+          "count": 170
+        },
+        {
+          "lemma": "presente",
+          "pos": "ADJ",
+          "count": 40
+        }
+      ],
+      "total_count": 210
+    },
+    {
+      "word": "vivo",
+      "meanings": [
+        {
+          "lemma": "vivo",
+          "pos": "ADJ",
+          "count": 157
+        },
+        {
+          "lemma": "viver",
+          "pos": "VERB",
+          "count": 49
+        }
+      ],
+      "total_count": 206
+    },
+    {
+      "word": "alto",
+      "meanings": [
+        {
+          "lemma": "alto",
+          "pos": "ADJ",
+          "count": 136
+        },
+        {
+          "lemma": "alto",
+          "pos": "ADV",
+          "count": 68
+        }
+      ],
+      "total_count": 204
+    },
+    {
+      "word": "sério",
+      "meanings": [
+        {
+          "lemma": "sério",
+          "pos": "ADJ",
+          "count": 161
+        },
+        {
+          "lemma": "sério",
+          "pos": "INTJ",
+          "count": 42
+        }
+      ],
+      "total_count": 203
+    },
+    {
+      "word": "sabem",
+      "meanings": [
+        {
+          "lemma": "saber",
+          "pos": "VERB",
+          "count": 154
+        },
+        {
+          "lemma": "saber",
+          "pos": "AUX",
+          "count": 44
+        }
+      ],
+      "total_count": 198
+    },
+    {
+      "word": "estará",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 139
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 58
+        }
+      ],
+      "total_count": 197
+    },
+    {
+      "word": "tô",
+      "meanings": [
+        {
+          "lemma": "estar",
+          "pos": "AUX",
+          "count": 153
+        },
+        {
+          "lemma": "estar",
+          "pos": "VERB",
+          "count": 41
+        }
+      ],
+      "total_count": 194
+    },
+    {
+      "word": "iria",
+      "meanings": [
+        {
+          "lemma": "ir",
+          "pos": "AUX",
+          "count": 148
+        },
+        {
+          "lemma": "ir",
+          "pos": "VERB",
+          "count": 46
+        }
+      ],
+      "total_count": 194
+    },
+    {
+      "word": "atenção",
+      "meanings": [
+        {
+          "lemma": "atenção",
+          "pos": "NOUN",
+          "count": 138
+        },
+        {
+          "lemma": "atenção",
+          "pos": "INTJ",
+          "count": 52
+        }
+      ],
+      "total_count": 190
+    },
+    {
+      "word": "alemão",
+      "meanings": [
+        {
+          "lemma": "alemão",
+          "pos": "NOUN",
+          "count": 139
+        },
+        {
+          "lemma": "alemão",
+          "pos": "ADJ",
+          "count": 48
+        }
+      ],
+      "total_count": 187
+    },
+    {
+      "word": "seguro",
+      "meanings": [
+        {
+          "lemma": "seguro",
+          "pos": "ADJ",
+          "count": 134
+        },
+        {
+          "lemma": "seguro",
+          "pos": "NOUN",
+          "count": 51
+        }
+      ],
+      "total_count": 185
+    },
+    {
+      "word": "saia",
+      "meanings": [
+        {
+          "lemma": "sair",
+          "pos": "VERB",
+          "count": 127
+        },
+        {
+          "lemma": "saia",
+          "pos": "NOUN",
+          "count": 54
+        }
+      ],
+      "total_count": 181
+    },
+    {
+      "word": "branco",
+      "meanings": [
+        {
+          "lemma": "branco",
+          "pos": "ADJ",
+          "count": 139
+        },
+        {
+          "lemma": "branco",
+          "pos": "NOUN",
+          "count": 40
+        }
+      ],
+      "total_count": 179
+    },
+    {
+      "word": "vestido",
+      "meanings": [
+        {
+          "lemma": "vestido",
+          "pos": "NOUN",
+          "count": 142
+        },
+        {
+          "lemma": "vestido",
+          "pos": "ADJ",
+          "count": 36
+        }
+      ],
+      "total_count": 178
+    },
+    {
+      "word": "vermelho",
+      "meanings": [
+        {
+          "lemma": "vermelho",
+          "pos": "ADJ",
+          "count": 133
+        },
+        {
+          "lemma": "vermelho",
+          "pos": "NOUN",
+          "count": 42
+        }
+      ],
+      "total_count": 175
+    },
+    {
+      "word": "parte",
+      "meanings": [
+        {
+          "lemma": "parte",
+          "pos": "NOUN",
+          "count": 137
+        },
+        {
+          "lemma": "partir",
+          "pos": "VERB",
+          "count": 31
+        }
+      ],
+      "total_count": 168
+    }
+  ]
+}

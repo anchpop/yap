@@ -281,7 +281,7 @@ fn load_movie_sentences(
         }
 
         // Sanity check: verify subtitles are actually in the target language
-        if !passes_language_sanity_check(&parsed_subtitles, language) {
+        if !passes_language_sanity_check(&parsed_subtitles, language, &movie.id) {
             eprintln!(
                 "Warning: subtitles for movie {} failed language sanity check, skipping",
                 movie.id
@@ -297,13 +297,31 @@ fn load_movie_sentences(
 }
 
 /// Check if subtitle lines pass the language sanity check.
-fn passes_language_sanity_check(subtitles: &[Subtitle], language: Language) -> bool {
-    match language.check_subtitle_sanity(subtitles.iter().map(|s| s.sentence.as_str())) {
+fn passes_language_sanity_check(
+    subtitles: &[Subtitle],
+    language: Language,
+    movie_id: &str,
+) -> bool {
+    let skip_markers = sanity_check_skip_markers(language, movie_id);
+    let skip_refs: Vec<&str> = skip_markers.to_vec();
+    match language.check_subtitle_sanity(subtitles.iter().map(|s| s.sentence.as_str()), &skip_refs)
+    {
         Ok(()) => true,
         Err(reason) => {
             eprintln!("  Sanity check failed: {reason}");
             false
         }
+    }
+}
+
+/// Returns corruption markers to skip for a specific (language, movie) pair.
+/// This allows whitelisting files where markers produce false positives
+/// (e.g., a character named "Rourke" triggering the French "rour" marker).
+fn sanity_check_skip_markers(language: Language, movie_id: &str) -> Vec<&'static str> {
+    match (language, movie_id) {
+        // Atlantis: character named "Rourke"
+        (Language::French, "tt0230011") => vec!["rour"],
+        _ => vec![],
     }
 }
 
@@ -507,6 +525,14 @@ pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
 
 /// Check if a sentence has encoding corruption or garbage characters that make it unusable.
 fn has_encoding_corruption(sentence: &str) -> bool {
+    // BOM character in text
+    if sentence.contains('\u{FEFF}') {
+        return true;
+    }
+    // &nbsp; HTML entity (common in corrupted subtitle files)
+    if sentence.contains("&nbsp;") {
+        return true;
+    }
     sentence.chars().any(|c| {
         matches!(
             c,
@@ -517,7 +543,13 @@ fn has_encoding_corruption(sentence: &str) -> bool {
         // MacRoman encoding artifacts (ˆ instead of à, Ž instead of é)
         '\u{02C6}' | '\u{017D}' |
         // Backtick and acute accent used as apostrophe in corrupted subtitles
-        '`' | '\u{00B4}'
+        '`' | '\u{00B4}' |
+        // Unicode replacement character (indicates failed decoding)
+        '\u{FFFD}' |
+        // Soft hyphen used incorrectly (e.g., as ¡ in Spanish OCR)
+        '\u{00AD}' |
+        // Zero-width space (typically from copy-paste corruption)
+        '\u{200B}'
         ) || matches!(c,
             // C1 control characters indicate mojibake (e.g., U+009C instead of œ)
             '\u{0080}'..='\u{009F}' |
