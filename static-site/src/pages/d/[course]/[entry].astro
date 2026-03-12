@@ -1,0 +1,527 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const { course: courseSlug, entry: pageSlug } = Astro.params;
+const kv = Astro.locals.runtime.env.DICTIONARY_KV;
+
+const [pageJson, coursesJson] = await Promise.all([
+  kv.get(`page:${courseSlug}:${pageSlug}`),
+  kv.get('courses'),
+]);
+
+if (!pageJson || !coursesJson) {
+  return new Response('Not found', { status: 404 });
+}
+
+const page = JSON.parse(pageJson);
+const courses = JSON.parse(coursesJson);
+const courseMeta = courses.find((c: any) => c.slug === courseSlug);
+if (!courseMeta) return new Response('Not found', { status: 404 });
+
+const mainSense = page.senses[0];
+const targetCode = courseMeta.target_language.slice(0, 2).toUpperCase();
+const nativeCode = courseMeta.native_language.slice(0, 2).toUpperCase();
+
+const pageTitle = mainSense.is_phrase
+  ? `"${page.display_text}" — ${courseMeta.target_language} phrase`
+  : `${page.display_text} — ${courseMeta.target_language}`;
+
+function getSummary(): string {
+  const seen = new Set<string>();
+  const words: string[] = [];
+  for (const s of page.senses) {
+    const natives: string[] = s.definition.type === 'Dictionary'
+      ? s.definition.definitions.map((d: any) => d.native)
+      : [s.definition.meaning];
+    for (const n of natives) {
+      for (const part of n.split(',')) {
+        const word = part.trim();
+        const key = word.toLowerCase();
+        if (key && !seen.has(key)) {
+          seen.add(key);
+          words.push(word);
+        }
+      }
+    }
+  }
+  return words.slice(0, 5).join(', ');
+}
+
+function getFrequencyTier(rank: number, total: number): { label: string; color: string } {
+  const pct = rank / total;
+  if (pct <= 0.01) return { label: 'Extremely common', color: 'bg-green-500/15 text-green-700 dark:text-green-400' };
+  if (pct <= 0.05) return { label: 'Very common', color: 'bg-green-500/10 text-green-600 dark:text-green-500' };
+  if (pct <= 0.20) return { label: 'Common', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400' };
+  if (pct <= 0.50) return { label: 'Uncommon', color: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400' };
+  return { label: 'Rare', color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400' };
+}
+
+
+function posLabel(pos: string): string {
+  const labels: Record<string, string> = {
+    Adj: 'adjective', Adp: 'preposition', Adv: 'adverb', Aux: 'auxiliary',
+    Cconj: 'conjunction', Det: 'determiner', Intj: 'interjection', Noun: 'noun',
+    Num: 'numeral', Part: 'particle', Pron: 'pronoun', Sconj: 'conjunction',
+    Sym: 'symbol', Verb: 'verb',
+  };
+  return labels[pos] || pos.toLowerCase();
+}
+
+/** Group conjugation forms into verb tables by (mood, tense) */
+function groupVerbForms(forms: any[]): Map<string, any[]> {
+  const groups = new Map<string, any[]>();
+  for (const form of forms) {
+    const key = [form.mood, form.tense].filter(Boolean).join(' ');
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(form);
+  }
+  return groups;
+}
+
+/** Capitalize first letter */
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/** Build a grammar summary line like "verb, 2nd person plural · present indicative" */
+function grammarSummary(sense: any): string {
+  const parts: string[] = [];
+  if (sense.pos && !sense.is_phrase) parts.push(posLabel(sense.pos));
+  if (sense.morphology && !sense.is_phrase) {
+    const m = sense.morphology;
+    // Group: gender/number, then tense/mood/person
+    const inflection: string[] = [];
+    if (m.person) inflection.push(m.person);
+    if (m.gender) inflection.push(m.gender);
+    if (m.number) inflection.push(m.number);
+    if (inflection.length > 0) parts.push(inflection.join(' '));
+    const verbInfo: string[] = [];
+    if (m.tense) verbInfo.push(m.tense);
+    if (m.mood) verbInfo.push(m.mood);
+    if (m.case) verbInfo.push(m.case);
+    if (verbInfo.length > 0) parts.push(verbInfo.join(' '));
+  }
+  if (sense.is_phrase) parts.push('phrase');
+  return parts.join(' · ');
+}
+---
+
+<Layout
+  title={pageTitle}
+  description={`${page.display_text}: ${getSummary()}. #${page.best_frequency_rank} most common in ${courseMeta.target_language}.`}
+  courseSlug={courseSlug}
+>
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/d/" class="hover:text-accent-foreground">Dictionaries</a>
+    <span class="mx-1.5 opacity-50">›</span>
+    <a href={`/d/${courseSlug}/`} class="hover:text-accent-foreground">{courseMeta.target_language} → {courseMeta.native_language}</a>
+    <span class="mx-1.5 opacity-50">›</span>
+    {page.display_text}
+  </nav>
+
+  <!-- Header: word + primary translation -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold">
+      {mainSense.prefix && !mainSense.is_phrase && (
+        <span class="text-muted-foreground/60 font-normal">{mainSense.prefix}</span>
+      )}{page.display_text}
+    </h1>
+    <p class="text-xl text-primary mt-1">{getSummary()}</p>
+    <div class="flex items-center gap-3 mt-2 text-sm text-muted-foreground/60">
+      {mainSense.pronunciation && (
+        <span>{mainSense.pronunciation}</span>
+      )}
+      {mainSense.lemma && mainSense.lemma !== page.display_text && (
+        <span>→ {mainSense.lemma}</span>
+      )}
+    </div>
+  </div>
+
+  <!-- Senses -->
+  <div class="space-y-8">
+    {page.senses.map((sense: any, senseIdx: number) => {
+      const grammar = grammarSummary(sense);
+      const senseTier = getFrequencyTier(sense.frequency_rank, courseMeta.total_pages);
+      return (
+        <div>
+          {/* Grammar + frequency line */}
+          <div class="flex items-center gap-2 text-sm text-muted-foreground/60 mb-2">
+            {grammar && <span>{grammar}</span>}
+            <span class={`text-xs font-medium px-1.5 py-0.5 rounded-full ${senseTier.color}`}>{senseTier.label}</span>
+            <span class="text-xs">#{sense.frequency_rank.toLocaleString()}</span>
+          </div>
+
+          {/* Definitions */}
+          {sense.definition.type === 'Dictionary' && (
+            <div class="space-y-2">
+              {sense.definition.definitions.map((def: any) => (
+                <div class="pl-3 border-l-2 border-muted">
+                  <span class="font-medium text-primary">{def.native}</span>
+                  {def.note && (
+                    <span class="text-sm text-muted-foreground/60 italic ml-2">{def.note}</span>
+                  )}
+                  {(def.example_target || def.example_native) && (
+                    <div class="mt-1 text-sm text-muted-foreground">
+                      {def.example_target && <div><span class="opacity-50">{targetCode}:</span> {def.example_target}</div>}
+                      {def.example_native && <div><span class="opacity-50">{nativeCode}:</span> {def.example_native}</div>}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {sense.definition.type === 'Phrasebook' && (
+            <div class="pl-3 border-l-2 border-muted">
+              <span class="font-medium text-primary">{sense.definition.meaning}</span>
+              {sense.definition.additional_notes && (
+                <span class="text-sm text-muted-foreground/60 italic ml-2">{sense.definition.additional_notes}</span>
+              )}
+              {(sense.definition.target_language_example || sense.definition.native_language_example) && (
+                <div class="mt-1 text-sm text-muted-foreground">
+                  {sense.definition.target_language_example && <div><span class="opacity-50">{targetCode}:</span> {sense.definition.target_language_example}</div>}
+                  {sense.definition.native_language_example && <div><span class="opacity-50">{nativeCode}:</span> {sense.definition.native_language_example}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Conjugation / declension table */}
+          {sense.conjugation && (
+            <details open class="mt-4">
+              <summary class="text-sm text-muted-foreground/60 cursor-pointer select-none hover:text-muted-foreground">
+                {sense.conjugation.pos === 'Verb' || sense.conjugation.pos === 'Aux'
+                  ? `Conjugation of ${sense.conjugation.lemma}`
+                  : sense.conjugation.pos === 'Noun'
+                    ? `Declension of ${sense.conjugation.lemma}`
+                    : `Forms of ${sense.conjugation.lemma}`}
+              </summary>
+              <div class="mt-2 text-sm">
+                {(() => {
+                  const conj = sense.conjugation;
+                  const pos = conj.pos;
+                  const forms = conj.forms;
+
+                  // Verb tables: group by (mood, tense)
+                  if (pos === 'Verb' || pos === 'Aux') {
+                    const allGroups = groupVerbForms(forms);
+                    // Only show groups that contain the current word, or infinitive
+                    const groups = new Map([...allGroups.entries()].filter(([label, groupForms]) =>
+                      label.includes('infinitive') || groupForms.some((f: any) => f.word === page.display_text)
+                    ));
+                    if (groups.size === 0) return null;
+                    const renderFormLink = (f: any) => (
+                      f.word === page.display_text
+                        ? <mark>{f.word}</mark>
+                        : f.slug
+                          ? <a href={`/d/${courseSlug}/${f.slug}/`} class="text-accent-foreground hover:underline">{f.word}</a>
+                          : <span>{f.word}</span>
+                    );
+                    return (
+                      <div class="space-y-3">
+                        {[...groups.entries()].map(([label, groupForms]) => {
+                          const persons = ['first', 'second', 'third'];
+                          const numbers = ['singular', 'plural'];
+                          const gridForms = groupForms.filter((f: any) => f.person && f.number);
+                          const remainingForms = groupForms.filter((f: any) => !(f.person && f.number));
+
+                          if (gridForms.length > 0) {
+                            return (
+                              <div>
+                                {label && <div class="text-muted-foreground/60 mb-1 font-medium">{capitalize(label)}</div>}
+                                <table class="conj-table">
+                                  <thead>
+                                    <tr>
+                                      <th></th>
+                                      {numbers.map(n => <th class="text-muted-foreground/60 font-normal px-3 py-1">{capitalize(n)}</th>)}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {persons.map(p => {
+                                      const row = numbers.map(n => gridForms.find((f: any) => f.person === p && f.number === n));
+                                      if (row.every((f: any) => !f)) return null;
+                                      return (
+                                        <tr>
+                                          <td class="text-muted-foreground/60 pr-3 py-1">{capitalize(p)}</td>
+                                          {row.map((f: any) => (
+                                            <td class="px-3 py-1">
+                                              {f ? renderFormLink(f) : <span class="text-muted-foreground/30">—</span>}
+                                            </td>
+                                          ))}
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                                {remainingForms.length > 0 && (
+                                  <div class="flex flex-wrap gap-2 mt-1">
+                                    {remainingForms.map((f: any) => renderFormLink(f))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          // Non-person forms (infinitive, participles, etc.)
+                          return (
+                            <div>
+                              {label && <div class="text-muted-foreground/60 mb-1 font-medium">{capitalize(label)}</div>}
+                              <div class="flex flex-wrap gap-2">
+                                {groupForms.map((f: any) => renderFormLink(f))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }
+
+                  // Nouns with case declension
+                  if (pos === 'Noun' && forms.some((f: any) => f.case) && forms.some((f: any) => f.word === page.display_text)) {
+                    const cases = ['nominative', 'accusative', 'dative', 'genitive'];
+                    const numbers = ['singular', 'plural'];
+                    return (
+                      <table class="conj-table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            {numbers.map(n => <th class="text-muted-foreground/60 font-normal px-3 py-1">{capitalize(n)}</th>)}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {cases.map(c => {
+                            const row = numbers.map(n => forms.find((f: any) => f.case === c && f.number === n));
+                            if (row.every((f: any) => !f)) return null;
+                            return (
+                              <tr>
+                                <td class="text-muted-foreground/60 pr-3 py-1">{capitalize(c)}</td>
+                                {row.map((f: any) => (
+                                  <td class="px-3 py-1">
+                                    {f ? (
+                                      f.word === page.display_text
+                                        ? <mark>{f.word}</mark>
+                                        : f.slug
+                                          ? <a href={`/d/${courseSlug}/${f.slug}/`} class="text-accent-foreground hover:underline">{f.word}</a>
+                                          : <span>{f.word}</span>
+                                    ) : <span class="text-muted-foreground/30">—</span>}
+                                  </td>
+                                ))}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    );
+                  }
+
+                  // Adjectives: gender × number grid
+                  if (pos === 'Adj' && forms.some((f: any) => f.gender) && forms.some((f: any) => f.word === page.display_text)) {
+                    const genders = ['masculine', 'feminine'];
+                    const numbers = ['singular', 'plural'];
+                    return (
+                      <table class="conj-table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            {genders.map(g => <th class="text-muted-foreground/60 font-normal px-3 py-1">{capitalize(g)}</th>)}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {numbers.map(n => {
+                            const row = genders.map(g => forms.find((f: any) => f.gender === g && f.number === n));
+                            if (row.every((f: any) => !f)) return null;
+                            return (
+                              <tr>
+                                <td class="text-muted-foreground/60 pr-3 py-1">{capitalize(n)}</td>
+                                {row.map((f: any) => (
+                                  <td class="px-3 py-1">
+                                    {f ? (
+                                      f.word === page.display_text
+                                        ? <mark>{f.word}</mark>
+                                        : f.slug
+                                          ? <a href={`/d/${courseSlug}/${f.slug}/`} class="text-accent-foreground hover:underline">{f.word}</a>
+                                          : <span>{f.word}</span>
+                                    ) : <span class="text-muted-foreground/30">—</span>}
+                                  </td>
+                                ))}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    );
+                  }
+
+                  // Fallback: flat list of forms
+                  if (!forms.some((f: any) => f.word === page.display_text)) return null;
+                  return (
+                    <div class="flex flex-wrap gap-2">
+                      {forms.map((f: any) => (
+                        f.word === page.display_text
+                          ? <mark>{f.word}</mark>
+                          : f.slug
+                            ? <a href={`/d/${courseSlug}/${f.slug}/`} class="text-accent-foreground hover:underline">{f.word}</a>
+                            : <span>{f.word}</span>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+            </details>
+          )}
+
+          {/* Example sentences — flat list */}
+          {sense.example_sentences.length > 0 && (
+            <div class="mt-4 space-y-3">
+              {sense.example_sentences.map((sentence: any, sentIdx: number) => (
+                <div class={`sentence-card ${sentIdx >= 10 ? 'hidden-sentence' : ''}`}>
+                  <p class="leading-relaxed">
+                    {sentence.segments.map((seg: any) => {
+                      const isCurrent = seg.slug === pageSlug;
+                      if (seg.slug) {
+                        return <>{isCurrent ? <mark><a
+                          href={`/d/${courseSlug}/${seg.slug}/`}
+                          class="gram-word"
+                          data-gloss={seg.gloss || undefined}
+                        >{seg.text}</a></mark> : <a
+                          href={`/d/${courseSlug}/${seg.slug}/`}
+                          class="gram-word text-accent-foreground"
+                          data-gloss={seg.gloss || undefined}
+                        >{seg.text}</a>}{seg.whitespace}</>;
+                      }
+                      return <><span class="text-muted-foreground">{seg.text}</span>{seg.whitespace}</>;
+                    })}
+                  </p>
+                  {sentence.translation && (
+                    <p class="text-sm text-muted-foreground mt-0.5 italic">{sentence.translation}</p>
+                  )}
+                  {sentence.source && (
+                    <p class="text-xs text-muted-foreground/60 mt-0.5">— {sentence.source}</p>
+                  )}
+                </div>
+              ))}
+              {sense.example_sentences.length > 10 && (
+                <button
+                  class="show-more-btn text-sm text-accent-foreground hover:text-foreground cursor-pointer"
+                  data-total={sense.example_sentences.length}
+                >
+                  Show {sense.example_sentences.length - 10} more
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    })}
+  </div>
+  <div id="gram-tooltip" popover></div>
+
+  <style>
+    .conj-table {
+      border-collapse: collapse;
+    }
+    .conj-table td, .conj-table th {
+      white-space: nowrap;
+    }
+
+    .hidden-sentence { display: none; }
+
+    mark {
+      background: oklch(0.8 0.12 328.6 / 20%);
+      color: var(--foreground);
+      padding: 0.05em 0.15em;
+      border-radius: 3px;
+    }
+
+    .gram-word {
+      text-decoration: none;
+      text-underline-offset: 3px;
+    }
+    .gram-word:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+    }
+
+    #gram-tooltip {
+      position: fixed;
+      margin: 0;
+      padding: 0.35em 0.65em;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      line-height: 1.3;
+      white-space: nowrap;
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 0.12s;
+    }
+    #gram-tooltip.visible {
+      opacity: 1;
+    }
+
+    @supports (anchor-name: --a) {
+      #gram-tooltip {
+        position-anchor: --active-word;
+        position-area: top;
+        margin-bottom: 4px;
+        position-try: flip-block;
+      }
+    }
+  </style>
+
+  <script>
+    const tooltip = document.getElementById('gram-tooltip')!;
+    const supportsAnchor = CSS.supports('anchor-name: --a');
+
+    let activeEl: HTMLElement | null = null;
+
+    document.addEventListener('pointerenter', (e) => {
+      const el = (e.target as HTMLElement).closest<HTMLElement>('[data-gloss]');
+      if (!el) return;
+
+      tooltip.textContent = el.dataset.gloss!;
+
+      if (supportsAnchor) {
+        if (activeEl) activeEl.style.removeProperty('anchor-name');
+        el.style.anchorName = '--active-word';
+        activeEl = el;
+        try { tooltip.showPopover(); } catch {}
+      } else {
+        const rect = el.getBoundingClientRect();
+        tooltip.style.left = `${rect.left + rect.width / 2}px`;
+        tooltip.style.top = `${rect.top + window.scrollY - 6}px`;
+        tooltip.style.transform = 'translate(-50%, -100%)';
+      }
+
+      tooltip.classList.add('visible');
+    }, true);
+
+    document.addEventListener('pointerleave', (e) => {
+      if ((e.target as HTMLElement).closest?.('[data-gloss]')) {
+        tooltip.classList.remove('visible');
+        if (supportsAnchor) {
+          try { tooltip.hidePopover(); } catch {}
+          if (activeEl) {
+            activeEl.style.removeProperty('anchor-name');
+            activeEl = null;
+          }
+        }
+      }
+    }, true);
+
+    document.querySelectorAll('.show-more-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const container = btn.parentElement!;
+        container.querySelectorAll('.hidden-sentence').forEach(el => {
+          el.classList.remove('hidden-sentence');
+        });
+        btn.remove();
+      });
+    });
+  </script>
+</Layout>

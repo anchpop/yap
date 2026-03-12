@@ -76,11 +76,11 @@ jobs:
 
       - name: Install dictionary site dependencies
         run: pnpm install
-        working-directory: dictionary-site
+        working-directory: static-site
 
       - name: Build dictionary site (SSR)
         run: pnpm build
-        working-directory: dictionary-site
+        working-directory: static-site
 
       - name: Install frontend dependencies
         run: pnpm install
@@ -94,16 +94,16 @@ jobs:
         run: |
           # Start with dictionary SSR output (has _worker.js for /d/* routes)
           DEPLOY_DIR=deploy-output
-          cp -r dictionary-site/dist "$DEPLOY_DIR"
+          cp -r static-site/dist "$DEPLOY_DIR"
 
           # Copy SPA static files into deploy dir (won't overwrite _worker.js)
           cp -r yap-frontend/dist/* "$DEPLOY_DIR/"
 
-          # Update _routes.json: only send /d/* to the worker, serve SPA files statically
+          # Update _routes.json: send /d/* and /blog/* to the worker, serve SPA files statically
           node -e "
             const fs = require('fs');
             const routes = JSON.parse(fs.readFileSync('$DEPLOY_DIR/_routes.json', 'utf-8'));
-            routes.include = ['/d/*'];
+            routes.include = ['/d/*', '/blog/*'];
             fs.writeFileSync('$DEPLOY_DIR/_routes.json', JSON.stringify(routes, null, 2));
           "
 

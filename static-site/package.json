@@ -1,0 +1,15 @@
+{
+  "name": "static-site",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.12",
+    "@tailwindcss/vite": "^4.1.4",
+    "astro": "^5.7.10",
+    "tailwindcss": "^4.1.4"
+  }
+}

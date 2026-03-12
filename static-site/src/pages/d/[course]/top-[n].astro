@@ -1,0 +1,52 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const { course: courseSlug, n } = Astro.params;
+const kv = Astro.locals.runtime.env.DICTIONARY_KV;
+
+if (n !== '100' && n !== '1000') return new Response('Not found', { status: 404 });
+
+const [pagesJson, coursesJson] = await Promise.all([
+  kv.get(`top:${courseSlug}:${n}`),
+  kv.get('courses'),
+]);
+
+if (!pagesJson || !coursesJson) return new Response('Not found', { status: 404 });
+
+const pages = JSON.parse(pagesJson);
+const courses = JSON.parse(coursesJson);
+const courseMeta = courses.find((c: any) => c.slug === courseSlug);
+if (!courseMeta) return new Response('Not found', { status: 404 });
+
+function getPreview(page: any): string {
+  return page.first_sense_preview?.definition_preview ?? '';
+}
+---
+
+<Layout
+  title={`Top ${n} ${courseMeta.target_language} Words`}
+  description={`The ${n} most common ${courseMeta.target_language} words with ${courseMeta.native_language} translations.`}
+  courseSlug={courseSlug}
+>
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/d/" class="hover:text-accent-foreground">Dictionaries</a>
+    <span class="mx-1.5 opacity-50">›</span>
+    <a href={`/d/${courseSlug}/`} class="hover:text-accent-foreground">{courseMeta.target_language} → {courseMeta.native_language}</a>
+    <span class="mx-1.5 opacity-50">›</span>
+    Top {n}
+  </nav>
+
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Top {n} {courseMeta.target_language} Words</h1>
+  </div>
+
+  <div class="space-y-1">
+    {pages.map((page: any, i: number) => (
+      <a href={`/d/${courseSlug}/${page.slug}/`} class="flex items-baseline gap-3 rounded-md px-3 py-2 hover:bg-secondary transition-colors no-underline text-card-foreground">
+        <span class="text-xs text-muted-foreground/50 w-8 text-right shrink-0">{i + 1}</span>
+        <span class="font-medium">{page.first_sense_preview?.prefix && !page.first_sense_preview?.is_phrase && (<span class="text-muted-foreground/60 font-normal">{page.first_sense_preview.prefix}</span>)}{page.display_text}</span>
+        <span class="text-sm text-muted-foreground truncate">{getPreview(page)}</span>
+      </a>
+    ))}
+  </div>
+</Layout>

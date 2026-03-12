@@ -712,7 +712,7 @@ fn resolve_sentence(
 
 fn main() -> Result<()> {
     let out_dir = Path::new("out");
-    let data_out_dir = Path::new("dictionary-site/src/data");
+    let data_out_dir = Path::new("static-site/src/data");
     std::fs::create_dir_all(data_out_dir)?;
 
     let mut courses_manifest: Vec<serde_json::Value> = Vec::new();
@@ -830,7 +830,7 @@ fn main() -> Result<()> {
         );
 
         // Generate search index
-        let search_dir = Path::new("dictionary-site/public/search");
+        let search_dir = Path::new("static-site/public/search");
         std::fs::create_dir_all(search_dir)?;
 
         let mut results: Vec<(String, String, String)> = Vec::new(); // (slug, display_text, preview)

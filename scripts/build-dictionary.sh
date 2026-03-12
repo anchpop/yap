@@ -10,7 +10,7 @@ cargo run --release --bin generate-dictionary-data
 
 # Build the Astro static site (outputs directly to yap-frontend/public/dictionary/)
 echo "==> Installing dictionary site dependencies..."
-cd dictionary-site
+cd static-site
 pnpm install
 
 echo "==> Building dictionary static pages..."

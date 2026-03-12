@@ -7,8 +7,8 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = 'dictionary-site/src/data';
-const SEARCH_DIR = 'dictionary-site/public/search';
+const DATA_DIR = 'static-site/src/data';
+const SEARCH_DIR = 'static-site/public/search';
 const KV_NAMESPACE_ID = '4f0627a5baf348e19fd656fc0a3896cd';
 const BATCH_SIZE = 5000;
 const MAX_RETRIES = 3;
