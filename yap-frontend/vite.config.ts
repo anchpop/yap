@@ -7,13 +7,14 @@ import tailwindcss from "@tailwindcss/vite"
 import { VitePWA } from 'vite-plugin-pwa'
 import { visualizer } from 'rollup-plugin-visualizer'
 
-// Serve static dictionary pages from /d/ without SPA fallback intercepting
-function dictionaryStaticPlugin() {
+// Serve static site pages (dictionary, blog) without SPA fallback intercepting
+function staticSitePlugin() {
   return {
-    name: 'dictionary-static',
+    name: 'static-site',
     configureServer(server: any) {
       server.middlewares.use((req: any, _res: any, next: any) => {
-        if (req.url?.startsWith('/d/') || req.url === '/d') {
+        if (req.url?.startsWith('/d/') || req.url === '/d' ||
+            req.url?.startsWith('/blog/') || req.url === '/blog') {
           // Rewrite directory requests to their index.html
           if (!req.url.includes('.')) {
             const path = req.url.endsWith('/') ? req.url : req.url + '/';
@@ -29,7 +30,7 @@ function dictionaryStaticPlugin() {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    dictionaryStaticPlugin(),
+    staticSitePlugin(),
     VitePWA({ 
       registerType: 'autoUpdate',
       devOptions: {
@@ -39,10 +40,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm,wav,mp3}'],
-        globIgnores: ['**/d/**'],
+        globIgnores: ['**/d/**', '**/blog/**'],
         importScripts: [],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MB (WASM file is ~2.1 MB)
-        navigateFallbackDenylist: [/^\/d\//],
+        navigateFallbackDenylist: [/^\/d\//, /^\/blog\//],
       },
       manifest: {
         name: 'Yap.Town',
