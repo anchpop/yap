@@ -13,22 +13,29 @@ import Layout from '../../layouts/Layout.astro';
       This was surprising to a lot of people, because it seems in contradiction with the LLM's ability to respond with perfect spelling. But in-the-know readers will already understand the resolution to the paradox. The LLMs could never spell, because spelling-related tasks are handled by a "dumb" pre- and post-processing step in the pipeline: tokenization.
     </p>
     <p>
-      Yes, when you look at a word, you can easily see a sequence of letters, but an LLM cannot, nor does it write words by writing sequences of letters. Instead, 
-    </p>
-     
-    === crap === 
-
-    <p>
-      Pedagogy is the study of how to teach effectively. And machine learning is the study of how to effectively teach things to computers. So machine learning could have been named "machine pedagogy" instead.
+      Yes, when you look at a word, you can easily see a sequence of letters, but an LLM cannot, nor does it write words by writing sequences of letters. The best way to understand the LLM might be via an analogy. All letters are mostly-random shapes with no inherent meaning, but you've learned to recognize them. But imagine someone took a common pairing of letters, like "th", and then combined them into a new shape: Þ. So all instances of "th" were replaced with "Þ". If you learned to write like Þis, you'd probaby see noÞing wrong with it. It would seem as natural to you as any oÞer letter in english.
     </p>
     <p>
-      Okay, it's not a perfect analogy, because we can modify machines however we want, but we can't modify humans. So the study of machine learning involves how to structure computers so that they learn from their input, as well as how to structure the inputs so they're effective for learning. While human pedagogy can only focus on the latter - how to structure inputs so they're effective for the human learner.
+      Now imagine if they did this thousands of times. You would quickly have a symbol for every common pair of leters, such as "th", "qu", "oo", "ck", and so on. But there's a twist. When "the" became "Þ", that all occurances of "the" became "Þe". And that becomes a candidate for being merged as well - so "Þe" would become its own new symbol as well. Now imagine we continued this process, combining the most common pair of letters into a new letter, over and over, until we have 32,000 letters.
     </p>
     <p>
-       Because of the excitement around AI and the relatededness of the problems, it's not surprising that people have tried to take expertise from how to structure inputs to humans, and tried to apply them to computers as well. For example, curriculum learning: people learn better if they're exposed to easy problems before hard problems, which is why a school curriculum is designed to start with easy topics. So it's a natural idea to the order the dataset is sampled for training, to train the model on easy examples first and then gradually increase the difficulty.
+      So, in this hypothetical, you've been brought up to write like this and you know all of those 32,000 letters easily. The classic A-Z are still letters, but at this point most whole words have been collapsed into single symbols.
     </p>
     <p>
-      But I'm not aware of any prior cases of the reverse - where an idea invented to help teach computers is applied directly to the teaching of humas.
+      And now you're working as an assistant, where people send you written questions and you type something in respose. But, they're writing questions in standard english and expect responses in standard english, while you're used to this language with 32,000 symbols. To stop this from being a problem for you, a dumb script translates all questinos into the symbol language for you, and then translates your responses back into standard english.
     </p>
+    <p>
+      99% of the time, this would be fine. If someone asked you "What is the capitol of France", that would be translated into your symbol language, and probably all of those words would have their own symbols. But you would know those symbols well, because you were raised with them. You could respond in terms of those same symbols, "The capitol of France is Paris," and it would be translatd back.
+    </p>
+    <p>
+      But now imagine someone asked you "how many letters are in the word 'strawberry'?" "Strawberry" would be collapsed into a single symbol, so you would not have access to the obivous way of knowing (just counting the letters). You'd have to know, from having read people say it explicitly, that the word "strawberry" has 10 letters.
+    </p>
+    <p>
+      And that would basically be a separaet piece of information to memorize for every word, that would probably be rarely said. So you probably just wouldn't know!
+    </p>
+    <p>
+      This is basically how LLMs see the world. Obivously, they don't see symbols the way we do, but chunks of letters in the input are convered to "tokens", and then the output tokens are coverted back into letters. The most common tokenizer is called "byte pair" encodings, which is basically the algorithm we described above: start out with tokesn for each character, then combine the most common pairs of tokens into new tokens, and repeat until you reach your desired number of tokens.
+    </p>
+    <p>To be completed...</p>
   </article>
 </Layout>
