@@ -64,6 +64,19 @@ fn compute_max_superseq_counts(
     max_superseq
 }
 
+/// Convert a SuperToken back to a Gram
+fn supertoken_to_gram(st: &SuperToken) -> Option<Gram<String>> {
+    match st {
+        SuperToken::Base(atom) => Some(Gram(vec![atom.clone()])),
+        SuperToken::Merged(merged) => {
+            let mut atoms = vec![Atom::<String>::Tok(merged.first.clone())];
+            atoms.extend(merged.middle.iter().cloned());
+            atoms.push(Atom::<String>::Tok(merged.last.clone()));
+            Some(Gram(atoms))
+        }
+    }
+}
+
 /// Convert a Gram to a SuperToken
 pub fn gram_to_supertoken(gram: &Gram<String>) -> Option<SuperToken> {
     match gram.len() {
@@ -333,8 +346,6 @@ impl UnigramTrainer {
     ) -> UnigramModel {
         // Step 1: Count all n-grams up to max_piece_length
         let mut ngram_counts: FxHashMap<Gram<String>, u32> = FxHashMap::default();
-        let mut unigram_counts: FxHashMap<Atom<String>, u64> = FxHashMap::default();
-        let mut total_unigrams: u64 = 0;
 
         // Build a set of seed sequences for quick lookup
         let seed_set: HashSet<&Gram<String>> = seed_sequences.iter().collect();
@@ -349,12 +360,6 @@ impl UnigramTrainer {
         }
 
         for sentence in corpus.iter() {
-            // Count unigrams for PMI calculation
-            for atom in sentence {
-                *unigram_counts.entry(atom.clone()).or_insert(0) += 1;
-                total_unigrams += 1;
-            }
-
             for start in 0..sentence.len() {
                 for end in start + 1..=sentence.len().min(start + self.config.max_piece_length) {
                     let slice = &sentence[start..end];
@@ -405,35 +410,12 @@ impl UnigramTrainer {
         // Step 3: Initialize vocabulary with PMI scores
         let total_ngrams: u64 = ngram_counts.values().map(|&c| c as u64).sum();
 
-        // Keep counts and PMI for loss estimation later
-        let counts_for_loss: FxHashMap<Gram<String>, u32> = ngram_counts.clone();
-
-        // Compute PMI for each n-gram: log(P(ngram) / product(P(atom_i)))
-        // PMI measures how much more likely the sequence is than if atoms were independent
+        // Compute log probability for each n-gram (used as Viterbi score)
         let mut vocab: Vec<(Gram<String>, f64, u32)> = ngram_counts
             .into_iter()
             .map(|(seq, count)| {
-                let log_prob_ngram = (count as f64 / total_ngrams as f64).ln();
-
-                if seq.len() == 1 {
-                    // Single atoms just use log probability
-                    (seq, log_prob_ngram, count)
-                } else {
-                    // Multi-word: compute PMI
-                    // PMI = log(P(ngram)) - sum(log(P(atom_i)))
-                    let log_prob_independent: f64 = seq
-                        .0
-                        .iter()
-                        .map(|atom| {
-                            let atom_count = unigram_counts.get(atom).copied().unwrap_or(1);
-                            (atom_count as f64 / total_unigrams as f64).ln()
-                        })
-                        .sum();
-
-                    let pmi = log_prob_ngram - log_prob_independent;
-                    // Use PMI as score (higher = more associated)
-                    (seq, pmi, count)
-                }
+                let log_prob = (count as f64 / total_ngrams as f64).ln();
+                (seq, log_prob, count)
             })
             .collect();
 
@@ -451,12 +433,9 @@ impl UnigramTrainer {
             }
         }
 
-        // Step 4: Compute substring suppression (independence ratios)
-        // For each sequence, find max count of any supersequence containing it
-        let max_superseq_counts = compute_max_superseq_counts(&counts_for_loss);
-
-        // Step 5: Iteratively prune vocabulary
-        // Seed sequences don't count towards the multiword quota
+        // Step 4: Iteratively prune vocabulary using Viterbi-based counts
+        // At each step, we build a temporary model, segment the corpus with Viterbi
+        // to get actual usage counts, then prune the least valuable items.
         let protected_count = vocab
             .iter()
             .filter(|(seq, _, _)| seq.len() == 1 || seed_set.contains(seq))
@@ -466,31 +445,41 @@ impl UnigramTrainer {
         while vocab.len() > target_vocab_size {
             let start_size = vocab.len();
 
+            // Build a temporary model from current vocab and segment corpus
+            let temp_model = UnigramModel::new(vocab.clone());
+            let mut viterbi_counts: FxHashMap<Gram<String>, u32> = FxHashMap::default();
+            for sentence in corpus.iter() {
+                let supertokens = temp_model.segment(sentence);
+                for st in &supertokens {
+                    if let Some(gram) = supertoken_to_gram(st) {
+                        *viterbi_counts.entry(gram).or_insert(0) += 1;
+                    }
+                }
+            }
+
+            // Compute independence from Viterbi-based counts
+            let max_superseq_counts = compute_max_superseq_counts(&viterbi_counts);
+
             // Calculate loss for each item
             // Single atoms and seed sequences get INFINITY (never removed)
-            // Multi-word: use PMI * count * independence as value (higher = keep, lower = remove)
-            // Independence ratio = (count - max_superseq_count) / count
-            // This suppresses phrases that mostly appear as part of longer phrases
+            // Multi-word: use count * independence as value (higher = keep, lower = remove)
+            // PMI is not needed here because Viterbi counts already reflect it —
+            // Viterbi only selects a multi-word gram when it beats the decomposed path,
+            // which is implicitly a PMI > 0 check.
             let mut losses: Vec<(usize, f64)> = Vec::with_capacity(vocab.len());
-            for (idx, (seq, pmi, _)) in vocab.iter().enumerate() {
+            for (idx, (seq, _, _)) in vocab.iter().enumerate() {
                 if seq.len() == 1 || seed_set.contains(seq) {
                     losses.push((idx, f64::INFINITY));
                     continue;
                 }
-                // Value = PMI * count * independence
-                // - PMI: how associated the words are (higher = more meaningful phrase)
-                // - count: how frequent (higher = more useful)
-                // - independence: what fraction appears independently vs as substring
-                //   (higher = more often stands alone, not just part of longer phrase)
-                let count = counts_for_loss.get(seq).copied().unwrap_or(0);
+                let count = viterbi_counts.get(seq).copied().unwrap_or(0);
                 let max_super = max_superseq_counts.get(seq).copied().unwrap_or(0);
                 let independence = if max_super == 0 {
-                    1.0 // No supersequence found, fully independent
+                    1.0
                 } else {
-                    // Fraction that appears independently (not as part of longer phrase)
                     (count.saturating_sub(max_super) as f64) / (count as f64)
                 };
-                let value = pmi * (count as f64) * independence;
+                let value = (count as f64) * independence;
                 losses.push((idx, value));
             }
 
@@ -500,8 +489,6 @@ impl UnigramTrainer {
             let iter_target = (vocab.len() as f64 * self.config.shrinking_factor).ceil() as usize;
             let iter_target = iter_target.max(target_vocab_size);
 
-            // Only remove items with finite loss (not INFINITY)
-            // This ensures single atoms are never removed
             let to_remove: std::collections::HashSet<usize> = losses
                 .iter()
                 .filter(|(_, loss)| *loss != f64::INFINITY)
@@ -518,7 +505,6 @@ impl UnigramTrainer {
 
             let removed = start_size - vocab.len();
 
-            // If we couldn't remove anything, we've hit the floor (all remaining items are protected)
             if removed == 0 {
                 break;
             }

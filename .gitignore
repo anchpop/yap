@@ -31,10 +31,10 @@ flamegraph.svg
 profile.json.gz
 
 # Dictionary site generated data and build output
-dictionary-site/src/data/
-dictionary-site/dist/
-dictionary-site/node_modules/
-dictionary-site/.astro/
+static-site/src/data/
+static-site/dist/
+static-site/node_modules/
+static-site/.astro/
 yap-frontend/public/d/
 deploy-output/
 .wrangler/

@@ -1,18 +1,18 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1782233
-Total errors: 818
-Accuracy: 99.95%
+Total predictions: 1800781
+Total errors: 801
+Accuracy: 99.96%
 
 ## Error Patterns (sorted by frequency)
 
-### "can" + "not" (127 occurrences)
+### "can" + "not" (128 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - And l cannot live out of this country.
   - And we can no longer stay silent when he tells us that we cannot speak.
   - And you cannot track that, not with a thousand bloodhounds.
+  - But I cannot just go in and catch her there.
 
 ### "do" + "n’t" (16 occurrences)
 - Predicted: Space
@@ -54,6 +54,14 @@ Accuracy: 99.95%
   - I don't know the answer.
   - I don't think so.
 
+### "-" + "I" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Finally, he got- I suspect- an infected jaw, and he was abandoned.
+  - I would like to see Gibarian - I mean, Sartorius.
+  - I- I manage the estate for Maxim.
+
 ### "-" + "the" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61,6 +69,14 @@ Accuracy: 99.95%
   - Because the best mushroom grows there - the chanterelle.
   - Could you tell the audience - the jury - what happened next?
   - He said I was lucky - the doctor.
+
+### "--" + "-" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Carrots, we need-- -Nick.
+  - Global warming-- -Could you stop talking?
+  - Listen-- -Why are you showing me this?
 
 ### "Are" + "you" (7 occurrences)
 - Predicted: Space
@@ -94,14 +110,6 @@ Accuracy: 99.95%
   - Haveyou got parents?
   - Haveyou heard anything about her?
 
-### "-" + "I" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Finally, he got- I suspect- an infected jaw, and he was abandoned.
-  - I- I manage the estate for Maxim.
-  - I- I only arranged the meeting.
-
 ### "-" + "and" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -126,22 +134,6 @@ Accuracy: 99.95%
   - For several months, so-- You know.
   - I told you -- You can go piss yourself.
 
-### "of" + "you" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - An animal, but who takes care ofyou like I do?
-  - Congratulations to both ofyou.
-  - I just dreamed ofyou in my sleep.
-
-### "of" + "your" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Are you out ofyour mind?
-  - He was a friend ofyour husband.
-  - None ofyour business.
-
 ### "," + "“" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -158,14 +150,6 @@ Accuracy: 99.95%
   - Hi, Schutte - No names!
   - N- No, she was standing back there with a sandwich in her hand.
 
-### "-" + "a" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - But there is one problem - a competitor.
-  - What can cheer up, soften, color everything - a big love.
-  - What you always wanted- a courageous death.
-
 ### "-" + "that" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -173,14 +157,6 @@ Accuracy: 99.95%
   - I demand it - that you tell these people the truth.
   - There must be someone - probably many- that you valued intensely.
   - This is a shot - or this whole sequence here - that is worth commenting upon.
-
-### "--" + "-" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Carrots, we need-- -Nick.
-  - Listen-- -Why are you showing me this?
-  - What-- -Please!
 
 ### "--" + "a" (4 occurrences)
 - Predicted: None
@@ -222,22 +198,6 @@ Accuracy: 99.95%
   - I mean, haveyou ever seen a bald woman?
   - What haveyou got in the bag?
 
-### "," + "-" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - He may look like an angel, -Oh, hi, will you wait?
-  - I Eat Ears, -I Eat Ears, and you should, too.
-  - This is my brother Antonio, -Nice to meet you, Antonio.
-
-### "," + "Jasper" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Come on,Jasper.
-  - Hurry up,Jasper!
-  - What do you want in there,Jasper?
-
 ### "," + "just" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -246,6 +206,14 @@ Accuracy: 99.95%
   - Yes,just a little bit.
   - You should,just in case.
 
+### "-" + "a" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - What can cheer up, soften, color everything - a big love.
+  - What you always wanted- a courageous death.
+  - You saw them age and die - a friend, a colleague, a wife.
+
 ### "-" + "he" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -253,6 +221,14 @@ Accuracy: 99.95%
   - Oh, he- he might be a man who lives outside of time as we know it.
   - Typical of Leone - he takes that little notion and vastly extends it.
   - Yeah - he was in fact the first close-up we saw in this picture.
+
+### "-" + "it" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Look - it looks like you.
+  - Reality has one problem - it is always honest.
+  - This duel- it will be your last, Fallow.
 
 ### "-" + "my" (3 occurrences)
 - Predicted: None
@@ -310,6 +286,14 @@ Accuracy: 99.95%
   - What doyou expect me to do?
   - Why doyou dislike Lola so much?
 
+### "of" + "you" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - An animal, but who takes care ofyou like I do?
+  - I just dreamed ofyou in my sleep.
+  - Look in front ofyou.
+
 ### "to" + "your" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -318,13 +302,19 @@ Accuracy: 99.95%
   - Haveyou spoken toyour mother?
   - What happened toyour face?
 
-### "you" + "-" (3 occurrences)
+### "," + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - And you -you call that clean?
-  - That young man who was with you - where can I find him?
-  - We - or rather you - will be drawn in.
+  - He may look like an angel, -Oh, hi, will you wait?
+  - I Eat Ears, -I Eat Ears, and you should, too.
+
+### "," + "Jasper" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Come on,Jasper.
+  - Hurry up,Jasper!
 
 ### "-" + "The" (2 occurrences)
 - Predicted: None
@@ -347,13 +337,6 @@ Accuracy: 99.95%
   - Stop - What is this?
   - W- What the hell?
 
-### "-" + "it" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Reality has one problem - it is always honest.
-  - This duel- it will be your last, Fallow.
-
 ### "-" + "just" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -361,26 +344,12 @@ Accuracy: 99.95%
   - My circus dreams - just memories ten years from now.
   - Very easy - just say please once.
 
-### "-" + "or" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - This is a shot - or this whole sequence here - that is worth commenting upon.
-  - We - or rather you - will be drawn in.
-
 ### "-" + "what" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Could you tell the audience - the jury - what happened next?
   - That day you came over to my place to play doctor- what was going on there?
-
-### "-" + "you" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - But you are good - you are a normal fellow.
-  - This one is for the girls - you can take your personal stuffwith you, too!
 
 ### "--" + "Are" (2 occurrences)
 - Predicted: None
@@ -430,6 +399,13 @@ Accuracy: 99.95%
 - Examples:
   - It's gonna rain tomorrow.
   - It's gonna take some time.
+
+### "Look" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Look - it looks like you.
+  - Look - my eyes.
 
 ### "She" + "'s" (2 occurrences)
 - Predicted: Space
@@ -508,13 +484,6 @@ Accuracy: 99.95%
   - A political speech hey ?
   - Good one hey ?
 
-### "him" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - He has got his guard always with him - two or three fighters.
-  - Your personal relationship with him - could you tell the jury when that began?
-
 ### "if" + "she" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -522,26 +491,19 @@ Accuracy: 99.95%
   - Well, ifshe says so.
   - What ifshe told me the truth?
 
-### "if" + "you" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - I guess that was the attraction, ifyou know what I mean.
-  - Well, just let me know ifyou need somebody to talk to, okay?
-
-### "men" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - There are good-looking men -yes, yes there are.
-  - They are men - yes sir!
-
 ### "of" + "his" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - It was the night ofhis birthday.
   - The hair bristled on the nape ofhis neck.
+
+### "of" + "your" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - He was a friend ofyour husband.
+  - This is all the result ofyour indulging him.
 
 ### "one" + "-" (2 occurrences)
 - Predicted: None
@@ -556,13 +518,6 @@ Accuracy: 99.95%
 - Examples:
   - In that park ?
   - Why would Mr Watanabe have wanted to create a park ?
-
-### "problem" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - But there is one problem - a competitor.
-  - Reality has one problem - it is always honest.
 
 ### "shoyu" + "-" (2 occurrences)
 - Predicted: None
@@ -591,6 +546,13 @@ Accuracy: 99.95%
 - Examples:
   - To the whole world - good night, good day and good morning.
   - Workers of the world - unite!
+
+### "you" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - And you -you call that clean?
+  - That young man who was with you - where can I find him?
 
 ### "," + "There" (1 occurrences)
 - Predicted: Space
@@ -694,6 +656,12 @@ Accuracy: 99.95%
 - Examples:
   - You wear something new and- Got a light?
 
+### "-" + "Happiness" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Like they say - Happiness only doubles when it is shared!
+
 ### "-" + "He" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -729,12 +697,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - R- Ryu?
-
-### "-" + "Shut" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Leave me alone - Shut up, I said.
 
 ### "-" + "Stop" (1 occurrences)
 - Predicted: None
@@ -801,12 +763,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Clint speaks what amounts to the essential moral - certainly of this sequence.
-
-### "-" + "city" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You said - city is the force, and yet everybody is feeble here.
 
 ### "-" + "could" (1 occurrences)
 - Predicted: None
@@ -916,6 +872,12 @@ Accuracy: 99.95%
 - Examples:
   - Your double does not obey h i s will- only m i n e!
 
+### "-" + "or" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - This is a shot - or this whole sequence here - that is worth commenting upon.
+
 ### "-" + "please" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -958,12 +920,6 @@ Accuracy: 99.95%
 - Examples:
   - On the tray are five objects - three of them are keys.
 
-### "-" + "two" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - He has got his guard always with him - two or three fighters.
-
 ### "-" + "unite" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -982,6 +938,12 @@ Accuracy: 99.95%
 - Examples:
   - When you lived here -as a little girl- were you not afraid?
 
+### "-" + "whatever" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Make him feel good, or bad- whatever!
+
 ### "-" + "where" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -994,12 +956,6 @@ Accuracy: 99.95%
 - Examples:
   - A lover for Rosalia - who could it be?
 
-### "-" + "will" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - We - or rather you - will be drawn in.
-
 ### "-" + "with" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1011,6 +967,12 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - They are men - yes sir!
+
+### "-" + "you" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - This one is for the girls - you can take your personal stuff with you, too!
 
 ### "--" + "Carrots" (1 occurrences)
 - Predicted: None
@@ -1114,6 +1076,12 @@ Accuracy: 99.95%
 - Examples:
   - The Lord of the Rings, we had-- We were on as a Hobbit quite a bit.
 
+### "--" + "Where" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - W-- Where am I calling now?
+
 ### "--" + "ages" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1137,6 +1105,12 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - I am calm-- but call them.
+
+### "--" + "can" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uh, c-- can I get your opinion on something?
 
 ### "--" + "for" (1 occurrences)
 - Predicted: None
@@ -1234,6 +1208,12 @@ Accuracy: 99.95%
 - Examples:
   - I just need to-- uh, Agnes, I just need to work.
 
+### "--" + "what" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wha-- what are you doing?
+
 ### "--" + "you" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1269,12 +1249,6 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - Good morning, even/one.
-
-### "/" + "umart" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - P/umart Publishers.
 
 ### "A" + "woman" (1 occurrences)
 - Predicted: Space
@@ -1342,6 +1316,12 @@ Accuracy: 99.95%
 - Examples:
   - Gandalfs asleep.
 
+### "Gibarian" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - I would like to see Gibarian - I mean, Sartorius.
+
 ### "Ha" + "/" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1365,12 +1345,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Hurry !
-
-### "I" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - I -You Let me tell you something.
 
 ### "I" + "going" (1 occurrences)
 - Predicted: Space
@@ -1456,12 +1430,6 @@ Accuracy: 99.95%
 - Examples:
   - Little Maggie -Little Maggie.
 
-### "Look" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Look - my eyes.
-
 ### "Look" + "when" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1485,6 +1453,12 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Do you know the brother of Michael Jackson ?
+
+### "Mine" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mine -And the adress under the car?
 
 ### "Mother" + "-" (1 occurrences)
 - Predicted: None
@@ -1510,23 +1484,11 @@ Accuracy: 99.95%
 - Examples:
   - Opportunities ?
 
-### "P" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - P/umart Publishers.
-
 ### "Plead" + "ed" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Pleaded.
-
-### "Pregnant" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Pregnant -Cool!
 
 ### "Really" + "!" (1 occurrences)
 - Predicted: None
@@ -1563,12 +1525,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Stop - What is this?
-
-### "TRMM" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - See, the sun-synch orbit needs to be in alignment with the radiometers of TRMM .
 
 ### "The" + "jacket" (1 occurrences)
 - Predicted: Space
@@ -1617,12 +1573,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Like Watanabe !
-
-### "We" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - We - or rather you - will be drawn in.
 
 ### "West" + "-" (1 occurrences)
 - Predicted: None
@@ -1744,12 +1694,6 @@ Accuracy: 99.95%
 - Examples:
   - Everyone hates know-it-alls.
 
-### "alone" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Leave me alone - Shut up, I said.
-
 ### "alors" + "je" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1815,6 +1759,12 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - No, youlookbetterthan ever.
+
+### "better" + "to" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Would have been betterto stay in the army.
 
 ### "bigger" + "jug" (1 occurrences)
 - Predicted: Space
@@ -2056,12 +2006,6 @@ Accuracy: 99.95%
 - Examples:
   - And you trade it all forjunk.
 
-### "for" + "just" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - It ran forjust under two weeks and received mixed reviews.
-
 ### "for" + "that" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2102,7 +2046,7 @@ Accuracy: 99.95%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - This one is for the girls - you can take your personal stuffwith you, too!
+  - This one is for the girls - you can take your personal stuff with you, too!
 
 ### "give" + "him" (1 occurrences)
 - Predicted: Space
@@ -2115,12 +2059,6 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - Your god—where is He now?
-
-### "good" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - But you are good - you are a normal fellow.
 
 ### "good" + "y" (1 occurrences)
 - Predicted: Space
@@ -2182,6 +2120,12 @@ Accuracy: 99.95%
 - Examples:
   - Nina hates everyone, including herselfand me.
 
+### "him" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Your personal relationship with him - could you tell the jury when that began?
+
 ### "homeland" + "—" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2223,6 +2167,12 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - What ifthey get lost?
+
+### "in" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No, Say in - I want to hear it!
 
 ### "incorrigible" + "!" (1 occurrences)
 - Predicted: None
@@ -2290,12 +2240,6 @@ Accuracy: 99.95%
 - Examples:
   - I knowyou like Capote.
 
-### "l" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Before l come to Phase ll , a quick update on the recently concluded Phase l .
-
 ### "left" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2307,12 +2251,6 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - You leftyesterday withoutyour money.
-
-### "ll" + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Before l come to Phase ll , a quick update on the recently concluded Phase l .
 
 ### "look" + "better" (1 occurrences)
 - Predicted: Space
@@ -2361,6 +2299,24 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - Show meyour cock.
+
+### "melancholy" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - I hate melancholy !
+
+### "men" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - They are men - yes sir!
+
+### "million" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - One million -Dollars?
 
 ### "minister" + "-" (1 occurrences)
 - Predicted: None
@@ -2433,6 +2389,12 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Come back here right now !
+
+### "now" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Excuse me, this has to be freezing by now -No, leave it there!
 
 ### "nurse" + "or" (1 occurrences)
 - Predicted: Space
@@ -2542,12 +2504,6 @@ Accuracy: 99.95%
 - Examples:
   - I have always depended on the kindness ofstrangers.
 
-### "of" + "this" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - All ofthis same substance.
-
 ### "of" + "three" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2608,6 +2564,12 @@ Accuracy: 99.95%
 - Examples:
   - Watch out—that guy is a real snake in the grass.
 
+### "penpushers" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - What can be done amongst those penpushers ?
+
 ### "place" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2626,11 +2588,23 @@ Accuracy: 99.95%
 - Examples:
   - Nobody has a preference ?
 
+### "problem" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Reality has one problem - it is always honest.
+
 ### "quarter" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - No quarter !
+
+### "rather" + "than" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - You could at least chop wood ratherthan sticking your neck out.
 
 ### "really" + "wanted" (1 occurrences)
 - Predicted: Space
@@ -2662,12 +2636,6 @@ Accuracy: 99.95%
 - Examples:
   - Sixth rule - No shirts, no shoes.
 
-### "said" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You said - city is the force, and yet everybody is feeble here.
-
 ### "savior" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2690,7 +2658,7 @@ Accuracy: 99.95%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - I just wanted to say -No, just wait a minute.
+  - Like they say - Happiness only doubles when it is shared!
 
 ### "say" + "?" (1 occurrences)
 - Predicted: None
@@ -2702,19 +2670,13 @@ Accuracy: 99.95%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Anti-Epidémic section ?
+  - Anti-Epidemic section ?
 
 ### "shot" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - This is a shot - or this whole sequence here - that is worth commenting upon.
-
-### "should" + "just" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Maybe you shouldjust take a break.
 
 ### "sick" + "!" (1 occurrences)
 - Predicted: None
@@ -2739,12 +2701,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - You have a son ?
-
-### "stuff" + "with" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - This one is for the girls - you can take your personal stuffwith you, too!
 
 ### "target" + "-" (1 occurrences)
 - Predicted: None
@@ -2800,12 +2756,6 @@ Accuracy: 99.95%
 - Examples:
   - Oh, andtearup theletter.
 
-### "their" + "parties" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - He had not been invited to any of theirparties since.
-
 ### "them" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2836,6 +2786,12 @@ Accuracy: 99.95%
 - Examples:
   - Manuela, I thinkyou owe us an explanation.
 
+### "time" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - We live losing our time !
+
 ### "to" + "join" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2847,12 +2803,6 @@ Accuracy: 99.95%
 - Actual: None
 - Examples:
   - Compared toyou.
-
-### "together" + "​." (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Stop crying and get your act together​.
 
 ### "too" + "!" (1 occurrences)
 - Predicted: None
@@ -2871,18 +2821,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - Who can one trust ?
-
-### "truth" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - And the more i talk about the whole truth -What is it?
-
-### "until" + "s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wait untils he grows up.
 
 ### "unusual" + "-" (1 occurrences)
 - Predicted: None
@@ -2961,12 +2899,6 @@ Accuracy: 99.95%
 - Actual: Space
 - Examples:
   - And with both of us working - You know how it is.
-
-### "years" + "I" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Fo yearsI have not known the purpose of my existence.
 
 ### "yes" + "-" (1 occurrences)
 - Predicted: None
