@@ -686,7 +686,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
             }
             Err(e) => {
                 println!(
-                    "WARNING: Skipping sentence due to LLM response error {e}: (Sentence: '{}')",
+                    "WARNING: Skipping sentence due to LLM response error {e:?}: (Sentence: '{}')",
                     original_sentence.sentence
                 );
                 skipped_count += 1;

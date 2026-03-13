@@ -303,11 +303,13 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
         // Collect example sentences, prioritizing those where the gram appears
         // as a direct encoded gram over those where it only appears via multiword terms.
         let sentence_spurs: Vec<Spur> = {
+            let mut seen_sentences = std::collections::HashSet::new();
             let all_sentences: Vec<Spur> = language_pack
                 .sentences_containing_gram_index
                 .get(spur_gram)
                 .into_iter()
                 .flat_map(|sentences| sentences.iter().copied())
+                .filter(|s| seen_sentences.insert(*s))
                 .collect();
 
             // Partition: direct gram matches first, then multiword matches
@@ -764,13 +766,29 @@ fn main() -> Result<()> {
             })
             .collect();
 
-        // Write top-100 and top-1000 JSON files (pages are already frequency-sorted)
+        // Write top-1000 JSON files: combined, words-only, phrases-only
         let listing_dir = data_out_dir.join(&slug);
-        for n in [100, 1000] {
-            let top_n: Vec<_> = all_index_entries.iter().take(n).cloned().collect();
-            let top_path = listing_dir.join(format!("top-{n}.json"));
-            std::fs::write(&top_path, serde_json::to_string(&top_n)?)?;
-            eprintln!("Wrote top-{n} to {}", top_path.display());
+        let top_combined: Vec<_> = all_index_entries.iter().take(1000).cloned().collect();
+        let top_words: Vec<_> = all_index_entries
+            .iter()
+            .filter(|e| !e.first_sense_preview.as_ref().is_some_and(|s| s.is_phrase))
+            .take(1000)
+            .cloned()
+            .collect();
+        let top_phrases: Vec<_> = all_index_entries
+            .iter()
+            .filter(|e| e.first_sense_preview.as_ref().is_some_and(|s| s.is_phrase))
+            .take(1000)
+            .cloned()
+            .collect();
+        for (name, entries) in [
+            ("top-1000", &top_combined),
+            ("top-1000-words", &top_words),
+            ("top-1000-phrases", &top_phrases),
+        ] {
+            let path = listing_dir.join(format!("{name}.json"));
+            std::fs::write(&path, serde_json::to_string(entries)?)?;
+            eprintln!("Wrote {name} ({} entries) to {}", entries.len(), path.display());
         }
 
         // Group pages by first letter and write per-letter JSON files

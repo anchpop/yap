@@ -4,10 +4,17 @@ import Layout from '../../../layouts/Layout.astro';
 const { course: courseSlug, n } = Astro.params;
 const kv = Astro.locals.runtime.env.DICTIONARY_KV;
 
-if (n !== '100' && n !== '1000') return new Response('Not found', { status: 404 });
+const validVariants: Record<string, string> = {
+  '1000': 'top-1000',
+  '1000-words': 'top-1000-words',
+  '1000-phrases': 'top-1000-phrases',
+};
+
+const kvKey = validVariants[n!];
+if (!kvKey) return new Response('Not found', { status: 404 });
 
 const [pagesJson, coursesJson] = await Promise.all([
-  kv.get(`top:${courseSlug}:${n}`),
+  kv.get(`${kvKey}:${courseSlug}`),
   kv.get('courses'),
 ]);
 
@@ -18,14 +25,17 @@ const courses = JSON.parse(coursesJson);
 const courseMeta = courses.find((c: any) => c.slug === courseSlug);
 if (!courseMeta) return new Response('Not found', { status: 404 });
 
+const label = n === '1000-words' ? 'Words' : n === '1000-phrases' ? 'Phrases' : 'Words & Phrases';
+const pageTitle = `Top 1000 ${courseMeta.target_language} ${label}`;
+
 function getPreview(page: any): string {
   return page.first_sense_preview?.definition_preview ?? '';
 }
 ---
 
 <Layout
-  title={`Top ${n} ${courseMeta.target_language} Words`}
-  description={`The ${n} most common ${courseMeta.target_language} words with ${courseMeta.native_language} translations.`}
+  title={pageTitle}
+  description={`The 1000 most common ${courseMeta.target_language} ${label.toLowerCase()} with ${courseMeta.native_language} translations.`}
   courseSlug={courseSlug}
 >
   <nav class="text-sm text-muted-foreground mb-4">
@@ -33,11 +43,11 @@ function getPreview(page: any): string {
     <span class="mx-1.5 opacity-50">›</span>
     <a href={`/d/${courseSlug}/`} class="hover:text-accent-foreground">{courseMeta.target_language} → {courseMeta.native_language}</a>
     <span class="mx-1.5 opacity-50">›</span>
-    Top {n}
+    Top 1000 {label}
   </nav>
 
   <div class="mb-6">
-    <h1 class="text-3xl font-bold">Top {n} {courseMeta.target_language} Words</h1>
+    <h1 class="text-3xl font-bold">{pageTitle}</h1>
   </div>
 
   <div class="space-y-1">

@@ -1,11 +1,116 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Author from '../../components/Author.astro';
 ---
 
 <Layout title="Unexpected Application of ML Theory to Language Learning" description="Is this the first time machine learning has transferred to human teaching">
   <article class="prose">
     <h1 class="text-3xl font-bold mb-2">Unexpected Application of ML Theory to Language Learning</h1>
     <p class="text-sm text-muted-foreground mb-8">March 12, 2026</p>
+    <p>
+      Being interested in both machine learning and human learning is a very powerful combination. Because often lessons from one can be applied to the other.
+    </p>
+    <p>
+      One thing that comes up in both machine learning and human learning is the idea of "tokenization", which is essentially just the process of breaking down a sentence into a list of "chunks". 
+    </p>
+    <p>
+      It's likely that every LLM you've ever interacted with has used tokenization, because it is extremely useful for teaching AIs about language. And it turns out that it is no less useful for teaching people about language!
+    </p>
+    <p>
+      By way of example, let's take this sentence from the movie <i>Conclave</i>:
+    </p>
+    <p> 
+       "I want you to understand that, first of all, you are not in any kind of trouble.""
+    </p>
+    <p>If you wanted to break it into chunks, how would you do it? The most obvious way is to make each word a chunk. So you get this: </p>
+    <p>
+      ['i', 'want', 'you', 'to', 'understand', 'that,', 'first', 'of', 'all,', 'you', 'are', 'not', 'in', 'any', 'kind', 'of', 'trouble.']
+    </p>
+    <p>
+      But, despite how natural it is, I'd be willing to bet that your brain doesn't work this way at all. For example, you've probably heard someone say "I want you to" hundreds of times. So your brain doesn't need to process every indiviaul word. Instead, you alreayd know the meaning of "I want you to" as a whole, and process it as one unit. Paying attention to each word individually would be almost as bad as reading each letter individually. It's just not possible to efficiently process a sentence one word at a time.
+    </p>
+    <p>
+      We don't normally have to worry about this because our brains figure these chunks out for us. But it raises an interesting question: how would we write a program to figure out these chunks? It's easier than you might think. And surprisingly relevant to machine learning. The very first step to training an LLM is to decide how you're going to break the input into chunks! In the context of LLMs, these chunks are called "tokens", but the idea is the same: instead of feeding the LLM one letter at a time, we typically want to feed it whole chunks of letters at a time, or maybe even whole chunks of words at a time. We do this just because it makes LLMs learn better and faster.
+    </p>
+    <p>
+      There is a catch though. We can't just split the sentence up any way we want. We have to decide on a predefined set of chunks. (AKA a predefined set of tokens.) This is called the "vocabulary". GPT-2's vocabulary had 50,257 chunks in it, while Meta's Llama 3 had 128,256 chunks, and Google's Gemini has 256,000 chunks. Large or small, we have to decide what the chunks will be in advance, before even starting to train the LLM.
+    </p>
+    <p>
+      Here is an approach that you may find natural. Suppose you decide you want to have 50,000 chunks in your vocabulary. Find a big dataset of sentences, and then generate millions of chunks in the dumbest way possible: just take every group of 4 or less words and make it a chunk. If you do this, you will end up with millions of chunks, and most of them will be useless ones that will almost never come up in practice. But, from this base, we can try to "trim down" the list to 50,000 really useful ones by getting rid of those useless ones. But that only pushes the problem down! You still have to figure out how to decide which chunks are useful, and which are not.
+    </p>
+    <p>
+      Instead of focusing on the how, it might be easier to focus on the objective. What do we want from our chunks, that we can easily express to a computer? Here is one attractive idea: maybe we want to be able to encode a sentence in the fewest chunks possible.
+    </p>
+    <p>
+      That sounds pretty good! It sounds especially good when you consider that LLMs are limited in how many input tokens they can take. If you can compress the same text into fewer chunks, that means you can fit longer text into the same number of input tokens!
+    </p>
+    <p>And it turns out it's not too difficult to figure out which chunks to keep to get the maximum compression. You basically just figure out which chunks are compressing your input the least, and then remmove them. How does it work? Unfortunately, when you try it, you get... this:
+    </p>
+    <p>
+      ['i want you', 'to understand', 'that,', 'first of', 'all, you', 'are not in', 'any kind', 'of trouble.']
+    </p>
+    <p>
+      Ugh. Look at that 'all, you' token. It may be good for writing sentences in the fewest chunks possible, because "all, you" probably appears in a lot of sentences. But the problem with it is that it doesn't mean anything. LLMs work best when each chunk has a coherent meaning, and "all, you" just doesn't. In fact, this has been studied, and <a href="https://arxiv.org/html/2402.18376v1">the vocabulary that is the best for compression is not the best for LLMs</a>.
+    </p>
+    <p>
+      It turns out the solution was already invented by Claude Shannon in 1948, when he was working on information theory, and it is still used in machine learning today. Fun fact: Claude the AI chatbot is named after Claude Shannon, in tribute of his contributions to the field! The idea is essentially to look for chunks that are more common than you'd expect given the rarity of the words inside it.
+    </p>
+    <p>
+      I'll get into the details more in a second, but first, let's give the algorithm a try and see how it does! Here's it in action:
+    </p>
+    <p>
+      ['i want you to', 'understand', 'that,', 'first of all,', 'you are not', 'in', 'any kind of', 'trouble.']
+    </p>
+    <p>
+      Wow! That's a lot better! The 'all, you' chunk is gone. It got replaced by "first of all," and "you are not". Both of those actually seem like useful chunks! They're common, but they're also coherent concepts, which LLMs like. 
+    </p>
+    <p>
+      Now, here's the idea that I find just so interesting. This is an algorithm designed to find effective chunks for teaching LLMs about language, but what if it was also useful for teaching humans about language? After all, each of these chunks seems like something you might find in a phrasebook. So I ran the algorithm on my sentence corpus, and here are the results:
+    </p>
+    [TODO: fetch supertoken list from github and allow it to be scrolled + render it in a nice way, btw it is a n aboslutely huge list so idk what the best way to do that is]
+    <p>
+    <p>
+      I honestly find it pretty remarkable. Almost every phrase is in here
+    </p>
+    </p>
+    <p>
+      I thought there was something to this, so I implemented it. I was so impressed by the results that I rewrote Yap nearly from the ground up to be based on chunks, rather than individual words. (For the unfamilliar, Yap is a noncommerical language learning app I work on for fun.) It works really well.
+    </p>
+    <p>
+      Back in 1998, <a href="https://dl.acm.org/doi/epdf/10.1145/290941.291008">Jay Ponte and W. Bruce Croft</a> came up with an idea that is still used to this day.  
+    </p>
+    <p>
+      So what makes a chunk useful? Maybe it's useful if it's very common, like "happy new year". "happy new year" just seems like a great chunk, because it is such a specific and complete thought. But there is an issue. While "happy new year" is common, "happy new" is even more common, because every sentence that contains "happy new year" also contains "happy new". But "happy new" is mostly meaningless on its own, and just seems like not a very useful chunk.
+    </p>
+    <p>
+      Still, we can solve this problem easily. Give each chunk a couter. Then, go through each sentence, and figure out how to encode it in the fewest chunks possible. Then, for each of the chunks in the shortest possible encoding, increment its counter. Then, sort the chunks by counter, and trim off the bottom 10%. Now, repeat until you hit 50,000!
+    </p>
+    <p>
+      In fact, if you do this, you will end up with the optimal vocabulary for compressing your sentences. Sentences will encode to fewer chunks under this vocabulary than any other. That sounds pretty good! It sounds especially good when you consider that LLMs are limited in how many input tokens they can take. If you can compress the same text into fewer chunks, that means you can fit longer text into the same number of input tokens!
+    </p>
+    <p>
+      But how well dous it actually work in practice? Just for fun, I ran this algorithm on my english corpus. Here are the chunks for that same sentence from <i>Conclave</i>:
+    </p>
+    <p>
+      ['i want you', 'to understand', 'that,', 'first of', 'all, you', 'are not in', 'any kind', 'of trouble.']
+    </p>
+    <p>
+      It's okay, but ugh, look at that 'all, you' chunk! That's not a coherent concept at all! It turns out that the string 'all, you' appears very often, so having it as a chunk is great for compressing sentences. But it doesn't mean much on its own. LLMs work best when each chunk has a coherent meaning, and "all, you" just doesn't. In fact, this has been studied, and <a href="https://arxiv.org/html/2402.18376v1">the vocabulary that is the best for compression is not the best for LLMs</a>.
+    </p>
+    <p>
+      There are other options, like "byte pair encoding", but the those chunks are even less coherent. However, there is one simple tweak to our algorithm that will take our tokenization from good to great. We do basically the same thing as described above, but we essentially add a penalty to chunks made of individually common words. This is called the "unigram" language model. Here is what that gives us:
+    </p>
+    <p>
+      ['i want you to', 'understand', 'that,', 'first of all,', 'you are not', 'in', 'any kind of', 'trouble.']
+    </p>
+    <p>TODO: make this a collapsiable section titled "the exact algorithm". The actual algorithm is to assign each chunk a score based on the logarithm of its frequency. Then find the encoding with the highest total score. Remember that because the frequencies are between 0 and 1, the logarithm is always negative.</p>
+
+    <p>
+      For Yap, one of my goals is to be able to accurately model my users' mistakes. When a user learning french translates a sentence into english, and gets it wrong, I want to be able to figure out what exact parts of the sentence they struggled with. That way I can help them study that exact part of the language.
+    </p>
+    <p>
+      
+    </p>
     <p>
       You've probably noticed that computers have learned to talk recently. But plugged-in readers will know that it is only even more recently that we taught computers to spell. Until relatievly recently, LLMs capable of solving complex coding challenges would utterly choke on any question that depended on knowledge of how a word is spelled.
     </p>
@@ -36,6 +141,18 @@ import Layout from '../../layouts/Layout.astro';
     <p>
       This is basically how LLMs see the world. Obivously, they don't see symbols the way we do, but chunks of letters in the input are convered to "tokens", and then the output tokens are coverted back into letters. The most common tokenizer is called "byte pair" encodings, which is basically the algorithm we described above: start out with tokesn for each character, then combine the most common pairs of tokens into new tokens, and repeat until you reach your desired number of tokens.
     </p>
-    <p>To be completed...</p>
+    <p>
+      The underlying reason is simple. Every LLM has a limited number of inputs. The naive approach is to use one letter per input. But it turns out it's hard to increase the number of inputs, and it's easier to increase the number of of letters there are. So, to get the most bang for your buck, you end up inventing thosands (or even millions) of new "letters", because each new letter allows you to fit more information into your limited number of input tokens.
+    </p>
+    <p>
+      Say yuu decide to have 32,000 tokens in your LLM. You can decide what each one corresponds to. So you suddenly have an optimization problem on your hands. To get the most bang for your buck, you want a series of tokens that minizes the length of most inputs to your modeel. Turning "the" into one token is very productive, because almost all inputs will contain "the". But turning an rarer sequence of letters like "aardvark" is less productive, because almost no inpnuts will contain that word so the presence of that tken won't be shortening them.
+    </p>
+    <p>
+      
+    </p>
+    <p>
+
+    </p>
   </article>
+  <Author />
 </Layout>

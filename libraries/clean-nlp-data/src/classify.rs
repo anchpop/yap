@@ -5585,7 +5585,7 @@ Pronoun lemmas: please be consistent with pronoun lemmatization:
 
 "non" should consistently be tagged ADV (not PART).
 
-être as copula (e.g., "il est grand", "c'est bon") should be tagged AUX, not VERB."#
+être as copula or existential verb (e.g., "il est grand", "c'est bon", "il est tard") should be tagged VERB, not AUX. Only tag être as AUX when it forms compound tenses with past participles (e.g., "elle est partie")."#
         }
         Language::German => {
             r#"
@@ -5727,8 +5727,8 @@ Feminine noun lemmas: please be consistent. Feminine nouns that have a distinct 
 
 ## Part of Speech
 
-estar as copula (with adjective complement) should be tagged AUX (not VERB).
-saber should always be tagged VERB, even in "saber + infinitive" constructions."#
+estar as copula (with adjective complement, e.g., "está bem", "estou em casa") should be tagged VERB, not AUX. Only tag estar as AUX when forming progressive tenses with gerund (e.g., "estou comendo").
+saber can be either AUX or VERB: AUX when expressing ability with infinitive (e.g., "sei nadar"), VERB when expressing knowledge of facts (e.g., "sei a resposta")."#
         }
         _ => "",
     }

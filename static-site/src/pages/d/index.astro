@@ -39,13 +39,13 @@ const languageFlags: Record<string, string> = {
   <div class="mt-10 text-sm text-muted-foreground space-y-2 max-w-xl">
     <h2 class="text-base font-semibold text-foreground">How it works</h2>
     <p>
-      These dictionaries are built from real sentences — hundreds of thousands of them per language. Every word is extracted from natural text, so the definitions, examples, and frequency rankings reflect how words are actually used, not just how they appear in textbooks.
+      These dictionaries are built from real sentences — hundreds of thousands of them per language. Every word is extracted from natural text, so the definitions, examples, and frequency rankings reflect how words are actually used.
     </p>
     <p>
-      Sentences are analyzed using <a href="https://huggingface.co/collections/anchpop/lexide-nlp-models" class="text-accent-foreground hover:underline">Lexide</a>, a set of custom machine learning models trained for language learning. They handle things like lemmatization, morphology, and multiword expression detection across all supported languages.
+      Sentences are analyzed using <a href="https://huggingface.co/collections/anchpop/lexide-nlp-models" class="text-accent-foreground hover:underline">Lexide</a>, a set of custom machine learning models trained for language learning. They handle things like tokenization, lemmatization, and part-of-speech tagging across all supported languages.
     </p>
     <p>
-      Patterns across sentences are also analyzed using a <a href="https://huggingface.co/learn/llm-course/en/chapter6/7" class="text-accent-foreground hover:underline">unigram language model</a> to automatically discover phrases and multiword expressions. This matters because a lot of meaning lives in phrases — "break up" means something completely different from "break" and "up" on their own, and a good dictionary should treat those as their own entries.
+      Patterns across sentences are also analyzed using a <a href="https://huggingface.co/learn/llm-course/en/chapter6/7" class="text-accent-foreground hover:underline">unigram language model</a> to automatically discover phrases, also known as multiword expressions. This matters because a lot of meaning lives in phrases — "ice cream" means something completely different from "ice" and "cream" on their own, so a good dictionary should give "ice cream" its own separate entry.
     </p>
   </div>
 </Layout>

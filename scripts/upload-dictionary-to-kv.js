@@ -56,12 +56,12 @@ for (const course of coursesData) {
     wranglerPut(`letters:${courseSlug}`, lettersFile);
   }
 
-  // Upload top-N lists
-  for (const n of [100, 1000]) {
-    const topFile = path.join(courseDir, `top-${n}.json`);
+  // Upload top-1000 lists (combined, words, phrases)
+  for (const variant of ['top-1000', 'top-1000-words', 'top-1000-phrases']) {
+    const topFile = path.join(courseDir, `${variant}.json`);
     if (fs.existsSync(topFile)) {
-      console.log(`Uploading top-${n}: ${courseSlug}`);
-      wranglerPut(`top:${courseSlug}:${n}`, topFile);
+      console.log(`Uploading ${variant}: ${courseSlug}`);
+      wranglerPut(`${variant}:${courseSlug}`, topFile);
     }
   }
 

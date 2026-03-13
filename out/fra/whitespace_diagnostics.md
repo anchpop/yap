@@ -1,18 +1,66 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2667405
-Total errors: 537
+Total predictions: 2671350
+Total errors: 567
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
 
-### "N" + "Tu" (5 occurrences)
+### "'" + "?" (19 occurrences)
+- Predicted: None
+- Actual: NarrowNbsp
+- Examples:
+  - Alors, tu disais 'meilleures intentions' ?
+  - C'est quoi une 'marque de savoir-faire' ?
+  - Ce n'est pas : 'Où est-il' ?
+
+### "c" + "‘" (11 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - NTu es vivant ?
-  - NTu ne te rappelles pas du fiasco avec le gamin ?
-  - NTu ne te sens pas bien ?
+  - Abdel, c‘est pas une caillera.
+  - Il paraît que c‘est toi qui as mon argent ?
+  - Mais le problème, c‘est que, faut se soulager, faut chier.
+
+### "C" + "‘" (10 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - C‘est bon, Saïd, ramène-toi.
+  - C‘est joli.
+  - C‘est les pires.
+
+### "qu" + "‘" (8 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Et qu‘on ne les y reprenne plus.
+  - Il paraît qu‘un keuf a perdu son calibre dans la cité, cette nuit.
+  - Je connais pas le keuf qu‘a perdu le flingue.
+
+### "T" + "‘" (6 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - T‘as des leçons de morale à donner ?
+  - T‘as même pas le droit de la regarder.
+  - T‘as un numéro de téléphone ?
+
+### "," + "'" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Comment ça, 'encore' ?
+  - Comment ça, 'nous' ?
+  - Je passe après 'tasse', 'piscine' et 'girafe'.
+
+### "l" + "‘" (5 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - C‘est l‘atterrissage.
+  - On peut l‘enlever avec une pelle ou laisser la pluie et le vent la balayer.
+  - Vous insistez pour rentrer dans l‘hôpital.
 
 ### "nous" + ";" (5 occurrences)
 - Predicted: NarrowNbsp
@@ -22,6 +70,38 @@ Accuracy: 99.98%
   - Juste entre nous; es-tu amoureux de ma sœur ?
   - Juste entre nous; êtes-vous amoureuse de ma sœur ?
 
+### "J" + "‘" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - J‘ai fêté mon anniversaire dans un restaurant.
+  - J‘aime beaucoup les chatons.
+  - J‘aime celui-ci.
+
+### "d" + "‘" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ces émeutes font suite à la bavure d‘un inspecteur des Muguets.
+  - Espèce d‘enculé.
+  - Ils ont le droit d‘avoir des calibres aussi gros ?
+
+### "t" + "‘" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Je t‘ai invité au Grec, la semaine dernière.
+  - Je t‘ai parlé à toi ?
+  - Qui t‘es, toi ?
+
+### "—" + "moi" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ah oui, nique—moi ?
+  - Excusez—moi !
+  - Hé, Hubert, attends—moi là, oh !
+
 ### "'" + "en" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30,13 +110,13 @@ Accuracy: 99.98%
   - Comment dit-on 'ami' en elfe ?
   - Comment dit-on 'planque' en français ?
 
-### "'" + "à" (3 occurrences)
-- Predicted: None
-- Actual: Space
+### ")" + "h" (3 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - Place un 'X' à l'endroit opportun.
-  - Si on donnait une touche 'irlandaise' à ces cafés ?
-  - T'aurais pas un 'R' à me prêter ?
+  - Accélération C)h, ça fait du bien, ça.
+  - C)h sa mère, putain on monte là !
+  - C)h, Elisa ?
 
 ### "," + "non" (3 occurrences)
 - Predicted: Space
@@ -60,9 +140,9 @@ Accuracy: 99.98%
 - Examples:
   - Comment ça, « Quoi ?
   - La première exclamation de John était, « Ha-ha !
-  - Non, « solution finale ».
+  - Tu connais ce mot, « travailler » ?
 
-### "--" + "Je" (3 occurrences)
+### "-" + "Je" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -70,21 +150,13 @@ Accuracy: 99.98%
   - Il a dit que la philosophie-- Je frime, donc arrête-moi.
   - J'étais marié avec-- Je peux m'asseoir là ?
 
-### "Bips" + "-" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Bips -Alerte torpille !
-  - Bips -Allez, dérobe !
-  - Bips -Missile ?
-
-### "Boir" + "e" (3 occurrences)
+### "Qu" + "‘" (3 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Boire du lait chaud me donne sommeil.
-  - Boire un coup.
-  - Boire un verre.
+  - Qu‘est—ce tu cherches ?
+  - Qu‘est—ce tu fais avec ton grenaille ?
+  - Qu‘est—ce tu peux faire de mieux ?
 
 ### "est" + "—" (3 occurrences)
 - Predicted: Space
@@ -102,21 +174,13 @@ Accuracy: 99.98%
   - Le temps vole comme une flèche ; un fruit vole comme une banane.
   - Les mouches du temps aiment une flèche ; les drosophiles aiment une banane.
 
-### "i" + "I" (3 occurrences)
+### "nous" + "'" (3 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Comment va-t-iI ?
-  - De quoi s'agit-iI ?
-  - Qu'est-ce qu'iI y a, Ià ?
-
-### "«" + "ouistiti" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Dis « ouistiti ».
-  - Dites « ouistiti ».
-  - Tout le monde, dites « ouistiti ».
+  - Comment ça, 'nous' ?
+  - Qu'est-ce que tu veux dire par 'nous' ?
+  - Qui ça, 'nous' ?
 
 ### "—" + "ce" (3 occurrences)
 - Predicted: Space
@@ -126,34 +190,26 @@ Accuracy: 99.98%
   - Qu‘est—ce tu fais avec ton grenaille ?
   - Qu‘est—ce tu peux faire de mieux ?
 
-### "—" + "moi" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ah oui, nique—moi ?
-  - Excusez—moi !
-  - Passez—moi un franc à la place de souffler comme Jurassic Park.
-
-### "'" + "?" (2 occurrences)
-- Predicted: None
-- Actual: NarrowNbsp
-- Examples:
-  - Qui 'il' ?
-  - Qui 'on' ?
-
-### "'" + "au" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Je croyais qu'on avait choisi 'M' au hasard.
-  - Je fais un 'chip' au-dessus de l'eau.
-
 ### "'" + "et" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - J'ai fait 'rappel' et c'était toi.
   - Je passe après 'tasse', 'piscine' et 'girafe'.
+
+### "'" + "à" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Si on donnait une touche 'irlandaise' à ces cafés ?
+  - T'aurais pas un 'R' à me prêter ?
+
+### "'Livre des Frères'" + "?" (2 occurrences)
+- Predicted: None
+- Actual: NarrowNbsp
+- Examples:
+  - C'est donc le célèbre 'Livre des Frères' ?
+  - C'est donc le fameux 'Livre des Frères' ?
 
 ### "," + "en" (2 occurrences)
 - Predicted: Space
@@ -176,6 +232,20 @@ Accuracy: 99.98%
   - Ca y est, ils sont au-dessus,vite !
   - Donnez-moi une citrouille,vite !
 
+### "-" + "le" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Il y a trop de machisme en tauromachie, reconnaissez- le.
+  - Ça - le volume.
+
+### "-" + "t" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Comment mon garçon a- t-il mérité cela ?
+  - Vieil homme, où le Christ a- t-il été crucifié ?
+
 ### "-" + "un" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -183,19 +253,12 @@ Accuracy: 99.98%
   - Ce qui peut tout animer, tout adoucir, tout colorer - un grand amour.
   - Lui - un salaud, elle - une sainte.
 
-### "--" + "-" (2 occurrences)
+### "Bips" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Et un-- -Je suis désolé, Mme Tanner.
-  - Je sais, mais-- -La chambre est libre maintenant.
-
-### "Désert" + "–" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mur météo Désert–Tundratown, porte d’accès, vite !
-  - Mur météo Désert–Tundratown, porte d’accès.
+  - Bips -Alerte torpille !
+  - Bips -Missile ?
 
 ### "Monsieur" + "," (2 occurrences)
 - Predicted: None
@@ -204,19 +267,19 @@ Accuracy: 99.98%
   - Monsieur , je regrette.
   - Monsieur , tous les escorts se sont enfuis ou ont été abattus.
 
-### "Nation" + "'" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Avant la première de 'La Fierté de la Nation'.
-  - Le film s'appelle 'La fierté de la Nation'.
-
 ### "Non" + "," (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Non , non , non !
   - Non , non !
+
+### "Rentrer" + "ez" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Rentrerez-vous chez vous pour Noël ?
+  - Rentrerez-vous à la maison pour Noël ?
 
 ### "Rire" + "-" (2 occurrences)
 - Predicted: None
@@ -239,12 +302,19 @@ Accuracy: 99.98%
   - Dis 'cheese'.
   - Dites 'cheese'.
 
-### "juifs" + "'" (2 occurrences)
+### "il" + "'" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Alors tu es 'Le chasseur de juifs'.
-  - Qu'on vous appelle le 'Chasseur de juifs'.
+  - Ce n'est pas : 'Où est-il' ?
+  - Qui 'il' ?
+
+### "ilà." + "" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Attends… Voilà.
+  - Petit renard malin… Voilà.
 
 ### "là" + "-" (2 occurrences)
 - Predicted: None
@@ -259,6 +329,13 @@ Accuracy: 99.98%
 - Examples:
   - Hé, chef, regardez qui est là .
   - Seul un miracle pourrait le sortir de là .
+
+### "m" + "‘" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Je m‘appelle pas Bocuse.
+  - Je m‘appelle pas Malik Oussekine.
 
 ### "meilleur" + ";" (2 occurrences)
 - Predicted: NarrowNbsp
@@ -280,6 +357,13 @@ Accuracy: 99.98%
 - Examples:
   - Hmm non , je te manquerais.
   - Non , non , non !
+
+### "s" + "‘" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Elle s‘appelle comment ?
+  - À un moment, y a un mec qui s‘approche de lui pour un autographe.
 
 ### "scientifique" + "," (2 occurrences)
 - Predicted: None
@@ -309,26 +393,19 @@ Accuracy: 99.98%
   - Je ne priais pas contre vous ; je priais pour vous.
   - Ne dites jamais du mal de vous ; vos amis en diront toujours assez.
 
-### "«" + "au" (2 occurrences)
+### "«" + "Avatar" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Elle a dit « au revoir ».
-  - Il a quitté la maison sans dire « au revoir ».
+  - Connaissez-vous le film « Avatar » ?
+  - Tu connais le film « Avatar » ?
 
-### "«" + "vieille" (2 occurrences)
+### "«" + "bonjour" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - C’est impoli de l’appeler « vieille peau ».
-  - Dis plutôt « vieille dame ».
-
-### "–" + "Tundratown" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mur météo Désert–Tundratown, porte d’accès, vite !
-  - Mur météo Désert–Tundratown, porte d’accès.
+  - Avez-vous dit « bonjour » ?
+  - Tu as dit « bonjour » ?
 
 ### "—" + "lui" (2 occurrences)
 - Predicted: Space
@@ -344,7 +421,14 @@ Accuracy: 99.98%
   - Retourne—toi sur ton maître.
   - Tire—toi !
 
-### "'" + "Bonne" (1 occurrences)
+### "… Vo" + "ilà." (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Attends… Voilà.
+  - Petit renard malin… Voilà.
+
+### "'" + "Bonne nuit Anderson" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -355,6 +439,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - J'ai trouvé 'Gretchen Ross' assez cool.
+
+### "'" + "au" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Je croyais qu'on avait choisi 'M' au hasard.
 
 ### "'" + "d'" (1 occurrences)
 - Predicted: None
@@ -380,12 +470,6 @@ Accuracy: 99.98%
 - Examples:
   - Sauf que 'toi' ne veut plus rien dire.
 
-### "'" + "roll" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - L'avenir du rock 'n' roll.
-
 ### "'" + "sur" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -404,23 +488,23 @@ Accuracy: 99.98%
 - Examples:
   - Par 'ces gars' vous voulez dire mes clients ?
 
-### "'Loyal'" + "?" (1 occurrences)
-- Predicted: None
-- Actual: NarrowNbsp
-- Examples:
-  - Et le second prénom, ce sera 'Loyal' ?
-
-### ")" + "h" (1 occurrences)
+### "'La Taverne" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - C)h, Elisa ?
+  - T'iras peut-être à 'La Taverne'.
 
-### "," + "'" (1 occurrences)
+### "'n'" + "roll" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Je passe après 'tasse', 'piscine' et 'girafe'.
+  - L'avenir du rock 'n' roll.
+
+### "'rabbit" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Je viens d'acheter une pièce de la 'rabbit'.
 
 ### "," + "," (1 occurrences)
 - Predicted: None
@@ -458,11 +542,11 @@ Accuracy: 99.98%
 - Examples:
   - Je peux m arrêter,Monsieur ?
 
-### "," + "Ntu" (1 occurrences)
+### "," + "Ndes" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Quand tu arrives dans un virage,Ntu dois laisser aller.
+  - Il fait des maisons, des motos,Ndes ponts, des villes, des fusées.
 
 ### "," + "O" (1 occurrences)
 - Predicted: Space
@@ -494,6 +578,18 @@ Accuracy: 99.98%
 - Examples:
   - Les Harkonnen détiennent ma femme,Wanna.
 
+### "," + "bong" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Vous avez la langue bien pendue,bong sang !
+
+### "," + "c" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Monsieur,c,est Melaram !
+
 ### "," + "celui" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -523,6 +619,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Et elle donc,elle a été merveilleuse !
+
+### "," + "est" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Monsieur,c,est Melaram !
 
 ### "," + "et" (1 occurrences)
 - Predicted: Space
@@ -602,23 +704,11 @@ Accuracy: 99.98%
 - Examples:
   - En tout cas,quelle filme vont-ils montrer ?
 
-### "," + "rien" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Non, non, non,rien.
-
 ### "," + "si" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Maintenant,si tu me permets, je veux faire la toilette bien sûr monsieur.
-
-### "," + "sir" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Than you so much,sir !
 
 ### "," + "the" (1 occurrences)
 - Predicted: Space
@@ -674,29 +764,41 @@ Accuracy: 99.98%
 - Examples:
   - Cris de joie - Bravo.
 
+### "-" + "C'" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Cette aventure était bien plus-- C'était très bien.
+
 ### "-" + "Catherine" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Regarde - Catherine !
 
-### "-" + "I" (1 occurrences)
+### "-" + "Ces" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - N- I- K-olai.
+  - Ces cartes-- Ces cartes sont pourries.
 
-### "-" + "Il" (1 occurrences)
+### "-" + "Es" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - N- Il a quelque chose dans la main !
+  - Quoi-- Es-tu fâchée ?
 
-### "-" + "K" (1 occurrences)
+### "-" + "Merci" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - N- I- K-olai.
+  - Rires - Merci, Éli.
+
+### "-" + "Non" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Je veux dire, je voudrais-- Non.
 
 ### "-" + "Pardon" (1 occurrences)
 - Predicted: None
@@ -722,17 +824,23 @@ Accuracy: 99.98%
 - Examples:
   - Avec de tels pouvoirs, ça ne rigole pas - Salut, Klaus.
 
-### "-" + "avoir" (1 occurrences)
+### "-" + "ce" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
+  - Est- ce que tu veux regarder un film ?
 
 ### "-" + "chut" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Le cochon lui saute dessus - chut.
+
+### "-" + "colonel" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Informez tout de suite le lieutenant- colonel Griaznov que je suis ici !
 
 ### "-" + "deux" (1 occurrences)
 - Predicted: None
@@ -746,29 +854,17 @@ Accuracy: 99.98%
 - Examples:
   - Là, je mettrai le fenouil, le persil, tu vois - directement sur la table.
 
-### "-" + "gardé" (1 occurrences)
+### "-" + "elle" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
+  - Comment va-t- elle ?
 
-### "-" + "le" (1 occurrences)
+### "-" + "moi" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Ça - le volume.
-
-### "-" + "mon" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
-
-### "-" + "officier" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
+  - Excusez- moi.
 
 ### "-" + "oui" (1 occurrences)
 - Predicted: None
@@ -782,11 +878,11 @@ Accuracy: 99.98%
 - Examples:
   - Son ventre me rappelle les cartes postales du Japon - plat et joli.
 
-### "-" + "pour" (1 occurrences)
+### "-" + "qui" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
+  - Leur pouvoir vient de leur leader-- qui est en quelque sorte leur cerveau.
 
 ### "-" + "rien" (1 occurrences)
 - Predicted: None
@@ -818,11 +914,23 @@ Accuracy: 99.98%
 - Examples:
   - Vous creusez là - tiens donc, le noyau atomique est constitué de protons.
 
+### "-" + "toi" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Suicide- toi, suicide-toi, suicide-toi.
+
 ### "-" + "tous" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Chevtchouk, Kintchev, Nastia - tous.
+
+### "-" + "trouver" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ou--je ne sais pas-- trouver un emploi à plein temps ?
 
 ### "-" + "une" (1 occurrences)
 - Predicted: None
@@ -842,18 +950,6 @@ Accuracy: 99.98%
 - Examples:
   - Un, deux- – Cul sec.
 
-### "--" + "C'" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Cette aventure était bien plus-- C'était très bien.
-
-### "--" + "Ces" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ces cartes-- Ces cartes sont pourries.
-
 ### "--" + "Dieu" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -865,30 +961,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Je suis -- Douglas Kelley.
-
-### "--" + "Es" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Quoi-- Es-tu fâchée ?
-
-### "--" + "Non" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Je veux dire, je voudrais-- Non.
-
-### "--" + "trouver" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ou--je ne sais pas-- trouver un emploi à plein temps ?
-
-### "." + "Retry" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La durée moyenne d'un appel, soit sept minutes.Retry
 
 ### "/" + "Allemandes" (1 occurrences)
 - Predicted: Space
@@ -938,12 +1010,6 @@ Accuracy: 99.98%
 - Examples:
   - Allez; rentrons a la maison.
 
-### "Anderson" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Un dur, ce ' Bonne nuit Anderson', alors fais gaffe.
-
 ### "Andrea" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: None
@@ -956,11 +1022,11 @@ Accuracy: 99.98%
 - Examples:
   - Angela -Bonjour.
 
-### "Boeuf bleu" + "'" (1 occurrences)
+### "Big Apple" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Les appels qui ont été faits du 'Boeuf bleu'.
+  - M'sieur, vous voulez apprendre le 'Big Apple' ?
 
 ### "Bonjour" + "-" (1 occurrences)
 - Predicted: None
@@ -968,23 +1034,23 @@ Accuracy: 99.98%
 - Examples:
   - Bonjour -Bonjour, bébé !
 
-### "C)" + "h" (1 occurrences)
+### "Bonne nuit Anderson" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Accélération C)h, ça fait du bien, ça.
+  - Un dur, ce ' Bonne nuit Anderson', alors fais gaffe.
+
+### "Chasseur de juifs" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Qu'on vous appelle le 'Chasseur de juifs'.
 
 ### "Cherche" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
 - Examples:
   - Cherche ; trouve ; découvre !
-
-### "Chester" + "'s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Chester's Mill est un endroit comme un autre.
 
 ### "Code rouge" + "'" (1 occurrences)
 - Predicted: Space
@@ -1004,17 +1070,11 @@ Accuracy: 99.98%
 - Examples:
   - Courir , rester , alors quoi ?
 
-### "D" + "é" (1 occurrences)
+### "Doc" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Démerde-toi !
-
-### "D" + "émerdez" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Démerdez-vous avec vos putains de problèmes de minables.
+  - Qui vous a dit qu'on l'appelle 'Doc' ?
 
 ### "Et" + "/" (1 occurrences)
 - Predicted: Space
@@ -1039,18 +1099,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Folk - Allez, on les a.
-
-### "Fraîche " + "!" (1 occurrences)
-- Predicted: NarrowNbsp
-- Actual: Space
-- Examples:
-  - Fraîche !
-
-### "Genn" + "a" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Genna.
 
 ### "Gretchen Ross" + "'" (1 occurrences)
 - Predicted: Space
@@ -1088,17 +1136,11 @@ Accuracy: 99.98%
 - Examples:
   - Tenez, du porc pané de chez Kitaro ; mais pas extra.
 
-### "L." + "F." (1 occurrences)
+### "L" + "‘" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - M.L.F., t'as entendu parler ?
-
-### "La Taverne" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - T'iras peut-être à 'La Taverne'.
+  - L‘homme pousse des petits cris.
 
 ### "Laissez" + "-" (1 occurrences)
 - Predicted: None
@@ -1106,17 +1148,11 @@ Accuracy: 99.98%
 - Examples:
   - Laissez -moi !
 
-### "Le Vieux Garçon de Greer County" + "'" (1 occurrences)
+### "Loyal" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - C'était 'Le Vieux Garçon de Greer County'.
-
-### "Lily" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ça s'appelle 'L'océan de Lily'.
+  - Et le second prénom, ce sera 'Loyal' ?
 
 ### "Lui" + "-" (1 occurrences)
 - Predicted: None
@@ -1136,17 +1172,11 @@ Accuracy: 99.98%
 - Examples:
   - Je croyais qu'on avait choisi 'M' au hasard.
 
-### "M." + "L." (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - M.L.F., t'as entendu parler ?
-
-### "Merci" + "-" (1 occurrences)
+### "Madame la Mort" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
+  - Et le désir me talonne et me mord, car je vous aime, ô Madame la Mort .
 
 ### "Millions" + "-" (1 occurrences)
 - Predicted: None
@@ -1154,23 +1184,11 @@ Accuracy: 99.98%
 - Examples:
   - Un Millions -Dollars ?
 
-### "Mort" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Et le désir me talonne et me mord, car je vous aime, ô Madame la Mort .
-
-### "N" + "Bien" (1 occurrences)
+### "N" + "‘" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - NBien sûr, ce serait bien.
-
-### "N" + "Pourquoi" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - NPourquoi on-t-il coupé ?
+  - N‘importe quoi !
 
 ### "Nastia" + "-" (1 occurrences)
 - Predicted: None
@@ -1184,29 +1202,11 @@ Accuracy: 99.98%
 - Examples:
   - Les chevaliers qui disent 'Ni' exigent un sacrifice.
 
-### "Nous" + "sa" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Noussa prêts à payer notre tribut.
-
 ### "Omaticaya" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Je suis tombé amoureux de la forêt, du peuple Omaticaya .
-
-### "Ou" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ou'est-ce que c'est ?
-
-### "P" + "»" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ça, c’était une parade avec un «P» majuscule.
 
 ### "Paris" + "." (1 occurrences)
 - Predicted: None
@@ -1244,17 +1244,17 @@ Accuracy: 99.98%
 - Examples:
   - Retourne—toi sur ton maître.
 
+### "Rires" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Rires - Merci, Éli.
+
 ### "Schutte" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Salut, Schutte - Pas de noms !
-
-### "Shadow" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Vous m'avez dit 'Sauf pour M. Shadow'.
 
 ### "Sonnerie" + "-" (1 occurrences)
 - Predicted: None
@@ -1268,35 +1268,11 @@ Accuracy: 99.98%
 - Examples:
   - Soupir - Quelle heure est-il ?
 
-### "T U C K E R" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - T U C K E R -Trevor ?
-
-### "TO" + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - TO , décolle.
-
 ### "Tire" + "—" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Tire—toi !
-
-### "Ventre" + "s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ventres à terre.
-
-### "Vous" + "sa" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Voussa suivez ?
 
 ### "Workman" + "." (1 occurrences)
 - Predicted: None
@@ -1304,23 +1280,29 @@ Accuracy: 99.98%
 - Examples:
   - Workman .
 
-### "X" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Place un 'X' à l'endroit opportun.
-
 ### "Y" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
 - Examples:
   - Les hommes ont un chromosome X et un Y ; les femmes, deux X.
 
-### "a" + "^iné" (1 occurrences)
+### "^" + "iné" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Sieur a^iné, je meurs de faim.
+
+### "a" + "^" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Sieur a^iné, je meurs de faim.
+
+### "accident" + "de" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Voilà votre mari est mort, accidentde bagnole, en Amérique du Sud.
 
 ### "accord" + "," (1 occurrences)
 - Predicted: None
@@ -1334,13 +1316,7 @@ Accuracy: 99.98%
 - Examples:
   - Qui travaille seul additionne ; qui travaille ensemble multiplie.
 
-### "ah" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dites 'ah'.
-
-### "aider" + "-" (1 occurrences)
+### "aider" + "-Aider" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -1376,6 +1352,12 @@ Accuracy: 99.98%
 - Examples:
   - Il a étudié assidûment; autrement il aurait échoué de nouveau.
 
+### "attends" + "—" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hé, Hubert, attends—moi là, oh !
+
 ### "aussi" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1388,11 +1370,11 @@ Accuracy: 99.98%
 - Examples:
   - Ne jouez pas avec , Vous pourriez devenir aveugle.
 
-### "avoir" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
+### "baronne" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
+  - Peut-on vous appeler autrement que 'Mme la baronne' ?
 
 ### "berger" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
@@ -1412,12 +1394,6 @@ Accuracy: 99.98%
 - Examples:
   - Ton ordinateur ne marche pas bien ; supprime les logiciels inutiles.
 
-### "bin" + "'s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - C'est quoi, ce bin's ?
-
 ### "bip" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1435,12 +1411,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Boire ou ne pas boire - telle est la question.
-
-### "bonbon" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La presse a appelé ça 'la défense bonbon'.
 
 ### "bras" + "," (1 occurrences)
 - Predicted: None
@@ -1484,12 +1454,6 @@ Accuracy: 99.98%
 - Examples:
   - Elle est au bord de la crise cardiaque, celle—là.
 
-### "chasse" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Papa est parti à la 'chasse'.
-
 ### "chat" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1501,12 +1465,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Tom a un chien et Marie un chaton ; les deux animaux s’entendent bien.
-
-### "chip" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Je fais un 'chip' au-dessus de l'eau.
 
 ### "chose" + "." (1 occurrences)
 - Predicted: None
@@ -1526,17 +1484,17 @@ Accuracy: 99.98%
 - Examples:
   - Au diable les circonstances ; je crée des opportunités.
 
-### "collation" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
-
 ### "colorer" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ce qui peut tout animer, tout adoucir, tout colorer - un grand amour.
+
+### "colère" + ";" (1 occurrences)
+- Predicted: NarrowNbsp
+- Actual: Space
+- Examples:
+  - Tu ne seras pas puni pour ta colère ; Tu seras puni par ta colère.
 
 ### "communautaire" + "." (1 occurrences)
 - Predicted: None
@@ -1574,6 +1532,12 @@ Accuracy: 99.98%
 - Examples:
   - Nous aimerions vous demander de reprendre son contrat .
 
+### "corps" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tu sais pas écrire 'garde du corps' ?
+
 ### "correcte" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -1604,29 +1568,17 @@ Accuracy: 99.98%
 - Examples:
   - Arrête de jouer les cow—boys, papy.
 
-### "cuillère" + ";" (1 occurrences)
-- Predicted: NarrowNbsp
-- Actual: Space
-- Examples:
-  - Tom mange le riz à la cuillère ; Marion, en revanche, préfère les baguettes.
-
 ### "de" + "Josie" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Je voulais faire partie deJosie et les Pussycats.
 
-### "de" + "Jésus" (1 occurrences)
+### "de" + "Jésus-Christ" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Une armée deJésus-Christ portant sa sainte croix ne peut être battue.
-
-### "de" + "uil" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hier, en plein deuil, le travail du gouvernement continuait.
 
 ### "dessus" + "-" (1 occurrences)
 - Predicted: None
@@ -1652,29 +1604,23 @@ Accuracy: 99.98%
 - Examples:
   - Moi et le mot 'devoir' dans la même phrase.
 
-### "doute" + ";" (1 occurrences)
-- Predicted: NarrowNbsp
-- Actual: None
-- Examples:
-  - La vérité est belle, sans doute; mais de même des mensonges.
-
-### "dâ€™" + "œil" (1 occurrences)
+### "e." + "" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Et tout sera sec en un clin dâ€™œil.
-
-### "effet" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Le deuxième acte s'appelle 'l'effet'.
+  - Que… Que… Que Dieu vous garde.
 
 ### "elle" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Lui - un salaud, elle - une sainte.
+
+### "encore" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Comment ça, 'encore' ?
 
 ### "ennemis" + "-" (1 occurrences)
 - Predicted: None
@@ -1712,6 +1658,12 @@ Accuracy: 99.98%
 - Examples:
   - Vas-y, explose—lui sa mère !
 
+### "e… Q" + "ue D" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Que… Que… Que Dieu vous garde.
+
 ### "faim" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -1729,12 +1681,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Il s'est excusé, mais le mal était fait; après, c'était trop tard.
-
-### "falloir" + "jouer" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Il va falloirjouer finement.
 
 ### "faut" + "'" (1 occurrences)
 - Predicted: Space
@@ -1778,6 +1724,12 @@ Accuracy: 99.98%
 - Examples:
   - Et ça vaut une fortune .
 
+### "gard" + "e." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Que… Que… Que Dieu vous garde.
+
 ### "gars" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1820,12 +1772,6 @@ Accuracy: 99.98%
 - Examples:
   - Et comme vous avez le même génotype , vous pourriez enfiler ses chaussures.
 
-### "homme" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dites juste 'conséquences pour la santé de l'homme'.
-
 ### "honnête" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -1838,17 +1784,17 @@ Accuracy: 99.98%
 - Examples:
   - On va mettre les points sur les 'i'.
 
-### "il" + "'" (1 occurrences)
+### "i" + "I" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Qui 'il' ?
+  - Comment va-t-iI ?
 
-### "inspecteur" + "'" (1 occurrences)
+### "intentions" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Sur ma plaque, il y a 'inspecteur'.
+  - Alors, tu disais 'meilleures intentions' ?
 
 ### "international" + "'" (1 occurrences)
 - Predicted: Space
@@ -1879,6 +1825,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Nous sommes italiens ; nous utilisons toujours nos mains.
+
+### "j" + "‘" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tu crois, j‘ai que de la gueule ?
 
 ### "joie" + "-" (1 occurrences)
 - Predicted: None
@@ -1916,12 +1868,6 @@ Accuracy: 99.98%
 - Examples:
   - Débranchez le .
 
-### "le" + " " (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Lâche le !
-
 ### "leader" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1958,12 +1904,6 @@ Accuracy: 99.98%
 - Examples:
   - Notre voiture est là ; où est la tienne ?
 
-### "mais" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Il y a un 'mais'.
-
 ### "mammifère" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -1981,6 +1921,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Un chien a des maîtres ; un chat, des serviteurs.
+
+### "meilleur gouvernement" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ensuite, qu'est-ce qui constitue le 'meilleur gouvernement' ?
 
 ### "merci" + "»" (1 occurrences)
 - Predicted: Space
@@ -2000,17 +1946,17 @@ Accuracy: 99.98%
 - Examples:
   - Il sait que c'est votre autre 'moi'.
 
+### "moi" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tu as besoin de moi , Guido ?
+
 ### "moi" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: None
 - Examples:
   - Le livre est pour moi; les fleurs sont pour nous.
-
-### "mon" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
 
 ### "monde" + "." (1 occurrences)
 - Predicted: None
@@ -2024,23 +1970,17 @@ Accuracy: 99.98%
 - Examples:
   - La physique ne décrit pas le monde ; elle décrit ce que nous savons du monde.
 
-### "n" + "'" (1 occurrences)
+### "musicien" + "ne" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - L'avenir du rock 'n' roll.
+  - Tom a une fille qui est musicienne.
 
 ### "nana" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - J'ai 'fait une nana' un tas de fois.
-
-### "neige" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ça allait devenir 'L'année de la grande neige'.
 
 ### "nique" + "—" (1 occurrences)
 - Predicted: Space
@@ -2066,12 +2006,6 @@ Accuracy: 99.98%
 - Examples:
   - Sommes-nous en colloque ou allons-nousjouer au golf ?
 
-### "nu" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Qu'entendez-vous par 'nu'.
-
 ### "nuit" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: None
@@ -2096,12 +2030,6 @@ Accuracy: 99.98%
 - Examples:
   - Vous n'y avez pas été 'obligée', non ?
 
-### "on" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Qui 'on' ?
-
 ### "ongles" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2120,12 +2048,6 @@ Accuracy: 99.98%
 - Examples:
   - Je parle au capitaine 'je-ne-sais-d'où'.
 
-### "pacte" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La première partie s'appelle 'le pacte'.
-
 ### "pactole" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2137,6 +2059,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Notre voiture est tombée en panne ; on a donc dû appeler un taxi.
+
+### "parler" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tu te rappelles qu'on a parlé de 'parler' ?
 
 ### "pas" + "," (1 occurrences)
 - Predicted: None
@@ -2208,13 +2136,13 @@ Accuracy: 99.98%
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Dis 's'il te plaît'.
+  - Tu as dit 's'il te plaît' ?
 
-### "pleuvait" + "jamais" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "porte" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Et on disait que chez vous il ne pleuvaitjamais !
+  - Il ouvre la porte , OK ?
 
 ### "possible" + "'" (1 occurrences)
 - Predicted: Space
@@ -2228,29 +2156,11 @@ Accuracy: 99.98%
 - Examples:
   - Je te fais une remise 'vieux pote'.
 
-### "potes" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Entre nous, on s'appelait 'les potes'.
-
 ### "pouce" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Le pouce .
-
-### "pour" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Merci - avoir - gardé collation - pour - mon - officier !
-
-### "pourrions" + "jamais" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Nous ne pourrionsjamais avoir une relation normale, Beth.
 
 ### "premier" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
@@ -2282,11 +2192,11 @@ Accuracy: 99.98%
 - Examples:
   - Arrêtez la voiture putain .
 
-### "rabbit" + "'" (1 occurrences)
+### "raison" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Je viens d'acheter une pièce de la 'rabbit'.
+  - Quand j'ai dit 'j'ai toujours raison' ?
 
 ### "raison" + "-" (1 occurrences)
 - Predicted: None
@@ -2306,12 +2216,6 @@ Accuracy: 99.98%
 - Examples:
   - Demandez et vous recevrez ; votre joie sera parfaite.
 
-### "rendez" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dans mon quartier, il faut prendre rendez—vous.
-
 ### "ressemble" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2330,17 +2234,23 @@ Accuracy: 99.98%
 - Examples:
   - Mais nous ne savons vraiment rien ; car la vérité se trouve tout au fond.
 
-### "roi" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - C'est toi qui as dit 'roi'.
-
 ### "sais" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Je sais .
+
+### "sans doute" + ";" (1 occurrences)
+- Predicted: NarrowNbsp
+- Actual: None
+- Examples:
+  - La vérité est belle, sans doute; mais de même des mensonges.
+
+### "savoir-faire" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - C'est quoi une 'marque de savoir-faire' ?
 
 ### "scientifiques" + "." (1 occurrences)
 - Predicted: None
@@ -2402,12 +2312,6 @@ Accuracy: 99.98%
 - Examples:
   - Plateau suivant .
 
-### "sur" + "monter" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mais je dois bien surmonter ça, non ?
-
 ### "survivront" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -2426,12 +2330,6 @@ Accuracy: 99.98%
 - Examples:
   - Il y aura une réunion avec des gens 'sûrs'.
 
-### "tapette" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Le dernier mot qu'il a entendu était 'tapette'.
-
 ### "tasse" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2449,6 +2347,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Vous venez de la terre .
+
+### "test" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Qu'est-ce que tu veux dire par 'test' ?
 
 ### "tire" + "—" (1 occurrences)
 - Predicted: Space
@@ -2504,11 +2408,23 @@ Accuracy: 99.98%
 - Examples:
   - Ils sont très difficiles à tuer .
 
+### "ue D" + "ieu" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Que… Que… Que Dieu vous garde.
+
 ### "underground" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - En Grande-Bretagne le métro se nomme « underground» et non « subway ».
+
+### "va" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - On y va, on y va , on y va !
 
 ### "va" + "Charlie" (1 occurrences)
 - Predicted: Space
@@ -2528,23 +2444,11 @@ Accuracy: 99.98%
 - Examples:
   - Détendez vous et faites le vide .
 
-### "vivre" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - En espagnol, ça veut dire 'Je te laisse vivre'.
-
 ### "vois" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Là, je mettrai le fenouil, le persil, tu vois - directement sur la table.
-
-### "voiture" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Vous m'avez dit 'un accident de voiture'.
 
 ### "votre" + "." (1 occurrences)
 - Predicted: None
@@ -2564,17 +2468,17 @@ Accuracy: 99.98%
 - Examples:
   - Ce qui fait de vous … un moins que rien.
 
-### "y" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bonjour, y'a-t-il quelqu'un ici ?
-
 ### "y" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Equipe mech allez y .
+
+### "zone" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Quoi d'autre, 'hors de la zone' ?
 
 ### "«" + "BR" (1 occurrences)
 - Predicted: None
@@ -2582,19 +2486,7 @@ Accuracy: 99.98%
 - Examples:
   - Brunch est un mot-valise combinant « BR-eakfast » et « l-UNCH ».
 
-### "«" + "Docteur" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ils me donnèrent du « Docteur ».
-
-### "«" + "Fonds Monétaire International" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - FMI signifie « Fonds Monétaire International ».
-
-### "«" + "Ha" (1 occurrences)
+### "«" + "Ha-ha" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -2606,31 +2498,19 @@ Accuracy: 99.98%
 - Examples:
   - Les « Hummers » sont des gouffres à carburant.
 
-### "«" + "Le Petit Kyoto" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Nous appelons cette ville « Le Petit Kyoto ».
-
-### "«" + "Les" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Les enfants vont maintenant chanter « Les quatre Questions ».
-
-### "«" + "Mistral" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Le vent qui souffle souvent en Provence s’appelle le « Mistral ».
-
 ### "«" + "Natto" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Le « Natto » a une odeur terrible, mais un goût délicieux.
 
-### "«" + "Poètes" (1 occurrences)
+### "«" + "Opération" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - L’« Opération dîner pour l’agent Wong » ?
+
+### "«" + "Poètes sans maisons" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -2642,7 +2522,7 @@ Accuracy: 99.98%
 - Examples:
   - Comment ça, « Quoi ?
 
-### "«" + "Tom" (1 occurrences)
+### "«" + "Tom et Marie" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -2654,53 +2534,29 @@ Accuracy: 99.98%
 - Examples:
   - La voie rapide « Tomei » relie Tokyo à Nagoya.
 
-### "«" + "Twitter" (1 occurrences)
+### "«" + "au revoir" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - On peut à présent suivre le pape sur « Twitter ».
+  - Il a quitté la maison sans dire « au revoir ».
 
-### "«" + "XXX" (1 occurrences)
+### "«" + "blagues" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Comment dit-on « XXX » en portugais ?
-
-### "«" + "ah" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Puis dites « ah ».
-
-### "«" + "brillant" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Que vous êtes un « brillant spécialiste des têtes ».
-
-### "«" + "bœuf" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Le pluriel de « bœuf » est « bœufs ».
-
-### "«" + "bœufs" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Le pluriel de « bœuf » est « bœufs ».
-
-### "«" + "d’" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Lors de son combat contre Rengoku-san, Akaza a parlé « d’esprit combatif ».
+  - Rien de neuf dans la rubrique « blagues » ?
 
 ### "«" + "homard" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Comment dis-tu « homard » en français ?
+
+### "«" + "ici" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Quel est simplement le mystère de ce lieu appelé « ici » ?
 
 ### "«" + "l" (1 occurrences)
 - Predicted: None
@@ -2726,18 +2582,6 @@ Accuracy: 99.98%
 - Examples:
   - Tu devrais au moins dire « merci ».
 
-### "«" + "mon" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ziri appelle Rima « mon sucre ».
-
-### "«" + "muscle" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Tom aime les « muscle cars ».
-
 ### "«" + "nègre" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2756,12 +2600,6 @@ Accuracy: 99.98%
 - Examples:
   - Il a mis le film sur « pause » et est allé aux toilettes.
 
-### "«" + "pretty" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Comment écris-tu « pretty » ?
-
 ### "«" + "salut" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2773,12 +2611,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Pourquoi ai-je obtenu un « satisfaisant » ?
-
-### "«" + "solution" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Non, « solution finale ».
 
 ### "«" + "subway" (1 occurrences)
 - Predicted: None
@@ -2792,11 +2624,17 @@ Accuracy: 99.98%
 - Examples:
   - Tom a eu un « suffisant » à son contrôle continu.
 
-### "«" + "syndrome" (1 occurrences)
+### "«" + "synonyme" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - SSPT signifie « syndrome de stress post-traumatique ».
+  - Y a t-il un autre mot pour « synonyme » ?
+
+### "«" + "tant" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Que voulez-vous dire par « tant de personnes » ?
 
 ### "«" + "thé" (1 occurrences)
 - Predicted: None
@@ -2804,17 +2642,11 @@ Accuracy: 99.98%
 - Examples:
   - Ce thé est appelé « thé vert ».
 
-### "«" + "trobairitz" (1 occurrences)
+### "«" + "travailler" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Une femme troubadour est appelée communément « trobairitz ».
-
-### "«" + "trouble" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - TSPT signifie « trouble de stress post-traumatique ».
+  - Tu connais ce mot, « travailler » ?
 
 ### "«" + "underground" (1 occurrences)
 - Predicted: None
@@ -2822,29 +2654,23 @@ Accuracy: 99.98%
 - Examples:
   - En Grande-Bretagne le métro se nomme « underground» et non « subway ».
 
+### "«" + "vieille" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - C’est impoli de l’appeler « vieille peau ».
+
 ### "«" + "Éveil" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - L’ « Éveil » est la suprématie de la sensibilité sur la vérité.
 
-### "«" + "état" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ESPT signifie « état de stress post-traumatique ».
-
 ### "Ça" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ça - le volume.
-
-### "é" + "merde" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Démerde-toi !
 
 ### "île" + "'" (1 occurrences)
 - Predicted: Space
@@ -2864,12 +2690,6 @@ Accuracy: 99.98%
 - Examples:
   - Elle est au bord de la crise cardiaque, celle—là.
 
-### "—" + "vous" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dans mon quartier, il faut prendre rendez—vous.
-
 ### "—" + "y" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2888,9 +2708,9 @@ Accuracy: 99.98%
 - Examples:
   - Dori, Nori… – Pas mes tomates de concours !
 
-### " " + "!" (1 occurrences)
-- Predicted: NarrowNbsp
+### "… Qu" + "e… Q" (1 occurrences)
+- Predicted: Space
 - Actual: None
 - Examples:
-  - Lâche le !
+  - Que… Que… Que Dieu vous garde.
 

@@ -35,12 +35,15 @@ const totalPages = letters.reduce((sum: number, l: any) => sum + l.count, 0);
     <p class="text-muted-foreground mt-1">{totalPages.toLocaleString()} words and phrases</p>
   </div>
 
-  <div class="flex gap-3 mb-8">
-    <a href={`/d/${courseSlug}/top-100/`} class="inline-flex items-center gap-1.5 rounded-lg border bg-card px-4 py-2 text-sm font-medium hover:bg-secondary transition-colors no-underline text-card-foreground">
-      Top 100
+  <div class="flex flex-wrap gap-3 mb-8">
+    <a href={`/d/${courseSlug}/top-1000-words/`} class="inline-flex items-center gap-1.5 rounded-lg border bg-card px-4 py-2 text-sm font-medium hover:bg-secondary transition-colors no-underline text-card-foreground">
+      Top 1000 Words
+    </a>
+    <a href={`/d/${courseSlug}/top-1000-phrases/`} class="inline-flex items-center gap-1.5 rounded-lg border bg-card px-4 py-2 text-sm font-medium hover:bg-secondary transition-colors no-underline text-card-foreground">
+      Top 1000 Phrases
     </a>
     <a href={`/d/${courseSlug}/top-1000/`} class="inline-flex items-center gap-1.5 rounded-lg border bg-card px-4 py-2 text-sm font-medium hover:bg-secondary transition-colors no-underline text-card-foreground">
-      Top 1000
+      Top 1000 (Combined)
     </a>
   </div>
 

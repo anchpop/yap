@@ -1,0 +1,22 @@
+---
+const birthDate = new Date(1999, 9, 8); // Oct 8, 1999
+const now = new Date();
+let age = now.getFullYear() - birthDate.getFullYear();
+if (now.getMonth() < birthDate.getMonth() || (now.getMonth() === birthDate.getMonth() && now.getDate() < birthDate.getDate())) {
+  age--;
+}
+---
+
+<div class="mt-10 pt-6 border-t">
+  <div class="flex items-start gap-4 text-sm">
+    <img src="/selfie.webp" alt="Andre Popovitch" class="w-14 h-14 rounded-full object-cover shrink-0" />
+    <div>
+      <p class="font-medium text-foreground">Andre Popovitch</p>
+      <p class="text-muted-foreground mt-1">
+        {age}-year-old software developer in San Francisco, sometimes known as
+        <a href="https://twitter.com/chadnauseam" class="text-accent-foreground hover:underline">chad nauseam</a>.
+        Builds <a href="/" class="text-accent-foreground hover:underline">Yap.Town</a> in his free time.
+      </p>
+    </div>
+  </div>
+</div>
