@@ -1,55 +1,74 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Author from '../../components/Author.astro';
+
+const supertokensResponse = await fetch('https://raw.githubusercontent.com/yaptown/yap/main/out/eng/supertokens.txt');
+const supertokensText = await supertokensResponse.text();
+const shannonData = [
+  { label: '0th', desc: 'Symbols independent and equiprobable.', text: 'XFOML RXKHRJFFJUJ ZLPWCFWKCYJ FFJEYVKCQSGHYD QPAAMKBZAACIBZLHJQD.' },
+  { label: '1st', desc: 'Symbols independent but with frequencies of English text.', text: 'OCRO HLI RGWR NMIELWIS EU LL NBNESEBYA TH EEI ALHENHTTPA OOBTTVA NAH BRL.' },
+  { label: '2nd', desc: 'Digram structure as in English.', text: 'ON IE ANTSOUTINYS ARE T INCTORE ST BE S DEAMY ACHIN D ILONASIVE TUCOOWE AT TEASONARE FUSO TIZIN ANDY TOBE SEACE CTISBE.' },
+  { label: '3rd', desc: 'Trigram structure as in English.', text: 'IN NO IST LAT WHEY CRATICT FROURE BIRS GROCID PONDENOME OF DEMONSTURES OF THE REPTAGIN IS REGOACTIONA OF CRE.' },
+  { label: 'Words 1st', desc: 'Words chosen independently but with their appropriate frequencies.', text: 'REPRESENTING AND SPEEDILY IS AN GOOD APT OR COME CAN DIFFERENT NATURAL HERE HE THE A IN CAME THE TO OF TO EXPERT GRAY COME TO FURNISHES THE LINE MESSAGE HAD BE THESE.' },
+  { label: 'Words 2nd', desc: 'Word transition probabilities are correct but no further structure is included.', text: 'THE HEAD AND IN FRONTAL ATTACK ON AN ENGLISH WRITER THAT THE CHARACTER OF THIS POINT IS THEREFORE ANOTHER METHOD FOR THE LETTERS THAT THE TIME OF WHO EVER TOLD THE PROBLEM FOR AN UNEXPECTED.' }
+];
+
+const chunkColors = ['rgba(224,108,117,0.3)', 'rgba(229,192,123,0.3)', 'rgba(97,175,239,0.3)', 'rgba(152,195,121,0.3)', 'rgba(198,120,221,0.3)', 'rgba(86,182,194,0.3)', 'rgba(209,154,102,0.3)', 'rgba(190,80,70,0.3)'];
+
+const supertokens = supertokensText
+  .split('\n')
+  .filter(line => line.trim() && !line.startsWith('#'))
+  .map(line => {
+    const match = line.match(/^(.+?)\s+\((\d+) atoms?, (\d+) occurrences?\)$/);
+    if (!match) return null;
+    return { phrase: match[1], atoms: parseInt(match[2]), occurrences: parseInt(match[3]) };
+  })
+  .filter(s => s !== null && s.occurrences > 0);
 ---
 
 <Layout title="Unexpected Application of ML Theory to Language Learning" description="Applying the Unigram tokenization algorithm to language learning">
-  <article class="prose dark:prose-invert">
+  <article class="prose prose-invert">
     <h1 class="text-3xl font-bold mb-2">Unexpected Application of ML Theory to Language Learning</h1>
     <p class="text-sm text-muted-foreground mb-8">March 12, 2026</p>
     <p>
       I can't think of a better example of a scientist more limited by their time. Today, people derisively refer to LLMs as "stochastic parrots" due to the randomness they use. But in 1948, Claude Shannon was deliberately trying to invent stochastic parrots. He obviously didn't have a computer, so he was stuck executing his algorithms by hand and got his random numbers a book containing tables of them. Despite these limitations, he came up with 6 "approximations" of English, each more realistic than the last.
     </p>
-    replace with a slider that lets you slide up shannon's hierarchy:
 
-    Zero-order approximation (symbols independent and equiprobable).
-XFOML RXKHRJFFJUJ ZLPWCFWKCYJ FFJEYVKCQSGHYD QPAAMKBZAACIBZLHJQD.
-2. First-order approximation (symbols independent but with frequencies of English text).
-OCRO HLI RGWR NMIELWIS EU LL NBNESEBYA TH EEI ALHENHTTPA OOBTTVA
-NAH BRL.
-3. Second-order approximation (digram structure as in English).
-ON IE ANTSOUTINYS ARE T INCTORE ST BE S DEAMY ACHIN D ILONASIVE TUCOOWE AT TEASONARE FUSO TIZIN ANDY TOBE SEACE CTISBE.
-4. Third-order approximation (trigram structure as in English).
-IN NO IST LAT WHEY CRATICT FROURE BIRS GROCID PONDENOME OF DEMONSTURES OF THE REPTAGIN IS REGOACTIONA OF CRE.
-5. First-order word approximation. Rather than continue with tetragram, ::: , n-gram structure it is easier
-and better to jump at this point to word units. Here words are chosen independently but with their
-appropriate frequencies.
-REPRESENTING AND SPEEDILY IS AN GOOD APT OR COME CAN DIFFERENT NATURAL HERE HE THE A IN CAME THE TO OF TO EXPERT GRAY COME TO FURNISHES
-THE LINE MESSAGE HAD BE THESE.
-6. Second-order word approximation. The word transition probabilities are correct but no further structure is included.
-THE HEAD AND IN FRONTAL ATTACK ON AN ENGLISH WRITER THAT THE CHARACTER OF THIS POINT IS THEREFORE ANOTHER METHOD FOR THE LETTERS THAT
-THE TIME OF WHO EVER TOLD THE PROBLEM FOR AN UNEXPECTED.
-    <p>
-      at the end, show: Shannon proudly says 
-      | The particular sequence of ten words “attack on an English writer that the character of this” is not at all unreasonable. It appears then that a sufficiently complex stochastic process will give a satisfactory representation of a discrete source."
-    </p>
+    <div class=”not-prose my-6 rounded-lg border border-border bg-card overflow-hidden”>
+      {shannonData.map((a, i) => (
+        <details style={{ margin: 0, borderTop: i === 0 ? 'none' : '1px solid rgba(128,128,128,0.2)' }} {...(i === 0 ? {open: true} : {})}>
+          <summary style={{ padding: '0.5rem 0.75rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600, listStyle: 'none' }}>
+            {a.label}
+            <span style={{ fontWeight: 400, color: 'var(--muted-foreground)', marginLeft: '0.5rem', fontSize: '0.75rem' }}>{a.desc}</span>
+          </summary>
+          <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', lineHeight: 1.625, padding: '0.75rem', margin: '0 0.75rem 0.75rem', borderRadius: '0.375rem', background: 'rgba(128,128,128,0.1)' }}>
+            {a.text}
+          </div>
+          {i === 5 && (
+            <p style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)', padding: '0 0.75rem 0.75rem', fontStyle: 'italic', margin: 0 }}>
+              Shannon proudly notes: “The particular sequence of ten words 'attack on an English writer that the character of this' is not at all unreasonable. It appears then that a sufficiently complex stochastic process will give a satisfactory representation of a discrete source.”
+            </p>
+          )}
+        </details>
+      ))}
+    </div>
+
     <p>Given his interests, it is not surprising that his work ended up being applicable to machine learning today. And in fact, there is one application of his research that even most machine learning researchers aren't aware of, and it has ramifications that affect every LLM. And in my opinion, it even holds up a strange mirror to human cognition.</p>
     <h3>Tokenization</h3>
     <p>
       It's likely that every LLM you've ever interacted with has used tokenization, because it is extremely useful for teaching AIs about language. And it turns out that it is no less useful for teaching people about language! But more on that later.
     </p>
     <p>
-      By way of example, let's take this sentence from the movie <i>Conclave</i>:
+      To show you what I mean by 'tokenization', let's take this sentence from the movie <i>Conclave</i>:
     </p>
-    <p> 
-       "I want you to understand that, first of all, you are not in any kind of trouble."
-    </p>
+    <blockquote>I want you to understand that, first of all, you are not in any kind of trouble.</blockquote>
     <p>If you wanted to break it into chunks, how would you do it? The most obvious way is to make each word a chunk. So you get this: </p>
+    <p>{['I', 'want', 'you', 'to', 'understand', 'that,', 'first', 'of', 'all,', 'you', 'are', 'not', 'in', 'any', 'kind', 'of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</p>
+    <p>(Where I've made each chunk a different color.)</p>
     <p>
-      ['i', 'want', 'you', 'to', 'understand', 'that,', 'first', 'of', 'all,', 'you', 'are', 'not', 'in', 'any', 'kind', 'of', 'trouble.']
+      And that would be a perfectly valid tokenization, if a bit basic. But, despite how natural it is, I'd be willing to bet that your brain doesn't work this way at all.
     </p>
-    <p>
-      But, despite how natural it is, I'd be willing to bet that your brain doesn't work this way at all. For example, you've probably heard someone say "I want you to" hundreds of times. So your brain doesn't need to process every individual word. Instead, you already know the meaning of "I want you to" as a whole, and process it as one unit. Paying attention to each word individually would be almost as bad as reading each letter individually. It's just not possible to efficiently process a sentence one word at a time.
+    <p>For example, you've probably heard someone say "I want you to" hundreds of times. So your brain doesn't need to process every individual word. Instead, you already know the meaning of "I want you to" as a whole, and process it as one unit. Paying attention to each word individually would be almost as bad as reading each letter individually. It's just not possible to efficiently process a sentence one word at a time.
     </p>
     <p>
       Most people don't have to worry about this, because everyone's brain figures out the chunks for them. But it raises an interesting question: how would we write a program to figure out these chunks? It's easier than you might think. And surprisingly relevant to machine learning. The very first step to training an LLM is to decide how you're going to break the input into chunks! In the context of LLMs, these chunks are called "tokens", but the idea is the same: instead of feeding the LLM one letter at a time, we typically want to feed it whole chunks of letters at a time, or maybe even whole chunks of words at a time. We do this just because it makes LLMs learn better and faster.
@@ -69,9 +88,7 @@ THE TIME OF WHO EVER TOLD THE PROBLEM FOR AN UNEXPECTED.
     </p>
     <p>And it turns out it's not too difficult to figure out which chunks to keep to get the maximum compression. You just start with your big set of chunks, segment all your text into chunks, then throw away the chunks that appear the least. I tried that, and got... this:
     </p>
-    <p>
-      ['i want you', 'to understand', 'that,', 'first of', 'all, you', 'are not in', 'any kind', 'of trouble.']
-    </p>
+    <p>{['I want you', 'to understand', 'that,', 'first of', 'all, you', 'are not in', 'any kind', 'of trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</p>
     <p>
       Ugh. Look at that 'all, you' token. It great for writing sentences in the fewest chunks possible, because "all, you" probably appears in a lot of sentences. But the problem with it is that it doesn't mean anything. LLMs work best when each chunk has a coherent meaning, and "all, you" just doesn't. In fact, this has been studied, and <a href="https://arxiv.org/html/2402.18376v1">the vocabulary that is the best for compression is not the best for LLMs</a>. And I'd bet the same applies to people.
     </p>
@@ -85,16 +102,75 @@ THE TIME OF WHO EVER TOLD THE PROBLEM FOR AN UNEXPECTED.
     <p>
       Before getting into the details, let's just give the new algorithm a try and see how it does! Here's it in action:
     </p>
-    <p>
-      ['i want you to', 'understand', 'that,', 'first of all,', 'you are not', 'in', 'any kind of', 'trouble.']
-    </p>
+    <p>{['I want you to', 'understand', 'that,', 'first of all,', 'you are not', 'in', 'any kind of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</p>
     <p>
       That's a lot better! The 'all, you' chunk is gone. It got replaced by "first of all," and "you are not". Both of those actually seem like useful chunks! They're common, and they're also coherent concepts. That has been shown to be desirable when training LLMs, but it also seems straightforwardly applicable to people learning a language! Everyone learning English needs to learn what "first of all" means, but never needs to explicitly learn what "all, you" means.
     </p>
     <p>
       It's almost absurd how well it works. I ran it on my full English corpus, and here are the results:
     </p>
-    [TODO: fetch supertoken list from github and allow it to be scrolled + render it in a nice way, btw it is a n aboslutely huge list so idk what the best way to do that is]
+    <div class="not-prose my-6 rounded-lg border border-border bg-card overflow-hidden" id="supertokens-widget">
+      <div class="px-4 py-3 border-b border-border bg-muted/30 flex items-center justify-between flex-wrap gap-2">
+        <p class="text-sm font-medium text-foreground">{supertokens.length.toLocaleString()} English supertokens, sorted by frequency</p>
+        <div id="supertokens-buttons" class="flex flex-wrap gap-1"></div>
+      </div>
+      <div class="overflow-y-auto max-h-[400px]">
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 bg-card border-b border-border">
+            <tr>
+              <th class="text-left px-4 py-2 text-muted-foreground font-medium">#</th>
+              <th class="text-left px-4 py-2 text-muted-foreground font-medium">Phrase</th>
+              <th class="text-right px-4 py-2 text-muted-foreground font-medium">Words</th>
+              <th class="text-right px-4 py-2 text-muted-foreground font-medium">Occurrences</th>
+            </tr>
+          </thead>
+          <tbody id="supertokens-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <script is:inline define:vars={{ supertokens }}>
+      document.addEventListener('DOMContentLoaded', function() {
+      const PAGE_SIZE = 1000;
+      const totalPages = Math.ceil(supertokens.length / PAGE_SIZE);
+      const buttonsEl = document.getElementById('supertokens-buttons');
+      const bodyEl = document.getElementById('supertokens-body');
+
+      function renderPage(page) {
+        const start = page * PAGE_SIZE;
+        const end = Math.min(start + PAGE_SIZE, supertokens.length);
+        let html = '';
+        for (let i = start; i < end; i++) {
+          const s = supertokens[i];
+          const bg = i % 2 === 0 ? '' : 'background:rgba(128,128,128,0.08)';
+          html += '<tr style="border-bottom:1px solid rgba(128,128,128,0.15);' + bg + '">'
+            + '<td style="padding:0.375rem 1rem;color:var(--muted-foreground);font-variant-numeric:tabular-nums">' + (i + 1) + '</td>'
+            + '<td style="padding:0.375rem 1rem;font-weight:500">' + s.phrase + '</td>'
+            + '<td style="padding:0.375rem 1rem;text-align:right;color:var(--muted-foreground);font-variant-numeric:tabular-nums">' + s.atoms + '</td>'
+            + '<td style="padding:0.375rem 1rem;text-align:right;color:var(--muted-foreground);font-variant-numeric:tabular-nums">' + s.occurrences.toLocaleString() + '</td>'
+            + '</tr>';
+        }
+        bodyEl.innerHTML = html;
+        bodyEl.parentElement.parentElement.scrollTop = 0;
+        for (const btn of buttonsEl.children) {
+          btn.style.fontWeight = btn.dataset.page == page ? '600' : '400';
+          btn.style.background = btn.dataset.page == page ? 'rgba(128,128,128,0.25)' : '';
+        }
+      }
+
+      for (let p = 0; p < totalPages; p++) {
+        const btn = document.createElement('button');
+        const start = p * PAGE_SIZE + 1;
+        const end = Math.min((p + 1) * PAGE_SIZE, supertokens.length);
+        btn.textContent = start.toLocaleString() + '–' + end.toLocaleString();
+        btn.dataset.page = p;
+        btn.style.cssText = 'padding:0.25rem 0.5rem;border-radius:0.375rem;font-size:0.75rem;cursor:pointer;border:none;color:inherit';
+        btn.addEventListener('click', () => renderPage(p));
+        buttonsEl.appendChild(btn);
+      }
+
+      renderPage(0);
+      });
+    </script>
     <p>
       I honestly find it pretty remarkable. There are 10,000 phrases in here, but you can scroll to any point and find something you've probably said or heard many times before.
     </p>
@@ -110,39 +186,37 @@ THE TIME OF WHO EVER TOLD THE PROBLEM FOR AN UNEXPECTED.
     <p>
       I'm not sure that anyone knows a truly non-tautological answer to this question. But I have a theory. Let's formalize the argument above slightly. 
     </p>
+    <ol class="list-none pl-0 space-y-1 my-4 border-l-2 border-border pl-4">
+      <li><strong>Premise 1:</strong> To understand a sentence, you must recall the meaning of each chunk.</li>
+      <li><strong>Premise 2:</strong> Recalling the meaning of a chunk takes some amount of mental effort.</li>
+      <li class="border-t border-border pt-1"><strong>Conclusion:</strong> Therefore, the amount of effort it takes to understand a sentence is proportional to the number of chunks in it.</li>
+    </ol>
     <p>
-      Premise 1: To understand a sentence, you must recall the meaning of each chunk.
-      Premise 2: Recalling the meaning of a chunk takes some amount of mental effort.
-      Conclusion: Therefore, the amount of effort it takes to understand a sentence is proportional to the number of chunks in it.
+      If you want, you can take a moment to try to poke holes in that argument. But here's mine. Premise 2 implies that the effort required to recall a chunk is always the same. But I think you'll find that common chunks, like "ice cream", are much easier for you to remember the meaning of than rare ones like "sovereign immunity". And when you think about it, it makes sense. If the brain has some analogous concept to a cache, it would make perfect sense to dedicate it to high-frequency chunks like "ice cream" and relegate "sovereign immunity" to the mental equivalent of a spinning rust hard drive. 
     </p>
     <p>
-      If you want, you can take a moment to try to poke holes in that argument. But here's mine. Premise 2 implies that the effort required to recall a chunk is equal for every chunk. But I think you'll find that common chunks, like "ice cream", are much easier for you to remember the meaning of than rare ones like "sovereign immunity". And when you think about it, it makes sense. If the brain has some analogous concept to a cache, it would make perfect sense to dedicate it to high-frequency chunks like "ice cream" and relegate "sovereign immunity" to the mental equivalent of a spinning rust hard drive. 
-    </p>
-    <p>
-      So, if the effort required to recall a chunk is <i>not</i> equal for every chunk, then it's not necessarily the case that fewer chunks is always better. Take the "all, you" bad chunk example from earlier. You probably have absolutely no problem recalling the meaning of "all" or "you" on their own. So, there is potentially very little benefit to chunking them. In fact, if "all, you" is rarer as a chunk than "all" or "you" are on their own, the chunking has actually increased the effort necessary to understand the sentence!
+      So, if the effort required to recall a chunk is <i>not</i> always the same, then it's not necessarily the case that fewer chunks is always better. Take the "all, you" bad chunk example from earlier. You probably have absolutely no problem recalling the meaning of "all" or "you" on their own. So, there is potentially very little benefit to chunking them. In fact, if "all, you" is rarer as a chunk than "all" or "you" are on their own, the chunking has actually increased the effort necessary to understand the sentence!
     </p>
     <p>
       So, let's adjust the argument.
     </p>
-    <p>
-      Premise 1: To understand a sentence, you must recall the meaning of each chunk.
-      Premise 2: Recalling the meaning of a chunk takes mental effort proportional to the rarity of the chunk.
-      Conclusion: Therefore, the amount of effort it takes to understand a sentence is proportional to the combined rarity of the chunks in it.
-    </p>
+    <ol class="list-none pl-0 space-y-1 my-4 border-l-2 border-border pl-4">
+      <li><strong>Premise 1:</strong> To understand a sentence, you must recall the meaning of each chunk.</li>
+      <li><strong>Premise 2:</strong> Recalling the meaning of a chunk takes mental effort proportional to the rarity of the chunk.</li>
+      <li class="border-t border-border pt-1"><strong>Conclusion:</strong> Therefore, the amount of effort it takes to understand a sentence is proportional to the combined rarity of the chunks in it.</li>
+    </ol>
     <p>
       But it wouldn't be much of an theory without a test. So I took all the 6-chunk sentences in my dataset, and grabbed the ones with the lowest and highest combined rarity of their chunks. By coincidence, in addition to being 6 chunks under my model, both were also 6 words, making them a perfect comparison:
     </p>
-    <p>
-      "All I know is what I told you."
-    </p>
-    <p>
-      "Positive atomic nuclei attract negative electrons."
-    </p>
+    <blockquote>All I know is what I told you.</blockquote>
+    <blockquote>Positive atomic nuclei attract negative electrons.</blockquote>
     <p>
       I think it's pretty obvious which one is harder to understand! Each word in the latter required more mental effort to process than each word in the former.
     </p>
     <p>
-      So, that brings us to our algorithm, called the "Unigram" algorithm. Instead of trying to find a vocabulary that minimizes the number of chunks in each sentence, we want to find a vocabulary that minimizes the combined rarity of the chunks in each sentence. Under this model, I think the perfect chunk might be "plausible deniability", because it's probably much more common than all other usages of either of the words "plausible" or "deniability" on their own. So, by chunking them both into "plausible deniability", turns 2 slow lookups into one slow lookup - and coders used to optimizing their code will know the benefits of eliminating a cache miss in a hot loop! But turning "all, you" into a single chunk probably makes understanding harder, because "all" and "you" were already very common and "all, you" is probably rarer. So that chunk is replacing two fast cache hits lookups with a single cache miss, which is a terrible deal.
+      So, that finally brings us to the algorithm. It's called the "Unigram" algorithm. Instead of trying to find a vocabulary that minimizes the number of chunks in each sentence, we want to find a vocabulary that minimizes the combined rarity of the chunks in each sentence.
+    </p>
+    <p>Under this model, I think an example of the perfect chunk might be "plausible deniability". It's probably much more common than all other usages of either of the words "plausible" or "deniability" on their own. So, by chunking them both into "plausible deniability", turns 2 slow lookups into one slow lookup - and coders used to optimizing their code will know the benefits of eliminating a cache miss in a hot loop! But turning "all, you" into a single chunk probably makes understanding harder, because "all" and "you" were already very common and "all, you" is probably rarer. So that chunk is replacing two fast cache hits with a single cache miss, which is a terrible deal.
     </p>
     <p>
       Now here's what I find so interesting. This "Unigram" algorithm was developed specifically to help represent written text to computers. At first, Claude Shannon researched it because it related to compression, then it was applied to machine learning. But if you can use it to make text more understandable to computers, why not to people?
@@ -239,7 +313,14 @@ THE TIME OF WHO EVER TOLD THE PROBLEM FOR AN UNEXPECTED.
     <p>
       ['i want you to', 'understand', 'that,', 'first of all,', 'you are not', 'in', 'any kind of', 'trouble.']
     </p>
-    <p>TODO: make this a collapsiable section titled "the exact algorithm". The actual algorithm is to assign each chunk a score based on the logarithm of its frequency. Then find the encoding with the highest total score. Remember that because the frequencies are between 0 and 1, the logarithm is always negative.</p>
+    <details class="my-4 rounded-lg border border-border bg-card">
+      <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-foreground hover:bg-muted/30">The exact algorithm</summary>
+      <div class="px-4 pb-4 text-sm">
+        <p>
+          The actual algorithm is to assign each chunk a score based on the logarithm of its frequency. Then, find the encoding with the highest total score. Because the frequencies are between 0 and 1, the logarithm is always negative, so "highest total score" means "least negative" - which corresponds to the encoding whose chunks are, collectively, the least rare.
+        </p>
+      </div>
+    </details>
 
     <p>
       For Yap, one of my goals is to be able to accurately model my users' mistakes. When a user learning french translates a sentence into english, and gets it wrong, I want to be able to figure out what exact parts of the sentence they struggled with. That way I can help them study that exact part of the language.
