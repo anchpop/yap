@@ -788,7 +788,11 @@ fn main() -> Result<()> {
         ] {
             let path = listing_dir.join(format!("{name}.json"));
             std::fs::write(&path, serde_json::to_string(entries)?)?;
-            eprintln!("Wrote {name} ({} entries) to {}", entries.len(), path.display());
+            eprintln!(
+                "Wrote {name} ({} entries) to {}",
+                entries.len(),
+                path.display()
+            );
         }
 
         // Group pages by first letter and write per-letter JSON files

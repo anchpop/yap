@@ -45,6 +45,16 @@ pub struct CorrectionResult {
 pub trait SentenceClassifier {
     /// Classify a sentence as Unknown or Suspicious
     fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification;
+
+    /// Check the first-stage LLM output and decide if a double-check pass is needed.
+    /// Returns None if the output looks fine, or Some(reasons) if it should be re-checked.
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        _tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        None
+    }
 }
 
 /// Trait for language-specific word correction rules
@@ -99,6 +109,56 @@ fn contraction_lemma(
             "numa" => Some("numa"),
             "nuns" => Some("nuns"),
             "numas" => Some("numas"),
+            // de + demonstrative/pronoun contractions
+            "disso" => Some("disso"),
+            "disto" => Some("disto"),
+            "daquilo" => Some("daquilo"),
+            "desse" => Some("desse"),
+            "dessa" => Some("dessa"),
+            "desses" => Some("desses"),
+            "dessas" => Some("dessas"),
+            "deste" => Some("deste"),
+            "desta" => Some("desta"),
+            "destes" => Some("destes"),
+            "destas" => Some("destas"),
+            "daquele" => Some("daquele"),
+            "daquela" => Some("daquela"),
+            "daqueles" => Some("daqueles"),
+            "daquelas" => Some("daquelas"),
+            "dele" => Some("dele"),
+            "dela" => Some("dela"),
+            "deles" => Some("deles"),
+            "delas" => Some("delas"),
+            // em + demonstrative/pronoun contractions
+            "nisso" => Some("nisso"),
+            "nisto" => Some("nisto"),
+            "naquilo" => Some("naquilo"),
+            "nesse" => Some("nesse"),
+            "nessa" => Some("nessa"),
+            "nesses" => Some("nesses"),
+            "nessas" => Some("nessas"),
+            "neste" => Some("neste"),
+            "nesta" => Some("nesta"),
+            "nestes" => Some("nestes"),
+            "nestas" => Some("nestas"),
+            "naquele" => Some("naquele"),
+            "naquela" => Some("naquela"),
+            "naqueles" => Some("naqueles"),
+            "naquelas" => Some("naquelas"),
+            "nele" => Some("nele"),
+            "nela" => Some("nela"),
+            "neles" => Some("neles"),
+            "nelas" => Some("nelas"),
+            // a + demonstrative contractions
+            "àquele" => Some("àquele"),
+            "àquela" => Some("àquela"),
+            "àqueles" => Some("àqueles"),
+            "àquelas" => Some("àquelas"),
+            "àquilo" => Some("àquilo"),
+            // de + adverb contractions
+            "daqui" => Some("daqui"),
+            "daí" => Some("daí"),
+            "dali" => Some("dali"),
             _ => None,
         },
         Language::German => match text_lower {
@@ -862,6 +922,46 @@ impl SentenceClassifier for SpanishClassifier {
             SentenceClassification::Suspicious { reasons }
         }
     }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            let is_ser = token.lemma == "ser"
+                && (token.pos == PartOfSpeechTag::Aux || token.pos == PartOfSpeechTag::Verb);
+            let is_estar = token.lemma == "estar"
+                && (token.pos == PartOfSpeechTag::Aux || token.pos == PartOfSpeechTag::Verb);
+
+            if (is_ser || is_estar) && token.pos == PartOfSpeechTag::Aux {
+                let verb_name = if is_ser { "ser" } else { "estar" };
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' ({verb_name}) is tagged AUX but is followed by adjective '{next_text}' — if this is a copula ({verb_name} + adjective), it should be VERB, not AUX. ser is only AUX in passive with past participles (e.g., 'fue construido'); estar is only AUX in progressive with gerund (e.g., 'estoy comiendo').",
+                        token.text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' ({verb_name}) is tagged AUX — please double-check: it should be VERB when used as a copula (e.g., 'es grande', 'está bien'), and only AUX when forming passive (ser) or progressive (estar) with participle/gerund.",
+                        token.text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
 }
 
 /// Spanish-specific corrector
@@ -1009,6 +1109,21 @@ impl WordCorrector for SpanishCorrector {
             if let Some(expected) = contraction_lemma(Language::Spanish, &text_lower, token.pos) {
                 if token.lemma != expected {
                     token.lemma = expected.to_string();
+                }
+            }
+
+            // Normalize clitic pronoun lemmas to singular base form
+            if token.pos == PartOfSpeechTag::Pron {
+                let expected = match text_lower.as_str() {
+                    "los" => Some("lo"),
+                    "las" => Some("la"),
+                    "les" => Some("le"),
+                    _ => None,
+                };
+                if let Some(expected) = expected {
+                    if token.lemma != expected {
+                        token.lemma = expected.to_string();
+                    }
                 }
             }
         }
@@ -1684,6 +1799,64 @@ impl SentenceClassifier for PortugueseClassifier {
             SentenceClassification::Unknown
         } else {
             SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            // Check estar tagged AUX — might be a copula that should be VERB
+            if token.lemma == "estar" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (estar) is tagged AUX but is followed by adjective '{}' — if this is a copula (estar + adjective describing a state), it should be VERB, not AUX. estar is only AUX when forming progressive tenses with gerund (e.g., 'estou comendo').",
+                        token.text, next_text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (estar) is tagged AUX but the next word '{}' ({:?}) doesn't look like a gerund — please double-check whether this is really a progressive tense (AUX) or a copula (VERB).",
+                        token.text,
+                        next_text,
+                        next_pos.unwrap_or(PartOfSpeechTag::X)
+                    ));
+                }
+            }
+
+            // Check ser tagged AUX — might be a copula that should be VERB
+            if token.lemma == "ser" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (ser) is tagged AUX but is followed by adjective '{}' — if this is a copula (ser + adjective describing identity/characteristics), it should be VERB, not AUX. ser is only AUX when forming passive voice with past participles (e.g., 'foi construído').",
+                        token.text, next_text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (ser) is tagged AUX but the next word '{}' ({:?}) doesn't look like a past participle — please double-check whether this is really a passive (AUX) or a copula (VERB).",
+                        token.text,
+                        next_text,
+                        next_pos.unwrap_or(PartOfSpeechTag::X)
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
         }
     }
 }
@@ -2428,6 +2601,40 @@ impl SentenceClassifier for EnglishClassifier {
             SentenceClassification::Suspicious { reasons }
         }
     }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            if token.lemma == "be" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (be) is tagged AUX but is followed by adjective '{next_text}' — if this is a copula (e.g., 'she is tall'), it should be VERB, not AUX. 'be' is only AUX when forming progressive (e.g., 'is running') or passive (e.g., 'was built').",
+                        token.text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (be) is tagged AUX — please double-check: it should be VERB when used as a copula (e.g., 'she is tall', 'it is late') or existential (e.g., 'there is a problem'), and only AUX when forming progressive or passive with a verb.",
+                        token.text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
 }
 
 /// English-specific corrector
@@ -2725,6 +2932,25 @@ impl SentenceClassifier for FrenchClassifier {
                     "'{}' (être) can be either AUX or VERB depending on context. Rule: AUX when forming compound tenses with past participles (e.g., 'elle est partie'), VERB when used as a copula or existential verb (e.g., 'elle est belle', 'il est tard', 'c'est vrai')",
                     token.text
                 ));
+
+                // Nudge when être is tagged AUX — remind the model to double-check
+                // whether it's really a compound tense or actually a copula.
+                if token.pos == PartOfSpeechTag::Aux {
+                    let next = sentence.doc.get(idx + 1);
+                    let next_pos = next.map(|n| n.pos);
+                    let next_text = next.map(|n| n.text.as_str()).unwrap_or("");
+                    if next_pos == Some(PartOfSpeechTag::Adj) {
+                        reasons.push(format!(
+                            "'{}' is tagged AUX and followed by '{}' (tagged ADJ) — please double-check: if this is être + adjective (e.g., 'elle est belle'), it should be VERB (copula), not AUX. être is only AUX in compound tenses with past participles like 'elle est partie'",
+                            token.text, next_text
+                        ));
+                    } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                        reasons.push(format!(
+                            "'{}' is tagged AUX — please double-check whether this is really a compound tense (AUX) or a copula (VERB). Remember: 'c'est vrai' → VERB, 'il est tard' → VERB, 'c'est tout' → VERB",
+                            token.text
+                        ));
+                    }
+                }
             }
 
             if falloir_forms.contains(&text_lower.as_str())
@@ -3022,6 +3248,46 @@ impl SentenceClassifier for FrenchClassifier {
             SentenceClassification::Unknown
         } else {
             SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            // Check être tagged AUX — might be a copula that should be VERB
+            if token.lemma == "être" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                // If followed by adjective, very likely copula
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (être) is tagged AUX but is followed by adjective '{}' — if this is a copula (être + adjective describing a state/quality), it should be VERB, not AUX. être is only AUX in compound tenses like 'elle est partie'.",
+                        token.text, next_text
+                    ));
+                }
+                // If not followed by a verb (i.e., not a compound tense), also suspicious
+                else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (être) is tagged AUX but the next word '{}' ({:?}) doesn't look like a past participle — please double-check whether this is really a compound tense (AUX) or a copula (VERB). Remember: 'c'est vrai' → VERB, 'c'est tout' → VERB.",
+                        token.text,
+                        next_text,
+                        next_pos.unwrap_or(PartOfSpeechTag::X)
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
         }
     }
 }
@@ -3820,6 +4086,40 @@ impl SentenceClassifier for GermanClassifier {
             SentenceClassification::Suspicious { reasons }
         }
     }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            if token.lemma == "sein" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (sein) is tagged AUX but is followed by adjective '{next_text}' — if this is a copula (e.g., 'er ist groß'), it should be VERB, not AUX. sein is only AUX when forming perfect tenses with past participles (e.g., 'ich bin gegangen').",
+                        token.text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (sein) is tagged AUX — please double-check: it should be VERB when used as a copula (e.g., 'er ist groß', 'ich bin müde') and only AUX when forming perfect tenses with past participles (e.g., 'ich bin gegangen').",
+                        token.text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
 }
 
 /// German-specific corrector
@@ -3926,6 +4226,16 @@ impl WordCorrector for GermanCorrector {
                 token.lemma = token.lemma.to_lowercase();
             }
 
+            // Capitalize noun lemmas (German nouns are always capitalized)
+            if token.pos == PartOfSpeechTag::Noun
+                && token.lemma.chars().next().is_some_and(|c| c.is_lowercase())
+            {
+                let mut chars = token.lemma.chars();
+                if let Some(first) = chars.next() {
+                    token.lemma = first.to_uppercase().to_string() + chars.as_str();
+                }
+            }
+
             if let Some(expected) = contraction_lemma(Language::German, &text_lower, token.pos) {
                 if token.lemma != expected {
                     token.lemma = expected.to_string();
@@ -3964,6 +4274,8 @@ impl WordCorrector for FrenchCorrector {
                 ("toi", "toi"),
                 ("lui", "lui"),
                 ("soi", "soi"),
+                ("elles", "elle"),
+                ("les", "le"),
             ];
             for &(form, expected_lemma) in french_pronoun_fixes {
                 if text_lower == form
@@ -4974,6 +5286,40 @@ impl SentenceClassifier for ItalianClassifier {
             SentenceClassification::Suspicious { reasons }
         }
     }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            if token.lemma == "essere" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (essere) is tagged AUX but is followed by adjective '{next_text}' — if this is a copula (e.g., 'è bello', 'sono stanco'), it should be VERB, not AUX. essere is only AUX when forming compound tenses with past participles (e.g., 'è andato') or passive (e.g., 'è stato costruito').",
+                        token.text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (essere) is tagged AUX — please double-check: it should be VERB when used as a copula (e.g., 'è bello', 'è tardi') and only AUX when forming compound tenses (e.g., 'è andato') or passive (e.g., 'è stato costruito').",
+                        token.text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
 }
 
 /// Italian-specific corrector
@@ -5815,6 +6161,86 @@ Think through your analysis, and finally provide the corrected token list. Remem
     let user_prompt = format!(
         "Sentence: \"{}\"\n\nCurrent NLP analysis:\n{}",
         sentence.sentence,
+        serde_json::to_string_pretty(&simplified_tokens)?
+    );
+
+    let response: NlpCorrectionResponse = chat_client
+        .chat_with_system_prompt(system_prompt, user_prompt)
+        .await?;
+
+    let corrected_tokens: Vec<SimplifiedTokenPrime> = response
+        .corrected_tokens
+        .into_iter()
+        .map(|token| SimplifiedTokenPrime {
+            whitespace: if token.whitespace == "[nbspace]" {
+                "\u{00A0}".to_string()
+            } else {
+                token.whitespace
+            },
+            pos: if token.text == "-" {
+                PartOfSpeechTag::Punct
+            } else {
+                token.pos
+            },
+            text: token.text,
+            lemma: token.lemma,
+        })
+        .collect();
+
+    Ok(corrected_tokens)
+}
+
+/// Double-check LLM output by feeding it back with specific concerns.
+pub async fn double_check_with_llm(
+    language: Language,
+    sentence: &str,
+    tokens: &[SimplifiedTokenPrime],
+    reasons: Vec<String>,
+    chat_client: &ChatClient,
+) -> anyhow::Result<Vec<SimplifiedTokenPrime>> {
+    let reason_list = reasons
+        .iter()
+        .enumerate()
+        .map(|(i, r)| format!("{i}. {r}"))
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    let language_tips = language_specific_tips(language);
+
+    let system_prompt = format!(
+        r#"You are an expert in {language} NLP analysis doing a quality review. A previous model already analyzed this sentence, but we suspect some issues remain. Your job is to review the analysis and fix any problems.
+
+The analysis consists of tokens, where each token has:
+
+{{
+    "1. text": string, // the word as it appears
+    "2. whitespace": string, // whitespace after the word. use "[nbspace]" for non-breaking spaces.
+    "3. pos": string, // part of speech
+    "4. lemma": string, // dictionary/base form
+}}
+
+Here are specific concerns about the current analysis:
+{reason_list}
+
+Please review these concerns carefully and correct the analysis if needed. Return all tokens, not just the changed ones. The text of each token must remain exactly as it appears in the original sentence. The goal is that you can concatenate the tokens + whitespace in the order they appear in your output to get the original sentence.{language_tips}"#
+    );
+
+    let simplified_tokens: Vec<SimplifiedTokenPrime> = tokens
+        .iter()
+        .map(|token| SimplifiedTokenPrime {
+            text: token.text.clone(),
+            whitespace: if token.whitespace == "\u{00A0}" {
+                "[nbspace]".to_string()
+            } else {
+                token.whitespace.clone()
+            },
+            pos: token.pos,
+            lemma: token.lemma.clone(),
+        })
+        .collect();
+
+    let user_prompt = format!(
+        "Sentence: \"{sentence}\"\n\nCurrent analysis:\n{}",
         serde_json::to_string_pretty(&simplified_tokens)?
     );
 

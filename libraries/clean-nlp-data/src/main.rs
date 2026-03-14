@@ -4,8 +4,8 @@ mod utils;
 
 use anyhow::{Context, anyhow};
 use classify::{
-    SentenceClassification, clean_sentence_with_llm, get_classifier, get_corrector,
-    parse_dependencies_with_llm,
+    SentenceClassification, clean_sentence_with_llm, double_check_with_llm, get_classifier,
+    get_corrector, parse_dependencies_with_llm,
 };
 use futures::StreamExt;
 use generate_data::target_sentences;
@@ -33,6 +33,14 @@ static CHAT_CLIENT_MINI: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5-mini")
         .unwrap()
         .with_cache_directory("./.cache")
+});
+
+static CHAT_CLIENT_LOW_REASONING: LazyLock<ChatClient> = LazyLock::new(|| {
+    ChatClient::from_env("gpt-5.4")
+        .unwrap()
+        .with_cache_directory("./.cache")
+        .with_reasoning_effort("low")
+        .with_service_tier("flex")
 });
 
 #[tokio::main]
@@ -691,6 +699,96 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                 );
                 skipped_count += 1;
                 continue;
+            }
+        }
+    }
+
+    // Double-check pass: re-check sentences the classifier flags
+    let classifier = get_classifier(language);
+    let needs_recheck: Vec<_> = validated_results
+        .iter()
+        .filter_map(|(sentence, tokens)| {
+            classifier
+                .needs_double_check(&sentence.sentence, tokens)
+                .map(|reasons| (sentence.sentence.clone(), reasons))
+        })
+        .collect();
+
+    let recheck_count = needs_recheck.len();
+    if recheck_count > 0 {
+        println!("\n=== Double-check pass: {recheck_count} sentences flagged ===");
+
+        let recheck_set: std::collections::HashSet<String> =
+            needs_recheck.iter().map(|(s, _)| s.clone()).collect();
+        let recheck_reasons: std::collections::HashMap<String, Vec<String>> =
+            needs_recheck.into_iter().collect();
+
+        let pb_dc = ProgressBar::new(recheck_count as u64);
+        pb_dc.set_style(
+            ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} double-checked ({per_sec}, ${msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb_dc.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let recheck_items: Vec<_> = validated_results
+            .iter()
+            .filter(|(s, _)| recheck_set.contains(&s.sentence))
+            .map(|(s, t)| {
+                (
+                    s.sentence.clone(),
+                    t.clone(),
+                    recheck_reasons
+                        .get(&s.sentence)
+                        .cloned()
+                        .unwrap_or_default(),
+                )
+            })
+            .collect();
+
+        let recheck_results = futures::stream::iter(recheck_items.into_iter())
+            .map(|(sentence_text, tokens, reasons)| {
+                let pb_dc = pb_dc.clone();
+                async move {
+                    let result = double_check_with_llm(
+                        language,
+                        &sentence_text,
+                        &tokens,
+                        reasons,
+                        &CHAT_CLIENT_LOW_REASONING,
+                    )
+                    .await;
+                    pb_dc.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+                    pb_dc.inc(1);
+                    (sentence_text, result)
+                }
+            })
+            .buffer_unordered(50)
+            .collect::<Vec<_>>()
+            .await;
+
+        pb_dc.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+
+        // Apply double-check results back
+        let corrector = get_corrector(language);
+        let mut recheck_map: std::collections::HashMap<String, Vec<_>> = recheck_results
+            .into_iter()
+            .filter_map(|(s, r)| match r {
+                Ok(mut tokens) => {
+                    corrector.post_corrections(&mut tokens);
+                    Some((s, tokens))
+                }
+                Err(e) => {
+                    println!("WARNING: Double-check failed for '{s}': {e}");
+                    None
+                }
+            })
+            .collect();
+
+        for (sentence, tokens) in validated_results.iter_mut() {
+            if let Some(new_tokens) = recheck_map.remove(&sentence.sentence) {
+                *tokens = new_tokens;
             }
         }
     }

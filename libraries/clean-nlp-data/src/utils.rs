@@ -126,6 +126,57 @@ pub fn validate_and_fix_whitespace(
             original: original.to_string(),
             reconstructed,
         }
+    } else if orig_no_spaces == recon_no_spaces {
+        // Non-whitespace characters match but whitespace is displaced to wrong tokens.
+        // Realign whitespace from the original sentence.
+        let orig_chars: Vec<char> = original.chars().collect();
+        let mut orig_pos = 0;
+
+        for token in corrected_tokens.iter_mut() {
+            // Skip any whitespace in the original at current position
+            while orig_pos < orig_chars.len() && orig_chars[orig_pos].is_whitespace() {
+                orig_pos += 1;
+            }
+
+            // Match this token's non-whitespace characters
+            let token_non_ws: usize = token.text.chars().filter(|c| !c.is_whitespace()).count();
+            let start = orig_pos;
+            let mut matched = 0;
+            while matched < token_non_ws && orig_pos < orig_chars.len() {
+                if !orig_chars[orig_pos].is_whitespace() {
+                    matched += 1;
+                }
+                orig_pos += 1;
+            }
+
+            // Rebuild token text from original (preserving internal whitespace if any)
+            token.text = orig_chars[start..orig_pos].iter().collect();
+
+            // Consume trailing whitespace as this token's whitespace
+            let ws_start = orig_pos;
+            while orig_pos < orig_chars.len() && orig_chars[orig_pos].is_whitespace() {
+                orig_pos += 1;
+            }
+            token.whitespace = if ws_start < orig_pos {
+                orig_chars[ws_start..orig_pos].iter().collect()
+            } else {
+                String::new()
+            };
+        }
+
+        // Verify
+        let final_reconstructed: String = corrected_tokens
+            .iter()
+            .map(|t| format!("{}{}", t.text, t.whitespace))
+            .collect();
+        if final_reconstructed == original {
+            ValidationResult::AutoFixed
+        } else {
+            ValidationResult::Invalid {
+                original: original.to_string(),
+                reconstructed: final_reconstructed,
+            }
+        }
     } else {
         ValidationResult::Invalid {
             original: original.to_string(),
