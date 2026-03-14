@@ -74,6 +74,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: yap-frontend
+
       - name: Install dictionary site dependencies
         run: pnpm install
         working-directory: static-site
@@ -81,10 +85,6 @@ jobs:
       - name: Build dictionary site (SSR)
         run: pnpm build
         working-directory: static-site
-
-      - name: Install frontend dependencies
-        run: pnpm install
-        working-directory: yap-frontend
 
       - name: Build frontend (SPA)
         run: pnpm build
