@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1800754
-Total errors: 1051
+Total predictions: 1801510
+Total errors: 1062
 Accuracy: 99.94%
 
 ## Error Patterns (sorted by frequency)
 
-### "can" + "not" (591 occurrences)
+### "can" + "not" (595 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -38,7 +38,7 @@ Accuracy: 99.94%
   - Get him-- What does he like?
   - I want for the broad-- What does she like?
 
-### "-" + "a" (6 occurrences)
+### "-" + "a" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -77,6 +77,14 @@ Accuracy: 99.94%
   - For children, “le Cirque du Soleil” is an unforgettable show.
   - He asks the nurse, “Hey, where they keep the Coke machine?
   - You had “Crazy Ray” Bucheck, “Psycho Ray” Dorian.
+
+### "-" + "-" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Fifty years ago - - The Olympic Games!
+  - Global warming-- -Could you stop talking?
+  - Oh, Jesus-- -Naomi!
 
 ### "-" + "that" (4 occurrences)
 - Predicted: None
@@ -188,13 +196,6 @@ Accuracy: 99.94%
   - Come on,Jasper.
   - Hurry up,Jasper!
 
-### "-" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Fifty years ago - - The Olympic Games!
-  - Okay, a- - Very old Cro-Magnon living until the present.
-
 ### "-" + "Are" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -299,6 +300,13 @@ Accuracy: 99.94%
 - Examples:
   - This is what-- you see?
   - This one is for the girls - you can take your personal stuff with you, too!
+
+### "--" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Carrots, we need-- -Nick.
+  - You stupid mother-- -Hey!
 
 ### "Look" + "-" (2 occurrences)
 - Predicted: None
@@ -672,6 +680,12 @@ Accuracy: 99.94%
 - Examples:
   - His belly reminds me of postcards from Japan - flat and pretty.
 
+### "-" + "for" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - And the next day, she sends for-- for Gyges and challenged him.
+
 ### "-" + "from" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -881,6 +895,12 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - They are men - yes sir!
+
+### "--" + "I" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - He flew like a madman always, so I-- I took no notice.
 
 ### "--" + "You" (1 occurrences)
 - Predicted: None

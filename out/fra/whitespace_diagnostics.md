@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2668595
-Total errors: 634
+Total predictions: 2668765
+Total errors: 635
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -1752,6 +1752,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Moi et le mot 'devoir' dans la même phrase.
+
+### "ding" + "eringeding" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ding-ding-ding-ding-dingeringeding !
 
 ### "doute" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
