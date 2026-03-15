@@ -18,6 +18,15 @@ static CHAT_CLIENT_LIGHT: LazyLock<ChatClient> = LazyLock::new(|| {
         .with_service_tier("flex")
 });
 
+static CHAT_CLIENT_LIGHTER: LazyLock<ChatClient> = LazyLock::new(|| {
+    ChatClient::from_env("gpt-5-mini")
+        .unwrap()
+        .with_cache_directory("./.dict-cache")
+        .with_backup_cache_directory("./.cache")
+        .with_reasoning_effort("minimal")
+        .with_service_tier("flex")
+});
+
 static CHAT_CLIENT_HEAVY: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.4")
         .unwrap()
@@ -288,7 +297,7 @@ pub async fn create_gram_phrasebook(
             let pb = pb.clone();
             let gram_text = gram.to_display_string(target_language);
             let cost =
-                CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHT.cost().unwrap_or(0.0);
+                CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHTER.cost().unwrap_or(0.0);
             pb.set_message(format!("{cost:.2} ({gram_text})"));
 
             let example_sentences = gram_sentences
@@ -311,11 +320,12 @@ pub async fn create_gram_phrasebook(
                 let chat_client = if freq > 250 {
                     &*CHAT_CLIENT_HEAVY
                 } else {
-                    &*CHAT_CLIENT_LIGHT
+                    &*CHAT_CLIENT_LIGHTER
                 };
 
                 // kind of ugly, but the old system prompt is bad, but it's too expensive to regenerate all of them so i'll just do it for the most important words
-                let system_prompt = format!(r#"The input is a {target_language} multi-word term along with example sentences showing its usage. Generate a phrasebook entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}).
+                let system_prompt = if freq > 100 {
+                    format!(r#"The input is a {target_language} multi-word term along with example sentences showing its usage. Generate a phrasebook entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}).
 
 Think about the word and its meaning based on how it's used in the example sentences, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning as the closest {native_language} equivalent word or short phrase — just like a dictionary translation (e.g. "just did", "what" or "that which", "as soon as"). Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just give the {native_language} equivalent. Any grammatical notes belong in the "additional_notes" field, not the meaning. Then, provide additional context for how the term is used in the "additional_notes" field. Finally, provide your own example of the term's usage in a natural sentence.
 
@@ -354,9 +364,49 @@ Output: {{
 Don't capitalize the first letter of the meaning unless it makes sense (e.g. english proper nouns, german nouns, etc). Do not add pronunciation, IPA, part of speech, gender, or conjugation info unless it's in the "additional_notes" field and truly necessary.
 
 Of course, their native language is {native_language}, so you should write the meaning and additional notes in {native_language}."#
-);
+)} else {
+    format!(
+                            r#"The input is a {target_language} multi-word term along with example sentences showing its usage. Generate a phrasebook entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}).
 
-                let response: Result<PhrasebookDefinitionEntry, _> = {
+Think about the word and its meaning based on how it's used in the example sentences, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning in a concise way. (Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just get straight to the meaning.) Then, provide additional context for how the term is used in the "additional_notes" field. Finally, provide your own example of the term's usage in a natural sentence.
+
+If the term is informal/slang, you can also set the "informal" field to true. For example, the english phrase "kick the bucket" is informal. If the term makes sense from the component words, you can also set the "compositional" field to true. (E.g. "Être sur son 31" makes no sense from its individual words, nor does "Altes Haus" in german. But "C'est" does make sense from its individual words) More examples: "pass away" is non-compositional (it's a phrasal verb whose meaning isn't obvious from "pass" + "away") but not informal. And "it is what it is" is informal but compositional.
+
+"Cognate" and "false_cognate" are boolean fields that indicate whether the {target_language} word is a cognate or false cognate in {native_language}.
+
+For our purposes, a phrase is a cognate to a definition if it looks similar to the {native_language} phrase. So "carte de crédit" is a cognate for "credit card", and "en général" is a cognate for "in general".
+And a phrase is a false cognate to a definition if it looks similar to a different {native_language} phrase and might be easily confused, a classic example being the spanish phrase "en absoluto" which looks like "absolutely" but means "not at all". (Another example is French "passer un examen" which looks like "pass an exam" but actually means "take an exam" with no implication of success).
+
+Lastly, "can_be_translated_literally" should be set to true if the phrase can be translated literally into the {native_language} phrase. For example, "carte de crédit" can be translated literally into "credit card", and "en général" can be translated literally into "in general".
+
+More french/english examples:
+"ce que" → not a cognate, but can be translated literally ("that which")
+"avoir lieu" → not a cognate, cannot be translated literally ("to have place" ≠ "to take place")
+
+Example:
+Input: multiword term: `ce que`
+Example sentences:
+1. Dis-moi ce que tu veux.
+2. Je ne sais pas ce que c'est.
+
+Output: {{
+    "target_language_multi_word_term":"ce que",
+    "meaning":"'what' or 'that which'.", // this field should be super concise
+    "additional_notes": "Refers to something previously mentioned or understood from context.",
+    "target_language_example":"C'est ce que je pensais.",
+    "native_language_example":"That's what I thought.",
+    "informal": false,
+    "compositional": true,
+    "cognate": false,
+    "false_cognate": false,
+    "can_be_translated_literally": true
+}}
+
+Of course, their native language is {native_language}, so you should write the meaning and additional notes in {native_language}.
+"#
+                )};
+
+                let response: Result<PhrasebookDefinitionEntry, _> = if freq > 100  {
                     let response: Result<PhrasebookDefinitionEntryV2, _> = chat_client
                         .chat_with_system_prompt(
                             system_prompt,
@@ -379,7 +429,20 @@ Of course, their native language is {native_language}, so you should write the m
                         cognate: entry.cognate,
                         false_cognate: entry.false_cognate,
                         can_be_translated_literally: entry.can_be_translated_literally,
-                    })};
+                    })
+                } else {
+                    chat_client
+                        .chat_with_system_prompt(
+                            system_prompt,
+                            format!(
+                                "multiword term: `{gram_text}`\n\nExample sentences:\n{examples_text}"
+                            ),
+                        )
+                        .await
+                        .inspect_err(|e| {
+                            println!("error: {e:#?}");
+                        })
+                };
 
                 // If the example doesn't contain the term, retry with feedback
                 let response = if let Ok(ref resp) = response {
@@ -417,7 +480,7 @@ Of course, their native language is {native_language}, so you should write the m
 
     pb.finish_with_message(format!(
         "{:.2}",
-        CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHT.cost().unwrap_or(0.0)
+        CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHTER.cost().unwrap_or(0.0)
     ));
 
     Ok(phrasebook)

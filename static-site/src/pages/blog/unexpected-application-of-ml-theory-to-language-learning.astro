@@ -63,7 +63,12 @@ const supertokens = supertokensText
     </p>
     <blockquote>I want you to understand that, first of all, you are not in any kind of trouble.</blockquote>
     <p>If you wanted to break it into chunks, how would you do it? The most obvious way is to make each word a chunk. So you get this: </p>
-    <p>{['I', 'want', 'you', 'to', 'understand', 'that,', 'first', 'of', 'all,', 'you', 'are', 'not', 'in', 'any', 'kind', 'of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</p>
+    <div class="not-prose my-4 rounded-lg border border-border overflow-hidden font-mono text-sm">
+      <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(128,128,128,0.2)' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted-foreground)', fontFamily: 'var(--font-sans)' }}>Words</span>
+        <div style={{ marginTop: '0.25rem' }}>{['I', 'want', 'you', 'to', 'understand', 'that,', 'first', 'of', 'all,', 'you', 'are', 'not', 'in', 'any', 'kind', 'of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</div>
+      </div>
+    </div>
     <p>(Where I've made each chunk a different color.)</p>
     <p>
       And that would be a perfectly valid tokenization, if a bit basic. But, despite how natural it is, I'd be willing to bet that your brain doesn't work this way at all.
@@ -88,13 +93,22 @@ const supertokens = supertokensText
     </p>
     <p>And it turns out it's not too difficult to figure out which chunks to keep to get the maximum compression. You just start with your big set of chunks, segment all your text into chunks, then throw away the chunks that appear the least. I tried that, and got... this:
     </p>
-    <p>{['I want you', 'to understand', 'that,', 'first of', 'all, you', 'are not in', 'any kind', 'of trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</p>
+    <div class="not-prose my-4 rounded-lg border border-border overflow-hidden font-mono text-sm">
+      <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(128,128,128,0.2)', opacity: 0.5 }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted-foreground)', fontFamily: 'var(--font-sans)' }}>Words</span>
+        <div style={{ marginTop: '0.25rem' }}>{['I', 'want', 'you', 'to', 'understand', 'that,', 'first', 'of', 'all,', 'you', 'are', 'not', 'in', 'any', 'kind', 'of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</div>
+      </div>
+      <div style={{ padding: '0.5rem 0.75rem' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted-foreground)', fontFamily: 'var(--font-sans)' }}>Min-chunks</span>
+        <div style={{ marginTop: '0.25rem' }}>{['I want you', 'to understand', 'that,', 'first of', 'all, you', 'are not in', 'any kind', 'of trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</div>
+      </div>
+    </div>
     <p>
       Ugh. Look at that 'all, you' token. It great for writing sentences in the fewest chunks possible, because "all, you" probably appears in a lot of sentences. But the problem with it is that it doesn't mean anything. LLMs work best when each chunk has a coherent meaning, and "all, you" just doesn't. In fact, this has been studied, and <a href="https://arxiv.org/html/2402.18376v1">the vocabulary that is the best for compression is not the best for LLMs</a>. And I'd bet the same applies to people.
     </p>
     <h3>The Unigram algorithm</h3>
     <p>
-      But there is a fix. A very simple one, in fact. The solution is to use a measure defined by Shannon almost a hundred years ago: Surprisal.
+      But there is a fix. A tiny tweak to the logic that lets us keep almost all the benefits of compression, but gives much better tokens. The solution is to use a measure defined by Shannon almost a hundred years ago: Surprisal.
     </p>
     <p>
       Instead of encoding the sentence in the fewest chunks possible, we encode it using the chunks that generate the "least surprisal". Surprisal just being a fancy name for the total rarity of each chunk in the sentence. It's a subtle change, but the results speak for themselves.
@@ -102,7 +116,20 @@ const supertokens = supertokensText
     <p>
       Before getting into the details, let's just give the new algorithm a try and see how it does! Here's it in action:
     </p>
-    <p>{['I want you to', 'understand', 'that,', 'first of all,', 'you are not', 'in', 'any kind of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</p>
+    <div class="not-prose my-4 rounded-lg border border-border overflow-hidden font-mono text-sm">
+      <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(128,128,128,0.2)', opacity: 0.5 }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted-foreground)', fontFamily: 'var(--font-sans)' }}>Words</span>
+        <div style={{ marginTop: '0.25rem' }}>{['I', 'want', 'you', 'to', 'understand', 'that,', 'first', 'of', 'all,', 'you', 'are', 'not', 'in', 'any', 'kind', 'of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</div>
+      </div>
+      <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid rgba(128,128,128,0.2)', opacity: 0.5 }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted-foreground)', fontFamily: 'var(--font-sans)' }}>Min-chunks</span>
+        <div style={{ marginTop: '0.25rem' }}>{['I want you', 'to understand', 'that,', 'first of', 'all, you', 'are not in', 'any kind', 'of trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</div>
+      </div>
+      <div style={{ padding: '0.5rem 0.75rem' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted-foreground)', fontFamily: 'var(--font-sans)' }}>Min-surprisal</span>
+        <div style={{ marginTop: '0.25rem' }}>{['I want you to', 'understand', 'that,', 'first of all,', 'you are not', 'in', 'any kind of', 'trouble.'].map((chunk, i) => (<><span style={{ background: chunkColors[i % chunkColors.length], borderRadius: '3px', padding: '0 2px' }}>{chunk}</span>{' '}</>))}</div>
+      </div>
+    </div>
     <p>
       That's a lot better! The 'all, you' chunk is gone. It got replaced by "first of all," and "you are not". Both of those actually seem like useful chunks! They're common, and they're also coherent concepts. That has been shown to be desirable when training LLMs, but it also seems straightforwardly applicable to people learning a language! Everyone learning English needs to learn what "first of all" means, but never needs to explicitly learn what "all, you" means.
     </p>
