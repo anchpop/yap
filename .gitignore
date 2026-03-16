@@ -39,3 +39,16 @@ static-site/.astro/
 yap-frontend/public/d/
 deploy-output/
 .wrangler/
+
+# Generated output files that are never read back (regenerated every run)
+out/*/homophone_practice.jsonl
+out/*/homophones_top_1000.jsonl
+out/*/pronunciation_sounds.jsonl
+out/*/target_language_sentences_nlp.jsonl
+out/*/conjugations.jsonl
+out/*/dictionary.jsonl
+out/*/gram_dictionary.jsonl
+out/*/gram_frequencies.jsonl
+out/*/gram_phrasebook.jsonl
+out/*/phrasebook.jsonl
+out/*/proper_noun_definitions.jsonl
