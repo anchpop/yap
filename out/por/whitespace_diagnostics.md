@@ -1,12 +1,20 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2498471
-Total errors: 511
+Total predictions: 2502020
+Total errors: 493
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
 
-### "-" + "um" (7 occurrences)
+### "-" + "me" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Chas, deixe- me terminar.
+  - Deixe - me tomar um banho rápido.
+  - Deixe- me falar claro.
+
+### "-" + "um" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -30,22 +38,6 @@ Accuracy: 99.98%
   - Eu não vou contar- Não vou contar nada.
   - Não quero mudar - Não é verdade.
 
-### "Mova" + "m" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Movam essas bundas suas bolas estúpidas!
-  - Movam seus traseiros!
-  - Movam-se!
-
-### "Mu" + "/" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Desculpe Mu/th/ur, o Yautja está morto.
-  - Olá, Mu/th/ur!
-  - Sabe por que a Mu/th/ur nos deu sentimentos?
-
 ### "," + "e" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -54,21 +46,13 @@ Accuracy: 99.98%
   - Adeus, querida,e boa sorte !
   - Hitleré um homem que teme o lntelecto,e odela todos lntelectuals.
 
-### "/" + "th" (4 occurrences)
-- Predicted: Space
-- Actual: None
+### "-" + "se" (4 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Desculpe Mu/th/ur, o Yautja está morto.
-  - Olá, Mu/th/ur!
-  - Sabe por que a Mu/th/ur nos deu sentimentos?
-
-### "/" + "ur" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Desculpe Mu/th/ur, o Yautja está morto.
-  - Olá, Mu/th/ur!
-  - Sabe por que a Mu/th/ur nos deu sentimentos?
+  - Acalme- se, Ethel.
+  - Adèle, sente- se, você já serviu todo mundo.
+  - Buckley, sente- se.
 
 ### "não" + "?" (4 occurrences)
 - Predicted: None
@@ -77,14 +61,6 @@ Accuracy: 99.98%
   - Foi bem com ele, não ?
   - Oh, não ?
   - Por que não ?
-
-### "th" + "/" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Desculpe Mu/th/ur, o Yautja está morto.
-  - Olá, Mu/th/ur!
-  - Sabe por que a Mu/th/ur nos deu sentimentos?
 
 ### "você" + "?" (4 occurrences)
 - Predicted: None
@@ -157,6 +133,13 @@ Accuracy: 99.98%
   - O que eles estão fazendo lá ?
   - Por que não fazem alguma reforma lá ?
   - Vamos lá ?
+
+### "," + "####" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - E sempre vou amar, ####.
+  - Ou só late, ####?
 
 ### "," + "Angela" (2 occurrences)
 - Predicted: Space
@@ -235,13 +218,6 @@ Accuracy: 99.98%
   - As pessoas - eles se parecem com lixo.
   - Leva o guarda-chuva - eles preveem chuva.
 
-### "." + "—" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ele ganhou na loteria. — É?!
-  - Ele voltou com a ex. — É?!
-
 ### "/" + "Elas" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -262,6 +238,13 @@ Accuracy: 99.98%
 - Examples:
   - Desisto - diga-me a resposta.
   - Desisto - me diga a resposta.
+
+### "Dul" + "cibear" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dulcibear!
+  - Dulcibear.
 
 ### "Eles" + "/" (2 occurrences)
 - Predicted: Space
@@ -291,6 +274,13 @@ Accuracy: 99.98%
   - Anda, Jasper !
   - Jasper !
 
+### "Julyan" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Coronel Julyan ?
+  - Seremos necessários na inquirição, Coronel Julyan ?
+
 ### "Maxim" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -305,6 +295,13 @@ Accuracy: 99.98%
   - Lembra daquele penhasco onde você me viu em Monte Carlo ?
   - Que acha de Monte Carlo ?
 
+### "Mu" + "/" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Olá, Mu/th/ur!
+  - Tessa, mensagem da Mu/Th/Ur recebida.
+
 ### "Pazu" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -318,6 +315,13 @@ Accuracy: 99.98%
 - Examples:
   - Julien Quentin !
   - Quentin !
+
+### "Visitar" + "emos" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Visitaremos nosso professor semana que vem.
+  - Visitaremos nosso tio próximo domingo.
 
 ### "a" + "Alemanha" (2 occurrences)
 - Predicted: Space
@@ -368,7 +372,7 @@ Accuracy: 99.98%
   - Ele perguntou isso ?
   - Tenho que pôr isso ?
 
-### "que" + "Jade Fox" (2 occurrences)
+### "que" + "Jade" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -381,6 +385,13 @@ Accuracy: 99.98%
 - Examples:
   - Aonde fica o banheiro, alguem sabe ?
   - Não sabe ?
+
+### "senhora" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Me chamou, senhora ?
+  - É possível reparar o objeto, senhora ?
 
 ### "," + "/" (1 occurrences)
 - Predicted: None
@@ -435,12 +446,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Slm,acredito.
-
-### "," + "asslm" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Estudantes,asslm como soldados, obedecem às ordens do Führer.
 
 ### "," + "baby" (1 occurrences)
 - Predicted: Space
@@ -526,19 +531,13 @@ Accuracy: 99.98%
 - Examples:
   - Primeiro eu,então!
 
-### "," + "espere" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Preclso lr,espere-me emmlnhacaslnha.
-
 ### "," + "estamos" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Os Piemontese nos cercam,estamos perdidos!
 
-### "," + "estavam" (1 occurrences)
+### "," + "estavamchelas" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -694,12 +693,6 @@ Accuracy: 99.98%
 - Examples:
   - O que chega primeiro,vota primeiro.
 
-### "," + "élnútll" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Pare de sonhar,élnútll.
-
 ### "," + "“" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -772,6 +765,12 @@ Accuracy: 99.98%
 - Examples:
   - Ei cara, eu imploro - borrife um pouco de inseticida atrás da geladeira.
 
+### "-" + "cabeça" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vocês podem resolver o quebra - cabeça?
+
 ### "-" + "como" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -790,12 +789,6 @@ Accuracy: 99.98%
 - Examples:
   - Desisto - diga-me a resposta.
 
-### "-" + "dois" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - V- dois, velocidade correta.
-
 ### "-" + "essencial" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -813,18 +806,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Bonito, inteligente e charmoso - isso descreve o que ele não é.
-
-### "-" + "lar" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - A- lar-me!
-
-### "-" + "me" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Desisto - me diga a resposta.
 
 ### "-" + "morrer" (1 occurrences)
 - Predicted: None
@@ -922,6 +903,18 @@ Accuracy: 99.98%
 - Examples:
   - Então -- você também?
 
+### "/" + "DC" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Que os polvos achem que é um show do AC/DC.
+
+### "/" + "Linux" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Use GNU/Linux.
+
 ### "/" + "Th" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -940,11 +933,23 @@ Accuracy: 99.98%
 - Examples:
   - Sami amava seu/sua professor(a).
 
-### "A" + "água" (1 occurrences)
+### "/" + "th" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Aágua é quente, né?
+  - Olá, Mu/th/ur!
+
+### "/" + "ur" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Olá, Mu/th/ur!
+
+### "AC" + "/" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Que os polvos achem que é um show do AC/DC.
 
 ### "Adeus" + "," (1 occurrences)
 - Predicted: None
@@ -988,11 +993,11 @@ Accuracy: 99.98%
 - Examples:
   - Conheceu você o Bixio ?
 
-### "C" + "+" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "Calogero" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Passou, C+.
+  - Dom Calogero !
 
 ### "Cerveja" + "?" (1 occurrences)
 - Predicted: None
@@ -1036,12 +1041,6 @@ Accuracy: 99.98%
 - Examples:
   - Ah sim, pode ser o Consomé ?
 
-### "Coronel Julyan" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Seremos necessários na inquirição, Coronel Julyan ?
-
 ### "DIRETORA" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1053,6 +1052,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Danny !
+
+### "Deixe" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Deixe - me tomar um banho rápido.
 
 ### "Diga" + "-" (1 occurrences)
 - Predicted: None
@@ -1072,11 +1077,11 @@ Accuracy: 99.98%
 - Examples:
   - Diz !
 
-### "Dom Calogero" + "!" (1 occurrences)
+### "Doi" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Dom Calogero !
+  - Tadashi Doi , em condições críticas.
 
 ### "Dom Calogero" + "?" (1 occurrences)
 - Predicted: None
@@ -1126,23 +1131,17 @@ Accuracy: 99.98%
 - Examples:
   - Então -- você também?
 
-### "Esta" + "é" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Estaéumahistóriasimples; no entanto,não é fácilcontá-la.
-
 ### "Eu" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Eu - não - vou - morrer.
 
-### "Fifty" + "é" (1 occurrences)
+### "Fogo" + "s" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Fifty-Fiftyé o caralho, Fábio.
+  - Fogos particulares são proibidos em muitos países.
 
 ### "Frith" + "!" (1 occurrences)
 - Predicted: None
@@ -1150,17 +1149,17 @@ Accuracy: 99.98%
 - Examples:
   - Frith !
 
+### "GNU" + "/" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Use GNU/Linux.
+
 ### "Garibaldi" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Mas, afinal de contas, meus homens foram úteis a Garibaldi .
-
-### "Genn" + "a" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Genna.
 
 ### "Hitler" + "é" (1 occurrences)
 - Predicted: Space
@@ -1180,6 +1179,18 @@ Accuracy: 99.98%
 - Examples:
   - VIOLÊNCIA INDISCRIMINADA - Não, eles irão se machucar.
 
+### "ISocorro" + "ILadrão" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - ParadoISocorroILadrão!
+
+### "Inevita" + "velmente" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Inevitavelmente perdido.
+
 ### "JUDEU" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1197,18 +1208,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Já leu Jules Verne ?
-
-### "Julyan" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Coronel Julyan ?
-
-### "Kelly" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Kelly -Kelly, certo.
 
 ### "Laid" + "," (1 occurrences)
 - Predicted: None
@@ -1263,12 +1262,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Maoses ?
-
-### "Mas" + "m" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Masm vou enviar os papéis do patrocínio.
 
 ### "Max" + "?" (1 occurrences)
 - Predicted: None
@@ -1360,6 +1353,12 @@ Accuracy: 99.98%
 - Examples:
   - Parabéns !
 
+### "Parado" + "ISocorro" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - ParadoISocorroILadrão!
+
 ### "Pare" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1371,12 +1370,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Pronto ?
-
-### "Quem" + "escapará" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Quemescaparáàselvagerla?
 
 ### "Quietos" + "!" (1 occurrences)
 - Predicted: None
@@ -1432,23 +1425,29 @@ Accuracy: 99.98%
 - Examples:
   - Senhor , damos antes as flores, ou a pizza?
 
+### "Ser" + "ei" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Serei o dublê de quem?
+
 ### "Sheeta" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Eu quero falar com Sheeta - a sós.
 
-### "Tadashi Doi" + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Tadashi Doi , em condições críticas.
-
 ### "Tatoeba" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Até que enfim completei cem frases no Tatoeba !
+
+### "Ter" + "ei" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Terei vivido em seu interior.
 
 ### "Terminado" + "?" (1 occurrences)
 - Predicted: None
@@ -1468,17 +1467,17 @@ Accuracy: 99.98%
 - Examples:
   - Todos !
 
-### "Todos" + "precls" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Todospreclsamsaber.
-
 ### "Trotiskistas" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Trotiskistas -Maoistas.
+
+### "Uma" + "vez" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Umavez, sua mãe disse a ele que, se ele pedisse, você viria.
 
 ### "Vamos" + "!" (1 occurrences)
 - Predicted: None
@@ -1521,12 +1520,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Que acha ?
-
-### "achegar" + "échlfrudo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - VamosIOúltlmo achegaréchlfrudo!
 
 ### "acione" + "¡" (1 occurrences)
 - Predicted: Space
@@ -1593,12 +1586,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - O que é aquilo ?
-
-### "as" + "redes" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No entanto,quando puxaram asredes,estavamchelas.
 
 ### "asco" + "!" (1 occurrences)
 - Predicted: None
@@ -1696,6 +1683,12 @@ Accuracy: 99.98%
 - Examples:
   - O céu está nublado e cinzento - um céu típico da estação das chuvas.
 
+### "coletor" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vamos, senhor coletor !
+
 ### "comer" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1713,12 +1706,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Quer comungar ?
-
-### "da" + "quela" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Gosto da cor daquela camisa.
 
 ### "dentes" + "?" (1 occurrences)
 - Predicted: None
@@ -1750,6 +1737,12 @@ Accuracy: 99.98%
 - Examples:
   - Não voltará até meio-dia ?
 
+### "ding" + "eringeding" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ding-ding-ding-ding-dingeringeding!
+
 ### "dizendo" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1773,12 +1766,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - O fruto proibido é o mais doce .
-
-### "doenças" + "l" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Certo, e não sabemos se trazem doençasl ou quanta radiação elas absorveram.
 
 ### "ela" + "-" (1 occurrences)
 - Predicted: None
@@ -1822,12 +1809,6 @@ Accuracy: 99.98%
 - Examples:
   - Devemos entrar ?
 
-### "entrevista" + "em" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Faremos a entrevistaem Cleveland.
-
 ### "entrou" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1840,12 +1821,6 @@ Accuracy: 99.98%
 - Examples:
   - Como ele era ?
 
-### "escapará" + "à" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Quemescaparáàselvagerla?
-
 ### "esperanto" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1857,12 +1832,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Que tipo de encenação é essa ?
-
-### "estavam" + "chelas" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No entanto,quando puxaram asredes,estavamchelas.
 
 ### "estranho" + "!" (1 occurrences)
 - Predicted: None
@@ -1923,18 +1892,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Por que não fecha ?
-
-### "ficará" + "sem" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - A cidade ficarásem diversão, sem nada!
-
-### "fisgar" + "á" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ele não sabe o que fisgará.
 
 ### "fora" + "?" (1 occurrences)
 - Predicted: None
@@ -2068,12 +2025,6 @@ Accuracy: 99.98%
 - Examples:
   - Seu lamen ?
 
-### "lhe" + "parece" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - O que lheparece?
-
 ### "love" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2139,18 +2090,6 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Todos os mendigos pedem moedas—mas este tinha um propósito muito especial!
-
-### "morrer" + "emos" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Retire-se ou todos morreremos aqui.
-
-### "mova" + "m" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Movam-se, movam-se.
 
 ### "mudar" + "-" (1 occurrences)
 - Predicted: None
@@ -2224,12 +2163,6 @@ Accuracy: 99.98%
 - Examples:
   - A atmosfera era ainda mais fria por causa de um vento gelado do norte .
 
-### "nos" + "dlstritosmllitares" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - A llstaseráaflxadaembreve nosdlstritosmllitares.
-
 ### "notado" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2302,12 +2235,6 @@ Accuracy: 99.98%
 - Examples:
   - Eu não posso sair pelado - não na minha idade.
 
-### "pelas" + "autorldades" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Os famIllaresserão notlflcados dlretamente pelasautorldades.
-
 ### "pensando" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2332,11 +2259,11 @@ Accuracy: 99.98%
 - Examples:
   - Precisamos de um plano - e rápido!
 
-### "por" + "amor" (1 occurrences)
+### "por" + "Jade Fox" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Umaloucacorrldaporouro e tambémporamor.
+  - Procuro porJade Fox.
 
 ### "possível" + "?" (1 occurrences)
 - Predicted: None
@@ -2344,23 +2271,11 @@ Accuracy: 99.98%
 - Examples:
   - Será possível ?
 
-### "pra" + "í" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mas agora botaram o metrô, ó praí, eles cimentaram tudo.
-
 ### "precisa" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - O que precisa ?
-
-### "precls" + "amsaber" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Todospreclsamsaber.
 
 ### "preparou" + "," (1 occurrences)
 - Predicted: None
@@ -2385,6 +2300,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - O que ?
+
+### "quebra" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vocês podem resolver o quebra - cabeça?
 
 ### "representantes" + "de" (1 occurrences)
 - Predicted: Space
@@ -2446,12 +2367,6 @@ Accuracy: 99.98%
 - Examples:
   - Apresse-se , ou você vai se atrasar para a escola.
 
-### "senhora" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Me chamou, senhora ?
-
 ### "sentar" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2500,17 +2415,17 @@ Accuracy: 99.98%
 - Examples:
   - Ah sim, o pode ser linguado também ?
 
-### "também" + "por" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Umaloucacorrldaporouro e tambémporamor.
-
 ### "tem" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Nunca tive medo de me afogar, você tem ?
+
+### "th" + "/" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Olá, Mu/th/ur!
 
 ### "trabalho" + "-" (1 occurrences)
 - Predicted: None
@@ -2523,12 +2438,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Você sabe aonde a gente tá ?
-
-### "um" + "ahistóriasimples" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Estaéumahistóriasimples; no entanto,não é fácilcontá-la.
 
 ### "vai" + "?" (1 occurrences)
 - Predicted: None
@@ -2590,17 +2499,11 @@ Accuracy: 99.98%
 - Examples:
   - Não acione¡ o Cronômetro na torre.
 
-### "à" + "selvagerla" (1 occurrences)
+### "É" + "Jade" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Quemescaparáàselvagerla?
-
-### "é" + "um" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Estaéumahistóriasimples; no entanto,não é fácilcontá-la.
+  - ÉJade Fox!
 
 ### "—" + "mas" (1 occurrences)
 - Predicted: Space

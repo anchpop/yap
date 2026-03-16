@@ -1,34 +1,10 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2720526
-Total errors: 1962
+Total predictions: 2730602
+Total errors: 2001
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
-
-### "Komm" + "t" (125 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Kommt Gas in den Abfluss rein, dann Gnade dem, der ein Zündholz anmacht.
-  - Kommt Ihr Mann auch aus Australien?
-  - Kommt Ihr mit was Trinken?
-
-### "-" + "und" (123 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Aber am berühmtesten war sie als Trapez- und Seilkünstlerin.
-  - Alle Land- und Stadtgerichte haben dem Dail Treue geschworen.
-  - Alle Schriftsysteme haben Vor- und Nachteile.
-
-### "-" + "oder" (31 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Bevorzugen Sie Lang- oder Rundkornreis?
-  - Bevorzugst du Lang- oder Rundkornreis?
-  - Bevorzugt ihr Lang- oder Rundkornreis?
 
 ### "…" + "-" (28 occurrences)
 - Predicted: None
@@ -38,13 +14,21 @@ Accuracy: 99.93%
   - Ah… -Hm?
   - Arme ausgebreitet, sie um dich gelegt und … - - … gedrückt.
 
-### "geht" + "s" (17 occurrences)
-- Predicted: Space
-- Actual: None
+### "-" + "und" (26 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Ach so, darum gehts!
-  - Captain, los gehts!
-  - Da gehts lang.
+  - Als geborene Münchnerin kennt sie die Stadt in- und auswendig.
+  - Da triffst du Prinz William - und kannst ihn an seiner Stelle heiraten.
+  - Darum leide ich an Vitamin-A- und Vitamin-E-Mangel.
+
+### "-" + "ho" (11 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ach, wo ist denn Kwang- ho hingegangen?
+  - Apropos Kwang- ho.
+  - Das bedeutet, Kwang- ho ist unser Zeuge.
 
 ### "," + "-" (10 occurrences)
 - Predicted: None
@@ -53,6 +37,14 @@ Accuracy: 99.93%
   - Aber wie dem auch sei, - jetzt ist alles klar.
   - Die Ballerinas trugen Ballettstrumpfhosen, -röckchen und -schuhe.
   - Die Menschen, mit denen ich verkehre, - sind wichtige Leute der Gesellschaft.
+
+### "Träne" + "n" (10 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er hat Tränen in den Augen.
+  - Ich sehe Tränen in deinen Augen.
+  - Mir kamen die Tränen.
 
 ### "du" + "?" (9 occurrences)
 - Predicted: None
@@ -78,6 +70,22 @@ Accuracy: 99.93%
   - Haben Sie „drei Wochen“ oder „drei Monate“ gesagt?
   - Habt ihr „Import“ oder „Export“ gesagt?
 
+### "“" + "oder" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bist du für „City“ oder die „Rovers“?
+  - Haben Sie „Import“ oder „Export“ gesagt?
+  - Haben Sie „drei Wochen“ oder „drei Monate“ gesagt?
+
+### "-" + "Cha" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Cha- Cha- Cha!
+  - Cha- Cha- Cha!
+  - Cha- Cha- Chat!
+
 ### "-" + "das" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -93,22 +101,6 @@ Accuracy: 99.93%
   - Bringe ihn sofort nach Hause !
   - Du bleibst zu Hause !
   - Geh nach Hause !
-
-### "“" + "oder" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Haben Sie „Import“ oder „Export“ gesagt?
-  - Haben Sie „drei Wochen“ oder „drei Monate“ gesagt?
-  - Habt ihr „Import“ oder „Export“ gesagt?
-
-### "-" + "bis" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Er pflegte zwei- bis dreimal im Jahr in dieser Stadt zu weilen.
-  - Es dauerte von Sonnenauf- bis Sonnenuntergang.
-  - Es gibt fünfzehn- bis zwanzigtausend Zuschauer.
 
 ### "-" + "wie" (7 occurrences)
 - Predicted: None
@@ -126,6 +118,22 @@ Accuracy: 99.93%
   - Er ist gewachsen, nicht ?
   - Es ist heiss heute, nicht ?
 
+### "“" + "zu" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Denken Sie ernsthaft darüber nach, das auf „eBay“ zu verkaufen?
+  - Hör auf, „Minecraft“ zu spielen!
+  - Höre auf, „Minecraft“ zu spielen!
+
+### "-" + "oder" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Sphären, in denen SS- oder Gestapo-Offiziere tätig waren.
+  - Egal, was es kostet - oder was sie brauchen.
+  - Ein- oder zweimal.
+
 ### "gemacht" + "?" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -133,6 +141,14 @@ Accuracy: 99.93%
   - Was habe ich gemacht ?
   - Was hast du da gemacht ?
   - Was hast du denn gemacht ?
+
+### "’" + "ich" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Da steh’ ich nun, ich armer Tor, und bin nicht klüger als zuvor.
+  - Da steh’ ich nun, ich armer Tor, und bin so klug als wie zuvor.
+  - Das nenn’ ich mal geräumig!
 
 ### "“" + "ist" (6 occurrences)
 - Predicted: None
@@ -158,13 +174,13 @@ Accuracy: 99.93%
   - Du bist wach,ja?
   - Ja,ja,ja.
 
-### "-" + "als" (5 occurrences)
+### "-" + "bis" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Alle waren so nett zu mir - als gehörte ich dazu.
-  - Die Methode hat sowohl Vor- als auch Nachteile.
-  - Es gibt weit mehr Yuan- als Euromillionäre auf der Welt.
+  - Er pflegte zwei- bis dreimal im Jahr in dieser Stadt zu weilen.
+  - Es gibt fünfzehn- bis zwanzigtausend Zuschauer.
+  - Ich esse nur drei- bis viermal im Monat Fleisch.
 
 ### "-" + "ich" (5 occurrences)
 - Predicted: None
@@ -182,6 +198,14 @@ Accuracy: 99.93%
   - Die Untersuchung von mir Als Verdächtiger im Terzi -Fall?
   - Nein, ich bin hier für den Terzi -Fall.
 
+### "an" + "!" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Halt den Wagen an !
+  - Jesus, schaut euch das an !
+  - Schau dir das an !
+
 ### "auf" + "!" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -189,6 +213,22 @@ Accuracy: 99.93%
   - He, Giudizio, fang auf !
   - Hör auf !
   - Ich gebe auf !
+
+### "“" + "gelesen" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Habt ihr „Romeo und Julia“ gelesen?
+  - Hast du schon einmal „Moby Dick“ gelesen?
+  - Hast du schon einmal „Vom Winde verweht“ gelesen?
+
+### "," + "„" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
+  - Hör auf, „Minecraft“ zu spielen!
+  - Höre auf, „Minecraft“ zu spielen!
 
 ### "-" + "-" (4 occurrences)
 - Predicted: None
@@ -214,14 +254,6 @@ Accuracy: 99.93%
   - Es war wie eine riesige Party, ein grandioses Fest - alles für mich.
   - Gabel, Gangschaltung - alles in allem ein Meisterstück.
 
-### "-" + "ist" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Der Zukunfts- ist auch ein Antik-, ein Bibelfilm.
-  - Für den Vater, Abou Tarek, - ist eine Sterbeurkunde nicht aufzufinden.
-  - Scheiße - ist das kalt!
-
 ### "-" + "sie" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -246,6 +278,14 @@ Accuracy: 99.93%
   - Die alte Hexe !
   - Es lebe die alte Hexe !
 
+### "Julia" + "“" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Habt ihr „Romeo und Julia“ gelesen?
+  - Hast du „Romeo und Julia“ gelesen?
+  - Im Theater wird „Romeo und Julia“ aufgeführt.
+
 ### "Scheiße" + "-" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -254,21 +294,13 @@ Accuracy: 99.93%
   - Scheiße - ich erfriere!
   - Scheiße - ist das kalt!
 
-### "Woll" + "t" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wollt ihr Tom sagen, was er tun muß, oder soll ich?
-  - Wollt ihr Tom sagen, was ihr getan habt?
-  - Wollt ihr Tom und Maria sagen, was sie tun müssen, oder soll ich?
-
-### "an" + "!" (4 occurrences)
+### "Vor-" + "und" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Jesus, schaut euch das an !
-  - Schau dir das an !
-  - Schaut euch die neuen Töchter an !
+  - Alle Schriftsysteme haben Vor- und Nachteile.
+  - Diese Prozedur hat Vor- und Nachteile.
+  - Es gibt immer Vor- und Nachteile.
 
 ### "denn" + "?" (4 occurrences)
 - Predicted: None
@@ -277,6 +309,14 @@ Accuracy: 99.93%
   - Also was hast du denn ?
   - Warum weinst du denn ?
   - Was begehrst du denn ?
+
+### "drei-" + "oder" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich gehe drei- oder viermal im Monat ins Kino.
+  - Tom geht mit Maria drei- oder viermal im Monat aus.
+  - Tom spielt drei- oder viermal im Monat Golf.
 
 ### "es" + "?" (4 occurrences)
 - Predicted: None
@@ -294,14 +334,6 @@ Accuracy: 99.93%
   - Ich bin hier !
   - Ich schöpfe hier !
 
-### "ist" + "ja" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Das istja eine Kunstart.
-  - Das istja normal.
-  - Das istja unfair.
-
 ### "jetzt" + "!" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -318,6 +350,22 @@ Accuracy: 99.93%
   - Das wusste ich nicht - wirklich nicht!
   - Gemelkt oder nicht - raus!
 
+### "räum" + "en" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Brücke räumen.
+  - Hank, kannst du das Atelier räumen?
+  - Ihr müsst das Zimmer räumen.
+
+### "“" + "und" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
+  - Der Satz enthält zwei Subjekte, nämlich „Tom“ und „Mary“.
+  - Die Rubriken „Sport“ und „Kultur“ lese ich nie.
+
 ### "„" + "Romeo" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -325,6 +373,14 @@ Accuracy: 99.93%
   - Habt ihr „Romeo und Julia“ gelesen?
   - Hast du „Romeo und Julia“ gelesen?
   - Im Theater wird „Romeo und Julia“ aufgeführt.
+
+### "-" + "Achtung" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kompanie B - Achtung!
+  - Kompanie D - Achtung!
+  - Kompanie E - Achtung!
 
 ### "-" + "Ei" (3 occurrences)
 - Predicted: None
@@ -366,6 +422,30 @@ Accuracy: 99.93%
   - Ihre Stärke ist, dass sie sich - für Frau Mak hält.
   - Von jetzt an werde ich an Ihrer Seite sein - für immer.
 
+### "-" + "gyu" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Chief, Hyun- gyu Park ist schon seit zwei Stunden nicht mehr gesehen worden.
+  - Hyun- gyu Park, hörst du nicht?
+  - Hyun- gyu, diese Karte hier, die hast du zum Sender geschickt, hm?
+
+### "-" + "sook" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das heißt also, du hast nicht nur Hyang- sook getötet, richtig?
+  - Hyang- sook auch?
+  - Hyang- sook?
+
+### "-" + "soon" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hyun- soon Dokko?
+  - Ich vermisse Hyun- soon ganz schön.
+  - Oh Mann, Hyun- soon.
+
 ### "Aktion" + "-" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -373,6 +453,14 @@ Accuracy: 99.93%
   - Aktion - Reaktion - Karzer!
   - Aktion - Reaktion!
   - Aktion - Reaktion.
+
+### "Babino" + "t" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Babinot, Beeilung!
+  - Babinot, die Ferien sind vorbei.
+  - Babinot, was soll das?
 
 ### "Duce" + "!" (3 occurrences)
 - Predicted: None
@@ -390,6 +478,14 @@ Accuracy: 99.93%
   - Habt ihr „Import“ oder „Export“ gesagt?
   - Hast du „Import“ oder „Export“ gesagt?
 
+### "Facebook" + "“" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich halte zu meinen Freunden und Verwandten über „Facebook“ Kontakt.
+  - Wie viele Freunde hast du bei „Facebook“?
+  - Wie viele „Facebook“-Freunde hast du?
+
 ### "Hm" + "…" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -406,6 +502,14 @@ Accuracy: 99.93%
   - Habt ihr „Import“ oder „Export“ gesagt?
   - Hast du „Import“ oder „Export“ gesagt?
 
+### "Ja" + "“" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er hat mir gesagt, wann ich „Ja“ sagen soll.
+  - I stimme mit „Ja“ ab.
+  - Sie antworteten alle ohne Ausnahme „Ja“.
+
 ### "Junge" + "!" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -413,6 +517,14 @@ Accuracy: 99.93%
   - Du böser Junge !
   - Du dummer Junge !
   - Lässt mich noch fallen, verrückter Junge !
+
+### "Korrek" + "t" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Korrekt von euch.
+  - Korrekt!
+  - Korrekt.
 
 ### "Lallo" + "!" (3 occurrences)
 - Predicted: None
@@ -422,14 +534,6 @@ Accuracy: 99.93%
   - Lallo !
   - Sei vorsichtig, Lallo !
 
-### "Mach" + "s" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Machs die gemütlich.
-  - Machs gut!
-  - Machs gut.
-
 ### "Monate" + "“" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -437,6 +541,14 @@ Accuracy: 99.93%
   - Haben Sie „drei Wochen“ oder „drei Monate“ gesagt?
   - Habt ihr „drei Wochen“ oder „drei Monate“ gesagt?
   - Hast du „drei Wochen“ oder „drei Monate“ gesagt?
+
+### "Schild" + "e" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Schilde hoch!
+  - Schilde hoch.
+  - Schilde zusammen!
 
 ### "Sie" + "…" (3 occurrences)
 - Predicted: None
@@ -454,6 +566,22 @@ Accuracy: 99.93%
   - Habt ihr „drei Wochen“ oder „drei Monate“ gesagt?
   - Hast du „drei Wochen“ oder „drei Monate“ gesagt?
 
+### "aus-" + "und" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Du solltest dir die nassen Sachen aus- und etwas Trockenes anziehen.
+  - Du solltest dir die nassen Sachen aus- und trockene anziehen.
+  - Sie sollten sich die nassen Sachen aus- und etwas Trockenes anziehen.
+
+### "ausreichend" + "“" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Du hast ein „ausreichend“ bekommen.
+  - Er bekam ein „ausreichend“.
+  - Warum habe ich ein „ausreichend“ bekommen?
+
 ### "da" + "!" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -470,6 +598,22 @@ Accuracy: 99.93%
   - Wer ist das ?
   - Wie findest du das ?
 
+### "euch" + "!" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ab ins Bett mit euch !
+  - Kommt raus und zeigt euch !
+  - Zur Hölle mit euch !
+
+### "gehen" + "!" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ciccio, lass uns an die Küste gehen !
+  - Lass mich gehen !
+  - Wir gehen !
+
 ### "genug" + "!" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -477,6 +621,14 @@ Accuracy: 99.93%
   - Das ist genug !
   - Ich hab genug !
   - So, das ist genug !
+
+### "hier" + "?" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bleibst du hier ?
+  - Lässt du ihn hier ?
+  - Was willst du hier ?
 
 ### "ich" + "!" (3 occurrences)
 - Predicted: None
@@ -493,6 +645,14 @@ Accuracy: 99.93%
   - Kommst du jetzt ?
   - Was machen sie jetzt ?
   - Wie fühlst du dich jetzt ?
+
+### "mal" + "’" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Du musst mal ’nen Zahn zulegen.
+  - Haste mal ’ne Kippe?
+  - Leg mal ’n Zahn zu!
 
 ### "mich" + "!" (3 occurrences)
 - Predicted: None
@@ -526,6 +686,14 @@ Accuracy: 99.93%
   - Was ist denn passiert ?
   - Was ist passiert ?
 
+### "raus" + "!" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Komm schon, raus !
+  - Kommt, alle wieder raus !
+  - Zieht mich raus !
+
 ### "sie" + "?" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -533,6 +701,22 @@ Accuracy: 99.93%
   - Wie ist sie ?
   - Willst du sie ?
   - Wo ist sie ?
+
+### "zwei-" + "oder" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er spielt zwei- oder dreimal im Monat Golf.
+  - Ich kaue nicht öfter als zwei- oder dreimal.
+  - Tom lässt sich gewöhnlich nur zwei- oder dreimal im Jahr die Haare schneiden.
+
+### "’" + "dich" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Geh mir aus dem Weg, oder ich knall’ dich ab!
+  - Ich hab’ dich einfach sehr gern.
+  - Ich hab’ dich lieb, Papa!
 
 ### "“" + "bedeutet" (3 occurrences)
 - Predicted: None
@@ -542,13 +726,21 @@ Accuracy: 99.93%
   - Wissen Sie überhaupt, was „ironisch“ bedeutet?
   - Wisst ihr überhaupt, was „ironisch“ bedeutet?
 
-### "“" + "gelesen" (3 occurrences)
+### "“" + "bekommen" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Hast du schon einmal „Moby Dick“ gelesen?
-  - Hast du schon einmal „Vom Winde verweht“ gelesen?
-  - Ich habe auf der Oberschule „Der große Gatsby“ gelesen.
+  - Du hast ein „ausreichend“ bekommen.
+  - Warum habe ich ein „ausreichend“ bekommen?
+  - Warum habe ich ein „befriedigend“ bekommen?
+
+### "“" + "lautet" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der Plural von „Kaktus“ lautet „Kakteen“.
+  - Die Mehrzahl von „Kaktus“ lautet „Kakteen“.
+  - Die Mehrzahl von „Pferd“ lautet „Pferde“.
 
 ### "„" + "Export" (3 occurrences)
 - Predicted: Space
@@ -558,6 +750,14 @@ Accuracy: 99.93%
   - Habt ihr „Import“ oder „Export“ gesagt?
   - Hast du „Import“ oder „Export“ gesagt?
 
+### "„" + "Facebook" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich halte zu meinen Freunden und Verwandten über „Facebook“ Kontakt.
+  - Wie viele Freunde hast du bei „Facebook“?
+  - Wie viele „Facebook“-Freunde hast du?
+
 ### "„" + "Import" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -566,12 +766,35 @@ Accuracy: 99.93%
   - Habt ihr „Import“ oder „Export“ gesagt?
   - Hast du „Import“ oder „Export“ gesagt?
 
+### "„" + "Ja" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er hat mir gesagt, wann ich „Ja“ sagen soll.
+  - I stimme mit „Ja“ ab.
+  - Sie antworteten alle ohne Ausnahme „Ja“.
+
+### "„" + "ausreichend" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Du hast ein „ausreichend“ bekommen.
+  - Er bekam ein „ausreichend“.
+  - Warum habe ich ein „ausreichend“ bekommen?
+
 ### "-" + "Tut" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Es wird wehtun- Tut mir leid-.
   - Verdammt- Tut mir leid-.
+
+### "-" + "als" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Alle waren so nett zu mir - als gehörte ich dazu.
+  - Es gibt weit mehr Yuan- als Euromillionäre auf der Welt.
 
 ### "-" + "der" (2 occurrences)
 - Predicted: None
@@ -601,6 +824,13 @@ Accuracy: 99.93%
   - Wen hättest du lieber - einen Sohn oder eine Tochter?
   - Wir haben - wortwörtlich - einen Haufen zu Essen.
 
+### "-" + "er" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dieser Tisch ist gut bis auf einen Aspekt - er passt nicht in mein Zimmer.
+  - Er ist-- er ist einer von denen Sir.
+
 ### "-" + "es" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -608,12 +838,26 @@ Accuracy: 99.93%
   - Das Folgende anzuhören ist kaum erträglich - es zu sagen ist noch schwerer.
   - Falls irgendwas passiert - es muss jemand Bescheid wissen.
 
+### "-" + "gen" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Erst konnte ich nicht hineingelan- gen, denn der Weg war mir versperrt.
+  - Kann ich das Weiße in ihren Au- gen sehen, stehen sie hinter mir.
+
 ### "-" + "hier" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Hier könnt Ihr frei reden - hier unter uns.
   - Nur wer genau hinschaut, sieht - hier!
+
+### "-" + "ist" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Für den Vater, Abou Tarek, - ist eine Sterbeurkunde nicht aufzufinden.
+  - Scheiße - ist das kalt!
 
 ### "-" + "nach" (2 occurrences)
 - Predicted: None
@@ -685,6 +929,13 @@ Accuracy: 99.93%
   - Ein Fremder schreibt nicht „Arschloch“.
   - Er schreibt „Arschloch“.
 
+### "B" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kompanie B - Achtung!
+  - Requiem I Klasse B - Freunde.
+
 ### "Baum" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -713,20 +964,6 @@ Accuracy: 99.93%
   - Chief … - Er wird schon wieder.
   - Chief … Sie hatte recht.
 
-### "D" + "a" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Da warst du gleich ganz freundlich, nicht?
-  - Da warst du noch auf der Oberschule, oder?
-
-### "Eltern" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ehrst du deine Eltern ?
-  - Nun, ehrst du deine Eltern ?
-
 ### "Erdschiff" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -741,12 +978,12 @@ Accuracy: 99.93%
   - Agent Starling, FBI .
   - Und wenn Ihnen das gelingt, dürfen Sie wieder zum Dienst, zum FBI .
 
-### "Facebook" + "“" (2 occurrences)
+### "Frieden" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Ich halte zu meinen Freunden und Verwandten über „Facebook“ Kontakt.
-  - Wie viele „Facebook“-Freunde hast du?
+  - Ich bin fast fertig mit „Krieg und Frieden“.
+  - Ich wollte schon immer mal „Krieg und Frieden“ lesen.
 
 ### "Frühling" + "!" (2 occurrences)
 - Predicted: None
@@ -769,26 +1006,33 @@ Accuracy: 99.93%
   - Ich … Ich bin wirklich … ein dumm… dumm… dummes Häschen.
   - Ich … helf eurer Freundin.
 
-### "Ja" + "“" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Er hat mir gesagt, wann ich „Ja“ sagen soll.
-  - Sie antworteten alle ohne Ausnahme „Ja“.
-
-### "Julia" + "“" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Im Theater wird „Romeo und Julia“ aufgeführt.
-  - Wer hat „Romeo und Julia“ geschrieben?
-
-### "Julia“" + "gelesen" (2 occurrences)
+### "Italien" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Habt ihr „Romeo und Julia“ gelesen?
-  - Hast du „Romeo und Julia“ gelesen?
+  - Es lebe Italien !
+  - Lang lebe Italien !
+
+### "Kakteen" + "“" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Plural von „Kaktus“ lautet „Kakteen“.
+  - Die Mehrzahl von „Kaktus“ lautet „Kakteen“.
+
+### "Kaktus" + "“" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Plural von „Kaktus“ lautet „Kakteen“.
+  - Die Mehrzahl von „Kaktus“ lautet „Kakteen“.
+
+### "Kopf-" + "und" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hast du Kopf- und Halsweh?
+  - Ich habe Kopf- und Halsschmerzen.
 
 ### "Kriegskunst" + "“" (2 occurrences)
 - Predicted: Space
@@ -797,12 +1041,26 @@ Accuracy: 99.93%
   - Sie spielt „Welt der Kriegskunst“.
   - Tom hat „Die Kriegskunst“ von Sūnzǐ gelesen.
 
+### "Mach" + "’" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mach ’ne Fliege!
+  - Mach ’nen Abflug!
+
 ### "Marsfahrzeug" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Das „Neugier-Marsfahrzeug“ ist auf dem Mars gelandet.
   - Das „Neugier-Marsfahrzeug“ ist im Gale-Krater gelandet.
+
+### "Minecraft" + "“" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hör auf, „Minecraft“ zu spielen!
+  - Höre auf, „Minecraft“ zu spielen!
 
 ### "Miranda" + "!" (2 occurrences)
 - Predicted: None
@@ -839,6 +1097,20 @@ Accuracy: 99.93%
   - Hallo Onkel !
   - Onkel !
 
+### "Papa" + "!" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mach das Kreuz, Papa !
+  - Papa !
+
+### "Papa" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kann ich noch etwas haben, Papa ?
+  - Wie war das mit dir und Papa ?
+
 ### "Platz" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -853,12 +1125,26 @@ Accuracy: 99.93%
   - Er war schön und von heiterer Ruhe - wie ein Erzengel.
   - Lass mich in Ruhe - Hast du was genommen?
 
+### "Science" + "“" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Studie wurde im Journal „Science“ veröffentlicht.
+  - Sie hat auch schon Artikel in „Science“ veröffentlicht.
+
 ### "Sohn" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Aber er ist doch mein Sohn !
   - Dein Halunke von einem Sohn !
+
+### "Sonnen-" + "oder" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wir benutzen sie oft als Sonnen- oder Regenschirme.
+  - Wir nutzen sie oft als Sonnen- oder Regenschirme.
 
 ### "Sport" + "“" (2 occurrences)
 - Predicted: Space
@@ -881,6 +1167,13 @@ Accuracy: 99.93%
   - Schau, Titta !
   - Titta !
 
+### "Tom" + "“" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Satz enthält zwei Subjekte, nämlich „Tom“ und „Mary“.
+  - Ist „Tom“ in Australien ein häufiger Name?
+
 ### "Und" + "…" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -895,19 +1188,19 @@ Accuracy: 99.93%
   - Wirfst Steine gegen deinen alten Vater ?
   - Ärgerst du immer noch deinen Vater ?
 
-### "Warp" + "geschwindigkeit" (2 occurrences)
+### "Vor" + "rücken" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Warpgeschwindigkeit in drei Minuten oder wir sind tot.
-  - Warpgeschwindigkeit.
+  - Vorrücken!
+  - Vorrücken.
 
-### "Wund" + "ervoll" (2 occurrences)
+### "Wiedersehen" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Wundervoll, oder?
-  - Wundervoll.
+  - Geh ihm „Auf Wiedersehen“ sagen, bevor er weg ist.
+  - Geh und sag ihm „Auf Wiedersehen“, bevor er wegfährt.
 
 ### "alles" + "?" (2 occurrences)
 - Predicted: None
@@ -923,12 +1216,19 @@ Accuracy: 99.93%
   - Das macht mir ein komisches Gefühl, dir nicht auch ?
   - Du auch ?
 
-### "bist" + "ja" (2 occurrences)
-- Predicted: Space
-- Actual: None
+### "auf" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Aber du bistja erwachsen!
-  - Du bistja eiskalt.
+  - Ich pass auf -Verpiss dich!
+  - Im Esperanto endet ein abgeleitetes Adverb auf -e.
+
+### "auf-" + "und" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich hörte eine Autotür auf- und zugehen.
+  - Tom hörte die Hintertür auf- und zugehen.
 
 ### "da" + "-" (2 occurrences)
 - Predicted: None
@@ -986,6 +1286,13 @@ Accuracy: 99.93%
   - Hey, du … - Auf Wiedersehen!
   - Und du … brauchst eine Therapietierherde.
 
+### "eBay" + "“" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Denken Sie ernsthaft darüber nach, das auf „eBay“ zu verkaufen?
+  - Ziehst du ernsthaft in Erwägung, das auf „eBay“ zu verkaufen?
+
 ### "er" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1014,19 +1321,12 @@ Accuracy: 99.93%
   - Okay, es … es ist mir egal, dass wir unterschiedlich sind.
   - Zu der Zeit war es … eine Show zur Geschlechtsidentität.
 
-### "euch" + "!" (2 occurrences)
+### "für" + "’" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Ab ins Bett mit euch !
-  - Zur Hölle mit euch !
-
-### "gehen" + "!" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ciccio, lass uns an die Küste gehen !
-  - Wir gehen !
+  - Das habe ich für ’n Appel und ’n Ei bekommen.
+  - Das habe ich für ’nen Appel und ’n Ei bekommen.
 
 ### "gehen" + "?" (2 occurrences)
 - Predicted: None
@@ -1035,19 +1335,12 @@ Accuracy: 99.93%
   - Wohin alle diese Leute gehen ?
   - Wohin sie mit Herzklopfen gehen ?
 
-### "geht" + "'s" (2 occurrences)
+### "geht" + "'" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - So, los geht's!
   - So, weiter geht's.
-
-### "hast" + "ja" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Du hastja auch ohne sie bestens existiert.
-  - Du hastja gesund gelebt.
 
 ### "hat" + "!" (2 occurrences)
 - Predicted: None
@@ -1077,13 +1370,6 @@ Accuracy: 99.93%
   - Was steht da geschrieben, frage ich ?
   - Wo bin ich ?
 
-### "ich" + "jemanden" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Die Leute wußten, daß ichjemanden im Rücken hatte.
-  - Zum erstenmal sah ichjemanden, der angeschossen worden war.
-
 ### "ironisch" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1098,12 +1384,12 @@ Accuracy: 99.93%
   - Findest du nicht, dass es so musikalisch ist ?
   - Was denkst du, wozu mein Hintern ist ?
 
-### "ist" + "jemand" (2 occurrences)
+### "ja" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Carlos, da istjemand im Bad.
-  - Für Susana istjemand am Telefon.
+  - Das Wort „ja“ kommt ihm nie über die Lippen.
+  - Die Antwort war „ja“.
 
 ### "kommen" + "!" (2 occurrences)
 - Predicted: None
@@ -1118,6 +1404,13 @@ Accuracy: 99.93%
 - Examples:
   - Der Mann bekam „lebenslänglich“.
   - Tom steht „lebenslänglich“ bevor.
+
+### "los" + "!" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Jawohl, hol das Pferd, los !
+  - Lasst mich los !
 
 ### "mehr" + "!" (2 occurrences)
 - Predicted: None
@@ -1175,19 +1468,26 @@ Accuracy: 99.93%
   - Nimm alle anderen Effekte raus - nur den Schrei.
   - Schaff ihn hier raus - wie, ist mir egal.
 
+### "rein" + "!" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es ist offen, du kannst rein !
+  - Spring rein !
+
+### "runter" + "!" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Komm runter !
+  - Lass mich runter !
+
 ### "sagen" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Mehr kann ich dir nicht sagen - weder dir noch den anderen.
   - Was Sie auch immer sagen - dieser Zustand wird nicht andauern.
-
-### "sehr" + "jung" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Es ist zwar sehrjung, aber ihm gehört die Zukunft.
-  - Meine Freundin war sehrjung.
 
 ### "sein" + "!" (2 occurrences)
 - Predicted: None
@@ -1210,20 +1510,6 @@ Accuracy: 99.93%
   - Und du sagst, ich soll der Vater dieses Mistkerls sein ?
   - Wie weit aussen wird es sein ?
 
-### "sich" + "s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Er sagt, er überlegt sichs.
-  - Sie wollen sichs überlegen.
-
-### "sieht" + "s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wie siehts aus Chef?
-  - Wie siehts aus?
-
 ### "so" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1237,13 +1523,6 @@ Accuracy: 99.93%
 - Examples:
   - Ist das richtig so ?
   - Wie hälst du dich denn so ?
-
-### "steh’" + "ich" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Da steh’ ich nun, ich armer Tor, und bin nicht klüger als zuvor.
-  - Da steh’ ich nun, ich armer Tor, und bin so klug als wie zuvor.
 
 ### "still" + "!" (2 occurrences)
 - Predicted: None
@@ -1259,6 +1538,13 @@ Accuracy: 99.93%
   - Möchtest du auf den Sieg des Faschismus trinken ?
   - Warum sollte ich das trinken ?
 
+### "tun" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Jesus, was soll ich jetzt tun ?
+  - Was willst du tun ?
+
 ### "umbringen" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1266,7 +1552,7 @@ Accuracy: 99.93%
   - Aber zuerst werde ich mich selbst umbringen !
   - Ich will dich umbringen !
 
-### "und" + "’n" (2 occurrences)
+### "und" + "’" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -1301,19 +1587,12 @@ Accuracy: 99.93%
   - Geh weg !
   - Wirf diesen Stein weg !
 
-### "wir" + "jetzt" (2 occurrences)
+### "zurücksetzen" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Ich bin sehr froh, dass wirjetzt zusammen hier sind.
-  - Was tun wirjetzt?
-
-### "wird" + "s" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Natürlich wirds das.
-  - Wer wirds wohl sein?
+  - Haben Sie auf „zurücksetzen“ gedrückt?
+  - Hast du auf „zurücksetzen“ gedrückt?
 
 ### "zwei" + "-" (2 occurrences)
 - Predicted: None
@@ -1329,13 +1608,6 @@ Accuracy: 99.93%
   - Sie, äh … haben ihn geschnappt.
   - Äh … äh … was?
 
-### "’" + "dich" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Geh mir aus dem Weg, oder ich knall’ dich ab!
-  - Ich hab’ dich lieb, Papa!
-
 ### "’" + "die" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1343,12 +1615,26 @@ Accuracy: 99.93%
   - Er tät’ die Reise lieber mit dem Zuge als im Fluge.
   - Sie gingen Seit’ an Seit’ die Straße entlang.
 
-### "’" + "ich" (2 occurrences)
+### "’" + "ein" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Nirgends auf Erden wollt’ ich lieber sein!
-  - Wenn Tom und Maria das machen, dann mach’ ich das auch.
+  - Ich hab’ ein Sofa.
+  - Ich wünscht’, ich wär’ ein Vögelein.
+
+### "’" + "mir" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich tu’ mir sehr gern Essig auf die Pommes.
+  - O wär’ mir doch solche Macht zu eigen!
+
+### "’" + "schon" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich dachte, das wär’ schon unter Dach und Fach.
+  - Ich dachte, der wär’ schon lange tot.
 
 ### "’" + "sie" (2 occurrences)
 - Predicted: None
@@ -1357,12 +1643,19 @@ Accuracy: 99.93%
   - Ich hab’ sie gern und sie mich auch.
   - Sag den Kindern, ich hab’ sie lieb!
 
-### "“" + "bekommen" (2 occurrences)
+### "“" + "ein" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Warum habe ich ein „ausreichend“ bekommen?
-  - Warum habe ich ein „befriedigend“ bekommen?
+  - In der heutigen Zeit ist „variabel“ ein Schimpfwort.
+  - Maria hat bei „Pinterest“ ein Bild von ihren Keksen hochgeladen.
+
+### "“" + "gedrückt" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Haben Sie auf „zurücksetzen“ gedrückt?
+  - Hast du auf „zurücksetzen“ gedrückt?
 
 ### "“" + "in" (2 occurrences)
 - Predicted: None
@@ -1378,19 +1671,12 @@ Accuracy: 99.93%
   - Er hat mir gesagt, wann ich „Ja“ sagen soll.
   - Geh ihm „Auf Wiedersehen“ sagen, bevor er weg ist.
 
-### "“" + "und" (2 occurrences)
+### "“" + "veröffentlicht" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
-  - Die Rubriken „Sport“ und „Kultur“ lese ich nie.
-
-### "“" + "zu" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich habe vergessen, auf „abschicken“ zu klicken.
-  - Was heißt es, „klug“ zu sein?
+  - Die Studie wurde im Journal „Science“ veröffentlicht.
+  - Sie hat auch schon Artikel in „Science“ veröffentlicht.
 
 ### "„" + "Arschloch" (2 occurrences)
 - Predicted: Space
@@ -1427,19 +1713,33 @@ Accuracy: 99.93%
   - Tom und Maria haben ein „Erdschiff“ gebaut.
   - Tom und Maria wohnen in einem „Erdschiff“.
 
-### "„" + "Facebook" (2 occurrences)
+### "„" + "Kakteen" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Ich halte zu meinen Freunden und Verwandten über „Facebook“ Kontakt.
-  - Wie viele „Facebook“-Freunde hast du?
+  - Der Plural von „Kaktus“ lautet „Kakteen“.
+  - Die Mehrzahl von „Kaktus“ lautet „Kakteen“.
 
-### "„" + "Ja" (2 occurrences)
+### "„" + "Kaktus" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Er hat mir gesagt, wann ich „Ja“ sagen soll.
-  - Sie antworteten alle ohne Ausnahme „Ja“.
+  - Der Plural von „Kaktus“ lautet „Kakteen“.
+  - Die Mehrzahl von „Kaktus“ lautet „Kakteen“.
+
+### "„" + "Krieg" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich bin fast fertig mit „Krieg und Frieden“.
+  - Ich wollte schon immer mal „Krieg und Frieden“ lesen.
+
+### "„" + "Minecraft" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hör auf, „Minecraft“ zu spielen!
+  - Höre auf, „Minecraft“ zu spielen!
 
 ### "„" + "Neugier" (2 occurrences)
 - Predicted: Space
@@ -1448,12 +1748,33 @@ Accuracy: 99.93%
   - Das „Neugier-Marsfahrzeug“ ist auf dem Mars gelandet.
   - Das „Neugier-Marsfahrzeug“ ist im Gale-Krater gelandet.
 
+### "„" + "Science" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Studie wurde im Journal „Science“ veröffentlicht.
+  - Sie hat auch schon Artikel in „Science“ veröffentlicht.
+
 ### "„" + "Sport" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Die Rubriken „Sport“ und „Kultur“ lese ich nie.
   - Ich lese alle Rubriken außer die Rubrik „Sport“.
+
+### "„" + "Tom" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Satz enthält zwei Subjekte, nämlich „Tom“ und „Mary“.
+  - Ist „Tom“ in Australien ein häufiger Name?
+
+### "„" + "eBay" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Denken Sie ernsthaft darüber nach, das auf „eBay“ zu verkaufen?
+  - Ziehst du ernsthaft in Erwägung, das auf „eBay“ zu verkaufen?
 
 ### "„" + "ironisch" (2 occurrences)
 - Predicted: Space
@@ -1462,6 +1783,13 @@ Accuracy: 99.93%
   - Wissen Sie überhaupt, was „ironisch“ bedeutet?
   - Wisst ihr überhaupt, was „ironisch“ bedeutet?
 
+### "„" + "ja" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Das Wort „ja“ kommt ihm nie über die Lippen.
+  - Die Antwort war „ja“.
+
 ### "„" + "lebenslänglich" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1469,33 +1797,12 @@ Accuracy: 99.93%
   - Der Mann bekam „lebenslänglich“.
   - Tom steht „lebenslänglich“ bevor.
 
-### "„Kaktus“" + "lautet" (2 occurrences)
-- Predicted: None
-- Actual: Space
+### "„" + "zurücksetzen" (2 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - Der Plural von „Kaktus“ lautet „Kakteen“.
-  - Die Mehrzahl von „Kaktus“ lautet „Kakteen“.
-
-### "„Minecraft“" + "zu" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hör auf, „Minecraft“ zu spielen!
-  - Höre auf, „Minecraft“ zu spielen!
-
-### "„Science“" + "veröffentlicht" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Studie wurde im Journal „Science“ veröffentlicht.
-  - Sie hat auch schon Artikel in „Science“ veröffentlicht.
-
-### "„eBay“" + "zu" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Denken Sie ernsthaft darüber nach, das auf „eBay“ zu verkaufen?
-  - Ziehst du ernsthaft in Erwägung, das auf „eBay“ zu verkaufen?
+  - Haben Sie auf „zurücksetzen“ gedrückt?
+  - Hast du auf „zurücksetzen“ gedrückt?
 
 ### "," + "bitteee" (1 occurrences)
 - Predicted: Space
@@ -1527,11 +1834,11 @@ Accuracy: 99.93%
 - Examples:
   - Nein, du spielst ,mit deinem Leben!
 
-### "," + "„" (1 occurrences)
+### "-" + "Agenten" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Was heißt es, „klug“ zu sein?
+  - Ich habe ihren besten Undercover- Agenten verkabelt, Freddie Corso.
 
 ### "-" + "Alkoholverbot" (1 occurrences)
 - Predicted: None
@@ -1550,6 +1857,24 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Hey, du … - Auf Wiedersehen!
+
+### "-" + "Aufbaukurs" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kennen Sie den Brustmuskel- Aufbaukurs im Fernsehen?
+
+### "-" + "Augen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Leute behaupten schließlich nicht umsonst, ich hätte Schamanen- Augen.
+
+### "-" + "Bart" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Gefällt dir mein Cäsaren- Bart?
 
 ### "-" + "Beleidigung" (1 occurrences)
 - Predicted: None
@@ -1575,12 +1900,6 @@ Accuracy: 99.93%
 - Examples:
   - In Begleitung von Dadinho und Bené - Cabeleiras Bruder .
 
-### "-" + "Cha" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Cha- Cha- Chat!
-
 ### "-" + "Chat" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1598,6 +1917,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Toller Rahmen- Darf ich fotografieren, wie du zum Fenster rausschaust?
+
+### "-" + "Dreck" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wieso frisst du Chinesen- Dreck in meinem verdammten Laden?
 
 ### "-" + "Du" (1 occurrences)
 - Predicted: None
@@ -1623,11 +1948,23 @@ Accuracy: 99.93%
 - Examples:
   - MILITÄREINSATZ BEI AUSSCHREITUNGEN - Es greift wohl im ganzen Land um sich.
 
+### "-" + "Familienweihnachtsbaum" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der Griswold- Familienweihnachtsbaum.
+
 ### "-" + "Flaschen" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ihre Abteilung sind Coca Cola- Flaschen, den Champagner überlassen Sie mal mir.
+
+### "-" + "Formation" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wir haben mit der Schildkröten- Formation ihren Angriff abgewehrt.
 
 ### "-" + "Freddy Loyacano" (1 occurrences)
 - Predicted: None
@@ -1653,11 +1990,23 @@ Accuracy: 99.93%
 - Examples:
   - Lass mich in Ruhe - Hast du was genommen?
 
+### "-" + "Hausmeister" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nagini sagt mir, dass der Muggel- Hausmeister direkt vor der Tür steht.
+
 ### "-" + "Heiß" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - SCHLACHTPLAN Schwere Dosen - Heiß!
+
+### "-" + "Herzexplosionstechnik" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Pai Mei hat dir die Fünf-Punkte- Herzexplosionstechnik beigebracht?
 
 ### "-" + "Hör" (1 occurrences)
 - Predicted: None
@@ -1725,11 +2074,23 @@ Accuracy: 99.93%
 - Examples:
   - GEWALTSAME UNRUHEN - Meine Güte.
 
+### "-" + "Message" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Genau so eine Mach-mir-ein-Baby- Message wollte ich ihm senden.
+
 ### "-" + "Millionen" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Fresst Scheiße - Millionen von Fliegen können nicht irren.
+
+### "-" + "Missionarinnen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Weshalb unsere Bene-Gesserit- Missionarinnen dort so produktiv waren.
 
 ### "-" + "Moskau" (1 occurrences)
 - Predicted: None
@@ -1767,11 +2128,17 @@ Accuracy: 99.93%
 - Examples:
   - Ich hatte mal einen Freund - Pedro.
 
-### "-" + "Phil Douglas" (1 occurrences)
+### "-" + "Phil" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Violine - Phil Douglas.
+
+### "-" + "Preisausschreiben" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie haben das Gemini- Preisausschreiben gewonnen.
 
 ### "-" + "Ritter" (1 occurrences)
 - Predicted: None
@@ -1893,11 +2260,35 @@ Accuracy: 99.93%
 - Examples:
   - Du gehst zu einem sehr gefährlichen Ort - also, gib Acht!
 
+### "-" + "arbeit" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie machen einem die Zusammen- arbeit nich einfach.
+
+### "-" + "artisten" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wir sind ein paar arme Zirkus- artisten, die sich verlaufen haben.
+
 ### "-" + "ausgerechnet" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ich habe sie zufällig getroffen - ausgerechnet in der Mongolei.
+
+### "-" + "bare" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ach Maxim, ich mach mir so furcht- bare Sorgen wegen der Verhandlung.
+
+### "-" + "beinen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie kennen den Mann von Kindes- beinen an, das gibt mir Zuversicht.
 
 ### "-" + "bin" (1 occurrences)
 - Predicted: None
@@ -1910,6 +2301,30 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Du spinnst, du tust überhaupt nichts - bleib in der verdammten Zelle!
+
+### "-" + "brochenen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Maxence hatte ihn wegen einer zer- brochenen Fensterscheibe bestraft.
+
+### "-" + "chenende" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Einmal, quasi heimlich übers Wo- chenende aus London hierhergekommen.
+
+### "-" + "chin" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Chin- chin!
+
+### "-" + "dammten" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hätte nicht jemand von einem ver- dammten Strand träumen können?
 
 ### "-" + "dann" (1 occurrences)
 - Predicted: None
@@ -1934,6 +2349,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Das Motto der SSBS - deinem neuen Heim.
+
+### "-" + "dernswert" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Und ich finde Ihre Haltung bewun- dernswert, einfach bewundernswert.
 
 ### "-" + "deutsches" (1 occurrences)
 - Predicted: None
@@ -1965,11 +2386,11 @@ Accuracy: 99.93%
 - Examples:
   - Wenn wir uns nicht gegenseitig helfen- - eine Nachricht.
 
-### "-" + "er" (1 occurrences)
+### "-" + "ende" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Dieser Tisch ist gut bis auf einen Aspekt - er passt nicht in mein Zimmer.
+  - Ich hab dieses Wochen- ende noch nichts vor.
 
 ### "-" + "erzähl" (1 occurrences)
 - Predicted: None
@@ -1983,11 +2404,35 @@ Accuracy: 99.93%
 - Examples:
   - Den Bourbonen - falls es erlaubt ist, sie zu erwähnen.
 
+### "-" + "familien" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Du wirst sehen, einige Zauberer- familien sind besser als andere.
+
+### "-" + "fenster" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich gebe Ihnen ein Zeit- fenster von fünf Minuten.
+
 ### "-" + "folgte" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Wenn er hier war, - folgte ich ihm auf Schritt und Tritt.
+
+### "-" + "fragt" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Kinder wurden als Zeugen be- fragt und Rachin wurde entlassen.
+
+### "-" + "freunde" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das haben Sie Ihre Studien- freunde immer spüren lassen.
 
 ### "-" + "frisch" (1 occurrences)
 - Predicted: None
@@ -1995,17 +2440,17 @@ Accuracy: 99.93%
 - Examples:
   - Und da könnte man Kräuter einpflanzen - frisch zum Tisch.
 
-### "-" + "fällt" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sag nicht, was dir am Wagen ge- fällt, ich will den Preis drücken.
-
 ### "-" + "geben" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Falls es irgendwas gibt, was wir für Sie tun können - geben Sie Bescheid.
+
+### "-" + "geber" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Aber seinen Arbeit- geber offenbar nicht.
 
 ### "-" + "gefäße" (1 occurrences)
 - Predicted: None
@@ -2025,17 +2470,29 @@ Accuracy: 99.93%
 - Examples:
   - Ich seh sie jetzt zum ersten Mal - genau wie ihr.
 
+### "-" + "geraten" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wie bist du nur da rein- geraten?
+
+### "-" + "gewöhnliche" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie verheißt eine außer- gewöhnliche Begabung.
+
 ### "-" + "glaubst" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Mercedes - glaubst du an Feen?
 
-### "-" + "ha" (1 occurrences)
+### "-" + "gruppen" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Der Sänger ist Jae- ha Yu.
+  - Erst überfiel sie meine Selbsthilfe- gruppen, nun mein Haus.
 
 ### "-" + "haben" (1 occurrences)
 - Predicted: None
@@ -2043,17 +2500,41 @@ Accuracy: 99.93%
 - Examples:
   - Wieso - haben Sie was dagegen?
 
+### "-" + "halter" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nicht, dass ich gegen Buch- halter das Geringste hätte!
+
+### "-" + "hemd" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das Fett wurde durch das Polyester- hemd mit dem Sitz verschweißt.
+
 ### "-" + "hinter" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Hände - hinter den Kopf!
 
+### "-" + "holung" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Wieder- holung habe ich vergessen.
+
 ### "-" + "höchstpersönlich" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Du, liebster Onkel - höchstpersönlich.
+
+### "-" + "iert" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wenn was davor oder danach pass- iert, sind Sie auf sich gestellt.
 
 ### "-" + "ihr" (1 occurrences)
 - Predicted: None
@@ -2066,6 +2547,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Das ist ihr Verbrechen - ihre betörende Schönheit.
+
+### "-" + "imperiums" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es wäre das Ende des Gesamt- imperiums, wie wir es kennen.
 
 ### "-" + "in" (1 occurrences)
 - Predicted: None
@@ -2097,11 +2584,47 @@ Accuracy: 99.93%
 - Examples:
   - Aber wie dem auch sei, - jetzt ist alles klar.
 
+### "-" + "jin" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Yoo- jin hat gesagt, eine Verrückte ist da reingefallen und gestorben.
+
+### "-" + "karren" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der langweilige Spießer- karren, den du wolltest.
+
 ### "-" + "kein" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ich hab das hier - kein Aspirin.
+
+### "-" + "kinder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Oder Du, Deine Kinder und Kindes- kinder werden in Armut sterben.
+
+### "-" + "knochen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Suppe schmeckt, als wären Schweine- knochen zu lang darin gekocht worden.
+
+### "-" + "küstenmafia" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dann hast du die Ost- küstenmafia beklaut.
+
+### "-" + "leben" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Du sagst, ich mische mich in dein Sex- leben ein, und was machst du?
 
 ### "-" + "legt" (1 occurrences)
 - Predicted: None
@@ -2114,6 +2637,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Das Haar der Frauen duftete - leuchtende, helle.
+
+### "-" + "lich" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Oberst Julyan, mir ist offensicht- lich damals ein Irrtum unterlaufen.
+
+### "-" + "lichen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wir wollen Ihren wissenschaft- lichen Erwartungen entsprechen.
 
 ### "-" + "los" (1 occurrences)
 - Predicted: None
@@ -2133,6 +2668,12 @@ Accuracy: 99.93%
 - Examples:
   - So schreibt keine Frau, die Selbst- mordabsichten hegt, nicht wahr?
 
+### "-" + "nationaler" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie haben die einzige Regel inter- nationaler Beziehungen verletzt.
+
 ### "-" + "nichts" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2150,6 +2691,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - In deinem Alter peinlich - noch dazu in Begleitung eines hochwürdigen Herrn.
+
+### "-" + "nummer" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wenn Sie bitte die Konto- nummer eingeben würden!
+
+### "-" + "nungen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Robert hat die Zeich- nungen in der Bibliothek gefunden.
 
 ### "-" + "nur" (1 occurrences)
 - Predicted: None
@@ -2169,17 +2722,23 @@ Accuracy: 99.93%
 - Examples:
   - Der Mann stand hier, griff nach seiner Waffe und - peng!
 
+### "-" + "phönizischen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Diese römisch- phönizischen Kellner haben uns deine Schuhe hergebracht.
+
+### "-" + "programm" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Zusage für das Zeugenschutz- programm obliegt den Ländern.
+
 ### "-" + "raus" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Gemelkt oder nicht - raus!
-
-### "-" + "sachen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Was Sie mir für einen Aufwand verur- sachen mit Ihren blödsinnigen Ideen!
 
 ### "-" + "sag" (1 occurrences)
 - Predicted: None
@@ -2211,11 +2770,11 @@ Accuracy: 99.93%
 - Examples:
   - Krieg bestimmt nicht, wer Recht hat - sondern nur, wer am Leben bleibt.
 
-### "-" + "sook" (1 occurrences)
+### "-" + "sprossen" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Er ist früher permanent dieser Hyang- sook hinterhergelaufen.
+  - Der alte Mann nahm einige Bambus- sprossen und kaute sie eine Weile.
 
 ### "-" + "steht" (1 occurrences)
 - Predicted: None
@@ -2229,6 +2788,12 @@ Accuracy: 99.93%
 - Examples:
   - Die Gegensätze - Yin und Yang - streben nacheinander bis ans Ende der Zeit.
 
+### "-" + "sun" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Byung- sun, bist du der Mörder?
+
 ### "-" + "super" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2241,11 +2806,35 @@ Accuracy: 99.93%
 - Examples:
   - Es hängt vollkommen von den Vorur- teilen deines Subjekts ab, verstehst du?
 
-### "-" + "versen" (1 occurrences)
+### "-" + "ten" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Er hat das Profil eines Per- versen mit gregarischem Trieb.
+  - Falls Sie an Selbstmord denken soll- ten, lesen Sie erst mal den Brief.
+
+### "-" + "tigen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er soll einen rich- tigen Beruf lernen.
+
+### "-" + "tionen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das Unterbewusstsein wird von Emo- tionen gesteuert, ja?
+
+### "-" + "up" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Und mit dem Make- up und so sieht sie wie eine ganz andere Person aus.
+
+### "-" + "ventile" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dann öffnete ich noch die Flut- ventile und das Boot sackte ab.
 
 ### "-" + "verständlich" (1 occurrences)
 - Predicted: None
@@ -2283,6 +2872,12 @@ Accuracy: 99.93%
 - Examples:
   - Und jetzt - weg da!
 
+### "-" + "welt" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - In solchen Zeiten sucht die Zauber- welt bei ihren Anführern Stärke!
+
 ### "-" + "wirklich" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2294,12 +2889,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Aber die geistig Blinden - wo werden die enden?
-
-### "-" + "worden" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sie sind ein bisschen schmaler ge- worden, seit wir uns gesehen haben.
 
 ### "-" + "wortwörtlich" (1 occurrences)
 - Predicted: None
@@ -2325,23 +2914,11 @@ Accuracy: 99.93%
 - Examples:
   - Arme ausgebreitet, sie um dich gelegt und … - - … gedrückt.
 
-### "-)" + "Seite" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wie kann ich mein Benutzerkonto auf dieser (Internet-)Seite stillegen.
-
 ### "/" + "oder" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Unfall und/oder Vorsatz.
-
-### "<<" + "entsprechen" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wieso <<entsprechen meine Angaben der Wirklichkeit fast gar nicht>>?
 
 ### "AUSSCHREITUNGEN" + "-" (1 occurrences)
 - Predicted: None
@@ -2349,17 +2926,23 @@ Accuracy: 99.93%
 - Examples:
   - MILITÄREINSATZ BEI AUSSCHREITUNGEN - Es greift wohl im ganzen Land um sich.
 
+### "Abend" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wo warst du denn gestern Abend ?
+
 ### "Abendmahl" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Leonardo da Vinci, der „Das letzte Abendmahl“ malte, war homosexuell.
 
-### "Abschrecken" + "d" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "Abhör-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Abschreckend sind in erster Linie Soldaten, die zu viel reden.
+  - Ich brauche Abhör- und Durchsuchungsbefehle für alle Mitarbeiter.
 
 ### "Achtung" + "!" (1 occurrences)
 - Predicted: None
@@ -2391,6 +2974,12 @@ Accuracy: 99.93%
 - Examples:
   - Die „Stimme Amerikas“ sendet aus Washington.
 
+### "Anfangs-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er trägt ihn in der Anfangs- und Endszene.
+
 ### "Angst" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2402,6 +2991,24 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Der Gedanke, dich zu verlieren, macht mir Angst … weil du mein Rudel bist.
+
+### "Animatron" + "ics" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Animatronics kann hier weg, nicht einmal du.
+
+### "Anime" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er mochte Zeichentrickfilme japanischer Art, auch „Anime“ genannt.
+
+### "Ankunfts-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Auf dem Plan dort sind Ankunfts- und Abfahrtszeiten aufgeführt.
 
 ### "Antwort" + "!" (1 occurrences)
 - Predicted: None
@@ -2439,11 +3046,23 @@ Accuracy: 99.93%
 - Examples:
   - Noahs Arche - das Raumschiff, das Rettung vor der Atomseuche sucht.
 
+### "Arschkriecher" + "wie" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bin kein Arschkriecherwie du.
+
 ### "Art" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Warum grüsst du nicht auf die Römische Art ?
+
+### "Arzt-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Eine, die Arzt- und Krankenhauskosten abdeckt, mit zusätzlichem Krankengeld.
 
 ### "Aspekt" + "-" (1 occurrences)
 - Predicted: None
@@ -2481,12 +3100,6 @@ Accuracy: 99.93%
 - Examples:
   - Nein, sie verließ die Stadt in ihrem eigenen Auto - ihr Chef sah sie.
 
-### "B" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Requiem I Klasse B - Freunde.
-
 ### "Bacurau" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2505,6 +3118,12 @@ Accuracy: 99.93%
 - Examples:
   - Verräterischer Bastard !
 
+### "Beischlaf" + "mit" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aber unser Verbrechen war Beischlafmit weißen Mädchen.
+
 ### "Benehmen" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2517,17 +3136,23 @@ Accuracy: 99.93%
 - Examples:
   - In Begleitung von Dadinho und Bené - Cabeleiras Bruder .
 
+### "Berg-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom fuhr mit der Berg- und Talbahn.
+
 ### "Bergen" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Die Leuchtfeuer auf den Bergen - das sind die Rebellen.
 
-### "Berufs-" + "und" (1 occurrences)
+### "Bevölkerungs-" + "und" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Ein ausgewogenes Verhältnis zwischen Berufs- und Privatleben ist wichtig.
+  - Hinsichtlich Bevölkerungs- und Nahrungsproblemen ist der Nutzen eindeutig.
 
 ### "Blinden" + "-" (1 occurrences)
 - Predicted: None
@@ -2595,6 +3220,12 @@ Accuracy: 99.93%
 - Examples:
   - Bravo !
 
+### "Brief" + "von" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aber ich habe doch einen Briefvon Ihnen, lassen Sie mich bitte rein, Madame.
+
 ### "Bristolian" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2619,23 +3250,17 @@ Accuracy: 99.93%
 - Examples:
   - Lang lebe die Braut und der Bräutigam !
 
-### "Buchstaben" + "-" (1 occurrences)
+### "Brücken-" + "brüstung" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Substantive enden auf den Buchstaben -o.
+  - Und wenn der Van an die Brücken- brüstung knallt, dürfte es eindeutig sein.
 
 ### "Büro" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Das „ovale Büro“ befindet sich im Weißen Haus.
-
-### "C" + "+" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Du hast bestanden, C+.
 
 ### "C" + "—" (1 occurrences)
 - Predicted: Space
@@ -2649,11 +3274,35 @@ Accuracy: 99.93%
 - Examples:
   - Don Calogero - Ritter von Sedara.
 
+### "Camden Town" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ist die nächste Haltestelle „Camden Town“?
+
+### "Cheese" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Guckt in die Kamera und sagt „Cheese“!
+
 ### "Christus" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Jesus Christus !
+
+### "City" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bist du für „City“ oder die „Rovers“?
+
+### "Clearasil" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Oliver benützt „Clearasil“.
 
 ### "Corpolo" + "!" (1 occurrences)
 - Predicted: None
@@ -2661,23 +3310,29 @@ Accuracy: 99.93%
 - Examples:
   - Scureza di Corpolo !
 
+### "Cosa Nostra" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Mafia wird auch als die „Cosa Nostra“ bezeichnet.
+
 ### "Cowboys" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Du nennst sie „Mavericks“; ich nenne sie „Cowboys“.
 
+### "D" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kompanie D - Achtung!
+
 ### "Daddy" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Daddy … - Daddy ist beschäftigt.
-
-### "Damit" + "du" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Damitdu für ihn sorgen kannst.
 
 ### "Danke" + "." (1 occurrences)
 - Predicted: None
@@ -2691,17 +3346,23 @@ Accuracy: 99.93%
 - Examples:
   - Das … würde ich mir gern für mein Therapietier aufheben.
 
-### "De Santis" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Was soll das, De Santis !
-
 ### "Deckung" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Deckung !
+
+### "Dehn-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Zuerst ein paar Dehn- und Streckübungen.
+
+### "Diabetes-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Fettleibigkeit erhöht das Diabetes- und Herzkrankheitsrisiko.
 
 ### "Dich" + "?" (1 occurrences)
 - Predicted: None
@@ -2715,11 +3376,29 @@ Accuracy: 99.93%
 - Examples:
   - Dies - das ist echter Tabak.
 
+### "Differential-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom hasst Differential- und Integralrechnung.
+
 ### "Docks" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Über die Docks … was?
+
+### "Dokumentar-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Werner Herzog macht herausragende Dokumentar- und Spielfilme.
+
+### "Don Tancredi" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Exzellenz macht sich Sorgen wegen Don Tancredi - verständlich.
 
 ### "Dorf" + "-" (1 occurrences)
 - Predicted: None
@@ -2733,31 +3412,13 @@ Accuracy: 99.93%
 - Examples:
   - SCHLACHTPLAN Schwere Dosen - Heiß!
 
-### "Drachen" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Tom hat im „Goldenen Drachen“ gegessen.
-
-### "Dreck" + "sau" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Drecksau!
-
-### "Drei" + "stigkeit" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dreistigkeit an dir, weißt du.
-
 ### "Drohung" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ist das eine Drohung ?
 
-### "Du" + "’n" (1 occurrences)
+### "Du" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -2768,6 +3429,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Du … Vielleicht bist du ja doch ein Lynxley.
+
+### "Dundonian" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Rob ist ein stolzer „Dundonian“.
+
+### "E" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kompanie E - Achtung!
 
 ### "Ehemann" + "-" (1 occurrences)
 - Predicted: None
@@ -2793,6 +3466,12 @@ Accuracy: 99.93%
 - Examples:
   - Ich hoffe, jemand tritt dich in die Eier !
 
+### "Eins" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich habe eine „Eins“ für meinen Aufsatz bekommen.
+
 ### "Eis" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2810,6 +3489,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wo versteckst du dich, du Elender ?
+
+### "Eltern" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nun, ehrst du deine Eltern ?
 
 ### "Ende" + "-" (1 occurrences)
 - Predicted: None
@@ -2846,6 +3531,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Es war mein Ernst - ich weiß nicht, wo es ist.
+
+### "Erwachsenen-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das ist ein Erwachsenen- und kein Kinderfilm.
 
 ### "Es" + "…" (1 occurrences)
 - Predicted: None
@@ -2901,6 +3592,12 @@ Accuracy: 99.93%
 - Examples:
   - Lass dich sehen, du Feigling !
 
+### "Fenster" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Schliesst die Fenster !
+
 ### "Fest" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2912,6 +3609,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Aber Mama ist munter wie ein Fisch , das kann ich Ihnen sagen!
+
+### "Fond-de-Veau" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - In einer Fond-de-Veau ?
+
+### "Fortgeschrittenen-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Haben Sie ein Fortgeschrittenen- oder ein Anfängerniveau?
 
 ### "Fox News" + "“" (1 occurrences)
 - Predicted: Space
@@ -2931,6 +3640,18 @@ Accuracy: 99.93%
 - Examples:
   - Was sind denn das für Fragen ?
 
+### "Frankfurter" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - In seinem Herkunftsland Deutschland hieß der Hot Dog „Frankfurter“.
+
+### "Französisch-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom und Maria geben beide Französisch- und Englischunterricht.
+
 ### "Frau" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2949,12 +3670,6 @@ Accuracy: 99.93%
 - Examples:
   - Tom bezeichnet Pommes frites noch immer als „Freiheitsfritten“.
 
-### "Fress" + "t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Fresst Scheiße - Millionen von Fliegen können nicht irren.
-
 ### "Freund" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2966,18 +3681,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ich hatte mal einen Freund - Pedro.
-
-### "Frie" + "de" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Friede sei mit dir.
-
-### "Frieden“" + "lesen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich wollte schon immer mal „Krieg und Frieden“ lesen.
 
 ### "Fritz" + "!" (1 occurrences)
 - Predicted: None
@@ -3008,6 +3711,18 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Ich habe auf der Oberschule „Der große Gatsby“ gelesen.
+
+### "Gebrauchs-" + "anweisung" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das Leben gibt dir keine Gebrauchs- anweisung für solche Situationen.
+
+### "Geburten-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Geburten- und Sterberate waren fast gleich.
 
 ### "Gegensätze" + "-" (1 occurrences)
 - Predicted: None
@@ -3057,11 +3772,11 @@ Accuracy: 99.93%
 - Examples:
   - Genug !
 
-### "Geschäft" + "aus" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "Geschmacks-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Kennt ihr euch im Geschäftaus?
+  - Alle vier verloren ihren Geschmacks- und Geruchssinn.
 
 ### "Gigliozzi" + "!" (1 occurrences)
 - Predicted: None
@@ -3087,11 +3802,23 @@ Accuracy: 99.93%
 - Examples:
   - Religion ist für die Leute wie ein Opiat für ein schmerzendes Glied .
 
+### "Glücks-" + "bringer" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wärst du als Glücks- bringer eher gekommen!
+
 ### "Gold" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Hast du „Geld“ oder „Gold“ gesagt?
+
+### "Goldenen Drachen" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tom hat im „Goldenen Drachen“ gegessen.
 
 ### "Gott" + "-" (1 occurrences)
 - Predicted: None
@@ -3105,19 +3832,19 @@ Accuracy: 99.93%
 - Examples:
   - Und du weisst nichts über das Gramophon ?
 
-### "Gus" + "teau" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Gusteau macht chinesisches Essen.
-
 ### "HALTE" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - HALTE - Was ist das?
 
-### "Hab" + "’ne" (1 occurrences)
+### "Haar-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie kaufte eine Haar- und eine Zahnbürste.
+
+### "Hab" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -3135,6 +3862,12 @@ Accuracy: 99.93%
 - Examples:
   - Hallo … Nicholas.
 
+### "Hals-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hals- und Steinbruch.
+
 ### "Halt" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3147,17 +3880,35 @@ Accuracy: 99.93%
 - Examples:
   - Das sind zwei kleine Halunken !
 
+### "Hand-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ein Verkehrspolizist regelt mit Hand- und Armzeichen den Verkehr.
+
 ### "Handy" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Hey, das Handy … ist das Erste, was die tracken.
 
+### "Harlow" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Jean Harlow !
+
 ### "Haus" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Tom und Maria wohnen in einem „schlauen Haus“.
+
+### "Haushalts-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Keine Haushalts- und schon gar keine Eisenwaren.
 
 ### "Hausmeister" + "!" (1 occurrences)
 - Predicted: None
@@ -3176,6 +3927,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Heil !
+
+### "Heil Hitler" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Oder seine Briefe mit „Heil Hitler“ zu unterschreiben.
 
 ### "Heiligwasser" + "?" (1 occurrences)
 - Predicted: None
@@ -3201,11 +3958,11 @@ Accuracy: 99.93%
 - Examples:
   - Herein .
 
-### "Herz" + "bube" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "Heut’" + "früh" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Herzbube?
+  - Heut’ früh war’s echt kalt.
 
 ### "Himmel" + "!" (1 occurrences)
 - Predicted: None
@@ -3219,11 +3976,23 @@ Accuracy: 99.93%
 - Examples:
   - Himmelherrgott !
 
+### "Hindenburg" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die „Hindenburg“ ging plötzlich in Flammen auf.
+
 ### "Hintern" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Mit einem Tritt in den Hintern !
+
+### "Hof-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Hof- und einige der Innenaufnahmen wurden da gedreht.
 
 ### "Humor" + "“" (1 occurrences)
 - Predicted: Space
@@ -3237,6 +4006,18 @@ Accuracy: 99.93%
 - Examples:
   - Siehst du die Dicke mit dem Hut ?
 
+### "Hyang-" + "sook" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ja, du hast mit angesehen, wie Hyang- sook getötet wurde.
+
+### "Hyang-" + "sooks" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dann hat sich Hyang- sooks Körper noch ein bisschen bewegt.
+
 ### "Hände" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3249,11 +4030,11 @@ Accuracy: 99.93%
 - Examples:
   - Geht in die Häuser !
 
-### "III" + "-" (1 occurrences)
+### "Hühner-" + "und" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Die Timour III - der sowjetische Schrecken.
+  - Hühner- und Schweinefleisch riecht sehr stark, also muss es vorgegart werden.
 
 ### "Idee" + "." (1 occurrences)
 - Predicted: None
@@ -3285,17 +4066,17 @@ Accuracy: 99.93%
 - Examples:
   - Inge .
 
-### "Italien" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Es lebe Italien !
-
 ### "Italien" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Warum gibt es eine „Miss“, aber keinen „Mister Italien“?
+
+### "JUMP" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dieser Buchladen hat den Verkauf von „JUMP“ eingestellt.
 
 ### "Jacke" + "!" (1 occurrences)
 - Predicted: None
@@ -3308,12 +4089,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Willst du meine Jacke ?
-
-### "Jean Harlow" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Jean Harlow !
 
 ### "Jeans" + "." (1 occurrences)
 - Predicted: None
@@ -3345,6 +4120,18 @@ Accuracy: 99.93%
 - Examples:
   - Tom und Maria versuchen noch immer, an Johannes’ Adresse heranzukommen.
 
+### "Johannes’" + "Erscheinen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom fragte Maria, ob sie wisse, wann mit Johannes’ Erscheinen zu rechnen sei.
+
+### "Johannes’" + "Hilfe" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom erwähnte, Maria hoffe auf Johannes’ Hilfe und Beistand.
+
 ### "Johannes’" + "Weigerung" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3357,6 +4144,24 @@ Accuracy: 99.93%
 - Examples:
   - Tom teilte Maria Johannes’ Wünsche mit.
 
+### "Junge" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Aber wo soll ich denn jetzt eine Frau herkriegen, mein Junge ?
+
+### "Kabinen" + "druck" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Kabinendruck fällt.
+
+### "Kaffee-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bist du eher ein Kaffee- oder ein Teetrinker?
+
 ### "Kamaraden" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3368,12 +4173,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Auf den Bund der Kamaradschaft !
-
-### "Kams" + "t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Kamst du dann als Sünder zur Welt?
 
 ### "Katsuhiro" + "-" (1 occurrences)
 - Predicted: None
@@ -3423,17 +4222,23 @@ Accuracy: 99.93%
 - Examples:
   - Wie schreibt man „Kleopatra“ in Hieroglyphen?
 
-### "Klinge" + "In" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - KlingeIn Sie durch, wenn sie kommt.
-
 ### "Komm" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Komm -Komm?
+
+### "Kommunikations-" + "Satelliten" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es verschlingt alle Kommunikations- Satelliten unserer Galaxis.
+
+### "Kontroll-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kontroll- und Befehlswerkzeug des Herrschers von Metropolis.
 
 ### "Kopf" + "!" (1 occurrences)
 - Predicted: None
@@ -3471,6 +4276,12 @@ Accuracy: 99.93%
 - Examples:
   - Die Rubriken „Sport“ und „Kultur“ lese ich nie.
 
+### "Kunststoff-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kunststoff- und Glasflaschen müssen in die richtigen Behälter geworfen werden.
+
 ### "Kyōto" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3483,11 +4294,17 @@ Accuracy: 99.93%
 - Examples:
   - Brenne nieder den Winter und die Kälte !
 
-### "Künst" + "ler" (1 occurrences)
+### "Köder" + "e" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Künstlerstadt.
+  - Ködere den Wolf mit der Henne.
+
+### "Kümmer" + "e" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Kümmere Dich nicht darum.
 
 ### "Künste" + "“" (1 occurrences)
 - Predicted: Space
@@ -3519,6 +4336,30 @@ Accuracy: 99.93%
 - Examples:
   - Er starb für sein Land .
 
+### "Land-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Alle Land- und Stadtgerichte haben dem Dail Treue geschworen.
+
+### "Lang-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bevorzugst du Lang- oder Rundkornreis?
+
+### "Lang-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sieht aus, als hätten sie eine Lang- und zwei Kurzwaffen.
+
+### "Lebens-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Warum ändern sich Lebens- und Denkweisen?
+
 ### "Leiter" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3543,6 +4384,12 @@ Accuracy: 99.93%
 - Examples:
   - Wo bist du, meine Liebste !
 
+### "Links-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ist Tom Links- oder Rechtshänder?
+
 ### "Luft" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3554,12 +4401,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Lächeln !
-
-### "Lächeln" + "d" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Lächelnd wird die Politik des Landes diskutiert.
 
 ### "Läusen" + "?" (1 occurrences)
 - Predicted: None
@@ -3584,18 +4425,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Du Lümmel !
-
-### "Mach" + "’ne" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Mach ’ne Fliege!
-
-### "Mach" + "’nen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Mach ’nen Abflug!
 
 ### "Magda" + "!" (1 occurrences)
 - Predicted: None
@@ -3633,17 +4462,41 @@ Accuracy: 99.93%
 - Examples:
   - Tom verwendet im Internet den Namen „Maria“.
 
+### "Mary" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Satz enthält zwei Subjekte, nämlich „Tom“ und „Mary“.
+
+### "Maul-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Maul- und Klauenseuche ist hochansteckend.
+
 ### "Mavericks" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Du nennst sie „Mavericks“; ich nenne sie „Cowboys“.
 
+### "Maße" + "n" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tom trinkt nie in Maßen, sondern immer zu viel.
+
 ### "Meer" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Das Meer ?
+
+### "Meeres-" + "grund" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Da es bis gestern auf dem Meeres- grund lag, ist das schwer möglich.
 
 ### "Melonenkerne" + "!" (1 occurrences)
 - Predicted: None
@@ -3675,11 +4528,29 @@ Accuracy: 99.93%
 - Examples:
   - Ming ?
 
+### "Miss" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Warum gibt es eine „Miss“, aber keinen „Mister Italien“?
+
+### "Mistral" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Wind, der häufig in der Provence weht, heißt „Mistral“.
+
 ### "Mitte" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Jetzt alle in die Sonne, die Braut in die Mitte !
+
+### "Mittel-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Spanisch wird in Mittel- und Südamerika gesprochen.
 
 ### "Moby Dick" + "“" (1 occurrences)
 - Predicted: Space
@@ -3693,11 +4564,23 @@ Accuracy: 99.93%
 - Examples:
   - Kleine Monster !
 
+### "Mord-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der einzige Mord- und Selbstmordfall in der Geschichte Fairvales.
+
 ### "Moroni" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Wenn ich mich nicht irre, Sie haben das Moroni -Haus dekoriert?
+
+### "Museums-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wir haben den Museums- und Ausstellungskomplex besucht.
 
 ### "Musik" + "?" (1 occurrences)
 - Predicted: None
@@ -3716,6 +4599,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wo ist deine Mutter ?
+
+### "Mutter" + "war" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Seine Mutterwar Stuhlflechterin.
 
 ### "Mädchen" + "-" (1 occurrences)
 - Predicted: None
@@ -3741,6 +4630,12 @@ Accuracy: 99.93%
 - Examples:
   - Das sind Männer - jawohl!
 
+### "Männer-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich konnte nicht ausmachen, ob es ein Männer- oder ein Frauengesicht war.
+
 ### "Möhren" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3758,6 +4653,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Müll !
+
+### "Müller-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich komme aus einer Müller- und Bäckerfamilie.
 
 ### "Nachladen" + "!" (1 occurrences)
 - Predicted: None
@@ -3795,12 +4696,6 @@ Accuracy: 99.93%
 - Examples:
   - Die in den Netzstrümpfen !
 
-### "Ni" + "ya" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Niya.
-
 ### "Nichts" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3825,35 +4720,23 @@ Accuracy: 99.93%
 - Examples:
   - Noahs Arche - das Raumschiff, das Rettung vor der Atomseuche sucht.
 
-### "Nord-" + "und" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Grenze zwischen Nord- und Südkorea ist da hinten.
-
-### "Nordkorea Zentralasiens" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Turkmenistan ist das „Nordkorea Zentralasiens“.
-
 ### "Normal" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Normal !
 
+### "Norwegerinnen" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wunderschön, gross, Norwegerinnen !
+
 ### "Null" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Warum geben Sie mir eine Null ?
-
-### "Ok" + "‚" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ok‚ sieh mich an.
 
 ### "Okay" + "?" (1 occurrences)
 - Predicted: None
@@ -3903,18 +4786,6 @@ Accuracy: 99.93%
 - Examples:
   - Panzer !
 
-### "Papa" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Papa !
-
-### "Papa" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Wie war das mit dir und Papa ?
-
 ### "Pasteten" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3945,6 +4816,24 @@ Accuracy: 99.93%
 - Examples:
   - Es ist ein Pfau !
 
+### "Pferd" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Mehrzahl von „Pferd“ lautet „Pferde“.
+
+### "Pferde" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Mehrzahl von „Pferd“ lautet „Pferde“.
+
+### "Pferde-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Pferde- und Rinderherden streiften frei über die Ebene.
+
 ### "Pfoten" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3963,11 +4852,29 @@ Accuracy: 99.93%
 - Examples:
   - Tom kann recht gut mit „Photoshop“ umgehen.
 
+### "Pinterest" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Maria hat bei „Pinterest“ ein Bild von ihren Keksen hochgeladen.
+
+### "Pochi" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Mike nennt seinen Hund „Pochi“?
+
 ### "Polin" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Sind Sie Polin ?
+
+### "Politik" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er liest nur die Rubriken „Wirtschaft“ und „Politik“.
 
 ### "Problem" + "-" (1 occurrences)
 - Predicted: None
@@ -3981,17 +4888,23 @@ Accuracy: 99.93%
 - Examples:
   - IP steht für „Internet-Protokoll“.
 
+### "Puls-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Puls- und Atemresonanz normal.
+
+### "Queen Elizabeth" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich taufe dieses Schiff auf den Namen „Queen Elizabeth“.
+
 ### "Quenelle" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Sie haben ja Quenelle .
-
-### "Rae" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Viel weicher als die von Seo-Rae - und das als Mann.
 
 ### "Rap" + "“" (1 occurrences)
 - Predicted: Space
@@ -4028,6 +4941,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Herr Rechtsanwalt !
+
+### "Registrierungs-" + "kommission" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vorsitzende der Registrierungs- kommission für Muggelstämmige.
 
 ### "Reihe" + "!" (1 occurrences)
 - Predicted: None
@@ -4071,11 +4990,29 @@ Accuracy: 99.93%
 - Examples:
   - Die „Riesen“ schlitterten der Niederlage entgegen.
 
-### "Roggen" + "“." (1 occurrences)
+### "Rizinus-Öl" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das ist Rizinus-Öl !
+
+### "Roggen" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Wir haben zufälligerweise zwei Exemplare des „Fängers im Roggen“.
+
+### "Rot-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Möchtest du Rot- oder Weißwein?
+
+### "Rovers" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bist du für „City“ oder die „Rovers“?
 
 ### "Ruhe" + "!" (1 occurrences)
 - Predicted: None
@@ -4083,23 +5020,29 @@ Accuracy: 99.93%
 - Examples:
   - Ruhe !
 
-### "Rund" + "um" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Rundumverteidigung!
-
 ### "SSBS" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Das Motto der SSBS - deinem neuen Heim.
 
+### "Santis" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Was soll das, De Santis !
+
 ### "Satzes" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Einen schönen „Tag des Satzes“!
+
+### "Sauerstoff-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ein Wassermolekül besteht aus einem Sauerstoff- und zwei Wasserstoff-Atomen.
 
 ### "Sauge" + "!" (1 occurrences)
 - Predicted: None
@@ -4131,17 +5074,17 @@ Accuracy: 99.93%
 - Examples:
   - Schaut !
 
-### "Scheiß" + "Torpedos" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Diese ScheißTorpedos!
-
 ### "Schenck" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Schenck .
+
+### "Schlaf-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das Haus verfügt über ein Ess-, ein Schlaf- und ein Arbeitszimmer.
 
 ### "Schlagbass" + "-" (1 occurrences)
 - Predicted: None
@@ -4172,6 +5115,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Schmutz !
+
+### "Schneide-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Eckzähne sind zwischen den Schneide- und den Backenzähnen.
 
 ### "Schuhe" + "?" (1 occurrences)
 - Predicted: None
@@ -4239,29 +5188,41 @@ Accuracy: 99.93%
 - Examples:
   - Seltsam , nicht wahr?
 
+### "Seo-Rae" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Viel weicher als die von Seo-Rae - und das als Mann.
+
 ### "Sexismus" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Weißt du überhaupt, was „Sexismus“ bedeutet?
 
-### "Sie" + "Jahre" (1 occurrences)
+### "Sicherheits" + "unterweisung" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Sie nennen sich Generale, weil SieJahre auf Militärakademien zugebracht haben.
+  - Nichts ist beruhigender als eine gute, alte Sicherheitsunterweisung.
 
 ### "Sie" + "jetzt" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Rufen Siejetzt an!
+  - Ich brauche Siejetzt nicht mehr.
 
 ### "Signatur" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Der Hersteller, die Signatur - alles passt.
+
+### "Sing" + "e" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Singe bitte ein Lied in deiner Sprache!
 
 ### "Situation" + "“" (1 occurrences)
 - Predicted: Space
@@ -4275,7 +5236,13 @@ Accuracy: 99.93%
 - Examples:
   - Ich war einst selbst ein Sklave - oder war es beinahe.
 
-### "So" + "’n" (1 occurrences)
+### "Skype" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tom und Maria sprechen häufig über „Skype“ miteinander.
+
+### "So" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -4298,6 +5265,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Sondern … von einer Schlange.
+
+### "Sonnen-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sonnen- und Windenergie werden immer kostengünstiger.
+
+### "Sonnenauf-" + "bis" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es dauerte von Sonnenauf- bis Sonnenuntergang.
 
 ### "Spatzen" + "!" (1 occurrences)
 - Predicted: None
@@ -4347,6 +5326,12 @@ Accuracy: 99.93%
 - Examples:
   - Haltet eure Stellung !
 
+### "Stoff-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Italiener sind Stoff- und Lebensmittelhändler.
+
 ### "Stopp" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4358,6 +5343,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Schwieriger Stoss !
+
+### "Strafverfolgungs-" + "behörde" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich bin nicht die Strafverfolgungs- behörde, sondern die Versicherung.
 
 ### "Stuhl" + "!" (1 occurrences)
 - Predicted: None
@@ -4371,12 +5362,6 @@ Accuracy: 99.93%
 - Examples:
   - Wie alt ist die Stute ?
 
-### "Sully" + "s" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sullys Kinder.
-
 ### "Tabakfrau" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4389,23 +5374,23 @@ Accuracy: 99.93%
 - Examples:
   - Das ist für mich die traurigste Zeit des Tages - Sie zu verlassen.
 
-### "Tancredi" + "-" (1 occurrences)
+### "Tanz-" + "und" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Exzellenz macht sich Sorgen wegen Don Tancredi - verständlich.
-
-### "Tanz" + "t" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Tanzt du, Cabiria?
+  - Heute besitze ich diese Tanz- und Fechtschule, die rosa Rumba Ranch.
 
 ### "Tasche" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Was hast du da in deiner Tasche ?
+
+### "Tatoeba" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hast du schon einmal etwas von „Tatoeba“ gehört?
 
 ### "Teufel" + "!" (1 occurrences)
 - Predicted: None
@@ -4425,6 +5410,24 @@ Accuracy: 99.93%
 - Examples:
   - Und jetzt der Sprung des Malaysischen Tigers !
 
+### "Times" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich lese die „Times“.
+
+### "Timour III" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Timour III - der sowjetische Schrecken.
+
+### "Tinder" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Viele sind bei „Tinder“ nur auf eine kurze Beziehung aus.
+
 ### "Titel" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4443,17 +5446,23 @@ Accuracy: 99.93%
 - Examples:
   - Tja … hat er nicht.
 
-### "Tom" + "“" (1 occurrences)
+### "Toilette" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Ist „Tom“ in Australien ein häufiger Name?
+  - An der Tür war ein großes T für „Toilette“.
 
 ### "Tooney" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Max Tooney - Trompete.
+
+### "Trapez-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Aber am berühmtesten war sie als Trapez- und Seilkünstlerin.
 
 ### "Traudl" + "!" (1 occurrences)
 - Predicted: None
@@ -4466,6 +5475,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Traudl ?
+
+### "Trauma-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er bekommt Trauma- und Kunsttherapie.
 
 ### "Trevor" + "-" (1 occurrences)
 - Predicted: None
@@ -4485,6 +5500,12 @@ Accuracy: 99.93%
 - Examples:
   - Ich bin ein Arschloch, ein kompletter Trottel !
 
+### "Trumpete" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Clinton kann Saxophon spielen und Trump die „Trumpete“.
+
 ### "Tschüß" + "«" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -4503,6 +5524,12 @@ Accuracy: 99.93%
 - Examples:
   - Ja, Sir, ja, Sir, Mister Tucker - Motherfucker!
 
+### "Twitter" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Man kann dem Papst jetzt auf „Twitter“ folgen.
+
 ### "Tür" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4514,6 +5541,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - GEWALTSAME UNRUHEN - Meine Güte.
+
+### "Umarm" + "e" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Umarme mich fest.
 
 ### "Und" + "-" (1 occurrences)
 - Predicted: None
@@ -4527,11 +5560,29 @@ Accuracy: 99.93%
 - Examples:
   - Der Oberleutnant war in Uniform - Beleidigung eines Offiziers.
 
+### "Unschuldigen" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Spiel nicht den Unschuldigen !
+
+### "Unsichtbarkeits-" + "Servoantrieb" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der Unsichtbarkeits- Servoantrieb ist kaputt.
+
 ### "Unsinn" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Was für ein Unsinn !
+
+### "Unter-" + "bewusstsein" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Und deshalb sucht sein Unter- bewusstsein nach dem Träumer.
 
 ### "Unternehmensengel" + "“" (1 occurrences)
 - Predicted: Space
@@ -4551,12 +5602,6 @@ Accuracy: 99.93%
 - Examples:
   - SYSTEM VERSAGT - Ich kenne die Zukunft nicht.
 
-### "Vater" + "war" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mein Vaterwar Buchhalter.
-
 ### "Verbrechen" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4575,23 +5620,29 @@ Accuracy: 99.93%
 - Examples:
   - Verflucht !
 
+### "Vermissten-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Geben Sie im Büro eine Vermissten- und eine Diebstahlsanzeige auf.
+
 ### "Verschwinde" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Verschwinde !
 
+### "Verstecken" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Wir haben nur „Verstecken“ gespielt.
+
 ### "Verwandte" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Wer ist der Verwandte ?
-
-### "Verwirklich" + "e" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Verwirkliche deinen Traum.
 
 ### "Verzeih" + "," (1 occurrences)
 - Predicted: None
@@ -4629,17 +5680,47 @@ Accuracy: 99.93%
 - Examples:
   - Volpina !
 
+### "Vor" + "an" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Voran.
+
+### "Vorder-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Alles hat eine Vorder- und eine Rückseite.
+
 ### "Vorsicht" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Vorsicht !
 
+### "Vögel-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie ist ein Vögel- und Blumenfreund.
+
 ### "Waffen" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - An die Waffen !
+
+### "Waffen-" + "lieferungen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es geht um amerikanische Waffen- lieferungen an Chiang Kai-shek.
+
+### "Waffen-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Erhältlich in jedem gut sortierten Waffen- und Souvenirgeschäft.
 
 ### "Wagen" + "!" (1 occurrences)
 - Predicted: None
@@ -4653,11 +5734,11 @@ Accuracy: 99.93%
 - Examples:
   - Wieso im Wagen ?
 
-### "Wahr" + "lich" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "Wagen-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Wahrlich, keiner ist weise, der nicht das Dunkel kennt.
+  - Die Wagen- und die Sitznummer stehen auf der Fahrkarte.
 
 ### "Waisenkinder" + "?" (1 occurrences)
 - Predicted: None
@@ -4677,6 +5758,12 @@ Accuracy: 99.93%
 - Examples:
   - Wartet !
 
+### "Wartungs-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bei Wartungs- und Reinigungsmaßnahmen sind Pausen vorgeschrieben.
+
 ### "Weiter" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4689,11 +5776,11 @@ Accuracy: 99.93%
 - Examples:
   - Nichts hält ewig in dieser verhexten Welt - nicht mal unsere Sorgen.
 
-### "Wen" + "rs" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "Whisky-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Wenrs blöd wird, bist du Schuld!
+  - In einem Whisky- oder Longdrink-Glas?
 
 ### "Wiedersehen" + "!" (1 occurrences)
 - Predicted: None
@@ -4706,18 +5793,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Auf Wiedersehen , meine jungen Freunde.
-
-### "Wiedersehen" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Geh ihm „Auf Wiedersehen“ sagen, bevor er weg ist.
-
-### "Wiedersehen" + "“," (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Geh und sag ihm „Auf Wiedersehen“, bevor er wegfährt.
 
 ### "Wieso" + "-" (1 occurrences)
 - Predicted: None
@@ -4737,17 +5812,11 @@ Accuracy: 99.93%
 - Examples:
   - Da triffst du Prinz William - und kannst ihn an seiner Stelle heiraten.
 
-### "Wir" + "wollen" (1 occurrences)
+### "Wirtschaft" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Wirwollen hier raus!
-
-### "Wir" + "wollten" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wirwollten zur Beichte für Sonntag.
+  - Er liest nur die Rubriken „Wirtschaft“ und „Politik“.
 
 ### "Witz" + "!" (1 occurrences)
 - Predicted: None
@@ -4760,6 +5829,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wohin ?
+
+### "Wohltätigkeits-" + "organisation" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie hat eine Wohltätigkeits- organisation und ist Mode-Ikone.
 
 ### "Währungsfonds" + "“" (1 occurrences)
 - Predicted: Space
@@ -4785,6 +5860,18 @@ Accuracy: 99.93%
 - Examples:
   - Wer ist denn das um diese Zeit ?
 
+### "Zeit-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Zeit- und Geldverschwendung ist nicht zu fassen.
+
+### "Zentralasiens" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Turkmenistan ist das „Nordkorea Zentralasiens“.
+
 ### "Ziel" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4802,6 +5889,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Das Mädchen im Zirkus !
+
+### "Zitronen-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Zitronen- und Orangenbäume wuchsen im Garten.
+
+### "Zukunfts-" + "ist" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der Zukunfts- ist auch ein Antik-, ein Bibelfilm.
 
 ### "Zunge" + "?" (1 occurrences)
 - Predicted: None
@@ -4826,6 +5925,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Eine Zwergnonne !
+
+### "Zwilling" + "s" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Zwillingspaar.
+
+### "Zwölfer-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die bekommt man in Sechser-, Zwölfer- oder Achtzehnerpackungen.
 
 ### "ab" + "!" (1 occurrences)
 - Predicted: None
@@ -4857,6 +5968,18 @@ Accuracy: 99.93%
 - Examples:
   - Du bleibst also ?
 
+### "an-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom stand an der Tür, den Lichtschalter an- und ausschaltend.
+
+### "anderes" + "d" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Da der Wagen gestohlen war, blieb mir nichts anderesd übrig, als zu laufen.
+
 ### "anfangen" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4881,47 +6004,23 @@ Accuracy: 99.93%
 - Examples:
   - Wie soll man verhindern, sich zu berühren, wenn sie einem so ansieht ?
 
-### "auf" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich pass auf -Verpiss dich!
-
-### "auf" + "-e" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Im Esperanto endet ein abgeleitetes Adverb auf -e.
-
 ### "auf" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Und so passt du also auf ihn auf ?
 
-### "auf" + "jeden" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wenn wir bleiben, kriegen uns die Russen aufjeden Fall!
-
-### "auf" + "m" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Was hab ich aufm Rücken?
-
-### "auf" + "’nen" (1 occurrences)
+### "auf" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Lust auf ’nen Tee?
 
-### "auf" + "’ner" (1 occurrences)
+### "aufgehört" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Ich hab’ ihn mal auf ’ner Feier gesehen.
+  - Es hat aufgehört !
 
 ### "aufwachen" + "“" (1 occurrences)
 - Predicted: Space
@@ -4947,12 +6046,6 @@ Accuracy: 99.93%
 - Examples:
   - Trink das aus !
 
-### "aus" + "m" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Kommt ausm Kreuz, Leute!
-
 ### "ausgemacht" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4964,12 +6057,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wir könnten etwas weniger ausprobieren … studiert.
-
-### "ausreichend" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Warum habe ich ein „ausreichend“ bekommen?
 
 ### "aussieht" + "?" (1 occurrences)
 - Predicted: None
@@ -4995,6 +6082,12 @@ Accuracy: 99.93%
 - Examples:
   - Warum habe ich ein „befriedigend“ bekommen?
 
+### "begriffen" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hast du begriffen ?
+
 ### "beigegeben" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5006,6 +6099,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Du wirst meine Tasche an deine Löffel bekommen !
+
+### "berühren" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lasst ihn mich berühren !
 
 ### "berührst" + "?" (1 occurrences)
 - Predicted: None
@@ -5049,12 +6148,6 @@ Accuracy: 99.93%
 - Examples:
   - Wir arbeiten von Sonnenaufgang bis -untergang.
 
-### "bist" + "jetzt" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Du bistjetzt ein Sohn der Omaticaya.
-
 ### "bitte" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -5079,7 +6172,7 @@ Accuracy: 99.93%
 - Examples:
   - Du kannst gehen oder bleiben - deine Wahl.
 
-### "brauch" + "’ne" (1 occurrences)
+### "brauch" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -5090,12 +6183,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Sei brav !
-
-### "bucht" + "et" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wieso buchtet man ihn nicht ein, wenn das alles bekannt ist?
 
 ### "böse" + "-" (1 occurrences)
 - Predicted: None
@@ -5133,11 +6220,11 @@ Accuracy: 99.93%
 - Examples:
   - Ich ordne hier etwas und dann - Moskau.
 
-### "darfst" + "jeden" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "dar" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Und du darfstjeden verarschen, außer den anderen Mitgliedern.
+  - Ja, aber was stellt es dar ?
 
 ### "das" + "!" (1 occurrences)
 - Predicted: None
@@ -5156,6 +6243,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wo denn !
+
+### "denn" + "je" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Sie kommen, wenn du am Boden bist und ihre Hilfe mehr dennje brauchst.
 
 ### "der" + "Arbeit" (1 occurrences)
 - Predicted: Space
@@ -5187,23 +6280,11 @@ Accuracy: 99.93%
 - Examples:
   - Wenn du betrunken bist, kannst du sogar dichten !
 
-### "die" + "Juden" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ich kann mir nur zugute halten, dieJuden offen bekämpft zu haben.
-
 ### "die" + "Verantwortung" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Ich trage doch dieVerantwortung gegenüber den Eltern.
-
-### "die" + "jungen" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Aber dafür sind diejungen Leute doch da.
 
 ### "diese" + "Judenschweine" (1 occurrences)
 - Predicted: Space
@@ -5223,6 +6304,12 @@ Accuracy: 99.93%
 - Examples:
   - Geht es dirjetzt besser?
 
+### "dir" + "wächst" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Na so was, dirwächst ja ein Schnurrbart.
+
 ### "doch" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5235,11 +6322,23 @@ Accuracy: 99.93%
 - Examples:
   - Aber es gibt doch … Gesetze.
 
+### "dort" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wann warst du dort ?
+
 ### "drei" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Nun sage ich «drei» und deine Hände erstarren.
+
+### "drei-" + "bis" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Fleisch esse ich nur drei- bis viermal im Monat.
 
 ### "dreizehn" + "“" (1 occurrences)
 - Predicted: Space
@@ -5277,7 +6376,7 @@ Accuracy: 99.93%
 - Examples:
   - Wie „Buh-duh, buh-duh, buh-duh“.
 
-### "echt" + "’ne" (1 occurrences)
+### "echt" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -5288,6 +6387,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ich nehme an, es war ein … langsamer Tod.
+
+### "ein-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom kommt ein- oder zweimal im Jahr nach Boston.
 
 ### "eine" + ":" (1 occurrences)
 - Predicted: Space
@@ -5319,12 +6424,6 @@ Accuracy: 99.93%
 - Examples:
   - Sie wollen unseren Platz einnehmen - ohne Gewalt.
 
-### "einnehmen" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sollten wir nicht unsere Plätze einnehmen ?
-
 ### "einpflanzen" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5355,7 +6454,7 @@ Accuracy: 99.93%
 - Examples:
   - Es wurde ein neues Kommunikationsmittel entwickelt - die Eisenbahn.
 
-### "er" + "’ne" (1 occurrences)
+### "er" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -5409,6 +6508,12 @@ Accuracy: 99.93%
 - Examples:
   - Genau das ist es .
 
+### "etwas" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Also dann iss etwas !
+
 ### "etwas" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5421,11 +6526,11 @@ Accuracy: 99.93%
 - Examples:
   - Die Italiener nennen es la posta del falcone - die Wacht des Falken.
 
-### "fang" + "t" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "fallen" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Kommt und fangt mich!
+  - Du lässt mich noch fallen !
 
 ### "fangen" + "?" (1 occurrences)
 - Predicted: None
@@ -5457,11 +6562,17 @@ Accuracy: 99.93%
 - Examples:
   - Sie können jeden in der Stadt und der Umgebung hier fragen .
 
-### "frag’" + "ihn" (1 occurrences)
+### "frei" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Ich frag’ ihn, ob er Japanisch spricht.
+  - Du bist frei !
+
+### "früh" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich komme wegen meiner Schwester, bin ich zu früh ?
 
 ### "für" + "Tag" (1 occurrences)
 - Predicted: Space
@@ -5475,17 +6586,17 @@ Accuracy: 99.93%
 - Examples:
   - Griechisch ist sehr nützlich fürwissenschaftliche Wörter.
 
-### "für" + "’n" (1 occurrences)
-- Predicted: None
-- Actual: Space
+### "g" + "elernt" (1 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - Das habe ich für ’n Appel und ’n Ei bekommen.
+  - Wann haben Sie sie kennen gelernt?
 
-### "für" + "’nen" (1 occurrences)
+### "ge-" + "worden" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Das habe ich für ’nen Appel und ’n Ei bekommen.
+  - Sie sind ein bisschen schmaler ge- worden, seit wir uns gesehen haben.
 
 ### "geb" + "'s" (1 occurrences)
 - Predicted: Space
@@ -5498,12 +6609,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ich werde Strychnin in eure Suppe geben !
-
-### "gedacht" + "und" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Also, zuerst haben wir an Paris gedachtund dann an den Balaton.
 
 ### "gefallen" + "!" (1 occurrences)
 - Predicted: None
@@ -5535,6 +6640,12 @@ Accuracy: 99.93%
 - Examples:
   - Wie habt ihr euch getroffen, euch verliebt und dann geheiratet ?
 
+### "gehen" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ein grünes Licht bedeutet „gehen“.
+
 ### "gehn" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5546,12 +6657,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Gradisca geht !
-
-### "geht" + "jeden" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Er gehtjeden Morgen eine Stunde spazieren.
 
 ### "gehört" + "?" (1 occurrences)
 - Predicted: None
@@ -5582,6 +6687,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ist es genug gesalzen ?
+
+### "geschlossen" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es ist geschlossen !
 
 ### "geschwommen" + "?" (1 occurrences)
 - Predicted: None
@@ -5643,17 +6754,11 @@ Accuracy: 99.93%
 - Examples:
   - Und was haben sie gezeigt ?
 
-### "gibt" + "'s" (1 occurrences)
+### "gibt" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - So, was gibt's Neues?
-
-### "gibt" + "jemanden" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Es gibtjemanden auf dem Gebiet, dem ich vertraue.
 
 ### "gleich" + "!" (1 occurrences)
 - Predicted: None
@@ -5679,7 +6784,13 @@ Accuracy: 99.93%
 - Examples:
   - Schau, wie grün !
 
-### "hab" + "’ne" (1 occurrences)
+### "gut" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er hat den Kurs mit einem „gut“ bestanden.
+
+### "hab" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -5691,47 +6802,11 @@ Accuracy: 99.93%
 - Examples:
   - Wir haben - wortwörtlich - einen Haufen zu Essen.
 
-### "haben" + "kein" (1 occurrences)
+### "halb" + "volle" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Wir habenkein Interesse an dem Geld, das eventuell in dem Haus gefunden wurde.
-
-### "habt" + "ja" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ihr habtja mich gefesselt.
-
-### "hab’" + "dich" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab’ dich einfach sehr gern.
-
-### "hab’" + "ein" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab’ ein Sofa.
-
-### "hab’" + "einen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab’ einen Narren an der gefressen.
-
-### "hab’" + "ihn" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab’ ihn mal auf ’ner Feier gesehen.
-
-### "hab’" + "’ne" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich trage coole Kleider und hab’ ’ne coole Sonnenbrille auf.
+  - Mein Onkel hat mir eine halbvolle Flasche geschenkt.
 
 ### "hat" + "-" (1 occurrences)
 - Predicted: None
@@ -5739,19 +6814,7 @@ Accuracy: 99.93%
 - Examples:
   - Krieg bestimmt nicht, wer Recht hat - sondern nur, wer am Leben bleibt.
 
-### "hat" + "ja" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sie hatja Angst.
-
-### "hat" + "jedes" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Eigentlich hatjedes Weib einen Bart an seinem Leib.
-
-### "hat" + "’ne" (1 occurrences)
+### "hat" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -5781,6 +6844,12 @@ Accuracy: 99.93%
 - Examples:
   - Habt ihr nicht auch heiss ?
 
+### "helfen" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kann ich helfen ?
+
 ### "her" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5793,7 +6862,31 @@ Accuracy: 99.93%
 - Examples:
   - Königinnen zu mir herabschauen - wie stehe ich da?
 
-### "hielt" + "’ne" (1 occurrences)
+### "herein-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie würden uns einen Tip geben, wenn etwas herein- oder herausging.
+
+### "herum" + "zu" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Es ist gefährlich, mit einer Klinge so herumzuwedeln.
+
+### "herunter" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Klettere herunter !
+
+### "hieb-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom hat ein hieb- und stichfestes Alibi.
+
+### "hielt" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -5805,17 +6898,23 @@ Accuracy: 99.93%
 - Examples:
   - Ich hab das hier - kein Aspirin.
 
-### "hier" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Was willst du hier ?
-
 ### "hierhin" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Warum kommt er denn nicht hierhin ?
+
+### "hin" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Stell diesen Teller wieder hin !
+
+### "hin" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Und wo ist der andere Nichtsnutz wieder hin ?
 
 ### "holen" + "?" (1 occurrences)
 - Predicted: None
@@ -5828,6 +6927,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ich kann das nicht mehr hören !
+
+### "hören" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kann ich es nochmals hören ?
+
+### "ich" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
 
 ### "ich" + "…" (1 occurrences)
 - Predicted: None
@@ -5859,31 +6970,19 @@ Accuracy: 99.93%
 - Examples:
   - Wo seid ihr ?
 
-### "in" + "’nem" (1 occurrences)
+### "in" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Den schick ich in ’nem Sack nach Irland.
 
-### "in" + "“," (1 occurrences)
+### "in" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Es ist unter den jungen Leuten jetzt „in“, gebrauchte Kleidung zu tragen.
 
-### "irgend" + "etwas" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Er hat noch nie auf irgendetwas anderem geschrieben.
-
-### "irgend" + "wer" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Kommt irgendwer aus Picton?
-
-### "ist" + "’ne" (1 occurrences)
+### "ist" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -5900,12 +6999,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Du bist ja !
-
-### "ja" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Das Wort „ja“ kommt ihm nie über die Lippen.
 
 ### "jemand" + "!" (1 occurrences)
 - Predicted: None
@@ -5979,6 +7072,12 @@ Accuracy: 99.93%
 - Examples:
   - Wann darf Ihr kleiner Prinz zu Ihnen ins Bett kommen ?
 
+### "kommt" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er kommt !
+
 ### "kommt" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5991,13 +7090,7 @@ Accuracy: 99.93%
 - Examples:
   - Egal, was es kostet - oder was sie brauchen.
 
-### "kostet" + "ja" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Fragen kostetja nichts.
-
-### "kostet" + "’ne" (1 occurrences)
+### "kostet" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -6008,12 +7101,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ein Falconeri sollte auf unserer Seite kämpfen - für den König.
-
-### "kämpfst" + "jetzt" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Du kämpfstjetzt mit unserem Priester?
 
 ### "können" + "-" (1 occurrences)
 - Predicted: None
@@ -6033,11 +7120,11 @@ Accuracy: 99.93%
 - Examples:
   - Wussten Sie, dass die Leute mit der Zunge küssen ?
 
-### "ler" + "stadt" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "lassen" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Künstlerstadt.
+  - Willlst du ihn da oben lassen ?
 
 ### "lieber" + "-" (1 occurrences)
 - Predicted: None
@@ -6045,23 +7132,17 @@ Accuracy: 99.93%
 - Examples:
   - Wen hättest du lieber - einen Sohn oder eine Tochter?
 
-### "los" + "!" (1 occurrences)
+### "los" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Jawohl, hol das Pferd, los !
+  - Was ist da los ?
 
 ### "loslassen" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Lass mich die Kracher loslassen !
-
-### "lügst" + "ja" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Du lügstja ständig!
 
 ### "mach" + "'s" (1 occurrences)
 - Predicted: Space
@@ -6080,30 +7161,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Was muss ich machen ?
-
-### "mach’" + "ich" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Vielleicht mach’ ich das irgendwann mal.
-
-### "mal" + "’n" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Leg mal ’n Zahn zu!
-
-### "mal" + "’ne" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Haste mal ’ne Kippe?
-
-### "mal" + "’nen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Du musst mal ’nen Zahn zulegen.
 
 ### "manchmal" + "?" (1 occurrences)
 - Predicted: None
@@ -6135,17 +7192,17 @@ Accuracy: 99.93%
 - Examples:
   - Und sie bringt Geld mit - viel Geld.
 
+### "mit" + "jedem" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Sie geht fremd, aber nicht mitjedem Mann.
+
 ### "muss" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ich muss - Nur eine Minute?
-
-### "muss" + "zu" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ich musszu meiner Schwester, um ihr beim Umzugzu helfen.
 
 ### "mögen" + "…" (1 occurrences)
 - Predicted: None
@@ -6177,29 +7234,29 @@ Accuracy: 99.93%
 - Examples:
   - Soll ich nachsehen ?
 
+### "nahr-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Avocado ist eine nahr- und schmackhafte Frucht.
+
 ### "nehmen" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Hör auf, ihn immer in Schutz zu nehmen !
 
-### "nenn’" + "ich" (1 occurrences)
+### "nehmen" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Das nenn’ ich mal geräumig!
+  - Papa, kann ich die Zügel nehmen ?
 
 ### "nicht" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Schau nicht !
-
-### "nicht" + ">>" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wieso <<entsprechen meine Angaben der Wirklichkeit fast gar nicht>>?
 
 ### "nichts" + "!" (1 occurrences)
 - Predicted: None
@@ -6249,12 +7306,6 @@ Accuracy: 99.93%
 - Examples:
   - Wieso nur ?
 
-### "nur" + "was" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Würd ich nurwas anderes finden.
-
 ### "nötig" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6291,12 +7342,6 @@ Accuracy: 99.93%
 - Examples:
   - Haben Sie gesehen wie oft ?
 
-### "ohn’" + "dass" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Das Alter beschleicht uns, ohn’ dass wir’s bemerken.
-
 ### "paar" + "Tagen" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -6327,12 +7372,6 @@ Accuracy: 99.93%
 - Examples:
   - Wie ist er da raufgekommen ?
 
-### "raus" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Komm schon, raus !
-
 ### "reden" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6351,11 +7390,29 @@ Accuracy: 99.93%
 - Examples:
   - Dieser wunderbare Enthusiasmus macht und jung aber gleichzeitig auch so reif !
 
+### "rein-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es soll niemand rein- oder rausgehen.
+
+### "reinkonmmen" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kann ich reinkonmmen ?
+
 ### "reiste" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Er reiste - und jedes Mal an einen anderen Ort.
+
+### "rum" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Was weinst du dann da rum ?
 
 ### "rumgekriegt" + "!" (1 occurrences)
 - Predicted: None
@@ -6363,17 +7420,17 @@ Accuracy: 99.93%
 - Examples:
   - Sie hat ihn rumgekriegt !
 
+### "s" + "paar" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Zwillingspaar.
+
 ### "sagen" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Und ich muss sagen … das Essen ist oberste Holzklasse.
-
-### "sagst" + "ja" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Du sagstja selber immer, was du denkst.
 
 ### "sagt" + "-" (1 occurrences)
 - Predicted: None
@@ -6405,23 +7462,17 @@ Accuracy: 99.93%
 - Examples:
   - Wenn du das nicht schaffst - bin ich erledigt.
 
-### "schaff’" + "ich" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Vielleicht schaff’ ich’s nicht, aber ich werde es zumindest versuchen.
-
 ### "schau" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Onkel, schau !
 
-### "scheint" + "jeder" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "schauen" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - So scheintjeder Tag unendlich zu sein.
+  - Kommt schauen !
 
 ### "schenken" + "?" (1 occurrences)
 - Predicted: None
@@ -6465,7 +7516,7 @@ Accuracy: 99.93%
 - Examples:
   - Wer will sie schon ?
 
-### "schon" + "’ne" (1 occurrences)
+### "schon" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -6476,6 +7527,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wann schaffst du das bloss, diese Gedichte zu schreiben ?
+
+### "schuldig" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Mein Klient will auf „schuldig“ plädieren.
+
+### "schwer" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sind die nicht schwer ?
 
 ### "sehen" + "!" (1 occurrences)
 - Predicted: None
@@ -6495,6 +7558,12 @@ Accuracy: 99.93%
 - Examples:
   - Ihre Stärke ist, dass sie sich - für Frau Mak hält.
 
+### "sicher" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sind Sie sicher ?
+
 ### "sie" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6506,6 +7575,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Vielleicht können wir sie verfolgen, ohne dass sieVerdacht schöpfen?
+
+### "sie" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
 
 ### "sieht" + "-" (1 occurrences)
 - Predicted: None
@@ -6525,7 +7600,7 @@ Accuracy: 99.93%
 - Examples:
   - Und wenn die Meise nicht will singen - Alle raus.
 
-### "so" + "’nen" (1 occurrences)
+### "so" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -6579,6 +7654,12 @@ Accuracy: 99.93%
 - Examples:
   - Hört, die Königliche Hoheit spricht !
 
+### "spät" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kommt, wir sind spät !
+
 ### "stecken" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6603,6 +7684,12 @@ Accuracy: 99.93%
 - Examples:
   - Wie das stinkt !
 
+### "strawberries" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Warum heißen Erdbeeren im Englischen „strawberries“?
+
 ### "tot" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6615,23 +7702,11 @@ Accuracy: 99.93%
 - Examples:
   - Das werde ich tun !
 
-### "tu’" + "mir" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich tu’ mir sehr gern Essig auf die Pommes.
-
 ### "um" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Der bringt uns heute noch um !
-
-### "um" + "verteidigung" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Rundumverteidigung!
 
 ### "um" + "…" (1 occurrences)
 - Predicted: None
@@ -6651,23 +7726,17 @@ Accuracy: 99.93%
 - Examples:
   - Ich werde dir den Hals umdrehen !
 
-### "und" + "-abgabe" (1 occurrences)
-- Predicted: None
-- Actual: Space
+### "unberechenbar" + "er" (1 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - Momentan ist die Leistungsaufnahme und -abgabe zufriedenstellend.
+  - Ein weltfremder, unberechenbarer Künstler!
 
 ### "und" + "/" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Unfall und/oder Vorsatz.
-
-### "und" + "jeder" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ich kanntejeden, undjeder kannte mich.
 
 ### "und" + "zu" (1 occurrences)
 - Predicted: Space
@@ -6711,11 +7780,11 @@ Accuracy: 99.93%
 - Examples:
   - In der heutigen Zeit ist „variabel“ ein Schimpfwort.
 
-### "ve" + "!" (1 occurrences)
+### "ver-" + "schwinden" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Die Per-spek-ti-ve !
+  - Ihr könnt von hier ver- schwinden, wenn ihr wollt.
 
 ### "verbrenne" + "!" (1 occurrences)
 - Predicted: None
@@ -6759,6 +7828,12 @@ Accuracy: 99.93%
 - Examples:
   - Ich werde euch vergiften !
 
+### "verlassen" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kann ich das Zimmer verlassen ?
+
 ### "verletzen" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6783,11 +7858,23 @@ Accuracy: 99.93%
 - Examples:
   - Bist du verrückt ?
 
+### "verschlossen" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wer hat das Tor verschlossen ?
+
 ### "verstanden" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Und dass du alle und alles verärgerst, verstanden ?
+
+### "verur-" + "sachen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Was Sie mir für einen Aufwand verur- sachen mit Ihren blödsinnigen Ideen!
 
 ### "verweht" + "“" (1 occurrences)
 - Predicted: Space
@@ -6813,11 +7900,23 @@ Accuracy: 99.93%
 - Examples:
   - Ich habe „vielleicht“ gesagt.
 
+### "vier-" + "oder" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vielleicht vier- oder fünfmal so groß.
+
 ### "von" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Weil ihr gleich neue beste Buddies seid von … Nibbles Maplestick!
+
+### "vor" + "Angst" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aber weisst du, in Wahrheit sterbe ich vorAngst.
 
 ### "vor" + "«" (1 occurrences)
 - Predicted: Space
@@ -6891,6 +7990,12 @@ Accuracy: 99.93%
 - Examples:
   - Mach weiter !
 
+### "weiterfahren" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Können wir weiterfahren !
+
 ### "weiß" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6903,25 +8008,13 @@ Accuracy: 99.93%
 - Examples:
   - Man könnte meinen, ich füttere euch zu wenig !
 
-### "wenn" + "n" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ich kann es nicht wissen, wennn du es mir nicht sagst.
-
 ### "werde" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Wisst ihr, was ich tun werde ?
 
-### "werdet" + "jetzt" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ihr werdetjetzt als Verräter an eurem Vaterland betrachtet.
-
-### "wie" + "’ne" (1 occurrences)
+### "wie" + "’" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -6963,17 +8056,23 @@ Accuracy: 99.93%
 - Examples:
   - Wohin gehen wir ?
 
-### "wir" + "ja" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Jetzt können wirja nicht einfach so ohne ein letztes Word verschwinden, hmm?
-
 ### "wir" + "jemals" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Werden wirjemals hier rauskommen?
+
+### "wir" + "wären" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Doch, wirwären sehr stolz.
+
+### "wir" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
 
 ### "wird" + "." (1 occurrences)
 - Predicted: None
@@ -7005,11 +8104,23 @@ Accuracy: 99.93%
 - Examples:
   - Wie soll ich das wissen ?
 
+### "woanders" + "hin" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Wir werden woandershin gehen.
+
 ### "wollen" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Warum würdest du Lehrer werden wollen ?
+
+### "wollt’" + "ich" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nirgends auf Erden wollt’ ich lieber sein!
 
 ### "wortwörtlich" + "-" (1 occurrences)
 - Predicted: None
@@ -7023,17 +8134,41 @@ Accuracy: 99.93%
 - Examples:
   - Wie wunderbar !
 
-### "wär’" + "mir" (1 occurrences)
+### "wär" + "‘" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Wie wär‘s, wenn ich dich auf einen Kaffee einlade?
+
+### "wär’" + "allein" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - O wär’ mir doch solche Macht zu eigen!
+  - Ich dachte, ich wär’ allein.
+
+### "wär’" + "das" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ohne Tom wär’ das Leben leer.
+
+### "wär’" + "schon" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das wär’ schon was!
 
 ### "wär’" + "sie" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Sie tat so, als wär’ sie schwer zu haben.
+
+### "wär’" + "–" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wenn er ein Vöglein wär’ – sagt er –, flöge er zu mir.
 
 ### "wünschen" + "!" (1 occurrences)
 - Predicted: None
@@ -7059,11 +8194,23 @@ Accuracy: 99.93%
 - Examples:
   - Aurelio, hör doch zu !
 
+### "zu" + "wedeln" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Es ist gefährlich, mit einer Klinge so herumzuwedeln.
+
 ### "zu" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Sie … hat gesagt … vielleicht sind wir doch zu … unterschiedlich.
+
+### "zuerst" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wer kommt zuerst ?
 
 ### "zurück" + "!" (1 occurrences)
 - Predicted: None
@@ -7071,17 +8218,17 @@ Accuracy: 99.93%
 - Examples:
   - Und kommst dann sofort zurück !
 
-### "zurücksetzen" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hast du auf „zurücksetzen“ gedrückt?
-
 ### "zusammen" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Näher zusammen !
+
+### "zusammen" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bist du gerne mit uns zusammen ?
 
 ### "zuzuhören" + "-" (1 occurrences)
 - Predicted: None
@@ -7143,24 +8290,6 @@ Accuracy: 99.93%
 - Examples:
   - VW werden Sie in die C—Kompanie eingliedern.
 
-### "’" + "Erscheinen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Tom fragte Maria, ob sie wisse, wann mit Johannes’ Erscheinen zu rechnen sei.
-
-### "’" + "Hilfe" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Tom erwähnte, Maria hoffe auf Johannes’ Hilfe und Beistand.
-
-### "’" + "Kenntnis" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Holmes’ Kenntnis der Seitenwege von London war außergewöhnlich.
-
 ### "’" + "Nacht" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7185,17 +8314,23 @@ Accuracy: 99.93%
 - Examples:
   - Will man einen Menschen kennen, beobachte man, wie er eine Katz’ behandelt.
 
+### "’" + "dass" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das Alter beschleicht uns, ohn’ dass wir’s bemerken.
+
 ### "’" + "dran" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Denk’ dran, die Fenster zu schließen.
 
-### "’" + "früh" (1 occurrences)
+### "’" + "einen" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Heut’ früh war’s echt kalt.
+  - Ich hab’ einen Narren an der gefressen.
 
 ### "’" + "gefangen" (1 occurrences)
 - Predicted: None
@@ -7203,11 +8338,23 @@ Accuracy: 99.93%
 - Examples:
   - Der Vogel, der am Morgen singt, wird am Abend von der Katz’ gefangen.
 
+### "’" + "ihn" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich frag’ ihn, ob er Japanisch spricht.
+
 ### "’" + "mich" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ich fühl’ mich voll entspannt.
+
+### "’" + "’" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich trage coole Kleider und hab’ ’ne coole Sonnenbrille auf.
 
 ### "“" + "(" (1 occurrences)
 - Predicted: None
@@ -7227,6 +8374,12 @@ Accuracy: 99.93%
 - Examples:
   - Ich halte zu meinen Freunden und Verwandten über „Facebook“ Kontakt.
 
+### "“" + "ab" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - I stimme mit „Ja“ ab.
+
 ### "“" + "aufgeführt" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7245,11 +8398,23 @@ Accuracy: 99.93%
 - Examples:
   - Die Stadt Recife ist als „Venedig Brasiliens“ bekannt.
 
+### "“" + "bestanden" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er hat den Kurs mit einem „gut“ bestanden.
+
 ### "“" + "bevor" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Tom steht „lebenslänglich“ bevor.
+
+### "“" + "bezeichnet" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Mafia wird auch als die „Cosa Nostra“ bezeichnet.
 
 ### "“" + "bis" (1 occurrences)
 - Predicted: None
@@ -7257,17 +8422,17 @@ Accuracy: 99.93%
 - Examples:
   - Nehmen Sie den Bus Richtung „Badstraße“ bis zur Seestraße.
 
-### "“" + "ein" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - In der heutigen Zeit ist „variabel“ ein Schimpfwort.
-
 ### "“" + "einen" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Die „Löwen“ haben gegen die „Falken“ einen leichten Sieg errungen.
+
+### "“" + "eingestellt" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dieser Buchladen hat den Verkauf von „JUMP“ eingestellt.
 
 ### "“" + "entschieden" (1 occurrences)
 - Predicted: None
@@ -7281,17 +8446,23 @@ Accuracy: 99.93%
 - Examples:
   - Kannst du mit dem Begriff „Selbsterhaltung“ etwas anfangen?
 
+### "“" + "folgen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Man kann dem Papst jetzt auf „Twitter“ folgen.
+
+### "“" + "für" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich habe eine „Eins“ für meinen Aufsatz bekommen.
+
 ### "“" + "gebaut" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Tom und Maria haben ein „Erdschiff“ gebaut.
-
-### "“" + "gedrückt" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hast du auf „zurücksetzen“ gedrückt?
 
 ### "“" + "gegessen" (1 occurrences)
 - Predicted: None
@@ -7299,17 +8470,41 @@ Accuracy: 99.93%
 - Examples:
   - Tom hat im „Goldenen Drachen“ gegessen.
 
+### "“" + "gehört" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hast du schon einmal etwas von „Tatoeba“ gehört?
+
 ### "“" + "gemacht" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Maria hat ihren Neffen „Şiş kebap“ gemacht.
 
+### "“" + "genannt" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er mochte Zeichentrickfilme japanischer Art, auch „Anime“ genannt.
+
 ### "“" + "geschrieben" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Wer hat „Romeo und Julia“ geschrieben?
+
+### "“" + "gespielt" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wir haben nur „Verstecken“ gespielt.
+
+### "“" + "ging" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die „Hindenburg“ ging plötzlich in Flammen auf.
 
 ### "“" + "haben" (1 occurrences)
 - Predicted: None
@@ -7353,11 +8548,35 @@ Accuracy: 99.93%
 - Examples:
   - Die Rubriken „Sport“ und „Kultur“ lese ich nie.
 
+### "“" + "lesen" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich wollte schon immer mal „Krieg und Frieden“ lesen.
+
 ### "“" + "malte" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Leonardo da Vinci, der „Das letzte Abendmahl“ malte, war homosexuell.
+
+### "“" + "miteinander" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom und Maria sprechen häufig über „Skype“ miteinander.
+
+### "“" + "nur" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Viele sind bei „Tinder“ nur auf eine kurze Beziehung aus.
+
+### "“" + "plädieren" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mein Klient will auf „schuldig“ plädieren.
 
 ### "“" + "schlitterten" (1 occurrences)
 - Predicted: None
@@ -7395,6 +8614,12 @@ Accuracy: 99.93%
 - Examples:
   - Tom hat „Die Kriegskunst“ von Sūnzǐ gelesen.
 
+### "„" + "Anime" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er mochte Zeichentrickfilme japanischer Art, auch „Anime“ genannt.
+
 ### "„" + "Badstraße" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7425,6 +8650,36 @@ Accuracy: 99.93%
 - Examples:
   - Wie „Buh-duh, buh-duh, buh-duh“.
 
+### "„" + "Camden Town" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ist die nächste Haltestelle „Camden Town“?
+
+### "„" + "Cheese" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Guckt in die Kamera und sagt „Cheese“!
+
+### "„" + "City" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bist du für „City“ oder die „Rovers“?
+
+### "„" + "Clearasil" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Oliver benützt „Clearasil“.
+
+### "„" + "Cosa Nostra" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Mafia wird auch als die „Cosa Nostra“ bezeichnet.
+
 ### "„" + "Cowboys" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7436,6 +8691,24 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Leonardo da Vinci, der „Das letzte Abendmahl“ malte, war homosexuell.
+
+### "„" + "Drei" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tom gewinnt nie bei „Drei gewinnt“.
+
+### "„" + "Dundonian" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Rob ist ein stolzer „Dundonian“.
+
+### "„" + "Eins" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich habe eine „Eins“ für meinen Aufsatz bekommen.
 
 ### "„" + "Enter" (1 occurrences)
 - Predicted: Space
@@ -7473,11 +8746,23 @@ Accuracy: 99.93%
 - Examples:
   - Lesen Sie unsere „Fragen und Antworten“.
 
+### "„" + "Frankfurter" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - In seinem Herkunftsland Deutschland hieß der Hot Dog „Frankfurter“.
+
 ### "„" + "Freiheitsfritten" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Tom bezeichnet Pommes frites noch immer als „Freiheitsfritten“.
+
+### "„" + "Fängers" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Wir haben zufälligerweise zwei Exemplare des „Fängers im Roggen“.
 
 ### "„" + "Geld" (1 occurrences)
 - Predicted: Space
@@ -7491,11 +8776,23 @@ Accuracy: 99.93%
 - Examples:
   - Hast du „Geld“ oder „Gold“ gesagt?
 
-### "„" + "Goldenen" (1 occurrences)
+### "„" + "Goldenen Drachen" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Tom hat im „Goldenen Drachen“ gegessen.
+
+### "„" + "Heil Hitler" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Oder seine Briefe mit „Heil Hitler“ zu unterschreiben.
+
+### "„" + "Hindenburg" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die „Hindenburg“ ging plötzlich in Flammen auf.
 
 ### "„" + "Hühnchen" (1 occurrences)
 - Predicted: Space
@@ -7520,6 +8817,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - IP steht für „Internet-Protokoll“.
+
+### "„" + "JUMP" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dieser Buchladen hat den Verkauf von „JUMP“ eingestellt.
 
 ### "„" + "Japanisch" (1 occurrences)
 - Predicted: Space
@@ -7563,11 +8866,35 @@ Accuracy: 99.93%
 - Examples:
   - Tom verwendet im Internet den Namen „Maria“.
 
+### "„" + "Mary" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Satz enthält zwei Subjekte, nämlich „Tom“ und „Mary“.
+
 ### "„" + "Mavericks" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Du nennst sie „Mavericks“; ich nenne sie „Cowboys“.
+
+### "„" + "Miss" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Warum gibt es eine „Miss“, aber keinen „Mister Italien“?
+
+### "„" + "Mister" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Warum gibt es eine „Miss“, aber keinen „Mister Italien“?
+
+### "„" + "Mistral" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Der Wind, der häufig in der Provence weht, heißt „Mistral“.
 
 ### "„" + "Moby Dick" (1 occurrences)
 - Predicted: Space
@@ -7581,7 +8908,7 @@ Accuracy: 99.93%
 - Examples:
   - Tom ist ein Mitglied der „Nationalen Schusswaffenvereinigung“.
 
-### "„" + "Nordkorea Zentralasiens" (1 occurrences)
+### "„" + "Nordkorea" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -7593,11 +8920,47 @@ Accuracy: 99.93%
 - Examples:
   - Wo ist der „Palast der schönen Künste“?
 
+### "„" + "Pferd" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Mehrzahl von „Pferd“ lautet „Pferde“.
+
+### "„" + "Pferde" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Mehrzahl von „Pferd“ lautet „Pferde“.
+
 ### "„" + "Photoshop" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Tom kann recht gut mit „Photoshop“ umgehen.
+
+### "„" + "Pinterest" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Maria hat bei „Pinterest“ ein Bild von ihren Keksen hochgeladen.
+
+### "„" + "Pochi" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Mike nennt seinen Hund „Pochi“?
+
+### "„" + "Politik" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er liest nur die Rubriken „Wirtschaft“ und „Politik“.
+
+### "„" + "Queen Elizabeth" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich taufe dieses Schiff auf den Namen „Queen Elizabeth“.
 
 ### "„" + "Rap" (1 occurrences)
 - Predicted: Space
@@ -7616,6 +8979,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Die „Riesen“ schlitterten der Niederlage entgegen.
+
+### "„" + "Rovers" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bist du für „City“ oder die „Rovers“?
 
 ### "„" + "Schwuchtel" (1 occurrences)
 - Predicted: Space
@@ -7641,6 +9010,12 @@ Accuracy: 99.93%
 - Examples:
   - Am „Silizium-Kreisel“ sind zahlreiche junge IT-Unternehmen ansässig.
 
+### "„" + "Skype" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tom und Maria sprechen häufig über „Skype“ miteinander.
+
 ### "„" + "Stimme" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7653,11 +9028,29 @@ Accuracy: 99.93%
 - Examples:
   - Einen schönen „Tag des Satzes“!
 
+### "„" + "Tatoeba" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hast du schon einmal etwas von „Tatoeba“ gehört?
+
 ### "„" + "The Slits" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Ari Up (Ariane Forster) war die Frontfrau von „The Slits“.
+
+### "„" + "Times" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich lese die „Times“.
+
+### "„" + "Tinder" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Viele sind bei „Tinder“ nur auf eine kurze Beziehung aus.
 
 ### "„" + "Tod" (1 occurrences)
 - Predicted: Space
@@ -7665,17 +9058,29 @@ Accuracy: 99.93%
 - Examples:
   - Das ist nicht „Tod eines Handlungsreisenden”.
 
-### "„" + "Tom" (1 occurrences)
+### "„" + "Toilette" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Ist „Tom“ in Australien ein häufiger Name?
+  - An der Tür war ein großes T für „Toilette“.
+
+### "„" + "Trumpete" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Clinton kann Saxophon spielen und Trump die „Trumpete“.
 
 ### "„" + "Tsubasa" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Der „Tsubasa“ ist ein sehr schneller Zug.
+
+### "„" + "Twitter" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Man kann dem Papst jetzt auf „Twitter“ folgen.
 
 ### "„" + "Unternehmensengel" (1 occurrences)
 - Predicted: Space
@@ -7689,6 +9094,18 @@ Accuracy: 99.93%
 - Examples:
   - Wir spielten oft „Vater, Mutter, Kind“ im Park.
 
+### "„" + "Venedig" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Stadt Recife ist als „Venedig Brasiliens“ bekannt.
+
+### "„" + "Verstecken" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Wir haben nur „Verstecken“ gespielt.
+
 ### "„" + "Vielfältigkeiten" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7701,11 +9118,23 @@ Accuracy: 99.93%
 - Examples:
   - Hast du schon einmal „Vom Winde verweht“ gelesen?
 
+### "„" + "Voyage" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Gérard de Nerval schrieb „Voyage en Orient“ (Reise im Orient).
+
 ### "„" + "Welt" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Sie spielt „Welt der Kriegskunst“.
+
+### "„" + "Wirtschaft" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er liest nur die Rubriken „Wirtschaft“ und „Politik“.
 
 ### "„" + "abschicken" (1 occurrences)
 - Predicted: Space
@@ -7718,12 +9147,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Das Gegenteil von „aufwachen“ ist „einschlafen“.
-
-### "„" + "ausreichend" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Warum habe ich ein „ausreichend“ bekommen?
 
 ### "„" + "befriedigend" (1 occurrences)
 - Predicted: Space
@@ -7773,11 +9196,29 @@ Accuracy: 99.93%
 - Examples:
   - Ich habe Tom als „fettes Schwein“ tituliert.
 
+### "„" + "gehen" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ein grünes Licht bedeutet „gehen“.
+
+### "„" + "gut" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Er hat den Kurs mit einem „gut“ bestanden.
+
 ### "„" + "hopfenlosen" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Boldi befand sich in einer „hopfenlosen Situation“.
+
+### "„" + "ich" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
 
 ### "„" + "in" (1 occurrences)
 - Predicted: Space
@@ -7785,17 +9226,17 @@ Accuracy: 99.93%
 - Examples:
   - Es ist unter den jungen Leuten jetzt „in“, gebrauchte Kleidung zu tragen.
 
-### "„" + "ja" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Das Wort „ja“ kommt ihm nie über die Lippen.
-
 ### "„" + "klug" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Was heißt es, „klug“ zu sein?
+
+### "„" + "kranken" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Man nennt es „kranken Humor“.
 
 ### "„" + "ovale" (1 occurrences)
 - Predicted: Space
@@ -7809,11 +9250,29 @@ Accuracy: 99.93%
 - Examples:
   - Tom und Maria wohnen in einem „schlauen Haus“.
 
+### "„" + "schuldig" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Mein Klient will auf „schuldig“ plädieren.
+
 ### "„" + "senden" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Tom drückte „senden“.
+
+### "„" + "sie" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
+
+### "„" + "strawberries" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Warum heißen Erdbeeren im Englischen „strawberries“?
 
 ### "„" + "variabel" (1 occurrences)
 - Predicted: Space
@@ -7827,207 +9286,15 @@ Accuracy: 99.93%
 - Examples:
   - Ich habe „vielleicht“ gesagt.
 
-### "„" + "zurücksetzen" (1 occurrences)
+### "„" + "wir" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Hast du auf „zurücksetzen“ gedrückt?
+  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
 
 ### "„" + "Şiş" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Maria hat ihren Neffen „Şiş kebap“ gemacht.
-
-### "„Anime“" + "genannt" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Er mochte Zeichentrickfilme japanischer Art, auch „Anime“ genannt.
-
-### "„City“" + "oder" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Bist du für „City“ oder die „Rovers“?
-
-### "„Clearasil" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Oliver benützt „Clearasil“.
-
-### "„Cosa Nostra“" + "bezeichnet" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Mafia wird auch als die „Cosa Nostra“ bezeichnet.
-
-### "„Eins“" + "für" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich habe eine „Eins“ für meinen Aufsatz bekommen.
-
-### "„Frankfurter" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - In seinem Herkunftsland Deutschland hieß der Hot Dog „Frankfurter“.
-
-### "„Hindenburg“" + "ging" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die „Hindenburg“ ging plötzlich in Flammen auf.
-
-### "„JUMP“" + "eingestellt" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Dieser Buchladen hat den Verkauf von „JUMP“ eingestellt.
-
-### "„Ja“" + "ab" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - I stimme mit „Ja“ ab.
-
-### "„Miss" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Warum gibt es eine „Miss“, aber keinen „Mister Italien“?
-
-### "„Mistral" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Der Wind, der häufig in der Provence weht, heißt „Mistral“.
-
-### "„Pferd“" + "lautet" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Mehrzahl von „Pferd“ lautet „Pferde“.
-
-### "„Pinterest“" + "ein" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Maria hat bei „Pinterest“ ein Bild von ihren Keksen hochgeladen.
-
-### "„Skype“" + "miteinander" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Tom und Maria sprechen häufig über „Skype“ miteinander.
-
-### "„Tatoeba“" + "gehört" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hast du schon einmal etwas von „Tatoeba“ gehört?
-
-### "„Tinder“" + "nur" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Viele sind bei „Tinder“ nur auf eine kurze Beziehung aus.
-
-### "„Toilette" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - An der Tür war ein großes T für „Toilette“.
-
-### "„Tom“" + "und" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Der Satz enthält zwei Subjekte, nämlich „Tom“ und „Mary“.
-
-### "„Trumpete" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Clinton kann Saxophon spielen und Trump die „Trumpete“.
-
-### "„Twitter“" + "folgen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Man kann dem Papst jetzt auf „Twitter“ folgen.
-
-### "„Verstecken“" + "gespielt" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Wir haben nur „Verstecken“ gespielt.
-
-### "„Wirtschaft“" + "und" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Er liest nur die Rubriken „Wirtschaft“ und „Politik“.
-
-### "„ausreichend" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Er bekam ein „ausreichend“.
-
-### "„ausreichend“" + "bekommen" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Du hast ein „ausreichend“ bekommen.
-
-### "„gehen" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ein grünes Licht bedeutet „gehen“.
-
-### "„gut“" + "bestanden" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Er hat den Kurs mit einem „gut“ bestanden.
-
-### "„ich" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
-
-### "„ja" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Die Antwort war „ja“.
-
-### "„schuldig“" + "plädieren" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Mein Klient will auf „schuldig“ plädieren.
-
-### "„sie" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
-
-### "„wir" + "“" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bei „ich“, „sie“ und „wir“ handelt es sich um Personalpronomen.
-
-### "„zurücksetzen“" + "gedrückt" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Haben Sie auf „zurücksetzen“ gedrückt?
 

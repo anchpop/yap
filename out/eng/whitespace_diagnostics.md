@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1801510
-Total errors: 1062
+Total predictions: 1801524
+Total errors: 1067
 Accuracy: 99.94%
 
 ## Error Patterns (sorted by frequency)
@@ -69,6 +69,14 @@ Accuracy: 99.94%
   - And with both of us working - You know how it is.
   - But this is how-- You know, this is how it sort of made me feel.
   - For several months, so-- You know.
+
+### "--" + "dumb" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Just dumb-- dumb-- dumb-- dumb-- dumb-- dumb bunny.
+  - Just dumb-- dumb-- dumb-- dumb-- dumb-- dumb bunny.
+  - Just dumb-- dumb-- dumb-- dumb-- dumb-- dumb bunny.
 
 ### "," + "“" (4 occurrences)
 - Predicted: None

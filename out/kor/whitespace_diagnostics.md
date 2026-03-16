@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 409126
-Total errors: 20966
+Total predictions: 409186
+Total errors: 20969
 Accuracy: 94.88%
 
 ## Error Patterns (sorted by frequency)
@@ -46218,6 +46218,12 @@ Accuracy: 94.88%
 - Examples:
   - 젠장, 이놈의 손!
 
+### "이" + "라도" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 새로운 것이라도 있어?
+
 ### "이" + "시다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -55260,6 +55266,12 @@ Accuracy: 94.88%
 - Examples:
   - 마지막 코너에서도?
 
+### "코니" + "라는" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 내가 니 나이때 코니라는 상상속 친구가 있었단다.
+
 ### "코드" + "는요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -57155,6 +57167,12 @@ Accuracy: 94.88%
 - Actual: None
 - Examples:
   - 승무원 탈출 포드였습니다.
+
+### "포로" + "다" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 이 사내는 포로다!
 
 ### "포르코" + "라는" (1 occurrences)
 - Predicted: Space

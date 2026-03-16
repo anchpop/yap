@@ -309,7 +309,11 @@ impl UnigramModel {
 
     /// Compute actual usage counts by segmenting the corpus and counting gram occurrences.
     /// Returns a new model with IDs reassigned so that ID 0 = most frequently used gram.
-    pub fn reorder_by_actual_usage(self, corpus: &[Vec<Atom<String>>]) -> Self {
+    pub fn reorder_by_actual_usage(
+        self,
+        corpus: &[Vec<Atom<String>>],
+        seed_set: &HashSet<&Gram<String>>,
+    ) -> Self {
         // Count actual usage of each gram when segmenting
         let mut usage_counts: Vec<u64> = vec![0; self.id_to_seq.len()];
 
@@ -322,15 +326,23 @@ impl UnigramModel {
             }
         }
 
-        // Create (sequence, log_prob, actual_count) tuples and sort by count descending
+        // Create (sequence, log_prob, actual_count) tuples and sort by count descending.
+        // Drop non-seed multi-atom grams with 0 actual usage — these are n-grams that
+        // omnigram counted from the corpus but the Viterbi decoder never selects
+        // (e.g., "il être" from French inversions like "peut-il être").
         let mut vocab_with_counts: Vec<(Gram<String>, f64, u32)> = self
             .id_to_seq
             .into_iter()
             .enumerate()
-            .map(|(id, seq)| {
+            .filter_map(|(id, seq)| {
                 let log_prob = self.vocab.get(&seq).map(|(_, lp)| *lp).unwrap_or(0.0);
                 let count = usage_counts[id] as u32;
-                (seq, log_prob, count)
+                // Keep single atoms (always needed), seeds, and grams with actual usage
+                if seq.len() == 1 || count > 0 || seed_set.contains(&seq) {
+                    Some((seq, log_prob, count))
+                } else {
+                    None
+                }
             })
             .collect();
 
@@ -571,7 +583,7 @@ impl UnigramTrainer {
 
         // Reorder by actual usage when segmenting the corpus
         // This ensures ID 0 = most frequently used gram in practice
-        model.reorder_by_actual_usage(corpus)
+        model.reorder_by_actual_usage(corpus, &seed_set)
     }
 
     fn compute_viterbi_counts(
