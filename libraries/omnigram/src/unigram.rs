@@ -338,6 +338,8 @@ pub struct UnigramTrainerConfig {
     /// At α=0.5, merges like "te dire" become cheap enough to use, but junk
     /// merges like "all, you" are still avoided.
     pub merge_alpha: f64,
+    /// Whether to use hard EM (Viterbi counts) instead of soft EM (forward-backward marginals).
+    pub hard_em: bool,
 }
 
 impl Default for UnigramTrainerConfig {
@@ -349,6 +351,7 @@ impl Default for UnigramTrainerConfig {
             min_frequency: 2,
             em_iterations: 10,
             merge_alpha: 0.0,
+            hard_em: false,
         }
     }
 }
@@ -609,6 +612,10 @@ impl UnigramTrainer {
         corpus: &[Vec<Atom<String>>],
         model: &UnigramModel,
     ) -> (ExpectedCounts, f64) {
+        if self.config.hard_em {
+            return self.compute_hard_expected_counts(corpus, model);
+        }
+
         let mut expected_counts: ExpectedCounts = FxHashMap::default();
         let mut corpus_log_likelihood = 0.0;
 
@@ -632,6 +639,74 @@ impl UnigramTrainer {
         }
 
         (expected_counts, corpus_log_likelihood)
+    }
+
+    fn compute_hard_expected_counts(
+        &self,
+        corpus: &[Vec<Atom<String>>],
+        model: &UnigramModel,
+    ) -> (ExpectedCounts, f64) {
+        let mut expected_counts: ExpectedCounts = FxHashMap::default();
+        let mut corpus_log_likelihood = 0.0;
+
+        for sentence in corpus {
+            let (segments, sentence_score) = self.viterbi_segments(sentence, model);
+            corpus_log_likelihood += sentence_score;
+
+            for seq in segments {
+                *expected_counts.entry(seq).or_insert(0.0) += 1.0;
+            }
+        }
+
+        (expected_counts, corpus_log_likelihood)
+    }
+
+    fn viterbi_segments(
+        &self,
+        sentence: &[Atom<String>],
+        model: &UnigramModel,
+    ) -> (Vec<Gram<String>>, f64) {
+        if sentence.is_empty() {
+            return (Vec::new(), 0.0);
+        }
+
+        let n = sentence.len();
+        let mut best_score = vec![f64::NEG_INFINITY; n + 1];
+        let mut best_prev: Vec<Option<(usize, Gram<String>)>> = vec![None; n + 1];
+        best_score[0] = 0.0;
+
+        for start in 0..n {
+            if !best_score[start].is_finite() {
+                continue;
+            }
+
+            for end in start + 1..=n.min(start + model.max_piece_length) {
+                let seq = Gram(sentence[start..end].to_vec());
+                let Some(score) = model.vocab_score(&seq) else {
+                    continue;
+                };
+                let candidate = best_score[start] + score;
+                if candidate > best_score[end] {
+                    best_score[end] = candidate;
+                    best_prev[end] = Some((start, seq));
+                }
+            }
+        }
+
+        let mut segments = Vec::new();
+        let mut pos = n;
+        while pos > 0 {
+            if let Some((prev_pos, seq)) = best_prev[pos].take() {
+                segments.push(seq);
+                pos = prev_pos;
+            } else {
+                pos -= 1;
+                segments.push(Gram(vec![sentence[pos].clone()]));
+            }
+        }
+        segments.reverse();
+
+        (segments, best_score[n])
     }
 
     fn build_lattice(
@@ -781,6 +856,7 @@ mod tests {
             min_frequency: 2,
             em_iterations: 8,
             merge_alpha: 0.0,
+            hard_em: false,
         };
 
         let trainer = UnigramTrainer::new(config);
@@ -920,6 +996,31 @@ mod tests {
     }
 
     #[test]
+    fn test_hard_em_uses_viterbi_counts() {
+        let corpus = vec![vec![make_atom("a"), make_atom("b")]];
+        let vocab = vec![
+            (Gram(vec![make_atom("a")]), 0.2f64.ln(), 10),
+            (Gram(vec![make_atom("b")]), 0.2f64.ln(), 10),
+            (Gram(vec![make_atom("a"), make_atom("b")]), 0.6f64.ln(), 10),
+        ];
+
+        let trainer = UnigramTrainer::new(UnigramTrainerConfig {
+            hard_em: true,
+            ..UnigramTrainerConfig::default()
+        });
+        let model = UnigramModel::new(vocab, 0.0);
+
+        let (expected_counts, _) = trainer.compute_expected_counts(&corpus, &model);
+
+        assert_eq!(
+            expected_counts.get(&Gram(vec![make_atom("a"), make_atom("b")])),
+            Some(&1.0)
+        );
+        assert!(!expected_counts.contains_key(&Gram(vec![make_atom("a")])));
+        assert!(!expected_counts.contains_key(&Gram(vec![make_atom("b")])));
+    }
+
+    #[test]
     fn test_best_alternative_score_prefers_non_singleton_decomposition() {
         let trainer = UnigramTrainer::new(UnigramTrainerConfig::default());
         let vocab = vec![
@@ -927,7 +1028,11 @@ mod tests {
             (Gram(vec![make_atom("b")]), 0.1f64.ln(), 10),
             (Gram(vec![make_atom("c")]), 0.1f64.ln(), 10),
             (Gram(vec![make_atom("a"), make_atom("b")]), 0.35f64.ln(), 10),
-            (Gram(vec![make_atom("a"), make_atom("b"), make_atom("c")]), 0.25f64.ln(), 10),
+            (
+                Gram(vec![make_atom("a"), make_atom("b"), make_atom("c")]),
+                0.25f64.ln(),
+                10,
+            ),
         ];
         let model = UnigramModel::new(vocab, 0.0);
         let seq = Gram(vec![make_atom("a"), make_atom("b"), make_atom("c")]);

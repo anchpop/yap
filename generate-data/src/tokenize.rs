@@ -57,6 +57,7 @@ pub fn train_supertokens_and_write_diagnostics(
         min_frequency: 3,
         em_iterations: 10,
         merge_alpha: 0.0,
+        hard_em: false,
     };
 
     let trainer = UnigramTrainer::new(config);

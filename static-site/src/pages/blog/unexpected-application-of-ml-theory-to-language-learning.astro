@@ -1,9 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Author from '../../components/Author.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const supertokensResponse = await fetch('https://raw.githubusercontent.com/yaptown/yap/main/out/eng/supertokens.txt');
-const supertokensText = await supertokensResponse.text();
+const supertokensText = fs.readFileSync(path.join(import.meta.dirname, '../../data/eng-supertokens.txt'), 'utf-8');
 const shannonData = [
   { label: '0th', desc: 'Symbols independent and equiprobable.', text: 'XFOML RXKHRJFFJUJ ZLPWCFWKCYJ FFJEYVKCQSGHYD QPAAMKBZAACIBZLHJQD.' },
   { label: '1st', desc: 'Symbols independent but with frequencies of English text.', text: 'OCRO HLI RGWR NMIELWIS EU LL NBNESEBYA TH EEI ALHENHTTPA OOBTTVA NAH BRL.' },

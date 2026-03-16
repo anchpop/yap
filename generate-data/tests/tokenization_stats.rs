@@ -22,12 +22,11 @@ fn load_french_corpus() -> Vec<Vec<Atom<String>>> {
         let (_, info): (String, serde_json::Value) = serde_json::from_str(&line).unwrap();
 
         let words_val = &info["words"];
-        if words_val.as_array().map_or(true, |a| a.is_empty()) {
+        if words_val.as_array().is_none_or(|a| a.is_empty()) {
             continue;
         }
 
-        let words: Vec<Literal<String>> =
-            serde_json::from_value(words_val.clone()).unwrap();
+        let words: Vec<Literal<String>> = serde_json::from_value(words_val.clone()).unwrap();
         let (atoms, _) = literals_to_atoms(&words, language);
         corpus.push(atoms);
     }
@@ -35,7 +34,7 @@ fn load_french_corpus() -> Vec<Vec<Atom<String>>> {
     corpus
 }
 
-fn eval_model(model: &omnigram::unigram::UnigramModel, corpus: &[Vec<Atom<String>>], alpha: f64) {
+fn eval_model(model: &omnigram::unigram::UnigramModel, corpus: &[Vec<Atom<String>>], label: &str) {
     let mut total_tokens = 0usize;
     let mut total_atoms_expanded = 0usize;
     let mut multi_atom_usages = 0usize;
@@ -78,8 +77,10 @@ fn eval_model(model: &omnigram::unigram::UnigramModel, corpus: &[Vec<Atom<String
     token_counts.sort();
     let median = token_counts[token_counts.len() / 2];
 
-    println!("  alpha={alpha:.1}: vocab {vocab_single}+{vocab_multi}={} | avg tok/sent {avg_tokens:.1} | avg atom/sent {avg_atoms:.1} | compression {compression:.2}x | multi {multi_pct:.1}% | median tok/sent {median}",
-        vocab_single + vocab_multi);
+    println!(
+        "  {label}: vocab {vocab_single}+{vocab_multi}={} | avg tok/sent {avg_tokens:.1} | avg atom/sent {avg_atoms:.1} | compression {compression:.2}x | multi {multi_pct:.1}% | median tok/sent {median}",
+        vocab_single + vocab_multi
+    );
 }
 
 #[test]
@@ -87,10 +88,7 @@ fn tokenization_stats() {
     let corpus = load_french_corpus();
     println!("Loaded {} sentences", corpus.len());
 
-    let unique_atoms: HashSet<_> = corpus
-        .iter()
-        .flat_map(|s| s.iter().cloned())
-        .collect();
+    let unique_atoms: HashSet<_> = corpus.iter().flat_map(|s| s.iter().cloned()).collect();
     let single_atom_count = unique_atoms.len();
     println!("Unique atoms: {single_atom_count}");
 
@@ -105,10 +103,47 @@ fn tokenization_stats() {
             min_frequency: 3,
             em_iterations: 10,
             merge_alpha: alpha,
+            hard_em: false,
         };
 
         let trainer = UnigramTrainer::new(config);
         let model = trainer.train(&corpus, &[]);
-        eval_model(&model, &corpus, alpha);
+        eval_model(&model, &corpus, &format!("alpha={alpha:.1}"));
+    }
+}
+
+#[test]
+fn tokenization_stats_alpha_zero_hard_vs_soft_em() {
+    let corpus = load_french_corpus();
+    println!("Loaded {} sentences", corpus.len());
+
+    let unique_atoms: HashSet<_> = corpus.iter().flat_map(|s| s.iter().cloned()).collect();
+    let single_atom_count = unique_atoms.len();
+    println!("Unique atoms: {single_atom_count}");
+
+    let target_multiword_tokens = (single_atom_count * 33) / 100;
+    println!(
+        "Training alpha=0.0 comparison with target_multiword_tokens={target_multiword_tokens}, min_frequency=3\n"
+    );
+
+    for hard_em in [false, true] {
+        let config = UnigramTrainerConfig {
+            target_multiword_tokens,
+            max_piece_length: 8,
+            shrinking_factor: 0.75,
+            min_frequency: 3,
+            em_iterations: 10,
+            merge_alpha: 0.0,
+            hard_em,
+        };
+
+        let trainer = UnigramTrainer::new(config);
+        let model = trainer.train(&corpus, &[]);
+        let mode = if hard_em {
+            "hard_em=true"
+        } else {
+            "hard_em=false"
+        };
+        eval_model(&model, &corpus, &format!("alpha=0.0 {mode}"));
     }
 }
