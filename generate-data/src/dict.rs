@@ -338,7 +338,7 @@ pub async fn create_gram_phrasebook(
                 // kind of ugly, but the old system prompt is bad, but it's too expensive to regenerate all of them so i'll just do it for the most important words
                 let system_prompt= format!(r#"The input is a {target_language} multi-word term along with example sentences showing its usage. Generate a phrasebook entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}).
 
-Think about the word and its meaning based on how it's used in the example sentences, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning as the closest {native_language} equivalent word or short phrase — just like a dictionary translation (e.g. "just did", "what" or "that which", "as soon as"). Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just give the {native_language} equivalent. Any grammatical notes, parentheticals, or other notes belong in the "additional_notes" field, not the meaning. Then, provide additional context for how the term is used in the "additional_notes" field.
+Think about the word and its meaning based on how it's used in the example sentences, and what is likely to be relevant to a beginner learner. Your thoughts will not be shown to the user. Then, write the word, then provide the meaning as the closest {native_language} equivalent word or short phrase — just like a dictionary translation (e.g. "just did", "what" or "that which", "as soon as"). Skip any preamble like "the {target_language} term [term] is often used to indicate that...", or "a question phrase equivalent to..." and just give the {native_language} equivalent. And don't include any parentheticals or other notes in the "meanings" field. Any grammatical notes, parentheticals, or other notes belong in the "additional_notes" field, not the "meanings". You can always provide additional context about things like context and gender and other notes about how the term is used in the "additional_notes" field. But what belongs in the "meanings" field is just the raw textual translation / meaning.
 
 Next, provide your own example of the term's usage in a natural sentence.
 
@@ -363,7 +363,7 @@ Example sentences:
 
 Output: {{
     "target_language_multi_word_term":"ce que",
-    "meaning": ["what", "that which"], // this field should be super concise - ideally include 1, maybe 2 of the most common meanings
+    "meanings": ["what", "that which"], // this field should be super concise - ideally include 1, maybe 2 of the most common meanings, no extra notes or context. If there are multiple meanings, include them in order of frequency. You might be able to get a hint from the example sentences.
     "additional_notes": "Refers to something previously mentioned or understood from context.",
     "target_language_example":"C'est ce que je pensais.",
     "native_language_example":"That's what I thought.",

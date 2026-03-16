@@ -37,39 +37,6 @@ fn is_proper_noun(atom: &Atom<String>) -> bool {
     )
 }
 
-/// Compute max supersequence counts for substring suppression.
-/// For each sequence, finds the max count of any longer sequence containing it.
-/// This is O(V × L²) where L is max_piece_length.
-fn compute_max_superseq_counts(
-    counts: &FxHashMap<Gram<String>, u32>,
-) -> FxHashMap<Gram<String>, u32> {
-    let mut max_superseq: FxHashMap<Gram<String>, u32> = FxHashMap::default();
-
-    // Process longer sequences first
-    let mut by_length: Vec<_> = counts.iter().collect();
-    by_length.sort_by_key(|(seq, _)| std::cmp::Reverse(seq.len()));
-
-    for (seq, &count) in by_length {
-        if seq.len() <= 1 {
-            continue; // Single atoms don't suppress anything
-        }
-        // For each contiguous subsequence of this sequence,
-        // update its max_superseq if our count is higher
-        for start in 0..seq.len() {
-            for end in start + 1..seq.len() {
-                // strictly shorter (end < seq.len())
-                let subseq = Gram(seq.0[start..end].to_vec());
-                max_superseq
-                    .entry(subseq)
-                    .and_modify(|c| *c = (*c).max(count))
-                    .or_insert(count);
-            }
-        }
-    }
-
-    max_superseq
-}
-
 fn logsumexp(values: &[f64]) -> f64 {
     if values.is_empty() {
         return f64::NEG_INFINITY;
@@ -91,19 +58,6 @@ fn is_representable_supertoken_sequence(seq: &Gram<String>) -> bool {
         _ => {
             matches!(seq.0.first(), Some(Atom::<String>::Tok(_)))
                 && matches!(seq.0.last(), Some(Atom::<String>::Tok(_)))
-        }
-    }
-}
-
-/// Convert a SuperToken back to a Gram
-fn supertoken_to_gram(st: &SuperToken) -> Option<Gram<String>> {
-    match st {
-        SuperToken::Base(atom) => Some(Gram(vec![atom.clone()])),
-        SuperToken::Merged(merged) => {
-            let mut atoms = vec![Atom::<String>::Tok(merged.first.clone())];
-            atoms.extend(merged.middle.iter().cloned());
-            atoms.push(Atom::<String>::Tok(merged.last.clone()));
-            Some(Gram(atoms))
         }
     }
 }
@@ -163,6 +117,8 @@ pub struct UnigramModel {
     unk_log_prob: f64,
     /// Longest sequence present in the vocabulary
     max_piece_length: usize,
+    /// Blend factor for segmentation (see UnigramTrainerConfig::merge_alpha)
+    merge_alpha: f64,
 }
 
 impl UnigramModel {
@@ -189,7 +145,7 @@ impl UnigramModel {
     }
 
     /// Create a new model from vocabulary with scores and counts
-    pub fn new(vocab_with_scores: Vec<(Gram<String>, f64, u32)>) -> Self {
+    pub fn new(vocab_with_scores: Vec<(Gram<String>, f64, u32)>, merge_alpha: f64) -> Self {
         let mut vocab = FxHashMap::default();
         let mut id_to_seq = Vec::with_capacity(vocab_with_scores.len());
         let mut counts = Vec::with_capacity(vocab_with_scores.len());
@@ -214,6 +170,7 @@ impl UnigramModel {
             counts,
             unk_log_prob,
             max_piece_length,
+            merge_alpha,
         }
     }
 
@@ -230,6 +187,15 @@ impl UnigramModel {
 
     fn vocab_log_prob(&self, seq: &Gram<String>) -> Option<f64> {
         self.vocab.get(seq).map(|(_, lp)| *lp)
+    }
+
+    fn sequence_score_from_log_prob(&self, log_prob: f64) -> f64 {
+        (1.0 - self.merge_alpha) * log_prob - self.merge_alpha
+    }
+
+    fn vocab_score(&self, seq: &Gram<String>) -> Option<f64> {
+        self.vocab_log_prob(seq)
+            .map(|log_prob| self.sequence_score_from_log_prob(log_prob))
     }
 
     /// Segment a sequence of atoms into supertokens using Viterbi algorithm
@@ -255,10 +221,10 @@ impl UnigramModel {
             // Try all possible next sequences starting at position i
             for end in i + 1..=n.min(i + self.max_piece_length) {
                 let seq = Gram(atoms[i..end].to_vec());
-                let Some(log_prob) = self.vocab_log_prob(&seq) else {
+                let Some(score) = self.vocab_score(&seq) else {
                     continue;
                 };
-                let new_score = best_score[i] + log_prob;
+                let new_score = best_score[i] + score;
 
                 if new_score > best_score[end] {
                     best_score[end] = new_score;
@@ -349,7 +315,7 @@ impl UnigramModel {
         // Sort by actual usage count descending
         vocab_with_counts.sort_by(|a, b| b.2.cmp(&a.2));
 
-        UnigramModel::new(vocab_with_counts)
+        UnigramModel::new(vocab_with_counts, self.merge_alpha)
     }
 }
 
@@ -367,6 +333,11 @@ pub struct UnigramTrainerConfig {
     pub min_frequency: u32,
     /// Number of EM iterations to run between prune rounds
     pub em_iterations: usize,
+    /// Blend between pathpiece (α=1, minimize token count) and unigram (α=0,
+    /// maximize log-probability). Per-token Viterbi score = (1-α)*log_prob - α.
+    /// At α=0.5, merges like "te dire" become cheap enough to use, but junk
+    /// merges like "all, you" are still avoided.
+    pub merge_alpha: f64,
 }
 
 impl Default for UnigramTrainerConfig {
@@ -377,6 +348,7 @@ impl Default for UnigramTrainerConfig {
             shrinking_factor: 0.75,
             min_frequency: 2,
             em_iterations: 10,
+            merge_alpha: 0.0,
         }
     }
 }
@@ -506,20 +478,7 @@ impl UnigramTrainer {
             let start_size = vocab.len();
             let (trained_vocab, expected_counts, _) = self.run_em(corpus, &vocab, em_iterations);
             vocab = trained_vocab;
-
-            let viterbi_counts = self.compute_viterbi_counts(corpus, &vocab);
-            let max_superseq_counts = compute_max_superseq_counts(&viterbi_counts);
-
-            let single_log_probs: FxHashMap<Atom<String>, f64> = vocab
-                .iter()
-                .filter_map(|(seq, log_prob, _)| {
-                    if seq.len() == 1 {
-                        Some((seq.0[0].clone(), *log_prob))
-                    } else {
-                        None
-                    }
-                })
-                .collect();
+            let model = UnigramModel::new(vocab.clone(), self.config.merge_alpha);
 
             let mut losses: Vec<(usize, f64)> = Vec::with_capacity(vocab.len());
             for (idx, (seq, log_prob, _)) in vocab.iter().enumerate() {
@@ -529,27 +488,12 @@ impl UnigramTrainer {
                 }
 
                 let expected = *expected_counts.get(seq).unwrap_or(&0.0);
-                let decomp_log_prob = seq
-                    .0
-                    .iter()
-                    .map(|atom| *single_log_probs.get(atom).unwrap_or(&LOG_PROB_FLOOR))
-                    .sum::<f64>();
-                let approx_loss = -expected * (*log_prob - decomp_log_prob);
-
-                let count = viterbi_counts.get(seq).copied().unwrap_or(0);
-                let max_super = max_superseq_counts.get(seq).copied().unwrap_or(0);
-                let independence = if count == 0 || max_super == 0 {
-                    1.0
-                } else {
-                    (count.saturating_sub(max_super) as f64) / (count as f64)
-                };
-
-                let adjusted_loss = if independence > 0.0 {
-                    approx_loss / independence
-                } else {
-                    approx_loss
-                };
-                losses.push((idx, adjusted_loss));
+                let alt_score = self
+                    .best_alternative_score(seq, &model)
+                    .unwrap_or(f64::NEG_INFINITY);
+                let piece_score = model.sequence_score_from_log_prob(*log_prob);
+                let approx_loss = -expected * (piece_score - alt_score);
+                losses.push((idx, approx_loss));
             }
 
             losses.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal));
@@ -579,29 +523,43 @@ impl UnigramTrainer {
         }
 
         let (vocab, _, _) = self.run_em(corpus, &vocab, em_iterations);
-        let model = UnigramModel::new(vocab);
+        let model = UnigramModel::new(vocab, self.config.merge_alpha);
 
         // Reorder by actual usage when segmenting the corpus
         // This ensures ID 0 = most frequently used gram in practice
         model.reorder_by_actual_usage(corpus, &seed_set)
     }
 
-    fn compute_viterbi_counts(
-        &self,
-        corpus: &[Vec<Atom<String>>],
-        vocab: &[VocabEntry],
-    ) -> FxHashMap<Gram<String>, u32> {
-        let model = UnigramModel::new(vocab.to_vec());
-        let mut counts = FxHashMap::default();
-        for sentence in corpus {
-            let supertokens = model.segment(sentence);
-            for st in &supertokens {
-                if let Some(gram) = supertoken_to_gram(st) {
-                    *counts.entry(gram).or_insert(0) += 1;
+    fn best_alternative_score(&self, seq: &Gram<String>, model: &UnigramModel) -> Option<f64> {
+        let n = seq.len();
+        if n <= 1 {
+            return None;
+        }
+
+        let mut best = vec![f64::NEG_INFINITY; n + 1];
+        best[0] = 0.0;
+
+        for start in 0..n {
+            if !best[start].is_finite() {
+                continue;
+            }
+
+            for end in start + 1..=n.min(start + model.max_piece_length) {
+                if start == 0 && end == n {
+                    continue;
+                }
+                let sub_seq = Gram(seq.0[start..end].to_vec());
+                let Some(score) = model.vocab_score(&sub_seq) else {
+                    continue;
+                };
+                let candidate = best[start] + score;
+                if candidate > best[end] {
+                    best[end] = candidate;
                 }
             }
         }
-        counts
+
+        best[n].is_finite().then_some(best[n])
     }
 
     fn run_em(
@@ -615,7 +573,7 @@ impl UnigramTrainer {
         let mut last_likelihood = f64::NEG_INFINITY;
 
         for _ in 0..iterations {
-            let model = UnigramModel::new(current.clone());
+            let model = UnigramModel::new(current.clone(), self.config.merge_alpha);
             let (expected_counts, corpus_log_likelihood) =
                 self.compute_expected_counts(corpus, &model);
 
@@ -688,11 +646,11 @@ impl UnigramTrainer {
         for start in 0..n {
             for end in start + 1..=n.min(start + model.max_piece_length) {
                 let seq = Gram(sentence[start..end].to_vec());
-                let Some(log_prob) = model.vocab_log_prob(&seq) else {
+                let Some(score) = model.vocab_score(&seq) else {
                     continue;
                 };
-                incoming[end].push((start, seq.clone(), log_prob));
-                outgoing[start].push((end, seq, log_prob));
+                incoming[end].push((start, seq.clone(), score));
+                outgoing[start].push((end, seq, score));
             }
         }
 
@@ -822,6 +780,7 @@ mod tests {
             shrinking_factor: 0.8,
             min_frequency: 2,
             em_iterations: 8,
+            merge_alpha: 0.0,
         };
 
         let trainer = UnigramTrainer::new(config);
@@ -845,7 +804,7 @@ mod tests {
             (Gram(vec![make_atom("je"), make_atom("suis")]), -0.5, 80), // More likely as pair
         ];
 
-        let model = UnigramModel::new(vocab);
+        let model = UnigramModel::new(vocab, 0.0);
 
         let atoms = vec![make_atom("je"), make_atom("suis"), make_atom("content")];
         let segmented = model.segment(&atoms);
@@ -861,7 +820,7 @@ mod tests {
             (Gram(vec![make_atom("york")]), -1.0, 100),
         ];
 
-        let model = UnigramModel::new(vocab);
+        let model = UnigramModel::new(vocab, 0.0);
         let atoms = vec![make_atom("new"), make_atom("york")];
         let segmented = model.segment(&atoms);
 
@@ -897,7 +856,7 @@ mod tests {
             (Gram(vec![make_atom("w19")]), -5.0, 100),
         ];
 
-        let model = UnigramModel::new(vocab);
+        let model = UnigramModel::new(vocab, 0.0);
         let segmented = model.segment(&atoms);
 
         assert_eq!(segmented.len(), 1);
@@ -919,7 +878,7 @@ mod tests {
             (Gram(vec![make_atom("a"), make_atom("b")]), 0.2f64.ln(), 10),
         ];
         let trainer = UnigramTrainer::new(UnigramTrainerConfig::default());
-        let model = UnigramModel::new(vocab);
+        let model = UnigramModel::new(vocab, 0.0);
 
         let (expected_counts, _) = trainer.compute_expected_counts(&corpus, &model);
         let total_expected = expected_counts.values().sum::<f64>();
@@ -927,6 +886,56 @@ mod tests {
         assert!(total_expected >= 1.0);
         assert!(total_expected <= 2.0);
         assert!(expected_counts.contains_key(&Gram(vec![make_atom("a"), make_atom("b")])));
+    }
+
+    #[test]
+    fn test_merge_alpha_affects_em_expected_counts() {
+        let corpus = vec![vec![make_atom("a"), make_atom("b")]];
+        let vocab = vec![
+            (Gram(vec![make_atom("a")]), 0.4f64.ln(), 10),
+            (Gram(vec![make_atom("b")]), 0.4f64.ln(), 10),
+            (Gram(vec![make_atom("a"), make_atom("b")]), 0.2f64.ln(), 10),
+        ];
+
+        let trainer_plain = UnigramTrainer::new(UnigramTrainerConfig {
+            merge_alpha: 0.0,
+            ..UnigramTrainerConfig::default()
+        });
+        let trainer_merge = UnigramTrainer::new(UnigramTrainerConfig {
+            merge_alpha: 0.5,
+            ..UnigramTrainerConfig::default()
+        });
+
+        let model_plain = UnigramModel::new(vocab.clone(), 0.0);
+        let model_merge = UnigramModel::new(vocab, 0.5);
+
+        let (expected_plain, _) = trainer_plain.compute_expected_counts(&corpus, &model_plain);
+        let (expected_merge, _) = trainer_merge.compute_expected_counts(&corpus, &model_merge);
+
+        let merged = Gram(vec![make_atom("a"), make_atom("b")]);
+        let merged_plain = *expected_plain.get(&merged).unwrap();
+        let merged_merge = *expected_merge.get(&merged).unwrap();
+
+        assert!(merged_merge > merged_plain);
+    }
+
+    #[test]
+    fn test_best_alternative_score_prefers_non_singleton_decomposition() {
+        let trainer = UnigramTrainer::new(UnigramTrainerConfig::default());
+        let vocab = vec![
+            (Gram(vec![make_atom("a")]), 0.1f64.ln(), 10),
+            (Gram(vec![make_atom("b")]), 0.1f64.ln(), 10),
+            (Gram(vec![make_atom("c")]), 0.1f64.ln(), 10),
+            (Gram(vec![make_atom("a"), make_atom("b")]), 0.35f64.ln(), 10),
+            (Gram(vec![make_atom("a"), make_atom("b"), make_atom("c")]), 0.25f64.ln(), 10),
+        ];
+        let model = UnigramModel::new(vocab, 0.0);
+        let seq = Gram(vec![make_atom("a"), make_atom("b"), make_atom("c")]);
+
+        let alt = trainer.best_alternative_score(&seq, &model).unwrap();
+        let expected = 0.35f64.ln() + 0.1f64.ln();
+
+        assert!((alt - expected).abs() < 1e-9);
     }
 
     #[test]
@@ -964,7 +973,7 @@ mod tests {
         ];
 
         let trainer = UnigramTrainer::new(UnigramTrainerConfig::default());
-        let model = UnigramModel::new(vocab);
+        let model = UnigramModel::new(vocab, 0.0);
         let (incoming, outgoing) = trainer.build_lattice(&sentence, &model);
         let alpha = trainer.forward_pass(&incoming);
         let beta = trainer.backward_pass(&outgoing);

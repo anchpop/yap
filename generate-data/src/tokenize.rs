@@ -47,15 +47,16 @@ pub fn train_supertokens_and_write_diagnostics(
         .collect();
     let single_atom_count = unique_atoms.len();
 
-    // Target multiword tokens = 22% of base token count
-    let target_multiword_tokens = (single_atom_count * 22) / 100;
+    // Target multiword tokens = 33% of base token count
+    let target_multiword_tokens = (single_atom_count * 33) / 100;
 
     let config = UnigramTrainerConfig {
         target_multiword_tokens,
         max_piece_length: 8,
         shrinking_factor: 0.75,
-        min_frequency: 5,
+        min_frequency: 3,
         em_iterations: 10,
+        merge_alpha: 0.0,
     };
 
     let trainer = UnigramTrainer::new(config);
