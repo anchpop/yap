@@ -569,7 +569,7 @@ impl UnigramTrainer {
         corpus: &[Vec<Atom<String>>],
         vocab: &[VocabEntry],
         iterations: usize,
-        seed_set: &HashSet<&Gram<String>>,
+        _seed_set: &HashSet<&Gram<String>>,
     ) -> EmRunResult {
         let mut current: Vec<VocabEntry> = vocab.to_vec();
         let mut last_expected = FxHashMap::default();
@@ -598,18 +598,13 @@ impl UnigramTrainer {
                 .iter()
                 .map(|(seq, _, count)| {
                     let expected = *expected_counts.get(seq).unwrap_or(&0.0);
-                    let is_protected = seq.len() == 1 || seed_set.contains(seq);
                     let log_prob = if expected.is_finite() && expected > 0.0 {
                         let ratio = expected / total_expected;
                         if ratio.is_finite() && ratio > 0.0 {
                             ratio.ln()
-                        } else if is_protected {
-                            LOG_PROB_FLOOR
                         } else {
                             LOG_PROB_FLOOR
                         }
-                    } else if is_protected {
-                        LOG_PROB_FLOOR
                     } else {
                         LOG_PROB_FLOOR
                     };

@@ -1,0 +1,60 @@
+---
+interface Props {
+  pages: any[];
+  courseSlug: string;
+  showRank?: boolean;
+}
+
+const { pages, courseSlug, showRank = false } = Astro.props;
+
+function getPreview(page: any): string {
+  return page.first_sense_preview?.definition_preview ?? '';
+}
+---
+
+<div class:list={["word-list", { "word-list--ranked": showRank }]}>
+  {pages.map((page: any, i: number) => (
+    <a href={`/d/${courseSlug}/${page.slug}/`} class="word-list-row">
+      {showRank && (
+        <span class="text-xs text-muted-foreground/50 text-right">{i + 1}</span>
+      )}
+      <span class="text-muted-foreground/60 text-right">
+        {page.first_sense_preview?.prefix && !page.first_sense_preview?.is_phrase
+          ? page.first_sense_preview.prefix
+          : '\u00A0'}
+      </span>
+      <span class="font-medium">
+        {page.display_text}
+        {page.first_sense_preview?.is_phrase && (
+          <span class="text-xs text-muted-foreground/50 font-normal ml-2">(phrase)</span>
+        )}
+      </span>
+      <span class="text-sm text-muted-foreground truncate">{getPreview(page)}</span>
+    </a>
+  ))}
+</div>
+
+<style>
+  .word-list {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+  }
+  .word-list--ranked {
+    grid-template-columns: 2rem auto auto 1fr;
+  }
+  .word-list-row {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    color: var(--color-card-foreground);
+    transition: background-color 0.15s;
+  }
+  .word-list-row:hover {
+    background-color: var(--color-secondary);
+  }
+</style>

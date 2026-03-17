@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import WordList from '../../../../components/WordList.astro';
 
 const { course: courseSlug, letter } = Astro.params;
 const kv = Astro.locals.runtime.env.DICTIONARY_KV;
@@ -15,10 +16,6 @@ const pages = JSON.parse(pagesJson);
 const courses = JSON.parse(coursesJson);
 const courseMeta = courses.find((c: any) => c.slug === courseSlug);
 if (!courseMeta) return new Response('Not found', { status: 404 });
-
-function getPreview(page: any): string {
-  return page.first_sense_preview?.definition_preview ?? '';
-}
 ---
 
 <Layout
@@ -39,15 +36,5 @@ function getPreview(page: any): string {
     <p class="text-muted-foreground mt-1">{pages.length.toLocaleString()} entries</p>
   </div>
 
-  <div class="space-y-1">
-    {pages.map((page: any) => (
-      <a href={`/d/${courseSlug}/${page.slug}/`} class="flex items-baseline gap-3 rounded-md px-3 py-2 hover:bg-secondary transition-colors no-underline text-card-foreground">
-        <span class="font-medium">{page.first_sense_preview?.prefix && !page.first_sense_preview?.is_phrase && (<span class="text-muted-foreground/60 font-normal">{page.first_sense_preview.prefix}</span>)}{page.display_text}</span>
-        {page.first_sense_preview?.is_phrase && (
-          <span class="text-xs text-muted-foreground/50">(phrase)</span>
-        )}
-        <span class="text-sm text-muted-foreground truncate">{getPreview(page)}</span>
-      </a>
-    ))}
-  </div>
+  <WordList pages={pages} courseSlug={courseSlug!} />
 </Layout>
