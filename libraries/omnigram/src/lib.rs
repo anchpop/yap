@@ -7,8 +7,10 @@
 pub mod unigram;
 
 use language_utils::{
-    Atom, ControlToken, Language, Literal, Whitespace, Word, literals_to_atoms, predict_whitespace,
+    Atom, ControlToken, Language, Literal, OtherWordType, Whitespace, Word, WordType,
+    literals_to_atoms, predict_whitespace,
 };
+use unigram::{Seq, UnigramToken};
 
 /// Type alias for backwards compatibility (was named Control, now ControlToken)
 pub type Control = ControlToken;
@@ -76,6 +78,68 @@ impl Sentence {
         Self {
             tokens: atoms.into_iter().map(SuperToken::Base).collect(),
             capitalize_first_letter,
+        }
+    }
+}
+
+// --- UnigramToken implementation for Atom<S> ---
+
+impl<S: Clone + Eq + std::hash::Hash + std::fmt::Debug> UnigramToken for Atom<S> {
+    fn can_be_sequence_boundary(&self) -> bool {
+        matches!(self, Atom::Tok(_))
+    }
+
+    fn is_content(&self) -> bool {
+        matches!(self, Atom::Tok(word) if matches!(&word.word_type, WordType::Heteronym(_)))
+    }
+
+    fn is_excluded_from_sequences(&self) -> bool {
+        matches!(
+            self,
+            Atom::Tok(word) if matches!(&word.word_type, WordType::Other(o) if o.other_tag == OtherWordType::Propn)
+        )
+    }
+}
+
+/// Convert a `Seq<Atom<String>>` to a `SuperToken`.
+/// Returns `None` for empty sequences.
+pub fn seq_to_supertoken(seq: &Seq<Atom<String>>) -> Option<SuperToken> {
+    match seq.len() {
+        0 => None,
+        1 => Some(SuperToken::Base(seq.0[0].clone())),
+        _ => {
+            // Find first and last word tokens
+            let first_word_idx = seq
+                .0
+                .iter()
+                .position(|a| matches!(a, Atom::<String>::Tok(_)))?;
+            let last_word_idx = seq
+                .0
+                .iter()
+                .rposition(|a| matches!(a, Atom::<String>::Tok(_)))?;
+
+            if first_word_idx == last_word_idx {
+                // Only one word, return as base
+                return Some(SuperToken::Base(seq.0[first_word_idx].clone()));
+            }
+
+            let first = match &seq.0[first_word_idx] {
+                Atom::<String>::Tok(w) => w.clone(),
+                _ => unreachable!(),
+            };
+            let last = match &seq.0[last_word_idx] {
+                Atom::<String>::Tok(w) => w.clone(),
+                _ => unreachable!(),
+            };
+
+            // Middle is everything between first and last word
+            let middle: Vec<Atom<String>> = seq.0[first_word_idx + 1..last_word_idx].to_vec();
+
+            Some(SuperToken::Merged(MergedToken {
+                first,
+                middle,
+                last,
+            }))
         }
     }
 }
