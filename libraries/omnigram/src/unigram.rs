@@ -590,7 +590,6 @@ impl UnigramTrainer {
                 expected_counts
                     .iter()
                     .filter(|(_, value)| !value.is_finite())
-                    .map(|(seq, value)| (seq, value))
                     .take(20)
                     .collect::<Vec<_>>()
             );
@@ -873,8 +872,7 @@ impl UnigramTrainer {
                 let is_forbidden = &seq == forbidden;
                 let score = model.vocab_score(&seq);
                 out.push_str(&format!(
-                    "  end={end} forbidden={} score={:?} seq={:#?}\n",
-                    is_forbidden, score, seq
+                    "  end={end} forbidden={is_forbidden} score={score:?} seq={seq:#?}\n"
                 ));
             }
         }

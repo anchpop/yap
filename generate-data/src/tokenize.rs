@@ -56,7 +56,7 @@ pub fn train_supertokens_and_write_diagnostics(
         shrinking_factor: 0.75,
         min_frequency: 3,
         em_iterations: 10,
-        initial_candidate_multiplier: 4,
+        initial_candidate_multiplier: 20,
         merge_alpha: 0.0,
     };
 

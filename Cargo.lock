@@ -2853,7 +2853,9 @@ name = "omnigram"
 version = "0.1.0"
 dependencies = [
  "language-utils",
+ "lasso",
  "log 0.4.27",
+ "rayon",
  "rustc-hash",
  "serde",
  "tokenizers",

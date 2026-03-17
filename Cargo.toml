@@ -69,3 +69,8 @@ features = ["derive"]
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
 lto = true
+
+[profile.profiling]
+inherits = "release"
+debug = true
+strip = "none"
