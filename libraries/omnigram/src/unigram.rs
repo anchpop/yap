@@ -6,7 +6,6 @@
 use crate::{Atom, MergedToken, Sentence, SuperToken};
 use language_utils::{Gram, OtherWordType, WordType};
 use rustc_hash::FxHashMap;
-use std::cmp::Ordering;
 use std::collections::HashSet;
 
 const LOG_PROB_FLOOR: f64 = -99.0;
@@ -237,17 +236,33 @@ impl UnigramModel {
         let mut result = Vec::new();
         let mut pos = n;
 
+        assert!(
+            best_score[n].is_finite(),
+            "UnigramModel::segment found no path through the lattice.\n\
+             sentence_len={n}\n\
+             max_piece_length={}\n\
+             sentence_atoms={:#?}",
+            self.max_piece_length,
+            atoms
+        );
+
         while pos > 0 {
-            if let Some((prev_pos, seq)) = best_prev[pos].take() {
-                if let Some(st) = gram_to_supertoken(&seq) {
-                    result.push(st);
-                }
-                pos = prev_pos;
-            } else {
-                // Fallback: emit single atom
-                pos -= 1;
-                result.push(SuperToken::Base(atoms[pos].clone()));
+            let (prev_pos, seq) = best_prev[pos].take().unwrap_or_else(|| {
+                panic!(
+                    "UnigramModel::segment lost a backpointer while reconstructing the best path.\n\
+                     position={pos}\n\
+                     sentence_len={n}\n\
+                     max_piece_length={}\n\
+                     sentence_atoms={:#?}\n\
+                     best_score={:#?}\n\
+                     best_prev={:#?}",
+                    self.max_piece_length, atoms, best_score, best_prev
+                )
+            });
+            if let Some(st) = gram_to_supertoken(&seq) {
+                result.push(st);
             }
+            pos = prev_pos;
         }
 
         result.reverse();
@@ -333,13 +348,15 @@ pub struct UnigramTrainerConfig {
     pub min_frequency: u32,
     /// Number of EM iterations to run between prune rounds
     pub em_iterations: usize,
+    /// Initial multiword candidate budget as a multiple of the target budget.
+    /// Rust previously kept every n-gram above `min_frequency`, which can explode
+    /// the candidate set and make EM/pruning both slow and noisy.
+    pub initial_candidate_multiplier: usize,
     /// Blend between pathpiece (α=1, minimize token count) and unigram (α=0,
     /// maximize log-probability). Per-token Viterbi score = (1-α)*log_prob - α.
     /// At α=0.5, merges like "te dire" become cheap enough to use, but junk
     /// merges like "all, you" are still avoided.
     pub merge_alpha: f64,
-    /// Whether to use hard EM (Viterbi counts) instead of soft EM (forward-backward marginals).
-    pub hard_em: bool,
 }
 
 impl Default for UnigramTrainerConfig {
@@ -350,8 +367,8 @@ impl Default for UnigramTrainerConfig {
             shrinking_factor: 0.75,
             min_frequency: 2,
             em_iterations: 10,
+            initial_candidate_multiplier: 4,
             merge_alpha: 0.0,
-            hard_em: false,
         }
     }
 }
@@ -444,6 +461,36 @@ impl UnigramTrainer {
         ngram_counts
             .retain(|seq, count| *count >= self.config.min_frequency || seed_set.contains(seq));
 
+        // Step 2.5: Cap the initial multiword candidate set by raw frequency.
+        // Keeping every qualifying n-gram makes the initial vocabulary enormous on
+        // real corpora, which both slows training and drowns useful candidates in junk.
+        let initial_multiword_budget = self
+            .config
+            .target_multiword_tokens
+            .saturating_mul(self.config.initial_candidate_multiplier.max(1));
+        let multiword_count = ngram_counts.keys().filter(|seq| seq.len() >= 2).count();
+        if multiword_count > initial_multiword_budget {
+            let mut multiwords: Vec<(Gram<String>, u32)> = ngram_counts
+                .iter()
+                .filter(|(seq, _)| seq.len() >= 2 && !seed_set.contains(seq))
+                .map(|(seq, count)| (seq.clone(), *count))
+                .collect();
+            multiwords.sort_by(|a, b| {
+                b.1.cmp(&a.1)
+                    .then_with(|| a.0.disambiguation_key().cmp(&b.0.disambiguation_key()))
+            });
+
+            let keep_multi: HashSet<Gram<String>> = multiwords
+                .into_iter()
+                .take(initial_multiword_budget)
+                .map(|(seq, _)| seq)
+                .collect();
+
+            ngram_counts.retain(|seq, _| {
+                seq.len() == 1 || seed_set.contains(seq) || keep_multi.contains(seq)
+            });
+        }
+
         // Step 3: Initialize vocabulary with normalized probabilities
         let total_ngrams: u64 = ngram_counts.values().map(|&c| c as u64).sum();
 
@@ -479,34 +526,18 @@ impl UnigramTrainer {
 
         while vocab.len() > target_vocab_size {
             let start_size = vocab.len();
-            let (trained_vocab, expected_counts, _) = self.run_em(corpus, &vocab, em_iterations);
+            let (trained_vocab, _, _) = self.run_em(corpus, &vocab, em_iterations, &seed_set);
             vocab = trained_vocab;
             let model = UnigramModel::new(vocab.clone(), self.config.merge_alpha);
-
-            let mut losses: Vec<(usize, f64)> = Vec::with_capacity(vocab.len());
-            for (idx, (seq, log_prob, _)) in vocab.iter().enumerate() {
-                if seq.len() == 1 || seed_set.contains(seq) {
-                    losses.push((idx, f64::INFINITY));
-                    continue;
-                }
-
-                let expected = *expected_counts.get(seq).unwrap_or(&0.0);
-                let alt_score = self
-                    .best_alternative_score(seq, &model)
-                    .unwrap_or(f64::NEG_INFINITY);
-                let piece_score = model.sequence_score_from_log_prob(*log_prob);
-                let approx_loss = -expected * (piece_score - alt_score);
-                losses.push((idx, approx_loss));
-            }
-
-            losses.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal));
+            let mut losses = self.compute_prune_losses(corpus, &vocab, &model, &seed_set);
+            losses.sort_by(|a, b| a.1.total_cmp(&b.1));
 
             let iter_target = (vocab.len() as f64 * self.config.shrinking_factor).ceil() as usize;
             let iter_target = iter_target.max(target_vocab_size);
 
             let to_remove: std::collections::HashSet<usize> = losses
                 .iter()
-                .filter(|(_, loss)| *loss != f64::INFINITY)
+                .filter(|(_, loss)| loss.is_finite())
                 .take(vocab.len() - iter_target)
                 .map(|(idx, _)| *idx)
                 .collect();
@@ -525,7 +556,7 @@ impl UnigramTrainer {
             }
         }
 
-        let (vocab, _, _) = self.run_em(corpus, &vocab, em_iterations);
+        let (vocab, _, _) = self.run_em(corpus, &vocab, em_iterations, &seed_set);
         let model = UnigramModel::new(vocab, self.config.merge_alpha);
 
         // Reorder by actual usage when segmenting the corpus
@@ -533,43 +564,12 @@ impl UnigramTrainer {
         model.reorder_by_actual_usage(corpus, &seed_set)
     }
 
-    fn best_alternative_score(&self, seq: &Gram<String>, model: &UnigramModel) -> Option<f64> {
-        let n = seq.len();
-        if n <= 1 {
-            return None;
-        }
-
-        let mut best = vec![f64::NEG_INFINITY; n + 1];
-        best[0] = 0.0;
-
-        for start in 0..n {
-            if !best[start].is_finite() {
-                continue;
-            }
-
-            for end in start + 1..=n.min(start + model.max_piece_length) {
-                if start == 0 && end == n {
-                    continue;
-                }
-                let sub_seq = Gram(seq.0[start..end].to_vec());
-                let Some(score) = model.vocab_score(&sub_seq) else {
-                    continue;
-                };
-                let candidate = best[start] + score;
-                if candidate > best[end] {
-                    best[end] = candidate;
-                }
-            }
-        }
-
-        best[n].is_finite().then_some(best[n])
-    }
-
     fn run_em(
         &self,
         corpus: &[Vec<Atom<String>>],
         vocab: &[VocabEntry],
         iterations: usize,
+        seed_set: &HashSet<&Gram<String>>,
     ) -> EmRunResult {
         let mut current: Vec<VocabEntry> = vocab.to_vec();
         let mut last_expected = FxHashMap::default();
@@ -581,18 +581,36 @@ impl UnigramTrainer {
                 self.compute_expected_counts(corpus, &model);
 
             let total_expected = expected_counts.values().sum::<f64>();
-            let total_expected = if total_expected > 0.0 {
-                total_expected
-            } else {
-                1.0
-            };
+            assert!(
+                total_expected.is_finite() && total_expected > 0.0,
+                "EM M-step received a non-finite total expected count.\n\
+                 total_expected={total_expected}\n\
+                 corpus_log_likelihood={corpus_log_likelihood}\n\
+                 nonfinite_expected_entries={:#?}",
+                expected_counts
+                    .iter()
+                    .filter(|(_, value)| !value.is_finite())
+                    .map(|(seq, value)| (seq, value))
+                    .take(20)
+                    .collect::<Vec<_>>()
+            );
 
             current = current
                 .iter()
                 .map(|(seq, _, count)| {
                     let expected = *expected_counts.get(seq).unwrap_or(&0.0);
-                    let log_prob = if expected > 0.0 {
-                        (expected / total_expected).ln()
+                    let is_protected = seq.len() == 1 || seed_set.contains(seq);
+                    let log_prob = if expected.is_finite() && expected > 0.0 {
+                        let ratio = expected / total_expected;
+                        if ratio.is_finite() && ratio > 0.0 {
+                            ratio.ln()
+                        } else if is_protected {
+                            LOG_PROB_FLOOR
+                        } else {
+                            LOG_PROB_FLOOR
+                        }
+                    } else if is_protected {
+                        LOG_PROB_FLOOR
                     } else {
                         LOG_PROB_FLOOR
                     };
@@ -612,10 +630,6 @@ impl UnigramTrainer {
         corpus: &[Vec<Atom<String>>],
         model: &UnigramModel,
     ) -> (ExpectedCounts, f64) {
-        if self.config.hard_em {
-            return self.compute_hard_expected_counts(corpus, model);
-        }
-
         let mut expected_counts: ExpectedCounts = FxHashMap::default();
         let mut corpus_log_likelihood = 0.0;
 
@@ -626,6 +640,16 @@ impl UnigramTrainer {
             let beta = self.backward_pass(&outgoing);
 
             let sentence_log_prob = alpha[n];
+            assert!(
+                sentence_log_prob.is_finite(),
+                "EM E-step found a sentence with no finite lattice path.\n\
+                 sentence_atoms={:#?}\n\
+                 max_piece_length={}\n\
+                 alpha={:#?}",
+                sentence,
+                model.max_piece_length,
+                alpha
+            );
             corpus_log_likelihood += sentence_log_prob;
 
             for edges in outgoing.iter().take(n) {
@@ -641,33 +665,93 @@ impl UnigramTrainer {
         (expected_counts, corpus_log_likelihood)
     }
 
-    fn compute_hard_expected_counts(
+    fn compute_prune_losses(
         &self,
         corpus: &[Vec<Atom<String>>],
+        vocab: &[VocabEntry],
         model: &UnigramModel,
-    ) -> (ExpectedCounts, f64) {
-        let mut expected_counts: ExpectedCounts = FxHashMap::default();
-        let mut corpus_log_likelihood = 0.0;
+        seed_set: &HashSet<&Gram<String>>,
+    ) -> Vec<(usize, f64)> {
+        let mut sentence_scores = Vec::with_capacity(corpus.len());
+        let mut token_to_sentences: FxHashMap<Gram<String>, Vec<usize>> = FxHashMap::default();
 
-        for sentence in corpus {
-            let (segments, sentence_score) = self.viterbi_segments(sentence, model);
-            corpus_log_likelihood += sentence_score;
+        for (sentence_idx, sentence) in corpus.iter().enumerate() {
+            let (segmentation, score) = self
+                .viterbi_segments_and_score(sentence, model, None)
+                .expect("single-atom fallback should always permit segmentation");
+            sentence_scores.push(score);
 
-            for seq in segments {
-                *expected_counts.entry(seq).or_insert(0.0) += 1.0;
+            let unique_tokens: HashSet<Gram<String>> = segmentation.into_iter().collect();
+            for seq in unique_tokens {
+                token_to_sentences
+                    .entry(seq)
+                    .or_default()
+                    .push(sentence_idx);
             }
         }
 
-        (expected_counts, corpus_log_likelihood)
+        let mut losses = Vec::with_capacity(vocab.len());
+        for (idx, (seq, _, _)) in vocab.iter().enumerate() {
+            if seq.len() == 1 || seed_set.contains(seq) {
+                losses.push((idx, f64::INFINITY));
+                continue;
+            }
+
+            let Some(sentence_indices) = token_to_sentences.get(seq) else {
+                losses.push((idx, 0.0));
+                continue;
+            };
+
+            let mut loss = 0.0;
+            for &sentence_idx in sentence_indices {
+                let original_score = sentence_scores[sentence_idx];
+                let rescored = self
+                    .viterbi_score_with_forbidden(&corpus[sentence_idx], model, seq)
+                    .unwrap_or_else(|| {
+                        let missing_singletons: Vec<u32> = corpus[sentence_idx]
+                            .iter()
+                            .filter_map(|atom| {
+                                let singleton = Gram(vec![atom.clone()]);
+                                (!model.vocab.contains_key(&singleton))
+                                    .then_some(singleton.disambiguation_key())
+                            })
+                            .collect();
+                        panic!(
+                            "Pruning invariant violated: removing a token made a sentence non-segmentable.\n\
+                             sentence_idx={sentence_idx}\n\
+                             token_len={}\n\
+                             token_disambiguation_key={}\n\
+                             token={:#?}\n\
+                             sentence_atoms={:#?}\n\
+                             missing_singleton_keys={:#?}\n\
+                             model_max_piece_length={}\n\
+                             original_score={}",
+                            seq.len(),
+                            seq.disambiguation_key(),
+                            seq,
+                            &corpus[sentence_idx],
+                            missing_singletons,
+                            model.max_piece_length,
+                            original_score
+                        )
+                    });
+                loss += (original_score - rescored).max(0.0);
+            }
+
+            losses.push((idx, loss));
+        }
+
+        losses
     }
 
-    fn viterbi_segments(
+    fn viterbi_segments_and_score(
         &self,
         sentence: &[Atom<String>],
         model: &UnigramModel,
-    ) -> (Vec<Gram<String>>, f64) {
+        forbidden: Option<&Gram<String>>,
+    ) -> Option<(Vec<Gram<String>>, f64)> {
         if sentence.is_empty() {
-            return (Vec::new(), 0.0);
+            return Some((Vec::new(), 0.0));
         }
 
         let n = sentence.len();
@@ -682,6 +766,9 @@ impl UnigramTrainer {
 
             for end in start + 1..=n.min(start + model.max_piece_length) {
                 let seq = Gram(sentence[start..end].to_vec());
+                if forbidden == Some(&seq) {
+                    continue;
+                }
                 let Some(score) = model.vocab_score(&seq) else {
                     continue;
                 };
@@ -693,20 +780,106 @@ impl UnigramTrainer {
             }
         }
 
-        let mut segments = Vec::new();
+        let final_score = best_score[n];
+        if !final_score.is_finite() {
+            return None;
+        }
+
         let mut pos = n;
+        let mut segments = Vec::new();
         while pos > 0 {
-            if let Some((prev_pos, seq)) = best_prev[pos].take() {
-                segments.push(seq);
-                pos = prev_pos;
-            } else {
-                pos -= 1;
-                segments.push(Gram(vec![sentence[pos].clone()]));
-            }
+            let (start, seq) = best_prev[pos].take()?;
+            segments.push(seq);
+            pos = start;
         }
         segments.reverse();
 
-        (segments, best_score[n])
+        Some((segments, final_score))
+    }
+
+    fn viterbi_score_with_forbidden(
+        &self,
+        sentence: &[Atom<String>],
+        model: &UnigramModel,
+        forbidden: &Gram<String>,
+    ) -> Option<f64> {
+        if sentence.is_empty() {
+            return Some(0.0);
+        }
+
+        let n = sentence.len();
+        let mut best_score = vec![f64::NEG_INFINITY; n + 1];
+        best_score[0] = 0.0;
+
+        for start in 0..n {
+            if !best_score[start].is_finite() {
+                continue;
+            }
+
+            for end in start + 1..=n.min(start + model.max_piece_length) {
+                let seq = Gram(sentence[start..end].to_vec());
+                if &seq == forbidden {
+                    continue;
+                }
+                let Some(score) = model.vocab_score(&seq) else {
+                    continue;
+                };
+                let candidate = best_score[start] + score;
+                if candidate > best_score[end] {
+                    best_score[end] = candidate;
+                }
+            }
+        }
+
+        if best_score[n].is_finite() {
+            Some(best_score[n])
+        } else {
+            panic!(
+                "Viterbi with forbidden token found no path.\n\
+                 forbidden_token={:#?}\n\
+                 sentence_atoms={:#?}\n\
+                 reachable_positions={:#?}\n\
+                 edge_dump={}",
+                forbidden,
+                sentence,
+                best_score
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(idx, score)| score.is_finite().then_some(idx))
+                    .collect::<Vec<_>>(),
+                self.debug_edge_dump(sentence, model, forbidden, &best_score)
+            );
+        }
+    }
+
+    fn debug_edge_dump(
+        &self,
+        sentence: &[Atom<String>],
+        model: &UnigramModel,
+        forbidden: &Gram<String>,
+        best_score: &[f64],
+    ) -> String {
+        let n = sentence.len();
+        let mut out = String::new();
+
+        for start in 0..n {
+            if !best_score[start].is_finite() {
+                continue;
+            }
+
+            out.push_str(&format!("\nstart={start} atom={:#?}\n", sentence[start]));
+            for end in start + 1..=n.min(start + model.max_piece_length) {
+                let seq = Gram(sentence[start..end].to_vec());
+                let is_forbidden = &seq == forbidden;
+                let score = model.vocab_score(&seq);
+                out.push_str(&format!(
+                    "  end={end} forbidden={} score={:?} seq={:#?}\n",
+                    is_forbidden, score, seq
+                ));
+            }
+        }
+
+        out
     }
 
     fn build_lattice(
@@ -855,8 +1028,8 @@ mod tests {
             shrinking_factor: 0.8,
             min_frequency: 2,
             em_iterations: 8,
+            initial_candidate_multiplier: 4,
             merge_alpha: 0.0,
-            hard_em: false,
         };
 
         let trainer = UnigramTrainer::new(config);
@@ -996,32 +1169,7 @@ mod tests {
     }
 
     #[test]
-    fn test_hard_em_uses_viterbi_counts() {
-        let corpus = vec![vec![make_atom("a"), make_atom("b")]];
-        let vocab = vec![
-            (Gram(vec![make_atom("a")]), 0.2f64.ln(), 10),
-            (Gram(vec![make_atom("b")]), 0.2f64.ln(), 10),
-            (Gram(vec![make_atom("a"), make_atom("b")]), 0.6f64.ln(), 10),
-        ];
-
-        let trainer = UnigramTrainer::new(UnigramTrainerConfig {
-            hard_em: true,
-            ..UnigramTrainerConfig::default()
-        });
-        let model = UnigramModel::new(vocab, 0.0);
-
-        let (expected_counts, _) = trainer.compute_expected_counts(&corpus, &model);
-
-        assert_eq!(
-            expected_counts.get(&Gram(vec![make_atom("a"), make_atom("b")])),
-            Some(&1.0)
-        );
-        assert!(!expected_counts.contains_key(&Gram(vec![make_atom("a")])));
-        assert!(!expected_counts.contains_key(&Gram(vec![make_atom("b")])));
-    }
-
-    #[test]
-    fn test_best_alternative_score_prefers_non_singleton_decomposition() {
+    fn test_viterbi_score_with_forbidden_matches_resegmentation_loss() {
         let trainer = UnigramTrainer::new(UnigramTrainerConfig::default());
         let vocab = vec![
             (Gram(vec![make_atom("a")]), 0.1f64.ln(), 10),
@@ -1035,12 +1183,20 @@ mod tests {
             ),
         ];
         let model = UnigramModel::new(vocab, 0.0);
-        let seq = Gram(vec![make_atom("a"), make_atom("b"), make_atom("c")]);
+        let sentence = vec![make_atom("a"), make_atom("b"), make_atom("c")];
+        let removed = Gram(vec![make_atom("a"), make_atom("b"), make_atom("c")]);
 
-        let alt = trainer.best_alternative_score(&seq, &model).unwrap();
-        let expected = 0.35f64.ln() + 0.1f64.ln();
+        let (_, original_score) = trainer
+            .viterbi_segments_and_score(&sentence, &model, None)
+            .unwrap();
+        let rescored = trainer
+            .viterbi_score_with_forbidden(&sentence, &model, &removed)
+            .unwrap();
+        let expected_rescored = 0.35f64.ln() + 0.1f64.ln();
 
-        assert!((alt - expected).abs() < 1e-9);
+        assert!((rescored - expected_rescored).abs() < 1e-9);
+        assert!((original_score - 0.25f64.ln()).abs() < 1e-9);
+        assert!(original_score > rescored);
     }
 
     #[test]

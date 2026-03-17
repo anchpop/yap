@@ -2,10 +2,12 @@
 //!
 //! Run with: cargo test -p generate-data --release --test tokenization_stats -- --nocapture
 
+use generate_data::nlp::convert_tokens_to_literals;
 use language_utils::{Atom, Language, Literal, literals_to_atoms};
 use omnigram::SuperToken;
 use omnigram::unigram::{UnigramTrainer, UnigramTrainerConfig};
-use std::collections::HashSet;
+use serde::Deserialize;
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -32,6 +34,36 @@ fn load_french_corpus() -> Vec<Vec<Atom<String>>> {
     }
 
     corpus
+}
+
+#[derive(Debug, Deserialize)]
+struct TokenizedSentence {
+    sentence: String,
+    tokens: Vec<lexide::Token>,
+}
+
+fn load_french_corpus_from_tokenization_jsonl() -> Vec<Vec<Atom<String>>> {
+    let path = "../out/fra/target_language_sentences_tokenization.jsonl";
+    let file = File::open(path).expect("Failed to open tokenization file");
+    let reader = BufReader::new(file);
+
+    let tokenizations = reader
+        .lines()
+        .map(|line| {
+            let line = line.unwrap();
+            let parsed: TokenizedSentence = serde_json::from_str(&line).unwrap();
+            (parsed.sentence, parsed.tokens)
+        })
+        .collect();
+
+    let literals = convert_tokens_to_literals(&tokenizations, Language::French);
+    literals
+        .values()
+        .map(|words| {
+            let (atoms, _) = literals_to_atoms(words, Language::French);
+            atoms
+        })
+        .collect()
 }
 
 fn eval_model(model: &omnigram::unigram::UnigramModel, corpus: &[Vec<Atom<String>>], label: &str) {
@@ -83,6 +115,132 @@ fn eval_model(model: &omnigram::unigram::UnigramModel, corpus: &[Vec<Atom<String
     );
 }
 
+fn print_top_multigrams(model: &omnigram::unigram::UnigramModel, language: Language, limit: usize) {
+    println!("  top multigrams:");
+    for (seq, count) in model
+        .get_vocab_with_counts()
+        .into_iter()
+        .filter(|(seq, count)| seq.len() > 1 && *count > 0)
+        .take(limit)
+    {
+        println!(
+            "    {} ({count})",
+            seq.to_display_string(language).replace('\n', "\\n")
+        );
+    }
+}
+
+fn collect_used_multigrams(
+    model: &omnigram::unigram::UnigramModel,
+) -> Vec<(language_utils::Gram<String>, u32)> {
+    model
+        .get_vocab_with_counts()
+        .into_iter()
+        .filter(|(seq, count)| seq.len() > 1 && *count > 0)
+        .map(|(seq, count)| (seq.clone(), count))
+        .collect()
+}
+
+fn print_multigram_list(
+    label: &str,
+    items: &[(language_utils::Gram<String>, u32)],
+    len: usize,
+    language: Language,
+) {
+    println!("  {label}:");
+    for (idx, (seq, count)) in items.iter().enumerate().take(len) {
+        println!(
+            "    #{idx}: {} ({count})",
+            seq.to_display_string(language).replace('\n', "\\n")
+        );
+    }
+}
+
+fn raw_count_fixed_bigram_model(
+    corpus: &[Vec<Atom<String>>],
+    target_multiword_tokens: usize,
+    merge_alpha: f64,
+) -> omnigram::unigram::UnigramModel {
+    let mut unigram_counts: HashMap<language_utils::Gram<String>, u32> = HashMap::new();
+    let mut bigram_counts: HashMap<language_utils::Gram<String>, u32> = HashMap::new();
+
+    for sentence in corpus {
+        for atom in sentence {
+            *unigram_counts
+                .entry(language_utils::Gram(vec![atom.clone()]))
+                .or_insert(0) += 1;
+        }
+
+        for pair in sentence.windows(2) {
+            let seq = language_utils::Gram(pair.to_vec());
+            if !seq
+                .iter()
+                .all(|atom| matches!(atom, Atom::Tok(word) if matches!(word.word_type, language_utils::WordType::Heteronym(_))))
+            {
+                continue;
+            }
+            *bigram_counts.entry(seq).or_insert(0) += 1;
+        }
+    }
+
+    let mut top_bigrams: Vec<(language_utils::Gram<String>, u32)> =
+        bigram_counts.into_iter().collect();
+    top_bigrams.sort_by(|a, b| {
+        b.1.cmp(&a.1)
+            .then_with(|| a.0.disambiguation_key().cmp(&b.0.disambiguation_key()))
+    });
+    top_bigrams.truncate(target_multiword_tokens);
+
+    let total_count: u64 = unigram_counts.values().map(|&c| c as u64).sum::<u64>()
+        + top_bigrams.iter().map(|(_, c)| *c as u64).sum::<u64>();
+
+    let mut vocab_with_scores = Vec::with_capacity(unigram_counts.len() + top_bigrams.len());
+    for (seq, count) in unigram_counts {
+        let log_prob = (count as f64 / total_count as f64).ln();
+        vocab_with_scores.push((seq, log_prob, count));
+    }
+    for (seq, count) in top_bigrams {
+        let log_prob = (count as f64 / total_count as f64).ln();
+        vocab_with_scores.push((seq, log_prob, count));
+    }
+
+    omnigram::unigram::UnigramModel::new(vocab_with_scores, merge_alpha)
+}
+
+fn run_production_path_french_stats(
+    label: &str,
+    max_piece_length: usize,
+    merge_alpha: f64,
+    initial_candidate_multiplier: usize,
+) {
+    let corpus = load_french_corpus_from_tokenization_jsonl();
+    println!("Loaded {} sentences from tokenization jsonl", corpus.len());
+
+    let unique_atoms: HashSet<_> = corpus.iter().flat_map(|s| s.iter().cloned()).collect();
+    let single_atom_count = unique_atoms.len();
+    println!("Unique atoms: {single_atom_count}");
+
+    let target_multiword_tokens = (single_atom_count * 33) / 100;
+    println!(
+        "Training production-style corpus with target_multiword_tokens={target_multiword_tokens}, min_frequency=3, max_piece_length={max_piece_length}, merge_alpha={merge_alpha}, initial_candidate_multiplier={initial_candidate_multiplier}\n"
+    );
+
+    let config = UnigramTrainerConfig {
+        target_multiword_tokens,
+        max_piece_length,
+        shrinking_factor: 0.75,
+        min_frequency: 3,
+        em_iterations: 10,
+        initial_candidate_multiplier,
+        merge_alpha,
+    };
+
+    let trainer = UnigramTrainer::new(config);
+    let model = trainer.train(&corpus, &[]);
+    eval_model(&model, &corpus, label);
+    print_top_multigrams(&model, Language::French, 30);
+}
+
 #[test]
 fn tokenization_stats() {
     let corpus = load_french_corpus();
@@ -102,8 +260,8 @@ fn tokenization_stats() {
             shrinking_factor: 0.75,
             min_frequency: 3,
             em_iterations: 10,
+            initial_candidate_multiplier: 4,
             merge_alpha: alpha,
-            hard_em: false,
         };
 
         let trainer = UnigramTrainer::new(config);
@@ -113,9 +271,111 @@ fn tokenization_stats() {
 }
 
 #[test]
-fn tokenization_stats_alpha_zero_hard_vs_soft_em() {
-    let corpus = load_french_corpus();
-    println!("Loaded {} sentences", corpus.len());
+fn tokenization_stats_from_tokenization_jsonl_alpha_zero() {
+    run_production_path_french_stats("production-path alpha=0.0", 8, 0.0, 4);
+}
+
+#[test]
+fn tokenization_stats_from_tokenization_jsonl_alpha_zero_max_len_3() {
+    run_production_path_french_stats("production-path alpha=0.0 max_len=3", 3, 0.0, 4);
+}
+
+#[test]
+fn tokenization_stats_from_tokenization_jsonl_alpha_zero_max_len_2() {
+    run_production_path_french_stats("production-path alpha=0.0 max_len=2", 2, 0.0, 4);
+}
+
+#[test]
+fn tokenization_stats_from_tokenization_jsonl_alpha_one() {
+    run_production_path_french_stats("production-path alpha=1.0", 8, 1.0, 4);
+}
+
+#[test]
+fn tokenization_stats_from_tokenization_jsonl_alpha_zero_initial_multiplier_10() {
+    run_production_path_french_stats(
+        "production-path alpha=0.0 initial_multiplier=10",
+        8,
+        0.0,
+        10,
+    );
+}
+
+#[test]
+fn tokenization_stats_compare_initial_multiplier_4_vs_10_vs_15() {
+    let corpus = load_french_corpus_from_tokenization_jsonl();
+    println!("Loaded {} sentences from tokenization jsonl", corpus.len());
+
+    let unique_atoms: HashSet<_> = corpus.iter().flat_map(|s| s.iter().cloned()).collect();
+    let single_atom_count = unique_atoms.len();
+    let target_multiword_tokens = (single_atom_count * 33) / 100;
+
+    let make_model = |initial_candidate_multiplier| {
+        let config = UnigramTrainerConfig {
+            target_multiword_tokens,
+            max_piece_length: 8,
+            shrinking_factor: 0.75,
+            min_frequency: 3,
+            em_iterations: 10,
+            initial_candidate_multiplier,
+            merge_alpha: 0.0,
+        };
+        UnigramTrainer::new(config).train(&corpus, &[])
+    };
+
+    let model4 = make_model(4);
+    let model10 = make_model(10);
+    let model15 = make_model(15);
+
+    eval_model(&model4, &corpus, "initial_multiplier=4");
+    eval_model(&model10, &corpus, "initial_multiplier=10");
+    eval_model(&model15, &corpus, "initial_multiplier=15");
+
+    let used4 = collect_used_multigrams(&model4);
+    let used10 = collect_used_multigrams(&model10);
+    let used15 = collect_used_multigrams(&model15);
+
+    let set4: HashSet<_> = used4.iter().map(|(seq, _)| seq.clone()).collect();
+    let set10: HashSet<_> = used10.iter().map(|(seq, _)| seq.clone()).collect();
+    let set15: HashSet<_> = used15.iter().map(|(seq, _)| seq.clone()).collect();
+
+    let unique4: Vec<_> = used4
+        .iter()
+        .filter(|(seq, _)| !set10.contains(seq) && !set15.contains(seq))
+        .cloned()
+        .collect();
+    let unique10: Vec<_> = used10
+        .iter()
+        .filter(|(seq, _)| !set4.contains(seq) && !set15.contains(seq))
+        .cloned()
+        .collect();
+    let unique15: Vec<_> = used15
+        .iter()
+        .filter(|(seq, _)| !set4.contains(seq) && !set10.contains(seq))
+        .cloned()
+        .collect();
+
+    println!(
+        "  overlap all three: shared_4_10={} shared_10_15={} shared_4_15={}",
+        set4.intersection(&set10).count(),
+        set10.intersection(&set15).count(),
+        set4.intersection(&set15).count()
+    );
+    println!(
+        "  exclusive counts: only4={} only10={} only15={}",
+        unique4.len(),
+        unique10.len(),
+        unique15.len()
+    );
+
+    print_multigram_list("most common only in 4", &unique4, 50, Language::French);
+    print_multigram_list("most common only in 10", &unique10, 50, Language::French);
+    print_multigram_list("most common only in 15", &unique15, 50, Language::French);
+}
+
+#[test]
+fn tokenization_stats_from_tokenization_jsonl_top_raw_bigrams_alpha_one() {
+    let corpus = load_french_corpus_from_tokenization_jsonl();
+    println!("Loaded {} sentences from tokenization jsonl", corpus.len());
 
     let unique_atoms: HashSet<_> = corpus.iter().flat_map(|s| s.iter().cloned()).collect();
     let single_atom_count = unique_atoms.len();
@@ -123,27 +383,14 @@ fn tokenization_stats_alpha_zero_hard_vs_soft_em() {
 
     let target_multiword_tokens = (single_atom_count * 33) / 100;
     println!(
-        "Training alpha=0.0 comparison with target_multiword_tokens={target_multiword_tokens}, min_frequency=3\n"
+        "Building fixed raw-count bigram vocab with target_multiword_tokens={target_multiword_tokens}, alpha=1.0\n"
     );
 
-    for hard_em in [false, true] {
-        let config = UnigramTrainerConfig {
-            target_multiword_tokens,
-            max_piece_length: 8,
-            shrinking_factor: 0.75,
-            min_frequency: 3,
-            em_iterations: 10,
-            merge_alpha: 0.0,
-            hard_em,
-        };
-
-        let trainer = UnigramTrainer::new(config);
-        let model = trainer.train(&corpus, &[]);
-        let mode = if hard_em {
-            "hard_em=true"
-        } else {
-            "hard_em=false"
-        };
-        eval_model(&model, &corpus, &format!("alpha=0.0 {mode}"));
-    }
+    let model = raw_count_fixed_bigram_model(&corpus, target_multiword_tokens, 1.0);
+    eval_model(
+        &model,
+        &corpus,
+        "production-path fixed top bigrams alpha=1.0",
+    );
+    print_top_multigrams(&model, Language::French, 30);
 }
