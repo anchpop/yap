@@ -176,7 +176,23 @@ fn load_french_corpus_from_tokenization_jsonl(
 
 fn main() {
     let args = parse_args();
-    let corpus = load_french_corpus_from_tokenization_jsonl(&args.path, args.sentence_limit);
+    let string_corpus = load_french_corpus_from_tokenization_jsonl(&args.path, args.sentence_limit);
+
+    // Intern all atoms for fast hashing/comparison during training
+    let mut rodeo = lasso::Rodeo::new();
+    let corpus: Vec<Vec<Atom<lasso::Spur>>> = string_corpus
+        .iter()
+        .map(|sentence| {
+            sentence
+                .iter()
+                .map(|a| a.get_or_intern(&mut rodeo))
+                .collect()
+        })
+        .collect();
+    // Drop string corpus and rodeo to free memory
+    drop(string_corpus);
+    let _reader = rodeo.into_reader();
+
     let unique_atoms: HashSet<_> = corpus
         .iter()
         .flat_map(|sentence| sentence.iter().cloned())

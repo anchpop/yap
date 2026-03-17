@@ -2,7 +2,7 @@
 
 use language_utils::{Atom, Gram, Language, Literal, literals_to_atoms, predict_whitespace};
 use omnigram::WhitespacePredictionSummary;
-use omnigram::unigram::{UnigramTrainer, UnigramTrainerConfig};
+use omnigram::unigram::{Seq, UnigramTrainer, UnigramTrainerConfig};
 use std::collections::{BTreeMap, HashSet};
 use std::fs::File;
 use std::io::{BufWriter, Write};
@@ -35,13 +35,20 @@ pub fn train_supertokens_and_write_diagnostics(
         })
         .collect();
 
-    let corpus: Vec<Vec<Atom<String>>> = sentences_with_atoms
+    // Intern all atoms for fast hashing/comparison during training
+    let mut rodeo = lasso::Rodeo::new();
+    let interned_corpus: Vec<Vec<Atom<lasso::Spur>>> = sentences_with_atoms
         .iter()
-        .map(|(_, atoms, _)| atoms.clone())
+        .map(|(_, atoms, _)| atoms.iter().map(|a| a.get_or_intern(&mut rodeo)).collect())
         .collect();
+    let interned_seeds: Vec<Seq<Atom<lasso::Spur>>> = seed_grams
+        .iter()
+        .map(|g| Seq(g.0.iter().map(|a| a.get_or_intern(&mut rodeo)).collect()))
+        .collect();
+    let reader = rodeo.into_reader();
 
     // Count unique single atoms to determine target multiword count
-    let unique_atoms: HashSet<_> = corpus
+    let unique_atoms: HashSet<_> = interned_corpus
         .iter()
         .flat_map(|sentence| sentence.iter().cloned())
         .collect();
@@ -61,22 +68,22 @@ pub fn train_supertokens_and_write_diagnostics(
     };
 
     let trainer = UnigramTrainer::new(config);
-    let model = trainer.train(&corpus, seed_grams);
+    let model = trainer.train(&interned_corpus, &interned_seeds);
 
     // Write vocabulary file (maps token ID to atom sequence)
-    write_vocabulary(&model, language, output_dir);
+    write_vocabulary(&model, &reader, output_dir);
 
     // Write human-readable supertokens file
-    write_supertokens_txt(&model, language, output_dir);
+    write_supertokens_txt(&model, &reader, language, output_dir);
 
     // Encode all sentences and write to file
-    write_encoded_sentences(&sentences_with_atoms, &model, output_dir);
+    write_encoded_sentences(&sentences_with_atoms, &interned_corpus, &model, output_dir);
 }
 
 /// Write the vocabulary file mapping token IDs to their atom sequences
 fn write_vocabulary(
-    model: &omnigram::unigram::UnigramModel,
-    _language: Language,
+    model: &omnigram::unigram::UnigramModel<Atom<lasso::Spur>>,
+    reader: &lasso::RodeoReader,
     output_dir: &Path,
 ) {
     let vocab_file = output_dir.join("vocabulary.jsonl");
@@ -85,9 +92,10 @@ fn write_vocabulary(
 
     // Write each vocabulary entry as a JSON line (in ID order so index = ID)
     for (id, (seq, count)) in model.get_vocab_in_id_order().enumerate() {
+        let resolved_atoms: Vec<Atom<String>> = seq.0.iter().map(|a| a.resolve(reader)).collect();
         let entry = serde_json::json!({
             "id": id,
-            "atoms": seq.0,
+            "atoms": resolved_atoms,
             "frequency": count,
         });
         writeln!(writer, "{entry}").expect("Failed to write vocabulary entry");
@@ -98,7 +106,8 @@ fn write_vocabulary(
 
 /// Write human-readable supertokens file
 fn write_supertokens_txt(
-    model: &omnigram::unigram::UnigramModel,
+    model: &omnigram::unigram::UnigramModel<Atom<lasso::Spur>>,
+    reader: &lasso::RodeoReader,
     language: Language,
     output_dir: &Path,
 ) {
@@ -112,8 +121,8 @@ fn write_supertokens_txt(
                 .0
                 .iter()
                 .filter_map(|atom| match atom {
-                    Atom::<String>::Tok(word) => Some(word.clone()),
-                    Atom::<String>::Control(_) => None,
+                    Atom::Tok(word) => Some(word.resolve(reader)),
+                    Atom::Control(_) => None,
                 })
                 .collect();
 
@@ -144,21 +153,24 @@ fn write_supertokens_txt(
 /// Encode all sentences using the trained model and write to file
 fn write_encoded_sentences(
     sentences_with_atoms: &[(&String, Vec<Atom<String>>, bool)],
-    model: &omnigram::unigram::UnigramModel,
+    interned_corpus: &[Vec<Atom<lasso::Spur>>],
+    model: &omnigram::unigram::UnigramModel<Atom<lasso::Spur>>,
     output_dir: &Path,
 ) {
     let encoded_file = output_dir.join("encoded_sentences.jsonl");
     let file = File::create(&encoded_file).expect("Failed to create encoded sentences file");
     let mut writer = BufWriter::new(file);
 
-    for (sentence_text, atoms, capitalize_first) in sentences_with_atoms {
+    for ((sentence_text, _, capitalize_first), interned_atoms) in
+        sentences_with_atoms.iter().zip(interned_corpus.iter())
+    {
         // Segment the sentence using the model
-        let supertokens = model.segment(atoms);
+        let segments = model.segment(interned_atoms);
 
-        // Convert supertokens to token IDs
-        let token_ids: Vec<u32> = supertokens
+        // Convert segments to token IDs
+        let token_ids: Vec<u32> = segments
             .iter()
-            .filter_map(|st| model.get_token_id(st))
+            .filter_map(|seq| model.get_token_id(seq))
             .collect();
 
         let entry = serde_json::json!({
