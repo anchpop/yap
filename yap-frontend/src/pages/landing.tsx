@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import { get_showcase_data, type CourseShowcase } from '../../../yap-frontend-rs/pkg'
 import { motion, AnimatePresence } from 'framer-motion'
