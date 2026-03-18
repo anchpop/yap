@@ -44,5 +44,8 @@ generate-data/data/tatoeba/links.csv filter=lfs diff=lfs merge=lfs -text
 # Encrypted movie subtitles (intentionally overrides LFS above)
 generate-data/data/*/sentence-sources/movies/subtitles/** filter=git-crypt diff=git-crypt
 
+# Encrypted Pimsleur transcripts (copyrighted)
+generate-data/data/*/sentence-sources/pimsleur/** filter=git-crypt diff=git-crypt
+
 # Encrypted secrets
 secrets/** filter=git-crypt diff=git-crypt
