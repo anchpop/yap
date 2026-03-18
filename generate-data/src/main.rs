@@ -1749,6 +1749,80 @@ async fn main() -> anyhow::Result<()> {
             FxHashMap::default()
         };
 
+        // Generate landing page showcase data
+        {
+            let translations_map: FxHashMap<&str, &[String]> = translations
+                .iter()
+                .map(|(s, t)| (s.as_str(), t.as_slice()))
+                .collect();
+
+            let lang = course.target_language;
+
+            // Collect candidate phrases: prefer multi-word, sorted by frequency
+            let mut showcase_phrases = Vec::new();
+            for entry in &gram_frequencies {
+                if showcase_phrases.len() >= 10 {
+                    break;
+                }
+                let gram = &entry.gram;
+
+                // Get definition
+                let definition = if gram.len() > 1 {
+                    phrasebook.get(gram).map(|p| p.meaning.clone())
+                } else if let Some(dict_entry) = gram_keyed_dictionary.get(gram) {
+                    dict_entry.definitions.first().map(|d| d.native.clone())
+                } else {
+                    None
+                };
+                let Some(definition) = definition else {
+                    continue;
+                };
+
+                // Get example sentences with translations
+                let Some(sentences) = gram_sentences.get(gram) else {
+                    continue;
+                };
+                let examples: Vec<language_utils::ShowcaseExampleSentence> = sentences
+                    .iter()
+                    .filter_map(|s| {
+                        let native = translations_map.get(s.as_str())?.first()?;
+                        Some(language_utils::ShowcaseExampleSentence {
+                            target: s.clone(),
+                            native: native.clone(),
+                        })
+                    })
+                    .take(3)
+                    .collect();
+
+                if examples.len() < 2 {
+                    continue;
+                }
+
+                showcase_phrases.push(language_utils::ShowcasePhrase {
+                    display_text: gram.to_display_string(lang),
+                    definition,
+                    examples,
+                });
+            }
+
+            let showcase = language_utils::CourseShowcase {
+                target_language: course.target_language,
+                native_language: course.native_language,
+                sentence_count: target_language_sentences.len(),
+                phrases: showcase_phrases,
+            };
+
+            let showcase_json =
+                serde_json::to_string(&showcase).context("Failed to serialize showcase data")?;
+            std::fs::write(native_specific_dir.join("showcase.json"), showcase_json)
+                .context("Failed to write showcase.json")?;
+            println!(
+                "Wrote showcase.json with {} phrases for {:?}",
+                showcase.phrases.len(),
+                course
+            );
+        }
+
         // Create consolidated data structure
         let consolidated_data = language_utils::ConsolidatedLanguageData {
             target_language_sentences,

@@ -70,6 +70,23 @@ pub fn get_available_courses() -> Vec<language_utils::Course> {
     language_utils::COURSES.to_vec()
 }
 
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn get_showcase_data() -> Vec<language_utils::CourseShowcase> {
+    static SHOWCASE_JSONS: &[&str] = &[
+        include_str!("../../out/fra_for_eng/showcase.json"),
+        include_str!("../../out/eng_for_fra/showcase.json"),
+        include_str!("../../out/spa_for_eng/showcase.json"),
+        include_str!("../../out/kor_for_eng/showcase.json"),
+        include_str!("../../out/deu_for_eng/showcase.json"),
+        include_str!("../../out/ita_for_eng/showcase.json"),
+        include_str!("../../out/por_for_eng/showcase.json"),
+    ];
+    SHOWCASE_JSONS
+        .iter()
+        .map(|json| serde_json::from_str(json).unwrap())
+        .collect()
+}
+
 #[wasm_bindgen]
 pub struct Weapon {
     // todo: move these into a type in `weapon`

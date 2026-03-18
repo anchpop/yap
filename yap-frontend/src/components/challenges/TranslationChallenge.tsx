@@ -659,23 +659,8 @@ export function TranslationChallenge({
     return groups;
   }, [tappedWords, literalGramIndices]);
 
-  // Map from gram group display string → group index (for phrase matching)
-  const groupDisplayToIndex = useMemo(() => {
-    const map = new Map<string, number>();
-    let i = 0;
-    while (i < sentence.target_language_literals.length) {
-      const group = literalGramIndices[i];
-      let text = sentence.target_language_literals[i].word.text;
-      let j = i + 1;
-      while (j < sentence.target_language_literals.length && literalGramIndices[j] === group) {
-        text += sentence.target_language_literals[j - 1].whitespace + sentence.target_language_literals[j].word.text;
-        j++;
-      }
-      map.set(text, group);
-      i = j;
-    }
-    return map;
-  }, [sentence.target_language_literals, literalGramIndices]);
+  const gramEq = (a: Gram<string>, b: Gram<string>) =>
+    JSON.stringify(a) === JSON.stringify(b);
 
   // Definitions to show for tapped gram groups, forgot literals, and forgot phrases
   const tappedDefinitions = useMemo(() => {
@@ -703,18 +688,23 @@ export function TranslationChallenge({
       });
 
       // Show definitions for phrases graded as "Forgot"
+      // Phrases are multiword terms separate from the sentence's gram sequence,
+      // so their definitions are in phrase_definitions (parallel to unique_target_language_phrases),
+      // not in gram_definitions_for_lookup.
+      const phraseDefinitions = sentence.phrase_definitions as (GramDefinition | undefined)[];
       for (const phrase of grade.graded.phrasesForgot) {
-        const displayStr = gram_to_display_string(phrase, targetLanguage);
-        const groupIdx = groupDisplayToIndex.get(displayStr);
-        if (groupIdx !== undefined) addGroup(groupIdx);
+        const phraseIdx = sentence.unique_target_language_phrases.findIndex(
+          (p) => gramEq(p, phrase)
+        );
+        if (phraseIdx !== -1) {
+          const def = phraseDefinitions[phraseIdx];
+          if (def) defs.push(def);
+        }
       }
     }
 
     return defs;
-  }, [tappedGramGroups, gramDefinitions, grade, literalGramIndices, groupDisplayToIndex, targetLanguage]);
-
-  const gramEq = (a: Gram<string>, b: Gram<string>) =>
-    JSON.stringify(a) === JSON.stringify(b);
+  }, [tappedGramGroups, gramDefinitions, grade, literalGramIndices, sentence.phrase_definitions, sentence.unique_target_language_phrases]);
 
   // Build grade items for manual grading UI (literals first, then phrases)
   const gradeItems: GradeItem[] = useMemo(() => {

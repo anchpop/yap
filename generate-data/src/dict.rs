@@ -19,11 +19,11 @@ static CHAT_CLIENT_LIGHT_DICTIONARY: LazyLock<ChatClient> = LazyLock::new(|| {
 });
 
 static CHAT_CLIENT_LIGHTER: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-5-mini")
+    ChatClient::from_env("gpt-5.4-mini")
         .unwrap()
         .with_cache_directory("./.dict-cache")
         .with_backup_cache_directory("./.cache")
-        .with_reasoning_effort("minimal")
+        .with_reasoning_effort("low")
         .with_service_tier("flex")
 });
 
@@ -359,11 +359,13 @@ Example:
 Input: multiword term: `ce que`
 Example sentences:
 1. Dis-moi ce que tu veux.
-2. Je ne sais pas ce que c'est.
+2. Je ne sais pas ce que tu veux dire.
+
+(Here, both sentences use `ce que` to mean `what` in English, so you can just say ["what"] for the `meanings` field.)
 
 Output: {{
     "target_language_multi_word_term":"ce que",
-    "meanings": ["what", "that which"], // this field should be super concise - ideally include 1, maybe 2 of the most common meanings, no extra notes or context. If there are multiple meanings, include them in order of frequency. You might be able to get a hint from the example sentences.
+    "meanings": ["what"], // this field should be super concise - ideally include 1 string, maybe 2 strings of the most common meanings, no extra notes or context. If there are multiple meanings, include them in order of frequency. You might be able to get a hint from the example sentences. 
     "additional_notes": "Refers to something previously mentioned or understood from context.",
     "target_language_example":"C'est ce que je pensais.",
     "native_language_example":"That's what I thought.",

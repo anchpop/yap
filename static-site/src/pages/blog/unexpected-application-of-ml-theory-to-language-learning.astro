@@ -1,10 +1,10 @@
 ---
+export const prerender = true;
+
 import Layout from '../../layouts/Layout.astro';
 import Author from '../../components/Author.astro';
-import fs from 'node:fs';
-import path from 'node:path';
 
-const supertokensText = fs.readFileSync(path.join(import.meta.dirname, '../../assets/eng-supertokens.txt'), 'utf-8');
+const supertokensText = await import.meta.glob('../../assets/eng-supertokens.txt', { query: '?raw', eager: true, import: 'default' })['../../assets/eng-supertokens.txt'] as string;
 const shannonData = [
   { label: '0th', desc: 'Symbols independent and equiprobable.', text: 'XFOML RXKHRJFFJUJ ZLPWCFWKCYJ FFJEYVKCQSGHYD QPAAMKBZAACIBZLHJQD.' },
   { label: '1st', desc: 'Symbols independent but with frequencies of English text.', text: 'OCRO HLI RGWR NMIELWIS EU LL NBNESEBYA TH EEI ALHENHTTPA OOBTTVA NAH BRL.' },
@@ -27,35 +27,10 @@ const supertokens = supertokensText
   .filter(s => s !== null && s.occurrences > 0);
 ---
 
-<Layout title="Unexpected Application of ML Theory to Language Learning" description="Applying the Unigram tokenization algorithm to language learning">
+<Layout title="The Tokenizer and the Brain" description="Applying the Unigram tokenization algorithm to language learning to surprising benefit">
   <article class="prose prose-invert">
-    <h1 class="text-3xl font-bold mb-2">Unexpected Application of ML Theory to Language Learning</h1>
-    <p class="text-sm text-muted-foreground mb-8">March 12, 2026</p>
-    <p>
-      I can't think of a better example of a scientist more limited by their time. Today, people derisively refer to LLMs as "stochastic parrots" due to the randomness they use. But in 1948, Claude Shannon was deliberately trying to invent stochastic parrots. He obviously didn't have a computer, so he was stuck executing his algorithms by hand and got his random numbers a book containing tables of them. Despite these limitations, he came up with 6 "approximations" of English, each more realistic than the last.
-    </p>
-
-    <div class=”not-prose my-6 rounded-lg border border-border bg-card overflow-hidden”>
-      {shannonData.map((a, i) => (
-        <details style={{ margin: 0, borderTop: i === 0 ? 'none' : '1px solid rgba(128,128,128,0.2)' }} {...(i === 0 ? {open: true} : {})}>
-          <summary style={{ padding: '0.5rem 0.75rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600, listStyle: 'none' }}>
-            {a.label}
-            <span style={{ fontWeight: 400, color: 'var(--muted-foreground)', marginLeft: '0.5rem', fontSize: '0.75rem' }}>{a.desc}</span>
-          </summary>
-          <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', lineHeight: 1.625, padding: '0.75rem', margin: '0 0.75rem 0.75rem', borderRadius: '0.375rem', background: 'rgba(128,128,128,0.1)' }}>
-            {a.text}
-          </div>
-          {i === 5 && (
-            <p style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)', padding: '0 0.75rem 0.75rem', fontStyle: 'italic', margin: 0 }}>
-              Shannon proudly notes: “The particular sequence of ten words 'attack on an English writer that the character of this' is not at all unreasonable. It appears then that a sufficiently complex stochastic process will give a satisfactory representation of a discrete source.”
-            </p>
-          )}
-        </details>
-      ))}
-    </div>
-
-    <p>Given his interests, it is not surprising that his work ended up being applicable to machine learning today. And in fact, there is one application of his research that even most machine learning researchers aren't aware of, and it has ramifications that affect every LLM. And in my opinion, it even holds up a strange mirror to human cognition.</p>
-    <h3>Tokenization</h3>
+    <h1 class="text-3xl font-bold mb-2">The Tokenizer and the Brain</h1>
+    <p class="text-sm text-muted-foreground mb-8">March 17, 2026</p>
     <p>
       It's likely that every LLM you've ever interacted with has used tokenization, because it is extremely useful for teaching AIs about language. And it turns out that it is no less useful for teaching people about language! But more on that later.
     </p>
@@ -77,20 +52,22 @@ const supertokens = supertokensText
     <p>For example, you've probably heard someone say "I want you to" hundreds of times. So your brain doesn't need to process every individual word. Instead, you already know the meaning of "I want you to" as a whole, and process it as one unit. Paying attention to each word individually would be almost as bad as reading each letter individually. It's just not possible to efficiently process a sentence one word at a time.
     </p>
     <p>
-      Most people don't have to worry about this, because everyone's brain figures out the chunks for them. But it raises an interesting question: how would we write a program to figure out these chunks? It's easier than you might think. And surprisingly relevant to machine learning. The very first step to training an LLM is to decide how you're going to break the input into chunks! In the context of LLMs, these chunks are called "tokens", but the idea is the same: instead of feeding the LLM one letter at a time, we typically want to feed it whole chunks of letters at a time, or maybe even whole chunks of words at a time. We do this just because it makes LLMs learn better and faster.
+      Most people don't have to worry about this, because everyone's brain figures out the chunks for them. But it raises an interesting question: how would we write a program to figure out these chunks? It's easier than you might think. And surprisingly relevant to machine learning. The very first step to training an LLM is to decide how you're going to break the input into chunks! In the context of LLMs, these chunks are called "tokens", and the idea is the same: instead of feeding the LLM one letter at a time, we typically want to feed it whole chunks of letters at a time, or maybe even whole chunks of words at a time. We do this just because it makes LLMs learn better and faster.
     </p>
     <p>
       There is a catch though. We can't just split the sentence up any way we want. We have to decide on a predefined set of chunks. (AKA a predefined set of tokens.) This is called the "vocabulary". GPT-2's vocabulary had 50,257 chunks in it, while Meta's Llama 3 had 128,256 chunks, and Google's Gemini has 256,000 chunks. Large or small, we have to decide what the chunks will be in advance, before even starting to train the LLM.
     </p>
     <h3>Compression-maximization</h3>
     <p>
-      Here is an approach that you may find natural. Suppose you decide you want to have 50,000 chunks in your vocabulary. Find a big dataset of sentences, and then generate millions of chunks in the dumbest way possible: just take every group of 4 or less words and make it a chunk. If you do this, you will end up with millions of chunks, and most of them will be useless ones that will almost never come up in practice. But, from this base, we can try to "trim down" the list to 50,000 really useful ones by getting rid of those useless ones. But that only pushes the problem down! You still have to figure out how to decide which chunks are useful, and which are not.
+      There are many approaches to this problem. I will focus on "top-down" approaches. These are the approaches that start with a big set of possible chunks, much larger than your desired vocabulary, and then "filter out" the useless ones.</p>
+    <p>
+      Suppose you decide you want to have 50,000 chunks in your vocabulary. Find a big dataset of sentences, and then generate millions of chunks in the dumbest way possible: just take every group of 2, 3, or 4 words and make it a chunk. If you do this, you will end up with millions of chunks, and most of them will be useless ones that will almost never come up in practice. But, from this base, we can try to "trim down" the list to 50,000 really useful ones by getting rid of those useless ones. But that only pushes the problem down! You still have to figure out how to decide which chunks are useful, and which are not.
     </p>
     <p>
       Instead of focusing on the how, it might be easier to focus on the objective. What do we want from our chunks, that we can easily express to a computer? Here is one attractive idea: maybe we want to be able to encode a sentence in the fewest chunks possible.
     </p>
     <p>
-      That sounds pretty good! It sounds especially good when you consider that LLMs are limited in how many input tokens they can take. If you can compress the same text into fewer chunks, that means you can fit longer text into the same number of input tokens!
+      That sounds pretty good! It sounds especially good when you consider that LLMs are limited in how many input tokens they can take. If you can compress the same text into fewer tokens, that means you can fit longer text into the same number of input tokens!
     </p>
     <p>And it turns out it's not too difficult to figure out which chunks to keep to get the maximum compression. You just start with your big set of chunks, segment all your text into chunks, then throw away the chunks that appear the least. I tried that, and got... this:
     </p>
@@ -109,10 +86,10 @@ const supertokens = supertokensText
     </p>
     <h3>The Unigram algorithm</h3>
     <p>
-      But there is a fix. A tiny tweak to the logic that lets us keep almost all the benefits of compression, but gives much better tokens. The solution is to use a measure defined by Shannon almost a hundred years ago: Surprisal.
+      But there is a fix. A tiny tweak to the logic that lets us keep almost all the benefits of compression, but gives much better tokens. The solution is to use a measure defined by Claude Shannon almost a hundred years ago: Surprisal. Shannon defined surprisal as the negative log of a token's probability, which is essentially a long-winded way of saying that when something is rare you're more surprised to see it. 
     </p>
     <p>
-      Instead of encoding the sentence in the fewest chunks possible, we encode it using the chunks that generate the "least surprisal". Surprisal just being a fancy name for the total rarity of each chunk in the sentence. It's a subtle change, but the results speak for themselves.
+      Instead of encoding the sentence in the fewest chunks possible, we encode it using the chunks that generate the "least surprisal". In other words, we're minimizing the total rarity of each chunk in the sentence. It's a subtle change, but the results speak for themselves.
     </p>
     <p>
       Before getting into the details, let's just give the new algorithm a try and see how it does! Here's it in action:
@@ -206,10 +183,10 @@ const supertokens = supertokensText
       Now, I promised I would explain how it works. It's very simple, and the starting point is the algorithm for maximum compression I mentioned earlier. 
     </p>
     <p>
-      How that algorithm worked was: You just start with your big set of chunks, segment all your text into those chunks, then throw away the chunks that appear the least frequently. You actually do this iteratively, throwing away just a few chunks at a time, repeating the process until you reach your desired number of chunks. Sentences will encode to fewer chunks under this vocabulary than any other.
+      How that algorithm worked was: You just start with your big set of chunks, segment all your text into those chunks, then throw away the chunks that appear the least frequently. You actually do this iteratively, throwing away just a few chunks at a time, repeating the process until you reach your desired number of chunks. If you do this, the resulting vocabulary will be the one that encodes sentences into fewer chunks than any other.
     </p>
     <p>
-      But, why are we chunking in the first place? The goal is to save effort, right? You remember what "I want you to" means so you can avoid having to think about the four individual words that make it up. So, converting sentences to the minimum possible number of chunks does seem like it would make sense. That leaves us with a paradox on our hands: if it makes sense, why did it give us chunks that feel useless?
+      But, let's think about why we're chunking in the first place. The goal is to save mental effort, right? You remember what "I want you to" means so you can avoid having to think about the four individual words that make it up. So, our first algorithm, which encodes sentences into the minimum possible number of chunks, does seem like it would make sense. If your brain can process a sentence by encoding it into 3 chunks, shouldn't that be less mental effort than encoding it into 5 chunks? It sounds like it makes sense, but as we saw earlier, the results were bad. That leaves us with a paradox on our hands: if it makes sense, why did it give us chunks that feel useless and confusing?
     </p>
     <p>
       I'm not sure that anyone knows a truly non-tautological answer to this question. But I have a theory. Let's formalize the argument above slightly. 
@@ -220,10 +197,10 @@ const supertokens = supertokensText
       <li class="border-t border-border pt-1"><strong>Conclusion:</strong> Therefore, the amount of effort it takes to understand a sentence is proportional to the number of chunks in it.</li>
     </ol>
     <p>
-      If you want, you can take a moment to try to poke holes in that argument. But here's mine. Premise 2 implies that the effort required to recall a chunk is always the same. But I think you'll find that common chunks, like "ice cream", are much easier for you to remember the meaning of than rare ones like "sovereign immunity". And when you think about it, it makes sense. If the brain has some analogous concept to a cache, it would make perfect sense to dedicate it to high-frequency chunks like "ice cream" and relegate "sovereign immunity" to the mental equivalent of a spinning rust hard drive. 
+      If you want, you can take a moment to try to poke holes in that argument. But here's my answer. Premise 2 implies that the effort required to recall a chunk is always the same. But I think you'll find that common chunks, like "ice cream", are much easier for you to remember the meaning of than rare ones like "sovereign immunity". And when you think about it, it makes sense. If the brain has some analogous concept to a cache, it would make perfect sense to dedicate it to high-frequency chunks like "ice cream" and relegate "sovereign immunity" to the mental equivalent of a spinning-rust hard drive. 
     </p>
     <p>
-      So, if the effort required to recall a chunk is <i>not</i> always the same, then it's not necessarily the case that fewer chunks is always better. Take the "all, you" bad chunk example from earlier. You probably have absolutely no problem recalling the meaning of "all" or "you" on their own. So, there is potentially very little benefit to chunking them. In fact, if "all, you" is rarer as a chunk than "all" or "you" are on their own, the chunking has actually increased the effort necessary to understand the sentence!
+      So, if the effort required to recall a chunk is <i>not</i> always the same, then it's not necessarily the case that fewer chunks is always better. Take the bad "all, you" chunk example from earlier. You probably have absolutely no problem recalling the meaning of "all" or "you" on their own. They are very common words that you can process with almost zero effort. So, there's potentially very little benefit to chunking them. In fact, if "all, you" is rarer as a chunk than "all" and "you" are on their own, and the effort of recalling a chunk is proportional to its rarity, the chunking has actually increased the effort necessary to understand the sentence!
     </p>
     <p>
       So, let's adjust the argument.
@@ -242,20 +219,59 @@ const supertokens = supertokensText
       I think it's pretty obvious which one is harder to understand! Each word in the latter required more mental effort to process than each word in the former.
     </p>
     <p>
+      At first I thought this example was cheating, but now I don't think so. In some ways, "All I know is what I told you." is actually a more complicated and more abstract sentence than "Positive atomic nuclei attract negative electrons." It doesn't feel that way, because we're so efficient at processing the first sentence, but the second sentence can be simplified to "A attracts B" which is a simple concept anyone can easily visualize. The first one cannot really be simplified or visualized in any way. So I think it serves as good evidence for the theory: the first sentence is actually more complicated and abstract than the second, but we find it incredibly easy to process because we have so much practice with all of the individual words in it. Meanwhile, the second sentence requires most of us to reach deep into our minds to recall the meaning of "positive", "atomic", "nuclei", and so on, which makes it much more effort to understand.
+    </p>
+    <p>
       So, that finally brings us to the algorithm. It's called the "Unigram" algorithm. Instead of trying to find a vocabulary that minimizes the number of chunks in each sentence, we want to find a vocabulary that minimizes the combined rarity of the chunks in each sentence.
     </p>
     <p>Under this model, I think an example of the perfect chunk might be "plausible deniability". It's probably much more common than all other usages of either of the words "plausible" or "deniability" on their own. So, by chunking them both into "plausible deniability", turns 2 slow lookups into one slow lookup - and coders used to optimizing their code will know the benefits of eliminating a cache miss in a hot loop! But turning "all, you" into a single chunk probably makes understanding harder, because "all" and "you" were already very common and "all, you" is probably rarer. So that chunk is replacing two fast cache hits with a single cache miss, which is a terrible deal.
     </p>
+    <h2>Unexpected applications</h2>
     <p>
-      Now here's what I find so interesting. This "Unigram" algorithm was developed specifically to help represent written text to computers. At first, Claude Shannon researched it because it related to compression, then it was applied to machine learning. But if you can use it to make text more understandable to computers, why not to people?
+      Now here's what I find so interesting. This "Unigram" algorithm was developed specifically to help represent written text to computers. At first, Claude Shannon developed the theory behind it because it related to compression, then it was applied to machine learning. It turns out to be a very good algorithm for making text more understandable to computers. But if you can use it to teach computers, why not to teach people?
     </p>
     <p>
       I started researching this because I wanted Yap to have a more nuanced understanding of sentences. One of my goals is for it to be able to accurately model my users' mistakes. When a user learning French translates a French sentence into English, and gets it wrong, I want to be able to figure out what exact parts of the French sentence they struggled with. That way I can help them study that exact part of the language.
     </p>
     <p>
-      Previously, this logic mostly operated on the level of single words, but I rewrote it to use unigram-discovered phrases as its basic unit of learning instead. The improvement in the learning experience was immediate and palpable. I now believe that this is the best way to teach a language: one chunk at a time, rather than one word. I've been using the new Yap for a while, but now it's live for everyone. Also, the <a href="/d/">multilingual dictionaries</a> include unigram chunks as well. But what's amazing to me is not this improvement to Yap on its own, but that I think it's the first time that an idea from machine learning has been directly applied to optimize human learning as well! Has this ever happened before? Maybe the real machine learning... was what we learned along the way.
+      Previously, this logic mostly operated on the level of single words, but I rewrote it to use unigram-discovered phrases as its basic unit of learning instead. The improvement in the learning experience was immediate. I now believe that this is the best way to teach a language: one chunk at a time, rather than one word. I've been using the new Yap for a while, but now it's live for everyone. Also, the <a href="/d/">multilingual dictionaries</a> include unigram chunks as well.
+    </p>
+    <p>
+      Where I think it gets really interesting is to compare the frequencies of words and the frequencies of phrases. Take a look at <a href="/d/french-to-english/top-1000/">the French wordlist for example</a>. At the beginning, it's almost half phrases, if not more! I expect some people will think that the phrase "vous êtes" (meaning "you are") is redundant, because you could just learn "vous" and "êtes" individually. But in my opinion, this does not lead to fluency. You want to be lightning quick at understanding "vous êtes" simply because you'll hear it so often. You won't have time to try processing it as two separate words. Of course, even if you learned them separately, as you consume input in your target language your brain would inevitably figure out the chunking itself. But we can and should short-circuit the process and teach according to the chunks your brain will eventually learn anyway.
+    </p>
+    <p>
+      But what's truly amazing to me is not this improvement to Yap on its own, but that I think it's the first time that an idea from machine learning has been directly applied to optimize human learning as well! To be clear, I'm talking about a specific algorithm developed to facilitate training models that also happens to be directly applicable to training people. Has this ever happened before? Maybe the real machine learning... was what we learned along the way.
     </p>
 
+    <hr />
+    <h2>
+      P.S. A fun note about Claude Shannon.
+    </h2>
+    <p>
+      I can't think of a better example of a scientist more limited by their time. Today, people derisively refer to LLMs as "stochastic parrots" due to the randomness they use. But in 1948, Claude Shannon was deliberately trying to invent stochastic parrots. He obviously didn't have a computer, so he was stuck executing his algorithms by hand and got his random numbers from a book. Despite these limitations, he came up with 6 "approximations" of English, each more realistic than the last.
+    </p>
+
+    <div class=”not-prose my-6 rounded-lg border border-border bg-card overflow-hidden”>
+      {shannonData.map((a, i) => (
+        <details style={{ margin: 0, borderTop: i === 0 ? 'none' : '1px solid rgba(128,128,128,0.2)' }} {...(i === 0 ? {open: true} : {})}>
+          <summary style={{ padding: '0.5rem 0.75rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600, listStyle: 'none' }}>
+            {a.label}
+            <span style={{ fontWeight: 400, color: 'var(--muted-foreground)', marginLeft: '0.5rem', fontSize: '0.75rem' }}>{a.desc}</span>
+          </summary>
+          <div style={{ fontFamily: 'monospace', fontSize: '0.875rem', lineHeight: 1.625, padding: '0.75rem', margin: '0 0.75rem 0.75rem', borderRadius: '0.375rem', background: 'rgba(128,128,128,0.1)' }}>
+            {a.text}
+          </div>
+          {i === 5 && (
+            <p style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)', padding: '0 0.75rem 0.75rem', fontStyle: 'italic', margin: 0 }}>
+              Shannon proudly notes: “The particular sequence of ten words 'attack on an English writer that the character of this' is not at all unreasonable. It appears then that a sufficiently complex stochastic process will give a satisfactory representation of a discrete source.”
+            </p>
+          )}
+        </details>
+      ))}
+    </div>
+
+    <p>Given his interests, it is not surprising that his work ended up being applicable to machine learning today.</p>
+    
 
 
 

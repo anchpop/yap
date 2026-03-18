@@ -1,6 +1,7 @@
 name: Deploy to Fly.io
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -9,6 +10,7 @@ on:
       - 'language-utils/**'
       - 'generate-data/**'
       - 'out/**/*.rkyv'
+      - 'out/**/*.hash'
       - 'Cargo.toml'
       - 'Cargo.lock'
 

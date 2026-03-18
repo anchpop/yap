@@ -21,6 +21,7 @@ import { AcceptInvite } from '@/pages/accept-invite'
 import { ForgotPassword } from '@/pages/forgot-password'
 import { UserProfilePage } from '@/pages/user-profile'
 import { AboutPage } from '@/pages/about'
+import { LandingPage } from '@/pages/landing'
 import { NotFoundPage } from '@/pages/not-found'
 import { playSoundEffect } from '@/lib/sound-effects'
 import { registerSW } from 'virtual:pwa-register'
@@ -309,101 +310,6 @@ function LoadingProgress({ message, progress }: { message: string; progress: num
         <Progress value={smoothProgress} className="w-full" disableTransition />
       </div>
     </div>
-  )
-}
-
-function LandingPage() {
-  const { userInfo } = useOutletContext<AppContextType>()
-  const deckSelection = useDeckSelection()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (deckSelection?.type === 'languageSelected') {
-      navigate('/learn', { replace: true })
-    }
-  }, [deckSelection, navigate])
-
-  if (deckSelection?.type === 'languageSelected') {
-    return null
-  }
-
-  return (
-    <TopPageLayout
-      userInfo={userInfo}
-      headerProps={{ showSignupNag: false, title: "Yap.Town" }}
-    >
-      <div className="relative z-10 flex items-center justify-center">
-        <div className="w-full max-w-2xl flex flex-col items-center text-center">
-          <div className="flex flex-col items-center justify-center gap-8 h-[calc(100dvh-6rem)]">
-            <h1
-              className="text-5xl md:text-6xl font-black tracking-tight"
-              style={{ textWrap: "balance" }}
-            >
-              Spaced repetition with{" "}
-              <span className="text-accent-foreground italic squiggly-underline">actual sentences.</span>
-            </h1>
-
-            <p className="text-lg text-muted-foreground max-w-lg" style={{ textWrap: "balance" }}>
-              SRS works. But isolated flashcards only get you so far.<br />
-              <span className="text-foreground font-semibold">
-                Every word in Yap lives inside a real sentence.
-              </span>
-            </p>
-
-            <div className="flex items-center gap-4">
-              <Button
-                size="lg"
-                variant="ghost"
-                onClick={() => {
-                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
-                }}
-                className="text-lg"
-              >
-                How it works
-              </Button>
-              <Button
-                size="lg"
-                onClick={() => navigate('/select-language')}
-                className="text-lg px-8"
-              >
-                Start learning
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div
-            id="how-it-works"
-            className="min-h-dvh flex flex-col items-center justify-center w-full gap-16 py-24"
-          >
-            <div className="flex flex-col items-center gap-6 max-w-lg">
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight" style={{ textWrap: "balance" }}>
-                Language modelling that goes deeper.
-              </h2>
-              <div className="flex flex-col gap-4">
-                <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
-                  Yap understands <span className="text-foreground font-semibold">phrases and polysemy</span>, so every card targets a precise meaning in context.
-                </p>
-                <p className="text-lg text-muted-foreground" style={{ textWrap: "balance" }}>
-                  And every deck is <span className="text-foreground font-semibold">premade and ready to go</span>.<br /> Just pick a language and start learning immediately.
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-lg text-muted-foreground">Powered by FSRS</span>
-                <Button
-                  size="lg"
-                  onClick={() => navigate('/select-language')}
-                  className="text-lg px-8"
-                >
-                  Start learning
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </TopPageLayout>
   )
 }
 
@@ -1194,7 +1100,7 @@ function SelectLanguagePage() {
 }
 
 
-function useDeckSelection():
+export function useDeckSelection():
   | { type: "languageSelected", nativeLanguage: Language, targetLanguage: Language, startingFresh: boolean | undefined, hasHeardAbout: boolean }
   | { type: "noLanguageSelected", hasHeardAbout: boolean }
   | null {

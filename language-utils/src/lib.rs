@@ -3001,6 +3001,38 @@ pub const LANGUAGES: &[Language] = &[
     Language::Italian,
 ];
 
+/// A sentence example for the landing page showcase.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
+#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
+pub struct ShowcaseExampleSentence {
+    pub target: String,
+    pub native: String,
+}
+
+/// A phrase entry for the landing page showcase.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
+#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
+#[serde(rename_all = "camelCase")]
+pub struct ShowcasePhrase {
+    pub display_text: String,
+    pub definition: String,
+    pub examples: Vec<ShowcaseExampleSentence>,
+}
+
+/// Landing page showcase data for a single course.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
+#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
+#[serde(rename_all = "camelCase")]
+pub struct CourseShowcase {
+    pub target_language: Language,
+    pub native_language: Language,
+    pub sentence_count: usize,
+    pub phrases: Vec<ShowcasePhrase>,
+}
+
 /// A pair of homophone words, lexicographically sorted to ensure consistency
 #[derive(
     Copy,

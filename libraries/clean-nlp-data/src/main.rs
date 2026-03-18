@@ -30,7 +30,7 @@ static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
 });
 
 static CHAT_CLIENT_MINI: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-5-mini")
+    ChatClient::from_env("gpt-5.4-mini")
         .unwrap()
         .with_cache_directory("./.cache")
 });
