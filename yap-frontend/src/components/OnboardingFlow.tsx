@@ -259,24 +259,28 @@ const srsStudies = [
     year: 1885,
     title: "Memory: A Contribution to Experimental Psychology",
     journal: "Teachers College, Columbia University",
+    url: "https://psychclassics.yorku.ca/Ebbinghaus/index.htm",
   },
   {
     authors: "Cepeda, N.J., Pashler, H., Vul, E., Wixted, J.T., & Rohrer, D.",
     year: 2006,
     title: "Distributed practice in verbal recall tasks: A review and quantitative synthesis",
+    url: "https://doi.org/10.1037/0033-2909.132.3.354",
     journal: "Psychological Bulletin, 132(3), 354\u2013380",
-  },
-  {
-    authors: "Pimsleur, P.",
-    year: 1967,
-    title: "A Memory Schedule",
-    journal: "The Modern Language Journal, 51(2), 73\u201375",
   },
   {
     authors: "Karpicke, J.D. & Roediger, H.L.",
     year: 2008,
     title: "The Critical Importance of Retrieval for Learning",
+    url: "https://doi.org/10.1126/science.1152408",
     journal: "Science, 319(5865), 966\u2013968",
+  },
+  {
+    authors: "Ye, J.J., Su, J., & Cao, Y.",
+    year: 2022,
+    title: "A Stochastic Shortest Path Algorithm for Optimizing Spaced Repetition Scheduling",
+    url: "https://dl.acm.org/doi/10.1145/3534678.3539081?cid=99660547150",
+    journal: "KDD \u201922: Proceedings of the 28th ACM SIGKDD Conference, 4381\u20134390",
   },
 ];
 
@@ -288,12 +292,15 @@ function SrsTeaserScreen({ onNext }: { onNext: () => void }) {
       </h2>
       <div className="w-full relative h-64 select-none overflow-x-clip" aria-hidden>
         {srsStudies.map((study, i) => (
-          <motion.div
+          <motion.a
             key={study.title}
+            href={study.url}
+            target="_blank"
+            rel="noopener noreferrer"
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1, rotate: (i - 1.5) * 2 }}
             transition={{ delay: 0.3 + i * 0.5, duration: 0.5, ease: "easeOut" }}
-            className="absolute inset-x-4 bg-white text-black rounded shadow-md px-5 py-4 border border-neutral-200"
+            className="absolute inset-x-4 bg-white text-black rounded shadow-md px-5 py-4 border border-neutral-200 block"
             style={{ zIndex: i, top: `${i * 8}px`, height: "200px" }}
           >
             <p className="text-[11px] font-semibold leading-tight truncate">{study.title}</p>
@@ -310,7 +317,7 @@ function SrsTeaserScreen({ onNext }: { onNext: () => void }) {
                 />
               ))}
             </div>
-          </motion.div>
+          </motion.a>
         ))}
       </div>
       <div className="-mt-2 h-10 flex flex-col items-center justify-start">
@@ -763,6 +770,19 @@ function NotificationScreen({ onNext }: { onNext: () => void }) {
 }
 
 // Screen 7: Ready to start
+const letsGoPhrases: Record<Language, string> = {
+  French: "Allons-y !",
+  Spanish: "¡Vamos!",
+  Korean: "가자!",
+  English: "Let's go!",
+  German: "Los geht's!",
+  Chinese: "走吧！",
+  Japanese: "行こう！",
+  Russian: "Пойдем!",
+  Portuguese: "Vamos lá!",
+  Italian: "Andiamo!",
+};
+
 function ReadyScreen({
   targetLanguage,
   experience,
@@ -807,7 +827,7 @@ function ReadyScreen({
           className="mt-2 px-8 text-base bg-primary hover:bg-primary/90"
           onClick={() => onComplete(true)}
         >
-          Start learning
+          {letsGoPhrases[targetLanguage]}
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       ) : (
