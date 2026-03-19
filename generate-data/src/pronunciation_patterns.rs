@@ -10,7 +10,8 @@ static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.2")
         .unwrap()
         .with_reasoning_effort("high")
-        .with_cache_directory("./.cache")
+        .with_cache_directory("./.new-cache")
+        .with_backup_cache_directory("./.cache")
 });
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]

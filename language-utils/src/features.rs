@@ -1217,7 +1217,7 @@ impl Morphology {
             }
             (Language::German, _) => None,
             (Language::English, PartOfSpeech::Verb | PartOfSpeech::Aux) => {
-                self.get_english_verb_prefix()
+                self.get_english_verb_prefix(pos)
             }
             (Language::Korean | Language::English, _) => None,
             (Language::Italian, PartOfSpeech::Noun) => self.get_italian_noun_prefix(word),
@@ -1433,8 +1433,9 @@ impl Morphology {
         })
     }
 
-    fn get_english_verb_prefix(&self) -> Option<WordPrefix> {
-        // For infinitives (no person), add "to"
+    fn get_english_verb_prefix(&self, pos: PartOfSpeech) -> Option<WordPrefix> {
+        // For infinitives (no person), add "to" — but not for auxiliaries/modals
+        // ("to can", "to must" etc. are not correct)
         // For conjugated verbs, add subject pronouns
         if let Some(person) = self.person {
             let number = self.number.unwrap_or(Number::Singular);
@@ -1452,6 +1453,9 @@ impl Morphology {
                 prefix: prefix.to_string(),
                 separator: " ".to_string(),
             })
+        } else if pos == PartOfSpeech::Aux {
+            // Auxiliaries/modals don't take "to" prefix
+            None
         } else {
             // Infinitive: add "to"
             Some(WordPrefix {

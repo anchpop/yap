@@ -1,11 +1,26 @@
+# Large data directories (not needed for ai-backend Docker build)
+generate-data/
+.cache/
+
+# Exclude everything in out/ except the rkyv files needed by include_bytes!
+out/**/*.jsonl
+out/**/*.json
+out/**/*.hash
+
 # Rust build artifacts
 target/
-.cache/
-Cargo.lock
 
 # Version control
 .git/
 .gitignore
+.gitattributes
+
+# Frontend (not needed for ai-backend)
+yap-frontend/
+yap-frontend-rs/
+static-site/
+supabase/
+modal-llm-server/
 
 # IDE files
 .vscode/
@@ -17,17 +32,16 @@ Cargo.lock
 .DS_Store
 Thumbs.db
 
-# Any other large directories
+# Other
 node_modules/
 dist/
 tmp/
 logs/
 *.log
-
-# Test data or large assets
 test-data/
 *.mp4
 *.mov
 *.zip
 *.tar.gz
-
+.github/
+scripts/

@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 2
 
       - name: Check what changed
@@ -29,6 +29,10 @@ jobs:
           else
             echo "dictionary=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Pull LFS files for dictionary generation
+        if: steps.changes.outputs.dictionary == 'true'
+        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -45,6 +49,9 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-cf-production
+          restore-keys: |
+            ${{ runner.os }}-cargo-cf-production-
+            ${{ runner.os }}-cargo-
 
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
