@@ -30,8 +30,7 @@ struct HomophonePracticeThoughts {
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5")
         .unwrap()
-        .with_cache_directory("./.new-cache")
-        .with_backup_cache_directory("./.cache")
+        .with_cache_directory("./.cache")
 });
 
 /// Generate homophones file for the top N most frequent words in the language.

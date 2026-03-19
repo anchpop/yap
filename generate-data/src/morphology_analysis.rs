@@ -11,15 +11,13 @@ use tysm::chat_completions::ChatClient;
 static CHAT_CLIENT_4O: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-4o")
         .unwrap()
-        .with_cache_directory("./.new-cache")
-        .with_backup_cache_directory("./.cache")
+        .with_cache_directory("./.cache")
 });
 
 static CHAT_CLIENT_5: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5")
         .unwrap()
-        .with_cache_directory("./.new-cache")
-        .with_backup_cache_directory("./.cache")
+        .with_cache_directory("./.cache")
         .with_service_tier("flex")
 });
 

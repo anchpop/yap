@@ -1,5 +1,4 @@
-# Large data directories (not needed for ai-backend Docker build)
-generate-data/
+# Cache directories
 .cache/
 
 # Exclude everything in out/ except the rkyv files needed by include_bytes!
@@ -17,7 +16,6 @@ target/
 
 # Frontend (not needed for ai-backend)
 yap-frontend/
-yap-frontend-rs/
 static-site/
 supabase/
 modal-llm-server/

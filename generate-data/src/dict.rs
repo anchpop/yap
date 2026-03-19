@@ -12,8 +12,7 @@ use tysm::chat_completions::{ChatClient, ChatMessage};
 static CHAT_CLIENT_LIGHT_DICTIONARY: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.2")
         .unwrap()
-        .with_cache_directory("./.new-cache")
-        .with_backup_cache_directory("./.dict-cache")
+        .with_cache_directory("./.cache")
         .with_reasoning_effort("low")
         .with_service_tier("flex")
 });
@@ -21,8 +20,7 @@ static CHAT_CLIENT_LIGHT_DICTIONARY: LazyLock<ChatClient> = LazyLock::new(|| {
 static CHAT_CLIENT_LIGHTER: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.4-mini")
         .unwrap()
-        .with_cache_directory("./.new-cache")
-        .with_backup_cache_directory("./.dict-cache")
+        .with_cache_directory("./.cache")
         .with_reasoning_effort("low")
         .with_service_tier("flex")
 });
@@ -30,8 +28,7 @@ static CHAT_CLIENT_LIGHTER: LazyLock<ChatClient> = LazyLock::new(|| {
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.4")
         .unwrap()
-        .with_cache_directory("./.new-cache")
-        .with_backup_cache_directory("./.dict-cache")
+        .with_cache_directory("./.cache")
         .with_reasoning_effort("low")
         .with_service_tier("flex")
 });
@@ -39,8 +36,7 @@ static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
 static CHAT_CLIENT_HEAVY: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.4")
         .unwrap()
-        .with_cache_directory("./.new-cache")
-        .with_backup_cache_directory("./.dict-cache")
+        .with_cache_directory("./.cache")
         .with_reasoning_effort("high")
         .with_service_tier("flex")
 });

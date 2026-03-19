@@ -13,7 +13,7 @@ use tysm::chat_completions::ChatClient;
 static QUALITY_CHECK_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
     ChatClient::from_env("gpt-5.4")
         .unwrap()
-        .with_cache_directory("./.sub-cache")
+        .with_cache_directory("./.cache")
         .with_service_tier("flex")
 });
 
