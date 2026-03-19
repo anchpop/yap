@@ -3398,3 +3398,497 @@ pub mod italian {
         }
     }
 }
+
+pub mod english {
+    use super::*;
+
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct EnglishVerbConjugation {
+        pub infinitive: String,
+        /// Third-person singular simple present (e.g. "drinks", "goes", "has")
+        pub third_person_singular: String,
+        /// Present participle / -ing form (e.g. "drinking", "going", "having")
+        pub present_participle: String,
+        /// Simple past (e.g. "drank", "went", "had")
+        pub simple_past: String,
+        /// Past participle (e.g. "drunk", "gone", "had")
+        pub past_participle: String,
+    }
+
+    /// Extract the English language section from a Wiktionary page
+    pub fn extract_english_section(document: &Html) -> anyhow::Result<Html> {
+        let h2_selector = Selector::parse("h2#English").unwrap();
+
+        let english_heading = document
+            .select(&h2_selector)
+            .next()
+            .context("Could not find English language section")?;
+
+        let mut english_content = String::new();
+        let mut current = english_heading.parent();
+
+        while let Some(node) = current {
+            current = node.next_sibling();
+            if let Some(current_node) = current {
+                if let Some(elem) = ElementRef::wrap(current_node) {
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
+                    }
+                    english_content.push_str(&elem.html());
+                }
+            }
+        }
+
+        Ok(Html::parse_fragment(&english_content))
+    }
+
+    /// Parse an English verb conjugation from the Wiktionary headword line.
+    ///
+    /// Two formats exist on Wiktionary:
+    /// 1. Modern: forms have CSS classes like `s-verb-form-form-of`, `ing-form-form-of`, etc.
+    /// 2. Legacy: forms are plain `<b class="Latn">` elements preceded by `<i>` labels.
+    ///
+    /// We try CSS class extraction first, then fall back to label-based parsing.
+    pub fn parse_english_verb_conjugation(
+        html: &str,
+        verb: &str,
+    ) -> anyhow::Result<EnglishVerbConjugation> {
+        // "be" is listed as "highly irregular; see conjugation table" with no headword forms
+        if verb == "be" {
+            return Ok(EnglishVerbConjugation {
+                infinitive: "be".to_string(),
+                third_person_singular: "is".to_string(),
+                present_participle: "being".to_string(),
+                simple_past: "was".to_string(),
+                past_participle: "been".to_string(),
+            });
+        }
+
+        let document = Html::parse_document(html);
+        let english_section = extract_english_section(&document)?;
+
+        let infinitive = verb.to_string();
+
+        // Try CSS class-based extraction first
+        let third_person_singular = extract_first_form(&english_section, "s-verb-form-form-of");
+        let present_participle = extract_first_form(&english_section, "ing-form-form-of");
+        let simple_past = extract_first_form(&english_section, "spast-form-of")
+            .or_else(|| extract_first_form(&english_section, "ed-form-form-of"));
+        let past_participle = extract_first_form(&english_section, "past|part-form-of")
+            .or_else(|| extract_first_form(&english_section, "ed-form-form-of"));
+
+        // If CSS class-based extraction found all forms, use them
+        if let (Some(tps), Some(pp), Some(sp), Some(ppart)) = (
+            third_person_singular.clone(),
+            present_participle.clone(),
+            simple_past.clone(),
+            past_participle.clone(),
+        ) {
+            return Ok(EnglishVerbConjugation {
+                infinitive,
+                third_person_singular: tps,
+                present_participle: pp,
+                simple_past: sp,
+                past_participle: ppart,
+            });
+        }
+
+        // Fallback: parse from headword text labels (for pages like "say" that use
+        // plain <b class="Latn"> without form-of classes)
+        parse_from_headword_labels(&english_section, &infinitive)
+    }
+
+    /// Parse verb forms from the headword line by reading the `<i>` labels.
+    ///
+    /// The headword line looks like:
+    /// `<strong>say</strong> (<i>third-person singular simple present</i> <b>says</b>,
+    ///  <i>present participle</i> <b>saying</b>,
+    ///  <i>simple past and past participle</i> <b>said</b>)`
+    fn parse_from_headword_labels(
+        document: &Html,
+        infinitive: &str,
+    ) -> anyhow::Result<EnglishVerbConjugation> {
+        let headword_selector = Selector::parse("span.headword-line").unwrap();
+        let headword_span = document
+            .select(&headword_selector)
+            .next()
+            .context("Failed to find headword line")?;
+
+        // Collect (label, word) pairs by walking through <i> and <b> siblings
+        let i_selector = Selector::parse("i").unwrap();
+        let b_selector = Selector::parse("b").unwrap();
+        let a_selector = Selector::parse("a").unwrap();
+
+        // Collect all <i> labels and their following <b> words
+        let labels: Vec<String> = headword_span
+            .select(&i_selector)
+            .map(|i| i.text().collect::<String>().to_lowercase())
+            .collect();
+
+        let forms: Vec<String> = headword_span
+            .select(&b_selector)
+            .filter_map(|b| {
+                // Skip the headword itself (it's a <strong> wrapped in headword-line,
+                // but some pages use <b> for the headword too)
+                let classes = b.value().attr("class").unwrap_or("");
+                if classes.contains("headword") {
+                    return None;
+                }
+                // Get text from link or direct text
+                if let Some(link) = b.select(&a_selector).next()
+                    && let Some(text) = link.text().next()
+                {
+                    Some(text.to_string())
+                } else {
+                    let text = b.text().collect::<String>().trim().to_string();
+                    if text.is_empty() { None } else { Some(text) }
+                }
+            })
+            .collect();
+
+        let mut third_person_singular = None;
+        let mut present_participle = None;
+        let mut simple_past = None;
+        let mut past_participle = None;
+
+        for (i, label) in labels.iter().enumerate() {
+            if i >= forms.len() {
+                break;
+            }
+            let form = &forms[i];
+
+            if label.contains("third-person singular") {
+                third_person_singular = Some(form.clone());
+            } else if label.contains("present participle") {
+                present_participle = Some(form.clone());
+            } else if label.contains("simple past and past participle") {
+                simple_past = Some(form.clone());
+                past_participle = Some(form.clone());
+            } else if label.contains("simple past") || label.contains("past tense") {
+                simple_past = Some(form.clone());
+            } else if label.contains("past participle") {
+                past_participle = Some(form.clone());
+            }
+        }
+
+        Ok(EnglishVerbConjugation {
+            infinitive: infinitive.to_string(),
+            third_person_singular: third_person_singular
+                .context("Failed to find third-person singular in headword labels")?,
+            present_participle: present_participle
+                .context("Failed to find present participle in headword labels")?,
+            simple_past: simple_past.context("Failed to find simple past in headword labels")?,
+            past_participle: past_participle
+                .context("Failed to find past participle in headword labels")?,
+        })
+    }
+
+    /// Extract the first form matching a given CSS class pattern from the headword line.
+    /// The class appears as e.g. `class="Latn form-of lang-en s-verb-form-form-of"`.
+    fn extract_first_form(document: &Html, class_pattern: &str) -> Option<String> {
+        let selector_str = format!("b[class*='{class_pattern}']");
+        let selector = Selector::parse(&selector_str).ok()?;
+        let a_selector = Selector::parse("a").unwrap();
+
+        for element in document.select(&selector) {
+            // Try to get text from link inside
+            if let Some(link) = element.select(&a_selector).next()
+                && let Some(text) = link.text().next()
+            {
+                return Some(text.to_string());
+            }
+            // Fallback: direct text
+            let text = element.text().collect::<String>().trim().to_string();
+            if !text.is_empty() {
+                return Some(text);
+            }
+        }
+
+        None
+    }
+
+    /// Fetch English verb conjugations from Wiktionary with HTML caching
+    pub async fn fetch_english_verb_conjugations(
+        verbs: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, EnglishVerbConjugation>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(verbs.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} English verbs ({per_sec}, {msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let fetch_results: Vec<(String, Result<EnglishVerbConjugation, String>)> =
+            futures::stream::iter(verbs.iter())
+                .map(|verb| {
+                    let pb = pb.clone();
+                    async move {
+                        pb.set_message(verb.to_string());
+
+                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                            Ok(html) => parse_english_verb_conjugation(&html, verb)
+                                .map_err(|e| format!("Failed to parse English verb '{verb}': {e}")),
+                            Err(e) => {
+                                Err(format!("Failed to get HTML for English verb '{verb}': {e}"))
+                            }
+                        };
+
+                        pb.inc(1);
+                        (verb.clone(), result)
+                    }
+                })
+                .buffered(50)
+                .collect()
+                .await;
+
+        let mut results = HashMap::new();
+        let mut skipped = 0;
+        for (verb, result) in fetch_results {
+            match result {
+                Ok(conjugation) => {
+                    results.insert(verb, conjugation);
+                }
+                Err(e) => {
+                    eprintln!("Skipping: {e}");
+                    skipped += 1;
+                }
+            }
+        }
+
+        pb.finish_with_message(format!(
+            "Finished: {}/{} parsed ({skipped} skipped)",
+            results.len(),
+            verbs.len()
+        ));
+
+        Ok(results)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use std::fs;
+
+        #[test]
+        fn test_parse_drink() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/drink.txt")
+                .expect("Failed to read drink.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "drink")
+                .expect("Failed to parse drink conjugation");
+
+            assert_eq!(conjugation.infinitive, "drink");
+            assert_eq!(conjugation.third_person_singular, "drinks");
+            assert_eq!(conjugation.present_participle, "drinking");
+            assert_eq!(conjugation.simple_past, "drank");
+            assert_eq!(conjugation.past_participle, "drunk");
+        }
+
+        #[test]
+        fn test_parse_go() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/go.txt")
+                .expect("Failed to read go.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "go")
+                .expect("Failed to parse go conjugation");
+
+            assert_eq!(conjugation.infinitive, "go");
+            assert_eq!(conjugation.third_person_singular, "goes");
+            assert_eq!(conjugation.present_participle, "going");
+            assert_eq!(conjugation.simple_past, "went");
+            assert_eq!(conjugation.past_participle, "gone");
+        }
+
+        #[test]
+        fn test_parse_have() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/have.txt")
+                .expect("Failed to read have.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "have")
+                .expect("Failed to parse have conjugation");
+
+            assert_eq!(conjugation.infinitive, "have");
+            assert_eq!(conjugation.third_person_singular, "has");
+            assert_eq!(conjugation.present_participle, "having");
+            assert_eq!(conjugation.simple_past, "had");
+            assert_eq!(conjugation.past_participle, "had");
+        }
+
+        #[test]
+        fn test_parse_make() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/make.txt")
+                .expect("Failed to read make.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "make")
+                .expect("Failed to parse make conjugation");
+
+            assert_eq!(conjugation.infinitive, "make");
+            assert_eq!(conjugation.third_person_singular, "makes");
+            assert_eq!(conjugation.present_participle, "making");
+            assert_eq!(conjugation.simple_past, "made");
+            assert_eq!(conjugation.past_participle, "made");
+        }
+
+        #[test]
+        fn test_parse_do() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/do.txt")
+                .expect("Failed to read do.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "do")
+                .expect("Failed to parse do conjugation");
+
+            assert_eq!(conjugation.infinitive, "do");
+            assert_eq!(conjugation.third_person_singular, "does");
+            assert_eq!(conjugation.present_participle, "doing");
+            assert_eq!(conjugation.simple_past, "did");
+            assert_eq!(conjugation.past_participle, "done");
+        }
+
+        #[test]
+        fn test_parse_eat() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/eat.txt")
+                .expect("Failed to read eat.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "eat")
+                .expect("Failed to parse eat conjugation");
+
+            assert_eq!(conjugation.infinitive, "eat");
+            assert_eq!(conjugation.third_person_singular, "eats");
+            assert_eq!(conjugation.present_participle, "eating");
+            assert_eq!(conjugation.simple_past, "ate");
+            assert_eq!(conjugation.past_participle, "eaten");
+        }
+
+        #[test]
+        fn test_parse_say() {
+            // "say" uses the legacy headword format (no form-of CSS classes)
+            let html = fs::read_to_string("src/wiktionary-examples/eng/say.txt")
+                .expect("Failed to read say.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "say")
+                .expect("Failed to parse say conjugation");
+
+            assert_eq!(conjugation.infinitive, "say");
+            assert_eq!(conjugation.third_person_singular, "says");
+            assert_eq!(conjugation.present_participle, "saying");
+            assert_eq!(conjugation.simple_past, "said");
+            assert_eq!(conjugation.past_participle, "said");
+        }
+
+        #[test]
+        fn test_parse_get() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/get.txt")
+                .expect("Failed to read get.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "get")
+                .expect("Failed to parse get conjugation");
+
+            assert_eq!(conjugation.infinitive, "get");
+            assert_eq!(conjugation.third_person_singular, "gets");
+            assert_eq!(conjugation.present_participle, "getting");
+            assert_eq!(conjugation.simple_past, "got");
+            assert_eq!(conjugation.past_participle, "got");
+        }
+
+        #[test]
+        fn test_parse_take() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/take.txt")
+                .expect("Failed to read take.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "take")
+                .expect("Failed to parse take conjugation");
+
+            assert_eq!(conjugation.infinitive, "take");
+            assert_eq!(conjugation.third_person_singular, "takes");
+            assert_eq!(conjugation.present_participle, "taking");
+            assert_eq!(conjugation.simple_past, "took");
+            assert_eq!(conjugation.past_participle, "taken");
+        }
+
+        #[test]
+        fn test_parse_know() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/know.txt")
+                .expect("Failed to read know.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "know")
+                .expect("Failed to parse know conjugation");
+
+            assert_eq!(conjugation.infinitive, "know");
+            assert_eq!(conjugation.third_person_singular, "knows");
+            assert_eq!(conjugation.present_participle, "knowing");
+            assert_eq!(conjugation.simple_past, "knew");
+            assert_eq!(conjugation.past_participle, "known");
+        }
+
+        #[test]
+        fn test_parse_think() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/think.txt")
+                .expect("Failed to read think.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "think")
+                .expect("Failed to parse think conjugation");
+
+            assert_eq!(conjugation.infinitive, "think");
+            assert_eq!(conjugation.third_person_singular, "thinks");
+            assert_eq!(conjugation.present_participle, "thinking");
+            assert_eq!(conjugation.simple_past, "thought");
+            assert_eq!(conjugation.past_participle, "thought");
+        }
+
+        #[test]
+        fn test_parse_come() {
+            let html = fs::read_to_string("src/wiktionary-examples/eng/come.txt")
+                .expect("Failed to read come.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "come")
+                .expect("Failed to parse come conjugation");
+
+            assert_eq!(conjugation.infinitive, "come");
+            assert_eq!(conjugation.third_person_singular, "comes");
+            assert_eq!(conjugation.present_participle, "coming");
+            assert_eq!(conjugation.simple_past, "came");
+            assert_eq!(conjugation.past_participle, "come");
+        }
+
+        #[test]
+        fn test_parse_want() {
+            // Regular verb - uses ed-form-form-of
+            let html = fs::read_to_string("src/wiktionary-examples/eng/want.txt")
+                .expect("Failed to read want.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "want")
+                .expect("Failed to parse want conjugation");
+
+            assert_eq!(conjugation.infinitive, "want");
+            assert_eq!(conjugation.third_person_singular, "wants");
+            assert_eq!(conjugation.present_participle, "wanting");
+            assert_eq!(conjugation.simple_past, "wanted");
+            assert_eq!(conjugation.past_participle, "wanted");
+        }
+
+        #[test]
+        fn test_parse_be() {
+            // "be" is highly irregular and hard-coded
+            let html = fs::read_to_string("src/wiktionary-examples/eng/be.txt")
+                .expect("Failed to read be.txt");
+
+            let conjugation = parse_english_verb_conjugation(&html, "be")
+                .expect("Failed to parse be conjugation");
+
+            assert_eq!(conjugation.infinitive, "be");
+            assert_eq!(conjugation.third_person_singular, "is");
+            assert_eq!(conjugation.present_participle, "being");
+            assert_eq!(conjugation.simple_past, "was");
+            assert_eq!(conjugation.past_participle, "been");
+        }
+    }
+}

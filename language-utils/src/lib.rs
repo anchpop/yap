@@ -421,9 +421,9 @@ pub struct MovieMetadataBasic {
 #[derive(
     Clone,
     Debug,
+    Eq,
     serde::Serialize,
     serde::Deserialize,
-    Eq,
     PartialEq,
     Ord,
     PartialOrd,
@@ -446,6 +446,8 @@ pub struct MovieMetadata {
     pub rotten_tomatoes_score: Option<u8>,
     /// Poster image bytes (JPEG format)
     pub poster_bytes: Option<Vec<u8>>,
+    /// Total gram count from unfiltered data (for accurate percentage calculations)
+    pub total_gram_count: u64,
 }
 
 impl From<MovieMetadataBasic> for MovieMetadata {
@@ -457,6 +459,7 @@ impl From<MovieMetadataBasic> for MovieMetadata {
             original_language: basic.original_language,
             rotten_tomatoes_score: basic.rotten_tomatoes_score,
             poster_bytes: None,
+            total_gram_count: 0,
         }
     }
 }

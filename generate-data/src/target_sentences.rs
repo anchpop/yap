@@ -252,7 +252,7 @@ fn load_movie_sentences(
             continue;
         }
 
-        let movie: language_utils::MovieMetadata =
+        let movie: language_utils::MovieMetadataBasic =
             serde_json::from_str(line).context("Failed to parse movie metadata")?;
 
         // Load subtitle file for this movie

@@ -191,7 +191,7 @@ fn raw_count_fixed_bigram_model(
 
     for sentence in corpus {
         for atom in sentence {
-            *unigram_counts.entry(Seq(vec![atom.clone()])).or_insert(0) += 1;
+            *unigram_counts.entry(Seq(vec![*atom])).or_insert(0) += 1;
         }
 
         for pair in sentence.windows(2) {

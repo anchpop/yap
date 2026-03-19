@@ -1948,21 +1948,23 @@ impl Deck {
                 continue;
             }
 
-            // Calculate total units and comprehensible units from gram frequencies.
-            let mut total_word_count = 0u64;
-            let mut comprehensible_word_count = 0u64;
-
-            for (gram, frequency) in movie_frequencies.iter() {
-                let word_count = frequency.count as u64;
-                total_word_count += word_count;
-
-                if comprehensible_grams.contains(gram) {
-                    comprehensible_word_count += word_count;
-                }
-            }
+            // Use pre-computed total gram count (from unfiltered data) for accurate percentages
+            let Some(movie) = language_pack.movies.get(movie_id) else {
+                continue;
+            };
+            let total_word_count = movie.total_gram_count;
 
             if total_word_count == 0 {
                 continue;
+            }
+
+            // Calculate comprehensible units from the filtered gram frequencies
+            let mut comprehensible_word_count = 0u64;
+
+            for (gram, frequency) in movie_frequencies.iter() {
+                if comprehensible_grams.contains(gram) {
+                    comprehensible_word_count += frequency.count as u64;
+                }
             }
 
             let percent_known =
@@ -2030,14 +2032,7 @@ impl Deck {
 
         for movie_id in movie_ids {
             if let Some(movie_metadata) = language_pack.movies.get(&movie_id) {
-                movies.push(MovieMetadata {
-                    id: movie_id.clone(),
-                    title: movie_metadata.title.clone(),
-                    year: movie_metadata.year,
-                    original_language: movie_metadata.original_language.clone(),
-                    rotten_tomatoes_score: movie_metadata.rotten_tomatoes_score,
-                    poster_bytes: movie_metadata.poster_bytes.clone(),
-                });
+                movies.push(movie_metadata.clone());
             }
         }
 

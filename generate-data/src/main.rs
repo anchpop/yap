@@ -735,6 +735,9 @@ async fn main() -> anyhow::Result<()> {
                 .map(|entry| entry.gram.clone())
                 .collect();
 
+        // Save unfiltered sentences for computing accurate per-movie total gram counts
+        let unfiltered_encoded_sentences = encoded_sentences_with_grams.clone();
+
         // Filter encoded sentences to only include those where we have all the learnable grams
         let encoded_sentences_count_before = encoded_sentences_with_grams.len();
         let mut encoded_sentences_with_grams: Vec<(String, SentenceGrams<Gram<String>>)> =
@@ -1632,7 +1635,7 @@ async fn main() -> anyhow::Result<()> {
         ));
         // Load movie metadata
         let movies_dir = source_data_path.join("sentence-sources/movies");
-        let movies = if movies_dir.exists() {
+        let mut movies = if movies_dir.exists() {
             let metadata_file = movies_dir.join("metadata.jsonl");
             if metadata_file.exists() {
                 let metadata_content = std::fs::read_to_string(&metadata_file)
@@ -1707,44 +1710,41 @@ async fn main() -> anyhow::Result<()> {
             }
         };
 
-        // Compute per-movie frequencies
+        // Compute per-movie frequencies from UNFILTERED sentences (for accurate totals)
+        let master_gram_set: std::collections::HashSet<Gram<String>> = gram_frequencies
+            .iter()
+            .map(|entry| entry.gram.clone())
+            .collect();
+
         let movie_gram_frequencies = if !movies.is_empty() {
             let movie_ids: Vec<String> = movies.keys().cloned().collect();
-            let movie_gram_frequencies = generate_data::frequencies::compute_movie_gram_frequencies(
-                &encoded_sentences_with_grams,
+            let unfiltered_movie_freqs = generate_data::frequencies::compute_movie_gram_frequencies(
+                &unfiltered_encoded_sentences,
                 &sentence_sources,
                 &movie_ids,
                 &gram_vocabulary,
             );
 
-            // Filter movie_gram_frequencies to only include grams that have definitions
-            let movie_gram_frequencies: FxHashMap<String, Vec<GramFrequencyEntry<String>>> =
-                movie_gram_frequencies
-                    .into_iter()
-                    .map(|(movie_id, freqs)| {
-                        let filtered_freqs: Vec<GramFrequencyEntry<String>> = freqs
-                            .into_iter()
-                            .filter(|entry| {
-                                let gram = &entry.gram;
-                                if gram.len() == 1 {
-                                    if let Some(Atom::Tok(word)) = gram.first()
-                                        && let language_utils::WordType::Heteronym(heteronym) =
-                                            &word.word_type
-                                    {
-                                        return gram_dictionary_set.contains(heteronym);
-                                    }
-                                    false
-                                } else {
-                                    phrasebook.contains_key(gram)
-                                }
-                            })
-                            .collect();
-                        (movie_id, filtered_freqs)
-                    })
-                    .filter(|(_, freqs)| !freqs.is_empty())
-                    .collect();
+            // Store total gram counts on movie metadata BEFORE filtering
+            for (movie_id, freqs) in &unfiltered_movie_freqs {
+                let total: u64 = freqs.iter().map(|e| e.count as u64).sum();
+                if let Some(movie) = movies.get_mut(movie_id) {
+                    movie.total_gram_count = total;
+                }
+            }
 
-            movie_gram_frequencies
+            // Filter movie frequencies to only include grams in the master frequency list
+            unfiltered_movie_freqs
+                .into_iter()
+                .map(|(movie_id, freqs)| {
+                    let filtered_freqs: Vec<GramFrequencyEntry<String>> = freqs
+                        .into_iter()
+                        .filter(|entry| master_gram_set.contains(&entry.gram))
+                        .collect();
+                    (movie_id, filtered_freqs)
+                })
+                .filter(|(_, freqs)| !freqs.is_empty())
+                .collect()
         } else {
             FxHashMap::default()
         };

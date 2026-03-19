@@ -474,6 +474,7 @@ pub mod wiktionary_morphology {
                 portuguese::create_portuguese_morphology(gram_frequencies).await
             }
             Language::Italian => italian::create_italian_morphology(gram_frequencies).await,
+            Language::English => english::create_english_morphology(gram_frequencies).await,
             _ => {
                 // Return empty for unsupported languages
                 Ok(BTreeMap::new())
@@ -2143,6 +2144,146 @@ pub mod wiktionary_morphology {
                     },
                 );
             }
+
+            morphology
+        }
+    }
+
+    mod english {
+        use super::*;
+        use crate::wiktionary_conjugations::english::{
+            EnglishVerbConjugation, fetch_english_verb_conjugations,
+        };
+        use language_utils::features::{Mood, Number, Person, Tense};
+        use std::collections::HashSet;
+        use std::path::Path;
+
+        pub async fn create_english_morphology(
+            gram_frequencies: &[GramFrequencyEntry<String>],
+        ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
+            let mut morphology = BTreeMap::new();
+
+            // Extract verb lemmas
+            let mut verb_lemmas = HashSet::new();
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        PartOfSpeech::Verb | PartOfSpeech::Aux => {
+                            verb_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
+                }
+            }
+
+            let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+
+            // Fetch and parse Wiktionary pages
+            let cache_dir = Path::new(".cache/wiktionary/english");
+            let conjugations = fetch_english_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+
+            // Convert conjugations to morphology entries
+            for (infinitive, conjugation) in conjugations.iter() {
+                let verb_morphology =
+                    conjugation_to_morphology(infinitive, conjugation, PartOfSpeech::Verb);
+                morphology.extend(verb_morphology);
+
+                let aux_morphology =
+                    conjugation_to_morphology(infinitive, conjugation, PartOfSpeech::Aux);
+                morphology.extend(aux_morphology);
+            }
+
+            Ok(morphology)
+        }
+
+        fn conjugation_to_morphology(
+            infinitive: &str,
+            conjugation: &EnglishVerbConjugation,
+            pos: PartOfSpeech,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut morphology = BTreeMap::new();
+
+            let mut add_morph = |word: &str, morph: Morphology| {
+                let heteronym = Heteronym {
+                    word: word.to_string(),
+                    lemma: infinitive.to_string(),
+                    pos,
+                };
+                morphology
+                    .entry(heteronym)
+                    .or_insert_with(Vec::new)
+                    .push(morph);
+            };
+
+            // Infinitive / base form
+            add_morph(
+                infinitive,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: None,
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Third-person singular present (e.g. "drinks")
+            add_morph(
+                &conjugation.third_person_singular,
+                Morphology {
+                    gender: None,
+                    number: Some(Number::Singular),
+                    politeness: None,
+                    tense: Some(Tense::Present),
+                    person: Some(Person::Third),
+                    case: None,
+                    mood: Some(Mood::Indicative),
+                },
+            );
+
+            // Present participle (e.g. "drinking")
+            add_morph(
+                &conjugation.present_participle,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: Some(Tense::Present),
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            // Simple past (e.g. "drank")
+            add_morph(
+                &conjugation.simple_past,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: Some(Tense::Past),
+                    person: None,
+                    case: None,
+                    mood: Some(Mood::Indicative),
+                },
+            );
+
+            // Past participle (e.g. "drunk")
+            add_morph(
+                &conjugation.past_participle,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: Some(Tense::Past),
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
 
             morphology
         }
