@@ -44,54 +44,65 @@ async function kvBulkPut(pairs, attempt = 1) {
   }
 }
 
-// Collect all key-value pairs, then flush in batches
-let allPairs = [];
+// Streaming batcher: flushes in batches as pairs are added, keeping memory low
+let currentBatch = [];
+let pendingBatches = [];
+let totalCollected = 0;
 let totalUploaded = 0;
+let totalBatches = 0;
 
-function addPair(key, value) {
-  allPairs.push({ key, value });
+async function addPair(key, value) {
+  currentBatch.push({ key, value });
+  totalCollected++;
+  if (currentBatch.length >= BATCH_SIZE) {
+    pendingBatches.push(currentBatch);
+    currentBatch = [];
+    // Flush immediately when we have enough batches for one concurrent round
+    if (pendingBatches.length >= CONCURRENCY) {
+      await flushPending();
+    }
+  }
 }
 
-function addPairFromFile(key, filePath) {
-  addPair(key, fs.readFileSync(filePath, 'utf-8'));
+async function addPairFromFile(key, filePath) {
+  await addPair(key, fs.readFileSync(filePath, 'utf-8'));
 }
 
-async function flushAll() {
-  if (allPairs.length === 0) return;
-
-  // Split into batches
-  const batches = [];
-  for (let i = 0; i < allPairs.length; i += BATCH_SIZE) {
-    batches.push(allPairs.slice(i, i + BATCH_SIZE));
+async function flushPending() {
+  // Flush any partial batch
+  if (currentBatch.length > 0) {
+    pendingBatches.push(currentBatch);
+    currentBatch = [];
   }
 
-  console.log(`Uploading ${allPairs.length} keys in ${batches.length} batches (${CONCURRENCY} concurrent)...`);
+  if (pendingBatches.length === 0) return;
+
+  const batches = pendingBatches;
+  pendingBatches = [];
+  totalBatches += batches.length;
 
   // Upload batches with limited concurrency
   for (let i = 0; i < batches.length; i += CONCURRENCY) {
     const chunk = batches.slice(i, i + CONCURRENCY);
     await Promise.all(chunk.map((batch, j) => {
-      const batchNum = i + j + 1;
-      console.log(`  Batch ${batchNum}/${batches.length} (${batch.length} keys)...`);
+      console.log(`  Batch (${batch.length} keys)...`);
       return kvBulkPut(batch);
     }));
     totalUploaded += chunk.reduce((sum, b) => sum + b.length, 0);
-    console.log(`  ${totalUploaded}/${allPairs.length} keys uploaded`);
+    console.log(`  ${totalUploaded} keys uploaded so far`);
   }
-
-  allPairs = [];
 }
 
 async function main() {
   // Upload courses manifest
   console.log('Collecting courses manifest...');
-  addPairFromFile('courses', path.join(DATA_DIR, 'courses.json'));
+  await addPairFromFile('courses', path.join(DATA_DIR, 'courses.json'));
 
   // Upload search indexes
   for (const file of fs.readdirSync(SEARCH_DIR)) {
     if (!file.endsWith('.json')) continue;
     const courseSlug = file.replace('.json', '');
-    addPairFromFile(`search:${courseSlug}`, path.join(SEARCH_DIR, file));
+    await addPairFromFile(`search:${courseSlug}`, path.join(SEARCH_DIR, file));
   }
 
   // Upload per-course data
@@ -104,14 +115,14 @@ async function main() {
     // Upload letters manifest
     const lettersFile = path.join(courseDir, 'letters.json');
     if (fs.existsSync(lettersFile)) {
-      addPairFromFile(`letters:${courseSlug}`, lettersFile);
+      await addPairFromFile(`letters:${courseSlug}`, lettersFile);
     }
 
     // Upload top-1000 lists (combined, words, phrases)
     for (const variant of ['top-1000', 'top-1000-words', 'top-1000-phrases']) {
       const topFile = path.join(courseDir, `${variant}.json`);
       if (fs.existsSync(topFile)) {
-        addPairFromFile(`${variant}:${courseSlug}`, topFile);
+        await addPairFromFile(`${variant}:${courseSlug}`, topFile);
       }
     }
 
@@ -121,11 +132,11 @@ async function main() {
       for (const letterFile of fs.readdirSync(letterDir)) {
         if (!letterFile.endsWith('.json')) continue;
         const letter = letterFile.replace('.json', '');
-        addPairFromFile(`letter:${courseSlug}:${letter}`, path.join(letterDir, letterFile));
+        await addPairFromFile(`letter:${courseSlug}:${letter}`, path.join(letterDir, letterFile));
       }
     }
 
-    // Upload per-page data
+    // Upload per-page data, flushing after each course to keep memory bounded
     console.log(`Collecting pages for ${courseSlug}...`);
     const pageFiles = fs.readdirSync(courseDir).filter(f =>
       f.endsWith('.json') && f !== 'letters.json' && f !== 'top-100.json' && f !== 'top-1000.json'
@@ -135,12 +146,16 @@ async function main() {
     for (const pageFile of pageFiles) {
       const pageSlug = pageFile.replace('.json', '');
       const value = fs.readFileSync(path.join(courseDir, pageFile), 'utf-8');
-      addPair(`page:${courseSlug}:${pageSlug}`, value);
+      await addPair(`page:${courseSlug}:${pageSlug}`, value);
     }
+
+    // Flush after each course so we don't accumulate all 200k pairs in memory
+    await flushPending();
   }
 
-  await flushAll();
-  console.log(`Done! ${totalUploaded} keys uploaded to KV.`);
+  // Final flush for any remaining pairs
+  await flushPending();
+  console.log(`Done! ${totalUploaded} keys uploaded to KV in ${totalBatches} batches.`);
 }
 
 main().catch(err => {
