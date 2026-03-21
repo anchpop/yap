@@ -255,6 +255,7 @@ impl DeckEvent {
                                     .into_iter()
                                     .filter_map(|c| c.into_v3(context))
                                     .collect(),
+                                goal: None,
                             }
                         }
                         LanguageEventContent::ReviewCard { reviewed, rating } => {
@@ -370,6 +371,18 @@ impl CardIndicator<String> {
                     .heteronym_to_grams
                     .get(heteronym)?
                     .first()?;
+                // Drop low-frequency grams — the pronunciation-to-word mapping picks
+                // the highest standalone-frequency word, which can be a rare conjugation
+                // (e.g. "croient" over "crois") when common forms get absorbed into
+                // multi-word grams. Threshold of 100 filters these out.
+                let freq = context
+                    .language_pack
+                    .gram_frequencies
+                    .entries
+                    .get(gram_spur)?;
+                if freq.count < 100 {
+                    return None;
+                }
                 let gram = context
                     .language_pack
                     .gram_rodeo

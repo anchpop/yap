@@ -866,6 +866,55 @@ pub mod wiktionary_morphology {
 
             morphology
         }
+
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+            use crate::wiktionary_conjugations::french::parse_french_verb_conjugation;
+
+            #[test]
+            fn test_boire_has_second_person_singular() {
+                let html = std::fs::read_to_string("src/wiktionary-examples/fra/boire.txt")
+                    .expect("Failed to read boire.txt");
+                let conjugation = parse_french_verb_conjugation(&html, "boire")
+                    .expect("Failed to parse boire conjugation");
+
+                let morphology =
+                    conjugation_to_morphology("boire", &conjugation, PartOfSpeech::Verb);
+
+                // "bois" should have morphology entries for BOTH first and second person singular
+                let bois_key = Heteronym {
+                    word: "bois".to_string(),
+                    lemma: "boire".to_string(),
+                    pos: PartOfSpeech::Verb,
+                };
+                let bois_morphs = morphology
+                    .get(&bois_key)
+                    .expect("Expected morphology entries for 'bois'");
+
+                let has_first_sg = bois_morphs.iter().any(|m| {
+                    m.person == Some(Person::First)
+                        && m.number == Some(Number::Singular)
+                        && m.mood == Some(Mood::Indicative)
+                        && m.tense == Some(Tense::Present)
+                });
+                let has_second_sg = bois_morphs.iter().any(|m| {
+                    m.person == Some(Person::Second)
+                        && m.number == Some(Number::Singular)
+                        && m.mood == Some(Mood::Indicative)
+                        && m.tense == Some(Tense::Present)
+                });
+
+                assert!(
+                    has_first_sg,
+                    "Expected first person singular present indicative for 'bois'"
+                );
+                assert!(
+                    has_second_sg,
+                    "Expected second person singular present indicative for 'bois'"
+                );
+            }
+        }
     }
 
     mod spanish {

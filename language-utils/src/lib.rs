@@ -400,6 +400,47 @@ impl SentenceSource {
     }
 }
 
+/// A Pimsleur lesson identifier (level + lesson number)
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub struct PimsleurLesson {
+    pub level: u32,
+    #[serde(alias = "unit")]
+    pub lesson: u32,
+}
+
+/// Identifies a source for per-source gram frequency data
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub enum FrequencySourceId {
+    Movie(String),
+    PimsleurLesson(PimsleurLesson),
+}
+
 /// Basic movie metadata without poster bytes, for serialization to files
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, Eq, PartialEq, Ord, PartialOrd)]
 pub struct MovieMetadataBasic {
@@ -446,8 +487,6 @@ pub struct MovieMetadata {
     pub rotten_tomatoes_score: Option<u8>,
     /// Poster image bytes (JPEG format)
     pub poster_bytes: Option<Vec<u8>>,
-    /// Total gram count from unfiltered data (for accurate percentage calculations)
-    pub total_gram_count: u64,
 }
 
 impl From<MovieMetadataBasic> for MovieMetadata {
@@ -459,7 +498,6 @@ impl From<MovieMetadataBasic> for MovieMetadata {
             original_language: basic.original_language,
             rotten_tomatoes_score: basic.rotten_tomatoes_score,
             poster_bytes: None,
-            total_gram_count: 0,
         }
     }
 }
@@ -1145,6 +1183,15 @@ pub struct GramFrequencyEntry<S> {
     pub disambiguation_key: u32,
 
     pub gram: Gram<S>,
+}
+
+/// A frequency list with its total count (for percentage calculations).
+/// Used in ConsolidatedLanguageData (pre-interning).
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct GramFrequencyList {
+    pub entries: Vec<GramFrequencyEntry<String>>,
+    /// Total gram count from unfiltered data (for accurate percentage calculations)
+    pub total_count: u64,
 }
 
 #[derive(
@@ -1952,8 +1999,8 @@ pub struct ConsolidatedLanguageData {
     pub phrasebook: BTreeMap<Gram<String>, PhrasebookDefinitionEntry>,
     /// Proper noun definitions for names, places, organizations
     pub proper_noun_definitions: BTreeMap<String, ProperNounDefinition>,
-    /// Per-movie gram frequencies indexed by movie ID
-    pub movie_gram_frequencies: FxHashMap<String, Vec<GramFrequencyEntry<String>>>,
+    /// Per-source gram frequencies (movies, Pimsleur lessons, etc.)
+    pub source_gram_frequencies: FxHashMap<FrequencySourceId, GramFrequencyList>,
     /// Mapping from words to their IPA pronunciations
     pub word_to_pronunciation: Vec<(String, Pronunciation)>,
     /// Mapping from IPA pronunciations to lists of words
@@ -1969,7 +2016,7 @@ pub struct ConsolidatedLanguageData {
     /// Gram vocabulary: maps gram ID to display info (index = gram ID)
     pub gram_vocabulary: Vec<GramVocabEntry<String>>,
     /// Gram frequencies for learnable grams
-    pub gram_frequencies: Vec<GramFrequencyEntry<String>>,
+    pub gram_frequencies: GramFrequencyList,
     /// Encoded sentences: sentence text -> grams with learnability and capitalize_first
     pub encoded_sentences: Vec<(String, SentenceGrams<Gram<String>>)>,
     /// Gram dictionary: definitions for grams (keyed by Gram for correct surface-form matching)
@@ -2105,9 +2152,9 @@ impl ConsolidatedLanguageData {
             }
         }
 
-        // intern movie gram frequencies
-        for movie_gram_freqs in self.movie_gram_frequencies.values() {
-            for entry in movie_gram_freqs {
+        // intern source gram frequencies
+        for freq_list in self.source_gram_frequencies.values() {
+            for entry in &freq_list.entries {
                 for atom in &entry.gram {
                     if let Atom::<String>::Tok(word) = atom {
                         rodeo.get_or_intern(&word.text);
@@ -2121,7 +2168,7 @@ impl ConsolidatedLanguageData {
         }
 
         // intern master gram frequencies
-        for entry in &self.gram_frequencies {
+        for entry in &self.gram_frequencies.entries {
             for atom in &entry.gram {
                 if let Atom::<String>::Tok(word) = atom {
                     rodeo.get_or_intern(&word.text);

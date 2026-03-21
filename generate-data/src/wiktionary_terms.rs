@@ -28,7 +28,7 @@ pub async fn ensure_multiword_terms_file(
         .await
         .context("Failed to get extra multiword terms")?;
     let banned_terms = match target_language {
-        Language::French => vec!["de le", "de les", "à le", "à les", "fait que"],
+        Language::French => vec!["de le", "de les", "à le", "à les", "fait que", "aller y"],
         Language::Spanish => vec!["de el", "a el"], // Spanish contractions that become "del" and "al"
         Language::English => vec!["me thinketh"],
         Language::Korean => vec![],
@@ -67,7 +67,7 @@ pub fn get_discontinuous_terms(course: &Course) -> BTreeSet<String> {
     let language_code = course.target_language.iso_639_3();
     let mut discontinuous = BTreeSet::new();
 
-    for suffix in ["extra_multiword_terms.txt", "extra_multiword_terms_ai.txt"] {
+    for suffix in ["extra_multiword_terms.txt"] {
         let path = format!("./generate-data/data/{language_code}/{suffix}");
         if let Ok(file) = File::open(Path::new(&path)) {
             let reader = BufReader::new(file);
@@ -93,21 +93,6 @@ async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>
     // Read manually curated extra multiword terms
     let manual_path = format!("./generate-data/data/{language_code}/extra_multiword_terms.txt");
     if let Ok(file) = File::open(Path::new(&manual_path)) {
-        let reader = BufReader::new(file);
-        for line in reader.lines() {
-            let line = line?.trim().to_string();
-            let line = line
-                .replace("...", "")
-                .replace("  ", " ")
-                .trim()
-                .to_string();
-            terms.push(line);
-        }
-    }
-
-    // Read AI-generated extra multiword terms
-    let ai_path = format!("./generate-data/data/{language_code}/extra_multiword_terms_ai.txt");
-    if let Ok(file) = File::open(Path::new(&ai_path)) {
         let reader = BufReader::new(file);
         for line in reader.lines() {
             let line = line?.trim().to_string();

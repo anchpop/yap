@@ -1,5 +1,5 @@
 use language_utils::{
-    Gram, GramFrequencyEntry, GramVocabEntry, SentenceGram, SentenceGrams, SentenceSource,
+    FrequencySourceId, Gram, GramFrequencyEntry, GramVocabEntry, SentenceGram, SentenceGrams,
 };
 use rustc_hash::FxHashMap;
 use std::cmp::Reverse;
@@ -24,52 +24,44 @@ pub fn write_gram_frequencies_file(
     Ok(())
 }
 
-/// Compute per-movie gram frequencies
-pub fn compute_movie_gram_frequencies(
+/// Compute per-source gram frequencies.
+///
+/// `sentence_to_sources` maps each sentence text to the set of source IDs it belongs to.
+pub fn compute_per_source_gram_frequencies(
     encoded_sentences: &[(String, SentenceGrams<Gram<String>>)],
-    sentence_sources: &[(String, SentenceSource)],
-    movie_ids: &[String],
+    sentence_to_sources: &FxHashMap<String, Vec<FrequencySourceId>>,
     gram_vocabulary: &[GramVocabEntry<String>],
-) -> FxHashMap<String, Vec<GramFrequencyEntry<String>>> {
-    // Build a map from sentence to movie IDs
-    let sentence_to_movies: FxHashMap<&str, Vec<&str>> = {
-        let mut map: FxHashMap<&str, Vec<&str>> = FxHashMap::default();
-        for (sentence, source) in sentence_sources {
-            if !source.movie_ids.is_empty() {
-                map.insert(
-                    sentence.as_str(),
-                    source.movie_ids.iter().map(|s| s.as_str()).collect(),
-                );
-            }
-        }
-        map
-    };
-
+) -> FxHashMap<FrequencySourceId, Vec<GramFrequencyEntry<String>>> {
     // Build a map from gram to its vocab entry for frequency lookup
     let gram_to_vocab: FxHashMap<&Gram<String>, &GramVocabEntry<String>> = gram_vocabulary
         .iter()
         .map(|entry| (&entry.atoms, entry))
         .collect();
 
-    let mut movie_gram_frequencies = FxHashMap::default();
+    // Collect all unique source IDs
+    let all_source_ids: HashSet<&FrequencySourceId> = sentence_to_sources
+        .values()
+        .flat_map(|ids| ids.iter())
+        .collect();
 
     println!(
-        "Computing per-movie gram frequencies for {} movies...",
-        movie_ids.len()
+        "Computing per-source gram frequencies for {} sources...",
+        all_source_ids.len()
     );
 
-    for movie_id in movie_ids {
-        // Count grams in sentences for this movie with weighted contributions
+    let mut result = FxHashMap::default();
+
+    for source_id in all_source_ids {
         let mut gram_counts: BTreeMap<Gram<String>, f32> = BTreeMap::new();
         let mut gram_actual_counts: BTreeMap<Gram<String>, u32> = BTreeMap::new();
 
         for (sentence, sentence_grams) in encoded_sentences {
-            // Check if this sentence is from this movie
-            if !sentence_to_movies
-                .get(sentence.as_str())
-                .map(|movie_ids| movie_ids.contains(&movie_id.as_str()))
-                .unwrap_or(false)
-            {
+            // Check if this sentence belongs to this source
+            let belongs = sentence_to_sources
+                .get(sentence)
+                .map(|ids| ids.contains(source_id))
+                .unwrap_or(false);
+            if !belongs {
                 continue;
             }
 
@@ -126,11 +118,11 @@ pub fn compute_movie_gram_frequencies(
         }
 
         if !freq_entries.is_empty() {
-            movie_gram_frequencies.insert(movie_id.clone(), freq_entries);
+            result.insert(source_id.clone(), freq_entries);
         }
     }
 
-    movie_gram_frequencies
+    result
 }
 
 /// Compute master gram frequencies from all encoded sentences.

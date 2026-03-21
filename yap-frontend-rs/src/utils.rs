@@ -165,7 +165,7 @@ pub async fn hit_ai_server(
 ) -> Result<fetch_happen::Response, fetch_happen::Error> {
     let client = fetch_happen::Client;
     let url = if cfg!(feature = "local-backend") {
-        "http://localhost:8080"
+        "http://localhost:21516"
     } else {
         "https://yap-ai-backend.fly.dev"
     };

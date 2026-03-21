@@ -52,13 +52,16 @@ Abou Simbel
 Académie française
 Action démocratique
 Action démocratique du Québec
+Acton Vale
 Addis-Abeba
+Afars et Issas
 Afrique de l'Ouest
 Afrique du Nord
 Afrique du Sud
 Afrique noire
 Afro-Eurasie
 Agneau de Dieu
+Ahuntsic-Cartierville
 Aigues-Juntes
 Aigues-Mortes
 Aigues-Vives
@@ -67,6 +70,8 @@ Aix-en-Provence
 Aix-la-Chapelle
 Albanie du Caucase
 Alexandre le Grand
+Algérie française
+Allahu akbar
 Allemagne de l'Est
 Allemagne de l'Ouest
 Alleyn-et-Cawood
@@ -116,6 +121,7 @@ Asie de l'Ouest
 Asie du Sud
 Asie du Sud-Est
 Asie mineure
+Asie-Pacifique
 Assemblée nationale
 Association européenne de libre-échange
 Assyro-Babylonie
@@ -135,6 +141,8 @@ BRAV-M
 Bade-Wurtemberg
 Bagnères-de-Luchon
 Baie-Comeau
+Baie-D'Urfé
+Baie-James
 Baie-Saint-Paul
 Baie-des-Chaloupes
 Baigts-de-Béarn
@@ -161,6 +169,7 @@ Baton Rouge
 Beauce-Centre
 Beauce-Sartigan
 Beauharnois-Salaberry
+Beaulieu-sur-Mer
 Beaumes-de-Venise
 Beaumont-le-Vicomte
 Beit Nouba
@@ -169,6 +178,7 @@ Belle Province
 Belle Vue
 Belle au bois dormant
 Belle de Mai
+Belle Époque
 Berlin-Ouest
 Bible hébraïque
 Big Apple
@@ -181,10 +191,11 @@ Blanche-Neige
 Bloc québécois
 Blue Sea
 Bois-Franc
+Bois-des-Filion
 Bois-le-Duc
-Bon Dieu
 Bon Samaritain
-Bon Thanksgiving
+Bonneuil-sur-Marne
+Bornéo du Nord
 Bosnie-Herzégovine
 Bosnie-et-Herzégovine
 Boubou Macoutes
@@ -202,13 +213,13 @@ Brinon-sur-Sauldre
 Britanno-Colombien
 Britanno-Colombienne
 Brome-Missisquoi
+Bry-sur-Marne
 Brétigny-sur-Orge
 Buenos Aires
 Buenos-Ayres
 Burkina Faso
 Bâle-Campagne
 Bâle-Ville
-C'est toi qui vois
 C.-B.
 CMA CGM
 COVID-19
@@ -225,11 +236,14 @@ Cap-Haïtien
 Cap-Vert
 Capitale-Nationale
 Carla-Bayle
+Carleton-sur-Mer
 Carole-Anne
 Caroline du Nord
 Caroline du Sud
 Cascades-Malignes
 Castel-Roussillon
+Castille-La Manche
+Castille-et-León
 Caucase du Nord
 Cavalaire-sur-Mer
 Centre-Asiatique
@@ -237,6 +251,7 @@ Centre-Val de Loire
 Centre-du-Québec
 Cette-Eygun
 Chambre des communes
+Champigny-sur-Marne
 Champs Perret
 Champs-sur-Marne
 Champs-Élysées
@@ -245,6 +260,7 @@ Chan-Yang
 Channel-Port aux Basques
 Chao-Chigne
 Charente-Maritime
+Charenton-le-Pont
 Charlevoix-Est
 Chaudière-Appalaches
 Chemin de Saint-Jacques
@@ -253,6 +269,7 @@ Chersonèse Taurique
 Chevelure de Bérénice
 Chine continentale
 Chine libre
+Choisy-le-Roi
 Chute-Saint-Philippe
 Chypre du Nord
 Château Roussillon
@@ -297,6 +314,7 @@ Courseulles-sur-Mer
 Covid-19
 Coët Prat
 Cram-Chaban
+Crans-Montana
 Crillon-le-Brave
 Cro-Magnon
 Croissant fertile
@@ -311,6 +329,7 @@ Cône Sud
 Côte d'Azur
 Côte d'Ivoire
 Côte d'Or
+Côte française des Somalis
 Côte-Nord
 Côte-d'Or
 Côtes-d'Armor
@@ -319,6 +338,7 @@ Cœlé-Syrie
 Da Silva
 Dame Nature
 Dampierre-le-Château
+De Entremont
 De Lesseps
 Des Cloizeaux
 Deux-Montagnes
@@ -333,6 +353,8 @@ Dieu soit loué
 Dieu-le-Père
 Dixie Alley
 Dol-de-Bretagne
+Dolbeau-Mistassini
+Dollard-des-Ormeaux
 Don Quichotte
 Douze Grandes Fêtes
 Duhamel-Ouest
@@ -343,9 +365,11 @@ Egan-Sud
 Emirats arabes unis
 Empereur-Dieu
 Empire byzantin
+Empire centrafricain
 Empire des Fleurs
 Empire du Milieu
 Empire ottoman
+Empire parthe
 Empire romain
 Empire romain d'Occident
 Empire romain d'Orient
@@ -399,7 +423,6 @@ Franche-Comté
 Franco-Ontarien
 Franco-Ontarienne
 Français de papier
-Français de souche
 French touch
 Frioul-Vénétie julienne
 Frobisher Bay
@@ -416,6 +439,7 @@ Gouverneure générale
 Grand Chelem
 Grand Chien
 Grand Colombier
+Grand Dérangement
 Grand Est
 Grand Isle
 Grand Lac Salé
@@ -435,10 +459,14 @@ Grande Bleue
 Grande Boucle
 Grande Comore
 Grande Dépression
+Grande Guerre
 Grande Ile
 Grande Muette
 Grande Muraille
+Grande Médie
+Grande Noirceur
 Grande Ourse
+Grande Peste
 Grande Russie
 Grande Île
 Grande-Bretagne
@@ -451,10 +479,12 @@ Grands Lacs
 Grecs du roi
 Grenier de Lascouinettes
 Grosse Pomme
+Grosses-Roches
 Grèce antique
-Guerre de Sept Ans
+Gréco-Bactrien
 Guerre de Trente Ans
 Guerre froide
+Guinée forestière
 Guinée équatoriale
 Guinée-Bissau
 Guyane française
@@ -488,14 +518,16 @@ Huang He
 Hunter's Point
 Hô-Chi-Minh-Ville
 I.-P.-E.
-Ici Houston
 Ille-et-Vilaine
 Ille-sur-Têt
 Immaculée Conception
+Indochine française
 Indre-et-Loire
 Inuit Nunangat
 Irlande du Nord
 Isles d'Hières
+Issy-les-Moulineaux
+Ivry-sur-Seine
 Ivry-sur-le-Lac
 J.-C.
 Jabreilles-les-Bordes
@@ -532,6 +564,7 @@ Jean-Étienne
 Jeux olympiques
 Jeux paralympiques
 Joli-Cœur
+Jos Bleau
 Jouars-Pontchartrain
 Jour J
 Journée du chandail orange
@@ -555,17 +588,20 @@ Kiang-Nan
 Kiang-Sou
 Kitigan Zibi
 Kouan-yin
+Kouang-Tchéou-Wan
 Kouang-Tong
 Kryvy Rih
 Kryvyï Rih
 Kuala Lumpur
 L'Ange-Gardien
+L'Anse Amour
 L'Haÿ-les-Roses
 L'Isle-aux-Allumettes
 L'Isle-sur-Sorgue
 L'Isle-sur-la-Sorgue
 L'Île-d'Orléans
 L'Île-du-Grand-Calumet
+La Baie
 La Bastide-de-Sérou
 La Canée
 La Cavalerie
@@ -585,9 +621,10 @@ La Haute-Gaspésie
 La Haute-Yamaska
 La Havane
 La Haye
+La Hontan
 La Jacques-Cartier
-La Joconde
 La Macaza
+La Malbaie
 La Matanie
 La Matapédia
 La Mecque
@@ -601,12 +638,14 @@ La Nouvelle-Beauce
 La Nouvelle-Ibérie
 La Nouvelle-Orléans
 La Nouvelle-Rochelle
+La Pocatière
 La Pêche
 La Reine
 La Rivière-du-Nord
 La Roche-sur-Yon
 La Rochefoucauld-en-Angoumois
 La Rochelle
+La Romaine
 La Sarre
 La Séguinière
 La Tour-du-Crieu
@@ -617,10 +656,10 @@ La Vallée-de-l'Or
 La Vallée-de-la-Gatineau
 La Vallée-du-Richelieu
 La Villette
-La question n'est pas là
 Lac Saint-Jean
 Lac-Akonapwehikan
 Lac-Bazinet
+Lac-Beauport
 Lac-Chicobi
 Lac-De La Bidière
 Lac-Despinassy
@@ -628,11 +667,13 @@ Lac-Douaire
 Lac-Dufault
 Lac-Duparquet
 Lac-Ernest
+Lac-Etchemin
 Lac-Granet
 Lac-Lenôtre
 Lac-Marguerite
 Lac-Metei
 Lac-Moselle
+Lac-Mégantic
 Lac-Nilgaut
 Lac-Oscar
 Lac-Pythonga
@@ -656,11 +697,13 @@ Laroque-de-Fa
 Lathus-Saint-Rémy
 Latulipe-et-Gaboury
 Laurel Canyon
+Laurier-Station
 Laverlochère-Angliers
 Le Beaucet
 Le Boulou
 Le Caire
 Le Cap
+Le Cateau-Cambrésis
 Le Classique
 Le Corre
 Le Domaine-du-Roy
@@ -706,6 +749,7 @@ Les Laurentides
 Les Maskoutains
 Les Milles
 Les Moulins
+Les Méchins
 Les Pays-d'en-Haut
 Les Sables
 Les Sables-d'Olonne
@@ -713,6 +757,7 @@ Les Sources
 Les Tarterêts
 Levallois-Perret
 Liberty City
+Ligue arabe
 Lochaber-Partie-Ouest
 Loir-et-Cher
 Loire-Atlantique
@@ -733,7 +778,6 @@ Madame Michu
 Madame Watanabe
 Mah-Jong
 Maine-et-Loire
-Mais ouais
 Maison Blanche
 Malemort-du-Comtat
 Malicorne-sur-Sarthe
@@ -819,6 +863,7 @@ Monte-Cristo
 Montesquieu-Avantès
 Montjoie-en-Couserans
 Montreux-Vieux
+Montréal-Est
 Montégut-Plantaurel
 Moose Jaw
 Morgane la fée
@@ -831,6 +876,8 @@ Mr Freeze
 Mulgrave-et-Derry
 Mère Araignée
 Mécanisme européen de stabilité
+Médie atropatienne
+Médie atropatène
 Ménétréol-sur-Sauldre
 Mérens-les-Vals
 N. D.
@@ -843,6 +890,8 @@ NP-complétude
 NP-difficile
 Nan-King
 Nations Unies
+Neuf-Brisach
+Neuilly-Plaisance
 Neuilly-sur-Seine
 Neuville-lès-Lœuilly
 New Rochelle
@@ -868,8 +917,10 @@ Nord-africain
 Nord-du-Québec
 Notre Dame
 Notre Dame de Noylhiac
+Notre Père
 Notre-Dame
 Notre-Dame-de-Bonsecours
+Notre-Dame-de-Lourdes
 Notre-Dame-de-Pontmain
 Notre-Dame-de-la-Paix
 Notre-Dame-de-la-Salette
@@ -898,19 +949,20 @@ Nouvelle-Zemble
 Nouvelle-Zélande
 Nouvelle-Écosse
 Noyal-Pontivy
+Noël au balcon, Pâques au tison
 Noël blanc
 Noël noir
 Nuages de Magellan
 Nuit des Longs Couteaux
 Néo-Brunswickois
 Néo-Brunswickoise
+Néo-Hittite
 Néo-Zélandais
 Néo-Zélandaise
 Néo-Écossais
 Néo-Écossaise
 Néris-les-Bains
 O. K.
-Oh Seigneur
 Oncle Sam
 Oost-Cappel
 Organisation des Nations Unies
@@ -931,6 +983,7 @@ P. M. U.
 P. Q.
 PE-BD
 PE-HD
+Palestine mandataire
 Palmyre du Nord
 Papouasie-Nouvelle-Guinée
 Paris de l'Orient
@@ -961,9 +1014,11 @@ Petite-Bretagne
 Petite-Forêt
 Petites Pyrénées
 Pierre le Grand
+Pierre, Jean, Jacques
 Pierre-De Saurel
 Pierre-Marie
 Pissevin-Valdegour
+Pointe-du-Lac
 Pointe-à-Pitre
 Poitou-Charentes
 Polynésie française
@@ -1031,6 +1086,7 @@ Riviera Maya
 Rivière-Héva
 Rivière-Ojima
 Rivière-Rouge
+Rivière-au-Renard
 Rivière-du-Loup
 Robin des Bois
 Rochefort-sur-Mer
@@ -1049,6 +1105,7 @@ Régime de Vichy
 République Démocratique du Congo
 République Française
 République algérienne démocratique et populaire
+République arabe sahraouie démocratique
 République arabe syrienne
 République centrafricaine
 République d'Afrique du Sud
@@ -1058,6 +1115,7 @@ République d'Orange
 République de Chine
 République de Corée
 République de Croatie
+République de Weimar
 République dominicaine
 République du Congo
 République démocratique allemande
@@ -1083,6 +1141,7 @@ S. V. P.
 Sa Majesté
 Sa Majesté impériale
 Saguenay–Lac-Saint-Jean
+Sahara espagnol
 Sahara occidental
 Saint Apollinaire
 Saint Beauzelly outre Gardon
@@ -1095,11 +1154,13 @@ Saint Marcelin
 Saint Onge
 Saint Sever de Rustan
 Saint-Aimé-du-Lac-des-Îles
+Saint-Albert
 Saint-André-Avellin
 Saint-Apollinaire
 Saint-Araille
 Saint-Augustin-de-Desmaures
 Saint-Barnabé
+Saint-Basile-le-Grand
 Saint-Bauzély
 Saint-Beauzély
 Saint-Blaise
@@ -1120,8 +1181,10 @@ Saint-Empire romain germanique
 Saint-Esprit
 Saint-Eugène-de-Guigues
 Saint-Eustache-sur-le-Lac
+Saint-Félicien
 Saint-Félix-Lauragais
 Saint-Félix-de-Dalquier
+Saint-Gabriel-de-Brandon
 Saint-Gall
 Saint-Gaudéric
 Saint-Gaudérique
@@ -1140,9 +1203,13 @@ Saint-Jean-de-Luz
 Saint-Jean-sur-Richelieu
 Saint-Joseph-de-Beauce
 Saint-Junien
+Saint-Jérôme
 Saint-Lambert
 Saint-Lambert-de-Lauzon
+Saint-Laurent
 Saint-Laurent-de-la-Salanque
+Saint-Lazare-de-Bellechasse
+Saint-Lin–Laurentides
 Saint-Lizier
 Saint-Lizier d'Ustou
 Saint-Louis
@@ -1200,14 +1267,19 @@ Sainte-Agathe-des-Monts
 Sainte-Anne-des-Monts
 Sainte-Anne-du-Lac
 Sainte-Barbe
+Sainte-Brigitte-de-Laval
+Sainte-Catherine-de-la-Jacques-Cartier
 Sainte-Flanelle
 Sainte-Geneviève-des-Bois
 Sainte-Germaine-Boulé
 Sainte-Gertrude-Manneville
 Sainte-Hélène
 Sainte-Hélène-de-Mancebourg
+Sainte-Julie
 Sainte-Lucie
 Sainte-Lucie-des-Laurentides
+Sainte-Marthe-sur-le-Lac
+Sainte-Thérèse
 Sainte-Thérèse-de-la-Gatineau
 Salaberry-de-Valleyfield
 Salies-du-Salat
@@ -1284,6 +1356,7 @@ Sésame, ouvre-toi
 Sûreté du Québec
 T-shirt
 T.-N.
+T.N.-O.
 Talmud de Babylone
 Talmud de Jérusalem
 Tarascon-sur-Ariège
@@ -1293,6 +1366,7 @@ Tchoung King
 Tel Aviv-Jaffa
 Terre Sainte
 Terre de Feu
+Terre de Rupert
 Terre des Fleurs
 Terre-Neuve
 Terre-Neuve-et-Labrador
@@ -1301,7 +1375,9 @@ Terre-Neuvien-et-Labradorien
 Terre-Neuvienne
 Terre-Neuvienne-et-Labradorienne
 Territoire de Belfort
+Territoire français des Afars et des Issas
 Territoires du Nord-Ouest
+Thetford Mines
 Thérèse-De Blainville
 Tigres tamouls
 Timor oriental
@@ -1333,6 +1409,7 @@ Ultima Thule
 Ultima Thulé
 Ultime Thule
 Ultime Thulé
+Unamen Shipu
 Union africaine
 Union des républiques socialistes soviétiques
 Union eurasiatique
@@ -1354,6 +1431,7 @@ Val-de-Marne
 Val-des-Bois
 Val-des-Lacs
 Val-des-Monts
+Val-des-Sources
 Val-du-Faby
 Vallée d'Aoste
 Vallée des rois
@@ -1367,6 +1445,7 @@ Vel' d'Hiv'
 Vierge Marie
 Viet Nam
 Vieux Continent
+Vieux-Brisach
 Vieux-Fort
 Village Shaughnessy
 Village-Neuf
@@ -1395,6 +1474,7 @@ W.-E.
 Wallis et Futuna
 Wallis-et-Futuna
 Wervicq-Sud
+Wi-Fi
 Yang Tse Kiang
 Yang-King-Pang
 Yang-Tsze-Kiang
@@ -1409,12 +1489,14 @@ a capella
 a cappella
 a contrario
 a divinis
+a dû
 a fortiori
 a giorno
 a latere
 a posteriori
 a priori
 a tempo
+a un sens
 abaisse-langue
 abandon scolaire
 abandonner à son sort
@@ -1489,6 +1571,7 @@ acide adénylique
 acide aminé
 acide anisique
 acide antimonique
+acide arachidonique
 acide arachique
 acide ascorbique
 acide aspartique
@@ -1611,6 +1694,7 @@ acide naphtalénique
 acide narcotinique
 acide nervonique
 acide nitranilique
+acide nitreux
 acide nitrique
 acide nucléique
 acide octacosanoïque
@@ -1702,6 +1786,7 @@ acier inoxydable
 acolyte des illustres
 acore odorant
 acte d'accusation
+acte de contrition
 acte de décès
 acte de foi
 acte de guerre
@@ -1732,7 +1817,6 @@ adverbe interrogatif
 advienne que pourra
 adénosine triphosphate
 affaire d'État
-affaire de coeur
 affaire de cœur
 affaire de vie ou de mort
 affaires courantes
@@ -1755,9 +1839,12 @@ agence de voyages
 agenda de ministre
 agent d'assurance
 agent d'entretien
+agent d'influence
+agent de bord
 agent de change
 agent de liaison
 agent de maîtrise
+agent de police
 agent de quartier
 agent de sécurité
 agent double
@@ -1767,6 +1854,7 @@ agent provocateur
 agent secret
 agent triple
 agent économique
+agente de bord
 agente provocatrice
 aggraver son cas
 agiter le chiffon rouge
@@ -1796,6 +1884,7 @@ aiguille des secondes
 aiguille à tricoter
 aiguillette baronne
 aiguilleur du ciel
+aiguise-crayon
 ail des ours
 ail sauvage
 aileron avant
@@ -1818,6 +1907,7 @@ aire de distribution
 aire de jeux
 aire de lancement
 aire de repos
+aire de restauration
 aire de répartition
 aire urbaine
 ajonc de Le Gall
@@ -1825,7 +1915,9 @@ ajonc de Provence
 ajonc nain
 ajouter foi
 ajouter une corde à son arc
+al-Andalus
 al-Kanadi
+alarme incendie
 album live
 album studio
 alchimille des champs
@@ -1843,14 +1935,13 @@ aller au ciel
 aller au lit
 aller aux nouvelles
 aller aux putes
-aller avec
 aller bon train
 aller chercher
 aller comme un gant
 aller de l'avant
 aller de pair
+aller de pair avec
 aller de soi
-aller donc
 aller droit au cœur
 aller droit dans le mur
 aller et venir
@@ -1871,16 +1962,14 @@ aller son petit bonhomme de chemin
 aller tout seul
 aller trop loin
 aller vite en besogne
-aller voir
 aller voir ailleurs
-aller y
 aller à Canossa
 aller à dame
+aller à l'encontre de
 aller à l'essentiel
 aller à vau-l'eau
 aller-retour
 allez savoir
-allez va
 allez voir là-bas si j'y suis
 allez vous faire foutre
 allez-y
@@ -2141,6 +2230,7 @@ arc-en-ciel
 arcade sourcilière
 arche de Noé
 archer cracheur
+archipel d'Hochelaga
 archipel de San Blas
 architecte d'intérieur
 architecture d'intérieur
@@ -2177,6 +2267,7 @@ arracher la gueule
 arracher les mots de la bouche
 arracheur de dents
 arranger les bidons
+arrangé avec le gars des vues
 arriver après la bataille
 arriver comme les carabiniers
 arriver à
@@ -2267,6 +2358,7 @@ artillerie lourde
 artillerie légère
 arts de la scène
 arts du spectacle
+artère fémorale
 artère subclavière
 as de la gâchette
 as des as
@@ -2278,7 +2370,6 @@ asile de fous
 asile politique
 asphodèle blanc
 assemblée générale
-assez parlé
 assiette anglaise
 assignation à résidence
 assigner à résidence
@@ -2287,6 +2378,7 @@ assimilation régressive
 assistance médicale à la procréation
 assistance publique
 assistant numérique personnel
+assistante maternelle
 association caritative
 association libre
 association sans but lucratif
@@ -2307,6 +2399,7 @@ assurance-vie
 assurer ses arrières
 assyro-babylonien
 astre de la nuit
+astre des nuits
 astre du jour
 atelier de misère
 athlètes olympiques de Russie
@@ -2331,12 +2424,10 @@ attendre le déluge
 attendre son heure
 attendre sous l'orme
 attendre un heureux événement
-attendre voir
 attendu que
 attentat à la pudeur
 attentat-suicide
 attention les yeux
-attention à
 attirer l'attention
 attracteur étrange
 attrape-couillon
@@ -2353,7 +2444,7 @@ au beau fixe
 au beau milieu de
 au berceau
 au besoin
-au bon moment
+au black
 au bord de
 au bord du gouffre
 au boulot
@@ -2406,6 +2497,7 @@ au fond
 au fond de
 au four
 au fur et à mesure
+au fur et à mesure que
 au galop
 au goût de
 au goût du jour
@@ -2513,7 +2605,6 @@ au total
 au train où vont les choses
 au travail
 au travers de
-au téléphone
 au violon
 au vol
 au volant
@@ -2544,6 +2635,8 @@ aulne poisseux
 auprès de
 auquel cas
 aurore boréale
+aurore polaire
+aussi bien
 aussi non
 aussi sec
 aussitôt dit, aussitôt fait
@@ -2569,6 +2662,8 @@ auto-entrepreneur
 auto-entreprise
 auto-intoxication
 auto-mobile
+auto-patrouille
+auto-persuasion
 auto-référence
 auto-sacrifice
 auto-stop
@@ -2615,6 +2710,7 @@ aux portes de la mort
 aux trousses
 aux yeux de
 av. J.-C.
+av. n. è.
 avaler son extrait de naissance
 avaler tout rond
 avaler une couleuvre
@@ -2673,10 +2769,10 @@ avec les moyens du bord
 avec ma bite et mon couteau
 avec pas de
 avec plaisir
-avec raison
 avec tambour et trompette
 avec tout le respect que je vous dois
 avec toute la bonne volonté du monde
+avertissement préventif
 aveuglement volontaire
 avez-vous besoin d'aide
 avez-vous des frères et sœurs
@@ -2743,6 +2839,7 @@ avoir deux de tension
 avoir deux mains gauches
 avoir droit
 avoir droit de cité
+avoir droit à
 avoir du biceps
 avoir du bol
 avoir du bon
@@ -2750,6 +2847,7 @@ avoir du chien
 avoir du cul
 avoir du cœur au ventre
 avoir du mal
+avoir du mal à
 avoir du monde au balcon
 avoir du métier
 avoir du pain sur la planche
@@ -2762,6 +2860,7 @@ avoir en horreur
 avoir en travers de la gorge
 avoir en tête
 avoir envie
+avoir envie de
 avoir faim
 avoir fait son temps
 avoir foi
@@ -2772,8 +2871,11 @@ avoir gardé les cochons ensemble
 avoir honte
 avoir horreur
 avoir hâte
+avoir hâte de
 avoir intérêt
+avoir intérêt à
 avoir l'air
+avoir l'air de
 avoir l'alcool triste
 avoir l'esprit ailleurs
 avoir l'esprit mal tourné
@@ -2802,6 +2904,7 @@ avoir la gâchette facile
 avoir la haine
 avoir la langue bien pendue
 avoir la larme à l'œil
+avoir la main heureuse
 avoir la main leste
 avoir la main lourde
 avoir la main verte
@@ -2815,6 +2918,7 @@ avoir la peau dure
 avoir la pelote à terre
 avoir la poisse
 avoir la pêche
+avoir la ref
 avoir la science infuse
 avoir la tête ailleurs
 avoir la tête comme un seau
@@ -2878,7 +2982,6 @@ avoir les foies
 avoir les grelots
 avoir les jambes en coton
 avoir les jetons
-avoir les mains baladeuses
 avoir les mains liées
 avoir les mains moites et les pieds poites
 avoir les nerfs à vif
@@ -2901,6 +3004,7 @@ avoir partie gagnée
 avoir peur
 avoir pied
 avoir pignon sur rue
+avoir piscine
 avoir pitié
 avoir plus d'un tour dans son sac
 avoir plus d'une corde à son arc
@@ -2927,7 +3031,6 @@ avoir sur les bras
 avoir table ouverte
 avoir tort
 avoir tout pour soi
-avoir tout son temps
 avoir toute honte bue
 avoir toute sa tête
 avoir trait à
@@ -2980,6 +3083,8 @@ axe de symétrie
 axe des x
 axe des y
 axe des z
+axe paradigmatique
+axe syntagmatique
 ayant droit
 azote liquide
 aéro-car
@@ -3002,9 +3107,12 @@ baguette de coudrier
 baguette de direction
 baguette de sourcier
 baguette magique
+baie James
 baie de Guanabara
 baie de genièvre
 baie de genévrier
+baie des Cochons
+baie des Puants
 baie vitrée
 bailleur de fonds
 bailleur social
@@ -3016,6 +3124,7 @@ bain de minuit
 bain de pieds
 bain de sang
 bain de soleil
+bain de vapeur
 bain tourbillon
 bain turc
 bain-douche
@@ -3107,11 +3216,14 @@ bander comme un taureau
 bander comme un âne
 bandit de grand chemin
 bandit manchot
+banked slalom
 banque centrale
 banque d'affaires
 banque d'investissement
+banque de sperme
 banque du sang
 banque universelle
+banquette arrière
 banquette de tir
 baptême du feu
 bar commun
@@ -3127,6 +3239,7 @@ baroud d'honneur
 barre d'espace
 barre d'outils
 barre de fraction
+barre de menu
 barre de mesure
 barre de recherche
 barre de reprise
@@ -3163,22 +3276,27 @@ bas relief
 bas résille
 bas à jour
 bas-bleu
+bas-culotte
 bas-côté
 bas-fond
 bas-latin
 bas-mât
 bas-relief
 bas-ventre
+base aérienne
+base d'aviation
 base de données
 base de données relationnelle
 base-ball
 base-sur-balles
 basket-ball
+basse chiffrée
 basse continue
 basse saison
 basse-cour
 basse-courier
 basse-courière
+basse-fosse
 basse-taille
 basse-terrien
 bassin versant
@@ -3190,11 +3308,13 @@ batara luisant
 bateau de plaisance
 bateau pilote
 bateau à vapeur
+bateau-citerne
 bateau-feu
 bateau-lavoir
 bateau-mouche
 bateau-phare
 bateau-pilote
+bateau-pompe
 battre de l'aile
 battre des ailes
 battre en brèche
@@ -3215,7 +3335,6 @@ bavard comme une pie
 bayer aux corneilles
 be-bop
 beach volley
-beau boulot
 beau comme le jour
 beau comme un cœur
 beau comme un dieu
@@ -3225,7 +3344,6 @@ beau monde
 beau parleur
 beau rôle
 beau sexe
-beau travail
 beau-dabe
 beau-fils
 beau-frère
@@ -3274,8 +3392,8 @@ belle-soeur
 belle-sœur
 belle-âge
 belles-lettres
-ben alors
 ben voyons
+benne à ordures
 berger allemand
 berger australien
 bernache du Canada
@@ -3291,9 +3409,11 @@ beurre clarifié
 beurre corporel
 beurre d'arachide
 beurre d'arachides
+beurre de cacahouète
 beurre de cacahuète
 beurre de cacao
 beurre de karité
+beurre de pinottes
 beurre de tourage
 beurre noir
 beurre sec
@@ -3302,6 +3422,7 @@ bi-curieux
 biais cognitif
 biais de confirmation
 biais de sélection
+biais des survivants
 bicarbonate de soude
 bichon maltais
 bichon à poil frisé
@@ -3316,6 +3437,7 @@ bien de consommation
 bien de production
 bien dit
 bien en chair
+bien en cour
 bien entendu
 bien essayé
 bien fait
@@ -3374,6 +3496,7 @@ binocles-ciseaux
 biologie du développement
 biscuit chinois
 biscuit sablé
+biscuit soda
 bison d'Amérique
 bison d'Europe
 bisphénol A
@@ -3434,8 +3557,10 @@ bleu pétrole
 bleu, blanc et rouge
 bleu-bite
 bleu-bitte
+bloc de brouillon
 bloc de béton
 bloc de départ
+bloc de l'Est
 bloc moteur
 bloc noir
 bloc opératoire
@@ -3464,6 +3589,7 @@ boire la tasse
 boire le calice jusqu'à la lie
 boire le vin de l'étrier
 boire les paroles
+boire un coup
 boire à sa soif
 bois d'aigle
 bois d'ébène
@@ -3506,7 +3632,6 @@ bombyx du mûrier
 bombyx laineux
 bombyx neustrien
 bon Dieu
-bon alors
 bon an mal an
 bon an, mal an
 bon anniversaire
@@ -3516,6 +3641,7 @@ bon appétit
 bon après-midi
 bon chic bon genre
 bon comme le bon pain
+bon comme le pain
 bon comme le pain blanc
 bon courage
 bon d'achat
@@ -3614,6 +3740,7 @@ borne-abreuvoir
 borne-fontaine
 boson de Higgs
 botte secrète
+botte à botte
 botter en touche
 botter le cul
 botter les fesses
@@ -3642,6 +3769,8 @@ boudin noir
 boue rouge
 bouffe de rue
 bouffer du curé
+bouffer la chatte
+bouffer la minette
 bouffer les pissenlits par la racine
 bouffée d'air frais
 bouffée d'oxygène
@@ -3669,6 +3798,7 @@ boule à thé
 boule à zéro
 boule-de-neige
 boulet de canon
+boulevard urbain
 boulier compteur
 bouquet garni
 bouquet parfait
@@ -3684,8 +3814,10 @@ bourse d'excellence
 bourse d'étude
 bourse d'études
 bourse-à-pasteur
+bout chaud
 bout de chou
 bout du monde
+bout froid
 bout à bout
 boute-en-train
 bouteille de Klein
@@ -3724,9 +3856,11 @@ boîte manuelle
 boîte noire
 boîte postale
 boîte vocale
+boîte à caca
 boîte à camembert
 boîte à cigare
 boîte à gants
+boîte à lait
 boîte à musique
 boîte à onglets
 boîte à outils
@@ -3770,6 +3904,7 @@ briseuse de grève
 britanno-colombien
 bromure de sodium
 broncho-pneumonie
+bronchopneumopathie chronique obstructive
 brosse de toilettes
 brosse à cheveux
 brosse à dents
@@ -3781,6 +3916,7 @@ broute-minou
 broyer du noir
 bruit de couloir
 bruit de fond
+bruits de bottes
 brunelle à feuilles hastées
 brut de décoffrage
 brûle-gueule
@@ -3800,6 +3936,7 @@ bugle petit-pin
 bull terrier
 bull-finch
 bull-terrier
+bulletin de confession
 bulletin de paie
 bulletin de salaire
 bulletin de vote
@@ -3824,8 +3961,10 @@ bâiller comme une carpe
 bâtiment précieux
 bâtir des châteaux en Espagne
 bâtir des plans sur la comète
+bâtir à chaux et à sable
 bâton de chaise
 bâton de comptage
+bâton de vieillesse
 bâton-du-diable
 bébé Cadum
 bébé éprouvette
@@ -3919,7 +4058,6 @@ c'est parti, mon kiki
 c'est pas de refus
 c'est pas demain la veille
 c'est pas pour dire
-c'est plus fort que moi
 c'est pour un ami
 c'est pourquoi
 c'est quand le jeu devient dur que les durs commencent à jouer
@@ -3937,6 +4075,8 @@ c'est-ce
 c'est-à-dire
 c'était le bon temps
 c.-à-d.
+cabane à caca
+cabane à sucre
 cabernet sauvignon
 cabine d'essayage
 cabine de douche
@@ -3962,6 +4102,7 @@ cacher son jeu
 cadavre exquis
 cadeau du ciel
 cadeau empoisonné
+cadence rompue
 cadet des soucis de
 cadrage satellitaire
 cadrage verbal
@@ -3988,6 +4129,7 @@ cage d'escalier
 cage de chasteté
 cage dorée
 cage thoracique
+cage à lapins
 cagoules noires
 cahier de textes
 cahier des charges
@@ -4033,6 +4175,7 @@ calotte glaciaire
 calumet de la paix
 camion autonome
 camion benne
+camion de déménagement
 camion plateau
 camion poubelle
 camion-balai
@@ -4126,6 +4269,7 @@ carnet de chèques
 carnet de commandes
 carnet de textes
 carottes Vichy
+carrefour giratoire
 carrer dans l'oignon
 carré d'agneau
 carré latin
@@ -4167,6 +4311,7 @@ carton jaune
 carton rouge
 carton-pierre
 cas d'espèce
+cas d'utilisation
 cas d'école
 cas de conscience
 cas de figure
@@ -4235,6 +4380,7 @@ ce avec quoi
 ce chez quoi
 ce contre quoi
 ce dans quoi
+ce disant
 ce dont
 ce dont il s'agit
 ce envers lequel
@@ -4262,7 +4408,6 @@ ce qui
 ce qui est fait est fait
 ce qui est fait n'est plus à faire
 ce qui ne tue pas rend plus fort
-ce soir
 ce sur quoi
 ce à quoi
 ce à quoi je pense
@@ -4284,6 +4429,8 @@ cela dit
 cela fait zir
 cela m'en touche une sans faire bouger l'autre
 cela s'entend
+cela va de soi
+cela va sans dire
 cela étant
 cela étant dit
 cellule de dégrisement
@@ -4314,6 +4461,7 @@ centre de profits
 centre de réflexion
 centre-asiatique
 centre-ville
+cercle antarctique
 cercle d'amis
 cercle de réflexion
 cercle familial
@@ -4430,6 +4578,7 @@ chanter la pomme
 chanter les louanges
 chanterelle orangée
 chantier naval
+chanvre de Manille
 chapeau bas
 chapeau claque
 chapeau de fer
@@ -4471,6 +4620,7 @@ chargé d'affaires
 chargé de clientèle
 chargé de communication
 chargé de cours
+chariot à mât rétractable
 chariot élévateur
 charité bien ordonnée commence par soi-même
 charme commun
@@ -4516,6 +4666,7 @@ chat sauvage d'Europe
 chat sauvage européen
 chat sylvestre
 chat à neuf queues
+chat à tête plate
 chat échaudé craint l'eau froide
 chat-chouage
 chat-garou
@@ -4588,6 +4739,7 @@ chemin de Damas
 chemin de croix
 chemin de fer
 chemin de halage
+chemin de ronde
 chemin de terre
 chemin des écoliers
 chemin faisant
@@ -4641,7 +4793,6 @@ chevillé au corps
 chevêche des terriers
 chevêchette d'Europe
 chewing-gum
-chez nous
 chez soi
 chez-soi
 chiant comme la pluie
@@ -4667,6 +4818,7 @@ chien qui aboie ne mord pas
 chien tayau
 chien à perdrix
 chien-garou
+chien-loup
 chienne de prairie
 chiens écrasés
 chier comme tout le monde
@@ -4693,6 +4845,7 @@ chirurgie esthétique
 chirurgie plastique
 chirurgien plasticien
 chirurgien-dentiste
+chlorure de baryum
 chlorure de calcium
 chlorure de potassium
 chlorure de sodium
@@ -4701,6 +4854,7 @@ choc culturel
 choc pétrolier
 choc septique
 choc terminal
+chocolat Dubaï
 chocolat au lait
 chocolat blanc
 chocolat chaud
@@ -4769,6 +4923,8 @@ chêne tauzin
 chêne vert
 chêne zéen
 chêne-liège
+chômage conjoncturel
+chômage frictionnel
 chômage partiel
 chômage structurel
 chômage technique
@@ -4813,6 +4969,7 @@ cinquante-troisième
 cinquième roue du carrosse
 ciné-club
 ciné-parc
+cinéma bis
 cinéma d'auteur
 circaète jean-le-blanc
 circonstance aggravante
@@ -4836,6 +4993,7 @@ citoyen du monde
 citoyen-soldat
 citrinelle de Californie
 citron vert
+citrouille-lanterne
 cité phocéenne
 cité universitaire
 cité-dortoir
@@ -4874,6 +5032,9 @@ classe statique
 classe verte
 classe wrapper
 classe économique
+clause du grand-père
+clause grand-père
+clavier virtuel
 clef d'ut
 clef de bras
 clef de fa
@@ -4959,6 +5120,7 @@ coin-coin
 coincer la bulle
 coincé du cul
 coitus interruptus
+col Claudine
 col Danton
 col Mao
 col de l'utérus
@@ -4966,6 +5128,7 @@ col du fémur
 col romain
 col roulé
 col utérin
+cold-cream
 colin d'Alaska
 colin-maillard
 colin-tampon
@@ -5000,6 +5163,7 @@ combattre le mal par le mal
 combien ça coûte
 combiné nordique
 comble de malheur
+comice agricole
 coming out
 comique de répétition
 comique de situation
@@ -5012,7 +5176,6 @@ commandant de bord
 commandant en chef
 commandante en chef
 comme c'est pas permis
-comme cela
 comme chien et chat
 comme ci comme ça
 comme ci, comme ça
@@ -5078,13 +5241,11 @@ comme ça
 comment allez-vous
 comment cela
 comment donc
-comment déjà
 comment les cannes sont
 comment les zaricos
 comment sont les haricots
 comment sont les z-haricots
 comment sont les zaricos
-comment va
 comment vas-tu
 comment ça
 comment ça plume
@@ -5382,6 +5543,7 @@ corps et biens
 corps et âme
 corps fini
 corps franc
+corps gras
 corps pur
 corps simple
 corps social
@@ -5512,13 +5674,16 @@ coup droit
 coup du chapeau
 coup du lapin
 coup du sort
+coup en flèche
 coup forcé
 coup fourré
 coup franc
 coup monté
 coup sur coup
 coup sûr
+coup turc
 coupe au bol
+coupe chou
 coupe choux
 coupe claire
 coupe de la ligue
@@ -5530,6 +5695,8 @@ coupe sombre
 coupe-bordure
 coupe-boulons
 coupe-bourse
+coupe-chou
+coupe-choux
 coupe-cigare
 coupe-coupe
 coupe-faim
@@ -5554,6 +5721,7 @@ couper les ailes
 couper les cheveux en quatre
 couper les ponts
 couper les vivres
+couple produit-marché
 coups et blessures
 coupure de Dedekind
 coupure de courant
@@ -5588,16 +5756,20 @@ courbe elliptique
 courbe logistique
 courber l'échine
 coureur de dot
+coureur de fond
 coureur de jupons
+coureuse de fond
 courez-venez
 courir après
 courir comme un dératé
+courir comme un lapin
 courir la galipote
 courir la gueuse
 courir la prétentaine
 courir le cotillon
 courir le guilledou
 courir le risque
+courir le risque de
 courir les filles
 courir les jupons
 courir les rues
@@ -5661,6 +5833,7 @@ couteau à palette
 couteau à poisson
 couteau à tartiner
 couteau à viande
+couverture chauffante
 couvre-chef
 couvre-feu
 couvre-visage
@@ -5704,6 +5877,7 @@ crapaudine à feuilles d'hysope
 craqueur catalytique
 cravate de notaire
 crayon de couleur
+crazy carpet
 cresson alénois
 cresson de fontaine
 creuser sa tombe
@@ -5763,7 +5937,6 @@ croche-pied
 crocodile marin
 croire dur comme fer
 croire sur parole
-croire à
 croiser le fer
 croiser les doigts
 croisette glabre
@@ -5788,6 +5961,7 @@ crosse de fougère
 crotte de nez
 croyance limitante
 croyez-le ou non
+cryptographie quantique
 crâne d'œuf
 crème anglaise
 crème brulée
@@ -5848,7 +6022,9 @@ cuillère à table
 cuillère à thé
 cuillère à œuf
 cuir chevelu
+cuisine américaine
 cuisine de rue
+cuisine fantôme
 cuisine interne
 cuisse de grenouille
 cul par-dessus tête
@@ -5856,6 +6032,7 @@ cul sec
 cul-béni
 cul-bénit
 cul-cul
+cul-de-basse-fosse
 cul-de-jatte
 cul-de-poule
 cul-de-sac
@@ -5888,6 +6065,7 @@ câble coaxial
 câble de démarrage
 cèdre de l'Atlas
 cécité nocturne
+céder aux sirènes
 céder la parole
 céder le pas
 cédez-le-passage
@@ -5912,7 +6090,6 @@ cœur de métier
 cœur de pierre
 cœur à l'ouvrage
 cœur à prendre
-c’est bon
 c’est carré comme en Corée
 d'abord et avant tout
 d'abord que
@@ -5947,9 +6124,11 @@ d'un poil
 d'un seul coup
 d'un seul tenant
 d'une façon ou d'une autre
+d'une haleine
 d'une main de maître
 d'une manière ou d'une autre
 d'une minute à l'autre
+d'une part
 d'une seule traite
 d'une seule voix
 d'une traite
@@ -6067,6 +6246,7 @@ danse du ventre
 danse macabre
 danseur noble
 dare-dare
+dark kitchen
 data scientifique
 date butoir
 date de naissance
@@ -6084,6 +6264,7 @@ de Brienne
 de Broglie
 de Chardin
 de Charybde en Scylla
+de Entremont
 de Fourcroy
 de Grasse
 de Grèce
@@ -6093,6 +6274,7 @@ de Lubac
 de Pourtalès
 de Stafford
 de Villiers
+de bac à sable
 de bas en haut
 de bas étage
 de base
@@ -6117,6 +6299,7 @@ de but en blanc
 de bz
 de cape et d'épée
 de caractère
+de ce côté-là
 de ce fait
 de ce pas
 de cette façon
@@ -6184,15 +6367,18 @@ de la bonne
 de la dernière chance
 de la dernière heure
 de la fesse gauche
+de la main à la main
 de la mort qui tue
 de la onzième heure
 de la part de
 de la pire espèce
 de la première heure
+de la religion
 de la sorte
 de la tête aux pieds
 de leur côté
 de loin
+de loin en loin
 de long en large
 de longtemps
 de longue date
@@ -6237,7 +6423,6 @@ de parole
 de part en part
 de part et d'autre
 de passage
-de peu
 de peur que
 de pied en cap
 de pied ferme
@@ -6301,6 +6486,7 @@ de taille
 de temps en temps
 de temps à autre
 de toujours
+de tous bords
 de tous côtés
 de tous les diables
 de tous les instants
@@ -6336,7 +6522,6 @@ degré plein
 degré zéro
 demain est un autre jour
 demande en mariage
-demander
 demander conseil
 demander en mariage
 demander l'impossible
@@ -6413,21 +6598,21 @@ dento-facial
 dents du bonheur
 depuis A jusqu'à Z
 depuis le temps
-depuis longtemps
 depuis lors
 depuis peu
-depuis quand
 depuis que
 depuis que le monde est monde
 depuis toujours
 der des ders
+dermatose nodulaire contagieuse
 dernier cri
 dernier en date
 dernier mot
+dernier souffle
+dernier soupir
 dernier-né
 dernière demeure
 dernière ligne droite
-dernière minute
 dernière-née
 derrière les barreaux
 derviche tourneur
@@ -6443,6 +6628,7 @@ descendre dans l'arène
 descente aux enfers
 descente de lit
 despotisme éclairé
+dessein intelligent
 desselle-toi que je te monte
 dessin animé
 dessin assisté par ordinateur
@@ -6459,7 +6645,6 @@ deux cents
 deux de tension
 deux ou trois
 deux paires
-deux par deux
 deux poids et deux mesures
 deux poids, deux mesures
 deux points
@@ -6481,6 +6666,7 @@ devant l'Éternel
 devant l'éternel
 devenir chèvre
 devine quoi
+devoir conjugal
 devoir de diligence
 devoir de mémoire
 devoir sur table
@@ -6502,6 +6688,7 @@ dictionnaire visuel
 dictée musicale
 dieu du ciel
 dieux du ciel
+diffusion en continu
 digne de ce nom
 digne de foi
 digue-digue
@@ -6521,7 +6708,6 @@ dire quelque chose
 dire quoi
 dire ses quatre vérités
 dire tantôt blanc, tantôt noir
-dire toujours
 dire tout et son contraire
 directeur artistique
 directeur commercial
@@ -6553,6 +6739,7 @@ distance de freinage
 distance focale
 distance matrimoniale
 distanciation sociale
+distributeur automatique de billets
 distributeur de billets
 distribution complémentaire
 dites donc
@@ -6615,6 +6802,7 @@ donner et retenir ne vaut
 donner foi
 donner l'assaut
 donner l'exemple
+donner l'éveil
 donner la main
 donner la parole
 donner la réplique
@@ -6630,16 +6818,21 @@ donner le ton
 donner lecture
 donner libre cours
 donner lieu
+donner lieu à
 donner naissance
 donner prise
 donner raison
+donner raison à
 donner sa langue au chat
 donner sa main à couper
 donner sa parole
 donner son corps à la science
 donner suite
+donner suite à
 donner sur
 donner tort
+donner tort à
+donner un coup de canif dans le contrat
 donner une leçon
 donneur d'ordre
 donneur d'organes
@@ -6660,6 +6853,7 @@ dormir sous les ponts
 dormir sur ses deux oreilles
 dormir à poings fermés
 dorso-ventral
+dorénavant
 dos crawlé
 dos d'âne
 dos à dos
@@ -6727,6 +6921,7 @@ droit d'accise
 droit d'asile
 droit d'aubaine
 droit d'auteur
+droit dans ses bottes
 droit de conquête
 droit de cuissage
 droit de douane
@@ -6735,6 +6930,7 @@ droit de l'homme
 droit de la famille
 droit de la guerre
 droit de passage
+droit de regard
 droit de vote
 droit des affaires
 droit des gens
@@ -6789,6 +6985,7 @@ du dernier chic
 du diable
 du dimanche
 du fait de
+du fait que
 du feu de Dieu
 du fil à retordre
 du fond du cœur
@@ -6862,8 +7059,11 @@ décrocher la lune
 décrocher la timbale
 défaillance de marché
 défaillance du marché
+défendre la veuve et l'orphelin
 défilé de mode
+déformation plastique
 déformation professionnelle
+déformation élastique
 défrayer la chronique
 dégât collatéral
 dégât d'eau
@@ -6929,6 +7129,7 @@ désespoir du singe
 déshabiller Paul pour habiller Jean
 déshabiller Pierre pour habiller Paul
 désobéissance civile
+désormais
 détecteur de mensonges
 détecteur de métaux
 détective privé
@@ -6938,6 +7139,7 @@ déterminant possessif
 déterrer la hache de guerre
 détournement de fonds
 détournement de mineur
+détroit d'Ormuz
 détroit de Béring
 détroit de Gibraltar
 détroit de Magellan
@@ -7056,6 +7258,7 @@ en avant toute
 en avant, marche
 en avoir après
 en avoir assez
+en avoir contre
 en avoir dans le ventre
 en avoir gros sur la patate
 en avoir gros sur le cœur
@@ -7068,6 +7271,7 @@ en avoir plein le dos
 en avoir plein les bottes
 en avoir plein les couilles
 en avoir plus qu'assez
+en avoir pour
 en avoir pour son argent
 en avoir ras la casquette
 en avoir ras le bol
@@ -7076,6 +7280,7 @@ en avoir ras-le-bol
 en avoir sa claque
 en avoir sa dose
 en avoir soupé
+en avoir sous la pédale
 en avoir sous le capot
 en avoir vu d'autres
 en avril ne te découvre pas d'un fil, en mai fais ce qu'il te plaît
@@ -7091,6 +7296,7 @@ en berne
 en bien
 en bon père de famille
 en bonne et due forme
+en bonne intelligence
 en bonne part
 en bonne règle
 en bonne voie
@@ -7131,6 +7337,7 @@ en chien
 en chien de fusil
 en chier
 en chœur
+en ciboire
 en civil
 en clair
 en cloque
@@ -7155,6 +7362,7 @@ en cours de
 en cours de route
 en crabe
 en creux
+en câlisse
 en d'autres termes
 en danger
 en danseuse
@@ -7206,6 +7414,7 @@ en feu
 en filigrane
 en fin de compte
 en finir
+en finir avec
 en flèche
 en foi de quoi
 en fonction de
@@ -7236,9 +7445,11 @@ en l'absence de
 en l'air
 en l'espace de
 en l'espèce
+en l'hommage de
 en l'honneur de
 en l'occurrence
 en l'état
+en la matière
 en la personne de
 en liberté
 en lice
@@ -7276,6 +7487,7 @@ en ordre
 en ordre de bataille
 en ordre de marche
 en ordre dispersé
+en ostie
 en outre
 en panne
 en parallèle
@@ -7356,7 +7568,9 @@ en règle générale
 en réalité
 en réserve
 en résumé
+en sacrament
 en sah
+en sautoir
 en second lieu
 en secret
 en sens inverse
@@ -7372,11 +7586,13 @@ en souffrance
 en sous-main
 en stand-by
 en substance
+en suffisance
 en surface
 en sus
 en sus de
 en suspens
 en série
+en tabarnak
 en tailleur
 en tant que
 en tant que tel
@@ -7390,6 +7606,7 @@ en temps voulu
 en tenue
 en termes de
 en théorie
+en tirer les conséquences
 en titre
 en tort
 en tous genres
@@ -7440,7 +7657,6 @@ en ville
 en vitesse
 en vogue
 en voie de
-en voilà
 en voir de toutes les couleurs
 en vouloir
 en vouloir pour exemple
@@ -7463,7 +7679,9 @@ en état de
 en état de marche
 en être
 en être de sa poche
+en être pour
 en être pour ses frais
+en être à
 en-avant
 en-but
 en-cas
@@ -7475,7 +7693,6 @@ encore et encore
 encore et toujours
 encore heureux
 encore moins
-encore plus
 encore que
 encore une fois
 encre de Chine
@@ -7485,6 +7702,7 @@ enculeuse de mouches
 encéphalopathie spongiforme bovine
 enfant Jésus
 enfant chéri
+enfant de chienne
 enfant de chœur
 enfant de pute
 enfant des rues
@@ -7528,6 +7746,8 @@ entendre parler
 entendre parler de
 entendre parler du pays
 entendre raison
+entente de confidentialité
+entente de non-divulgation
 enterrement de vie de garçon
 enterrement de vie de jeune fille
 enterrer la hache de guerre
@@ -7543,6 +7763,7 @@ entre l'arbre et l'écorce
 entre la peste et le choléra
 entre la poire et le fromage
 entre le marteau et l'enclume
+entre le zist et le zest
 entre nous
 entre nous soit dit
 entre parenthèses
@@ -7563,11 +7784,14 @@ entre-temps
 entre-tuer
 entre-égorger
 entrepôt de données
+entrer comme dans un moulin
+entrer comme dans une écurie
 entrer dans la danse
 entrer dans la ronde
 entrer dans le jeu de
 entrer dans le vif du sujet
 entrer en action
+entrer en contact avec
 entrer en fonction
 entrer en jeu
 entrer en lice
@@ -7616,6 +7840,7 @@ espace des phases
 espace euclidien
 espace insécable
 espace interstellaire
+espace public
 espace vectoriel
 espace vital
 espace-temps
@@ -7647,8 +7872,6 @@ espèce invasive
 espèces sonnantes et trébuchantes
 espérance de vie
 essai de pénalité
-essayer toujours
-essayer voir
 essence de térébenthine
 essuie-glace
 essuie-mains
@@ -7657,7 +7880,6 @@ essuyer les plâtres
 est passé
 est-allemand
 est-asiatique
-est-ce
 est-ce que
 est-il
 est-nord-est
@@ -7789,9 +8011,11 @@ faire abstraction
 faire acte de présence
 faire aller
 faire allusion
+faire allusion à
 faire amende honorable
 faire ami-ami
 faire appel
+faire appel à
 faire attention
 faire attention à
 faire au mieux
@@ -7845,6 +8069,7 @@ faire comme chez soi
 faire comme si
 faire concurrence
 faire confiance
+faire confiance à
 faire connaissance
 faire connaître
 faire contre mauvaise fortune bon cœur
@@ -7888,9 +8113,9 @@ faire diligence
 faire diversion
 faire dodo
 faire don
-faire donc
 faire droit
 faire du bien
+faire du boudin
 faire du bruit
 faire du chiffre
 faire du mal
@@ -7904,13 +8129,14 @@ faire défaut
 faire désordre
 faire effet
 faire en sorte
-faire entrer
 faire envie
 faire erreur
 faire escale
 faire exception
 faire exprès
+faire exprès de
 faire face
+faire face à
 faire faillite
 faire faim
 faire fausse route
@@ -7918,6 +8144,7 @@ faire faux bond
 faire feu
 faire feu de tout bois
 faire fi de
+faire figure de
 faire florès
 faire flèche de tout bois
 faire foi
@@ -7962,6 +8189,7 @@ faire l'impossible
 faire l'innocent
 faire l'intéressant
 faire l'objet
+faire l'objet de
 faire l'unanimité
 faire l'école buissonnière
 faire l'éloge de
@@ -8006,6 +8234,7 @@ faire la pluie et le beau temps
 faire la poussière
 faire la queue
 faire la ronde
+faire la roue
 faire la soudure
 faire la sourde oreille
 faire la tournée des grands-ducs
@@ -8018,6 +8247,7 @@ faire le beau
 faire le bien
 faire le bon apôtre
 faire le bonheur
+faire le café
 faire le canard
 faire le con
 faire le coup
@@ -8072,12 +8302,12 @@ faire les yeux doux
 faire litière de
 faire loi
 faire long feu
-faire longtemps
 faire machine arrière
 faire maigre
 faire main basse
 faire maison nette
 faire mal
+faire mal à
 faire marche
 faire marche arrière
 faire marcher
@@ -8105,14 +8335,15 @@ faire parler de soi
 faire parler la poudre
 faire part
 faire partie
+faire partie de
 faire partie intégrante
-faire passer
 faire passer un chameau par le chas d'une aiguille
 faire peau neuve
 faire peine à voir
 faire pencher la balance
 faire peu de cas
 faire peur
+faire peur à
 faire peur à voir
 faire pipi
 faire pitié
@@ -8120,6 +8351,7 @@ faire pièce
 faire place
 faire place nette
 faire plaisir
+faire plaisir à
 faire pleurer Margot
 faire pleurer dans les chaumières
 faire pleurer le colosse
@@ -8139,7 +8371,6 @@ faire que sage
 faire rage
 faire recette
 faire relâche
-faire rentrer
 faire rinque de
 faire ripaille
 faire route
@@ -8147,6 +8378,7 @@ faire réflexion
 faire référence
 faire régime
 faire sa B.A.
+faire sa diva
 faire sa fête
 faire sa loi
 faire sa valise
@@ -8172,7 +8404,6 @@ faire ses délices
 faire ses gammes
 faire ses griffes
 faire ses nuits
-faire ses paris
 faire ses premiers pas
 faire ses premières armes
 faire ses preuves
@@ -8191,12 +8422,11 @@ faire son entrée
 faire son intéressant
 faire son lit
 faire son marché
+faire son maximum
 faire son poids
 faire son possible
 faire son retour
-faire son truc
 faire son âge
-faire sortir
 faire souche
 faire style
 faire suite à
@@ -8238,9 +8468,8 @@ faire une montagne d'une taupinière
 faire une scène
 faire usage
 faire valoir
-faire venir
 faire violence
-faire voir
+faire voile
 faire vœu
 faire échec
 faire écho
@@ -8255,7 +8484,6 @@ faire-part
 faire-valoir
 fais ce que je dis, pas ce que je fais
 fais de beaux rêves
-fais voir
 fais-toi à
 faiseur d'anges
 faiseur d'opinion
@@ -8274,8 +8502,7 @@ faites l'amour, pas la guerre
 faites vos jeux
 faits et gestes
 fake news
-falloir
-falloir que
+falloir bien
 famille d'accueil
 famille nombreuse
 famille nucléaire
@@ -8300,6 +8527,7 @@ fausse alarme
 fausse alerte
 fausse analogie
 fausse barbe
+fausse bonne idée
 fausse braie
 fausse chanterelle
 fausse couche
@@ -8390,6 +8618,7 @@ fenêtre d'opportunité
 fenêtre de lancement
 fenêtre de tir
 fenêtre nationale
+fenêtre à guillotine
 fenêtre à la française
 fer de lance
 fer à cheval
@@ -8419,16 +8648,19 @@ feu d'artifice
 feu de Bengale
 feu de bengale
 feu de camp
+feu de circulation
 feu de forêt
 feu de joie
 feu de paille
 feu de plancher
+feu de signalisation
 feu follet
 feu grégeois
 feu orange
 feu rouge
 feu sacré
 feu sauvage
+feu tricolore
 feu vert
 feuille d'acanthe
 feuille de boucher
@@ -8577,6 +8809,7 @@ flash-ball
 fleur au fusil
 fleur bleue
 fleur cirage
+fleur d'oranger
 fleur de coin
 fleur de l'âge
 fleur de lis
@@ -8643,6 +8876,7 @@ fontaine de jouvence
 fontaine de lave
 fonts baptismaux
 food truck
+food-court
 football américain
 football association
 football australien
@@ -8659,6 +8893,7 @@ force de l'âge
 force de la nature
 force de proposition
 force est
+force est de
 force majeure
 force motrice
 force opérationnelle
@@ -8688,6 +8923,7 @@ fort comme un bœuf
 fort de café
 fort en thème
 fort et clair
+forte partie
 forêt amazonienne
 forêt de Yatir
 forêt du Ciron
@@ -8738,6 +8974,7 @@ fourmilier géant
 fourmilier nain
 fourre-tout
 fourrer dans le même sac
+fourrer la paume
 fourrer les pieds
 fourrer son nez
 foutage de gueule
@@ -8771,6 +9008,7 @@ fraise des bois
 franc CFA
 franc belge
 franc comme l'or
+franc comme l'osier
 franc du collier
 franc français
 franc suisse
@@ -8821,6 +9059,8 @@ fromage de chèvre
 fromage frais
 fromage à la pie
 froncer les sourcils
+front chaud
+front froid
 front intérieur
 frontière linguistique
 frou-frou
@@ -8874,6 +9114,7 @@ fute fute
 fute-fute
 futur antérieur
 futur simple
+fève tonka
 fée des dents
 fée du logis
 fée marraine
@@ -8976,6 +9217,7 @@ gardien de la paix
 gardien de nuit
 gardien de phare
 gardien de prison
+gardienne d'enfants
 gardienne de but
 gardienne de la paix
 gardienne de phare
@@ -9028,6 +9270,7 @@ geste-barrière
 gestion de versions
 gestion des risques
 gestionnaire de paquets
+ghost kitchen
 gibier de potence
 gigantisme abyssal
 gigantisme insulaire
@@ -9075,6 +9318,7 @@ golfe de Gabès
 golfe de Gascogne
 golfe du Lion
 golfe du Mexique
+golfe du Saint-Laurent
 gomme à mâcher
 gorfou des Snares
 gorfou du Fiordland
@@ -9193,6 +9437,7 @@ grande gueule
 grande jacobée
 grande marée
 grande muette
+grande musique
 grande parure
 grande personne
 grande profondeur
@@ -9312,6 +9557,7 @@ grève du sexe
 grève du zèle
 grève générale
 grève sauvage
+gréco-bactrien
 gréco-latin
 gréco-romain
 gréco-égyptien
@@ -9324,8 +9570,10 @@ guerre d'attrition
 guerre d'usure
 guerre de Cent Ans
 guerre de Crimée
+guerre de Sept Ans
 guerre de Sécession
 guerre de conquête
+guerre de la Conquête
 guerre de position
 guerre de positions
 guerre de religion
@@ -9333,6 +9581,7 @@ guerre de succession
 guerre de tranchées
 guerre des nerfs
 guerre des tranchées
+guerre du Pacifique
 guerre du Vietnam
 guerre froide
 guerre mondiale
@@ -9343,6 +9592,7 @@ guerre sale
 guerre totale
 guerre éclair
 guerre-éclair
+guest-star
 guet-apens
 gueule cassée
 gueule d'enterrement
@@ -9378,6 +9628,7 @@ gâteau de voyage
 gâteau mille crêpes
 gâteau sec
 gâteau sous la cerise
+gâté pourri
 géant de Provence
 géante bleue
 géante rouge
@@ -9469,6 +9720,7 @@ haut potentiel
 haut sur cravate
 haut-commissaire
 haut-de-chausses
+haut-de-forme
 haut-goût
 haut-le-cœur
 haut-parleur
@@ -9477,7 +9729,9 @@ haut-relief
 haut-savoyard
 hautbois baryton
 hautbois d'amour
+haute bourgeoisie
 haute couture
+haute finance
 haute main
 haute mer
 haute montagne
@@ -9494,6 +9748,7 @@ hauteur de vanité
 hauteur de vue
 havre de paix
 herbe au diable
+herbe aux chats
 herbe aux deniers
 herbe aux mamelles
 herbe aux ours
@@ -9507,6 +9762,8 @@ herbe à Sitarane
 herbe à chat
 herbe à savon
 herbe à soie
+herbe-au-chat
+herbe-aux-chats
 herbe-à-Robert
 herbes de Provence
 hernie discale
@@ -9517,6 +9774,8 @@ hespérie des graminées
 hespérie du dactyle
 hespérie européenne
 heure avancée
+heure avancée de l'Est
+heure avancée des Rocheuses
 heure bleue
 heure creuse
 heure d'affluence
@@ -9530,7 +9789,8 @@ heure dorée
 heure du berger
 heure du mystère
 heure normale
-heure normale de l'est
+heure normale de l'Est
+heure normale des Rocheuses
 heure verte
 heure-lumière
 heures bleues
@@ -9602,6 +9862,7 @@ homme des bois
 homme des cavernes
 homme du moment
 homme du monde
+homme fait
 homme fort
 homme politique
 homme trans-identifié
@@ -9624,14 +9885,15 @@ horloge circadienne
 horloge interne
 hormone de croissance
 horribile auditu
+hors antenne
 hors catégorie
 hors compétition
+hors concours
 hors contexte
 hors contrat
 hors d'affaire
 hors d'atteinte
 hors d'haleine
-hors d'oeuvre
 hors d'usage
 hors d'âge
 hors d'état de
@@ -9650,6 +9912,7 @@ hors de question
 hors de saison
 hors de soi
 hors des clous
+hors des gonds
 hors des sentiers battus
 hors du commun
 hors du coup
@@ -9664,6 +9927,7 @@ hors service
 hors sujet
 hors taxes
 hors-bord
+hors-d'oeuvre
 hors-d'œuvre
 hors-jeu
 hors-la-loi
@@ -9673,6 +9937,7 @@ hors-sol
 hors-série
 hors-texte
 hostie de
+hot take
 hot-dog
 hotte aspirante
 house music
@@ -9682,6 +9947,7 @@ houx commun
 houx verticillé
 hubertie tomenteuse
 huile d'olive
+huile de chauffage
 huile de coco
 huile de coude
 huile de foie de morue
@@ -9747,7 +10013,7 @@ hôtel-dieu
 hôtesse de l'air
 i grec
 ibéro-américain
-ici Bauer
+ice tea
 ici et là
 ici-bas
 identité remarquable
@@ -9763,6 +10029,9 @@ idée noire
 idée reçue
 idée-force
 il arrive que
+il convient de
+il est inconscient
+il est interdit d'interdire
 il est quelle heure
 il faut
 il faut battre le fer pendant qu'il est chaud
@@ -9775,12 +10044,14 @@ il faut le voir pour le croire
 il faut que jeunesse se fasse
 il faut que jeunesse se passe
 il faut se méfier de l'eau qui dort
+il importe de
 il le faut
 il n'en est pas question
 il n'en est rien
 il n'en reste pas moins que
 il n'est pire aveugle que celui qui ne veut pas voir
 il n'est pire sourd que celui qui ne veut pas entendre
+il n'est si bon charretier qui ne verse
 il n'est si bon cheval qui ne bronche
 il n'y a pas de fumée sans feu
 il n'y a pas de mais qui tienne
@@ -9808,7 +10079,14 @@ il ne faut pas dire, fontaine, je ne boirai pas de ton eau
 il ne faut pas réveiller le chat qui dort
 il ne faut pas vendre la peau de l'ours avant de l'avoir tué
 il ne manquait plus que ça
+il paraît que
 il reste que
+il s'agit de
+il semble que
+il suffit de
+il va de soi que
+il va sans dire que
+il vaut mieux
 il vaut mieux s'adresser au Bon Dieu qu'à ses saints
 il y a
 il y a de cela
@@ -9836,6 +10114,7 @@ image par seconde
 image satellite
 imaginaire pur
 imbécile heureux
+immeuble de bureaux
 immeuble de rapport
 immobilisation corporelle
 immobilisation financière
@@ -9876,6 +10155,7 @@ in-trente-deux
 in-vingt
 incapacité de travail
 incarvillée de Delavay
+incendie criminel
 incessamment sous peu
 inconnu au bataillon
 incrustation d'image
@@ -9893,6 +10173,7 @@ industrie légère
 infarctus du myocarde
 infection sexuellement transmissible
 infirmité motrice cérébrale
+infirmière praticienne spécialisée
 informatique en nuage
 infra-son
 infra-sonore
@@ -9987,6 +10268,7 @@ j'sais pas quoi
 j't'ai cassé
 jacaranda à feuilles de mimosa
 jacinthe du Cap
+jack-strap
 jaguar-garou
 jaloux comme un tigre
 jamais au grand jamais
@@ -10123,12 +10405,12 @@ joindre les deux bouts
 joint de culasse
 joint-venture
 joli cœur
-joli travail
 jolie laide
 jouer au chat et à la souris
 jouer au docteur
 jouer avec le feu
 jouer cartes sur table
+jouer de la harpe
 jouer des coudes
 jouer des tours
 jouer franc jeu
@@ -10142,8 +10424,10 @@ jouer les gros bras
 jouer petit bras
 jouer serré
 jouer sur du velours
+jouer sur le velours
 jouer sur les mots
 jouer sur tous les tableaux
+jouer un rôle
 joueur contre joueur
 joueur contre l'environnement
 joueur de deuxième but
@@ -10223,11 +10507,9 @@ jusqu'à pas d'heure
 jusqu'à plus soif
 jusqu'à preuve du contraire
 jusqu'à présent
-jusqu'à son dernier souffle
 jusque là
 jusque-là
 juste ciel
-juste maintenant
 juste milieu
 juste prix
 justice immanente
@@ -10241,6 +10523,7 @@ kayak sur neige
 ketmie d'Afrique
 kif-kif
 kif-kif bourricot
+kilomètre zéro
 kino-congolais
 kir breton
 kitti à nez de porc
@@ -10259,6 +10542,7 @@ l'argent est bon serviteur et mauvais maître
 l'argent est le nerf de la guerre
 l'argent n'a pas d'odeur
 l'argent ne fait pas le bonheur
+l'argent ne pousse pas dans les arbres
 l'argent ne tombe pas du ciel
 l'arme au pied
 l'art pour l'art
@@ -10319,7 +10603,6 @@ la foudre ne tombe jamais deux fois au même endroit
 la goutte d'eau qui fait déborder le vase
 la gueule enfarinée
 la honte
-la jouer
 la main sur le cœur
 la majeur
 la majorité de
@@ -10356,7 +10639,6 @@ la tête la première
 la vache
 la vengeance est un plat qui se mange froid
 la vie n'est pas un long fleuve tranquille
-la voilà
 la vérité est dans le vin
 la vérité finit toujours par triompher
 la vérité sort de la bouche des enfants
@@ -10364,8 +10646,14 @@ labeur sans soin, labeur de rien
 laboratoire d'idées
 labre capitaine
 labre nettoyeur
+lac Huron
+lac Léman
+lac Mégantic
+lac Ontario
 lac Poyang
+lac Supérieur
 lac salé
+lac Érié
 laid comme le péché
 laid comme les sept péchés capitaux
 laid comme un pou
@@ -10383,7 +10671,6 @@ laisser entendre
 laisser faire
 laisser la parole
 laisser le temps au temps
-laisser parler
 laisser passer
 laisser pisser
 laisser pour compte
@@ -10393,8 +10680,6 @@ laisser sur sa faim
 laisser tomber
 laisser tomber comme une vieille chaussette
 laisser tranquille
-laisser venir
-laisser voir
 laisser à désirer
 laisser à penser
 laisser-aller
@@ -10412,6 +10697,7 @@ lait de poule
 lait de soja
 lait en poudre
 lait entier
+lait frappé
 lait écrémé
 laiteron rude
 laitue de Plumier
@@ -10515,6 +10801,7 @@ langue-toit
 lanterne d'Aristote
 lanterne rouge
 lap cheong
+lap dance
 lapin commun
 lapin de Pâques
 lapin de garenne
@@ -10568,8 +10855,10 @@ le doigt sur la couture du pantalon
 le donner en mille
 le fait est que
 le fait que
+le fond du baril
 le franc est tombé
 le jeu n'en vaut pas la chandelle
+le jour et la nuit
 le jupon dépasse
 le leur
 le long de
@@ -10583,6 +10872,7 @@ le nez dans le guidon
 le nôtre
 le ou vers le
 le petit oiseau va sortir
+le plus
 le plus clair de
 le plus offrant
 le poisson pourrit par la tête
@@ -10603,6 +10893,7 @@ lecteur de CD
 lecteur de nouvelles
 lectrice de nouvelles
 lecture rapide
+lemon-grass
 lendemain de veille
 lentement mais sûrement
 lentille corail
@@ -10638,7 +10929,6 @@ les si n'aiment pas les rais
 les trois quarts du temps
 les voies de Dieu sont impénétrables
 les voies du Seigneur sont impénétrables
-les voilà
 les yeux fermés
 les zaricos sont salés
 lettre d'adieu
@@ -10662,8 +10952,10 @@ lever de soleil
 lever du soleil
 lever l'ancre
 lever le camp
+lever le coude
 lever le petit doigt
 lever le pied
+lever le rideau
 lever le voile
 lever les yeux au ciel
 lever son verre
@@ -10673,10 +10965,12 @@ levure chimique
 levée d'écrou
 levée de boucliers
 levée du corps
+leçon de vie
 li-chi
 li-tchi
 liaison covalente
 liberté d'expression
+liberté d'opinion
 liberté de conscience
 liberté de culte
 liberté de la presse
@@ -10689,7 +10983,9 @@ libre circulation
 libre comme l'air
 libre entreprise
 libre examen
+libre expression
 libre marché
+libre pensée
 libre échange
 libre-arbitre
 libre-service
@@ -10710,6 +11006,7 @@ lien mort
 lien profond
 lien rouge
 lieu commun
+lieu d'aisance
 lieu de culte
 lieu de mémoire
 lieu de travail
@@ -10798,6 +11095,7 @@ lit à baldaquin
 lit-cage
 lits superposés
 littérature comparée
+littérature de gare
 littérature de voyage
 lividités cadavériques
 livre audio
@@ -10846,6 +11144,7 @@ logarithme népérien
 logement social
 logiciel de rançon
 logiciel espion
+logiciel fantôme
 logiciel libre
 logiciel malveillant
 logiciel nuisible
@@ -10909,7 +11208,6 @@ louveteau-garou
 louvetelle-garou
 lueur d'espoir
 luge de course
-lui parler
 lui-même
 lumière blanche
 lumière bleue
@@ -10982,7 +11280,6 @@ ma foi
 ma gia
 ma lai
 ma parole
-ma petite
 ma pomme
 ma troi
 macaque crabier
@@ -10990,6 +11287,7 @@ macaque rhésus
 macaroni chinois
 machine de Turing
 machine de guerre
+machine virtuelle
 machine à boule
 machine à café
 machine à calculer
@@ -11007,11 +11305,15 @@ machine-outil
 macro-économique
 madame je-sais-tout
 magasin d'usine
+magasin à un dollar
+magasin à une piasse
+magasin à une piastre
 magie blanche
 magie noire
 magistrat du siège
 magnitude absolue
 magnitude apparente
+magnétisme animal
 magnéto-électrique
 mah-jong
 maigre comme un clou
@@ -11029,11 +11331,10 @@ main invisible
 main-d'œuvre
 main-forte
 maine coon
+mains baladeuses
 mains de fée
-maintenant ou jamais
 maintenant que
 maintes fois
-mais alors
 mais bien sûr
 mais bon
 mais encore
@@ -11084,6 +11385,7 @@ mal amanché
 mal baisé
 mal barré
 mal dans sa peau
+mal de Naples
 mal de chien
 mal de débarquement
 mal de gorge
@@ -11099,6 +11401,7 @@ mal des transports
 mal du pays
 mal du siècle
 mal embouché
+mal en cour
 mal en point
 mal luné
 mal léché
@@ -11136,6 +11439,7 @@ maladie du sommeil
 maladie infectieuse
 maladie mentale
 maladie orpheline
+maladie pulmonaire obstructive chronique
 maladie rare
 maladie sexuellement transmissible
 malgré que
@@ -11171,17 +11475,20 @@ manger comme un loup
 manger comme un moineau
 manger comme un ogre
 manger dans la main
+manger de la marde
 manger du curé
 manger les pissenlits par la racine
 manger maigre
 manger ses mots
 manger son chapeau
 manger son pain blanc
+manger son pain noir
 manger une volée
 manger à sa faim
 manger à tous les râteliers
 mangeuse d'homme
 mangeuse d'hommes
+mangeux de marde
 maniaco-dépressif
 manque à gagner
 manquer le coche
@@ -11382,6 +11689,7 @@ meilleurs vœux
 melon d'eau
 melon de France
 melon de Montréal
+melting pot
 membrane clignotante
 membrane déciduale
 membrane haptogène
@@ -11413,6 +11721,7 @@ menthe-coq
 mentir comme on respire
 mentir comme un arracheur de dents
 menu du jour
+menu déroulant
 menu fretin
 menu gastronomique
 mer Adriatique
@@ -11444,7 +11753,6 @@ mer Égéenne
 mer Érythrée
 merci beaucoup
 merci bien
-merci de
 merci mille fois
 merci pour ton aide
 merci pour votre aide
@@ -11461,8 +11769,8 @@ merle d'Amérique
 merlu blanc
 merlu commun
 merlu européen
-mes félicitations
 mesdames et messieurs
+message subliminal
 message vocal
 messager sagittaire
 messager secrétaire
@@ -11549,6 +11857,7 @@ mettre en œuvre
 mettre enceinte
 mettre entre parenthèses
 mettre fin
+mettre fin à
 mettre fin à ses jours
 mettre l'accent sur
 mettre l'eau à la bouche
@@ -11596,6 +11905,7 @@ mettre les petits plats dans les grands
 mettre les pieds
 mettre les pieds dans le plat
 mettre les points sur les i
+mettre les pouces
 mettre les voiles
 mettre sa main au feu
 mettre sa main à couper
@@ -11676,7 +11986,6 @@ micro-puce
 micro-trottoir
 micro-électronique
 microscope à effet tunnel
-mieux encore
 mieux que rien
 mieux vaut prévenir que guérir
 mieux vaut tard que jamais
@@ -11693,6 +12002,7 @@ mille nautique
 mille-feuille
 mille-pattes
 mille-pertuis
+mille-pieds
 millepertuis nummulaire
 millepertuis perforé
 milles trous
@@ -11709,11 +12019,13 @@ minute papillon
 minute, papillon
 minute-lumière
 miroir aux alouettes
+miroir déformant
 miroir sans tain
 mis à part
 mise au ban
 mise au pas
 mise au point
+mise bas
 mise en abyme
 mise en accusation
 mise en bière
@@ -11798,6 +12110,7 @@ monarchie de droit divin
 monde de l'autre côté
 monde des Idées
 monde libre
+monde réel
 monnaie courante
 monnaie d'échange
 monnaie de singe
@@ -11819,6 +12132,7 @@ mont de Vénus
 mont-blanc
 mont-de-piété
 montagne de glace
+montagnes Rocheuses
 montagnes russes
 monte-charge
 monte-en-l'air
@@ -11876,6 +12190,7 @@ mort de faim
 mort de rire
 mort et enterré
 mort ou vif
+mort sociale
 mort subite
 mort subite du nourrisson
 mort-aux-rats
@@ -11890,6 +12205,7 @@ mot caché
 mot composé
 mot d'esprit
 mot d'ordre
+mot d'église
 mot de Cambronne
 mot de la fin
 mot de passe
@@ -11910,6 +12226,7 @@ moteur thermique
 moteur à deux temps
 moteur à explosion
 moteur à quatre temps
+moteur à réaction
 motion de censure
 motion de confiance
 moto-école
@@ -11958,6 +12275,8 @@ mouton noir
 mouton à cinq pattes
 mouvement de jeunesse
 mouvement perpétuel
+mouvement rectiligne uniforme
+mouvement rectiligne uniformément accéléré
 mouvement social
 moyen anglais
 moyen breton
@@ -11985,6 +12304,7 @@ muet comme une tombe
 multi-instrumentiste
 multi-locataire
 multi-propriétaire
+municipalité régionale de comté
 munition maraudeuse
 munition rôdeuse
 muqueuse utérine
@@ -12006,8 +12326,10 @@ musique d'ameublement
 musique d'ascenseur
 musique d'aéroport
 musique de chambre
+musique populaire
 musique sacrée
 musique savante
+musique sérieuse
 musée imaginaire
 mutation adoucissante
 mutatis mutandis
@@ -12117,10 +12439,13 @@ n'avoir que la peau sur les os
 n'avoir rien pour soi
 n'avoir rien à se mettre
 n'avoir rien à voir avec
+n'empêche que
 n'en déplaise à
 n'en faire qu'à sa tête
 n'en plus pouvoir
 n'en pouvoir mais
+n'en pouvoir plus
+n'en revenir pas
 n'est plus là
 n'est-ce pas
 n'eût été
@@ -12188,6 +12513,7 @@ ne faire aucun doute
 ne faire ni chaud ni froid
 ne faire qu'un
 ne faire qu'une bouchée
+ne faire que
 ne fût-ce que
 ne guère
 ne jamais
@@ -12230,6 +12556,7 @@ ne pas en fiche une rame
 ne pas en ficher lourd
 ne pas en ficher une
 ne pas en ficher une rame
+ne pas en finir
 ne pas en foutre une
 ne pas en foutre une rame
 ne pas en mener large
@@ -12277,6 +12604,7 @@ ne pas se prendre pour de la merde
 ne pas se trouver sous le sabot d'un cheval
 ne pas se trouver sous les sabots d'un cheval
 ne pas sentir la rose
+ne pas tenir en place
 ne pas tourner rond
 ne pas valoir un clou
 ne pas voir plus loin que le bout de son nez
@@ -12285,6 +12613,7 @@ ne pas y aller avec le dos de la cuillère
 ne pas y aller de main morte
 ne pas y aller par quatre chemins
 ne pas y avoir photo
+ne pas y croire
 ne pas être au bout de ses peines
 ne pas être au bout de ses surprises
 ne pas être dans son assiette
@@ -12316,9 +12645,11 @@ ne rien
 ne rien avoir à se mettre
 ne rien dire qui vaille
 ne rien se refuser
+ne rien valoir
 ne rien vouloir entendre
 ne rien vouloir savoir
 ne rimer à rien
+ne s'en faire pas
 ne savoir que faire
 ne serait-ce que
 ne souffler mot
@@ -12331,11 +12662,14 @@ neige carbonique
 neige de culture
 neige fondue
 neige marine
+neiger à plein ciel
+neiger à plein temps
 neiges d'antan
 nerf de bœuf
 nerf du canal ptérygoïdien
 nerf optique
 nerf trijumeau
+nerf vague
 nerf vidien
 nettoyage de printemps
 nettoyage ethnique
@@ -12359,6 +12693,7 @@ ni plus ni moins
 ni pour or ni pour argent
 ni vu ni connu
 ni vu, ni connu
+niche fiscale
 nid d'aigle
 nid d'amour
 nid de poule
@@ -12484,6 +12819,7 @@ non content de
 non genré
 non mais
 non merci
+non pas
 non pas que
 non peut-être
 non plus
@@ -12588,6 +12924,7 @@ nouvelle lune
 nouvelle vague
 nouvelles technologies
 noyau atomique
+noyau dur
 noyau terrestre
 noyer du Brésil
 noyer le poisson
@@ -12644,6 +12981,7 @@ néo-gothique
 néo-grec
 néo-guinéen
 néo-haussmannien
+néo-hittite
 néo-kantisme
 néo-latin
 néo-natal
@@ -12694,6 +13032,7 @@ océan Austral
 océan Glacial arctique
 océan Indien
 océan Pacifique
+oeil du cyclone
 off-shore
 office de tourisme
 office des Grandes Heures
@@ -12755,6 +13094,7 @@ onde progressive
 onde radio
 onde stationnaire
 onde électromagnétique
+one-step
 open space
 ophtalmie égyptienne
 opiner du bonnet
@@ -12851,12 +13191,12 @@ os zygomatique
 oscillateur de battement
 osier fleuri
 osso buco
+ostie de tabarnak
 ostéogenèse imparfaite
 otacanthe bleuâtre
 oto-rhino-laryngologie
 oto-rhino-laryngologique
 oto-rhino-laryngologiste
-ou alors
 ou bien
 ou quoi
 ou sinon
@@ -12877,6 +13217,7 @@ ours en peluche
 ours mal léché
 ours noir
 ours polaire
+ours à lunettes
 ours-garou
 outre mesure
 outre que
@@ -12908,6 +13249,7 @@ ouvrir les yeux
 ouvrir ses portes
 ouï-dire
 ouïr dire
+oxalate de calcium
 oxyde blanc d'arsenic
 oxyde d'éthylène
 oxyde de carbone
@@ -12991,6 +13333,7 @@ papier collant
 papier colle-mouches
 papier d'Arménie
 papier de riz
+papier de toilette
 papier de verre
 papier filtre
 papier hygiénique
@@ -13019,9 +13362,9 @@ par après
 par avance
 par bonheur
 par bonté de cœur
-par ce temps
 par chance
 par conséquent
+par contenance
 par contre
 par contumace
 par cœur
@@ -13053,7 +13396,6 @@ par monts et par vaux
 par mégarde
 par opposition à
 par parenthèse
-par personne
 par pitié
 par plaisanterie
 par principe
@@ -13067,7 +13409,6 @@ par surprise
 par terre
 par tous les temps
 par trop
-par téléphone
 par tête de pipe
 par voie de conséquence
 par voies et par chemins
@@ -13150,13 +13491,13 @@ parler de corde dans la maison d'un pendu
 parler de la pluie et du beau temps
 parler de soi-même
 parler de tout et de rien
+parler en cul de poule
 parler en l'air
 parler entre ses dents
 parler français comme une vache espagnole
 parler gaga
 parler pour ne rien dire
 parler trop vite
-parler à
 parler à travers son chapeau
 parler à un mur
 parler à un sourd
@@ -13281,7 +13622,6 @@ passer commande
 passer comme une lettre à la poste
 passer crème
 passer de vie à trépas
-passer devant
 passer du coq à l'âne
 passer en force
 passer en revue
@@ -13310,6 +13650,7 @@ passer outre
 passer par la tête
 passer par les armes
 passer par les mains
+passer pour
 passer ses nerfs
 passer son chemin
 passer son tour
@@ -13480,6 +13821,7 @@ perdu pour perdu
 perfide Albion
 perle rare
 permanence de l'objet
+permanganate de potassium
 permis de conduire
 permis de construire
 permis de séjour
@@ -13496,6 +13838,9 @@ personne morale
 personne physique
 personne à mobilité réduite
 personne âgée
+personnel navigant
+personnel navigant commercial
+personnel navigant technique
 perspective cavalière
 perspective linéaire
 perte de connaissance
@@ -13507,6 +13852,7 @@ peser dans la balance
 peser le pour et le contre
 peser ses mots
 peser un âne mort
+peser une tonne
 peste bubonique
 peste noire
 peste porcine
@@ -13524,10 +13870,12 @@ petit bras
 petit coin
 petit comité
 petit copain
+petit cul
 petit doigt
 petit déjeuner
 petit filet
 petit four
+petit garçon
 petit joueur
 petit jour
 petit juif
@@ -13561,6 +13909,7 @@ petit-neveu
 petit-noir
 petit-nègre
 petit-russien
+petit-suisse
 petite aiguille
 petite amie
 petite annonce
@@ -13575,6 +13924,7 @@ petite cuiller
 petite cuillère
 petite culotte
 petite enfance
+petite fille
 petite finale
 petite frappe
 petite main
@@ -13662,11 +14012,13 @@ pied-bot
 pied-d'alouette
 pied-de-biche
 pied-de-mouche
+pied-de-poule
 pied-de-vent
 pied-main
 pied-à-terre
 pieds d'argile
 pieds et poings liés
+pieds nus
 pierre angulaire
 pierre d'achoppement
 pierre d'angle
@@ -13751,6 +14103,7 @@ pisse-au-lit
 pisse-froid
 pisse-vinaigre
 pisser dans son froc
+pisser le sang
 piste courte
 piste cyclable
 piste d'atterrissage
@@ -13876,6 +14229,7 @@ plaît-il
 plein aux as
 plein comme un œuf
 plein comme une huître
+plein de marde
 plein de soupe
 plein et entier
 plein pot
@@ -13908,29 +14262,23 @@ pluie verglaçante
 pluriel brisé
 plus ample informé
 plus bas que terre
-plus besoin
 plus besoin de
-plus de
 plus de peur que de mal
-plus encore
 plus facile à dire qu'à faire
 plus fait douceur que violence
+plus fort que soi
 plus grand commun diviseur
 plus grand commun dénominateur
 plus mort que vif
 plus on est de fous, plus on rit
 plus ou moins
 plus outre
-plus personne
 plus petit commun multiple
-plus que
 plus que de raison
 plus que jamais
 plus souvent qu'à son tour
-plus tard
 plus vieux métier du monde
 plus vrai que nature
-plus vraiment
 plus ça change, plus c'est la même chose
 plus-que-parfait
 plus-value
@@ -13938,6 +14286,7 @@ plusieurs fois
 plutôt crever
 plutôt deux fois qu'une
 plutôt mourir
+plutôt que
 pluvier bronzé
 pluvier doré
 pluvier fauve
@@ -14010,12 +14359,14 @@ point faible
 point final
 point focal
 point fort
+point interrogant
 point mort
 point médian
 point noir
 point triple
 point trop n'en faut
 point virgule
+point zéro
 point à la ligne
 point-virgule
 pointe aux âmes
@@ -14173,6 +14524,7 @@ porte-épée
 porte-étendard
 porter assistance
 porter atteinte
+porter atteinte à
 porter aux nues
 porter beau
 porter bonheur
@@ -14188,6 +14540,7 @@ porter préjudice
 porter sa croix
 porter secours
 porter ses fruits
+porter sur
 porter à confusion
 porter à croire
 porter à faux
@@ -14234,6 +14587,7 @@ poste de police
 poste de quartier
 poste de travail
 poste médical avancé
+poste à gaz
 poste à souder
 poste-frontière
 pot Mason
@@ -14253,6 +14607,7 @@ potage Esaü
 potage Saint-Germain
 poteau rose
 potron-minet
+pouce bleu
 pouce en l'air
 pouding chômeur
 poudre Shimosa
@@ -14298,6 +14653,7 @@ pour du beurre
 pour du faux
 pour du vrai
 pour faire court
+pour faveur
 pour finir
 pour info
 pour l'amour de
@@ -14381,6 +14737,7 @@ poutine déjeuner
 poutine italienne
 poutine pizza
 poutre apparente
+pouvoir bien
 pouvoir d'achat
 pouvoir de marché
 pouvoir de résolution
@@ -14396,6 +14753,7 @@ premier degré
 premier en date
 premier jet
 premier maître
+premier maître de deuxième classe
 premier maître-chef
 premier ministre
 premier moteur
@@ -14431,6 +14789,7 @@ prendre cher
 prendre congé
 prendre connaissance
 prendre conscience
+prendre conscience de
 prendre contact
 prendre corps
 prendre courage
@@ -14462,6 +14821,8 @@ prendre du poids
 prendre du recul
 prendre du retard
 prendre effet
+prendre en amitié
+prendre en aversion
 prendre en charge
 prendre en chasse
 prendre en compte
@@ -14473,6 +14834,7 @@ prendre en filature
 prendre en flagrant délit
 prendre en grippe
 prendre en main
+prendre en mensonge
 prendre en otage
 prendre en photo
 prendre en pitié
@@ -14486,6 +14848,7 @@ prendre fin
 prendre forme
 prendre froid
 prendre garde
+prendre garde à
 prendre goût
 prendre l'air
 prendre l'eau
@@ -14503,6 +14866,7 @@ prendre la mesure
 prendre la mouche
 prendre la parole
 prendre la peine
+prendre la peine de
 prendre la porte
 prendre la pose
 prendre la poudre d'escampette
@@ -14551,6 +14915,7 @@ prendre ombrage
 prendre par la main
 prendre par les sentiments
 prendre part
+prendre part à
 prendre parti
 prendre peur
 prendre pitié
@@ -14596,6 +14961,7 @@ prendre son élan
 prendre sous son aile
 prendre sur le fait
 prendre sur soi
+prendre sur soi de
 prendre un coup dans l'aile
 prendre un verre
 prendre une brosse
@@ -14628,6 +14994,7 @@ prestataire de services
 prestation de serment
 preuve par 9
 preuve par l'absurde
+preux chevalier
 prie-Dieu
 prime de bienvenue
 prime de départ
@@ -14670,6 +15037,7 @@ prisonnière de guerre
 privat-docent
 private joke
 prix Nobel
+prix catalogue
 prix coûtant
 prix d'achat
 prix d'ami
@@ -14706,6 +15074,7 @@ profil de risque
 profil perdu
 profondeur de champ
 programmation orientée objet
+programme de concert
 programme malveillant
 projet de loi
 projet européen
@@ -14731,6 +15100,7 @@ proposer la botte
 propre comme un sou neuf
 propre sur soi
 proprement dit
+propriétaire terrien
 propriété intellectuelle
 propriété privée
 protection des données
@@ -14745,6 +15115,7 @@ protéger ses arrières
 provision technique
 prudence est mère de sûreté
 prunelle de ses yeux
+près de
 près de ses sous
 pré carré
 pré-grec
@@ -14754,6 +15125,7 @@ pré-salé
 pré-éjaculatoire
 pré-électoral
 précompte mobilier
+précompte professionnel
 préfet du prétoire
 prénanthe pourpre
 préparer le terrain
@@ -14796,6 +15168,7 @@ prêteur sur gages
 pseudo-bulbaire
 pseudo-colonne
 pseudo-instruction
+pseudo-science
 psiadie rétuse
 psiadie à feuilles de buglosse
 psycho-analeptique
@@ -14895,6 +15268,7 @@ période de sûreté
 pétage de plombs
 pétard mouillé
 péter au frette
+péter dans la soie
 péter de chaud
 péter des flammes
 péter la forme
@@ -14903,6 +15277,7 @@ péter la santé
 péter le feu
 péter les couilles
 péter les plombs
+péter plus haut que le trou
 péter plus haut que son cul
 péter un coup
 péter un câble
@@ -14947,6 +15322,7 @@ quadrature du cercle
 quadruple croche
 qualité de vie
 quand bien même
+quand et quand
 quand il n'y en a plus, il y en a encore
 quand le chat n'est pas là, les souris dansent
 quand le vin est tiré, il faut le boire
@@ -14988,6 +15364,7 @@ quarante-troisième
 quart d'heure
 quart d'heure académique
 quart de finale
+quart de livre
 quart de soupir
 quart-monde
 quarte augmentée
@@ -15092,7 +15469,6 @@ quelque chose
 quelque part
 quelque part que
 quelque peu
-quelque temps
 quelques-unes
 quelques-uns
 querelle de clocher
@@ -15107,6 +15483,7 @@ question à choix multiple
 question-tag
 questionnaire à choix multiple
 queue de poisson
+queue-d'aronde
 queue-de-cheval
 queue-de-pie
 queues de cerises
@@ -15191,6 +15568,7 @@ rabattre le clapet
 raccourci clavier
 raccrocher au nez
 raccrocher les crampons
+raccrocher les wagons
 racine carrée
 racine cubique
 racler les fonds de tiroir
@@ -15252,6 +15630,7 @@ rapport d'étape
 rapport de force
 rapport de forces
 rapport de gestion
+rapport qualité-prix
 rapport sexuel
 rapport à
 ras la touffe
@@ -15290,6 +15669,7 @@ rayer de la carte
 rayer le casque
 rayon X
 rayon d'action
+rayon de braquage
 rayon de soleil
 raz de marée
 raz-de-marée
@@ -15335,6 +15715,7 @@ reine des animaux
 reine mère
 reine-claude
 reine-des-prés
+relais d'opinion
 relais suédois
 relation client
 relation libre
@@ -15388,6 +15769,7 @@ rendez-vous
 rendez-vous galant
 rendre chèvre
 rendre compte
+rendre compte de
 rendre coup pour coup
 rendre des comptes
 rendre gorge
@@ -15401,10 +15783,12 @@ rendre la pareille
 rendre le dernier soupir
 rendre raison
 rendre service
+rendre service à
 rendre son tablier
 rendre son âme au bon Dieu
 rendre son âme à Dieu
 rendre visite
+rendre visite à
 rendre à César ce qui est à César
 renoncule de Gouan
 renouvellement urbain
@@ -15479,7 +15863,9 @@ respirer à pleins poumons
 responsabilité limitée
 ressemblance familiale
 ressources humaines
+restaurant d'entreprise
 restauration rapide
+reste que
 reste-avec
 rester en travers de la gorge
 rester les bras croisés
@@ -15544,6 +15930,7 @@ rhinocéros blanc
 rhinocéros laineux
 rhinocéros noir
 rhubarbe sauvage
+rhum agricole
 rhume des foins
 ric-rac
 riche comme Crésus
@@ -15623,7 +16010,10 @@ roi fainéant
 roi mage
 rois cailles
 rollier d'Europe
+roman de gare
+roman historique
 roman policier
+roman vidéoludique
 roman à clef
 roman à thèse
 roman à tiroirs
@@ -15693,6 +16083,7 @@ roulé-boulé
 rousserolle effarvatte
 route de campagne
 route de la soie
+route des vins
 route royale
 royaume chérifien
 ruban adhésif
@@ -15710,6 +16101,7 @@ rupture de charge
 rupture de contrat
 rupture de stock
 ruse de Sioux
+ruse de guerre
 rusé comme un renard
 ruée vers l'or
 rythme de croisière
@@ -15752,6 +16144,7 @@ réduire à la portion congrue
 réduire à néant
 réduire à sa plus simple expression
 réflexion faite
+référentiel galiléen
 régime moteur
 régler ses comptes
 régler son compte
@@ -15777,6 +16170,7 @@ réseau neuronal
 réseau sans fil
 réseau social
 réseau trophique
+réservation fantôme
 réserve naturelle
 résidence principale
 résidence secondaire
@@ -15798,6 +16192,7 @@ révolution de palais
 réécrire l'histoire
 rêve américain
 rêve lucide
+rôti haché
 s long
 s'acheter une conduite
 s'agir de
@@ -15827,9 +16222,11 @@ s'en prendre plein la tronche
 s'en prendre une
 s'en prendre à
 s'en rapporter à
+s'en remettre à
 s'en sortir
 s'en tenir là
 s'en tenir à
+s'en tirer
 s'en vouloir
 s'en être
 s'endormir sur ses lauriers
@@ -15851,6 +16248,7 @@ s'occuper de ses fesses
 s'occuper de ses ognons
 s'occuper de ses oignons
 s'offrir en spectacle
+s'y attendre
 s'y casser les dents
 s'y connaître
 s'y entendre
@@ -15887,6 +16285,7 @@ sac à vin
 sac-à-lait
 sacre bleu
 sacrer comme un bûcheron
+sacrer son camp
 sacro-saint
 sacré nom
 sage comme une image
@@ -15918,6 +16317,7 @@ sainte barbe
 sainte nitouche
 sainte-barbe
 sainte-nitouche
+saints de glace
 sais pas
 sais-tu
 saisir aux tripes
@@ -15960,6 +16360,7 @@ salle obscure
 salle à manger
 salon de beauté
 salon de coiffure
+salon de jeu
 salon de massage
 salon de thé
 salsifis des prés
@@ -16010,6 +16411,7 @@ sans histoire
 sans histoires
 sans intérêt
 sans intérêts
+sans issue
 sans l'ombre d'un doute
 sans le sou
 sans lendemain
@@ -16031,6 +16433,7 @@ sans problème
 sans précédent
 sans prétention
 sans queue ni tête
+sans quoi
 sans rancune
 sans relâche
 sans rire
@@ -16050,6 +16453,7 @@ sans-cœur
 sans-dessein
 sans-emploi
 sans-faute
+sans-façon
 sans-filiste
 sans-grade
 sans-gêne
@@ -16089,6 +16493,7 @@ sauf mention contraire
 sauf que
 sauf si
 sauf votre respect
+sauf à
 sauf-conduit
 sauge blanche
 sauge clandestine
@@ -16245,6 +16650,7 @@ se faire des illusions
 se faire dessus
 se faire du mauvais sang
 se faire du mouron
+se faire du souci
 se faire désirer
 se faire fort de
 se faire jour
@@ -16264,6 +16670,7 @@ se faire un nom
 se faire un sang d'encre
 se faire une raison
 se faire vieux
+se faire à
 se fendre la poire
 se ficher comme de colin-tampon
 se ficher comme de l'an quarante de
@@ -16278,6 +16685,7 @@ se jeter dans la gueule du loup
 se jeter dans les bras de
 se jeter un verre derrière la cravate
 se jeter à l'eau
+se jouer de
 se la couler douce
 se la jouer
 se la péter
@@ -16337,8 +16745,11 @@ se plaindre
 se planter
 se plier en quatre
 se porter
+se porter bien
 se porter comme un charme
 se porter garant
+se porter garant de
+se porter mal
 se pousser
 se pouvoir
 se prendre
@@ -16360,7 +16771,9 @@ se regarder en chiens de faïence
 se regarder le nombril
 se relaxer
 se remettre dans le bain
+se remplir les poches
 se rendre
+se rendre compte de
 se rendre à l'évidence
 se reposer sur ses lauriers
 se retourner dans sa tombe
@@ -16387,6 +16800,7 @@ se taper la cloche
 se taper la honte
 se taper un rassis
 se tenir à carreau
+se tirer
 se tirer sur l'élastique
 se tirer une balle
 se tirer une balle dans le pied
@@ -16408,6 +16822,7 @@ second maître hors classe
 second plan
 second rôle
 second souffle
+second vin
 second violon
 seconde d'angle
 seconde nature
@@ -16493,9 +16908,11 @@ sept cents
 sept jours sur sept
 sept péchés capitaux
 septante-neuf
+septante-sept
 septième art
 septième ciel
 serbo-croate
+sergent fourrier
 sergent-chef
 sergent-major
 seringue hypodermique
@@ -16521,6 +16938,7 @@ serrer les fesses
 serrer les rangs
 servant de messe
 service après-vente
+service au volant
 service civil
 service clientèle
 service compris
@@ -16537,6 +16955,7 @@ serviette hygiénique
 setter irlandais
 seuil de pauvreté
 seuil de rentabilité
+seuil de tolérance
 seul au monde
 seul en scène
 seul et même
@@ -16574,15 +16993,16 @@ si ma mémoire est bonne
 si ma tante en avait, on l'appellerait mon oncle
 si majeur
 si nécessaire
-si peu
 si possible
 si seulement
 si tant est que
 si tu le dis
+si tu savais
 si tu veux la paix prépare la guerre
 si tu veux la paix, prépare la guerre
 si tu vois ce que je veux dire
 si vous le dites
+si vous saviez
 si ça se trouve
 side-car
 sieste crapuleuse
@@ -16602,6 +17022,7 @@ simple d'esprit
 singe savant
 singularité gravitationnelle
 singularité technologique
+sino-tibétain
 sinus hyperbolique
 sirop d'érable
 sirop de longue vie
@@ -16638,16 +17059,19 @@ ski para nordique
 ski para-alpin
 ski para-nordique
 ski paranordique
+slalom incliné
 smoke meat
 smoked meat
 snack-bar
 snow-boot
 sobre comme un chameau
+soccer de table
 social-démocrate
 social-démocratie
 socialisme démocratique
 socialisme scientifique
 socio-culturel
+socio-historique
 socio-professionnel
 socio-économique
 société anonyme
@@ -16727,6 +17151,7 @@ soldat de première classe
 solde créditeur
 solde débiteur
 solde intermédiaire de gestion
+solde migratoire
 sole meunière
 soleil couchant
 soleil de minuit
@@ -16766,6 +17191,7 @@ sortie de secours
 sortir avec
 sortir de
 sortir de l'ombre
+sortir de l'ordinaire
 sortir de l'œuf
 sortir de nulle part
 sortir de ses gonds
@@ -16829,6 +17255,7 @@ sous les feux de la rampe
 sous les yeux de
 sous peine de
 sous peu
+sous prétexte de
 sous prétexte que
 sous réserve de
 sous réserve que
@@ -16939,6 +17366,7 @@ sous-titre
 sous-titrer
 sous-titré
 sous-total
+sous-traduction
 sous-traitance
 sous-traitant
 sous-traiter
@@ -16975,6 +17403,7 @@ sport nautique
 sprint assis
 sri-lankais
 stade anal
+stade du miroir
 stade oral
 stand de tir
 staphylocoque doré
@@ -17164,6 +17593,7 @@ syllabe fermée
 syllabe ouverte
 sylvie jaune
 syndicat d'initiative
+syndrome d'Alice au pays des merveilles
 syndrome d'Asperger
 syndrome d'immunodéficience acquise
 syndrome de Diogène
@@ -17171,6 +17601,7 @@ syndrome de Down
 syndrome de Gilles de la Tourette
 syndrome de Klinefelter
 syndrome de Marfan
+syndrome de Noé
 syndrome de Paris
 syndrome de Stein-Leventhal
 syndrome de Stevens-Johnson
@@ -17228,6 +17659,7 @@ séparation des pouvoirs
 séparer le bon grain de l'ivraie
 séquence principale
 série B
+série Z
 série de Taylor
 série temporelle
 sérum de vérité
@@ -17346,6 +17778,12 @@ tapis volant
 tapis-franc
 taquiner la muse
 tardo-antique
+tardo-baroque
+tardo-gothique
+tardo-impérial
+tardo-médiéval
+tardo-romantique
+tardo-républicain
 tarier pâtre
 tarin des aulnes
 tarte Tatin
@@ -17414,6 +17852,7 @@ temps primaire
 temps primitif
 temps propre
 temps secondaire
+temps universel coordonné
 temps verbal
 température ambiante
 tempête dans un verre d'eau
@@ -17435,6 +17874,7 @@ tenir au corps
 tenir au courant
 tenir au jus
 tenir bon
+tenir boutique
 tenir chaud
 tenir compagnie
 tenir compte
@@ -17449,6 +17889,7 @@ tenir en joue
 tenir en place
 tenir en respect
 tenir en échec
+tenir garnison
 tenir l'alcool
 tenir la balance égale
 tenir la barre
@@ -17472,7 +17913,9 @@ tenir les cordons de la bourse
 tenir les rênes
 tenir lieu
 tenir parole
+tenir pour
 tenir pour acquis
+tenir promesse
 tenir quitte
 tenir rigueur
 tenir sa langue
@@ -17482,6 +17925,7 @@ tenir sur ses jambes
 tenir table ouverte
 tenir tête
 tenir à
+tenir à ce que
 tenir à cœur
 tenir à l'œil
 tenir à quelque chose comme à la prunelle de ses yeux
@@ -17535,6 +17979,8 @@ thème céleste
 thé au lait
 thé d'Aubrac
 thé dansant
+thé froid
+thé glacé
 thé noir
 thé vert
 thé à la menthe
@@ -17555,6 +18001,7 @@ thésium des Pyrénées
 théâtre des opérations
 ti baume
 ti-punch
+tibéto-birman
 tic de langage
 tic-tac
 ticket de caisse
@@ -17563,6 +18010,7 @@ ticket-restaurant
 tiens donc
 tiens tiens
 tierce picarde
+tiers de livre
 tiers payant
 tiers-monde
 tiers-mondisme
@@ -17573,6 +18021,7 @@ tigre du Bengale
 tigre à dents de sabre
 tigre-garou
 tiki-taka
+timbre postal
 timbre-poste
 tir ami
 tir de barrage
@@ -17595,6 +18044,7 @@ tirer d'un mauvais pas
 tirer d'un sac deux moutures
 tirer des plans sur la comète
 tirer en longueur
+tirer l'aiguille
 tirer la couverture à soi
 tirer la gueule
 tirer la langue
@@ -17608,7 +18058,9 @@ tirer les marrons du feu
 tirer les oreilles
 tirer les vers du nez
 tirer parti
+tirer parti de
 tirer profit
+tirer profit de
 tirer raison
 tirer sa crampe
 tirer sa révérence
@@ -17627,6 +18079,7 @@ tirer une carotte
 tirer une épine du pied
 tirer vers le bas
 tirer vers le haut
+tirer à balles réelles
 tirer à boulets rouges
 tirer à conséquence
 tirer à la courte paille
@@ -17667,8 +18120,10 @@ tolérance zéro
 tomate cerise
 tomate italienne
 tomber amoureux
+tomber bien
 tomber comme des mouches
 tomber comme un couperet
+tomber d'accord
 tomber dans
 tomber dans l'escarcelle
 tomber dans l'oreille d'un sourd
@@ -17681,14 +18136,17 @@ tomber de haut
 tomber de sa chaise
 tomber de sommeil
 tomber de son piédestal
+tomber des mains
 tomber des nues
 tomber des peaux de lièvre
 tomber du ciel
 tomber en discrédit
 tomber en disgrâce
 tomber en panne
+tomber en quenouille
 tomber en ruine
 tomber enceinte
+tomber mal
 tomber malade
 tomber sous le sens
 tomber sur
@@ -17732,7 +18190,6 @@ toucher sa bille
 toucher terre
 toucher un mot
 toucher à sa fin
-toujours aussi
 toujours est-il que
 tour CN
 tour Eiffel
@@ -17760,6 +18217,7 @@ tour de vis
 tour du chapeau
 tour du poteau
 tour du silence
+tour à plomb
 tour à tour
 tour-lanterne
 touret à meuler
@@ -17793,6 +18251,7 @@ tourte voyageuse
 tourterelle des bois
 tourterelle turque
 tourtière du Lac-St-Jean
+tous aux abris
 tous deux
 tous droits réservés
 tous frais payés
@@ -17805,13 +18264,13 @@ tous les jours
 tous les jours que Dieu fait
 tous les quatre matins
 tous les trente-six du mois
+tout au long de
 tout au moins
 tout au plus
 tout bas
 tout bien considéré
 tout bien pesé
 tout bien réfléchi
-tout bon
 tout ce qui
 tout ce qui brille n'est pas or
 tout chose
@@ -17821,6 +18280,7 @@ tout court
 tout craché
 tout d'abord
 tout d'un coup
+tout d'une haleine
 tout de go
 tout de même
 tout de suite
@@ -17841,9 +18301,7 @@ tout le toutim
 tout mouillé
 tout ou rien
 tout ouïe
-tout petit
 tout plein
-tout quoi
 tout seul
 tout sourire
 tout travail mérite salaire
@@ -17914,6 +18372,7 @@ transition de phase
 transition énergétique
 transpirer à grosses gouttes
 transport en commun
+transport public
 transporteur de vrac
 traquet pâtre
 travail alimentaire
@@ -17947,6 +18406,7 @@ traîner dans la boue
 traîner la patte
 traîner la savate
 traîner les pieds
+traîner ses guêtres
 treize à la douzaine
 treizième mois
 tremblement de terre
@@ -18008,6 +18468,7 @@ trois cents
 trois fois rien
 trois francs six sous
 trois pelés et un tondu
+troisième art
 troisième base
 troisième but
 troisième ligne
@@ -18039,6 +18500,7 @@ trou blanc
 trou d'air
 trou d'eau
 trou d'homme
+trou d'un coup
 trou dans la raquette
 trou de balle
 trou de cul
@@ -18049,6 +18511,7 @@ trou de souris
 trou de ver
 trou du cul
 trou du cul du monde
+trou en un
 trou noir
 trou normand
 trou paumé
@@ -18058,12 +18521,14 @@ trou à rats
 trouble bipolaire
 trouble de l'humeur
 trouble de l'érection
+trouble de la mémoire
 trouble de la personnalité
 trouble de la personnalité narcissique
 trouble de la personnalité paranoïaque
 trouble de la personnalité schizotypique
 trouble de la personnalité évitante
 trouble des conduites alimentaires
+trouble du comportement
 trouble du déficit de l'attention avec ou sans hyperactivité
 trouble du sommeil
 trouble mental
@@ -18174,7 +18639,6 @@ téléphone mobile
 téléphone portable
 téléphone rose
 téléphone sans fil
-téléphoner à
 télévision par câble
 témoin de Jéhovah
 témoin de navigation
@@ -18242,6 +18706,7 @@ un homme à la mer
 un jour
 un jour ou l'autre
 un mal pour un bien
+un malheur n'arrive jamais seul
 un malheur ne vient jamais seul
 un mauvais ouvrier a toujours de mauvais outils
 un max
@@ -18257,7 +18722,6 @@ un point c'est tout
 un point fait à temps en épargne cent
 un pour tous, tous pour un
 un rien
-un sur trois
 un tant soit peu
 un tas de
 un tas de gens
@@ -18274,7 +18738,6 @@ une fois pour toutes
 une fois toutes les lunes
 une hirondelle ne fait pas le printemps
 une image vaut mille mots
-une minute
 une-deux
 union civile
 union sacrée
@@ -18312,10 +18775,12 @@ va-et-vient
 va-nu-pieds
 va-t-en-guerre
 vache de mer
+vache folle
 vache sacrée
 vache à lait
 vache-garou
 vacher luisant
+vacherin glacé
 vaches grasses
 vaches maigres
 vague coréenne
@@ -18346,6 +18811,7 @@ valeur vénale
 valises sous les yeux
 valoir de l'or
 valoir la peine
+valoir la peine de
 valoir le coup
 valoir le coup d'œil
 valoir le détour
@@ -18391,9 +18857,10 @@ vendre son âme au diable
 vendredi fou
 vendredi noir
 vendredi saint
+venez-vous
 venir au monde
 venir aux nouvelles
-venir chercher
+venir avec
 venir de
 venir du cœur
 venir en aide
@@ -18536,11 +19003,15 @@ vieille ville
 vieille école
 vieilles lunes
 vielle à roue
+viens-tu
+vient-il
 vieux breton
+vieux briscard
 vieux comme Hérode
 vieux comme Mathusalem
 vieux comme le monde
 vieux comme les chemins
+vieux crabe
 vieux croûton
 vieux de la vieille
 vieux français
@@ -18551,8 +19022,12 @@ vieux norois
 vieux norrois
 vieux néerlandais
 vieux perse
+vieux renard
+vieux riche
+vieux routier
 vieux russe
 vieux-perse
+vif comme un écureuil
 vif d'esprit
 vif-argent
 vigne vierge
@@ -18588,6 +19063,7 @@ vin rosé
 vin rouge
 vinaigre balsamique
 vinaigre de toilette
+vinaigre des quatre voleurs
 vingt dieux
 vingt et un
 vingt et unième
@@ -18664,7 +19140,6 @@ vivre sa vie
 vocabulaire actif
 vocabulaire passif
 vogue la galère
-voici pourquoi
 voici que
 voie d'accélération
 voie d'eau
@@ -18687,12 +19162,9 @@ voie verte
 voile du palais
 voile intégral
 voile latine
-voilà autre chose
-voilà comment
 voilà qui est fait
 voilà tout
 voir Naples et mourir
-voir avec
 voir clair
 voir d'un bon œil
 voir d'un mauvais œil
@@ -18862,7 +19334,6 @@ y avoir mille à parier
 y avoir péril en la demeure
 y compris
 y compter
-y croire
 y en a des qui
 y laisser des plumes
 y mettre du sien
@@ -18871,6 +19342,7 @@ y perdre son latin
 y regarder à deux fois
 y rester
 y être
+y être pour quelque chose
 y'a plus de jeunesse
 y'a plus qu'à
 yacht-club
@@ -18936,6 +19408,7 @@ zéro pointé
 État islamique d'Irak
 État islamique en Irak et au Levant
 État libre associé de Porto Rico
+État libre d'Orange
 État membre
 État palestinien
 État policier
@@ -18944,11 +19417,13 @@ zéro pointé
 État-nation
 État-providence
 États confédérés d'Amérique
+États du Pape
 États pontificaux
 États-Unien
 États-Unienne
 États-Unis
 États-Unis d'Amérique
+Î.-P.-É.
 Île Chevreau
 Île Christmas
 Île Coco
@@ -18997,6 +19472,7 @@ zéro pointé
 à bout de nerfs
 à bout de souffle
 à bout portant
+à bout touchant
 à bras ouverts
 à bras raccourcis
 à bras-le-corps
@@ -19059,6 +19535,7 @@ zéro pointé
 à coups de
 à court
 à court terme
+à courte vue
 à couteaux tirés
 à couvert
 à craquer
@@ -19102,12 +19579,14 @@ zéro pointé
 à droite
 à décharge
 à découvert
+à défaut
 à défaut de
 à en croire
 à en juger par
 à faire peur
 à fendre l'âme
 à feu d'argent
+à feu vif
 à flanc de
 à fleur de
 à fleur de peau
@@ -19123,6 +19602,7 @@ zéro pointé
 à fonds perdus
 à force
 à force de
+à force ouverte
 à fortiori
 à frais communs
 à franc étrier
@@ -19182,6 +19662,7 @@ zéro pointé
 à l'avance
 à l'avenant
 à l'avenir
+à l'aventure
 à l'aveuglette
 à l'eau de rose
 à l'effet de
@@ -19255,6 +19736,7 @@ zéro pointé
 à la botte de
 à la cantonade
 à la carte
+à la chaude
 à la chaîne
 à la clef
 à la clé
@@ -19262,6 +19744,7 @@ zéro pointé
 à la coque
 à la corde
 à la croisée des chemins
+à la croque au sel
 à la demande
 à la dernière minute
 à la différence de
@@ -19270,9 +19753,11 @@ zéro pointé
 à la dérive
 à la dérobée
 à la faveur de
+à la file
 à la fin
 à la fin des fins
 à la fois
+à la folie
 à la force du poignet
 à la fortune du pot
 à la française
@@ -19304,6 +19789,7 @@ zéro pointé
 à la one again
 à la page
 à la papa
+à la passion
 à la pelle
 à la perfection
 à la petite semaine
@@ -19482,7 +19968,6 @@ zéro pointé
 à regret
 à revendre
 à risque
-à réaction
 à répétition
 à réveiller un mort
 à s'y méprendre
@@ -19529,7 +20014,6 @@ zéro pointé
 à titre gratuit
 à titre indicatif
 à titre onéreux
-à toi
 à toi de jouer
 à toi de me le dire
 à toi de voir
@@ -19564,6 +20048,7 @@ zéro pointé
 à tout-va
 à toute
 à toute allure
+à toute force
 à toute heure
 à toute vapeur
 à toute vitesse
@@ -19756,6 +20241,7 @@ zéro pointé
 électro-encéphalogramme
 électro-ménager
 électro-osmose
+électrodynamique quantique
 électron libre
 électron-volt
 élever au carré
@@ -19891,6 +20377,7 @@ zéro pointé
 être assis entre deux chaises
 être au bout de sa vie
 être au bout de son latin
+être au courant de
 être au fond du trou
 être au four et au moulin
 être au plus bas
@@ -19901,7 +20388,9 @@ zéro pointé
 être aux premières loges
 être aux prises
 être bien vu
+être censé
 être chargé comme une mule
+être d'accord
 être d'avis
 être d'intelligence
 être dans de beaux draps
@@ -19923,18 +20412,26 @@ zéro pointé
 être de la tarte
 être de mèche
 être de notoriété publique
+être de retour
 être debout
 être dos au mur
+être du dernier bien
 être du gâteau
 être du matin
 être du pareil au même
+être en avance
 être en bonne odeur
 être en bons termes
 être en butte
+être en droit de
 être en fonds
 être en mauvais termes
 être en mauvaise odeur
+être en mesure de
 être en odeur de sainteté
+être en passe de
+être en retard
+être en tort
 être en train de
 être fait comme un rat
 être faux comme un jeton
@@ -19945,9 +20442,9 @@ zéro pointé
 être le cas
 être le pied
 être logé à la même enseigne
+être loin de
 être là
 être légion
-être mal en cour
 être mal vu
 être moins une
 être pendu aux lèvres de
@@ -19955,11 +20452,13 @@ zéro pointé
 être plus royaliste que le roi
 être porté sur la chose
 être pris entre deux feux
+être près de
 être question
 être sur la corde raide
 être sur la même longueur d'onde
 être sur la paille
 être sur le départ
+être sur le point de
 être sur les dents
 être sur les nerfs
 être sur les rotules
@@ -19974,19 +20473,24 @@ zéro pointé
 être vivant
 être à
 être à cran
+être à l'aise
+être à l'os
 être à l'ouest
 être à la bourre
 être à la fête
 être à la porte
-être à quelqu’un de + infinitif
+être à même de
 être à son avantage
 être à ça de
 île Bourbon
 île Christmas
+île Jésus
 île Seguin
 île Tintamarre
+île d'Anticosti
 île d'Oléron
 île de Man
+île de Montréal
 île de Nôle
 île de Ré
 île de Wrangel
@@ -20023,6 +20527,7 @@ zéro pointé
 œil pour œil, dent pour dent
 œil-de-bœuf
 œil-de-chat
+œil-de-perdrix
 œil-de-tigre
 œillet barbu
 œillet d'Inde

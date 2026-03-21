@@ -653,14 +653,51 @@ const CARD_TYPES: [CardType; 3] = [
     CardType::LetterPronunciation,
 ];
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct AddCardOptions {
     pub smart_add: u32,
     pub manual_add: Vec<(u32, CardType)>,
+    /// The estimated percent of words known after adding `smart_add` cards
+    pub percent_known_after: f64,
+    /// Display strings for the cards that would be added via smart_add
+    pub preview: Vec<String>,
 }
 
 pub use deck_event::current::CardIndicator;
+
+/// Tier definitions for the frequency list. Each tier covers a range of the most frequent grams.
+/// The first element is the tier name, the second is how many new words this tier adds.
+const TIERS: &[(&str, usize)] = &[
+    ("Elementary", 200),
+    ("Core", 300),
+    ("Basic", 400),
+    ("Essential", 500),
+    ("Functional", 600),
+    ("Intermediate", 700),
+    ("Proficient", 800),
+    ("Advanced", 900),
+    ("Expert", 1000),
+    ("Specialized", 1100),
+    ("Esoteric", usize::MAX), // all remaining
+];
+
+const WORDS_PER_LEVEL: usize = 31;
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct TierInfo {
+    /// 1-indexed tier number
+    pub tier: u32,
+    /// Display name for this tier
+    pub name: String,
+    /// 1-indexed level within this tier
+    pub level: u32,
+    /// Total number of levels in this tier
+    pub total_levels: u32,
+    /// Percent known within the current level (0-100)
+    pub percent_known: f64,
+}
 
 impl CardType {
     pub fn challenge_type(&self) -> ChallengeRequirements {
@@ -780,6 +817,8 @@ pub struct DeckState {
     stats: Stats,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
+    /// The most recently selected goal from an AddCards event
+    goal: Option<GoalSelection>,
 }
 
 #[derive(Clone, Debug)]
@@ -793,6 +832,8 @@ pub struct Deck {
     regressions: Regressions,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
+    /// The most recently selected goal from an AddCards event
+    goal: Option<GoalSelection>,
 }
 
 #[derive(Clone, Debug)]
@@ -816,6 +857,7 @@ impl From<Deck> for DeckState {
             fsrs: deck.fsrs,
             stats: deck.stats,
             leeches: deck.leeches,
+            goal: deck.goal,
         }
     }
 }
@@ -846,13 +888,16 @@ impl weapon::AppState for Deck {
             deck.stats.start_time = Some(*timestamp);
         }
 
-        deck.update_daily_streak(timestamp);
-        deck.stats.total_reviews += 1;
+        let counts_as_review_activity = !matches!(event, LanguageEventContent::SetGoal { .. });
+        if counts_as_review_activity {
+            deck.update_daily_streak(timestamp);
+            deck.stats.total_reviews += 1;
 
-        // Clean up leeches that are more than 250 reviews old
-        let current_reviews = deck.stats.total_reviews;
-        deck.leeches
-            .retain(|_, detected_at| current_reviews - *detected_at <= 250);
+            // Clean up leeches that are more than 250 reviews old
+            let current_reviews = deck.stats.total_reviews;
+            deck.leeches
+                .retain(|_, detected_at| current_reviews - *detected_at <= 250);
+        }
 
         if *event_language != context.course.target_language {
             return deck;
@@ -882,7 +927,8 @@ impl weapon::AppState for Deck {
             LanguageEventContent::CompletePlacementTest { results } => {
                 deck.placement_test_results = Some(results.clone());
             }
-            LanguageEventContent::AddCards { cards } => {
+            LanguageEventContent::AddCards { cards, goal } => {
+                deck.goal = goal.clone();
                 for (index, card) in cards.iter().enumerate() {
                     if let Some(card) = card.get_interned(
                         &context.language_pack.string_rodeo,
@@ -1356,6 +1402,9 @@ impl weapon::AppState for Deck {
                     }
                 }
             }
+            LanguageEventContent::SetGoal { goal } => {
+                deck.goal = goal.clone();
+            }
         }
 
         deck
@@ -1444,6 +1493,7 @@ impl weapon::AppState for Deck {
         let smoothing_window = context
             .language_pack
             .gram_frequencies
+            .entries
             .get_index(0)
             .map(|(_, freq)| freq.ease * 0.2)
             .unwrap_or(1.0); // Fallback if no frequencies exist
@@ -1484,6 +1534,7 @@ impl weapon::AppState for Deck {
             context: context.clone(),
             regressions,
             leeches: state.leeches,
+            goal: state.goal,
         }
     }
 }
@@ -1516,6 +1567,7 @@ impl DeckState {
                 flashcard_type_seen_count: BTreeMap::new(),
             },
             leeches: BTreeMap::new(),
+            goal: None,
         }
     }
 
@@ -1690,21 +1742,209 @@ impl Deck {
     }
 
     /// Get the set of comprehensible written grams (includes both single-word and multiword grams).
-    fn get_comprehensible_written_grams(&self) -> BTreeSet<SpurGram> {
+    fn get_comprehensible_written_grams(
+        &self,
+        count_added_as_comprehensible: bool,
+    ) -> BTreeSet<SpurGram> {
         let mut comprehensible_grams = BTreeSet::new();
 
-        for gram in self.context.language_pack.gram_frequencies.keys() {
+        for gram in self.context.language_pack.gram_frequencies.entries.keys() {
             let card_indicator = CardIndicator::WrittenGram { gram: *gram };
             let card_data = self.cards.get(&card_indicator);
-            if self
-                .context
-                .is_comprehensible(&card_indicator, card_data, &self.regressions)
-            {
+            if self.context.is_comprehensible(
+                &card_indicator,
+                card_data,
+                &self.regressions,
+                count_added_as_comprehensible,
+            ) {
                 comprehensible_grams.insert(*gram);
             }
         }
 
         comprehensible_grams
+    }
+
+    /// Get the set of comprehensible listening grams.
+    fn get_comprehensible_listening_grams(
+        &self,
+        count_added_as_comprehensible: bool,
+    ) -> BTreeSet<SpurGram> {
+        let mut comprehensible_grams = BTreeSet::new();
+
+        for gram in self.context.language_pack.gram_frequencies.entries.keys() {
+            let card_indicator = CardIndicator::ListeningGram { gram: *gram };
+            let card_data = self.cards.get(&card_indicator);
+            if self.context.is_comprehensible(
+                &card_indicator,
+                card_data,
+                &self.regressions,
+                count_added_as_comprehensible,
+            ) {
+                comprehensible_grams.insert(*gram);
+            }
+        }
+
+        comprehensible_grams
+    }
+
+    /// Calculate the percentage of a frequency list that is covered by the given known gram sets.
+    /// Each gram contributes its full frequency count if known in both written and listening,
+    /// or half if known in only one. 100% = all grams known in both modalities.
+    fn percent_known_in(
+        frequency_list: &language_utils::language_pack::FrequencyList,
+        known_written: &BTreeSet<SpurGram>,
+        known_listening: &BTreeSet<SpurGram>,
+    ) -> ComprehensionScore {
+        let total = frequency_list.total_count;
+        if total == 0 {
+            return ComprehensionScore {
+                percent_known: 0.0,
+                all_available_learned: true,
+            };
+        }
+
+        let mut all_available_learned = true;
+        let known: f64 = frequency_list
+            .entries
+            .iter()
+            .map(|(gram, freq)| {
+                let written = known_written.contains(gram);
+                let listening = known_listening.contains(gram);
+                let weight = match (written, listening) {
+                    (true, true) => 1.0,
+                    (true, false) | (false, true) => {
+                        all_available_learned = false;
+                        0.5
+                    }
+                    (false, false) => {
+                        all_available_learned = false;
+                        0.0
+                    }
+                };
+                freq.count as f64 * weight
+            })
+            .sum();
+
+        ComprehensionScore {
+            percent_known: known / total as f64 * 100.0,
+            all_available_learned,
+        }
+    }
+
+    /// Compute the percent known within the current tier (first tier not at 100%).
+    fn tier_percent_known_with(
+        frequency_list: &language_utils::language_pack::FrequencyList,
+        known_written: &BTreeSet<SpurGram>,
+        known_listening: &BTreeSet<SpurGram>,
+    ) -> f64 {
+        let all_grams: Vec<SpurGram> = frequency_list.entries.keys().copied().collect();
+        let mut offset = 0usize;
+
+        for &(_name, size) in TIERS {
+            let end = if size == usize::MAX {
+                all_grams.len()
+            } else {
+                (offset + size).min(all_grams.len())
+            };
+
+            if offset >= all_grams.len() {
+                return 100.0;
+            }
+
+            let tier_grams = &all_grams[offset..end];
+            let total_levels = tier_grams.len().div_ceil(WORDS_PER_LEVEL);
+
+            for level_idx in 0..total_levels {
+                let level_start = level_idx * WORDS_PER_LEVEL;
+                let level_end = ((level_idx + 1) * WORDS_PER_LEVEL).min(tier_grams.len());
+                let level_grams = &tier_grams[level_start..level_end];
+
+                let mut level_total: u64 = 0;
+                let mut level_known: f64 = 0.0;
+                for gram in level_grams {
+                    if let Some(freq) = frequency_list.entries.get(gram) {
+                        let count = freq.count as f64;
+                        level_total += freq.count as u64;
+                        let w = known_written.contains(gram);
+                        let l = known_listening.contains(gram);
+                        level_known += match (w, l) {
+                            (true, true) => count,
+                            (true, false) | (false, true) => count * 0.5,
+                            (false, false) => 0.0,
+                        };
+                    }
+                }
+
+                let pct = if level_total > 0 {
+                    level_known / level_total as f64 * 100.0
+                } else {
+                    100.0
+                };
+
+                if pct < 100.0 {
+                    return pct;
+                }
+            }
+
+            offset = end;
+        }
+
+        100.0
+    }
+
+    /// Get the percent known for a goal. For movies, uses the movie's frequency list.
+    /// For essential (None), returns the current tier/level percent.
+    #[allow(dead_code)]
+    fn goal_percent_known(&self, goal: &Option<GoalSelection>) -> ComprehensionScore {
+        let written = self.get_comprehensible_written_grams(true);
+        let listening = self.get_comprehensible_listening_grams(true);
+        self.goal_percent_known_with(goal, &written, &listening)
+    }
+
+    /// Same as goal_percent_known but with pre-computed (possibly projected) gram sets.
+    fn goal_percent_known_with(
+        &self,
+        goal: &Option<GoalSelection>,
+        known_written: &BTreeSet<SpurGram>,
+        known_listening: &BTreeSet<SpurGram>,
+    ) -> ComprehensionScore {
+        match goal {
+            Some(goal) => {
+                let source_id = match goal {
+                    GoalSelection::Movie { id } => {
+                        language_utils::FrequencySourceId::Movie(id.clone())
+                    }
+                    GoalSelection::PimsleurLesson { level, lesson } => {
+                        language_utils::FrequencySourceId::PimsleurLesson(
+                            language_utils::PimsleurLesson {
+                                level: *level,
+                                lesson: *lesson,
+                            },
+                        )
+                    }
+                };
+                self.context
+                    .language_pack
+                    .source_gram_frequencies
+                    .get(&source_id)
+                    .map(|fl| Self::percent_known_in(fl, known_written, known_listening))
+                    .unwrap_or(ComprehensionScore {
+                        percent_known: 0.0,
+                        all_available_learned: true,
+                    })
+            }
+            None => {
+                let percent_known = Self::tier_percent_known_with(
+                    &self.context.language_pack.gram_frequencies,
+                    known_written,
+                    known_listening,
+                );
+                ComprehensionScore {
+                    percent_known,
+                    all_available_learned: false,
+                }
+            }
+        }
     }
 
     /// Returns all cards as summaries, ordered consistently with get_review_info
@@ -1880,28 +2120,111 @@ impl Deck {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_percent_of_words_known(&self) -> f64 {
-        let total_words_reviewed: u64 = self
-            .cards_excluding_leeches()
-            .filter_map(|(card_indicator, card_data)| {
-                let is_reviewed = match card_data {
-                    CardData::Added { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
-                    CardData::Ghost { fsrs_card } => fsrs_card.state != rs_fsrs::State::New,
+        let written = self.get_comprehensible_written_grams(true);
+        let listening = self.get_comprehensible_listening_grams(true);
+        Self::percent_known_in(
+            &self.context.language_pack.gram_frequencies,
+            &written,
+            &listening,
+        )
+        .percent_known
+            / 100.0
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_goal(&self) -> Option<GoalSelection> {
+        self.goal.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn set_goal(&self, goal: Option<GoalSelection>) -> DeckEvent {
+        DeckEvent::Language(LanguageEvent {
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
+            content: LanguageEventContent::SetGoal { goal },
+        })
+    }
+
+    /// Get the user's current tier (first tier not at 100%) and their progress within it.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_current_tier(&self) -> TierInfo {
+        let written = self.get_comprehensible_written_grams(true);
+        let listening = self.get_comprehensible_listening_grams(true);
+        let entries = &self.context.language_pack.gram_frequencies.entries;
+        let all_grams: Vec<SpurGram> = entries.keys().copied().collect();
+
+        let mut offset = 0usize;
+        for (i, &(name, size)) in TIERS.iter().enumerate() {
+            let end = if size == usize::MAX {
+                all_grams.len()
+            } else {
+                (offset + size).min(all_grams.len())
+            };
+
+            if offset >= all_grams.len() {
+                return TierInfo {
+                    tier: (i + 1) as u32,
+                    name: name.to_string(),
+                    level: 1,
+                    total_levels: 1,
+                    percent_known: 100.0,
                 };
-                if is_reviewed {
-                    match card_indicator {
-                        CardIndicator::WrittenGram { .. } => {
-                            self.context.get_card_frequency(card_indicator)
-                        }
-                        CardIndicator::ListeningGram { .. }
-                        | CardIndicator::LetterPronunciation { .. } => None,
+            }
+
+            let tier_grams = &all_grams[offset..end];
+            let total_levels = tier_grams.len().div_ceil(WORDS_PER_LEVEL) as u32;
+
+            // Check each level within this tier
+            for level_idx in 0..total_levels {
+                let level_start = level_idx as usize * WORDS_PER_LEVEL;
+                let level_end = ((level_idx as usize + 1) * WORDS_PER_LEVEL).min(tier_grams.len());
+                let level_grams = &tier_grams[level_start..level_end];
+
+                let mut level_total: u64 = 0;
+                let mut level_known: f64 = 0.0;
+                for gram in level_grams {
+                    if let Some(freq) = entries.get(gram) {
+                        let count = freq.count as f64;
+                        level_total += freq.count as u64;
+                        let w = written.contains(gram);
+                        let l = listening.contains(gram);
+                        level_known += match (w, l) {
+                            (true, true) => count,
+                            (true, false) | (false, true) => count * 0.5,
+                            (false, false) => 0.0,
+                        };
                     }
-                } else {
-                    None
                 }
-            })
-            .map(|freq| freq.count as u64)
-            .sum();
-        total_words_reviewed as f64 / self.context.language_pack.total_word_count as f64
+
+                let pct = if level_total > 0 {
+                    level_known / level_total as f64 * 100.0
+                } else {
+                    100.0
+                };
+
+                if pct < 100.0 {
+                    return TierInfo {
+                        tier: (i + 1) as u32,
+                        name: name.to_string(),
+                        level: level_idx + 1,
+                        total_levels,
+                        percent_known: pct,
+                    };
+                }
+            }
+
+            offset = end;
+        }
+
+        // All tiers complete
+        let last = TIERS.len();
+        TierInfo {
+            tier: last as u32,
+            name: TIERS[last - 1].0.to_string(),
+            level: 1,
+            total_levels: 1,
+            percent_known: 100.0,
+        }
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -1937,41 +2260,45 @@ impl Deck {
         let language_pack = &self.context.language_pack;
         let mut stats = Vec::new();
 
-        let comprehensible_grams = self.get_comprehensible_written_grams();
+        let comprehensible_written = self.get_comprehensible_written_grams(true);
+        let comprehensible_listening = self.get_comprehensible_listening_grams(true);
 
         for movie_id in language_pack.movies.keys() {
-            let Some(movie_frequencies) = language_pack.movie_gram_frequencies.get(movie_id) else {
+            let source_id = language_utils::FrequencySourceId::Movie(movie_id.clone());
+            let Some(movie_frequencies) = language_pack.source_gram_frequencies.get(&source_id)
+            else {
                 continue;
             };
 
-            if movie_frequencies.is_empty() {
+            if movie_frequencies.entries.is_empty() {
                 continue;
             }
 
-            // Use pre-computed total gram count (from unfiltered data) for accurate percentages
-            let Some(movie) = language_pack.movies.get(movie_id) else {
-                continue;
-            };
-            let total_word_count = movie.total_gram_count;
+            let total_word_count = movie_frequencies.total_count;
 
             if total_word_count == 0 {
                 continue;
             }
 
-            // Calculate comprehensible units from the filtered gram frequencies
-            let mut comprehensible_word_count = 0u64;
-
-            for (gram, frequency) in movie_frequencies.iter() {
-                if comprehensible_grams.contains(gram) {
-                    comprehensible_word_count += frequency.count as u64;
-                }
-            }
-
-            let percent_known =
-                (comprehensible_word_count as f64 / total_word_count as f64) * 100.0;
+            let score = Self::percent_known_in(
+                movie_frequencies,
+                &comprehensible_written,
+                &comprehensible_listening,
+            );
+            let percent_known = score.percent_known;
+            // For milestone calculation, use written comprehension as the card count basis
+            let comprehensible_word_count: u64 = movie_frequencies
+                .entries
+                .iter()
+                .filter_map(|(gram, freq)| {
+                    comprehensible_written
+                        .contains(gram)
+                        .then_some(freq.count as u64)
+                })
+                .sum();
 
             // Calculate cards needed to reach next 5% milestone
-            let cards_to_next_milestone = if percent_known < 100.0 {
+            let cards_to_next_milestone = if !score.all_available_learned {
                 let next_milestone = ((percent_known / 5.0).ceil() * 5.0).min(100.0);
                 let target_word_count = ((next_milestone / 100.0) * total_word_count as f64) as u64;
                 let words_needed = target_word_count.saturating_sub(comprehensible_word_count);
@@ -1979,9 +2306,10 @@ impl Deck {
                 if words_needed > 0 {
                     // Collect unknown grams with their frequencies.
                     let mut unknown_words: Vec<(SpurGram, u64)> = movie_frequencies
+                        .entries
                         .iter()
                         .filter_map(|(gram, frequency)| {
-                            if comprehensible_grams.contains(gram) {
+                            if comprehensible_written.contains(gram) {
                                 None
                             } else {
                                 Some((*gram, frequency.count as u64))
@@ -2015,6 +2343,7 @@ impl Deck {
             stats.push(MovieStats {
                 id: movie_id.clone(),
                 percent_known,
+                all_available_learned: score.all_available_learned,
                 cards_to_next_milestone,
             });
         }
@@ -2023,6 +2352,84 @@ impl Deck {
         stats.sort_by(|a, b| b.percent_known.partial_cmp(&a.percent_known).unwrap());
 
         stats
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_pimsleur_stats(&self) -> Vec<PimsleurStats> {
+        let language_pack = &self.context.language_pack;
+        let mut stats = Vec::new();
+
+        let comprehensible_written = self.get_comprehensible_written_grams(true);
+        let comprehensible_listening = self.get_comprehensible_listening_grams(true);
+
+        for (source_id, freq_list) in &language_pack.source_gram_frequencies {
+            let language_utils::FrequencySourceId::PimsleurLesson(lesson) = source_id else {
+                continue;
+            };
+
+            if freq_list.entries.is_empty() || freq_list.total_count == 0 {
+                continue;
+            }
+
+            let score = Self::percent_known_in(
+                freq_list,
+                &comprehensible_written,
+                &comprehensible_listening,
+            );
+
+            stats.push(PimsleurStats {
+                level: lesson.level,
+                lesson: lesson.lesson,
+                percent_known: score.percent_known,
+                all_available_learned: score.all_available_learned,
+            });
+        }
+
+        // Sort by level then lesson
+        stats.sort_by(|a, b| a.level.cmp(&b.level).then(a.lesson.cmp(&b.lesson)));
+
+        stats
+    }
+
+    /// Returns the best movie goal: highest RT score among incomplete movies.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_best_movie_goal(&self) -> Option<GoalSelection> {
+        let stats = self.get_movie_stats();
+        let incomplete: std::collections::BTreeSet<_> = stats
+            .iter()
+            .filter(|s| !s.all_available_learned)
+            .map(|s| &s.id)
+            .collect();
+
+        let target_iso = self.context.course.target_language.iso_639_1();
+        self.context
+            .language_pack
+            .movies
+            .iter()
+            .filter(|(id, meta)| {
+                incomplete.contains(id)
+                    && meta
+                        .original_language
+                        .as_deref()
+                        .is_some_and(|lang| lang == target_iso)
+            })
+            .filter_map(|(id, meta)| meta.rotten_tomatoes_score.map(|score| (id, score)))
+            .max_by_key(|(_, score)| *score)
+            .map(|(id, _)| GoalSelection::Movie { id: id.clone() })
+    }
+
+    /// Returns the best Pimsleur lesson: the first incomplete one (by level/lesson).
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_best_pimsleur_goal(&self) -> Option<GoalSelection> {
+        let stats = self.get_pimsleur_stats();
+        // Already sorted by level then lesson
+        stats
+            .into_iter()
+            .find(|s| !s.all_available_learned)
+            .map(|s| GoalSelection::PimsleurLesson {
+                level: s.level,
+                lesson: s.lesson,
+            })
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -2060,6 +2467,7 @@ impl Deck {
     pub fn add_card_options(
         &self,
         banned_challenge_types: Vec<ChallengeRequirements>,
+        goal: Option<GoalSelection>,
     ) -> AddCardOptions {
         let banned_types_set = banned_challenge_types
             .into_iter()
@@ -2067,13 +2475,64 @@ impl Deck {
 
         let max_cards_to_add = self.max_cards_to_add();
 
+        // Collect smart add cards to compute both count and projected percentage
+        let smart_add_cards: Vec<_> = self
+            .next_unknown_cards(
+                AllowedCards::BannedRequirements(banned_types_set.clone()),
+                &goal,
+            )
+            .take(max_cards_to_add)
+            .collect();
+        let smart_add_count = smart_add_cards.len() as u32;
+
+        // Calculate projected percent known after adding smart_add cards
+        // Build projected gram sets including the new cards
+        let mut projected_written = self.get_comprehensible_written_grams(true);
+        let mut projected_listening = self.get_comprehensible_listening_grams(true);
+        for card in &smart_add_cards {
+            match card {
+                CardIndicator::WrittenGram { gram } => {
+                    projected_written.insert(*gram);
+                }
+                CardIndicator::ListeningGram { gram } => {
+                    projected_listening.insert(*gram);
+                }
+                CardIndicator::LetterPronunciation { .. } => {}
+            }
+        }
+
+        let score_after =
+            self.goal_percent_known_with(&goal, &projected_written, &projected_listening);
+        let percent_known_after = score_after.percent_known;
+
+        let preview: Vec<String> = smart_add_cards
+            .iter()
+            .map(|card| match card {
+                CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                    let resolved = self
+                        .context
+                        .language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&self.context.language_pack.string_rodeo);
+                    resolved.to_display_string(self.context.course.target_language)
+                }
+                CardIndicator::LetterPronunciation { pattern, .. } => self
+                    .context
+                    .language_pack
+                    .string_rodeo
+                    .resolve(pattern)
+                    .to_string(),
+            })
+            .collect();
+
         AddCardOptions {
             manual_add: vec![
                 (
                     if banned_types_set.contains(&ChallengeRequirements::Text) {
                         0
                     } else {
-                        self.next_unknown_cards(AllowedCards::Type(CardType::TargetLanguage))
+                        self.next_unknown_cards(AllowedCards::Type(CardType::TargetLanguage), &goal)
                             .take(max_cards_to_add)
                             .count() as u32
                     },
@@ -2083,7 +2542,7 @@ impl Deck {
                     if banned_types_set.contains(&ChallengeRequirements::Listening) {
                         0
                     } else {
-                        self.next_unknown_cards(AllowedCards::Type(CardType::Listening))
+                        self.next_unknown_cards(AllowedCards::Type(CardType::Listening), &goal)
                             .take(max_cards_to_add)
                             .count() as u32
                     },
@@ -2093,17 +2552,19 @@ impl Deck {
                     if banned_types_set.contains(&ChallengeRequirements::Speaking) {
                         0
                     } else {
-                        self.next_unknown_cards(AllowedCards::Type(CardType::LetterPronunciation))
-                            .take(max_cards_to_add)
-                            .count() as u32
+                        self.next_unknown_cards(
+                            AllowedCards::Type(CardType::LetterPronunciation),
+                            &goal,
+                        )
+                        .take(max_cards_to_add)
+                        .count() as u32
                     },
                     CardType::LetterPronunciation,
                 ),
             ],
-            smart_add: self
-                .next_unknown_cards(AllowedCards::BannedRequirements(banned_types_set))
-                .take(max_cards_to_add)
-                .count() as u32,
+            smart_add: smart_add_count,
+            percent_known_after,
+            preview,
         }
     }
 
@@ -2113,6 +2574,7 @@ impl Deck {
         card_type: Option<CardType>,
         count: usize,
         banned_challenge_types: Vec<ChallengeRequirements>,
+        goal: Option<GoalSelection>,
     ) -> Option<DeckEvent> {
         let banned_types_set = banned_challenge_types
             .into_iter()
@@ -2128,7 +2590,7 @@ impl Deck {
         };
 
         let cards = self
-            .next_unknown_cards(allowed_cards)
+            .next_unknown_cards(allowed_cards, &goal)
             .take(count)
             .map(|card| {
                 card.resolve(
@@ -2142,7 +2604,7 @@ impl Deck {
             DeckEvent::Language(LanguageEvent {
                 target_language: self.context.course.target_language,
                 native_language: self.context.course.native_language,
-                content: LanguageEventContent::AddCards { cards },
+                content: LanguageEventContent::AddCards { cards, goal },
             })
         })
     }
@@ -2420,7 +2882,7 @@ impl Deck {
             FxHashMap::default();
 
         // Iterate through actual grams/phrases in the language pack and find ones matching our target frequencies
-        for (gram, frequency) in self.context.language_pack.gram_frequencies.iter() {
+        for (gram, frequency) in self.context.language_pack.gram_frequencies.entries.iter() {
             let freq_value = frequency.count as f64;
 
             // Check if this frequency is close to one of our target frequencies
@@ -2502,18 +2964,38 @@ pub struct FrequencyKnowledgePoint {
     pub example_words: String,
 }
 
+struct ComprehensionScore {
+    percent_known: f64,
+    all_available_learned: bool,
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
 #[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub struct MovieStats {
     pub id: String,
     pub percent_known: f64,
+    pub all_available_learned: bool,
     pub cards_to_next_milestone: Option<u32>,
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
+#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
+pub struct PimsleurStats {
+    pub level: u32,
+    pub lesson: u32,
+    pub percent_known: f64,
+    pub all_available_learned: bool,
+}
+
 impl Deck {
-    pub(crate) fn next_unknown_cards(&self, allowed_cards: AllowedCards) -> NextCardsIterator {
-        NextCardsIterator::new(self, allowed_cards)
+    pub(crate) fn next_unknown_cards(
+        &self,
+        allowed_cards: AllowedCards,
+        goal: &Option<GoalSelection>,
+    ) -> NextCardsIterator {
+        NextCardsIterator::new(self, allowed_cards, goal)
     }
 
     fn get_comprehensible_sentence_containing(
@@ -2625,11 +3107,19 @@ impl Deck {
         None
     }
 
-    fn is_listened_gram_comprehensible(&self, gram: &SpurGram) -> bool {
+    fn is_listened_gram_comprehensible(
+        &self,
+        gram: &SpurGram,
+        count_added_as_comprehensible: bool,
+    ) -> bool {
         let card_indicator = CardIndicator::ListeningGram { gram: *gram };
         let card_data = self.cards.get(&card_indicator);
-        self.context
-            .is_comprehensible(&card_indicator, card_data, &self.regressions)
+        self.context.is_comprehensible(
+            &card_indicator,
+            card_data,
+            &self.regressions,
+            count_added_as_comprehensible,
+        )
     }
 }
 
@@ -2640,9 +3130,11 @@ impl Context {
     /// For letter pronunciation cards: checks if the pattern exists in the frequency map
     pub fn is_card_valid(&self, card: &CardIndicator<SpurGram, Spur>) -> bool {
         match card {
-            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
-                self.language_pack.gram_frequencies.contains_key(gram)
-            }
+            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => self
+                .language_pack
+                .gram_frequencies
+                .entries
+                .contains_key(gram),
             CardIndicator::LetterPronunciation { pattern, position } => self
                 .language_pack
                 .pattern_frequency_map
@@ -2655,13 +3147,13 @@ impl Context {
         card_indicator: &CardIndicator<SpurGram, Spur>,
         card_data: Option<&CardData>,
         regressions: &Regressions,
+        count_added_as_comprehensible: bool,
     ) -> bool {
         match card_data {
-            // For tracked cards (both Added and Ghost), check if they're in review state
-            Some(CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card }) => {
-                // Card is comprehensible if it's in review state (not new, learning, or relearning)
-                fsrs_card.state == rs_fsrs::State::Review
+            Some(CardData::Added { fsrs_card }) => {
+                count_added_as_comprehensible || fsrs_card.state == rs_fsrs::State::Review
             }
+            Some(CardData::Ghost { fsrs_card }) => fsrs_card.state == rs_fsrs::State::Review,
             // For unadded cards, use regression predictions
             None => {
                 // Check if we have high confidence they would be known
@@ -2788,9 +3280,12 @@ impl Context {
     /// Get the frequency count for a card (used for isotonic regression)
     fn get_card_frequency(&self, card: &CardIndicator<SpurGram, Spur>) -> Option<Frequency> {
         match card {
-            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
-                self.language_pack.gram_frequencies.get(gram).copied()
-            }
+            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => self
+                .language_pack
+                .gram_frequencies
+                .entries
+                .get(gram)
+                .copied(),
             CardIndicator::LetterPronunciation { pattern, position } => {
                 // Look up the actual frequency of this pattern from our calculated data
                 let count = self
@@ -2837,7 +3332,7 @@ impl Context {
             for heteronym in heteronyms {
                 if let Some(grams) = self.language_pack.heteronym_to_grams.get(heteronym)
                     && let Some(gram) = grams.first()
-                    && let Some(freq) = self.language_pack.gram_frequencies.get(gram)
+                    && let Some(freq) = self.language_pack.gram_frequencies.entries.get(gram)
                 {
                     return Some((*heteronym, *freq));
                 }
@@ -2854,6 +3349,7 @@ impl Context {
         grams.iter().any(|g| {
             self.language_pack
                 .gram_frequencies
+                .entries
                 .get(g)
                 .is_some_and(|f| f.easy)
         })
@@ -3879,7 +4375,7 @@ mod tests {
         let mut deck = Deck::default();
 
         // Test that we can add cards to the default deck
-        if let Some(event) = deck.add_next_unknown_cards(None, 1, Vec::new()) {
+        if let Some(event) = deck.add_next_unknown_cards(None, 1, Vec::new(), None) {
             let ts = weapon::data_model::Timestamped {
                 timestamp: chrono::Utc::now(),
                 within_device_events_index: 0,
@@ -3891,7 +4387,7 @@ mod tests {
             deck = Deck::finalize(state, &context);
 
             // If language pack has data, we should have added a card
-            if !context.language_pack.gram_frequencies.is_empty() {
+            if !context.language_pack.gram_frequencies.entries.is_empty() {
                 assert!(!deck.cards.is_empty());
                 println!("✓ Successfully added card to default deck");
             } else {
@@ -3903,6 +4399,38 @@ mod tests {
     }
 
     #[test]
+    fn test_set_goal_does_not_increment_review_stats() {
+        use crate::{Deck, DeckState, GoalSelection};
+        use weapon::AppState;
+        use weapon::data_model::Timestamped;
+
+        let deck = Deck::default();
+        let context = deck.context.clone();
+        let event = deck.set_goal(Some(GoalSelection::Movie {
+            id: "tt0111161".to_string(),
+        }));
+        let timestamped = Timestamped {
+            timestamp: chrono::Utc::now(),
+            within_device_events_index: 0,
+            event,
+        };
+
+        let state = DeckState::from(deck);
+        let state = Deck::process_event(state, &context, &timestamped);
+        let deck = Deck::finalize(state, &context);
+
+        assert_eq!(deck.stats.total_reviews, 0);
+        assert_eq!(deck.stats.xp, 0.0);
+        assert!(deck.stats.daily_streak.is_none());
+        assert_eq!(
+            deck.get_goal(),
+            Some(GoalSelection::Movie {
+                id: "tt0111161".to_string(),
+            })
+        );
+    }
+
+    #[test]
     fn test_add_card_limits_scale_with_deck_size() {
         use crate::{Deck, DeckState};
         use weapon::AppState;
@@ -3911,7 +4439,7 @@ mod tests {
         let mut deck = Deck::default();
 
         let assert_limits = |deck: &Deck| {
-            let options = deck.add_card_options(Vec::new());
+            let options = deck.add_card_options(Vec::new(), None);
             let expected_max = if deck.num_cards() < 5 {
                 1
             } else if deck.num_cards() < 11 {
@@ -3932,7 +4460,7 @@ mod tests {
         assert_limits(&deck);
 
         while deck.num_cards() < 12 {
-            let Some(event) = deck.add_next_unknown_cards(None, 5, Vec::new()) else {
+            let Some(event) = deck.add_next_unknown_cards(None, 5, Vec::new(), None) else {
                 break;
             };
 
@@ -4213,7 +4741,7 @@ mod tests {
             })
             .expect("Should have an Adp gram for 'à'");
 
-        let comprehensible_grams = deck.get_comprehensible_written_grams();
+        let comprehensible_grams = deck.get_comprehensible_written_grams(false);
         let sentence = deck.get_comprehensible_sentence_containing(
             Some(adp_gram),
             comprehensible_grams,

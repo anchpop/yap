@@ -22,9 +22,11 @@ import { UserProfilePage } from '@/pages/user-profile'
 import { AboutPage } from '@/pages/about'
 import { LandingPage } from '@/pages/landing'
 import { NotFoundPage } from '@/pages/not-found'
+import { GoalsPage } from '@/pages/goals'
 import { playSoundEffect } from '@/lib/sound-effects'
 import { registerSW } from 'virtual:pwa-register'
 import { NoCardsReady } from '@/components/no-cards-ready'
+import { useGoal, goalToGoalSelection } from '@/hooks/useGoal'
 import { SetDisplayName } from '@/components/SetDisplayName'
 
 import type { Dispatch, SetStateAction } from 'react'
@@ -600,6 +602,7 @@ function findNextDueCard(deck: Deck): CardSummary | null {
 interface MovieWithMetadata {
   id: string
   percent_known: number
+  all_available_learned: boolean
   cards_to_next_milestone: number | null | undefined
   title?: string
   year?: number
@@ -619,6 +622,7 @@ interface ReviewProps {
 
 function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, moviesWithMetadata, startingFresh }: ReviewProps) {
   const weapon = useWeapon()
+  const { goal, setGoal } = useGoal(deck.get_goal())
 
   const CANT_LISTEN_DURATION_MS = 15 * 60 * 1000;
 
@@ -635,13 +639,16 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
   const nextDueCard = findNextDueCard(deck)
 
-  // Find movie closest to next milestone for NoCardsReady component (native language only)
+  // Filter movies to target language for goal selector
   const targetLanguageIso = languageToIso6391(targetLanguage)
-  const closestToMilestone = useMemo(() => {
-    return moviesWithMetadata
-      .filter(m => m.cards_to_next_milestone !== null && m.cards_to_next_milestone !== undefined && m.original_language === targetLanguageIso)
-      .sort((a, b) => (a.cards_to_next_milestone || 0) - (b.cards_to_next_milestone || 0))[0]
+  const targetLanguageMovies = useMemo(() => {
+    return moviesWithMetadata.filter(m => m.original_language === targetLanguageIso)
   }, [moviesWithMetadata, targetLanguageIso])
+
+  const hasPimsleur = useMemo(() => {
+    return deck.get_pimsleur_stats().length > 0
+  }, [deck])
+
 
   // Update scheduled push notifications and language stats when the deck state changes
   useEffect(() => {
@@ -787,12 +794,14 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
   }, [deck, accessToken, reviewInfo])
 
 
+  const goalSelection = goalToGoalSelection(goal);
+
   const addNextCards = useCallback(async (card_type: CardType | undefined, count: number) => {
-    const event = deck.add_next_unknown_cards(card_type, count, bannedChallengeTypes);
+    const event = deck.add_next_unknown_cards(card_type, count, bannedChallengeTypes, goalSelection);
     if (event) {
       weapon.add_deck_event(event);
     }
-  }, [deck, weapon, bannedChallengeTypes])
+  }, [deck, weapon, bannedChallengeTypes, goalSelection])
 
   const handleRating = async (rating: Rating) => {
     if (!currentChallenge || (currentChallenge.type !== 'FlashCardReview' && currentChallenge.type !== 'PronunciationChallenge')) {
@@ -942,7 +951,10 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
             deck={deck}
             bannedChallengeTypes={bannedChallengeTypes}
             userInfo={userInfo}
-            closestToMilestone={closestToMilestone}
+            goal={goal}
+            setGoal={setGoal}
+            moviesWithMetadata={targetLanguageMovies}
+            hasPimsleur={hasPimsleur}
           />
         ) : currentChallenge ? (
           (currentChallenge.type === 'PronunciationChallenge') ? (
@@ -1026,6 +1038,7 @@ function App() {
               <Route path="learn" element={<ReviewPage />} />
               <Route path="dictionary" element={<DictionaryPage />} />
               <Route path="leeches" element={<LeechesPage />} />
+              <Route path="goals" element={<GoalsPage />} />
               <Route path="select-language" element={<SelectLanguagePage />} />
               <Route path="user/id/:id" element={<UserProfilePage />} />
               <Route path="*" element={<NotFoundPage />} />
@@ -1142,7 +1155,7 @@ export function useDeckSelection():
   }
 }
 
-function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
+export function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
   const weapon = useWeapon()
   const [retryCount, setRetryCount] = useState(0)
   const [loadingState, setLoadingState] = useState<{ message: string, progress: number } | null>(null)

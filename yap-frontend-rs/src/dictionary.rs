@@ -28,6 +28,7 @@ impl Deck {
 
         let mut entries: Vec<((u8, usize), GramDictionaryEntry)> = language_pack
             .gram_frequencies
+            .entries
             .iter()
             .enumerate()
             .filter_map(|(frequency_index, (spur_gram, _freq))| {
@@ -140,6 +141,7 @@ impl Deck {
         let language_pack = &self.context.language_pack;
         language_pack
             .gram_frequencies
+            .entries
             .iter()
             .filter(|(spur_gram, _)| language_pack.gram_definitions.contains_key(spur_gram))
             .count()
@@ -149,7 +151,10 @@ impl Deck {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn add_gram_by_frequency_index(&self, frequency_index: usize) -> Option<DeckEvent> {
         let language_pack = &self.context.language_pack;
-        let (spur_gram, _freq) = language_pack.gram_frequencies.get_index(frequency_index)?;
+        let (spur_gram, _freq) = language_pack
+            .gram_frequencies
+            .entries
+            .get_index(frequency_index)?;
 
         let card = CardIndicator::WrittenGram { gram: *spur_gram };
         let resolved_card = card.resolve(&language_pack.string_rodeo, &language_pack.gram_rodeo);
@@ -159,6 +164,7 @@ impl Deck {
             native_language: self.context.course.native_language,
             content: LanguageEventContent::AddCards {
                 cards: vec![resolved_card],
+                goal: None,
             },
         }))
     }

@@ -3,6 +3,13 @@ use language_utils::{Atom, GramDefinition, Heteronym, PartOfSpeech};
 use lasso::Spur;
 use pav_regression::{IsotonicRegression, Point, SmoothRegression, UnitWeight};
 
+#[derive(serde::Serialize, tsify::Tsify)]
+#[tsify(into_wasm_abi)]
+pub struct PlacementTestWord {
+    pub word: String,
+    pub definition: String,
+}
+
 /// Extract a single heteronym from a gram, if it's a single-word gram.
 /// Returns None for multi-word grams.
 fn extract_heteronym(
@@ -74,6 +81,18 @@ impl Context {
         };
         !definition.cognate && !definition.false_cognate
     }
+
+    /// Get the first native-language definition for a heteronym, if available.
+    pub(crate) fn get_first_definition(&self, word: &Heteronym<Spur>) -> Option<String> {
+        let grams = self.language_pack.heteronym_to_grams.get(word)?;
+        let gram_def = grams
+            .iter()
+            .find_map(|g| self.language_pack.gram_definitions.get(g))?;
+        let GramDefinition::Dictionary(entry) = gram_def else {
+            return None;
+        };
+        entry.definitions.first().map(|d| d.native.clone())
+    }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
@@ -86,7 +105,7 @@ impl Deck {
         target_ln_freq: f32,
         excluded_lemmas: &std::collections::HashSet<Spur>,
     ) -> Option<(Heteronym<Spur>, language_utils::Frequency)> {
-        let frequencies = &self.context.language_pack.gram_frequencies;
+        let frequencies = &self.context.language_pack.gram_frequencies.entries;
         let gram_rodeo = &self.context.language_pack.gram_rodeo;
         if frequencies.is_empty() {
             return None;
@@ -138,7 +157,7 @@ impl Deck {
         &self,
         known_words: Vec<String>,
         unknown_words: Vec<String>,
-    ) -> Vec<String> {
+    ) -> Vec<PlacementTestWord> {
         let gram_rodeo = &self.context.language_pack.gram_rodeo;
 
         // Convert word strings to their most common heteronyms using the helper method
@@ -161,6 +180,7 @@ impl Deck {
             .context
             .language_pack
             .gram_frequencies
+            .entries
             .iter()
             .filter_map(|(gop, freq)| extract_heteronym(gop, gram_rodeo).map(|h| (h, freq)))
             .next()
@@ -173,6 +193,7 @@ impl Deck {
             .context
             .language_pack
             .gram_frequencies
+            .entries
             .iter()
             .rev()
             .filter_map(|(gop, freq)| extract_heteronym(gop, gram_rodeo).map(|h| (h, freq)))
@@ -189,7 +210,7 @@ impl Deck {
         let mut excluded_lemmas = std::collections::HashSet::new();
 
         // Exclude all words with the same frequency as the most common (from start)
-        for (gop, freq) in self.context.language_pack.gram_frequencies.iter() {
+        for (gop, freq) in self.context.language_pack.gram_frequencies.entries.iter() {
             if freq.count >= most_common_freq.count {
                 if let Some(heteronym) = extract_heteronym(gop, gram_rodeo) {
                     excluded_lemmas.insert(heteronym.lemma);
@@ -200,7 +221,14 @@ impl Deck {
         }
 
         // Exclude all words with the same frequency as the least common (from end)
-        for (gop, freq) in self.context.language_pack.gram_frequencies.iter().rev() {
+        for (gop, freq) in self
+            .context
+            .language_pack
+            .gram_frequencies
+            .entries
+            .iter()
+            .rev()
+        {
             if freq.count <= least_common_freq.count {
                 if let Some(heteronym) = extract_heteronym(gop, gram_rodeo) {
                     excluded_lemmas.insert(heteronym.lemma);
@@ -257,7 +285,12 @@ impl Deck {
                 .heteronym_to_grams
                 .get(&heteronym)
                 && let Some(gram) = grams.first()
-                && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
+                && let Some(freq) = self
+                    .context
+                    .language_pack
+                    .gram_frequencies
+                    .entries
+                    .get(gram)
             {
                 points.push(Point::new_with_weight(freq.ease, 1.0, UnitWeight));
             }
@@ -271,7 +304,12 @@ impl Deck {
                 .heteronym_to_grams
                 .get(&heteronym)
                 && let Some(gram) = grams.first()
-                && let Some(freq) = self.context.language_pack.gram_frequencies.get(gram)
+                && let Some(freq) = self
+                    .context
+                    .language_pack
+                    .gram_frequencies
+                    .entries
+                    .get(gram)
             {
                 points.push(Point::new_with_weight(freq.ease, 0.0, UnitWeight));
             }
@@ -320,13 +358,20 @@ impl Deck {
                         // Add to excluded set so we don't use it again
                         excluded_lemmas.insert(heteronym.lemma);
 
-                        // Get the word string
+                        // Get the word string and definition
                         let word_str = self
                             .context
                             .language_pack
                             .string_rodeo
                             .resolve(&heteronym.word);
-                        result_words.push(word_str.to_string());
+                        let definition = self
+                            .context
+                            .get_first_definition(&heteronym)
+                            .unwrap_or_default();
+                        result_words.push(PlacementTestWord {
+                            word: word_str.to_string(),
+                            definition,
+                        });
                     }
                 }
             }
@@ -335,7 +380,7 @@ impl Deck {
         // Filter out any words that match the known/unknown inputs
         result_words
             .into_iter()
-            .filter(|word| !excluded_word_strings.contains(word))
+            .filter(|pw| !excluded_word_strings.contains(&pw.word))
             .collect()
     }
 }
@@ -353,13 +398,19 @@ mod tests {
         let result = deck.get_placement_test(vec![], vec![]);
         println!("Placement test with empty lists:");
         println!("  Returned {} words", result.len());
-        for (i, word) in result.iter().enumerate() {
+        for (i, pw) in result.iter().enumerate() {
             let freq = deck
                 .context
-                .lookup_word(word)
+                .lookup_word(&pw.word)
                 .map(|(_, f)| f.count)
                 .unwrap_or(0);
-            println!("  {}. {} (freq: {})", i + 1, word, freq);
+            println!(
+                "  {}. {} = \"{}\" (freq: {})",
+                i + 1,
+                pw.word,
+                pw.definition,
+                freq
+            );
         }
         assert!(result.len() <= 11, "Should return at most 11 words");
 
@@ -383,19 +434,25 @@ mod tests {
             "\nPlacement test with known=['le', 'et', 'pain', 'souvent', 'aller', 'es', 'des', 'a', 'est'] and unknown=['abandonnés', 'allées']:"
         );
         println!("  Returned {} words", result.len());
-        for (i, word) in result.iter().enumerate() {
+        for (i, pw) in result.iter().enumerate() {
             let freq = deck
                 .context
-                .lookup_word(word)
+                .lookup_word(&pw.word)
                 .map(|(_, f)| f.count)
                 .unwrap_or(0);
-            println!("  {}. {} (freq: {})", i + 1, word, freq);
+            println!(
+                "  {}. {} = \"{}\" (freq: {})",
+                i + 1,
+                pw.word,
+                pw.definition,
+                freq
+            );
         }
         assert!(result.len() <= 11, "Should return at most 11 words");
         assert!(!result.is_empty(), "Should return at least some words");
 
         // Verify no duplicates in result
-        let unique_words: std::collections::HashSet<_> = result.iter().collect();
+        let unique_words: std::collections::HashSet<_> = result.iter().map(|pw| &pw.word).collect();
         assert_eq!(
             unique_words.len(),
             result.len(),

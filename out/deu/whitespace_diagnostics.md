@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2730602
-Total errors: 2001
+Total predictions: 2810844
+Total errors: 2004
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -1229,6 +1229,13 @@ Accuracy: 99.93%
 - Examples:
   - Ich hörte eine Autotür auf- und zugehen.
   - Tom hörte die Hintertür auf- und zugehen.
+
+### "can" + "not" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - As two neighbors cannot come.
+  - Without glasses I cannot read the digits.
 
 ### "da" + "-" (2 occurrences)
 - Predicted: None
@@ -3975,6 +3982,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Himmelherrgott !
+
+### "Hin-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hin- und Rückfahrt?
 
 ### "Hindenburg" + "“" (1 occurrences)
 - Predicted: Space

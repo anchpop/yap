@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2357845
-Total errors: 2487
-Accuracy: 99.89%
+Total predictions: 2430684
+Total errors: 2490
+Accuracy: 99.90%
 
 ## Error Patterns (sorted by frequency)
 
@@ -13,6 +13,14 @@ Accuracy: 99.89%
   - A quel giovane manca solo un po' di esperienza, il talento ce l'ha di sicuro.
   - Abbiamo una bella casa ma ci manca un po' di spazio per lo studio.
   - Aggiungi un po' di bianco al colore per schiarirlo e ottenere la tonalità giusta.
+
+### "Glie" + "lo" (17 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Glielo auguro di cuore.
+  - Glielo auguro.
+  - Glielo chiedi tu o lo faccio io?
 
 ### "cosa" + "?" (17 occurrences)
 - Predicted: None
@@ -37,14 +45,6 @@ Accuracy: 99.89%
   - Abbiamo parlato un po’ di cosa avremmo fatto quel giorno.
   - Che noiosi, un po’ di foresta bruciata, e gridano subito vendetta!
   - Con una vite o… un po’ di colla, o una corda.
-
-### "Glie" + "lo" (14 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Glielo chiedi tu o lo faccio io?
-  - Glielo chiedo sempre, ma mi dicono che non posso tornare a casa.
-  - Glielo chiedo subito.
 
 ### "no" + "?" (14 occurrences)
 - Predicted: None

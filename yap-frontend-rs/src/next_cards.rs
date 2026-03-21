@@ -7,7 +7,10 @@ use language_utils::{Atom, SpurGram, Word, WordType, grm};
 use lasso::Spur;
 use ordered_float::NotNan;
 
-use crate::{CARD_TYPES, CardData, CardIndicator, CardType, ChallengeRequirements, Deck};
+use crate::{
+    CARD_TYPES, CardData, CardIndicator, CardType, ChallengeRequirements, Deck,
+    deck_event::current::GoalSelection,
+};
 
 /// Returns the single word from a gram if it has exactly one Tok atom.
 /// Returns None for multi-word grams or empty grams.
@@ -51,10 +54,31 @@ pub(crate) enum AllowedCards {
 }
 
 impl NextCardsIterator {
-    pub fn new(deck: &Deck, allowed_cards: AllowedCards) -> Self {
+    pub fn new(deck: &Deck, allowed_cards: AllowedCards, goal: &Option<GoalSelection>) -> Self {
         let cards = deck.cards.clone();
         let context = &deck.context;
         let regressions = &deck.regressions;
+
+        // Determine which frequency list to use based on goal
+        let goal_freq_list = goal.as_ref().and_then(|g| {
+            let source_id = match g {
+                GoalSelection::Movie { id } => language_utils::FrequencySourceId::Movie(id.clone()),
+                GoalSelection::PimsleurLesson { level, lesson } => {
+                    language_utils::FrequencySourceId::PimsleurLesson(
+                        language_utils::PimsleurLesson {
+                            level: *level,
+                            lesson: *lesson,
+                        },
+                    )
+                }
+            };
+            context
+                .language_pack
+                .source_gram_frequencies
+                .get(&source_id)
+        });
+
+        let gram_source = goal_freq_list.unwrap_or(&context.language_pack.gram_frequencies);
 
         // Initialize counts by iterating once over tracked cards
         let mut added_count = 0;
@@ -70,9 +94,8 @@ impl NextCardsIterator {
         }
 
         // Precompute text card values: all unadded grams sorted by value desc
-        let mut text_values: Vec<(NotNan<f32>, SpurGram)> = context
-            .language_pack
-            .gram_frequencies
+        let mut text_values: Vec<(NotNan<f32>, SpurGram)> = gram_source
+            .entries
             .keys()
             .filter_map(|gram| {
                 let card = CardIndicator::WrittenGram { gram: *gram };
@@ -125,9 +148,8 @@ impl NextCardsIterator {
             };
 
         // Precompute listening card values: all unadded listening grams sorted by value desc
-        let mut listening_values: Vec<(NotNan<f32>, SpurGram)> = context
-            .language_pack
-            .gram_frequencies
+        let mut listening_values: Vec<(NotNan<f32>, SpurGram)> = gram_source
+            .entries
             .keys()
             .filter_map(|gram| {
                 let card = CardIndicator::ListeningGram { gram: *gram };
@@ -289,8 +311,8 @@ impl NextCardsIterator {
                     (*card_type, {
                         let target_ratio = match card_type {
                             CardType::TargetLanguage => 0.65,
-                            CardType::Listening => 0.3,
-                            CardType::LetterPronunciation => 0.05,
+                            CardType::Listening => 0.33,
+                            CardType::LetterPronunciation => 0.02,
                         };
                         (*count as f64 / total_cards as f64) / target_ratio
                     })

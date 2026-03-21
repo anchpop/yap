@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
-import type { Deck } from "../../../yap-frontend-rs/pkg";
+import type { Deck, PlacementTestWord } from "../../../yap-frontend-rs/pkg";
 import { Progress } from "@/components/ui/progress";
 
 const NUM_ROUNDS = 3;
@@ -17,10 +17,11 @@ interface PlacementTestProps {
 
 export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
   const [round, setRound] = useState(1);
-  const [words, setWords] = useState<string[]>([]);
+  const [words, setWords] = useState<PlacementTestWord[]>([]);
   const [selectedWords, setSelectedWords] = useState<Set<string>>(new Set());
   const [knownWords, setKnownWords] = useState<string[]>([]);
   const [unknownWords, setUnknownWords] = useState<string[]>([]);
+  const [revealedWords, setRevealedWords] = useState<Set<string>>(new Set());
 
   // Load words for the current round
   useEffect(() => {
@@ -32,6 +33,7 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
       } else {
         setWords(placementWords);
         setSelectedWords(new Set());
+        setRevealedWords(new Set());
       }
     }
   }, [round, deck, knownWords, unknownWords]);
@@ -48,10 +50,18 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
     });
   };
 
+  const revealWord = (word: string) => {
+    setRevealedWords((prev) => {
+      const next = new Set(prev);
+      next.add(word);
+      return next;
+    });
+  };
+
   const handleNext = () => {
     // Words that were selected are known, others are unknown
-    const known = words.filter((w) => selectedWords.has(w));
-    const unknown = words.filter((w) => !selectedWords.has(w));
+    const known = words.filter((w) => selectedWords.has(w.word)).map((w) => w.word);
+    const unknown = words.filter((w) => !selectedWords.has(w.word)).map((w) => w.word);
 
     setKnownWords((prev) => [...prev, ...known]);
     setUnknownWords((prev) => [...prev, ...unknown]);
@@ -71,6 +81,7 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
       setKnownWords([]);
       setUnknownWords([]);
       setSelectedWords(new Set());
+      setRevealedWords(new Set());
     }
   };
 
@@ -138,22 +149,37 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-              {words.map((word) => (
-                <button
-                  key={word}
-                  onClick={() => toggleWord(word)}
-                  className={`
-                p-4 rounded-lg border-2 transition-all
-                ${
-                  selectedWords.has(word)
-                    ? "border-primary bg-primary/10 scale-95"
-                    : "border-border hover:border-primary/50 hover:bg-accent"
-                }
-              `}
-                >
-                  <span className="text-lg font-medium">{word}</span>
-                </button>
-              ))}
+              {words.map((pw) => {
+                const revealed = revealedWords.has(pw.word);
+                return (
+                  <button
+                    key={pw.word}
+                    onClick={() => {
+                      if (revealed) {
+                        toggleWord(pw.word);
+                      } else {
+                        revealWord(pw.word);
+                      }
+                    }}
+                    className={`
+                  p-4 rounded-lg border-2 transition-all
+                  ${
+                    selectedWords.has(pw.word)
+                      ? "border-primary bg-primary/10 scale-95"
+                      : "border-border hover:border-primary/50 hover:bg-accent"
+                  }
+                `}
+                  >
+                    {revealed ? (
+                      <span className="text-sm text-muted-foreground truncate block">
+                        {pw.definition}
+                      </span>
+                    ) : (
+                      <span className="text-lg font-medium">{pw.word}</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             <Button onClick={handleNext} className="w-full" size="lg">

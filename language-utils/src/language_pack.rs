@@ -9,15 +9,22 @@ use lasso::Spur;
 use rustc_hash::FxHashMap;
 use std::collections::BTreeMap;
 
+/// A frequency list with its total count (interned version for the language pack).
+#[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+pub struct FrequencyList {
+    pub entries: IndexMap<SpurGram, Frequency>,
+    /// Total gram count from unfiltered data (for accurate percentage calculations)
+    pub total_count: u64,
+}
+
 #[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub struct LanguagePack {
     pub string_rodeo: lasso::RodeoReader,
     pub gram_rodeo: lasso::RodeoReader<Gram<Spur>>,
     pub translations: FxHashMap<Spur, Vec<Spur>>,
     pub words_to_heteronyms: FxHashMap<Spur, Vec<Heteronym<Spur>>>,
-    pub total_word_count: u64,
-    /// Per-movie gram frequencies indexed by movie ID
-    pub movie_gram_frequencies: FxHashMap<String, IndexMap<SpurGram, Frequency>>,
+    /// Per-source gram frequencies (movies, Pimsleur lessons, etc.)
+    pub source_gram_frequencies: FxHashMap<crate::FrequencySourceId, FrequencyList>,
     pub word_to_pronunciation: FxHashMap<Spur, Spur>,
     pub pronunciation_to_words: FxHashMap<Spur, Vec<Spur>>,
     pub pronunciation_data: PronunciationData,
@@ -31,8 +38,8 @@ pub struct LanguagePack {
     pub sentence_sources: FxHashMap<Spur, SentenceSource>,
     /// Global proper noun definitions map
     pub proper_noun_definitions: BTreeMap<Spur, ProperNounDefinition>,
-    /// Gram frequencies: maps gram to frequency, for learnable grams
-    pub gram_frequencies: IndexMap<SpurGram, Frequency>,
+    /// Master gram frequencies
+    pub gram_frequencies: FrequencyList,
     /// Encoded sentences: maps sentence to grams with learnability and capitalize_first
     /// The gram Spur is a key into gram_rodeo
     pub encoded_sentences: FxHashMap<Spur, SentenceGrams<SpurGram>>,
@@ -159,7 +166,7 @@ impl LanguagePack {
         let words_to_heteronyms: FxHashMap<Spur, Vec<Heteronym<Spur>>> = {
             let mut map: FxHashMap<Spur, Vec<(Heteronym<Spur>, u32)>> = FxHashMap::default();
 
-            for entry in &language_data.gram_frequencies {
+            for entry in &language_data.gram_frequencies.entries {
                 if let Some(heteronym) = entry.gram.heteronym() {
                     let word_spur = rodeo.get(&heteronym.word).unwrap();
                     let interned_het = Heteronym {
@@ -183,14 +190,6 @@ impl LanguagePack {
                     (word, hets.into_iter().map(|(h, _)| h).collect::<Vec<_>>())
                 })
                 .collect()
-        };
-
-        let total_word_count = {
-            language_data
-                .gram_frequencies
-                .iter()
-                .map(|entry| entry.count as u64)
-                .sum()
         };
 
         let word_to_pronunciation = {
@@ -249,8 +248,8 @@ impl LanguagePack {
         // Initialize movie data
         let movies = language_data.movies;
 
-        // Store movie_gram_frequencies to convert after gram_rodeo is created
-        let movie_gram_frequencies_data = language_data.movie_gram_frequencies.clone();
+        // Store source_gram_frequencies to convert after gram_rodeo is created
+        let source_gram_frequencies_data = language_data.source_gram_frequencies.clone();
 
         // Convert sentence sources
         let sentence_sources = {
@@ -341,7 +340,7 @@ impl LanguagePack {
         // Build as counts first; we'll compute the `easy` flag after gram_definitions is available.
         let gram_counts: IndexMap<SpurGram, (u32, u32)> = {
             let mut map = IndexMap::new();
-            for entry in &language_data.gram_frequencies {
+            for entry in &language_data.gram_frequencies.entries {
                 let interned_gram = entry.gram.get_interned(&rodeo);
                 if let Some(interned_gram) = interned_gram
                     && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
@@ -382,7 +381,7 @@ impl LanguagePack {
         };
 
         // Now that we have definitions, convert gram_counts into gram_frequencies with `easy` and `ease` computed.
-        let gram_frequencies: IndexMap<SpurGram, Frequency> = {
+        let gram_frequencies_map: IndexMap<SpurGram, Frequency> = {
             const COGNATE_BONUS: f32 = 2.0;
 
             // First pass: compute base ease for single-atom grams so we can reference them
@@ -477,11 +476,16 @@ impl LanguagePack {
             map
         };
 
+        let gram_frequencies = FrequencyList {
+            total_count: language_data.gram_frequencies.total_count,
+            entries: gram_frequencies_map,
+        };
+
         // Build index from heteronym to all grams composed only of that heteronym, sorted by frequency
         let heteronym_to_grams: FxHashMap<Heteronym<Spur>, Vec<SpurGram>> = {
             let mut map: FxHashMap<Heteronym<Spur>, Vec<(SpurGram, Frequency)>> =
                 FxHashMap::default();
-            for (gram_spur, freq) in gram_frequencies.iter() {
+            for (gram_spur, freq) in gram_frequencies.entries.iter() {
                 let gram = gram_rodeo.resolve(gram_spur);
                 // Check if this gram is composed of a single heteronym atom
                 if gram.len() == 1
@@ -524,20 +528,20 @@ impl LanguagePack {
             map
         };
 
-        // Convert per-movie gram frequencies (pre-computed in generate-data)
-        // Each entry now has a `gram` field (Gram<String>) which we intern
-        let movie_gram_frequencies: FxHashMap<String, IndexMap<SpurGram, Frequency>> =
-            movie_gram_frequencies_data
+        // Convert per-source gram frequencies (pre-computed in generate-data)
+        // Each entry has a `gram` field (Gram<String>) which we intern
+        let source_gram_frequencies: FxHashMap<crate::FrequencySourceId, FrequencyList> =
+            source_gram_frequencies_data
                 .iter()
-                .map(|(movie_id, freqs)| {
+                .map(|(source_id, freq_list)| {
                     let mut map: IndexMap<SpurGram, Frequency> = IndexMap::new();
-                    for entry in freqs {
+                    for entry in &freq_list.entries {
                         let interned_gram = entry.gram.get_interned(&rodeo);
                         if let Some(interned_gram) = interned_gram
                             && let Some(gram_spur) = gram_rodeo.get(&interned_gram)
                         {
                             // Use ease from global gram_frequencies; fall back to ln(count)
-                            let global_freq = gram_frequencies.get(&gram_spur);
+                            let global_freq = gram_frequencies.entries.get(&gram_spur);
                             map.insert(
                                 gram_spur,
                                 Frequency {
@@ -552,9 +556,15 @@ impl LanguagePack {
                             );
                         }
                     }
-                    (movie_id.clone(), map)
+                    (
+                        source_id.clone(),
+                        FrequencyList {
+                            entries: map,
+                            total_count: freq_list.total_count,
+                        },
+                    )
                 })
-                .filter(|(_, map)| !map.is_empty())
+                .filter(|(_, list)| !list.entries.is_empty())
                 .collect();
 
         // Pre-compute pronunciation max frequencies for performance
@@ -576,7 +586,9 @@ impl LanguagePack {
                         heteronym_to_grams
                             .get(heteronym)?
                             .iter()
-                            .filter_map(|gram_spur| gram_frequencies.get(gram_spur).copied())
+                            .filter_map(|gram_spur| {
+                                gram_frequencies.entries.get(gram_spur).copied()
+                            })
                             .max_by_key(|f| f.count)
                     })
                     .max_by_key(|f| f.count)?;
@@ -600,8 +612,7 @@ impl LanguagePack {
             gram_rodeo,
             translations,
             words_to_heteronyms,
-            total_word_count,
-            movie_gram_frequencies,
+            source_gram_frequencies,
             word_to_pronunciation,
             pronunciation_to_words,
             pronunciation_data,

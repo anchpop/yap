@@ -8,6 +8,8 @@ interface NumericStatsProps {
   percentKnown: number;
   dailyStreak: number;
   totalReviews: number | bigint;
+  tierName?: string;
+  tierPercent?: number;
 }
 
 export const NumericStats: React.FC<NumericStatsProps> = ({
@@ -17,6 +19,8 @@ export const NumericStats: React.FC<NumericStatsProps> = ({
   percentKnown,
   dailyStreak,
   totalReviews,
+  tierName,
+  tierPercent,
 }) => {
   return (
     <div className="mb-4">
@@ -37,9 +41,9 @@ export const NumericStats: React.FC<NumericStatsProps> = ({
           <p className="text-sm text-muted-foreground mt-1">{cardsReady} ready now</p>
         </Card>
         <Card className="p-4 gap-0" animate>
-          <p className="text-sm text-muted-foreground mb-1">Words Known</p>
-          <p className="text-2xl font-bold">{percentKnown.toFixed(2)}%</p>
-          <p className="text-sm text-muted-foreground mt-1">of total</p>
+          <p className="text-sm text-muted-foreground mb-1">{tierName ?? "Words Known"}</p>
+          <p className="text-2xl font-bold">{(tierPercent ?? percentKnown).toFixed(1)}%</p>
+          <p className="text-sm text-muted-foreground mt-1">{percentKnown.toFixed(1)}% overall</p>
         </Card>
         <Card className="p-4 gap-0" animate>
           <p className="text-sm text-muted-foreground mb-1">Daily Streak</p>
