@@ -1,10 +1,18 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2502020
-Total errors: 493
+Total predictions: 2574140
+Total errors: 517
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
+
+### "Ter" + "ei" (25 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Terei aprendido mais uma língua estrangeira e mudado para um novo país.
+  - Terei aprendido mais uma língua estrangeira.
+  - Terei aprendido mais uma.
 
 ### "-" + "me" (9 occurrences)
 - Predicted: None
@@ -1442,12 +1450,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Até que enfim completei cem frases no Tatoeba !
-
-### "Ter" + "ei" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Terei vivido em seu interior.
 
 ### "Terminado" + "?" (1 occurrences)
 - Predicted: None

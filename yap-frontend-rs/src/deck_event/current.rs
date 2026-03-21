@@ -187,12 +187,28 @@ pub struct PlacementTest {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
+pub enum GoalSelection {
+    Movie {
+        id: String,
+    },
+    PimsleurLesson {
+        level: u32,
+        #[serde(alias = "unit")]
+        lesson: u32,
+    },
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+#[serde(tag = "type")]
 pub enum LanguageEventContent {
     CompletePlacementTest {
         results: PlacementTest,
     },
     AddCards {
         cards: Vec<CardIndicator<Gram<String>, String>>,
+        #[serde(default)]
+        goal: Option<GoalSelection>,
     },
     ReviewCard {
         reviewed: CardIndicator<Gram<String>, String>,
@@ -205,6 +221,9 @@ pub enum LanguageEventContent {
     },
     TranscriptionChallenge {
         challenge: Vec<transcription_challenge::PartGraded>,
+    },
+    SetGoal {
+        goal: Option<GoalSelection>,
     },
 }
 

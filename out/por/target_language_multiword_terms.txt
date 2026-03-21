@@ -435,6 +435,7 @@ Canal da Mancha
 Canal de Suez
 Canal do Panamá
 Canal do Suez
+Canaã dos Carajás
 Canes Venatici
 Canis Minor
 Canudos do Vale
@@ -817,6 +818,7 @@ Estado da Cidade do Vaticano
 Estado da Eritreia
 Estado de Israel
 Estado do Catar
+Estado-nação
 Estados Confederados da América
 Estados Federados da Micronésia
 Estados Papais
@@ -984,6 +986,7 @@ Grande Prémio
 Grande Prêmio
 Grande Salto Adiante
 Grande Salto para Frente
+Grande Satã
 Grandes Lagos
 Grã-Bretanha
 Grão Mogol
@@ -1480,6 +1483,7 @@ Nova Caledônia
 Nova Campina
 Nova Canaã
 Nova Canaã Paulista
+Nova Canaã do Norte
 Nova Candelária
 Nova Castilho
 Nova Delhi
@@ -2496,6 +2500,7 @@ São Raimundo das Mangabeiras
 São Romão
 São Roque
 São Roque de Minas
+São Roque do Canaã
 São Roque do Pico
 São Sebastião
 São Sebastião da Bela Vista
@@ -2602,7 +2607,7 @@ Torres Gêmeas
 Torres Novas
 Torres Vedras
 Trajano de Moraes
-Trentino-Alto Adige
+Trentino-Alto Ádige
 Treze Tílias
 Treze de Maio
 Trindade do Sul
@@ -2767,6 +2772,7 @@ a Deus dará
 a beleza está nos olhos de quem a vê
 a beleza está nos olhos de quem vê
 a bem da verdade
+a bem de
 a bordo
 a cabo de
 a cada passo
@@ -2774,6 +2780,7 @@ a cada um o que é seu
 a caminho
 a caminho de
 a cappella
+a cargo de
 a carne é fraca
 a casa caiu
 a casa de um homem é o seu castelo
@@ -2782,6 +2789,7 @@ a cavalo dado não se olha os dentes
 a cavalo dado não se olham os dentes
 a cera sobeja queima a igreja
 a cereja do bolo
+a coberto de
 a cobrar
 a conta, por favor
 a contragosto
@@ -2808,6 +2816,7 @@ a fim de
 a fim de que
 a fio
 a fome é o melhor tempero
+a fortiori
 a fundo
 a fé move montanhas
 a galinha da vizinha é melhor que a minha
@@ -2826,6 +2835,12 @@ a justo título
 a la minuta
 a longo prazo
 a luz no fim do túnel
+a maior parte
+a maior parte das pessoas
+a maior parte do tempo
+a maioria
+a mais
+a menos
 a menos que
 a mil
 a mil pelo Brasil
@@ -2839,6 +2854,7 @@ a não ser
 a não ser que
 a paciência é uma virtude
 a par
+a par de
 a partir de
 a passo de caracol
 a pena é mais forte do que a espada
@@ -2849,15 +2865,21 @@ a ponto de
 a porta da rua é serventia da casa
 a porta fechada
 a portas fechadas
+a posteriori
 a postos
 a pressa é a inimiga da perfeição
 a preço de banana
 a princípio
 a priori
 a propósito
+a propósito de
 a prática faz a perfeição
 a pé
+a qual
+a qualquer custo
 a quantas anda
+a questão é que
+a quo
 a respeito de
 a rodo
 a saber
@@ -2873,6 +2895,7 @@ a tempo e horas
 a tiracollo
 a tiracolo
 a todo custo
+a todo o custo
 a todo vapor
 a toque de caixa
 a torto e a direito
@@ -2889,6 +2912,7 @@ a vingança é um prato que se serve frio
 a voz do povo é a voz de Deus
 a última gota
 a-bê-cê
+a-propósito
 ab-reagir
 ab-reativo
 ab-reação
@@ -2900,6 +2924,7 @@ ab-rupção
 abade nullius
 abade-geral
 abaixa-luz
+abaixador de língua
 abaixo de
 abaixo-assinado
 abalar as estruturas
@@ -2931,6 +2956,7 @@ abridor de lata
 abrigo antiaéreo
 abrir as pernas
 abrir caminho
+abrir espaço a
 abrir mão
 abrunheiro-bravo
 abrótano-macho
@@ -2943,6 +2969,7 @@ abóbora-menina
 acabar com o sofrimento
 acabar de
 acabar em pizza
+acabar por
 acampamento de verão
 acanto espinhoso
 acará-bandeira
@@ -2974,8 +3001,12 @@ acima de
 acima de tudo
 acima mencionado
 acompanhante de luxo
+acompanhar o ritmo de
 acontece que
+acontecer
+acontecer a alguém
 acontecer nas melhores famílias
+aconteceu
 acordar com o pé esquerdo
 acordar para a vida
 acordo pré-nupcial
@@ -2998,6 +3029,7 @@ adenilato ciclase
 adição-padrão
 administrador de banco de dados
 admirador secreto
+admitindo que
 adolescência tardia
 advogada do diabo
 advogado de porta de cadeia
@@ -3012,7 +3044,6 @@ afogar o ganso
 afro-americana
 afro-americano
 afro-brasileiro
-agar-agar
 agente duplo
 agente funerário
 agente laranja
@@ -3027,6 +3058,7 @@ agora já foi
 agora mesmo
 agora que
 agradar a gregos e troianos
+agradecer a
 agrião-dos-prados
 aguentar os cavalos
 aguia real
@@ -3048,6 +3080,7 @@ ainda assim
 ainda bem
 ainda mais
 ainda por cima
+ainda que
 ainda sim
 aipo-rábano
 air bag
@@ -3085,6 +3118,7 @@ alfinete-de-fralda
 alga marinha
 algarismo arábico
 algebricamente fechado
+algo
 algo mais
 algodoeiro-da-praia
 algodão-da-praia
@@ -3094,6 +3128,9 @@ algor mortis
 algoritmo de aproximação
 algum dia
 alguma coisa
+algumas
+alguns
+alguém
 alho selvagem
 alho-francês
 alho-porro
@@ -3105,6 +3142,7 @@ alicate prensa terminal
 alicate universal
 aligator americano
 aligátor americano
+aliás
 all-in
 allahu akbar
 allegro ma non troppo
@@ -3132,6 +3170,7 @@ alto e claro
 alto forno
 alto lá
 alto-alemão médio
+alto-astral
 alto-cúmulo
 alto-estrato
 alto-falante
@@ -3172,7 +3211,10 @@ amendoeira-da-praia
 amido de milho
 amido-hidrolase
 amiga colorida
+amiga da onça
 amiga do peito
+amiga-da-onça
+amiga-ursa
 amigo colorido
 amigo da onça
 amigo de Peniche
@@ -3182,6 +3224,7 @@ amigo oculto
 amigo por correspondência
 amigo secreto
 amigo-da-onça
+amigo-urso
 amino-terminal
 aminoacil-tRNA sintetase
 amizade colorida
@@ -3217,10 +3260,12 @@ anarco-sindicalista
 ancestral apical
 ancien regime
 ancien régime
+andar a
 andar com o credo na boca
 andar logo
 andar na berlinda
 andar na corda bamba
+andar por aí
 andar térreo
 andar à bulha
 andorinha comum
@@ -3260,11 +3305,20 @@ annus horribilis
 annus mirabilis
 ano anomalístico
 ano bissexto
+ano civil
+ano comum
 ano de Cristo
 ano escolar
+ano fiscal
+ano letivo
+ano litúrgico
+ano lunar
 ano novo
 ano novo chinês
 ano que vem
+ano santo
+ano secular
+ano sideral
 ano-bom
 ano-luz
 ano-maço
@@ -3276,9 +3330,11 @@ ansa néfrica
 antagonista alfa-adrenérgico
 ante-sala
 antena parabólica
+antes de mais
 antes de mais nada
 antes de tudo
 antes fosse
+antes que
 antes só do que mal acompanhado
 antes só que mal acompanhado
 antes tarde do que nunca
@@ -3410,7 +3466,9 @@ anémona-do-mar
 anêmona dos bosques
 anêmona-do-mar
 anúncio intersticial
+ao abrigo de
 ao acaso
+ao alcance de
 ao ar
 ao ar livre
 ao atá
@@ -3418,8 +3476,10 @@ ao aveso
 ao avesso
 ao cabo de
 ao calhas
+ao cargo de
 ao chou
 ao contrário
+ao contrário de
 ao de leve
 ao deus-dará
 ao fim e ao cabo
@@ -3436,6 +3496,8 @@ ao pé
 ao pé da letra
 ao pé de
 ao quadrado
+ao qual
+ao que parece
 ao redor
 ao redor de
 ao rés de
@@ -3460,6 +3522,7 @@ aparelho televisor
 apart-hotel
 apelo sexual
 apelo à autoridade
+aperceber-se de
 apertar as mãos
 apertar o passo
 aperto de mão
@@ -3484,6 +3547,13 @@ aqui há gato
 aqui jaz
 aqui se faz, aqui se paga
 aqui-d'el-rei
+aquilo a que
+aquilo com que
+aquilo de que
+aquilo em que
+aquilo por que
+aquilo que
+aquém de
 aquém-mar
 ar comprimido
 ar condicionado
@@ -3536,6 +3606,7 @@ arqui-inimiga
 arqui-inimigo
 arqui-rival
 arraia-miúda
+arrancar
 arranha-céu
 arranha-céus
 arrasa-quarteirão
@@ -3547,6 +3618,7 @@ arregaçar as mangas
 arremesso de disco
 arremesso de peso
 arremesso lateral
+arrepender-se
 arriar o calhau
 arrotar postas de pescada
 arroz agulha
@@ -3589,6 +3661,7 @@ artigo indefinido
 artéria coronária
 artéria de Adamkiewicz
 as paredes têm ouvidos
+as quais
 as senhoras
 asa dianteira
 asa-delta
@@ -3648,6 +3721,7 @@ até mais ver
 até o cu fazer bico
 até parece
 até parece que
+até quando
 até que
 até que a morte nos separe
 até que enfim
@@ -3680,6 +3754,7 @@ auto-suficiente
 auto-sustentável
 auto-ódio
 avant-garde
+avançar
 ave Maria
 ave de capoeira
 ave de rapina
@@ -3719,6 +3794,7 @@ açúcar sintático
 aí está
 aí sim
 aí tem
+aí-pixuna
 baba de camelo
 baba-ovo
 babar ovo
@@ -3731,15 +3807,18 @@ bacia hidrográfica
 baga-de-freira
 bagagem de mão
 bagagem de porão
+bagre-guri
 baile de formatura
 baile de máscaras
 baile funk
 bairro de lata
+baixa da égua
 baixa-mar
 baixar a bola
 baixar a bolinha
 baixo alemão
 baixo saxão
+baixo-astral
 baixo-império
 baixo-relevo
 baião de dois
@@ -3819,7 +3898,10 @@ bas tarde
 bas-fond
 base aérea
 base de dados
+baseado em baseados
 basta a cada dia o seu mal
+basta de
+basta que
 bastão de Esculápio
 batalha campal
 batalha naval
@@ -3842,6 +3924,7 @@ bater a caçoleta
 bater as botas
 bater bem
 bater bola
+bater bolacha
 bater cara
 bater com as doze
 bater em retirada
@@ -3890,6 +3973,7 @@ bem de vida
 bem durável
 bem feito
 bem haja
+bem longe de
 bem maior
 bem me parecia
 bem passado
@@ -3925,6 +4009,7 @@ best seller
 best-seller
 besta negra
 besta quadrada
+besta-fera
 bete-ombro
 beterraba sacarina
 beterraba-sacarina
@@ -3955,6 +4040,7 @@ bicho-de-sete-cabeças
 bicho-galo
 bicho-geográfico
 bicho-gordo
+bicho-grilo
 bicho-homem
 bicho-papão
 bicho-pau
@@ -4154,6 +4240,7 @@ brema-do-mar
 brigadeiro-general
 brilho aparente
 brincadeira de criança
+brincar com
 brincar com fogo
 brinco-de-princesa
 brinco-de-viúva
@@ -4195,6 +4282,7 @@ búfalo do Cabo
 búfalo-asiático
 bútio-rabo-canela
 caapiá-verdadeiro
+cabelo-de-velha
 caber como uma luva
 cabeça de bagre
 cabeça de impressão
@@ -4217,6 +4305,7 @@ cabo-verdiano
 cabra alpina
 cabra brava
 cabra da peste
+cabra macho
 cabra-cega
 cabra-de-leque
 cabra-montesa
@@ -4235,6 +4324,7 @@ cada um por si
 cada uma
 cada vez
 cada vez mais
+cada vez menos
 cadeia alimentar
 cadeia de caracteres
 cadeia montanhosa
@@ -4267,6 +4357,7 @@ cair como uma luva
 cair da noite
 cair de amores
 cair de boca
+cair de paraquedas
 cair em saco roto
 cair fora
 cair morto
@@ -4351,6 +4442,7 @@ caminho de ronda
 caminho-de-ferro
 caminhão de bombeiros
 caminhão de lixo
+caminhão-pipa
 caminhão-tanque
 camisa de força
 camisa de vénus
@@ -4410,6 +4502,7 @@ canto de cisne
 canto do cisne
 canto gregoriano
 canto tirolês
+canário-da-terra
 canção de Natal
 canção de cisne
 canção de embalar
@@ -4431,6 +4524,7 @@ capsulite adesiva
 captura de ecrã
 captura de tela
 cara a cara
+cara de cu
 cara de lata
 cara de pau
 cara de um, focinho de outro
@@ -4459,6 +4553,7 @@ carne branca
 carne de canhão
 carne moída
 carne vermelha
+carpa-capim
 carpe diem
 carrinho bate-bate
 carrinho de compras
@@ -4544,6 +4639,7 @@ casca de bala
 casca-grossa
 cascar o bico
 casinha de cachorro
+caso
 caso abessivo
 caso absolutivo
 caso adessivo
@@ -4631,6 +4727,8 @@ caçar o que fazer
 cação-anjo
 cebolinha verde
 cebolinha-verde
+ceder o passo a
+cedo ou tarde
 cego em tiroteio
 cegonha-branca
 cegueira noturna
@@ -4672,6 +4770,7 @@ chaise longue
 chaleira elétrica
 chama-maré
 chamar a atenção
+chamar ao pão, pão e ao queijo, queijo
 chamar atenção
 chamar nomes
 chamar o Hugo
@@ -4720,7 +4819,9 @@ chefe de estado
 chefe de estação
 chefe de família
 chefe de justiça
+chegar a
 chegar ao fim do mês
+chegar ao ponto
 chegar chegando
 cheirar a esturro
 cheiro-verde
@@ -4736,6 +4837,7 @@ chinês simplificado
 chinês tradicional
 chocolate ao leite
 chocolate branco
+chocolate de Dubai
 chocolate de leite
 chocolate quente
 chop suey
@@ -4763,6 +4865,7 @@ chupa-me o caralho
 chupa-me os colhões
 chupe-chupe
 chutar o balde
+chute de bicicleta
 chute de letra
 chuva congelante
 chuva de estrelas
@@ -4895,7 +4998,9 @@ classificador numeral
 clave de fá
 clave de sol
 clique duplo
+cloreto de bário
 cloreto de cálcio
+cloreto de potássio
 cloreto de sódio
 close-up
 closet americano
@@ -4935,8 +5040,11 @@ coisa em si
 coisa-em-si
 coisa-ruim
 coito interrompido
+colar o velcro
+colar velcro
 colarinho clerical
 colarinho romano
+colação de velcro
 colega de classe
 colega de quarto
 colete balístico
@@ -4962,17 +5070,22 @@ com a boca na botija
 com a breca
 com a cara e a coragem
 com a pulga atrás da orelha
+com a qual
 com a respiração em suspenso
 com a respiração suspensa
 com amigos assim, quem precisa de inimigos
 com as mãos a abanar
 com as mãos abanando
+com base em
 com certeza
 com efeito
 com licença
+com maior razão
+com medo de que
 com o cu na mão
 com o passar do tempo
 com o perdão da palavra
+com o qual
 com o rabo entre as pernas
 com o tempo
 com os copos
@@ -4980,6 +5093,7 @@ com os dias contados
 com prazer
 com quanto
 com que cara
+com receio de que
 com sigo
 com todas as letras
 com tudo
@@ -5001,6 +5115,7 @@ comer o chapéu
 comer o pão que o diabo amassou
 comer que nem um porco
 comes e bebes
+começar a
 começar do zero
 comigo-ninguém-pode
 coming out
@@ -5009,7 +5124,9 @@ comissária de voo
 comissário de bordo
 common law
 como assim
+como consequência
 como diria Jack o Estripador, vamos por partes
+como dizer
 como em cima, assim embaixo
 como já era de esperar
 como já era de se esperar
@@ -5017,6 +5134,9 @@ como não
 como o caralho
 como por exemplo
 como queira
+como quer que
+como quiser
+como quiseres
 como se
 como se diz
 como se não houvesse amanhã
@@ -5052,6 +5172,7 @@ comtanto que
 comum de dois
 comunidade autónoma
 comunidade autônoma
+comunista de iPhone
 comédia de situação
 comércio livre
 concha nasal
@@ -5077,6 +5198,8 @@ conhecer como a palma da mão
 conhecimento é poder
 conjunto de caracteres
 conjunto de partes
+conquanto
+conseguir
 consoante composta
 constante arbitrária de integração
 constante de Avogadro
@@ -5094,12 +5217,17 @@ contador do gás
 contagem final
 contagem regressiva
 contanto que
+contar com
 contar com o ovo no cu da galinha
+contar fazer
+contar para
 contato imediato
 contato visual
+continuar a
 continuação analítica
 conto de fadas
 conto popular
+contra
 contra a corrente
 contra a maré
 contra o relógio
@@ -5187,6 +5315,7 @@ corrente alternada
 corrente contínua
 corrente sanguínea
 correr atrás
+correr o risco de
 corretor líquido
 corretor ortográfico
 correção política
@@ -5232,7 +5361,9 @@ couve-galega
 couve-lombarda
 couve-nabiça
 couve-nabo
+couve-portuguesa
 couve-rábano
+couve-tronchuda
 cova coletiva
 coxa-branca
 cozinha aberta
@@ -5272,6 +5403,7 @@ crista ectodérmica apical
 cristianismo muscular
 cromatografia em camada delgada
 cromátide-irmã
+cruelty-free
 cruz credo
 cruz de Malta
 cruz de Santo André
@@ -5417,6 +5549,7 @@ cópia de segurança
 córtex cingulado
 córtex cingulado anterior
 côr de burro quando foge
+côr-de-rosa
 cúmulo-nimbo
 da Costa
 da Cruz
@@ -5433,6 +5566,8 @@ da hora
 da moléstia
 da noite para o dia
 da noite pro dia
+da parte de
+da qual
 da vida
 daco-romeno
 daddy issues
@@ -5451,15 +5586,21 @@ dança macabra
 dançarina exótica
 daqui a
 daqui a pouco
+daqui em diante
+daquilo
 dar PT
 dar a bunda
 dar a cara a tapa
+dar a conhecer
 dar a entender
+dar a impressão de
 dar a luz
 dar a mão
 dar a mão à palmatória
 dar a mínima
 dar a palavra
+dar a saber
+dar a sua opinião
 dar a volta por cima
 dar ao manifesto
 dar asas à imaginação
@@ -5483,13 +5624,18 @@ dar de ombros
 dar de si
 dar distância
 dar duro
+dar em
 dar em cima
+dar espaço a
 dar espetáculo
+dar fim a
 dar fé
 dar graças
 dar ibope
 dar ideia
+dar início a
 dar like
+dar lugar a
 dar mole
 dar murro em ponta de faca
 dar no couro
@@ -5511,11 +5657,13 @@ dar o peido mestre
 dar o que falar
 dar o troco
 dar ouvidos
+dar ouvidos a
 dar para
 dar para o gasto
 dar para o torto
 dar pau
 dar pitaco
+dar por
 dar por isso
 dar pum
 dar pé
@@ -5553,9 +5701,15 @@ dar vácuo
 dar zebra
 dar à luz
 dar à língua
+dar-se
+dar-se ao luxo de
 dar-se ao trabalho
+dar-se ao trabalho de
 dar-se bem
 dar-se conta
+dar-se conta de
+dar-se mal
+dar-se o caso de
 darwinismo social
 das antigas
 das duas, uma
@@ -5570,6 +5724,8 @@ de Taubaté
 de acordo
 de acordo com
 de agora em diante
+de algum modo
+de alguma maneira
 de antemão
 de araque
 de bandeja
@@ -5595,7 +5751,9 @@ de cair o cu da bunda
 de cama
 de cara
 de certa forma
+de certeza
 de certo
+de certo modo
 de chofre
 de cor
 de cor e salteado
@@ -5611,6 +5769,7 @@ de fato
 de fio a pavio
 de forma alguma
 de forma nenhuma
+de forma que
 de gatas
 de gema
 de graça
@@ -5636,6 +5795,7 @@ de maior
 de mal
 de maneira alguma
 de maneira nenhuma
+de maneira que
 de mansinho
 de marca maior
 de marré de si
@@ -5643,9 +5803,12 @@ de marré deci
 de mau gosto
 de memória
 de menor
+de menos
 de mentira
 de merda
+de modo a que
 de modo algum
+de modo especial
 de modo geral
 de modo que
 de molho
@@ -5691,6 +5854,7 @@ de qualquer forma
 de qualquer jeito
 de qualquer maneira
 de qualquer modo
+de quando em vez
 de quatro
 de que forma
 de que jeito
@@ -5710,8 +5874,10 @@ de segunda mão
 de sempre
 de sobra
 de sol a sol
+de sorte que
 de soslaio
 de supetão
+de súbito
 de tempos em tempos
 de tirar o fôlego
 de todo
@@ -5755,18 +5921,23 @@ deitar a toalha ao chão
 deitar cedo e cedo erguer dá saúde e faz crescer
 deitar fora
 deitar fora a criança com a água do banho
+deitar mão de
 deitar sangue
 deixar a desejar
 deixar a peteca cair
 deixar barato
+deixar cair
 deixar de
 deixar em paz
 deixar escapar
+deixar estar
 deixar na mão
 deixar para lá
 deixar passar
 deixar quieto
 deixar rabo
+deixar-se enganar
+deixar-se ir
 delação premiada
 delegacia de polícia
 delícia turca
@@ -5784,6 +5955,7 @@ dentro de
 depois de
 depois de Cristo
 depois de amanhã
+depois que
 depressão maníaca
 depósito de porra
 deriva continental
@@ -5793,6 +5965,7 @@ derradeiro recurso
 derramamento de sangue
 derramar o espaguete
 derretimento nuclear
+desatar a
 descabelar o palhaço
 descansar em paz
 descanso de tela
@@ -5802,11 +5975,13 @@ descer o cacete
 descontinuidade de Mohorovicic
 desculpa esfarrapada
 desde então
+desde já
 desde quando
 desde que
 desde que eu me conheço por gente
 desde que o mundo é mundo
 desenho animado
+desenrascar-se
 desenvolvimento sustentável
 desfile de moda
 design inteligente
@@ -5815,6 +5990,7 @@ desmancha-prazeres
 desobediência civil
 despedida de solteira
 despedida de solteiro
+desperdiçar tempo
 destino manifesto
 desvio padrão
 desvio para o vermelho
@@ -5829,6 +6005,8 @@ devagar e sempre
 devagar se vai ao longe
 dever até as calças
 dever de casa
+dever ter
+dever ter jogado pedra na cruz
 devido a
 dez e seis
 dez e seys
@@ -5895,6 +6073,7 @@ diretor de cinema
 diretor executivo
 diretor-geral
 direção-geral
+dirigir-se a
 disc jockey
 disco compacto
 disco de acreção
@@ -5911,9 +6090,12 @@ discurso indireto
 discurso indireto livre
 disfunção alimentar
 disfunção erétil
+dispensar
 dispensar apresentações
 dispositivo intrauterino
+disso
 dissonância cognitiva
+disto
 distorcer a realidade
 distribuição gaussiana
 distribuição hipergeométrica
@@ -5929,7 +6111,10 @@ ditado popular
 dito cujo
 dito e feito
 dito-cujo
+ditongo crescente
+ditongo decrescente
 diversidade é o tempero da vida
+divertir-se à grande
 dividir e conquistar
 dividir e governar
 divisor de águas
@@ -5937,9 +6122,11 @@ diz que diz
 diz que diz que
 diz-me com quem andas
 diz-me com quem andas, dir-te-ei quem és
+diz-se que
 dizem por aí
 dizer coisa com coisa
 dizer palavrões
+dizer respeito a
 dizer xis
 dióxido de carbono
 dióxido de nitrogénio
@@ -5949,6 +6136,8 @@ do amor
 do avesso
 do balaco
 do balacobaco
+do bom
+do bom tempo
 do caralho
 do caramba
 do contra
@@ -5956,9 +6145,11 @@ do costume
 do dia para a noite
 do dia pra noite
 do fundo do coração
+do lado bom
 do mundo
 do nada
 do pé para a mão
+do qual
 do que
 do que alguém é feito
 do quê
@@ -6008,6 +6199,7 @@ dois-irmãos
 dois-pontos
 dolce-amarga
 dom-fafe
+dom-juan
 dom-rodrigo
 domo de sal
 domínio público
@@ -6042,6 +6234,7 @@ drive-thru
 duas cabeças pensam melhor do que uma
 dublê de corpo
 ducto deferente
+dumba-nengue
 dupla penetração
 duplas mistas
 duplo negativo
@@ -6123,6 +6316,9 @@ efeito dominó
 efeito especial
 efeito estufa
 efeito sonoro
+eis como
+eis porque
+eis que
 eis senão quando
 eita, piula
 eixo de comando
@@ -6157,25 +6353,32 @@ elusão fiscal
 elétron-volt
 em Roma sê romano
 em Roma, como os romanos
+em algum lugar
 em alto e bom som
 em andamento
 em antemão
 em baixo
 em banho-maria
+em benefício de
 em boas mãos
 em bom português
 em branco
 em breve
+em briga de marido e mulher, não se mete a colher
 em carne e osso
 em cartaz
 em casa
 em casa de ferreiro, o espeto é de pau
+em certo sentido
 em cima
 em cima da hora
 em cima de
 em cima do muro
 em comum
+em consequência
+em consequência de
 em conta
+em contra de
 em contramão
 em contrapartida
 em contrário
@@ -6185,23 +6388,34 @@ em desenvolvimento
 em detalhes
 em dia
 em diante
+em direção a
 em dois toques
 em efígie
 em especial
 em espécie
 em essência
+em face de
+em favor de
 em flagrante
 em frente a
+em frente de
 em função de
 em geral
 em grande escala
 em guarda
+em homenagem a
+em honra de
 em jogo
 em larga escala
 em linha
 em loop
+em louvor de
+em lugar de
+em lugar nenhum
 em massa
+em matéria de
 em meio a
+em memória de
 em mãos
 em nome de
 em operação
@@ -6209,30 +6423,39 @@ em ordem
 em outras palavras
 em paralelo
 em parte
+em parte alguma
+em particular
 em pequena escala
 em pessoa
 em plena luz do dia
 em ponto
 em poucas palavras
+em presença de
 em primeiro lugar
 em princípio
 em prol de
+em proveito de
 em pé
 em pé de guerra
 em pó
 em quanto
 em questão
+em redor de
 em regra
 em relação a
+em resumo
 em seguida
+em segundo lugar
 em suma
 em série
 em tempo
+em termos de
 em terra de cego, quem tem um olho é rei
 em time que está ganhando, não se mexe
 em todo caso
 em todo o caso
 em torno de
+em troca de
 em um repente
 em uma palavra
 em vez de
@@ -6247,6 +6470,7 @@ em voz alta
 em vão
 em última análise
 embaixo de
+embora
 embu-guaçuense
 emendas Pix
 eminência parda
@@ -6273,6 +6497,9 @@ encher o saco
 encher os pacovás
 encolher os ombros
 encolhida de ombros
+encontrar maneira de
+encontrar tempo de
+encontrar-se
 encontro consonantal
 encontro às cegas
 encostar às boxes
@@ -6291,6 +6518,7 @@ energia nuclear
 energia potencial
 enfiar a faca
 enfiar o pé na jaca
+enfim
 engenharia civil
 engenharia de sistemas
 engenharia de software
@@ -6311,6 +6539,7 @@ enguia europeia
 enguia-elétrica
 enjoo de viagem
 enjôo de viagem
+enquanto
 enquanto isso
 ensaio geral
 ensinar a missa ao padre
@@ -6322,6 +6551,8 @@ ensino primário
 ensino secundário
 ensino superior
 entendedores entenderão
+entender-se
+entender-se em
 entornar o caldo
 entrar em
 entrar em jogo
@@ -6332,10 +6563,9 @@ entre o cão e o lobo
 entre outros
 entre quatro paredes
 entregar os pontos
+então
 enunciado do problema
 enunciado performativo
-enviar pix
-enviar um pix
 enxaguante bucal
 enxugar gelo
 enxágue bucal
@@ -6359,6 +6589,7 @@ era uma vez
 era viking
 erguer o nariz
 errar é humano
+erro tipográfico
 erupção solar
 erva cidreira
 erva daninha
@@ -6435,6 +6666,7 @@ espaço vetorial
 espaço-nave
 espaço-tempo
 espaço-tempo absoluto
+especialmente
 espectro autista
 espectrometria de massa
 espelho retrovisor
@@ -6466,6 +6698,7 @@ espiral de Arquimedes
 espondilite anquilosante
 esponja de aço
 esporte de contato
+espírito de porco
 espírito esportivo
 espírito familiar
 espírito faminto
@@ -6492,13 +6725,17 @@ estado da matéria
 estado de bem-estar
 estado de bem-estar social
 estado de direito
-estado insular
 estado policial
+estado-nação
 estado-unidense
 estalão-ouro
 estamos conversados
 estampa ilustrada
+estar a fazer
 estar a fim
+estar a par de
+estar a ponto de
+estar bem longe de
 estar cansado de saber
 estar careca de
 estar com a cara boa
@@ -6508,10 +6745,19 @@ estar com os pés na cova
 estar com os pés para a cova
 estar com tudo
 estar de chico
+estar em condições de
+estar em jogo
+estar fazendo
 estar na berlinda
 estar para
+estar por
 estar por um fio
+estar prestes a
+estar sob o risco de
+estar zangado com
+estar à altura de
 estar-se a cagar
+estar-se a marimbar para
 estar-se nas tintas
 estatu quo
 estatus quo
@@ -6584,6 +6830,7 @@ ex-namorado
 ex-presidente
 exagerar a verdade
 exame de sangue
+exceto se
 exceção que prova a regra
 existem casos e casos
 expectativa de vida
@@ -6599,6 +6846,7 @@ extrema-esquerda
 extrema-unção
 fac-símile
 faca de dois gumes
+face a
 face a face
 fada dos dentes
 fada-madrinha
@@ -6622,7 +6870,9 @@ falante nativo
 falar coisa com coisa
 falar com a porta
 falar com as paredes
+falar de
 falar em línguas
+falar grego
 falar mais do que a boca
 falar mais que a boca
 falar mal
@@ -6661,6 +6911,7 @@ fato-de-macaco
 fato-macaco
 faz favor
 faz o L
+faz tempo
 faz tudo
 faz-me rir
 faz-tudo
@@ -6671,6 +6922,7 @@ fazer a cama
 fazer a caveira
 fazer a egípcia
 fazer a festa
+fazer a sua parte
 fazer amor
 fazer aniversário
 fazer anos
@@ -6683,6 +6935,7 @@ fazer careta
 fazer caso
 fazer cocó
 fazer cocô
+fazer com que
 fazer companhia
 fazer corpo mole
 fazer correr muita tinta
@@ -6692,9 +6945,12 @@ fazer cócegas
 fazer das tripas coração
 fazer de conta
 fazer de gato e sapato
+fazer de modo a
+fazer de modo que
 fazer de tudo
 fazer do limão uma limonada
 fazer doce
+fazer em cima do joelho
 fazer em postas
 fazer esse
 fazer falta
@@ -6719,6 +6975,7 @@ fazer o quê
 fazer ouvidos moucos
 fazer oó
 fazer parte
+fazer parte de
 fazer pender a balança
 fazer piscinas
 fazer pix
@@ -6727,17 +6984,22 @@ fazer pouco
 fazer questão
 fazer renúncia
 fazer rodeios
+fazer saber
 fazer sala
 fazer sentido
 fazer sexo
 fazer tempestade em copo d'água
+fazer tesourinha
 fazer tijolo
 fazer tipo
-fazer um pix
+fazer troça de
 fazer uma tempestade num copo de água
+fazer uso de
+fazer ver
 fazer vista grossa
 fazer voar
 fazer xixi
+fazer-se
 fazer-se passar por
 faça chuva ou faça sol
 faça favor
@@ -6762,6 +7024,7 @@ fecho de correr
 fecho ecler
 fecho éclair
 fecho-relâmpago
+fedegoso-verdadeiro
 feijão com arroz
 feijão comum
 feijão de tropeiro
@@ -6788,6 +7051,7 @@ feijão-verde
 feijão-vermelho
 feira da ladra
 feira de comércio
+feito em cima do joelho
 feito nas coxas
 feitura de santo
 feliz aniversário
@@ -6825,8 +7089,11 @@ fibra ótica
 fibrodisplasia ossificante progressiva
 fibrose cística
 fica com Deus
+ficar a
+ficar a ver navios
 ficar chato
 ficar com o pé atrás
+ficar de
 ficar de cara
 ficar de enrolação
 ficar de fora
@@ -6835,6 +7102,8 @@ ficar enfiado
 ficar esperto
 ficar no aguardo
 ficar para trás
+ficar por
+ficar por ali
 ficção científica
 figo da Índia
 figo-da-Índia
@@ -6879,7 +7148,9 @@ fim-de-semana
 final de semana
 final feliz
 finanças públicas
+fingir de
 fino-úgrico
+fio condutor
 fio da meada
 fio dental
 fios de ovos
@@ -6950,11 +7221,13 @@ fora da caixa
 fora da lei
 fora de
 fora de controle
+fora de dúvida
 fora de hora
 fora de jogo
 fora de lei
 fora de linha
 fora de série
+fora do alcance de
 fora do armário
 fora do comum
 fora do normal
@@ -7001,6 +7274,7 @@ franco-atirador
 franco-maçom
 francês antigo
 francês médio
+frango assado
 frango frito
 frango-d'água
 franzir o cenho
@@ -7016,6 +7290,7 @@ frente de batalha
 frente fria
 frente quente
 frente ártica
+fruta que caiu
 fruta-de-manteiga
 fruta-do-conde
 fruta-pinha
@@ -7100,8 +7375,8 @@ galáxia anã
 game show
 ganha-pão
 ganhar a vida
-ganhar pix
-ganhar um pix
+ganhar terreno
+ganhar vantagem
 ganso do Canadá
 ganso-bravo
 ganso-de-faces-brancas
@@ -7179,6 +7454,7 @@ geo-espacial
 geometria algébrica
 geometria analítica
 geometria euclidiana
+geometria não euclidiana
 geometria não-euclidiana
 gerador Van de Graaff
 geração Z
@@ -7194,6 +7470,7 @@ geômetra algébrico
 gigante azul
 gigante gasoso
 gigante vermelha
+gil-vicentista
 ginseng americano
 ginástica rítmica
 gira-discos
@@ -7210,6 +7487,7 @@ glândula adrenal
 glândula anal
 glândula apócrina
 glândula bulbouretral
+glândula de Skene
 glândula mamária
 glândula parótida
 glândula pineal
@@ -7257,7 +7535,9 @@ gota d'água no oceano
 gota de chocolate
 gota de água
 governo-sombra
+gozar com
 grade levadiça
+grafo não orientado
 grafo não-orientado
 grafo orientado
 gralha de nuca cinzenta
@@ -7376,6 +7656,7 @@ gérmen de trigo
 gêmeo siamês
 h aspirado
 h mudo
+habituar-se a
 hall da fama
 hang loose
 happy hour
@@ -7387,6 +7668,7 @@ harmónica de vidro
 harmônica de vidro
 harpa de boca
 hat-trick
+haver
 haver de
 heavy metal
 hemisfério norte
@@ -7395,6 +7677,7 @@ hera-terrestre
 herpes-zóster
 hetero-avaliação
 hidreto de lítio
+hihi levei vantagem
 hino nacional
 hip hip hurra
 hip hop
@@ -7467,6 +7750,7 @@ humor ácido
 husky siberiano
 há algo de podre no reino da Dinamarca
 há males que vêm para o bem
+há muito tempo
 há quanto tempo
 há quem diga que
 há tempos
@@ -7490,6 +7774,7 @@ idiota da vila
 idiota útil
 ifrita-de-coroa-azul
 igual a
+igualmente
 ilha Norfolk
 ilha de coral
 ilhas Falkland
@@ -7500,6 +7785,8 @@ iluminação pública
 imaculada conceição
 imagem inversa
 imagem recíproca
+imagina
+imagine-se
 imortalidade biológica
 implantação de íons
 imposto de consumo
@@ -7545,6 +7832,7 @@ insónia familiar fatal
 insônia familiar fatal
 integral indefinida
 integral indefinido
+inteirar-se de
 inteligência artificial
 inter-racial
 inter-relação
@@ -7575,10 +7863,13 @@ intra-específico
 inverno nuclear
 invés de
 ipsis litteris
+ir ao assunto
 ir ao cu
+ir ao ponto
 ir aos arames
 ir aos pés
 ir atrás
+ir buscar
 ir com a cara
 ir com os porcos
 ir de arrasta pra cima
@@ -7590,9 +7881,13 @@ ir direto ao assunto
 ir em cana
 ir em frente
 ir embora
+ir fazer
+ir lá
+ir para
 ir para a cama
 ir para a cama com
 ir para a cucuia
+ir para a frente
 ir para o beleléu
 ir para o brejo
 ir para o caralho
@@ -7602,13 +7897,16 @@ ir pra cucuia
 ir preso
 ir pro brejo
 ir pro caralho
+ir procurar
 ir prò caralho
 ir pró caralho
 ir tomar banho
 ir à Roma e não ver o papa
 ir à merda
+ir à procura de
 ir às alturas
 ir às compras
+ir-se embora
 irlandês médio
 irmão de sangue
 irmão leigo
@@ -7652,6 +7950,7 @@ jogar fora o bebê com a água do banho
 jogar luz
 jogar merda no ventilador
 jogar na cara
+jogar pedra na cruz
 jogar pérolas aos porcos
 jogar shade
 jogar um balde de água fria
@@ -7692,6 +7991,7 @@ juntar os trapinhos
 juntar os trapos
 junto a
 junto com
+junto de
 jurar a pés juntos
 jurar por Deus
 jurará-açu
@@ -7749,6 +8049,7 @@ lançamento do peso
 lançamento lateral
 lançar luz
 lançar mão
+lançar mão de
 lar, doce lar
 laranja amarga
 laranja azeda
@@ -7788,6 +8089,7 @@ lavar as mãos
 lavar urubu
 lebre ártica
 lebrel irlandês
+ledo engano
 lei básica
 lei da vantagem
 lei marcial
@@ -7805,6 +8107,7 @@ leite ninho
 leito de morte
 leitura labial
 lelé da cuca
+lembrar-se de
 lenda urbana
 lenga-lenga
 lente de aumento
@@ -7838,6 +8141,10 @@ levantar do lado errado da cama
 levantar voo
 levar a breca
 levar a cabo
+levar a efeito
+levar a melhor
+levar a pior
+levar em consideração
 levar em conta
 levar no cagueiro
 levar no cu
@@ -7960,6 +8267,7 @@ lobo do mar
 lobo em pele de cordeiro
 lobo mexicano
 lobo parietal
+lobo solitário
 lobo-cerval
 lobo-cinzento
 lobo-d'alsácia
@@ -7974,6 +8282,7 @@ lobo-terrível
 locomotiva-tênder
 locução prepositiva
 logaritmo natural
+logo
 logo que
 loja de 1,99
 loja de conveniência
@@ -7984,6 +8293,7 @@ loja dos 300
 loja dos trezentos
 long neck
 longa-metragem
+longe de
 longe dos olhos, longe do coração
 lontra-gigante
 lotação esgotada
@@ -8043,6 +8353,7 @@ língua auxiliar
 língua azul
 língua brasileira de sinais
 língua d'oc
+língua de oïl
 língua de sinais
 língua de sinais americana
 língua de sinais argentina
@@ -8075,6 +8386,7 @@ macaco-cairara
 macaco-da-noite
 macaco-de-cheiro
 macaco-guariba
+macaco-inglês
 macaco-japonês
 macaco-prego
 macaco-preto
@@ -8101,11 +8413,14 @@ mais cedo ou mais tarde
 mais de
 mais dia, menos dia
 mais do que
+mais do que tudo
 mais logo
 mais louco que o padre do balão
 mais ou menos
 mais perdido que cego em tiroteio
 mais que
+mais que perfeito
+mais que tudo
 mais sossegado que pai de menina feia
 mais tarde
 mais vale estar só que mal acompanhado
@@ -8119,6 +8434,7 @@ mais-que-perfeito
 mais-querer
 mais-valia
 making of
+mal
 mal aí
 mal comida
 mal contado
@@ -8165,9 +8481,8 @@ manda-chuva
 mandar bala
 mandar brasa
 mandar embora
-mandar pix
-mandar um pix
 mandar ver
+mandioca-brava
 manga Alphonso
 manga espada
 manga rosa
@@ -8178,6 +8493,7 @@ manobra de Heimlich
 manteiga de amendoim
 manteiga de cacau
 manter no escuro
+manter o ritmo
 mapa de Karnaugh
 mapa do site
 mapa-múndi
@@ -8192,6 +8508,7 @@ marca de água
 marca registrada
 marca-livro
 marca-passo
+marca-texto
 marcador de páginas
 marcar bobeira
 marcar touca
@@ -8237,6 +8554,7 @@ maré de sizígia
 maré negra
 maré vermelha
 maré viva
+mas também
 mas, né
 masculinidade frágil
 massa atómica
@@ -8269,6 +8587,7 @@ matar dois coelhos de uma cajadada
 matar dois coelhos de uma cajadada só
 matar o tempo
 matar um leão por dia
+matcha latte
 mate do louco
 matemática aplicada
 matemática discreta
@@ -8416,15 +8735,18 @@ mestre-sala
 mesão-friense
 metal pesado
 metal progressivo
+meter a colher
 meter a mão na massa
 meter fita
 meter o bedelho
 meter o louco
+meter o nariz
 meter o pau
 meter o pé
 meter o rabo entre as pernas
 meter os pés pelas mãos
 meter uma lança em África
+meter-se a
 metralhadora Gatling
 metro cúbico
 metro quadrado
@@ -8491,12 +8813,8 @@ modus operandi
 modéstia à parte
 moeda fiduciária
 moeda-ouro
-moedor de café
-moedor de pimenta
 moer o juízo
 mogno africano
-moinho de café
-moinho de pimenta
 moinho de vento
 molha-parvos
 molhar a garganta
@@ -8580,6 +8898,7 @@ mudar de ideia
 mudar de pato para ganso
 mudar de pato pra ganso
 muita cera queima a igreja
+muito bem
 muito cacique para pouco índio
 muito louco
 muito menos
@@ -8680,23 +8999,30 @@ na cara dura
 na contramão
 na de alguém
 na descontra
+na direção de
 na dúvida
 na estica
+na faixa
 na frente
 na frente de
 na guerra e no amor vale tudo
 na hora
 na lata
+na maior parte
 na manga
 na marra
+na melhor das hipóteses
 na mesma como a lesma
 na mesma, como a lesma
 na minha opinião
 na moda
 na moral
 na mosca
+na pior das hipóteses
 na ponta da língua
+na presença de
 na prática
+na qual
 na qualidade de
 na real
 na realidade
@@ -8710,7 +9036,11 @@ nabo da Suécia
 nabos em saco
 nacional-socialismo
 nacional-socialista
+nada
 nada a ver
+nada além de
+nada haver
+nada mais que
 nada mau
 nada nessa mão
 nada se cria; tudo se copia
@@ -8729,6 +9059,8 @@ nariz empinado
 nariz-de-cera
 narrador não confiável
 narrador não-confiável
+narradora não confiável
+narradora não-confiável
 nas costas
 nas mangas
 nas mãos de
@@ -8755,6 +9087,7 @@ neca de pitibiriba
 necas de pitibiribas
 negativo duplo
 negro de fumo
+nem
 nem Jesus Cristo conseguiu agradar a todos
 nem a pau
 nem aqui, nem na China
@@ -8763,6 +9096,7 @@ nem carne nem peixe
 nem de longe
 nem ferrando
 nem fodendo
+nem mais nem menos
 nem mas, nem meio mas
 nem me digas
 nem me fala
@@ -8784,9 +9118,11 @@ neo-nazi
 neo-nazismo
 neo-nazista
 nervo abducente
+nervo vago
 nervo óptico
 nervo ótico
 nhe-nhe-nhem
+nheco-nheco
 nheque-nheque
 nhá-benta
 nimbo-cúmulo
@@ -8803,20 +9139,35 @@ no Dia de São Nunca à tarde
 no ano da Hégira
 no ar
 no bico do corvo
+no caso de
+no caso específico
 no cu do mundo
+no decorrer de
 no duro
 no entanto
 no fim das contas
+no fim de
+no fim de contas
 no final das contas
+no fundo de
 no geral
 no limiar de
+no lugar de
 no mais
+no meio de
 no momento
 no máximo
+no mínimo
 no papel
 no pelo
 no ponto
+no qual
 no que
+no que diz respeito a
+no que se refere a
+no que toca a
+no relento
+no sentido de
 no susto
 no vamo ver
 no vermelho
@@ -8914,18 +9265,30 @@ nuvem de Oort
 nuvem de cogumelo
 nuvem em cogumelo
 náhuatl clássico
+não agressão
+não binária
+não binário
 não brinca
 não custa nada
 não dar ponto sem nó
+não deixar de
 não deu outra
 não diga
 não estar com nada
+não estar mais
 não está no gibi
 não existe almoço de graça
 não existe almoço grátis
+não fazer mais que
+não fazer senão
 não fede, nem cheira
+não ficar atrás
+não ficar atrás de
+não governamental
+não há
 não há carne sem osso
 não há de quê
+não há dúvida que
 não há fumaça sem fogo
 não há lugar como nosso lar
 não há lugar como o nosso lar
@@ -8934,23 +9297,42 @@ não há regra sem exceção
 não importa
 não interessa
 não ir com a cara de
+não jamais
+não mais
 não me diga
 não meter prego nem estopa
+não nada
+não nenhum
+não ninguém
+não nunca
 não obstante
+não perder pitada
+não precisar mais de
+não pôr o pé
+não que
 não querer saber
 não querer ver nem pintado
 não quero saber
+não saber o que fazer
+não se conformar
 não se faz omelete sem se quebrar alguns ovos
 não se pode julgar um livro pela capa
 não se preocupe
 não sei
 não sei das quantas
+não sei o quê
+não sei quê
 não sei, não quero saber e tenho raiva de quem sabe
 não ser grande espingarda
+não só
 não te interessa
+não ter nada a ver com
 não ter onde cair morto
 não ter papas na língua
+não ter tempo a perder
 não tá no gibi
+não valer a pena
+não valer o que come
 não valer um centavo
 não ver a hora
 não é
@@ -8960,7 +9342,7 @@ não é flor que se cheire
 não é não
 não és transparente
 não-agressão
-não-binárie
+não-binária
 não-binário
 não-governamental
 não-me-esqueças
@@ -9016,11 +9398,16 @@ o céu vir abaixo
 o céu é o limite
 o diabo que carregue
 o espírito está pronto, mas a carne é fraca
+o facto de que
+o facto é que
+o fato de que
+o fato é que
 o gato comeu sua língua
 o homem põe e Deus dispõe
 o homem é o lobo do homem
 o hábito faz o monge
 o hábito não faz o monge
+o importante é
 o inferno está cheio de boas intenções
 o jogo só acaba quando termina
 o mesmo
@@ -9042,20 +9429,26 @@ o que conta é a intenção
 o que diabos
 o que está feito está feito
 o que foi
+o que há
+o que importa é
 o que não mata, engorda
 o que os olhos não veem o coração não sente
-o que os olhos não veem, o coração não sente
 o que quer que
 o que tem a ver o cu com as calças
 o que vem de baixo não me atinge
+o que é
+o que é que
 o que é que foi
+o que é que há
 o que é que o cu tem a ver com as calças
 o que é que se passa
 o que é que tem
 o que é que tem o cu a ver com as calças
+o que é que é
 o que é um peido para quem está cagado
 o que é, o que é
 o quê
+o resto é história
 o sangue é mais grosso que a água
 o senhor
 o silêncio é ouro
@@ -9067,6 +9460,7 @@ o tempo inteiro
 o tempo todo
 o tempo voa
 o último dos moicanos
+oba-oba
 objecto voador não identificado
 objecto voador não-identificado
 objeto direto
@@ -9080,6 +9474,7 @@ obra prima
 obrigado pela parte que me toca
 obsolescência planejada
 obsolescência programada
+ocupar-se de
 oficial de justiça
 oh minha nossa
 oh, gente
@@ -9095,7 +9490,6 @@ oitenta e sete
 oitenta e três
 oitenta e um
 oito ou oitenta
-olha lá
 olha quem fala
 olhar antes de saltar
 olhar de mil jardas
@@ -9104,6 +9498,7 @@ olho da goiaba
 olho da rua
 olho da tempestade
 olho do cu
+olho do furacão
 olho gordo
 olho mágico
 olho nu
@@ -9125,6 +9520,7 @@ onda dente de serra
 onda eletromagnética
 onda gravitacional
 onda sonora
+onde
 onde Judas perdeu as botas
 onde fica o banheiro
 onde há fumaça, há fogo
@@ -9144,6 +9540,7 @@ oração subordinada adjetiva
 orbital de antiligação
 ordem de grandeza
 orelha-de-judas
+organização não governamental
 organização não-governamental
 orgulho hétero
 orientado a objetos
@@ -9158,6 +9555,7 @@ os dados estão lançados
 os fins justificam os meios
 os incomodados que se mudem
 os opostos se atraem
+os quais
 os senhores
 osso alveolar
 osso da sorte
@@ -9174,6 +9572,7 @@ ossos do ofício
 osteogénese imperfeita
 osteogênese imperfeita
 ou caga, ou desocupa a moita
+ou então
 ou exclusivo
 ou oito, ou oitenta
 ou seja
@@ -9191,7 +9590,9 @@ outro eu
 outro mundo
 outros quinhentos
 ouvido médio
+ouvir dizer que
 ouvir falar
+ouvir falar de
 ovelha negra
 ovo centenário
 ovo de Páscoa
@@ -9199,11 +9600,13 @@ ovo estrelado
 ovo mole de Aveiro
 ovo quente
 ovos mexidos
+oxalato de cálcio
 p. ex.
 padrão FIFA
 padrão Fifa
 padrão de vida
 padrão-ouro
+paganismo piaga
 pagar as contas
 pagar as favas
 pagar boquete
@@ -9250,6 +9653,8 @@ panda-gigante
 panda-vermelho
 panela a vapor
 panela de pressão
+panela velha é que faz comida boa
+panna cotta
 pano branco
 pano de chão
 pano de copa
@@ -9291,7 +9696,9 @@ papel machê
 papel toalha
 papel-alumínio
 papel-carbono
+papel-cartão
 papel-machê
+papel-manteiga
 papel-moeda
 papel-toalha
 papila gustativa
@@ -9303,6 +9710,7 @@ papoula de São Francisco
 par mínimo
 par ordenado
 para a frentex
+para além de
 para baixo
 para bom entendedor, meia palavra basta
 para caralho
@@ -9311,11 +9719,14 @@ para casa
 para cima
 para cima de
 para com
+para cá de
 para dar e vender
 para dedéu
+para dizer a verdade
 para inglês ver
 para lá de
 para lá de Bagdá
+para mais
 para ninguém botar defeito
 para o bem ou para o mal
 para o melhor ou para o pior
@@ -9349,12 +9760,14 @@ parcela de mercado
 parceria civil
 pardal doméstico
 pardal-doméstico
+parece que
 parecer consultivo
 parede abdominal
 parede celular
 parede corta-fogo
 parede de texto
 paredes de texto
+pari passu
 paridade do poder de compra
 parque aquático
 parque de diversões
@@ -9367,6 +9780,7 @@ part-time
 parte do leão
 participação em mercado
 participação no mercado
+particularmente
 particípio passado
 particípio presente
 partir o coração de
@@ -9383,6 +9797,7 @@ passagem de nível
 passagem sem retorno
 passagem sem volta
 passagem só de ida
+passar a
 passar a bola para
 passar a ferro
 passar a noite em claro
@@ -9399,12 +9814,15 @@ passar o rodo
 passar pano
 passar pelas brasas
 passar por
+passar sem
 passar vergonha
+passar-se
 passe-bem
 passe-vite
 passo a passo
 passo-a-passo
 passou-bem
+passou-se
 pasta de dente
 pasta de dentes
 pastel de nata
@@ -9444,6 +9862,7 @@ pau no cu de
 pau para toda a obra
 pau para toda obra
 pau pra toda obra
+pau que bate em Chico, bate em Francisco
 pau que nasce torto nunca se endireita
 pau-brasil
 pau-d'arco
@@ -9495,6 +9914,7 @@ pega-azul
 pega-pega
 pega-rabuda
 pega-varetas
+pegar a
 pegar a visão
 pegar ar
 pegar de empurrão
@@ -9555,6 +9975,7 @@ pela boca morre o peixe
 pela fresquinha
 pela madrugada
 pela mesma boca
+pela qual
 pelas chagas de Jesus
 pelas mãos de
 pele de galinha
@@ -9565,6 +9986,9 @@ pelo amor de deus
 pelo bem de
 pelo contrário
 pelo menos
+pelo qual
+pelo que parece
+pelo que toca a
 pelos vistos
 pelotão de fuzilamento
 pen-drive
@@ -9574,8 +9998,10 @@ peneireiro-vulgar
 pensamento desejoso
 pensamento intrusivo
 pensar com seus botões
+pensar de
 pensar duas vezes
 pensar em
+pensar fazer
 pensar na morte da bezerra
 pensar que berimbau é gaita
 penso, logo existo
@@ -9593,6 +10019,7 @@ pera doce
 pera-abacate
 pera-de-advogado
 pera-maçã
+perante
 perca comum
 perca europeia
 perca-amarela
@@ -9604,6 +10031,7 @@ perder a linha
 perder as botas
 perder as estribeiras
 perder de vista
+perder o fio
 perder o seu latim
 perder os sentidos
 perder tempo
@@ -9613,6 +10041,7 @@ perdiz-cinzenta
 perereca-de-banheiro
 pergunta que não quer calar
 periquito-australiano
+permanganato de potássio
 permanência de objeto
 permanência de objetos
 perna de pau
@@ -9729,6 +10158,7 @@ piso radiante
 pista de dança
 pista de gelo
 pista de pouso
+pista de rolamento
 pistola de ar
 pistola de pregos
 pita-cega
@@ -9763,6 +10193,8 @@ poda alfa-beta
 pode apostar
 pode crer
 pode pá
+pode ser que
+poder bem
 poder com
 poder de compra
 poder executivo
@@ -9770,6 +10202,7 @@ poder judiciário
 poder legislativo
 podia dormir sem essa
 podre de rico
+pois
 pois não
 pois sim
 pois é
@@ -9816,6 +10249,7 @@ ponta do icebergue
 ponta solta
 ponta-de-lança
 pontapé de baliza
+pontapé de bicicleta
 pontapé de canto
 pontapé de saída
 pontapé inicial
@@ -9828,6 +10262,7 @@ ponte de hidrogênio
 ponte em arco
 ponte estaiada
 ponte levadiça
+ponte que partiu
 ponte terrestre
 ponte-limense
 ponte-pretana
@@ -9865,7 +10300,9 @@ por a mais b
 por a mais bê
 por acaso
 por agora
+por amor a
 por amor da Santa
+por amor de
 por amor de Deus
 por assim dizer
 por aí
@@ -9875,6 +10312,7 @@ por causa que
 por cento
 por completo
 por conseguinte
+por consequência
 por conta de
 por conta própria
 por defeito
@@ -9895,6 +10333,7 @@ por gentileza
 por goleada
 por hora
 por incrível que pareça
+por intermédio de
 por isso
 por isto
 por mais que
@@ -9929,6 +10368,7 @@ por um triz
 por ventura
 por vez
 por via das dúvidas
+por via de
 por via de regra
 por via popular
 por volta de
@@ -9941,6 +10381,7 @@ porco-espinho
 porco-formigueiro
 pornografia infantil
 poro abdominal
+porquanto
 porque sim
 porquinho-da-índia
 porra de
@@ -9976,6 +10417,7 @@ porta-retrato
 porta-retratos
 porta-rolos
 porta-voz
+portanto
 porto-alegrense
 porto-riquenho
 português antigo
@@ -10020,6 +10462,7 @@ praça de alimentação
 praça de pret
 praça de pré
 praça de touros
+precisar de
 predador sexual
 pregar aos convertidos
 pregar uma peça
@@ -10043,6 +10486,7 @@ pressão barométrica
 pressão osmótica
 pressão sanguínea
 prestar atenção
+prestar atenção a
 prestes a
 presunto de Iorque
 presunto de York
@@ -10105,7 +10549,9 @@ problema de Alhazen
 problema do caixeiro viajante
 processo alveolar
 processo judicial
+procurar
 procurar pelo em ovo
+procurar problemas
 procurar sarna pra se coçar
 producção em massa
 produto cartesiano
@@ -10201,6 +10647,7 @@ psicologia clínica
 psicologia cognitiva
 publicidade indireta
 pula corda
+pula-pula
 pular a cerca
 pular carnaval
 pular corda
@@ -10354,13 +10801,28 @@ pós-produção
 pós-traducional
 pós-traumático
 pôr a mão na massa
+pôr a par
+pôr a par de
+pôr ao corrente
 pôr chifres em
+pôr de lado
+pôr de parte
 pôr do sol
+pôr em andamento
+pôr em causa
+pôr em dúvida
+pôr em jogo
+pôr em marcha
+pôr em prática
+pôr em questão
+pôr fim a
 pôr lenha na fogueira
+pôr o pé
 pôr os pontos nos ii
 pôr os pontos nos is
 pôr os pés em polvorosa
 pôr-do-sol
+pôr-se a
 público-alvo
 qi-gong
 quadro de giz
@@ -10369,6 +10831,7 @@ qual é
 qual é o teu nome
 qualidade de vida
 qualquer coisa
+qualquer coisa que
 qualquer dia desses
 qualquer que seja
 qualquer um
@@ -10384,6 +10847,7 @@ quando muito
 quando o gato sai, os ratos fazem a festa
 quando o inferno congelar
 quando o sol nasce, nasce para todos
+quando se amarrava cachorro com linguiça
 quando um burro fala, o outro abaixa a orelha
 quando um não quer, dois não brigam
 quanto a
@@ -10449,6 +10913,7 @@ que tal se
 que vem
 que vou te contar
 que é de
+que é que
 que é uma beleza
 quebra-cabeça
 quebra-cabeças
@@ -10463,6 +10928,7 @@ quebra-molas
 quebra-nozes
 quebra-ossos
 quebra-pau
+quebra-quebra
 quebrador de gelo
 quebrar a cabeça
 quebrar a cara
@@ -10486,6 +10952,7 @@ queimar a rosca
 queimar as pontes
 queimar estoque
 queimar o filme
+queixar-se de
 queixo duplo
 quejim minas
 quem ama o feio, bonito lhe parece
@@ -10525,7 +10992,10 @@ quem vê cara não vê coração
 quem é vivo sempre aparece
 quem-nós-sabemos
 quer dizer
+quer que
 quer saber
+querer bem
+querer bem a
 querer dizer
 querer porque querer
 querer ser mico de circo
@@ -10605,8 +11075,6 @@ ratão-do-banhado
 raça superior
 realidade virtual
 reality show
-realizar pix
-realizar um pix
 reanimação cardiopulmonar
 reanimação cardiorrespiratória
 reator nuclear
@@ -10617,9 +11085,9 @@ reação nuclear
 reação química
 rebentar pelas costuras
 rebimboca da parafuseta
-receber pix
-receber um pix
 reclamar de barriga cheia
+reco-reco
+recuar
 recurso natural
 recursos humanos
 recém-chegado
@@ -10644,6 +11112,7 @@ rei-dos-ratos
 reino animal
 reinventar a roda
 relacionamento aberto
+relativamente a
 relatividade especial
 relatividade geral
 relatividade restrita
@@ -10682,6 +11151,8 @@ responder por
 ressecção abdominoperineal
 ressuscitação cardiopulmonar
 ressuscitação cardiorrespiratória
+resta o facto de que
+resumindo e concluindo
 resumo da ópera
 reta final
 reticulado completo
@@ -10722,6 +11193,7 @@ roda dentada
 roda-gigante
 roda-viva
 rodar a baiana
+rodar à volta de
 rola-bosta
 rola-turca
 roleta russa
@@ -10735,6 +11207,7 @@ rolo de massa
 rom-rom
 romance de cavalaria
 romance gráfico
+romper a
 root beer
 rosa dos ventos
 rosa rubiginosa
@@ -10781,7 +11254,9 @@ régua-tê
 rés do chão
 rés-do-chão
 sabe-tudo
+saber de
 saber de coração
+saber fazer
 saber lá
 saber é poder
 saber-fazer
@@ -10802,10 +11277,14 @@ saco vazio não para em pé
 saco vazio não pára em pé
 saco-cama
 saco-de-gambá
+safar-se
 sagrado da Birmânia
 sai fora
 saia justa
+sair com
+sair de
 sair de cima do muro
+sair disso
 sair do armário
 sair do papel
 sair fora
@@ -10845,6 +11324,7 @@ salvar pelo gongo
 salve-se quem puder
 salve-se-quem-puder
 salvo engano
+salvo se
 salvo-conduto
 salário mínimo
 salão de beleza
@@ -10863,6 +11343,8 @@ sanguinária do Canadá
 sanguinária-do-canadá
 santa-columbense
 santa-combense
+santa-lucense
+santa-luciense
 santa-luzia
 santo do pau oco
 santo-e-senha
@@ -10871,6 +11353,7 @@ sapatinho-do-diabo
 sapinho-admirável-de-barriga-vermelha
 sapo a engolir
 sapo-cururu
+sapo-do-mar
 sardo campidanês
 sargento-ajudante
 sargento-chefe
@@ -10913,6 +11396,8 @@ secção eficaz
 secção transversal
 segredo de estado
 seguidor de acampamento
+seguir adiante
+seguir em frente
 seguir o baile
 segunda dama
 segunda intenção
@@ -10924,7 +11409,9 @@ segunda-feira
 segundas intenções
 segundo as más línguas
 segundo cavalheiro
+segundo dizem
 segundo grau
+segundo o qual
 segundo plano
 segundo-cabo
 segundo-cavalheiro
@@ -10939,6 +11426,8 @@ seguro-desemprego
 sei lá
 seio de Abraão
 seja como for
+seja o que for
+seja que
 seleção artificial
 seleção natural
 seleção sexual
@@ -10949,6 +11438,7 @@ sem comentários
 sem dor, sem ganho
 sem dúvida
 sem eira nem beira
+sem embargo de
 sem falar de
 sem futuro
 sem graça
@@ -11002,9 +11492,15 @@ separar o joio do trigo
 separar o trigo do joio
 septo nasal
 ser a praia de alguém
+ser breve
+ser capaz de
 ser da casa
+ser da opinião de que
 ser de casa
 ser de comer rezando
+ser de opinião que
+ser de parecer que
+ser grato a
 ser humano
 ser mais
 ser mais fácil a cobra fumar do que
@@ -11014,6 +11510,7 @@ ser o de menos
 ser um livro aberto
 ser unha com carne
 ser vivo
+ser óbvio
 serbo-croata
 seria cômico se não fosse trágico
 serial killer
@@ -11029,6 +11526,7 @@ serrote de costa
 serrote de ponta
 servidor proxy
 servir como uma luva
+servir-se de
 serviço de informações
 serviço de mesa
 serviço secreto
@@ -11124,6 +11622,7 @@ sistema planetário
 sistema solar
 situação-problema
 slot machine
+sob certos aspetos
 sob medida
 sobe e desce
 sobe-e-desce
@@ -11133,12 +11632,14 @@ sobre o meu cadáver
 sobre-estimar
 sobre-humano
 sobre-salto
+sobretudo
 sobrinha-neta
 sobrinho-neto
 social-democracia
 social-democrata
 socialismo democrático
 sociedade de responsabilidade limitada
+socio-histórico
 soco-inglês
 soda cáustica
 soda limonada
@@ -11182,6 +11683,7 @@ spina bifida
 spina bífida
 spray de pimenta
 sri-lankês
+star talent
 start-up
 statu quo
 status quo
@@ -11209,9 +11711,11 @@ substantivo abstrato
 substantivo verbal
 substância cinzenta
 substância química
+suceder
 sucessão apostólica
 sueco antigo
 sufrágio universal
+sugar daddy
 sujar a imagem
 sujo falando do mal lavado
 sul-africana
@@ -11288,6 +11792,8 @@ síndrome do cri du chat
 síndrome do ninho vazio
 síndrome do túnel carpal
 síndrome unha-patela
+só há isso
+só o bagaço
 só o pó
 só o pó da rabiola
 só o tempo dirá
@@ -11295,6 +11801,7 @@ só por cima do meu cadáver
 só que
 só que não
 só se vive uma vez
+sócio-histórico
 sólido arquimediano
 sólido de Arquimedes
 sôbre-salto
@@ -11321,14 +11828,21 @@ tal e tal
 tal pai, tal filho
 talha dourada
 talha-mar
+talvez
 tamanduá-bandeira
 tamanduá-mirim
 tamo junto
+tampouco
 tango argentino
+tanta gente
+tantas coisas
+tantas vezes
 tanto assim
 tanto faz
 tanto faz como tanto fez
 tanto faz, tanto fez
+tanto mais que
+tanto menos
 tapa na barata
 tapa-boca
 tapa-olho
@@ -11412,8 +11926,10 @@ temperatura ambiente
 tempestade em copo d'água
 tempestade num copo d'água
 tempo absoluto
+tempo em que se amarrava cachorro com linguiça
 tempo livre
 tempo é dinheiro
+tencionar fazer
 tendão de Aquiles
 tenente de corveta
 tenente de fragata
@@ -11422,6 +11938,7 @@ tenente-coronel
 tenente-general
 tenho uma pergunta
 tensão superficial
+tentar
 tentar a sorte
 tentilhão-montês
 teorema de Pitágoras
@@ -11444,22 +11961,36 @@ teoria dos nós
 teoria dos números
 teoria dos números algébricos
 teoria musical
+ter a impressão de que
 ter a mania
 ter a ver
+ter a ver com
+ter acabado de
 ter bicho-carpinteiro
 ter como
+ter cuidado com
 ter de
+ter de fazer
+ter de ter
 ter dois pés esquerdos
+ter em conta
 ter em mente
 ter em vista
 ter fogo no rabo
+ter início
 ter mais olhos que barriga
 ter o olho maior do que a barriga
 ter os olhos maiores que a boca
 ter parte
 ter que
+ter que fazer
+ter que ver com
 ter razão
+ter sentido
 ter sol na eira e chuva no nabal
+ter tempo de
+ter vantagem
+ter voz ativa
 terapia adjuvante
 terapia de conversão
 terceira pessoa
@@ -11540,6 +12071,7 @@ tira-linhas
 tira-olhos
 tirador de racha
 tirar a sorte grande
+tirar algo
 tirar as palavras da boca
 tirar cara ou coroa
 tirar de letra
@@ -11550,6 +12082,8 @@ tirar o cavalo da chuva
 tirar o chapéu
 tirar o couro
 tirar onda
+tirar partido de
+tirar proveito de
 tirar sarro
 tirar satisfação
 tirar satisfações
@@ -11574,12 +12108,14 @@ tocador de MP3
 tocar no assunto
 tocar punheta
 tocar à punheta
+toda a gente
 toda boa ação tem sempre uma punição
 toda brincadeira tem um fundo de verdade
 toda regra tem exceção
 toda regra tem uma exceção
 toda vida
 todo mundo
+todo o mundo
 todo o ouro do mundo
 todo ouvidos
 todo santo dia
@@ -11596,11 +12132,14 @@ tomar as dores
 tomar chuva
 tomar chá de banco
 tomar chá de sumiço
+tomar conhecimento de
 tomar conta
 tomar conta de
 tomar cuidado
+tomar em consideração
 tomar no cu
 tomar parte
+tomar parte em
 tomar partido
 tomar uma
 tomara que
@@ -11627,6 +12166,7 @@ toque final
 torda-mergulheira
 tordo americano
 tordo-comum
+tornar a
 torno de oleiro
 tornozeleira eletrônica
 torre d'água
@@ -11675,6 +12215,7 @@ transtorno esquizoafetivo
 transtorno invasivo do desenvolvimento
 transtorno obsessivo-compulsivo
 transtorno opositivo desafiador
+tratar-se de
 trato respiratório
 trava-língua
 trava-línguas
@@ -11688,6 +12229,7 @@ traço ene
 treinador de bancada
 trem de aterragem
 trem-bala
+treme-treme
 tremer as bases
 tremer como vara verde
 tremor de terra
@@ -11767,13 +12309,16 @@ tubo polínico
 tuc-tuc
 tucano-de-bico-preto
 tucano-toco
+tudo aquilo que
 tudo bem
 tudo e mais um pouco
 tudo fica bem quando acaba bem
 tudo menos
+tudo o que
 tudo o que vem à rede é peixe
 tudo que vai volta
 tudo que é bom acaba
+tudo somado
 tuk-tuk
 tumbérgia-azul
 tupi antigo
@@ -11802,6 +12347,7 @@ tênis de mesa
 tête-à-tête
 tília americana
 tô ligado
+tô-fraco
 tônus muscular
 túnel carpal
 túnel do carpo
@@ -11814,14 +12360,19 @@ um atrás do outro
 um beijo
 um belo dia
 um bocado
+um bocado de
+um bom número de
+um certo número de
 um dia
 um dia da caça, outro do caçador
 um dia não são dias
 um e noventa e nove
+um grande número de
 um homem prevenido vale por dois
 um mais que o outro
 um mal nunca vem só
 um monte
+um monte de
 um ou outro
 um passarinho me contou
 um passo de cada vez
@@ -11829,6 +12380,7 @@ um pior que o outro
 um por todos, todos por um
 um por um
 um pouco
+um pouco de
 um poucão
 um sol para cada um
 um tanto quanto
@@ -11940,9 +12492,11 @@ vai-te foder
 vai-te lixar
 vala coletiva
 vala comum
+vale dizer
 vale-cambrense
 vale-tudo
 valer a pena
+valer-se de
 valeu, falou
 valha o que valer
 valha o que valha
@@ -11991,11 +12545,13 @@ velocidade angular
 velocidade da luz
 velocidade de escapamento
 velocidade de escape
+vem
 vem cá
 venda casada
 venda cruzada
 vendedor ambulante
 vender gato por lebre
+vens
 vento de feição
 vento estelar
 vento ponteiro
@@ -12058,6 +12614,7 @@ via-férrea
 via-sacra
 viagem no tempo
 viajar na maionese
+vice e versa
 vice rei
 vice rey
 vice versa
@@ -12083,6 +12640,7 @@ vide-da-judeia
 vide-da-índia
 video game
 video-tape
+vigiar
 vigário-geral
 vigésima primeira
 vigésimo primeiro
@@ -12093,6 +12651,7 @@ vila-regense
 vim, vi, venci
 vin-d'alho
 vinca-de-madagáscar
+vindes
 vingança é um prato que se come frio
 vinha d'alhos
 vinha-d'alho
@@ -12121,9 +12680,12 @@ vinte e três
 vinte e um
 vinte-e-um
 violeta africana
+violeta-africana
 violência doméstica
+vir a
 vir a calhar
 vir a óbito
+vir de
 vira e mexe
 vira essa boca pra lá
 vira-casaca
@@ -12191,6 +12753,7 @@ vogal posterior
 vogal temática
 voleibol de praia
 volta e meia
+voltar a
 voltar à estaca zero
 voltar às boas
 volte sempre
@@ -12214,6 +12777,8 @@ vá tomar no cu
 vá-se foder
 válvula de escape
 válvula termiônica
+várias vezes
+vêm
 víbora-do-gabão
 vídeo game
 vídeo-game
@@ -12235,6 +12800,7 @@ xeque-mate
 xing ling
 xique-xique
 xis da questão
+xis-nove
 yin-yang
 zerar a vida
 zerinho ou um
@@ -12305,16 +12871,22 @@ zé-prequeté
 à capela
 à cata
 à caçador
+à conta de
 à custa de
 à deriva
 à distância
 à expensa de
+à face de
+à falta de
 à força
+à força de
 à frente
 à frente de seu tempo
+à la carte
 à la minuta
 à letra
 à luz de
+à margem de
 à medida que
 à mercê
 à mercê de
@@ -12324,6 +12896,7 @@ zé-prequeté
 à mão de semear
 à noite
 à noite todo gato é pardo
+à outrance
 à pai Adão
 à paisana
 à parte
@@ -12331,15 +12904,20 @@ zé-prequeté
 à plena luz do dia
 à primeira vista
 à prova de fogo
+à qual
 à queima-roupa
 à risca
+à roda de
 à solta
+à sua maneira
 à terceira é de vez
 à toa
 à velocidade da luz
 à venda
 à ventura
 à vista
+à vista de
+à volta de
 à vontade
 à vontadinha
 à época
@@ -12426,6 +13004,8 @@ zé-prequeté
 ácido lisérgico
 ácido láctico
 ácido lático
+ácido málico
+ácido nitroso
 ácido nucleico
 ácido nítrico
 ácido oleico
@@ -12440,6 +13020,7 @@ zé-prequeté
 ácido sulfúrico
 ácido tartárico
 ácido úrico
+ágar-ágar
 água Apollinaris
 água benta
 água canalizada
@@ -12557,19 +13138,30 @@ zé-prequeté
 ânus artificial
 é a vida
 é assim que a banda toca
+é bem preciso
 é bom que
+é claro que
 é dando que se recebe
 é de cair o cu da bunda
 é de menino que se torce o pepino
+é evidente que
 é isso aí
 é mais fácil dizer do que fazer
 é mais fácil falar do que fazer
 é melhor prevenir do que remediar
+é mesmo preciso
+é modo de dizer
 é mole
 é mole ou quer mais
+é necessário
 é o que é
+é possível que
+é preciso
 é proibido fumar
+é provável que
 é que
+é tudo
+é óbvio que
 és-sudeste
 és-sueste
 índice de Apgar
@@ -12593,6 +13185,7 @@ zé-prequeté
 ô louco
 ônibus escolar
 ônibus espacial
+ônibus sanfona
 ônus da prova
 última bolacha do pacote
 última instância

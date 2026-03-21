@@ -12,26 +12,33 @@ struct Subtitle {
     end_ms: u32,
 }
 
+#[derive(Debug, Deserialize)]
+struct PimsleurSentence {
+    target_language: String,
+    #[allow(dead_code)]
+    native_language: String,
+}
+
+pub use language_utils::PimsleurLesson;
+
+/// The result of collecting target sentences, split into app and restricted sets.
+pub struct TargetSentences {
+    /// Sentences that can be used in the app (Anki, Tatoeba, manual, movies, songs)
+    pub app_sentences: Vec<(String, Option<String>, SentenceSource)>,
+    /// Restricted sentences (e.g. Pimsleur) — used for frequency/tokenization only, not in the app.
+    /// Each entry is (target_sentence, list of lessons it appears in).
+    pub restricted_sentences: Vec<(String, Vec<PimsleurLesson>)>,
+}
+
 /// Default target maximum number of sentences to import from Tatoeba
 const DEFAULT_TARGET_SENTENCE_COUNT: usize = 200_000;
 
 /// Get target language sentences with optional translations and source information.
 ///
-/// This function collects sentences from all available sources (Anki, Tatoeba, manual, songs)
-/// for a given course. It returns sentences with their native language translations when available
-/// and tracks which sources each sentence came from.
+/// This function collects sentences from all available sources (Anki, Tatoeba, manual, songs, movies)
+/// for a given course, split into app sentences and restricted sentences.
 /// It does not perform Google Translate translations and does not write to cache files.
-///
-/// # Arguments
-///
-/// * `course` - The course defining target and native languages
-///
-/// # Returns
-///
-/// A vector of tuples: (target_sentence, optional_native_translation, source_info)
-pub fn get_target_sentences(
-    course: Course,
-) -> anyhow::Result<Vec<(String, Option<String>, SentenceSource)>> {
+pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     let source_data_path = PathBuf::from(format!(
         "./generate-data/data/{}",
         course.target_language.iso_639_3()
@@ -146,7 +153,7 @@ pub fn get_target_sentences(
     }
 
     // Manual sentences also need cleanup (they weren't cleaned up earlier)
-    let result = result
+    let app_sentences = result
         .into_iter()
         .map(|(sentence, native, source)| {
             if source.is_manual() {
@@ -165,7 +172,18 @@ pub fn get_target_sentences(
         })
         .collect();
 
-    Ok(result)
+    // Load restricted (Pimsleur) sentences
+    let restricted_sentences = load_pimsleur_sentences(&source_data_path, course)?;
+
+    println!(
+        "  Loaded restricted sentences: Pimsleur: {}",
+        restricted_sentences.len(),
+    );
+
+    Ok(TargetSentences {
+        app_sentences,
+        restricted_sentences,
+    })
 }
 
 /// Load banned sentences from both manual and AI-generated files
@@ -294,6 +312,113 @@ fn load_movie_sentences(
     }
 
     Ok(all_movie_sentences)
+}
+
+/// Load Pimsleur sentences (restricted/copyrighted).
+///
+/// Directory structure: `sentence-sources/pimsleur/for_{native_iso}/level_{N}/unit_{NN}/sentences.jsonl`
+///
+/// Each sentence may appear in multiple lessons, so we deduplicate and collect all lessons per sentence.
+fn load_pimsleur_sentences(
+    source_data_path: &std::path::Path,
+    course: Course,
+) -> anyhow::Result<Vec<(String, Vec<PimsleurLesson>)>> {
+    let pimsleur_dir = source_data_path.join(format!(
+        "sentence-sources/pimsleur/for_{}",
+        course.native_language.iso_639_3()
+    ));
+
+    if !pimsleur_dir.exists() {
+        return Ok(vec![]);
+    }
+
+    // Collect all (sentence, lesson) pairs, then deduplicate
+    let mut sentence_to_lessons: HashMap<String, Vec<PimsleurLesson>> = HashMap::new();
+
+    // Iterate over level directories
+    let mut level_dirs: Vec<_> = std::fs::read_dir(&pimsleur_dir)
+        .context("Failed to read pimsleur directory")?
+        .filter_map(|e| e.ok())
+        .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false))
+        .collect();
+    level_dirs.sort_by_key(|e| e.file_name());
+
+    for level_entry in level_dirs {
+        let level_name = level_entry.file_name();
+        let level_str = level_name.to_string_lossy();
+        let Some(level_num) = level_str
+            .strip_prefix("level_")
+            .and_then(|s| s.parse::<u32>().ok())
+        else {
+            continue;
+        };
+
+        // Iterate over unit directories within this level
+        let mut unit_dirs: Vec<_> = std::fs::read_dir(level_entry.path())
+            .context("Failed to read pimsleur level directory")?
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false))
+            .collect();
+        unit_dirs.sort_by_key(|e| e.file_name());
+
+        for unit_entry in unit_dirs {
+            let unit_name = unit_entry.file_name();
+            let unit_str = unit_name.to_string_lossy();
+            let Some(unit_num) = unit_str
+                .strip_prefix("unit_")
+                .and_then(|s| s.parse::<u32>().ok())
+            else {
+                continue;
+            };
+
+            let sentences_file = unit_entry.path().join("sentences.jsonl");
+            if !sentences_file.exists() {
+                continue;
+            }
+
+            let content = std::fs::read_to_string(&sentences_file).with_context(|| {
+                format!(
+                    "Failed to read pimsleur sentences: {}",
+                    sentences_file.display()
+                )
+            })?;
+
+            let lesson = PimsleurLesson {
+                level: level_num,
+                lesson: unit_num,
+            };
+
+            for line in content.lines() {
+                let line = line.trim();
+                if line.is_empty() {
+                    continue;
+                }
+
+                let entry: PimsleurSentence = serde_json::from_str(line).with_context(|| {
+                    format!(
+                        "Failed to parse pimsleur sentence in {}",
+                        sentences_file.display()
+                    )
+                })?;
+
+                let cleaned = language_utils::text_cleanup::cleanup_sentence(
+                    entry.target_language,
+                    course.target_language,
+                );
+
+                if !should_include_sentence(&cleaned, course.target_language) {
+                    continue;
+                }
+
+                sentence_to_lessons
+                    .entry(cleaned)
+                    .or_default()
+                    .push(lesson.clone());
+            }
+        }
+    }
+
+    Ok(sentence_to_lessons.into_iter().collect())
 }
 
 /// Check if subtitle lines pass the language sanity check.

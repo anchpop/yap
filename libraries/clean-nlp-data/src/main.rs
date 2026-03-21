@@ -382,10 +382,10 @@ fn ensure_target_sentences_file(
         "Generating target language sentences for {:?}...",
         course.target_language
     );
-    let sentences = target_sentences::get_target_sentences(course)
+    let target_sentences = target_sentences::get_target_sentences(course)
         .context("Failed to load target sentences")?;
 
-    if sentences.is_empty() {
+    if target_sentences.app_sentences.is_empty() {
         return Err(anyhow!(
             "No target sentences found for {:?}",
             course.target_language
@@ -397,7 +397,7 @@ fn ensure_target_sentences_file(
     ))?;
     let mut writer = BufWriter::new(file);
 
-    for (sentence, _, _source) in sentences {
+    for (sentence, _, _source) in target_sentences.app_sentences {
         writeln!(writer, "{}", serde_json::to_string(&sentence)?)
             .context("Failed to write target sentence")?;
     }
@@ -530,6 +530,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     println!("Loading target sentences for {language:?}...");
     let all_raw_sentences: Vec<String> = target_sentences::get_target_sentences(course)
         .context("Failed to load target sentences")?
+        .app_sentences
         .into_iter()
         .map(|(s, _, _)| s)
         .collect();

@@ -264,7 +264,7 @@ async fn download_and_cache_language_data(
         async move {
             let client = fetch_happen::Client;
             let url = if cfg!(feature = "local-backend") {
-                "http://localhost:8080"
+                "http://localhost:21516"
             } else {
                 "https://yap-ai-backend.fly.dev"
             };

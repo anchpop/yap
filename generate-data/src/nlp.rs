@@ -267,24 +267,42 @@ pub fn convert_tokens_to_literals(
 pub async fn generate_nlp_sentences(
     sentence_literals: &BTreeMap<String, Vec<language_utils::Literal<String>>>,
     sentences_tokenizations: &BTreeMap<String, Vec<lexide::Token>>,
-    lemma_patterns: &BTreeMap<Gram<String>, Vec<String>>,
-    discontinuous_lemma_patterns: &BTreeMap<Gram<String>, Vec<String>>,
+    lemma_patterns: &BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
+    discontinuous_lemma_patterns: &BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
     tree_patterns: &BTreeMap<Gram<String>, lexide::matching::TreeNode>,
 ) -> Result<BTreeMap<String, language_utils::SentenceInfo>> {
     use language_utils::{MultiwordTerms, SentenceInfo};
     use lexide::matching::{DependencyMatcher, DiscontinuousLemmaMatcher, LemmaMatcher, TreeNode};
 
+    type PatternList<'a> = Vec<(Gram<String>, Vec<(&'a str, lexide::pos::PartOfSpeech)>)>;
+
     // Build lemma matcher (high confidence) — use Gram<String> keys directly
-    let lemma_patterns: Vec<(Gram<String>, Vec<&str>)> = lemma_patterns
+    let lemma_patterns: PatternList<'_> = lemma_patterns
         .iter()
-        .map(|(gram, lemmas)| (gram.clone(), lemmas.iter().map(|s| s.as_str()).collect()))
+        .map(|(gram, lemma_pos_pairs)| {
+            (
+                gram.clone(),
+                lemma_pos_pairs
+                    .iter()
+                    .map(|(s, pos)| (s.as_str(), *pos))
+                    .collect(),
+            )
+        })
         .collect();
     let lemma_matcher = LemmaMatcher::new(&lemma_patterns);
 
     // Build discontinuous lemma matcher (low confidence) — max gap of 5 tokens between anchors
-    let disc_patterns: Vec<(Gram<String>, Vec<&str>)> = discontinuous_lemma_patterns
+    let disc_patterns: PatternList<'_> = discontinuous_lemma_patterns
         .iter()
-        .map(|(gram, lemmas)| (gram.clone(), lemmas.iter().map(|s| s.as_str()).collect()))
+        .map(|(gram, lemma_pos_pairs)| {
+            (
+                gram.clone(),
+                lemma_pos_pairs
+                    .iter()
+                    .map(|(s, pos)| (s.as_str(), *pos))
+                    .collect(),
+            )
+        })
         .collect();
     let discontinuous_matcher = DiscontinuousLemmaMatcher::new(&disc_patterns, Some(5));
 

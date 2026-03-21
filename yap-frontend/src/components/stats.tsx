@@ -79,6 +79,8 @@ export function Stats({ deck: deckProp }: StatsProps) {
         percentKnown={deck.get_percent_of_words_known() * 100}
         dailyStreak={deck.get_daily_streak()}
         totalReviews={deck.get_total_reviews()}
+        tierName={`${deck.get_current_tier().name} Lv.${deck.get_current_tier().level}`}
+        tierPercent={deck.get_current_tier().percent_known}
       />
       <Card className="overflow-hidden p-0 gap-0" animate>
         <table className="w-full table-fixed">

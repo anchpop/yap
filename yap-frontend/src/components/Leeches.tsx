@@ -6,7 +6,7 @@ import TimeAgo from "react-timeago";
 export function Leeches({ deck }: { deck: Deck }) {
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
   const [revealedListeningCards, setRevealedListeningCards] = useState<
-    Set<string>
+    Set<number>
   >(() => new Set());
 
   // Update timestamp periodically to keep timing fresh
@@ -19,18 +19,6 @@ export function Leeches({ deck }: { deck: Deck }) {
   }, []);
 
   const leeches = deck.get_leeches();
-
-  const handleRevealListeningCard = (key: string) => {
-    setRevealedListeningCards((prev) => {
-      if (prev.has(key)) {
-        return prev;
-      }
-
-      const next = new Set(prev);
-      next.add(key);
-      return next;
-    });
-  };
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
@@ -60,68 +48,38 @@ export function Leeches({ deck }: { deck: Deck }) {
             <table className="w-full table-fixed">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 font-medium w-1/3">Word</th>
-                  <th className="text-left p-3 font-medium w-1/3">State</th>
-                  <th className="text-left p-3 font-medium w-1/3">Ready</th>
+                  <th className="text-left p-3 font-medium w-1/2">Word</th>
+                  <th className="text-left p-3 font-medium w-1/2">Ready</th>
                 </tr>
               </thead>
               <tbody>
                 {leeches.map((card, index) => {
-                  let shortDescription = "";
-                  let pos = "";
-                  const tags: string[] = [];
-
-                  const isListeningHeteronym =
-                    card.card_indicator.type === "ListeningHeteronym";
-                  let listeningCardKey: string | null = null;
-
-                  if (card.card_indicator.type === "TargetLanguage") {
-                    const lexeme = card.card_indicator.lexeme;
-                    if (lexeme.type === "Heteronym") {
-                      shortDescription = lexeme.heteronym.word;
-                      pos = lexeme.heteronym.pos;
-                    } else {
-                      shortDescription = lexeme.phrase;
-                    }
-                  } else if (card.card_indicator.type === "ListeningHomophonous") {
-                    shortDescription = `/${card.card_indicator.pronunciation}/`;
-                  } else if (isListeningHeteronym) {
-                    // ListeningHeteronym always contains a heteronym directly
-                    shortDescription = card.card_indicator.heteronym.word;
-                    tags.push("listening");
-                    listeningCardKey = JSON.stringify(card.card_indicator);
-                  } else if (card.card_indicator.type === "LetterPronunciation") {
-                    shortDescription = `[${card.card_indicator.pattern}]`;
-                  }
-
+                  const isListening = card.card_subtitle === "listening";
                   const isReady = card.due_timestamp_ms <= currentTimestamp;
-                  const isListeningCardRevealed = listeningCardKey
-                    ? revealedListeningCards.has(listeningCardKey)
-                    : false;
+                  const isRevealed = revealedListeningCards.has(index);
 
-                  const wordCellContent = isListeningHeteronym ? (
-                    isListeningCardRevealed ? (
-                      shortDescription
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          listeningCardKey &&
-                          handleRevealListeningCard(listeningCardKey)
-                        }
-                        className="inline-flex items-center gap-2 rounded-sm bg-transparent p-0 text-left text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                        aria-label="Reveal listening lexeme"
-                      >
-                        <span className="select-none blur-sm">
-                          {shortDescription}
-                        </span>
-                        <span className="text-xs italic text-muted-foreground">
-                          Tap to reveal
-                        </span>
-                      </button>
-                    )
+                  const wordCellContent = isListening && !isRevealed ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRevealedListeningCards((prev) => {
+                          const next = new Set(prev);
+                          next.add(index);
+                          return next;
+                        })
+                      }
+                      className="inline-flex items-center gap-2 rounded-sm bg-transparent p-0 text-left text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                      aria-label="Reveal listening lexeme"
+                    >
+                      <span className="select-none blur-sm">
+                        {card.card_text}
+                      </span>
+                      <span className="text-xs italic text-muted-foreground">
+                        Tap to reveal
+                      </span>
+                    </button>
                   ) : (
-                    shortDescription
+                    card.card_text
                   );
 
                   return (
@@ -131,19 +89,11 @@ export function Leeches({ deck }: { deck: Deck }) {
                     >
                       <td className="p-3 font-medium">
                         {wordCellContent}
-                        {[pos && pos.toLowerCase(), ...tags]
-                          .filter(Boolean)
-                          .map((tag, idx) => (
-                            <span
-                              key={`${shortDescription}-${tag}-${idx}`}
-                              className="ml-2 text-muted-foreground text-sm"
-                            >
-                              ({tag})
-                            </span>
-                          ))}
-                      </td>
-                      <td className="p-3">
-                        <Badge variant="outline">{card.state}</Badge>
+                        {card.card_subtitle && (
+                          <span className="ml-2 text-muted-foreground text-sm">
+                            ({card.card_subtitle})
+                          </span>
+                        )}
                       </td>
                       <td className="p-3 text-sm text-muted-foreground">
                         {isReady ? (

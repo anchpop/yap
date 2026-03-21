@@ -358,7 +358,7 @@ function ProperNounDefinitionCard({
     <div className="p-3 border border-card/50 bg-card/30 rounded-md">
       <span className="font-semibold">
         {words.map((word, index) => (
-          <>
+          <span key={word}>
             {word}
             <span className="text-muted-foreground">
               {index < words.length - 1
@@ -367,7 +367,7 @@ function ProperNounDefinitionCard({
                   : ", "
                 : ""}
             </span>
-          </>
+          </span>
         ))}
       </span>
       <span className="text-muted-foreground">

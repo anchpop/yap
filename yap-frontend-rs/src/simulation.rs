@@ -73,7 +73,7 @@ impl DayChallengeIterator {
         let mut deck = self.take_deck();
 
         // Add 10 new cards at the end of the day
-        if let Some(event) = deck.add_next_unknown_cards(None, 10, vec![]) {
+        if let Some(event) = deck.add_next_unknown_cards(None, 10, vec![], None) {
             let ts = Timestamped {
                 timestamp: self.current_time,
                 within_device_events_index: self.event_index,
@@ -241,7 +241,7 @@ mod tests {
         );
 
         // Every gram in gram_frequencies should have a definition
-        for gram_spur in lp.gram_frequencies.keys() {
+        for gram_spur in lp.gram_frequencies.entries.keys() {
             let resolved = lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo);
             assert!(
                 lp.gram_definitions.contains_key(gram_spur),
@@ -252,7 +252,7 @@ mod tests {
         }
 
         // Every gram should produce a non-empty display string
-        for gram_spur in lp.gram_frequencies.keys() {
+        for gram_spur in lp.gram_frequencies.entries.keys() {
             let resolved = lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo);
             let display = resolved.to_display_string(lang);
             assert!(

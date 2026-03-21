@@ -430,7 +430,7 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
     let state = DeckState::new();
     let mut deck = <Deck as weapon::AppState>::finalize(state, &context);
 
-    if let Some(event) = deck.add_next_unknown_cards(None, 100, vec![]) {
+    if let Some(event) = deck.add_next_unknown_cards(None, 100, vec![], None) {
         let ts = Timestamped {
             timestamp: Utc::now(),
             within_device_events_index: 0,
@@ -515,54 +515,6 @@ fn write_results_to_files(analyses: &[CourseAnalysis]) -> Result<()> {
             );
         } else {
             println!("No new banned sentences to add for {lang_dir}");
-        }
-
-        // Read existing multiword terms
-        let mwt_path = data_dir.join("extra_multiword_terms_ai.txt");
-        let mut existing_multiword_terms: HashSet<String> = HashSet::new();
-        if mwt_path.exists() {
-            let content = fs::read_to_string(&mwt_path)?;
-            for line in content.lines() {
-                existing_multiword_terms.insert(line.to_string());
-            }
-            println!(
-                "Found {} existing multiword terms",
-                existing_multiword_terms.len()
-            );
-        }
-
-        // Collect new multiword terms that aren't already in the file
-        let mut new_multiword_terms: HashSet<String> = HashSet::new();
-        for issue in &analysis.all_issues {
-            for mwt in &issue.missing_multiword_terms {
-                if !existing_multiword_terms.contains(mwt) {
-                    new_multiword_terms.insert(mwt.clone());
-                }
-            }
-        }
-
-        if !new_multiword_terms.is_empty() {
-            let mwt_output = new_multiword_terms
-                .iter()
-                .cloned()
-                .collect::<Vec<_>>()
-                .join("\n");
-            // Append to file (or create if it doesn't exist)
-            if mwt_path.exists() {
-                fs::write(
-                    &mwt_path,
-                    format!("{}\n{}", fs::read_to_string(&mwt_path)?, mwt_output),
-                )?;
-            } else {
-                fs::write(&mwt_path, mwt_output)?;
-            }
-            println!(
-                "Added {} new multiword terms to {:?}",
-                new_multiword_terms.len(),
-                mwt_path
-            );
-        } else {
-            println!("No new multiword terms to add for {lang_dir}");
         }
     }
 

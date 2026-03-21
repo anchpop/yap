@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1801524
-Total errors: 1067
+Total predictions: 1806832
+Total errors: 1072
 Accuracy: 99.94%
 
 ## Error Patterns (sorted by frequency)
@@ -1114,6 +1114,12 @@ Accuracy: 99.94%
 - Examples:
   - Opportunities ?
 
+### "Quand" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Quand ?
+
 ### "Really" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1269,6 +1275,12 @@ Accuracy: 99.94%
 - Actual: None
 - Examples:
   - We areJew-haters because we are proud to be Aryans.
+
+### "arrivés" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Est-ce que vous êtes arrivés ?
 
 ### "audience" + "-" (1 occurrences)
 - Predicted: None
@@ -1564,6 +1576,12 @@ Accuracy: 99.94%
 - Examples:
   - Nina hates everyone, including herselfand me.
 
+### "heure" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - À quelle heure ?
+
 ### "him" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1659,6 +1677,12 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Does he like his job ?
+
+### "jours" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Combien de jours ?
 
 ### "jury" + "-" (1 occurrences)
 - Predicted: None
@@ -2031,6 +2055,12 @@ Accuracy: 99.94%
 - Actual: Space
 - Examples:
   - Want to play tit for tat ?
+
+### "temps" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Combien de temps ?
 
 ### "that" + "you" (1 occurrences)
 - Predicted: Space

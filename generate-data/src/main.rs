@@ -25,6 +25,28 @@ struct PhraseDetectionData {
 type PhraseDetectionDataMap = BTreeMap<Gram<String>, PhraseDetectionData>;
 
 /// Deduplicates a pattern map where multiple grams may produce the same matcher pattern.
+/// Convert language_utils PartOfSpeech to lexide PartOfSpeech.
+fn convert_pos(pos: language_utils::PartOfSpeech) -> lexide::pos::PartOfSpeech {
+    use language_utils::PartOfSpeech as LP;
+    use lexide::pos::PartOfSpeech as XP;
+    match pos {
+        LP::Adj => XP::Adj,
+        LP::Adp => XP::Adp,
+        LP::Adv => XP::Adv,
+        LP::Aux => XP::Aux,
+        LP::Cconj => XP::Cconj,
+        LP::Det => XP::Det,
+        LP::Intj => XP::Intj,
+        LP::Noun => XP::Noun,
+        LP::Num => XP::Num,
+        LP::Part => XP::Part,
+        LP::Pron => XP::Pron,
+        LP::Sconj => XP::Sconj,
+        LP::Sym => XP::Sym,
+        LP::Verb => XP::Verb,
+    }
+}
+
 /// When exactly one gram in a duplicate group is from wiktionary, keeps that one.
 /// When multiple are from wiktionary, keeps the shortest (then alphabetically first).
 /// When none are from wiktionary, warns and skips the pattern entirely.
@@ -187,13 +209,16 @@ async fn main() -> anyhow::Result<()> {
         let translations_file =
             native_specific_dir.join("target_language_to_native_translations.jsonl");
         let sentence_sources_file = target_language_dir.join("sentence_sources.jsonl");
+        // Get target sentences split into app and restricted sets
+        let target_sentences_result =
+            generate_data::target_sentences::get_target_sentences(*course)
+                .context("Failed to get target sentences")?;
+        let restricted_sentences = target_sentences_result.restricted_sentences;
+
         {
             let mut total_sentences = 0;
 
-            // Get target sentences with their existing translations (from Anki, Tatoeba, and manual sources)
-            let sentences_with_translations_and_sources =
-                generate_data::target_sentences::get_target_sentences(*course)
-                    .context("Failed to get target sentences")?;
+            let sentences_with_translations_and_sources = target_sentences_result.app_sentences;
 
             // Create the translator once and share it across all async tasks
             let translator = GoogleTranslator::new(
@@ -435,6 +460,38 @@ async fn main() -> anyhow::Result<()> {
                 })
                 .collect();
 
+        // Process restricted (Pimsleur) sentences — tokenize to a separate cache file
+        let restricted_tokenization_file =
+            target_language_dir.join("restricted_sentences_tokenization.jsonl");
+        let restricted_sentence_texts: Vec<String> = restricted_sentences
+            .iter()
+            .map(|(s, _)| s.clone())
+            .collect();
+        let restricted_tokenizations = if !restricted_sentence_texts.is_empty() {
+            generate_data::nlp::process_sentences(
+                restricted_sentence_texts,
+                &restricted_tokenization_file,
+                course.target_language,
+            )
+            .await
+            .context("Failed to process restricted sentences tokenization")?
+        } else {
+            BTreeMap::new()
+        };
+        let restricted_literals = generate_data::nlp::convert_tokens_to_literals(
+            &restricted_tokenizations,
+            course.target_language,
+        );
+
+        // Merge restricted literals into sentence_literals for omnigram training.
+        // BTreeMap insert means duplicates (sentences in both sets) are naturally handled.
+        let mut all_sentence_literals = sentence_literals.clone();
+        for (text, lits) in &restricted_literals {
+            all_sentence_literals
+                .entry(text.clone())
+                .or_insert_with(|| lits.clone());
+        }
+
         // Convert multiword term tokenizations to grams for seeding into omnigram
         let multiword_term_literals = generate_data::nlp::convert_tokens_to_literals(
             &multiword_terms_tokenizations,
@@ -449,9 +506,9 @@ async fn main() -> anyhow::Result<()> {
             .collect();
         let wiktionary_grams: HashSet<Gram<String>> = seed_grams.iter().cloned().collect();
 
-        // Train supertokens and write whitespace diagnostics
+        // Train supertokens and write whitespace diagnostics (using all sentences including restricted)
         generate_data::tokenize::train_supertokens_and_write_diagnostics(
-            &sentence_literals,
+            &all_sentence_literals,
             course.target_language,
             &target_language_dir,
             &seed_grams,
@@ -560,44 +617,64 @@ async fn main() -> anyhow::Result<()> {
             sentences
         };
 
+        // Split encoded sentences: app-only (in sentence_literals) vs all (including restricted)
+        let all_encoded_sentences = encoded_sentences;
+        let encoded_sentences: Vec<(String, EncodedSentence)> = all_encoded_sentences
+            .iter()
+            .filter(|(text, _)| sentence_literals.contains_key(text))
+            .cloned()
+            .collect();
+        println!(
+            "Encoded sentences: {} total, {} app-only, {} restricted-only",
+            all_encoded_sentences.len(),
+            encoded_sentences.len(),
+            all_encoded_sentences.len() - encoded_sentences.len(),
+        );
+
         // Pre-compute matcher data from phrase detection map
         let lang = course.target_language;
-        let lemma_patterns: BTreeMap<Gram<String>, Vec<String>> = phrase_detection_map
-            .iter()
-            .filter_map(|(gram, data)| {
-                // If we have lexide tokens, use their lemmas
-                if let Some(tokens) = data.tokens.as_ref() {
-                    if tokens.len() <= 1 {
+        let lemma_patterns: BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>> =
+            phrase_detection_map
+                .iter()
+                .filter_map(|(gram, data)| {
+                    // If we have lexide tokens, use their lemmas and POS
+                    if let Some(tokens) = data.tokens.as_ref() {
+                        if tokens.len() <= 1 {
+                            return None;
+                        }
+                        return Some((
+                            gram.clone(),
+                            tokens
+                                .iter()
+                                .map(|t| (t.lemma.lemma.clone(), t.pos))
+                                .collect(),
+                        ));
+                    }
+                    // For omnigram-discovered grams without lexide tokens,
+                    // build lemma+POS patterns from the gram's atoms directly
+                    if gram.len() <= 1 {
                         return None;
                     }
-                    return Some((
-                        gram.clone(),
-                        tokens.iter().map(|t| t.lemma.lemma.clone()).collect(),
-                    ));
-                }
-                // For omnigram-discovered grams without lexide tokens,
-                // build lemma patterns from the gram's atoms directly
-                if gram.len() <= 1 {
-                    return None;
-                }
-                let lemmas: Vec<String> = gram
-                    .iter()
-                    .filter_map(|atom| match atom {
-                        language_utils::Atom::Tok(word) => match &word.word_type {
-                            language_utils::WordType::Heteronym(h) => Some(h.lemma.clone()),
+                    let lemma_pos_pairs: Vec<(String, lexide::pos::PartOfSpeech)> = gram
+                        .iter()
+                        .filter_map(|atom| match atom {
+                            language_utils::Atom::Tok(word) => match &word.word_type {
+                                language_utils::WordType::Heteronym(h) => {
+                                    Some((h.lemma.clone(), convert_pos(h.pos)))
+                                }
+                                _ => None,
+                            },
                             _ => None,
-                        },
-                        _ => None,
-                    })
-                    .collect();
-                // Only include if we got a lemma for every atom
-                if lemmas.len() == gram.len() {
-                    Some((gram.clone(), lemmas))
-                } else {
-                    None
-                }
-            })
-            .collect();
+                        })
+                        .collect();
+                    // Only include if we got a lemma+POS for every atom
+                    if lemma_pos_pairs.len() == gram.len() {
+                        Some((gram.clone(), lemma_pos_pairs))
+                    } else {
+                        None
+                    }
+                })
+                .collect();
 
         let tree_patterns: BTreeMap<Gram<String>, lexide::matching::TreeNode> =
             phrase_detection_map
@@ -649,10 +726,13 @@ async fn main() -> anyhow::Result<()> {
         // Split discontinuous patterns into their own map, but keep them in the
         // contiguous map too so truly contiguous occurrences still get high confidence
         // from the LemmaMatcher.
-        let discontinuous_lemma_patterns: BTreeMap<Gram<String>, Vec<String>> = lemma_patterns
+        let discontinuous_lemma_patterns: BTreeMap<
+            Gram<String>,
+            Vec<(String, lexide::pos::PartOfSpeech)>,
+        > = lemma_patterns
             .iter()
             .filter(|(gram, _)| discontinuous_grams.contains(gram))
-            .map(|(gram, lemmas)| (gram.clone(), lemmas.clone()))
+            .map(|(gram, lemma_pos_pairs)| (gram.clone(), lemma_pos_pairs.clone()))
             .collect();
         let contiguous_lemma_patterns = lemma_patterns;
 
@@ -667,9 +747,11 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("Failed to generate NLP sentences")?;
 
-        // Convert encoded sentences to use SentenceGram<Gram<String>> instead of token IDs
-        let encoded_sentences_with_grams: Vec<(String, SentenceGrams<Gram<String>>)> =
-            encoded_sentences
+        // Helper closure: convert encoded sentences to SentenceGrams using gram vocabulary + NLP data
+        let convert_to_grams = |sentences: &[(String, EncodedSentence)],
+                                nlp: &BTreeMap<String, language_utils::SentenceInfo>|
+         -> Vec<(String, SentenceGrams<Gram<String>>)> {
+            sentences
                 .iter()
                 .map(|(text, encoded)| {
                     let grams: Vec<SentenceGram<Gram<String>>> = encoded
@@ -681,15 +763,13 @@ async fn main() -> anyhow::Result<()> {
                                 .map(|entry| SentenceGram::from(entry.atoms.clone()))
                         })
                         .collect();
-                    // Collect grams already in the encoded sentence so we can
-                    // skip listing them again as multiword terms.
                     let sentence_gram_set: std::collections::HashSet<&Gram<String>> = grams
                         .iter()
                         .map(|sg| match sg {
                             SentenceGram::Learnable(g) | SentenceGram::Obvious(g) => g,
                         })
                         .collect();
-                    let (multiword_terms, low_confidence_multiword_terms) = nlp_sentences
+                    let (multiword_terms, low_confidence_multiword_terms) = nlp
                         .get(text)
                         .map(|info| {
                             (
@@ -718,7 +798,16 @@ async fn main() -> anyhow::Result<()> {
                         },
                     )
                 })
-                .collect();
+                .collect()
+        };
+
+        // Convert app-only encoded sentences to grams
+        let encoded_sentences_with_grams: Vec<(String, SentenceGrams<Gram<String>>)> =
+            convert_to_grams(&encoded_sentences, &nlp_sentences);
+
+        // Convert ALL encoded sentences (including restricted) to grams for per-source frequencies
+        let all_encoded_sentences_with_grams: Vec<(String, SentenceGrams<Gram<String>>)> =
+            convert_to_grams(&all_encoded_sentences, &nlp_sentences);
 
         // Filter initial gram frequencies to only include those with count > 3 (like regular dictionary)
         let filtered_initial_gram_frequencies: Vec<GramFrequencyEntry<String>> =
@@ -735,8 +824,8 @@ async fn main() -> anyhow::Result<()> {
                 .map(|entry| entry.gram.clone())
                 .collect();
 
-        // Save unfiltered sentences for computing accurate per-movie total gram counts
-        let unfiltered_encoded_sentences = encoded_sentences_with_grams.clone();
+        // Save unfiltered sentences (including restricted) for computing accurate per-source total gram counts
+        let unfiltered_encoded_sentences = all_encoded_sentences_with_grams;
 
         // Filter encoded sentences to only include those where we have all the learnable grams
         let encoded_sentences_count_before = encoded_sentences_with_grams.len();
@@ -768,6 +857,7 @@ async fn main() -> anyhow::Result<()> {
             &encoded_sentences_with_grams,
             &gram_vocabulary,
         );
+        let master_total_count: u64 = gram_frequencies.iter().map(|e| e.count as u64).sum();
 
         // Filter to only include those with count > 3
         let filtered_gram_frequencies: Vec<GramFrequencyEntry<String>> = gram_frequencies
@@ -1635,7 +1725,7 @@ async fn main() -> anyhow::Result<()> {
         ));
         // Load movie metadata
         let movies_dir = source_data_path.join("sentence-sources/movies");
-        let mut movies = if movies_dir.exists() {
+        let movies = if movies_dir.exists() {
             let metadata_file = movies_dir.join("metadata.jsonl");
             if metadata_file.exists() {
                 let metadata_content = std::fs::read_to_string(&metadata_file)
@@ -1710,44 +1800,71 @@ async fn main() -> anyhow::Result<()> {
             }
         };
 
-        // Compute per-movie frequencies from UNFILTERED sentences (for accurate totals)
+        // Build sentence_to_sources map for per-source frequency computation
         let master_gram_set: std::collections::HashSet<Gram<String>> = gram_frequencies
             .iter()
             .map(|entry| entry.gram.clone())
             .collect();
 
-        let movie_gram_frequencies = if !movies.is_empty() {
-            let movie_ids: Vec<String> = movies.keys().cloned().collect();
-            let unfiltered_movie_freqs = generate_data::frequencies::compute_movie_gram_frequencies(
+        let mut sentence_to_sources: rustc_hash::FxHashMap<
+            String,
+            Vec<language_utils::FrequencySourceId>,
+        > = rustc_hash::FxHashMap::default();
+        // Add movie sources
+        for (sentence, source) in &sentence_sources {
+            for movie_id in &source.movie_ids {
+                sentence_to_sources
+                    .entry(sentence.clone())
+                    .or_default()
+                    .push(language_utils::FrequencySourceId::Movie(movie_id.clone()));
+            }
+        }
+        // Add Pimsleur lesson sources
+        for (sentence, lessons) in &restricted_sentences {
+            for lesson in lessons {
+                sentence_to_sources
+                    .entry(sentence.clone())
+                    .or_default()
+                    .push(language_utils::FrequencySourceId::PimsleurLesson(
+                        language_utils::PimsleurLesson {
+                            level: lesson.level,
+                            lesson: lesson.lesson,
+                        },
+                    ));
+            }
+        }
+
+        // Compute per-source frequencies from UNFILTERED sentences (for accurate totals).
+        // We need all_encoded_sentences here because restricted sentences are only in that set.
+        let unfiltered_source_freqs =
+            generate_data::frequencies::compute_per_source_gram_frequencies(
                 &unfiltered_encoded_sentences,
-                &sentence_sources,
-                &movie_ids,
+                &sentence_to_sources,
                 &gram_vocabulary,
             );
 
-            // Store total gram counts on movie metadata BEFORE filtering
-            for (movie_id, freqs) in &unfiltered_movie_freqs {
-                let total: u64 = freqs.iter().map(|e| e.count as u64).sum();
-                if let Some(movie) = movies.get_mut(movie_id) {
-                    movie.total_gram_count = total;
-                }
-            }
-
-            // Filter movie frequencies to only include grams in the master frequency list
-            unfiltered_movie_freqs
-                .into_iter()
-                .map(|(movie_id, freqs)| {
-                    let filtered_freqs: Vec<GramFrequencyEntry<String>> = freqs
-                        .into_iter()
-                        .filter(|entry| master_gram_set.contains(&entry.gram))
-                        .collect();
-                    (movie_id, filtered_freqs)
-                })
-                .filter(|(_, freqs)| !freqs.is_empty())
-                .collect()
-        } else {
-            FxHashMap::default()
-        };
+        // Compute total counts per source BEFORE filtering, then filter entries
+        let source_gram_frequencies: rustc_hash::FxHashMap<
+            language_utils::FrequencySourceId,
+            language_utils::GramFrequencyList,
+        > = unfiltered_source_freqs
+            .into_iter()
+            .map(|(source_id, freqs)| {
+                let total_count: u64 = freqs.iter().map(|e| e.count as u64).sum();
+                let filtered_entries: Vec<GramFrequencyEntry<String>> = freqs
+                    .into_iter()
+                    .filter(|entry| master_gram_set.contains(&entry.gram))
+                    .collect();
+                (
+                    source_id,
+                    language_utils::GramFrequencyList {
+                        entries: filtered_entries,
+                        total_count,
+                    },
+                )
+            })
+            .filter(|(_, list)| !list.entries.is_empty())
+            .collect();
 
         // Generate landing page showcase data
         {
@@ -1830,7 +1947,7 @@ async fn main() -> anyhow::Result<()> {
             nlp_sentences,
             phrasebook,
             proper_noun_definitions,
-            movie_gram_frequencies,
+            source_gram_frequencies,
             word_to_pronunciation,
             pronunciation_to_words,
             pronunciation_data,
@@ -1838,7 +1955,10 @@ async fn main() -> anyhow::Result<()> {
             movies,
             sentence_sources,
             gram_vocabulary,
-            gram_frequencies,
+            gram_frequencies: language_utils::GramFrequencyList {
+                entries: gram_frequencies,
+                total_count: master_total_count,
+            },
             encoded_sentences: encoded_sentences_with_grams,
             gram_dictionary: gram_keyed_dictionary,
         };

@@ -52,3 +52,8 @@ out/*/gram_frequencies.jsonl
 out/*/gram_phrasebook.jsonl
 out/*/phrasebook.jsonl
 out/*/proper_noun_definitions.jsonl
+out/*/encoded_sentences.jsonl
+out/*/pronunciation_to_words.jsonl
+out/*/supertokens.txt
+out/*/vocabulary.jsonl
+out/*/word_to_pronunciation.jsonl

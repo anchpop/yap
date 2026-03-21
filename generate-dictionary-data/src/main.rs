@@ -43,7 +43,7 @@ struct ConjugationTable {
 }
 
 /// A single inflected form in a conjugation/declension table.
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 struct ConjugationForm {
     word: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -254,7 +254,9 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
     let mut conjugation_index: FxHashMap<(String, PartOfSpeech), Vec<(String, Morphology)>> =
         FxHashMap::default();
 
-    for (frequency_index, (spur_gram, freq)) in language_pack.gram_frequencies.iter().enumerate() {
+    for (frequency_index, (spur_gram, freq)) in
+        language_pack.gram_frequencies.entries.iter().enumerate()
+    {
         let gram_def = match language_pack.gram_definitions.get(spur_gram) {
             Some(def) => def,
             None => continue,
@@ -377,10 +379,8 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
         // form which may be capitalized from sentence-initial position).
         if !is_phrase {
             if let GramDefinition::Dictionary(dict) = gram_def {
-                if let Some(morph) = dict.morphology.first() {
-                    if let (Some(lemma_str), Some(pos_val), Some(word)) =
-                        (&lemma, het_pos, &het_word)
-                    {
+                if let (Some(lemma_str), Some(pos_val), Some(word)) = (&lemma, het_pos, &het_word) {
+                    for morph in &dict.morphology {
                         conjugation_index
                             .entry((lemma_str.clone(), pos_val))
                             .or_default()
@@ -484,7 +484,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
 
     // Build SpurGram → (slug, gloss) lookup for cross-linking sentences.
     let mut gram_to_info: FxHashMap<language_utils::SpurGram, GramInfo> = FxHashMap::default();
-    for (spur_gram, _freq) in language_pack.gram_frequencies.iter() {
+    for (spur_gram, _freq) in language_pack.gram_frequencies.entries.iter() {
         let gram = gram_rodeo.resolve(spur_gram);
         let resolved = gram.resolve(string_rodeo);
         let dt = resolved.to_display_string(target_language);
@@ -567,17 +567,11 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                 };
                 if let Some(pos) = pos_val {
                     if let Some(forms) = conjugation_index.get(&(lemma.clone(), pos)) {
-                        // Deduplicate forms by (word, morphology) and by
-                        // case-insensitive word (keep the first/most-frequent)
+                        // Deduplicate forms by (word, morphology)
                         let mut seen_forms: std::collections::HashSet<(&str, &Morphology)> =
-                            std::collections::HashSet::new();
-                        let mut seen_words_lower: std::collections::HashSet<String> =
                             std::collections::HashSet::new();
                         let mut unique_forms: Vec<ConjugationForm> = Vec::new();
                         for (word, morph) in forms {
-                            if !seen_words_lower.insert(word.to_lowercase()) {
-                                continue;
-                            }
                             if seen_forms.insert((word.as_str(), morph)) {
                                 unique_forms.push(ConjugationForm {
                                     word: word.clone(),
@@ -945,6 +939,39 @@ mod tests {
     }
 
     // --- French verb tests ---
+
+    #[test]
+    #[ignore]
+    fn french_boire_second_person_singular() {
+        let course = Course {
+            native_language: Language::English,
+            target_language: Language::French,
+        };
+        let data = load_and_extract(&course);
+        let page = find_page_by_display(&data, "bois");
+        let sense = page
+            .senses
+            .iter()
+            .find(|s| s.lemma.as_deref() == Some("boire"))
+            .expect("No sense with lemma 'boire'");
+        let table = sense.conjugation.as_ref().expect("No conjugation table");
+        assert_eq!(table.lemma, "boire");
+        // "bois" should appear as both first and second person singular
+        let has_second_sg = table.forms.iter().any(|f| {
+            f.word == "bois"
+                && f.person.as_deref() == Some("second")
+                && f.number.as_deref() == Some("singular")
+        });
+        assert!(
+            has_second_sg,
+            "Expected second person singular 'bois' in boire conjugation. Forms: {:?}",
+            table
+                .forms
+                .iter()
+                .filter(|f| f.word == "bois")
+                .collect::<Vec<_>>()
+        );
+    }
 
     #[test]
     #[ignore]

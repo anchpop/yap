@@ -184,7 +184,7 @@ impl ReviewInfo {
     ) -> Option<Challenge<Gram<String>>> {
         let language_pack: &Arc<LanguagePack> = &deck.context.language_pack;
         let sentence = {
-            let comprehensible_grams = deck.get_comprehensible_written_grams();
+            let comprehensible_grams = deck.get_comprehensible_written_grams(false);
             let sentence = deck.get_comprehensible_sentence_containing(
                 Some(&gram),
                 comprehensible_grams,
@@ -217,7 +217,7 @@ impl ReviewInfo {
             match sentence_gram {
                 SentenceGram::Learnable((sentence_gram, literals))
                     if sentence_gram == gram
-                        || deck.is_listened_gram_comprehensible(&sentence_gram) =>
+                        || deck.is_listened_gram_comprehensible(&sentence_gram, false) =>
                 {
                     if let Some(transcription_challenge::Part::AskedToTranscribe {
                         parts: existing_parts,
@@ -383,7 +383,7 @@ impl ReviewInfo {
             unique_target_language_phrases,
             native_languages,
         } = {
-            let comprehensible_grams = deck.get_comprehensible_written_grams();
+            let comprehensible_grams = deck.get_comprehensible_written_grams(false);
             deck.get_comprehensible_sentence_containing(
                 Some(&gram),
                 comprehensible_grams,
