@@ -42,7 +42,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm,wav,mp3}'],
         globIgnores: ['**/d/**', '**/blog/**'],
         importScripts: [],
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MB (WASM file is ~2.1 MB)
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 MiB to cover the current WASM bundle
         navigateFallbackDenylist: [/^\/d\//, /^\/blog\//],
       },
       manifest: {
