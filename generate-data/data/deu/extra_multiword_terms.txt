@@ -2114,3 +2114,10 @@ warum bloß
 was bloß
 wer bloß
 wo bloß
+weder ... noch
+entweder ... oder
+nicht ... sondern
+sowohl ... als auch
+nicht nur ... sondern auch
+je ... desto
+je ... umso

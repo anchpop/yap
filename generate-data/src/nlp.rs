@@ -292,15 +292,14 @@ pub async fn generate_nlp_sentences(
     let lemma_matcher = LemmaMatcher::new(&lemma_patterns);
 
     // Build discontinuous lemma matcher (low confidence) — max gap of 5 tokens between anchors
-    let disc_patterns: PatternList<'_> = discontinuous_lemma_patterns
+    // Uses lemma-only matching (no POS) because spaCy tags discontinuous constructions
+    // like "ne...que" inconsistently (ADV vs SCONJ depending on context).
+    let disc_patterns: Vec<(Gram<String>, Vec<&str>)> = discontinuous_lemma_patterns
         .iter()
         .map(|(gram, lemma_pos_pairs)| {
             (
                 gram.clone(),
-                lemma_pos_pairs
-                    .iter()
-                    .map(|(s, pos)| (s.as_str(), *pos))
-                    .collect(),
+                lemma_pos_pairs.iter().map(|(s, _pos)| s.as_str()).collect(),
             )
         })
         .collect();
