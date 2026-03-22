@@ -93,16 +93,18 @@ impl NextCardsIterator {
                 .and_modify(|count| *count += 1);
         }
 
-        // Precompute text card values: all unadded grams sorted by value desc
+        // Precompute text card values: grams not yet Added, sorted by value desc
+        // Ghost cards are included since they can be promoted to Added
         let mut text_values: Vec<(NotNan<f32>, SpurGram)> = gram_source
             .entries
             .keys()
             .filter_map(|gram| {
                 let card = CardIndicator::WrittenGram { gram: *gram };
-                if cards.contains_key(&card) {
+                if matches!(cards.get(&card), Some(CardData::Added { .. })) {
                     return None;
                 }
-                let value = context.get_card_value_with_status(&card, None, regressions)?;
+                let value =
+                    context.get_card_value_with_status(&card, cards.get(&card), regressions)?;
                 Some((value, *gram))
             })
             .collect();
@@ -147,16 +149,18 @@ impl NextCardsIterator {
                 None
             };
 
-        // Precompute listening card values: all unadded listening grams sorted by value desc
+        // Precompute listening card values: grams not yet Added, sorted by value desc
+        // Ghost cards are included since they can be promoted to Added
         let mut listening_values: Vec<(NotNan<f32>, SpurGram)> = gram_source
             .entries
             .keys()
             .filter_map(|gram| {
                 let card = CardIndicator::ListeningGram { gram: *gram };
-                if cards.contains_key(&card) {
+                if matches!(cards.get(&card), Some(CardData::Added { .. })) {
                     return None;
                 }
-                let value = context.get_card_value_with_status(&card, None, regressions)?;
+                let value =
+                    context.get_card_value_with_status(&card, cards.get(&card), regressions)?;
                 Some((value, *gram))
             })
             .collect();
@@ -196,6 +200,11 @@ impl NextCardsIterator {
         }
     }
 
+    /// Returns true if a card is Already Added (not Ghost, not absent).
+    fn is_added(&self, card: &CardIndicator<SpurGram, Spur>) -> bool {
+        matches!(self.cards.get(card), Some(CardData::Added { .. }))
+    }
+
     fn next_text_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
         // Try preferred indices first based on added_count thresholds
         let preferred_gram = if self.added_count < 5 {
@@ -222,7 +231,7 @@ impl NextCardsIterator {
         let gram = preferred_gram.or_else(|| {
             self.text_values.iter().find_map(|(_, gram)| {
                 let card = CardIndicator::WrittenGram { gram: *gram };
-                if self.cards.contains_key(&card) {
+                if self.is_added(&card) {
                     None
                 } else {
                     Some(*gram)
@@ -242,7 +251,7 @@ impl NextCardsIterator {
         indices.iter().find_map(|&i| {
             let gram = self.text_values[i].1;
             let card = CardIndicator::WrittenGram { gram };
-            if self.cards.contains_key(&card) {
+            if self.is_added(&card) {
                 None
             } else {
                 Some(gram)
@@ -254,7 +263,7 @@ impl NextCardsIterator {
         &self,
     ) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
         self.pronunciation_values.iter().find_map(|(_, card)| {
-            if self.cards.contains_key(card) {
+            if self.is_added(card) {
                 None
             } else {
                 Some((*card, rs_fsrs::Card::new(Utc::now())))
@@ -265,7 +274,7 @@ impl NextCardsIterator {
     fn next_listening_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
         self.listening_values.iter().find_map(|(_, gram)| {
             let card = CardIndicator::ListeningGram { gram: *gram };
-            if self.cards.contains_key(&card) {
+            if self.is_added(&card) {
                 return None;
             }
             // Only include if we already know this gram as a written card
