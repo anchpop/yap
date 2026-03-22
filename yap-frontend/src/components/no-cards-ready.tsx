@@ -118,8 +118,7 @@ export function NoCardsReady({
     (numCanSmartAdd > 0 ||
       numCanAddTargetLanguage > 0 ||
       numCanAddListening > 0 ||
-      numCanAddLetterPronunciation > 0) &&
-    deck.num_cards() > 40;
+      numCanAddLetterPronunciation > 0);
 
   const add_cards: [number, CardType | undefined][] = [];
   if (numCanSmartAdd > 0) {
@@ -316,6 +315,20 @@ export function NoCardsReady({
         </div>
       </div>
 
+      {isEmptyDeck ? (
+        <div className="flex justify-center">
+          <Button
+            onClick={() => addNextCards(undefined, add_cards[0]?.[0] ?? 1)}
+            variant="default"
+            size="lg"
+            className="group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg"
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
+            <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
+            Start learning
+          </Button>
+        </div>
+      ) : (
       <Card className="overflow-hidden py-4 gap-2" animate>
         <p className="text-lg font-semibold px-8 text-center">
           {goalDone
@@ -510,6 +523,7 @@ export function NoCardsReady({
           </button>
         </div>
       </Card>
+      )}
 
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
     </div>
