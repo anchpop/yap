@@ -6,6 +6,16 @@ Check it out on [yap.town](https://yap.town)!
 
 Join the community on [Discord](https://discord.gg/mpgqfsH).
 
+**Yap's goal is to be the #1 most effective language learning app.**
+
+The idea is basically to combine Anki-style spaced repetition with comprehensible input. You add vocabulary to your deck, like any flashcard app. But Yap has a corpus of sentences, and can show you a sentence containing the word you need to review. You review the whole sentence my translating it or listening to it, and then Yap records what you got right and what you got wrong. It then uses that information to give you more sentences, always prompting you to review exactly what you need to!
+
+![Yap example](docs/yap-example-image.png)
+
+> I have a seemingly endless supply of sentences to translate containing words at my level with immediate feedback. Amazing. I’ve used Duolingo in the past, but it often felt like rote memorization of sentences that I’d never actually use. I’ve used Anki too, but sentence practice isn’t as granular as Yap Town. I think there’s really something special here and I‘d definitely recommend it to anyone interested in learning a new language.
+
+– Jarret
+
 ## Supported Languages
 
 1. French
@@ -20,11 +30,9 @@ Join the community on [Discord](https://discord.gg/mpgqfsH).
 1. Reading
 2. Listening
 
-## Why Yap?
+## Why other apps fall short
 
-**Yap's goal is to be the #1 most effective language learning app on the planet.**
-
-This is a low standard because most apps are optimized for engagement or are otherwise poorly designed, making them very ineffective. Language learning apps typically have two main flaws.
+Most apps are optimized for engagement or are otherwise poorly designed, making them very ineffective. Language learning apps typically have two main flaws.
 
 1. They do not effectively utilize spaced repetition.
 2. They teach words and grammatical concepts in an ineffective order.
