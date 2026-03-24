@@ -2727,9 +2727,61 @@ impl Language {
                 ("Ihes ", "lhes "),
                 ("úItim", "últim"),
             ],
+            // Encoding corruption: Windows-1251 decoded as Latin-1/ISO-8859-1 produces
+            // garbled sequences like "Ð" prefixes. Also Latin homoglyphs mixed into Cyrillic:
+            // Latin "a", "e", "o", "c", "p", "x" look identical to Cyrillic "а", "е", "о", "с", "р", "х"
+            // but break text processing. We detect systematic Latin-for-Cyrillic substitution
+            // by looking for Latin letters surrounded by Cyrillic context.
+            Language::Russian => &[
+                // Windows-1251 → Latin-1 mojibake: Cyrillic capital letters become Ð+something
+                ("Ð\u{00B0}", "а"), // а
+                ("Ð\u{00B5}", "е"), // е
+                ("Ð¾", "о"),        // о (common mojibake pattern)
+                ("Ñ\u{0082}", "т"), // т
+                ("Ñ\u{0080}", "р"), // р
+                // OCR: Ь (soft sign) misread as b
+                ("6ы", "бы"),
+                // Digit 3 for З (Ze)
+                ("3а", "За"),
+                ("3де", "Зде"),
+            ],
             // No Latin script subtitles for these
-            Language::Korean | Language::Chinese | Language::Japanese | Language::Russian => &[],
+            Language::Korean | Language::Chinese | Language::Japanese => &[],
         }
+    }
+
+    /// Count Latin homoglyph characters that appear inside words that are otherwise Cyrillic.
+    /// This detects subtitle corruption where visually identical Latin letters
+    /// (a, e, o, c, p, x, y, A, B, C, E, H, K, M, O, P, T, X) replace their Cyrillic
+    /// counterparts (а, е, о, с, р, х, у, А, В, С, Е, Н, К, М, О, Р, Т, Х).
+    /// Non-homoglyph Latin chars (b, d, f, g, etc.) are ignored since they appear
+    /// legitimately in foreign words with Russian case endings (e.g., "Mercedes'ом").
+    fn count_latin_in_cyrillic_words(text: &str) -> usize {
+        // Latin chars that are visual homoglyphs of Cyrillic chars
+        const LATIN_HOMOGLYPHS: &[char] = &[
+            'a', 'e', 'o', 'c', 'p', 'x', 'y', // lowercase
+            'A', 'B', 'C', 'E', 'H', 'K', 'M', 'O', 'P', 'T', 'X', // uppercase
+        ];
+        let mut count = 0;
+        for word in text.split(|c: char| c.is_whitespace() || c.is_ascii_punctuation()) {
+            if word.is_empty() {
+                continue;
+            }
+            let mut cyrillic_chars = 0usize;
+            let mut homoglyph_chars = 0usize;
+            for c in word.chars() {
+                if ('\u{0400}'..='\u{04FF}').contains(&c) {
+                    cyrillic_chars += 1;
+                } else if LATIN_HOMOGLYPHS.contains(&c) {
+                    homoglyph_chars += 1;
+                }
+            }
+            // Only flag words that are mostly Cyrillic but have Latin homoglyphs mixed in
+            if cyrillic_chars >= 2 && homoglyph_chars >= 1 {
+                count += homoglyph_chars;
+            }
+        }
+        count
     }
 
     /// Unified subtitle sanity check. Takes an iterator of subtitle sentence strings.
@@ -2959,6 +3011,19 @@ impl Language {
             return Err(format!(
                 "SRT timecodes found in {timecode_count} lines (format conversion error)"
             ));
+        }
+
+        // 17. Russian: Latin homoglyphs mixed into Cyrillic text
+        // Latin a/e/o/c/p/x/y/A/B/C/E/H/K/M/O/P/T/X look identical to
+        // Cyrillic а/е/о/с/р/х/у/А/В/С/Е/Н/К/М/О/Р/Т/Х but break text processing.
+        // Count Latin letters that appear inside otherwise-Cyrillic words.
+        if matches!(self, Language::Russian) {
+            let latin_in_cyrillic = Self::count_latin_in_cyrillic_words(&all_text);
+            if latin_in_cyrillic >= 20 {
+                return Err(format!(
+                    "Latin homoglyphs mixed into Cyrillic text: {latin_in_cyrillic} Latin characters found inside Cyrillic words"
+                ));
+            }
         }
 
         Ok(())

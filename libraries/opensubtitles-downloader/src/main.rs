@@ -235,26 +235,46 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0046438",  // Tokyo Story
     "tt0156887",  // Perfect Blue
     // Russian
-    "tt0079944", // Stalker
-    "tt0069293", // Solaris
-    "tt0091251", // Come and See
-    "tt0072443", // Mirror
-    "tt2802154", // Leviathan
-    "tt0060107", // Andrei Rublev
-    "tt6304162", // Loveless
-    "tt0376968", // The Return
-    "tt0318034", // Russian Ark
-    "tt6537238", // Salyut-7
-    "tt0118767", // Brother
-    "tt0050986", // The Cranes Are Flying
-    "tt0112883", // Burnt by the Sun
-    "tt0084726", // Kin-dza-dza!
-    "tt0079579", // Moscow Does Not Believe in Tears
-    "tt1234530", // Elena
-    "tt0363187", // Night Watch
-    "tt0488074", // Day Watch
-    "tt0015648", // Battleship Potemkin
-    "tt0056111", // Ivan's Childhood (Ivanovo detstvo)
+    "tt0079944",  // Stalker
+    "tt0069293",  // Solaris
+    "tt0091251",  // Come and See
+    "tt0072443",  // Mirror
+    "tt2802154",  // Leviathan
+    "tt0060107",  // Andrei Rublev
+    "tt6304162",  // Loveless
+    "tt0376968",  // The Return
+    "tt0318034",  // Russian Ark
+    "tt6537238",  // Salyut-7
+    "tt0118767",  // Brother
+    "tt0050986",  // The Cranes Are Flying
+    "tt0112883",  // Burnt by the Sun
+    "tt0084726",  // Kin-dza-dza!
+    "tt0079579",  // Moscow Does Not Believe in Tears
+    "tt1234530",  // Elena
+    "tt0363187",  // Night Watch
+    "tt0488074",  // Day Watch
+    "tt0015648",  // Battleship Potemkin
+    "tt0056111",  // Ivan's Childhood (Ivanovo detstvo)
+    "tt0063794",  // War and Peace (1966, Bondarchuk)
+    "tt0062759",  // The Diamond Arm (1969, Gaidai)
+    "tt0073179",  // The Irony of Fate (1976, Ryazanov)
+    "tt0076727",  // Office Romance (1977, Ryazanov)
+    "tt0084345",  // My Friend Ivan Lapshin (1985, German)
+    "tt0097561",  // The Needle (1988, Nugmanov)
+    "tt0095574",  // Little Vera (1988, Pichul)
+    "tt0093754",  // Repentance (1987, Abuladze)
+    "tt0101003",  // Freeze, Die, Come to Life (1990, Kanevsky)
+    "tt0100757",  // Taxi Blues (1990, Lungin)
+    "tt0096841",  // The Asthenic Syndrome (1989, Muratova)
+    "tt0126711",  // Is It Easy to Be Young? (1986, Podnieks)
+    "tt0238883",  // Brother 2 (2000, Balabanov)
+    "tt0156849",  // Of Freaks and Men (1998, Balabanov)
+    "tt0124207",  // The Thief (1997, Chukhray)
+    "tt0116754",  // Prisoner of the Mountains (1996, Bodrov Sr.)
+    "tt0156701",  // Khrustalyov, My Car! (1998, German)
+    "tt1588875",  // How I Ended This Summer (2010, Popogrebsky)
+    "tt10199640", // Beanpole (2019, Balagov)
+    "tt0847880",  // Cargo 200 (2007, Balabanov)
     // Portuguese
     "tt0317248",  // City of God
     "tt0861739",  // Elite Squad
