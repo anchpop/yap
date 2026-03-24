@@ -330,7 +330,7 @@ export function NoCardsReady({
         </div>
       ) : (
       <Card className="overflow-hidden py-4 gap-2" animate>
-        <p className="text-lg font-semibold px-8 text-center">
+        <p className="text-lg font-semibold px-4 sm:px-8 text-center">
           {goalDone
             ? <>You're all done with<br /><span className="uppercase font-bold">{goalLabel}!</span></>
             : showLightWorkloadNotification && thresholdTarget !== null
@@ -349,7 +349,7 @@ export function NoCardsReady({
             <ChevronLeft className="h-6 w-6" />
           </button>
 
-          <div className="flex-1 flex items-center gap-4">
+          <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">
             {effectiveGoal.type === "pimsleur" && !pimsleurAcknowledged ? (
               <div className="flex-1 flex flex-col items-center gap-3 py-4 px-2 text-center">
                 <Headphones className="h-8 w-8 text-muted-foreground" />
@@ -370,7 +370,7 @@ export function NoCardsReady({
               <>
                 <div
                   onClick={() => navigate("/goals")}
-                  className="w-24 h-36 flex-shrink-0 rounded-lg border border-border/50 overflow-hidden cursor-pointer hover:scale-105 transition-all"
+                  className="hidden sm:block sm:order-first w-24 h-36 flex-shrink-0 rounded-lg border border-border/50 overflow-hidden cursor-pointer hover:scale-105 transition-all"
                 >
                   {goalImageUrl ? (
                     <img
@@ -384,7 +384,7 @@ export function NoCardsReady({
                     </div>
                   )}
                 </div>
-                <div className="flex-1 flex flex-col gap-3 min-w-0">
+                <div className="order-1 sm:order-last flex-1 flex flex-col items-center sm:items-start gap-3 min-w-0 w-full sm:w-auto">
                   {goalDone ? (() => {
                     // Show "next lesson" / "next movie" button when goal is complete
                     const nextGoal = (() => {

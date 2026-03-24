@@ -43,7 +43,7 @@ export default defineConfig({
         globIgnores: ['**/d/**', '**/blog/**'],
         importScripts: [],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 MiB to cover the current WASM bundle
-        navigateFallbackDenylist: [/^\/d\//, /^\/blog\//],
+        navigateFallbackDenylist: [/^\/d\//, /^\/blog\//, /^\/sitemap/, /^\/robots\.txt/],
       },
       manifest: {
         name: 'Yap.Town',
