@@ -26,7 +26,7 @@ Yap.Town is a language learning application with a Rust-based backend and React 
 - **modal-llm-server**: Python FastAPI service for LLM inference using Modal. (Not currently used.)
 - **supabase/**: Database and authentication configuration
 
-Vercel for hosting.
+Cloudflare for hosting.
 
 ### Data Flow
 

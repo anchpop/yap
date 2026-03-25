@@ -6,6 +6,7 @@ import topLevelAwait from "vite-plugin-top-level-await";
 import tailwindcss from "@tailwindcss/vite"
 import { VitePWA } from 'vite-plugin-pwa'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { sentryVitePlugin } from "@sentry/vite-plugin"
 
 // Serve static site pages (dictionary, blog) without SPA fallback intercepting
 function staticSitePlugin() {
@@ -29,6 +30,9 @@ function staticSitePlugin() {
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    sourcemap: "hidden",
+  },
   plugins: [
     staticSitePlugin(),
     VitePWA({ 
@@ -112,7 +116,12 @@ export default defineConfig({
       filename: 'bundle-analysis.html',
       gzipSize: true,
       brotliSize: true,
-    })
+    }),
+    sentryVitePlugin({
+      org: "yaptown",
+      project: "javascript-react",
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    }),
   ],
   resolve: {
     alias: {

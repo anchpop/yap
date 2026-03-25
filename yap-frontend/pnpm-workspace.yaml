@@ -1,0 +1,6 @@
+ignoredBuiltDependencies:
+  - '@sentry/cli'
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - esbuild
+  - sharp

@@ -96,6 +96,8 @@ jobs:
       - name: Build frontend (SPA)
         run: pnpm build
         working-directory: yap-frontend
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Merge SPA and dictionary into single deploy directory
         run: |

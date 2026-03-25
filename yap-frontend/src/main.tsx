@@ -1,5 +1,8 @@
+import "./instrument";               // Sentry must init before anything else
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { reactErrorHandler } from "@sentry/react";
 import '@fontsource-variable/nunito'
 import '@fontsource-variable/nunito-sans'
 import './index.css'
@@ -10,7 +13,11 @@ if (typeof window !== 'undefined' && (window as any).hideLoadingScreen) {
   (window as any).hideLoadingScreen();
 }
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')!, {
+  onUncaughtError: reactErrorHandler(),
+  onCaughtError: reactErrorHandler(),
+  onRecoverableError: reactErrorHandler(),
+}).render(
   <StrictMode>
     <App />
   </StrictMode>,

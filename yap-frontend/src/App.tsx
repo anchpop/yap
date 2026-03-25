@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { useState, useEffect, Profiler, useSyncExternalStore, useMemo, useCallback } from 'react'
 import { useZeno } from '@/hooks/useZeno'
 import { BrowserRouter, Routes, Route, Outlet, useNavigate, useOutletContext } from 'react-router-dom'
@@ -137,6 +138,7 @@ function AppCheckLoggedIn({ weaponToken }: { weaponToken: WeaponToken }) {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       if (event === 'SIGNED_IN') {
+        Sentry.setUser({ id: session?.user.id, email: session?.user.email })
         localStorage.setItem('yap-user-info', JSON.stringify({
           id: session?.user.id,
           email: session?.user.email,
@@ -144,6 +146,7 @@ function AppCheckLoggedIn({ weaponToken }: { weaponToken: WeaponToken }) {
         }))
         setSignedOut(false)
       } else if (event === 'SIGNED_OUT') {
+        Sentry.setUser(null)
         localStorage.removeItem('yap-user-info')
 
         if (window.OneSignal) {

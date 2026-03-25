@@ -1,5 +1,6 @@
 use axum::{
     Router,
+    body::Bytes,
     extract::Json,
     http::{StatusCode, header},
     response::Response,
@@ -1499,6 +1500,38 @@ async fn get_follow_status(
     }))
 }
 
+const SENTRY_HOST: &str = "o4511102905090048.ingest.us.sentry.io";
+const SENTRY_PROJECT_ID: &str = "4511102907056128";
+
+async fn sentry_tunnel(body: Bytes) -> StatusCode {
+    // Parse the envelope header (first line) to verify the DSN matches our project
+    let body_str = match std::str::from_utf8(&body) {
+        Ok(s) => s,
+        Err(_) => return StatusCode::BAD_REQUEST,
+    };
+    let header_line = match body_str.lines().next() {
+        Some(line) => line,
+        None => return StatusCode::BAD_REQUEST,
+    };
+    // Verify the DSN in the envelope header points to our project
+    if !header_line.contains(SENTRY_HOST) {
+        return StatusCode::UNAUTHORIZED;
+    }
+
+    let url = format!("https://{SENTRY_HOST}/api/{SENTRY_PROJECT_ID}/envelope/");
+    let client = reqwest::Client::new();
+    match client
+        .post(&url)
+        .header("Content-Type", "application/x-sentry-envelope")
+        .body(body.to_vec())
+        .send()
+        .await
+    {
+        Ok(_) => StatusCode::OK,
+        Err(_) => StatusCode::BAD_GATEWAY,
+    }
+}
+
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
@@ -1522,6 +1555,7 @@ async fn main() {
         .route("/follow", post(follow_user))
         .route("/unfollow", post(unfollow_user))
         .route("/follow-status", get(get_follow_status))
+        .route("/sentry-tunnel", post(sentry_tunnel))
         .layer(CompressionLayer::new())
         .layer(cors);
 
