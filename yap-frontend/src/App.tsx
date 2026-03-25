@@ -1229,6 +1229,7 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
       } catch (error) {
         setLoadingState(null)
         console.error("Failed to fetch language pack:", error)
+        Sentry.captureException(error)
         const errorMessage = error instanceof Error ? error.message : String(error)
         return {
           type: "error",

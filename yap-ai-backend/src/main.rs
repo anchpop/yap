@@ -1504,14 +1504,16 @@ const SENTRY_HOST: &str = "o4511102905090048.ingest.us.sentry.io";
 const SENTRY_PROJECT_ID: &str = "4511102907056128";
 
 async fn sentry_tunnel(body: Bytes) -> StatusCode {
-    // Parse the envelope header (first line) to verify the DSN matches our project
-    let body_str = match std::str::from_utf8(&body) {
+    // Parse the envelope header (first line) to verify the DSN matches our project.
+    // Only the first line needs to be valid UTF-8; the rest may be binary (e.g. replay data).
+    let newline_pos = body.iter().position(|&b| b == b'\n');
+    let header_bytes = match newline_pos {
+        Some(pos) => &body[..pos],
+        None => &body[..],
+    };
+    let header_line = match std::str::from_utf8(header_bytes) {
         Ok(s) => s,
         Err(_) => return StatusCode::BAD_REQUEST,
-    };
-    let header_line = match body_str.lines().next() {
-        Some(line) => line,
-        None => return StatusCode::BAD_REQUEST,
     };
     // Verify the DSN in the envelope header points to our project
     if !header_line.contains(SENTRY_HOST) {
