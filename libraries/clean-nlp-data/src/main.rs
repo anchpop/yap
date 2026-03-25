@@ -155,8 +155,9 @@ fn parse_language_code(code: &str) -> anyhow::Result<Language> {
         "kor" => Ok(Language::Korean),
         "por" => Ok(Language::Portuguese),
         "ita" => Ok(Language::Italian),
+        "rus" => Ok(Language::Russian),
         _ => Err(anyhow!(
-            "Unknown language code '{}'. Supported codes: fra, deu, spa, eng, kor, por, ita",
+            "Unknown language code '{}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus",
             code
         )),
     }
@@ -497,6 +498,7 @@ async fn clean_all_languages() -> anyhow::Result<()> {
         Language::Korean,
         Language::Portuguese,
         Language::Italian,
+        Language::Russian,
     ];
 
     for language in languages {
@@ -547,15 +549,62 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         other_texts.len()
     );
 
-    let sampled_texts = sample_to_target(other_texts, sample_size, |s: &String| s.clone());
-    println!("Sampled {} sentences", sampled_texts.len());
-
-    // Step 3: Load and sample multiword terms (as raw strings)
+    // Step 3: Load NLP cache to find previously-processed sentences
+    // (these will also have cached LLM responses, so including them is ~free)
     let base_dir = base_output_directory(language);
     std::fs::create_dir_all(&base_dir).context("Failed to create output directory")?;
     let base_dir = base_dir
         .canonicalize()
         .context("Failed to canonicalize output directory")?;
+
+    let nlp_cache_file = base_dir.join("nlp_cache.jsonl");
+    let previously_processed: std::collections::HashSet<String> = if nlp_cache_file.exists() {
+        let file = File::open(&nlp_cache_file).context("Failed to open NLP cache for reading")?;
+        let reader = BufReader::new(file);
+        reader
+            .lines()
+            .filter_map(|line| {
+                let line = line.ok()?;
+                let sentence: NlpAnalyzedSentence = serde_json::from_str(&line).ok()?;
+                Some(sentence.sentence)
+            })
+            .collect()
+    } else {
+        std::collections::HashSet::new()
+    };
+    println!(
+        "Found {} previously spaCy-processed sentences in cache",
+        previously_processed.len()
+    );
+
+    // Include previously-processed sentences (their LLM responses are likely cached too)
+    let other_set: std::collections::HashSet<&String> = other_texts.iter().collect();
+    let cached_sentences: Vec<String> = previously_processed
+        .iter()
+        .filter(|s| other_set.contains(s) && !manual_sentences.contains(s.as_str()))
+        .cloned()
+        .collect();
+    println!(
+        "{} cached sentences are still in the current sentence pool",
+        cached_sentences.len()
+    );
+
+    let sampled_texts = sample_to_target(other_texts, sample_size, |s: &String| s.clone());
+    println!("Sampled {} sentences", sampled_texts.len());
+
+    // Union of sampled + previously cached (deduplicated)
+    let mut seen: std::collections::HashSet<String> = sampled_texts.iter().cloned().collect();
+    let mut combined_texts = sampled_texts;
+    for s in cached_sentences {
+        if seen.insert(s.clone()) {
+            combined_texts.push(s);
+        }
+    }
+    println!(
+        "Combined {} sentences (sampled + previously cached)",
+        combined_texts.len()
+    );
+    let sampled_texts = combined_texts;
 
     let multiword_terms_file =
         generate_data::wiktionary_terms::ensure_multiword_terms_file(&course, &base_dir)
@@ -582,7 +631,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     );
 
     // Step 5: Run spaCy with caching — only processes new/unseen sentences
-    let nlp_cache_file = base_dir.join("nlp_cache.jsonl");
+    // (nlp_cache_file already defined above when loading previously-processed sentences)
 
     // For multiword terms being analyzed, we use an empty terms file
     // For regular sentences, we use the actual multiword terms file

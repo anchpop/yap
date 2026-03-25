@@ -224,6 +224,7 @@ pub fn get_classifier(language: Language) -> Box<dyn SentenceClassifier> {
         Language::Korean => Box::new(KoreanClassifier),
         Language::English => Box::new(EnglishClassifier),
         Language::Italian => Box::new(ItalianClassifier),
+        Language::Russian => Box::new(RussianClassifier),
         language => unimplemented!("No classifier for language: {}", language),
     }
 }
@@ -238,6 +239,7 @@ pub fn get_corrector(language: Language) -> Box<dyn WordCorrector> {
         Language::Korean => Box::new(KoreanCorrector),
         Language::English => Box::new(EnglishCorrector),
         Language::Italian => Box::new(ItalianCorrector),
+        Language::Russian => Box::new(RussianCorrector),
         language => unimplemented!("No corrector for language: {}", language),
     }
 }
@@ -5471,6 +5473,668 @@ impl WordCorrector for ItalianCorrector {
     }
 }
 
+/// Russian-specific classifier
+struct RussianClassifier;
+
+impl SentenceClassifier for RussianClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for token in &sentence.doc {
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token, which is usually not necessary due to the `whitespace` field".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{}' classified as a proper noun, but the legacy NLP pipeline often over-classifies things as proper nouns",
+                    token.text
+                ));
+            }
+
+            let text_lower = token.text.to_lowercase();
+
+            // Check for lemmas containing spaces (parsing error)
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    token.text, token.lemma
+                ));
+            }
+
+            // --- быть (byt') AUX vs VERB disambiguation ---
+            // VERB: copula ("он был учителем"), existential ("здесь будет парк")
+            // AUX: passive ("он был принят"), future compound ("она будет петь")
+            let byt_forms = [
+                // Past
+                "был",
+                "была",
+                "было",
+                "были",
+                // Future
+                "буду",
+                "будешь",
+                "будет",
+                "будем",
+                "будете",
+                "будут",
+                // Imperative/infinitive
+                "быть",
+                "будь",
+                "будьте",
+                // Present (archaic/formal, rare but exists)
+                "есть",
+                "суть",
+            ];
+
+            if byt_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && (token.lemma == "быть" || token.lemma == "бы")
+            {
+                reasons.push(format!(
+                    "'{}' (быть) can be either AUX or VERB depending on context. Rule: VERB when used as copula (e.g., 'он был учителем', 'здесь будет парк') or existential, AUX when forming passive (e.g., 'был принят') or future compound tense with imperfective infinitive (e.g., 'будет петь')",
+                    token.text
+                ));
+            }
+
+            // --- мочь (moch') AUX vs VERB ---
+            let moch_forms = [
+                "могу",
+                "можешь",
+                "может",
+                "можем",
+                "можете",
+                "могут",
+                "мог",
+                "могла",
+                "могло",
+                "могли",
+            ];
+
+            if moch_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "мочь"
+            {
+                reasons.push(format!(
+                    "'{}' (мочь) can be either AUX or VERB depending on context. Rule: AUX when expressing ability/possibility with infinitive (e.g., 'могу помочь'), VERB when used independently (rare)",
+                    token.text
+                ));
+            }
+
+            // --- хотеть (khotet') AUX vs VERB ---
+            let khotet_forms = [
+                "хочу",
+                "хочешь",
+                "хочет",
+                "хотим",
+                "хотите",
+                "хотят",
+                "хотел",
+                "хотела",
+                "хотело",
+                "хотели",
+            ];
+
+            if khotet_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "хотеть"
+            {
+                reasons.push(format!(
+                    "'{}' (хотеть) can be either AUX or VERB depending on context. Rule: AUX when expressing desire with infinitive (e.g., 'хочу спать'), VERB when expressing desire for a noun (e.g., 'хочу воды')",
+                    token.text
+                ));
+            }
+
+            // --- стать (stat') AUX vs VERB ---
+            let stat_forms = [
+                "стану",
+                "станешь",
+                "станет",
+                "станем",
+                "станете",
+                "станут",
+                "стал",
+                "стала",
+                "стало",
+                "стали",
+            ];
+
+            if stat_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma == "стать"
+            {
+                reasons.push(format!(
+                    "'{}' (стать) can be either AUX or VERB depending on context. Rule: VERB when meaning 'to become' (e.g., 'стал учителем'), AUX when forming negative future with imperfective infinitive (e.g., 'не стану слушать')",
+                    token.text
+                ));
+            }
+
+            // --- должен modal: often mistagged ---
+            let dolzhen_forms = ["должен", "должна", "должно", "должны"];
+
+            if dolzhen_forms.contains(&text_lower.as_str()) && token.pos != PartOfSpeechTag::Adj {
+                reasons.push(format!(
+                        "'{}' (должен) is a short-form adjective expressing obligation — should be tagged ADJ, not {:?}",
+                        token.text, token.pos
+                    ));
+            }
+
+            // --- Impersonal predicatives that are short-form neuter adjectives ---
+            // нужно (нужный), должно (должный), важно (важный), видно (видный), etc.
+            // These should be ADJ with the full adjective as lemma, so learners can
+            // connect them to their adjective families. можно/надо/нельзя/пора are
+            // genuine adverbs/particles with no adjective paradigm.
+            let short_neuter_adj_predicatives: &[(&str, &str)] = &[
+                ("нужно", "нужный"),
+                ("должно", "должный"),
+                ("важно", "важный"),
+                ("видно", "видный"),
+            ];
+
+            for &(form, full_adj) in short_neuter_adj_predicatives {
+                if text_lower == form && token.pos != PartOfSpeechTag::Adj {
+                    reasons.push(format!(
+                        "'{}' is the short neuter form of '{}' — should be tagged ADJ with lemma '{}', not {:?}. This connects learners to the full adjective paradigm.",
+                        token.text, full_adj, full_adj, token.pos
+                    ));
+                }
+            }
+
+            // больно is genuinely ambiguous: predicative ADJ ("мне больно" = it hurts me)
+            // vs true ADV ("больно ударить" = to hit painfully). Flag for context check.
+            if text_lower == "больно" {
+                reasons.push(
+                    "'больно' is ambiguous: ADJ (short neuter of 'больной', predicative 'мне больно') vs ADV (adverb 'больно ударить'). Check context.".to_string()
+                );
+            }
+
+            // можно/надо/нельзя/пора have no adjective paradigm — these are genuinely
+            // adverbial/predicative and don't need POS correction.
+
+            // --- DET vs PRON disambiguation ---
+            let det_or_pron_words = [
+                // Demonstratives
+                "этот",
+                "эта",
+                "это",
+                "эти",
+                "тот",
+                "та",
+                "то",
+                "те",
+                // Possessives
+                "мой",
+                "моя",
+                "моё",
+                "мои",
+                "твой",
+                "твоя",
+                "твоё",
+                "твои",
+                "наш",
+                "наша",
+                "наше",
+                "наши",
+                "ваш",
+                "ваша",
+                "ваше",
+                "ваши",
+                "свой",
+                "своя",
+                "своё",
+                "свои",
+                // Quantifiers
+                "весь",
+                "вся",
+                "всё",
+                "все",
+                "каждый",
+                "каждая",
+                "каждое",
+                "каждые",
+                "какой",
+                "какая",
+                "какое",
+                "какие",
+                "некоторый",
+                "некоторая",
+                "некоторое",
+                "некоторые",
+                "другой",
+                "другая",
+                "другое",
+                "другие",
+                "такой",
+                "такая",
+                "такое",
+                "такие",
+                "сам",
+                "сама",
+                "само",
+                "сами",
+            ];
+
+            if det_or_pron_words.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
+            {
+                reasons.push(format!(
+                    "'{}' can be either DET or PRON depending on context (Rule: modifies noun → DET, stands alone → PRON)",
+                    token.text
+                ));
+            }
+
+            // --- все vs всё homograph (without ё) ---
+            if text_lower == "все" || text_lower == "всё" {
+                reasons.push(format!(
+                    "'{}' — if written without ё, this could be 'все' (all/everyone, DET/PRON plural) or 'всё' (everything, PRON neuter singular). Check context.",
+                    token.text
+                ));
+            }
+
+            // --- уже homograph ---
+            if text_lower == "уже" {
+                reasons.push(
+                    "'уже' could be ADV (already) or comparative ADJ (narrower, from узкий). Check context.".to_string()
+                );
+            }
+
+            // --- Broken verb lemmas: Russian infinitives end in -ть/-ти/-чь ---
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma = &token.lemma;
+                if !lemma.ends_with("ть")
+                    && !lemma.ends_with("ти")
+                    && !lemma.ends_with("чь")
+                    && !lemma.ends_with("ться")
+                    && !lemma.ends_with("тись")
+                    && lemma != "быть"
+                    && lemma != "есть"
+                    && text_lower.len() > 4
+                // skip very short tokens that might be particles
+                {
+                    reasons.push(format!(
+                        "'{}' has lemma '{}' which doesn't look like a Russian infinitive (should end in -ть, -ти, -чь, or -ться) — likely a failed lemmatization",
+                        token.text, token.lemma
+                    ));
+                }
+            }
+
+            // --- Participles: ADJ vs VERB ---
+            // Russian participles (читающий, прочитанный, сделанный, etc.) can be ADJ or VERB
+            if token.pos == PartOfSpeechTag::Adj || token.pos == PartOfSpeechTag::Verb {
+                let t = &text_lower;
+                // Active present participles (-ущий/-ющий/-ащий/-ящий)
+                // Active past participles (-вший/-ший)
+                // Passive past participles (-нный/-тый/-енный)
+                // Passive present participles (-емый/-имый)
+                let is_participle_form = t.ends_with("ущий")
+                    || t.ends_with("ющий")
+                    || t.ends_with("ащий")
+                    || t.ends_with("ящий")
+                    || t.ends_with("ущая")
+                    || t.ends_with("ющая")
+                    || t.ends_with("ащая")
+                    || t.ends_with("ящая")
+                    || t.ends_with("ущее")
+                    || t.ends_with("ющее")
+                    || t.ends_with("ащее")
+                    || t.ends_with("ящее")
+                    || t.ends_with("вший")
+                    || t.ends_with("ший")
+                    || t.ends_with("вшая")
+                    || t.ends_with("шая")
+                    || t.ends_with("вшее")
+                    || t.ends_with("шее")
+                    || t.ends_with("нный")
+                    || t.ends_with("тый")
+                    || t.ends_with("нная")
+                    || t.ends_with("тая")
+                    || t.ends_with("нное")
+                    || t.ends_with("тое")
+                    || t.ends_with("енный")
+                    || t.ends_with("ённый")
+                    || t.ends_with("емый")
+                    || t.ends_with("имый")
+                    || t.ends_with("емая")
+                    || t.ends_with("имая")
+                    || t.ends_with("емое")
+                    || t.ends_with("имое");
+
+                if is_participle_form {
+                    reasons.push(format!(
+                        "'{}' looks like a participle — verify POS. If used as modifier/adjective, tag ADJ with infinitive lemma. If part of verb phrase, tag VERB.",
+                        token.text
+                    ));
+                }
+            }
+
+            // --- Short-form adjectives (рад, готов, должен, нужен, etc.) should be ADJ ---
+            let short_adj_forms = [
+                "рад",
+                "рада",
+                "радо",
+                "рады",
+                "готов",
+                "готова",
+                "готово",
+                "готовы",
+                "нужен",
+                "нужна",
+                "нужно",
+                "нужны",
+                "важен",
+                "важна",
+                "важно",
+                "важны",
+                "болен",
+                "больна",
+                // "больно" omitted — genuinely ambiguous (ADJ predicative vs ADV), handled separately
+                "больны",
+                "виден",
+                "видна",
+                "видно",
+                "видны",
+                "волен",
+                "вольна",
+                "вольно",
+                "вольны",
+                "прав",
+                "права",
+                "право",
+                "правы",
+                "жив",
+                "жива",
+                "живо",
+                "живы",
+                "похож",
+                "похожа",
+                "похоже",
+                "похожи",
+                "согласен",
+                "согласна",
+                "согласно",
+                "согласны",
+                "способен",
+                "способна",
+                "способно",
+                "способны",
+                "уверен",
+                "уверена",
+                "уверено",
+                "уверены",
+                "знаком",
+                "знакома",
+                "знакомо",
+                "знакомы",
+                "доволен",
+                "довольна",
+                "довольно",
+                "довольны",
+            ];
+
+            if short_adj_forms.contains(&text_lower.as_str()) && token.pos != PartOfSpeechTag::Adj {
+                reasons.push(format!(
+                    "'{}' is a short-form adjective — should typically be tagged ADJ, not {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // --- Pronoun lemma checks ---
+            // Flag pronouns where lemma looks like an oblique form instead of nominative
+            if token.pos == PartOfSpeechTag::Pron {
+                let pron_fixes: &[(&[&str], &str)] = &[
+                    (&["меня", "мне", "мной", "мною"], "я"),
+                    (&["тебя", "тебе", "тобой", "тобою"], "ты"),
+                    (&["его", "ему", "им", "нём", "него"], "он"),
+                    (&["её", "ей", "ею", "неё", "ней"], "она"),
+                    (&["нас", "нам", "нами"], "мы"),
+                    (&["вас", "вам", "вами"], "вы"),
+                    (&["их", "им", "ими", "них", "ним", "ними"], "они"),
+                    (&["себя", "себе", "собой", "собою"], "себя"),
+                ];
+
+                for &(forms, expected_lemma) in pron_fixes {
+                    if forms.contains(&text_lower.as_str()) && token.lemma != expected_lemma {
+                        reasons.push(format!(
+                            "Pronoun '{}' has lemma '{}', expected nominative form '{}'",
+                            token.text, token.lemma, expected_lemma
+                        ));
+                        break;
+                    }
+                }
+            }
+
+            // --- Reflexive verb lemma convention: keep -ся ---
+            // If a verb text has -ся/-сь but lemma doesn't, flag it
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let is_reflexive_form = text_lower.ends_with("ся") || text_lower.ends_with("сь");
+                let lemma_is_reflexive = token.lemma.ends_with("ся") || token.lemma.ends_with("сь");
+
+                if is_reflexive_form && !lemma_is_reflexive {
+                    reasons.push(format!(
+                        "'{}' is a reflexive verb form but lemma '{}' is non-reflexive — for pedagogy, reflexive verbs should keep -ся in the lemma (e.g., 'мыться', not 'мыть')",
+                        token.text, token.lemma
+                    ));
+                }
+            }
+
+            // --- ё normalization: flag if lemma uses е where ё is expected ---
+            // Common words where ё matters for learners
+            let yo_words: &[(&str, &str)] = &[
+                ("еще", "ещё"),
+                ("все", "всё"), // when meaning "everything"
+                ("ее", "её"),
+                ("елка", "ёлка"),
+                ("мед", "мёд"),
+                ("лед", "лёд"),
+                ("берет", "берёт"), // verb form
+            ];
+
+            for &(without_yo, with_yo) in yo_words {
+                if token.lemma == without_yo {
+                    reasons.push(format!(
+                        "'{}' has lemma '{}' — check if it should be '{}' (with ё). Ё is important for learners.",
+                        token.text, without_yo, with_yo
+                    ));
+                    break;
+                }
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Russian, &text_lower) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            // быть tagged AUX followed by adjective/noun → likely should be VERB (copula)
+            if token.lemma == "быть" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (быть) is tagged AUX but is followed by adjective '{}' — if this is a copula (быть + adjective/noun predicate), it should be VERB, not AUX. быть is only AUX in passive (e.g., 'был принят') or future compound (e.g., 'будет петь').",
+                        token.text, next_text
+                    ));
+                } else if next_pos == Some(PartOfSpeechTag::Noun) {
+                    reasons.push(format!(
+                        "'{}' (быть) is tagged AUX but is followed by noun '{}' — if this is a copula (e.g., 'он был учителем'), it should be VERB, not AUX.",
+                        token.text, next_text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (быть) is tagged AUX — please double-check: it should be VERB when used as a copula or existential, and only AUX when forming passive or future compound with infinitive.",
+                        token.text
+                    ));
+                }
+            }
+
+            // Flag non-PROPN tokens with spaces in lemma — these should be split
+            // into separate tokens so learners see each word independently.
+            if token.lemma.contains(' ') && token.pos != PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "'{}' has lemma '{}' containing a space — this should be split into separate tokens. Learners need to see each word as independent vocabulary (e.g., 'всё равно' → two tokens: 'всё' + 'равно', 'слава богу' → 'слава' + 'богу').",
+                    token.text, token.lemma
+                ));
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
+/// Russian-specific corrector
+struct RussianCorrector;
+
+impl WordCorrector for RussianCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrected = false;
+        let mut corrections = Vec::new();
+
+        for token in &mut sentence.doc {
+            let text_lower = token.text.to_lowercase();
+
+            // --- Pronoun lemma normalization to nominative form ---
+            if token.pos == PartOfSpeechTag::Pron {
+                let expected = match text_lower.as_str() {
+                    "меня" | "мне" | "мной" | "мною" => Some("я"),
+                    "тебя" | "тебе" | "тобой" | "тобою" => Some("ты"),
+                    // его/ему/им are ambiguous (он or оно), but "он" is the standard lemma
+                    "ему" | "им" | "нём" | "него" => Some("он"),
+                    "её" | "ей" | "ею" | "неё" | "ней" => Some("она"),
+                    "нас" | "нам" | "нами" => Some("мы"),
+                    "вас" | "вам" | "вами" => Some("вы"),
+                    "их" | "ими" | "них" | "ним" | "ними" => Some("они"),
+                    "себя" | "себе" | "собой" | "собою" => Some("себя"),
+                    _ => None,
+                };
+
+                if let Some(expected) = expected {
+                    if token.lemma != expected {
+                        corrections.push(format!(
+                            "Fixed pronoun '{}' lemma from '{}' to '{}'",
+                            token.text, token.lemma, expected
+                        ));
+                        token.lemma = expected.to_string();
+                        corrected = true;
+                    }
+                }
+            }
+
+            // --- Reflexive verb lemma: ensure -ся stays ---
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let is_reflexive_form = text_lower.ends_with("ся") || text_lower.ends_with("сь");
+                let lemma_is_reflexive = token.lemma.ends_with("ся") || token.lemma.ends_with("сь");
+
+                if is_reflexive_form && !lemma_is_reflexive {
+                    // Append -ся to the lemma
+                    let new_lemma = format!("{}ся", token.lemma);
+                    corrections.push(format!(
+                        "Fixed reflexive verb '{}' lemma from '{}' to '{}'",
+                        token.text, token.lemma, new_lemma
+                    ));
+                    token.lemma = new_lemma;
+                    corrected = true;
+                }
+            }
+
+            // --- Fix capitalized lemmas for non-proper nouns ---
+            if token.pos != PartOfSpeechTag::Propn
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                let lowercase_lemma = token.lemma.to_lowercase();
+                corrections.push(format!(
+                    "Fixed capitalized lemma '{}' to lowercase '{}'",
+                    token.lemma, lowercase_lemma
+                ));
+                token.lemma = lowercase_lemma;
+                corrected = true;
+            }
+
+            // --- Fix "не" POS: should be PART, not ADV ---
+            // In Russian UD, "не" is PART (unlike French/Spanish "no"/"non" which are ADV)
+            if text_lower == "не" && token.pos == PartOfSpeechTag::Adv {
+                corrections.push(format!("Fixed '{}' POS from Adv to Part", token.text));
+                token.pos = PartOfSpeechTag::Part;
+                corrected = true;
+            }
+        }
+
+        CorrectionResult {
+            corrected,
+            corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            let text_lower = token.text.to_lowercase();
+
+            // Pronoun lemma normalization
+            if token.pos == PartOfSpeechTag::Pron {
+                let expected = match text_lower.as_str() {
+                    "меня" | "мне" | "мной" | "мною" => Some("я"),
+                    "тебя" | "тебе" | "тобой" | "тобою" => Some("ты"),
+                    "ему" | "им" | "нём" | "него" => Some("он"),
+                    "её" | "ей" | "ею" | "неё" | "ней" => Some("она"),
+                    "нас" | "нам" | "нами" => Some("мы"),
+                    "вас" | "вам" | "вами" => Some("вы"),
+                    "их" | "ими" | "них" | "ним" | "ними" => Some("они"),
+                    "себя" | "себе" | "собой" | "собою" => Some("себя"),
+                    _ => None,
+                };
+
+                if let Some(expected) = expected {
+                    if token.lemma != expected {
+                        token.lemma = expected.to_string();
+                    }
+                }
+            }
+
+            // Reflexive verb lemma normalization
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let is_reflexive_form = text_lower.ends_with("ся") || text_lower.ends_with("сь");
+                let lemma_is_reflexive = token.lemma.ends_with("ся") || token.lemma.ends_with("сь");
+
+                if is_reflexive_form && !lemma_is_reflexive {
+                    token.lemma = format!("{}ся", token.lemma);
+                }
+            }
+
+            // Fix capitalized lemmas
+            if token.pos != PartOfSpeechTag::Propn
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                token.lemma = token.lemma.to_lowercase();
+            }
+
+            // Fix "не" POS
+            if text_lower == "не" && token.pos == PartOfSpeechTag::Adv {
+                token.pos = PartOfSpeechTag::Part;
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -6075,6 +6739,55 @@ Feminine noun lemmas: please be consistent. Feminine nouns that have a distinct 
 
 estar as copula (with adjective complement, e.g., "está bem", "estou em casa") should be tagged VERB, not AUX. Only tag estar as AUX when forming progressive tenses with gerund (e.g., "estou comendo").
 saber can be either AUX or VERB: AUX when expressing ability with infinitive (e.g., "sei nadar"), VERB when expressing knowledge of facts (e.g., "sei a resposta")."#
+        }
+        Language::Russian => {
+            r#"
+
+Russian-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses:
+
+## Lemmatization
+
+Reflexive verb convention: reflexive verbs (ending in -ся/-сь) are distinct vocabulary items for learners. The lemma should keep -ся:
+- "моюсь" / "моешься" / "мылся" → lemma "мыться" (not "мыть")
+- "учится" / "учились" → lemma "учиться" (not "учить")
+- "боюсь" / "боялся" → lemma "бояться" (not "бояться" is correct, don't strip -ся)
+- "нравится" → lemma "нравиться" (not "нравить")
+- "смеётся" → lemma "смеяться"
+
+Pronoun lemmas: all pronoun forms should lemmatize to the nominative form:
+- "меня" / "мне" / "мной" → lemma "я"
+- "тебя" / "тебе" / "тобой" → lemma "ты"
+- "его" / "ему" / "им" / "нём" → lemma "он"
+- "её" / "ей" / "ею" → lemma "она"
+- "нас" / "нам" / "нами" → lemma "мы"
+- "вас" / "вам" / "вами" → lemma "вы"
+- "их" / "им" / "ими" → lemma "они"
+- "себя" / "себе" / "собой" → lemma "себя" (reflexive has no nominative)
+
+Aspect pairs are separate lemmas: perfective and imperfective verbs are distinct dictionary entries:
+- делать (impf) ≠ сделать (pf) — these are separate lemmas
+- писать (impf) ≠ написать (pf)
+- читать (impf) ≠ прочитать (pf)
+- говорить (impf) ≠ сказать (pf)
+Do NOT merge aspect pairs into one lemma. Each aspect is its own vocabulary item.
+
+Lowercase lemmas: lemmas should always be lowercase (Russian doesn't capitalize common nouns). Only proper nouns (PROPN) get capitalized lemmas.
+
+Ё in lemmas: preserve ё where it belongs — it's important for learners:
+- "ещё" (not "еще"), "всё" (when meaning "everything", not "все")
+- "берёт" → lemma "брать" (not "берет" → lemma "брать")
+
+## Part of Speech
+
+быть as copula or existential verb (e.g., "он был учителем", "здесь будет парк", "есть проблема") should be tagged VERB, not AUX. Only tag быть as AUX when forming passive (e.g., "был принят") or future compound tenses with imperfective infinitive (e.g., "будет петь").
+
+Short-form adjectives (рад, готов, должен, нужен, болен, прав, жив, похож, согласен, способен, уверен, знаком, доволен) should consistently be tagged ADJ with the full long-form adjective as lemma (e.g., рад → радый, готов → готовый, должен → должный, нужен → нужный, болен → больной).
+
+"не" (negation particle) should be tagged PART.
+
+Short-form neuter adjectives used as predicatives: нужно (нужный), должно (должный), важно (важный), видно (видный) — tag as ADJ with the full adjective as lemma. This connects learners to the full adjective paradigm. "больно" is ambiguous: ADJ when predicative ("мне больно", lemma "больной") vs ADV when modifying a verb ("больно ударить"). можно, надо, нельзя, пора have no adjective paradigm — these are genuinely adverbial.
+
+Participles used as adjectives: when a participle modifies a noun (e.g., "уставший человек", "написанное письмо"), tag as ADJ and use the verb infinitive as lemma. When part of a verb phrase, tag as VERB."#
         }
         _ => "",
     }

@@ -124,9 +124,7 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
         Language::Japanese => {
             return Ok(vec![]);
         }
-        Language::Russian => {
-            return Ok(vec![]);
-        }
+        Language::Russian => "Russian_multiword_terms",
         Language::Portuguese => "Portuguese_multiword_terms",
         Language::Italian => "Italian_multiword_terms",
     };
