@@ -292,6 +292,16 @@ async function checkBrowserSupport(
     // Check if OPFS test has already passed
     const opfsTestPassed = localStorage.getItem("opfs-test-passed");
 
+    // Quick JS-level check before calling into WASM (avoids noisy TypeErrors
+    // on browsers that lack OPFS entirely)
+    if (
+      !navigator.storage ||
+      typeof navigator.storage.getDirectory !== "function"
+    ) {
+      setBrowserSupported(false);
+      return;
+    }
+
     if (opfsTestPassed === "true") {
       setBrowserSupported(true);
     } else {
