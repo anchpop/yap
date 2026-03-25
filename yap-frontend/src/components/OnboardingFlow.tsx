@@ -927,7 +927,7 @@ export function OnboardingFlow({
   );
 
   return (
-    <div className="w-full flex flex-col items-center px-4 py-8">
+    <div className="w-full flex flex-col items-center px-4 py-8 overflow-x-clip">
       <OnboardingProgress current={step} total={totalSteps} />
 
       {/* Back button */}
