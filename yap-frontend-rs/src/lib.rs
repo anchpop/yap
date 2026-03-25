@@ -524,8 +524,12 @@ impl Weapon {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub async fn cache_language_pack(&self, course: Course) {
-        let _ = self.get_language_pack(course, None).await;
+    pub async fn cache_language_pack(
+        &self,
+        course: Course,
+    ) -> Result<(), language_pack::LanguageDataError> {
+        self.get_language_pack(course, None).await?;
+        Ok(())
     }
 }
 

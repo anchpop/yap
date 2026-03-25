@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -247,10 +248,19 @@ export function LanguageSelector({
 
   useEffect(() => {
     if (selectionState.stage === "onboarding") {
-      weapon.cache_language_pack({
-        nativeLanguage: selectionState.nativeLanguage,
-        targetLanguage: selectionState.targetLanguage,
+      Sentry.addBreadcrumb({
+        category: "language-pack",
+        message: `Caching ${selectionState.nativeLanguage} → ${selectionState.targetLanguage}`,
+        level: "info",
       });
+      weapon
+        .cache_language_pack({
+          nativeLanguage: selectionState.nativeLanguage,
+          targetLanguage: selectionState.targetLanguage,
+        })
+        .catch((e: unknown) => {
+          Sentry.captureException(e);
+        });
     }
   }, [selectionState, weapon]);
 

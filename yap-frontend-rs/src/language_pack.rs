@@ -184,7 +184,7 @@ pub(crate) async fn get_language_pack(
             .inspect_err(|e| {
                 log::error!("Error deserializing language data: {e:?}");
             })
-            .unwrap(),
+            .map_err(LanguageDataError::Rkyv)?,
         Err(e) => {
             log::error!("Error when accessing language data: {e}\nre-downloading language data");
             let bytes = download_and_cache_language_data(
@@ -224,6 +224,9 @@ pub enum LanguageDataError {
     #[error("AI server error:")]
     AiServer(#[source] fetch_happen::Error),
 
+    #[error("Server returned HTTP {0}")]
+    ServerError(u16),
+
     #[error("Unsupported course: {0:?}")]
     UnsupportedCourse(Course),
 }
@@ -239,6 +242,9 @@ impl From<LanguageDataError> for wasm_bindgen::JsValue {
             }
             LanguageDataError::AiServer(error) => {
                 wasm_bindgen::JsValue::from_str(&format!("AI server error: {error:?}"))
+            }
+            LanguageDataError::ServerError(status) => {
+                wasm_bindgen::JsValue::from_str(&format!("Server returned HTTP {status}"))
             }
             LanguageDataError::UnsupportedCourse(course) => {
                 wasm_bindgen::JsValue::from_str(&format!("Unsupported course: {course:?}"))
@@ -281,8 +287,8 @@ async fn download_and_cache_language_data(
     .map_err(LanguageDataError::AiServer)?;
 
     if !response.ok() {
-        log::info!("Server returned error: {}", response.status());
-        panic!("Server returned error: {}", response.status());
+        log::error!("Server returned error: {}", response.status());
+        return Err(LanguageDataError::ServerError(response.status()));
     }
 
     // Try to get content-length header, fallback to expected_size
