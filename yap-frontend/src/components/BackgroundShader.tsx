@@ -80,6 +80,11 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
       return false;
     }
 
+    // Check OffscreenCanvas support (needed for worker-based rendering)
+    if (typeof HTMLCanvasElement.prototype.transferControlToOffscreen !== "function") {
+      return false;
+    }
+
     return true;
   }, [animatedBackground]);
 
