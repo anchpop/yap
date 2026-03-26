@@ -31,7 +31,7 @@ function staticSitePlugin() {
 // https://vite.dev/config/
 export default defineConfig({
   build: {
-    sourcemap: "hidden",
+    sourcemap: true,
   },
   plugins: [
     staticSitePlugin(),

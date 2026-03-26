@@ -16,6 +16,7 @@ import { Card } from "@/components/ui/card";
 import { AudioButton } from "../AudioButton";
 import { playSoundEffect } from "@/lib/sound-effects";
 import { CantListenButton } from "../CantListenButton";
+import { AudioErrorBanner } from "../AudioErrorBanner";
 import { FeedbackDisplay } from "@/components/FeedbackDisplay";
 import { AudioVisualizer } from "../AudioVisualizer";
 import { AccentedCharacterKeyboard } from "../AccentedCharacterKeyboard";
@@ -112,6 +113,7 @@ export function TranscriptionChallenge({
   deck,
 }: TranscriptionChallengeProps) {
   const [userInputs, setUserInputs] = useState<Map<number, string>>(new Map());
+  const [audioError, setAudioError] = useState(false);
 
   const movieData = useMemo(() => {
     if (!challenge.movie_titles || challenge.movie_titles.length === 0) {
@@ -446,7 +448,7 @@ export function TranscriptionChallenge({
 
   return (
     <div className="flex flex-col flex-1 justify-between">
-      <div>
+      <div className="flex flex-col gap-2">
         <Card animate className="pt-3 pb-3 pl-3 pr-3 relative gap-0">
           {/* Dropdown menu for options */}
           <div className="absolute top-2 right-2">
@@ -475,6 +477,8 @@ export function TranscriptionChallenge({
                   autoplayed={autoplayed}
                   setAutoplayed={setAutoplayed}
                   playPreAudio={true}
+                  onError={() => setAudioError(true)}
+                  onSuccess={() => setAudioError(false)}
                 />
 
                 <AudioVisualizer />
@@ -596,6 +600,10 @@ export function TranscriptionChallenge({
             )}
           </div>
         </Card>
+
+        {audioError && onCantListen && (
+          <AudioErrorBanner onSkip={onCantListen} />
+        )}
 
         {/* Accented character keyboard - show when not graded, language supports it, and not on small screens */}
         {gradingState === null &&

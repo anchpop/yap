@@ -119,6 +119,13 @@ static LANGUAGE_DATA: LazyLock<BTreeMap<Course, &'static [u8]>> = LazyLock::new(
         },
         include_bytes!("../../out/por_for_eng/language_data.rkyv") as &'static [u8],
     );
+    data.insert(
+        Course {
+            native_language: Language::English,
+            target_language: Language::Russian,
+        },
+        include_bytes!("../../out/rus_for_eng/language_data.rkyv") as &'static [u8],
+    );
     data
 });
 
@@ -223,8 +230,9 @@ async fn text_to_speech(
         Language::German => "IWm8DnJ4NGjFI7QAM5lM", // Stephan - German voice
         Language::Italian => "sKbNSlHXq99bttvf8rRF", // Nicola Lorusso - Italian voice
         Language::Portuguese => "tS45q0QcrDHqHoaWdCDR", // Lax - Portuguese voice
+        Language::Russian => "hLjwV7lYzk15SWLUmhEH", // Russian voice
 
-        Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+        Language::Chinese | Language::Japanese => todo!(),
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -275,8 +283,9 @@ async fn google_text_to_speech(
         Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar"),
         Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar"),
         Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar"),
+        Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Achernar"),
 
-        Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+        Language::Chinese | Language::Japanese => todo!(),
     };
 
     let input = if request.is_ssml {
@@ -392,7 +401,8 @@ async fn autograde_translation(
         Language::German => "German",
         Language::Italian => "Italian",
         Language::Portuguese => "Portuguese",
-        Language::Chinese | Language::Japanese | Language::Russian => {
+        Language::Russian => "Russian",
+        Language::Chinese | Language::Japanese => {
             return Err(StatusCode::NOT_IMPLEMENTED);
         }
     };
@@ -639,9 +649,10 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
                 r#"For example, if the user confused "anno" and "hanno", or "pena" and "penna", you could generate ["anno", "hanno"] or ["pena", "penna"] in the compare array."#,
             Language::Portuguese =>
                 r#"For example, if the user confused "avô" and "avó", or "coser" and "cozer", you could generate ["avô", "avó"] or ["coser", "cozer"] in the compare array."#,
+            Language::Russian =>
+                r#"For example, if the user confused "компания" and "кампания", or "предать" and "придать", you could generate ["компания", "кампания"] or ["предать", "придать"] in the compare array."#,
 
-            Language::Chinese | Language::Japanese | Language::Russian =>
-                return Err(StatusCode::NOT_IMPLEMENTED),
+            Language::Chinese | Language::Japanese => return Err(StatusCode::NOT_IMPLEMENTED),
         }
     );
 

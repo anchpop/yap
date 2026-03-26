@@ -23,6 +23,7 @@ const BROWSER_LANG_MAP: Record<string, string> = {
   de: "German", "de-DE": "German",
   it: "Italian", "it-IT": "Italian",
   pt: "Portuguese", "pt-BR": "Portuguese", "pt-PT": "Portuguese",
+  ru: "Russian", "ru-RU": "Russian",
 }
 
 function useDetectedNativeLanguage(): string {

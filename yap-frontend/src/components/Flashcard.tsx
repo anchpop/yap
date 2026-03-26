@@ -30,6 +30,7 @@ import "./Flashcard.css";
 import { AudioButton } from "./AudioButton";
 import { ReportIssueModal } from "./challenges/ReportIssueModal";
 import { CantListenButton } from "./CantListenButton";
+import { AudioErrorBanner } from "./AudioErrorBanner";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { formatMorphology } from "@/utils/formatMorphology";
@@ -329,6 +330,7 @@ export const Flashcard = function Flashcard({
   const [showReportModal, setShowReportModal] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  const [audioError, setAudioError] = useState(false);
   const { bumpBackground } = useBackground();
 
   const toggleAnswer = useCallback(
@@ -589,6 +591,8 @@ export const Flashcard = function Flashcard({
                       autoPlay={true}
                       autoplayed={autoplayed}
                       setAutoplayed={setAutoplayed}
+                      onError={() => setAudioError(true)}
+                      onSuccess={() => setAudioError(false)}
                     />
                   ) : (
                     <div className="w-10" /> /* Spacer to keep content centered */
@@ -707,6 +711,9 @@ export const Flashcard = function Flashcard({
           >
             {!showAnswer && (
               <>
+                {audioError && onCantListen && content.type === "Listening" && (
+                  <AudioErrorBanner onSkip={onCantListen} />
+                )}
                 {onCantListen && content.type === "Listening" && (
                   <CantListenButton onClick={onCantListen} />
                 )}

@@ -19,8 +19,9 @@ fn to_lexide_language(lang: Language) -> Option<lexide::Language> {
         Language::German => Some(lexide::Language::German),
         Language::Italian => Some(lexide::Language::Italian),
         Language::Portuguese => Some(lexide::Language::Portuguese),
+        Language::Russian => Some(lexide::Language::Russian),
         // Languages not yet supported by lexide
-        Language::Chinese | Language::Japanese | Language::Russian => None,
+        Language::Chinese | Language::Japanese => None,
     }
 }
 

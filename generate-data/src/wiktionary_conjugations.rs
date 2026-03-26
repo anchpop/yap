@@ -3892,3 +3892,808 @@ pub mod english {
         }
     }
 }
+
+pub mod russian {
+    use super::*;
+
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct RussianVerbConjugation {
+        pub infinitive: String,
+
+        // Present tense (only for imperfective verbs) - 6 forms: я, ты, он, мы, вы, они
+        pub present: Option<[String; 6]>,
+
+        // Future tense (synthetic for perfective verbs) - 6 forms
+        pub future: Option<[String; 6]>,
+
+        // Past tense (gendered: masculine, feminine, neuter, plural)
+        pub past_masculine: String,
+        pub past_feminine: String,
+        pub past_neuter: String,
+        pub past_plural: String,
+
+        // Imperative (2 forms: singular ты, plural вы)
+        pub imperative: Option<[String; 2]>,
+
+        // Participles (all optional)
+        pub present_active_participle: Option<String>,
+        pub past_active_participle: Option<String>,
+        pub present_passive_participle: Option<String>,
+        pub past_passive_participle: Option<String>,
+
+        // Adverbial participles / gerunds (optional)
+        pub present_adverbial_participle: Option<String>,
+        pub past_adverbial_participle: Option<String>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct RussianNounDeclension {
+        pub lemma: String,
+        pub gender: RussianGender,
+
+        // 6 cases × 2 numbers (all optional since some nouns lack full tables)
+        pub nominative_singular: Option<String>,
+        pub genitive_singular: Option<String>,
+        pub dative_singular: Option<String>,
+        pub accusative_singular: Option<String>,
+        pub instrumental_singular: Option<String>,
+        pub prepositional_singular: Option<String>,
+
+        pub nominative_plural: Option<String>,
+        pub genitive_plural: Option<String>,
+        pub dative_plural: Option<String>,
+        pub accusative_plural: Option<String>,
+        pub instrumental_plural: Option<String>,
+        pub prepositional_plural: Option<String>,
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub enum RussianGender {
+        Masculine,
+        Feminine,
+        Neuter,
+    }
+
+    /// Extract the Russian language section from a Wiktionary page
+    pub fn extract_russian_section(document: &Html) -> anyhow::Result<Html> {
+        let h2_selector = Selector::parse("h2#Russian").unwrap();
+
+        let russian_heading = document
+            .select(&h2_selector)
+            .next()
+            .context("Could not find Russian language section")?;
+
+        let mut russian_content = String::new();
+        let mut current = russian_heading.parent();
+
+        while let Some(node) = current {
+            current = node.next_sibling();
+            if let Some(current_node) = current {
+                if let Some(elem) = ElementRef::wrap(current_node) {
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
+                    }
+                    russian_content.push_str(&elem.html());
+                }
+            }
+        }
+
+        Ok(Html::parse_fragment(&russian_content))
+    }
+
+    /// Strip combining acute accent (U+0301) used as stress marks on Russian Wiktionary
+    fn strip_stress_marks(s: &str) -> String {
+        s.replace('\u{0301}', "")
+    }
+
+    /// Extract text from a form-of span (tries <a> link first, then selflink, then direct text).
+    /// Strips stress marks (combining acute accent) since they're annotation, not part of the word.
+    fn extract_form_text(element: &ElementRef) -> Option<String> {
+        let a_selector = Selector::parse("a").unwrap();
+        if let Some(link) = element.select(&a_selector).next() {
+            if let Some(text) = link.text().next() {
+                return Some(strip_stress_marks(text));
+            }
+        }
+        let strong_selector = Selector::parse("strong.selflink").unwrap();
+        if let Some(strong) = element.select(&strong_selector).next() {
+            if let Some(text) = strong.text().next() {
+                return Some(strip_stress_marks(text));
+            }
+        }
+        let text = element.text().collect::<String>().trim().to_string();
+        if !text.is_empty() {
+            Some(strip_stress_marks(&text))
+        } else {
+            None
+        }
+    }
+
+    /// Parse a 6-form tense (person × number) from Russian conjugation table
+    /// `tense_marker` is "pres|ind" or "fut|ind"
+    fn parse_tense_6(document: &Html, tense_marker: &str) -> anyhow::Result<[String; 6]> {
+        let persons = ["1", "2", "3"];
+        let numbers = ["s", "p"];
+
+        let mut forms = Vec::new();
+
+        for person in &persons {
+            for number in &numbers {
+                let class_pattern = format!("{person}|{number}|{tense_marker}-form-of");
+                let selector_str = format!("span[class*='{class_pattern}']");
+
+                if let Ok(selector) = Selector::parse(&selector_str) {
+                    let mut found = false;
+                    for element in document.select(&selector) {
+                        if let Some(text) = extract_form_text(&element) {
+                            forms.push(text);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if !found {
+                        anyhow::bail!("Failed to find {} {} {} form", person, number, tense_marker);
+                    }
+                } else {
+                    anyhow::bail!(
+                        "Invalid selector for {} {} {}",
+                        person,
+                        number,
+                        tense_marker
+                    );
+                }
+            }
+        }
+
+        if forms.len() != 6 {
+            anyhow::bail!(
+                "Expected 6 forms for {}, found {}",
+                tense_marker,
+                forms.len()
+            );
+        }
+
+        // Reorder from [1s, 1p, 2s, 2p, 3s, 3p] to [1s, 2s, 3s, 1p, 2p, 3p]
+        Ok([
+            forms[0].clone(), // 1s (я)
+            forms[2].clone(), // 2s (ты)
+            forms[4].clone(), // 3s (он)
+            forms[1].clone(), // 1p (мы)
+            forms[3].clone(), // 2p (вы)
+            forms[5].clone(), // 3p (они)
+        ])
+    }
+
+    /// Parse a single form by CSS class pattern (returns None if not found)
+    fn parse_single_form(document: &Html, class_pattern: &str) -> Option<String> {
+        let selector_str = format!("span[class*='{class_pattern}']");
+        let selector = Selector::parse(&selector_str).ok()?;
+        for element in document.select(&selector) {
+            if let Some(text) = extract_form_text(&element) {
+                return Some(text);
+            }
+        }
+        None
+    }
+
+    /// Parse a Russian verb conjugation table from Wiktionary HTML
+    pub fn parse_russian_verb_conjugation(
+        html: &str,
+        verb: &str,
+    ) -> anyhow::Result<RussianVerbConjugation> {
+        let document = Html::parse_document(html);
+        let russian_section = extract_russian_section(&document)?;
+
+        let infinitive =
+            parse_single_form(&russian_section, "inf-form-of").unwrap_or_else(|| verb.to_string());
+
+        // Present tense (imperfective only — perfective verbs won't have this)
+        let present = parse_tense_6(&russian_section, "pres|ind").ok();
+
+        // Future tense (perfective verbs have synthetic future)
+        let future = parse_tense_6(&russian_section, "fut|ind").ok();
+
+        // Past tense (gendered forms)
+        let past_masculine = parse_single_form(&russian_section, "m|s|past|ind-form-of")
+            .context("Failed to find masculine past form")?;
+        let past_feminine = parse_single_form(&russian_section, "f|s|past|ind-form-of")
+            .context("Failed to find feminine past form")?;
+        let past_neuter = parse_single_form(&russian_section, "n|s|past|ind-form-of")
+            .context("Failed to find neuter past form")?;
+        let past_plural = parse_single_form(&russian_section, "p|past|ind-form-of")
+            .context("Failed to find plural past form")?;
+
+        // Imperative
+        let imp_sg = parse_single_form(&russian_section, "2|s|imp-form-of");
+        let imp_pl = parse_single_form(&russian_section, "2|p|imp-form-of");
+        let imperative = match (imp_sg, imp_pl) {
+            (Some(sg), Some(pl)) => Some([sg, pl]),
+            _ => None,
+        };
+
+        // Participles
+        let present_active_participle =
+            parse_single_form(&russian_section, "pres|act|part-form-of");
+        let past_active_participle = parse_single_form(&russian_section, "past|act|part-form-of");
+        let present_passive_participle =
+            parse_single_form(&russian_section, "pres|pass|part-form-of");
+        let past_passive_participle = parse_single_form(&russian_section, "past|pass|part-form-of");
+
+        // Adverbial participles (gerunds)
+        let present_adverbial_participle =
+            parse_single_form(&russian_section, "pres|adv|part-form-of");
+        let past_adverbial_participle =
+            parse_single_form(&russian_section, "past|adv|part-form-of");
+
+        Ok(RussianVerbConjugation {
+            infinitive,
+            present,
+            future,
+            past_masculine,
+            past_feminine,
+            past_neuter,
+            past_plural,
+            imperative,
+            present_active_participle,
+            past_active_participle,
+            present_passive_participle,
+            past_passive_participle,
+            present_adverbial_participle,
+            past_adverbial_participle,
+        })
+    }
+
+    /// Parse a Russian noun declension table from Wiktionary HTML
+    pub fn parse_russian_noun_declension(
+        html: &str,
+        noun: &str,
+    ) -> anyhow::Result<RussianNounDeclension> {
+        let document = Html::parse_document(html);
+        let russian_section = extract_russian_section(&document)?;
+
+        let lemma = noun.to_string();
+        let gender = parse_noun_gender(&russian_section)?;
+
+        // Parse all case/number combinations (Russian has 6 cases)
+        // Wiktionary uses: nom, gen, dat, acc, ins, pre
+        let nominative_singular = parse_noun_form(&russian_section, "nom", "s");
+        let genitive_singular = parse_noun_form(&russian_section, "gen", "s");
+        let dative_singular = parse_noun_form(&russian_section, "dat", "s");
+        let accusative_singular = parse_noun_form(&russian_section, "acc", "s");
+        let instrumental_singular = parse_noun_form(&russian_section, "ins", "s");
+        let prepositional_singular = parse_noun_form(&russian_section, "pre", "s");
+
+        let nominative_plural = parse_noun_form(&russian_section, "nom", "p");
+        let genitive_plural = parse_noun_form(&russian_section, "gen", "p");
+        let dative_plural = parse_noun_form(&russian_section, "dat", "p");
+        let accusative_plural = parse_noun_form(&russian_section, "acc", "p");
+        let instrumental_plural = parse_noun_form(&russian_section, "ins", "p");
+        let prepositional_plural = parse_noun_form(&russian_section, "pre", "p");
+
+        Ok(RussianNounDeclension {
+            lemma,
+            gender,
+            nominative_singular,
+            genitive_singular,
+            dative_singular,
+            accusative_singular,
+            instrumental_singular,
+            prepositional_singular,
+            nominative_plural,
+            genitive_plural,
+            dative_plural,
+            accusative_plural,
+            instrumental_plural,
+            prepositional_plural,
+        })
+    }
+
+    fn parse_noun_gender(document: &Html) -> anyhow::Result<RussianGender> {
+        // Try the shared headword gender parser first
+        let headword = super::parse_headword_gender(document)?;
+        match headword.genders.first() {
+            Some(language_utils::features::Gender::Feminine) => Ok(RussianGender::Feminine),
+            Some(language_utils::features::Gender::Masculine) => Ok(RussianGender::Masculine),
+            Some(language_utils::features::Gender::Neuter) => Ok(RussianGender::Neuter),
+            _ => anyhow::bail!("Failed to find noun gender"),
+        }
+    }
+
+    fn parse_noun_form(document: &Html, case: &str, number: &str) -> Option<String> {
+        let class_pattern = format!("{case}|{number}-form-of");
+        parse_single_form(document, &class_pattern)
+    }
+
+    /// Fetch Russian verb conjugations from Wiktionary with HTML caching
+    pub async fn fetch_russian_verb_conjugations(
+        verbs: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, RussianVerbConjugation>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(verbs.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} Russian verbs ({per_sec}, {msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let fetch_results: Vec<(String, Result<RussianVerbConjugation, String>)> =
+            futures::stream::iter(verbs.iter())
+                .map(|verb| {
+                    let pb = pb.clone();
+                    async move {
+                        pb.set_message(verb.to_string());
+
+                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                            Ok(html) => parse_russian_verb_conjugation(&html, verb)
+                                .map_err(|e| format!("Failed to parse Russian verb '{verb}': {e}")),
+                            Err(e) => {
+                                Err(format!("Failed to get HTML for Russian verb '{verb}': {e}"))
+                            }
+                        };
+
+                        pb.inc(1);
+                        (verb.clone(), result)
+                    }
+                })
+                .buffered(50)
+                .collect()
+                .await;
+
+        let mut results = HashMap::new();
+        let mut skipped = 0;
+        for (verb, result) in fetch_results {
+            match result {
+                Ok(conjugation) => {
+                    results.insert(verb, conjugation);
+                }
+                Err(e) => {
+                    eprintln!("Skipping: {e}");
+                    skipped += 1;
+                }
+            }
+        }
+
+        pb.finish_with_message(format!(
+            "Finished: {}/{} parsed ({skipped} skipped)",
+            results.len(),
+            verbs.len()
+        ));
+
+        Ok(results)
+    }
+
+    /// Fetch Russian noun declensions from Wiktionary with HTML caching
+    pub async fn fetch_russian_noun_declensions(
+        nouns: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, RussianNounDeclension>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(nouns.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} Russian nouns ({per_sec}, {msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let fetch_results: Vec<(String, Result<RussianNounDeclension, String>)> =
+            futures::stream::iter(nouns.iter())
+                .map(|noun| {
+                    let pb = pb.clone();
+                    async move {
+                        pb.set_message(noun.to_string());
+
+                        let result = match super::get_wiktionary_html(noun, cache_dir).await {
+                            Ok(html) => parse_russian_noun_declension(&html, noun)
+                                .map_err(|e| format!("Failed to parse Russian noun '{noun}': {e}")),
+                            Err(e) => {
+                                Err(format!("Failed to get HTML for Russian noun '{noun}': {e}"))
+                            }
+                        };
+
+                        pb.inc(1);
+                        (noun.clone(), result)
+                    }
+                })
+                .buffered(50)
+                .collect()
+                .await;
+
+        let mut results = HashMap::new();
+        let mut skipped = 0;
+        for (noun, result) in fetch_results {
+            match result {
+                Ok(declension) => {
+                    results.insert(noun, declension);
+                }
+                Err(e) => {
+                    eprintln!("Skipping: {e}");
+                    skipped += 1;
+                }
+            }
+        }
+
+        pb.finish_with_message(format!(
+            "Finished: {}/{} parsed ({skipped} skipped)",
+            results.len(),
+            nouns.len()
+        ));
+
+        Ok(results)
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct RussianAdjectiveDeclension {
+        pub lemma: String,
+
+        // Nominative: masculine, neuter, feminine, plural
+        pub nominative_masculine: Option<String>,
+        pub nominative_neuter: Option<String>,
+        pub nominative_feminine: Option<String>,
+        pub nominative_plural: Option<String>,
+
+        // Genitive: masculine/neuter (shared), feminine, plural
+        pub genitive_masculine_neuter: Option<String>,
+        pub genitive_feminine: Option<String>,
+        pub genitive_plural: Option<String>,
+
+        // Dative: masculine/neuter (shared), feminine, plural
+        pub dative_masculine_neuter: Option<String>,
+        pub dative_feminine: Option<String>,
+        pub dative_plural: Option<String>,
+
+        // Accusative: animate/inanimate distinction for masculine and plural
+        pub accusative_animate_masculine: Option<String>,
+        pub accusative_inanimate_masculine: Option<String>,
+        pub accusative_neuter: Option<String>,
+        pub accusative_feminine: Option<String>,
+        pub accusative_animate_plural: Option<String>,
+        pub accusative_inanimate_plural: Option<String>,
+
+        // Instrumental: masculine/neuter (shared), feminine, plural
+        pub instrumental_masculine_neuter: Option<String>,
+        pub instrumental_feminine: Option<String>,
+        pub instrumental_plural: Option<String>,
+
+        // Prepositional: masculine/neuter (shared), feminine, plural
+        pub prepositional_masculine_neuter: Option<String>,
+        pub prepositional_feminine: Option<String>,
+        pub prepositional_plural: Option<String>,
+
+        // Short forms (optional — not all adjectives have them)
+        pub short_masculine: Option<String>,
+        pub short_neuter: Option<String>,
+        pub short_feminine: Option<String>,
+        pub short_plural: Option<String>,
+    }
+
+    /// Parse a Russian adjective declension table from Wiktionary HTML
+    pub fn parse_russian_adjective_declension(
+        html: &str,
+        adjective: &str,
+    ) -> anyhow::Result<RussianAdjectiveDeclension> {
+        let document = Html::parse_document(html);
+        let russian_section = extract_russian_section(&document)?;
+
+        Ok(RussianAdjectiveDeclension {
+            lemma: adjective.to_string(),
+
+            // Nominative
+            nominative_masculine: parse_single_form(&russian_section, "nom|m|s-form-of"),
+            nominative_neuter: parse_single_form(&russian_section, "nom|n|s-form-of"),
+            nominative_feminine: parse_single_form(&russian_section, "nom|f|s-form-of"),
+            nominative_plural: parse_single_form(&russian_section, "nom|p-form-of"),
+
+            // Genitive
+            genitive_masculine_neuter: parse_single_form(&russian_section, "gen|m//n|s-form-of"),
+            genitive_feminine: parse_single_form(&russian_section, "gen|f|s-form-of"),
+            genitive_plural: parse_single_form(&russian_section, "gen|p-form-of"),
+
+            // Dative
+            dative_masculine_neuter: parse_single_form(&russian_section, "dat|m//n|s-form-of"),
+            dative_feminine: parse_single_form(&russian_section, "dat|f|s-form-of"),
+            dative_plural: parse_single_form(&russian_section, "dat|p-form-of"),
+
+            // Accusative (with animate/inanimate distinction)
+            accusative_animate_masculine: parse_single_form(&russian_section, "an|acc|m|s-form-of"),
+            accusative_inanimate_masculine: parse_single_form(
+                &russian_section,
+                "in|acc|m|s-form-of",
+            ),
+            accusative_neuter: parse_single_form(&russian_section, "acc|n|s-form-of"),
+            accusative_feminine: parse_single_form(&russian_section, "acc|f|s-form-of"),
+            accusative_animate_plural: parse_single_form(&russian_section, "an|acc|p-form-of"),
+            accusative_inanimate_plural: parse_single_form(&russian_section, "in|acc|p-form-of"),
+
+            // Instrumental
+            instrumental_masculine_neuter: parse_single_form(
+                &russian_section,
+                "ins|m//n|s-form-of",
+            ),
+            instrumental_feminine: parse_single_form(&russian_section, "ins|f|s-form-of"),
+            instrumental_plural: parse_single_form(&russian_section, "ins|p-form-of"),
+
+            // Prepositional
+            prepositional_masculine_neuter: parse_single_form(
+                &russian_section,
+                "pre|m//n|s-form-of",
+            ),
+            prepositional_feminine: parse_single_form(&russian_section, "pre|f|s-form-of"),
+            prepositional_plural: parse_single_form(&russian_section, "pre|p-form-of"),
+
+            // Short forms
+            short_masculine: parse_single_form(&russian_section, "short|m|s-form-of"),
+            short_neuter: parse_single_form(&russian_section, "short|n|s-form-of"),
+            short_feminine: parse_single_form(&russian_section, "short|f|s-form-of"),
+            short_plural: parse_single_form(&russian_section, "short|p-form-of"),
+        })
+    }
+
+    /// Fetch Russian adjective declensions from Wiktionary with HTML caching
+    pub async fn fetch_russian_adjective_declensions(
+        adjectives: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, RussianAdjectiveDeclension>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(adjectives.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} Russian adjectives ({per_sec}, {msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let fetch_results: Vec<(String, Result<RussianAdjectiveDeclension, String>)> =
+            futures::stream::iter(adjectives.iter())
+                .map(|adj| {
+                    let pb = pb.clone();
+                    async move {
+                        pb.set_message(adj.to_string());
+
+                        let result = match super::get_wiktionary_html(adj, cache_dir).await {
+                            Ok(html) => {
+                                parse_russian_adjective_declension(&html, adj).map_err(|e| {
+                                    format!("Failed to parse Russian adjective '{adj}': {e}")
+                                })
+                            }
+                            Err(e) => Err(format!(
+                                "Failed to get HTML for Russian adjective '{adj}': {e}"
+                            )),
+                        };
+
+                        pb.inc(1);
+                        (adj.clone(), result)
+                    }
+                })
+                .buffered(50)
+                .collect()
+                .await;
+
+        let mut results = HashMap::new();
+        let mut skipped = 0;
+        for (adj, result) in fetch_results {
+            match result {
+                Ok(declension) => {
+                    results.insert(adj, declension);
+                }
+                Err(e) => {
+                    eprintln!("Skipping: {e}");
+                    skipped += 1;
+                }
+            }
+        }
+
+        pb.finish_with_message(format!(
+            "Finished: {}/{} parsed ({skipped} skipped)",
+            results.len(),
+            adjectives.len()
+        ));
+
+        Ok(results)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use std::fs;
+
+        #[test]
+        fn test_parse_bolshoy_adjective() {
+            let html = fs::read_to_string("src/wiktionary-examples/rus/большой.txt")
+                .expect("Failed to read большой.txt");
+
+            let declension = parse_russian_adjective_declension(&html, "большой")
+                .expect("Failed to parse большой declension");
+
+            // Nominative forms
+            assert!(
+                declension.nominative_masculine.is_some(),
+                "Should have nominative masculine"
+            );
+            assert!(
+                declension.nominative_neuter.is_some(),
+                "Should have nominative neuter"
+            );
+            assert!(
+                declension.nominative_feminine.is_some(),
+                "Should have nominative feminine"
+            );
+            assert!(
+                declension.nominative_plural.is_some(),
+                "Should have nominative plural"
+            );
+
+            // Genitive forms
+            assert!(
+                declension.genitive_masculine_neuter.is_some(),
+                "Should have genitive m/n"
+            );
+            assert!(
+                declension.genitive_feminine.is_some(),
+                "Should have genitive feminine"
+            );
+            assert!(
+                declension.genitive_plural.is_some(),
+                "Should have genitive plural"
+            );
+
+            // Short forms
+            assert!(
+                declension.short_masculine.is_some(),
+                "Should have short masculine"
+            );
+            assert!(
+                declension.short_feminine.is_some(),
+                "Should have short feminine"
+            );
+        }
+
+        #[test]
+        fn test_parse_novy_adjective() {
+            let html = fs::read_to_string("src/wiktionary-examples/rus/новый.txt")
+                .expect("Failed to read новый.txt");
+
+            let declension = parse_russian_adjective_declension(&html, "новый")
+                .expect("Failed to parse новый declension");
+
+            assert!(declension.nominative_masculine.is_some());
+            assert!(declension.nominative_feminine.is_some());
+            assert!(declension.genitive_masculine_neuter.is_some());
+            assert!(declension.instrumental_plural.is_some());
+            assert!(declension.short_masculine.is_some());
+        }
+
+        #[test]
+        fn test_parse_govorit() {
+            // говорить - imperfective verb "to speak"
+            let html = fs::read_to_string("src/wiktionary-examples/rus/говорить.txt")
+                .expect("Failed to read говорить.txt");
+
+            let conjugation = parse_russian_verb_conjugation(&html, "говорить")
+                .expect("Failed to parse говорить conjugation");
+
+            assert_eq!(conjugation.infinitive, "говорить");
+
+            // Present tense should exist (imperfective)
+            let present = conjugation
+                .present
+                .as_ref()
+                .expect("Should have present tense");
+            assert_eq!(present[0], "говорю"); // я
+            assert_eq!(present[1], "говоришь"); // ты
+            assert_eq!(present[2], "говорит"); // он
+            assert_eq!(present[3], "говорим"); // мы
+            assert_eq!(present[4], "говорите"); // вы
+            assert_eq!(present[5], "говорят"); // они
+
+            // No synthetic future (imperfective)
+            assert!(conjugation.future.is_none());
+
+            // Past tense
+            assert_eq!(conjugation.past_masculine, "говорил");
+            assert_eq!(conjugation.past_feminine, "говорила");
+            assert_eq!(conjugation.past_neuter, "говорило");
+            assert_eq!(conjugation.past_plural, "говорили");
+
+            // Imperative
+            let imperative = conjugation
+                .imperative
+                .as_ref()
+                .expect("Should have imperative");
+            assert_eq!(imperative[0], "говори"); // ты
+            assert_eq!(imperative[1], "говорите"); // вы
+
+            // Participles
+            assert!(conjugation.present_active_participle.is_some());
+            assert!(conjugation.past_active_participle.is_some());
+            assert!(conjugation.present_adverbial_participle.is_some());
+        }
+
+        #[test]
+        fn test_parse_skazat() {
+            // сказать - perfective verb "to say/tell"
+            let html = fs::read_to_string("src/wiktionary-examples/rus/сказать.txt")
+                .expect("Failed to read сказать.txt");
+
+            let conjugation = parse_russian_verb_conjugation(&html, "сказать")
+                .expect("Failed to parse сказать conjugation");
+
+            assert_eq!(conjugation.infinitive, "сказать");
+
+            // No present tense (perfective)
+            assert!(conjugation.present.is_none());
+
+            // Future tense should exist (perfective)
+            let future = conjugation
+                .future
+                .as_ref()
+                .expect("Should have future tense");
+            assert_eq!(future[0], "скажу"); // я
+            assert_eq!(future[1], "скажешь"); // ты
+            assert_eq!(future[2], "скажет"); // он
+            assert_eq!(future[3], "скажем"); // мы
+            assert_eq!(future[4], "скажете"); // вы
+            assert_eq!(future[5], "скажут"); // они
+
+            // Past tense
+            assert_eq!(conjugation.past_masculine, "сказал");
+            assert_eq!(conjugation.past_feminine, "сказала");
+            assert_eq!(conjugation.past_neuter, "сказало");
+            assert_eq!(conjugation.past_plural, "сказали");
+
+            // Imperative
+            let imperative = conjugation
+                .imperative
+                .as_ref()
+                .expect("Should have imperative");
+            assert_eq!(imperative[0], "скажи"); // ты
+            assert_eq!(imperative[1], "скажите"); // вы
+        }
+
+        #[test]
+        fn test_parse_dom_noun() {
+            // дом - masculine noun "house"
+            let html = fs::read_to_string("src/wiktionary-examples/rus/дом.txt")
+                .expect("Failed to read дом.txt");
+
+            let declension = parse_russian_noun_declension(&html, "дом")
+                .expect("Failed to parse дом declension");
+
+            assert_eq!(declension.gender, RussianGender::Masculine);
+            assert_eq!(declension.nominative_singular.as_deref(), Some("дом"));
+            assert!(declension.genitive_singular.is_some());
+            assert!(declension.dative_singular.is_some());
+            assert!(declension.accusative_singular.is_some());
+            assert!(declension.instrumental_singular.is_some());
+            assert!(declension.prepositional_singular.is_some());
+            assert!(declension.nominative_plural.is_some());
+        }
+
+        #[test]
+        fn test_parse_kniga_noun() {
+            // книга - feminine noun "book"
+            let html = fs::read_to_string("src/wiktionary-examples/rus/книга.txt")
+                .expect("Failed to read книга.txt");
+
+            let declension = parse_russian_noun_declension(&html, "книга")
+                .expect("Failed to parse книга declension");
+
+            assert_eq!(declension.gender, RussianGender::Feminine);
+            assert_eq!(declension.nominative_singular.as_deref(), Some("книга"));
+            assert!(declension.genitive_singular.is_some());
+            assert!(declension.nominative_plural.is_some());
+        }
+    }
+}

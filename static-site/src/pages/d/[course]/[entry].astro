@@ -277,7 +277,8 @@ function grammarSummary(sense: any): string {
 
                   // Nouns with case declension
                   if (pos === 'Noun' && forms.some((f: any) => f.case) && forms.some((f: any) => f.word === page.display_text)) {
-                    const cases = ['nominative', 'accusative', 'dative', 'genitive'];
+                    const allCasesOrdered = ['nominative', 'accusative', 'genitive', 'dative', 'instrumental', 'locative'];
+                    const cases = allCasesOrdered.filter(c => forms.some((f: any) => f.case === c));
                     const numbers = ['singular', 'plural'];
                     return (
                       <table class="conj-table">

@@ -22,6 +22,8 @@ interface AudioButtonProps {
   autoplayed?: boolean;
   setAutoplayed?: () => void;
   playPreAudio?: boolean;
+  onError?: () => void;
+  onSuccess?: () => void;
 }
 
 export function AudioButton({
@@ -34,6 +36,8 @@ export function AudioButton({
   autoplayed,
   setAutoplayed,
   playPreAudio = false,
+  onError,
+  onSuccess,
 }: AudioButtonProps) {
   "use memo";
   const [isPlaying, setIsPlaying] = useState(false);
@@ -90,8 +94,10 @@ export function AudioButton({
             setNeedsAuth(true);
           }
         });
+        onSuccess?.();
       } catch (error) {
         console.error("Failed to play audio:", error);
+        onError?.();
       } finally {
         setIsPlaying(false);
       }

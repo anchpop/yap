@@ -86,6 +86,8 @@ export function LanguageSelector({
       "es-ES": "Spanish",
       ko: "Korean",
       "ko-KR": "Korean",
+      ru: "Russian",
+      "ru-RU": "Russian",
     };
 
     // Get browser language
@@ -115,13 +117,13 @@ export function LanguageSelector({
 
   // Determine language stability level
   const getLanguageStatus = (lang: Language): "stable" | "alpha" | "beta" => {
-    if (lang === "French" || lang === "Spanish" || lang === "German") {
-      return "stable";
-    }
-    if (lang === "Italian" || lang === "Portuguese" || lang === "Korean") {
+    if (lang === "Russian" || lang === "Korean") {
       return "alpha";
     }
-    return "beta";
+    if (lang === "Italian" || lang === "Portuguese") {
+      return "beta";
+    }
+    return "stable";
   };
 
   // Get target languages available for selected native language
@@ -447,62 +449,7 @@ export function LanguageSelector({
                 </div>
               )}
 
-              {/* Alpha section divider */}
-              {alphaLanguages.length > 0 && (
-                <div className="w-full max-w-md">
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="px-2 text-foreground">
-                        Alpha Languages
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Alpha languages */}
-              {alphaLanguages.length > 0 && (
-                <div className="grid md:grid-cols-3 grid-cols-2 gap-8 w-full">
-                  {alphaLanguages.map((lang) => (
-                    <motion.div
-                      key={lang}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Card
-                        className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                        onClick={() => {
-                          bumpBackground(50.0);
-                          setSelectionState({
-                            stage: "onboarding",
-                            nativeLanguage: selectionState.nativeLanguage,
-                            targetLanguage: lang,
-                          });
-                        }}
-                        animate
-                      >
-                        <div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                          style={{ background: languageColors[lang]?.gradient }}
-                        />
-                        <div className="relative z-10">
-                          <div className="md:text-8xl text-6xl mb-4">
-                            {languageFlags[lang]}
-                          </div>
-                          <h2 className="text-3xl font-bold mb-2">
-                            {nativeLanguageNames[lang]}
-                          </h2>
-                        </div>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-
-              {/* Beta languages (if any) */}
+              {/* Beta section divider */}
               {betaLanguages.length > 0 && (
                 <>
                   <div className="w-full max-w-md">
@@ -511,12 +458,67 @@ export function LanguageSelector({
                         <span className="w-full border-t" />
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
-                        <span className="px-2 text-foreground">Beta</span>
+                        <span className="px-2 text-foreground">Beta Languages</span>
                       </div>
                     </div>
                   </div>
                   <div className="grid md:grid-cols-3 grid-cols-2 gap-8 w-full">
                     {betaLanguages.map((lang) => (
+                      <motion.div
+                        key={lang}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Card
+                          className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
+                          onClick={() => {
+                            bumpBackground(50.0);
+                            setSelectionState({
+                              stage: "onboarding",
+                              nativeLanguage: selectionState.nativeLanguage,
+                              targetLanguage: lang,
+                            });
+                          }}
+                          animate
+                        >
+                          <div
+                            className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                            style={{
+                              background: languageColors[lang]?.gradient,
+                            }}
+                          />
+                          <div className="relative z-10">
+                            <div className="md:text-8xl text-6xl mb-4">
+                              {languageFlags[lang]}
+                            </div>
+                            <h2 className="md:text-3xl text-2xl font-bold mb-2">
+                              {nativeLanguageNames[lang]}
+                            </h2>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Alpha section divider */}
+              {alphaLanguages.length > 0 && (
+                <>
+                  <div className="w-full max-w-md">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="px-2 text-foreground">
+                          Alpha Languages
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-3 grid-cols-2 gap-8 w-full">
+                    {alphaLanguages.map((lang) => (
                       <motion.div
                         key={lang}
                         whileHover={{ scale: 1.05 }}

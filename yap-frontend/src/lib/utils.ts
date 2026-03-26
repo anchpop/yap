@@ -40,6 +40,9 @@ export function isoCodeToLanguage(isoCode: string): Language | null {
     'spa': 'Spanish',
     'kor': 'Korean',
     'deu': 'German',
+    'ita': 'Italian',
+    'por': 'Portuguese',
+    'rus': 'Russian',
   }
   return isoToLanguage[isoCode] || null
 }

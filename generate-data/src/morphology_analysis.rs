@@ -475,6 +475,7 @@ pub mod wiktionary_morphology {
             }
             Language::Italian => italian::create_italian_morphology(gram_frequencies).await,
             Language::English => english::create_english_morphology(gram_frequencies).await,
+            Language::Russian => russian::create_russian_morphology(gram_frequencies).await,
             _ => {
                 // Return empty for unsupported languages
                 Ok(BTreeMap::new())
@@ -2333,6 +2334,689 @@ pub mod wiktionary_morphology {
                     mood: None,
                 },
             );
+
+            morphology
+        }
+    }
+
+    mod russian {
+        use super::*;
+        use crate::wiktionary_conjugations::russian::{
+            RussianAdjectiveDeclension, RussianGender, RussianNounDeclension,
+            RussianVerbConjugation, fetch_russian_adjective_declensions,
+            fetch_russian_noun_declensions, fetch_russian_verb_conjugations,
+        };
+        use language_utils::features::{Case, Gender, Mood, Number, Person, Tense};
+        use std::collections::HashSet;
+        use std::path::Path;
+
+        pub async fn create_russian_morphology(
+            gram_frequencies: &[GramFrequencyEntry<String>],
+        ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
+            let mut morphology = BTreeMap::new();
+
+            let mut verb_lemmas = HashSet::new();
+            let mut noun_lemmas = HashSet::new();
+            let mut adj_lemmas = HashSet::new();
+            let mut det_lemmas = HashSet::new();
+
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        PartOfSpeech::Verb => {
+                            verb_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Noun => {
+                            noun_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Adj => {
+                            adj_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Det => {
+                            det_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
+                }
+            }
+
+            let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+            let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
+            let adj_lemmas_vec: Vec<String> = adj_lemmas.into_iter().collect();
+            let det_lemmas_vec: Vec<String> = det_lemmas.into_iter().collect();
+
+            let cache_dir = Path::new(".cache/wiktionary/russian");
+
+            let verb_conjugations =
+                fetch_russian_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+
+            for (infinitive, conjugation) in verb_conjugations.iter() {
+                let verb_morphology = verb_conjugation_to_morphology(infinitive, conjugation);
+                morphology.extend(verb_morphology);
+            }
+
+            let noun_declensions =
+                fetch_russian_noun_declensions(&noun_lemmas_vec, cache_dir).await?;
+
+            for (lemma, declension) in noun_declensions.iter() {
+                let noun_morphology = noun_declension_to_morphology(lemma, declension);
+                morphology.extend(noun_morphology);
+            }
+
+            let adj_declensions =
+                fetch_russian_adjective_declensions(&adj_lemmas_vec, cache_dir).await?;
+
+            for (lemma, declension) in adj_declensions.iter() {
+                let adj_morphology =
+                    adjective_like_declension_to_morphology(lemma, declension, PartOfSpeech::Adj);
+                morphology.extend(adj_morphology);
+            }
+
+            // Determiners decline like adjectives in Russian
+            let det_declensions =
+                fetch_russian_adjective_declensions(&det_lemmas_vec, cache_dir).await?;
+
+            for (lemma, declension) in det_declensions.iter() {
+                let det_morphology =
+                    adjective_like_declension_to_morphology(lemma, declension, PartOfSpeech::Det);
+                morphology.extend(det_morphology);
+            }
+
+            Ok(morphology)
+        }
+
+        fn verb_conjugation_to_morphology(
+            infinitive: &str,
+            conjugation: &RussianVerbConjugation,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut morphology = BTreeMap::new();
+
+            let mut add_morph = |word: &str, morph: Morphology| {
+                let heteronym = Heteronym {
+                    word: word.to_string(),
+                    lemma: infinitive.to_string(),
+                    pos: PartOfSpeech::Verb,
+                };
+                morphology
+                    .entry(heteronym)
+                    .or_insert_with(Vec::new)
+                    .push(morph);
+            };
+
+            // Infinitive
+            add_morph(
+                &conjugation.infinitive,
+                Morphology {
+                    gender: None,
+                    number: None,
+                    politeness: None,
+                    tense: None,
+                    person: None,
+                    case: None,
+                    mood: None,
+                },
+            );
+
+            let persons = [
+                Person::First,
+                Person::Second,
+                Person::Third,
+                Person::First,
+                Person::Second,
+                Person::Third,
+            ];
+            let numbers = [
+                Number::Singular,
+                Number::Singular,
+                Number::Singular,
+                Number::Plural,
+                Number::Plural,
+                Number::Plural,
+            ];
+
+            // Present tense (imperfective only)
+            if let Some(present) = &conjugation.present {
+                for (i, form) in present.iter().enumerate() {
+                    add_morph(
+                        form,
+                        Morphology {
+                            gender: None,
+                            number: Some(numbers[i]),
+                            politeness: None,
+                            tense: Some(Tense::Present),
+                            person: Some(persons[i]),
+                            case: None,
+                            mood: Some(Mood::Indicative),
+                        },
+                    );
+                }
+            }
+
+            // Future tense (perfective synthetic future)
+            if let Some(future) = &conjugation.future {
+                for (i, form) in future.iter().enumerate() {
+                    add_morph(
+                        form,
+                        Morphology {
+                            gender: None,
+                            number: Some(numbers[i]),
+                            politeness: None,
+                            tense: Some(Tense::Future),
+                            person: Some(persons[i]),
+                            case: None,
+                            mood: Some(Mood::Indicative),
+                        },
+                    );
+                }
+            }
+
+            // Past tense (gendered singular, genderless plural)
+            let past_genders = [
+                (Some(Gender::Masculine), &conjugation.past_masculine),
+                (Some(Gender::Feminine), &conjugation.past_feminine),
+                (Some(Gender::Neuter), &conjugation.past_neuter),
+            ];
+            for (gender, form) in past_genders {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender,
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: Some(Tense::Past),
+                        person: None,
+                        case: None,
+                        mood: Some(Mood::Indicative),
+                    },
+                );
+            }
+            add_morph(
+                &conjugation.past_plural,
+                Morphology {
+                    gender: None,
+                    number: Some(Number::Plural),
+                    politeness: None,
+                    tense: Some(Tense::Past),
+                    person: None,
+                    case: None,
+                    mood: Some(Mood::Indicative),
+                },
+            );
+
+            // Imperative
+            if let Some(imperative) = &conjugation.imperative {
+                let imp_numbers = [Number::Singular, Number::Plural];
+                for (i, form) in imperative.iter().enumerate() {
+                    add_morph(
+                        form,
+                        Morphology {
+                            gender: None,
+                            number: Some(imp_numbers[i]),
+                            politeness: None,
+                            tense: None,
+                            person: Some(Person::Second),
+                            case: None,
+                            mood: Some(Mood::Imperative),
+                        },
+                    );
+                }
+            }
+
+            // Participles
+            if let Some(form) = &conjugation.present_active_participle {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: None,
+                        politeness: None,
+                        tense: Some(Tense::Present),
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+            if let Some(form) = &conjugation.past_active_participle {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: None,
+                        politeness: None,
+                        tense: Some(Tense::Past),
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+            if let Some(form) = &conjugation.present_passive_participle {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: None,
+                        politeness: None,
+                        tense: Some(Tense::Present),
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+            if let Some(form) = &conjugation.past_passive_participle {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: None,
+                        politeness: None,
+                        tense: Some(Tense::Past),
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+
+            // Adverbial participles (gerunds)
+            if let Some(form) = &conjugation.present_adverbial_participle {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: None,
+                        politeness: None,
+                        tense: Some(Tense::Present),
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+            if let Some(form) = &conjugation.past_adverbial_participle {
+                add_morph(
+                    form,
+                    Morphology {
+                        gender: None,
+                        number: None,
+                        politeness: None,
+                        tense: Some(Tense::Past),
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+
+            morphology
+        }
+
+        fn noun_declension_to_morphology(
+            lemma: &str,
+            declension: &RussianNounDeclension,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut morphology = BTreeMap::new();
+
+            let gender = match declension.gender {
+                RussianGender::Masculine => Gender::Masculine,
+                RussianGender::Feminine => Gender::Feminine,
+                RussianGender::Neuter => Gender::Neuter,
+            };
+
+            let mut add_morph = |word: &str, morph: Morphology| {
+                let heteronym = Heteronym {
+                    word: word.to_string(),
+                    lemma: lemma.to_string(),
+                    pos: PartOfSpeech::Noun,
+                };
+                morphology
+                    .entry(heteronym)
+                    .or_insert_with(Vec::new)
+                    .push(morph);
+            };
+
+            // Helper for case/number forms
+            let cases = [
+                (
+                    Case::Nominative,
+                    &declension.nominative_singular,
+                    &declension.nominative_plural,
+                ),
+                (
+                    Case::Genitive,
+                    &declension.genitive_singular,
+                    &declension.genitive_plural,
+                ),
+                (
+                    Case::Dative,
+                    &declension.dative_singular,
+                    &declension.dative_plural,
+                ),
+                (
+                    Case::Accusative,
+                    &declension.accusative_singular,
+                    &declension.accusative_plural,
+                ),
+                (
+                    Case::Instrumental,
+                    &declension.instrumental_singular,
+                    &declension.instrumental_plural,
+                ),
+                // Russian prepositional case maps to Locative in UD
+                (
+                    Case::Locative,
+                    &declension.prepositional_singular,
+                    &declension.prepositional_plural,
+                ),
+            ];
+
+            for (case, sg, pl) in cases {
+                if let Some(form) = sg {
+                    add_morph(
+                        form,
+                        Morphology {
+                            gender: Some(gender),
+                            number: Some(Number::Singular),
+                            politeness: None,
+                            tense: None,
+                            person: None,
+                            case: Some(case),
+                            mood: None,
+                        },
+                    );
+                }
+                if let Some(form) = pl {
+                    add_morph(
+                        form,
+                        Morphology {
+                            gender: Some(gender),
+                            number: Some(Number::Plural),
+                            politeness: None,
+                            tense: None,
+                            person: None,
+                            case: Some(case),
+                            mood: None,
+                        },
+                    );
+                }
+            }
+
+            morphology
+        }
+
+        fn adjective_like_declension_to_morphology(
+            lemma: &str,
+            declension: &RussianAdjectiveDeclension,
+            pos: PartOfSpeech,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut morphology = BTreeMap::new();
+
+            let mut add_morph = |word: &str, morph: Morphology| {
+                let heteronym = Heteronym {
+                    word: word.to_string(),
+                    lemma: lemma.to_string(),
+                    pos,
+                };
+                morphology
+                    .entry(heteronym)
+                    .or_insert_with(Vec::new)
+                    .push(morph);
+            };
+
+            // Helper to create a morphology with case, gender, number
+            let mut add_case_form =
+                |form: &Option<String>, case: Case, gender: Option<Gender>, number: Number| {
+                    if let Some(word) = form {
+                        add_morph(
+                            word,
+                            Morphology {
+                                gender,
+                                number: Some(number),
+                                politeness: None,
+                                tense: None,
+                                person: None,
+                                case: Some(case),
+                                mood: None,
+                            },
+                        );
+                    }
+                };
+
+            // Nominative
+            add_case_form(
+                &declension.nominative_masculine,
+                Case::Nominative,
+                Some(Gender::Masculine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.nominative_neuter,
+                Case::Nominative,
+                Some(Gender::Neuter),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.nominative_feminine,
+                Case::Nominative,
+                Some(Gender::Feminine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.nominative_plural,
+                Case::Nominative,
+                None,
+                Number::Plural,
+            );
+
+            // Genitive (masculine/neuter share form)
+            add_case_form(
+                &declension.genitive_masculine_neuter,
+                Case::Genitive,
+                Some(Gender::Masculine),
+                Number::Singular,
+            );
+            // Also add as neuter
+            add_case_form(
+                &declension.genitive_masculine_neuter,
+                Case::Genitive,
+                Some(Gender::Neuter),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.genitive_feminine,
+                Case::Genitive,
+                Some(Gender::Feminine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.genitive_plural,
+                Case::Genitive,
+                None,
+                Number::Plural,
+            );
+
+            // Dative (masculine/neuter share form)
+            add_case_form(
+                &declension.dative_masculine_neuter,
+                Case::Dative,
+                Some(Gender::Masculine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.dative_masculine_neuter,
+                Case::Dative,
+                Some(Gender::Neuter),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.dative_feminine,
+                Case::Dative,
+                Some(Gender::Feminine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.dative_plural,
+                Case::Dative,
+                None,
+                Number::Plural,
+            );
+
+            // Accusative — for animate masculine, use genitive-like form; for inanimate, use nominative-like
+            // We store the animate form as the primary accusative masculine
+            add_case_form(
+                &declension.accusative_animate_masculine,
+                Case::Accusative,
+                Some(Gender::Masculine),
+                Number::Singular,
+            );
+            // Also add the inanimate form if different
+            if declension.accusative_inanimate_masculine != declension.accusative_animate_masculine
+            {
+                add_case_form(
+                    &declension.accusative_inanimate_masculine,
+                    Case::Accusative,
+                    Some(Gender::Masculine),
+                    Number::Singular,
+                );
+            }
+            add_case_form(
+                &declension.accusative_neuter,
+                Case::Accusative,
+                Some(Gender::Neuter),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.accusative_feminine,
+                Case::Accusative,
+                Some(Gender::Feminine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.accusative_animate_plural,
+                Case::Accusative,
+                None,
+                Number::Plural,
+            );
+            if declension.accusative_inanimate_plural != declension.accusative_animate_plural {
+                add_case_form(
+                    &declension.accusative_inanimate_plural,
+                    Case::Accusative,
+                    None,
+                    Number::Plural,
+                );
+            }
+
+            // Instrumental (masculine/neuter share form)
+            add_case_form(
+                &declension.instrumental_masculine_neuter,
+                Case::Instrumental,
+                Some(Gender::Masculine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.instrumental_masculine_neuter,
+                Case::Instrumental,
+                Some(Gender::Neuter),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.instrumental_feminine,
+                Case::Instrumental,
+                Some(Gender::Feminine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.instrumental_plural,
+                Case::Instrumental,
+                None,
+                Number::Plural,
+            );
+
+            // Prepositional → Locative (same mapping as nouns)
+            add_case_form(
+                &declension.prepositional_masculine_neuter,
+                Case::Locative,
+                Some(Gender::Masculine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.prepositional_masculine_neuter,
+                Case::Locative,
+                Some(Gender::Neuter),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.prepositional_feminine,
+                Case::Locative,
+                Some(Gender::Feminine),
+                Number::Singular,
+            );
+            add_case_form(
+                &declension.prepositional_plural,
+                Case::Locative,
+                None,
+                Number::Plural,
+            );
+
+            // Short forms (no case — these are predicative)
+            if let Some(word) = &declension.short_masculine {
+                add_morph(
+                    word,
+                    Morphology {
+                        gender: Some(Gender::Masculine),
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+            if let Some(word) = &declension.short_neuter {
+                add_morph(
+                    word,
+                    Morphology {
+                        gender: Some(Gender::Neuter),
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+            if let Some(word) = &declension.short_feminine {
+                add_morph(
+                    word,
+                    Morphology {
+                        gender: Some(Gender::Feminine),
+                        number: Some(Number::Singular),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
+            if let Some(word) = &declension.short_plural {
+                add_morph(
+                    word,
+                    Morphology {
+                        gender: None,
+                        number: Some(Number::Plural),
+                        politeness: None,
+                        tense: None,
+                        person: None,
+                        case: None,
+                        mood: None,
+                    },
+                );
+            }
 
             morphology
         }

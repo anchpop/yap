@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2574140
-Total errors: 517
+Total predictions: 2655665
+Total errors: 549
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -22,6 +22,14 @@ Accuracy: 99.98%
   - Deixe - me tomar um banho rápido.
   - Deixe- me falar claro.
 
+### "-" + "Não" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - A melhor coisa do meu trabalho - Não preciso fazer decisões.
+  - Eu não vou contar- Não vou contar nada.
+  - Não deixe brilhar - Não deixe.
+
 ### "-" + "um" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38,21 +46,21 @@ Accuracy: 99.98%
   - Idéia de Maxim ?
   - Pronto, Maxim ?
 
-### "-" + "Não" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - A melhor coisa do meu trabalho - Não preciso fazer decisões.
-  - Eu não vou contar- Não vou contar nada.
-  - Não quero mudar - Não é verdade.
-
-### "," + "e" (4 occurrences)
+### "," + "e" (5 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - A maior organização do mundo,e você não sabia que existia até entrar nela.
   - Adeus, querida,e boa sorte !
   - Hitleré um homem que teme o lntelecto,e odela todos lntelectuals.
+
+### "-" + "não" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Eu - não - vou - morrer.
+  - Eu faria - não faria?
+  - Eu não posso sair pelado - não na minha idade.
 
 ### "-" + "se" (4 occurrences)
 - Predicted: None
@@ -101,14 +109,6 @@ Accuracy: 99.98%
   - Brinque ou estude - a escolha é sua.
   - Eu quero falar com Sheeta - a sós.
   - Um novo modo de comunicação foi desenvolvido - a ferrovia.
-
-### "-" + "não" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Eu - não - vou - morrer.
-  - Eu não posso sair pelado - não na minha idade.
-  - Você que me meteu nessa - não se esqueça disso.
 
 ### "/" + "aquilo" (3 occurrences)
 - Predicted: Space
@@ -163,6 +163,13 @@ Accuracy: 99.98%
   - Nesses últimos tempos,Tom esteve realmente ocupado.
   - Onde diabo você esteve,Tom?
 
+### "," + "claro" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Claro,claro.
+  - Sim, Grunia ,claro.
+
 ### "," + "ele" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -205,6 +212,13 @@ Accuracy: 99.98%
   - Melina,é demasiado fino para ti.
   - Sim,é meu pai.
 
+### "," + "“" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ah, não, “fofo” nada.
+  - Como assim, “eles foram embora”?
+
 ### "-" + "A" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -225,6 +239,13 @@ Accuracy: 99.98%
 - Examples:
   - As pessoas - eles se parecem com lixo.
   - Leva o guarda-chuva - eles preveem chuva.
+
+### "-" + "o" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Eu faria - o que eu não faria?
+  - Os homens procuram apenas uma coisa na vida - o seu prazer.
 
 ### "/" + "Elas" (2 occurrences)
 - Predicted: Space
@@ -359,6 +380,13 @@ Accuracy: 99.98%
   - Quando a mamãe volta para a casa ?
   - Quando o papai volta para a casa ?
 
+### "faria" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Eu faria - não faria?
+  - Eu faria - o que eu não faria?
+
 ### "fazendo" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -443,6 +471,12 @@ Accuracy: 99.98%
 - Examples:
   - Você sabe que umdla tudo seránosso,Pepe.
 
+### "," + "Vitya" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Vamos,Vitya, você começa, é sua vez agora.
+
 ### "," + "a" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -473,12 +507,6 @@ Accuracy: 99.98%
 - Examples:
   - Vamos,cego bêbadoIGrite!
 
-### "," + "claro" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Claro,claro.
-
 ### "," + "com" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -502,6 +530,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Sim,creio que sei.
+
+### "," + "deixe" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Está bem,deixe, pregarei eu mesma.
 
 ### "," + "depois" (1 occurrences)
 - Predicted: Space
@@ -701,12 +735,6 @@ Accuracy: 99.98%
 - Examples:
   - O que chega primeiro,vota primeiro.
 
-### "," + "“" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ah, não, “fofo” nada.
-
 ### "-" + "ABORTAR" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -767,6 +795,18 @@ Accuracy: 99.98%
 - Examples:
   - Love, love, love - Você fez isso?
 
+### "-" + "ai" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Por eu estar apaixonada - ai - mas não de ti!
+
+### "-" + "avança" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Verde - avança, vermelho - pára!
+
 ### "-" + "borrife" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -803,6 +843,12 @@ Accuracy: 99.98%
 - Examples:
   - Conjugação de verbos irregulares - essencial para aqueles aprendendo inglês.
 
+### "-" + "estas" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Um banho em cada apartamento - estas são as normas.
+
 ### "-" + "eu" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -815,6 +861,18 @@ Accuracy: 99.98%
 - Examples:
   - Bonito, inteligente e charmoso - isso descreve o que ele não é.
 
+### "-" + "isto" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ladrão - isto sou eu!
+
+### "-" + "mas" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Por eu estar apaixonada - ai - mas não de ti!
+
 ### "-" + "morrer" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -826,12 +884,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Talvez foi um homem, uma vez - no tempo da minha avó.
-
-### "-" + "o" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Os homens procuram apenas uma coisa na vida - o seu prazer.
 
 ### "-" + "oink" (1 occurrences)
 - Predicted: None
@@ -863,6 +915,12 @@ Accuracy: 99.98%
 - Examples:
   - Leva o guarda-chuva - prevê-se chuva.
 
+### "-" + "pára" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Verde - avança, vermelho - pára!
+
 ### "-" + "qual" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -881,11 +939,29 @@ Accuracy: 99.98%
 - Examples:
   - Pazu - tirando o dia de folga?
 
+### "-" + "tu" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nós voltaremos os dois - tu e eu.
+
+### "-" + "vamos" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tenho uma ideia - vamos sair hoje?
+
 ### "-" + "vou" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Eu - não - vou - morrer.
+
+### "-" + "É" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mas não serviria para comer - É a música que estavam cantando.
 
 ### "-" + "é" (1 occurrences)
 - Predicted: None
@@ -1169,6 +1245,12 @@ Accuracy: 99.98%
 - Examples:
   - Mas, afinal de contas, meus homens foram úteis a Garibaldi .
 
+### "Grunia" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sim, Grunia ,claro.
+
 ### "Hitler" + "é" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1216,6 +1298,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Já leu Jules Verne ?
+
+### "Ladrão" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ladrão - isto sou eu!
 
 ### "Laid" + "," (1 occurrences)
 - Predicted: None
@@ -1499,6 +1587,12 @@ Accuracy: 99.98%
 - Examples:
   - VamosIOúltlmo achegaréchlfrudo!
 
+### "Verde" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Verde - avança, vermelho - pára!
+
 ### "Versos" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1510,6 +1604,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Sou o Xia Xiang -Sou o Xu Da Shan.
+
+### "Zhurov" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Aqui fala Capitão Zhurov .
 
 ### "abandonaram" + "?" (1 occurrences)
 - Predicted: None
@@ -1540,6 +1640,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Posso ir agora ?
+
+### "ai" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Por eu estar apaixonada - ai - mas não de ti!
 
 ### "algo" + "!" (1 occurrences)
 - Predicted: None
@@ -1577,11 +1683,23 @@ Accuracy: 99.98%
 - Examples:
   - Ainda consegue ler a lingua dos anões antigos ?
 
+### "apaixonada" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Por eu estar apaixonada - ai - mas não de ti!
+
 ### "apaixonado" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - E ai está apaixonado ?
+
+### "apartamento" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Um banho em cada apartamento - estas são as normas.
 
 ### "aquilo" + "?" (1 occurrences)
 - Predicted: None
@@ -1624,6 +1742,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - O coreano é bom -Sim, mas severo.
+
+### "brilhar" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Não deixe brilhar - Não deixe.
 
 ### "bêbado" + "IGrite" (1 occurrences)
 - Predicted: Space
@@ -1690,6 +1814,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Vamos, senhor coletor !
+
+### "comer" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mas não serviria para comer - É a música que estavam cantando.
 
 ### "comer" + "?" (1 occurrences)
 - Predicted: None
@@ -1768,6 +1898,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - O fruto proibido é o mais doce .
+
+### "dois" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nós voltaremos os dois - tu e eu.
 
 ### "ela" + "-" (1 occurrences)
 - Predicted: None
@@ -1972,6 +2108,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Frank, o que há ?
+
+### "ideia" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tenho uma ideia - vamos sair hoje?
 
 ### "ideias" + "." (1 occurrences)
 - Predicted: None
@@ -2453,6 +2595,12 @@ Accuracy: 99.98%
 - Examples:
   - Mas gostaria de ser o primeiro a bailar com você a próxima valsa .
 
+### "vermelho" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Verde - avança, vermelho - pára!
+
 ### "vez" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2506,6 +2654,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - ÉJade Fox!
+
+### "é" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Você sabe o você é ?
 
 ### "—" + "mas" (1 occurrences)
 - Predicted: Space

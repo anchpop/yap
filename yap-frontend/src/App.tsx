@@ -80,7 +80,11 @@ function AppMain() {
     onRegistered(r) {
       if (r) {
         setInterval(() => {
-          r.update()
+          r.update().catch((e) => {
+            if (navigator.onLine) {
+              Sentry.captureException(e, { tags: { "sw.online": true } })
+            }
+          })
         }, updateIntervalMS)
       }
     }
@@ -655,14 +659,11 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
   // Update scheduled push notifications and language stats when the deck state changes
   useEffect(() => {
-    try {
-      if (accessToken && userInfo?.id) {
-        deck.submit_push_notifications(accessToken, userInfo?.id)
-        deck.submit_language_stats(accessToken)
-      }
-    }
-    catch {
-      console.error("An error occurred when trying to update the notification schedule or language stats");
+    if (accessToken && userInfo?.id) {
+      deck.submit_push_notifications(accessToken, userInfo?.id)
+        .catch(() => console.error("Failed to update notification schedule"));
+      deck.submit_language_stats(accessToken)
+        .catch(() => console.error("Failed to update language stats"));
     }
   }, [deck, userInfo?.id, accessToken])
 
@@ -1215,7 +1216,17 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
       }
 
       try {
+        Sentry.addBreadcrumb({
+          category: "language-pack",
+          message: `Loading language pack: ${course.targetLanguage} → ${course.nativeLanguage}`,
+          level: "info",
+        })
         const languagePack = await weapon.get_language_pack(course, (message: string, progress: number) => {
+          Sentry.addBreadcrumb({
+            category: "language-pack",
+            message: `${message} (${Math.round(progress)}%)`,
+            level: "info",
+          })
           setLoadingState({ message, progress })
         })
         setLoadingState(null)
@@ -1229,8 +1240,23 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
       } catch (error) {
         setLoadingState(null)
         console.error("Failed to fetch language pack:", error)
-        Sentry.captureException(error)
         const errorMessage = error instanceof Error ? error.message : String(error)
+        Sentry.captureException(
+          error instanceof Error ? error : new Error(errorMessage),
+          {
+            tags: {
+              "language-pack.target": course.targetLanguage,
+              "language-pack.native": course.nativeLanguage,
+            },
+            contexts: {
+              "language-pack": {
+                targetLanguage: course.targetLanguage,
+                nativeLanguage: course.nativeLanguage,
+                rawError: errorMessage,
+              },
+            },
+          }
+        )
         return {
           type: "error",
           message: errorMessage,

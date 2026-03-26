@@ -531,13 +531,16 @@ impl FeatureSet for PronType {
             | Language::English
             | Language::Spanish
             | Language::German
-            | Language::Korean => {
+            | Language::Korean
+            | Language::Portuguese
+            | Language::Italian
+            | Language::Russian => {
                 matches!(
                     pos,
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Num | PartOfSpeech::Adv
                 )
             }
-            _ => todo!(),
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -561,7 +564,14 @@ impl FeatureSet for NumType {
                     PartOfSpeech::Num | PartOfSpeech::Det | PartOfSpeech::Adj | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian uses cardinal, ordinal, and collective numerals
+                matches!(
+                    pos,
+                    PartOfSpeech::Num | PartOfSpeech::Det | PartOfSpeech::Adj | PartOfSpeech::Adv
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -585,7 +595,14 @@ impl FeatureSet for Poss {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adj
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian possessive pronouns and adjectives
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adj
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -606,7 +623,14 @@ impl FeatureSet for Reflex {
             | Language::Italian => {
                 matches!(pos, PartOfSpeech::Pron | PartOfSpeech::Det)
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian reflexive pronouns (себя) and verbs with -ся/-сь
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -626,7 +650,9 @@ impl FeatureSet for Clusivity {
             | Language::Korean
             | Language::Portuguese
             | Language::Italian => false,
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            // Russian does not have clusivity
+            Language::Russian => false,
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -661,7 +687,21 @@ impl FeatureSet for Gender {
             }
 
             Language::Korean => false, // Korean has no grammatical gender
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian has three genders (masculine, feminine, neuter)
+                // Affects nouns, pronouns, adjectives, determiners, numerals, verbs (past tense), participles
+                matches!(
+                    pos,
+                    PartOfSpeech::Noun
+                        | PartOfSpeech::Pron
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Det
+                        | PartOfSpeech::Num
+                        | PartOfSpeech::Verb // Past tense and participles
+                        | PartOfSpeech::Aux
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -670,9 +710,9 @@ impl FeatureSet for Animacy {
     fn name() -> &'static str {
         "Animacy"
     }
-    fn applies_to(language: Language, _pos: PartOfSpeech) -> bool {
+    fn applies_to(language: Language, pos: PartOfSpeech) -> bool {
         // Lexical feature of nouns and inflectional feature of other parts of speech
-        // Mainly used in Slavic languages (Polish, Czech), not common in our current language set
+        // Mainly used in Slavic languages (Polish, Czech, Russian)
         match language {
             Language::French
             | Language::English
@@ -681,7 +721,19 @@ impl FeatureSet for Animacy {
             | Language::Korean
             | Language::Portuguese
             | Language::Italian => false,
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian distinguishes animate vs inanimate, affecting accusative case forms
+                // Applies to nouns, pronouns, adjectives, determiners, numerals
+                matches!(
+                    pos,
+                    PartOfSpeech::Noun
+                        | PartOfSpeech::Pron
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Det
+                        | PartOfSpeech::Num
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -700,7 +752,9 @@ impl FeatureSet for NounClass {
             | Language::Korean
             | Language::Portuguese
             | Language::Italian => false,
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            // Russian does not have noun classes
+            Language::Russian => false,
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -747,7 +801,20 @@ impl FeatureSet for Number {
                 // Optional plural marking, no verb agreement
                 matches!(pos, PartOfSpeech::Noun | PartOfSpeech::Pron)
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian has singular and plural; affects nouns, pronouns, adjectives, determiners, numerals, verbs
+                matches!(
+                    pos,
+                    PartOfSpeech::Noun
+                        | PartOfSpeech::Pron
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Det
+                        | PartOfSpeech::Num
+                        | PartOfSpeech::Verb
+                        | PartOfSpeech::Aux
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -775,7 +842,19 @@ impl FeatureSet for Case {
                 // Limited case in pronouns only
                 matches!(pos, PartOfSpeech::Pron)
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian has 6 cases (nominative, genitive, dative, accusative, instrumental, prepositional)
+                // Affects nouns, pronouns, adjectives, determiners, numerals, participles
+                matches!(
+                    pos,
+                    PartOfSpeech::Noun
+                        | PartOfSpeech::Pron
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Det
+                        | PartOfSpeech::Num
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -799,7 +878,9 @@ impl FeatureSet for Definite {
                     PartOfSpeech::Noun | PartOfSpeech::Adj | PartOfSpeech::Det
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            // Russian has no articles; definiteness is not morphologically marked
+            Language::Russian => false,
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -823,7 +904,13 @@ impl FeatureSet for Deixis {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -847,7 +934,13 @@ impl FeatureSet for DeixisRef {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -871,7 +964,10 @@ impl FeatureSet for Degree {
                     PartOfSpeech::Adj | PartOfSpeech::Adv | PartOfSpeech::Noun
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                matches!(pos, PartOfSpeech::Adj | PartOfSpeech::Adv)
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -895,7 +991,14 @@ impl FeatureSet for VerbForm {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian has infinitive, finite, participle (often tagged Adj), converb
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -944,7 +1047,14 @@ impl FeatureSet for Tense {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj // For participles tagged as adjectives
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian has past, present, future tense; participles can carry tense
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -972,7 +1082,15 @@ impl FeatureSet for Aspect {
                         | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Aspect (perfective/imperfective) is fundamental in Russian
+                // Applies to verbs, auxiliaries, and participles (tagged as Adj)
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -1000,7 +1118,14 @@ impl FeatureSet for Voice {
                         | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian has active, passive, and middle voice
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -1018,8 +1143,9 @@ impl FeatureSet for Evident {
             | Language::German
             | Language::Korean
             | Language::Portuguese
-            | Language::Italian => false,
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            | Language::Italian
+            | Language::Russian => false,
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -1050,7 +1176,22 @@ impl FeatureSet for Polarity {
                         | PartOfSpeech::Adp
                 )
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian negation particle не, ни; also negative pronouns/adverbs
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb
+                        | PartOfSpeech::Aux
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Adv
+                        | PartOfSpeech::Noun
+                        | PartOfSpeech::Part
+                        | PartOfSpeech::Intj
+                        | PartOfSpeech::Pron
+                        | PartOfSpeech::Det
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -1087,7 +1228,14 @@ impl FeatureSet for Person {
                 // Korean pronouns exist but verbs don't inflect for person
                 matches!(pos, PartOfSpeech::Pron)
             }
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            Language::Russian => {
+                // Russian verbs inflect for person in present/future; pronouns carry person
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -1118,8 +1266,14 @@ impl FeatureSet for Polite {
             }
             // English lacks morphological politeness
             Language::English => false,
-
-            Language::Chinese | Language::Japanese | Language::Russian => todo!(),
+            // Russian has ты/вы (T-V) distinction
+            Language::Russian => {
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
+                )
+            }
+            Language::Chinese | Language::Japanese => todo!(),
         }
     }
 }
@@ -1230,7 +1384,12 @@ impl Morphology {
                 self.get_portuguese_verb_prefix()
             }
             (Language::Portuguese, _) => None,
-            (Language::Chinese, _) | (Language::Japanese, _) | (Language::Russian, _) => todo!(),
+            // Russian has no articles; nouns don't get prefixes
+            (Language::Russian, PartOfSpeech::Verb | PartOfSpeech::Aux) => {
+                self.get_russian_verb_prefix()
+            }
+            (Language::Russian, _) => None,
+            (Language::Chinese, _) | (Language::Japanese, _) => todo!(),
         }
     }
 
@@ -1574,6 +1733,28 @@ impl Morphology {
             (Person::Second, Number::Plural, _) => "vós",
             (Person::Third, Number::Singular, _) => "ele",
             (Person::Third, Number::Plural, _) => "eles",
+            _ => return None,
+        };
+
+        Some(WordPrefix {
+            prefix: prefix.to_string(),
+            separator: " ".to_string(),
+        })
+    }
+
+    fn get_russian_verb_prefix(&self) -> Option<WordPrefix> {
+        let person = self.person?;
+        let number = self.number.unwrap_or(Number::Singular);
+        let politeness = self.politeness;
+
+        let prefix = match (person, number, politeness) {
+            (Person::First, Number::Singular, _) => "я",
+            (Person::First, Number::Plural, _) => "мы",
+            (Person::Second, Number::Singular, Some(Polite::Formal)) => "вы",
+            (Person::Second, Number::Singular, _) => "ты",
+            (Person::Second, Number::Plural, _) => "вы",
+            (Person::Third, Number::Singular, _) => "он",
+            (Person::Third, Number::Plural, _) => "они",
             _ => return None,
         };
 

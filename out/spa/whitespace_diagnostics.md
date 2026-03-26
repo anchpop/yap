@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2541576
-Total errors: 835
+Total predictions: 2591146
+Total errors: 864
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "ver" + "te" (163 occurrences)
+### "ver" + "te" (165 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -14,7 +14,7 @@ Accuracy: 99.97%
   - Alguien llamado Tom quiere verte.
   - Alguien quiere verte.
 
-### "," + "¿" (21 occurrences)
+### "," + "¿" (22 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -29,6 +29,14 @@ Accuracy: 99.97%
   - Así Ezequiel puede conseguir más crack, ¿ verdad, tío?
   - Bromeas, ¿ verdad, papá?
   - Claro que sí, ¿ verdad?
+
+### "-" + "¡" (13 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Decía - ¡Basta ya!
+  - EDIFICIO DEL SERVICIO DE IMPUESTOS INTERNOS - ¡Rápido, rápido!
+  - EL CAIRO - ¡Sí, entrenador, sí!
 
 ### "…" + "-" (12 occurrences)
 - Predicted: None
@@ -62,14 +70,6 @@ Accuracy: 99.97%
   - Le dije, 'Has buscado abajo del respaldo del sofá?'
   - Le he dado el nombre de Génesis, 'Nacimiento'.
 
-### "-" + "¡" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Decía - ¡Basta ya!
-  - EDIFICIO DEL SERVICIO DE IMPUESTOS INTERNOS - ¡Rápido, rápido!
-  - EL CAIRO - ¡Sí, entrenador, sí!
-
 ### "'" + "y" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86,6 +86,14 @@ Accuracy: 99.97%
   - Ella se volvió loca conmigo por haberme salido del camino.
   - Esta mañana, partí hacia la escuela sin haberme lavado la cara.
 
+### "¿" + "qué" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Además, ¿ qué tenía yo que ver con eso?
+  - Cleopatra, por ejemplo, ¿ qué sabe de ella?
+  - Disculpa, pero ¿ qué quieres decir con esto?
+
 ### "," + "no" (6 occurrences)
 - Predicted: Space
 - Actual: None
@@ -101,14 +109,6 @@ Accuracy: 99.97%
   - Es la vajilla del camafeo, ¿ no es cierto?
   - Esos relieves están pintados, ¿ no?
   - Hermoso, ¿ no?
-
-### "¿" + "qué" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Además, ¿ qué tenía yo que ver con eso?
-  - Cleopatra, por ejemplo, ¿ qué sabe de ella?
-  - Disculpa, pero ¿ qué quieres decir con esto?
 
 ### "," + "gracias" (5 occurrences)
 - Predicted: Space
@@ -157,6 +157,14 @@ Accuracy: 99.97%
   - Piérdete!
   - Piérdete, Dursley, bobo majadero.
   - Piérdete, ¿sí?
+
+### "haber" + "te" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - No haberte metido en el mercadillo conmigo.
+  - Podrías haberte bajado con el paraguas.
+  - Podrías haberte despedido de él.
 
 ### "¿" + "cómo" (4 occurrences)
 - Predicted: None
@@ -245,14 +253,6 @@ Accuracy: 99.97%
   - Oye, Gregory Peck, ¿Porqué no me metéis en el ajo de una vez?
   - Si la homenajeada se aburre, ¿Porqué no lo hace ella?
   - Vivo en este barrio, ¿Porqué no nos visitas cualquier tarde?
-
-### "haber" + "te" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Podrías haberte bajado con el paraguas.
-  - Podrías haberte despedido de él.
-  - Podrías haberte negado al juego.
 
 ### "hola" + "'" (3 occurrences)
 - Predicted: Space
@@ -508,6 +508,13 @@ Accuracy: 99.97%
 - Examples:
   - Aún crees que soy tu criado, ¿ eh?
   - No me recuerdas, ¿ eh?
+
+### "¿" + "ha" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Disculpe, señora mía, ¿ ha perdido a su guía?
+  - Querida amiga, ¿ ha cometido él una atrocidad, cierto?
 
 ### "¿" + "quieres" (2 occurrences)
 - Predicted: None
@@ -1088,6 +1095,12 @@ Accuracy: 99.97%
 - Examples:
   - Sólo-- Oye, ve más despacio.
 
+### "-" + "Quién" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Les diré todo - Quién eres, de dónde vienes.
+
 ### "-" + "Te" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1214,6 +1227,12 @@ Accuracy: 99.97%
 - Examples:
   - Se han vuelto locos - no les importa nada más que el asesino.
 
+### "-" + "oculta" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La película ha sido filmada con una cámara medio - oculta.
+
 ### "-" + "pescar" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1279,6 +1298,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Viernes negro para el asado - va en picado.
+
+### "-" + "volver" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Y luego - volver.
 
 ### "-" + "we" (1 occurrences)
 - Predicted: None
@@ -1604,6 +1629,12 @@ Accuracy: 99.97%
 - Examples:
   - Como Store Kitchen .
 
+### "Kozlodóyev" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Descuídate, Kozlodóyev .
+
 ### "Maddalena" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1735,6 +1766,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Sí -Sí.
+
+### "TARDE" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - UN AÑO MÁS TARDE - ¡Dios!
 
 ### "TYRELL" + "-" (1 occurrences)
 - Predicted: None
@@ -2053,6 +2090,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Por si 'mirar' se vuelve 'comprar'.
+
+### "conocer" + "te" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - La madre del ruso quiere conocerte.
 
 ### "consumiste" + "?" (1 occurrences)
 - Predicted: None
@@ -2426,6 +2469,12 @@ Accuracy: 99.97%
 - Examples:
   - Me encantan losjudíos.
 
+### "luego" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Y luego - volver.
+
 ### "lugar" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2455,6 +2504,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Ahora sólo usa la palabra 'maricón' durante el sexo.
+
+### "medio" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La película ha sido filmada con una cámara medio - oculta.
 
 ### "mejor" + "'" (1 occurrences)
 - Predicted: Space
@@ -2708,6 +2763,12 @@ Accuracy: 99.97%
 - Examples:
   - Las mujeres son como un pétalo de una rosa - suaves y hermosas.
 
+### "rápido" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Epa, rápido - ¡Vete hasta el ascensor!
+
 ### "sale" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2822,6 +2883,12 @@ Accuracy: 99.97%
 - Examples:
   - Ordeñadores de chivas, tienta - gallinas, cazadores de pulgas!
 
+### "todo" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Les diré todo - Quién eres, de dónde vienes.
+
 ### "todos" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2839,6 +2906,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Eres una 'turista'.
+
+### "usted" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Le agradezco, de mano y corazón, que usted - ¡quien no lo adivina!
 
 ### "va" + "'" (1 occurrences)
 - Predicted: Space
@@ -2900,6 +2973,12 @@ Accuracy: 99.97%
 - Examples:
   - Rosa, mira, visitas .
 
+### "volveré" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Voy a darle un tiempo y volveré - ¡¿Usted qué?
+
 ### "yo" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2912,11 +2991,23 @@ Accuracy: 99.97%
 - Examples:
   - Me gusta hacer las cosas como las hago yo .
 
+### "¿" + "A" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bueno ¿ A dónde la llevo?
+
 ### "¿" + "Giulia" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Por cierto, ¿ Giulia le mencionó mi idea?
+
+### "¿" + "Partimos" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bueno, ¿ Partimos, sí?
 
 ### "¿" + "Y" (1 occurrences)
 - Predicted: None
@@ -2942,17 +3033,35 @@ Accuracy: 99.97%
 - Examples:
   - Pero antes, ¿ desearíais hacerme alguna pregunta a mí?
 
-### "¿" + "ha" (1 occurrences)
+### "¿" + "le" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Disculpe, señora mía, ¿ ha perdido a su guía?
+  - O sea, ¿ le diste una llave?
+
+### "¿" + "monté" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O sea que, ¿ monté en el avión en lugar de Pablito?
+
+### "¿" + "por" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Explíqueme, ¿ por qué su novia vendrá a buscarlo en mí casa?
 
 ### "¿" + "ve" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Manganiello, ¿ ve a ese individuo?
+
+### "¿" + "ves" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Abel, ¿ ves esas ventanas iluminadas, al otro lado del cementerio?
 
 ### "¿" + "y" (1 occurrences)
 - Predicted: None

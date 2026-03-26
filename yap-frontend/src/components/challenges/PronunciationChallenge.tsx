@@ -6,8 +6,10 @@ import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useEffect } from "react";
+import { useState } from "react";
 import { AudioButton } from "../AudioButton";
 import { CantSpeakButton } from "../CantSpeakButton";
+import { AudioErrorBanner } from "../AudioErrorBanner";
 import { useBackground } from "../BackgroundShader";
 import { PlayfulArrow } from "../PlayfulArrow";
 import { match } from "ts-pattern";
@@ -39,6 +41,7 @@ export function PronunciationChallenge({
   timesTypeSeen,
 }: PronunciationChallengeProps) {
   const { bumpBackground } = useBackground();
+  const [audioError, setAudioError] = useState(false);
 
   const showGuide = timesTypeSeen < 2;
 
@@ -202,6 +205,8 @@ export function PronunciationChallenge({
                               }}
                               accessToken={accessToken}
                               autoPlay={false}
+                              onError={() => setAudioError(true)}
+                              onSuccess={() => setAudioError(false)}
                             />
                           </div>
                         );
@@ -233,6 +238,9 @@ export function PronunciationChallenge({
         )}
 
         <div className="mt-4 flex flex-col gap-2">
+          {audioError && (
+            <AudioErrorBanner onSkip={onCantSpeak} />
+          )}
           <CantSpeakButton onClick={onCantSpeak} />
           <div className="grid grid-cols-2">
             <Button
