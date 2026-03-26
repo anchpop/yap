@@ -293,10 +293,11 @@ async function checkBrowserSupport(
     const opfsTestPassed = localStorage.getItem("opfs-test-passed");
 
     // Quick JS-level check before calling into WASM (avoids noisy TypeErrors
-    // on browsers that lack OPFS entirely)
+    // on browsers that lack OPFS entirely or don't support createWritable)
     if (
       !navigator.storage ||
-      typeof navigator.storage.getDirectory !== "function"
+      typeof navigator.storage.getDirectory !== "function" ||
+      typeof FileSystemFileHandle?.prototype?.createWritable !== "function"
     ) {
       setBrowserSupported(false);
       return;
