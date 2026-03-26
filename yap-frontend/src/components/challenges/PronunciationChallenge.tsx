@@ -1,6 +1,8 @@
 import {
+  type AudioRequest,
   type Language,
   type Rating,
+  get_pronunciation_connector,
 } from "../../../../yap-frontend-rs/pkg";
 import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
@@ -14,6 +16,7 @@ import { useBackground } from "../BackgroundShader";
 import { PlayfulArrow } from "../PlayfulArrow";
 import { match } from "ts-pattern";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { TargetLanguageText } from "../TargetLanguageText";
 
 interface PronunciationChallengeProps {
   pattern: string;
@@ -22,6 +25,7 @@ interface PronunciationChallengeProps {
     description?: string;
     example_words?: { target: string; cultural_context?: string }[];
   };
+  audioRequests: AudioRequest[];
   onRating: (rating: Rating) => void;
   accessToken: string | undefined;
   onCantSpeak: () => void;
@@ -33,6 +37,7 @@ interface PronunciationChallengeProps {
 export function PronunciationChallenge({
   pattern,
   guide,
+  audioRequests,
   onRating,
   accessToken,
   onCantSpeak,
@@ -48,18 +53,7 @@ export function PronunciationChallenge({
   const leftLabel = isNew ? "Didn't know" : "Forgot";
   const rightLabel = isNew ? "Already knew" : "Remembered";
 
-  const connector = match(targetLanguage)
-    .with("French", () => "comme dans")
-    .with("Spanish", () => "como en")
-    .with("Korean", () => "처럼")
-    .with("English", () => "as in")
-    .with("German", () => "wie in")
-    .with("Chinese", () => "如")
-    .with("Japanese", () => "のように")
-    .with("Russian", () => "как в")
-    .with("Portuguese", () => "como em")
-    .with("Italian", () => "come in")
-    .exhaustive();
+  const connector = get_pronunciation_connector(targetLanguage);
 
   const rate = (rating: Rating) => {
     bumpBackground(30.0);
@@ -96,7 +90,7 @@ export function PronunciationChallenge({
         {showGuide && (
           <div className="text-center mt-4 text-2xl font-semibold text-muted-foreground animate-fade-in flex flex-row justify-center items-start gap-1">
             <PlayfulArrow direction="down" flipStart size={70} />
-            <div>Let's practice saying "{pattern}"</div>
+            <div>Let's practice saying "<TargetLanguageText language={targetLanguage}>{pattern}</TargetLanguageText>"</div>
             <PlayfulArrow direction="down" size={70} />
           </div>
         )}
@@ -105,11 +99,13 @@ export function PronunciationChallenge({
           <div className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
               <div className="text-center text-3xl font-bold">
-                {match(guide.position)
-                  .with("Beginning", () => `${pattern}___`)
-                  .with("End", () => `___${pattern}`)
-                  .with("Anywhere", () => pattern)
-                  .exhaustive()}
+                <TargetLanguageText language={targetLanguage}>
+                  {match(guide.position)
+                    .with("Beginning", () => `${pattern}___`)
+                    .with("End", () => `___${pattern}`)
+                    .with("Anywhere", () => pattern)
+                    .exhaustive()}
+                </TargetLanguageText>
               </div>
               {guide.position !== "Anywhere" && (
                 <span className="text-xs text-muted-foreground/80">
@@ -180,12 +176,12 @@ export function PronunciationChallenge({
                           >
                             <div className="flex-1">
                               <div className="text-base">
-                                <span className="font-medium">{pattern}</span>
+                                <span className="font-medium"><TargetLanguageText language={targetLanguage}>{pattern}</TargetLanguageText></span>
                                 <span className="text-muted-foreground mx-2">
                                   {connector}
                                 </span>
                                 <span className="font-semibold">
-                                  {highlightedWord}
+                                  <TargetLanguageText language={targetLanguage}>{highlightedWord}</TargetLanguageText>
                                 </span>
                               </div>
                               {example.cultural_context && (
@@ -194,20 +190,15 @@ export function PronunciationChallenge({
                                 </div>
                               )}
                             </div>
-                            <AudioButton
-                              audioRequest={{
-                                request: {
-                                  text: `<speak><break time="100ms"/><say-as interpret-as="characters">${pattern}</say-as><break time="100ms"/>${connector}<break time="200ms"/>${example.target}</speak>`,
-                                  language: targetLanguage,
-                                  is_ssml: true,
-                                },
-                                provider: "Google",
-                              }}
-                              accessToken={accessToken}
-                              autoPlay={false}
-                              onError={() => setAudioError(true)}
-                              onSuccess={() => setAudioError(false)}
-                            />
+                            {audioRequests[index] && (
+                              <AudioButton
+                                audioRequest={audioRequests[index]}
+                                accessToken={accessToken}
+                                autoPlay={false}
+                                onError={() => setAudioError(true)}
+                                onSuccess={() => setAudioError(false)}
+                              />
+                            )}
                           </div>
                         );
                       }

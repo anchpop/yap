@@ -46,6 +46,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MoviePosterCard } from "./MoviePosterCard";
 import { InlineTextarea } from "../ui/textarea";
 import { ProperNounDefinitions } from "./TranslationChallenge";
+import { TargetLanguageText } from "../TargetLanguageText";
 
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence;
@@ -400,7 +401,7 @@ export function TranscriptionChallenge({
       } else {
         return (
           <span key={index}>
-            {item.part.word.text}
+            <TargetLanguageText language={targetLanguage}>{item.part.word.text}</TargetLanguageText>
             {item.part.whitespace}
           </span>
         );
@@ -499,6 +500,7 @@ export function TranscriptionChallenge({
             {gradingState === null && (
               <ProperNounDefinitions
                 definitions={challenge.proper_noun_definitions}
+                targetLanguage={targetLanguage}
               />
             )}
 
@@ -511,7 +513,7 @@ export function TranscriptionChallenge({
                     Correct answer:
                   </p>
                   <p className="text-lg font-medium">
-                    {challenge.target_language}
+                    <TargetLanguageText language={targetLanguage}>{challenge.target_language}</TargetLanguageText>
                   </p>
                 </div>
 
@@ -538,6 +540,7 @@ export function TranscriptionChallenge({
                         "autograding_error" in gradingState.graded &&
                         gradingState.graded.autograding_error !== undefined
                       }
+                      targetLanguage={targetLanguage}
                     />
 
                     <FeedbackDisplay
@@ -557,7 +560,7 @@ export function TranscriptionChallenge({
                                   key={idx}
                                   className="flex items-center gap-1"
                                 >
-                                  <span className="font-medium">{item}</span>
+                                  <span className="font-medium"><TargetLanguageText language={targetLanguage}>{item}</TargetLanguageText></span>
                                   <AudioButton
                                     audioRequest={{
                                       request: {
@@ -697,12 +700,14 @@ interface WordGradesProps {
   wordGrades: PartGraded[];
   setGrade: (results: PartGraded[]) => void;
   open_by_default: boolean;
+  targetLanguage: Language;
 }
 
 function WordGrades({
   wordGrades,
   setGrade,
   open_by_default,
+  targetLanguage,
 }: WordGradesProps) {
   const [isOpen, setIsOpen] = useState(open_by_default);
 
@@ -778,7 +783,7 @@ function WordGrades({
                       >
                         <div className="flex-1">
                           <span className="font-medium">
-                            {wordPart.heard.word.text}
+                            <TargetLanguageText language={targetLanguage}>{wordPart.heard.word.text}</TargetLanguageText>
                           </span>
                         </div>
                         <Select

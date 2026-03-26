@@ -38,6 +38,7 @@ import { useBackground } from "./BackgroundShader";
 import { PlayfulArrow } from "./PlayfulArrow";
 import { cn } from "@/lib/utils";
 import { highlightTermInSentence } from "@/utils/highlightTermInSentence";
+import { TargetLanguageText } from "./TargetLanguageText";
 
 // GramDefinition is missing from the .d.ts due to a type generator bug
 type GramDefinition =
@@ -78,7 +79,7 @@ const CardFront = ({
       const prefix = listeningPrefix || "Le mot est";
       return (
         <h2 className="text-3xl font-semibold flex items-center gap-3 flex-wrap justify-center text-center">
-          <span>{prefix} _____. </span>
+          <span><TargetLanguageText language={targetLanguage}>{prefix}</TargetLanguageText> _____. </span>
         </h2>
       );
     })
@@ -103,17 +104,19 @@ const CardFront = ({
             : undefined;
         return (
           <h2 className="text-3xl font-semibold">
-            {wordPrefix && (
-              <span className="text-muted-foreground/60">
-                {wordPrefix.prefix}
-                {wordPrefix.separator}
-              </span>
-            )}
-            {text}
+            <TargetLanguageText language={targetLanguage}>
+              {wordPrefix && (
+                <span className="text-muted-foreground/60">
+                  {wordPrefix.prefix}
+                  {wordPrefix.separator}
+                </span>
+              )}
+              {text}
+            </TargetLanguageText>
           </h2>
         );
       } else {
-        return <h2 className="text-3xl font-semibold">{text}</h2>;
+        return <h2 className="text-3xl font-semibold"><TargetLanguageText language={targetLanguage}>{text}</TargetLanguageText></h2>;
       }
     })
     .exhaustive();
@@ -177,7 +180,7 @@ const CardBack = ({
       if (possibleGrams.length === 1) {
         return (
           <div className="text-3xl font-medium">
-            {gramDisplayText(possibleGrams[0][1])}
+            <TargetLanguageText language={targetLanguage}>{gramDisplayText(possibleGrams[0][1])}</TargetLanguageText>
           </div>
         );
       }
@@ -197,7 +200,7 @@ const CardBack = ({
                     : "bg-muted/30 border border-muted/20"
                 }`}
               >
-                <span className="text-lg">{gramDisplayText(gram)}</span>
+                <span className="text-lg"><TargetLanguageText language={targetLanguage}>{gramDisplayText(gram)}</TargetLanguageText></span>
                 {isKnown && (
                   <span className="text-sm text-green-600 ml-2">(known)</span>
                 )}
@@ -253,7 +256,7 @@ const CardBack = ({
                       </div>
                       <div>
                         <p className="text-muted-foreground italic flex-1">
-                          "{highlightTermInSentence(def.example_sentence_target_language, term)}"
+                          <TargetLanguageText language={targetLanguage}>"{highlightTermInSentence(def.example_sentence_target_language, term)}"</TargetLanguageText>
                         </p>
                         <p className="text-muted-foreground">
                           "{def.example_sentence_native_language}"
@@ -279,7 +282,7 @@ const CardBack = ({
                 <div className="flex items-start gap-2">
                   <div>
                     <p className="text-muted-foreground italic">
-                      "{highlightTermInSentence(pb.target_language_example, term)}"
+                      <TargetLanguageText language={targetLanguage}>"{highlightTermInSentence(pb.target_language_example, term)}"</TargetLanguageText>
                     </p>
                     <p className="text-muted-foreground">
                       "{pb.native_language_example}"
@@ -347,8 +350,8 @@ export const Flashcard = function Flashcard({
   const showTutorial = timesTypeSeen < 2;
 
   const tutorialText = match(content)
-    .with({ type: "Gram" }, (c) => `Guess what "${gramDisplayText(c.gram)}" means…`)
-    .with({ type: "Listening" }, () => `Guess what ${targetLanguage} word is missing`)
+    .with({ type: "Gram" }, (c) => <>Guess what "<TargetLanguageText language={targetLanguage}>{gramDisplayText(c.gram)}</TargetLanguageText>" means…</>)
+    .with({ type: "Listening" }, () => <>Guess what {targetLanguage} word is missing</>)
     .exhaustive();
 
   const showAnswerText = match(content)

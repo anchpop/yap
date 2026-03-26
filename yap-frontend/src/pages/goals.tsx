@@ -43,7 +43,6 @@ export function GoalsPage() {
         const setGoalAndNavigate = (g: Goal) => {
           const event = deck.set_goal(goalToGoalSelection(g));
           weapon.add_deck_event(event);
-          window.scrollTo(0, 0);
           navigate("/learn");
         };
         const targetLanguageIso = languageToIso6391(targetLanguage);

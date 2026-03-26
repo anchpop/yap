@@ -60,6 +60,7 @@ import { useBackground } from "../BackgroundShader";
 import { MoviePosterCard } from "./MoviePosterCard";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
+import { TargetLanguageText } from "../TargetLanguageText";
 
 interface SentenceChallengeProps {
   sentence: TranslateComprehensibleSentence;
@@ -90,6 +91,7 @@ interface ChallengeSentenceProps {
   tappedWords: Set<number>;
   literalGramIndices: number[];
   tappedGramGroups: Set<number>;
+  targetLanguage: Language;
 }
 
 type GradeItem =
@@ -100,6 +102,7 @@ interface SwipeablePhraseProps {
   item: GradeItem;
   onSwipe: (item: GradeItem, remembered: boolean) => void;
   isSelected?: boolean;
+  targetLanguage: Language;
 }
 
 export interface SwipeableWordHandle {
@@ -107,7 +110,7 @@ export interface SwipeableWordHandle {
 }
 
 const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
-  ({ item, onSwipe, isSelected = false }, ref) => {
+  ({ item, onSwipe, isSelected = false, targetLanguage }, ref) => {
     const status = item.status;
     const x = useMotionValue(0);
     const controls = animationControls();
@@ -206,7 +209,7 @@ const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
               isSelected ? "ring-2 ring-primary" : ""
             }`}
           >
-            <p className="text-lg font-medium text-center">{item.display}</p>
+            <p className="text-lg font-medium text-center"><TargetLanguageText language={targetLanguage}>{item.display}</TargetLanguageText></p>
           </motion.div>
         </div>
 
@@ -278,6 +281,7 @@ interface PhraseStatusesProps {
   phraseRefs: React.RefObject<Map<number, SwipeableWordHandle>>;
   handleGradeSwipe: (item: GradeItem, remembered: boolean) => void;
   openByDefault: boolean;
+  targetLanguage: Language;
 }
 
 function PhraseStatuses({
@@ -287,6 +291,7 @@ function PhraseStatuses({
   phraseRefs,
   handleGradeSwipe,
   openByDefault,
+  targetLanguage,
 }: PhraseStatusesProps) {
   const [isAnswerOpen, setIsAnswerOpen] = useState(openByDefault);
 
@@ -336,6 +341,7 @@ function PhraseStatuses({
                 item={item}
                 onSwipe={handleGradeSwipe}
                 isSelected={selectedPhraseIndex === index}
+                targetLanguage={targetLanguage}
               />
             </div>
           ))}
@@ -349,17 +355,19 @@ function ProperNounDefinitionCard({
   words,
   type_singular,
   type_plural,
+  targetLanguage,
 }: {
   words: string[];
   type_singular: string;
   type_plural: string;
+  targetLanguage: Language;
 }) {
   return (
     <div className="p-3 border border-card/50 bg-card/30 rounded-md">
       <span className="font-semibold">
         {words.map((word, index) => (
           <span key={word}>
-            {word}
+            <TargetLanguageText language={targetLanguage}>{word}</TargetLanguageText>
             <span className="text-muted-foreground">
               {index < words.length - 1
                 ? index === words.length - 2
@@ -379,8 +387,10 @@ function ProperNounDefinitionCard({
 
 export function ProperNounDefinitions({
   definitions,
+  targetLanguage,
 }: {
   definitions: [string, ProperNounDefinition][];
+  targetLanguage: Language;
 }) {
   if (!definitions || definitions.length === 0) {
     return null;
@@ -424,6 +434,7 @@ export function ProperNounDefinitions({
           words={personNames}
           type_singular="person"
           type_plural="people"
+          targetLanguage={targetLanguage}
         />
       )}
       {placeNames.length > 0 && (
@@ -431,6 +442,7 @@ export function ProperNounDefinitions({
           words={placeNames}
           type_singular="place"
           type_plural="places"
+          targetLanguage={targetLanguage}
         />
       )}
       {organizationNames.length > 0 && (
@@ -438,6 +450,7 @@ export function ProperNounDefinitions({
           words={organizationNames}
           type_singular="organization"
           type_plural="organizations"
+          targetLanguage={targetLanguage}
         />
       )}
       {transliterationAndDescription.map(
@@ -447,6 +460,7 @@ export function ProperNounDefinitions({
             words={[noun]}
             type_singular={`${transliteration} (${description})`}
             type_plural=""
+            targetLanguage={targetLanguage}
           />
         )
       )}
@@ -456,6 +470,7 @@ export function ProperNounDefinitions({
           words={[noun]}
           type_singular={transliteration}
           type_plural=""
+          targetLanguage={targetLanguage}
         />
       ))}
       {descriptionOnly.map(([noun, description]) => (
@@ -464,6 +479,7 @@ export function ProperNounDefinitions({
           words={[noun]}
           type_singular={description}
           type_plural=""
+          targetLanguage={targetLanguage}
         />
       ))}
     </div>
@@ -472,14 +488,16 @@ export function ProperNounDefinitions({
 
 function GramDefinitionDisplay({
   definition,
+  targetLanguage,
 }: {
   definition: GramDefinition;
+  targetLanguage: Language;
 }) {
   if ("Dictionary" in definition) {
     const dict = definition.Dictionary;
     return (
       <div className="p-3 border border-card/50 bg-card/30 rounded-md space-y-2">
-        <p className="text-sm font-semibold">{dict.target_language_word}:</p>
+        <p className="text-sm font-semibold"><TargetLanguageText language={targetLanguage}>{dict.target_language_word}</TargetLanguageText>:</p>
         {dict.definitions.map((def: TargetToNativeWord, i: number) => (
           <div key={i}>
             <p className="text-sm">
@@ -490,7 +508,7 @@ function GramDefinitionDisplay({
             </p>
             {def.example_sentence_target_language && (
               <div className="text-xs text-muted-foreground mt-1">
-                <p className="italic">"{def.example_sentence_target_language}"</p>
+                <p className="italic"><TargetLanguageText language={targetLanguage}>"{def.example_sentence_target_language}"</TargetLanguageText></p>
                 <p>"{def.example_sentence_native_language}"</p>
               </div>
             )}
@@ -503,12 +521,12 @@ function GramDefinitionDisplay({
     return (
       <div className="p-3 border border-card/50 bg-card/30 rounded-md">
         <p className="text-sm font-semibold">
-          {pb.target_language_multi_word_term}:
+          <TargetLanguageText language={targetLanguage}>{pb.target_language_multi_word_term}</TargetLanguageText>:
         </p>
         <p className="text-sm">{pb.meaning}</p>
         {pb.target_language_example && (
           <div className="text-xs text-muted-foreground mt-1">
-            <p className="italic">"{pb.target_language_example}"</p>
+            <p className="italic"><TargetLanguageText language={targetLanguage}>"{pb.target_language_example}"</TargetLanguageText></p>
             <p>"{pb.native_language_example}"</p>
           </div>
         )}
@@ -525,6 +543,7 @@ function ChallengeSentence({
   tappedWords,
   literalGramIndices,
   tappedGramGroups,
+  targetLanguage,
 }: ChallengeSentenceProps) {
   const getLiteralColorClass = (literal: Literal<string>, i: number) => {
     if (isPerfect) {
@@ -578,7 +597,7 @@ function ChallengeSentence({
                 }
               }}
             >
-              {literal.word.text}
+              <TargetLanguageText language={targetLanguage}>{literal.word.text}</TargetLanguageText>
             </span>
             {literal.whitespace}
           </span>
@@ -1051,6 +1070,7 @@ export function TranslationChallenge({
                     tappedWords={tappedWords}
                     literalGramIndices={literalGramIndices}
                     tappedGramGroups={tappedGramGroups}
+                    targetLanguage={targetLanguage}
                   />
                 </div>
 
@@ -1082,6 +1102,7 @@ export function TranslationChallenge({
 
                 <ProperNounDefinitions
                   definitions={sentence.proper_noun_definitions}
+                  targetLanguage={targetLanguage}
                 />
               </>
             ) : (
@@ -1131,6 +1152,7 @@ export function TranslationChallenge({
                         "autogradingError" in grade.graded &&
                         grade.graded.autogradingError !== undefined
                       }
+                      targetLanguage={targetLanguage}
                     />
                   </>
                 )}
@@ -1140,7 +1162,7 @@ export function TranslationChallenge({
           {tappedDefinitions.length > 0 && (
             <div className="space-y-2">
               {tappedDefinitions.map((def, i) => (
-                <GramDefinitionDisplay key={i} definition={def} />
+                <GramDefinitionDisplay key={i} definition={def} targetLanguage={targetLanguage} />
               ))}
             </div>
           )}

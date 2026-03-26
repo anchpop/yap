@@ -2,26 +2,27 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
-import type { Deck, PlacementTestWord } from "../../../yap-frontend-rs/pkg";
+import type { Deck, Language, PlacementTestWord } from "../../../yap-frontend-rs/pkg";
 import { Progress } from "@/components/ui/progress";
+import { TargetLanguageText } from "./TargetLanguageText";
 
 const NUM_ROUNDS = 3;
 
 interface PlacementTestProps {
   deck: Deck;
+  targetLanguage: Language;
   onComplete: (results: {
     knownWords: string[];
     unknownWords: string[];
   }) => void;
 }
 
-export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
+export function PlacementTest({ deck, targetLanguage, onComplete }: PlacementTestProps) {
   const [round, setRound] = useState(1);
   const [words, setWords] = useState<PlacementTestWord[]>([]);
   const [selectedWords, setSelectedWords] = useState<Set<string>>(new Set());
   const [knownWords, setKnownWords] = useState<string[]>([]);
   const [unknownWords, setUnknownWords] = useState<string[]>([]);
-  const [revealedWords, setRevealedWords] = useState<Set<string>>(new Set());
 
   // Load words for the current round
   useEffect(() => {
@@ -33,7 +34,6 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
       } else {
         setWords(placementWords);
         setSelectedWords(new Set());
-        setRevealedWords(new Set());
       }
     }
   }, [round, deck, knownWords, unknownWords]);
@@ -46,14 +46,6 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
       } else {
         next.add(word);
       }
-      return next;
-    });
-  };
-
-  const revealWord = (word: string) => {
-    setRevealedWords((prev) => {
-      const next = new Set(prev);
-      next.add(word);
       return next;
     });
   };
@@ -81,7 +73,6 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
       setKnownWords([]);
       setUnknownWords([]);
       setSelectedWords(new Set());
-      setRevealedWords(new Set());
     }
   };
 
@@ -150,32 +141,26 @@ export function PlacementTest({ deck, onComplete }: PlacementTestProps) {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
               {words.map((pw) => {
-                const revealed = revealedWords.has(pw.word);
+                const isSelected = selectedWords.has(pw.word);
                 return (
                   <button
                     key={pw.word}
-                    onClick={() => {
-                      if (revealed) {
-                        toggleWord(pw.word);
-                      } else {
-                        revealWord(pw.word);
-                      }
-                    }}
+                    onClick={() => toggleWord(pw.word)}
                     className={`
                   p-4 rounded-lg border-2 transition-all
                   ${
-                    selectedWords.has(pw.word)
+                    isSelected
                       ? "border-primary bg-primary/10 scale-95"
                       : "border-border hover:border-primary/50 hover:bg-accent"
                   }
                 `}
                   >
-                    {revealed ? (
-                      <span className="text-sm text-muted-foreground truncate block">
+                    {isSelected ? (
+                      <span key="def" className="text-lg text-muted-foreground truncate block placement-reveal">
                         {pw.definition}
                       </span>
                     ) : (
-                      <span className="text-lg font-medium">{pw.word}</span>
+                      <span key="word" className="text-lg font-medium"><TargetLanguageText language={targetLanguage}>{pw.word}</TargetLanguageText></span>
                     )}
                   </button>
                 );

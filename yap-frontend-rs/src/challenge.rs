@@ -536,12 +536,31 @@ impl ReviewInfo {
             );
         };
 
+        let target_language = deck.context.course.target_language;
+        let connector = target_language.pronunciation_connector();
+        let audio_requests = guide
+            .example_words
+            .iter()
+            .map(|example| AudioRequest {
+                request: TtsRequest {
+                    text: format!(
+                        "<speak><break time=\"100ms\"/><say-as interpret-as=\"characters\">{}</say-as><break time=\"100ms\"/>{}<break time=\"200ms\"/>{}</speak>",
+                        pattern_str, connector, example.target
+                    ),
+                    language: target_language,
+                    is_ssml: true,
+                },
+                provider: TtsProvider::Google,
+            })
+            .collect();
+
         Challenge::PronunciationChallenge {
             indicator: ctx
                 .indicator
                 .resolve(&language_pack.string_rodeo, &language_pack.gram_rodeo),
             pattern: pattern_str,
             guide,
+            audio_requests,
             is_new: ctx.is_new,
             times_type_seen: ctx.times_type_seen,
         }

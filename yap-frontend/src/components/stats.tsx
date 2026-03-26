@@ -1,7 +1,8 @@
 import { useState, lazy, Suspense, useDeferredValue, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import TimeAgo from "react-timeago";
-import type { Deck } from "../../../yap-frontend-rs/pkg";
+import type { Deck, Language } from "../../../yap-frontend-rs/pkg";
+import { TargetLanguageText } from "./TargetLanguageText";
 import {
   Collapsible,
   CollapsibleContent,
@@ -21,9 +22,10 @@ const FrequencyKnowledgeChart = lazy(() =>
 
 interface StatsProps {
   deck: Deck;
+  targetLanguage: Language;
 }
 
-export function Stats({ deck: deckProp }: StatsProps) {
+export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
   const deck = useDeferredValue(deckProp);
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
 
@@ -120,7 +122,7 @@ export function Stats({ deck: deckProp }: StatsProps) {
 
                 const wordCellContent = isListeningGram ? (
                   isListeningCardRevealed ? (
-                    shortDescription
+                    <TargetLanguageText language={targetLanguage}>{shortDescription}</TargetLanguageText>
                   ) : (
                     <button
                       type="button"
@@ -132,7 +134,7 @@ export function Stats({ deck: deckProp }: StatsProps) {
                       aria-label="Reveal listening lexeme"
                     >
                       <span className="select-none blur-sm">
-                        {shortDescription}
+                        <TargetLanguageText language={targetLanguage}>{shortDescription}</TargetLanguageText>
                       </span>
                       <span className="text-xs italic text-muted-foreground">
                         Tap to reveal
@@ -140,7 +142,7 @@ export function Stats({ deck: deckProp }: StatsProps) {
                     </button>
                   )
                 ) : (
-                  shortDescription
+                  <TargetLanguageText language={targetLanguage}>{shortDescription}</TargetLanguageText>
                 );
                 return (
                   <tr

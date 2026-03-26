@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react'
 import { useState, useEffect, Profiler, useSyncExternalStore, useMemo, useCallback } from 'react'
 import { useZeno } from '@/hooks/useZeno'
-import { BrowserRouter, Routes, Route, Outlet, useNavigate, useOutletContext } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Outlet, useNavigate, useOutletContext, ScrollRestoration } from 'react-router-dom'
 import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Heteronym, type Language, type LiteralGrades, type Gram, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
 import { Button } from "@/components/ui/button.tsx"
 import { Progress } from "@/components/ui/progress.tsx"
@@ -397,7 +397,7 @@ function ReviewPage() {
               </TopPageLayout>
               <Tools deck={deck} />
               <Movies moviesWithMetadata={moviesWithMetadata} targetLanguageIso={languageToIso6391(targetLanguage)} />
-              <Stats deck={deck} />
+              <Stats deck={deck} targetLanguage={targetLanguage} />
             </>
             );
           })
@@ -460,20 +460,14 @@ function Tools({ deck: _deck }: { deck: Deck }) {
       <h2 className="text-2xl font-semibold animate-fade-in-delay-2">Tools</h2>
       <Card className="p-4 mt-3 space-y-2 gap-0" animate>
         <button
-          onClick={() => {
-            navigate('/dictionary');
-            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-          }}
+          onClick={() => navigate('/dictionary')}
           className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted transition-colors mb-0"
         >
           <span>📖 Dictionary</span>
           <span className="text-muted-foreground">→</span>
         </button>
         <button
-          onClick={() => {
-            navigate('/leeches');
-            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-          }}
+          onClick={() => navigate('/leeches')}
           className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted transition-colors"
         >
           <span>🩹 Leeches</span>
@@ -594,7 +588,7 @@ function LeechesPage() {
         backButton: { label: 'Leeches', onBack: () => navigate('/learn') }
       }}
     >
-      <Leeches deck={deck.deck} />
+      <Leeches deck={deck.deck} targetLanguage={deck.targetLanguage} />
     </TopPageLayout>
   )
 }
@@ -931,6 +925,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
         {shouldShowPlacementTest ? (
           <PlacementTest
             deck={deck}
+            targetLanguage={targetLanguage}
             onComplete={({ knownWords, unknownWords }) => {
               const event = deck.complete_placement_test(knownWords, unknownWords);
               weapon.add_deck_event(event);
@@ -965,6 +960,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
             <PronunciationChallenge
               pattern={currentChallenge.pattern}
               guide={currentChallenge.guide}
+              audioRequests={currentChallenge.audio_requests}
               onRating={handleRating}
               accessToken={accessToken}
               onCantSpeak={handleCantSpeak}
@@ -1026,33 +1022,47 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
   )
 }
 
-function App() {
+function AppShell() {
   return (
-    <BrowserRouter>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <BackgroundShader>
-          <Routes>
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/confirm-email" element={<ConfirmEmail />} />
-            <Route path="/accept-invite" element={<AcceptInvite />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/*" element={<AppMain />}>
-              <Route index element={<LandingPage />} />
-              <Route path="learn" element={<ReviewPage />} />
-              <Route path="dictionary" element={<DictionaryPage />} />
-              <Route path="leeches" element={<LeechesPage />} />
-              <Route path="goals" element={<GoalsPage />} />
-              <Route path="select-language" element={<SelectLanguagePage />} />
-              <Route path="user/id/:id" element={<UserProfilePage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
-          <Toaster />
-        </BackgroundShader>
-      </ThemeProvider>
-    </BrowserRouter>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <BackgroundShader>
+        <ScrollRestoration />
+        <Outlet />
+        <Toaster />
+      </BackgroundShader>
+    </ThemeProvider>
   )
+}
+
+const router = createBrowserRouter([
+  {
+    element: <AppShell />,
+    children: [
+      { path: "/reset-password", element: <ResetPassword /> },
+      { path: "/confirm-email", element: <ConfirmEmail /> },
+      { path: "/accept-invite", element: <AcceptInvite /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/about", element: <AboutPage /> },
+      {
+        path: "/*",
+        element: <AppMain />,
+        children: [
+          { index: true, element: <LandingPage /> },
+          { path: "learn", element: <ReviewPage /> },
+          { path: "dictionary", element: <DictionaryPage /> },
+          { path: "leeches", element: <LeechesPage /> },
+          { path: "goals", element: <GoalsPage /> },
+          { path: "select-language", element: <SelectLanguagePage /> },
+          { path: "user/id/:id", element: <UserProfilePage /> },
+          { path: "*", element: <NotFoundPage /> },
+        ],
+      },
+    ],
+  },
+])
+
+function App() {
+  return <RouterProvider router={router} />
 }
 
 function SelectLanguagePage() {

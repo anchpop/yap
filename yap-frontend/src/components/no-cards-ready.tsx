@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import { getPosterDataUrl } from "@/lib/poster-utils";
 import { goalToGoalSelection, type Goal } from "@/hooks/useGoal";
 import { useNavigate } from "react-router-dom";
+import { TargetLanguageText } from "./TargetLanguageText";
 
 export interface MovieWithMetadata {
   id: string;
@@ -290,7 +291,7 @@ export function NoCardsReady({
                 <>
                   You'll review{" "}
                   <span className="font-semibold">
-                    {nextTargetLanguageWord}
+                    <TargetLanguageText language={targetLanguage}>{nextTargetLanguageWord}</TargetLanguageText>
                   </span>{" "}
                   {nextDueCard ? (
                     <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />

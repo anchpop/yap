@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { formatMorphology } from '@/utils/formatMorphology'
 import { highlightTermInSentence } from '@/utils/highlightTermInSentence'
 import { Card } from '@/components/ui/card'
+import { TargetLanguageText } from './TargetLanguageText'
 
 const RESULTS_LIMIT = 100
 
@@ -123,12 +124,14 @@ export function Dictionary({ deck, weapon, targetLanguage, nativeLanguage }: { d
             <Card key={entry.frequency_index} className="p-4 relative gap-0">
               <div className="flex items-baseline justify-between gap-4 mb-2">
                 <h2 className="text-xl font-semibold">
-                  {entry.prefix && (
-                    <span className="text-muted-foreground/60">
-                      {entry.prefix.prefix}{entry.prefix.separator}
-                    </span>
-                  )}
-                  {entry.display_text}
+                  <TargetLanguageText language={targetLanguage}>
+                    {entry.prefix && (
+                      <span className="text-muted-foreground/60">
+                        {entry.prefix.prefix}{entry.prefix.separator}
+                      </span>
+                    )}
+                    {entry.display_text}
+                  </TargetLanguageText>
                   {entry.is_phrase && (
                     <span className="text-sm text-muted-foreground/60 font-normal ml-2">(phrase)</span>
                   )}
@@ -152,7 +155,7 @@ export function Dictionary({ deck, weapon, targetLanguage, nativeLanguage }: { d
                       )}
                       <div className="mt-2 text-sm space-y-1">
                         <div className="text-foreground">
-                          <span className="text-muted-foreground">{targetLangCode}:</span> {highlightTermInSentence(def.example_sentence_target_language, entry.display_text)}
+                          <span className="text-muted-foreground">{targetLangCode}:</span> <TargetLanguageText language={targetLanguage}>{highlightTermInSentence(def.example_sentence_target_language, entry.display_text)}</TargetLanguageText>
                         </div>
                         <div className="text-muted-foreground">
                           <span>{nativeLangCode}:</span> {def.example_sentence_native_language}
@@ -167,7 +170,7 @@ export function Dictionary({ deck, weapon, targetLanguage, nativeLanguage }: { d
                       <div className="mt-2 text-sm space-y-1">
                         {entry.definition.Phrasebook.target_language_example && (
                           <div className="text-foreground">
-                            <span className="text-muted-foreground">{targetLangCode}:</span> {highlightTermInSentence(entry.definition.Phrasebook.target_language_example, entry.display_text)}
+                            <span className="text-muted-foreground">{targetLangCode}:</span> <TargetLanguageText language={targetLanguage}>{highlightTermInSentence(entry.definition.Phrasebook.target_language_example, entry.display_text)}</TargetLanguageText>
                           </div>
                         )}
                         {entry.definition.Phrasebook.native_language_example && (

@@ -2093,9 +2093,8 @@ impl Deck {
                 };
                 challenges_fetched += 1;
 
-                // Pre-fetch the audio file
-                let request = challenge.audio_request();
-                if let Some(request) = request {
+                // Pre-fetch audio files
+                for request in challenge.audio_requests() {
                     let cache_filename =
                         audio::AudioCache::get_cache_filename(&request.request, &request.provider);
                     let _ = audio_cache.fetch_and_cache(&request, access_token).await;
@@ -3503,6 +3502,7 @@ pub enum Challenge<G> {
         indicator: CardIndicator<G, String>,
         pattern: String,
         guide: PronunciationGuide,
+        audio_requests: Vec<AudioRequest>,
         is_new: bool,
         times_type_seen: u32,
     },
@@ -3511,15 +3511,17 @@ pub enum Challenge<G> {
 }
 
 impl<G> Challenge<G> {
-    fn audio_request(&self) -> Option<AudioRequest> {
+    fn audio_requests(&self) -> Vec<AudioRequest> {
         match self {
-            Challenge::FlashCardReview { flashcard, .. } => flashcard.audio.clone(),
-            Challenge::PronunciationChallenge { .. } => None,
+            Challenge::FlashCardReview { flashcard, .. } => {
+                flashcard.audio.clone().into_iter().collect()
+            }
+            Challenge::PronunciationChallenge { audio_requests, .. } => audio_requests.clone(),
             Challenge::TranslateComprehensibleSentence(translate_comprehensible_sentence) => {
-                Some(translate_comprehensible_sentence.audio.clone())
+                vec![translate_comprehensible_sentence.audio.clone()]
             }
             Challenge::TranscribeComprehensibleSentence(transcribe_comprehensible_sentence) => {
-                Some(transcribe_comprehensible_sentence.audio.clone())
+                vec![transcribe_comprehensible_sentence.audio.clone()]
             }
         }
     }
@@ -3672,6 +3674,11 @@ pub fn get_word_prefix(
     language: Language,
 ) -> Option<WordPrefix> {
     morphology.get_prefix(word, pos, language)
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn get_pronunciation_connector(language: Language) -> String {
+    language.pronunciation_connector().to_string()
 }
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]

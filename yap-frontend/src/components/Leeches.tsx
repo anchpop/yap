@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { type Deck } from "../../../yap-frontend-rs/pkg";
+import { type Deck, type Language } from "../../../yap-frontend-rs/pkg";
 import { Badge } from "@/components/ui/badge";
+import { TargetLanguageText } from "./TargetLanguageText";
 import TimeAgo from "react-timeago";
 
-export function Leeches({ deck }: { deck: Deck }) {
+export function Leeches({ deck, targetLanguage }: { deck: Deck; targetLanguage: Language }) {
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
   const [revealedListeningCards, setRevealedListeningCards] = useState<
     Set<string>
@@ -73,14 +74,14 @@ export function Leeches({ deck }: { deck: Deck }) {
                       aria-label="Reveal listening lexeme"
                     >
                       <span className="select-none blur-sm">
-                        {card.card_text}
+                        <TargetLanguageText language={targetLanguage}>{card.card_text}</TargetLanguageText>
                       </span>
                       <span className="text-xs italic text-muted-foreground">
                         Tap to reveal
                       </span>
                     </button>
                   ) : (
-                    card.card_text
+                    <TargetLanguageText language={targetLanguage}>{card.card_text}</TargetLanguageText>
                   );
 
                   return (

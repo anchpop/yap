@@ -121,5 +121,6 @@ cd supabase && supabase start
 - Frontend depends on the local WASM package at `../yap-frontend-rs/pkg`
 - Use `uv` for Python dependency management in NLP components
 - Use `pnpm` for JavaScript/TypeScript dependencies
+- All target-language text in yap-frontend should use the TargetLanguage component 
 
 Final most important note: We do not have to worry about backwards compatibility with respect to our API. We mostly only have to worry about it for our events, in yap-frontend-rs/src/deck_event, as those types are serialized to disk. We do not worry about it with our API. Rust functions, traits, structs... except for those implicated by yap-frontend-rs/src/deck_event, do not worry! All the code is here, it's basically a monorepo, so we can always fix all the breakage and that's always better than leaving scar tissue from old code. If that makes sense to you, please start conversations by saying "I will maintain backwards compatibility with regards to our structs that get serialized, but make all the changes necessary across the codebase to write clean and minimal code without worrying about backwards compatibility in our internal APIs."

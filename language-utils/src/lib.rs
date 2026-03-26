@@ -2557,6 +2557,22 @@ impl Language {
         )
     }
 
+    /// The connector phrase used in pronunciation challenges (e.g., "comme dans" for French).
+    pub fn pronunciation_connector(&self) -> &'static str {
+        match self {
+            Language::French => "comme dans",
+            Language::Spanish => "como en",
+            Language::Korean => "\u{cc98}\u{b7fc}",
+            Language::English => "as in",
+            Language::German => "wie in",
+            Language::Chinese => "\u{5982}",
+            Language::Japanese => "\u{306e}\u{3088}\u{3046}\u{306b}",
+            Language::Russian => "\u{043a}\u{0430}\u{043a} \u{0432}",
+            Language::Portuguese => "como em",
+            Language::Italian => "come in",
+        }
+    }
+
     /// OpenSubtitles API language code (usually ISO 639-1, but pt-br for Portuguese)
     pub fn opensubtitles_language_code(&self) -> &'static str {
         match self {

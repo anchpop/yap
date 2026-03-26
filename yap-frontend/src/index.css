@@ -266,3 +266,19 @@ ol {
     translate: 0 10px;
   }
 }
+
+.placement-reveal {
+  animation: placement-fade-in 1s ease-out;
+}
+
+@keyframes placement-fade-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Per-language font size adjustments for target language text.
+   CJK characters render smaller at the same font size as Latin text.
+   Uses em so it scales relative to whatever the parent's font-size is. */
+[lang="ko"], [lang="ja"], [lang="zh"] {
+  font-size: 1.55em;
+}
