@@ -618,6 +618,8 @@ pub struct TranslateComprehensibleSentence {
     pub native_translations: Vec<String>,
     pub movie_titles: Vec<(String, String)>,
     pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
+    /// The gram that motivated this challenge (the one being reviewed via spaced repetition).
+    pub primary_expression: Gram<String>,
 }
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
@@ -2537,9 +2539,13 @@ impl Deck {
                     if banned_types_set.contains(&ChallengeRequirements::Text) {
                         0
                     } else {
-                        self.next_unknown_cards(AllowedCards::Type(CardType::TargetLanguage), &goal, max_cards_to_add)
-                            .take(max_cards_to_add)
-                            .count() as u32
+                        self.next_unknown_cards(
+                            AllowedCards::Type(CardType::TargetLanguage),
+                            &goal,
+                            max_cards_to_add,
+                        )
+                        .take(max_cards_to_add)
+                        .count() as u32
                     },
                     CardType::TargetLanguage,
                 ),
@@ -2547,9 +2553,13 @@ impl Deck {
                     if banned_types_set.contains(&ChallengeRequirements::Listening) {
                         0
                     } else {
-                        self.next_unknown_cards(AllowedCards::Type(CardType::Listening), &goal, max_cards_to_add)
-                            .take(max_cards_to_add)
-                            .count() as u32
+                        self.next_unknown_cards(
+                            AllowedCards::Type(CardType::Listening),
+                            &goal,
+                            max_cards_to_add,
+                        )
+                        .take(max_cards_to_add)
+                        .count() as u32
                     },
                     CardType::Listening,
                 ),
@@ -3746,6 +3756,7 @@ pub async fn autograde_translation(
     gram_definitions: autograde::GramDefinitions,
     literal_gram_indices: Vec<usize>,
     phrase_definitions: autograde::GramDefinitions,
+    primary_expression: Gram<String>,
 ) -> Result<autograde::AutoGradeTranslationResponse, JsValue> {
     let gram_definitions = gram_definitions.0;
     let phrase_definitions = phrase_definitions.0;
@@ -3785,6 +3796,7 @@ pub async fn autograde_translation(
         literals: literals.clone(),
         phrases: phrases.clone(),
         course,
+        primary_expression,
     };
 
     let llm_result = async {

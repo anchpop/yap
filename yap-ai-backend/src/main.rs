@@ -351,6 +351,7 @@ async fn autograde_translation(
         literals,
         phrases,
         course,
+        primary_expression,
     } = request;
 
     let target_language = course.target_language;
@@ -374,6 +375,9 @@ async fn autograde_translation(
             .zip(phrases.iter())
             .map(|(s, g)| (s.as_str(), g))
             .collect();
+
+    // Check whether the primary expression is a phrase or a literal-level gram
+    let primary_is_phrase = phrases.contains(&primary_expression);
 
     // Count gradable literals early for threshold checks
     let gradable_count = literals
@@ -453,8 +457,42 @@ async fn autograde_translation(
             .join("\n")
     };
 
+    let primary_expression_system_instruction = if primary_is_phrase {
+        let display = primary_expression.to_display_string(target_language);
+        format!(
+            "The phrase \"{display}\" motivated this challenge, so please always include it in either phrases_remembered or phrases_forgot."
+        )
+    } else {
+        let words: Vec<&str> = primary_expression
+            .0
+            .iter()
+            .filter_map(|atom| match atom {
+                language_utils::Atom::Tok(word) => Some(word.text.as_str()),
+                _ => None,
+            })
+            .collect();
+        if words.len() == 1 {
+            format!(
+                "The word \"{}\" motivated this challenge, so please always grade it as Remembered or Forgot (not null) in literal_grades.",
+                words[0]
+            )
+        } else {
+            format!(
+                "The words {words} motivated this challenge, so please always grade at least one of them as Remembered or Forgot (not null) in literal_grades. If you mark at least one of them as \"forgot\", the user will be shown more words with the words \"{display}\".",
+                words = words
+                    .iter()
+                    .map(|w| format!("\"{w}\""))
+                    .collect::<Vec<_>>()
+                    .join(", "),
+                display = primary_expression.to_display_string(target_language)
+            )
+        }
+    };
+
     let system_prompt = format!(
         r#"{PERSONALITY}The user is learning {target_language_name}. They were challenged to translate a {target_language_name} sentence to {native_language_name}. Your goal is to identify which {target_language_name} words or phrases they remembered, and which ones they forgot. If they translated the sentence correctly, that means they remembered everything! But if they translated the sentence incorrectly, we need to figure out what words and phrases they seemed to have remembered correctly, and which ones they seem to have remembered incorrectly. This will be used as part of a spaced-repetition system, which will help users study the words they need to.
+
+{primary_expression_system_instruction}
 
 You will be given:
 1. Literals: Individual words in order, each with an index number. Words marked with "_" do not need grading (proper nouns, punctuation, etc.).

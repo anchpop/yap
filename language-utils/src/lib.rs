@@ -1266,6 +1266,8 @@ pub mod autograde {
         pub user_sentence: String,
         pub literals: Vec<Literal<String>>,
         pub phrases: Vec<Gram<String>>,
+        /// The gram that motivated this challenge — the LLM must always grade it.
+        pub primary_expression: Gram<String>,
     }
 
     /// Response from autograde.

@@ -32,7 +32,7 @@ tsify = { version = "0.5.5", features = ["js"], default-features = false }
 tysm = "0.17.0"
 reqwest = { version = "0.12", features = ["json"] }
 tokio = { version = "1.45.1", features = ["full"] }
-opfs = { version = "0.1.4" }
+opfs = { version = "0.2.0" }
 idb = { version = "0.6.3" }
 fetch-happen = { version = "0.3.1" }
 xxhash-rust = { version = "0.8.15", features = ["xxh3", "const_xxh3"] }

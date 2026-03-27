@@ -61,7 +61,7 @@ lasso = { workspace = true }
 unicode-normalization = "0.1.24"
 wasm-logger.workspace = true
 log.workspace = true
-pav_regression = { path = "../../tmp/pav.rs" }
+pav_regression = { git = "https://github.com/anchpop/pav.rs.git", rev = "416206b920d91caa405755e224a8823dbb7168be" }
 rustc-hash = "2.0"
 itertools = "0.14.0"
 

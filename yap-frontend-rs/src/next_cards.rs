@@ -65,7 +65,12 @@ pub(crate) enum AllowedCards {
 }
 
 impl NextCardsIterator {
-    pub fn new(deck: &Deck, allowed_cards: AllowedCards, goal: &Option<GoalSelection>, limit: usize) -> Self {
+    pub fn new(
+        deck: &Deck,
+        allowed_cards: AllowedCards,
+        goal: &Option<GoalSelection>,
+        limit: usize,
+    ) -> Self {
         // Buffer beyond the requested limit to account for cards split across types
         // (text vs listening vs pronunciation) and the iterator's balancing logic.
         let early_term_n = (limit * 3).max(100);
@@ -131,12 +136,9 @@ impl NextCardsIterator {
             if matches!(cards.get(&card), Some(CardData::Added { .. })) {
                 continue;
             }
-            if let Some(value) = context.card_value_with_frequency(
-                &card,
-                cards.get(&card),
-                regressions,
-                *frequency,
-            ) {
+            if let Some(value) =
+                context.card_value_with_frequency(&card, cards.get(&card), regressions, *frequency)
+            {
                 text_values.push((value, *gram));
                 if top_n.len() < early_term_n {
                     top_n.push(std::cmp::Reverse(value));
@@ -225,8 +227,7 @@ impl NextCardsIterator {
                 if cards.contains_key(&card) {
                     return None;
                 }
-                let value =
-                    context.get_card_value_with_status(&card, None, regressions)?;
+                let value = context.get_card_value_with_status(&card, None, regressions)?;
                 Some((value, card))
             })
             .collect();

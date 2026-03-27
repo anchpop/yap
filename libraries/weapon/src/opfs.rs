@@ -418,7 +418,7 @@ impl EventLogFile {
         if existing_size < EVENT_LOG_HEADER_LEN {
             writable.truncate(0).await?;
             let header = event_log_header_bytes();
-            writable.write_at_cursor_pos(header).await?;
+            writable.write_at_cursor_pos(&header).await?;
             writable.seek(EVENT_LOG_HEADER_LEN).await?;
         } else {
             writable.seek(existing_size).await?;
@@ -426,7 +426,7 @@ impl EventLogFile {
 
         for record in records {
             if let Some(bytes) = encode_event_log_record(record) {
-                writable.write_at_cursor_pos(bytes).await?;
+                writable.write_at_cursor_pos(&bytes).await?;
             }
         }
 

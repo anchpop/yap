@@ -809,7 +809,8 @@ export function TranslationChallenge({
           course,
           sentence.gram_definitions_for_lookup,
           new Uint32Array(sentence.literal_gram_indices),
-          sentence.phrase_definitions
+          sentence.phrase_definitions,
+          sentence.primary_expression
         );
 
         const encouragement = response.encouragement;

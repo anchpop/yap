@@ -493,6 +493,10 @@ impl ReviewInfo {
                 },
                 movie_titles,
                 proper_noun_definitions,
+                primary_expression: language_pack
+                    .gram_rodeo
+                    .resolve(&gram)
+                    .resolve(&language_pack.string_rodeo),
             },
         ))
     }

@@ -80,7 +80,7 @@ async fn test_opfs_inner() -> Result<bool, JsValue> {
         }
     };
 
-    if let Err(e) = writable.write_at_cursor_pos(test_data.clone()).await {
+    if let Err(e) = writable.write_at_cursor_pos(&test_data).await {
         log::error!("Failed to write data: {e:?}");
         return Ok(false);
     }

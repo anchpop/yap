@@ -372,7 +372,7 @@ async fn download_and_cache_language_data(
         .await
         .map_err(LanguageDataError::Persistent)?;
     writable
-        .write_at_cursor_pos(bytes.clone())
+        .write_at_cursor_pos(&bytes)
         .await
         .map_err(LanguageDataError::Persistent)?;
     writable

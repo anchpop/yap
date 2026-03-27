@@ -146,9 +146,7 @@ pub(crate) async fn get_or_create_device_id(
                 })
                 .await?;
 
-            writable
-                .write_at_cursor_pos(device_id.as_bytes().to_vec())
-                .await?;
+            writable.write_at_cursor_pos(device_id.as_bytes()).await?;
 
             writable.close().await?;
 

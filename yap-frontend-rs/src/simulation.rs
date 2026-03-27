@@ -258,7 +258,10 @@ mod tests {
             assert!(
                 freq.count <= prev_count,
                 "[{label}] gram_frequencies not sorted by count descending: gram '{}' has count {} after count {}",
-                lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo).to_display_string(lang),
+                lp.gram_rodeo
+                    .resolve(gram_spur)
+                    .resolve(&lp.string_rodeo)
+                    .to_display_string(lang),
                 freq.count,
                 prev_count
             );

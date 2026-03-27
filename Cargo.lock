@@ -2952,9 +2952,9 @@ dependencies = [
 
 [[package]]
 name = "opfs"
-version = "0.1.4"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6374ee9472796e13081ce810c8daeeb489e8faa1b9ed819b44ab17cacb2744e"
+checksum = "a81d38c32da5bb367c3e6901de6c6e350bdbff0791f9f8894749bd6c0e00eb0e"
 dependencies = [
  "dirs",
  "futures",
@@ -3048,6 +3048,7 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 [[package]]
 name = "pav_regression"
 version = "0.5.2"
+source = "git+https://github.com/anchpop/pav.rs.git?rev=416206b920d91caa405755e224a8823dbb7168be#416206b920d91caa405755e224a8823dbb7168be"
 dependencies = [
  "eytzinger",
  "ordered-float 3.9.2",

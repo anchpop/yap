@@ -110,7 +110,7 @@ impl AudioCache {
                 })
                 .await
         {
-            let _ = writable.write_at_cursor_pos(bytes).await;
+            let _ = writable.write_at_cursor_pos(&bytes).await;
             let _ = writable.close().await;
         }
     }
