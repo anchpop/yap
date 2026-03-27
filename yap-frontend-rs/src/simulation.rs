@@ -251,6 +251,20 @@ mod tests {
             );
         }
 
+        // gram_frequencies should be sorted by count descending
+        // (NextCardsIterator relies on this for early termination)
+        let mut prev_count = u32::MAX;
+        for (gram_spur, freq) in lp.gram_frequencies.entries.iter() {
+            assert!(
+                freq.count <= prev_count,
+                "[{label}] gram_frequencies not sorted by count descending: gram '{}' has count {} after count {}",
+                lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo).to_display_string(lang),
+                freq.count,
+                prev_count
+            );
+            prev_count = freq.count;
+        }
+
         // Every gram should produce a non-empty display string
         for gram_spur in lp.gram_frequencies.entries.keys() {
             let resolved = lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo);
@@ -372,6 +386,47 @@ mod tests {
         for _ in 0..365 {
             let day = simulator.next_day();
             simulator = day.finish_day();
+        }
+    }
+
+    /// Test that the early-termination optimization in NextCardsIterator produces
+    /// exactly the same cards as a full evaluation of all grams.
+    #[test]
+    fn test_next_cards_early_termination_correctness() {
+        use crate::next_cards::AllowedCards;
+
+        let course = language_utils::Course {
+            target_language: language_utils::Language::French,
+            native_language: language_utils::Language::English,
+        };
+        let language_pack = load_language_pack(&course);
+        let deck = load_test_data_deck(language_pack);
+
+        // Record the exact card sequence from the optimized path
+        for count in [1, 5, 10, 50, 100] {
+            let result_a: Vec<_> = deck
+                .next_unknown_cards(
+                    AllowedCards::BannedRequirements(Default::default()),
+                    &None,
+                    count,
+                )
+                .take(count)
+                .collect();
+
+            // Run it again with a very large limit (effectively no early termination)
+            let result_b: Vec<_> = deck
+                .next_unknown_cards(
+                    AllowedCards::BannedRequirements(Default::default()),
+                    &None,
+                    usize::MAX / 4,
+                )
+                .take(count)
+                .collect();
+
+            assert_eq!(
+                result_a, result_b,
+                "Results differ for count={count}: early-terminated iterator produced different cards than unlimited iterator"
+            );
         }
     }
 

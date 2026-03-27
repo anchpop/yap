@@ -834,7 +834,7 @@ pub struct Deck {
     fsrs: FSRS,
     pub(crate) stats: Stats,
     pub(crate) context: Context,
-    regressions: Regressions,
+    pub(crate) regressions: Regressions,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
     /// The most recently selected goal from an AddCards event
@@ -2484,6 +2484,7 @@ impl Deck {
             .next_unknown_cards(
                 AllowedCards::BannedRequirements(banned_types_set.clone()),
                 &goal,
+                max_cards_to_add,
             )
             .take(max_cards_to_add)
             .collect();
@@ -2536,7 +2537,7 @@ impl Deck {
                     if banned_types_set.contains(&ChallengeRequirements::Text) {
                         0
                     } else {
-                        self.next_unknown_cards(AllowedCards::Type(CardType::TargetLanguage), &goal)
+                        self.next_unknown_cards(AllowedCards::Type(CardType::TargetLanguage), &goal, max_cards_to_add)
                             .take(max_cards_to_add)
                             .count() as u32
                     },
@@ -2546,7 +2547,7 @@ impl Deck {
                     if banned_types_set.contains(&ChallengeRequirements::Listening) {
                         0
                     } else {
-                        self.next_unknown_cards(AllowedCards::Type(CardType::Listening), &goal)
+                        self.next_unknown_cards(AllowedCards::Type(CardType::Listening), &goal, max_cards_to_add)
                             .take(max_cards_to_add)
                             .count() as u32
                     },
@@ -2559,6 +2560,7 @@ impl Deck {
                         self.next_unknown_cards(
                             AllowedCards::Type(CardType::LetterPronunciation),
                             &goal,
+                            max_cards_to_add,
                         )
                         .take(max_cards_to_add)
                         .count() as u32
@@ -2594,7 +2596,7 @@ impl Deck {
         };
 
         let cards = self
-            .next_unknown_cards(allowed_cards, &goal)
+            .next_unknown_cards(allowed_cards, &goal, count)
             .take(count)
             .map(|card| {
                 card.resolve(
@@ -2998,8 +3000,9 @@ impl Deck {
         &self,
         allowed_cards: AllowedCards,
         goal: &Option<GoalSelection>,
+        limit: usize,
     ) -> NextCardsIterator {
-        NextCardsIterator::new(self, allowed_cards, goal)
+        NextCardsIterator::new(self, allowed_cards, goal, limit)
     }
 
     fn get_comprehensible_sentence_containing(
@@ -3183,17 +3186,6 @@ impl Context {
         }
     }
 
-    fn get_card_value(
-        &self,
-        card: &CardIndicator<SpurGram, Spur>,
-        regressions: &Regressions,
-    ) -> Option<ordered_float::NotNan<f32>> {
-        let (knowledge_probability, frequency) =
-            self.get_card_knowledge_probability(card, regressions)?;
-        let ln_freq = Self::card_value_frequency(card, frequency);
-        ordered_float::NotNan::new((1.0 - knowledge_probability) * ln_freq).ok()
-    }
-
     fn get_card_value_with_status(
         &self,
         card: &CardIndicator<SpurGram, Spur>,
@@ -3201,6 +3193,17 @@ impl Context {
         regressions: &Regressions,
     ) -> Option<ordered_float::NotNan<f32>> {
         let frequency = self.get_card_frequency(card)?;
+        self.card_value_with_frequency(card, card_data, regressions, frequency)
+    }
+
+    /// Computes card value given a pre-looked-up frequency.
+    pub(crate) fn card_value_with_frequency(
+        &self,
+        card: &CardIndicator<SpurGram, Spur>,
+        card_data: Option<&CardData>,
+        regressions: &Regressions,
+        frequency: Frequency,
+    ) -> Option<ordered_float::NotNan<f32>> {
         let ln_freq = Self::card_value_frequency(card, frequency);
 
         // Check if we have a reviewed card (ghost or added)
@@ -3247,7 +3250,8 @@ impl Context {
         }
 
         // Fall back to regular prediction-based value for new or unadded cards
-        self.get_card_value(card, regressions)
+        let knowledge_probability = self.get_knowledge_probability(card, regressions, frequency);
+        ordered_float::NotNan::new((1.0 - knowledge_probability) * ln_freq).ok()
     }
 
     fn get_card_knowledge_probability(
@@ -3256,29 +3260,36 @@ impl Context {
         regressions: &Regressions,
     ) -> Option<(f32, Frequency)> {
         let frequency = self.get_card_frequency(card)?;
+        let probability = self.get_knowledge_probability(card, regressions, frequency);
+        Some((probability, frequency))
+    }
 
-        let knowledge_probability = match card {
+    /// Computes the knowledge probability given a pre-looked-up frequency.
+    fn get_knowledge_probability(
+        &self,
+        card: &CardIndicator<SpurGram, Spur>,
+        regressions: &Regressions,
+        frequency: Frequency,
+    ) -> f32 {
+        match card {
             CardIndicator::LetterPronunciation { pattern, position } => {
-                // For pronunciation patterns, use the LLM's familiarity assessment
                 let pattern_str = self.language_pack.string_rodeo.resolve(pattern);
                 let guide = self
                     .language_pack
                     .pronunciation_data
                     .guides
                     .iter()
-                    .find(|g| g.pattern == pattern_str && g.position == *position)?;
+                    .find(|g| g.pattern == pattern_str && g.position == *position);
 
-                // Convert familiarity to probability
-                match guide.familiarity {
-                    language_utils::PronunciationFamiliarity::LikelyAlreadyKnows => 0.85,
-                    language_utils::PronunciationFamiliarity::MaybeAlreadyKnows => 0.50,
-                    language_utils::PronunciationFamiliarity::ProbablyDoesNotKnow => 0.15,
+                match guide.map(|g| &g.familiarity) {
+                    Some(language_utils::PronunciationFamiliarity::LikelyAlreadyKnows) => 0.85,
+                    Some(language_utils::PronunciationFamiliarity::MaybeAlreadyKnows) => 0.50,
+                    Some(language_utils::PronunciationFamiliarity::ProbablyDoesNotKnow) => 0.15,
+                    None => 0.0,
                 }
             }
             _ => regressions.predict_card_knowledge_probability(card, frequency),
-        };
-
-        Some((knowledge_probability, frequency))
+        }
     }
 
     /// Get the frequency count for a card (used for isotonic regression)

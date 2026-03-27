@@ -462,7 +462,7 @@ You will be given:
 
 For each indexed literal, decide if the user remembered it ("Remembered"), forgot it ("Forgot"), or if it's indeterminate (null). Grade each literal individually based on the user's translation.
 
-For phrases, list which ones were remembered and which were forgotten.
+For phrases, list which ones were remembered and which were forgotten. If one was netiher remembered nor forgotten (e.g. it was not in the sentence), just don't mention it at all. There might be a lot of phrases in the provided list that are not actually in the sentence - that's just to give you a large block of marble to carve from, but our phrase detection is very liberal and expansive so it often picks up false positives that you should basically ignore.
 
 Do not punish learners for non-literal translations if the meaning is preserved (including tense, tone, etc).
 

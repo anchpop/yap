@@ -1,19 +1,15 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use chrono::{TimeZone, Utc};
-use criterion::{Criterion, criterion_group, criterion_main};
 use language_utils::language_pack::LanguagePack;
 use language_utils::{Course, Language};
 use weapon::data_model::{EventStore, EventType, Timestamped};
 use weapon::opfs::parse_event_log_records;
 use yap_frontend_rs::{Context, Deck, DeckEvent, DeckState};
 
-/// Load the language pack and replay real user events to get a realistic deck.
 fn load_deck_from_test_data() -> Deck {
-    // Load language pack
     let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
-        .expect("Failed to read language data - run `cargo run --bin generate-data` first");
+        .expect("Failed to read language data");
     let archived = rkyv::access::<
         language_utils::language_pack::ArchivedLanguagePack,
         rkyv::rancor::Error,
@@ -23,7 +19,6 @@ fn load_deck_from_test_data() -> Deck {
         rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
     let language_pack = Arc::new(language_pack);
 
-    // Set up event store and replay real events
     let mut store: EventStore<String, String> = EventStore::default();
     store.get_or_insert_default::<EventType<DeckEvent>>("reviews".to_string(), None);
 
@@ -59,47 +54,9 @@ fn load_deck_from_test_data() -> Deck {
     stream.state(initial_state, &context)
 }
 
-fn bench_simulation(c: &mut Criterion) {
+fn main() {
     let deck = load_deck_from_test_data();
-    let fixed_time = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-
-    c.bench_function("simulate_1_day", |b| {
-        b.iter_batched(
-            || deck.simulate_usage(fixed_time),
-            |sim| sim.next_day().finish_day(),
-            criterion::BatchSize::SmallInput,
-        )
-    });
-
-    c.bench_function("simulate_5_days", |b| {
-        b.iter_batched(
-            || deck.simulate_usage(fixed_time),
-            |mut sim| {
-                for _ in 0..5 {
-                    sim = sim.next_day().finish_day();
-                }
-                sim
-            },
-            criterion::BatchSize::SmallInput,
-        )
-    });
+    for _ in 0..5000 {
+        std::hint::black_box(deck.add_next_unknown_cards(None, 10, vec![], None));
+    }
 }
-
-fn bench_next_unknown_cards(c: &mut Criterion) {
-    let deck = load_deck_from_test_data();
-
-    c.bench_function("next_unknown_cards_10", |b| {
-        b.iter(|| {
-            criterion::black_box(deck.add_next_unknown_cards(None, 10, vec![], None));
-        })
-    });
-
-    c.bench_function("next_unknown_cards_100", |b| {
-        b.iter(|| {
-            criterion::black_box(deck.add_next_unknown_cards(None, 100, vec![], None));
-        })
-    });
-}
-
-criterion_group!(benches, bench_simulation, bench_next_unknown_cards);
-criterion_main!(benches);

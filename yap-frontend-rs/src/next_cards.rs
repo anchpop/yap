@@ -12,6 +12,17 @@ use crate::{
     deck_event::current::GoalSelection,
 };
 
+/// Partition the top `n` elements to the front (descending by first tuple element),
+/// then sort only those. Much faster than a full sort when `n << len`.
+fn partial_sort_desc<T>(values: &mut [(NotNan<f32>, T)], n: usize) {
+    if values.len() <= n {
+        values.sort_by(|a, b| b.0.cmp(&a.0));
+    } else {
+        values.select_nth_unstable_by(n, |a, b| b.0.cmp(&a.0));
+        values[..n].sort_by(|a, b| b.0.cmp(&a.0));
+    }
+}
+
 /// Returns the single word from a gram if it has exactly one Tok atom.
 /// Returns None for multi-word grams or empty grams.
 fn gram_single_word(gram: &grm<Spur>) -> Option<&Word<Spur>> {
@@ -54,7 +65,11 @@ pub(crate) enum AllowedCards {
 }
 
 impl NextCardsIterator {
-    pub fn new(deck: &Deck, allowed_cards: AllowedCards, goal: &Option<GoalSelection>) -> Self {
+    pub fn new(deck: &Deck, allowed_cards: AllowedCards, goal: &Option<GoalSelection>, limit: usize) -> Self {
+        // Buffer beyond the requested limit to account for cards split across types
+        // (text vs listening vs pronunciation) and the iterator's balancing logic.
+        let early_term_n = (limit * 3).max(100);
+
         let cards = deck.cards.clone();
         let context = &deck.context;
         let regressions = &deck.regressions;
@@ -93,27 +108,52 @@ impl NextCardsIterator {
                 .and_modify(|count| *count += 1);
         }
 
-        // Precompute text card values: grams not yet Added, sorted by value desc
-        // Ghost cards are included since they can be promoted to Added
-        let mut text_values: Vec<(NotNan<f32>, SpurGram)> = gram_source
-            .entries
-            .keys()
-            .filter_map(|gram| {
-                let card = CardIndicator::WrittenGram { gram: *gram };
-                if matches!(cards.get(&card), Some(CardData::Added { .. })) {
-                    return None;
+        // Precompute text card values: grams not yet Added, partially sorted by value desc.
+        // Ghost cards are included since they can be promoted to Added.
+        //
+        // gram_source.entries is sorted by count descending, so ln_freq is also descending.
+        // Since value = (1 - probability) * ln_freq ≤ ln_freq, once ln_freq drops below
+        // the Nth-best value we've seen, no subsequent gram can enter the top N.
+        let mut text_values: Vec<(NotNan<f32>, SpurGram)> = Vec::new();
+        // Min-heap tracking the top early_term_n values for early termination threshold
+        let mut top_n: std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>> =
+            std::collections::BinaryHeap::new();
+        for (gram, frequency) in gram_source.entries.iter() {
+            // Early termination: once we have enough candidates and ln_freq is below
+            // the smallest of the top N, no future gram can enter the top N.
+            if top_n.len() >= early_term_n {
+                let ln_freq = NotNan::new(frequency.ln_frequency()).unwrap_or_default();
+                if ln_freq < top_n.peek().unwrap().0 {
+                    break;
                 }
-                let value =
-                    context.get_card_value_with_status(&card, cards.get(&card), regressions)?;
-                Some((value, *gram))
-            })
-            .collect();
-        text_values.sort_by(|a, b| b.0.cmp(&a.0));
+            }
+            let card = CardIndicator::WrittenGram { gram: *gram };
+            if matches!(cards.get(&card), Some(CardData::Added { .. })) {
+                continue;
+            }
+            if let Some(value) = context.card_value_with_frequency(
+                &card,
+                cards.get(&card),
+                regressions,
+                *frequency,
+            ) {
+                text_values.push((value, *gram));
+                if top_n.len() < early_term_n {
+                    top_n.push(std::cmp::Reverse(value));
+                } else if value > top_n.peek().unwrap().0 {
+                    top_n.pop();
+                    top_n.push(std::cmp::Reverse(value));
+                }
+            }
+        }
+        partial_sort_desc(&mut text_values, early_term_n);
 
         // Build single-word indices if needed for early onboarding preference
+        // Only look within the partially-sorted top portion
         let single_word_indices = if added_count < 20 {
+            let limit = text_values.len().min(early_term_n);
             Some(
-                text_values
+                text_values[..limit]
                     .iter()
                     .enumerate()
                     .filter(|(_, (_, gram))| {
@@ -149,22 +189,26 @@ impl NextCardsIterator {
                 None
             };
 
-        // Precompute listening card values: grams not yet Added, sorted by value desc
+        // Precompute listening card values: grams not yet Added, partially sorted by value desc
         // Ghost cards are included since they can be promoted to Added
         let mut listening_values: Vec<(NotNan<f32>, SpurGram)> = gram_source
             .entries
-            .keys()
-            .filter_map(|gram| {
+            .iter()
+            .filter_map(|(gram, frequency)| {
                 let card = CardIndicator::ListeningGram { gram: *gram };
                 if matches!(cards.get(&card), Some(CardData::Added { .. })) {
                     return None;
                 }
-                let value =
-                    context.get_card_value_with_status(&card, cards.get(&card), regressions)?;
+                let value = context.card_value_with_frequency(
+                    &card,
+                    cards.get(&card),
+                    regressions,
+                    *frequency,
+                )?;
                 Some((value, *gram))
             })
             .collect();
-        listening_values.sort_by(|a, b| b.0.cmp(&a.0));
+        partial_sort_desc(&mut listening_values, early_term_n);
 
         // Precompute pronunciation card values
         let mut pronunciation_values: Vec<(NotNan<f32>, CardIndicator<SpurGram, Spur>)> = context
@@ -181,7 +225,8 @@ impl NextCardsIterator {
                 if cards.contains_key(&card) {
                     return None;
                 }
-                let value = context.get_card_value_with_status(&card, None, regressions)?;
+                let value =
+                    context.get_card_value_with_status(&card, None, regressions)?;
                 Some((value, card))
             })
             .collect();
