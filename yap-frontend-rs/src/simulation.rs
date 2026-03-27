@@ -210,6 +210,8 @@ impl Deck {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::deck_event::current::GoalSelection;
+    use crate::next_cards::AllowedCards;
     use chrono::TimeZone;
     use language_utils::SentenceGram;
     use language_utils::language_pack::LanguagePack;
@@ -240,6 +242,29 @@ mod tests {
             course.target_language.iso_639_3()
         );
 
+        fn assert_frequency_list_sorted<'a>(
+            lp: &LanguagePack,
+            lang: language_utils::Language,
+            label: &str,
+            list_name: &str,
+            entries: impl Iterator<Item = (&'a language_utils::SpurGram, &'a crate::Frequency)>,
+        ) {
+            let mut prev_count = u32::MAX;
+            for (gram_spur, freq) in entries {
+                assert!(
+                    freq.count <= prev_count,
+                    "[{label}] {list_name} not sorted by count descending: gram '{}' has count {} after count {}",
+                    lp.gram_rodeo
+                        .resolve(gram_spur)
+                        .resolve(&lp.string_rodeo)
+                        .to_display_string(lang),
+                    freq.count,
+                    prev_count
+                );
+                prev_count = freq.count;
+            }
+        }
+
         // Every gram in gram_frequencies should have a definition
         for gram_spur in lp.gram_frequencies.entries.keys() {
             let resolved = lp.gram_rodeo.resolve(gram_spur).resolve(&lp.string_rodeo);
@@ -253,19 +278,16 @@ mod tests {
 
         // gram_frequencies should be sorted by count descending
         // (NextCardsIterator relies on this for early termination)
-        let mut prev_count = u32::MAX;
-        for (gram_spur, freq) in lp.gram_frequencies.entries.iter() {
-            assert!(
-                freq.count <= prev_count,
-                "[{label}] gram_frequencies not sorted by count descending: gram '{}' has count {} after count {}",
-                lp.gram_rodeo
-                    .resolve(gram_spur)
-                    .resolve(&lp.string_rodeo)
-                    .to_display_string(lang),
-                freq.count,
-                prev_count
-            );
-            prev_count = freq.count;
+        assert_frequency_list_sorted(
+            lp,
+            lang,
+            &label,
+            "gram_frequencies",
+            lp.gram_frequencies.entries.iter(),
+        );
+        for (source_id, freq_list) in &lp.source_gram_frequencies {
+            let list_name = format!("source_gram_frequencies[{source_id:?}]");
+            assert_frequency_list_sorted(lp, lang, &label, &list_name, freq_list.entries.iter());
         }
 
         // Every gram should produce a non-empty display string
@@ -396,8 +418,6 @@ mod tests {
     /// exactly the same cards as a full evaluation of all grams.
     #[test]
     fn test_next_cards_early_termination_correctness() {
-        use crate::next_cards::AllowedCards;
-
         let course = language_utils::Course {
             target_language: language_utils::Language::French,
             native_language: language_utils::Language::English,
@@ -405,31 +425,47 @@ mod tests {
         let language_pack = load_language_pack(&course);
         let deck = load_test_data_deck(language_pack);
 
-        // Record the exact card sequence from the optimized path
-        for count in [1, 5, 10, 50, 100] {
-            let result_a: Vec<_> = deck
-                .next_unknown_cards(
-                    AllowedCards::BannedRequirements(Default::default()),
-                    &None,
-                    count,
-                )
-                .take(count)
-                .collect();
+        let mut goals = vec![None];
+        for source_id in deck.context.language_pack.source_gram_frequencies.keys() {
+            let goal = match source_id {
+                language_utils::FrequencySourceId::Movie(id) => {
+                    GoalSelection::Movie { id: id.clone() }
+                }
+                language_utils::FrequencySourceId::PimsleurLesson(lesson) => {
+                    GoalSelection::PimsleurLesson {
+                        level: lesson.level,
+                        lesson: lesson.lesson,
+                    }
+                }
+            };
+            goals.push(Some(goal));
+        }
 
-            // Run it again with a very large limit (effectively no early termination)
-            let result_b: Vec<_> = deck
-                .next_unknown_cards(
-                    AllowedCards::BannedRequirements(Default::default()),
-                    &None,
-                    usize::MAX / 4,
-                )
-                .take(count)
-                .collect();
+        for goal in goals {
+            for count in [1, 5, 10, 50, 100] {
+                let result_a: Vec<_> = deck
+                    .next_unknown_cards(
+                        AllowedCards::BannedRequirements(Default::default()),
+                        &goal,
+                        count,
+                    )
+                    .take(count)
+                    .collect();
 
-            assert_eq!(
-                result_a, result_b,
-                "Results differ for count={count}: early-terminated iterator produced different cards than unlimited iterator"
-            );
+                let result_b: Vec<_> = deck
+                    .next_unknown_cards(
+                        AllowedCards::BannedRequirements(Default::default()),
+                        &goal,
+                        usize::MAX / 4,
+                    )
+                    .take(count)
+                    .collect();
+
+                assert_eq!(
+                    result_a, result_b,
+                    "Results differ for goal={goal:?}, count={count}: early-terminated iterator produced different cards than unlimited iterator"
+                );
+            }
         }
     }
 

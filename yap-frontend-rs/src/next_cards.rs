@@ -14,12 +14,15 @@ use crate::{
 
 /// Partition the top `n` elements to the front (descending by first tuple element),
 /// then sort only those. Much faster than a full sort when `n << len`.
-fn partial_sort_desc<T>(values: &mut [(NotNan<f32>, T)], n: usize) {
-    if values.len() <= n {
-        values.sort_by(|a, b| b.0.cmp(&a.0));
+fn partial_sort_desc<T: Ord>(values: &mut [(NotNan<f32>, T)], n: usize) {
+    let compare =
+        |a: &(NotNan<f32>, T), b: &(NotNan<f32>, T)| b.0.cmp(&a.0).then_with(|| a.1.cmp(&b.1));
+
+    if n == 0 || values.len() <= n {
+        values.sort_by(compare);
     } else {
-        values.select_nth_unstable_by(n, |a, b| b.0.cmp(&a.0));
-        values[..n].sort_by(|a, b| b.0.cmp(&a.0));
+        values.select_nth_unstable_by(n - 1, compare);
+        values[..n].sort_by(compare);
     }
 }
 
@@ -231,7 +234,7 @@ impl NextCardsIterator {
                 Some((value, card))
             })
             .collect();
-        pronunciation_values.sort_by(|a, b| b.0.cmp(&a.0));
+        pronunciation_values.sort_by(|a, b| b.0.cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
 
         Self {
             cards,

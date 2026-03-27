@@ -117,6 +117,8 @@ pub fn compute_per_source_gram_frequencies(
             }
         }
 
+        freq_entries.sort_by_key(|entry| Reverse(entry.clone()));
+
         if !freq_entries.is_empty() {
             result.insert(source_id.clone(), freq_entries);
         }
@@ -201,4 +203,98 @@ pub fn compute_gram_frequencies(
     freq_entries.sort_by_key(|entry| Reverse(entry.clone()));
 
     freq_entries
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use language_utils::{Atom, FrequencySourceId, PimsleurLesson, Word, WordType};
+
+    fn gram(text: &str) -> Gram<String> {
+        Gram(vec![Atom::Tok(Word {
+            text: text.to_string(),
+            word_type: WordType::Heteronym(language_utils::Heteronym {
+                word: text.to_string(),
+                lemma: text.to_string(),
+                pos: language_utils::PartOfSpeech::Noun,
+            }),
+        })])
+    }
+
+    #[test]
+    fn test_per_source_gram_frequencies_are_sorted_descending() {
+        let alpha = gram("alpha");
+        let beta = gram("beta");
+        let gamma = gram("gamma");
+
+        let encoded_sentences = vec![
+            (
+                "s1".to_string(),
+                SentenceGrams {
+                    grams: vec![
+                        SentenceGram::Learnable(alpha.clone()),
+                        SentenceGram::Learnable(beta.clone()),
+                    ],
+                    capitalize_first: false,
+                    multiword_terms: vec![],
+                    low_confidence_multiword_terms: vec![],
+                },
+            ),
+            (
+                "s2".to_string(),
+                SentenceGrams {
+                    grams: vec![SentenceGram::Learnable(alpha.clone())],
+                    capitalize_first: false,
+                    multiword_terms: vec![],
+                    low_confidence_multiword_terms: vec![],
+                },
+            ),
+            (
+                "s3".to_string(),
+                SentenceGrams {
+                    grams: vec![SentenceGram::Learnable(gamma.clone())],
+                    capitalize_first: false,
+                    multiword_terms: vec![],
+                    low_confidence_multiword_terms: vec![],
+                },
+            ),
+        ];
+
+        let source_id = FrequencySourceId::PimsleurLesson(PimsleurLesson {
+            level: 1,
+            lesson: 1,
+        });
+        let sentence_to_sources = FxHashMap::from_iter([
+            ("s1".to_string(), vec![source_id.clone()]),
+            ("s2".to_string(), vec![source_id.clone()]),
+            ("s3".to_string(), vec![source_id.clone()]),
+        ]);
+        let gram_vocabulary = vec![
+            GramVocabEntry {
+                atoms: alpha.clone(),
+                frequency: 2,
+            },
+            GramVocabEntry {
+                atoms: beta.clone(),
+                frequency: 1,
+            },
+            GramVocabEntry {
+                atoms: gamma.clone(),
+                frequency: 1,
+            },
+        ];
+
+        let result = compute_per_source_gram_frequencies(
+            &encoded_sentences,
+            &sentence_to_sources,
+            &gram_vocabulary,
+        );
+        let entries = &result[&source_id];
+
+        assert_eq!(
+            entries.iter().map(|entry| entry.count).collect::<Vec<_>>(),
+            vec![2, 1, 1]
+        );
+        assert!(entries.windows(2).all(|w| w[0].count >= w[1].count));
+    }
 }
