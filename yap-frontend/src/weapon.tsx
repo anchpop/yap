@@ -306,9 +306,10 @@ async function checkBrowserSupport(
     if (opfsTestPassed === "true") {
       setBrowserSupported(true);
     } else {
+      let timeoutId: number | undefined;
       // Create a timeout promise that rejects after 3 seconds
       const timeoutPromise = new Promise<boolean>((resolve) => {
-        setTimeout(() => {
+        timeoutId = window.setTimeout(() => {
           console.log("OPFS test timed out after 3 seconds");
           resolve(false);
         }, 3000);
@@ -316,6 +317,9 @@ async function checkBrowserSupport(
 
       // Race between the OPFS test and the timeout
       const isSupported = await Promise.race([test_opfs(), timeoutPromise]);
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
 
       setBrowserSupported(isSupported);
 

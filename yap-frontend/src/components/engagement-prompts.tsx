@@ -99,18 +99,18 @@ export function EngagementPrompts({ language }: EngagementPromptsProps) {
     .exhaustive();
 
   return (
-      <Card variant="light" animate className="gap-0 p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">{headingText}</h3>
+      <Card variant="light" animate className="gap-0 px-3 py-4 sm:p-6">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <Sparkles className="h-5 w-5 text-primary shrink-0" />
+          <h3 className="font-semibold text-sm sm:text-base">{headingText}</h3>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
           Research shows that consistent daily practice is key to language
           learning success. These features help you maintain your streak:
         </p>
 
-        <div className="grid grid-cols-[auto_1fr] gap-3">
+        <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[auto_1fr]">
           {shouldShowAddToHomeScreen && (
             <>
               <InstallPwaButton variant="outline" size="sm" className="justify-start" />
@@ -141,7 +141,7 @@ export function EngagementPrompts({ language }: EngagementPromptsProps) {
           )}
         </div>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3 sm:mt-4">
           <Button
             onClick={handleDismiss}
             variant="ghost"

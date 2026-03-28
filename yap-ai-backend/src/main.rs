@@ -67,6 +67,13 @@ fn language_data_for_course(course: &Course) -> Option<&'static [u8]> {
     LANGUAGE_DATA.get(course).copied()
 }
 
+#[derive(Debug, Deserialize)]
+struct LanguageDataRequest {
+    course: Course,
+    chunk_index: Option<usize>,
+    chunk_size: Option<usize>,
+}
+
 // Include the language data rkyv file at compile time
 static LANGUAGE_DATA: LazyLock<BTreeMap<Course, &'static [u8]>> = LazyLock::new(|| {
     let mut data = BTreeMap::new();
@@ -1294,13 +1301,44 @@ async fn update_language_stats(
     }
 }
 
-async fn serve_language_data(Json(course): Json<Course>) -> Response {
-    if let Some(language_data) = language_data_for_course(&course) {
+async fn serve_language_data(Json(request): Json<LanguageDataRequest>) -> Response {
+    if let Some(language_data) = language_data_for_course(&request.course) {
+        let body = match (request.chunk_index, request.chunk_size) {
+            (Some(chunk_index), Some(chunk_size)) => {
+                if chunk_size == 0 {
+                    return Response::builder()
+                        .status(StatusCode::BAD_REQUEST)
+                        .body(axum::body::Body::from("chunk_size must be positive"))
+                        .unwrap();
+                }
+
+                let start = chunk_index.saturating_mul(chunk_size);
+                if start >= language_data.len() {
+                    return Response::builder()
+                        .status(StatusCode::RANGE_NOT_SATISFIABLE)
+                        .body(axum::body::Body::from("chunk_index out of range"))
+                        .unwrap();
+                }
+
+                let end = (start + chunk_size).min(language_data.len());
+                &language_data[start..end]
+            }
+            (None, None) => language_data,
+            _ => {
+                return Response::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .body(axum::body::Body::from(
+                        "chunk_index and chunk_size must be provided together",
+                    ))
+                    .unwrap();
+            }
+        };
+
         Response::builder()
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, "application/octet-stream")
-            .header(header::CONTENT_LENGTH, language_data.len())
-            .body(axum::body::Body::from(language_data))
+            .header(header::CONTENT_LENGTH, body.len())
+            .body(axum::body::Body::from(body))
             .unwrap()
     } else {
         Response::builder()

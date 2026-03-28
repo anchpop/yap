@@ -7,7 +7,10 @@ use opfs::{
     DirectoryHandle as _, FileHandle as _, WritableFileStream as _,
     persistent::{self, DirectoryHandle},
 };
-use std::{collections::BTreeMap, sync::LazyLock};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    sync::LazyLock,
+};
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
 
 use crate::utils;
@@ -94,6 +97,62 @@ fn course_directory_slug(course: Course) -> String {
     )
 }
 
+const LANGUAGE_DATA_WRITE_CHUNK_SIZE: usize = 1024 * 1024;
+const LANGUAGE_DATA_WRITE_ATTEMPTS: usize = 3;
+const LANGUAGE_DATA_TARGET_CHUNK_COUNT: usize = 5;
+
+#[derive(serde::Serialize)]
+struct LanguageDataRequest {
+    course: Course,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    chunk_index: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    chunk_size: Option<usize>,
+}
+
+fn language_data_chunk_size(total_size: usize) -> usize {
+    total_size.max(1).div_ceil(LANGUAGE_DATA_TARGET_CHUNK_COUNT)
+}
+
+fn language_data_chunk_count(total_size: usize) -> usize {
+    total_size
+        .max(1)
+        .div_ceil(language_data_chunk_size(total_size))
+}
+
+fn language_data_chunk_filename(hash: u64, total_size: usize, chunk_index: usize) -> String {
+    let chunk_len = language_data_chunk_len(total_size, chunk_index);
+    format!(
+        "language_data_{hash}.chunk_{chunk_index:02}_of_{chunk_count:02}.size_{chunk_len}",
+        chunk_count = language_data_chunk_count(total_size)
+    )
+}
+
+fn language_data_chunk_filenames(hash: u64, total_size: usize) -> Vec<String> {
+    (0..language_data_chunk_count(total_size))
+        .map(|chunk_index| language_data_chunk_filename(hash, total_size, chunk_index))
+        .collect()
+}
+
+fn language_data_chunk_len(total_size: usize, chunk_index: usize) -> usize {
+    let chunk_size = language_data_chunk_size(total_size);
+    let chunk_start = chunk_index * chunk_size;
+    total_size.saturating_sub(chunk_start).min(chunk_size)
+}
+
+fn current_language_data_filenames(hash: u64, total_size: usize) -> BTreeSet<String> {
+    language_data_chunk_filenames(hash, total_size)
+        .into_iter()
+        .collect()
+}
+
+fn is_retryable_persistent_error(error: &persistent::Error) -> bool {
+    let error_text = format!("{error:?}");
+    error_text.contains("UnknownError")
+        || error_text.contains("QuotaExceededError")
+        || error_text.contains("out of memory")
+}
+
 pub(crate) async fn get_language_pack(
     data_directory_handle: &DirectoryHandle,
     course: Course,
@@ -129,46 +188,22 @@ pub(crate) async fn get_language_pack(
         }
     }
 
-    let filename = format!("language_data_{language_data_hash}.rkyv");
-    let language_data_file = language_directory
-        .get_file_handle_with_options(&filename, &opfs::GetFileHandleOptions { create: false })
-        .await;
-
-    let bytes = match language_data_file {
-        Ok(language_data_file) => {
-            // Cache hit - read from local storage
-            let _perf_timer = utils::PerfTimer::new("reading language data from local storage");
-            let bytes = language_data_file
-                .read()
-                .await
-                .map_err(LanguageDataError::Persistent)?;
-            let computed_hash = const_xxh3(&bytes);
-            if computed_hash != language_data_hash {
-                log::warn!(
-                    "Language data hash mismatch! Expected: {language_data_hash}, Got: {computed_hash}"
-                );
-                log::info!(
-                    "Language data cache miss for {:?}->{:?}, fetching from server...",
-                    course.native_language,
-                    course.target_language
-                );
-                download_and_cache_language_data(
-                    &mut language_directory,
-                    course,
-                    language_data_hash,
-                    language_data_size,
-                    set_loading_state,
-                )
-                .await?
-            } else {
-                log::info!("Language data from local storage hash matches expectation");
-                bytes
-            }
+    let bytes = match read_cached_language_data(
+        &mut language_directory,
+        language_data_hash,
+        language_data_size,
+        set_loading_state,
+    )
+    .await?
+    {
+        Some(bytes) => {
+            log::info!("Language data from chunked local storage hash matches expectation");
+            bytes
         }
-        Err(e) => {
+        None => {
             let _perf_timer = utils::PerfTimer::new("downloading and caching language data");
             log::info!(
-                "Downloading and caching language data because the language data file ({filename}) was not found: {e:?}"
+                "Downloading and caching language data because the chunked language data cache was missing or invalid"
             );
             download_and_cache_language_data(
                 &mut language_directory,
@@ -234,6 +269,9 @@ pub enum LanguageDataError {
     #[error("Server returned HTTP {0}")]
     ServerError(u16),
 
+    #[error("{0}")]
+    InvalidData(String),
+
     #[error("Unsupported course: {0:?}")]
     UnsupportedCourse(Course),
 }
@@ -253,11 +291,77 @@ impl From<LanguageDataError> for wasm_bindgen::JsValue {
             LanguageDataError::ServerError(status) => {
                 wasm_bindgen::JsValue::from_str(&format!("Server returned HTTP {status}"))
             }
+            LanguageDataError::InvalidData(message) => wasm_bindgen::JsValue::from_str(&message),
             LanguageDataError::UnsupportedCourse(course) => {
                 wasm_bindgen::JsValue::from_str(&format!("Unsupported course: {course:?}"))
             }
         }
     }
+}
+
+async fn read_cached_language_data(
+    language_directory_handle: &mut DirectoryHandle,
+    expected_hash: u64,
+    expected_size: usize,
+    set_loading_state: &impl Fn(&str, f32),
+) -> Result<Option<Vec<u8>>, LanguageDataError> {
+    let chunk_filenames = language_data_chunk_filenames(expected_hash, expected_size);
+
+    for (chunk_index, filename) in chunk_filenames.iter().enumerate() {
+        let file_handle = match language_directory_handle
+            .get_file_handle_with_options(filename, &opfs::GetFileHandleOptions { create: false })
+            .await
+        {
+            Ok(file_handle) => file_handle,
+            Err(_) => return Ok(None),
+        };
+
+        let expected_chunk_len = language_data_chunk_len(expected_size, chunk_index);
+        let actual_chunk_len = file_handle
+            .size()
+            .await
+            .map_err(LanguageDataError::Persistent)? as usize;
+
+        if actual_chunk_len != expected_chunk_len {
+            log::warn!(
+                "Chunk size mismatch for {filename}. Expected {expected_chunk_len} bytes, got {actual_chunk_len}. Re-downloading."
+            );
+            if let Err(error) = language_directory_handle.remove_entry(filename).await {
+                log::warn!("Failed to remove invalid language data chunk {filename}: {error:?}");
+            }
+            return Ok(None);
+        }
+    }
+
+    let mut bytes = Vec::with_capacity(expected_size);
+    for (chunk_index, filename) in chunk_filenames.iter().enumerate() {
+        let chunk_bytes = match get_cached_chunk_bytes(
+            language_directory_handle,
+            filename,
+            language_data_chunk_len(expected_size, chunk_index),
+        )
+        .await
+        {
+            Ok(Some(chunk_bytes)) => chunk_bytes,
+            Ok(None) => return Ok(None),
+            Err(error) => return Err(error),
+        };
+
+        bytes.extend_from_slice(&chunk_bytes);
+        let progress = (bytes.len() as f64 / expected_size.max(1) as f64) * 100.0;
+        set_loading_state("Loading cached language data", progress as f32);
+    }
+
+    let computed_hash = const_xxh3(&bytes);
+    if computed_hash != expected_hash {
+        log::warn!(
+            "Chunked language data hash mismatch! Expected: {expected_hash}, Got: {computed_hash}. Removing cached chunks."
+        );
+        remove_language_data_files(language_directory_handle, &chunk_filenames).await;
+        return Ok(None);
+    }
+
+    Ok(Some(bytes))
 }
 
 async fn download_and_cache_language_data(
@@ -267,13 +371,78 @@ async fn download_and_cache_language_data(
     expected_size: usize,
     set_loading_state: &impl Fn(&str, f32),
 ) -> Result<Vec<u8>, LanguageDataError> {
-    set_loading_state(
-        &format!("Downloading {:?} language data", course.target_language),
-        0.0,
-    );
+    let chunk_size = language_data_chunk_size(expected_size);
+    let chunk_filenames = language_data_chunk_filenames(expected_hash, expected_size);
+    let mut downloaded_bytes = 0usize;
+    let mut bytes = Vec::with_capacity(expected_size);
+
+    for (chunk_index, filename) in chunk_filenames.iter().enumerate() {
+        let expected_chunk_len = language_data_chunk_len(expected_size, chunk_index);
+
+        if let Some(chunk_bytes) =
+            get_cached_chunk_bytes(language_directory_handle, filename, expected_chunk_len).await?
+        {
+            bytes.extend_from_slice(&chunk_bytes);
+            downloaded_bytes += chunk_bytes.len();
+            let progress = (downloaded_bytes as f64 / expected_size.max(1) as f64) * 100.0;
+            set_loading_state(
+                &format!("Downloading {:?} language data", course.target_language),
+                progress as f32,
+            );
+            continue;
+        }
+
+        let chunk_bytes = download_language_data_chunk(
+            course,
+            chunk_index,
+            chunk_size,
+            expected_chunk_len,
+            downloaded_bytes,
+            expected_size,
+            set_loading_state,
+        )
+        .await?;
+
+        cache_language_data_bytes(language_directory_handle, filename, &chunk_bytes).await?;
+        bytes.extend_from_slice(&chunk_bytes);
+        downloaded_bytes += chunk_bytes.len();
+    }
+
+    set_loading_state("Verifying language data", 100.0);
+    let computed_hash = const_xxh3(&bytes);
+    if computed_hash != expected_hash {
+        remove_language_data_files(language_directory_handle, &chunk_filenames).await;
+        return Err(LanguageDataError::InvalidData(format!(
+            "Downloaded language data hash mismatch. Expected {expected_hash}, got {computed_hash}"
+        )));
+    }
+
+    remove_stale_language_data_files(
+        language_directory_handle,
+        &current_language_data_filenames(expected_hash, expected_size),
+    )
+    .await?;
+
+    log::info!("Language data successfully loaded and cached in chunks!");
+    Ok(bytes)
+}
+
+async fn download_language_data_chunk(
+    course: Course,
+    chunk_index: usize,
+    chunk_size: usize,
+    expected_chunk_len: usize,
+    downloaded_before_chunk: usize,
+    expected_total_size: usize,
+    set_loading_state: &impl Fn(&str, f32),
+) -> Result<Vec<u8>, LanguageDataError> {
     let response = {
         let path: &str = "/language-data";
-        let request = Some(course);
+        let request = LanguageDataRequest {
+            course,
+            chunk_index: Some(chunk_index),
+            chunk_size: Some(chunk_size),
+        };
         async move {
             let client = fetch_happen::Client;
             let url = if cfg!(feature = "local-backend") {
@@ -282,128 +451,149 @@ async fn download_and_cache_language_data(
                 "https://yap-ai-backend.fly.dev"
             };
             let full_url = format!("{url}{path}");
-            let mut req = client.post(&full_url);
-            if let Some(body) = request {
-                req = req.json(&body)?;
-            }
-            let response = req.send().await?;
-            Ok(response)
+            client.post(&full_url).json(&request)?.send().await
         }
     }
     .await
     .map_err(LanguageDataError::AiServer)?;
 
     if !response.ok() {
-        log::error!("Server returned error: {}", response.status());
+        log::error!(
+            "Server returned error while fetching chunk {}: {}",
+            chunk_index,
+            response.status()
+        );
         return Err(LanguageDataError::ServerError(response.status()));
     }
 
-    // Try to get content-length header, fallback to expected_size
-    let content_length = response
-        .header("content-length")
-        .ok()
-        .flatten()
-        .and_then(|s| s.parse::<usize>().ok())
-        .or(if expected_size > 0 {
-            Some(expected_size)
-        } else {
-            None
-        });
-
-    // Stream the response with progress tracking
     let reader = response
         .stream_reader()
         .map_err(LanguageDataError::AiServer)?;
 
-    let mut bytes = Vec::new();
-    let mut last_logged_percent = 0;
+    let mut chunk_bytes = Vec::with_capacity(expected_chunk_len);
+    let mut last_logged_percent = downloaded_before_chunk * 100 / expected_total_size.max(1);
 
     loop {
         match reader.read_chunk().await {
             Ok(Some(chunk)) => {
-                bytes.extend_from_slice(&chunk);
-
-                // Report progress if we know the total size
-                if let Some(total) = content_length {
-                    let progress = (bytes.len() as f64 / total as f64) * 100.0;
-                    let progress_int = progress as u32;
-
-                    // Update every 1%
-                    if progress_int > last_logged_percent {
-                        set_loading_state(
-                            &format!("Downloading {:?} language data", course.target_language),
-                            progress as f32,
-                        );
-                        last_logged_percent = progress_int;
-                    }
+                chunk_bytes.extend_from_slice(&chunk);
+                let progress = ((downloaded_before_chunk + chunk_bytes.len()) as f64
+                    / expected_total_size.max(1) as f64)
+                    * 100.0;
+                let progress_int = progress as usize;
+                if progress_int > last_logged_percent {
+                    set_loading_state(
+                        &format!("Downloading {:?} language data", course.target_language),
+                        progress as f32,
+                    );
+                    last_logged_percent = progress_int;
                 }
             }
             Ok(None) => break,
-            Err(e) => {
-                return Err(LanguageDataError::AiServer(e));
-            }
+            Err(error) => return Err(LanguageDataError::AiServer(error)),
         }
     }
 
-    set_loading_state("Verifying language data", 100.0);
-    let language_data_hash = {
-        let computed_hash = const_xxh3(&bytes);
+    if chunk_bytes.len() != expected_chunk_len {
+        return Err(LanguageDataError::InvalidData(format!(
+            "Downloaded language data chunk {chunk_index} had {actual} bytes, expected {expected_chunk_len}",
+            actual = chunk_bytes.len()
+        )));
+    }
 
-        if computed_hash != expected_hash {
-            log::warn!(
-                "Language data hash mismatch! Expected: {expected_hash}, Got: {computed_hash}. Proceeding anyway..."
-            );
-        } else {
-            log::info!("Language data hash verified.");
-        }
-        computed_hash
+    Ok(chunk_bytes)
+}
+
+async fn get_cached_chunk_bytes(
+    language_directory_handle: &mut DirectoryHandle,
+    filename: &str,
+    expected_chunk_len: usize,
+) -> Result<Option<Vec<u8>>, LanguageDataError> {
+    let file_handle = match language_directory_handle
+        .get_file_handle_with_options(filename, &opfs::GetFileHandleOptions { create: false })
+        .await
+    {
+        Ok(file_handle) => file_handle,
+        Err(_) => return Ok(None),
     };
-    let mut language_data_file = language_directory_handle
-        .get_file_handle_with_options(
-            &format!("language_data_{language_data_hash}.rkyv"),
-            &opfs::GetFileHandleOptions { create: true },
-        )
-        .await
-        .map_err(LanguageDataError::Persistent)?;
-    let mut writable = language_data_file
-        .create_writable_with_options(&opfs::CreateWritableOptions {
-            keep_existing_data: false,
-        })
-        .await
-        .map_err(LanguageDataError::Persistent)?;
-    writable
-        .write_at_cursor_pos(&bytes)
-        .await
-        .map_err(LanguageDataError::Persistent)?;
-    writable
-        .close()
+    let chunk_bytes = file_handle
+        .read()
         .await
         .map_err(LanguageDataError::Persistent)?;
 
-    set_loading_state("Cleaning up old language data files", 100.0);
-    // Clean up old language data files
-    let files_to_delete = {
-        let current_filename = format!("language_data_{language_data_hash}.rkyv");
-        let mut entries = language_directory_handle
-            .entries()
-            .await
-            .map_err(LanguageDataError::Persistent)?;
-        let mut files_to_delete = Vec::new();
+    if chunk_bytes.len() == expected_chunk_len {
+        return Ok(Some(chunk_bytes));
+    }
 
-        // Collect filenames to delete first
-        while let Some(Ok((filename, _))) = entries.next().await {
-            if filename.starts_with("language_data_")
-                && filename.ends_with(".hash")
-                && filename != current_filename
-            {
-                files_to_delete.push(filename);
+    if let Err(error) = language_directory_handle.remove_entry(filename).await {
+        log::warn!("Failed to remove invalid language data chunk {filename}: {error:?}");
+    }
+
+    log::warn!(
+        "Removing invalid language data chunk {filename}: expected {expected_chunk_len} bytes, got {actual}",
+        actual = chunk_bytes.len()
+    );
+    Ok(None)
+}
+
+async fn cache_language_data_bytes(
+    language_directory_handle: &mut DirectoryHandle,
+    filename: &str,
+    bytes: &[u8],
+) -> Result<(), LanguageDataError> {
+    for attempt in 1..=LANGUAGE_DATA_WRITE_ATTEMPTS {
+        let result: Result<(), persistent::Error> = async {
+            let mut language_data_file = language_directory_handle
+                .get_file_handle_with_options(
+                    filename,
+                    &opfs::GetFileHandleOptions { create: true },
+                )
+                .await?;
+            let mut writable = language_data_file
+                .create_writable_with_options(&opfs::CreateWritableOptions {
+                    keep_existing_data: false,
+                })
+                .await?;
+
+            for chunk in bytes.chunks(LANGUAGE_DATA_WRITE_CHUNK_SIZE) {
+                writable.write_at_cursor_pos(chunk).await?;
             }
+
+            writable.close().await?;
+            Ok(())
         }
+        .await;
 
-        files_to_delete
-    };
+        match result {
+            Ok(()) => return Ok(()),
+            Err(error)
+                if attempt < LANGUAGE_DATA_WRITE_ATTEMPTS
+                    && is_retryable_persistent_error(&error) =>
+            {
+                log::warn!(
+                    "Retrying language data OPFS write after transient error on attempt {attempt}: {error:?}"
+                );
+                if let Err(cleanup_error) = language_directory_handle.remove_entry(filename).await {
+                    log::warn!(
+                        "Failed to remove partially written chunk {filename}: {cleanup_error:?}"
+                    );
+                }
+            }
+            Err(error) => return Err(LanguageDataError::Persistent(error)),
+        }
+    }
 
-    // Now delete the collected files
+    Ok(())
+}
+
+async fn remove_stale_language_data_files(
+    language_directory_handle: &mut DirectoryHandle,
+    current_filenames: &BTreeSet<String>,
+) -> Result<(), LanguageDataError> {
+    let files_to_delete = stale_language_data_files(language_directory_handle, current_filenames)
+        .await
+        .map_err(LanguageDataError::Persistent)?;
+
     for filename in files_to_delete {
         log::info!("Removing old language data file: {filename}");
         if let Err(e) = language_directory_handle.remove_entry(&filename).await {
@@ -411,6 +601,32 @@ async fn download_and_cache_language_data(
         }
     }
 
-    log::info!("Language data successfully loaded and cached!");
-    Ok(bytes)
+    Ok(())
+}
+
+async fn remove_language_data_files(
+    language_directory_handle: &mut DirectoryHandle,
+    filenames: &[String],
+) {
+    for filename in filenames {
+        if let Err(error) = language_directory_handle.remove_entry(filename).await {
+            log::warn!("Failed to remove language data file {filename}: {error:?}");
+        }
+    }
+}
+
+async fn stale_language_data_files(
+    language_directory_handle: &mut DirectoryHandle,
+    current_filenames: &BTreeSet<String>,
+) -> Result<Vec<String>, persistent::Error> {
+    let mut entries = language_directory_handle.entries().await?;
+    let mut files_to_delete = Vec::new();
+
+    while let Some(Ok((filename, _))) = entries.next().await {
+        if filename.starts_with("language_data_") && !current_filenames.contains(&filename) {
+            files_to_delete.push(filename);
+        }
+    }
+
+    Ok(files_to_delete)
 }

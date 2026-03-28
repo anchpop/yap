@@ -330,7 +330,7 @@ export function NoCardsReady({
           </Button>
         </div>
       ) : (
-      <Card className="overflow-hidden py-4 gap-2" animate>
+      <Card className="overflow-hidden px-2 py-4 gap-2" animate>
         <p className="text-lg font-semibold px-4 sm:px-8 text-center">
           {goalDone
             ? <>You're all done with<br /><span className="uppercase font-bold">{goalLabel}!</span></>
@@ -343,7 +343,7 @@ export function NoCardsReady({
         <div className="flex items-center justify-between gap-0">
           <button
             onClick={() => navigateGoal("left")}
-            className={`p-2 self-stretch transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
+            className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
             disabled={!canGoLeft}
             aria-label="Previous goal"
           >
@@ -432,7 +432,7 @@ export function NoCardsReady({
                             onClick={() => addNextCards(add_cards[0][1], add_cards[0][0])}
                             variant="default"
                             size="lg"
-                            className={`group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg ${
+                            className={`group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg whitespace-normal h-auto min-h-10 ${
                               add_cards.length > 1 ? "rounded-r-none" : ""
                             }`}
                           >
@@ -509,6 +509,27 @@ export function NoCardsReady({
                   >
                     change goal
                   </button>
+
+                  {categories.length > 1 && (
+                    <div className="flex sm:hidden items-center justify-between w-full">
+                      <button
+                        onClick={() => navigateGoal("left")}
+                        className={`p-2 transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
+                        disabled={!canGoLeft}
+                        aria-label="Previous goal"
+                      >
+                        <ChevronLeft className="h-6 w-6" />
+                      </button>
+                      <button
+                        onClick={() => navigateGoal("right")}
+                        className={`p-2 transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
+                        disabled={!canGoRight}
+                        aria-label="Next goal"
+                      >
+                        <ChevronRight className="h-6 w-6" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -516,7 +537,7 @@ export function NoCardsReady({
 
           <button
             onClick={() => navigateGoal("right")}
-            className={`p-2 self-stretch transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
+            className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
             disabled={!canGoRight}
             aria-label="Next goal"
           >
