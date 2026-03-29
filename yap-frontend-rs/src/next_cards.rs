@@ -45,6 +45,8 @@ pub(crate) struct NextCardsIterator {
     /// Only tracked cards (Added/Ghost). Unadded cards are derived from context.
     pub(crate) cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardData>,
     pub(crate) allowed_cards: AllowedCards,
+    /// Grams the user can comprehend in written form (includes placement test knowledge).
+    comprehensible_written: BTreeSet<SpurGram>,
     // Cached counts to avoid repeated iteration
     added_count: usize,
     card_type_counts: FxHashMap<CardType, u32>,
@@ -78,6 +80,7 @@ impl NextCardsIterator {
         // (text vs listening vs pronunciation) and the iterator's balancing logic.
         let early_term_n = (limit * 3).max(100);
 
+        let comprehensible_written = deck.get_comprehensible_written_grams(true);
         let cards = deck.cards.clone();
         let context = &deck.context;
         let regressions = &deck.regressions;
@@ -239,6 +242,7 @@ impl NextCardsIterator {
         Self {
             cards,
             allowed_cards,
+            comprehensible_written,
             added_count,
             card_type_counts,
             text_values,
@@ -326,11 +330,9 @@ impl NextCardsIterator {
             if self.is_added(&card) {
                 return None;
             }
-            // Only include if we already know this gram as a written card
-            if !self
-                .cards
-                .contains_key(&CardIndicator::WrittenGram { gram: *gram })
-            {
+            // Only include if the user comprehends this gram in written form
+            // (via card, placement test, or other means)
+            if !self.comprehensible_written.contains(gram) {
                 return None;
             }
             Some((card, rs_fsrs::Card::new(Utc::now())))

@@ -10,7 +10,7 @@ Fetch a user's events from Supabase, replay them to reconstruct their deck, and 
 ## How to run
 
 ```bash
-INSPECT_EMAIL=<email> cargo test -p yap-frontend-rs inspect_user_deck -- --nocapture
+INSPECT_EMAIL=<email> cargo test -p yap-frontend-rs inspect_user_deck -- --ignored --nocapture
 ```
 
 Requires `SUPABASE_SERVICE_ROLE_KEY` env var (should already be in `.env`).

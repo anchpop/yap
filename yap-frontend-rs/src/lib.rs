@@ -14,6 +14,7 @@ mod placement_test;
 pub mod profile;
 pub mod simulation;
 mod supabase;
+mod tiers;
 mod utils;
 
 pub use deck_event::*;
@@ -660,38 +661,7 @@ pub struct AddCardOptions {
 
 pub use deck_event::current::CardIndicator;
 
-/// Tier definitions for the frequency list. Each tier covers a range of the most frequent grams.
-/// The first element is the tier name, the second is how many new words this tier adds.
-const TIERS: &[(&str, usize)] = &[
-    ("Elementary", 200),
-    ("Core", 300),
-    ("Basic", 400),
-    ("Essential", 500),
-    ("Functional", 600),
-    ("Intermediate", 700),
-    ("Proficient", 800),
-    ("Advanced", 900),
-    ("Expert", 1000),
-    ("Specialized", 1100),
-    ("Esoteric", usize::MAX), // all remaining
-];
-
-const WORDS_PER_LEVEL: usize = 31;
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct TierInfo {
-    /// 1-indexed tier number
-    pub tier: u32,
-    /// Display name for this tier
-    pub name: String,
-    /// 1-indexed level within this tier
-    pub level: u32,
-    /// Total number of levels in this tier
-    pub total_levels: u32,
-    /// Percent known within the current level (0-100)
-    pub percent_known: f64,
-}
+pub use tiers::TierInfo;
 
 impl CardType {
     pub fn challenge_type(&self) -> ChallengeRequirements {
@@ -1825,65 +1795,13 @@ impl Deck {
         }
     }
 
-    /// Compute the percent known within the current tier (first tier not at 100%).
+    /// Compute the percent known within the first incomplete tier level.
     fn tier_percent_known_with(
         frequency_list: &language_utils::language_pack::FrequencyList,
         known_written: &BTreeSet<SpurGram>,
         known_listening: &BTreeSet<SpurGram>,
     ) -> f64 {
-        let all_grams: Vec<SpurGram> = frequency_list.entries.keys().copied().collect();
-        let mut offset = 0usize;
-
-        for &(_name, size) in TIERS {
-            let end = if size == usize::MAX {
-                all_grams.len()
-            } else {
-                (offset + size).min(all_grams.len())
-            };
-
-            if offset >= all_grams.len() {
-                return 100.0;
-            }
-
-            let tier_grams = &all_grams[offset..end];
-            let total_levels = tier_grams.len().div_ceil(WORDS_PER_LEVEL);
-
-            for level_idx in 0..total_levels {
-                let level_start = level_idx * WORDS_PER_LEVEL;
-                let level_end = ((level_idx + 1) * WORDS_PER_LEVEL).min(tier_grams.len());
-                let level_grams = &tier_grams[level_start..level_end];
-
-                let mut level_total: u64 = 0;
-                let mut level_known: f64 = 0.0;
-                for gram in level_grams {
-                    if let Some(freq) = frequency_list.entries.get(gram) {
-                        let count = freq.count as f64;
-                        level_total += freq.count as u64;
-                        let w = known_written.contains(gram);
-                        let l = known_listening.contains(gram);
-                        level_known += match (w, l) {
-                            (true, true) => count,
-                            (true, false) | (false, true) => count * 0.5,
-                            (false, false) => 0.0,
-                        };
-                    }
-                }
-
-                let pct = if level_total > 0 {
-                    level_known / level_total as f64 * 100.0
-                } else {
-                    100.0
-                };
-
-                if pct < 100.0 {
-                    return pct;
-                }
-            }
-
-            offset = end;
-        }
-
-        100.0
+        tiers::first_incomplete_level_pct(frequency_list, known_written, known_listening)
     }
 
     /// Get the percent known for a goal. For movies, uses the movie's frequency list.
@@ -2137,86 +2055,52 @@ impl Deck {
         })
     }
 
-    /// Get the user's current tier (first tier not at 100%) and their progress within it.
+    /// Get the tier level where adding the next batch of cards makes the most progress.
+    /// Falls back to the first incomplete level if no cards improve any level.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_current_tier(&self) -> TierInfo {
-        let written = self.get_comprehensible_written_grams(true);
-        let listening = self.get_comprehensible_listening_grams(true);
-        let entries = &self.context.language_pack.gram_frequencies.entries;
-        let all_grams: Vec<SpurGram> = entries.keys().copied().collect();
+        let freq_list = &self.context.language_pack.gram_frequencies;
+        let all_grams: Vec<SpurGram> = freq_list.entries.keys().copied().collect();
+        let levels = tiers::tier_level_slices(&all_grams, freq_list);
 
-        let mut offset = 0usize;
-        for (i, &(name, size)) in TIERS.iter().enumerate() {
-            let end = if size == usize::MAX {
-                all_grams.len()
-            } else {
-                (offset + size).min(all_grams.len())
-            };
+        let current_written = self.get_comprehensible_written_grams(true);
+        let current_listening = self.get_comprehensible_listening_grams(true);
 
-            if offset >= all_grams.len() {
-                return TierInfo {
-                    tier: (i + 1) as u32,
-                    name: name.to_string(),
-                    level: 1,
-                    total_levels: 1,
-                    percent_known: 100.0,
-                };
-            }
+        // Compute what smart add would suggest
+        let max_cards = self.max_cards_to_add();
+        let smart_add_cards: Vec<_> = self
+            .next_unknown_cards(
+                AllowedCards::BannedRequirements(BTreeSet::new()),
+                &self.goal,
+                max_cards,
+            )
+            .take(max_cards)
+            .collect();
 
-            let tier_grams = &all_grams[offset..end];
-            let total_levels = tier_grams.len().div_ceil(WORDS_PER_LEVEL) as u32;
-
-            // Check each level within this tier
-            for level_idx in 0..total_levels {
-                let level_start = level_idx as usize * WORDS_PER_LEVEL;
-                let level_end = ((level_idx as usize + 1) * WORDS_PER_LEVEL).min(tier_grams.len());
-                let level_grams = &tier_grams[level_start..level_end];
-
-                let mut level_total: u64 = 0;
-                let mut level_known: f64 = 0.0;
-                for gram in level_grams {
-                    if let Some(freq) = entries.get(gram) {
-                        let count = freq.count as f64;
-                        level_total += freq.count as u64;
-                        let w = written.contains(gram);
-                        let l = listening.contains(gram);
-                        level_known += match (w, l) {
-                            (true, true) => count,
-                            (true, false) | (false, true) => count * 0.5,
-                            (false, false) => 0.0,
-                        };
-                    }
+        let mut projected_written = current_written.clone();
+        let mut projected_listening = current_listening.clone();
+        for card in &smart_add_cards {
+            match card {
+                CardIndicator::WrittenGram { gram } => {
+                    projected_written.insert(*gram);
                 }
-
-                let pct = if level_total > 0 {
-                    level_known / level_total as f64 * 100.0
-                } else {
-                    100.0
-                };
-
-                if pct < 100.0 {
-                    return TierInfo {
-                        tier: (i + 1) as u32,
-                        name: name.to_string(),
-                        level: level_idx + 1,
-                        total_levels,
-                        percent_known: pct,
-                    };
+                CardIndicator::ListeningGram { gram } => {
+                    projected_listening.insert(*gram);
                 }
+                CardIndicator::LetterPronunciation { .. } => {}
             }
-
-            offset = end;
         }
 
-        // All tiers complete
-        let last = TIERS.len();
-        TierInfo {
-            tier: last as u32,
-            name: TIERS[last - 1].0.to_string(),
-            level: 1,
-            total_levels: 1,
-            percent_known: 100.0,
-        }
+        let level = tiers::best_tier_level(
+            &levels,
+            freq_list,
+            &current_written,
+            &current_listening,
+            &projected_written,
+            &projected_listening,
+        );
+        let pct = level.known_pct(freq_list, &current_written, &current_listening);
+        level.to_tier_info(pct)
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -2494,9 +2378,31 @@ impl Deck {
             }
         }
 
-        let score_after =
-            self.goal_percent_known_with(&goal, &projected_written, &projected_listening);
-        let percent_known_after = score_after.percent_known;
+        let percent_known_after = match &goal {
+            Some(_) => {
+                self.goal_percent_known_with(&goal, &projected_written, &projected_listening)
+                    .percent_known
+            }
+            None => {
+                // For essential (no goal), find the tier level where these cards help most
+                // and report the projected percent for that level.
+                let freq_list = &self.context.language_pack.gram_frequencies;
+                let all_grams: Vec<SpurGram> = freq_list.entries.keys().copied().collect();
+                let levels = tiers::tier_level_slices(&all_grams, freq_list);
+                let current_written = self.get_comprehensible_written_grams(true);
+                let current_listening = self.get_comprehensible_listening_grams(true);
+
+                let level = tiers::best_tier_level(
+                    &levels,
+                    freq_list,
+                    &current_written,
+                    &current_listening,
+                    &projected_written,
+                    &projected_listening,
+                );
+                level.known_pct(freq_list, &projected_written, &projected_listening)
+            }
+        };
 
         let preview: Vec<String> = smart_add_cards
             .iter()
@@ -4800,6 +4706,7 @@ mod tests {
     ///
     /// Requires SUPABASE_SERVICE_ROLE_KEY env var.
     #[tokio::test]
+    #[ignore]
     async fn inspect_user_deck() {
         let email = match std::env::var("INSPECT_EMAIL") {
             Ok(e) => e,
@@ -4995,145 +4902,6 @@ mod tests {
         println!("  Level progress: {:.1}%", tier.percent_known);
 
         let goal = deck.goal.clone();
-        let score = deck.goal_percent_known(&goal);
-        println!("  Goal comprehension: {:.2}%", score.percent_known);
-        println!("  All available learned: {}", score.all_available_learned);
-
-        // Show what grams are in the current tier level that aren't known yet
-        {
-            let written = deck.get_comprehensible_written_grams(true);
-            let listening = deck.get_comprehensible_listening_grams(true);
-            let entries = &deck.context.language_pack.gram_frequencies.entries;
-            let all_grams: Vec<_> = entries.keys().copied().collect();
-
-            // Find the current tier/level boundaries
-            let mut offset = 0usize;
-            let mut found_level_grams = None;
-            'outer: for &(_name, size) in TIERS {
-                let end = if size == usize::MAX {
-                    all_grams.len()
-                } else {
-                    (offset + size).min(all_grams.len())
-                };
-                if offset >= all_grams.len() {
-                    break;
-                }
-                let tier_grams = &all_grams[offset..end];
-                let total_levels = tier_grams.len().div_ceil(WORDS_PER_LEVEL);
-                for level_idx in 0..total_levels {
-                    let level_start = level_idx * WORDS_PER_LEVEL;
-                    let level_end = ((level_idx + 1) * WORDS_PER_LEVEL).min(tier_grams.len());
-                    let level_grams = &tier_grams[level_start..level_end];
-
-                    // Check if this level is incomplete
-                    let unknown: Vec<_> = level_grams
-                        .iter()
-                        .filter(|g| !written.contains(g) || !listening.contains(g))
-                        .collect();
-                    if !unknown.is_empty() {
-                        found_level_grams = Some((unknown, level_grams.to_vec()));
-                        break 'outer;
-                    }
-                }
-                offset = end;
-            }
-
-            if let Some((unknown, _all_level)) = found_level_grams {
-                println!("\n=== Unknown grams in current tier level ===");
-                for gram in &unknown {
-                    let resolved = deck
-                        .context
-                        .language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&deck.context.language_pack.string_rodeo);
-                    let display = resolved.to_display_string(deck.context.course.target_language);
-                    let in_written = written.contains(gram);
-                    let in_listening = listening.contains(gram);
-                    let status = match (in_written, in_listening) {
-                        (true, false) => " (written only)",
-                        (false, true) => " (listening only)",
-                        (false, false) => " (unknown)",
-                        (true, true) => " (known?!)",
-                    };
-                    // Check if this gram appears in the next-cards-to-add
-                    let in_next_cards = deck
-                        .cards
-                        .contains_key(&CardIndicator::WrittenGram { gram: **gram });
-                    println!("  {display}{status} — already has card: {in_next_cards}");
-                }
-            }
-        }
-
-        // Check why "yo" listening isn't being suggested
-        {
-            let yo_grams = deck.context.language_pack.string_to_grams.get("yo");
-            if let Some(grams) = yo_grams {
-                println!("\n=== Debugging 'yo' ===");
-                for gram in grams {
-                    let resolved = deck
-                        .context
-                        .language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&deck.context.language_pack.string_rodeo);
-                    let display = resolved.to_display_string(deck.context.course.target_language);
-
-                    let written_card = CardIndicator::WrittenGram { gram: *gram };
-                    let listening_card = CardIndicator::ListeningGram { gram: *gram };
-                    let written_status = deck.cards.get(&written_card);
-                    let listening_status = deck.cards.get(&listening_card);
-                    println!("  gram: {display}");
-                    println!("    WrittenGram card: {written_status:?}");
-                    println!("    ListeningGram card: {listening_status:?}");
-
-                    // Check the frequency and value
-                    if let Some(freq) = deck
-                        .context
-                        .language_pack
-                        .gram_frequencies
-                        .entries
-                        .get(gram)
-                    {
-                        println!(
-                            "    Frequency: count={}, ln_freq={:.3}",
-                            freq.count,
-                            freq.ln_frequency()
-                        );
-                        let value = deck.context.card_value_with_frequency(
-                            &listening_card,
-                            deck.cards.get(&listening_card),
-                            &deck.regressions,
-                            *freq,
-                        );
-                        println!("    Listening card value: {value:?}");
-                    } else {
-                        println!("    NOT in gram_frequencies!");
-                    }
-                }
-            }
-
-            // Also show the top listening values from the iterator
-            let iter = deck.next_unknown_cards(
-                next_cards::AllowedCards::Type(CardType::Listening),
-                &goal,
-                20,
-            );
-            println!("\n  Top listening cards from iterator:");
-            for (i, card) in iter.take(10).enumerate() {
-                let display = match &card {
-                    CardIndicator::ListeningGram { gram } => deck
-                        .context
-                        .language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&deck.context.language_pack.string_rodeo)
-                        .to_display_string(deck.context.course.target_language),
-                    _ => format!("{card:?}"),
-                };
-                println!("    {}. {display}", i + 1);
-            }
-        }
 
         println!("\n=== Add Card Options (Smart Add) ===");
         let options = deck.add_card_options(vec![], goal);
@@ -5147,11 +4915,53 @@ mod tests {
             println!("    {card_type:?}: {count} available");
         }
         println!("  Preview of next cards to add:");
-        for (i, card) in options.preview.iter().enumerate().take(20) {
-            println!("    {}. {}", i + 1, card);
-        }
-        if options.preview.len() > 20 {
-            println!("    ... and {} more", options.preview.len() - 20);
+        {
+            let freq_entries = &deck.context.language_pack.gram_frequencies.entries;
+            let smart_add_cards: Vec<_> = deck
+                .next_unknown_cards(
+                    AllowedCards::BannedRequirements(BTreeSet::new()),
+                    &deck.goal,
+                    deck.max_cards_to_add(),
+                )
+                .take(deck.max_cards_to_add())
+                .collect();
+            for (i, card) in smart_add_cards.iter().enumerate() {
+                let (display, gram) = match card {
+                    CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                        let resolved = deck
+                            .context
+                            .language_pack
+                            .gram_rodeo
+                            .resolve(gram)
+                            .resolve(&deck.context.language_pack.string_rodeo);
+                        (
+                            resolved.to_display_string(deck.context.course.target_language),
+                            Some(gram),
+                        )
+                    }
+                    CardIndicator::LetterPronunciation { pattern, .. } => (
+                        deck.context
+                            .language_pack
+                            .string_rodeo
+                            .resolve(pattern)
+                            .to_string(),
+                        None,
+                    ),
+                };
+                let card_type = match card {
+                    CardIndicator::WrittenGram { .. } => "written",
+                    CardIndicator::ListeningGram { .. } => "listening",
+                    CardIndicator::LetterPronunciation { .. } => "pronunciation",
+                };
+                let freq_info = gram
+                    .and_then(|g| {
+                        let rank = freq_entries.keys().position(|k| k == g)?;
+                        let freq = freq_entries.get(g)?;
+                        Some(format!("rank #{}, count={}", rank + 1, freq.count))
+                    })
+                    .unwrap_or_else(|| "not in freq list".to_string());
+                println!("    {}. {display} ({card_type}, {freq_info})", i + 1);
+            }
         }
     }
 }
