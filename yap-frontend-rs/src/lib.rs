@@ -242,10 +242,7 @@ impl Weapon {
             })
     }
 
-    pub async fn get_deck_state(
-        &self,
-        course: Course,
-    ) -> Result<Deck, JsValue> {
+    pub async fn get_deck_state(&self, course: Course) -> Result<Deck, JsValue> {
         let language_pack = self
             .language_pack
             .borrow()
@@ -1891,8 +1888,7 @@ impl Deck {
 
     /// Get the percent known for a goal. For movies, uses the movie's frequency list.
     /// For essential (None), returns the current tier/level percent.
-    #[allow(dead_code)]
-    fn goal_percent_known(&self, goal: &Option<GoalSelection>) -> ComprehensionScore {
+    pub fn goal_percent_known(&self, goal: &Option<GoalSelection>) -> ComprehensionScore {
         let written = self.get_comprehensible_written_grams(true);
         let listening = self.get_comprehensible_listening_grams(true);
         self.goal_percent_known_with(goal, &written, &listening)
@@ -2970,9 +2966,9 @@ pub struct FrequencyKnowledgePoint {
     pub example_words: String,
 }
 
-struct ComprehensionScore {
-    percent_known: f64,
-    all_available_learned: bool,
+pub struct ComprehensionScore {
+    pub percent_known: f64,
+    pub all_available_learned: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -4794,5 +4790,368 @@ mod tests {
             ),
             "Listening challenge for common word 'à' should be a transcription, not a flashcard"
         );
+    }
+
+    /// Fetch a user's events from Supabase and print their deck state + add card options.
+    /// The language pair is auto-detected from deck_selection events.
+    ///
+    /// Usage:
+    ///   INSPECT_EMAIL=user@example.com cargo test -p yap-frontend-rs inspect_user_deck -- --nocapture
+    ///
+    /// Requires SUPABASE_SERVICE_ROLE_KEY env var.
+    #[tokio::test]
+    async fn inspect_user_deck() {
+        let email = match std::env::var("INSPECT_EMAIL") {
+            Ok(e) => e,
+            Err(_) => {
+                println!("Skipping: set INSPECT_EMAIL to run this test");
+                return;
+            }
+        };
+        let service_role_key = std::env::var("SUPABASE_SERVICE_ROLE_KEY")
+            .expect("SUPABASE_SERVICE_ROLE_KEY env var required");
+        let supabase_url = std::env::var("SUPABASE_URL")
+            .unwrap_or_else(|_| "https://eearwzqotpfoderpfrqx.supabase.co".to_string());
+
+        let client = reqwest::Client::new();
+
+        // 1. Look up user by email
+        println!("Looking up user: {email}");
+        let resp: serde_json::Value = client
+            .get(format!("{supabase_url}/auth/v1/admin/users"))
+            .header("apikey", &service_role_key)
+            .header("Authorization", format!("Bearer {service_role_key}"))
+            .send()
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+
+        let user_id = resp["users"]
+            .as_array()
+            .expect("Expected users array")
+            .iter()
+            .find(|u| u["email"].as_str() == Some(&email))
+            .unwrap_or_else(|| panic!("No user found with email: {email}"))["id"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        println!("Found user_id: {user_id}");
+
+        // 2. Fetch all events (paginated)
+        println!("Fetching events...");
+        let mut all_events: Vec<serde_json::Value> = Vec::new();
+        let page_size = 1000;
+        let mut offset = 0;
+        loop {
+            let page: Vec<serde_json::Value> = client
+                .get(format!(
+                    "{supabase_url}/rest/v1/events?user_id=eq.{user_id}&order=id.asc&limit={page_size}&offset={offset}"
+                ))
+                .header("apikey", &service_role_key)
+                .header("Authorization", format!("Bearer {service_role_key}"))
+                .send()
+                .await
+                .unwrap()
+                .json()
+                .await
+                .unwrap();
+            let count = page.len();
+            all_events.extend(page);
+            if count < page_size {
+                break;
+            }
+            offset += page_size;
+        }
+        println!("Fetched {} total events", all_events.len());
+
+        // 3. Group by (stream_id, device_id) and load into EventStore
+        use std::collections::BTreeMap;
+        use weapon::data_model::{EventStore, EventType, Timestamped};
+
+        let mut grouped: BTreeMap<String, BTreeMap<String, Vec<Timestamped<serde_json::Value>>>> =
+            BTreeMap::new();
+        for row in &all_events {
+            let stream_id = row["stream_id"].as_str().unwrap_or("reviews").to_string();
+            let device_id = row["device_id"].as_str().unwrap_or("unknown").to_string();
+            let event_value = match &row["event"] {
+                serde_json::Value::String(s) => serde_json::from_str(s).unwrap(),
+                v => v.clone(),
+            };
+            let timestamped: Timestamped<serde_json::Value> =
+                serde_json::from_value(event_value).unwrap();
+            grouped
+                .entry(stream_id)
+                .or_default()
+                .entry(device_id)
+                .or_default()
+                .push(timestamped);
+        }
+
+        let mut store: EventStore<String, String> = EventStore::default();
+        store.get_or_insert_default::<EventType<DeckEvent>>("reviews".to_string(), None);
+        store.get_or_insert_default::<EventType<DeckSelectionEvent>>(
+            "deck_selection".to_string(),
+            None,
+        );
+
+        for (stream_id, devices) in grouped {
+            let total: usize = devices.values().map(|v| v.len()).sum();
+            println!(
+                "  Stream '{stream_id}': {total} events across {} device(s)",
+                devices.len()
+            );
+            for (device_id, events) in devices {
+                store.add_device_events_jsons(stream_id.clone(), device_id, events, None);
+            }
+        }
+
+        // 4. Replay deck_selection to auto-detect language pair
+        let deck_selection = store
+            .get::<EventType<DeckSelectionEvent>>("deck_selection".to_string())
+            .map(|s| {
+                s.state(
+                    deck_selection::DeckSelectionPartial {
+                        target_language: None,
+                        native_language: None,
+                        onboarding_selections: BTreeMap::new(),
+                        heard_about: None,
+                    },
+                    &(),
+                )
+            });
+
+        let detected_target = deck_selection
+            .as_ref()
+            .and_then(|ds: &deck_selection::DeckSelection| ds.target_language);
+        let detected_native = deck_selection
+            .as_ref()
+            .and_then(|ds: &deck_selection::DeckSelection| ds.native_language);
+
+        println!("\n=== Deck Selection ===");
+        println!("  Detected target language: {detected_target:?}");
+        println!("  Detected native language: {detected_native:?}");
+        if let Some(ref ds) = deck_selection {
+            println!("  Onboarding selections: {:?}", ds.onboarding_selections);
+        }
+
+        let target =
+            detected_target.expect("Could not detect target language from deck_selection events");
+        let native = detected_native.unwrap_or(Language::English);
+
+        println!("  Using: {target} for {native}");
+
+        // 5. Load language pack and compute deck state
+        let rkyv_path = format!(
+            "../out/{}_for_{}/language_data.rkyv",
+            target.iso_639_3(),
+            native.iso_639_3()
+        );
+        let bytes =
+            std::fs::read(&rkyv_path).unwrap_or_else(|e| panic!("Failed to read {rkyv_path}: {e}"));
+        let archived = rkyv::access::<
+            language_utils::language_pack::ArchivedLanguagePack,
+            rkyv::rancor::Error,
+        >(&bytes)
+        .unwrap();
+        let language_pack: LanguagePack =
+            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        let language_pack = Arc::new(language_pack);
+
+        let course = Course {
+            target_language: target,
+            native_language: native,
+        };
+        let context = Context {
+            language_pack,
+            course,
+        };
+        let initial_state = DeckState::new();
+        let stream = store
+            .get::<EventType<DeckEvent>>("reviews".to_string())
+            .expect("reviews stream should exist");
+        let deck: Deck = stream.state(initial_state, &context);
+
+        // 6. Print report
+        println!("\n=== Deck State ===");
+        println!("  Total cards: {}", deck.num_cards());
+        println!("  Total reviews: {}", deck.stats.total_reviews);
+        println!("  XP: {:.1}", deck.stats.xp);
+        println!(
+            "  Has placement test: {}",
+            deck.placement_test_results.is_some()
+        );
+        println!("  Leeches: {}", deck.leeches.len());
+        println!("  Start time: {:?}", deck.stats.start_time);
+        println!("  Current goal: {:?}", deck.goal);
+
+        let tier = deck.get_current_tier();
+        println!("\n=== Progress ===");
+        println!(
+            "  Current tier: {} (tier {}), level {}/{}",
+            tier.name, tier.tier, tier.level, tier.total_levels
+        );
+        println!("  Level progress: {:.1}%", tier.percent_known);
+
+        let goal = deck.goal.clone();
+        let score = deck.goal_percent_known(&goal);
+        println!("  Goal comprehension: {:.2}%", score.percent_known);
+        println!("  All available learned: {}", score.all_available_learned);
+
+        // Show what grams are in the current tier level that aren't known yet
+        {
+            let written = deck.get_comprehensible_written_grams(true);
+            let listening = deck.get_comprehensible_listening_grams(true);
+            let entries = &deck.context.language_pack.gram_frequencies.entries;
+            let all_grams: Vec<_> = entries.keys().copied().collect();
+
+            // Find the current tier/level boundaries
+            let mut offset = 0usize;
+            let mut found_level_grams = None;
+            'outer: for &(_name, size) in TIERS {
+                let end = if size == usize::MAX {
+                    all_grams.len()
+                } else {
+                    (offset + size).min(all_grams.len())
+                };
+                if offset >= all_grams.len() {
+                    break;
+                }
+                let tier_grams = &all_grams[offset..end];
+                let total_levels = tier_grams.len().div_ceil(WORDS_PER_LEVEL);
+                for level_idx in 0..total_levels {
+                    let level_start = level_idx * WORDS_PER_LEVEL;
+                    let level_end = ((level_idx + 1) * WORDS_PER_LEVEL).min(tier_grams.len());
+                    let level_grams = &tier_grams[level_start..level_end];
+
+                    // Check if this level is incomplete
+                    let unknown: Vec<_> = level_grams
+                        .iter()
+                        .filter(|g| !written.contains(g) || !listening.contains(g))
+                        .collect();
+                    if !unknown.is_empty() {
+                        found_level_grams = Some((unknown, level_grams.to_vec()));
+                        break 'outer;
+                    }
+                }
+                offset = end;
+            }
+
+            if let Some((unknown, _all_level)) = found_level_grams {
+                println!("\n=== Unknown grams in current tier level ===");
+                for gram in &unknown {
+                    let resolved = deck
+                        .context
+                        .language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&deck.context.language_pack.string_rodeo);
+                    let display = resolved.to_display_string(deck.context.course.target_language);
+                    let in_written = written.contains(gram);
+                    let in_listening = listening.contains(gram);
+                    let status = match (in_written, in_listening) {
+                        (true, false) => " (written only)",
+                        (false, true) => " (listening only)",
+                        (false, false) => " (unknown)",
+                        (true, true) => " (known?!)",
+                    };
+                    // Check if this gram appears in the next-cards-to-add
+                    let in_next_cards = deck
+                        .cards
+                        .contains_key(&CardIndicator::WrittenGram { gram: **gram });
+                    println!("  {display}{status} — already has card: {in_next_cards}");
+                }
+            }
+        }
+
+        // Check why "yo" listening isn't being suggested
+        {
+            let yo_grams = deck.context.language_pack.string_to_grams.get("yo");
+            if let Some(grams) = yo_grams {
+                println!("\n=== Debugging 'yo' ===");
+                for gram in grams {
+                    let resolved = deck
+                        .context
+                        .language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&deck.context.language_pack.string_rodeo);
+                    let display = resolved.to_display_string(deck.context.course.target_language);
+
+                    let written_card = CardIndicator::WrittenGram { gram: *gram };
+                    let listening_card = CardIndicator::ListeningGram { gram: *gram };
+                    let written_status = deck.cards.get(&written_card);
+                    let listening_status = deck.cards.get(&listening_card);
+                    println!("  gram: {display}");
+                    println!("    WrittenGram card: {written_status:?}");
+                    println!("    ListeningGram card: {listening_status:?}");
+
+                    // Check the frequency and value
+                    if let Some(freq) = deck
+                        .context
+                        .language_pack
+                        .gram_frequencies
+                        .entries
+                        .get(gram)
+                    {
+                        println!(
+                            "    Frequency: count={}, ln_freq={:.3}",
+                            freq.count,
+                            freq.ln_frequency()
+                        );
+                        let value = deck.context.card_value_with_frequency(
+                            &listening_card,
+                            deck.cards.get(&listening_card),
+                            &deck.regressions,
+                            *freq,
+                        );
+                        println!("    Listening card value: {value:?}");
+                    } else {
+                        println!("    NOT in gram_frequencies!");
+                    }
+                }
+            }
+
+            // Also show the top listening values from the iterator
+            let iter = deck.next_unknown_cards(
+                next_cards::AllowedCards::Type(CardType::Listening),
+                &goal,
+                20,
+            );
+            println!("\n  Top listening cards from iterator:");
+            for (i, card) in iter.take(10).enumerate() {
+                let display = match &card {
+                    CardIndicator::ListeningGram { gram } => deck
+                        .context
+                        .language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&deck.context.language_pack.string_rodeo)
+                        .to_display_string(deck.context.course.target_language),
+                    _ => format!("{card:?}"),
+                };
+                println!("    {}. {display}", i + 1);
+            }
+        }
+
+        println!("\n=== Add Card Options (Smart Add) ===");
+        let options = deck.add_card_options(vec![], goal);
+        println!("  Smart add count: {}", options.smart_add);
+        println!(
+            "  Projected percent known after: {:.2}%",
+            options.percent_known_after
+        );
+        println!("  Manual add options:");
+        for (count, card_type) in &options.manual_add {
+            println!("    {card_type:?}: {count} available");
+        }
+        println!("  Preview of next cards to add:");
+        for (i, card) in options.preview.iter().enumerate().take(20) {
+            println!("    {}. {}", i + 1, card);
+        }
+        if options.preview.len() > 20 {
+            println!("    ... and {} more", options.preview.len() - 20);
+        }
     }
 }

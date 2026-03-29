@@ -262,8 +262,7 @@ async fn main() -> anyhow::Result<()> {
                 Ok(f) => f,
                 Err(e) => {
                     return Err(anyhow::anyhow!(
-                        "Error creating target_language sentences file: {}",
-                        e
+                        "Error creating target_language sentences file: {e}"
                     ));
                 }
             };
@@ -272,7 +271,7 @@ async fn main() -> anyhow::Result<()> {
             let translations_file_handle = match File::create(translations_file.clone()) {
                 Ok(f) => f,
                 Err(e) => {
-                    return Err(anyhow::anyhow!("Error creating translations file: {}", e));
+                    return Err(anyhow::anyhow!("Error creating translations file: {e}"));
                 }
             };
             let mut translations_writer = BufWriter::new(translations_file_handle);
@@ -280,10 +279,7 @@ async fn main() -> anyhow::Result<()> {
             let sentence_sources_file_handle = match File::create(sentence_sources_file.clone()) {
                 Ok(f) => f,
                 Err(e) => {
-                    return Err(anyhow::anyhow!(
-                        "Error creating sentence sources file: {}",
-                        e
-                    ));
+                    return Err(anyhow::anyhow!("Error creating sentence sources file: {e}"));
                 }
             };
             let mut sentence_sources_writer = BufWriter::new(sentence_sources_file_handle);

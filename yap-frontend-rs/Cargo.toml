@@ -68,6 +68,8 @@ itertools = "0.14.0"
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
 criterion = { version = "0.5", features = ["html_reports"] }
+tokio = { workspace = true }
+reqwest = { workspace = true }
 
 [[bench]]
 name = "simulation"

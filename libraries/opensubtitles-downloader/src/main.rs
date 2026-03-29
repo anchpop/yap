@@ -484,7 +484,7 @@ impl TmdbClient {
         let find_response: TmdbFindResponse = serde_json::from_str(&response_text)?;
 
         if find_response.movie_results.is_empty() {
-            return Err(anyhow!("No movie found for IMDB ID {}", imdb_id));
+            return Err(anyhow!("No movie found for IMDB ID {imdb_id}"));
         }
 
         // Rate limiting: wait 300ms between requests (TMDB allows ~40 req/10s)
@@ -564,7 +564,7 @@ impl OpenSubtitlesClient {
 
         if !status.is_success() {
             let error_text = response.text().await?;
-            return Err(anyhow!("API error ({}): {}", status, error_text));
+            return Err(anyhow!("API error ({status}): {error_text}"));
         }
 
         let popular_response: PopularMoviesResponse = response.json().await?;
@@ -646,13 +646,13 @@ fn parse_srt(srt_content: &str) -> Result<Vec<SubtitleLineJson>> {
         srt_content,
         25.0, // fps (not used for SRT but required parameter)
     )
-    .map_err(|e| anyhow!("Failed to parse SRT: {:?}", e))?;
+    .map_err(|e| anyhow!("Failed to parse SRT: {e:?}"))?;
 
     let mut lines = Vec::new();
 
     for entry in subtitle_file
         .get_subtitle_entries()
-        .map_err(|e| anyhow!("Failed to get subtitle entries: {:?}", e))?
+        .map_err(|e| anyhow!("Failed to get subtitle entries: {e:?}"))?
     {
         // entry.line is Option<String>
         let text = match &entry.line {

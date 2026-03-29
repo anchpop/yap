@@ -131,7 +131,7 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
 
     let terms = download_category(category)
         .await
-        .map_err(|e| anyhow::anyhow!("{}", e))
+        .map_err(|e| anyhow::anyhow!("{e}"))
         .context(format!("Failed to download {category}"))?;
 
     Ok(terms)

@@ -108,7 +108,7 @@ pub async fn process_sentences(
 ) -> Result<BTreeMap<String, Vec<lexide::Token>>> {
     // Check if language is supported
     let lexide_language = to_lexide_language(language)
-        .ok_or_else(|| anyhow::anyhow!("Language {} is not yet supported by lexide", language))?;
+        .ok_or_else(|| anyhow::anyhow!("Language {language} is not yet supported by lexide"))?;
 
     // Initialize lexide
     let lexide = Lexide::from_server("https://anchpop--lexide-gemma-3-27b-vllm-serve.modal.run")

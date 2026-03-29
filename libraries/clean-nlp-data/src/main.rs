@@ -157,8 +157,7 @@ fn parse_language_code(code: &str) -> anyhow::Result<Language> {
         "ita" => Ok(Language::Italian),
         "rus" => Ok(Language::Russian),
         _ => Err(anyhow!(
-            "Unknown language code '{}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus",
-            code
+            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus"
         )),
     }
 }

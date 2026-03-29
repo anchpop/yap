@@ -302,7 +302,7 @@ pub mod french {
         let mood_prefix = match mood {
             "indicative" => "roa-indicative-left-rail",
             "subjunctive" => "roa-subjunctive-left-rail",
-            _ => anyhow::bail!("Unknown mood: {}", mood),
+            _ => anyhow::bail!("Unknown mood: {mood}"),
         };
 
         // Find the header for this tense
@@ -1009,7 +1009,7 @@ pub mod spanish {
         let tense_keyword = match mood {
             "indicative" => format!("{spanish_tense} de indicativo"),
             "subjunctive" => format!("{spanish_tense} de subjuntivo"),
-            _ => anyhow::bail!("Unknown mood: {}", mood),
+            _ => anyhow::bail!("Unknown mood: {mood}"),
         };
 
         let mut tense_row_ref = None;
@@ -1614,7 +1614,7 @@ pub mod german {
             }
         }
 
-        anyhow::bail!("Failed to find {} participle", participle_type)
+        anyhow::bail!("Failed to find {participle_type} participle")
     }
 
     fn parse_auxiliary(document: &Html) -> anyhow::Result<GermanAuxiliary> {
@@ -1735,15 +1735,10 @@ pub mod german {
                         }
                     }
                     if !found {
-                        anyhow::bail!("Failed to find {} {} {} form", person, number, tense_marker);
+                        anyhow::bail!("Failed to find {person} {number} {tense_marker} form");
                     }
                 } else {
-                    anyhow::bail!(
-                        "Invalid selector for {} {} {}",
-                        person,
-                        number,
-                        tense_marker
-                    );
+                    anyhow::bail!("Invalid selector for {person} {number} {tense_marker}");
                 }
             }
         }
@@ -2003,7 +1998,7 @@ pub mod german {
             }
         }
 
-        anyhow::bail!("Failed to find {} {} form", case, number)
+        anyhow::bail!("Failed to find {case} {number} form")
     }
 
     /// Fetch German noun declensions from Wiktionary with HTML caching
@@ -2403,7 +2398,7 @@ pub mod portuguese {
         let th_selector = match mood {
             "indicative" => Selector::parse("th.roa-indicative-left-rail").unwrap(),
             "subjunctive" => Selector::parse("th.roa-subjunctive-left-rail").unwrap(),
-            _ => anyhow::bail!("Unknown mood: {}", mood),
+            _ => anyhow::bail!("Unknown mood: {mood}"),
         };
         let a_selector = Selector::parse("a").unwrap();
         let strong_selector = Selector::parse("strong.selflink").unwrap();
@@ -2994,7 +2989,7 @@ pub mod italian {
         let th_selector = match mood {
             "indicative" => Selector::parse("th.roa-indicative-left-rail").unwrap(),
             "subjunctive" => Selector::parse("th.roa-subjunctive-left-rail").unwrap(),
-            _ => anyhow::bail!("Unknown mood: {}", mood),
+            _ => anyhow::bail!("Unknown mood: {mood}"),
         };
         let a_selector = Selector::parse("a").unwrap();
         let strong_selector = Selector::parse("strong.selflink").unwrap();
@@ -4036,15 +4031,10 @@ pub mod russian {
                         }
                     }
                     if !found {
-                        anyhow::bail!("Failed to find {} {} {} form", person, number, tense_marker);
+                        anyhow::bail!("Failed to find {person} {number} {tense_marker} form");
                     }
                 } else {
-                    anyhow::bail!(
-                        "Invalid selector for {} {} {}",
-                        person,
-                        number,
-                        tense_marker
-                    );
+                    anyhow::bail!("Invalid selector for {person} {number} {tense_marker}");
                 }
             }
         }
