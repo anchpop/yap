@@ -1181,19 +1181,6 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
     weapon.request_reviews()
   }, [weapon])
 
-  // Pre-warm language pack from cached course while waiting for weapon streams
-  useEffect(() => {
-    try {
-      const cached = localStorage.getItem(LAST_COURSE_KEY)
-      if (!cached) return
-      const course: Course = JSON.parse(cached)
-      if (!course.nativeLanguage || !course.targetLanguage) return
-      weapon.get_language_pack(course, (message: string, progress: number) => {
-        setLoadingState({ message, progress })
-      }).catch(() => { /* pre-warm failure is fine, real flow will retry */ })
-    } catch { /* ignore parse errors */ }
-  }, [weapon])
-
   const getSnapshot = useCallback(() => {
     try {
       const num_reviews = weapon.get_stream_num_events("reviews")
@@ -1223,75 +1210,96 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
     setRetryCount(count => count + 1)
   }, [])
 
-  const state = useAsyncMemo(async () => {
-    if (numEvents === null) {
-      return null
-    }
+  // Determine course: from weapon streams if ready, else from localStorage cache
+  const deck_selection = weapon.get_deck_selection_state()
+  const courseParts = numEvents !== null && deck_selection?.targetLanguage && deck_selection?.nativeLanguage
+    ? { nativeLanguage: deck_selection.nativeLanguage, targetLanguage: deck_selection.targetLanguage }
+    : null
+  if (courseParts) {
+    localStorage.setItem(LAST_COURSE_KEY, JSON.stringify(courseParts))
+  }
+  const cachedCourse = useMemo<Course | null>(() => {
+    try {
+      const cached = localStorage.getItem(LAST_COURSE_KEY)
+      if (!cached) return null
+      const parsed = JSON.parse(cached)
+      if (parsed.nativeLanguage && parsed.targetLanguage) return parsed
+    } catch { /* ignore */ }
+    return null
+  }, [])
+  const course = courseParts ?? cachedCourse
 
-    const deck_selection = weapon.get_deck_selection_state()
-    if (deck_selection === undefined || deck_selection === null) {
-      return null
-    }
-    if (deck_selection.targetLanguage === undefined || deck_selection.targetLanguage === null || deck_selection.nativeLanguage === undefined || deck_selection.nativeLanguage === null) {
-      return { type: "noLanguageSelected" } as { type: "noLanguageSelected" }
-    } else {
-      const course: Course = {
-        nativeLanguage: deck_selection.nativeLanguage,
-        targetLanguage: deck_selection.targetLanguage,
-      }
-
-      try {
+  // Fetch language pack — only re-runs when course changes, not when numEvents changes
+  const languagePackResult = useAsyncMemo(async () => {
+    if (!course) return null
+    Sentry.addBreadcrumb({
+      category: "language-pack",
+      message: `Loading language pack: ${course.targetLanguage} → ${course.nativeLanguage}`,
+      level: "info",
+    })
+    try {
+      const pack = await weapon.get_language_pack(course, (message: string, progress: number) => {
         Sentry.addBreadcrumb({
           category: "language-pack",
-          message: `Loading language pack: ${course.targetLanguage} → ${course.nativeLanguage}`,
+          message: `${message} (${Math.round(progress)}%)`,
           level: "info",
         })
-        const languagePack = await weapon.get_language_pack(course, (message: string, progress: number) => {
-          Sentry.addBreadcrumb({
-            category: "language-pack",
-            message: `${message} (${Math.round(progress)}%)`,
-            level: "info",
-          })
-          setLoadingState({ message, progress })
-        })
-        setLoadingState(null)
-        localStorage.setItem(LAST_COURSE_KEY, JSON.stringify(course))
-        return {
-          type: "deck",
-          startingFresh: deck_selection.onboardingSelections?.startingFresh,
-          nativeLanguage: deck_selection.nativeLanguage,
-          targetLanguage: deck_selection.targetLanguage,
-          deck: await weapon.get_deck_state(languagePack, course),
-        } as { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined }
-      } catch (error) {
-        setLoadingState(null)
-        console.error("Failed to fetch language pack:", error)
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        Sentry.captureException(
-          error instanceof Error ? error : new Error(errorMessage),
-          {
-            tags: {
-              "language-pack.target": course.targetLanguage,
-              "language-pack.native": course.nativeLanguage,
-            },
-            contexts: {
-              "language-pack": {
-                targetLanguage: course.targetLanguage,
-                nativeLanguage: course.nativeLanguage,
-                rawError: errorMessage,
-              },
-            },
-          }
-        )
-        return {
-          type: "error",
-          message: errorMessage,
-          retry,
-          retryCount,
-        } as { type: "error", message: string, retry: () => void, retryCount: number }
-      }
+        setLoadingState({ message, progress })
+      })
+      setLoadingState(null)
+      return { ok: true as const, pack }
+    } catch (error) {
+      setLoadingState(null)
+      return { ok: false as const, error }
     }
-  }, [weapon, numEvents, retryCount])
+  }, [weapon, course?.targetLanguage, course?.nativeLanguage, retryCount])
+
+  // Build deck — re-runs when language pack is ready or streams change
+  const state = useAsyncMemo(async () => {
+    if (numEvents === null) return null
+
+    if (!deck_selection?.targetLanguage || !deck_selection?.nativeLanguage) {
+      return { type: "noLanguageSelected" } as { type: "noLanguageSelected" }
+    }
+
+    if (!course || !languagePackResult) return null
+
+    if (!languagePackResult.ok) {
+      const error = languagePackResult.error
+      console.error("Failed to fetch language pack:", error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      Sentry.captureException(
+        error instanceof Error ? error : new Error(errorMessage),
+        {
+          tags: {
+            "language-pack.target": course.targetLanguage,
+            "language-pack.native": course.nativeLanguage,
+          },
+          contexts: {
+            "language-pack": {
+              targetLanguage: course.targetLanguage,
+              nativeLanguage: course.nativeLanguage,
+              rawError: errorMessage,
+            },
+          },
+        }
+      )
+      return {
+        type: "error",
+        message: errorMessage,
+        retry,
+        retryCount,
+      } as { type: "error", message: string, retry: () => void, retryCount: number }
+    }
+
+    return {
+      type: "deck",
+      startingFresh: deck_selection.onboardingSelections?.startingFresh,
+      nativeLanguage: course.nativeLanguage,
+      targetLanguage: course.targetLanguage,
+      deck: await weapon.get_deck_state(languagePackResult.pack, course),
+    } as { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined }
+  }, [weapon, numEvents, languagePackResult, retryCount])
 
   if (state?.type === "error" && state.retryCount < retryCount) {
     return null
