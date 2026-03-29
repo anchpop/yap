@@ -1169,6 +1169,8 @@ export function useDeckSelection():
   }
 }
 
+const LAST_COURSE_KEY = "yap-last-course"
+
 export function useDeck(): { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined } | { type: "noLanguageSelected" } | { type: "error", message: string, retry: () => void, retryCount: number } | { type: "loading", message: string, progress: number } | null {
   const weapon = useWeapon()
   const [retryCount, setRetryCount] = useState(0)
@@ -1177,6 +1179,19 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
   useEffect(() => {
     weapon.request_deck_selection()
     weapon.request_reviews()
+  }, [weapon])
+
+  // Pre-warm language pack from cached course while waiting for weapon streams
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(LAST_COURSE_KEY)
+      if (!cached) return
+      const course: Course = JSON.parse(cached)
+      if (!course.nativeLanguage || !course.targetLanguage) return
+      weapon.get_language_pack(course, (message: string, progress: number) => {
+        setLoadingState({ message, progress })
+      }).catch(() => { /* pre-warm failure is fine, real flow will retry */ })
+    } catch { /* ignore parse errors */ }
   }, [weapon])
 
   const getSnapshot = useCallback(() => {
@@ -1240,6 +1255,7 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
           setLoadingState({ message, progress })
         })
         setLoadingState(null)
+        localStorage.setItem(LAST_COURSE_KEY, JSON.stringify(course))
         return {
           type: "deck",
           startingFresh: deck_selection.onboardingSelections?.startingFresh,
