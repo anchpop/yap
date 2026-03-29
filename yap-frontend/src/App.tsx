@@ -1238,7 +1238,7 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
       level: "info",
     })
     try {
-      const pack = await weapon.get_language_pack(course, (message: string, progress: number) => {
+      await weapon.get_language_pack(course, (message: string, progress: number) => {
         Sentry.addBreadcrumb({
           category: "language-pack",
           message: `${message} (${Math.round(progress)}%)`,
@@ -1247,7 +1247,7 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
         setLoadingState({ message, progress })
       })
       setLoadingState(null)
-      return { ok: true as const, pack }
+      return { ok: true as const }
     } catch (error) {
       setLoadingState(null)
       return { ok: false as const, error }
@@ -1297,7 +1297,7 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
       startingFresh: deck_selection.onboardingSelections?.startingFresh,
       nativeLanguage: course.nativeLanguage,
       targetLanguage: course.targetLanguage,
-      deck: await weapon.get_deck_state(languagePackResult.pack, course),
+      deck: await weapon.get_deck_state(course),
     } as { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined }
   }, [weapon, numEvents, languagePackResult, retryCount])
 

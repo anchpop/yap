@@ -244,10 +244,14 @@ impl Weapon {
 
     pub async fn get_deck_state(
         &self,
-        language_pack: FetchedLanguagePack,
         course: Course,
     ) -> Result<Deck, JsValue> {
-        let language_pack = Arc::clone(&language_pack.pack);
+        let language_pack = self
+            .language_pack
+            .borrow()
+            .get(&course)
+            .cloned()
+            .ok_or_else(|| JsValue::from_str("language pack not loaded for this course"))?;
         let target_language = course.target_language;
         let native_language = self
             .get_deck_selection_state()
@@ -535,47 +539,33 @@ impl Weapon {
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-pub struct FetchedLanguagePack {
-    pack: Arc<LanguagePack>,
-}
-
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl Weapon {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub async fn get_language_pack(
         &self,
         course: Course,
         on_progress: Option<js_sys::Function>,
-    ) -> Result<FetchedLanguagePack, language_pack::LanguageDataError> {
-        let language_pack = if let Some(language_pack) = self.language_pack.borrow().get(&course) {
-            language_pack.clone()
-        } else {
-            let language_pack = language_pack::get_language_pack(
-                &self.directories.data_directory_handle,
-                course,
-                &|message: &str, progress: f32| {
-                    if let Some(ref callback) = on_progress {
-                        let this = wasm_bindgen::JsValue::NULL;
-                        let message_js = wasm_bindgen::JsValue::from_str(message);
-                        let progress_js = wasm_bindgen::JsValue::from_f64(progress as f64);
-                        let _ = callback.call2(&this, &message_js, &progress_js);
-                    }
-                },
-            )
-            .await?;
-            self.language_pack
-                .borrow_mut()
-                .insert(course, Arc::new(language_pack));
-
-            self.language_pack
-                .borrow()
-                .get(&course)
-                .expect("language pack must exist as we just added it")
-                .clone()
-        };
-        Ok(FetchedLanguagePack {
-            pack: language_pack,
-        })
+    ) -> Result<(), language_pack::LanguageDataError> {
+        if self.language_pack.borrow().get(&course).is_some() {
+            return Ok(());
+        }
+        let language_pack = language_pack::get_language_pack(
+            &self.directories.data_directory_handle,
+            course,
+            &|message: &str, progress: f32| {
+                if let Some(ref callback) = on_progress {
+                    let this = wasm_bindgen::JsValue::NULL;
+                    let message_js = wasm_bindgen::JsValue::from_str(message);
+                    let progress_js = wasm_bindgen::JsValue::from_f64(progress as f64);
+                    let _ = callback.call2(&this, &message_js, &progress_js);
+                }
+            },
+        )
+        .await?;
+        self.language_pack
+            .borrow_mut()
+            .insert(course, Arc::new(language_pack));
+        Ok(())
     }
 }
 
