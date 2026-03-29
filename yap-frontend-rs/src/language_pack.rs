@@ -349,7 +349,7 @@ async fn read_cached_language_data(
 
         bytes.extend_from_slice(&chunk_bytes);
         let progress = (bytes.len() as f64 / expected_size.max(1) as f64) * 100.0;
-        set_loading_state("Loading cached language data", progress as f32);
+        set_loading_state("Loading...", progress as f32);
     }
 
     let computed_hash = const_xxh3(&bytes);
