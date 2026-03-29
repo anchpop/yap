@@ -1806,7 +1806,8 @@ impl Deck {
 
     /// Get the percent known for a goal. For movies, uses the movie's frequency list.
     /// For essential (None), returns the current tier/level percent.
-    pub fn goal_percent_known(&self, goal: &Option<GoalSelection>) -> ComprehensionScore {
+    #[allow(dead_code)]
+    fn goal_percent_known(&self, goal: &Option<GoalSelection>) -> ComprehensionScore {
         let written = self.get_comprehensible_written_grams(true);
         let listening = self.get_comprehensible_listening_grams(true);
         self.goal_percent_known_with(goal, &written, &listening)
@@ -2872,9 +2873,9 @@ pub struct FrequencyKnowledgePoint {
     pub example_words: String,
 }
 
-pub struct ComprehensionScore {
-    pub percent_known: f64,
-    pub all_available_learned: bool,
+struct ComprehensionScore {
+    percent_known: f64,
+    all_available_learned: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
