@@ -136,27 +136,24 @@ pub(crate) fn best_tier_level<'a>(
     projected_written: &BTreeSet<SpurGram>,
     projected_listening: &BTreeSet<SpurGram>,
 ) -> &'a TierLevelSlice<'a> {
-    let mut best_delta = 0.0f64;
-    let mut best_idx = None;
-    for (i, level) in levels.iter().enumerate() {
-        let current_pct = level.known_pct(freq_list, current_written, current_listening);
-        let projected_pct = level.known_pct(freq_list, projected_written, projected_listening);
-        let delta = projected_pct - current_pct;
-        if delta > best_delta {
-            best_delta = delta;
-            best_idx = Some(i);
-        }
-    }
-
-    // Fall back to first incomplete level
-    let idx = best_idx.unwrap_or_else(|| {
-        levels
-            .iter()
-            .position(|level| {
-                level.known_pct(freq_list, current_written, current_listening) < 100.0
-            })
-            .unwrap_or(levels.len().saturating_sub(1))
-    });
+    // Find the earliest level where adding cards makes any progress
+    let idx = levels
+        .iter()
+        .position(|level| {
+            let current_pct = level.known_pct(freq_list, current_written, current_listening);
+            let projected_pct =
+                level.known_pct(freq_list, projected_written, projected_listening);
+            projected_pct > current_pct
+        })
+        // Fall back to first incomplete level
+        .unwrap_or_else(|| {
+            levels
+                .iter()
+                .position(|level| {
+                    level.known_pct(freq_list, current_written, current_listening) < 100.0
+                })
+                .unwrap_or(levels.len().saturating_sub(1))
+        });
 
     &levels[idx]
 }

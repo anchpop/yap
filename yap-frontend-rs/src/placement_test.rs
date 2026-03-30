@@ -39,19 +39,29 @@ impl Context {
         &self,
         placement_test: &PlacementTest,
     ) -> Vec<Point<f32, UnitWeight>> {
+        // Each placement test answer gets 3 points (spaced slightly apart)
+        // to give them more weight relative to individual card reviews.
+        const POINTS_PER_ANSWER: usize = 5;
+
         let mut points = Vec::new();
 
         // Add points for known words (y = 5.0)
         for word_str in &placement_test.known_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
-                points.push(Point::new_with_weight(freq.ease, 5.0, UnitWeight));
+                for i in 0..POINTS_PER_ANSWER {
+                    let offset = (i as f32 - (POINTS_PER_ANSWER as f32 - 1.0) / 2.0) * 0.01;
+                    points.push(Point::new_with_weight(freq.ease + offset, 5.0, UnitWeight));
+                }
             }
         }
 
         // Add points for unknown words (y = 0.0)
         for word_str in &placement_test.unknown_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
-                points.push(Point::new_with_weight(freq.ease, 0.0, UnitWeight));
+                for i in 0..POINTS_PER_ANSWER {
+                    let offset = (i as f32 - (POINTS_PER_ANSWER as f32 - 1.0) / 2.0) * 0.01;
+                    points.push(Point::new_with_weight(freq.ease + offset, 0.0, UnitWeight));
+                }
             }
         }
 
