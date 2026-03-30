@@ -794,6 +794,7 @@ pub struct Deck {
     pub(crate) stats: Stats,
     pub(crate) context: Context,
     pub(crate) regressions: Regressions,
+    pub(crate) comprehensible: CachedComprehensibleGrams,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
     /// The most recently selected goal from an AddCards event
@@ -804,6 +805,22 @@ pub struct Deck {
 pub(crate) struct Regressions {
     target_language_regression: Option<SmoothRegression<f32>>,
     listening_regression: Option<SmoothRegression<f32>>,
+}
+
+/// Cached comprehensible grams for a single modality (written or listening).
+#[derive(Clone, Debug)]
+pub(crate) struct ComprehensibleGrams {
+    /// Only cards that have actually been reviewed to Review state.
+    pub now: BTreeSet<SpurGram>,
+    /// Includes Added cards that haven't been reviewed yet.
+    pub now_and_planned: BTreeSet<SpurGram>,
+}
+
+/// Cached comprehensible grams for both modalities.
+#[derive(Clone, Debug)]
+pub(crate) struct CachedComprehensibleGrams {
+    pub written: ComprehensibleGrams,
+    pub listening: ComprehensibleGrams,
 }
 
 struct ComprehensibleSentence {
@@ -1490,6 +1507,65 @@ impl weapon::AppState for Deck {
             listening_regression,
         };
 
+        // Pre-compute comprehensible grams for both modalities.
+        // We build `now` (only reviewed) and `now_and_planned` (includes Added)
+        // in a single pass per modality.
+        let comprehensible = {
+            let mut written_now = BTreeSet::new();
+            let mut written_planned = BTreeSet::new();
+            let mut listening_now = BTreeSet::new();
+            let mut listening_planned = BTreeSet::new();
+
+            for gram in context.language_pack.gram_frequencies.entries.keys() {
+                // Written
+                let written_indicator = CardIndicator::WrittenGram { gram: *gram };
+                let written_card = state.cards.get(&written_indicator);
+                if context.is_comprehensible(&written_indicator, written_card, &regressions, false)
+                {
+                    written_now.insert(*gram);
+                    written_planned.insert(*gram);
+                } else if context.is_comprehensible(
+                    &written_indicator,
+                    written_card,
+                    &regressions,
+                    true,
+                ) {
+                    written_planned.insert(*gram);
+                }
+
+                // Listening
+                let listening_indicator = CardIndicator::ListeningGram { gram: *gram };
+                let listening_card = state.cards.get(&listening_indicator);
+                if context.is_comprehensible(
+                    &listening_indicator,
+                    listening_card,
+                    &regressions,
+                    false,
+                ) {
+                    listening_now.insert(*gram);
+                    listening_planned.insert(*gram);
+                } else if context.is_comprehensible(
+                    &listening_indicator,
+                    listening_card,
+                    &regressions,
+                    true,
+                ) {
+                    listening_planned.insert(*gram);
+                }
+            }
+
+            CachedComprehensibleGrams {
+                written: ComprehensibleGrams {
+                    now: written_now,
+                    now_and_planned: written_planned,
+                },
+                listening: ComprehensibleGrams {
+                    now: listening_now,
+                    now_and_planned: listening_planned,
+                },
+            }
+        };
+
         Deck {
             placement_test_results: state.placement_test_results,
             cards: state.cards,
@@ -1497,6 +1573,7 @@ impl weapon::AppState for Deck {
             stats: state.stats,
             context: context.clone(),
             regressions,
+            comprehensible,
             leeches: state.leeches,
             goal: state.goal,
         }
@@ -1709,46 +1786,24 @@ impl Deck {
     fn get_comprehensible_written_grams(
         &self,
         count_added_as_comprehensible: bool,
-    ) -> BTreeSet<SpurGram> {
-        let mut comprehensible_grams = BTreeSet::new();
-
-        for gram in self.context.language_pack.gram_frequencies.entries.keys() {
-            let card_indicator = CardIndicator::WrittenGram { gram: *gram };
-            let card_data = self.cards.get(&card_indicator);
-            if self.context.is_comprehensible(
-                &card_indicator,
-                card_data,
-                &self.regressions,
-                count_added_as_comprehensible,
-            ) {
-                comprehensible_grams.insert(*gram);
-            }
+    ) -> &BTreeSet<SpurGram> {
+        if count_added_as_comprehensible {
+            &self.comprehensible.written.now_and_planned
+        } else {
+            &self.comprehensible.written.now
         }
-
-        comprehensible_grams
     }
 
     /// Get the set of comprehensible listening grams.
     fn get_comprehensible_listening_grams(
         &self,
         count_added_as_comprehensible: bool,
-    ) -> BTreeSet<SpurGram> {
-        let mut comprehensible_grams = BTreeSet::new();
-
-        for gram in self.context.language_pack.gram_frequencies.entries.keys() {
-            let card_indicator = CardIndicator::ListeningGram { gram: *gram };
-            let card_data = self.cards.get(&card_indicator);
-            if self.context.is_comprehensible(
-                &card_indicator,
-                card_data,
-                &self.regressions,
-                count_added_as_comprehensible,
-            ) {
-                comprehensible_grams.insert(*gram);
-            }
+    ) -> &BTreeSet<SpurGram> {
+        if count_added_as_comprehensible {
+            &self.comprehensible.listening.now_and_planned
+        } else {
+            &self.comprehensible.listening.now
         }
-
-        comprehensible_grams
     }
 
     /// Calculate the percentage of a frequency list that is covered by the given known gram sets.
@@ -1810,7 +1865,7 @@ impl Deck {
     fn goal_percent_known(&self, goal: &Option<GoalSelection>) -> ComprehensionScore {
         let written = self.get_comprehensible_written_grams(true);
         let listening = self.get_comprehensible_listening_grams(true);
-        self.goal_percent_known_with(goal, &written, &listening)
+        self.goal_percent_known_with(goal, written, listening)
     }
 
     /// Same as goal_percent_known but with pre-computed (possibly projected) gram sets.
@@ -2035,8 +2090,8 @@ impl Deck {
         let listening = self.get_comprehensible_listening_grams(true);
         Self::percent_known_in(
             &self.context.language_pack.gram_frequencies,
-            &written,
-            &listening,
+            written,
+            listening,
         )
         .percent_known
             / 100.0
@@ -2095,12 +2150,12 @@ impl Deck {
         let level = tiers::best_tier_level(
             &levels,
             freq_list,
-            &current_written,
-            &current_listening,
+            current_written,
+            current_listening,
             &projected_written,
             &projected_listening,
         );
-        let pct = level.known_pct(freq_list, &current_written, &current_listening);
+        let pct = level.known_pct(freq_list, current_written, current_listening);
         level.to_tier_info(pct)
     }
 
@@ -2159,8 +2214,8 @@ impl Deck {
 
             let score = Self::percent_known_in(
                 movie_frequencies,
-                &comprehensible_written,
-                &comprehensible_listening,
+                comprehensible_written,
+                comprehensible_listening,
             );
             let percent_known = score.percent_known;
             // For milestone calculation, use written comprehension as the card count basis
@@ -2250,8 +2305,8 @@ impl Deck {
 
             let score = Self::percent_known_in(
                 freq_list,
-                &comprehensible_written,
-                &comprehensible_listening,
+                comprehensible_written,
+                comprehensible_listening,
             );
 
             stats.push(PimsleurStats {
@@ -2365,8 +2420,8 @@ impl Deck {
 
         // Calculate projected percent known after adding smart_add cards
         // Build projected gram sets including the new cards
-        let mut projected_written = self.get_comprehensible_written_grams(true);
-        let mut projected_listening = self.get_comprehensible_listening_grams(true);
+        let mut projected_written = self.get_comprehensible_written_grams(true).clone();
+        let mut projected_listening = self.get_comprehensible_listening_grams(true).clone();
         for card in &smart_add_cards {
             match card {
                 CardIndicator::WrittenGram { gram } => {
@@ -2396,8 +2451,8 @@ impl Deck {
                 let level = tiers::best_tier_level(
                     &levels,
                     freq_list,
-                    &current_written,
-                    &current_listening,
+                    current_written,
+                    current_listening,
                     &projected_written,
                     &projected_listening,
                 );
@@ -2894,15 +2949,10 @@ impl Deck {
     fn get_comprehensible_sentence_containing(
         &self,
         required_gram: Option<&SpurGram>,
-        mut comprehensible_grams: BTreeSet<SpurGram>,
+        comprehensible_grams: &BTreeSet<SpurGram>,
         sentences_reviewed: &BTreeMap<Spur, u32>,
         language_pack: &LanguagePack,
     ) -> Option<ComprehensibleSentence> {
-        // Add the target gram to comprehensible set if provided
-        if let Some(required) = required_gram {
-            comprehensible_grams.insert(*required);
-        }
-
         // Search through all sentences - if we have a required gram, only look at sentences containing it
         let candidate_sentences: Vec<Spur> = if let Some(required) = required_gram {
             language_pack
@@ -2912,6 +2962,11 @@ impl Deck {
         } else {
             // If no required gram/phrase, consider all sentences
             language_pack.translations.keys().cloned().collect()
+        };
+
+        let is_comprehensible = |gram: &SpurGram| {
+            comprehensible_grams.contains(gram)
+                || required_gram.is_some_and(|req| req == gram)
         };
 
         let mut possible_sentences = Vec::new();
@@ -2925,7 +2980,7 @@ impl Deck {
             // Check that all learnable grams are comprehensible
             for sentence_gram in &sentence_grams.grams {
                 if let SentenceGram::Learnable(gram) = sentence_gram
-                    && !comprehensible_grams.contains(gram)
+                    && !is_comprehensible(gram)
                 {
                     continue 'checkSentences; // Early exit!
                 }
@@ -2937,7 +2992,7 @@ impl Deck {
                 .iter()
                 .chain(sentence_grams.low_confidence_multiword_terms.iter())
             {
-                if !comprehensible_grams.contains(multiword_gram) {
+                if !is_comprehensible(multiword_gram) {
                     continue 'checkSentences; // Early exit!
                 }
             }
