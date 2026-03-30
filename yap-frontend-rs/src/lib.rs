@@ -2778,6 +2778,11 @@ impl Deck {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_frequency_knowledge_chart_data(&self) -> Vec<FrequencyKnowledgePoint> {
+        let regression = match &self.regressions.target_language_regression {
+            Some(r) => r,
+            None => return vec![],
+        };
+
         // Sample frequencies from 1 to 10000 on a logarithmic scale
         let target_frequencies: Vec<f64> = vec![
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 15.0, 20.0, 30.0, 40.0, 50.0, 60.0,
@@ -2786,65 +2791,43 @@ impl Deck {
             10000.0,
         ];
 
-        // Create a map to collect data for each frequency bucket
-        let mut frequency_buckets: FxHashMap<String, (Vec<f64>, Vec<String>)> =
-            FxHashMap::default();
-
-        // Iterate through actual grams/phrases in the language pack and find ones matching our target frequencies
-        for (gram, frequency) in self.context.language_pack.gram_frequencies.entries.iter() {
-            let freq_value = frequency.count as f64;
-
-            // Check if this frequency is close to one of our target frequencies
-            for &target_freq in &target_frequencies {
-                if (freq_value - target_freq).abs() < target_freq * 0.1 {
-                    // Within 10% of target
-                    let card_indicator = CardIndicator::WrittenGram { gram: *gram };
-
-                    // Use the regression to predict knowledge at this frequency
-                    let knowledge_probability = self
-                        .regressions
-                        .predict_card_knowledge_probability(&card_indicator, *frequency);
-
-                    // Get display text for the card
-                    let display_text = self
-                        .context
-                        .language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&self.context.language_pack.string_rodeo)
-                        .to_display_string(self.context.course.target_language);
-
-                    let bucket_key = format!("{target_freq}");
-                    let entry = frequency_buckets
-                        .entry(bucket_key)
-                        .or_insert((vec![], vec![]));
-                    entry.0.push(f64::from(knowledge_probability));
-                    if entry.1.len() < 5 {
-                        // Limit to 5 example words per bucket
-                        entry.1.push(display_text);
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        // Convert buckets to final chart data
+        // Collect example words by ease proximity (for tooltip display).
+        // For each target frequency, find grams whose ease is close to ln(target_freq).
+        let entries = &self.context.language_pack.gram_frequencies.entries;
         let mut chart_data = Vec::new();
         for &target_freq in &target_frequencies {
-            let bucket_key = format!("{target_freq}");
-            if let Some((probabilities, words)) = frequency_buckets.get(&bucket_key)
-                && !probabilities.is_empty()
-            {
-                let avg_probability =
-                    probabilities.iter().sum::<f64>() / probabilities.len() as f64;
-                chart_data.push(FrequencyKnowledgePoint {
-                    frequency: target_freq,
-                    predicted_knowledge: avg_probability,
-                    word_count: probabilities.len() as u32,
-                    example_words: words.join(", "),
-                });
+            let target_ease = (target_freq as f32).ln();
+            let Some(knowledge) = regression.interpolate(target_ease) else {
+                continue;
+            };
+            let probability = Regressions::knowledge_to_probability(knowledge);
+
+            // Find example words near this ease value
+            let ease_tolerance = 0.5_f32;
+            let mut examples = Vec::new();
+            let mut word_count = 0u32;
+            for (gram, freq) in entries.iter() {
+                if (freq.ease - target_ease).abs() < ease_tolerance {
+                    word_count += 1;
+                    if examples.len() < 5 {
+                        let display_text = self
+                            .context
+                            .language_pack
+                            .gram_rodeo
+                            .resolve(gram)
+                            .resolve(&self.context.language_pack.string_rodeo)
+                            .to_display_string(self.context.course.target_language);
+                        examples.push(display_text);
+                    }
+                }
             }
+
+            chart_data.push(FrequencyKnowledgePoint {
+                frequency: target_freq,
+                predicted_knowledge: f64::from(probability),
+                word_count,
+                example_words: examples.join(", "),
+            });
         }
 
         chart_data

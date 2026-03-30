@@ -3048,7 +3048,7 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 [[package]]
 name = "pav_regression"
 version = "0.5.2"
-source = "git+https://github.com/anchpop/pav.rs.git?rev=416206b920d91caa405755e224a8823dbb7168be#416206b920d91caa405755e224a8823dbb7168be"
+source = "git+https://github.com/anchpop/pav.rs.git?rev=1d44104842df02b2b66d9443df6fb540aa368d69#1d44104842df02b2b66d9443df6fb540aa368d69"
 dependencies = [
  "eytzinger",
  "ordered-float 3.9.2",

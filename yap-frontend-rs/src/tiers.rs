@@ -141,8 +141,7 @@ pub(crate) fn best_tier_level<'a>(
         .iter()
         .position(|level| {
             let current_pct = level.known_pct(freq_list, current_written, current_listening);
-            let projected_pct =
-                level.known_pct(freq_list, projected_written, projected_listening);
+            let projected_pct = level.known_pct(freq_list, projected_written, projected_listening);
             projected_pct > current_pct
         })
         // Fall back to first incomplete level
