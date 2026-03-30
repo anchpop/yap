@@ -45,8 +45,6 @@ pub(crate) struct NextCardsIterator {
     /// Only tracked cards (Added/Ghost). Unadded cards are derived from context.
     pub(crate) cards: FxHashMap<CardIndicator<SpurGram, Spur>, CardData>,
     pub(crate) allowed_cards: AllowedCards,
-    /// Grams the user can comprehend in written form (includes placement test knowledge).
-    comprehensible_written: BTreeSet<SpurGram>,
     // Cached counts to avoid repeated iteration
     added_count: usize,
     card_type_counts: FxHashMap<CardType, u32>,
@@ -197,12 +195,18 @@ impl NextCardsIterator {
                 None
             };
 
-        // Precompute listening card values: grams not yet Added, partially sorted by value desc
-        // Ghost cards are included since they can be promoted to Added
+        // Precompute listening card values: grams not yet Added, partially sorted by value desc.
+        // Ghost cards are included since they can be promoted to Added.
+        // Pre-filter by comprehensible_written so the partial sort only contains
+        // usable values (otherwise the comprehensible filter in next_listening_card
+        // can skip past the sorted portion).
         let mut listening_values: Vec<(NotNan<f32>, SpurGram)> = gram_source
             .entries
             .iter()
             .filter_map(|(gram, frequency)| {
+                if !comprehensible_written.contains(gram) {
+                    return None;
+                }
                 let card = CardIndicator::ListeningGram { gram: *gram };
                 if matches!(cards.get(&card), Some(CardData::Added { .. })) {
                     return None;
@@ -242,7 +246,6 @@ impl NextCardsIterator {
         Self {
             cards,
             allowed_cards,
-            comprehensible_written,
             added_count,
             card_type_counts,
             text_values,
@@ -325,14 +328,10 @@ impl NextCardsIterator {
     }
 
     fn next_listening_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
+        // listening_values is pre-filtered to only comprehensible written grams
         self.listening_values.iter().find_map(|(_, gram)| {
             let card = CardIndicator::ListeningGram { gram: *gram };
             if self.is_added(&card) {
-                return None;
-            }
-            // Only include if the user comprehends this gram in written form
-            // (via card, placement test, or other means)
-            if !self.comprehensible_written.contains(gram) {
                 return None;
             }
             Some((card, rs_fsrs::Card::new(Utc::now())))
