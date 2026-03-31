@@ -8,6 +8,7 @@ interface MoviePosterCardProps {
   title: string;
   year: number | undefined;
   deck: Deck;
+  className?: string;
   children?: ReactNode;
 }
 
@@ -16,12 +17,13 @@ export function MoviePosterCard({
   title,
   year,
   deck,
+  className,
   children,
 }: MoviePosterCardProps) {
   return (
     <Card
       key={id}
-      className="overflow-hidden p-0 transition-all group gap-0"
+      className={`overflow-hidden p-0 transition-all group gap-0${className ? ` ${className}` : ""}`}
       animate
     >
       <div className="relative aspect-[2/3] bg-muted">

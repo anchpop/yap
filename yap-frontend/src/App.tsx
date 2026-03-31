@@ -813,6 +813,8 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
       playSoundEffect('success'); // Don't await - play in background
     }
 
+    window.scrollTo({ top: 0 });
+
     const event = deck.review_card(currentChallenge.indicator, rating);
     if (event) {
       weapon.add_deck_event(event);
@@ -831,6 +833,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
     // Play success sound in background for sentence completion (regardless of perfect or errors)
     playSoundEffect('success'); // Don't await - play in background
+    window.scrollTo({ top: 0 });
 
     if ("perfect" in grade) {
       // Perfect sentence review
@@ -862,6 +865,7 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
 
     // Play success sound in background for sentence completion (regardless of perfect or errors)
     playSoundEffect('success'); // Don't await - play in background
+    window.scrollTo({ top: 0 });
 
     const event = deck.transcribe_sentence(grade);
     if (event) {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { getMovieMetadata } from "@/lib/movie-cache";
+import { MoviePosterGrid } from "./MoviePosterGrid";
 import {
   autograde_transcription,
   type TranscribeComprehensibleSentence,
@@ -43,7 +44,6 @@ import {
 import { MoreVertical } from "lucide-react";
 import { ReportIssueModal } from "./ReportIssueModal";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MoviePosterCard } from "./MoviePosterCard";
 import { InlineTextarea } from "../ui/textarea";
 import { ProperNounDefinitions } from "./TranslationChallenge";
 import { TargetLanguageText } from "../TargetLanguageText";
@@ -626,19 +626,9 @@ export function TranscriptionChallenge({
           <MobileKeyboardTip language={targetLanguage} />
         )}
 
-        {/* Movie posters */}
-        {movieData.length > 0 && (
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {movieData.map((movie) => (
-              <MoviePosterCard
-                key={movie.id}
-                id={movie.id}
-                title={movie.title}
-                year={movie.year}
-                deck={deck}
-              />
-            ))}
-          </div>
+        {/* Movie posters - hidden after grading */}
+        {gradingState === null && (
+          <MoviePosterGrid movieData={movieData} deck={deck} />
         )}
       </div>
 

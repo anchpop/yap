@@ -8,6 +8,7 @@ import {
   useMemo,
 } from "react";
 import { getMovieMetadata } from "@/lib/movie-cache";
+import { MoviePosterGrid } from "./MoviePosterGrid";
 import {
   type TranslateComprehensibleSentence,
   type Literal,
@@ -57,7 +58,6 @@ import { ReportIssueModal } from "./ReportIssueModal";
 import { FeedbackDisplay } from "@/components/FeedbackDisplay";
 import { playSoundEffect } from "@/lib/sound-effects";
 import { useBackground } from "../BackgroundShader";
-import { MoviePosterCard } from "./MoviePosterCard";
 import { cn } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { TargetLanguageText } from "../TargetLanguageText";
@@ -1169,19 +1169,9 @@ export function TranslationChallenge({
           )}
         </Card>
 
-        {/* Movie posters */}
-        {movieData.length > 0 && (
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {movieData.map((movie) => (
-              <MoviePosterCard
-                key={movie.id}
-                id={movie.id}
-                title={movie.title}
-                year={movie.year}
-                deck={deck}
-              />
-            ))}
-          </div>
+        {/* Movie posters - hidden after grading */}
+        {grade === null && (
+          <MoviePosterGrid movieData={movieData} deck={deck} />
         )}
       </div>
 
