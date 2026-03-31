@@ -92,7 +92,7 @@ export function GoalsPage() {
               />
               {goal.type === "essential" && (
                 <p className="text-xs text-muted-foreground -mt-2 ml-1">
-                  The {tierInfo.name} tier covers the {tierInfo.tier === 1 ? "" : "next "}most frequent {targetLanguage} words. The words in this level account for {tierInfo.percent_of_usage.toFixed(1)}% of the {targetLanguage} you'll encounter.
+                  The {tierInfo.name} tier covers the {tierInfo.tier === 1 ? "" : "next "}most frequent {targetLanguage} words. When you complete this level, you'll understand {tierInfo.percent_of_usage.toFixed(1)}% of everyday {targetLanguage}.
                 </p>
               )}
 

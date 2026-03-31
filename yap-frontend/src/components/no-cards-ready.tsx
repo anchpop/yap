@@ -505,7 +505,7 @@ export function NoCardsReady({
 
                   {effectiveGoal.type === "essential" && (
                     <p className="text-xs text-muted-foreground text-center sm:text-left">
-                      The words in this level account for {tierInfo.percent_of_usage.toFixed(1)}% of the {targetLanguage} you'll encounter.
+                      When you complete this level, you'll understand {tierInfo.percent_of_usage.toFixed(1)}% of everyday {targetLanguage}.
                     </p>
                   )}
 
