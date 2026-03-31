@@ -443,6 +443,8 @@ pub enum FrequencySourceId {
 
 /// Basic movie metadata without poster bytes, for serialization to files
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, Eq, PartialEq, Ord, PartialOrd)]
+#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
+#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub struct MovieMetadataBasic {
     /// Unique identifier (IMDb ID, e.g., "tt0211915")
     pub id: String,

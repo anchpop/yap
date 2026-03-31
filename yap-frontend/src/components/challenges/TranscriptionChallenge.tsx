@@ -635,7 +635,7 @@ export function TranscriptionChallenge({
                 id={movie.id}
                 title={movie.title}
                 year={movie.year}
-                posterBytes={movie.poster_bytes}
+                deck={deck}
               />
             ))}
           </div>

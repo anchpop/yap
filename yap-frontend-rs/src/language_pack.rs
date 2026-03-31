@@ -286,7 +286,13 @@ impl From<LanguageDataError> for wasm_bindgen::JsValue {
                 wasm_bindgen::JsValue::from_str(&format!("Rkyv error: {error:?}"))
             }
             LanguageDataError::AiServer(error) => {
-                wasm_bindgen::JsValue::from_str(&format!("AI server error: {error:?}"))
+                let prefix = match &error {
+                    fetch_happen::Error::JsError(_) => "Network error",
+                    fetch_happen::Error::HttpError(_, _) => "AI server HTTP error",
+                    fetch_happen::Error::JsonError(_) => "AI server JSON error",
+                    fetch_happen::Error::Aborted => "AI server request aborted",
+                };
+                wasm_bindgen::JsValue::from_str(&format!("{prefix}: {error}"))
             }
             LanguageDataError::ServerError(status) => {
                 wasm_bindgen::JsValue::from_str(&format!("Server returned HTTP {status}"))

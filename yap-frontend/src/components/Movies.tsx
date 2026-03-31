@@ -1,6 +1,7 @@
 import { useState, useDeferredValue } from 'react'
 import { Card } from "@/components/ui/card"
-import { getPosterDataUrl } from "@/lib/poster-utils"
+import { Poster } from "@/components/Poster"
+import type { Deck } from "../../../yap-frontend-rs/pkg"
 
 interface MovieWithMetadata {
   id: string
@@ -9,15 +10,15 @@ interface MovieWithMetadata {
   title?: string
   year?: number
   original_language?: string
-  poster_bytes?: number[]
 }
 
 interface MoviesProps {
   moviesWithMetadata: MovieWithMetadata[]
   targetLanguageIso?: string
+  deck: Deck
 }
 
-export function Movies({ moviesWithMetadata: moviesWithMetadataProp, targetLanguageIso }: MoviesProps) {
+export function Movies({ moviesWithMetadata: moviesWithMetadataProp, targetLanguageIso, deck }: MoviesProps) {
   const moviesWithMetadata = useDeferredValue(moviesWithMetadataProp);
   const [showAllMovies, setShowAllMovies] = useState(false)
 
@@ -42,8 +43,6 @@ export function Movies({ moviesWithMetadata: moviesWithMetadataProp, targetLangu
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {visibleMovies.map((movie) => {
-          const posterDataUrl = getPosterDataUrl(movie.poster_bytes)
-
           return (
             <Card
               key={movie.id}
@@ -51,17 +50,7 @@ export function Movies({ moviesWithMetadata: moviesWithMetadataProp, targetLangu
               animate
             >
               <div className="relative aspect-[2/3] bg-muted">
-                {posterDataUrl ? (
-                  <img
-                    src={posterDataUrl}
-                    alt={movie.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl">
-                    🎬
-                  </div>
-                )}
+                <Poster movieId={movie.id} deck={deck} alt={movie.title} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <div className="text-white text-sm font-semibold line-clamp-2">

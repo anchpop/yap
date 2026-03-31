@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use language_utils::Language;
 use weapon::data_model::Event;
@@ -83,6 +83,7 @@ pub struct DeckSelection {
     pub native_language: Option<Language>,
     pub onboarding_selections: Option<OnboardingSelections>,
     pub heard_about: Option<HeardAbout>,
+    pub onboarded_languages: Vec<Language>,
 }
 
 impl DeckSelection {
@@ -97,6 +98,7 @@ pub struct DeckSelectionPartial {
     pub target_language: Option<Language>,
     pub native_language: Option<Language>,
     pub onboarding_selections: BTreeMap<Language, OnboardingSelections>,
+    pub selected_languages: BTreeSet<Language>,
     pub heard_about: Option<HeardAbout>,
 }
 
@@ -117,6 +119,7 @@ impl weapon::AppState for DeckSelection {
             DeckSelectionEvent::SelectBothLanguages { native, target } => {
                 partial.native_language = Some(*native);
                 partial.target_language = Some(*target);
+                partial.selected_languages.insert(*target);
                 partial
             }
             DeckSelectionEvent::SetOnboardingSelections {
@@ -145,6 +148,7 @@ impl weapon::AppState for DeckSelection {
                 .as_ref()
                 .and_then(|target_language| partial.onboarding_selections.get(target_language))
                 .cloned(),
+            onboarded_languages: partial.selected_languages.into_iter().collect(),
             target_language: partial.target_language,
             native_language: partial.native_language,
             heard_about: partial.heard_about,

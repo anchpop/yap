@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { useDeck } from "@/App";
 import { languageToIso6391 } from "@/lib/utils";
 import { getMovieMetadata } from "@/lib/movie-cache";
-import { getPosterDataUrl } from "@/lib/poster-utils";
+import { Poster } from "@/components/Poster";
+import type { Deck as DeckType } from "../../../yap-frontend-rs/pkg";
 import { goalSelectionToGoal, goalToGoalSelection, type Goal } from "@/hooks/useGoal";
 import { useWeapon } from "@/weapon";
 import { match, P } from "ts-pattern";
@@ -107,7 +108,6 @@ export function GoalsPage() {
                   <>
                     <div className="space-y-2">
                       {visibleMovies.map((movie) => {
-                        const posterDataUrl = getPosterDataUrl(movie.poster_bytes);
                         const isSelected =
                           goal.type === "movie" && goal.movieId === movie.id;
 
@@ -120,7 +120,8 @@ export function GoalsPage() {
                             description={movie.year ? `${movie.year}` : undefined}
                             percentKnown={movie.percent_known}
                             done={movie.all_available_learned}
-                            posterUrl={posterDataUrl}
+                            movieId={movie.id}
+                            deck={deck}
                           />
                         );
                       })}
@@ -230,6 +231,8 @@ function GoalCard({
   percentKnown,
   done,
   posterUrl,
+  movieId,
+  deck,
   icon,
 }: {
   selected: boolean;
@@ -239,6 +242,8 @@ function GoalCard({
   percentKnown: number;
   done?: boolean;
   posterUrl?: string | null;
+  movieId?: string;
+  deck?: DeckType;
   icon?: React.ReactNode;
 }) {
   return (
@@ -252,14 +257,17 @@ function GoalCard({
       onClick={onClick}
     >
       <div className="flex items-center gap-3 p-3">
-        {posterUrl && (
+        {posterUrl ? (
           <img
             src={posterUrl}
             alt={title}
             className="w-10 h-15 object-cover rounded-md flex-shrink-0 opacity-90 saturate-70 dark:opacity-70 dark:saturate-80"
           />
-        )}
-        {!posterUrl && (
+        ) : movieId && deck ? (
+          <div className="w-10 h-15 rounded-md flex-shrink-0 overflow-hidden opacity-90 saturate-70 dark:opacity-70 dark:saturate-80">
+            <Poster movieId={movieId} deck={deck} alt={title} />
+          </div>
+        ) : (
           <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
             {icon ?? <Sparkles className="h-5 w-5 text-muted-foreground" />}
           </div>

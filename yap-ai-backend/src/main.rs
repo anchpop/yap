@@ -290,7 +290,7 @@ async fn google_text_to_speech(
         Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar"),
         Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar"),
         Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar"),
-        Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Achernar"),
+        Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Aoede"),
 
         Language::Chinese | Language::Japanese => todo!(),
     };
@@ -319,7 +319,7 @@ async fn google_text_to_speech(
     };
 
     let url =
-        format!("https://texttospeech.googleapis.com/v1/text:synthesize?key={google_api_key}");
+        format!("https://texttospeech.googleapis.com/v1beta1/text:synthesize?key={google_api_key}");
 
     let response = client
         .post(&url)
@@ -330,7 +330,9 @@ async fn google_text_to_speech(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if !response.status().is_success() {
-        eprintln!("Google TTS Error: {response:?}");
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        eprintln!("Google TTS Error ({status}): {body}");
         return Err(StatusCode::BAD_GATEWAY);
     }
 

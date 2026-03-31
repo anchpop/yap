@@ -396,7 +396,7 @@ function ReviewPage() {
                 />
               </TopPageLayout>
               <Tools deck={deck} />
-              <Movies moviesWithMetadata={moviesWithMetadata} targetLanguageIso={languageToIso6391(targetLanguage)} />
+              <Movies moviesWithMetadata={moviesWithMetadata} targetLanguageIso={languageToIso6391(targetLanguage)} deck={deck} />
               <Stats deck={deck} targetLanguage={targetLanguage} />
             </>
             );
@@ -608,7 +608,6 @@ interface MovieWithMetadata {
   title?: string
   year?: number
   original_language?: string
-  poster_bytes?: number[]
 }
 
 interface ReviewProps {
@@ -1072,7 +1071,7 @@ function SelectLanguagePage() {
   const navigate = useNavigate()
 
   return match(deckSelection)
-    .with({ type: "languageSelected" }, ({ targetLanguage, hasHeardAbout }) => (
+    .with({ type: "languageSelected" }, ({ targetLanguage, hasHeardAbout, onboardedLanguages }) => (
       <LanguageSelector
 
         currentTargetLanguage={targetLanguage}
@@ -1089,11 +1088,12 @@ function SelectLanguagePage() {
         onHeardAbout={(heard_about) => {
           weapon.add_deck_selection_event({ SetHeardAbout: { heard_about } })
         }}
+        onboardedLanguages={onboardedLanguages}
         userInfo={userInfo}
         onBack={() => navigate('/learn')}
       />
     ))
-    .with({ type: "noLanguageSelected" }, ({ hasHeardAbout }) => (
+    .with({ type: "noLanguageSelected" }, ({ hasHeardAbout, onboardedLanguages }) => (
       <LanguageSelector
 
         onLanguagesConfirmed={(native, target) => {
@@ -1107,6 +1107,7 @@ function SelectLanguagePage() {
         onHeardAbout={(heard_about) => {
           weapon.add_deck_selection_event({ SetHeardAbout: { heard_about } })
         }}
+        onboardedLanguages={onboardedLanguages}
         userInfo={userInfo}
       />
     ))
@@ -1127,8 +1128,8 @@ function SelectLanguagePage() {
 
 
 export function useDeckSelection():
-  | { type: "languageSelected", nativeLanguage: Language, targetLanguage: Language, startingFresh: boolean | undefined, hasHeardAbout: boolean }
-  | { type: "noLanguageSelected", hasHeardAbout: boolean }
+  | { type: "languageSelected", nativeLanguage: Language, targetLanguage: Language, startingFresh: boolean | undefined, hasHeardAbout: boolean, onboardedLanguages: Language[] }
+  | { type: "noLanguageSelected", hasHeardAbout: boolean, onboardedLanguages: Language[] }
   | null {
   const weapon = useWeapon()
 
@@ -1155,9 +1156,10 @@ export function useDeckSelection():
 
   const deckSelection = weapon.get_deck_selection_state()
   const hasHeardAbout = deckSelection?.heardAbout != null;
+  const onboardedLanguages = deckSelection?.onboardedLanguages ?? [];
 
   if (!deckSelection?.targetLanguage || !deckSelection?.nativeLanguage) {
-    return { type: "noLanguageSelected", hasHeardAbout }
+    return { type: "noLanguageSelected", hasHeardAbout, onboardedLanguages }
   }
 
   return {
@@ -1166,6 +1168,7 @@ export function useDeckSelection():
     targetLanguage: deckSelection.targetLanguage,
     startingFresh: deckSelection.onboardingSelections?.startingFresh,
     hasHeardAbout,
+    onboardedLanguages,
   }
 }
 
@@ -1268,22 +1271,27 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
       const error = languagePackResult.error
       console.error("Failed to fetch language pack:", error)
       const errorMessage = error instanceof Error ? error.message : String(error)
-      Sentry.captureException(
-        error instanceof Error ? error : new Error(errorMessage),
-        {
-          tags: {
-            "language-pack.target": course.targetLanguage,
-            "language-pack.native": course.nativeLanguage,
-          },
-          contexts: {
-            "language-pack": {
-              targetLanguage: course.targetLanguage,
-              nativeLanguage: course.nativeLanguage,
-              rawError: errorMessage,
+      const isNetworkError = errorMessage.startsWith("Network error:")
+      if (!isNetworkError) {
+        // Only report non-network errors to Sentry. Network failures are expected
+        // on flaky mobile connections and the user already sees a retry UI.
+        Sentry.captureException(
+          error instanceof Error ? error : new Error(errorMessage),
+          {
+            tags: {
+              "language-pack.target": course.targetLanguage,
+              "language-pack.native": course.nativeLanguage,
             },
-          },
-        }
-      )
+            contexts: {
+              "language-pack": {
+                targetLanguage: course.targetLanguage,
+                nativeLanguage: course.nativeLanguage,
+                rawError: errorMessage,
+              },
+            },
+          }
+        )
+      }
       return {
         type: "error",
         message: errorMessage,

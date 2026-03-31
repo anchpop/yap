@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
-import { useBackground } from "@/components/BackgroundShader";
 import { OnboardingFlow, type OnboardingSelections, type HeardAbout } from "@/components/OnboardingFlow";
 import {
   Command,
@@ -36,6 +35,7 @@ interface LanguageSelectorProps {
   onOnboardingComplete: (selections: OnboardingSelections, target: Language) => void;
   onHeardAbout: (value: HeardAbout) => void;
   hasHeardAbout: boolean;
+  onboardedLanguages: Language[];
   currentTargetLanguage?: Language;
   showResumeButton?: boolean;
   onResume?: () => void;
@@ -48,6 +48,7 @@ export function LanguageSelector({
   onOnboardingComplete,
   onHeardAbout,
   hasHeardAbout,
+  onboardedLanguages,
   currentTargetLanguage,
   showResumeButton,
   onResume,
@@ -59,7 +60,19 @@ export function LanguageSelector({
   });
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const weapon = useWeapon();
-  const { bumpBackground } = useBackground();
+
+  const handleTargetLanguageSelected = (nativeLanguage: Language, lang: Language) => {
+    if (onboardedLanguages.includes(lang)) {
+      // Already onboarded for this language — skip straight to learning
+      onLanguagesConfirmed(nativeLanguage, lang);
+    } else {
+      setSelectionState({
+        stage: "onboarding",
+        nativeLanguage,
+        targetLanguage: lang,
+      });
+    }
+  };
 
   // Get available courses
   const availableCourses = useMemo(() => get_available_courses(), []);
@@ -421,14 +434,7 @@ export function LanguageSelector({
                     >
                       <Card
                         className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                        onClick={() => {
-                          bumpBackground(50.0);
-                          setSelectionState({
-                            stage: "onboarding",
-                            nativeLanguage: selectionState.nativeLanguage,
-                            targetLanguage: lang,
-                          });
-                        }}
+                        onClick={() => handleTargetLanguageSelected(selectionState.nativeLanguage, lang)}
                         animate
                       >
                         <div
@@ -471,14 +477,7 @@ export function LanguageSelector({
                       >
                         <Card
                           className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                          onClick={() => {
-                            bumpBackground(50.0);
-                            setSelectionState({
-                              stage: "onboarding",
-                              nativeLanguage: selectionState.nativeLanguage,
-                              targetLanguage: lang,
-                            });
-                          }}
+                          onClick={() => handleTargetLanguageSelected(selectionState.nativeLanguage, lang)}
                           animate
                         >
                           <div
@@ -526,14 +525,7 @@ export function LanguageSelector({
                       >
                         <Card
                           className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                          onClick={() => {
-                            bumpBackground(50.0);
-                            setSelectionState({
-                              stage: "onboarding",
-                              nativeLanguage: selectionState.nativeLanguage,
-                              targetLanguage: lang,
-                            });
-                          }}
+                          onClick={() => handleTargetLanguageSelected(selectionState.nativeLanguage, lang)}
                           animate
                         >
                           <div

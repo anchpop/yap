@@ -21,7 +21,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { UserInfo } from "@/App";
 import { useEffect, useState } from "react";
-import { getPosterDataUrl } from "@/lib/poster-utils";
+import { Poster } from "@/components/Poster";
 import { goalToGoalSelection, type Goal } from "@/hooks/useGoal";
 import { useNavigate } from "react-router-dom";
 import { TargetLanguageText } from "./TargetLanguageText";
@@ -34,7 +34,6 @@ export interface MovieWithMetadata {
   title?: string;
   year?: number;
   original_language?: string;
-  poster_bytes?: number[];
 }
 
 interface NoCardsReadyProps {
@@ -259,14 +258,12 @@ export function NoCardsReady({
   const crossesThreshold = afterRounded > currentRounded;
   const thresholdTarget = crossesThreshold ? afterRounded : null;
 
-  const goalImageUrl = (() => {
+  const goalImage = (() => {
     switch (effectiveGoal.type) {
       case "essential":
-        return "/essential-course.webp";
-      case "movie": {
-        const movie = moviesWithMetadata.find(m => m.id === effectiveGoal.movieId);
-        return movie ? getPosterDataUrl(movie.poster_bytes) : null;
-      }
+        return { type: "url" as const, url: "/essential-course.webp" };
+      case "movie":
+        return { type: "movie" as const, movieId: effectiveGoal.movieId };
       case "pimsleur":
         return null;
     }
@@ -373,12 +370,14 @@ export function NoCardsReady({
                   onClick={() => navigate("/goals")}
                   className="hidden sm:block sm:order-first w-24 h-36 flex-shrink-0 rounded-lg border border-border/50 overflow-hidden cursor-pointer hover:scale-105 transition-all"
                 >
-                  {goalImageUrl ? (
+                  {goalImage?.type === "url" ? (
                     <img
-                      src={goalImageUrl}
+                      src={goalImage.url}
                       alt={goalLabel}
                       className={`w-full h-full object-cover opacity-90 saturate-70 dark:opacity-70 dark:saturate-80 hover:opacity-100 hover:saturate-100 transition-all ${effectiveGoal.type === "essential" ? "dark:invert dark:hue-rotate-180" : ""}`}
                     />
+                  ) : goalImage?.type === "movie" ? (
+                    <Poster movieId={goalImage.movieId} deck={deck} alt={goalLabel} />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
                       <Headphones className="h-8 w-8 text-muted-foreground" />

@@ -42,7 +42,7 @@ use language_utils::text_cleanup::{find_closest_match, normalize_for_grading};
 use language_utils::transcription_challenge;
 use language_utils::{Course, Language};
 use language_utils::{
-    Gram, GramDefinition, Heteronym, MovieMetadata, PronunciationGuide, SentenceGram, WordType,
+    Gram, GramDefinition, Heteronym, MovieMetadataBasic, PronunciationGuide, SentenceGram, WordType,
 };
 use lasso::Spur;
 use opfs::persistent::{self};
@@ -236,6 +236,7 @@ impl Weapon {
                         target_language: None,
                         native_language: None,
                         onboarding_selections: BTreeMap::new(),
+                        selected_languages: BTreeSet::new(),
                         heard_about: None,
                     },
                     &(),
@@ -2303,11 +2304,8 @@ impl Deck {
                 continue;
             }
 
-            let score = Self::percent_known_in(
-                freq_list,
-                comprehensible_written,
-                comprehensible_listening,
-            );
+            let score =
+                Self::percent_known_in(freq_list, comprehensible_written, comprehensible_listening);
 
             stats.push(PimsleurStats {
                 level: lesson.level,
@@ -2365,17 +2363,32 @@ impl Deck {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_movie_metadata(&self, movie_ids: Vec<String>) -> Vec<MovieMetadata> {
+    pub fn get_movie_metadata(&self, movie_ids: Vec<String>) -> Vec<MovieMetadataBasic> {
         let language_pack = &self.context.language_pack;
         let mut movies = Vec::new();
 
         for movie_id in movie_ids {
             if let Some(movie_metadata) = language_pack.movies.get(&movie_id) {
-                movies.push(movie_metadata.clone());
+                movies.push(MovieMetadataBasic {
+                    id: movie_metadata.id.clone(),
+                    title: movie_metadata.title.clone(),
+                    year: movie_metadata.year,
+                    original_language: movie_metadata.original_language.clone(),
+                    rotten_tomatoes_score: movie_metadata.rotten_tomatoes_score,
+                });
             }
         }
 
         movies
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_movie_poster(&self, movie_id: String) -> Option<Vec<u8>> {
+        self.context
+            .language_pack
+            .movies
+            .get(&movie_id)
+            .and_then(|m| m.poster_bytes.clone())
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -2965,8 +2978,7 @@ impl Deck {
         };
 
         let is_comprehensible = |gram: &SpurGram| {
-            comprehensible_grams.contains(gram)
-                || required_gram.is_some_and(|req| req == gram)
+            comprehensible_grams.contains(gram) || required_gram.is_some_and(|req| req == gram)
         };
 
         let mut possible_sentences = Vec::new();
@@ -4862,6 +4874,7 @@ mod tests {
                         target_language: None,
                         native_language: None,
                         onboarding_selections: BTreeMap::new(),
+                        selected_languages: BTreeSet::new(),
                         heard_about: None,
                     },
                     &(),

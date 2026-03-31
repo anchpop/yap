@@ -36,14 +36,22 @@ export function ThemeProvider({
   defaultAnimatedBackground = true,
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
+    } catch {
+      return defaultTheme;
+    }
+  });
 
   const [animatedBackground, setAnimatedBackgroundState] = useState<boolean>(
     () => {
-      const stored = localStorage.getItem(animatedBackgroundStorageKey);
-      return stored === null ? defaultAnimatedBackground : stored === "true";
+      try {
+        const stored = localStorage.getItem(animatedBackgroundStorageKey);
+        return stored === null ? defaultAnimatedBackground : stored === "true";
+      } catch {
+        return defaultAnimatedBackground;
+      }
     }
   );
 
@@ -68,7 +76,11 @@ export function ThemeProvider({
   }, [theme]);
 
   const setAnimatedBackground = (enabled: boolean) => {
-    localStorage.setItem(animatedBackgroundStorageKey, String(enabled));
+    try {
+      localStorage.setItem(animatedBackgroundStorageKey, String(enabled));
+    } catch {
+      // localStorage unavailable (e.g. private browsing)
+    }
     setAnimatedBackgroundState(enabled);
   };
 
@@ -79,7 +91,11 @@ export function ThemeProvider({
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
+      try {
+        localStorage.setItem(storageKey, theme);
+      } catch {
+        // localStorage unavailable (e.g. private browsing)
+      }
       setTheme(theme);
     },
     animatedBackground,

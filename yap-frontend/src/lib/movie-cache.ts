@@ -1,31 +1,16 @@
-import type { Deck } from '../../../yap-frontend-rs/pkg';
+import type { Deck, MovieMetadataBasic } from '../../../yap-frontend-rs/pkg';
 
-interface MovieMetadata {
-  id: string;
-  title: string;
-  year: number | undefined;
-  original_language: string | undefined;
-  rotten_tomatoes_score: number | undefined;
-  poster_bytes: number[] | undefined;
-}
-
-// Global cache for movie metadata
-// NOTE: This is technically spaghetti code - we're using a global cache that persists
-// across deck changes, which can be problematic. However, it's the simplest way to
-// avoid re-fetching movie metadata (especially poster JPEGs) on every render or deck
-// change. The alternative would be a proper React context or state management solution,
-// but that adds complexity. We cache by language+movieId to handle different languages.
-const movieMetadataCache = new Map<string, MovieMetadata>();
+const movieMetadataCache = new Map<string, MovieMetadataBasic>();
 
 /**
  * Get movie metadata with caching. Only fetches uncached movies from the deck.
  * Cache key includes target language since the same movie ID might have different
- * metadata (e.g., different posters or titles) in different language contexts.
+ * metadata (e.g., different titles) in different language contexts.
  */
-export function getMovieMetadata(deck: Deck, movieIds: string[]): MovieMetadata[] {
+export function getMovieMetadata(deck: Deck, movieIds: string[]): MovieMetadataBasic[] {
   const targetLanguage = deck.get_target_language();
   const uncachedIds: string[] = [];
-  const results: MovieMetadata[] = [];
+  const results: MovieMetadataBasic[] = [];
 
   // Check which movies we need to fetch
   for (const id of movieIds) {

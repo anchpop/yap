@@ -1,8 +1,8 @@
-export function getPosterDataUrl(posterBytes: number[] | undefined): string | null {
+export function getPosterDataUrl(posterBytes: Uint8Array | undefined): string | null {
   if (!posterBytes) return null;
 
   try {
-    const uint8Array = new Uint8Array(posterBytes);
+    const uint8Array = posterBytes;
     let binaryString = '';
     const chunkSize = 8192;
     for (let i = 0; i < uint8Array.length; i += chunkSize) {
