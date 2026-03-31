@@ -497,10 +497,17 @@ export function NoCardsReady({
 
                   <Progress
                     value={goalPercentKnown}
+                    projectedValue={goalDone ? undefined : addCardOptions.percent_known_after}
                     showPercentage
                     label={goalDone ? "Done!" : undefined}
                     className="h-6"
                   />
+
+                  {effectiveGoal.type === "essential" && (
+                    <p className="text-xs text-muted-foreground text-center sm:text-left">
+                      The words in this level account for {tierInfo.percent_of_usage.toFixed(1)}% of the {targetLanguage} you'll encounter.
+                    </p>
+                  )}
 
                   <button
                     onClick={() => navigate("/goals")}

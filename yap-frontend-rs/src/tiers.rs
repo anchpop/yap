@@ -34,6 +34,8 @@ pub struct TierInfo {
     pub total_levels: u32,
     /// Percent known within the current level (0-100)
     pub percent_known: f64,
+    /// What percentage of all word usage the words in this level account for (0-100)
+    pub percent_of_usage: f64,
 }
 
 pub(crate) struct TierLevelSlice<'a> {
@@ -46,6 +48,10 @@ pub(crate) struct TierLevelSlice<'a> {
 }
 
 impl TierLevelSlice<'_> {
+    pub(crate) fn total_freq(&self) -> u64 {
+        self.total_freq
+    }
+
     pub(crate) fn known_pct(
         &self,
         freq_list: &language_utils::language_pack::FrequencyList,
@@ -74,13 +80,14 @@ impl TierLevelSlice<'_> {
         known / self.total_freq as f64 * 100.0
     }
 
-    pub(crate) fn to_tier_info(&self, percent_known: f64) -> TierInfo {
+    pub(crate) fn to_tier_info(&self, percent_known: f64, cumulative_percent_of_usage: f64) -> TierInfo {
         TierInfo {
             tier: (self.tier_idx + 1) as u32,
             name: self.tier_name.to_string(),
             level: (self.level_idx + 1) as u32,
             total_levels: self.total_levels_in_tier as u32,
             percent_known,
+            percent_of_usage: cumulative_percent_of_usage,
         }
     }
 }
@@ -128,16 +135,16 @@ pub(crate) fn tier_level_slices<'a>(
 
 /// Find the tier level where projected grams show the most improvement over current grams.
 /// Falls back to the first incomplete level if no improvement anywhere.
-pub(crate) fn best_tier_level<'a>(
-    levels: &'a [TierLevelSlice<'_>],
+pub(crate) fn best_tier_level_idx(
+    levels: &[TierLevelSlice<'_>],
     freq_list: &language_utils::language_pack::FrequencyList,
     current_written: &BTreeSet<SpurGram>,
     current_listening: &BTreeSet<SpurGram>,
     projected_written: &BTreeSet<SpurGram>,
     projected_listening: &BTreeSet<SpurGram>,
-) -> &'a TierLevelSlice<'a> {
+) -> usize {
     // Find the earliest level where adding cards makes any progress
-    let idx = levels
+    levels
         .iter()
         .position(|level| {
             let current_pct = level.known_pct(freq_list, current_written, current_listening);
@@ -152,9 +159,7 @@ pub(crate) fn best_tier_level<'a>(
                     level.known_pct(freq_list, current_written, current_listening) < 100.0
                 })
                 .unwrap_or(levels.len().saturating_sub(1))
-        });
-
-    &levels[idx]
+        })
 }
 
 /// Compute the percent known within the first tier level that isn't at 100%.

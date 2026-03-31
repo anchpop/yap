@@ -86,10 +86,15 @@ export function GoalsPage() {
                 selected={goal.type === "essential"}
                 onClick={() => setGoalAndNavigate({ type: "essential" })}
                 title={`Frequent ${targetLanguage}`}
-                description={`Currently on: ${tierInfo.name} ${targetLanguage} (tier ${tierInfo.tier})`}
+                description={`Currently on: ${tierInfo.name} ${targetLanguage} Level ${tierInfo.level} of ${tierInfo.total_levels}`}
                 percentKnown={overallPercentKnown}
                 posterUrl="/essential-course.webp"
               />
+              {goal.type === "essential" && (
+                <p className="text-xs text-muted-foreground -mt-2 ml-1">
+                  The {tierInfo.name} tier covers the {tierInfo.tier === 1 ? "" : "next "}most frequent {targetLanguage} words. The words in this level account for {tierInfo.percent_of_usage.toFixed(1)}% of the {targetLanguage} you'll encounter.
+                </p>
+              )}
 
               {/* Movie goals */}
               <h3 className="text-lg font-semibold mt-6">Movies</h3>

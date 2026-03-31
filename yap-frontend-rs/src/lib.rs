@@ -2148,7 +2148,7 @@ impl Deck {
             }
         }
 
-        let level = tiers::best_tier_level(
+        let level_idx = tiers::best_tier_level_idx(
             &levels,
             freq_list,
             current_written,
@@ -2156,8 +2156,16 @@ impl Deck {
             &projected_written,
             &projected_listening,
         );
+        let level = &levels[level_idx];
         let pct = level.known_pct(freq_list, current_written, current_listening);
-        level.to_tier_info(pct)
+        let grand_total_freq: u64 = freq_list.entries.values().map(|f| f.count as u64).sum();
+        let cumulative_freq: u64 = levels[..=level_idx].iter().map(|l| l.total_freq()).sum();
+        let cumulative_pct = if grand_total_freq > 0 {
+            cumulative_freq as f64 / grand_total_freq as f64 * 100.0
+        } else {
+            0.0
+        };
+        level.to_tier_info(pct, cumulative_pct)
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -2461,7 +2469,7 @@ impl Deck {
                 let current_written = self.get_comprehensible_written_grams(true);
                 let current_listening = self.get_comprehensible_listening_grams(true);
 
-                let level = tiers::best_tier_level(
+                let level_idx = tiers::best_tier_level_idx(
                     &levels,
                     freq_list,
                     current_written,
@@ -2469,7 +2477,7 @@ impl Deck {
                     &projected_written,
                     &projected_listening,
                 );
-                level.known_pct(freq_list, &projected_written, &projected_listening)
+                levels[level_idx].known_pct(freq_list, &projected_written, &projected_listening)
             }
         };
 

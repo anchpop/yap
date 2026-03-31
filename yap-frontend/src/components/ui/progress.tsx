@@ -6,16 +6,19 @@ import { cn } from "@/lib/utils"
 function Progress({
   className,
   value,
+  projectedValue,
   disableTransition,
   showPercentage,
   label,
   ...props
 }: React.ComponentProps<typeof ProgressPrimitive.Root> & {
+  projectedValue?: number
   disableTransition?: boolean
   showPercentage?: boolean
   label?: string
 }) {
   const pct = value || 0
+  const projectedPct = projectedValue ?? pct
   const displayLabel = label ?? `${Math.floor(pct)}%`
 
   return (
@@ -27,6 +30,12 @@ function Progress({
       )}
       {...props}
     >
+      {projectedPct > pct && (
+        <div
+          className={cn("bg-primary/30 absolute h-full", !disableTransition && "transition-all")}
+          style={{ width: `${projectedPct}%` }}
+        />
+      )}
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
         className={cn("bg-primary h-full w-full flex-1", !disableTransition && "transition-all")}
