@@ -57,6 +57,14 @@ MODEL_MAPPING = {
     "rus": {
         "small": "ru_core_news_lg",
         "large": "ru_core_news_lg"
+    },
+    "nld": {
+        "small": "nl_core_news_sm",
+        "large": "nl_core_news_lg"
+    },
+    "dan": {
+        "small": "da_core_news_sm",
+        "large": "da_core_news_trf"
     }
 }
 

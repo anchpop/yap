@@ -17,6 +17,11 @@ pub fn polysemous_words(language: Language) -> &'static [PolysemousWord] {
         Language::German => GERMAN,
         Language::Italian => ITALIAN,
         Language::Portuguese => PORTUGUESE,
+        Language::Chinese => CHINESE,
+        Language::Japanese => JAPANESE,
+        Language::Hindi => HINDI,
+        Language::Dutch => DUTCH,
+        Language::Danish => DANISH,
         _ => &[],
     }
 }
@@ -443,4 +448,102 @@ const PORTUGUESE: &[PolysemousWord] = &[
     ("vestido", &[("vestido", Noun), ("vestido", Adj)]),
     ("vermelho", &[("vermelho", Adj), ("vermelho", Noun)]),
     ("parte", &[("parte", Noun), ("partir", Verb)]),
+];
+
+const CHINESE: &[PolysemousWord] = &[
+    ("会", &[("会", Aux), ("会", Verb), ("会", Noun)]), // can/will / meet / meeting
+    ("要", &[("要", Aux), ("要", Verb), ("要", Adj)]),  // want/will / want / important
+    ("就", &[("就", Adv), ("就", Cconj)]),              // then/just / then
+    ("还", &[("还", Adv), ("还", Verb)]),               // still/also / return
+    ("过", &[("过", Part), ("过", Verb)]),              // experiential aspect / to pass
+    ("得", &[("得", Part), ("得", Verb)]),              // complement marker / to get
+    ("给", &[("给", Verb), ("给", Adp)]),               // to give / to/for
+    ("到", &[("到", Verb), ("到", Adp)]),               // to arrive / to
+    ("把", &[("把", Adp), ("把", Noun)]),               // BA-construction / handle
+    ("对", &[("对", Adj), ("对", Adp), ("对", Verb)]),  // correct / toward / to face
+    ("让", &[("让", Verb), ("让", Adp)]),               // to let / by (passive)
+    ("想", &[("想", Verb), ("想", Aux)]),               // to think / to want
+    ("点", &[("点", Noun), ("点", Verb), ("点", Num)]), // point / to order / a little
+    ("行", &[("行", Adj), ("行", Verb), ("行", Noun)]), // OK / to walk / row
+    ("回", &[("回", Verb), ("回", Noun)]),              // to return / time(s)
+    ("多", &[("多", Adj), ("多", Adv)]),                // many / how (much)
+    ("快", &[("快", Adj), ("快", Adv)]),                // fast / soon
+    ("长", &[("长", Adj), ("长", Verb)]),               // long / to grow
+    ("好", &[("好", Adj), ("好", Adv), ("好", Intj)]),  // good / very / OK!
+    ("地", &[("地", Part), ("地", Noun)]),              // adverbial marker / earth
+    ("下", &[("下", Verb), ("下", Noun), ("下", Adp)]), // to go down / below / under
+    ("上", &[("上", Verb), ("上", Noun), ("上", Adp)]), // to go up / above / on
+    ("跟", &[("跟", Adp), ("跟", Verb), ("跟", Cconj)]), // with / to follow / and
+];
+
+const JAPANESE: &[PolysemousWord] = &[
+    ("もう", &[("もう", Adv), ("もう", Intj)]), // already / geez!
+    ("まだ", &[("まだ", Adv), ("まだ", Intj)]), // still/not yet
+    ("ちょっと", &[("ちょっと", Adv), ("ちょっと", Intj)]), // a little / hey!
+    ("本当", &[("本当", Noun), ("本当", Adv)]), // truth / really
+    ("大丈夫", &[("大丈夫", Adj), ("大丈夫", Intj)]), // OK (adj) / OK! (intj)
+    ("結構", &[("結構", Adv), ("結構", Adj)]),  // quite / fine/enough
+    ("方", &[("方", Noun), ("方", Noun)]),      // direction / person (polite)
+    ("前", &[("前", Noun), ("前", Adp)]),       // front / before
+    ("後", &[("後", Noun), ("後", Adp)]),       // back / after
+    ("間", &[("間", Noun), ("間", Adp)]),       // between / during
+    ("一番", &[("一番", Adv), ("一番", Noun)]), // most / number one
+    ("自分", &[("自分", Noun), ("自分", Pron)]), // oneself / I (informal)
+];
+
+const HINDI: &[PolysemousWord] = &[
+    ("सब", &[("सब", Det), ("सब", Pron), ("सब", Noun)]), // all (det/pron) / everyone (noun)
+    ("और", &[("और", Cconj), ("और", Adv)]),              // and / more
+    ("बस", &[("बस", Adv), ("बस", Noun), ("बस", Intj)]), // just / bus / enough!
+    ("पर", &[("पर", Adp), ("पर", Cconj)]),              // on / but
+    ("तो", &[("तो", Part), ("तो", Cconj)]),             // then/emphasis / then/so
+    ("भी", &[("भी", Part), ("भी", Adv)]),               // also / even
+    ("ही", &[("ही", Part), ("ही", Adv)]),               // only/emphasis / only
+    ("अच्छा", &[("अच्छा", Adj), ("अच्छा", Intj)]),         // good / OK!/I see
+    ("ठीक", &[("ठीक", Adj), ("ठीक", Intj), ("ठीक", Adv)]), // fine / OK! / exactly
+    ("बहुत", &[("बहुत", Adv), ("बहुत", Det)]),             // very / much/many
+    ("कुछ", &[("कुछ", Pron), ("कुछ", Det), ("कुछ", Adv)]),  // something / some / somewhat
+    ("यह", &[("यह", Pron), ("यह", Det)]),               // this (pron) / this (det)
+    ("वह", &[("वह", Pron), ("वह", Det)]),               // that (pron) / that (det)
+    ("क्या", &[("क्या", Pron), ("क्या", Part), ("क्या", Adv)]), // what / question marker / how
+];
+
+const DUTCH: &[PolysemousWord] = &[
+    ("er", &[("er", Adv), ("er", Pron)]), // there / it (expletive)
+    ("wel", &[("wel", Adv), ("wel", Intj)]), // indeed/well / well!
+    ("al", &[("al", Adv), ("al", Det)]),  // already / all
+    ("nog", &[("nog", Adv), ("nog", Det)]), // still/yet / more
+    ("maar", &[("maar", Cconj), ("maar", Adv), ("maar", Part)]), // but / just / just
+    ("toch", &[("toch", Adv), ("toch", Cconj)]), // yet/still / but
+    ("even", &[("even", Adv), ("even", Adj)]), // just/briefly / equal
+    ("goed", &[("goed", Adj), ("goed", Adv), ("goed", Noun)]), // good / well / good (noun)
+    ("zo", &[("zo", Adv), ("zo", Intj)]), // so/like this / so!
+    ("best", &[("goed", Adj), ("goed", Adv)]), // best (adj) / quite (adv)
+    ("vlak", &[("vlak", Adj), ("vlak", Adv), ("vlak", Noun)]), // flat / just (before) / plane
+    ("stuk", &[("stuk", Noun), ("stuk", Adj)]), // piece / broken
+    ("vast", &[("vast", Adj), ("vast", Adv)]), // fixed / surely
+    ("vrij", &[("vrij", Adj), ("vrij", Adv)]), // free / quite
+    ("hard", &[("hard", Adj), ("hard", Adv)]), // hard / hard (adv)
+    ("net", &[("net", Adv), ("net", Adj), ("net", Noun)]), // just / neat / net
+    ("eens", &[("eens", Adv), ("eens", Num)]), // once/sometime / one
+    ("pas", &[("pas", Adv), ("pas", Noun)]), // only just / pass/step
+];
+
+const DANISH: &[PolysemousWord] = &[
+    ("jo", &[("jo", Adv), ("jo", Intj), ("jo", Part)]), // indeed/you know / yes!
+    ("vel", &[("vel", Adv), ("vel", Part)]),            // well/presumably
+    ("da", &[("da", Adv), ("da", Sconj), ("da", Intj)]), // then / when / well!
+    ("nok", &[("nok", Adv), ("nok", Det)]),             // probably / enough
+    ("godt", &[("god", Adj), ("godt", Adv)]),           // good / well
+    ("lige", &[("lige", Adv), ("lige", Adj)]),          // just/exactly / equal
+    ("vel", &[("vel", Adv), ("vel", Noun)]),            // well/presumably / well-being
+    ("selv", &[("selv", Adv), ("selv", Pron)]),         // even / self
+    ("helt", &[("hel", Adj), ("helt", Adv)]),           // whole / completely
+    ("ret", &[("ret", Adv), ("ret", Adj), ("ret", Noun)]), // quite / right / right/dish
+    ("fast", &[("fast", Adj), ("fast", Adv)]),          // fixed / almost
+    ("vist", &[("vis", Adj), ("vist", Adv)]),           // certain / probably
+    ("altid", &[("altid", Adv)]),                       // always (disambig from noun context)
+    ("kun", &[("kun", Adv), ("kun", Part)]),            // only
+    ("lidt", &[("lidt", Adv), ("lille", Adj)]),         // a little / small
+    ("meget", &[("meget", Adv), ("megen", Det)]),       // very/much / much
 ];

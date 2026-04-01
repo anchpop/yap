@@ -22,6 +22,7 @@ fn to_lexide_language(lang: Language) -> Option<lexide::Language> {
         Language::Russian => Some(lexide::Language::Russian),
         // Languages not yet supported by lexide
         Language::Chinese | Language::Japanese => None,
+        _ => todo!(),
     }
 }
 

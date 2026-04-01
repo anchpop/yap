@@ -540,7 +540,7 @@ impl FeatureSet for PronType {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Num | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -571,7 +571,7 @@ impl FeatureSet for NumType {
                     PartOfSpeech::Num | PartOfSpeech::Det | PartOfSpeech::Adj | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -602,7 +602,7 @@ impl FeatureSet for Poss {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adj
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -630,7 +630,7 @@ impl FeatureSet for Reflex {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -652,7 +652,7 @@ impl FeatureSet for Clusivity {
             | Language::Italian => false,
             // Russian does not have clusivity
             Language::Russian => false,
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -701,7 +701,7 @@ impl FeatureSet for Gender {
                         | PartOfSpeech::Aux
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -733,7 +733,7 @@ impl FeatureSet for Animacy {
                         | PartOfSpeech::Num
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -754,7 +754,7 @@ impl FeatureSet for NounClass {
             | Language::Italian => false,
             // Russian does not have noun classes
             Language::Russian => false,
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -814,7 +814,7 @@ impl FeatureSet for Number {
                         | PartOfSpeech::Aux
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -854,7 +854,7 @@ impl FeatureSet for Case {
                         | PartOfSpeech::Num
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -880,7 +880,7 @@ impl FeatureSet for Definite {
             }
             // Russian has no articles; definiteness is not morphologically marked
             Language::Russian => false,
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -910,7 +910,7 @@ impl FeatureSet for Deixis {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -940,7 +940,7 @@ impl FeatureSet for DeixisRef {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -967,7 +967,7 @@ impl FeatureSet for Degree {
             Language::Russian => {
                 matches!(pos, PartOfSpeech::Adj | PartOfSpeech::Adv)
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -998,7 +998,7 @@ impl FeatureSet for VerbForm {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1025,6 +1025,7 @@ impl FeatureSet for Mood {
                 // particles and auxiliaries rather than verb forms
                 matches!(pos, PartOfSpeech::Aux)
             }
+            _ => todo!(),
         }
     }
 }
@@ -1054,7 +1055,7 @@ impl FeatureSet for Tense {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1090,7 +1091,7 @@ impl FeatureSet for Aspect {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1125,7 +1126,7 @@ impl FeatureSet for Voice {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1145,7 +1146,7 @@ impl FeatureSet for Evident {
             | Language::Portuguese
             | Language::Italian
             | Language::Russian => false,
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1191,7 +1192,7 @@ impl FeatureSet for Polarity {
                         | PartOfSpeech::Det
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1235,7 +1236,7 @@ impl FeatureSet for Person {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1273,7 +1274,7 @@ impl FeatureSet for Polite {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
                 )
             }
-            Language::Chinese | Language::Japanese => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -1389,7 +1390,7 @@ impl Morphology {
                 self.get_russian_verb_prefix()
             }
             (Language::Russian, _) => None,
-            (Language::Chinese, _) | (Language::Japanese, _) => todo!(),
+            _ => todo!(),
         }
     }
 

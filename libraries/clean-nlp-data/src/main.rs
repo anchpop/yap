@@ -5,7 +5,7 @@ mod utils;
 use anyhow::{Context, anyhow};
 use classify::{
     SentenceClassification, clean_sentence_with_llm, double_check_with_llm, get_classifier,
-    get_corrector, parse_dependencies_with_llm,
+    get_corrector, language_specific_tips, parse_dependencies_with_llm,
 };
 use futures::StreamExt;
 use generate_data::target_sentences;
@@ -42,6 +42,25 @@ static CHAT_CLIENT_LOW_REASONING: LazyLock<ChatClient> = LazyLock::new(|| {
         .with_reasoning_effort("low")
         .with_service_tier("flex")
 });
+
+static CHAT_CLIENT_NANO: LazyLock<ChatClient> = LazyLock::new(|| {
+    ChatClient::from_env("gpt-5.4-nano")
+        .unwrap()
+        .with_cache_directory("./.cache")
+});
+
+/// Languages that use LLM-based NLP instead of spaCy
+/// (either no spaCy model exists, or spaCy output is too inconsistent)
+fn needs_llm_nlp(language: Language) -> bool {
+    matches!(
+        language,
+        Language::Hindi
+            | Language::Tamil
+            | Language::Telugu
+            | Language::Bengali
+            | Language::Japanese
+    )
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -139,6 +158,12 @@ fn print_usage() {
     eprintln!("  jpn - Japanese");
     eprintln!("  rus - Russian");
     eprintln!("  zho - Chinese");
+    eprintln!("  hin - Hindi");
+    eprintln!("  tam - Tamil");
+    eprintln!("  tel - Telugu");
+    eprintln!("  ben - Bengali");
+    eprintln!("  nld - Dutch");
+    eprintln!("  dan - Danish");
     eprintln!();
     eprintln!("Examples:");
     eprintln!("  clean-nlp-data print fra 40    # Print 40 random French sentences");
@@ -156,8 +181,16 @@ fn parse_language_code(code: &str) -> anyhow::Result<Language> {
         "por" => Ok(Language::Portuguese),
         "ita" => Ok(Language::Italian),
         "rus" => Ok(Language::Russian),
+        "zho" => Ok(Language::Chinese),
+        "jpn" => Ok(Language::Japanese),
+        "hin" => Ok(Language::Hindi),
+        "tam" => Ok(Language::Tamil),
+        "tel" => Ok(Language::Telugu),
+        "ben" => Ok(Language::Bengali),
+        "nld" => Ok(Language::Dutch),
+        "dan" => Ok(Language::Danish),
         _ => Err(anyhow!(
-            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus"
+            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus, zho, jpn, hin, tam, tel, ben, nld, dan"
         )),
     }
 }
@@ -342,6 +375,173 @@ fn run_nlp_cached(
     Ok(results)
 }
 
+/// LLM response structure for initial NLP analysis (replaces spaCy for languages without models)
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
+struct LlmNlpToken {
+    #[serde(rename = "1. text")]
+    text: String,
+    #[serde(rename = "2. whitespace")]
+    whitespace: String,
+    #[serde(rename = "3. pos")]
+    pos: language_utils::PartOfSpeechTag,
+    #[serde(rename = "4. lemma")]
+    lemma: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
+struct LlmNlpResponse {
+    tokens: Vec<LlmNlpToken>,
+}
+
+/// Run LLM-based NLP analysis for languages without spaCy models.
+/// Produces NlpAnalyzedSentence output compatible with the rest of the pipeline.
+async fn run_llm_nlp_cached(
+    language: Language,
+    sentences: &[String],
+    cache_file: &Path,
+) -> anyhow::Result<Vec<NlpAnalyzedSentence>> {
+    // Load existing cache
+    let mut cache: HashMap<String, NlpAnalyzedSentence> = if cache_file.exists() {
+        let file = File::open(cache_file)
+            .context(format!("Failed to open LLM NLP cache: {cache_file:?}"))?;
+        let reader = BufReader::new(file);
+        reader
+            .lines()
+            .filter_map(|line| {
+                let line = line.ok()?;
+                let sentence: NlpAnalyzedSentence = serde_json::from_str(&line).ok()?;
+                Some((sentence.sentence.clone(), sentence))
+            })
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
+    // Find uncached sentences (deduplicated)
+    let uncached: Vec<String> = {
+        let mut seen = std::collections::HashSet::new();
+        sentences
+            .iter()
+            .filter(|s| !cache.contains_key(s.as_str()) && seen.insert((*s).clone()))
+            .cloned()
+            .collect()
+    };
+
+    if uncached.is_empty() {
+        println!(
+            "All {} sentences found in LLM NLP cache, skipping",
+            sentences.len()
+        );
+    } else {
+        println!(
+            "LLM NLP cache hit: {}/{} cached, running LLM NLP on {} new sentences",
+            sentences.len() - uncached.len(),
+            sentences.len(),
+            uncached.len()
+        );
+
+        let tips = language_specific_tips(language);
+        let system_prompt = format!(
+            r#"You are an expert {language} linguist. Tokenize and analyze the given {language} sentence.
+
+For each token, provide:
+- "1. text": the exact text as it appears in the sentence
+- "2. whitespace": any whitespace characters that follow this token (space, empty string, etc.)
+- "3. pos": the Universal Dependencies POS tag (ADJ, ADP, ADV, AUX, CCONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT, SCONJ, SYM, VERB, X)
+- "4. lemma": the dictionary/base form of the word
+
+CRITICAL: when you concatenate all tokens' text + whitespace in order, you MUST exactly reproduce the original sentence. Every character must be accounted for.
+
+The lemma should be the form a learner would look up in a dictionary.{tips}"#
+        );
+
+        let pb = ProgressBar::new(uncached.len() as u64);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} LLM NLP ({per_sec}, ${msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let results = futures::stream::iter(uncached.into_iter())
+            .map(|sentence| {
+                let system_prompt = system_prompt.clone();
+                let pb = pb.clone();
+                async move {
+                    let user_prompt = format!("Sentence: \"{sentence}\"");
+                    let result: Result<LlmNlpResponse, _> = CHAT_CLIENT_NANO
+                        .chat_with_system_prompt(&system_prompt, user_prompt)
+                        .await;
+
+                    pb.set_message(format!("{:.2}", CHAT_CLIENT_NANO.cost().unwrap_or(0.0)));
+                    pb.inc(1);
+
+                    (sentence, result)
+                }
+            })
+            .buffer_unordered(50)
+            .collect::<Vec<_>>()
+            .await;
+
+        pb.finish_with_message(format!("{:.2}", CHAT_CLIENT_NANO.cost().unwrap_or(0.0)));
+
+        // Convert LLM responses to NlpAnalyzedSentence and add to cache
+        let mut success_count = 0;
+        let mut fail_count = 0;
+        for (sentence, result) in results {
+            match result {
+                Ok(response) => {
+                    let doc: Vec<language_utils::DocToken> = response
+                        .tokens
+                        .into_iter()
+                        .map(|t| language_utils::DocToken {
+                            text: t.text,
+                            whitespace: t.whitespace,
+                            pos: t.pos,
+                            lemma: t.lemma,
+                            morph: std::collections::BTreeMap::new(),
+                        })
+                        .collect();
+
+                    let analyzed = NlpAnalyzedSentence {
+                        sentence: sentence.clone(),
+                        multiword_terms: language_utils::MultiwordTerms {
+                            high_confidence: vec![],
+                            low_confidence: vec![],
+                        },
+                        doc,
+                    };
+                    cache.insert(sentence, analyzed);
+                    success_count += 1;
+                }
+                Err(e) => {
+                    eprintln!("WARNING: LLM NLP failed for '{sentence}': {e}");
+                    fail_count += 1;
+                }
+            }
+        }
+        println!("LLM NLP: {success_count} succeeded, {fail_count} failed");
+
+        // Write updated cache
+        let file = File::create(cache_file).context("Failed to write LLM NLP cache")?;
+        let mut writer = BufWriter::new(file);
+        for sentence in cache.values() {
+            writeln!(writer, "{}", serde_json::to_string(sentence)?)
+                .context("Failed to write cache entry")?;
+        }
+        writer.flush()?;
+    }
+
+    // Return results in input order, skipping sentences that failed
+    let results: Vec<NlpAnalyzedSentence> = sentences
+        .iter()
+        .filter_map(|s| cache.get(s.as_str()).cloned())
+        .collect();
+
+    Ok(results)
+}
+
 fn print_random_sentences(sentences: &[NlpAnalyzedSentence], count: usize) {
     let mut rng = rand::rng();
     let sample_size = count.min(sentences.len());
@@ -431,22 +631,51 @@ async fn ensure_nlp_file(language: Language) -> anyhow::Result<PathBuf> {
 
     let nlp_file_path = base_dir.join("target_language_sentences_nlp.jsonl");
     if !nlp_file_path.exists() {
-        println!(
-            "Running Python NLP pipeline for {:?}...",
-            course.target_language
-        );
-        // Create an empty multiword terms file for now
-        let multiword_terms_file = base_dir.join("multiword_terms.jsonl");
-        if !multiword_terms_file.exists() {
-            File::create(&multiword_terms_file)
-                .context("Failed to create empty multiword terms file")?;
+        if needs_llm_nlp(course.target_language) {
+            // For languages without spaCy models, use LLM-based NLP
+            println!(
+                "Running LLM NLP pipeline for {:?} (no spaCy model available)...",
+                course.target_language
+            );
+            let file = File::open(&target_sentences_path)
+                .context("Failed to open target sentences file")?;
+            let reader = BufReader::new(file);
+            let sentences: Vec<String> = reader
+                .lines()
+                .filter_map(|line| {
+                    let line = line.ok()?;
+                    serde_json::from_str::<String>(&line).ok()
+                })
+                .collect();
+
+            let results =
+                run_llm_nlp_cached(course.target_language, &sentences, &nlp_file_path).await?;
+
+            // Write results as JSONL
+            let file = File::create(&nlp_file_path).context("Failed to create NLP output file")?;
+            let mut writer = BufWriter::new(file);
+            for sentence in &results {
+                writeln!(writer, "{}", serde_json::to_string(sentence)?)?;
+            }
+            writer.flush()?;
+        } else {
+            println!(
+                "Running Python NLP pipeline for {:?}...",
+                course.target_language
+            );
+            // Create an empty multiword terms file for now
+            let multiword_terms_file = base_dir.join("multiword_terms.jsonl");
+            if !multiword_terms_file.exists() {
+                File::create(&multiword_terms_file)
+                    .context("Failed to create empty multiword terms file")?;
+            }
+            run_python_nlp(
+                course.target_language,
+                &target_sentences_path,
+                &multiword_terms_file,
+                &nlp_file_path,
+            )?;
         }
-        run_python_nlp(
-            course.target_language,
-            &target_sentences_path,
-            &multiword_terms_file,
-            &nlp_file_path,
-        )?;
     }
 
     Ok(nlp_file_path)
@@ -498,6 +727,14 @@ async fn clean_all_languages() -> anyhow::Result<()> {
         Language::Portuguese,
         Language::Italian,
         Language::Russian,
+        Language::Chinese,
+        Language::Japanese,
+        Language::Hindi,
+        Language::Tamil,
+        Language::Telugu,
+        Language::Bengali,
+        Language::Dutch,
+        Language::Danish,
     ];
 
     for language in languages {
@@ -519,7 +756,13 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         manual_sentences.insert("Est-ce que Robin des Bois est vivant ?".to_string());
     }
 
-    let sample_size: usize = 8_000;
+    let sample_size: usize = if language == Language::Japanese {
+        200
+    } else if needs_llm_nlp(language) {
+        1_000
+    } else {
+        8_000
+    };
     const TERM_SAMPLE_SIZE: usize = 5_000;
 
     // Step 1: Load all raw sentence strings (no spaCy yet)
@@ -629,19 +872,19 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         all_needed.len()
     );
 
-    // Step 5: Run spaCy with caching — only processes new/unseen sentences
-    // (nlp_cache_file already defined above when loading previously-processed sentences)
-
-    // For multiword terms being analyzed, we use an empty terms file
-    // For regular sentences, we use the actual multiword terms file
-    // Since we mix both, use the multiword terms file (terms themselves
-    // won't be affected by the matcher in practice)
-    let samples = run_nlp_cached(
-        language,
-        &all_needed,
-        &multiword_terms_file,
-        &nlp_cache_file,
-    )?;
+    // Step 5: Run NLP analysis with caching
+    // For languages without spaCy models, use LLM-based NLP (gpt-5.4-nano)
+    // For others, use spaCy via Python
+    let samples = if needs_llm_nlp(language) {
+        run_llm_nlp_cached(language, &all_needed, &nlp_cache_file).await?
+    } else {
+        run_nlp_cached(
+            language,
+            &all_needed,
+            &multiword_terms_file,
+            &nlp_cache_file,
+        )?
+    };
 
     let sample_count = samples.len();
     println!("Total samples for cleaning: {sample_count}");

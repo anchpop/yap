@@ -792,6 +792,7 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
                 return false;
             }
         }
+        _ => todo!(),
     }
 
     // Reject sentences with quotes (often dialogue or non-standard)

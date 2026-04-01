@@ -225,7 +225,14 @@ pub fn get_classifier(language: Language) -> Box<dyn SentenceClassifier> {
         Language::English => Box::new(EnglishClassifier),
         Language::Italian => Box::new(ItalianClassifier),
         Language::Russian => Box::new(RussianClassifier),
-        language => unimplemented!("No classifier for language: {}", language),
+        Language::Chinese => Box::new(ChineseClassifier),
+        Language::Japanese => Box::new(JapaneseClassifier),
+        Language::Hindi => Box::new(HindiClassifier),
+        Language::Tamil => Box::new(TamilClassifier),
+        Language::Telugu => Box::new(TeluguClassifier),
+        Language::Bengali => Box::new(BengaliClassifier),
+        Language::Dutch => Box::new(DutchClassifier),
+        Language::Danish => Box::new(DanishClassifier),
     }
 }
 
@@ -240,7 +247,14 @@ pub fn get_corrector(language: Language) -> Box<dyn WordCorrector> {
         Language::English => Box::new(EnglishCorrector),
         Language::Italian => Box::new(ItalianCorrector),
         Language::Russian => Box::new(RussianCorrector),
-        language => unimplemented!("No corrector for language: {}", language),
+        Language::Chinese => Box::new(ChineseCorrector),
+        Language::Japanese => Box::new(JapaneseCorrector),
+        Language::Hindi => Box::new(HindiCorrector),
+        Language::Tamil => Box::new(TamilCorrector),
+        Language::Telugu => Box::new(TeluguCorrector),
+        Language::Bengali => Box::new(BengaliCorrector),
+        Language::Dutch => Box::new(DutchCorrector),
+        Language::Danish => Box::new(DanishCorrector),
     }
 }
 
@@ -6135,6 +6149,2444 @@ impl WordCorrector for RussianCorrector {
     }
 }
 
+/// Chinese-specific classifier
+struct ChineseClassifier;
+
+impl SentenceClassifier for ChineseClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in sentence.doc.iter().enumerate() {
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token, which is usually not necessary due to the `whitespace` field".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns",
+                    token.text
+                ));
+            }
+
+            // Check for lemmas containing spaces (parsing error)
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    token.text, token.lemma
+                ));
+            }
+
+            // Chinese words generally should have themselves as lemma (no morphological inflection)
+            // but check for obvious mismatches
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Adj {
+                // In Chinese, the surface form IS the lemma — no conjugation
+                if token.text != token.lemma && !token.lemma.is_empty() {
+                    reasons.push(format!(
+                        "'{}' ({:?}) has different lemma '{}' — Chinese words generally don't inflect, so lemma should match surface form",
+                        token.text, token.pos, token.lemma
+                    ));
+                }
+            }
+
+            // --- Word segmentation sanity checks ---
+            // Single-character tokens that are commonly part of multi-character words
+            // Flag when a single CJK character is tagged as a content word — may be an
+            // over-segmentation error (e.g., 因 + 为 instead of 因为, 可 + 以 instead of 可以)
+            let char_count = token.text.chars().count();
+            if char_count == 1
+                && matches!(
+                    token.pos,
+                    PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Noun
+                )
+            {
+                let c = token.text.chars().next().unwrap();
+                let is_cjk = ('\u{4E00}'..='\u{9FFF}').contains(&c);
+                if is_cjk {
+                    // Check if the next token is also a single CJK character with the same POS
+                    // — strong signal of over-segmentation
+                    if let Some(next) = sentence.doc.get(idx + 1) {
+                        let next_count = next.text.chars().count();
+                        let next_is_single_cjk = next_count == 1
+                            && next
+                                .text
+                                .chars()
+                                .next()
+                                .is_some_and(|nc| ('\u{4E00}'..='\u{9FFF}').contains(&nc));
+                        if next_is_single_cjk
+                            && next.pos == token.pos
+                            && token.whitespace.is_empty()
+                        {
+                            reasons.push(format!(
+                                "'{}' + '{}' are adjacent single-character {} tokens with no whitespace — possible over-segmentation (should these be one word '{}{}'?)",
+                                token.text, next.text, format!("{:?}", token.pos).to_lowercase(),
+                                token.text, next.text
+                            ));
+                        }
+                    }
+                }
+            }
+
+            // 是 (shì) AUX vs VERB disambiguation — copula
+            if token.text == "是"
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
+                    "'是' can be either AUX or VERB depending on context. Rule: VERB when used as copula (e.g., '他是老师' = he is a teacher), AUX in 是...的 focus constructions (e.g., '他是昨天来的'). Current POS: {:?}",
+                    token.pos
+                ));
+            }
+
+            // 在 (zài) — one of the most common and most ambiguous words
+            // VERB (to be at: 他在家), ADP (at/in: 在学校学习), ADV (progressive: 他在吃饭)
+            if token.text == "在" {
+                if token.pos == PartOfSpeechTag::Verb
+                    || token.pos == PartOfSpeechTag::Adp
+                    || token.pos == PartOfSpeechTag::Adv
+                {
+                    reasons.push(format!(
+                        "'在' is highly ambiguous: VERB when copula-like (e.g., '他在家' = he is at home), ADP when prepositional (e.g., '在学校学习' = study at school), ADV when progressive aspect marker (e.g., '他在吃饭' = he is eating). Current POS: {:?}",
+                        token.pos
+                    ));
+                } else {
+                    reasons.push(format!(
+                        "'在' tagged as {:?} but should be VERB (locative copula), ADP (preposition), or ADV (progressive marker)",
+                        token.pos
+                    ));
+                }
+            }
+
+            // 有 (yǒu) — VERB for possession/existence, not AUX
+            if token.text == "有" && token.pos == PartOfSpeechTag::Aux {
+                reasons.push(
+                    "'有' tagged as AUX — verify: 有 is typically VERB (possession: '我有书', existence: '有人来了'). AUX usage is rare."
+                        .to_string(),
+                );
+            }
+
+            // 把 (bǎ) — disposal/object-fronting marker (ADP) vs measure word vs VERB "to hold"
+            if token.text == "把" {
+                if token.pos == PartOfSpeechTag::Verb {
+                    reasons.push(
+                        "'把' tagged as VERB — check context: it's most commonly ADP (disposal construction: '把书放下'), rarely VERB meaning 'to hold/guard'. As a measure word it should be NOUN."
+                            .to_string(),
+                    );
+                } else if token.pos == PartOfSpeechTag::Adp {
+                    // Correct for disposal, but flag for review
+                    reasons.push(
+                        "'把' as ADP (disposal/object-fronting marker, e.g., '把门关上') — verify this is the disposal construction and not the measure word or verb"
+                            .to_string(),
+                    );
+                }
+            }
+
+            // 被 (bèi) — passive marker (ADP) vs VERB "to cover"
+            if token.text == "被" {
+                if token.pos == PartOfSpeechTag::Verb {
+                    reasons.push(
+                        "'被' tagged as VERB — check context: it's most commonly ADP (passive marker: '被打了' = was hit). It's rarely used as VERB meaning 'to cover' in modern Chinese."
+                            .to_string(),
+                    );
+                } else if token.pos != PartOfSpeechTag::Adp {
+                    reasons.push(format!(
+                        "'被' tagged as {:?} but is typically ADP (passive marker, e.g., '被老师批评了' = was criticized by the teacher)",
+                        token.pos
+                    ));
+                }
+            }
+
+            // 会/能/可以/要/想/应该 — modal verbs, AUX vs VERB
+            // (exclude 得 — handled separately below to avoid double-flagging)
+            let modal_verbs = [
+                "会", "能", "可以", "要", "想", "应该", "必须", "可能", "愿意",
+            ];
+            if modal_verbs.contains(&token.text.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
+                    "'{}' can be either AUX or VERB depending on context. AUX when modifying another verb (e.g., '我会说中文'), VERB when standalone (e.g., '我要这个'). Current POS: {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // 得 (de/dé/děi) — three-way ambiguity, handled in one place to avoid double-flagging:
+            // 1. Structural particle (complement marker): PART (e.g., 跑得快)
+            // 2. Modal "must" (děi): AUX (e.g., 我得走了)
+            // 3. Verb "to get/obtain" (dé): VERB (e.g., 得到)
+            if token.text == "得" {
+                reasons.push(format!(
+                    "'得' is three-way ambiguous: PART when complement marker (e.g., '跑得快' = runs fast), AUX when modal 'must' (e.g., '我得走了' = I must go), VERB when meaning 'to get' (rare standalone, more common in compounds like '得到'). Current POS: {:?}",
+                    token.pos
+                ));
+            }
+
+            // 了/过/着 — aspect particles, often mistagged as VERB
+            // 了: perfective aspect or sentence-final change-of-state
+            // 过: experiential aspect ("have you ever...") vs VERB "to pass/cross"
+            // 着: durative aspect ("holding") vs VERB "to touch/arrive"
+            if token.text == "了" && token.pos == PartOfSpeechTag::Verb {
+                reasons.push(
+                    "'了' tagged as VERB — verify: 了 is almost always PART (aspect marker after verb, or sentence-final change-of-state). VERB usage is extremely rare in modern Chinese."
+                        .to_string(),
+                );
+            }
+
+            if token.text == "过" {
+                if token.pos == PartOfSpeechTag::Verb {
+                    // Could be VERB "to pass" or mistagged aspect particle
+                    // If preceded by another verb, it's almost certainly the aspect particle
+                    let prev_is_verb = idx > 0
+                        && matches!(
+                            sentence.doc[idx - 1].pos,
+                            PartOfSpeechTag::Verb | PartOfSpeechTag::Adj
+                        );
+                    if prev_is_verb {
+                        reasons.push(
+                            "'过' tagged as VERB after another verb — likely the experiential aspect particle (PART), meaning 'have ever done X' (e.g., '我去过中国' = I have been to China). Should be PART."
+                                .to_string(),
+                        );
+                    } else {
+                        reasons.push(format!(
+                            "'过' can be VERB (to pass/cross, e.g., '过马路') or PART (experiential aspect after a verb, e.g., '吃过'). Current POS: {:?}",
+                            token.pos
+                        ));
+                    }
+                } else if token.pos == PartOfSpeechTag::Part {
+                    // Fine, but note it for context review
+                } else {
+                    reasons.push(format!(
+                        "'过' tagged as {:?} but should be VERB (to pass) or PART (experiential aspect)",
+                        token.pos
+                    ));
+                }
+            }
+
+            if token.text == "着" {
+                if token.pos == PartOfSpeechTag::Verb {
+                    let prev_is_verb = idx > 0
+                        && matches!(
+                            sentence.doc[idx - 1].pos,
+                            PartOfSpeechTag::Verb | PartOfSpeechTag::Adj
+                        );
+                    if prev_is_verb {
+                        reasons.push(
+                            "'着' tagged as VERB after another verb — likely the durative aspect particle (PART), indicating ongoing state (e.g., '开着门' = the door is open, '穿着红衣服' = wearing red). Should be PART."
+                                .to_string(),
+                        );
+                    } else {
+                        reasons.push(format!(
+                            "'着' can be VERB (to touch/arrive, rare) or PART (durative aspect after a verb, e.g., '拿着'). Current POS: {:?}",
+                            token.pos
+                        ));
+                    }
+                } else if token.pos != PartOfSpeechTag::Part {
+                    reasons.push(format!(
+                        "'着' tagged as {:?} but should typically be PART (durative aspect particle)",
+                        token.pos
+                    ));
+                }
+            }
+
+            // 的/地 — structural particles, should be PART
+            // (得 is handled separately above)
+            if (token.text == "的" || token.text == "地") && token.pos != PartOfSpeechTag::Part {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} but is typically PART (structural particle). 的 = attributive, 地 = adverbial",
+                    token.text, token.pos
+                ));
+            }
+
+            // 吗/呢/吧 — sentence-final particles, should be PART
+            if (token.text == "吗" || token.text == "呢" || token.text == "吧")
+                && token.pos != PartOfSpeechTag::Part
+            {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: sentence-final particles (吗/呢/吧) are typically PART. Check if this is genuinely sentence-final.",
+                    token.text, token.pos
+                ));
+            }
+
+            // Measure words / classifiers — after numbers OR demonstratives
+            let common_measure_words = [
+                "个", "只", "条", "张", "件", "本", "台", "辆", "位", "块", "杯", "瓶", "双", "次",
+                "遍", "种", "些",
+            ];
+            // (把 excluded — handled separately above as disposal marker)
+            if common_measure_words.contains(&token.text.as_str()) && idx > 0 {
+                let prev = &sentence.doc[idx - 1];
+                let prev_triggers_classifier = prev.pos == PartOfSpeechTag::Num
+                    || ["这", "那", "哪", "每", "几"].contains(&prev.text.as_str());
+                if prev_triggers_classifier && token.pos != PartOfSpeechTag::Noun {
+                    reasons.push(format!(
+                        "'{}' after '{}' is a measure word/classifier — check POS (currently {:?})",
+                        token.text, prev.text, token.pos
+                    ));
+                }
+            }
+
+            // 不/没 negation — should be ADV
+            if (token.text == "不" || token.text == "没") && token.pos != PartOfSpeechTag::Adv {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: 不/没 are typically ADV (negation). Check context.",
+                    token.text, token.pos
+                ));
+            }
+            // 没有 — ADV (negation, "haven't") or VERB ("don't have")
+            if token.text == "没有"
+                && token.pos != PartOfSpeechTag::Adv
+                && token.pos != PartOfSpeechTag::Verb
+            {
+                reasons.push(format!(
+                    "'没有' tagged as {:?} but should be ADV (negation: '没有去过') or VERB (non-possession: '我没有钱')",
+                    token.pos
+                ));
+            }
+
+            // DET/PRON ambiguity for demonstratives
+            let det_or_pron_words = ["这", "那", "这些", "那些", "每", "哪", "哪些", "某", "各"];
+            if det_or_pron_words.contains(&token.text.as_str())
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
+            {
+                reasons.push(format!(
+                    "'{}' can be either DET or PRON depending on context (modifies noun → DET, stands alone → PRON)",
+                    token.text
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Chinese, &token.text) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            // 是 tagged AUX followed by noun → likely copula VERB
+            if token.text == "是" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Noun) || next_pos == Some(PartOfSpeechTag::Adj)
+                {
+                    reasons.push(format!(
+                        "'是' is tagged AUX but is followed by '{}' ({:?}) — if this is a copula (是 + noun/adjective), it should be VERB, not AUX. 是 is only AUX in 是...的 focus constructions.",
+                        next_text, next_pos.unwrap_or(PartOfSpeechTag::X)
+                    ));
+                }
+            }
+
+            // 在 tagged as VERB but followed by another verb → likely progressive ADV
+            if token.text == "在" && token.pos == PartOfSpeechTag::Verb {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                if next_pos == Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'在' is tagged VERB but followed by verb '{}' — if this is the progressive marker (在 + verb = doing), it should be ADV, not VERB.",
+                        next.map(|t| t.text.as_str()).unwrap_or("")
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
+/// Chinese-specific corrector
+struct ChineseCorrector;
+
+impl WordCorrector for ChineseCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrected = false;
+        let mut corrections = Vec::new();
+
+        for token in &mut sentence.doc {
+            // Chinese lemmas should generally be the surface form (no inflection)
+            if (token.pos == PartOfSpeechTag::Verb
+                || token.pos == PartOfSpeechTag::Adj
+                || token.pos == PartOfSpeechTag::Noun)
+                && token.text != token.lemma
+                && !token.lemma.is_empty()
+                && !token.text.is_empty()
+            {
+                corrections.push(format!(
+                    "Fixed '{}' lemma from '{}' to surface form",
+                    token.text, token.lemma
+                ));
+                token.lemma = token.text.clone();
+                corrected = true;
+            }
+
+            // Fix capitalized lemmas (shouldn't happen in Chinese, but just in case)
+            if token.pos != PartOfSpeechTag::Propn
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                let lower = token.lemma.to_lowercase();
+                corrections.push(format!("Lowercased lemma '{}' to '{}'", token.lemma, lower));
+                token.lemma = lower;
+                corrected = true;
+            }
+        }
+
+        CorrectionResult {
+            corrected,
+            corrections,
+        }
+    }
+}
+
+/// Japanese-specific classifier
+struct JapaneseClassifier;
+
+impl SentenceClassifier for JapaneseClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in sentence.doc.iter().enumerate() {
+            let text = &token.text;
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{text}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns"
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    text, token.lemma
+                ));
+            }
+
+            // --- Verb lemmatization: dictionary form ends in う-row kana ---
+            if token.pos == PartOfSpeechTag::Verb {
+                let lemma = &token.lemma;
+                let u_row = ['う', 'く', 'す', 'つ', 'ぬ', 'ぶ', 'む', 'る', 'ぐ', 'ず'];
+                let has_japanese = lemma.chars().any(|c| {
+                    ('\u{3040}'..='\u{309F}').contains(&c)
+                        || ('\u{4E00}'..='\u{9FFF}').contains(&c)
+                        || ('\u{30A0}'..='\u{30FF}').contains(&c)
+                });
+                if has_japanese
+                    && !lemma.chars().last().is_some_and(|c| u_row.contains(&c))
+                    && !lemma.ends_with("だ")
+                    && lemma != "て"
+                    && lemma != "た"
+                {
+                    reasons.push(format!(
+                        "'{text}' (VERB) has lemma '{lemma}' which doesn't end in dictionary form — should end in う-row kana"
+                    ));
+                }
+            }
+
+            // --- AUX checks ---
+            if token.pos == PartOfSpeechTag::Aux {
+                let lemma = &token.lemma;
+                // Copula lemma must be だ
+                if (text == "です" || text == "でした") && lemma != "だ" {
+                    reasons.push(format!(
+                        "'{text}' (AUX) has lemma '{lemma}' — copula lemma should always be 'だ'"
+                    ));
+                }
+                if (text == "ます" || text == "ました" || text == "ません") && lemma != "ます"
+                {
+                    reasons.push(format!(
+                        "'{text}' (AUX) has lemma '{lemma}' — should be 'ます'"
+                    ));
+                }
+            }
+
+            // --- ます: always AUX ---
+            if (text == "ます" || text == "ました" || text == "ません" || text == "ませんでした")
+                && token.pos != PartOfSpeechTag::Aux
+            {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: ます and its forms are typically AUX (politeness suffix), not standalone verbs.",
+                    text, token.pos
+                ));
+            }
+
+            // --- ない: ADJ vs AUX ---
+            if (text == "ない" || token.lemma == "ない")
+                && token.pos != PartOfSpeechTag::Aux
+                && token.pos != PartOfSpeechTag::Adj
+            {
+                reasons.push(format!(
+                    "'ない' tagged as {:?} — should be ADJ (nonexistent: 時間がない) or AUX (negation: 食べない)", token.pos
+                ));
+            }
+
+            // --- Adjective checks ---
+            if token.pos == PartOfSpeechTag::Adj {
+                let lemma = &token.lemma;
+                // i-adjective adverbial form as lemma
+                if lemma == text && text.ends_with("く") {
+                    reasons.push(format!(
+                        "'{text}' has lemma '{lemma}' — adverbial form, lemma should end in い"
+                    ));
+                }
+                // na-adjective lemma must include だ
+                let common_na_adj = [
+                    "きれい",
+                    "静か",
+                    "大切",
+                    "大変",
+                    "元気",
+                    "有名",
+                    "便利",
+                    "不便",
+                    "親切",
+                    "丁寧",
+                    "簡単",
+                    "複雑",
+                    "重要",
+                    "特別",
+                    "自由",
+                    "安全",
+                    "危険",
+                    "可能",
+                    "不可能",
+                    "素敵",
+                    "立派",
+                    "無理",
+                    "大丈夫",
+                    "心配",
+                    "好き",
+                    "嫌い",
+                    "上手",
+                    "下手",
+                ];
+                if (common_na_adj.contains(&text.as_str())
+                    || common_na_adj.contains(&lemma.as_str()))
+                    && !lemma.ends_with("だ")
+                {
+                    reasons.push(format!(
+                            "'{text}' is a na-adjective — lemma should include だ ('{text}だ'). Current lemma: '{lemma}'."
+                        ));
+                }
+            }
+
+            // --- na-adjectives mistagged as NOUN ---
+            let common_na_adjectives = [
+                "きれい",
+                "静か",
+                "大切",
+                "大変",
+                "元気",
+                "有名",
+                "便利",
+                "不便",
+                "親切",
+                "丁寧",
+                "簡単",
+                "複雑",
+                "重要",
+                "特別",
+                "自由",
+                "安全",
+                "危険",
+                "可能",
+                "不可能",
+                "素敵",
+                "立派",
+                "無理",
+                "大丈夫",
+                "心配",
+                "好き",
+                "嫌い",
+                "上手",
+                "下手",
+            ];
+            if token.pos == PartOfSpeechTag::Noun && common_na_adjectives.contains(&text.as_str()) {
+                // Many na-adjectives genuinely function as nouns in certain constructions:
+                // 人気がある (popularity exists), 危険に気づく (notice the danger), 心配をかける (cause worry)
+                // Only flag when the context suggests adjectival use, not nominal use
+                let next_is_noun_particle = sentence.doc.get(idx + 1).is_some_and(|n| {
+                    // が/を/の/に/から/まで after the word = treating it as a noun
+                    matches!(n.text.as_str(), "が" | "を" | "の" | "から" | "まで")
+                });
+                if next_is_noun_particle {
+                    // Likely genuinely used as NOUN — don't assert it's wrong
+                    reasons.push(format!(
+                        "'{text}' tagged as NOUN — this word can be either NOUN or ADJ (na-adjective). Before '{}' it's likely NOUN (e.g., 人気がある = popularity exists). Please verify based on context.",
+                        sentence.doc.get(idx + 1).map(|n| n.text.as_str()).unwrap_or("")
+                    ));
+                } else {
+                    reasons.push(format!(
+                        "'{text}' tagged as NOUN — this word is often a na-adjective (ADJ with lemma '{text}だ'). Check context: if it modifies a noun ('{text}な...') or is a predicate ('{text}だ'), it should be ADJ. If it's the subject/object of a verb ('{text}がある'), NOUN is correct.",
+                    ));
+                }
+            }
+
+            // --- Particle checks: case particles → ADP ---
+            // Note: の is handled separately below (genitive vs nominalizer)
+            let case_particles = ["は", "が", "を", "に", "へ", "も", "から", "まで", "より"];
+            if case_particles.contains(&text.as_str()) && token.pos != PartOfSpeechTag::Adp {
+                reasons.push(format!(
+                    "'{text}' tagged as {:?} — this is typically ADP (case/topic particle). Please verify based on context.",
+                    token.pos
+                ));
+            }
+
+            // --- の: genitive (ADP) vs nominalizer (SCONJ/PART) ---
+            // After a verb/adj, の nominalizes the clause → should be SCONJ or PART, NOT ADP
+            // After a noun, の marks genitive → ADP
+            if text == "の" && idx > 0 {
+                let prev = &sentence.doc[idx - 1];
+                if matches!(
+                    prev.pos,
+                    PartOfSpeechTag::Verb | PartOfSpeechTag::Aux | PartOfSpeechTag::Adj
+                ) {
+                    // Nominalizer の (e.g., 食べるのが好き, 鍵を捜すのを手伝って)
+                    if token.pos == PartOfSpeechTag::Adp {
+                        reasons.push(format!(
+                                "'の' after verb/adj '{}' — verify: when の follows a verb/adjective, it's typically a nominalizer (SCONJ or PART), not genitive (ADP). Check if this の turns the clause into a noun phrase.",
+                                prev.text
+                            ));
+                    }
+                } else {
+                    // Genitive の (e.g., 猫の名前) → ADP is correct
+                    if token.pos != PartOfSpeechTag::Adp {
+                        reasons.push(format!(
+                            "'の' after noun '{}' — verify: genitive の is typically ADP. Currently tagged {:?}.",
+                            prev.text, token.pos
+                        ));
+                    }
+                }
+            }
+
+            // で is ambiguous: case particle vs copula て-form
+            if text == "で" {
+                reasons.push(format!(
+                    "'で' is ambiguous: ADP when case particle (学校で), or copula て-form (静かで). Current POS: {:?}", token.pos
+                ));
+            }
+
+            // と is especially ambiguous
+            if text == "と" {
+                reasons.push(format!(
+                    "'と' is ambiguous: ADP comitative/quotative/conditional, or CCONJ listing nouns. Current POS: {:?}", token.pos
+                ));
+            }
+
+            // Sentence-final particles → PART
+            let final_particles = ["か", "よ", "ね", "な", "わ", "ぞ", "ぜ", "さ"];
+            if final_particles.contains(&text.as_str()) && token.pos != PartOfSpeechTag::Part {
+                reasons.push(format!(
+                    "'{text}' tagged as {:?} — verify: sentence-final particles are typically PART. Check if this is genuinely sentence-final.",
+                    token.pos
+                ));
+            }
+
+            // --- Copula だ/です: always AUX, lemma だ ---
+            if (text == "だ" || text == "です" || text == "でした" || text == "だった")
+                && token.pos != PartOfSpeechTag::Aux
+            {
+                reasons.push(format!(
+                    "'{text}' tagged as {:?} — verify: copula (だ/です) should typically be AUX with lemma 'だ'. Check context.",
+                    token.pos
+                ));
+            }
+
+            // --- のだ/んだ explanatory mood ---
+            if (text == "の" || text == "ん") && token.pos != PartOfSpeechTag::Adp {
+                if let Some(next) = sentence.doc.get(idx + 1) {
+                    if (next.text == "だ"
+                        || next.text == "です"
+                        || next.text == "でした"
+                        || next.text == "だった")
+                        && token.pos != PartOfSpeechTag::Part
+                        && token.pos != PartOfSpeechTag::Noun
+                    {
+                        reasons.push(format!(
+                            "'{}' before '{}' is the explanatory の — should be PART or NOUN",
+                            text, next.text
+                        ));
+                    }
+                }
+            }
+
+            // --- する-compound split detection ---
+            // If a noun is followed by a form of する split as a separate token,
+            // flag it — する-compounds should be single VERB tokens
+            if token.pos == PartOfSpeechTag::Noun {
+                if let Some(next) = sentence.doc.get(idx + 1) {
+                    let next_is_suru = next.lemma == "する"
+                        || next.lemma == "す"
+                        || next.text == "し"
+                        || next.text == "する"
+                        || next.text == "した"
+                        || next.text == "して"
+                        || next.text == "さ"
+                        || next.text == "せ"
+                        || next.text == "される"
+                        || next.text == "させ"
+                        || next.text == "され";
+                    let next_is_particle =
+                        matches!(next.pos, PartOfSpeechTag::Adp | PartOfSpeechTag::Part);
+                    if next_is_suru && !next_is_particle {
+                        reasons.push(format!(
+                            "'{}' (NOUN) + '{}' (する form) — verify: noun+する compounds are typically a single VERB token (e.g., '勉強する' not '勉強' + 'する'). Exception: when を intervenes (勉強をする). Please check if these should be merged.",
+                            text, next.text
+                        ));
+                    }
+                }
+            }
+
+            // --- たい baked into verb lemma ---
+            // If a verb lemma ends in たい, the tokenizer merged V+たい when they should be split
+            if token.pos == PartOfSpeechTag::Verb
+                && token.lemma.ends_with("たい")
+                && token.lemma != "たい"
+            {
+                reasons.push(format!(
+                    "'{}' has lemma '{}' which ends in たい — verify: たい is typically a separate AUX token (e.g., '食べたい' → '食べ'(VERB) + 'たい'(AUX)). Check if this lemma incorrectly includes たい.",
+                    text, token.lemma
+                ));
+            }
+
+            // --- ある/いる: AUX after て-form, VERB for existence ---
+            if (token.lemma == "ある" || token.lemma == "いる")
+                && (token.pos == PartOfSpeechTag::Aux || token.pos == PartOfSpeechTag::Verb)
+            {
+                reasons.push(format!(
+                    "'{}' (lemma '{}') — AUX after て-form, VERB for existence. Current POS: {:?}",
+                    text, token.lemma, token.pos
+                ));
+            }
+
+            // --- て-form auxiliaries ---
+            let te_form_auxiliaries = [
+                ("しまう", "completion/regret"),
+                ("おく", "preparation"),
+                ("みる", "trying"),
+                ("くる", "toward speaker"),
+                ("いく", "away from speaker"),
+                ("もらう", "receiving favor"),
+                ("あげる", "giving favor"),
+                ("くれる", "favor toward me"),
+            ];
+            for (lemma_form, description) in &te_form_auxiliaries {
+                if token.lemma == *lemma_form
+                    && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                    && idx > 0
+                {
+                    let prev = &sentence.doc[idx - 1];
+                    if prev.text.ends_with('て') || prev.text.ends_with('で') {
+                        reasons.push(format!(
+                            "'{}' (lemma '{}') after て-form — auxiliary ({description}) should be AUX. Current POS: {:?}",
+                            text, token.lemma, token.pos
+                        ));
+                    }
+                }
+            }
+
+            // --- Contracted て-form direction ---
+            if (text.contains("てった")
+                || text.contains("ていった")
+                || text.ends_with("てく")
+                || text.ends_with("ていく"))
+                && token.lemma.contains("くる")
+            {
+                reasons.push(format!(
+                        "'{}' has lemma '{}' — this is ていく (going away). Lemma should contain 'いく', not 'くる'.", text, token.lemma
+                    ));
+            }
+            if (text.contains("てきた") || text.ends_with("てくる")) && token.lemma.contains("いく")
+            {
+                reasons.push(format!(
+                        "'{}' has lemma '{}' — this is てくる (coming toward). Lemma should contain 'くる', not 'いく'.", text, token.lemma
+                    ));
+            }
+
+            // --- Causative させる / passive られる ---
+            if (token.lemma == "させる" || token.lemma == "せる")
+                && token.pos == PartOfSpeechTag::Verb
+            {
+                reasons.push(format!(
+                    "'{}' (lemma '{}') tagged VERB — causative suffix should be AUX",
+                    text, token.lemma
+                ));
+            }
+            if (token.lemma == "られる" || token.lemma == "れる")
+                && token.pos == PartOfSpeechTag::Verb
+            {
+                reasons.push(format!(
+                    "'{}' (lemma '{}') tagged VERB — passive/potential suffix should be AUX",
+                    text, token.lemma
+                ));
+            }
+
+            // --- らしい: productive suffix ---
+            if (token.lemma == "らしい" || text.ends_with("らしい") || text.ends_with("らしく"))
+                && token.pos != PartOfSpeechTag::Aux
+                && token.pos != PartOfSpeechTag::Adj
+            {
+                reasons.push(format!(
+                    "'{}' — らしい is productive, should be AUX or ADJ, not {:?}",
+                    text, token.pos
+                ));
+            }
+
+            // --- DET check ---
+            let always_det = [
+                "この",
+                "その",
+                "あの",
+                "どの",
+                "こんな",
+                "そんな",
+                "あんな",
+                "どんな",
+            ];
+            if always_det.contains(&text.as_str()) && token.pos != PartOfSpeechTag::Det {
+                reasons.push(format!(
+                    "'{text}' tagged as {:?} but should be DET",
+                    token.pos
+                ));
+            }
+
+            if let Some(reason) = check_polysemous(Language::Japanese, &token.text) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            // ます not AUX
+            if (token.text == "ます" || token.text == "ました" || token.text == "ません")
+                && token.pos != PartOfSpeechTag::Aux
+            {
+                reasons.push(format!(
+                    "'{}' tagged {:?} but should be AUX.",
+                    token.text, token.pos
+                ));
+            }
+
+            // Copula lemma consistency
+            if (token.text == "です" || token.text == "でした") && token.lemma != "だ" {
+                reasons.push(format!(
+                    "'{}' has lemma '{}' — should be 'だ'.",
+                    token.text, token.lemma
+                ));
+            }
+
+            // て-form auxiliaries tagged VERB → should be AUX
+            let te_aux_lemmas = [
+                "しまう",
+                "おく",
+                "みる",
+                "くる",
+                "いく",
+                "もらう",
+                "あげる",
+                "くれる",
+            ];
+            if te_aux_lemmas.contains(&token.lemma.as_str())
+                && token.pos == PartOfSpeechTag::Verb
+                && idx > 0
+            {
+                let prev_text = &tokens[idx - 1].text;
+                if prev_text.ends_with('て') || prev_text.ends_with('で') {
+                    reasons.push(format!(
+                        "'{}' (lemma '{}') is VERB after て-form '{}' — should be AUX.",
+                        token.text, token.lemma, prev_text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
+/// Japanese-specific corrector
+struct JapaneseCorrector;
+
+impl WordCorrector for JapaneseCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrected = false;
+        let mut corrections = Vec::new();
+
+        for token in &mut sentence.doc {
+            // Fix copula lemma: です/でした → だ
+            if (token.text == "です" || token.text == "でした")
+                && token.pos == PartOfSpeechTag::Aux
+                && token.lemma != "だ"
+            {
+                corrections.push(format!(
+                    "Fixed copula '{}' lemma from '{}' to 'だ'",
+                    token.text, token.lemma
+                ));
+                token.lemma = "だ".to_string();
+                corrected = true;
+            }
+
+            // Fix capitalized lemmas
+            if token.pos != PartOfSpeechTag::Propn
+                && token
+                    .lemma
+                    .chars()
+                    .next()
+                    .is_some_and(|c| c.is_uppercase() && c.is_ascii())
+            {
+                let lower = token.lemma.to_lowercase();
+                corrections.push(format!("Lowercased lemma '{}' to '{}'", token.lemma, lower));
+                token.lemma = lower;
+                corrected = true;
+            }
+        }
+
+        CorrectionResult {
+            corrected,
+            corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            if (token.text == "です" || token.text == "でした")
+                && token.pos == PartOfSpeechTag::Aux
+                && token.lemma != "だ"
+            {
+                token.lemma = "だ".to_string();
+            }
+        }
+    }
+}
+
+/// Hindi-specific classifier
+struct HindiClassifier;
+
+impl SentenceClassifier for HindiClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in sentence.doc.iter().enumerate() {
+            let text = &token.text;
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{text}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns"
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    text, token.lemma
+                ));
+            }
+
+            // --- Verb lemmatization: Hindi infinitives end in -ना ---
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma = &token.lemma;
+                if !lemma.ends_with("ना") && !lemma.is_empty() && lemma.chars().count() > 1 {
+                    reasons.push(format!(
+                        "'{}' ({:?}) has lemma '{}' which doesn't end in -ना — Hindi verb lemma should be the infinitive form (e.g., खाना, जाना, करना)",
+                        text, token.pos, lemma
+                    ));
+                }
+            }
+
+            // --- होना (honā) copula/auxiliary: AUX vs VERB ---
+            let hona_forms = [
+                "है",
+                "हैं",
+                "हूँ",
+                "हो",
+                "था",
+                "थी",
+                "थे",
+                "थीं",
+                "होगा",
+                "होगी",
+                "होंगे",
+                "होंगी",
+                "हुआ",
+                "हुई",
+                "हुए",
+            ];
+            if hona_forms.contains(&text.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
+                    "'{}' (होना) can be either AUX or VERB depending on context. VERB when used as copula (e.g., 'वह शिक्षक है' = he is a teacher) or existential ('यहाँ पानी है'). AUX when forming compound tenses (e.g., 'वह खा रहा है' = he is eating). Current POS: {:?}",
+                    text, token.pos
+                ));
+            }
+
+            // --- रहा/रही/रहे progressive aspect marker ---
+            // In "खा रहा है", रहा is the progressive aspect marker
+            // Often mistagged as ADJ or VERB. Should be AUX (or PART in some frameworks)
+            let raha_forms = ["रहा", "रही", "रहे", "रहीं"];
+            if raha_forms.contains(&text.as_str()) {
+                if token.pos == PartOfSpeechTag::Adj {
+                    // Check if preceded by a verb stem — strong signal of progressive
+                    let prev_is_verb = idx > 0
+                        && matches!(
+                            sentence.doc[idx - 1].pos,
+                            PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
+                        );
+                    if prev_is_verb {
+                        reasons.push(format!(
+                            "'{}' tagged as ADJ after verb '{}' — this is likely the progressive aspect marker (V + रहा + होना = continuous tense). Should be AUX, not ADJ.",
+                            text, sentence.doc[idx - 1].text
+                        ));
+                    } else {
+                        reasons.push(format!(
+                            "'{}' tagged as {:?} — if progressive aspect marker (खा रहा है), should be AUX. If genuine adjective, ADJ is fine. Check context.",
+                            text, token.pos
+                        ));
+                    }
+                } else if token.pos == PartOfSpeechTag::Verb {
+                    reasons.push(format!(
+                        "'{text}' tagged as VERB — if progressive aspect marker (V + रहा + होना), should be AUX. Only VERB if standalone meaning 'to remain/stay'."
+                    ));
+                }
+            }
+
+            // --- Compound verb light verbs ---
+            let light_verbs = [
+                "जाना",
+                "लेना",
+                "देना",
+                "डालना",
+                "बैठना",
+                "उठना",
+                "पड़ना",
+                "रखना",
+                "आना",
+                "चुकना",
+            ];
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && light_verbs.contains(&token.lemma.as_str())
+            {
+                reasons.push(format!(
+                    "'{}' (lemma '{}') — if this is part of a compound verb (e.g., 'खा लेना'), the light verb should be AUX. If used independently, it should be VERB. Current POS: {:?}",
+                    text, token.lemma, token.pos
+                ));
+            }
+
+            // --- Simple postpositions: should basically always be ADP ---
+            let simple_postpositions = ["में", "पर", "को", "से", "के", "का", "की", "ने", "तक", "द्वारा"];
+            if simple_postpositions.contains(&text.as_str()) && token.pos != PartOfSpeechTag::Adp {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: this is typically ADP (simple postposition). Check context.",
+                    text, token.pos
+                ));
+            }
+
+            // --- Compound postpositions: nouns that function as postpositions after के/की ---
+            // These legitimately can be NOUN standalone, but after के/की they're part of compound postpositions
+            let compound_postposition_nouns = [
+                "लिए",
+                "साथ",
+                "बारे",
+                "बाद",
+                "पहले",
+                "ऊपर",
+                "नीचे",
+                "बीच",
+                "अंदर",
+                "बाहर",
+                "पास",
+            ];
+            if compound_postposition_nouns.contains(&text.as_str())
+                && token.pos != PartOfSpeechTag::Adp
+                && token.pos != PartOfSpeechTag::Noun
+            {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — should be ADP (compound postposition, e.g., 'के {}') or NOUN",
+                    text, token.pos, text
+                ));
+            }
+
+            // --- Oblique noun form lemmatization ---
+            // Hindi nouns change form before postpositions (लड़का → लड़के को)
+            // If the lemma matches the surface form and ends in oblique markers, it may be unlemmatized
+            if token.pos == PartOfSpeechTag::Noun {
+                let lemma = &token.lemma;
+                // Masculine nouns ending in -ा take oblique -े (लड़का → लड़के)
+                // If lemma ends in -े and equals text, the pipeline may have failed to lemmatize
+                if lemma == text && text.ends_with("े") && text.chars().count() > 2 {
+                    reasons.push(format!(
+                        "Noun '{text}' has itself as lemma but ends in -े — this may be an oblique form. Check if the lemma should be the direct form (e.g., 'लड़के' → lemma 'लड़का', 'घरों' → lemma 'घर')"
+                    ));
+                }
+                // Plural oblique -ों
+                if lemma == text && text.ends_with("ों") {
+                    reasons.push(format!(
+                        "Noun '{text}' has itself as lemma but ends in -ों (plural oblique) — lemma should be the singular direct form (e.g., 'लड़कों' → lemma 'लड़का')"
+                    ));
+                }
+            }
+
+            // --- वाला/वाली/वाले: adjective-former, near-future, relative marker ---
+            let vala_forms = ["वाला", "वाली", "वाले"];
+            if vala_forms.contains(&text.as_str()) {
+                reasons.push(format!(
+                    "'{}' is multifunctional: ADJ when forming adjectives (दूध वाला = the milk one), PART/AUX when marking near-future (जाने वाला है = is about to go), DET when specifying (वह वाला = that one). Current POS: {:?}. Please tag based on context.",
+                    text, token.pos
+                ));
+            }
+
+            // --- ही/भी/तो: focus/emphasis particles, should be PART ---
+            if text == "ही" && token.pos != PartOfSpeechTag::Part {
+                reasons.push(format!(
+                    "'ही' tagged as {:?} but is a focus particle meaning 'only/very/emphasis' — should be PART",
+                    token.pos
+                ));
+            }
+            if text == "भी" && token.pos != PartOfSpeechTag::Part {
+                reasons.push(format!(
+                    "'भी' tagged as {:?} but is a focus particle meaning 'also/even' — should be PART",
+                    token.pos
+                ));
+            }
+            if text == "तो"
+                && token.pos != PartOfSpeechTag::Part
+                && token.pos != PartOfSpeechTag::Cconj
+            {
+                reasons.push(format!(
+                    "'तो' tagged as {:?} but is typically PART (emphasis/then) or CCONJ (then/so)",
+                    token.pos
+                ));
+            }
+
+            // --- नहीं/न/मत negation should be ADV or PART ---
+            if (text == "नहीं" || text == "न" || text == "मत")
+                && token.pos != PartOfSpeechTag::Adv
+                && token.pos != PartOfSpeechTag::Part
+            {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: negation words (नहीं/न/मत) are typically ADV or PART. Check context.",
+                    text, token.pos
+                ));
+            }
+
+            // --- DET/PRON ambiguity ---
+            let det_or_pron = [
+                "यह",
+                "वह",
+                "ये",
+                "वे",
+                "कोई",
+                "कुछ",
+                "सब",
+                "हर",
+                "इस",
+                "उस",
+                "इन",
+                "उन",
+                "मेरा",
+                "मेरी",
+                "मेरे",
+                "तेरा",
+                "तेरी",
+                "तेरे",
+                "उसका",
+                "उसकी",
+                "उसके",
+            ];
+            if det_or_pron.contains(&text.as_str())
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
+            {
+                reasons.push(format!(
+                    "'{text}' can be either DET or PRON depending on context (modifies noun → DET, stands alone → PRON)"
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Hindi, &token.text) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            let hona_forms = ["है", "हैं", "हूँ", "हो", "था", "थी", "थे", "थीं"];
+            if hona_forms.contains(&token.text.as_str()) && token.pos == PartOfSpeechTag::Aux {
+                // Walk backwards past ADV tokens to find the real predicate
+                // This handles "वह बहुत अच्छा है" where ADV "बहुत" intervenes
+                let mut check_idx = idx;
+                while check_idx > 0 {
+                    check_idx -= 1;
+                    let prev = &tokens[check_idx];
+                    if prev.pos == PartOfSpeechTag::Adv {
+                        continue; // skip adverbs
+                    }
+                    // If we hit रहा/रही/रहे, this is progressive (V + रहा + है), not copula
+                    let raha_forms = ["रहा", "रही", "रहे", "रहीं"];
+                    if raha_forms.contains(&prev.text.as_str()) {
+                        break; // progressive construction, don't flag
+                    }
+                    // If we hit a NOUN or ADJ, likely copula
+                    if prev.pos == PartOfSpeechTag::Noun || prev.pos == PartOfSpeechTag::Adj {
+                        reasons.push(format!(
+                            "'{}' (होना) is tagged AUX but the predicate '{}' ({:?}) suggests this is a copula — should be VERB, not AUX. होना is only AUX when forming compound tenses (V + रहा + है, V + चुका + है, etc.).",
+                            token.text, prev.text, prev.pos
+                        ));
+                    }
+                    break;
+                }
+            }
+
+            // रहा tagged ADJ after a verb → should be AUX
+            let raha_forms = ["रहा", "रही", "रहे", "रहीं"];
+            if raha_forms.contains(&token.text.as_str())
+                && token.pos == PartOfSpeechTag::Adj
+                && idx > 0
+                && matches!(
+                    tokens[idx - 1].pos,
+                    PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
+                )
+            {
+                reasons.push(format!(
+                        "'{}' is tagged ADJ after verb '{}' — this is the progressive aspect marker, should be AUX.",
+                        token.text, tokens[idx - 1].text
+                    ));
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
+/// Hindi-specific corrector
+struct HindiCorrector;
+
+impl WordCorrector for HindiCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrected = false;
+        let mut corrections = Vec::new();
+
+        for token in &mut sentence.doc {
+            // --- Pronoun lemma normalization to direct case ---
+            if token.pos == PartOfSpeechTag::Pron {
+                let expected = match token.text.as_str() {
+                    "मुझे" | "मुझको" | "मुझसे" | "मुझमें" | "मेरा" | "मेरी" | "मेरे" => {
+                        Some("मैं")
+                    }
+                    "तुझे" | "तुझको" | "तुझसे" | "तेरा" | "तेरी" | "तेरे" => {
+                        Some("तू")
+                    }
+                    "तुम्हें" | "तुम्हारा" | "तुम्हारी" | "तुम्हारे" => {
+                        Some("तुम")
+                    }
+                    "आपको" | "आपसे" | "आपका" | "आपकी" | "आपके" => {
+                        Some("आप")
+                    }
+                    "उसे" | "उसको" | "उससे" | "उसमें" | "उसका" | "उसकी" | "उसके" | "उसने" => {
+                        Some("वह")
+                    }
+                    "इसे" | "इसको" | "इससे" | "इसमें" | "इसका" | "इसकी" | "इसके" | "इसने" => {
+                        Some("यह")
+                    }
+                    "उन्हें" | "उनसे" | "उनका" | "उनकी" | "उनके" | "उन्होंने" => {
+                        Some("वे")
+                    }
+                    "इन्हें" | "इनसे" | "इनका" | "इनकी" | "इनके" | "इन्होंने" => {
+                        Some("ये")
+                    }
+                    "हमें" | "हमसे" | "हमारा" | "हमारी" | "हमारे" | "हमने" => {
+                        Some("हम")
+                    }
+                    _ => None,
+                };
+
+                if let Some(expected) = expected {
+                    if token.lemma != expected {
+                        corrections.push(format!(
+                            "Fixed pronoun '{}' lemma from '{}' to '{}'",
+                            token.text, token.lemma, expected
+                        ));
+                        token.lemma = expected.to_string();
+                        corrected = true;
+                    }
+                }
+            }
+
+            // --- Fix ही/भी POS to PART ---
+            if (token.text == "ही" || token.text == "भी") && token.pos != PartOfSpeechTag::Part
+            {
+                corrections.push(format!(
+                    "Fixed '{}' POS from {:?} to Part",
+                    token.text, token.pos
+                ));
+                token.pos = PartOfSpeechTag::Part;
+                corrected = true;
+            }
+
+            // --- Fix capitalized lemmas ---
+            if token.pos != PartOfSpeechTag::Propn
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                let lower = token.lemma.to_lowercase();
+                corrections.push(format!("Lowercased lemma '{}' to '{}'", token.lemma, lower));
+                token.lemma = lower;
+                corrected = true;
+            }
+        }
+
+        CorrectionResult {
+            corrected,
+            corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            // Pronoun lemma normalization
+            if token.pos == PartOfSpeechTag::Pron {
+                let expected = match token.text.as_str() {
+                    "मुझे" | "मुझको" | "मुझसे" | "मुझमें" => {
+                        Some("मैं")
+                    }
+                    "तुझे" | "तुझको" | "तुझसे" => Some("तू"),
+                    "तुम्हें" => Some("तुम"),
+                    "आपको" | "आपसे" => Some("आप"),
+                    "उसे" | "उसको" | "उससे" | "उसमें" | "उसने" => {
+                        Some("वह")
+                    }
+                    "इसे" | "इसको" | "इससे" | "इसमें" | "इसने" => {
+                        Some("यह")
+                    }
+                    "उन्हें" | "उनसे" | "उन्होंने" => Some("वे"),
+                    "इन्हें" | "इनसे" | "इन्होंने" => Some("ये"),
+                    "हमें" | "हमसे" | "हमने" => Some("हम"),
+                    _ => None,
+                };
+
+                if let Some(expected) = expected {
+                    if token.lemma != expected {
+                        token.lemma = expected.to_string();
+                    }
+                }
+            }
+
+            // Fix ही/भी POS
+            if (token.text == "ही" || token.text == "भी") && token.pos != PartOfSpeechTag::Part
+            {
+                token.pos = PartOfSpeechTag::Part;
+            }
+        }
+    }
+}
+
+/// Tamil-specific classifier
+struct TamilClassifier;
+
+impl SentenceClassifier for TamilClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for token in &sentence.doc {
+            let text = &token.text;
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{text}' classified as a proper noun — may be over-classified"
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    text, token.lemma
+                ));
+            }
+
+            // --- Tamil agglutinative morphology: case suffixes should be split ---
+            // Tamil is heavily agglutinative — a single "word" may contain noun+case+etc.
+            // spaCy may or may not split these; flag long tokens for review
+            let tamil_char_count = text
+                .chars()
+                .filter(|c| {
+                    let cp = *c as u32;
+                    (0x0B80..=0x0BFF).contains(&cp) // Tamil Unicode block
+                })
+                .count();
+            if tamil_char_count > 8 && token.pos == PartOfSpeechTag::Noun {
+                reasons.push(format!(
+                    "'{text}' is a long noun token ({tamil_char_count} Tamil chars) — may contain unsplit case suffixes that should be separate ADP tokens for learners"
+                ));
+            }
+
+            // --- Verb lemmatization: Tamil verb infinitives typically end in specific patterns ---
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                // Tamil dictionary forms (infinitive stems) are complex, but surface form = lemma is suspicious
+                if token.text == token.lemma && text.chars().count() > 3 {
+                    reasons.push(format!(
+                        "Verb/Aux '{text}' has itself as lemma — should be lemmatized to dictionary form (root + class marker)"
+                    ));
+                }
+            }
+
+            // --- இருக்கிறது/இரு (iru) copula/auxiliary ---
+            if (token.lemma == "இரு" || token.lemma == "இருக்கு" || token.lemma == "இருக்க")
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
+                        "'{}' (lemma '{}') — இரு can be VERB (copula/existence: 'நான் மகிழ்ச்சியாக இருக்கிறேன்') or AUX (progressive: 'படிக்கிறான் இருக்கிறான்'). Current POS: {:?}",
+                        text, token.lemma, token.pos
+                    ));
+            }
+
+            // --- Common postpositions should be ADP ---
+            let postpositions = ["இல்", "இல", "மேல்", "கீழ்", "உடன்", "மூலம்", "வரை", "பின்", "முன்"];
+            if postpositions.contains(&text.as_str()) && token.pos != PartOfSpeechTag::Adp {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: this word is often a postposition (ADP). Check context.",
+                    text, token.pos
+                ));
+            }
+
+            // --- Negation: இல்லை should be ADV or VERB, அல்ல should be PART ---
+            if text == "இல்லை"
+                && token.pos != PartOfSpeechTag::Verb
+                && token.pos != PartOfSpeechTag::Adv
+                && token.pos != PartOfSpeechTag::Part
+            {
+                reasons.push(format!(
+                    "'இல்லை' tagged as {:?} but is a negation word — should be VERB (negative existence) or PART",
+                    token.pos
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Tamil, &token.text) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+}
+
+/// Tamil-specific corrector
+struct TamilCorrector;
+
+impl WordCorrector for TamilCorrector {
+    fn correct(&self, _sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        CorrectionResult {
+            corrected: false,
+            corrections: vec![],
+        }
+    }
+}
+
+/// Telugu-specific classifier
+struct TeluguClassifier;
+
+impl SentenceClassifier for TeluguClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for token in &sentence.doc {
+            let text = &token.text;
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{text}' classified as a proper noun — may be over-classified"
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    text, token.lemma
+                ));
+            }
+
+            // --- Agglutinative morphology checks ---
+            let telugu_char_count = text
+                .chars()
+                .filter(|c| {
+                    let cp = *c as u32;
+                    (0x0C00..=0x0C7F).contains(&cp) // Telugu Unicode block
+                })
+                .count();
+            if telugu_char_count > 8 && token.pos == PartOfSpeechTag::Noun {
+                reasons.push(format!(
+                    "'{text}' is a long noun token ({telugu_char_count} Telugu chars) — may contain unsplit case suffixes"
+                ));
+            }
+
+            // --- Verb lemmatization ---
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.text == token.lemma
+                && text.chars().count() > 3
+            {
+                reasons.push(format!(
+                    "Verb/Aux '{text}' has itself as lemma — should be lemmatized to dictionary form"
+                ));
+            }
+
+            // --- ఉండు (uṇḍu) copula/auxiliary ---
+            if (token.lemma == "ఉండు"
+                || token.lemma == "ఉన్నాడు"
+                || text == "ఉన్నాను"
+                || text == "ఉన్నారు"
+                || text == "ఉంది")
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
+                        "'{}' (ఉండు) can be VERB (copula/existence) or AUX (forming progressive/continuous). Current POS: {:?}",
+                        text, token.pos
+                    ));
+            }
+
+            // --- Postpositions ---
+            let postpositions = [
+                "లో",
+                "కి",
+                "నుండి",
+                "మీద",
+                "కింద",
+                "తో",
+                "వల్ల",
+                "కోసం",
+                "గురించి",
+                "వరకు",
+            ];
+            if postpositions.contains(&text.as_str()) && token.pos != PartOfSpeechTag::Adp {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: this word is often a postposition (ADP). Check context.",
+                    text, token.pos
+                ));
+            }
+
+            // --- Negation ---
+            if (text == "లేదు" || text == "కాదు")
+                && token.pos != PartOfSpeechTag::Verb
+                && token.pos != PartOfSpeechTag::Part
+            {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: this is typically a negation word (VERB or PART). Check context.",
+                    text, token.pos
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Telugu, &token.text) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+}
+
+/// Telugu-specific corrector
+struct TeluguCorrector;
+
+impl WordCorrector for TeluguCorrector {
+    fn correct(&self, _sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        CorrectionResult {
+            corrected: false,
+            corrections: vec![],
+        }
+    }
+}
+
+/// Bengali-specific classifier
+struct BengaliClassifier;
+
+impl SentenceClassifier for BengaliClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for token in &sentence.doc {
+            let text = &token.text;
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{text}' classified as a proper noun — may be over-classified"
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    text, token.lemma
+                ));
+            }
+
+            // --- Verb lemmatization: Bengali infinitives end in -া (-a) ---
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma = &token.lemma;
+                if !lemma.ends_with('া') && !lemma.is_empty() && lemma.chars().count() > 1 {
+                    reasons.push(format!(
+                        "'{}' ({:?}) has lemma '{}' which may not be a proper Bengali infinitive — Bengali verb lemma should end in -া (e.g., করা, খাওয়া, যাওয়া)",
+                        text, token.pos, lemma
+                    ));
+                }
+            }
+
+            // --- হওয়া (hōẏā) copula/auxiliary ---
+            let howa_forms = [
+                "হয়",
+                "হল",
+                "হলো",
+                "হবে",
+                "হচ্ছে",
+                "ছিল",
+                "ছিলেন",
+                "আছে",
+                "আছি",
+                "আছেন",
+                "আছো",
+                "ছিলাম",
+            ];
+            if howa_forms.contains(&text.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
+                    "'{}' (হওয়া/থাকা) can be VERB (copula/existence) or AUX (forming compound tenses). Current POS: {:?}",
+                    text, token.pos
+                ));
+            }
+
+            // --- Compound verbs (light verbs) ---
+            let light_verbs = [
+                "ফেলা",
+                "নেওয়া",
+                "দেওয়া",
+                "যাওয়া",
+                "আসা",
+                "ওঠা",
+                "পড়া",
+                "বসা",
+                "রাখা",
+                "থাকা",
+            ];
+            if (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && light_verbs.contains(&token.lemma.as_str())
+            {
+                reasons.push(format!(
+                    "'{}' (lemma '{}') — if part of a compound verb, the light verb should be AUX. If standalone, it should be VERB. Current POS: {:?}",
+                    text, token.lemma, token.pos
+                ));
+            }
+
+            // --- Postpositions ---
+            let postpositions = [
+                "তে",
+                "তে",
+                "কে",
+                "র",
+                "এ",
+                "থেকে",
+                "দিয়ে",
+                "নিয়ে",
+                "জন্য",
+                "সাথে",
+                "পরে",
+                "আগে",
+            ];
+            if postpositions.contains(&text.as_str())
+                && token.pos != PartOfSpeechTag::Adp
+                && token.pos != PartOfSpeechTag::Noun
+            {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: this word is often a postposition (ADP). Check context.",
+                    text, token.pos
+                ));
+            }
+
+            // --- Negation ---
+            if (text == "না" || text == "নি" || text == "নয়")
+                && token.pos != PartOfSpeechTag::Part
+                && token.pos != PartOfSpeechTag::Adv
+            {
+                reasons.push(format!(
+                    "'{}' tagged as {:?} — verify: negation words are typically PART or ADV. Check context.",
+                    text, token.pos
+                ));
+            }
+
+            // --- DET/PRON ambiguity ---
+            let det_or_pron = ["এই", "ওই", "সেই", "কোনো", "প্রতি", "সব", "আমার", "তোমার", "তার"];
+            if det_or_pron.contains(&text.as_str())
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
+            {
+                reasons.push(format!(
+                    "'{text}' can be either DET or PRON depending on context (modifies noun → DET, stands alone → PRON)"
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Bengali, &token.text) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            let howa_forms = ["হয়", "হল", "হলো", "আছে", "আছি", "ছিল"];
+            if howa_forms.contains(&token.text.as_str()) && token.pos == PartOfSpeechTag::Aux {
+                let prev = if idx > 0 { tokens.get(idx - 1) } else { None };
+                let prev_pos = prev.map(|t| t.pos);
+
+                if prev_pos == Some(PartOfSpeechTag::Noun) || prev_pos == Some(PartOfSpeechTag::Adj)
+                {
+                    reasons.push(format!(
+                        "'{}' is tagged AUX after noun/adjective — if this is a copula, it should be VERB.",
+                        token.text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
+/// Bengali-specific corrector
+struct BengaliCorrector;
+
+impl WordCorrector for BengaliCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrected = false;
+        let mut corrections = Vec::new();
+
+        for token in &mut sentence.doc {
+            // Fix capitalized lemmas
+            if token.pos != PartOfSpeechTag::Propn
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                let lower = token.lemma.to_lowercase();
+                corrections.push(format!("Lowercased lemma '{}' to '{}'", token.lemma, lower));
+                token.lemma = lower;
+                corrected = true;
+            }
+        }
+
+        CorrectionResult {
+            corrected,
+            corrections,
+        }
+    }
+}
+
+/// Dutch-specific classifier
+struct DutchClassifier;
+
+impl SentenceClassifier for DutchClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for token in &sentence.doc {
+            let text_lower = token.text.to_lowercase();
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{}' classified as a proper noun — may be over-classified",
+                    token.text
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    token.text, token.lemma
+                ));
+            }
+
+            // --- Verb lemmatization: Dutch infinitives end in -en (or -n for short-stems) ---
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma_lower = token.lemma.to_lowercase();
+                if !lemma_lower.ends_with("en")
+                    && !lemma_lower.ends_with('n')
+                    && lemma_lower.len() > 2
+                {
+                    reasons.push(format!(
+                        "'{}' has lemma '{}' which doesn't look like a Dutch infinitive (should end in -en/-n)",
+                        token.text, token.lemma
+                    ));
+                }
+
+                // Check for verbs with themselves as lemma (no lemmatization)
+                if lemma_lower == text_lower
+                    && !lemma_lower.ends_with("en")
+                    && lemma_lower.len() > 2
+                {
+                    reasons.push(format!(
+                        "Verb/Aux '{}' has itself as lemma — should be lemmatized to infinitive",
+                        token.text
+                    ));
+                }
+            }
+
+            // --- zijn (to be) AUX vs VERB ---
+            let zijn_forms = ["ben", "bent", "is", "zijn", "was", "waren", "geweest"];
+            if zijn_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma.to_lowercase() == "zijn"
+            {
+                reasons.push(format!(
+                    "'{}' (zijn) can be either AUX or VERB. VERB when copula (e.g., 'hij is groot') or existential. AUX when forming perfect tense (e.g., 'hij is gekomen') or passive (e.g., 'het wordt gemaakt'). Current POS: {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // --- hebben (to have) AUX vs VERB ---
+            let hebben_forms = ["heb", "hebt", "heeft", "hebben", "had", "hadden", "gehad"];
+            if hebben_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma.to_lowercase() == "hebben"
+            {
+                reasons.push(format!(
+                    "'{}' (hebben) can be either AUX or VERB. AUX when forming perfect tense (e.g., 'ik heb gegeten'). VERB when expressing possession (e.g., 'ik heb een hond'). Current POS: {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // --- worden (to become / passive auxiliary) ---
+            let worden_forms = ["word", "wordt", "worden", "werd", "werden", "geworden"];
+            if worden_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma.to_lowercase() == "worden"
+            {
+                reasons.push(format!(
+                    "'{}' (worden) can be either AUX or VERB. AUX when forming passive voice (e.g., 'het wordt gemaakt'). VERB when meaning 'to become' (e.g., 'hij wordt oud'). Current POS: {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // --- Modal verbs: kunnen, moeten, mogen, willen, zullen ---
+            let modal_sets: &[(&[&str], &str, &str)] = &[
+                (
+                    &["kan", "kunt", "kunnen", "kon", "konden", "gekund"],
+                    "kunnen",
+                    "ability/possibility",
+                ),
+                (
+                    &["moet", "moeten", "moest", "moesten", "gemoeten"],
+                    "moeten",
+                    "obligation",
+                ),
+                (
+                    &["mag", "mogen", "mocht", "mochten", "gemogen"],
+                    "mogen",
+                    "permission",
+                ),
+                (
+                    &["wil", "wilt", "willen", "wilde", "wilden", "gewild"],
+                    "willen",
+                    "desire",
+                ),
+                (
+                    &["zal", "zult", "zullen", "zou", "zouden"],
+                    "zullen",
+                    "future/conditional",
+                ),
+            ];
+
+            for (forms, infinitive, meaning) in modal_sets {
+                if forms.contains(&text_lower.as_str())
+                    && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                    && token.lemma.to_lowercase() == *infinitive
+                {
+                    reasons.push(format!(
+                        "'{}' ({infinitive}) can be AUX ({meaning} with infinitive) or VERB (standalone). Current POS: {:?}",
+                        token.text, token.pos
+                    ));
+                }
+            }
+
+            // --- "er" — extremely polysemous Dutch function word ---
+            if text_lower == "er" {
+                reasons.push(format!(
+                    "'er' is highly polysemous: expletive subject ('er is een probleem'), locative ('ik ben er'), prepositional ('erover', 'erbij' — if split), partitive ('er zijn er drie'). Current POS: {:?}, lemma: '{}'. Check context carefully.",
+                    token.pos, token.lemma
+                ));
+            }
+
+            // --- Separable verb prefixes ---
+            // Dutch has separable verbs like "opbellen" → "ik bel op"
+            // Flag any known prefix tagged ADV regardless of position — the LLM can figure out context
+            let separable_prefixes = [
+                "op", "af", "aan", "uit", "mee", "bij", "door", "over", "om", "in", "na", "terug",
+                "weg", "vast", "toe", "samen",
+            ];
+            if separable_prefixes.contains(&text_lower.as_str())
+                && token.pos == PartOfSpeechTag::Adv
+            {
+                reasons.push(format!(
+                    "'{}' tagged as ADV — could be a separated verb prefix (e.g., 'Ik bel mijn moeder op'). If this is a separable prefix, it should have a compound:prt dependency to its verb.",
+                    token.text
+                ));
+            }
+
+            // --- Diminutive lemmas ---
+            // Dutch diminutives (-je, -tje, -pje, -etje, -kje) should lemmatize to the base noun
+            if token.pos == PartOfSpeechTag::Noun {
+                let diminutive_suffixes =
+                    ["je", "tje", "pje", "etje", "kje", "jes", "tjes", "pjes"];
+                let lemma_lower = token.lemma.to_lowercase();
+                let lemma_has_dim = diminutive_suffixes.iter().any(|s| lemma_lower.ends_with(s));
+                // Flag if the lemma has a diminutive suffix — whether text == lemma or not
+                // (catches both "huisje"→"huisje" and "huisjes"→"huisje")
+                if lemma_has_dim {
+                    reasons.push(format!(
+                        "Noun '{}' has diminutive lemma '{}' — for pedagogy, the lemma should be the base noun (e.g., 'huisje'/'huisjes' → lemma 'huis', 'bloemetje' → lemma 'bloem')",
+                        token.text, token.lemma
+                    ));
+                }
+            }
+
+            // --- DET/PRON ambiguity ---
+            let det_or_pron = [
+                "die", "dat", "deze", "dit", "welk", "welke", "elk", "elke", "ieder", "iedere",
+                "alle", "sommige", "enige", "geen", "mijn", "jouw", "zijn", "haar", "ons", "onze",
+                "hun", "jullie",
+            ];
+            if det_or_pron.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
+            {
+                reasons.push(format!(
+                    "'{}' can be either DET or PRON depending on context (modifies noun → DET, stands alone → PRON)",
+                    token.text
+                ));
+            }
+
+            // --- Lemma capitalization: Dutch doesn't capitalize common nouns ---
+            // Unlike German, ALL Dutch lemmas should be lowercase (except PROPN)
+            if token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                reasons.push(format!(
+                    "'{}' ({:?}) has capitalized lemma '{}' — Dutch doesn't capitalize common nouns. Please verify the lemma should be lowercase.",
+                    token.text, token.pos, token.lemma
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Dutch, &text_lower) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            // zijn tagged AUX followed by adjective → copula, should be VERB
+            if token.lemma.to_lowercase() == "zijn" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (zijn) is tagged AUX but is followed by adjective '{}' — if this is a copula, it should be VERB. zijn is only AUX when forming perfect tense (e.g., 'hij is gekomen').",
+                        token.text, next_text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (zijn) is tagged AUX — double-check: should be VERB when used as copula (e.g., 'hij is groot') and only AUX in perfect tense.",
+                        token.text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
+/// Dutch-specific corrector
+struct DutchCorrector;
+
+impl WordCorrector for DutchCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrected = false;
+        let mut corrections = Vec::new();
+
+        for token in &mut sentence.doc {
+            let text_lower = token.text.to_lowercase();
+
+            // Lowercase ALL non-PROPN lemmas (Dutch doesn't capitalize nouns unlike German)
+            if token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                let lower = token.lemma.to_lowercase();
+                corrections.push(format!(
+                    "Lowercased {:?} lemma '{}' to '{}'",
+                    token.pos, token.lemma, lower
+                ));
+                token.lemma = lower;
+                corrected = true;
+            }
+
+            // --- Pronoun lemma normalization ---
+            if token.pos == PartOfSpeechTag::Pron {
+                let expected = match text_lower.as_str() {
+                    "mij" | "me" => Some("ik"),
+                    "jou" => Some("jij"),
+                    "hem" => Some("hij"),
+                    "haar" if token.lemma != "haar" => Some("zij"), // "haar" can also be NOUN (hair) or DET (her)
+                    "ons" => Some("wij"),
+                    "hen" | "hun" => Some("zij"),
+                    _ => None,
+                };
+
+                if let Some(expected) = expected {
+                    if token.lemma != expected {
+                        corrections.push(format!(
+                            "Fixed pronoun '{}' lemma from '{}' to '{}'",
+                            token.text, token.lemma, expected
+                        ));
+                        token.lemma = expected.to_string();
+                        corrected = true;
+                    }
+                }
+            }
+        }
+
+        CorrectionResult {
+            corrected,
+            corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            let text_lower = token.text.to_lowercase();
+
+            // Lowercase ALL non-PROPN lemmas
+            if token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                token.lemma = token.lemma.to_lowercase();
+            }
+
+            // Pronoun lemma normalization
+            if token.pos == PartOfSpeechTag::Pron {
+                let expected = match text_lower.as_str() {
+                    "mij" | "me" => Some("ik"),
+                    "jou" => Some("jij"),
+                    "hem" => Some("hij"),
+                    "ons" => Some("wij"),
+                    "hen" | "hun" => Some("zij"),
+                    _ => None,
+                };
+
+                if let Some(expected) = expected {
+                    if token.lemma != expected {
+                        token.lemma = expected.to_string();
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Danish-specific classifier
+struct DanishClassifier;
+
+impl SentenceClassifier for DanishClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for token in &sentence.doc {
+            let text_lower = token.text.to_lowercase();
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{}' classified as a proper noun — may be over-classified",
+                    token.text
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    token.text, token.lemma
+                ));
+            }
+
+            // --- Verb lemmatization: Danish infinitives end in -e or a vowel ---
+            if token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux {
+                let lemma_lower = token.lemma.to_lowercase();
+                if lemma_lower == text_lower
+                    && !lemma_lower.ends_with('e')
+                    && !lemma_lower.ends_with('å')
+                    && !lemma_lower.ends_with('o')
+                    && lemma_lower != "gå"
+                    && lemma_lower != "se"
+                    && lemma_lower != "bo"
+                    && lemma_lower != "dø"
+                    && lemma_lower.len() > 2
+                {
+                    reasons.push(format!(
+                        "Verb/Aux '{}' has itself as lemma — should be lemmatized to infinitive form",
+                        token.text
+                    ));
+                }
+            }
+
+            // --- være (to be) AUX vs VERB ---
+            let vaere_forms = ["er", "var", "været", "være", "vær"];
+            if vaere_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma.to_lowercase() == "være"
+            {
+                reasons.push(format!(
+                    "'{}' (være) can be either AUX or VERB. VERB when copula (e.g., 'han er stor') or existential. AUX when forming passive (e.g., 'bogen er skrevet'). Current POS: {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // --- have (to have) AUX vs VERB ---
+            let have_forms = ["har", "havde", "haft", "have"];
+            if have_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma.to_lowercase() == "have"
+            {
+                reasons.push(format!(
+                    "'{}' (have) can be either AUX or VERB. AUX when forming perfect tense (e.g., 'jeg har spist'). VERB when expressing possession (e.g., 'jeg har en hund'). Current POS: {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // --- blive (to become / passive) AUX vs VERB ---
+            let blive_forms = ["bliver", "blev", "blevet", "blive"];
+            if blive_forms.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                && token.lemma.to_lowercase() == "blive"
+            {
+                reasons.push(format!(
+                    "'{}' (blive) can be either AUX or VERB. AUX when forming passive (e.g., 'bogen bliver læst'). VERB when meaning 'to become/stay' (e.g., 'han bliver gammel'). Current POS: {:?}",
+                    token.text, token.pos
+                ));
+            }
+
+            // --- Modal verbs ---
+            // Note: Danish modals are defective (no true infinitive). We use conventional citation forms.
+            let modal_sets: &[(&[&str], &str, &str)] = &[
+                (&["kan", "kunne", "kunnet"], "kunne", "ability"),
+                (
+                    &["skal", "skulle", "skullet"],
+                    "skulle",
+                    "obligation/future",
+                ),
+                (&["vil", "ville", "villet"], "ville", "desire/future"),
+                (&["må", "måtte"], "måtte", "permission/necessity"),
+                (&["bør", "burde", "burdet"], "burde", "should/ought"),
+            ];
+
+            for (forms, infinitive, meaning) in modal_sets {
+                if forms.contains(&text_lower.as_str())
+                    && (token.pos == PartOfSpeechTag::Verb || token.pos == PartOfSpeechTag::Aux)
+                {
+                    reasons.push(format!(
+                        "'{}' ({infinitive}) can be AUX ({meaning} with infinitive) or VERB (standalone). Current POS: {:?}",
+                        token.text, token.pos
+                    ));
+                }
+            }
+
+            // --- Passive s-form verbs ---
+            // Danish has a passive formed with -s suffix (e.g., "bygges" = is built)
+            // These are still VERB, not AUX — but exclude lexicalized s-verbs
+            let lexicalized_s_verbs = ["synes", "lykkes", "findes", "mindes", "trives", "færdes"];
+            if text_lower.ends_with('s')
+                && token.pos == PartOfSpeechTag::Aux
+                && text_lower.len() > 3
+                && !lexicalized_s_verbs.contains(&text_lower.as_str())
+            {
+                reasons.push(format!(
+                    "'{}' ends in -s (possible Danish passive s-form) but tagged as AUX — productive passive s-forms should typically be VERB, not AUX",
+                    token.text
+                ));
+            }
+
+            // --- "der" — relative pronoun / expletive subject ---
+            if text_lower == "der" {
+                reasons.push(format!(
+                    "'der' is ambiguous: PRON when relative pronoun ('manden, der kom' = the man who came), ADV/PRON when expletive subject ('der er en mand' = there is a man). Current POS: {:?}, lemma: '{}'. Check context.",
+                    token.pos, token.lemma
+                ));
+            }
+
+            // --- Definite suffix nouns: lemma should be indefinite form ---
+            if token.pos == PartOfSpeechTag::Noun {
+                let lemma_lower = token.lemma.to_lowercase();
+                if lemma_lower == text_lower && text_lower.len() > 3 {
+                    let definite_suffixes = ["en", "et", "ne", "ene"];
+                    let has_definite = definite_suffixes.iter().any(|s| text_lower.ends_with(s));
+                    if has_definite {
+                        reasons.push(format!(
+                            "Noun '{}' has itself as lemma — if this is a definite form (with suffix -en/-et/-ne), the lemma should be the indefinite base form",
+                            token.text
+                        ));
+                    }
+                }
+            }
+
+            // --- DET/PRON ambiguity ---
+            let det_or_pron = [
+                "den", "det", "de", "denne", "dette", "disse", "min", "mit", "mine", "din", "dit",
+                "dine", "sin", "sit", "sine", "vor", "vort", "vore", "deres", "nogen", "noget",
+                "nogle", "ingen", "intet", "alle", "hver", "hvert",
+            ];
+            if det_or_pron.contains(&text_lower.as_str())
+                && (token.pos == PartOfSpeechTag::Det || token.pos == PartOfSpeechTag::Pron)
+            {
+                reasons.push(format!(
+                    "'{}' can be either DET or PRON depending on context (modifies noun → DET, stands alone → PRON)",
+                    token.text
+                ));
+            }
+
+            // --- Lemma capitalization: Danish doesn't capitalize common nouns ---
+            if token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                reasons.push(format!(
+                    "'{}' has capitalized lemma '{}' — Danish doesn't capitalize common nouns. Please verify the lemma should be lowercase.",
+                    token.text, token.lemma
+                ));
+            }
+
+            // --- "ikke" negation should be ADV ---
+            if text_lower == "ikke" && token.pos != PartOfSpeechTag::Adv {
+                reasons.push(format!(
+                    "'ikke' tagged as {:?} — verify: 'ikke' is typically ADV (negation). Check context.",
+                    token.pos
+                ));
+            }
+
+            // Check polysemous words
+            if let Some(reason) = check_polysemous(Language::Danish, &text_lower) {
+                reasons.push(reason);
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            // være tagged AUX followed by adjective → copula, should be VERB
+            if token.lemma.to_lowercase() == "være" && token.pos == PartOfSpeechTag::Aux {
+                let next = tokens.get(idx + 1);
+                let next_pos = next.map(|t| t.pos);
+                let next_text = next.map(|t| t.text.as_str()).unwrap_or("");
+
+                if next_pos == Some(PartOfSpeechTag::Adj) {
+                    reasons.push(format!(
+                        "'{}' (være) is tagged AUX but is followed by adjective '{}' — if this is a copula, it should be VERB. være is only AUX when forming passive (e.g., 'bogen er skrevet').",
+                        token.text, next_text
+                    ));
+                } else if next_pos != Some(PartOfSpeechTag::Verb) {
+                    reasons.push(format!(
+                        "'{}' (være) is tagged AUX — double-check: should be VERB when copula (e.g., 'han er stor') and only AUX in passive constructions.",
+                        token.text
+                    ));
+                }
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
+/// Danish-specific corrector
+struct DanishCorrector;
+
+impl WordCorrector for DanishCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrected = false;
+        let mut corrections = Vec::new();
+
+        for token in &mut sentence.doc {
+            // Lowercase non-propn lemmas (including NOUN — Danish doesn't capitalize nouns)
+            if token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                let lower = token.lemma.to_lowercase();
+                corrections.push(format!(
+                    "Lowercased {:?} lemma '{}' to '{}'",
+                    token.pos, token.lemma, lower
+                ));
+                token.lemma = lower;
+                corrected = true;
+            }
+
+            // Fix "ikke" POS
+            if token.text.to_lowercase() == "ikke" && token.pos != PartOfSpeechTag::Adv {
+                corrections.push(format!("Fixed 'ikke' POS from {:?} to Adv", token.pos));
+                token.pos = PartOfSpeechTag::Adv;
+                corrected = true;
+            }
+        }
+
+        CorrectionResult {
+            corrected,
+            corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens {
+            // Lowercase non-propn lemmas
+            if token.pos != PartOfSpeechTag::Propn
+                && token.pos != PartOfSpeechTag::Punct
+                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
+            {
+                token.lemma = token.lemma.to_lowercase();
+            }
+
+            // Fix "ikke" POS
+            if token.text.to_lowercase() == "ikke" && token.pos != PartOfSpeechTag::Adv {
+                token.pos = PartOfSpeechTag::Adv;
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -6383,7 +8835,7 @@ pub struct MultiwordTermValidationResponse {
 }
 
 /// Returns language-specific tips for the LLM correction prompt.
-fn language_specific_tips(language: Language) -> &'static str {
+pub fn language_specific_tips(language: Language) -> &'static str {
     match language {
         Language::Korean => {
             r#"Korean-specific rules — please follow these carefully, as they address systematic issues we've seen in past analyses.
@@ -6788,6 +9240,410 @@ Short-form adjectives (рад, готов, должен, нужен, болен,
 Short-form neuter adjectives used as predicatives: нужно (нужный), должно (должный), важно (важный), видно (видный) — tag as ADJ with the full adjective as lemma. This connects learners to the full adjective paradigm. "больно" is ambiguous: ADJ when predicative ("мне больно", lemma "больной") vs ADV when modifying a verb ("больно ударить"). можно, надо, нельзя, пора have no adjective paradigm — these are genuinely adverbial.
 
 Participles used as adjectives: when a participle modifies a noun (e.g., "уставший человек", "написанное письмо"), tag as ADJ and use the verb infinitive as lemma. When part of a verb phrase, tag as VERB."#
+        }
+        Language::Chinese => {
+            r#"
+
+Chinese-specific rules — please follow these carefully:
+
+## Lemmatization
+
+Chinese words do not inflect — the lemma should always be identical to the surface form. Do not change the lemma to a different word.
+
+## Tokenization
+
+Chinese is written without spaces between words. The tokenizer has already segmented the text. Review the segmentation carefully — common errors include:
+- Over-segmenting: splitting a two-character word into two single characters (e.g., 因为 split into 因 + 为, 可以 split into 可 + 以, 已经 split into 已 + 经). If two adjacent single-character tokens of the same POS have no whitespace between them, consider whether they should be one word.
+- Under-segmenting: keeping two words fused (e.g., 他们说 should be 他们 + 说)
+- Multiword proper nouns should be kept as single tokens (e.g., 中华人民共和国)
+
+## Part of Speech
+
+### Structural particles (助词)
+的 (attributive), 地 (adverbial) should be tagged PART.
+
+得 is three-way ambiguous — handle carefully:
+- PART: complement marker after a verb (e.g., 跑得快 = runs fast)
+- AUX: modal "must" (pronunciation děi, e.g., 我得走了 = I must go)
+- VERB: "to get/obtain" (pronunciation dé, rare standalone, common in compounds like 得到)
+
+### Aspect particles (also PART)
+了: perfective aspect (after verb: 吃了) or sentence-final change-of-state. Should be PART, NOT VERB.
+过: experiential aspect after a verb (e.g., 我去过中国 = I have been to China) → PART. But 过 as a standalone main verb meaning "to pass/cross" (e.g., 过马路) → VERB.
+着: durative aspect after a verb (e.g., 开着门 = the door is open) → PART. But 着 as a standalone verb is rare in modern Chinese.
+
+### Sentence-final particles
+吗 (yes/no question), 呢 (follow-up/topic), 吧 (suggestion/uncertainty) should be PART.
+
+### 在 (zài) — highly ambiguous
+- VERB: locative copula (他在家 = he is at home)
+- ADP: preposition (在学校学习 = study at school)
+- ADV: progressive aspect marker (他在吃饭 = he is eating)
+When 在 appears directly before a verb, it's typically ADV (progressive). When before a noun/place, it's ADP. When it IS the main predicate with a location, it's VERB.
+
+### 把 and 被 — grammatical markers
+把: most commonly ADP (disposal/object-fronting construction: 把书放下 = put the book down). Rarely VERB "to hold/guard". As measure word after a number/demonstrative, it should be NOUN.
+被: most commonly ADP (passive marker: 被打了 = was hit, 被老师批评了 = was criticized by the teacher). Rarely VERB "to cover" in modern Chinese.
+
+### 是 (shì) as copula
+VERB when linking subject to predicate (e.g., '他是老师'). AUX only in 是...的 focus constructions (e.g., '他是昨天来的').
+
+### Modal verbs
+会/能/可以/要/想/应该/必须: AUX when modifying another verb, VERB when standalone with a direct object.
+
+### Measure words/classifiers (量词)
+个, 只, 条, 张, etc. after a number or demonstrative (这/那/哪/每/几) should be tagged NOUN.
+
+### Negation
+不 and 没 should be ADV. 没有 can be ADV (negation: '没有去过') or VERB (non-possession: '我没有钱').
+
+### Demonstratives
+这/那 before a noun: DET. Standing alone: PRON."#
+        }
+        Language::Japanese => {
+            r#"
+
+Japanese-specific rules — please follow these carefully. Japanese presents unique challenges because it has no spaces between words, uses three writing systems simultaneously, and has extensive agglutinative verb morphology.
+
+## Lemmatization
+
+Every verb and adjective lemma should be the dictionary form. For verbs, this is the る/う-ending form. For い-adjectives, this is the い-ending form. For な-adjectives, the lemma includes だ (e.g., 静かだ, not 静か). Please don't leave a conjugated form as the lemma.
+
+Verbs (dictionary form ends in -う row kana):
+- 食べました → lemma "食べる"
+- 飲んだ → lemma "飲む"
+- 行って → lemma "行く"
+- 書かない → lemma "書く"
+- 勉強した → lemma "勉強する" (する-verb compounds are single tokens)
+
+い-adjectives (dictionary form ends in い):
+- 高くない → lemma "高い"
+- よかった → lemma "いい" (prefer "いい" as standard dictionary form)
+- 大きな → lemma "大きい"
+
+な-adjectives (lemma includes だ to parallel verb dictionary forms):
+- 静かな → lemma "静かだ"
+- きれいだった → lemma "きれいだ"
+- 便利な → lemma "便利だ"
+
+Honorific/humble verb forms keep their own lemma (they are distinct dictionary entries):
+- いらっしゃいます → lemma "いらっしゃる"
+- おっしゃった → lemma "おっしゃる"
+- 召し上がる → lemma "召し上がる"
+- ございます → lemma "ございます"
+
+## Tokenization
+
+A "token" in Japanese is the smallest unit a language learner needs to recognize independently.
+
+### Particles
+Particles (助詞) should always be separate tokens:
+- Case particles: が, を, に, へ, で, と, から, まで, より → ADP
+- Topic/contrast: は, も → ADP
+- Genitive: の (after noun, e.g., 猫の名前) → ADP
+- Sentence-final: か, ね, よ, な, ぞ, わ, さ → PART
+- Conjunctive: が, けど, けれど, し, ので, のに, ながら → SCONJ
+
+IMPORTANT — の has two distinct functions:
+- Genitive (after noun): ADP — 猫の名前 = cat's name
+- Nominalizer (after verb/adj): SCONJ or PART — 食べるのが好き = I like eating, 鍵を捜すのを手伝って = help me look for the key
+Do NOT tag nominalizer の as ADP. The test: if の follows a verb or adjective and turns the clause into a noun phrase, it's a nominalizer (SCONJ/PART). If it follows a noun showing possession/attribution, it's genitive (ADP).
+
+Examples:
+- "東京に行く" → "東京" (NOUN) + "に" (ADP) + "行く" (VERB)
+- "猫が好きです" → "猫" (NOUN) + "が" (ADP) + "好き" (ADJ, lemma "好きだ") + "です" (AUX, lemma "だ")
+- "食べるのが好き" → "食べる" (VERB) + "の" (SCONJ, nominalizer) + "が" (ADP) + "好き" (ADJ, lemma "好きだ")
+
+### Verb conjugations stay as one token
+Conjugated verbs stay as one token with the dictionary form as lemma:
+- "走っている" → "走って" (VERB, lemma "走る") + "いる" (AUX, lemma "いる")
+- "書かなかった" → one token: "書かなかった" (VERB, lemma "書く")
+- "食べました" → "食べ" (VERB, lemma "食べる") + "ました" (AUX, lemma "ます")
+
+### Compound verb constructions (て-form + auxiliary)
+When a verb in て-form is followed by an auxiliary, split them:
+- "食べている" → "食べて" (VERB, lemma "食べる") + "いる" (AUX, lemma "いる")
+- "読んでみる" → "読んで" (VERB, lemma "読む") + "みる" (AUX, lemma "みる")
+- "書いてしまった" → "書いて" (VERB, lemma "書く") + "しまった" (AUX, lemma "しまう")
+- "持っていく" → "持って" (VERB, lemma "持つ") + "いく" (AUX, lemma "いく")
+
+IMPORTANT — contracted forms in casual speech stay as one token (can't be visually separated):
+- "食べちゃった" → one token (VERB, lemma "食べてしまう") — contraction of てしまう
+- "やっとく" → one token (VERB, lemma "やっておく") — contraction of ておく
+- "見てる" → one token (VERB, lemma "見ている") — contraction of ている
+
+IMPORTANT — direction matters for contracted ていく/てくる:
+- てった/ていった/てく = て + いく (going AWAY from speaker). Lemma must contain いく.
+- てきた/てくる = て + くる (coming TOWARD speaker). Lemma must contain くる.
+
+### Copula splits from noun/adjective
+- "学生です" → "学生" (NOUN) + "です" (AUX, lemma "だ")
+- "静かです" → "静か" (ADJ, lemma "静かだ") + "です" (AUX, lemma "だ")
+- "猫だ" → "猫" (NOUN) + "だ" (AUX, lemma "だ")
+
+### する-verbs are single tokens — MUST BE CONSISTENT
+When する attaches to a noun to form a verb, keep as one token. This includes ALL conjugated forms (した, して, される, させ, etc.):
+- "勉強する" → one token (VERB, lemma "勉強する")
+- "勉強した" → one token (VERB, lemma "勉強する")
+- "延期された" → one token (VERB, lemma "延期する") — passive still stays merged
+- "指名された" → one token (VERB, lemma "指名する")
+- "返金して" → one token (VERB, lemma "返金する")
+Do NOT split noun+する into NOUN + AUX, even when passive/causative morphology is present. The whole compound is one VERB token.
+But if を intervenes, split: "勉強をする" → "勉強" (NOUN) + "を" (ADP) + "する" (VERB, lemma "する")
+
+### たい is always a separate AUX token
+たい (desiderative "want to") should be split from the verb as its own AUX token:
+- "食べたい" → "食べ" (VERB, lemma "食べる") + "たい" (AUX, lemma "たい")
+- "寝たい" → "寝" (VERB, lemma "寝る") + "たい" (AUX, lemma "たい")
+Do NOT merge たい into the verb token or bake it into the lemma (e.g., lemma "応援したい" is wrong).
+
+### Number+counter compounds stay together
+- "三人" → one token (NOUN, lemma "三人")
+- "五冊" → one token (NOUN, lemma "五冊")
+
+### Proper nouns never decompose
+- "トム" → one token (PROPN)
+- "田中さん" → "田中" (PROPN) + "さん" (NOUN)
+
+## Part of Speech
+
+### だ/です copula: always AUX with lemma "だ"
+です is the polite form of だ. All forms (だ, です, でした, だった) have lemma "だ".
+
+### ます: always AUX with lemma "ます"
+ます and its forms (ました, ません) are always AUX. They are never the root verb.
+
+### ない: ADJ when standalone predicate (時間がない), AUX when negation suffix (食べない)
+
+### い-adjectives vs な-adjectives
+Both are tagged ADJ. い-adjectives conjugate (高い→高くない). な-adjectives don't conjugate — they use だ/です. Na-adjective lemmas include だ.
+
+### いる/ある
+VERB for existence (猫がいる, 本がある). AUX after て-form (食べている, 書いてある).
+
+### Causative/passive suffixes: AUX
+させる/せる (causative) and られる/れる (passive/potential) should be AUX, not VERB.
+
+### らしい: productive suffix, not fixed expression
+本当らしい, 男らしい — productive morphology. Tag as AUX or ADJ, not dep:fixed.
+
+### 必要: context-dependent
+ADJ in 必要だ/必要な (na-adjective). NOUN in 必要がある (subject of ある)."#
+        }
+
+        Language::Hindi => {
+            r#"
+
+Hindi-specific rules — please follow these carefully:
+
+## Lemmatization
+
+Verb lemmas should be the infinitive form ending in -ना:
+- खाता/खाती/खाते → lemma "खाना" (to eat)
+- जाता/गया/जाएगा → lemma "जाना" (to go)
+- करता/किया/करेगा → lemma "करना" (to do)
+- बोलता/बोला/बोलेगा → lemma "बोलना" (to speak)
+- है/हैं/हूँ/था/थी/थे → lemma "होना" (to be)
+
+Noun lemmas should be the direct case singular form. Oblique and plural forms must be lemmatized back:
+- लड़के (oblique) → lemma "लड़का"
+- लड़कों (plural oblique) → lemma "लड़का"
+- बच्चों → lemma "बच्चा"
+- लड़कियों → lemma "लड़की"
+
+Pronoun lemmas should be the direct/nominative form:
+- मुझे/मुझको/मुझसे → lemma "मैं"
+- तुझे/तुझको → lemma "तू"
+- तुम्हें → lemma "तुम"
+- आपको/आपसे → lemma "आप"
+- उसे/उसको/उसने → lemma "वह"
+- इसे/इसको/इसने → lemma "यह"
+- उन्हें/उन्होंने → lemma "वे"
+- हमें/हमने → lemma "हम"
+
+Postposition lemmas should be themselves: में, पर, को, से, के, का, की, ने, तक
+
+## Part of Speech
+
+### होना (to be): copula vs auxiliary
+VERB when used as copula (वह शिक्षक है = he is a teacher) or existential (यहाँ पानी है = there is water here). AUX when forming compound tenses (वह खा रहा है = he is eating, वह खा चुका है = he has eaten).
+
+### रहा/रही/रहे: progressive aspect marker
+In compound tenses (V + रहा + होना), रहा is the progressive aspect marker and should be AUX, NOT ADJ. Pipelines frequently tag it as ADJ because it agrees in gender/number. Examples:
+- वह खा रहा है (he is eating): खा = VERB, रहा = AUX, है = AUX
+- वह पढ़ रही थी (she was reading): पढ़ = VERB, रही = AUX, थी = AUX
+
+### Compound verbs (light verbs)
+Hindi extensively uses compound verbs where a main verb stem combines with a light verb. The light verb should be AUX when adding aspectual meaning:
+- खा लिया (completive: ate up) — लिया is AUX
+- चल दिया (sudden start) — दिया is AUX
+- बैठ गया (unintentional/sudden: sat down) — गया is AUX
+When used independently, these are VERB: लेना = to take, देना = to give, जाना = to go.
+
+### Postpositions
+Simple postpositions should always be ADP: में, पर, को, से, के, का, की, ने, तक, द्वारा.
+Compound postposition nouns (लिए, साथ, बारे, बाद, पहले, ऊपर, नीचे, etc.) can be ADP or NOUN depending on context — ADP when part of compound postposition (के लिए, के साथ), NOUN otherwise.
+
+### Focus/emphasis particles
+ही (only/emphasis), भी (also/even) should be PART — not ADV.
+तो (then/emphasis) should be PART or CCONJ — not ADV.
+
+### Negation
+नहीं and न should be ADV or PART. मत (prohibitive) should be ADV or PART.
+
+### वाला/वाली/वाले
+Multifunctional — tag based on context:
+- ADJ when forming adjectives: दूध वाला (the milk one)
+- AUX/PART when marking near-future: जाने वाला है (is about to go)
+- DET when specifying: वह वाला (that one)"#
+        }
+        Language::Tamil => {
+            r#"
+
+Tamil-specific rules — please follow these carefully:
+
+## Lemmatization
+
+Tamil is agglutinative — suffixes for case, tense, person, number are attached to stems. The lemma should be the dictionary/citation form.
+
+Verb lemmas should be the infinitive or root form. Common verb classes:
+- செய் (to do), போ (to go), வா (to come), சொல் (to say), பார் (to see)
+- படி (to study/read), எழுது (to write), குடி (to drink)
+
+Noun lemmas should be the nominative singular without case suffixes.
+
+## Tokenization
+
+Case suffixes (-ை, -ில், -உக்கு, -ஆல், -இடம், etc.) should ideally be split into separate ADP tokens when the tokenizer leaves them attached to the noun. This is critical for learners who need to see each grammatical morpheme independently.
+
+## Part of Speech
+
+இரு (iru, to be): VERB when copula/existential (e.g., 'நான் மகிழ்ச்சியாக இருக்கிறேன்'). AUX when forming progressive aspect.
+
+இல்லை (illai, not): VERB (negative existence) or PART (negation). This is the primary negation word.
+
+அல்ல (alla): negative copula — VERB or PART.
+
+Postpositions should be ADP: மேல் (on), கீழ் (under), உள் (inside), வரை (until), பின் (after), முன் (before)."#
+        }
+        Language::Telugu => {
+            r#"
+
+Telugu-specific rules — please follow these carefully:
+
+## Lemmatization
+
+Telugu is agglutinative. The lemma should be the dictionary/citation form.
+
+Verb lemmas should be the dictionary form (typically ending in -ు or -డు):
+- చేయు (to do), వెళ్ళు (to go), తిను (to eat), చదువు (to read)
+- చెప్పు (to say/tell), రా (to come), ఇవ్వు (to give)
+
+Noun lemmas should be the nominative singular without case suffixes.
+
+## Part of Speech
+
+ఉండు (uṇḍu, to be): VERB when copula/existential, AUX when forming progressive/continuous tenses.
+
+లేదు (lēdu, is not): negation of existence — VERB or PART.
+కాదు (kādu, is not): negation of identity — VERB or PART.
+
+Postpositions should be ADP: లో (in), మీద (on), కింద (under), తో (with), నుండి (from), వరకు (until), కోసం (for), గురించి (about)."#
+        }
+        Language::Bengali => {
+            r#"
+
+Bengali-specific rules — please follow these carefully:
+
+## Lemmatization
+
+Verb lemmas should be the infinitive form ending in -া:
+- করা (to do), খাওয়া (to eat), যাওয়া (to go), বলা (to say), দেখা (to see)
+- লেখা (to write), পড়া (to read/fall), দেওয়া (to give), নেওয়া (to take)
+- হওয়া (to be/become), থাকা (to stay/exist), আসা (to come)
+
+Noun lemmas should be the nominative/direct form without case markers.
+
+## Part of Speech
+
+হওয়া (to be/become) and থাকা (to exist/stay): VERB when copula/existential, AUX when forming compound tenses.
+
+Compound verbs: Bengali uses light verbs (ফেলা, নেওয়া, দেওয়া, যাওয়া, etc.) extensively. The light verb is AUX when adding aspectual meaning, VERB when standalone.
+
+Negation: না, নি, নয় should be PART or ADV.
+
+Postpositions should be ADP: -তে (locative), -কে (dative/accusative), -র (genitive), থেকে (from), দিয়ে (with/by), জন্য (for), সাথে (with)."#
+        }
+        Language::Dutch => {
+            r#"
+
+Dutch-specific rules — please follow these carefully:
+
+## Lemmatization
+
+Lemmas should always be lowercase (Dutch doesn't capitalize common nouns). Only proper nouns get capitalized lemmas.
+- "Hebben" (sentence-initial) → lemma "hebben" (not "Hebben")
+- "Mijn" (sentence-initial DET) → lemma "mijn" (not "Mijn")
+
+Verb lemmas should be the infinitive form (ending in -en/-n):
+- "heb" / "heeft" / "had" → lemma "hebben"
+- "ben" / "is" / "was" → lemma "zijn"
+- "word" / "wordt" / "werd" → lemma "worden"
+- "ga" / "gaat" / "ging" → lemma "gaan"
+
+Diminutive nouns: the lemma for diminutives (-je/-tje/-pje/-etje) should be the base noun:
+- "huisje" → lemma "huis" (not "huisje")
+- "boekje" → lemma "boek" (not "boekje")
+- "bloemetje" → lemma "bloem" (not "bloemetje")
+
+## Part of Speech
+
+zijn (to be): VERB when copula (e.g., 'hij is groot') or existential. AUX when forming perfect tense with past participle (e.g., 'hij is gekomen').
+
+worden (to become/passive): VERB when meaning 'to become' (e.g., 'hij wordt oud'). AUX when forming passive voice (e.g., 'het wordt gemaakt').
+
+hebben (to have): VERB when expressing possession. AUX when forming perfect tense (e.g., 'ik heb gegeten').
+
+Separable verbs: when a separable prefix is separated (e.g., 'ik bel op' from 'opbellen'), the prefix should have a compound:prt dependency relation to the verb.
+
+Modal verbs (kunnen, moeten, mogen, willen, zullen): AUX when used with infinitive, VERB when standalone."#
+        }
+        Language::Danish => {
+            r#"
+
+Danish-specific rules — please follow these carefully:
+
+## Lemmatization
+
+Lemmas should always be lowercase (Danish doesn't capitalize common nouns). Only proper nouns get capitalized lemmas.
+
+Verb lemmas should be the infinitive form (typically ending in -e or a stressed vowel):
+- "er" / "var" → lemma "være" (to be)
+- "har" / "havde" → lemma "have" (to have)
+- "bliver" / "blev" → lemma "blive" (to become)
+- "kan" / "kunne" → lemma "kunne" (to be able)
+- "skal" / "skulle" → lemma "skulle" (shall/must)
+- "går" / "gik" → lemma "gå" (to go)
+- "ser" / "så" → lemma "se" (to see)
+
+Definite nouns: Danish uses a suffixed definite article (-en/-et for singular, -ne/-ene for plural). The lemma should be the indefinite form:
+- "huset" (the house) → lemma "hus"
+- "bogen" (the book) → lemma "bog"
+- "børnene" (the children) → lemma "barn"
+
+## Part of Speech
+
+være (to be): VERB when copula (e.g., 'han er stor') or existential. AUX when forming passive (e.g., 'bogen er skrevet').
+
+blive (to become/passive): VERB when meaning 'to become/stay'. AUX when forming passive (e.g., 'bogen bliver læst').
+
+have (to have): VERB when expressing possession. AUX when forming perfect tense (e.g., 'jeg har spist').
+
+Passive s-forms: Danish forms passives with -s suffix (e.g., 'bygges' = is built). These should be tagged VERB, not AUX.
+
+"ikke" (negation) should always be ADV.
+
+Modal verbs (kunne, skulle, ville, måtte, burde): AUX when used with infinitive, VERB when standalone."#
         }
         _ => "",
     }

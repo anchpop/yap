@@ -411,6 +411,7 @@ fn heteronym_from_lexide_token(
                 pos,
             });
         }
+        _ => todo!(),
     };
 
     let heteronym = if let Some(heteronym) = proper_nouns.get(&text.to_lowercase()) {
