@@ -388,6 +388,9 @@ export function TranscriptionChallenge({
               }}
               disabled={gradingState !== null}
               lang={languageToIso6391(targetLanguage)}
+              autoCorrect="on"
+              autoCapitalize="sentences"
+              spellCheck={true}
               className={`inline-block ${
                 isSinglePartTranscription ? "min-w-64" : "min-w-32"
               } mx-1 text-center resize-none text-l font-semibold ${getInputClassName(
