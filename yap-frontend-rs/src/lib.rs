@@ -3882,11 +3882,6 @@ impl ReviewInfo {
             Language::Portuguese => "A palavra é",
             Language::Italian => "La parola è",
             Language::Hindi => "शब्द है",
-            Language::Tamil => "வார்த்தை",
-            Language::Telugu => "పదం",
-            Language::Bengali => "শব্দটি হলো",
-            Language::Dutch => "Het woord is",
-            Language::Danish => "Ordet er",
         }
     }
 

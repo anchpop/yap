@@ -239,14 +239,7 @@ async fn text_to_speech(
         Language::Portuguese => "tS45q0QcrDHqHoaWdCDR", // Lax - Portuguese voice
         Language::Russian => "hLjwV7lYzk15SWLUmhEH", // Russian voice
 
-        Language::Chinese
-        | Language::Japanese
-        | Language::Hindi
-        | Language::Tamil
-        | Language::Telugu
-        | Language::Bengali
-        | Language::Dutch
-        | Language::Danish => todo!(),
+        Language::Chinese | Language::Japanese | Language::Hindi => todo!(),
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -299,14 +292,7 @@ async fn google_text_to_speech(
         Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar"),
         Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Aoede"),
 
-        Language::Chinese
-        | Language::Japanese
-        | Language::Hindi
-        | Language::Tamil
-        | Language::Telugu
-        | Language::Bengali
-        | Language::Dutch
-        | Language::Danish => todo!(),
+        Language::Chinese | Language::Japanese | Language::Hindi => todo!(),
     };
 
     let input = if request.is_ssml {
@@ -429,14 +415,7 @@ async fn autograde_translation(
         Language::Italian => "Italian",
         Language::Portuguese => "Portuguese",
         Language::Russian => "Russian",
-        Language::Chinese
-        | Language::Japanese
-        | Language::Hindi
-        | Language::Tamil
-        | Language::Telugu
-        | Language::Bengali
-        | Language::Dutch
-        | Language::Danish => {
+        Language::Chinese | Language::Japanese | Language::Hindi => {
             return Err(StatusCode::NOT_IMPLEMENTED);
         }
     };
@@ -720,14 +699,9 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
             Language::Russian =>
                 r#"For example, if the user confused "компания" and "кампания", or "предать" and "придать", you could generate ["компания", "кампания"] or ["предать", "придать"] in the compare array."#,
 
-            Language::Chinese
-            | Language::Japanese
-            | Language::Hindi
-            | Language::Tamil
-            | Language::Telugu
-            | Language::Bengali
-            | Language::Dutch
-            | Language::Danish => return Err(StatusCode::NOT_IMPLEMENTED),
+            Language::Chinese | Language::Japanese | Language::Hindi => {
+                return Err(StatusCode::NOT_IMPLEMENTED);
+            }
         }
     );
 

@@ -52,14 +52,7 @@ static CHAT_CLIENT_NANO: LazyLock<ChatClient> = LazyLock::new(|| {
 /// Languages that use LLM-based NLP instead of spaCy
 /// (either no spaCy model exists, or spaCy output is too inconsistent)
 fn needs_llm_nlp(language: Language) -> bool {
-    matches!(
-        language,
-        Language::Hindi
-            | Language::Tamil
-            | Language::Telugu
-            | Language::Bengali
-            | Language::Japanese
-    )
+    matches!(language, Language::Hindi | Language::Japanese)
 }
 
 #[tokio::main]
@@ -128,7 +121,13 @@ async fn main() -> anyhow::Result<()> {
             print_random_sentences(&unknown_sentences, count);
         }
         "clean" => {
-            clean_all_languages().await?;
+            if args.len() >= 3 {
+                let language = parse_language_code(&args[2])?;
+                println!("\n=== Cleaning {language:?} ===");
+                clean_language_with_llm(language).await?;
+            } else {
+                clean_all_languages().await?;
+            }
         }
         _ => {
             eprintln!("Error: Unknown command '{command}'");
@@ -159,11 +158,6 @@ fn print_usage() {
     eprintln!("  rus - Russian");
     eprintln!("  zho - Chinese");
     eprintln!("  hin - Hindi");
-    eprintln!("  tam - Tamil");
-    eprintln!("  tel - Telugu");
-    eprintln!("  ben - Bengali");
-    eprintln!("  nld - Dutch");
-    eprintln!("  dan - Danish");
     eprintln!();
     eprintln!("Examples:");
     eprintln!("  clean-nlp-data print fra 40    # Print 40 random French sentences");
@@ -184,13 +178,8 @@ fn parse_language_code(code: &str) -> anyhow::Result<Language> {
         "zho" => Ok(Language::Chinese),
         "jpn" => Ok(Language::Japanese),
         "hin" => Ok(Language::Hindi),
-        "tam" => Ok(Language::Tamil),
-        "tel" => Ok(Language::Telugu),
-        "ben" => Ok(Language::Bengali),
-        "nld" => Ok(Language::Dutch),
-        "dan" => Ok(Language::Danish),
         _ => Err(anyhow!(
-            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus, zho, jpn, hin, tam, tel, ben, nld, dan"
+            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus, zho, jpn, hin"
         )),
     }
 }
@@ -730,11 +719,6 @@ async fn clean_all_languages() -> anyhow::Result<()> {
         Language::Chinese,
         Language::Japanese,
         Language::Hindi,
-        Language::Tamil,
-        Language::Telugu,
-        Language::Bengali,
-        Language::Dutch,
-        Language::Danish,
     ];
 
     for language in languages {
@@ -756,14 +740,16 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         manual_sentences.insert("Est-ce que Robin des Bois est vivant ?".to_string());
     }
 
-    let sample_size: usize = if language == Language::Japanese {
-        200
-    } else if needs_llm_nlp(language) {
-        1_000
+    let sample_size: usize = if language == Language::Japanese || language == Language::Hindi {
+        4_000 // reduce Japanese and Hindi samples because I'm broke rn
     } else {
         8_000
     };
-    const TERM_SAMPLE_SIZE: usize = 5_000;
+    let term_sample_size: usize = if language == Language::Japanese || language == Language::Hindi {
+        2_500
+    } else {
+        5_000
+    };
 
     // Step 1: Load all raw sentence strings (no spaCy yet)
     let course = Course {
@@ -857,7 +843,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     println!("Loaded {} multiword terms", term_strings.len());
 
     let sampled_term_strings =
-        sample_to_target(term_strings, TERM_SAMPLE_SIZE, |s: &String| s.clone());
+        sample_to_target(term_strings, term_sample_size, |s: &String| s.clone());
     println!("Sampled {} multiword terms", sampled_term_strings.len());
 
     // Step 4: Combine all sentences that need NLP processing

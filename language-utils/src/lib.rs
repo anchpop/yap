@@ -2462,11 +2462,6 @@ pub enum Language {
     Portuguese,
     Italian,
     Hindi,
-    Tamil,
-    Telugu,
-    Bengali,
-    Dutch,
-    Danish,
 }
 
 #[derive(
@@ -2494,12 +2489,6 @@ pub enum WritingSystem {
     Japanese,
     /// Devanagari script (Hindi, etc.)
     Devanagari,
-    /// Tamil script
-    Tamil,
-    /// Telugu script
-    Telugu,
-    /// Bengali script
-    Bengali,
 }
 
 impl Language {
@@ -2516,11 +2505,6 @@ impl Language {
             Language::Portuguese => "por",
             Language::Italian => "ita",
             Language::Hindi => "hin",
-            Language::Tamil => "tam",
-            Language::Telugu => "tel",
-            Language::Bengali => "ben",
-            Language::Dutch => "nld",
-            Language::Danish => "dan",
         }
     }
 
@@ -2537,11 +2521,6 @@ impl Language {
             "por" => Language::Portuguese,
             "ita" => Language::Italian,
             "hin" => Language::Hindi,
-            "tam" => Language::Tamil,
-            "tel" => Language::Telugu,
-            "ben" => Language::Bengali,
-            "nld" => Language::Dutch,
-            "dan" => Language::Danish,
             _ => return None,
         })
     }
@@ -2559,11 +2538,6 @@ impl Language {
             Language::Portuguese => "pt",
             Language::Italian => "it",
             Language::Hindi => "hi",
-            Language::Tamil => "ta",
-            Language::Telugu => "te",
-            Language::Bengali => "bn",
-            Language::Dutch => "nl",
-            Language::Danish => "da",
         }
     }
 
@@ -2574,17 +2548,12 @@ impl Language {
             | Language::Spanish
             | Language::German
             | Language::Portuguese
-            | Language::Italian
-            | Language::Dutch
-            | Language::Danish => WritingSystem::Latin,
+            | Language::Italian => WritingSystem::Latin,
             Language::Korean => WritingSystem::Hangul,
             Language::Russian => WritingSystem::Cyrillic,
             Language::Chinese => WritingSystem::Han,
             Language::Japanese => WritingSystem::Japanese,
             Language::Hindi => WritingSystem::Devanagari,
-            Language::Tamil => WritingSystem::Tamil,
-            Language::Telugu => WritingSystem::Telugu,
-            Language::Bengali => WritingSystem::Bengali,
         }
     }
 
@@ -2596,8 +2565,6 @@ impl Language {
                 | Language::German
                 | Language::Portuguese
                 | Language::Italian
-                | Language::Dutch
-                | Language::Danish
                 | Language::Hindi
         )
     }
@@ -2616,11 +2583,6 @@ impl Language {
             Language::Portuguese => "como em",
             Language::Italian => "come in",
             Language::Hindi => "जैसे",
-            Language::Tamil => "போல",
-            Language::Telugu => "లాగా",
-            Language::Bengali => "যেমন",
-            Language::Dutch => "zoals in",
-            Language::Danish => "som i",
         }
     }
 
@@ -2646,11 +2608,6 @@ impl Language {
             Language::Portuguese => "pt-BR",
             Language::Italian => "it-IT",
             Language::Hindi => "hi-IN",
-            Language::Tamil => "ta-IN",
-            Language::Telugu => "te-IN",
-            Language::Bengali => "bn-IN",
-            Language::Dutch => "nl-NL",
-            Language::Danish => "da-DK",
         }
     }
 
@@ -2670,11 +2627,6 @@ impl Language {
             Language::Portuguese => &["que", "de", "não", "eu"],
             Language::Italian => &["che", "di", "non", "il"],
             Language::Hindi => &["है", "में", "के", "को"],
-            Language::Tamil => &["இது", "என", "ஒரு", "நான்"],
-            Language::Telugu => &["ఏమి", "నేను", "ఒక", "ఈ"],
-            Language::Bengali => &["আমি", "এই", "তুমি", "কি"],
-            Language::Dutch => &["de", "het", "een", "niet"],
-            Language::Danish => &["det", "er", "ikke", "jeg"],
         }
     }
 
@@ -2826,8 +2778,7 @@ impl Language {
             ],
             // No Latin script subtitles for these
             Language::Korean | Language::Chinese | Language::Japanese => &[],
-            Language::Hindi | Language::Tamil | Language::Telugu | Language::Bengali => &[],
-            Language::Dutch | Language::Danish => &[],
+            Language::Hindi => &[],
         }
     }
 
@@ -2999,13 +2950,7 @@ impl Language {
         // 9. CJK characters in non-CJK subtitle files
         if !matches!(
             self,
-            Language::Chinese
-                | Language::Japanese
-                | Language::Korean
-                | Language::Hindi
-                | Language::Tamil
-                | Language::Telugu
-                | Language::Bengali
+            Language::Chinese | Language::Japanese | Language::Korean | Language::Hindi
         ) {
             let cjk_count = all_text
                 .chars()
@@ -3061,11 +3006,7 @@ impl Language {
         // 14. OCR: "fii" for "fi" (ligature mangling)
         if matches!(
             self,
-            Language::English
-                | Language::French
-                | Language::Italian
-                | Language::Dutch
-                | Language::Danish
+            Language::English | Language::French | Language::Italian
         ) {
             let fii_count = all_text_lower.matches("fii").count();
             if fii_count >= 5 {
@@ -3135,11 +3076,6 @@ impl std::fmt::Display for Language {
             Language::Portuguese => write!(f, "Portuguese"),
             Language::Italian => write!(f, "Italian"),
             Language::Hindi => write!(f, "Hindi"),
-            Language::Tamil => write!(f, "Tamil"),
-            Language::Telugu => write!(f, "Telugu"),
-            Language::Bengali => write!(f, "Bengali"),
-            Language::Dutch => write!(f, "Dutch"),
-            Language::Danish => write!(f, "Danish"),
         }
     }
 }
@@ -3216,11 +3152,6 @@ pub const LANGUAGES: &[Language] = &[
     Language::Portuguese,
     Language::Italian,
     Language::Hindi,
-    Language::Tamil,
-    Language::Telugu,
-    Language::Bengali,
-    Language::Dutch,
-    Language::Danish,
 ];
 
 /// A sentence example for the landing page showcase.
