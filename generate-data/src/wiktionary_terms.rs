@@ -123,7 +123,17 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
             return Ok(vec![]);
         }
         Language::Japanese => {
-            return Ok(vec![]);
+            // The Japanese_multiword_terms category only has subcategories, no direct entries.
+            // Fetch from the subcategories instead.
+            let mut terms = download_category("Japanese_idioms")
+                .await
+                .unwrap_or_default();
+            terms.extend(
+                download_category("Japanese_phrases")
+                    .await
+                    .unwrap_or_default(),
+            );
+            return Ok(terms);
         }
         Language::Russian => "Russian_multiword_terms",
         Language::Portuguese => "Portuguese_multiword_terms",
