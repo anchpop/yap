@@ -889,9 +889,12 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     let sample_count = samples.len();
     println!("Total samples for cleaning: {sample_count}");
 
+    // Check if this language should skip LLM cleaning entirely
+    let corrector = get_corrector(language);
+    let is_passthrough = corrector.passthrough();
+
     // Classify each sentence to get suspicious reasons
     let classifier = get_classifier(language);
-    let corrector = get_corrector(language);
     let classified_sentences: Vec<_> = samples
         .into_iter()
         .map(|mut sentence| {
@@ -904,6 +907,43 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
             (sentence, suspicious_reason)
         })
         .collect();
+
+    // Write results to file
+    let output_dir = PathBuf::from("./out");
+    std::fs::create_dir_all(&output_dir).context("Failed to create output directory")?;
+    let output_file = output_dir.join(format!("cleaned_{}.jsonl", language.iso_639_3()));
+    let file = File::create(&output_file)
+        .context(format!("Failed to create output file: {output_file:?}"))?;
+    let mut writer = BufWriter::new(file);
+
+    if is_passthrough {
+        // Passthrough mode: skip LLM cleaning and dependency parsing, write spaCy tokens directly
+        println!("Passthrough mode — skipping LLM cleaning and dependency parsing");
+        for (sentence, _suspicious_reasons) in &classified_sentences {
+            let tokens: Vec<_> = sentence
+                .doc
+                .iter()
+                .map(|token| {
+                    serde_json::json!({
+                        "text": token.text,
+                        "whitespace": token.whitespace,
+                        "pos": token.pos,
+                        "lemma": token.lemma,
+                    })
+                })
+                .collect();
+
+            let output = serde_json::json!({
+                "sentence": sentence.sentence,
+                "tokens": tokens,
+            });
+            writeln!(writer, "{}", serde_json::to_string(&output)?)
+                .context("Failed to write to output file")?;
+        }
+        writer.flush().context("Failed to flush writer")?;
+        println!("Results written to: {}", output_file.display());
+        return Ok(());
+    }
 
     // Clean each sentence with LLM
     let pb = ProgressBar::new(sample_count as u64);
@@ -939,15 +979,6 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         .await;
 
     pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
-
-    // Write results to file
-    let output_dir = PathBuf::from("./out");
-    std::fs::create_dir_all(&output_dir).context("Failed to create output directory")?;
-
-    let output_file = output_dir.join(format!("cleaned_{}.jsonl", language.iso_639_3()));
-    let file = File::create(&output_file)
-        .context(format!("Failed to create output file: {output_file:?}"))?;
-    let mut writer = BufWriter::new(file);
 
     let mut skipped_count = 0;
     let mut auto_fixed_count = 0;
