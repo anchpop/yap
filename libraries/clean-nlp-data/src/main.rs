@@ -740,12 +740,12 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         manual_sentences.insert("Est-ce que Robin des Bois est vivant ?".to_string());
     }
 
-    let sample_size: usize = if language == Language::Japanese || language == Language::Hindi {
-        4_000 // reduce Japanese and Hindi samples because I'm broke rn
+    let sample_size: usize = if language == Language::Hindi {
+        4_000 // hindi has more training data that was already sampled
     } else {
         8_000
     };
-    let term_sample_size: usize = if language == Language::Japanese || language == Language::Hindi {
+    let term_sample_size: usize = if language == Language::Hindi {
         2_500
     } else {
         5_000
@@ -758,13 +758,19 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     };
 
     println!("Loading target sentences for {language:?}...");
-    let all_raw_sentences: Vec<String> = target_sentences::get_target_sentences(course)
+    let app_sentences = target_sentences::get_target_sentences(course)
         .context("Failed to load target sentences")?
-        .app_sentences
-        .into_iter()
-        .map(|(s, _, _)| s)
-        .collect();
-    println!("Loaded {} raw sentences", all_raw_sentences.len());
+        .app_sentences;
+    let movie_count = app_sentences
+        .iter()
+        .filter(|(_, _, source)| !source.movie_ids.is_empty())
+        .count();
+    let all_raw_sentences: Vec<String> = app_sentences.into_iter().map(|(s, _, _)| s).collect();
+    println!(
+        "Loaded {} raw sentences ({} from movies)",
+        all_raw_sentences.len(),
+        movie_count
+    );
 
     // Step 2: Separate manual from non-manual, sample BEFORE running spaCy
     let (manual_texts, other_texts): (Vec<_>, Vec<_>) = all_raw_sentences
