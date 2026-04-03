@@ -326,11 +326,7 @@ impl Deck {
 
         // Get daily streak information
         let daily_streak = self.get_daily_streak() as i64;
-        let daily_streak_expiry = self
-            .stats
-            .daily_streak
-            .as_ref()
-            .map(|streak| streak.streak_expiry.to_rfc3339());
+        let daily_streak_expiry: Option<String> = None;
 
         let xp = self.stats.xp;
 

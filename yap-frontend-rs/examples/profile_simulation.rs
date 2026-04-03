@@ -47,6 +47,7 @@ fn load_deck_from_test_data() -> Deck {
             target_language: Language::French,
             native_language: Language::English,
         },
+        timezone: chrono::FixedOffset::east_opt(0).unwrap(),
     };
     let initial_state = DeckState::new();
     let stream = store

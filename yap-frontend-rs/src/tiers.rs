@@ -80,7 +80,11 @@ impl TierLevelSlice<'_> {
         known / self.total_freq as f64 * 100.0
     }
 
-    pub(crate) fn to_tier_info(&self, percent_known: f64, cumulative_percent_of_usage: f64) -> TierInfo {
+    pub(crate) fn to_tier_info(
+        &self,
+        percent_known: f64,
+        cumulative_percent_of_usage: f64,
+    ) -> TierInfo {
         TierInfo {
             tier: (self.tier_idx + 1) as u32,
             name: self.tier_name.to_string(),

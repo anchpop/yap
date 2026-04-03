@@ -1309,7 +1309,7 @@ export function useDeck(): { type: "deck", nativeLanguage: Language, targetLangu
       startingFresh: deck_selection.onboardingSelections?.startingFresh,
       nativeLanguage: course.nativeLanguage,
       targetLanguage: course.targetLanguage,
-      deck: await weapon.get_deck_state(course),
+      deck: await weapon.get_deck_state(course, new Date().getTimezoneOffset() * -60),
     } as { type: "deck", nativeLanguage: Language, targetLanguage: Language, deck: Deck | null, startingFresh: boolean | undefined }
   }, [weapon, numEvents, languagePackResult, retryCount])
 

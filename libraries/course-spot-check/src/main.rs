@@ -429,6 +429,7 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
     let context = yap_frontend_rs::Context {
         language_pack,
         course,
+        timezone: chrono::FixedOffset::east_opt(0).unwrap(),
     };
     let state = DeckState::new();
     let mut deck = <Deck as weapon::AppState>::finalize(state, &context);

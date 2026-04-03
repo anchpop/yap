@@ -343,6 +343,7 @@ mod tests {
             let context = crate::Context {
                 language_pack,
                 course: *course,
+                timezone: chrono::FixedOffset::east_opt(0).unwrap(),
             };
             let state = crate::DeckState::new();
             let deck: Deck = <Deck as weapon::AppState>::finalize(state, &context);
@@ -388,6 +389,7 @@ mod tests {
                 target_language: language_utils::Language::French,
                 native_language: language_utils::Language::English,
             },
+            timezone: chrono::FixedOffset::east_opt(0).unwrap(),
         };
         let initial_state = crate::DeckState::new();
         let stream = store

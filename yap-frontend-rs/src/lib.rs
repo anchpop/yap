@@ -28,7 +28,7 @@ use language_utils::SentenceGrams;
 use language_utils::SpurGram;
 pub use simulation::{DailySimulationIterator, DayChallengeIterator};
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Datelike, Utc};
 use deck_selection::DeckSelectionEvent;
 use language_utils::Frequency;
 use language_utils::Literal;
@@ -244,7 +244,11 @@ impl Weapon {
             })
     }
 
-    pub async fn get_deck_state(&self, course: Course) -> Result<Deck, JsValue> {
+    pub async fn get_deck_state(
+        &self,
+        course: Course,
+        utc_offset_seconds: i32,
+    ) -> Result<Deck, JsValue> {
         let language_pack = self
             .language_pack
             .borrow()
@@ -257,12 +261,15 @@ impl Weapon {
             .and_then(|s| s.native_language)
             .unwrap_or(course.native_language);
 
+        let timezone = chrono::FixedOffset::east_opt(utc_offset_seconds)
+            .ok_or_else(|| JsValue::from_str("invalid timezone offset"))?;
         let context = Context {
             language_pack,
             course: Course {
                 target_language,
                 native_language,
             },
+            timezone,
         };
         let initial_state = DeckState::new();
         let store = self.store.borrow_mut();
@@ -715,8 +722,10 @@ impl CardData {
 
 #[derive(Clone, Debug)]
 pub struct DailyStreak {
-    streak_start: chrono::DateTime<chrono::Utc>,
-    streak_expiry: chrono::DateTime<chrono::Utc>,
+    /// The most recent calendar day (in user's local timezone) with activity
+    last_active_day: chrono::NaiveDate,
+    /// The current streak length in days
+    streak_count: u32,
 }
 
 /// Context contains the language-specific configuration
@@ -724,6 +733,8 @@ pub struct DailyStreak {
 pub struct Context {
     pub language_pack: Arc<LanguagePack>,
     pub course: Course,
+    /// User's timezone offset from UTC
+    pub timezone: chrono::FixedOffset,
 }
 
 /// Flashcard types for tracking tutorial progress
@@ -872,7 +883,7 @@ impl weapon::AppState for Deck {
 
         let counts_as_review_activity = !matches!(event, LanguageEventContent::SetGoal { .. });
         if counts_as_review_activity {
-            deck.update_daily_streak(timestamp);
+            deck.update_daily_streak(timestamp, &context.timezone);
             deck.stats.total_reviews += 1;
 
             // Clean up leeches that are more than 250 reviews old
@@ -889,7 +900,10 @@ impl weapon::AppState for Deck {
         match event {
             LanguageEventContent::TranslationChallenge { .. }
             | LanguageEventContent::TranscriptionChallenge { .. } => {
-                let days_since_epoch = timestamp.timestamp() / 86400;
+                let days_since_epoch = timestamp
+                    .with_timezone(&context.timezone)
+                    .date_naive()
+                    .num_days_from_ce() as i64;
                 *deck
                     .stats
                     .past_week_challenges
@@ -1676,31 +1690,33 @@ impl DeckState {
         };
     }
 
-    fn update_daily_streak(&mut self, timestamp: &DateTime<Utc>) {
+    fn update_daily_streak(&mut self, timestamp: &DateTime<Utc>, timezone: &chrono::FixedOffset) {
+        let day = timestamp.with_timezone(timezone).date_naive();
+
         match &self.stats.daily_streak {
             None => {
-                // First review ever - streak expires 30 hours from now
                 self.stats.daily_streak = Some(DailyStreak {
-                    streak_start: *timestamp,
-                    streak_expiry: *timestamp + chrono::Duration::hours(30),
+                    last_active_day: day,
+                    streak_count: 1,
                 });
             }
             Some(streak) => {
-                if timestamp < &streak.streak_expiry {
-                    // Within expiry window, continue streak and extend expiry
+                let diff = (day - streak.last_active_day).num_days();
+                if diff == 0 {
+                    // Same day, no change
+                } else if diff == 1 {
+                    // Consecutive day, extend streak
                     self.stats.daily_streak = Some(DailyStreak {
-                        streak_start: streak.streak_start,
-                        streak_expiry: *timestamp + chrono::Duration::hours(30),
+                        last_active_day: day,
+                        streak_count: streak.streak_count + 1,
                     });
                 } else {
-                    // Past expiry, start new streak
+                    // Gap in days, reset streak
                     self.stats.daily_streak = Some(DailyStreak {
-                        streak_start: *timestamp,
-                        streak_expiry: *timestamp + chrono::Duration::hours(30),
+                        last_active_day: day,
+                        streak_count: 1,
                     });
                 }
-                // Note: if timestamp is before streak_expiry but in the past relative to
-                // streak_expiry calculation time, we still update. This handles out-of-order events.
             }
         }
     }
@@ -2183,13 +2199,14 @@ impl Deck {
         match &self.stats.daily_streak {
             None => 0,
             Some(streak) => {
-                let now = chrono::Utc::now();
+                let today = chrono::Utc::now()
+                    .with_timezone(&self.context.timezone)
+                    .date_naive();
+                let days_since_active = (today - streak.last_active_day).num_days();
 
-                if now < streak.streak_expiry {
-                    // Streak is active (hasn't expired yet)
-                    (now.date_naive() - streak.streak_start.date_naive()).num_days() as u32 + 1
+                if days_since_active <= 1 {
+                    streak.streak_count
                 } else {
-                    // Streak is broken (expired)
                     0
                 }
             }
@@ -4103,6 +4120,7 @@ mod tests {
                     target_language: Language::French,
                     native_language: Language::English,
                 },
+                timezone: chrono::FixedOffset::east_opt(0).unwrap(),
             };
             let state = DeckState::new();
             <Deck as weapon::AppState>::finalize(state, &context)
@@ -4563,6 +4581,7 @@ mod tests {
                 target_language: Language::French,
                 native_language: Language::English,
             },
+            timezone: chrono::FixedOffset::east_opt(0).unwrap(),
         };
         let initial_state = DeckState::new();
         let stream = store
@@ -4707,6 +4726,7 @@ mod tests {
                 target_language: Language::French,
                 native_language: Language::English,
             },
+            timezone: chrono::FixedOffset::east_opt(0).unwrap(),
         };
         let initial_state = DeckState::new();
         let stream = store
@@ -4933,6 +4953,7 @@ mod tests {
         let context = Context {
             language_pack,
             course,
+            timezone: chrono::FixedOffset::east_opt(0).unwrap(),
         };
         let initial_state = DeckState::new();
         let stream = store
