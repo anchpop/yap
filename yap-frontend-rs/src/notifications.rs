@@ -326,7 +326,15 @@ impl Deck {
 
         // Get daily streak information
         let daily_streak = self.get_daily_streak() as i64;
-        let daily_streak_expiry: Option<String> = None;
+        let daily_streak_expiry = self.stats.daily_streak.as_ref().map(|streak| {
+            let tomorrow = streak.last_active_day + chrono::Duration::days(2);
+            let expiry = tomorrow
+                .and_hms_opt(0, 0, 0)
+                .unwrap()
+                .and_local_timezone(self.context.timezone)
+                .unwrap();
+            expiry.to_rfc3339()
+        });
 
         let xp = self.stats.xp;
 
