@@ -238,8 +238,10 @@ async fn text_to_speech(
         Language::Italian => "sKbNSlHXq99bttvf8rRF", // Nicola Lorusso - Italian voice
         Language::Portuguese => "tS45q0QcrDHqHoaWdCDR", // Lax - Portuguese voice
         Language::Russian => "hLjwV7lYzk15SWLUmhEH", // Russian voice
+        Language::Japanese => "GxhGYQesaQaYKePCZDEC", // Japanese voice
+        Language::Hindi => "K24eC7JpUgk8zMtQYrpV",    // Hindi voice
 
-        Language::Chinese | Language::Japanese | Language::Hindi => todo!(),
+        Language::Chinese => todo!(),
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -291,8 +293,10 @@ async fn google_text_to_speech(
         Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar"),
         Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar"),
         Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Aoede"),
+        Language::Japanese => ("ja-JP", "ja-JP-Chirp3-HD-Achernar"),
+        Language::Hindi => ("hi-IN", "hi-IN-Chirp3-HD-Achernar"),
 
-        Language::Chinese | Language::Japanese | Language::Hindi => todo!(),
+        Language::Chinese => todo!(),
     };
 
     let input = if request.is_ssml {
@@ -415,7 +419,9 @@ async fn autograde_translation(
         Language::Italian => "Italian",
         Language::Portuguese => "Portuguese",
         Language::Russian => "Russian",
-        Language::Chinese | Language::Japanese | Language::Hindi => {
+        Language::Japanese => "Japanese",
+        Language::Hindi => "Hindi",
+        Language::Chinese => {
             return Err(StatusCode::NOT_IMPLEMENTED);
         }
     };
@@ -698,8 +704,12 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
                 r#"For example, if the user confused "avô" and "avó", or "coser" and "cozer", you could generate ["avô", "avó"] or ["coser", "cozer"] in the compare array."#,
             Language::Russian =>
                 r#"For example, if the user confused "компания" and "кампания", or "предать" and "придать", you could generate ["компания", "кампания"] or ["предать", "придать"] in the compare array."#,
+            Language::Japanese =>
+                r#"For example, if the user confused "行って" and "言って", or "聞く" and "効く", you could generate ["行って", "言って"] or ["聞く", "効く"] in the compare array."#,
+            Language::Hindi =>
+                r#"For example, if the user confused "सुनना" and "सुनाना", or "बोलना" and "बुलाना", you could generate ["सुनना", "सुनाना"] or ["बोलना", "बुलाना"] in the compare array."#,
 
-            Language::Chinese | Language::Japanese | Language::Hindi => {
+            Language::Chinese => {
                 return Err(StatusCode::NOT_IMPLEMENTED);
             }
         }
