@@ -47,11 +47,24 @@ pub enum ExperienceLevel {
     Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub enum StudyGoal {
+pub enum DailyReviewTarget {
     Casual,
     Regular,
     Serious,
     Intense,
+}
+
+impl DailyReviewTarget {
+    /// Approximate daily review target assuming 30 seconds per review.
+    /// Casual=5min(10), Regular=10min(20), Serious=15min(30), Intense=20min(40)
+    pub fn review_count(&self) -> u32 {
+        match self {
+            DailyReviewTarget::Casual => 10,
+            DailyReviewTarget::Regular => 20,
+            DailyReviewTarget::Serious => 30,
+            DailyReviewTarget::Intense => 40,
+        }
+    }
 }
 
 #[derive(
@@ -72,7 +85,7 @@ pub struct OnboardingSelections {
     pub starting_fresh: bool,
     pub motivation: Option<Motivation>,
     pub experience_level: Option<ExperienceLevel>,
-    pub study_goal: Option<StudyGoal>,
+    pub study_goal: Option<DailyReviewTarget>,
 }
 
 #[derive(Clone, Debug, tsify::Tsify, serde::Serialize, serde::Deserialize)]

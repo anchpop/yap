@@ -29,6 +29,7 @@ use language_utils::SpurGram;
 pub use simulation::{DailySimulationIterator, DayChallengeIterator};
 
 use chrono::{DateTime, Datelike, Utc};
+use deck_selection::DailyReviewTarget;
 use deck_selection::DeckSelectionEvent;
 use language_utils::Frequency;
 use language_utils::Literal;
@@ -726,6 +727,14 @@ pub struct DailyStreak {
     last_active_day: chrono::NaiveDate,
     /// The current streak length in days
     streak_count: u32,
+    /// Number of reviews completed on `last_active_day`
+    today_reviews: u32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum Accomplishment {
+    DailyGoalReached,
 }
 
 /// Context contains the language-specific configuration
@@ -795,6 +804,10 @@ pub struct DeckState {
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
     /// The most recently selected goal from an AddCards event
     goal: Option<GoalSelection>,
+    /// The current accomplishment to display (cleared on each review, set when earned)
+    accomplishment: Option<Accomplishment>,
+    /// The user's daily study intensity
+    daily_review_target: DailyReviewTarget,
 }
 
 #[derive(Clone, Debug)]
@@ -811,6 +824,10 @@ pub struct Deck {
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
     /// The most recently selected goal from an AddCards event
     goal: Option<GoalSelection>,
+    /// The current accomplishment to display (cleared on each review, set when earned)
+    accomplishment: Option<Accomplishment>,
+    /// The user's daily study intensity
+    daily_review_target: DailyReviewTarget,
 }
 
 #[derive(Clone, Debug)]
@@ -851,6 +868,8 @@ impl From<Deck> for DeckState {
             stats: deck.stats,
             leeches: deck.leeches,
             goal: deck.goal,
+            accomplishment: deck.accomplishment,
+            daily_review_target: deck.daily_review_target,
         }
     }
 }
@@ -881,10 +900,25 @@ impl weapon::AppState for Deck {
             deck.stats.start_time = Some(*timestamp);
         }
 
-        let counts_as_review_activity = !matches!(event, LanguageEventContent::SetGoal { .. });
+        let counts_as_review_activity = !matches!(
+            event,
+            LanguageEventContent::SetGoal { .. }
+                | LanguageEventContent::SetDailyReviewTarget { .. }
+        );
         if counts_as_review_activity {
+            // Clear accomplishment on each review
+            deck.accomplishment = None;
+
             deck.update_daily_streak(timestamp, &context.timezone);
             deck.stats.total_reviews += 1;
+
+            // Check if the user just hit their daily study goal
+            if let Some(streak) = &deck.stats.daily_streak {
+                let target = deck.daily_review_target.review_count();
+                if streak.today_reviews == target {
+                    deck.accomplishment = Some(Accomplishment::DailyGoalReached);
+                }
+            }
 
             // Clean up leeches that are more than 250 reviews old
             let current_reviews = deck.stats.total_reviews;
@@ -1401,6 +1435,11 @@ impl weapon::AppState for Deck {
             LanguageEventContent::SetGoal { goal } => {
                 deck.goal = goal.clone();
             }
+            LanguageEventContent::SetDailyReviewTarget {
+                daily_review_target,
+            } => {
+                deck.daily_review_target = daily_review_target.clone();
+            }
         }
 
         deck
@@ -1591,6 +1630,8 @@ impl weapon::AppState for Deck {
             comprehensible,
             leeches: state.leeches,
             goal: state.goal,
+            accomplishment: state.accomplishment,
+            daily_review_target: state.daily_review_target,
         }
     }
 }
@@ -1624,6 +1665,8 @@ impl DeckState {
             },
             leeches: BTreeMap::new(),
             goal: None,
+            accomplishment: None,
+            daily_review_target: DailyReviewTarget::Casual,
         }
     }
 
@@ -1698,23 +1741,31 @@ impl DeckState {
                 self.stats.daily_streak = Some(DailyStreak {
                     last_active_day: day,
                     streak_count: 1,
+                    today_reviews: 1,
                 });
             }
             Some(streak) => {
                 let diff = (day - streak.last_active_day).num_days();
                 if diff == 0 {
-                    // Same day, no change
+                    // Same day, increment today's reviews
+                    self.stats.daily_streak = Some(DailyStreak {
+                        last_active_day: day,
+                        streak_count: streak.streak_count,
+                        today_reviews: streak.today_reviews + 1,
+                    });
                 } else if diff == 1 {
-                    // Consecutive day, extend streak
+                    // Consecutive day, extend streak, reset today's reviews
                     self.stats.daily_streak = Some(DailyStreak {
                         last_active_day: day,
                         streak_count: streak.streak_count + 1,
+                        today_reviews: 1,
                     });
                 } else {
                     // Gap in days, reset streak
                     self.stats.daily_streak = Some(DailyStreak {
                         last_active_day: day,
                         streak_count: 1,
+                        today_reviews: 1,
                     });
                 }
             }
@@ -2128,6 +2179,22 @@ impl Deck {
         })
     }
 
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_daily_review_target_setting(&self) -> DailyReviewTarget {
+        self.daily_review_target.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn set_daily_review_target(&self, daily_review_target: DailyReviewTarget) -> DeckEvent {
+        DeckEvent::Language(LanguageEvent {
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
+            content: LanguageEventContent::SetDailyReviewTarget {
+                daily_review_target,
+            },
+        })
+    }
+
     /// Get the tier level where adding the next batch of cards makes the most progress.
     /// Falls back to the first incomplete level if no cards improve any level.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -2185,6 +2252,11 @@ impl Deck {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_accomplishment(&self) -> Option<Accomplishment> {
+        self.accomplishment.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_total_reviews(&self) -> u64 {
         self.stats.total_reviews
     }
@@ -2211,6 +2283,28 @@ impl Deck {
                 }
             }
         }
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_today_reviews(&self) -> u32 {
+        match &self.stats.daily_streak {
+            None => 0,
+            Some(streak) => {
+                let today = chrono::Utc::now()
+                    .with_timezone(&self.context.timezone)
+                    .date_naive();
+                if streak.last_active_day == today {
+                    streak.today_reviews
+                } else {
+                    0
+                }
+            }
+        }
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_daily_review_target(&self) -> u32 {
+        self.daily_review_target.review_count()
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]

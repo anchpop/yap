@@ -32,7 +32,7 @@ import type {
   HeardAbout,
   Motivation,
   ExperienceLevel,
-  StudyGoal,
+  DailyReviewTarget,
   OnboardingSelections,
 } from "../../../yap-frontend-rs/pkg/yap_frontend_rs";
 import { nativeLanguageNames, languageFlags } from "@/lib/utils";
@@ -48,7 +48,7 @@ export type { OnboardingSelections, HeardAbout };
 interface OnboardingData {
   motivation: Motivation | null;
   experience: ExperienceLevel | null;
-  studyGoal: StudyGoal | null;
+  studyGoal: DailyReviewTarget | null;
 }
 
 interface OnboardingFlowProps {
@@ -671,16 +671,16 @@ function AchievementsScreen({ onNext }: { onNext: () => void }) {
 }
 
 // Screen 6: Study goal
-function StudyGoalScreen({
+function DailyReviewTargetScreen({
   value,
   onChange,
   onNext,
 }: {
-  value: StudyGoal | null;
-  onChange: (v: StudyGoal) => void;
+  value: DailyReviewTarget | null;
+  onChange: (v: DailyReviewTarget) => void;
   onNext: () => void;
 }) {
-  const goals: Array<{ key: StudyGoal; label: string; mins: number; icon: LucideIcon }> = [
+  const goals: Array<{ key: DailyReviewTarget; label: string; mins: number; icon: LucideIcon }> = [
     { key: "Casual", label: "Casual", mins: 5, icon: SignalLow },
     { key: "Regular", label: "Regular", mins: 10, icon: SignalMedium },
     { key: "Serious", label: "Serious", mins: 15, icon: SignalHigh },
@@ -968,7 +968,7 @@ export function OnboardingFlow({
         )}
         {currentScreen === "achievements" && <AchievementsScreen onNext={next} />}
         {currentScreen === "study-goal" && (
-          <StudyGoalScreen
+          <DailyReviewTargetScreen
             value={data.studyGoal}
             onChange={(v) => setData((d) => ({ ...d, studyGoal: v }))}
             onNext={next}

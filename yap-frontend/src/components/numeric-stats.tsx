@@ -10,6 +10,8 @@ interface NumericStatsProps {
   totalReviews: number | bigint;
   tierName?: string;
   tierPercent?: number;
+  todayReviews: number;
+  dailyReviewTarget: number;
 }
 
 export const NumericStats: React.FC<NumericStatsProps> = ({
@@ -21,16 +23,28 @@ export const NumericStats: React.FC<NumericStatsProps> = ({
   totalReviews,
   tierName,
   tierPercent,
+  todayReviews,
+  dailyReviewTarget,
 }) => {
+  const goalReached = todayReviews >= dailyReviewTarget;
   return (
     <div className="mb-4">
       <h2 className="text-2xl font-semibold animate-fade-in-delay-2">Stats</h2>
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
         <Card className="p-4 gap-0" animate>
           <p className="text-sm text-muted-foreground mb-1">XP</p>
           <p className="text-2xl font-bold">{xp}</p>
           <p className="text-sm text-muted-foreground mt-1">
             You get more XP for words you didn't remember.
+          </p>
+        </Card>
+        <Card className="p-4 gap-0" animate>
+          <p className="text-sm text-muted-foreground mb-1">Daily Goal</p>
+          <p className="text-2xl font-bold">
+            {todayReviews} / {dailyReviewTarget}
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {goalReached ? "Goal reached!" : `${dailyReviewTarget - todayReviews} reviews to go`}
           </p>
         </Card>
       </div>

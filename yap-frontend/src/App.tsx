@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react'
 import { useState, useEffect, Profiler, useSyncExternalStore, useMemo, useCallback } from 'react'
 import { useZeno } from '@/hooks/useZeno'
 import { createBrowserRouter, RouterProvider, Outlet, useNavigate, useOutletContext, ScrollRestoration } from 'react-router-dom'
-import { CardSummary, Deck, type CardType, type Challenge, type ChallengeRequirements, type Course, type Heteronym, type Language, type LiteralGrades, type Gram, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
+import { CardSummary, Deck, type Accomplishment, type CardType, type Challenge, type ChallengeRequirements, type Course, type DailyReviewTarget, type Heteronym, type Language, type LiteralGrades, type Gram, type /* comes from TranscriptionChallenge */ PartGraded, type Rating } from '../../yap-frontend-rs/pkg'
 import { Button } from "@/components/ui/button.tsx"
 import { Progress } from "@/components/ui/progress.tsx"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -27,6 +27,7 @@ import { GoalsPage } from '@/pages/goals'
 import { playSoundEffect } from '@/lib/sound-effects'
 import { registerSW } from 'virtual:pwa-register'
 import { NoCardsReady } from '@/components/no-cards-ready'
+import { AccomplishmentScreen } from '@/components/AccomplishmentScreen'
 import { useGoal, goalToGoalSelection } from '@/hooks/useGoal'
 import { SetDisplayName } from '@/components/SetDisplayName'
 
@@ -637,6 +638,13 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
   const autoplayed = lastAutoPlayReviewCount == totalReviewsCompleted
   const setAutoplayed = useCallback(() => setLastAutoPlayReviewCount(totalReviewsCompleted), [totalReviewsCompleted])
 
+  const accomplishment: Accomplishment | undefined = deck.get_accomplishment()
+  const [dismissedAccomplishment, setDismissedAccomplishment] = useState(false)
+  // Reset dismissed state when a new accomplishment appears (i.e. totalReviewsCompleted changes)
+  useEffect(() => {
+    setDismissedAccomplishment(false)
+  }, [totalReviewsCompleted])
+
   const nextDueCard = findNextDueCard(deck)
 
   // Filter movies to target language for goal selector
@@ -943,6 +951,16 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
               localStorage.setItem('yap-skipped-set-display-name', 'true')
               setDismissedSetDisplayName(true)
             }}
+          />
+        ) : accomplishment && !dismissedAccomplishment ? (
+          <AccomplishmentScreen
+            accomplishment={accomplishment}
+            dailyReviewTarget={deck.get_daily_review_target_setting()}
+            onChangeDailyReviewTarget={(target: DailyReviewTarget) => {
+              const event = deck.set_daily_review_target(target)
+              weapon.add_deck_event(event)
+            }}
+            onDismiss={() => setDismissedAccomplishment(true)}
           />
         ) : reviewInfo.due_count === 0 && !currentChallenge ? (
           <NoCardsReady

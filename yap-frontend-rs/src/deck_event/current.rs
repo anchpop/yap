@@ -2,6 +2,7 @@
 
 use std::collections::BTreeSet;
 
+use crate::deck_selection::DailyReviewTarget;
 use crate::transcription_challenge;
 use crate::{CardType, FlashcardType};
 use language_utils::{Gram, Language, Literal, PatternPosition, SpurGram};
@@ -224,6 +225,9 @@ pub enum LanguageEventContent {
     },
     SetGoal {
         goal: Option<GoalSelection>,
+    },
+    SetDailyReviewTarget {
+        daily_review_target: DailyReviewTarget,
     },
 }
 
