@@ -981,6 +981,7 @@ function Review({
         | { perfect: string | null },
       wordsTapped: Heteronym<string>[],
       submission: string,
+      completedAtMs: number,
     ) => {
       if (
         !currentChallenge ||
@@ -1003,7 +1004,7 @@ function Review({
           currentChallenge.target_language,
         );
         if (event) {
-          weapon.add_deck_event(event);
+          weapon.add_deck_event_at(event, completedAtMs);
         }
       } else {
         // Wrong sentence review - pass literal grades directly to Rust
@@ -1016,7 +1017,7 @@ function Review({
           grade.phrasesForgot,
         );
         if (event) {
-          weapon.add_deck_event(event);
+          weapon.add_deck_event_at(event, completedAtMs);
         }
       }
     },
@@ -1024,7 +1025,7 @@ function Review({
   );
 
   const handleTranscriptionComplete = useCallback(
-    (grade: /* comes from TranscriptionChallenge*/ PartGraded[]) => {
+    (grade: /* comes from TranscriptionChallenge*/ PartGraded[], completedAtMs: number) => {
       if (
         !currentChallenge ||
         currentChallenge.type !== "TranscribeComprehensibleSentence"
@@ -1041,8 +1042,7 @@ function Review({
 
       const event = deck.transcribe_sentence(grade);
       if (event) {
-        console.log("event", event);
-        weapon.add_deck_event(event);
+        weapon.add_deck_event_at(event, completedAtMs);
       }
     },
     [deck, currentChallenge, weapon],
@@ -1203,6 +1203,7 @@ function Review({
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
               deck={deck}
+              totalReviewsCompleted={totalReviewsCompleted}
             />
           ) : (
             <TranscriptionChallenge
@@ -1217,6 +1218,7 @@ function Review({
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
               deck={deck}
+              totalReviewsCompleted={totalReviewsCompleted}
             />
           )
         ) : (

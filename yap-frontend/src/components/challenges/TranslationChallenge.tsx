@@ -21,6 +21,7 @@ import {
   autograde_translation,
   find_closest_translation,
   gram_to_display_string,
+  get_app_version,
   type Language,
   type Course,
   type Deck,
@@ -74,6 +75,7 @@ interface SentenceChallengeProps {
       | { perfect: string | null },
     heteronymsTapped: Heteronym<string>[],
     submission: string,
+    completedAtMs: number,
   ) => void;
   accessToken: string | undefined;
   targetLanguage: Language;
@@ -81,6 +83,7 @@ interface SentenceChallengeProps {
   autoplayed: boolean;
   setAutoplayed: () => void;
   deck: Deck;
+  totalReviewsCompleted: bigint;
 }
 
 interface ChallengeSentenceProps {
@@ -645,6 +648,7 @@ export function TranslationChallenge({
   autoplayed,
   setAutoplayed,
   deck,
+  totalReviewsCompleted,
 }: SentenceChallengeProps) {
   "use memo";
   const [userTranslation, setUserTranslation] = useState("");
@@ -662,7 +666,9 @@ export function TranslationChallenge({
   const [selectedPhraseIndex, setSelectedPhraseIndex] = useState<number>(-1);
   const [showReportModal, setShowReportModal] = useState(false);
   const [tappedWords, setTappedWords] = useState<Set<number>>(new Set());
-  const [grade, setGrade] = useState<
+  const STORAGE_KEY = "yap-pending-translation-grade";
+
+  type GradeState =
     | {
         graded:
           | {
@@ -680,11 +686,74 @@ export function TranslationChallenge({
             };
       }
     | { grading: null }
-    | null
-  >(null);
+    | null;
+
+  // Try to restore a saved grade from localStorage
+  const restored = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      if (
+        saved.version !== get_app_version() ||
+        saved.totalReviewsCompleted !== Number(totalReviewsCompleted) ||
+        JSON.stringify(saved.challenge) !== JSON.stringify(sentence)
+      ) {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+      }
+      return saved as {
+        grade: GradeState;
+        userTranslation: string;
+        tappedWords: number[];
+        completedAtMs: number;
+        correctTranslation: string;
+      };
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [grade, setGrade] = useState<GradeState>(restored?.grade ?? null);
+  const completedAtMsRef = useRef<number | undefined>(restored?.completedAtMs);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const phraseRefs = useRef<Map<number, SwipeableWordHandle>>(new Map());
   const { bumpBackground } = useBackground();
+
+  // Restore saved state
+  useEffect(() => {
+    if (restored) {
+      setUserTranslation(restored.userTranslation);
+      setTappedWords(new Set(restored.tappedWords));
+      setCorrectTranslation(restored.correctTranslation);
+    }
+  }, [restored]);
+
+  // Save grade to localStorage when grading completes so it survives navigation
+  useEffect(() => {
+    if (grade && "graded" in grade) {
+      const timestamp = completedAtMsRef.current ?? Date.now();
+      completedAtMsRef.current = timestamp;
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            version: get_app_version(),
+            challenge: sentence,
+            totalReviewsCompleted: Number(totalReviewsCompleted),
+            grade,
+            userTranslation,
+            tappedWords: [...tappedWords],
+            completedAtMs: timestamp,
+            correctTranslation,
+          }),
+        );
+      } catch {
+        // localStorage full or unavailable — not critical
+      }
+    }
+  }, [grade, sentence, userTranslation, tappedWords, correctTranslation]);
 
   const literalGramIndices: number[] = sentence.literal_gram_indices;
   const gramDefinitions = sentence.gram_definitions_for_lookup as (
@@ -840,6 +909,7 @@ export function TranslationChallenge({
 
   const handleCheckAnswer = useCallback(async () => {
     if (userTranslation.trim()) {
+      completedAtMsRef.current = Date.now();
       bumpBackground(30.0);
       const closest =
         find_closest_translation(
@@ -948,13 +1018,16 @@ export function TranslationChallenge({
   const handleContinue = useCallback(() => {
     if (canContinue) {
       if (grade && "graded" in grade) {
+        localStorage.removeItem(STORAGE_KEY);
         bumpBackground(30.0);
         window.scrollTo({ top: 0, behavior: "smooth" });
+        const completedAtMs = completedAtMsRef.current!;
         if ("perfect" in grade.graded) {
           onComplete(
             { perfect: grade.graded.perfect },
             heteronymsTapped,
             userTranslation,
+            completedAtMs,
           );
         } else {
           onComplete(
@@ -965,6 +1038,7 @@ export function TranslationChallenge({
             },
             heteronymsTapped,
             userTranslation,
+            completedAtMs,
           );
         }
       }

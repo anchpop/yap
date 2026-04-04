@@ -525,6 +525,21 @@ impl Weapon {
         self.flush_notifications();
     }
 
+    /// Add a deck event with a specific timestamp (milliseconds since Unix epoch).
+    /// Used when an exercise was completed earlier but the event is being submitted later.
+    pub fn add_deck_event_at(&self, event: DeckEvent, timestamp_ms: f64) {
+        let timestamp = chrono::DateTime::from_timestamp_millis(timestamp_ms as i64)
+            .unwrap_or_else(chrono::Utc::now);
+        self.store.borrow_mut().add_raw_event_at(
+            "reviews".to_string(),
+            self.device_id.clone(),
+            event,
+            None,
+            timestamp,
+        );
+        self.flush_notifications();
+    }
+
     pub fn add_deck_selection_event(&self, event: DeckSelectionEvent) {
         self.store.borrow_mut().add_raw_event(
             "deck_selection".to_string(),

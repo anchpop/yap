@@ -307,6 +307,21 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         Event: Ord + Clone + crate::Event + 'static,
         Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
     {
+        self.add_raw_event_at(stream, device, event, modifier, chrono::Utc::now());
+    }
+
+    /// Add a raw event with a specific timestamp.
+    pub fn add_raw_event_at<Event>(
+        &mut self,
+        stream: Stream,
+        device: Device,
+        event: Event,
+        modifier: Option<ListenerKey>,
+        timestamp: chrono::DateTime<chrono::Utc>,
+    ) where
+        Event: Ord + Clone + crate::Event + 'static,
+        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
+    {
         let within_device_events_index = self
             .get_or_insert_default::<EventType<Event>>(stream.clone(), modifier)
             .len_device(&device);
@@ -314,7 +329,7 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         // Convert to versioned form for storage
         let versioned_event = Timestamped {
             event: EventType::User(event.to_versioned()),
-            timestamp: chrono::Utc::now(),
+            timestamp,
             within_device_events_index,
         };
 

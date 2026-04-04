@@ -3,6 +3,7 @@ import { getMovieMetadata } from "@/lib/movie-cache";
 import { MoviePosterGrid } from "./MoviePosterGrid";
 import {
   autograde_transcription,
+  get_app_version,
   type TranscribeComprehensibleSentence,
   type PartGraded,
   type PartSubmitted,
@@ -50,7 +51,7 @@ import { TargetLanguageText } from "../TargetLanguageText";
 
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence;
-  onComplete: (grade: PartGraded[]) => void;
+  onComplete: (grade: PartGraded[], completedAtMs: number) => void;
   totalCount: number;
   accessToken: string | undefined;
   onCantListen?: () => void;
@@ -59,6 +60,7 @@ interface TranscriptionChallengeProps {
   autoplayed: boolean;
   setAutoplayed: () => void;
   deck: Deck;
+  totalReviewsCompleted: bigint;
 }
 
 function AutogradeError() {
@@ -112,8 +114,38 @@ export function TranscriptionChallenge({
   autoplayed,
   setAutoplayed,
   deck,
+  totalReviewsCompleted,
 }: TranscriptionChallengeProps) {
-  const [userInputs, setUserInputs] = useState<Map<number, string>>(new Map());
+  const STORAGE_KEY = "yap-pending-transcription-grade";
+
+  // Try to restore a saved grade from localStorage
+  const restored = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      if (
+        saved.version !== get_app_version() ||
+        saved.totalReviewsCompleted !== Number(totalReviewsCompleted) ||
+        JSON.stringify(saved.challenge) !== JSON.stringify(challenge)
+      ) {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+      }
+      return saved as {
+        gradingState: GradingState;
+        userInputs: [number, string][];
+        completedAtMs: number;
+      };
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [userInputs, setUserInputs] = useState<Map<number, string>>(
+    restored ? new Map(restored.userInputs) : new Map(),
+  );
   const [audioError, setAudioError] = useState(false);
 
   const movieData = useMemo(() => {
@@ -123,7 +155,8 @@ export function TranscriptionChallenge({
     const movieIds = challenge.movie_titles.map(([id]) => id);
     return getMovieMetadata(deck, movieIds);
   }, [challenge.movie_titles, deck]);
-  const [gradingState, setGradingState] = useState<GradingState>(null);
+  const [gradingState, setGradingState] = useState<GradingState>(restored?.gradingState ?? null);
+  const completedAtMsRef = useRef<number | undefined>(restored?.completedAtMs);
   const [showReportModal, setShowReportModal] = useState(false);
   const [isTranslationRevealed, setIsTranslationRevealed] = useState(false);
   const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(
@@ -143,6 +176,29 @@ export function TranscriptionChallenge({
     });
     return blankIndices;
   }, [challenge]);
+
+  // Save grade to localStorage when grading completes so it survives navigation
+  useEffect(() => {
+    if (gradingState && "graded" in gradingState) {
+      const timestamp = completedAtMsRef.current ?? Date.now();
+      completedAtMsRef.current = timestamp;
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            version: get_app_version(),
+            challenge,
+            totalReviewsCompleted: Number(totalReviewsCompleted),
+            gradingState,
+            userInputs: [...userInputs.entries()],
+            completedAtMs: timestamp,
+          }),
+        );
+      } catch {
+        // localStorage full or unavailable — not critical
+      }
+    }
+  }, [gradingState, challenge, userInputs]);
 
   // Focus first input on mount and reset translation reveal
   useEffect(() => {
@@ -234,6 +290,7 @@ export function TranscriptionChallenge({
   const handleSubmit = useCallback(async () => {
     if (gradingState !== null) return;
 
+    completedAtMsRef.current = Date.now();
     bumpBackground(30.0);
     setGradingState({ grading: null });
 
@@ -285,6 +342,14 @@ export function TranscriptionChallenge({
     bumpBackground,
   ]);
 
+  const handleTranscriptionContinue = useCallback(() => {
+    if (gradingState && "graded" in gradingState) {
+      localStorage.removeItem(STORAGE_KEY);
+      bumpBackground(30.0);
+      onComplete(gradingState.graded.results, completedAtMsRef.current!);
+    }
+  }, [gradingState, onComplete, bumpBackground]);
+
   // Global keyboard handler for Enter key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -320,8 +385,7 @@ export function TranscriptionChallenge({
         } else if (gradingState && "graded" in gradingState) {
           // Handle continue when graded and no input focused
           e.preventDefault();
-          bumpBackground(30.0);
-          onComplete(gradingState.graded.results);
+          handleTranscriptionContinue();
         }
       } else if (
         e.key === "ArrowRight" &&
@@ -330,8 +394,7 @@ export function TranscriptionChallenge({
         !isInputFocused
       ) {
         e.preventDefault();
-        bumpBackground(30.0);
-        onComplete(gradingState.graded.results);
+        handleTranscriptionContinue();
       }
     };
 
@@ -339,7 +402,7 @@ export function TranscriptionChallenge({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [
     gradingState,
-    onComplete,
+    handleTranscriptionContinue,
     blankIndices,
     allBlanksFilledOut,
     handleSubmit,
@@ -655,10 +718,7 @@ export function TranscriptionChallenge({
           <Button
             onClick={
               gradingState && "graded" in gradingState
-                ? () => {
-                    bumpBackground(30.0);
-                    onComplete(gradingState.graded.results);
-                  }
+                ? handleTranscriptionContinue
                 : handleSubmit
             }
             disabled={
