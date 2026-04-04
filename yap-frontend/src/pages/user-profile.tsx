@@ -142,7 +142,7 @@ export function UserProfilePage() {
       await update_profile(
         editDisplayName || null,
         editBio || null,
-        accessToken
+        accessToken,
       );
 
       // Reload profile to get updated data including slug
@@ -180,7 +180,7 @@ export function UserProfilePage() {
               is_following: true,
               follower_count: prev.follower_count + 1,
             }
-          : null
+          : null,
       );
       toast.success("Followed successfully");
     } catch (err) {
@@ -207,7 +207,7 @@ export function UserProfilePage() {
               is_following: false,
               follower_count: prev.follower_count - 1,
             }
-          : null
+          : null,
       );
       toast.success("Unfollowed successfully");
     } catch (err) {

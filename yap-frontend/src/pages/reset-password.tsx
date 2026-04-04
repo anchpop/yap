@@ -1,88 +1,98 @@
-import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { ThemeProvider } from '@/components/theme-provider'
+import { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export function ResetPassword() {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-  const [isValidToken, setIsValidToken] = useState<boolean | null>(null)
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Check both query params and hash fragments
-    let access_token = searchParams.get('access_token')
-    let refresh_token = searchParams.get('refresh_token')
+    let access_token = searchParams.get("access_token");
+    let refresh_token = searchParams.get("refresh_token");
 
     // If not in query params, check hash fragments
     if (!access_token && window.location.hash) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      access_token = hashParams.get('access_token')
-      refresh_token = hashParams.get('refresh_token')
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      access_token = hashParams.get("access_token");
+      refresh_token = hashParams.get("refresh_token");
     }
 
     if (access_token && refresh_token) {
       // Standard Supabase password reset flow - just set the session
-      supabase.auth.setSession({
-        access_token,
-        refresh_token,
-      }).then(({ data, error }) => {
-        if (error) {
-          console.error('Error setting session:', error)
-          setError('Invalid or expired reset link. Please request a new one.')
-          setIsValidToken(false)
-        } else {
-          console.log('Session set successfully:', data)
-          setIsValidToken(true)
-          // Clear the URL to hide the tokens
-          window.history.replaceState(null, '', window.location.pathname)
-        }
-      })
+      supabase.auth
+        .setSession({
+          access_token,
+          refresh_token,
+        })
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("Error setting session:", error);
+            setError(
+              "Invalid or expired reset link. Please request a new one.",
+            );
+            setIsValidToken(false);
+          } else {
+            console.log("Session set successfully:", data);
+            setIsValidToken(true);
+            // Clear the URL to hide the tokens
+            window.history.replaceState(null, "", window.location.pathname);
+          }
+        });
     } else {
-      console.log('No tokens found in URL')
-      setError('Invalid reset link. Please request a new one.')
-      setIsValidToken(false)
+      console.log("No tokens found in URL");
+      setError("Invalid reset link. Please request a new one.");
+      setIsValidToken(false);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    
+    e.preventDefault();
+    setError(null);
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      return
+      setError("Passwords do not match");
+      return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters')
-      return
+      setError("Password must be at least 6 characters");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     const { error } = await supabase.auth.updateUser({
-      password: password
-    })
+      password: password,
+    });
 
     if (error) {
-      setError(error.message)
+      setError(error.message);
     } else {
-      setSuccess(true)
+      setSuccess(true);
       setTimeout(() => {
-        navigate('/')
-      }, 2000)
+        navigate("/");
+      }, 2000);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   if (success) {
     return (
@@ -90,13 +100,17 @@ export function ResetPassword() {
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-green-500">Password Updated!</CardTitle>
-              <CardDescription>Your password has been successfully updated. Redirecting...</CardDescription>
+              <CardTitle className="text-2xl font-bold text-green-500">
+                Password Updated!
+              </CardTitle>
+              <CardDescription>
+                Your password has been successfully updated. Redirecting...
+              </CardDescription>
             </CardHeader>
           </Card>
         </div>
       </ThemeProvider>
-    )
+    );
   }
 
   // Show loading while verifying token
@@ -106,13 +120,15 @@ export function ResetPassword() {
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">Verifying Reset Link</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                Verifying Reset Link
+              </CardTitle>
               <CardDescription>Please wait...</CardDescription>
             </CardHeader>
           </Card>
         </div>
       </ThemeProvider>
-    )
+    );
   }
 
   // Show error if token is invalid
@@ -122,8 +138,12 @@ export function ResetPassword() {
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">Invalid Reset Link</CardTitle>
-              <CardDescription>This password reset link is invalid or has expired.</CardDescription>
+              <CardTitle className="text-2xl font-bold">
+                Invalid Reset Link
+              </CardTitle>
+              <CardDescription>
+                This password reset link is invalid or has expired.
+              </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
               {error && (
@@ -131,14 +151,17 @@ export function ResetPassword() {
                   {error}
                 </div>
               )}
-              <Button onClick={() => navigate('/forgot-password')} variant="outline">
+              <Button
+                onClick={() => navigate("/forgot-password")}
+                variant="outline"
+              >
                 Request New Reset Link
               </Button>
             </CardContent>
           </Card>
         </div>
       </ThemeProvider>
-    )
+    );
   }
 
   return (
@@ -146,7 +169,9 @@ export function ResetPassword() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Reset Your Password</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Reset Your Password
+            </CardTitle>
             <CardDescription>Enter your new password below</CardDescription>
           </CardHeader>
           <CardContent>
@@ -174,7 +199,7 @@ export function ResetPassword() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Updating...' : 'Update Password'}
+                {loading ? "Updating..." : "Update Password"}
               </Button>
             </form>
 
@@ -187,5 +212,5 @@ export function ResetPassword() {
         </Card>
       </div>
     </ThemeProvider>
-  )
+  );
 }

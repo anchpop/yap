@@ -15,10 +15,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, ChevronLeft, ChevronRight, Headphones, Sparkles } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Headphones,
+  Sparkles,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import type { UserInfo } from "@/App";
 import { useEffect, useState } from "react";
 import { Poster } from "@/components/Poster";
@@ -65,10 +75,13 @@ export function NoCardsReady({
 }: NoCardsReadyProps) {
   const navigate = useNavigate();
   const [pimsleurAcknowledged, setPimsleurAcknowledged] = useState(
-    () => localStorage.getItem("yap-pimsleur-acknowledged") === "true"
+    () => localStorage.getItem("yap-pimsleur-acknowledged") === "true",
   );
   const goalSelection = goalToGoalSelection(goal);
-  const addCardOptionsRaw = deck.add_card_options(bannedChallengeTypes, goalSelection);
+  const addCardOptionsRaw = deck.add_card_options(
+    bannedChallengeTypes,
+    goalSelection,
+  );
   const addCardOptions: AddCardOptions =
     userInfo === undefined
       ? {
@@ -81,28 +94,32 @@ export function NoCardsReady({
                   ? count
                   : 0,
                 card_type,
-              ] as [number, CardType]
+              ] as [number, CardType],
           ),
           percent_known_after: addCardOptionsRaw.percent_known_after,
           preview: addCardOptionsRaw.preview,
         }
       : addCardOptionsRaw;
   let nextTargetLanguageWord: string | null = null;
-  if (nextDueCard && (nextDueCard.card_indicator.type === "WrittenPhrase" || nextDueCard.card_indicator.type === "WrittenGram")) {
+  if (
+    nextDueCard &&
+    (nextDueCard.card_indicator.type === "WrittenPhrase" ||
+      nextDueCard.card_indicator.type === "WrittenGram")
+  ) {
     nextTargetLanguageWord = nextDueCard?.card_text;
   }
 
   const numCanAddTargetLanguage =
     addCardOptions.manual_add.find(
-      ([, card_type]) => card_type === "TargetLanguage"
+      ([, card_type]) => card_type === "TargetLanguage",
     )?.[0] || 0;
   const numCanAddListening =
     addCardOptions.manual_add.find(
-      ([, card_type]) => card_type === "Listening"
+      ([, card_type]) => card_type === "Listening",
     )?.[0] || 0;
   const numCanAddLetterPronunciation =
     addCardOptions.manual_add.find(
-      ([, card_type]) => card_type === "LetterPronunciation"
+      ([, card_type]) => card_type === "LetterPronunciation",
     )?.[0] || 0;
   const numCanSmartAdd = addCardOptions.smart_add;
 
@@ -189,7 +206,8 @@ export function NoCardsReady({
   const currentCategoryIndex = categories.indexOf(currentCategory);
   // If category not found (e.g. no movies available but goal is movie), fall back to essential
   const effectiveIndex = currentCategoryIndex === -1 ? 0 : currentCategoryIndex;
-  const effectiveGoal: Goal = currentCategoryIndex === -1 ? { type: "essential" } : goal;
+  const effectiveGoal: Goal =
+    currentCategoryIndex === -1 ? { type: "essential" } : goal;
 
   const canGoLeft = effectiveIndex > 0;
   const canGoRight = effectiveIndex < categories.length - 1;
@@ -217,7 +235,8 @@ export function NoCardsReady({
   };
 
   const navigateGoal = (direction: "left" | "right") => {
-    const nextIndex = direction === "left" ? effectiveIndex - 1 : effectiveIndex + 1;
+    const nextIndex =
+      direction === "left" ? effectiveIndex - 1 : effectiveIndex + 1;
     if (nextIndex >= 0 && nextIndex < categories.length) {
       setGoal(goalForCategory(categories[nextIndex]));
     }
@@ -230,13 +249,25 @@ export function NoCardsReady({
       case "essential":
         return { goalPercentKnown: tierInfo.percent_known, goalDone: false };
       case "movie": {
-        const movie = moviesWithMetadata.find(m => m.id === effectiveGoal.movieId);
-        return { goalPercentKnown: movie?.percent_known ?? 0, goalDone: movie?.all_available_learned ?? false };
+        const movie = moviesWithMetadata.find(
+          (m) => m.id === effectiveGoal.movieId,
+        );
+        return {
+          goalPercentKnown: movie?.percent_known ?? 0,
+          goalDone: movie?.all_available_learned ?? false,
+        };
       }
       case "pimsleur": {
         const stats = deck.get_pimsleur_stats();
-        const lesson = stats.find(l => l.level === effectiveGoal.level && l.lesson === effectiveGoal.lesson);
-        return { goalPercentKnown: lesson?.percent_known ?? 0, goalDone: lesson?.all_available_learned ?? false };
+        const lesson = stats.find(
+          (l) =>
+            l.level === effectiveGoal.level &&
+            l.lesson === effectiveGoal.lesson,
+        );
+        return {
+          goalPercentKnown: lesson?.percent_known ?? 0,
+          goalDone: lesson?.all_available_learned ?? false,
+        };
       }
     }
   })();
@@ -246,7 +277,10 @@ export function NoCardsReady({
       case "essential":
         return `${tierInfo.name} ${targetLanguage} Level ${tierInfo.level}`;
       case "movie":
-        return moviesWithMetadata.find(m => m.id === effectiveGoal.movieId)?.title ?? "Movie";
+        return (
+          moviesWithMetadata.find((m) => m.id === effectiveGoal.movieId)
+            ?.title ?? "Movie"
+        );
       case "pimsleur":
         return `Pimsleur Level ${effectiveGoal.level}, Lesson ${effectiveGoal.lesson}`;
     }
@@ -274,9 +308,7 @@ export function NoCardsReady({
       <div className="text-center py-4">
         <div className="flex flex-col gap-2">
           <p className="text-2xl font-bold">
-            {isEmptyDeck
-              ? "Ready to start learning?"
-              : "All caught up!"}
+            {isEmptyDeck ? "Ready to start learning?" : "All caught up!"}
           </p>
           {isEmptyDeck ? (
             <p className="text-muted-foreground">
@@ -288,7 +320,9 @@ export function NoCardsReady({
                 <>
                   You'll review{" "}
                   <span className="font-semibold">
-                    <TargetLanguageText language={targetLanguage}>{nextTargetLanguageWord}</TargetLanguageText>
+                    <TargetLanguageText language={targetLanguage}>
+                      {nextTargetLanguageWord}
+                    </TargetLanguageText>
                   </span>{" "}
                   {nextDueCard ? (
                     <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
@@ -327,230 +361,279 @@ export function NoCardsReady({
           </Button>
         </div>
       ) : (
-      <Card className="overflow-hidden px-2 py-4 gap-2" animate>
-        <p className="text-lg font-semibold px-4 sm:px-8 text-center">
-          {goalDone
-            ? <>You're all done with<br /><span className="uppercase font-bold">{goalLabel}!</span></>
-            : showLightWorkloadNotification && thresholdTarget !== null
-            ? <>Soon you'll hit {thresholdTarget}% on<br /><span className="uppercase font-bold">{goalLabel}!</span></>
-            : showLightWorkloadNotification
-            ? <>Keep up the momentum on<br /><span className="uppercase font-bold">{goalLabel}!</span></>
-            : <>You're doing great on<br /><span className="uppercase font-bold">{goalLabel}!</span></>}
-        </p>
-        <div className="flex items-center justify-between gap-0">
-          <button
-            onClick={() => navigateGoal("left")}
-            className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
-            disabled={!canGoLeft}
-            aria-label="Previous goal"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-
-          <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">
-            {effectiveGoal.type === "pimsleur" && !pimsleurAcknowledged ? (
-              <div className="flex-1 flex flex-col items-center gap-3 py-4 px-2 text-center">
-                <Headphones className="h-8 w-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  Yap has word lists for Pimsleur, but is not affiliated with Pimsleur in any way.
-                </p>
-                <Button
-                  variant="default"
-                  onClick={() => {
-                    localStorage.setItem("yap-pimsleur-acknowledged", "true");
-                    setPimsleurAcknowledged(true);
-                  }}
-                >
-                  I understand
-                </Button>
-              </div>
+        <Card className="overflow-hidden px-2 py-4 gap-2" animate>
+          <p className="text-lg font-semibold px-4 sm:px-8 text-center">
+            {goalDone ? (
+              <>
+                You're all done with
+                <br />
+                <span className="uppercase font-bold">{goalLabel}!</span>
+              </>
+            ) : showLightWorkloadNotification && thresholdTarget !== null ? (
+              <>
+                Soon you'll hit {thresholdTarget}% on
+                <br />
+                <span className="uppercase font-bold">{goalLabel}!</span>
+              </>
+            ) : showLightWorkloadNotification ? (
+              <>
+                Keep up the momentum on
+                <br />
+                <span className="uppercase font-bold">{goalLabel}!</span>
+              </>
             ) : (
               <>
-                <div
-                  onClick={() => navigate("/goals")}
-                  className="hidden sm:block sm:order-first w-24 h-36 flex-shrink-0 rounded-lg border border-border/50 overflow-hidden cursor-pointer hover:scale-105 transition-all"
-                >
-                  {goalImage?.type === "url" ? (
-                    <img
-                      src={goalImage.url}
-                      alt={goalLabel}
-                      className={`w-full h-full object-cover opacity-90 saturate-70 dark:opacity-70 dark:saturate-80 hover:opacity-100 hover:saturate-100 transition-all ${effectiveGoal.type === "essential" ? "dark:invert dark:hue-rotate-180" : ""}`}
-                    />
-                  ) : goalImage?.type === "movie" ? (
-                    <Poster movieId={goalImage.movieId} deck={deck} alt={goalLabel} />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <Headphones className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-                <div className="order-1 sm:order-last flex-1 flex flex-col items-center sm:items-start gap-3 min-w-0 w-full sm:w-auto">
-                  {goalDone ? (() => {
-                    // Show "next lesson" / "next movie" button when goal is complete
-                    const nextGoal = (() => {
-                      switch (effectiveGoal.type) {
-                        case "pimsleur": {
-                          const best = deck.get_best_pimsleur_goal();
-                          if (best && best.type === "PimsleurLesson") {
-                            return { goal: { type: "pimsleur" as const, level: best.level, lesson: best.lesson }, label: "Next lesson" };
-                          }
-                          return null;
-                        }
-                        case "movie": {
-                          const best = deck.get_best_movie_goal();
-                          if (best && best.type === "Movie") {
-                            return { goal: { type: "movie" as const, movieId: best.id }, label: "Next movie" };
-                          }
-                          return null;
-                        }
-                        case "essential":
-                          return null;
-                      }
-                    })();
+                You're doing great on
+                <br />
+                <span className="uppercase font-bold">{goalLabel}!</span>
+              </>
+            )}
+          </p>
+          <div className="flex items-center justify-between gap-0">
+            <button
+              onClick={() => navigateGoal("left")}
+              className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
+              disabled={!canGoLeft}
+              aria-label="Previous goal"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
 
-                    return nextGoal ? (
-                      <Button
-                        onClick={() => setGoal(nextGoal.goal)}
-                        variant="default"
-                        size="lg"
-                        className="group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg"
-                      >
-                        <ChevronRight className="h-5 w-5 mr-2" />
-                        {nextGoal.label}
-                      </Button>
+            <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">
+              {effectiveGoal.type === "pimsleur" && !pimsleurAcknowledged ? (
+                <div className="flex-1 flex flex-col items-center gap-3 py-4 px-2 text-center">
+                  <Headphones className="h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    Yap has word lists for Pimsleur, but is not affiliated with
+                    Pimsleur in any way.
+                  </p>
+                  <Button
+                    variant="default"
+                    onClick={() => {
+                      localStorage.setItem("yap-pimsleur-acknowledged", "true");
+                      setPimsleurAcknowledged(true);
+                    }}
+                  >
+                    I understand
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div
+                    onClick={() => navigate("/goals")}
+                    className="hidden sm:block sm:order-first w-24 h-36 flex-shrink-0 rounded-lg border border-border/50 overflow-hidden cursor-pointer hover:scale-105 transition-all"
+                  >
+                    {goalImage?.type === "url" ? (
+                      <img
+                        src={goalImage.url}
+                        alt={goalLabel}
+                        className={`w-full h-full object-cover opacity-90 saturate-70 dark:opacity-70 dark:saturate-80 hover:opacity-100 hover:saturate-100 transition-all ${effectiveGoal.type === "essential" ? "dark:invert dark:hue-rotate-180" : ""}`}
+                      />
+                    ) : goalImage?.type === "movie" ? (
+                      <Poster
+                        movieId={goalImage.movieId}
+                        deck={deck}
+                        alt={goalLabel}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <Headphones className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="order-1 sm:order-last flex-1 flex flex-col items-center sm:items-start gap-3 min-w-0 w-full sm:w-auto">
+                    {goalDone ? (
+                      (() => {
+                        // Show "next lesson" / "next movie" button when goal is complete
+                        const nextGoal = (() => {
+                          switch (effectiveGoal.type) {
+                            case "pimsleur": {
+                              const best = deck.get_best_pimsleur_goal();
+                              if (best && best.type === "PimsleurLesson") {
+                                return {
+                                  goal: {
+                                    type: "pimsleur" as const,
+                                    level: best.level,
+                                    lesson: best.lesson,
+                                  },
+                                  label: "Next lesson",
+                                };
+                              }
+                              return null;
+                            }
+                            case "movie": {
+                              const best = deck.get_best_movie_goal();
+                              if (best && best.type === "Movie") {
+                                return {
+                                  goal: {
+                                    type: "movie" as const,
+                                    movieId: best.id,
+                                  },
+                                  label: "Next movie",
+                                };
+                              }
+                              return null;
+                            }
+                            case "essential":
+                              return null;
+                          }
+                        })();
+
+                        return nextGoal ? (
+                          <Button
+                            onClick={() => setGoal(nextGoal.goal)}
+                            variant="default"
+                            size="lg"
+                            className="group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg"
+                          >
+                            <ChevronRight className="h-5 w-5 mr-2" />
+                            {nextGoal.label}
+                          </Button>
+                        ) : (
+                          <p className="text-sm">
+                            You've learned all available words!
+                          </p>
+                        );
+                      })()
+                    ) : add_cards.length > 0 ? (
+                      <div className="flex">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() =>
+                                addNextCards(add_cards[0][1], add_cards[0][0])
+                              }
+                              variant="default"
+                              size="lg"
+                              className={`group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg whitespace-normal h-auto min-h-10 ${
+                                add_cards.length > 1 ? "rounded-r-none" : ""
+                              }`}
+                            >
+                              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
+                              <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
+                              Learn {add_cards[0][0]} new{" "}
+                              {add_cards[0][1] === undefined
+                                ? ""
+                                : add_cards[0][1] === "TargetLanguage"
+                                  ? targetLanguageSpan
+                                  : add_cards[0][1] === "Listening"
+                                    ? listeningSpan
+                                    : pronunciationSpan}{" "}
+                              {add_cards[0][0] === 1 ? "card" : "cards"}
+                              {thresholdTarget !== null &&
+                                !showLightWorkloadNotification && (
+                                  <> to hit {thresholdTarget}%</>
+                                )}
+                            </Button>
+                          </TooltipTrigger>
+                          {addCardOptions.preview.length > 0 && (
+                            <TooltipContent>
+                              {addCardOptions.preview.join(", ")}
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                        {add_cards.length > 1 && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="default"
+                                size="lg"
+                                className="rounded-l-none border-l border-l-primary-foreground/20 px-2"
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {add_cards.slice(1).map(([count, card_type]) => (
+                                <DropdownMenuItem
+                                  key={card_type || "smart"}
+                                  onClick={() => addNextCards(card_type, count)}
+                                  className="cursor-pointer"
+                                >
+                                  <Sparkles className="h-4 w-4 mr-2" />
+                                  Learn {count}{" "}
+                                  {card_type === "TargetLanguage"
+                                    ? targetLanguageSpan
+                                    : card_type === "Listening"
+                                      ? listeningSpan
+                                      : card_type === "LetterPronunciation"
+                                        ? pronunciationSpan
+                                        : ""}{" "}
+                                  {count === 1 ? "card" : "cards"}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
                     ) : (
                       <p className="text-sm">
                         You've learned all available words!
                       </p>
-                    );
-                  })() : add_cards.length > 0 ? (
-                    <div className="flex">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            onClick={() => addNextCards(add_cards[0][1], add_cards[0][0])}
-                            variant="default"
-                            size="lg"
-                            className={`group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg whitespace-normal h-auto min-h-10 ${
-                              add_cards.length > 1 ? "rounded-r-none" : ""
-                            }`}
-                          >
-                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
-                            <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
-                            Learn {add_cards[0][0]} new{" "}
-                            {add_cards[0][1] === undefined
-                              ? ""
-                              : add_cards[0][1] === "TargetLanguage"
-                              ? targetLanguageSpan
-                              : add_cards[0][1] === "Listening"
-                              ? listeningSpan
-                              : pronunciationSpan}{" "}
-                            {add_cards[0][0] === 1 ? "card" : "cards"}
-                            {thresholdTarget !== null && !showLightWorkloadNotification && <> to hit {thresholdTarget}%</>}
-                          </Button>
-                        </TooltipTrigger>
-                        {addCardOptions.preview.length > 0 && (
-                          <TooltipContent>
-                            {addCardOptions.preview.join(", ")}
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                      {add_cards.length > 1 && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="default"
-                              size="lg"
-                              className="rounded-l-none border-l border-l-primary-foreground/20 px-2"
-                            >
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {add_cards.slice(1).map(([count, card_type]) => (
-                              <DropdownMenuItem
-                                key={card_type || "smart"}
-                                onClick={() => addNextCards(card_type, count)}
-                                className="cursor-pointer"
-                              >
-                                <Sparkles className="h-4 w-4 mr-2" />
-                                Learn {count}{" "}
-                                {card_type === "TargetLanguage"
-                                  ? targetLanguageSpan
-                                  : card_type === "Listening"
-                                  ? listeningSpan
-                                  : card_type === "LetterPronunciation"
-                                  ? pronunciationSpan
-                                  : ""}{" "}
-                                {count === 1 ? "card" : "cards"}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-sm">
-                      You've learned all available words!
-                    </p>
-                  )}
+                    )}
 
-                  <Progress
-                    value={goalPercentKnown}
-                    projectedValue={goalDone ? undefined : addCardOptions.percent_known_after}
-                    showPercentage
-                    label={goalDone ? "Done!" : undefined}
-                    className="h-6"
-                  />
+                    <Progress
+                      value={goalPercentKnown}
+                      projectedValue={
+                        goalDone
+                          ? undefined
+                          : addCardOptions.percent_known_after
+                      }
+                      showPercentage
+                      label={goalDone ? "Done!" : undefined}
+                      className="h-6"
+                    />
 
-                  {effectiveGoal.type === "essential" && (
-                    <p className="text-xs text-muted-foreground text-center sm:text-left">
-                      When you complete this level, you'll understand {tierInfo.percent_of_usage.toFixed(1)}% of everyday {targetLanguage}.
-                    </p>
-                  )}
+                    {effectiveGoal.type === "essential" && (
+                      <p className="text-xs text-muted-foreground text-center sm:text-left">
+                        When you complete this level, you'll understand{" "}
+                        {tierInfo.percent_of_usage.toFixed(1)}% of everyday{" "}
+                        {targetLanguage}.
+                      </p>
+                    )}
 
-                  <button
-                    onClick={() => navigate("/goals")}
-                    className="text-xs text-foreground/60 hover:text-foreground underline underline-offset-2 transition-colors text-left"
-                  >
-                    change goal
-                  </button>
+                    <button
+                      onClick={() => navigate("/goals")}
+                      className="text-xs text-foreground/60 hover:text-foreground underline underline-offset-2 transition-colors text-left"
+                    >
+                      change goal
+                    </button>
 
-                  {categories.length > 1 && (
-                    <div className="flex sm:hidden items-center justify-between w-full">
-                      <button
-                        onClick={() => navigateGoal("left")}
-                        className={`p-2 transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
-                        disabled={!canGoLeft}
-                        aria-label="Previous goal"
-                      >
-                        <ChevronLeft className="h-6 w-6" />
-                      </button>
-                      <button
-                        onClick={() => navigateGoal("right")}
-                        className={`p-2 transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
-                        disabled={!canGoRight}
-                        aria-label="Next goal"
-                      >
-                        <ChevronRight className="h-6 w-6" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+                    {categories.length > 1 && (
+                      <div className="flex sm:hidden items-center justify-between w-full">
+                        <button
+                          onClick={() => navigateGoal("left")}
+                          className={`p-2 transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
+                          disabled={!canGoLeft}
+                          aria-label="Previous goal"
+                        >
+                          <ChevronLeft className="h-6 w-6" />
+                        </button>
+                        <button
+                          onClick={() => navigateGoal("right")}
+                          className={`p-2 transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
+                          disabled={!canGoRight}
+                          aria-label="Next goal"
+                        >
+                          <ChevronRight className="h-6 w-6" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <button
+              onClick={() => navigateGoal("right")}
+              className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
+              disabled={!canGoRight}
+              aria-label="Next goal"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
           </div>
-
-          <button
-            onClick={() => navigateGoal("right")}
-            className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
-            disabled={!canGoRight}
-            aria-label="Next goal"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-        </div>
-      </Card>
+        </Card>
       )}
 
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}

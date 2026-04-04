@@ -8,11 +8,19 @@ import { languageToIso6391 } from "@/lib/utils";
 import { getMovieMetadata } from "@/lib/movie-cache";
 import { Poster } from "@/components/Poster";
 import type { Deck as DeckType } from "../../../yap-frontend-rs/pkg";
-import { goalSelectionToGoal, goalToGoalSelection, type Goal } from "@/hooks/useGoal";
+import {
+  goalSelectionToGoal,
+  goalToGoalSelection,
+  type Goal,
+} from "@/hooks/useGoal";
 import { useWeapon } from "@/weapon";
 import { match, P } from "ts-pattern";
 import { Check, ChevronDown, Headphones, Sparkles } from "lucide-react";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 
 const INITIAL_MOVIES_SHOWN = 5;
 import { useEffect, useState } from "react";
@@ -23,11 +31,12 @@ export function GoalsPage() {
   const deckState = useDeck();
   const navigate = useNavigate();
   const weapon = useWeapon();
-  const goal = deckState?.type === "deck" && deckState.deck
-    ? goalSelectionToGoal(deckState.deck.get_goal())
-    : ({ type: "essential" } as Goal);
+  const goal =
+    deckState?.type === "deck" && deckState.deck
+      ? goalSelectionToGoal(deckState.deck.get_goal())
+      : ({ type: "essential" } as Goal);
   const [pimsleurAcknowledged, setPimsleurAcknowledged] = useState(
-    () => localStorage.getItem("yap-pimsleur-acknowledged") === "true"
+    () => localStorage.getItem("yap-pimsleur-acknowledged") === "true",
   );
   const [showAllMovies, setShowAllMovies] = useState(false);
 
@@ -92,22 +101,27 @@ export function GoalsPage() {
               />
               {goal.type === "essential" && (
                 <p className="text-xs text-muted-foreground -mt-2 ml-1">
-                  The {tierInfo.name} tier covers the {tierInfo.tier === 1 ? "" : "next "}most frequent {targetLanguage} words. When you complete this level, you'll understand {tierInfo.percent_of_usage.toFixed(1)}% of everyday {targetLanguage}.
+                  The {tierInfo.name} tier covers the{" "}
+                  {tierInfo.tier === 1 ? "" : "next "}most frequent{" "}
+                  {targetLanguage} words. When you complete this level, you'll
+                  understand {tierInfo.percent_of_usage.toFixed(1)}% of everyday{" "}
+                  {targetLanguage}.
                 </p>
               )}
 
               {/* Movie goals */}
               <h3 className="text-lg font-semibold mt-6">Movies</h3>
               <p className="text-sm text-muted-foreground">
-                Focus on vocabulary from a specific movie. You can usually
-                watch comfortably once you know 95% of the words.
+                Focus on vocabulary from a specific movie. You can usually watch
+                comfortably once you know 95% of the words.
               </p>
 
               {(() => {
                 const visibleMovies = showAllMovies
                   ? moviesWithMetadata
                   : moviesWithMetadata.slice(0, INITIAL_MOVIES_SHOWN);
-                const hiddenCount = moviesWithMetadata.length - INITIAL_MOVIES_SHOWN;
+                const hiddenCount =
+                  moviesWithMetadata.length - INITIAL_MOVIES_SHOWN;
 
                 return (
                   <>
@@ -120,9 +134,16 @@ export function GoalsPage() {
                           <GoalCard
                             key={movie.id}
                             selected={isSelected}
-                            onClick={() => setGoalAndNavigate({ type: "movie", movieId: movie.id })}
+                            onClick={() =>
+                              setGoalAndNavigate({
+                                type: "movie",
+                                movieId: movie.id,
+                              })
+                            }
                             title={movie.title ?? movie.id}
-                            description={movie.year ? `${movie.year}` : undefined}
+                            description={
+                              movie.year ? `${movie.year}` : undefined
+                            }
                             percentKnown={movie.percent_known}
                             done={movie.all_available_learned}
                             movieId={movie.id}
@@ -136,7 +157,8 @@ export function GoalsPage() {
                         onClick={() => setShowAllMovies(true)}
                         className="w-full py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200 font-medium rounded-md border border-border"
                       >
-                        Show {hiddenCount} more {hiddenCount === 1 ? "movie" : "movies"}
+                        Show {hiddenCount} more{" "}
+                        {hiddenCount === 1 ? "movie" : "movies"}
                       </button>
                     )}
                   </>
@@ -146,16 +168,22 @@ export function GoalsPage() {
               {/* Pimsleur goals */}
               {pimsleurStats.length > 0 && (
                 <>
-                  <h3 className="text-lg font-semibold mt-6">Pimsleur Lessons</h3>
+                  <h3 className="text-lg font-semibold mt-6">
+                    Pimsleur Lessons
+                  </h3>
                   {!pimsleurAcknowledged ? (
                     <div className="flex flex-col items-center gap-3 py-4 text-center">
                       <p className="text-sm text-muted-foreground">
-                        Yap has word lists for Pimsleur, but is not affiliated with Pimsleur in any way.
+                        Yap has word lists for Pimsleur, but is not affiliated
+                        with Pimsleur in any way.
                       </p>
                       <Button
                         variant="default"
                         onClick={() => {
-                          localStorage.setItem("yap-pimsleur-acknowledged", "true");
+                          localStorage.setItem(
+                            "yap-pimsleur-acknowledged",
+                            "true",
+                          );
                           setPimsleurAcknowledged(true);
                         }}
                       >
@@ -169,13 +197,19 @@ export function GoalsPage() {
                       </p>
 
                       {(() => {
-                        const levels = [...new Set(pimsleurStats.map(l => l.level))].sort((a, b) => a - b);
+                        const levels = [
+                          ...new Set(pimsleurStats.map((l) => l.level)),
+                        ].sort((a, b) => a - b);
                         return levels.map((level) => {
-                          const units = pimsleurStats.filter(l => l.level === level);
+                          const units = pimsleurStats.filter(
+                            (l) => l.level === level,
+                          );
                           return (
                             <Collapsible key={level}>
                               <CollapsibleTrigger className="flex items-center gap-2 mt-4 w-full group">
-                                <h4 className="text-sm font-semibold">Level {level}</h4>
+                                <h4 className="text-sm font-semibold">
+                                  Level {level}
+                                </h4>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
                               </CollapsibleTrigger>
                               <CollapsibleContent>
@@ -190,32 +224,36 @@ export function GoalsPage() {
                                       <GoalCard
                                         key={`pimsleur-${lesson.level}-${lesson.lesson}`}
                                         selected={isSelected}
-                                        onClick={() => setGoalAndNavigate({
-                                          type: "pimsleur",
-                                          level: lesson.level,
-                                          lesson: lesson.lesson,
-                                        })}
+                                        onClick={() =>
+                                          setGoalAndNavigate({
+                                            type: "pimsleur",
+                                            level: lesson.level,
+                                            lesson: lesson.lesson,
+                                          })
+                                        }
                                         title={`Lesson ${lesson.lesson}`}
                                         percentKnown={lesson.percent_known}
                                         done={lesson.all_available_learned}
-                                        icon={<Headphones className="h-5 w-5 text-muted-foreground" />}
+                                        icon={
+                                          <Headphones className="h-5 w-5 text-muted-foreground" />
+                                        }
                                       />
                                     );
                                   })}
                                 </div>
                               </CollapsibleContent>
-                                </Collapsible>
-                              );
-                            });
-                          })()}
-                        </>
-                      )}
+                            </Collapsible>
+                          );
+                        });
+                      })()}
+                    </>
+                  )}
                 </>
               )}
             </div>
           </TopPageLayout>
         );
-      }
+      },
     )
     .otherwise(() => (
       <TopPageLayout userInfo={userInfo}>

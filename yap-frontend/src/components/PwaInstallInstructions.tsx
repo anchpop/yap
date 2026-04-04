@@ -60,9 +60,7 @@ export function PwaInstallInstructions() {
               <span>Tap "Add to Home Screen" or "Install App"</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-xl mt-[-4px] text-muted-foreground">
-                ✓
-              </span>
+              <span className="text-xl mt-[-4px] text-muted-foreground">✓</span>
               <span>Tap "Add" or "Install"</span>
             </li>
           </ol>
@@ -92,8 +90,8 @@ export function PwaInstallInstructions() {
           <p className="font-medium mt-4">For Firefox:</p>
           <div className="ml-4">
             <p className="text-muted-foreground">
-              Firefox doesn't support app installation. Consider using
-              Chrome or Edge for the best experience.
+              Firefox doesn't support app installation. Consider using Chrome or
+              Edge for the best experience.
             </p>
           </div>
         </div>

@@ -102,7 +102,7 @@ export function AudioButton({
         setIsPlaying(false);
       }
     },
-    [audioRequest, accessToken, playPreAudio]
+    [audioRequest, accessToken, playPreAudio],
   );
 
   // Auto-play audio when text changes (if autoPlay is enabled)

@@ -1,4 +1,4 @@
-import type { Deck, MovieMetadataBasic } from '../../../yap-frontend-rs/pkg';
+import type { Deck, MovieMetadataBasic } from "../../../yap-frontend-rs/pkg";
 
 const movieMetadataCache = new Map<string, MovieMetadataBasic>();
 
@@ -7,7 +7,10 @@ const movieMetadataCache = new Map<string, MovieMetadataBasic>();
  * Cache key includes target language since the same movie ID might have different
  * metadata (e.g., different titles) in different language contexts.
  */
-export function getMovieMetadata(deck: Deck, movieIds: string[]): MovieMetadataBasic[] {
+export function getMovieMetadata(
+  deck: Deck,
+  movieIds: string[],
+): MovieMetadataBasic[] {
   const targetLanguage = deck.get_target_language();
   const uncachedIds: string[] = [];
   const results: MovieMetadataBasic[] = [];

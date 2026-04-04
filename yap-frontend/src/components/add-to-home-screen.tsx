@@ -15,10 +15,7 @@ export function AddToHomeScreen({ onDismiss }: AddToHomeScreenProps) {
     platform = "ios";
   } else if (/android/.test(userAgent)) {
     platform = "android";
-  } else if (
-    /windows|mac|linux/.test(userAgent) &&
-    !/mobile/.test(userAgent)
-  ) {
+  } else if (/windows|mac|linux/.test(userAgent) && !/mobile/.test(userAgent)) {
     platform = "desktop";
   } else {
     platform = "unknown";

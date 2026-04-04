@@ -4,7 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { TargetLanguageText } from "./TargetLanguageText";
 import TimeAgo from "react-timeago";
 
-export function Leeches({ deck, targetLanguage }: { deck: Deck; targetLanguage: Language }) {
+export function Leeches({
+  deck,
+  targetLanguage,
+}: {
+  deck: Deck;
+  targetLanguage: Language;
+}) {
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
   const [revealedListeningCards, setRevealedListeningCards] = useState<
     Set<string>
@@ -60,29 +66,34 @@ export function Leeches({ deck, targetLanguage }: { deck: Deck; targetLanguage: 
                   const cardKey = JSON.stringify(card.card_indicator);
                   const isRevealed = revealedListeningCards.has(cardKey);
 
-                  const wordCellContent = isListening && !isRevealed ? (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRevealedListeningCards((prev) => {
-                          const next = new Set(prev);
-                          next.add(cardKey);
-                          return next;
-                        })
-                      }
-                      className="inline-flex items-center gap-2 rounded-sm bg-transparent p-0 text-left text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                      aria-label="Reveal listening lexeme"
-                    >
-                      <span className="select-none blur-sm">
-                        <TargetLanguageText language={targetLanguage}>{card.card_text}</TargetLanguageText>
-                      </span>
-                      <span className="text-xs italic text-muted-foreground">
-                        Tap to reveal
-                      </span>
-                    </button>
-                  ) : (
-                    <TargetLanguageText language={targetLanguage}>{card.card_text}</TargetLanguageText>
-                  );
+                  const wordCellContent =
+                    isListening && !isRevealed ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setRevealedListeningCards((prev) => {
+                            const next = new Set(prev);
+                            next.add(cardKey);
+                            return next;
+                          })
+                        }
+                        className="inline-flex items-center gap-2 rounded-sm bg-transparent p-0 text-left text-base font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                        aria-label="Reveal listening lexeme"
+                      >
+                        <span className="select-none blur-sm">
+                          <TargetLanguageText language={targetLanguage}>
+                            {card.card_text}
+                          </TargetLanguageText>
+                        </span>
+                        <span className="text-xs italic text-muted-foreground">
+                          Tap to reveal
+                        </span>
+                      </button>
+                    ) : (
+                      <TargetLanguageText language={targetLanguage}>
+                        {card.card_text}
+                      </TargetLanguageText>
+                    );
 
                   return (
                     <tr

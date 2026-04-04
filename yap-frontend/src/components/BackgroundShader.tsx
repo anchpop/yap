@@ -36,7 +36,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   const { theme, animatedBackground } = useTheme();
   const location = useLocation();
   const blurBackground = location.pathname === "/select-language";
-  
+
   // Determine actual theme (resolve "system") - memoized to prevent recalculation
   const actualTheme = useMemo(
     () =>
@@ -45,7 +45,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
           ? "dark"
           : "light"
         : theme,
-    [theme]
+    [theme],
   );
 
   // Check accessibility preferences and hardware capabilities
@@ -58,7 +58,9 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
 
     // Disable on low-end devices
     if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) {
-      console.log(`hardwareConcurrency is less than 4: ${navigator.hardwareConcurrency}`);
+      console.log(
+        `hardwareConcurrency is less than 4: ${navigator.hardwareConcurrency}`,
+      );
       return false;
     }
 
@@ -81,7 +83,10 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     }
 
     // Check OffscreenCanvas support (needed for worker-based rendering)
-    if (typeof HTMLCanvasElement.prototype.transferControlToOffscreen !== "function") {
+    if (
+      typeof HTMLCanvasElement.prototype.transferControlToOffscreen !==
+      "function"
+    ) {
       return false;
     }
 
@@ -111,7 +116,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     // Create worker
     const worker = new Worker(
       new URL("../workers/backgroundShader.worker.ts", import.meta.url),
-      { type: "module" }
+      { type: "module" },
     );
     workerRef.current = worker;
 
@@ -132,7 +137,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
         canvas: offscreenCanvas,
         theme: actualTheme,
       },
-      [offscreenCanvas]
+      [offscreenCanvas],
     );
 
     // Handle resize events
@@ -168,54 +173,61 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
 
   const shaderBgColor = useMemo(
     () => getShaderBackgroundCss(actualTheme),
-    [actualTheme]
+    [actualTheme],
   );
 
   return (
     <BackgroundContext.Provider value={{ bumpBackground }}>
       <div
         className="fixed -inset-10 -z-10 transition-[filter] duration-700 ease-in-out"
-        style={{ filter: blurBackground ? "blur(20px)" : "blur(0px)", pointerEvents: "none", backgroundColor: shaderBgColor }}
+        style={{
+          filter: blurBackground ? "blur(20px)" : "blur(0px)",
+          pointerEvents: "none",
+          backgroundColor: shaderBgColor,
+        }}
       >
         {shouldRender && (
           <>
             <div ref={containerRef} className="contents" />
-          <div
-            className="fixed inset-0 w-full h-full opacity-[0.30]"
-            style={{
-              pointerEvents: "none",
-              backgroundImage: actualTheme === "dark" || actualTheme === "oled" ? "url(/fog.webp)" : "url(/noise2.webp)",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              mixBlendMode:
-                actualTheme === "dark" || actualTheme === "oled"
-                  ? "multiply"
-                  : "screen",
-              filter:
-                actualTheme === "dark" || actualTheme === "oled"
-                  ? "invert(1)"
-                  : "none",
-            }}
-          />
-          <div
-            className="fixed inset-0 w-full h-full opacity-[0.20]"
-            style={{
-              pointerEvents: "none",
-              backgroundImage: "url(/noise.webp)",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              mixBlendMode:
-                actualTheme === "dark" || actualTheme === "oled"
-                  ? "multiply"
-                  : "screen",
-              filter:
-                actualTheme === "dark" || actualTheme === "oled"
-                  ? "invert(1)"
-                  : "none",
-            }}
-          />
+            <div
+              className="fixed inset-0 w-full h-full opacity-[0.30]"
+              style={{
+                pointerEvents: "none",
+                backgroundImage:
+                  actualTheme === "dark" || actualTheme === "oled"
+                    ? "url(/fog.webp)"
+                    : "url(/noise2.webp)",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                mixBlendMode:
+                  actualTheme === "dark" || actualTheme === "oled"
+                    ? "multiply"
+                    : "screen",
+                filter:
+                  actualTheme === "dark" || actualTheme === "oled"
+                    ? "invert(1)"
+                    : "none",
+              }}
+            />
+            <div
+              className="fixed inset-0 w-full h-full opacity-[0.20]"
+              style={{
+                pointerEvents: "none",
+                backgroundImage: "url(/noise.webp)",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                mixBlendMode:
+                  actualTheme === "dark" || actualTheme === "oled"
+                    ? "multiply"
+                    : "screen",
+                filter:
+                  actualTheme === "dark" || actualTheme === "oled"
+                    ? "invert(1)"
+                    : "none",
+              }}
+            />
           </>
         )}
       </div>

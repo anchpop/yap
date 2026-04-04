@@ -8,12 +8,20 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { Deck, DailyReviewTarget, Language } from "../../../yap-frontend-rs/pkg";
+import type {
+  Deck,
+  DailyReviewTarget,
+  Language,
+} from "../../../yap-frontend-rs/pkg";
 import { Trophy, ChevronDown, PartyPopper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TargetLanguageText } from "./TargetLanguageText";
 
-const TARGET_OPTIONS: Array<{ value: DailyReviewTarget; label: string; mins: number }> = [
+const TARGET_OPTIONS: Array<{
+  value: DailyReviewTarget;
+  label: string;
+  mins: number;
+}> = [
   { value: "Casual", label: "Casual", mins: 5 },
   { value: "Regular", label: "Regular", mins: 10 },
   { value: "Serious", label: "Serious", mins: 15 },
@@ -27,14 +35,22 @@ function formatMinutes(seconds: number): string {
 
 function dayMessage(day: string): string {
   switch (day) {
-    case "Monday": return "Monday can't stop you!";
-    case "Tuesday": return "Solid Tuesday session!";
-    case "Wednesday": return "Midweek momentum!";
-    case "Thursday": return "Thursday well spent!";
-    case "Friday": return "Happy Friday!";
-    case "Saturday": return "Weekend warrior!";
-    case "Sunday": return "So much for the day of rest!";
-    default: return "Nice!";
+    case "Monday":
+      return "Monday can't stop you!";
+    case "Tuesday":
+      return "Solid Tuesday session!";
+    case "Wednesday":
+      return "Midweek momentum!";
+    case "Thursday":
+      return "Thursday well spent!";
+    case "Friday":
+      return "Happy Friday!";
+    case "Saturday":
+      return "Weekend warrior!";
+    case "Sunday":
+      return "So much for the day of rest!";
+    default:
+      return "Nice!";
   }
 }
 
@@ -65,7 +81,8 @@ export function AccomplishmentScreen({
   onDismiss,
 }: AccomplishmentScreenProps) {
   const [goalOpen, setGoalOpen] = useState(false);
-  const [pendingTarget, setPendingTarget] = useState<DailyReviewTarget>(dailyReviewTarget);
+  const [pendingTarget, setPendingTarget] =
+    useState<DailyReviewTarget>(dailyReviewTarget);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const confettiRef = useRef<confetti.CreateTypes | null>(null);
 
@@ -81,7 +98,9 @@ export function AccomplishmentScreen({
     if (!canvasRef.current) return;
     const myConfetti = confetti.create(canvasRef.current, { resize: true });
     confettiRef.current = myConfetti;
-    return () => { myConfetti.reset(); };
+    return () => {
+      myConfetti.reset();
+    };
   }, []);
 
   const fireConfetti = useCallback(() => {
@@ -89,8 +108,18 @@ export function AccomplishmentScreen({
     if (!fire) return;
     const end = Date.now() + 800;
     const frame = () => {
-      fire({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.6 } });
-      fire({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.6 } });
+      fire({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.6 },
+      });
+      fire({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.6 },
+      });
       if (Date.now() < end) requestAnimationFrame(frame);
     };
     frame();
@@ -114,20 +143,35 @@ export function AccomplishmentScreen({
         <div className="rounded-xl bg-yellow-100 dark:bg-yellow-900/30 p-4">
           <Trophy className="h-10 w-10 text-yellow-500" />
         </div>
-        <h2 className="text-2xl font-bold">Goal Reached! {dayMessage(summary.day_of_week)}</h2>
+        <h2 className="text-2xl font-bold">
+          Goal Reached! {dayMessage(summary.day_of_week)}
+        </h2>
         <p className="text-muted-foreground">
-          You studied {formatMinutes(summary.time_spent_seconds)}! ({summary.reviews} challenges)
+          You studied {formatMinutes(summary.time_spent_seconds)}! (
+          {summary.reviews} challenges)
         </p>
         {streak > 0 && (
-          <Badge variant="outline" className="border-red-400/50 text-muted-foreground font-normal text-sm">
+          <Badge
+            variant="outline"
+            className="border-red-400/50 text-muted-foreground font-normal text-sm"
+          >
             🔥 {streak} day streak — {streakMessage(streak)}
           </Badge>
         )}
         {/* Change goal collapsible */}
-        <Collapsible open={goalOpen} onOpenChange={setGoalOpen} className="flex flex-col items-center">
+        <Collapsible
+          open={goalOpen}
+          onOpenChange={setGoalOpen}
+          className="flex flex-col items-center"
+        >
           <CollapsibleTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
             Change daily goal
-            <ChevronDown className={cn("h-4 w-4 transition-transform", goalOpen && "rotate-180")} />
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform",
+                goalOpen && "rotate-180",
+              )}
+            />
           </CollapsibleTrigger>
           <CollapsibleContent className="flex flex-col items-center gap-3 mt-3">
             <div className="flex rounded-lg border overflow-hidden">
@@ -140,7 +184,7 @@ export function AccomplishmentScreen({
                     "border-r last:border-r-0",
                     opt.value === pendingTarget
                       ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
+                      : "hover:bg-muted",
                   )}
                 >
                   <div>{opt.label}</div>
@@ -165,15 +209,25 @@ export function AccomplishmentScreen({
       {/* New today */}
       {summary.new_cards.length > 0 && (
         <div className="w-full">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">New today</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            New today
+          </p>
           <div className="grid grid-cols-2 gap-2">
             {summary.new_cards.map((card, i) => (
               <Card key={i} className="p-3 gap-0">
                 <div className="flex justify-between items-start">
-                  <p className="font-semibold"><TargetLanguageText language={targetLanguage}>{card.word}</TargetLanguageText></p>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{card.card_type}</span>
+                  <p className="font-semibold">
+                    <TargetLanguageText language={targetLanguage}>
+                      {card.word}
+                    </TargetLanguageText>
+                  </p>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                    {card.card_type}
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground">{card.translation}</p>
+                <p className="text-sm text-muted-foreground">
+                  {card.translation}
+                </p>
               </Card>
             ))}
           </div>
@@ -183,15 +237,25 @@ export function AccomplishmentScreen({
       {/* Learned (graduated to Review state today) */}
       {summary.learned_cards.length > 0 && (
         <div className="w-full">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Learned</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Learned
+          </p>
           <div className="grid grid-cols-2 gap-2">
             {summary.learned_cards.map((card, i) => (
               <Card key={i} className="p-3 gap-0">
                 <div className="flex justify-between items-start">
-                  <p className="font-semibold"><TargetLanguageText language={targetLanguage}>{card.word}</TargetLanguageText></p>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{card.card_type}</span>
+                  <p className="font-semibold">
+                    <TargetLanguageText language={targetLanguage}>
+                      {card.word}
+                    </TargetLanguageText>
+                  </p>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                    {card.card_type}
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground">{card.translation}</p>
+                <p className="text-sm text-muted-foreground">
+                  {card.translation}
+                </p>
               </Card>
             ))}
           </div>
@@ -201,15 +265,25 @@ export function AccomplishmentScreen({
       {/* Back on track (relearning → review) */}
       {summary.locked_in_cards.length > 0 && (
         <div className="w-full">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Back on track</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Back on track
+          </p>
           <div className="grid grid-cols-2 gap-2">
             {summary.locked_in_cards.map((card, i) => (
               <Card key={i} className="p-3 gap-0">
                 <div className="flex justify-between items-start">
-                  <p className="font-semibold"><TargetLanguageText language={targetLanguage}>{card.word}</TargetLanguageText></p>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{card.card_type}</span>
+                  <p className="font-semibold">
+                    <TargetLanguageText language={targetLanguage}>
+                      {card.word}
+                    </TargetLanguageText>
+                  </p>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                    {card.card_type}
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground">{card.translation}</p>
+                <p className="text-sm text-muted-foreground">
+                  {card.translation}
+                </p>
               </Card>
             ))}
           </div>
@@ -219,12 +293,16 @@ export function AccomplishmentScreen({
       {/* Reviewed */}
       {summary.reviewed_words.length > 0 && (
         <div className="w-full">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Reviewed ({summary.reviewed_words.length})</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Reviewed ({summary.reviewed_words.length})
+          </p>
           <Card variant="light" className="p-3 gap-0" animate>
             <div className="flex flex-wrap gap-2">
               {summary.reviewed_words.map((word, i) => (
                 <Badge key={i} variant="outline">
-                  <TargetLanguageText language={targetLanguage}>{word}</TargetLanguageText>
+                  <TargetLanguageText language={targetLanguage}>
+                    {word}
+                  </TargetLanguageText>
                 </Badge>
               ))}
             </div>
@@ -248,14 +326,18 @@ export function AccomplishmentScreen({
 
       {/* Actions */}
       <div className="flex items-center gap-2 w-full sticky bottom-0 py-3">
-        <Button variant="outline" size="icon" onClick={fireConfetti} className="shrink-0">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={fireConfetti}
+          className="shrink-0"
+        >
           <PartyPopper className="h-5 w-5" />
         </Button>
         <Button onClick={onDismiss} size="lg" className="flex-1">
           Continue
         </Button>
       </div>
-
     </div>
   );
 }

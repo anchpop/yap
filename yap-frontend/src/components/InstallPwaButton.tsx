@@ -4,12 +4,22 @@ import { Home } from "lucide-react";
 import { AddToHomeScreenModal } from "@/components/add-to-home-screen-modal";
 
 interface InstallPwaButtonProps {
-  variant?: "default" | "outline" | "ghost" | "link" | "destructive" | "secondary";
+  variant?:
+    | "default"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "destructive"
+    | "secondary";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }
 
-export function InstallPwaButton({ variant = "outline", size = "sm", className }: InstallPwaButtonProps) {
+export function InstallPwaButton({
+  variant = "outline",
+  size = "sm",
+  className,
+}: InstallPwaButtonProps) {
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -25,10 +35,7 @@ export function InstallPwaButton({ variant = "outline", size = "sm", className }
           ? "Add to Home Screen"
           : "Install App"}
       </Button>
-      <AddToHomeScreenModal
-        open={showModal}
-        onOpenChange={setShowModal}
-      />
+      <AddToHomeScreenModal open={showModal} onOpenChange={setShowModal} />
     </>
   );
 }

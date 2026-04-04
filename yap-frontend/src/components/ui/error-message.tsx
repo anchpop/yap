@@ -36,7 +36,7 @@ export function ErrorMessage({
     // Detect device type
     const isMobile =
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        userAgent
+        userAgent,
       );
     const isTablet = /iPad|Android(?!.*Mobile)/i.test(userAgent);
     const deviceType = isTablet ? "Tablet" : isMobile ? "Mobile" : "Desktop";
@@ -64,10 +64,10 @@ export function ErrorMessage({
       browser = "Opera";
 
     const issueTitle = encodeURIComponent(
-      title || "Error loading language data"
+      title || "Error loading language data",
     );
     const issueBody = encodeURIComponent(
-      `## Additional Context\n\n[Please describe what you were doing when this error occurred]\n\n## Device Information\n\n- Device Type: ${deviceType}\n- OS: ${os}\n- Browser: ${browser}\n- User Agent: \`${userAgent}\`\n\n## Error Details\n\n\`\`\`\n${message}\n\`\`\`\n\n`
+      `## Additional Context\n\n[Please describe what you were doing when this error occurred]\n\n## Device Information\n\n- Device Type: ${deviceType}\n- OS: ${os}\n- Browser: ${browser}\n- User Agent: \`${userAgent}\`\n\n## Error Details\n\n\`\`\`\n${message}\n\`\`\`\n\n`,
     );
     return `https://github.com/yaptown/yap/issues/new?title=${issueTitle}&body=${issueBody}&labels[]=bug`;
   };
@@ -76,14 +76,14 @@ export function ErrorMessage({
     <div
       className={cn(
         "p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg overflow-hidden flex flex-col gap-2",
-        className
+        className,
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <p
           className={cn(
             "text-sm text-red-600 dark:text-red-400 flex-1 line-clamp-3 break-all min-w-0",
-            variant === "compact" ? "line-clamp-3" : "line-clamp-5"
+            variant === "compact" ? "line-clamp-3" : "line-clamp-5",
           )}
         >
           {message}

@@ -90,7 +90,13 @@ export function PronunciationChallenge({
         {showGuide && (
           <div className="text-center mt-4 text-2xl font-semibold text-muted-foreground animate-fade-in flex flex-row justify-center items-start gap-1">
             <PlayfulArrow direction="down" flipStart size={70} />
-            <div>Let's practice saying "<TargetLanguageText language={targetLanguage}>{pattern}</TargetLanguageText>"</div>
+            <div>
+              Let's practice saying "
+              <TargetLanguageText language={targetLanguage}>
+                {pattern}
+              </TargetLanguageText>
+              "
+            </div>
             <PlayfulArrow direction="down" size={70} />
           </div>
         )}
@@ -110,7 +116,10 @@ export function PronunciationChallenge({
               {guide.position !== "Anywhere" && (
                 <span className="text-xs text-muted-foreground/80">
                   {match(guide.position)
-                    .with("Beginning", () => "Appears at the beginning of words")
+                    .with(
+                      "Beginning",
+                      () => "Appears at the beginning of words",
+                    )
                     .with("End", () => "Appears at the end of words")
                     .exhaustive()}
                 </span>
@@ -125,7 +134,7 @@ export function PronunciationChallenge({
                     .map(
                       (
                         example: { target: string; cultural_context?: string },
-                        index: number
+                        index: number,
                       ) => {
                         const lowerPattern = pattern.toLowerCase();
                         const lowerWord = example.target.toLowerCase();
@@ -151,10 +160,10 @@ export function PronunciationChallenge({
                           const before = example.target.slice(0, patternIndex);
                           const matched = example.target.slice(
                             patternIndex,
-                            patternIndex + matchLength
+                            patternIndex + matchLength,
                           );
                           const after = example.target.slice(
-                            patternIndex + matchLength
+                            patternIndex + matchLength,
                           );
                           highlightedWord = (
                             <>
@@ -176,12 +185,18 @@ export function PronunciationChallenge({
                           >
                             <div className="flex-1">
                               <div className="text-base">
-                                <span className="font-medium"><TargetLanguageText language={targetLanguage}>{pattern}</TargetLanguageText></span>
+                                <span className="font-medium">
+                                  <TargetLanguageText language={targetLanguage}>
+                                    {pattern}
+                                  </TargetLanguageText>
+                                </span>
                                 <span className="text-muted-foreground mx-2">
                                   {connector}
                                 </span>
                                 <span className="font-semibold">
-                                  <TargetLanguageText language={targetLanguage}>{highlightedWord}</TargetLanguageText>
+                                  <TargetLanguageText language={targetLanguage}>
+                                    {highlightedWord}
+                                  </TargetLanguageText>
                                 </span>
                               </div>
                               {example.cultural_context && (
@@ -201,7 +216,7 @@ export function PronunciationChallenge({
                             )}
                           </div>
                         );
-                      }
+                      },
                     )}
                 </div>
               </div>
@@ -229,9 +244,7 @@ export function PronunciationChallenge({
         )}
 
         <div className="mt-4 flex flex-col gap-2 sticky bottom-0">
-          {audioError && (
-            <AudioErrorBanner onSkip={onCantSpeak} />
-          )}
+          {audioError && <AudioErrorBanner onSkip={onCantSpeak} />}
           <CantSpeakButton onClick={onCantSpeak} />
           <div className="grid grid-cols-2">
             <Button

@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
-import type { Deck, Language, PlacementTestWord } from "../../../yap-frontend-rs/pkg";
+import type {
+  Deck,
+  Language,
+  PlacementTestWord,
+} from "../../../yap-frontend-rs/pkg";
 import { Progress } from "@/components/ui/progress";
 import { TargetLanguageText } from "./TargetLanguageText";
 
@@ -17,7 +21,11 @@ interface PlacementTestProps {
   }) => void;
 }
 
-export function PlacementTest({ deck, targetLanguage, onComplete }: PlacementTestProps) {
+export function PlacementTest({
+  deck,
+  targetLanguage,
+  onComplete,
+}: PlacementTestProps) {
   const [round, setRound] = useState(1);
   const [words, setWords] = useState<PlacementTestWord[]>([]);
   const [selectedWords, setSelectedWords] = useState<Set<string>>(new Set());
@@ -52,8 +60,12 @@ export function PlacementTest({ deck, targetLanguage, onComplete }: PlacementTes
 
   const handleNext = () => {
     // Words that were selected are known, others are unknown
-    const known = words.filter((w) => selectedWords.has(w.word)).map((w) => w.word);
-    const unknown = words.filter((w) => !selectedWords.has(w.word)).map((w) => w.word);
+    const known = words
+      .filter((w) => selectedWords.has(w.word))
+      .map((w) => w.word);
+    const unknown = words
+      .filter((w) => !selectedWords.has(w.word))
+      .map((w) => w.word);
 
     setKnownWords((prev) => [...prev, ...known]);
     setUnknownWords((prev) => [...prev, ...unknown]);
@@ -94,7 +106,9 @@ export function PlacementTest({ deck, targetLanguage, onComplete }: PlacementTes
                     {tooAdvanced && (
                       <TriangleAlert className="w-5 h-5 text-yellow-500" />
                     )}
-                    {tooAdvanced ? "You might be too advanced" : "Ready to Start!"}
+                    {tooAdvanced
+                      ? "You might be too advanced"
+                      : "Ready to Start!"}
                   </h2>
                 </div>
                 <p className="text-muted-foreground">
@@ -156,11 +170,18 @@ export function PlacementTest({ deck, targetLanguage, onComplete }: PlacementTes
                 `}
                   >
                     {isSelected ? (
-                      <span key="def" className="text-lg text-muted-foreground truncate block placement-reveal">
+                      <span
+                        key="def"
+                        className="text-lg text-muted-foreground truncate block placement-reveal"
+                      >
                         {pw.definition}
                       </span>
                     ) : (
-                      <span key="word" className="text-lg font-medium"><TargetLanguageText language={targetLanguage}>{pw.word}</TargetLanguageText></span>
+                      <span key="word" className="text-lg font-medium">
+                        <TargetLanguageText language={targetLanguage}>
+                          {pw.word}
+                        </TargetLanguageText>
+                      </span>
                     )}
                   </button>
                 );

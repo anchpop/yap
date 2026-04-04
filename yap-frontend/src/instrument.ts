@@ -18,8 +18,7 @@ Sentry.init({
 
   beforeSend(event) {
     // Filter out browser extension errors (not our code)
-    const message =
-      event.exception?.values?.[0]?.value ?? "";
+    const message = event.exception?.values?.[0]?.value ?? "";
     if (message.includes("runtime.sendMessage()")) {
       return null;
     }

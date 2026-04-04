@@ -54,30 +54,29 @@ export function WeaponProvider({
 
   const isImpersonating = useCallback(
     () => !!localStorage.getItem(ORIGINAL_SESSION_KEY),
-    []
+    [],
   );
 
-  const sync = useCallback(async function sync(
-    listenerId: any,
-    stream_id: string
-  ) {
-    if (stateRef.current) {
-      if (stateRef.current.type !== "ready") return;
-      try {
-        const upload = !isImpersonating();
-        await stateRef.current.weapon.sync(
-          stream_id,
-          accessTokenRef.current,
-          networkStateRef.current.online ? true : false,
-          listenerId ?? undefined,
-          upload
-        );
-      } catch (e: any) {
-        console.warn("sync failed after store change", e);
+  const sync = useCallback(
+    async function sync(listenerId: any, stream_id: string) {
+      if (stateRef.current) {
+        if (stateRef.current.type !== "ready") return;
+        try {
+          const upload = !isImpersonating();
+          await stateRef.current.weapon.sync(
+            stream_id,
+            accessTokenRef.current,
+            networkStateRef.current.online ? true : false,
+            listenerId ?? undefined,
+            upload,
+          );
+        } catch (e: any) {
+          console.warn("sync failed after store change", e);
+        }
       }
-    }
-  },
-  [isImpersonating]);
+    },
+    [isImpersonating],
+  );
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -102,23 +101,26 @@ export function WeaponProvider({
     return () => abortController.abort();
   }, [userId, sync]);
 
-  const syncWithSupabase = useCallback(async (forceUpload?: boolean) => {
-    if (stateRef.current === null) return;
-    if (stateRef.current.type !== "ready") return;
-    if (accessTokenRef.current === undefined) return;
-    try {
-      if (networkStateRef.current.online) {
-        const upload = forceUpload ?? !isImpersonating();
-        await stateRef.current.weapon.sync_with_supabase(
-          accessTokenRef.current,
-          undefined,
-          upload
-        );
+  const syncWithSupabase = useCallback(
+    async (forceUpload?: boolean) => {
+      if (stateRef.current === null) return;
+      if (stateRef.current.type !== "ready") return;
+      if (accessTokenRef.current === undefined) return;
+      try {
+        if (networkStateRef.current.online) {
+          const upload = forceUpload ?? !isImpersonating();
+          await stateRef.current.weapon.sync_with_supabase(
+            accessTokenRef.current,
+            undefined,
+            upload,
+          );
+        }
+      } catch (e: any) {
+        console.warn("sync_with_supabase failed", e);
       }
-    } catch (e: any) {
-      console.warn("sync_with_supabase failed", e);
-    }
-  }, [isImpersonating]);
+    },
+    [isImpersonating],
+  );
 
   useEffect(() => {
     // rerun supabase sync every 30 seconds
@@ -151,7 +153,7 @@ export function WeaponProvider({
       if (event.data?.type === "opfs-written" && event.data?.stream_id) {
         const streamId = event.data.stream_id;
         console.log(
-          `Another tab wrote to OPFS for stream ${streamId}, reloading...`
+          `Another tab wrote to OPFS for stream ${streamId}, reloading...`,
         );
 
         // Load from local storage for the affected stream
@@ -219,18 +221,18 @@ export function WeaponProvider({
             ) {
               console.log(
                 `Adding remote ${stream_id} event from ${device_id}`,
-                stringified_event_json
+                stringified_event_json,
               );
               current.weapon.add_remote_event(
                 device_id,
                 stream_id,
-                stringified_event_json
+                stringified_event_json,
               );
             }
           } catch (e) {
             console.error("Error handling realtime event", e);
           }
-        }
+        },
       )
       .subscribe();
 
@@ -278,7 +280,10 @@ export function useWeaponState(): WeaponState {
   return ctx;
 }
 
-export function useSyncActions(): { syncNow: () => Promise<void>; forcePush: () => Promise<void> } {
+export function useSyncActions(): {
+  syncNow: () => Promise<void>;
+  forcePush: () => Promise<void>;
+} {
   const ctx = useContext(SyncActionsContext);
   if (!ctx)
     throw new Error("useSyncActions must be used within a WeaponProvider");
@@ -286,7 +291,7 @@ export function useSyncActions(): { syncNow: () => Promise<void>; forcePush: () 
 }
 
 async function checkBrowserSupport(
-  setBrowserSupported: (browserSupported: boolean) => void
+  setBrowserSupported: (browserSupported: boolean) => void,
 ) {
   try {
     // Check if OPFS test has already passed
@@ -337,7 +342,7 @@ async function checkBrowserSupport(
 
 export function useWeaponSupport(): { browserSupported: true | false | null } {
   const [browserSupported, setBrowserSupported] = useState<boolean | null>(
-    null
+    null,
   );
   useEffect(() => {
     checkBrowserSupport(setBrowserSupported);
@@ -349,7 +354,7 @@ export function useWeaponSupport(): { browserSupported: true | false | null } {
 export function useAsyncMemo<T>(
   factory: () => Promise<T> | undefined | null,
   deps: React.DependencyList,
-  initial?: T
+  initial?: T,
 ) {
   const [val, setVal] = useState<T | undefined>(initial);
   useEffect(() => {

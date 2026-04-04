@@ -4,7 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
-import { OnboardingFlow, type OnboardingSelections, type HeardAbout } from "@/components/OnboardingFlow";
+import {
+  OnboardingFlow,
+  type OnboardingSelections,
+  type HeardAbout,
+} from "@/components/OnboardingFlow";
 import {
   Command,
   CommandEmpty,
@@ -32,7 +36,10 @@ type LanguageSelectionState =
 
 interface LanguageSelectorProps {
   onLanguagesConfirmed: (native: Language, target: Language) => void;
-  onOnboardingComplete: (selections: OnboardingSelections, target: Language) => void;
+  onOnboardingComplete: (
+    selections: OnboardingSelections,
+    target: Language,
+  ) => void;
   onHeardAbout: (value: HeardAbout) => void;
   hasHeardAbout: boolean;
   onboardedLanguages: Language[];
@@ -61,7 +68,10 @@ export function LanguageSelector({
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const weapon = useWeapon();
 
-  const handleTargetLanguageSelected = (nativeLanguage: Language, lang: Language) => {
+  const handleTargetLanguageSelected = (
+    nativeLanguage: Language,
+    lang: Language,
+  ) => {
     if (onboardedLanguages.includes(lang)) {
       // Already onboarded for this language — skip straight to learning
       onLanguagesConfirmed(nativeLanguage, lang);
@@ -145,19 +155,19 @@ export function LanguageSelector({
       ? []
       : availableCourses
           .filter(
-            (course) => course.nativeLanguage === selectionState.nativeLanguage
+            (course) => course.nativeLanguage === selectionState.nativeLanguage,
           )
           .map((course) => course.targetLanguage);
 
   // Group languages by stability status
   const stableLanguages = targetLanguages.filter(
-    (lang) => getLanguageStatus(lang) === "stable"
+    (lang) => getLanguageStatus(lang) === "stable",
   );
   const alphaLanguages = targetLanguages.filter(
-    (lang) => getLanguageStatus(lang) === "alpha"
+    (lang) => getLanguageStatus(lang) === "alpha",
   );
   const betaLanguages = targetLanguages.filter(
-    (lang) => getLanguageStatus(lang) === "beta"
+    (lang) => getLanguageStatus(lang) === "beta",
   );
 
   // "I speak [language]" in each language
@@ -434,7 +444,12 @@ export function LanguageSelector({
                     >
                       <Card
                         className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                        onClick={() => handleTargetLanguageSelected(selectionState.nativeLanguage, lang)}
+                        onClick={() =>
+                          handleTargetLanguageSelected(
+                            selectionState.nativeLanguage,
+                            lang,
+                          )
+                        }
                         animate
                       >
                         <div
@@ -464,7 +479,9 @@ export function LanguageSelector({
                         <span className="w-full border-t" />
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
-                        <span className="px-2 text-foreground">Beta Languages</span>
+                        <span className="px-2 text-foreground">
+                          Beta Languages
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -477,7 +494,12 @@ export function LanguageSelector({
                       >
                         <Card
                           className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                          onClick={() => handleTargetLanguageSelected(selectionState.nativeLanguage, lang)}
+                          onClick={() =>
+                            handleTargetLanguageSelected(
+                              selectionState.nativeLanguage,
+                              lang,
+                            )
+                          }
                           animate
                         >
                           <div
@@ -525,7 +547,12 @@ export function LanguageSelector({
                       >
                         <Card
                           className="relative overflow-hidden p-2 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-2 aspect-square flex items-center justify-center"
-                          onClick={() => handleTargetLanguageSelected(selectionState.nativeLanguage, lang)}
+                          onClick={() =>
+                            handleTargetLanguageSelected(
+                              selectionState.nativeLanguage,
+                              lang,
+                            )
+                          }
                           animate
                         >
                           <div
@@ -595,7 +622,7 @@ export function LanguageSelector({
                                   "mr-2 h-4 w-4",
                                   selectionState.nativeLanguage === lang
                                     ? "opacity-100"
-                                    : "opacity-0"
+                                    : "opacity-0",
                                 )}
                               />
                               <span className="mr-2">
@@ -627,7 +654,7 @@ export function LanguageSelector({
                 onOnboardingComplete(selections, selectionState.targetLanguage);
                 onLanguagesConfirmed(
                   selectionState.nativeLanguage,
-                  selectionState.targetLanguage
+                  selectionState.targetLanguage,
                 );
               }}
               onBack={() => {

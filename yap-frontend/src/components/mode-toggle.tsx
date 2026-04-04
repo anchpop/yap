@@ -11,7 +11,8 @@ import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 export function ModeToggle() {
-  const { theme, setTheme, animatedBackground, toggleAnimatedBackground } = useTheme();
+  const { theme, setTheme, animatedBackground, toggleAnimatedBackground } =
+    useTheme();
 
   const themes = [
     { value: "light" as const, icon: Sun, label: "Light" },
@@ -37,17 +38,23 @@ export function ModeToggle() {
               onClick={() => setTheme(value)}
               className={cn(
                 "flex flex-col items-center gap-1 rounded-md p-2 hover:bg-accent transition-colors",
-                theme === value && "bg-accent"
+                theme === value && "bg-accent",
               )}
             >
-              <Icon className={cn(
-                "h-4 w-4",
-                theme === value ? "text-foreground" : "text-muted-foreground"
-              )} />
-              <span className={cn(
-                "text-xs",
-                theme === value ? "text-foreground font-medium" : "text-muted-foreground"
-              )}>
+              <Icon
+                className={cn(
+                  "h-4 w-4",
+                  theme === value ? "text-foreground" : "text-muted-foreground",
+                )}
+              />
+              <span
+                className={cn(
+                  "text-xs",
+                  theme === value
+                    ? "text-foreground font-medium"
+                    : "text-muted-foreground",
+                )}
+              >
                 {label}
               </span>
             </button>
@@ -58,10 +65,12 @@ export function ModeToggle() {
           onClick={toggleAnimatedBackground}
           className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
         >
-          <Check className={cn(
-            "h-4 w-4",
-            animatedBackground ? 'opacity-100' : 'opacity-0'
-          )} />
+          <Check
+            className={cn(
+              "h-4 w-4",
+              animatedBackground ? "opacity-100" : "opacity-0",
+            )}
+          />
           <span>Animated background</span>
         </button>
       </DropdownMenuContent>

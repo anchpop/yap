@@ -1,6 +1,10 @@
 // Background shader worker - handles all canvas rendering off the main thread
 
-import { calculateColors, FALLBACK_BAND_INDEX, type ShaderTheme } from "../lib/shader-colors";
+import {
+  calculateColors,
+  FALLBACK_BAND_INDEX,
+  type ShaderTheme,
+} from "../lib/shader-colors";
 
 interface WorkerMessage {
   type: string;
@@ -22,19 +26,19 @@ function zeno(
   current: number,
   target: number,
   delta_time: number,
-  rate?: number
+  rate?: number,
 ): number;
 function zeno(
   current: number[],
   target: number[],
   delta_time: number,
-  rate?: number
+  rate?: number,
 ): number[];
 function zeno(
   current: number[][],
   target: number[][],
   delta_time: number,
-  rate?: number
+  rate?: number,
 ): number[][];
 
 // Implementation
@@ -42,7 +46,7 @@ function zeno(
   current: number | number[] | number[][],
   target: number | number[] | number[][],
   delta_time: number,
-  rate = 5.0
+  rate = 5.0,
 ): number | number[] | number[][] {
   const alpha = 1 - Math.exp(-rate * delta_time);
 
@@ -56,24 +60,23 @@ function zeno(
     // Check if it's array of arrays
     if (Array.isArray(current[0]) && Array.isArray(target[0])) {
       return (current as number[][]).map((row, i) =>
-        row.map((val, j) => val + alpha * ((target as number[][])[i][j] - val))
+        row.map((val, j) => val + alpha * ((target as number[][])[i][j] - val)),
       );
     }
 
     // Array of numbers
     return (current as number[]).map(
-      (val, i) => val + alpha * ((target as number[])[i] - val)
+      (val, i) => val + alpha * ((target as number[])[i] - val),
     );
   }
 
   throw new Error("Invalid types for zeno function");
 }
 
-
 function createShader(
   gl: WebGLRenderingContext,
   type: number,
-  source: string
+  source: string,
 ): WebGLShader | null {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -90,7 +93,7 @@ function createShader(
 function createProgram(
   gl: WebGLRenderingContext,
   vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
+  fragmentShader: WebGLShader,
 ): WebGLProgram | null {
   const program = gl.createProgram();
   if (!program) return null;
@@ -104,10 +107,7 @@ function createProgram(
   return program;
 }
 
-function initWebGL(
-  offscreenCanvas: OffscreenCanvas,
-  theme: ShaderTheme
-) {
+function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
   canvas = offscreenCanvas;
   currentTheme = theme;
 
@@ -252,7 +252,7 @@ function initWebGL(
   const fragmentShader = createShader(
     gl,
     gl.FRAGMENT_SHADER,
-    fragmentShaderSrc
+    fragmentShaderSrc,
   );
   if (!vertexShader || !fragmentShader) return;
 
@@ -264,7 +264,7 @@ function initWebGL(
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
-    gl.STATIC_DRAW
+    gl.STATIC_DRAW,
   );
 
   const positionLocation = gl.getAttribLocation(program, "a_position");
@@ -319,9 +319,7 @@ function initWebGL(
     if (speed < SPEED_THRESHOLD) {
       let colorsSettled = true;
       for (let i = 0; i < currentColors.length; i++) {
-        if (
-          Math.abs(currentColors[i] - targetColors[i]) > COLOR_THRESHOLD
-        ) {
+        if (Math.abs(currentColors[i] - targetColors[i]) > COLOR_THRESHOLD) {
           colorsSettled = false;
           break;
         }

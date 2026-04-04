@@ -41,11 +41,11 @@ export function SyncStatusDialog() {
 
   // Poll sync state and earliest unsynced timestamp every second
   const [lastSyncFinishedAt, setLastSyncFinishedAt] = useState<number | null>(
-    null
+    null,
   );
   const [lastSyncError, setLastSyncError] = useState<string | null>(null);
   const [earliestUnsyncedAt, setEarliestUnsyncedAt] = useState<number | null>(
-    null
+    null,
   );
   const [syncInProgress, setSyncInProgress] = useState<boolean>(false);
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
@@ -55,7 +55,7 @@ export function SyncStatusDialog() {
     () => {
       setCurrentTimestamp(Date.now());
     },
-    1000 // Update every second
+    1000, // Update every second
   );
 
   useEffect(() => {
@@ -149,10 +149,10 @@ export function SyncStatusDialog() {
               !isOnline
                 ? "bg-gray-500 dark:bg-gray-400"
                 : lastSyncError
-                ? "bg-red-500 dark:bg-red-400"
-                : unsyncedStale
-                ? "bg-yellow-600 dark:bg-yellow-400"
-                : ""
+                  ? "bg-red-500 dark:bg-red-400"
+                  : unsyncedStale
+                    ? "bg-yellow-600 dark:bg-yellow-400"
+                    : ""
             } transition-colors duration-300`}
           ></span>
         </button>
@@ -178,7 +178,11 @@ export function SyncStatusDialog() {
           </div>
 
           {lastSyncError && (
-            <ErrorMessage title="Sync Error" message={lastSyncError} variant="compact" />
+            <ErrorMessage
+              title="Sync Error"
+              message={lastSyncError}
+              variant="compact"
+            />
           )}
 
           <div className="space-y-3">

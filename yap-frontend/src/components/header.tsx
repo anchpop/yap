@@ -100,7 +100,9 @@ export function Header({
                   </div>
                 )}
                 <h1 className="text-2xl font-bold drop-shadow-[0_0px_8px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)]">
-                  <Link to="/about"><span className="hidden sm:inline">{title}</span></Link>
+                  <Link to="/about">
+                    <span className="hidden sm:inline">{title}</span>
+                  </Link>
                   <span className="sm:hidden">{title.split(".")[0]}</span>
                 </h1>
               </div>
@@ -114,7 +116,10 @@ export function Header({
         </div>
         <div className="flex items-center gap-2">
           {dueCount !== undefined && dueCount > 0 && (
-            <Badge variant="outline" className="text-xs text-muted-foreground border-muted-foreground">
+            <Badge
+              variant="outline"
+              className="text-xs text-muted-foreground border-muted-foreground"
+            >
               {dueCount}
             </Badge>
           )}

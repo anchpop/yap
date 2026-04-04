@@ -6,7 +6,7 @@ import { type ReactNode } from "react";
  */
 export function highlightTermInSentence(
   sentence: string,
-  term: string
+  term: string,
 ): ReactNode {
   if (!term) return sentence;
 

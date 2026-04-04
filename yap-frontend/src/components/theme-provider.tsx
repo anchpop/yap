@@ -52,7 +52,7 @@ export function ThemeProvider({
       } catch {
         return defaultAnimatedBackground;
       }
-    }
+    },
   );
 
   useEffect(() => {

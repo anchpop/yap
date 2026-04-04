@@ -33,11 +33,7 @@ export function MoviePosterCard({
             <div className="text-white text-sm font-semibold line-clamp-2">
               {title}
             </div>
-            {year && (
-              <div className="text-white/70 text-xs mt-1">
-                {year}
-              </div>
-            )}
+            {year && <div className="text-white/70 text-xs mt-1">{year}</div>}
           </div>
         </div>
       </div>

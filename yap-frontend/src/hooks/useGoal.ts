@@ -21,7 +21,11 @@ export function goalToGoalSelection(goal: Goal): GoalSelection | undefined {
     case "movie":
       return { type: "Movie" as const, id: goal.movieId };
     case "pimsleur":
-      return { type: "PimsleurLesson" as const, level: goal.level, lesson: goal.lesson };
+      return {
+        type: "PimsleurLesson" as const,
+        level: goal.level,
+        lesson: goal.lesson,
+      };
     case "essential":
       return undefined;
   }

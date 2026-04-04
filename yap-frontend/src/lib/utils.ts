@@ -1,9 +1,14 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { get_audio, invalidate_audio_cache, type AudioRequest, type Language } from '../../../yap-frontend-rs/pkg'
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import {
+  get_audio,
+  invalidate_audio_cache,
+  type AudioRequest,
+  type Language,
+} from "../../../yap-frontend-rs/pkg";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 // Language utility functions
@@ -18,7 +23,7 @@ export const languageFlags: Record<Language, string> = {
   Russian: "🇷🇺",
   Portuguese: "🇧🇷",
   Italian: "🇮🇹",
-}
+};
 
 export const nativeLanguageNames: Record<Language, string> = {
   English: "English",
@@ -31,86 +36,97 @@ export const nativeLanguageNames: Record<Language, string> = {
   Russian: "Русский",
   Portuguese: "Português",
   Italian: "Italiano",
-}
+};
 
 export function isoCodeToLanguage(isoCode: string): Language | null {
   const isoToLanguage: Record<string, Language> = {
-    'fra': 'French',
-    'eng': 'English',
-    'spa': 'Spanish',
-    'kor': 'Korean',
-    'deu': 'German',
-    'ita': 'Italian',
-    'por': 'Portuguese',
-    'rus': 'Russian',
-  }
-  return isoToLanguage[isoCode] || null
+    fra: "French",
+    eng: "English",
+    spa: "Spanish",
+    kor: "Korean",
+    deu: "German",
+    ita: "Italian",
+    por: "Portuguese",
+    rus: "Russian",
+  };
+  return isoToLanguage[isoCode] || null;
 }
 
 export function getLanguageFlag(isoCodeOrLanguage: string): string {
   // Check if it's already a Language type
   if (isoCodeOrLanguage in languageFlags) {
-    return languageFlags[isoCodeOrLanguage as Language]
+    return languageFlags[isoCodeOrLanguage as Language];
   }
   // Otherwise convert from ISO code
-  const language = isoCodeToLanguage(isoCodeOrLanguage)
-  return language ? languageFlags[language] : '🌐'
+  const language = isoCodeToLanguage(isoCodeOrLanguage);
+  return language ? languageFlags[language] : "🌐";
 }
 
 export function getLanguageName(isoCodeOrLanguage: string): string {
   // Check if it's already a Language type
   if (isoCodeOrLanguage in nativeLanguageNames) {
-    return nativeLanguageNames[isoCodeOrLanguage as Language]
+    return nativeLanguageNames[isoCodeOrLanguage as Language];
   }
   // Otherwise convert from ISO code
-  const language = isoCodeToLanguage(isoCodeOrLanguage)
-  return language ? nativeLanguageNames[language] : isoCodeOrLanguage
+  const language = isoCodeToLanguage(isoCodeOrLanguage);
+  return language ? nativeLanguageNames[language] : isoCodeOrLanguage;
 }
 
 // Convert Language to ISO 639-1 2-letter language code for HTML lang attribute
 export function languageToIso6391(language: Language): string {
   const languageToIso: Record<Language, string> = {
-    French: 'fr',
-    English: 'en',
-    Spanish: 'es',
-    Korean: 'ko',
-    German: 'de',
-    Chinese: 'zh',
-    Japanese: 'ja',
-    Russian: 'ru',
-    Portuguese: 'pt',
-    Italian: 'it',
-  }
-  return languageToIso[language]
+    French: "fr",
+    English: "en",
+    Spanish: "es",
+    Korean: "ko",
+    German: "de",
+    Chinese: "zh",
+    Japanese: "ja",
+    Russian: "ru",
+    Portuguese: "pt",
+    Italian: "it",
+  };
+  return languageToIso[language];
 }
 
-export const profilerOnRender = (id: string, phase: string, actualDuration: number, baseDuration: number, startTime: number, commitTime: number) => {
-  void id
-  void phase
-  void actualDuration
-  void baseDuration
-  void startTime
-  void commitTime
+export const profilerOnRender = (
+  id: string,
+  phase: string,
+  actualDuration: number,
+  baseDuration: number,
+  startTime: number,
+  commitTime: number,
+) => {
+  void id;
+  void phase;
+  void actualDuration;
+  void baseDuration;
+  void startTime;
+  void commitTime;
   // console.log(`id:`, id, `, phase:`, phase, `, actualDuration:`, actualDuration, `, baseDuration:`, baseDuration, `, startTime:`, startTime, `, commitTime:`, commitTime);
-}
+};
 
 let isPlayingAudio = false;
 
-export async function playAudio(audioRequest: AudioRequest, accessToken: string | undefined, needsAuth: () => void): Promise<void> {
+export async function playAudio(
+  audioRequest: AudioRequest,
+  accessToken: string | undefined,
+  needsAuth: () => void,
+): Promise<void> {
   if (isPlayingAudio) {
-    console.log('Audio already playing, skipping...');
+    console.log("Audio already playing, skipping...");
     return;
   }
 
   isPlayingAudio = true;
   try {
     const audioData = await get_audio(audioRequest, accessToken);
-    
-    const audioBlob = new Blob([audioData], { type: 'audio/mpeg' });
+
+    const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
     const audioUrl = URL.createObjectURL(audioBlob);
-    
+
     const audio = new Audio(audioUrl);
-    
+
     return new Promise((resolve, reject) => {
       let errorHandled = false;
 
@@ -119,7 +135,7 @@ export async function playAudio(audioRequest: AudioRequest, accessToken: string 
           try {
             await invalidate_audio_cache(audioRequest);
           } catch (invalidateError) {
-            console.error('Failed to invalidate audio cache:', invalidateError);
+            console.error("Failed to invalidate audio cache:", invalidateError);
           }
         })();
       };
@@ -129,7 +145,8 @@ export async function playAudio(audioRequest: AudioRequest, accessToken: string 
         errorHandled = true;
 
         // Only invalidate cache for actual audio file errors, not autoplay restrictions
-        const isNotAllowedError = error instanceof Error && error.name === 'NotAllowedError';
+        const isNotAllowedError =
+          error instanceof Error && error.name === "NotAllowedError";
         if (!isNotAllowedError) {
           invalidateCache();
         }
@@ -148,20 +165,18 @@ export async function playAudio(audioRequest: AudioRequest, accessToken: string 
       };
 
       audio.onerror = () => {
-        handlePlaybackFailure(new Error('Audio playback failed'));
+        handlePlaybackFailure(new Error("Audio playback failed"));
       };
 
-      audio
-        .play()
-        .catch((error) => {
-          handlePlaybackFailure(error);
-        });
+      audio.play().catch((error) => {
+        handlePlaybackFailure(error);
+      });
     });
   } catch (error) {
-    if (typeof error === 'string' && error.includes('400')) {
+    if (typeof error === "string" && error.includes("400")) {
       needsAuth();
     }
-    console.error('Failed to play audio:', error);
+    console.error("Failed to play audio:", error);
     throw error;
   } finally {
     isPlayingAudio = false;

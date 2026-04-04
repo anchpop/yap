@@ -46,7 +46,10 @@ type GramDefinition =
   | { Phrasebook: PhrasebookDefinitionEntry };
 
 function gramDisplayText(gram: Literal<string>[]): string {
-  return gram.map((l) => l.word.text + l.whitespace).join("").trim();
+  return gram
+    .map((l) => l.word.text + l.whitespace)
+    .join("")
+    .trim();
 }
 
 interface FlashcardProps {
@@ -79,7 +82,12 @@ const CardFront = ({
       const prefix = listeningPrefix || "Le mot est";
       return (
         <h2 className="text-3xl font-semibold flex items-center gap-3 flex-wrap justify-center text-center">
-          <span><TargetLanguageText language={targetLanguage}>{prefix}</TargetLanguageText> _____. </span>
+          <span>
+            <TargetLanguageText language={targetLanguage}>
+              {prefix}
+            </TargetLanguageText>{" "}
+            _____.{" "}
+          </span>
         </h2>
       );
     })
@@ -94,12 +102,14 @@ const CardFront = ({
           .map((l) => l.word.word_type)
           .find((wt) => wt.type === "Heteronym");
         const wordPrefix =
-          firstHeteronym && firstHeteronym.type === "Heteronym" && dict.morphology.length > 0
+          firstHeteronym &&
+          firstHeteronym.type === "Heteronym" &&
+          dict.morphology.length > 0
             ? get_word_prefix(
                 dict.morphology[0],
                 firstHeteronym.word,
                 firstHeteronym.pos,
-                targetLanguage
+                targetLanguage,
               )
             : undefined;
         return (
@@ -116,7 +126,13 @@ const CardFront = ({
           </h2>
         );
       } else {
-        return <h2 className="text-3xl font-semibold"><TargetLanguageText language={targetLanguage}>{text}</TargetLanguageText></h2>;
+        return (
+          <h2 className="text-3xl font-semibold">
+            <TargetLanguageText language={targetLanguage}>
+              {text}
+            </TargetLanguageText>
+          </h2>
+        );
       }
     })
     .exhaustive();
@@ -153,7 +169,9 @@ const CardFrontSubtitle = ({ content }: { content: CardContent }) => {
                 .exhaustive()
             : null;
         return partOfSpeech ? (
-          <span className="text-sm text-muted-foreground">({partOfSpeech})</span>
+          <span className="text-sm text-muted-foreground">
+            ({partOfSpeech})
+          </span>
         ) : null;
       } else {
         return (
@@ -180,7 +198,9 @@ const CardBack = ({
       if (possibleGrams.length === 1) {
         return (
           <div className="text-3xl font-medium">
-            <TargetLanguageText language={targetLanguage}>{gramDisplayText(possibleGrams[0][1])}</TargetLanguageText>
+            <TargetLanguageText language={targetLanguage}>
+              {gramDisplayText(possibleGrams[0][1])}
+            </TargetLanguageText>
           </div>
         );
       }
@@ -200,7 +220,11 @@ const CardBack = ({
                     : "bg-muted/30 border border-muted/20"
                 }`}
               >
-                <span className="text-lg"><TargetLanguageText language={targetLanguage}>{gramDisplayText(gram)}</TargetLanguageText></span>
+                <span className="text-lg">
+                  <TargetLanguageText language={targetLanguage}>
+                    {gramDisplayText(gram)}
+                  </TargetLanguageText>
+                </span>
                 {isKnown && (
                   <span className="text-sm text-green-600 ml-2">(known)</span>
                 )}
@@ -256,7 +280,14 @@ const CardBack = ({
                       </div>
                       <div>
                         <p className="text-muted-foreground italic flex-1">
-                          <TargetLanguageText language={targetLanguage}>"{highlightTermInSentence(def.example_sentence_target_language, term)}"</TargetLanguageText>
+                          <TargetLanguageText language={targetLanguage}>
+                            "
+                            {highlightTermInSentence(
+                              def.example_sentence_target_language,
+                              term,
+                            )}
+                            "
+                          </TargetLanguageText>
                         </p>
                         <p className="text-muted-foreground">
                           "{def.example_sentence_native_language}"
@@ -282,7 +313,14 @@ const CardBack = ({
                 <div className="flex items-start gap-2">
                   <div>
                     <p className="text-muted-foreground italic">
-                      <TargetLanguageText language={targetLanguage}>"{highlightTermInSentence(pb.target_language_example, term)}"</TargetLanguageText>
+                      <TargetLanguageText language={targetLanguage}>
+                        "
+                        {highlightTermInSentence(
+                          pb.target_language_example,
+                          term,
+                        )}
+                        "
+                      </TargetLanguageText>
                     </p>
                     <p className="text-muted-foreground">
                       "{pb.native_language_example}"
@@ -338,7 +376,7 @@ export const Flashcard = function Flashcard({
 
   const toggleAnswer = useCallback(
     () => setShowAnswer(!showAnswer),
-    [showAnswer]
+    [showAnswer],
   );
 
   const leftLabel = isNew ? "Didn't know" : "Forgot";
@@ -350,8 +388,18 @@ export const Flashcard = function Flashcard({
   const showTutorial = timesTypeSeen < 2;
 
   const tutorialText = match(content)
-    .with({ type: "Gram" }, (c) => <>Guess what "<TargetLanguageText language={targetLanguage}>{gramDisplayText(c.gram)}</TargetLanguageText>" means…</>)
-    .with({ type: "Listening" }, () => <>Guess what {targetLanguage} word is missing</>)
+    .with({ type: "Gram" }, (c) => (
+      <>
+        Guess what "
+        <TargetLanguageText language={targetLanguage}>
+          {gramDisplayText(c.gram)}
+        </TargetLanguageText>
+        " means…
+      </>
+    ))
+    .with({ type: "Listening" }, () => (
+      <>Guess what {targetLanguage} word is missing</>
+    ))
     .exhaustive();
 
   const showAnswerText = match(content)
@@ -367,7 +415,7 @@ export const Flashcard = function Flashcard({
 
   const handleDragEnd = async (
     _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
+    info: PanInfo,
   ) => {
     setIsDragging(false);
     const threshold = 100;
@@ -500,7 +548,9 @@ export const Flashcard = function Flashcard({
     const word = match(content)
       .with({ type: "Gram" }, (c) => gramDisplayText(c.gram))
       .with({ type: "Listening" }, (c) =>
-        c.possible_grams.length > 0 ? gramDisplayText(c.possible_grams[0][1]) : undefined
+        c.possible_grams.length > 0
+          ? gramDisplayText(c.possible_grams[0][1])
+          : undefined,
       )
       .exhaustive();
 
@@ -524,7 +574,7 @@ export const Flashcard = function Flashcard({
               "grid transition-all duration-300",
               showAnswer
                 ? "grid-rows-[0fr] opacity-0"
-                : "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[1fr] opacity-100",
             )}
           >
             <div className="overflow-hidden">

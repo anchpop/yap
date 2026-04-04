@@ -62,12 +62,20 @@ export const NumericStats: React.FC<NumericStatsProps> = ({
         <Card className="p-4 gap-0" animate>
           <p className="text-sm text-muted-foreground mb-1">Total Cards</p>
           <p className="text-2xl font-bold">{totalCards}</p>
-          <p className="text-sm text-muted-foreground mt-1">{cardsReady} ready now</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {cardsReady} ready now
+          </p>
         </Card>
         <Card className="p-4 gap-0" animate>
-          <p className="text-sm text-muted-foreground mb-1">{tierName ?? "Words Known"}</p>
-          <p className="text-2xl font-bold">{(tierPercent ?? percentKnown).toFixed(1)}%</p>
-          <p className="text-sm text-muted-foreground mt-1">{percentKnown.toFixed(1)}% overall</p>
+          <p className="text-sm text-muted-foreground mb-1">
+            {tierName ?? "Words Known"}
+          </p>
+          <p className="text-2xl font-bold">
+            {(tierPercent ?? percentKnown).toFixed(1)}%
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {percentKnown.toFixed(1)}% overall
+          </p>
         </Card>
         <Card className="p-4 gap-0" animate>
           <p className="text-sm text-muted-foreground mb-1">Daily Streak</p>

@@ -73,7 +73,7 @@ interface SentenceChallengeProps {
         }
       | { perfect: string | null },
     heteronymsTapped: Heteronym<string>[],
-    submission: string
+    submission: string,
   ) => void;
   accessToken: string | undefined;
   targetLanguage: Language;
@@ -95,8 +95,18 @@ interface ChallengeSentenceProps {
 }
 
 type GradeItem =
-  | { kind: "phrase"; gram: Gram<string>; display: string; status: boolean | null }
-  | { kind: "literal"; literalIndex: number; display: string; status: boolean | null };
+  | {
+      kind: "phrase";
+      gram: Gram<string>;
+      display: string;
+      status: boolean | null;
+    }
+  | {
+      kind: "literal";
+      literalIndex: number;
+      display: string;
+      status: boolean | null;
+    };
 
 interface SwipeablePhraseProps {
   item: GradeItem;
@@ -119,16 +129,12 @@ const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
     const background = useTransform(
       x,
       [-150, 0, 150],
-      [
-        "rgba(239, 68, 68, 0.2)",
-        "rgba(0, 0, 0, 0)",
-        "rgba(34, 197, 94, 0.2)",
-      ]
+      ["rgba(239, 68, 68, 0.2)", "rgba(0, 0, 0, 0)", "rgba(34, 197, 94, 0.2)"],
     );
 
     const handleDragEnd = async (
       _event: MouseEvent | TouchEvent | PointerEvent,
-      info: PanInfo
+      info: PanInfo,
     ) => {
       const velocityThreshold = 5;
       const positionThreshold = 50;
@@ -161,7 +167,7 @@ const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
           onSwipe(item, false);
         }
       },
-      [controls, onSwipe, item, bumpBackground]
+      [controls, onSwipe, item, bumpBackground],
     );
 
     useImperativeHandle(
@@ -169,7 +175,7 @@ const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
       () => ({
         handleButtonClick,
       }),
-      [handleButtonClick]
+      [handleButtonClick],
     );
 
     useEffect(() => {
@@ -209,7 +215,11 @@ const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
               isSelected ? "ring-2 ring-primary" : ""
             }`}
           >
-            <p className="text-lg font-medium text-center"><TargetLanguageText language={targetLanguage}>{item.display}</TargetLanguageText></p>
+            <p className="text-lg font-medium text-center">
+              <TargetLanguageText language={targetLanguage}>
+                {item.display}
+              </TargetLanguageText>
+            </p>
           </motion.div>
         </div>
 
@@ -222,7 +232,7 @@ const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
         </button>
       </motion.div>
     );
-  }
+  },
 );
 
 SwipeablePhrase.displayName = "SwipeablePhrase";
@@ -296,11 +306,7 @@ function PhraseStatuses({
   const [isAnswerOpen, setIsAnswerOpen] = useState(openByDefault);
 
   useEffect(() => {
-    if (
-      isAnswerOpen &&
-      selectedPhraseIndex === -1 &&
-      gradeItems.length > 0
-    ) {
+    if (isAnswerOpen && selectedPhraseIndex === -1 && gradeItems.length > 0) {
       setSelectedPhraseIndex(0);
     }
   }, [
@@ -367,7 +373,9 @@ function ProperNounDefinitionCard({
       <span className="font-semibold">
         {words.map((word, index) => (
           <span key={word}>
-            <TargetLanguageText language={targetLanguage}>{word}</TargetLanguageText>
+            <TargetLanguageText language={targetLanguage}>
+              {word}
+            </TargetLanguageText>
             <span className="text-muted-foreground">
               {index < words.length - 1
                 ? index === words.length - 2
@@ -462,7 +470,7 @@ export function ProperNounDefinitions({
             type_plural=""
             targetLanguage={targetLanguage}
           />
-        )
+        ),
       )}
       {transliterations.map(([noun, transliteration]) => (
         <ProperNounDefinitionCard
@@ -497,18 +505,30 @@ function GramDefinitionDisplay({
     const dict = definition.Dictionary;
     return (
       <div className="p-3 border border-card/50 bg-card/30 rounded-md space-y-2">
-        <p className="text-sm font-semibold"><TargetLanguageText language={targetLanguage}>{dict.target_language_word}</TargetLanguageText>:</p>
+        <p className="text-sm font-semibold">
+          <TargetLanguageText language={targetLanguage}>
+            {dict.target_language_word}
+          </TargetLanguageText>
+          :
+        </p>
         {dict.definitions.map((def: TargetToNativeWord, i: number) => (
           <div key={i}>
             <p className="text-sm">
               {def.native}
               {def.note && (
-                <span className="text-xs text-muted-foreground"> ({def.note})</span>
+                <span className="text-xs text-muted-foreground">
+                  {" "}
+                  ({def.note})
+                </span>
               )}
             </p>
             {def.example_sentence_target_language && (
               <div className="text-xs text-muted-foreground mt-1">
-                <p className="italic"><TargetLanguageText language={targetLanguage}>"{def.example_sentence_target_language}"</TargetLanguageText></p>
+                <p className="italic">
+                  <TargetLanguageText language={targetLanguage}>
+                    "{def.example_sentence_target_language}"
+                  </TargetLanguageText>
+                </p>
                 <p>"{def.example_sentence_native_language}"</p>
               </div>
             )}
@@ -521,12 +541,19 @@ function GramDefinitionDisplay({
     return (
       <div className="p-3 border border-card/50 bg-card/30 rounded-md">
         <p className="text-sm font-semibold">
-          <TargetLanguageText language={targetLanguage}>{pb.target_language_multi_word_term}</TargetLanguageText>:
+          <TargetLanguageText language={targetLanguage}>
+            {pb.target_language_multi_word_term}
+          </TargetLanguageText>
+          :
         </p>
         <p className="text-sm">{pb.meaning}</p>
         {pb.target_language_example && (
           <div className="text-xs text-muted-foreground mt-1">
-            <p className="italic"><TargetLanguageText language={targetLanguage}>"{pb.target_language_example}"</TargetLanguageText></p>
+            <p className="italic">
+              <TargetLanguageText language={targetLanguage}>
+                "{pb.target_language_example}"
+              </TargetLanguageText>
+            </p>
             <p>"{pb.native_language_example}"</p>
           </div>
         )}
@@ -589,7 +616,7 @@ function ChallengeSentence({
                 colorClass,
                 isHeteronym
                   ? "cursor-pointer underline-offset-3 underline decoration-dotted hover:decoration-solid hover:decoration-3 transition-transform hover:scale-105 inline-block"
-                  : ""
+                  : "",
               )}
               onClick={() => {
                 if (isHeteronym) {
@@ -597,7 +624,9 @@ function ChallengeSentence({
                 }
               }}
             >
-              <TargetLanguageText language={targetLanguage}>{literal.word.text}</TargetLanguageText>
+              <TargetLanguageText language={targetLanguage}>
+                {literal.word.text}
+              </TargetLanguageText>
             </span>
             {literal.whitespace}
           </span>
@@ -628,7 +657,7 @@ export function TranslationChallenge({
     return getMovieMetadata(deck, movieIds);
   }, [sentence.movie_titles, deck]);
   const [correctTranslation, setCorrectTranslation] = useState(
-    sentence.native_translations[0]
+    sentence.native_translations[0],
   );
   const [selectedPhraseIndex, setSelectedPhraseIndex] = useState<number>(-1);
   const [showReportModal, setShowReportModal] = useState(false);
@@ -658,7 +687,10 @@ export function TranslationChallenge({
   const { bumpBackground } = useBackground();
 
   const literalGramIndices: number[] = sentence.literal_gram_indices;
-  const gramDefinitions = sentence.gram_definitions_for_lookup as (GramDefinition | undefined)[];
+  const gramDefinitions = sentence.gram_definitions_for_lookup as (
+    | GramDefinition
+    | undefined
+  )[];
 
   const handleWordTap = (index: number) => {
     if (!grade) {
@@ -710,10 +742,13 @@ export function TranslationChallenge({
       // Phrases are multiword terms separate from the sentence's gram sequence,
       // so their definitions are in phrase_definitions (parallel to unique_target_language_phrases),
       // not in gram_definitions_for_lookup.
-      const phraseDefinitions = sentence.phrase_definitions as (GramDefinition | undefined)[];
+      const phraseDefinitions = sentence.phrase_definitions as (
+        | GramDefinition
+        | undefined
+      )[];
       for (const phrase of grade.graded.phrasesForgot) {
         const phraseIdx = sentence.unique_target_language_phrases.findIndex(
-          (p) => gramEq(p, phrase)
+          (p) => gramEq(p, phrase),
         );
         if (phraseIdx !== -1) {
           const def = phraseDefinitions[phraseIdx];
@@ -723,7 +758,14 @@ export function TranslationChallenge({
     }
 
     return defs;
-  }, [tappedGramGroups, gramDefinitions, grade, literalGramIndices, sentence.phrase_definitions, sentence.unique_target_language_phrases]);
+  }, [
+    tappedGramGroups,
+    gramDefinitions,
+    grade,
+    literalGramIndices,
+    sentence.phrase_definitions,
+    sentence.unique_target_language_phrases,
+  ]);
 
   // Build grade items for manual grading UI (literals first, then phrases)
   const gradeItems: GradeItem[] = useMemo(() => {
@@ -732,12 +774,15 @@ export function TranslationChallenge({
 
     // Add each gradable heteronym literal
     if ("literalGrades" in grade.graded) {
-      const hasAutogradingError = "autogradingError" in grade.graded && grade.graded.autogradingError;
+      const hasAutogradingError =
+        "autogradingError" in grade.graded && grade.graded.autogradingError;
       sentence.target_language_literals.forEach((literal, i) => {
-        if ((literal.word.word_type as { type?: string })?.type !== "Heteronym") return;
-        const literalGrade = grade.graded && "literalGrades" in grade.graded
-          ? grade.graded.literalGrades[i]
-          : undefined;
+        if ((literal.word.word_type as { type?: string })?.type !== "Heteronym")
+          return;
+        const literalGrade =
+          grade.graded && "literalGrades" in grade.graded
+            ? grade.graded.literalGrades[i]
+            : undefined;
         // When autograde failed, undefined heteronym grades need manual grading;
         // when autograde succeeded, undefined means ungradable.
         if (literalGrade === undefined && !hasAutogradingError) return;
@@ -745,7 +790,12 @@ export function TranslationChallenge({
           kind: "literal",
           literalIndex: i,
           display: literal.word.text,
-          status: literalGrade === "Remembered" ? true : literalGrade === "Forgot" ? false : null,
+          status:
+            literalGrade === "Remembered"
+              ? true
+              : literalGrade === "Forgot"
+                ? false
+                : null,
         });
       });
     }
@@ -754,7 +804,9 @@ export function TranslationChallenge({
     if ("phrasesRemembered" in grade.graded) {
       for (const gram of sentence.unique_target_language_phrases) {
         const display = gram_to_display_string(gram, targetLanguage);
-        const remembered = grade.graded.phrasesRemembered.some((p) => gramEq(p, gram));
+        const remembered = grade.graded.phrasesRemembered.some((p) =>
+          gramEq(p, gram),
+        );
         const forgot = grade.graded.phrasesForgot.some((p) => gramEq(p, gram));
         items.push({
           kind: "phrase",
@@ -766,7 +818,12 @@ export function TranslationChallenge({
     }
 
     return items;
-  }, [grade, sentence.target_language_literals, sentence.unique_target_language_phrases, targetLanguage]);
+  }, [
+    grade,
+    sentence.target_language_literals,
+    sentence.unique_target_language_phrases,
+    targetLanguage,
+  ]);
 
   const canContinue =
     grade &&
@@ -788,7 +845,7 @@ export function TranslationChallenge({
         find_closest_translation(
           userTranslation,
           sentence.native_translations,
-          nativeLanguage
+          nativeLanguage,
         ) ?? sentence.native_translations[0];
       setCorrectTranslation(closest);
       setGrade({ grading: null });
@@ -810,7 +867,7 @@ export function TranslationChallenge({
           sentence.gram_definitions_for_lookup,
           new Uint32Array(sentence.literal_gram_indices),
           sentence.phrase_definitions,
-          sentence.primary_expression
+          sentence.primary_expression,
         );
 
         const encouragement = response.encouragement;
@@ -830,7 +887,10 @@ export function TranslationChallenge({
               autogradingError: response.autograding_error,
             },
           });
-        } else if (response.phrases_forgot.length === 0 && !response.literal_grades.some(g => g === "Forgot")) {
+        } else if (
+          response.phrases_forgot.length === 0 &&
+          !response.literal_grades.some((g) => g === "Forgot")
+        ) {
           setGrade({ graded: { perfect: null, encouragement, explanation } });
           playSoundEffect("perfect");
         } else {
@@ -849,7 +909,9 @@ export function TranslationChallenge({
         playSoundEffect("aiDoneGrading");
         setGrade({
           graded: {
-            literalGrades: sentence.target_language_literals.map(() => undefined),
+            literalGrades: sentence.target_language_literals.map(
+              () => undefined,
+            ),
             phrasesRemembered: [],
             phrasesForgot: [],
             encouragement: undefined,
@@ -892,7 +954,7 @@ export function TranslationChallenge({
           onComplete(
             { perfect: grade.graded.perfect },
             heteronymsTapped,
-            userTranslation
+            userTranslation,
           );
         } else {
           onComplete(
@@ -902,7 +964,7 @@ export function TranslationChallenge({
               phrasesForgot: grade.graded.phrasesForgot,
             },
             heteronymsTapped,
-            userTranslation
+            userTranslation,
           );
         }
       }
@@ -923,10 +985,10 @@ export function TranslationChallenge({
 
         if (item.kind === "phrase" && "phrasesRemembered" in prevGrade.graded) {
           const newRemembered = prevGrade.graded.phrasesRemembered.filter(
-            (p) => !gramEq(p, item.gram)
+            (p) => !gramEq(p, item.gram),
           );
           const newForgot = prevGrade.graded.phrasesForgot.filter(
-            (p) => !gramEq(p, item.gram)
+            (p) => !gramEq(p, item.gram),
           );
           if (remembered) newRemembered.push(item.gram);
           else newForgot.push(item.gram);
@@ -941,7 +1003,9 @@ export function TranslationChallenge({
 
         if (item.kind === "literal" && "literalGrades" in prevGrade.graded) {
           const newLiteralGrades = [...prevGrade.graded.literalGrades];
-          newLiteralGrades[item.literalIndex] = remembered ? "Remembered" : "Forgot";
+          newLiteralGrades[item.literalIndex] = remembered
+            ? "Remembered"
+            : "Forgot";
           return {
             graded: {
               ...prevGrade.graded,
@@ -953,7 +1017,7 @@ export function TranslationChallenge({
         return prevGrade;
       });
     },
-    []
+    [],
   );
 
   // Keyboard shortcuts
@@ -1163,7 +1227,11 @@ export function TranslationChallenge({
           {tappedDefinitions.length > 0 && (
             <div className="space-y-2">
               {tappedDefinitions.map((def, i) => (
-                <GramDefinitionDisplay key={i} definition={def} targetLanguage={targetLanguage} />
+                <GramDefinitionDisplay
+                  key={i}
+                  definition={def}
+                  targetLanguage={targetLanguage}
+                />
               ))}
             </div>
           )}

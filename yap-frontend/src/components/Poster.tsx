@@ -34,7 +34,7 @@ export function Poster({ movieId, deck, alt }: PosterProps) {
           observer.disconnect();
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "200px" },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -53,10 +53,6 @@ export function Poster({ movieId, deck, alt }: PosterProps) {
   }
 
   return (
-    <img
-      src={posterDataUrl}
-      alt={alt}
-      className="w-full h-full object-cover"
-    />
+    <img src={posterDataUrl} alt={alt} className="w-full h-full object-cover" />
   );
 }

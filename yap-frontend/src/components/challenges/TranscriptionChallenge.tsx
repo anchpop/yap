@@ -127,7 +127,7 @@ export function TranscriptionChallenge({
   const [showReportModal, setShowReportModal] = useState(false);
   const [isTranslationRevealed, setIsTranslationRevealed] = useState(false);
   const [focusedInputIndex, setFocusedInputIndex] = useState<number | null>(
-    null
+    null,
   );
   const [shiftHeld, setShiftHeld] = useState(false);
   const inputRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
@@ -228,7 +228,7 @@ export function TranscriptionChallenge({
   const allBlanksFilledOut = blankIndices.every(
     (index) =>
       userInputs.get(index)?.trim() !== undefined &&
-      userInputs.get(index)?.trim() !== ""
+      userInputs.get(index)?.trim() !== "",
   );
 
   const handleSubmit = useCallback(async () => {
@@ -263,7 +263,7 @@ export function TranscriptionChallenge({
     const isAllCorrect = graded.results.every(
       (result) =>
         result.type === "Provided" ||
-        result.parts.every((part) => part.grade.type === "Perfect")
+        result.parts.every((part) => part.grade.type === "Perfect"),
     );
 
     setGradingState({
@@ -289,7 +289,9 @@ export function TranscriptionChallenge({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const activeElement = document.activeElement;
-      const isInputFocused = activeElement?.tagName === "INPUT" || activeElement?.tagName === "TEXTAREA";
+      const isInputFocused =
+        activeElement?.tagName === "INPUT" ||
+        activeElement?.tagName === "TEXTAREA";
 
       if (e.key === "Enter") {
         if (isInputFocused) {
@@ -298,13 +300,13 @@ export function TranscriptionChallenge({
 
           // Find which input is focused
           const currentIndex = inputRefs.current.findIndex(
-            (ref) => ref === activeElement
+            (ref) => ref === activeElement,
           );
           if (currentIndex === -1) return;
 
           // Find next blank
           const currentBlankPosition = blankIndices.findIndex(
-            (index) => index === currentIndex
+            (index) => index === currentIndex,
           );
           const nextBlankIndex = blankIndices[currentBlankPosition + 1];
 
@@ -349,20 +351,21 @@ export function TranscriptionChallenge({
     gradingState.graded.results.every(
       (result) =>
         result.type === "Provided" ||
-        result.parts.every((part) => part.grade.type === "Perfect")
+        result.parts.every((part) => part.grade.type === "Perfect"),
     );
 
   const renderSentenceWithBlanks = () => {
     // Check if it's a single AskedToTranscribe part (full sentence transcription)
     const askedToTranscribeParts = challenge.parts.filter(
-      (part) => part.type === "AskedToTranscribe"
+      (part) => part.type === "AskedToTranscribe",
     );
     const isSinglePartTranscription =
       askedToTranscribeParts.length === 1 &&
       challenge.parts.every(
         (part) =>
           part.type === "AskedToTranscribe" ||
-          (part.type === "Provided" && part.part.word.word_type?.type !== "Heteronym")
+          (part.type === "Provided" &&
+            part.part.word.word_type?.type !== "Heteronym"),
       );
 
     return challenge.parts.map((item, index) => {
@@ -370,8 +373,7 @@ export function TranscriptionChallenge({
         if (item.parts.length === 0) {
           throw new Error("AskedToTranscribe part has no parts");
         }
-        const end_whitespace =
-          item.parts[item.parts.length - 1].whitespace;
+        const end_whitespace = item.parts[item.parts.length - 1].whitespace;
 
         return (
           <span key={index}>
@@ -391,7 +393,7 @@ export function TranscriptionChallenge({
               className={`inline-block ${
                 isSinglePartTranscription ? "min-w-64" : "min-w-32"
               } mx-1 text-center resize-none text-l font-semibold ${getInputClassName(
-                index
+                index,
               )} border-0 border-b-3 border-dotted`}
               placeholder="Write what you hear"
             />
@@ -401,7 +403,9 @@ export function TranscriptionChallenge({
       } else {
         return (
           <span key={index}>
-            <TargetLanguageText language={targetLanguage}>{item.part.word.text}</TargetLanguageText>
+            <TargetLanguageText language={targetLanguage}>
+              {item.part.word.text}
+            </TargetLanguageText>
             {item.part.whitespace}
           </span>
         );
@@ -416,21 +420,22 @@ export function TranscriptionChallenge({
       if (result && result.type === "AskedToTranscribe") {
         // Check if all words are perfect
         const allPerfect = result.parts.every(
-          (part) => part.grade.type === "Perfect"
+          (part) => part.grade.type === "Perfect",
         );
         // Check for other grades
         const hasMissed = result.parts.some(
-          (part) => part.grade.type === "Missed"
+          (part) => part.grade.type === "Missed",
         );
         const hasIncorrect = result.parts.some(
-          (part) => part.grade.type === "Incorrect"
+          (part) => part.grade.type === "Incorrect",
         );
         const hasPhoneticallySimilar = result.parts.some(
-          (part) => part.grade.type === "PhoneticallySimilarButContextuallyIncorrect"
+          (part) =>
+            part.grade.type === "PhoneticallySimilarButContextuallyIncorrect",
         );
         const hasPhoneticallyIdentical = result.parts.some(
           (part) =>
-            part.grade.type === "PhoneticallyIdenticalButContextuallyIncorrect"
+            part.grade.type === "PhoneticallyIdenticalButContextuallyIncorrect",
         );
 
         if (allPerfect) {
@@ -513,7 +518,9 @@ export function TranscriptionChallenge({
                     Correct answer:
                   </p>
                   <p className="text-lg font-medium">
-                    <TargetLanguageText language={targetLanguage}>{challenge.target_language}</TargetLanguageText>
+                    <TargetLanguageText language={targetLanguage}>
+                      {challenge.target_language}
+                    </TargetLanguageText>
                   </p>
                 </div>
 
@@ -560,7 +567,13 @@ export function TranscriptionChallenge({
                                   key={idx}
                                   className="flex items-center gap-1"
                                 >
-                                  <span className="font-medium"><TargetLanguageText language={targetLanguage}>{item}</TargetLanguageText></span>
+                                  <span className="font-medium">
+                                    <TargetLanguageText
+                                      language={targetLanguage}
+                                    >
+                                      {item}
+                                    </TargetLanguageText>
+                                  </span>
                                   <AudioButton
                                     audioRequest={{
                                       request: {
@@ -639,42 +652,42 @@ export function TranscriptionChallenge({
 
         {/* Submit/Continue button at the bottom */}
         <div className="sticky bottom-0">
-        <Button
-          onClick={
-            gradingState && "graded" in gradingState
-              ? () => {
-                  bumpBackground(30.0);
-                  onComplete(gradingState.graded.results);
-                }
-              : handleSubmit
-          }
-          disabled={
-            (gradingState === null && !allBlanksFilledOut) ||
-            (gradingState !== null && "grading" in gradingState)
-          }
-          className="w-full h-14 text-lg"
-          size="lg"
-        >
-          {gradingState === null ? (
-            <span className="relative flex items-center justify-center">
-              Check Answer
-              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
-                (⏎)
+          <Button
+            onClick={
+              gradingState && "graded" in gradingState
+                ? () => {
+                    bumpBackground(30.0);
+                    onComplete(gradingState.graded.results);
+                  }
+                : handleSubmit
+            }
+            disabled={
+              (gradingState === null && !allBlanksFilledOut) ||
+              (gradingState !== null && "grading" in gradingState)
+            }
+            className="w-full h-14 text-lg"
+            size="lg"
+          >
+            {gradingState === null ? (
+              <span className="relative flex items-center justify-center">
+                Check Answer
+                <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+                  (⏎)
+                </span>
               </span>
-            </span>
-          ) : "grading" in gradingState ? (
-            "AI is grading..."
-          ) : "error" in gradingState ? (
-            "Error"
-          ) : (
-            <span className="relative flex items-center justify-center">
-              {isAllCorrect ? "Nailed it!" : "Continue"}
-              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
-                (⏎)
+            ) : "grading" in gradingState ? (
+              "AI is grading..."
+            ) : "error" in gradingState ? (
+              "Error"
+            ) : (
+              <span className="relative flex items-center justify-center">
+                {isAllCorrect ? "Nailed it!" : "Continue"}
+                <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+                  (⏎)
+                </span>
               </span>
-            </span>
-          )}
-        </Button>
+            )}
+          </Button>
         </div>
       </div>
 
@@ -725,7 +738,7 @@ function WordGrades({
   const handleGradeChange = (
     partIndex: number,
     wordIndex: number,
-    newGradeKey: string
+    newGradeKey: string,
   ) => {
     const updatedGrades = [...wordGrades];
     const part = updatedGrades[partIndex];
@@ -739,7 +752,7 @@ function WordGrades({
   };
 
   const transcribedParts = wordGrades.filter(
-    (part) => part.type === "AskedToTranscribe"
+    (part) => part.type === "AskedToTranscribe",
   );
 
   if (transcribedParts.length === 0) {
@@ -775,7 +788,9 @@ function WordGrades({
                       >
                         <div className="flex-1">
                           <span className="font-medium">
-                            <TargetLanguageText language={targetLanguage}>{wordPart.heard.word.text}</TargetLanguageText>
+                            <TargetLanguageText language={targetLanguage}>
+                              {wordPart.heard.word.text}
+                            </TargetLanguageText>
                           </span>
                         </div>
                         <Select

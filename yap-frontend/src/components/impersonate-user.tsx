@@ -16,7 +16,7 @@ const SERVICE_ROLE_KEY_STORAGE = "yap-impersonation-service-role-key";
  */
 export function useImpersonationActivation() {
   const [activated, setActivated] = useState(
-    () => !!localStorage.getItem(ORIGINAL_SESSION_KEY)
+    () => !!localStorage.getItem(ORIGINAL_SESSION_KEY),
   );
   const clickCountRef = useRef(0);
   const lastClickRef = useRef(0);
@@ -42,14 +42,14 @@ export function useImpersonationActivation() {
 export function ImpersonateUser() {
   const { forcePush } = useSyncActions();
   const [serviceRoleKey, setServiceRoleKey] = useState(
-    () => sessionStorage.getItem(SERVICE_ROLE_KEY_STORAGE) ?? ""
+    () => sessionStorage.getItem(SERVICE_ROLE_KEY_STORAGE) ?? "",
   );
   const [targetEmail, setTargetEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [pushing, setPushing] = useState(false);
   const [isImpersonating, setIsImpersonating] = useState(
-    () => !!localStorage.getItem(ORIGINAL_SESSION_KEY)
+    () => !!localStorage.getItem(ORIGINAL_SESSION_KEY),
   );
 
   const handleForcePush = async () => {
@@ -82,7 +82,7 @@ export function ImpersonateUser() {
         JSON.stringify({
           access_token: currentSession.access_token,
           refresh_token: currentSession.refresh_token,
-        })
+        }),
       );
 
       // Remember service role key for the tab lifetime
@@ -116,8 +116,7 @@ export function ImpersonateUser() {
       setIsImpersonating(true);
       setTargetEmail("");
     } catch (e: unknown) {
-      const message =
-        e instanceof Error ? e.message : "Impersonation failed";
+      const message = e instanceof Error ? e.message : "Impersonation failed";
       setError(message);
       // Roll back saved session on failure
       localStorage.removeItem(ORIGINAL_SESSION_KEY);

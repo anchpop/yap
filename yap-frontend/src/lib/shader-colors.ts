@@ -4,7 +4,7 @@
 export function lchToRgb(
   L: number,
   C: number,
-  H: number
+  H: number,
 ): [number, number, number] {
   const a = C * Math.cos(H);
   const b = C * Math.sin(H);

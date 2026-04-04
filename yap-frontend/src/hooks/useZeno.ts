@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 
 type UseZenoOptions = {
   /** Decay rate - higher = faster approach. Default 8 */
@@ -9,7 +9,7 @@ type UseZenoOptions = {
 
 export function useZeno(
   target: number,
-  { lambda = 8, epsilon = 0.1 }: UseZenoOptions = {}
+  { lambda = 8, epsilon = 0.1 }: UseZenoOptions = {},
 ): number {
   const [display, setDisplay] = useState(target);
   const current = useRef(target);

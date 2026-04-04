@@ -17,7 +17,7 @@ import { Card } from "@/components/ui/card";
 const FrequencyKnowledgeChart = lazy(() =>
   import("./FrequencyKnowledgeChart").then((module) => ({
     default: module.FrequencyKnowledgeChart,
-  }))
+  })),
 );
 
 interface StatsProps {
@@ -34,19 +34,19 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
     () => {
       setCurrentTimestamp(Date.now());
     },
-    10000 // Update every 10 seconds
+    10000, // Update every 10 seconds
   );
 
   const { reviewInfo, readyCards, allCardsSummary } = useMemo(() => {
     const reviewInfo = deck.get_review_info([], currentTimestamp);
     const allCardsSummary = deck.get_all_cards_summary();
     const readyCards = allCardsSummary.filter(
-      (card) => card.due_timestamp_ms <= currentTimestamp
+      (card) => card.due_timestamp_ms <= currentTimestamp,
     );
     return { reviewInfo, readyCards, allCardsSummary };
   }, [deck, currentTimestamp]);
   const notReadyCards = allCardsSummary.filter(
-    (card) => card.due_timestamp_ms > currentTimestamp
+    (card) => card.due_timestamp_ms > currentTimestamp,
   );
 
   const [visibleCount, setVisibleCount] = useState(10);
@@ -101,16 +101,22 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
               // Find card_text values that appear more than once
               const textCounts = new Map<string, number>();
               for (const card of visibleCards) {
-                textCounts.set(card.card_text, (textCounts.get(card.card_text) || 0) + 1);
+                textCounts.set(
+                  card.card_text,
+                  (textCounts.get(card.card_text) || 0) + 1,
+                );
               }
               const duplicateTexts = new Set(
-                [...textCounts.entries()].filter(([, count]) => count > 1).map(([text]) => text)
+                [...textCounts.entries()]
+                  .filter(([, count]) => count > 1)
+                  .map(([text]) => text),
               );
 
               return visibleCards.map((card, index) => {
                 const shortDescription = card.card_text;
                 const subtitle = card.card_subtitle;
-                const showSubtitle = subtitle && duplicateTexts.has(shortDescription);
+                const showSubtitle =
+                  subtitle && duplicateTexts.has(shortDescription);
 
                 const isListeningGram =
                   card.card_indicator.type === "ListeningGram";
@@ -125,7 +131,9 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
 
                 const wordCellContent = isListeningGram ? (
                   isListeningCardRevealed ? (
-                    <TargetLanguageText language={targetLanguage}>{shortDescription}</TargetLanguageText>
+                    <TargetLanguageText language={targetLanguage}>
+                      {shortDescription}
+                    </TargetLanguageText>
                   ) : (
                     <button
                       type="button"
@@ -137,7 +145,9 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
                       aria-label="Reveal listening lexeme"
                     >
                       <span className="select-none blur-sm">
-                        <TargetLanguageText language={targetLanguage}>{shortDescription}</TargetLanguageText>
+                        <TargetLanguageText language={targetLanguage}>
+                          {shortDescription}
+                        </TargetLanguageText>
                       </span>
                       <span className="text-xs italic text-muted-foreground">
                         Tap to reveal
@@ -145,7 +155,9 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
                     </button>
                   )
                 ) : (
-                  <TargetLanguageText language={targetLanguage}>{shortDescription}</TargetLanguageText>
+                  <TargetLanguageText language={targetLanguage}>
+                    {shortDescription}
+                  </TargetLanguageText>
                 );
                 return (
                   <tr
@@ -160,20 +172,20 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
                         </span>
                       )}
                     </td>
-                  <td className="p-3">
-                    <Badge variant="outline">{card.state}</Badge>
-                  </td>
-                  <td className="p-3 text-sm text-muted-foreground">
-                    {isReady ? (
-                      <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">
-                        Ready now
-                      </Badge>
-                    ) : (
-                      <TimeAgo date={new Date(card.due_timestamp_ms)} />
-                    )}
-                  </td>
-                </tr>
-              );
+                    <td className="p-3">
+                      <Badge variant="outline">{card.state}</Badge>
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      {isReady ? (
+                        <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">
+                          Ready now
+                        </Badge>
+                      ) : (
+                        <TimeAgo date={new Date(card.due_timestamp_ms)} />
+                      )}
+                    </td>
+                  </tr>
+                );
               });
             })()}
           </tbody>
@@ -187,8 +199,7 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
               }}
               className="w-full py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200 font-medium"
             >
-              Show{" "}
-              {Math.min(nextBatchSize, allCards.length - visibleCount)}{" "}
+              Show {Math.min(nextBatchSize, allCards.length - visibleCount)}{" "}
               more cards
             </button>
           </div>
@@ -215,7 +226,8 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
               Pre-existing Knowledge by Word Frequency
             </h3>
             <p className="text-sm text-muted-foreground">
-              This is used to help Yap decide which words to teach first. (Yap tries to avoid teaching you words you already know!)
+              This is used to help Yap decide which words to teach first. (Yap
+              tries to avoid teaching you words you already know!)
             </p>
             <Suspense
               fallback={
