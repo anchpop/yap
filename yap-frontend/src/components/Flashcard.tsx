@@ -698,7 +698,7 @@ export const Flashcard = function Flashcard({
         )}
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col sticky bottom-0">
         {/* Tutorial text above buttons */}
         {showTutorial && showAnswer && (
           <div className="text-center mt-4 text-2xl font-semibold text-muted-foreground flex flex-row justify-center items-start animate-fade-in-delayed">

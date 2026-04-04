@@ -55,14 +55,14 @@ pub enum DailyReviewTarget {
 }
 
 impl DailyReviewTarget {
-    /// Approximate daily review target assuming 30 seconds per review.
-    /// Casual=5min(10), Regular=10min(20), Serious=15min(30), Intense=20min(40)
-    pub fn review_count(&self) -> u32 {
+    /// Target time in seconds for each daily review goal.
+    /// Casual=5min, Regular=10min, Serious=15min, Intense=20min
+    pub fn target_seconds(&self) -> u32 {
         match self {
-            DailyReviewTarget::Casual => 10,
-            DailyReviewTarget::Regular => 20,
-            DailyReviewTarget::Serious => 30,
-            DailyReviewTarget::Intense => 40,
+            DailyReviewTarget::Casual => 5 * 60,
+            DailyReviewTarget::Regular => 10 * 60,
+            DailyReviewTarget::Serious => 15 * 60,
+            DailyReviewTarget::Intense => 20 * 60,
         }
     }
 }

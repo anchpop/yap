@@ -727,14 +727,60 @@ pub struct DailyStreak {
     last_active_day: chrono::NaiveDate,
     /// The current streak length in days
     streak_count: u32,
-    /// Number of reviews completed on `last_active_day`
-    today_reviews: u32,
+}
+
+#[derive(Clone, Debug)]
+pub struct TodayStats {
+    /// The calendar day these stats are for (in user's local timezone)
+    day: chrono::NaiveDate,
+    /// Number of reviews completed today
+    pub reviews: u32,
+    /// Estimated time spent reviewing today, in seconds
+    pub time_spent_seconds: u32,
+    /// Timestamp of the last review (used to compute time between reviews)
+    last_review_timestamp: DateTime<Utc>,
+    /// Cards that were in New state when first reviewed today
+    pub new_cards: BTreeSet<CardIndicator<SpurGram, Spur>>,
+    /// Cards that went from Learning to Review state today
+    pub learned_cards: BTreeSet<CardIndicator<SpurGram, Spur>>,
+    /// Cards that went from Relearning to Review state today
+    pub locked_in_cards: BTreeSet<CardIndicator<SpurGram, Spur>>,
+    /// Cards that were already known and reviewed today
+    pub reviewed_cards: BTreeSet<CardIndicator<SpurGram, Spur>>,
+    /// Number of reviews where the user remembered
+    pub remembered: u32,
+    /// Number of reviews where the user forgot
+    pub forgot: u32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Accomplishment {
     DailyGoalReached,
+}
+
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct TodayNewCard {
+    pub word: String,
+    pub translation: String,
+    pub card_type: String,
+}
+
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct TodaySummary {
+    pub reviews: u32,
+    pub time_spent_seconds: u32,
+    pub new_cards: Vec<TodayNewCard>,
+    /// Cards that went from Learning to Review today (not in new_cards)
+    pub learned_cards: Vec<TodayNewCard>,
+    /// Cards that went from Relearning to Review today (locked back in)
+    pub locked_in_cards: Vec<TodayNewCard>,
+    pub reviewed_words: Vec<String>,
+    /// Recall percentage (0-100), None if no reviews
+    pub recall_percent: Option<u32>,
+    pub day_of_week: String,
 }
 
 /// Context contains the language-specific configuration
@@ -775,6 +821,8 @@ pub struct Stats {
     pub total_reviews: u64,
     pub xp: f64,
     pub daily_streak: Option<DailyStreak>,
+    /// Stats for the current calendar day (resets when the day changes)
+    pub today: Option<TodayStats>,
     /// Track daily challenge completions for the past week
     /// Key is days since epoch, value is number of challenges completed
     pub past_week_challenges: BTreeMap<i64, u32>,
@@ -909,13 +957,21 @@ impl weapon::AppState for Deck {
             // Clear accomplishment on each review
             deck.accomplishment = None;
 
-            deck.update_daily_streak(timestamp, &context.timezone);
+            let day = timestamp.with_timezone(&context.timezone).date_naive();
+            let time_before = deck
+                .stats
+                .today
+                .as_ref()
+                .filter(|t| t.day == day)
+                .map_or(0, |t| t.time_spent_seconds);
+
+            deck.update_daily_activity(timestamp, &context.timezone);
             deck.stats.total_reviews += 1;
 
-            // Check if the user just hit their daily study goal
-            if let Some(streak) = &deck.stats.daily_streak {
-                let target = deck.daily_review_target.review_count();
-                if streak.today_reviews == target {
+            // Check if the user just crossed their daily study goal
+            if let Some(today) = &deck.stats.today {
+                let target = deck.daily_review_target.target_seconds();
+                if time_before < target && today.time_spent_seconds >= target {
                     deck.accomplishment = Some(Accomplishment::DailyGoalReached);
                 }
             }
@@ -1004,6 +1060,7 @@ impl weapon::AppState for Deck {
                             .entry(flashcard_type)
                             .or_insert(0) += 1;
                     }
+
                     deck.log_review(reviewed, *rating, *timestamp, context);
                 }
             }
@@ -1659,6 +1716,7 @@ impl DeckState {
                 total_reviews: 0,
                 xp: 0.0,
                 daily_streak: None,
+                today: None,
                 past_week_challenges: BTreeMap::new(),
                 start_time: None,
                 flashcard_type_seen_count: BTreeMap::new(),
@@ -1666,7 +1724,7 @@ impl DeckState {
             leeches: BTreeMap::new(),
             goal: None,
             accomplishment: None,
-            daily_review_target: DailyReviewTarget::Casual,
+            daily_review_target: DailyReviewTarget::Regular,
         }
     }
 
@@ -1681,6 +1739,16 @@ impl DeckState {
         if !context.is_card_valid(&card) {
             return;
         }
+
+        // Track card state before FSRS update for today stats
+        let state_before = self
+            .cards
+            .get(&card)
+            .map(|cd| match cd {
+                CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => fsrs_card.state,
+            })
+            .unwrap_or(rs_fsrs::State::New);
+        let was_new = state_before == rs_fsrs::State::New;
 
         let card_data = self.cards.entry(card).or_insert_with(|| {
             // Create a ghost card if it doesn't exist
@@ -1731,43 +1799,88 @@ impl DeckState {
             Rating::Again => 5.0,
             _ => 1.0,
         };
+
+        // Track in today stats
+        if let Some(today) = &mut self.stats.today {
+            if was_new {
+                // Only show in "new today" if the user didn't already know it
+                if fsrs_card.lapses > 0 {
+                    today.new_cards.insert(card);
+                }
+            } else {
+                // Track cards that graduated to Review state today
+                if fsrs_card.state == rs_fsrs::State::Review && fsrs_card.lapses > 0 {
+                    if state_before == rs_fsrs::State::Learning {
+                        today.learned_cards.insert(card);
+                    } else if state_before == rs_fsrs::State::Relearning {
+                        today.locked_in_cards.insert(card);
+                    }
+                }
+                today.reviewed_cards.insert(card);
+            }
+            if rating == Rating::Again {
+                today.forgot += 1;
+            } else {
+                today.remembered += 1;
+            }
+        }
     }
 
-    fn update_daily_streak(&mut self, timestamp: &DateTime<Utc>, timezone: &chrono::FixedOffset) {
+    fn update_daily_activity(&mut self, timestamp: &DateTime<Utc>, timezone: &chrono::FixedOffset) {
         let day = timestamp.with_timezone(timezone).date_naive();
 
+        // Update daily streak
         match &self.stats.daily_streak {
             None => {
                 self.stats.daily_streak = Some(DailyStreak {
                     last_active_day: day,
                     streak_count: 1,
-                    today_reviews: 1,
                 });
             }
             Some(streak) => {
                 let diff = (day - streak.last_active_day).num_days();
                 if diff == 0 {
-                    // Same day, increment today's reviews
-                    self.stats.daily_streak = Some(DailyStreak {
-                        last_active_day: day,
-                        streak_count: streak.streak_count,
-                        today_reviews: streak.today_reviews + 1,
-                    });
+                    // Same day, no streak change
                 } else if diff == 1 {
-                    // Consecutive day, extend streak, reset today's reviews
                     self.stats.daily_streak = Some(DailyStreak {
                         last_active_day: day,
                         streak_count: streak.streak_count + 1,
-                        today_reviews: 1,
                     });
                 } else {
-                    // Gap in days, reset streak
                     self.stats.daily_streak = Some(DailyStreak {
                         last_active_day: day,
                         streak_count: 1,
-                        today_reviews: 1,
                     });
                 }
+            }
+        }
+
+        // Update today stats
+        const MAX_REVIEW_SECONDS: u32 = 30;
+        match self.stats.today.take() {
+            Some(mut today) if today.day == day => {
+                let elapsed = (*timestamp - today.last_review_timestamp)
+                    .num_seconds()
+                    .max(0) as u32;
+                let credit = elapsed.min(MAX_REVIEW_SECONDS);
+                today.reviews += 1;
+                today.time_spent_seconds += credit;
+                today.last_review_timestamp = *timestamp;
+                self.stats.today = Some(today);
+            }
+            _ => {
+                self.stats.today = Some(TodayStats {
+                    day,
+                    reviews: 1,
+                    time_spent_seconds: MAX_REVIEW_SECONDS,
+                    last_review_timestamp: *timestamp,
+                    new_cards: BTreeSet::new(),
+                    learned_cards: BTreeSet::new(),
+                    locked_in_cards: BTreeSet::new(),
+                    reviewed_cards: BTreeSet::new(),
+                    remembered: 0,
+                    forgot: 0,
+                });
             }
         }
     }
@@ -2287,24 +2400,150 @@ impl Deck {
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_today_reviews(&self) -> u32 {
-        match &self.stats.daily_streak {
-            None => 0,
-            Some(streak) => {
-                let today = chrono::Utc::now()
+        match &self.stats.today {
+            Some(today) => {
+                let current_day = chrono::Utc::now()
                     .with_timezone(&self.context.timezone)
                     .date_naive();
-                if streak.last_active_day == today {
-                    streak.today_reviews
+                if today.day == current_day {
+                    today.reviews
                 } else {
                     0
                 }
             }
+            None => 0,
+        }
+    }
+
+    /// Today's estimated time spent reviewing, in seconds.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_today_time_spent(&self) -> u32 {
+        match &self.stats.today {
+            Some(today) => {
+                let current_day = chrono::Utc::now()
+                    .with_timezone(&self.context.timezone)
+                    .date_naive();
+                if today.day == current_day {
+                    today.time_spent_seconds
+                } else {
+                    0
+                }
+            }
+            None => 0,
         }
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_today_summary(&self) -> TodaySummary {
+        let language_pack = &self.context.language_pack;
+
+        let today = match &self.stats.today {
+            Some(today) => today,
+            None => {
+                return TodaySummary {
+                    reviews: 0,
+                    time_spent_seconds: 0,
+                    new_cards: vec![],
+                    learned_cards: vec![],
+                    locked_in_cards: vec![],
+                    reviewed_words: vec![],
+                    recall_percent: None,
+                    day_of_week: chrono::Utc::now()
+                        .with_timezone(&self.context.timezone)
+                        .date_naive()
+                        .format("%A")
+                        .to_string(),
+                };
+            }
+        };
+
+        let total = today.remembered + today.forgot;
+        let recall_percent = if total > 0 {
+            Some((today.remembered as f64 / total as f64 * 100.0) as u32)
+        } else {
+            None
+        };
+        let day_of_week = today.day.format("%A").to_string();
+
+        let resolve_card_text = |card: &CardIndicator<SpurGram, Spur>| -> String {
+            match card {
+                CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                    language_pack
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&language_pack.string_rodeo)
+                        .to_display_string(self.context.course.target_language)
+                }
+                CardIndicator::LetterPronunciation { pattern, .. } => {
+                    format!("[{}]", language_pack.string_rodeo.resolve(pattern))
+                }
+            }
+        };
+
+        let resolve_translation = |card: &CardIndicator<SpurGram, Spur>| -> String {
+            let gram = match card {
+                CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => gram,
+                _ => return String::new(),
+            };
+            match language_pack.gram_definitions.get(gram) {
+                Some(language_utils::GramDefinition::Dictionary(dict)) => dict
+                    .definitions
+                    .first()
+                    .map(|d| d.native.clone())
+                    .unwrap_or_default(),
+                Some(language_utils::GramDefinition::Phrasebook(pb)) => pb.meaning.clone(),
+                None => String::new(),
+            }
+        };
+
+        let resolve_card_type = |card: &CardIndicator<SpurGram, Spur>| -> String {
+            match card {
+                CardIndicator::WrittenGram { .. } => "reading".to_string(),
+                CardIndicator::ListeningGram { .. } => "listening".to_string(),
+                CardIndicator::LetterPronunciation { .. } => "pronunciation".to_string(),
+            }
+        };
+
+        let to_new_card = |card: &CardIndicator<SpurGram, Spur>| TodayNewCard {
+            word: resolve_card_text(card),
+            translation: resolve_translation(card),
+            card_type: resolve_card_type(card),
+        };
+
+        let new_cards: Vec<TodayNewCard> = today.new_cards.iter().map(to_new_card).collect();
+
+        let learned_cards: Vec<TodayNewCard> = today
+            .learned_cards
+            .iter()
+            .filter(|card| !today.new_cards.contains(card))
+            .map(to_new_card)
+            .collect();
+
+        let locked_in_cards: Vec<TodayNewCard> = today
+            .locked_in_cards
+            .iter()
+            .filter(|card| !today.new_cards.contains(card))
+            .map(to_new_card)
+            .collect();
+
+        let reviewed_words = today.reviewed_cards.iter().map(resolve_card_text).collect();
+
+        TodaySummary {
+            reviews: today.reviews,
+            time_spent_seconds: today.time_spent_seconds,
+            new_cards,
+            learned_cards,
+            locked_in_cards,
+            reviewed_words,
+            recall_percent,
+            day_of_week,
+        }
+    }
+
+    /// Daily goal target in seconds.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_daily_review_target(&self) -> u32 {
-        self.daily_review_target.review_count()
+        self.daily_review_target.target_seconds()
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]

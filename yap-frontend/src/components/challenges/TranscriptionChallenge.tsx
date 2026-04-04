@@ -638,6 +638,7 @@ export function TranscriptionChallenge({
         )}
 
         {/* Submit/Continue button at the bottom */}
+        <div className="sticky bottom-0">
         <Button
           onClick={
             gradingState && "graded" in gradingState
@@ -674,6 +675,7 @@ export function TranscriptionChallenge({
             </span>
           )}
         </Button>
+        </div>
       </div>
 
       <ReportIssueModal

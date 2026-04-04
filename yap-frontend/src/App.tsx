@@ -644,6 +644,16 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
   useEffect(() => {
     setDismissedAccomplishment(false)
   }, [totalReviewsCompleted])
+  // Auto-dismiss at midnight
+  useEffect(() => {
+    if (!accomplishment || dismissedAccomplishment) return
+    const now = new Date()
+    const midnight = new Date(now)
+    midnight.setHours(24, 0, 0, 0)
+    const ms = midnight.getTime() - now.getTime()
+    const timer = setTimeout(() => setDismissedAccomplishment(true), ms)
+    return () => clearTimeout(timer)
+  }, [accomplishment, dismissedAccomplishment])
 
   const nextDueCard = findNextDueCard(deck)
 
@@ -954,7 +964,8 @@ function Review({ userInfo, accessToken, deck, targetLanguage, nativeLanguage, m
           />
         ) : accomplishment && !dismissedAccomplishment ? (
           <AccomplishmentScreen
-            accomplishment={accomplishment}
+            deck={deck}
+            targetLanguage={targetLanguage}
             dailyReviewTarget={deck.get_daily_review_target_setting()}
             onChangeDailyReviewTarget={(target: DailyReviewTarget) => {
               const event = deck.set_daily_review_target(target)

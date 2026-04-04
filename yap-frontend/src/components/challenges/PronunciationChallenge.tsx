@@ -228,7 +228,7 @@ export function PronunciationChallenge({
           </div>
         )}
 
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-2 sticky bottom-0">
           {audioError && (
             <AudioErrorBanner onSkip={onCantSpeak} />
           )}

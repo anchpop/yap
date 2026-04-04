@@ -11,7 +11,15 @@ interface NumericStatsProps {
   tierName?: string;
   tierPercent?: number;
   todayReviews: number;
-  dailyReviewTarget: number;
+  todayTimeSpent: number;
+  dailyTargetSeconds: number;
+}
+
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (mins === 0) return `${secs}s`;
+  return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
 }
 
 export const NumericStats: React.FC<NumericStatsProps> = ({
@@ -24,9 +32,11 @@ export const NumericStats: React.FC<NumericStatsProps> = ({
   tierName,
   tierPercent,
   todayReviews,
-  dailyReviewTarget,
+  todayTimeSpent,
+  dailyTargetSeconds,
 }) => {
-  const goalReached = todayReviews >= dailyReviewTarget;
+  const goalReached = todayTimeSpent >= dailyTargetSeconds;
+  const targetMins = Math.round(dailyTargetSeconds / 60);
   return (
     <div className="mb-4">
       <h2 className="text-2xl font-semibold animate-fade-in-delay-2">Stats</h2>
@@ -41,10 +51,10 @@ export const NumericStats: React.FC<NumericStatsProps> = ({
         <Card className="p-4 gap-0" animate>
           <p className="text-sm text-muted-foreground mb-1">Daily Goal</p>
           <p className="text-2xl font-bold">
-            {todayReviews} / {dailyReviewTarget}
+            {formatTime(todayTimeSpent)} / {targetMins}m
           </p>
           <p className="text-sm text-muted-foreground mt-1">
-            {goalReached ? "Goal reached!" : `${dailyReviewTarget - todayReviews} reviews to go`}
+            {goalReached ? "Goal reached!" : `${todayReviews} reviews today`}
           </p>
         </Card>
       </div>

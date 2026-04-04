@@ -84,7 +84,8 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
         tierName={`${deck.get_current_tier().name} Lv.${deck.get_current_tier().level}`}
         tierPercent={deck.get_current_tier().percent_known}
         todayReviews={deck.get_today_reviews()}
-        dailyReviewTarget={deck.get_daily_review_target()}
+        todayTimeSpent={deck.get_today_time_spent()}
+        dailyTargetSeconds={deck.get_daily_review_target()}
       />
       <Card className="overflow-hidden p-0 gap-0" animate>
         <table className="w-full table-fixed">

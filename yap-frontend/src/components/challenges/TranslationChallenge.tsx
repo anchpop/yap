@@ -1175,34 +1175,36 @@ export function TranslationChallenge({
         )}
       </div>
 
-      {grade === null ? (
-        <Button
-          onClick={handleCheckAnswer}
-          className="w-full mt-4 h-14 text-lg"
-          size="lg"
-          disabled={!userTranslation.trim()}
-        >
-          Check Answer
-        </Button>
-      ) : (
-        <Button
-          onClick={handleContinue}
-          className="w-full h-14 text-lg"
-          size="lg"
-          disabled={!canContinue}
-        >
-          {"grading" in grade ? (
-            "AI is grading..."
-          ) : (
-            <span className="relative flex items-center justify-center">
-              {"perfect" in grade.graded ? "Nailed it!" : "Continue"}
-              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
-                (⏎)
+      <div className="sticky bottom-0">
+        {grade === null ? (
+          <Button
+            onClick={handleCheckAnswer}
+            className="w-full mt-4 h-14 text-lg"
+            size="lg"
+            disabled={!userTranslation.trim()}
+          >
+            Check Answer
+          </Button>
+        ) : (
+          <Button
+            onClick={handleContinue}
+            className="w-full h-14 text-lg"
+            size="lg"
+            disabled={!canContinue}
+          >
+            {"grading" in grade ? (
+              "AI is grading..."
+            ) : (
+              <span className="relative flex items-center justify-center">
+                {"perfect" in grade.graded ? "Nailed it!" : "Continue"}
+                <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+                  (⏎)
+                </span>
               </span>
-            </span>
-          )}
-        </Button>
-      )}
+            )}
+          </Button>
+        )}
+      </div>
 
       <ReportIssueModal
         context={`Sentence challenge: ${JSON.stringify(sentence)}"`}
