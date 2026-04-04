@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, Sparkles } from "lucide-react";
 import { useOneSignalNotifications } from "@/hooks/use-onesignal-notifications";
@@ -12,7 +12,7 @@ interface EngagementPromptsProps {
   language: Language;
 }
 
-export function EngagementPrompts({ language }: EngagementPromptsProps) {
+export const EngagementPrompts = memo(function EngagementPrompts({ language }: EngagementPromptsProps) {
   const {
     isSupported,
     isSubscribed,
@@ -157,4 +157,4 @@ export function EngagementPrompts({ language }: EngagementPromptsProps) {
       </div>
     </Card>
   );
-}
+});

@@ -2,12 +2,13 @@ import { Button } from "@/components/ui/button";
 import TimeAgo from "react-timeago";
 import { EngagementPrompts } from "@/components/engagement-prompts";
 import type {
-  AddCardOptions,
   CardSummary,
   CardType,
   ChallengeRequirements,
+  DeckEvent,
   Deck,
   Language,
+  ManualAddOption,
 } from "../../../yap-frontend-rs/pkg";
 import {
   DropdownMenu,
@@ -30,7 +31,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import type { UserInfo } from "@/App";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Poster } from "@/components/Poster";
 import { goalToGoalSelection, type Goal } from "@/hooks/useGoal";
 import { useNavigate } from "react-router-dom";
@@ -49,7 +50,7 @@ export interface MovieWithMetadata {
 interface NoCardsReadyProps {
   nextDueCard: CardSummary | null;
   showEngagementPrompts: boolean;
-  addNextCards: (card_type: CardType | undefined, count: number) => void;
+  addEvent: (event: DeckEvent) => void;
   targetLanguage: Language;
   deck: Deck;
   bannedChallengeTypes: ChallengeRequirements[];
@@ -60,10 +61,10 @@ interface NoCardsReadyProps {
   hasPimsleur: boolean;
 }
 
-export function NoCardsReady({
+export const NoCardsReady = memo(function NoCardsReady({
   nextDueCard,
   showEngagementPrompts,
-  addNextCards,
+  addEvent,
   targetLanguage,
   deck,
   bannedChallengeTypes,
@@ -78,28 +79,31 @@ export function NoCardsReady({
     () => localStorage.getItem("yap-pimsleur-acknowledged") === "true",
   );
   const goalSelection = goalToGoalSelection(goal);
-  const addCardOptionsRaw = deck.add_card_options(
-    bannedChallengeTypes,
-    goalSelection,
+
+  // One memoized call that does the expensive next_unknown_cards computation
+  const info = useMemo(
+    () => deck.get_no_cards_ready_info(bannedChallengeTypes, goalSelection),
+    [deck, bannedChallengeTypes, goalSelection],
   );
-  const addCardOptions: AddCardOptions =
-    userInfo === undefined
-      ? {
-          smart_add: 0,
-          manual_add: addCardOptionsRaw.manual_add.map(
-            ([count, card_type]) =>
-              [
-                card_type == "TargetLanguage" ||
-                card_type == "LetterPronunciation"
-                  ? count
-                  : 0,
-                card_type,
-              ] as [number, CardType],
-          ),
-          percent_known_after: addCardOptionsRaw.percent_known_after,
-          preview: addCardOptionsRaw.preview,
-        }
-      : addCardOptionsRaw;
+
+  // Manual add options — computed lazily on dropdown open
+  const [manualAddOptions, setManualAddOptions] = useState<ManualAddOption[]>([]);
+  const loadManualAddOptions = useCallback(() => {
+    if (manualAddOptions.length > 0) return;
+    const types: CardType[] = ["TargetLanguage", "Listening", "LetterPronunciation"];
+    const options = types
+      .map((t) => deck.get_manual_add_option(t, goalSelection))
+      .filter((o) => userInfo !== undefined || o.card_type === "TargetLanguage" || o.card_type === "LetterPronunciation")
+      .filter((o) => userInfo !== undefined || o.count > 0);
+    setManualAddOptions(options);
+  }, [deck, goalSelection, userInfo, manualAddOptions.length]);
+
+  const addSmartCards = useCallback(() => {
+    if (info.smart_add_event) {
+      addEvent(info.smart_add_event);
+    }
+  }, [info.smart_add_event, addEvent]);
+
   let nextTargetLanguageWord: string | null = null;
   if (
     nextDueCard &&
@@ -109,47 +113,13 @@ export function NoCardsReady({
     nextTargetLanguageWord = nextDueCard?.card_text;
   }
 
-  const numCanAddTargetLanguage =
-    addCardOptions.manual_add.find(
-      ([, card_type]) => card_type === "TargetLanguage",
-    )?.[0] || 0;
-  const numCanAddListening =
-    addCardOptions.manual_add.find(
-      ([, card_type]) => card_type === "Listening",
-    )?.[0] || 0;
-  const numCanAddLetterPronunciation =
-    addCardOptions.manual_add.find(
-      ([, card_type]) => card_type === "LetterPronunciation",
-    )?.[0] || 0;
-  const numCanSmartAdd = addCardOptions.smart_add;
-
   // Calculate if workload looks light
-  const pastWeekAverage = deck.get_past_week_challenge_average();
-  const upcomingStats = deck.get_upcoming_week_review_stats();
-  const cardsAddedPast16Hours = deck.get_cards_added_in_past_hours(16);
   const showLightWorkloadNotification =
-    cardsAddedPast16Hours < 20 &&
-    (upcomingStats.total_reviews < pastWeekAverage * 21 ||
-      upcomingStats.max_per_day < 10) &&
-    upcomingStats.max_per_day <= 50 &&
-    (numCanSmartAdd > 0 ||
-      numCanAddTargetLanguage > 0 ||
-      numCanAddListening > 0 ||
-      numCanAddLetterPronunciation > 0);
-
-  const add_cards: [number, CardType | undefined][] = [];
-  if (numCanSmartAdd > 0) {
-    add_cards.push([numCanSmartAdd, undefined]);
-  }
-  if (numCanAddTargetLanguage > 0) {
-    add_cards.push([numCanAddTargetLanguage, "TargetLanguage"]);
-  }
-  if (numCanAddListening > 0) {
-    add_cards.push([numCanAddListening, "Listening"]);
-  }
-  if (numCanAddLetterPronunciation > 0) {
-    add_cards.push([numCanAddLetterPronunciation, "LetterPronunciation"]);
-  }
+    info.cards_added_past_16_hours < 20 &&
+    (info.upcoming_total_reviews < info.past_week_challenge_average * 21 ||
+      info.upcoming_max_per_day < 10) &&
+    info.upcoming_max_per_day <= 50 &&
+    info.smart_add_count > 0;
 
   const targetLanguageSpan = (
     <span style={{ fontWeight: "bold" }}>{targetLanguage} → English</span>
@@ -177,10 +147,10 @@ export function NoCardsReady({
 
       if (
         (event.code === "Space" || event.code === "Enter") &&
-        add_cards.length > 0
+        info.smart_add_event
       ) {
         event.preventDefault();
-        addNextCards(add_cards[0][1], add_cards[0][0]);
+        addSmartCards();
       }
     };
 
@@ -189,7 +159,7 @@ export function NoCardsReady({
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [addNextCards, add_cards]);
+  }, [addSmartCards, info.smart_add_event]);
 
   // Goal navigation — 3 tabs: essential, movie, pimsleur
   // Each tab auto-picks the best specific goal within that category
@@ -243,7 +213,7 @@ export function NoCardsReady({
   };
 
   // Goal progress info
-  const tierInfo = deck.get_current_tier();
+  const tierInfo = info.tier_info;
   const { goalPercentKnown, goalDone } = (() => {
     switch (effectiveGoal.type) {
       case "essential":
@@ -288,7 +258,7 @@ export function NoCardsReady({
 
   // Check if adding cards would cross a 5% threshold
   const currentRounded = Math.floor(goalPercentKnown / 5) * 5;
-  const afterRounded = Math.floor(addCardOptions.percent_known_after / 5) * 5;
+  const afterRounded = Math.floor(info.percent_known_after / 5) * 5;
   const crossesThreshold = afterRounded > currentRounded;
   const thresholdTarget = crossesThreshold ? afterRounded : null;
 
@@ -350,7 +320,7 @@ export function NoCardsReady({
       {isEmptyDeck ? (
         <div className="flex justify-center">
           <Button
-            onClick={() => addNextCards(undefined, add_cards[0]?.[0] ?? 1)}
+            onClick={addSmartCards}
             variant="default"
             size="lg"
             className="group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg"
@@ -495,76 +465,63 @@ export function NoCardsReady({
                           </p>
                         );
                       })()
-                    ) : add_cards.length > 0 ? (
+                    ) : info.smart_add_count > 0 ? (
                       <div className="flex">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              onClick={() =>
-                                addNextCards(add_cards[0][1], add_cards[0][0])
-                              }
+                              onClick={addSmartCards}
                               variant="default"
                               size="lg"
-                              className={`group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg whitespace-normal h-auto min-h-10 ${
-                                add_cards.length > 1 ? "rounded-r-none" : ""
-                              }`}
+                              className="group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg whitespace-normal h-auto min-h-10 rounded-r-none"
                             >
                               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
                               <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
-                              Learn {add_cards[0][0]} new{" "}
-                              {add_cards[0][1] === undefined
-                                ? ""
-                                : add_cards[0][1] === "TargetLanguage"
-                                  ? targetLanguageSpan
-                                  : add_cards[0][1] === "Listening"
-                                    ? listeningSpan
-                                    : pronunciationSpan}{" "}
-                              {add_cards[0][0] === 1 ? "card" : "cards"}
+                              Learn {info.smart_add_count} new{" "}
+                              {info.smart_add_count === 1 ? "card" : "cards"}
                               {thresholdTarget !== null &&
                                 !showLightWorkloadNotification && (
                                   <> to hit {thresholdTarget}%</>
                                 )}
                             </Button>
                           </TooltipTrigger>
-                          {addCardOptions.preview.length > 0 && (
+                          {info.preview.length > 0 && (
                             <TooltipContent>
-                              {addCardOptions.preview.join(", ")}
+                              {info.preview.join(", ")}
                             </TooltipContent>
                           )}
                         </Tooltip>
-                        {add_cards.length > 1 && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="default"
-                                size="lg"
-                                className="rounded-l-none border-l border-l-primary-foreground/20 px-2"
+                        <DropdownMenu onOpenChange={(open) => { if (open) loadManualAddOptions(); }}>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="default"
+                              size="lg"
+                              className="rounded-l-none border-l border-l-primary-foreground/20 px-2"
+                            >
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {manualAddOptions.filter(o => o.count > 0).map((option) => (
+                              <DropdownMenuItem
+                                key={option.card_type}
+                                onClick={() => option.event && addEvent(option.event)}
+                                className="cursor-pointer"
                               >
-                                <ChevronDown className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {add_cards.slice(1).map(([count, card_type]) => (
-                                <DropdownMenuItem
-                                  key={card_type || "smart"}
-                                  onClick={() => addNextCards(card_type, count)}
-                                  className="cursor-pointer"
-                                >
-                                  <Sparkles className="h-4 w-4 mr-2" />
-                                  Learn {count}{" "}
-                                  {card_type === "TargetLanguage"
-                                    ? targetLanguageSpan
-                                    : card_type === "Listening"
-                                      ? listeningSpan
-                                      : card_type === "LetterPronunciation"
-                                        ? pronunciationSpan
-                                        : ""}{" "}
-                                  {count === 1 ? "card" : "cards"}
-                                </DropdownMenuItem>
-                              ))}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Learn {option.count}{" "}
+                                {option.card_type === "TargetLanguage"
+                                  ? targetLanguageSpan
+                                  : option.card_type === "Listening"
+                                    ? listeningSpan
+                                    : option.card_type === "LetterPronunciation"
+                                      ? pronunciationSpan
+                                      : ""}{" "}
+                                {option.count === 1 ? "card" : "cards"}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     ) : (
                       <p className="text-sm">
@@ -577,7 +534,7 @@ export function NoCardsReady({
                       projectedValue={
                         goalDone
                           ? undefined
-                          : addCardOptions.percent_known_after
+                          : info.percent_known_after
                       }
                       showPercentage
                       label={goalDone ? "Done!" : undefined}
@@ -639,4 +596,4 @@ export function NoCardsReady({
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
     </div>
   );
-}
+});

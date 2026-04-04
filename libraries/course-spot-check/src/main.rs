@@ -434,7 +434,7 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
     let state = DeckState::new();
     let mut deck = <Deck as weapon::AppState>::finalize(state, &context);
 
-    if let Some(event) = deck.add_next_unknown_cards(None, 100, vec![], None) {
+    if let Some(event) = deck.get_no_cards_ready_info(vec![], None).smart_add_event {
         let ts = Timestamped {
             timestamp: Utc::now(),
             within_device_events_index: 0,

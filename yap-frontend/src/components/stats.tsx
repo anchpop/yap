@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useDeferredValue, useMemo } from "react";
+import { memo, useState, lazy, Suspense, useDeferredValue, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import TimeAgo from "react-timeago";
 import type { Deck, Language } from "../../../yap-frontend-rs/pkg";
@@ -25,7 +25,7 @@ interface StatsProps {
   targetLanguage: Language;
 }
 
-export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
+export const Stats = memo(function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
   const deck = useDeferredValue(deckProp);
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
 
@@ -242,4 +242,4 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
       </Collapsible>
     </div>
   );
-}
+});

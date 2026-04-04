@@ -659,13 +659,29 @@ const CARD_TYPES: [CardType; 3] = [
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
-pub struct AddCardOptions {
-    pub smart_add: u32,
-    pub manual_add: Vec<(u32, CardType)>,
-    /// The estimated percent of words known after adding `smart_add` cards
-    pub percent_known_after: f64,
+pub struct NoCardsReadyInfo {
+    pub smart_add_count: u32,
     /// Display strings for the cards that would be added via smart_add
     pub preview: Vec<String>,
+    /// The estimated percent of words known after adding smart_add cards
+    pub percent_known_after: f64,
+    /// Pre-built event to add the smart_add cards (None if no cards to add)
+    pub smart_add_event: Option<DeckEvent>,
+    /// Current tier info
+    pub tier_info: TierInfo,
+    /// Workload stats for notification
+    pub past_week_challenge_average: f64,
+    pub upcoming_total_reviews: u32,
+    pub upcoming_max_per_day: u32,
+    pub cards_added_past_16_hours: u32,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct ManualAddOption {
+    pub count: u32,
+    pub card_type: CardType,
+    pub event: Option<DeckEvent>,
 }
 
 pub use deck_event::current::CardIndicator;
@@ -2766,31 +2782,56 @@ impl Deck {
         }
     }
 
+    fn cards_to_event(
+        &self,
+        cards: &[CardIndicator<SpurGram, Spur>],
+        goal: &Option<GoalSelection>,
+    ) -> Option<DeckEvent> {
+        if cards.is_empty() {
+            return None;
+        }
+        let resolved = cards
+            .iter()
+            .map(|card| {
+                card.resolve(
+                    &self.context.language_pack.string_rodeo,
+                    &self.context.language_pack.gram_rodeo,
+                )
+            })
+            .collect::<Vec<_>>();
+        Some(DeckEvent::Language(LanguageEvent {
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
+            content: LanguageEventContent::AddCards {
+                cards: resolved,
+                goal: goal.clone(),
+            },
+        }))
+    }
+
+    /// Compute everything the NoCardsReady screen needs in a single call.
+    /// This calls next_unknown_cards only once.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn add_card_options(
+    pub fn get_no_cards_ready_info(
         &self,
         banned_challenge_types: Vec<ChallengeRequirements>,
         goal: Option<GoalSelection>,
-    ) -> AddCardOptions {
-        let banned_types_set = banned_challenge_types
-            .into_iter()
-            .collect::<std::collections::BTreeSet<_>>();
-
+    ) -> NoCardsReadyInfo {
+        let banned_types_set: std::collections::BTreeSet<_> =
+            banned_challenge_types.into_iter().collect();
         let max_cards_to_add = self.max_cards_to_add();
 
-        // Collect smart add cards to compute both count and projected percentage
+        // One next_unknown_cards call for smart add
         let smart_add_cards: Vec<_> = self
             .next_unknown_cards(
-                AllowedCards::BannedRequirements(banned_types_set.clone()),
+                AllowedCards::BannedRequirements(banned_types_set),
                 &goal,
                 max_cards_to_add,
             )
             .take(max_cards_to_add)
             .collect();
-        let smart_add_count = smart_add_cards.len() as u32;
 
-        // Calculate projected percent known after adding smart_add cards
-        // Build projected gram sets including the new cards
+        // Projected percent known
         let mut projected_written = self.get_comprehensible_written_grams(true).clone();
         let mut projected_listening = self.get_comprehensible_listening_grams(true).clone();
         for card in &smart_add_cards {
@@ -2811,14 +2852,11 @@ impl Deck {
                     .percent_known
             }
             None => {
-                // For essential (no goal), find the tier level where these cards help most
-                // and report the projected percent for that level.
                 let freq_list = &self.context.language_pack.gram_frequencies;
                 let all_grams: Vec<SpurGram> = freq_list.entries.keys().copied().collect();
                 let levels = tiers::tier_level_slices(&all_grams, freq_list);
                 let current_written = self.get_comprehensible_written_grams(true);
                 let current_listening = self.get_comprehensible_listening_grams(true);
-
                 let level_idx = tiers::best_tier_level_idx(
                     &levels,
                     freq_list,
@@ -2831,18 +2869,17 @@ impl Deck {
             }
         };
 
+        // Preview strings
         let preview: Vec<String> = smart_add_cards
             .iter()
             .map(|card| match card {
-                CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
-                    let resolved = self
-                        .context
-                        .language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&self.context.language_pack.string_rodeo);
-                    resolved.to_display_string(self.context.course.target_language)
-                }
+                CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => self
+                    .context
+                    .language_pack
+                    .gram_rodeo
+                    .resolve(gram)
+                    .resolve(&self.context.language_pack.string_rodeo)
+                    .to_display_string(self.context.course.target_language),
                 CardIndicator::LetterPronunciation { pattern, .. } => self
                     .context
                     .language_pack
@@ -2852,96 +2889,72 @@ impl Deck {
             })
             .collect();
 
-        AddCardOptions {
-            manual_add: vec![
-                (
-                    if banned_types_set.contains(&ChallengeRequirements::Text) {
-                        0
-                    } else {
-                        self.next_unknown_cards(
-                            AllowedCards::Type(CardType::TargetLanguage),
-                            &goal,
-                            max_cards_to_add,
-                        )
-                        .take(max_cards_to_add)
-                        .count() as u32
-                    },
-                    CardType::TargetLanguage,
-                ),
-                (
-                    if banned_types_set.contains(&ChallengeRequirements::Listening) {
-                        0
-                    } else {
-                        self.next_unknown_cards(
-                            AllowedCards::Type(CardType::Listening),
-                            &goal,
-                            max_cards_to_add,
-                        )
-                        .take(max_cards_to_add)
-                        .count() as u32
-                    },
-                    CardType::Listening,
-                ),
-                (
-                    if banned_types_set.contains(&ChallengeRequirements::Speaking) {
-                        0
-                    } else {
-                        self.next_unknown_cards(
-                            AllowedCards::Type(CardType::LetterPronunciation),
-                            &goal,
-                            max_cards_to_add,
-                        )
-                        .take(max_cards_to_add)
-                        .count() as u32
-                    },
-                    CardType::LetterPronunciation,
-                ),
-            ],
-            smart_add: smart_add_count,
-            percent_known_after,
+        // Pre-build smart add event
+        let smart_add_event = self.cards_to_event(&smart_add_cards, &goal);
+
+        // Tier info (reuses the projected grams we already computed)
+        let tier_info = {
+            let freq_list = &self.context.language_pack.gram_frequencies;
+            let all_grams: Vec<SpurGram> = freq_list.entries.keys().copied().collect();
+            let levels = tiers::tier_level_slices(&all_grams, freq_list);
+            let current_written = self.get_comprehensible_written_grams(true);
+            let current_listening = self.get_comprehensible_listening_grams(true);
+            let level_idx = tiers::best_tier_level_idx(
+                &levels,
+                freq_list,
+                current_written,
+                current_listening,
+                &projected_written,
+                &projected_listening,
+            );
+            let level = &levels[level_idx];
+            let pct = level.known_pct(freq_list, current_written, current_listening);
+            let grand_total_freq: u64 = freq_list.entries.values().map(|f| f.count as u64).sum();
+            let cumulative_freq: u64 = levels[..=level_idx].iter().map(|l| l.total_freq()).sum();
+            let cumulative_pct = if grand_total_freq > 0 {
+                cumulative_freq as f64 / grand_total_freq as f64 * 100.0
+            } else {
+                0.0
+            };
+            level.to_tier_info(pct, cumulative_pct)
+        };
+
+        // Workload stats
+        let past_week_challenge_average = self.get_past_week_challenge_average();
+        let upcoming = self.get_upcoming_week_review_stats();
+        let cards_added_past_16_hours = self.get_cards_added_in_past_hours(16.0);
+
+        NoCardsReadyInfo {
+            smart_add_count: smart_add_cards.len() as u32,
             preview,
+            percent_known_after,
+            smart_add_event,
+            tier_info,
+            past_week_challenge_average,
+            upcoming_total_reviews: upcoming.total_reviews,
+            upcoming_max_per_day: upcoming.max_per_day,
+            cards_added_past_16_hours,
         }
     }
 
+    /// Compute a manual add option for a specific card type. Call lazily (e.g. on dropdown open).
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn add_next_unknown_cards(
+    pub fn get_manual_add_option(
         &self,
-        card_type: Option<CardType>,
-        count: usize,
-        banned_challenge_types: Vec<ChallengeRequirements>,
+        card_type: CardType,
         goal: Option<GoalSelection>,
-    ) -> Option<DeckEvent> {
-        let banned_types_set = banned_challenge_types
-            .into_iter()
-            .collect::<std::collections::BTreeSet<_>>();
-
-        if count == 0 {
-            return None;
+    ) -> ManualAddOption {
+        let max_cards_to_add = self.max_cards_to_add();
+        let cards: Vec<_> = self
+            .next_unknown_cards(AllowedCards::Type(card_type), &goal, max_cards_to_add)
+            .take(max_cards_to_add)
+            .collect();
+        let event = self.cards_to_event(&cards, &goal);
+        ManualAddOption {
+            count: cards.len() as u32,
+            card_type,
+            event,
         }
-
-        let allowed_cards = match (card_type, banned_types_set) {
-            (Some(card_type), _) => AllowedCards::Type(card_type),
-            (None, banned_types_set) => AllowedCards::BannedRequirements(banned_types_set),
-        };
-
-        let cards = self
-            .next_unknown_cards(allowed_cards, &goal, count)
-            .take(count)
-            .map(|card| {
-                card.resolve(
-                    &self.context.language_pack.string_rodeo,
-                    &self.context.language_pack.gram_rodeo,
-                )
-            })
-            .collect::<Vec<_>>();
-
-        (!cards.is_empty()).then_some({
-            DeckEvent::Language(LanguageEvent {
-                target_language: self.context.course.target_language,
-                native_language: self.context.course.native_language,
-                content: LanguageEventContent::AddCards { cards, goal },
-            })
-        })
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -3135,18 +3148,13 @@ impl Deck {
         self.cards.len()
     }
 
-    /// Get the average number of challenges completed per day in the past week
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_past_week_challenge_average(&self) -> f64 {
+    fn get_past_week_challenge_average(&self) -> f64 {
         let total_challenges: u32 = self.stats.past_week_challenges.values().sum();
         // Average over 7 days
         total_challenges as f64 / 7.0
     }
 
-    /// Calculate upcoming review statistics for the next three weeks
-    /// Returns total reviews and max reviews on any single day
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_upcoming_week_review_stats(&self) -> UpcomingReviewStats {
+    fn get_upcoming_week_review_stats(&self) -> UpcomingReviewStats {
         let now = Utc::now();
         let three_weeks_later = now + chrono::Duration::days(21);
 
@@ -3181,9 +3189,7 @@ impl Deck {
         }
     }
 
-    /// Count the number of cards created within the past `hours` hours.
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_cards_added_in_past_hours(&self, hours: f64) -> u32 {
+    fn get_cards_added_in_past_hours(&self, hours: f64) -> u32 {
         if !hours.is_finite() || hours <= 0.0 {
             return 0;
         }
@@ -3266,10 +3272,9 @@ impl Deck {
 }
 
 #[derive(Debug, Clone)]
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-pub struct UpcomingReviewStats {
-    pub total_reviews: u32,
-    pub max_per_day: u32,
+struct UpcomingReviewStats {
+    total_reviews: u32,
+    max_per_day: u32,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -3314,6 +3319,7 @@ impl Deck {
         goal: &Option<GoalSelection>,
         limit: usize,
     ) -> NextCardsIterator {
+        log::info!("next_unknown_cards called");
         NextCardsIterator::new(self, allowed_cards, goal, limit)
     }
 
@@ -4712,7 +4718,10 @@ mod tests {
         let mut deck = Deck::default();
 
         // Test that we can add cards to the default deck
-        if let Some(event) = deck.add_next_unknown_cards(None, 1, Vec::new(), None) {
+        if let Some(event) = deck
+            .get_no_cards_ready_info(Vec::new(), None)
+            .smart_add_event
+        {
             let ts = weapon::data_model::Timestamped {
                 timestamp: chrono::Utc::now(),
                 within_device_events_index: 0,
@@ -4797,7 +4806,10 @@ mod tests {
         assert_limits(&deck);
 
         while deck.num_cards() < 12 {
-            let Some(event) = deck.add_next_unknown_cards(None, 5, Vec::new(), None) else {
+            let Some(event) = deck
+                .get_no_cards_ready_info(Vec::new(), None)
+                .smart_add_event
+            else {
                 break;
             };
 

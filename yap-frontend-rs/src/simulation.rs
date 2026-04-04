@@ -73,7 +73,7 @@ impl DayChallengeIterator {
         let mut deck = self.take_deck();
 
         // Add 10 new cards at the end of the day
-        if let Some(event) = deck.add_next_unknown_cards(None, 10, vec![], None) {
+        if let Some(event) = deck.get_no_cards_ready_info(vec![], None).smart_add_event {
             let ts = Timestamped {
                 timestamp: self.current_time,
                 within_device_events_index: self.event_index,

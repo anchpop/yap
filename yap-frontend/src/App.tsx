@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/react";
 import {
   useState,
   useEffect,
+  memo,
   Profiler,
   useSyncExternalStore,
   useMemo,
@@ -20,7 +21,7 @@ import {
   CardSummary,
   Deck,
   type Accomplishment,
-  type CardType,
+  type DeckEvent,
   type Challenge,
   type ChallengeRequirements,
   type Course,
@@ -526,7 +527,7 @@ function ReviewPage() {
   );
 }
 
-function Tools({ deck: _deck }: { deck: Deck }) {
+const Tools = memo(function Tools({ deck: _deck }: { deck: Deck }) {
   const navigate = useNavigate();
 
   return (
@@ -550,7 +551,7 @@ function Tools({ deck: _deck }: { deck: Deck }) {
       </Card>
     </div>
   );
-}
+});
 
 function DictionaryPage() {
   const { userInfo } = useOutletContext<AppContextType>();
@@ -832,7 +833,7 @@ function Review({
 
   useInterval(
     () => setCardsBecameDue((cardsBecameDue) => cardsBecameDue + 1),
-    reviewInfo.due_count === 0 ? 1000 : 60000,
+    60000,
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -929,20 +930,16 @@ function Review({
 
   const goalSelection = goalToGoalSelection(goal);
 
-  const addNextCards = useCallback(
-    async (card_type: CardType | undefined, count: number) => {
-      const event = deck.add_next_unknown_cards(
-        card_type,
-        count,
-        bannedChallengeTypes,
-        goalSelection,
-      );
-      if (event) {
-        weapon.add_deck_event(event);
-      }
-    },
-    [deck, weapon, bannedChallengeTypes, goalSelection],
-  );
+  const addEvent = useCallback((event: DeckEvent) => {
+    weapon.add_deck_event(event);
+  }, [weapon]);
+
+  const addSmartCards = useCallback(() => {
+    const info = deck.get_no_cards_ready_info(bannedChallengeTypes, goalSelection);
+    if (info.smart_add_event) {
+      weapon.add_deck_event(info.smart_add_event);
+    }
+  }, [deck, weapon, bannedChallengeTypes, goalSelection]);
 
   const handleRating = async (rating: Rating) => {
     if (
@@ -1080,7 +1077,7 @@ function Review({
       if (event.code === "Space" || event.code === "Enter") {
         if (deck.num_cards() === 0) {
           event.preventDefault();
-          addNextCards(undefined, 1);
+          addSmartCards();
         }
       }
     };
@@ -1090,7 +1087,7 @@ function Review({
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [addNextCards, deck]);
+  }, [addSmartCards, deck]);
 
   // Check if we should show the SetDisplayName prompt
   const shouldShowSetDisplayName =
@@ -1147,7 +1144,7 @@ function Review({
         ) : reviewInfo.due_count === 0 && !currentChallenge ? (
           <NoCardsReady
             nextDueCard={nextDueCard}
-            addNextCards={addNextCards}
+            addEvent={addEvent}
             showEngagementPrompts={
               reviewInfo.total_count > 5 &&
               network.online === true &&

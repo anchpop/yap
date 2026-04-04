@@ -21,7 +21,7 @@ function formatTime(seconds: number): string {
   return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
 }
 
-export const NumericStats: React.FC<NumericStatsProps> = ({
+export const NumericStats: React.FC<NumericStatsProps> = React.memo(({
   xp,
   totalCards,
   cardsReady,
@@ -82,4 +82,4 @@ export const NumericStats: React.FC<NumericStatsProps> = ({
       </div>
     </div>
   );
-};
+});
