@@ -81,8 +81,7 @@ export function Stats({ deck: deckProp, targetLanguage }: StatsProps) {
         percentKnown={deck.get_percent_of_words_known() * 100}
         dailyStreak={deck.get_daily_streak()}
         totalReviews={deck.get_total_reviews()}
-        tierName={`${deck.get_current_tier().name} Lv.${deck.get_current_tier().level}`}
-        tierPercent={deck.get_current_tier().percent_known}
+        targetLanguage={targetLanguage}
         todayReviews={deck.get_today_reviews()}
         todayTimeSpent={deck.get_today_time_spent()}
         dailyTargetSeconds={deck.get_daily_review_target()}
