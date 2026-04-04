@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ interface HeaderProps {
   };
   title?: string;
   dueCount?: number;
+  dailyGoalPercent?: number;
 }
 
 function getLanguageEmoji(language: Language | undefined): string {
@@ -57,6 +59,7 @@ export function Header({
   backButton,
   title = "Yap.Town",
   dueCount,
+  dailyGoalPercent,
 }: HeaderProps) {
   const [authOpen, setAuthOpen] = useState(false);
   const [defaultView, setDefaultView] = useState<"signin" | "signup">("signin");
@@ -64,6 +67,12 @@ export function Header({
 
   return (
     <div className="space-y-2">
+      {dailyGoalPercent !== undefined && (
+        <Progress
+          value={Math.min(dailyGoalPercent, 100)}
+          className="h-1 rounded-none fixed top-0 left-0 right-0 z-50 bg-transparent"
+        />
+      )}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-4">
           {backButton ? (

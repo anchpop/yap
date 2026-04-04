@@ -127,10 +127,22 @@ export function AccomplishmentScreen({
 
   // Fire on mount
   useEffect(() => {
-    // Small delay to ensure canvas is ready
     const timer = setTimeout(fireConfetti, 100);
     return () => clearTimeout(timer);
   }, [fireConfetti]);
+
+  // Enter/Space to dismiss
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLButtonElement) return;
+      if (e.code === "Enter" || e.code === "Space") {
+        e.preventDefault();
+        onDismiss();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onDismiss]);
 
   return (
     <div className="flex flex-col items-center gap-6">

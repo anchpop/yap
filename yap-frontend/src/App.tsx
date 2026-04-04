@@ -443,6 +443,8 @@ function ReviewPage() {
                     showSignupNag: deck !== null,
                     language: targetLanguage,
                     dueCount: reviewInfo.due_count || 0,
+                    dailyGoalPercent:
+                      (deck.get_today_time_spent() / deck.get_daily_review_target()) * 100,
                   }}
                 >
                   <Review

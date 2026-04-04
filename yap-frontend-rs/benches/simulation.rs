@@ -91,13 +91,13 @@ fn bench_next_unknown_cards(c: &mut Criterion) {
 
     c.bench_function("next_unknown_cards_10", |b| {
         b.iter(|| {
-            criterion::black_box(deck.add_next_unknown_cards(None, 10, vec![], None));
+            criterion::black_box(deck.get_no_cards_ready_info(vec![], None));
         })
     });
 
     c.bench_function("next_unknown_cards_100", |b| {
         b.iter(|| {
-            criterion::black_box(deck.add_next_unknown_cards(None, 100, vec![], None));
+            criterion::black_box(deck.get_no_cards_ready_info(vec![], None));
         })
     });
 }

@@ -58,6 +58,6 @@ fn load_deck_from_test_data() -> Deck {
 fn main() {
     let deck = load_deck_from_test_data();
     for _ in 0..5000 {
-        std::hint::black_box(deck.add_next_unknown_cards(None, 10, vec![], None));
+        std::hint::black_box(deck.get_no_cards_ready_info(vec![], None));
     }
 }

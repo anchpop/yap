@@ -83,6 +83,8 @@ For the description (optional, set to null if not needed):
 - Include context if it's a historical figure, famous place, or cultural reference that might need explanation
 - Leave as null for common names, well-known places, or self-explanatory proper nouns
 
+IMPORTANT: Do not reference or repeat the example sentences in your output. The sentences are only provided to help you understand what the proper noun refers to. Your description should be general-purpose, as the proper noun may appear in other contexts.
+
 Be very concise - this is for a language learning app.
 
 Examples:

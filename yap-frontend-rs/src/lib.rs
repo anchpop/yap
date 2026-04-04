@@ -4785,7 +4785,7 @@ mod tests {
         let mut deck = Deck::default();
 
         let assert_limits = |deck: &Deck| {
-            let options = deck.add_card_options(Vec::new(), None);
+            let info = deck.get_no_cards_ready_info(Vec::new(), None);
             let expected_max = if deck.num_cards() < 5 {
                 1
             } else if deck.num_cards() < 11 {
@@ -4794,13 +4794,7 @@ mod tests {
                 5
             } as u32;
 
-            assert!(options.smart_add <= expected_max);
-            assert!(
-                options
-                    .manual_add
-                    .iter()
-                    .all(|(count, _)| *count <= expected_max)
-            );
+            assert!(info.smart_add_count <= expected_max);
         };
 
         assert_limits(&deck);
@@ -5330,16 +5324,12 @@ mod tests {
         let goal = deck.goal.clone();
 
         println!("\n=== Add Card Options (Smart Add) ===");
-        let options = deck.add_card_options(vec![], goal);
-        println!("  Smart add count: {}", options.smart_add);
+        let info = deck.get_no_cards_ready_info(vec![], goal);
+        println!("  Smart add count: {}", info.smart_add_count);
         println!(
             "  Projected percent known after: {:.2}%",
-            options.percent_known_after
+            info.percent_known_after
         );
-        println!("  Manual add options:");
-        for (count, card_type) in &options.manual_add {
-            println!("    {card_type:?}: {count} available");
-        }
         println!("  Preview of next cards to add:");
         {
             let freq_entries = &deck.context.language_pack.gram_frequencies.entries;

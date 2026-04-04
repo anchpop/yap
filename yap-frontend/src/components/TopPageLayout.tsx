@@ -17,6 +17,7 @@ interface TopPageLayoutProps {
     };
     title?: string;
     dueCount?: number;
+    dailyGoalPercent?: number;
   };
 }
 
