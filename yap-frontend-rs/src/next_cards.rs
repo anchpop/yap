@@ -120,19 +120,19 @@ impl NextCardsIterator {
         // Precompute text card values: grams not yet Added, partially sorted by value desc.
         // Ghost cards are included since they can be promoted to Added.
         //
-        // gram_source.entries is sorted by count descending, so ln_freq is also descending.
-        // Since value = (1 - probability) * ln_freq ≤ ln_freq, once ln_freq drops below
-        // the Nth-best value we've seen, no subsequent gram can enter the top N.
+        // gram_source.entries is sorted by count descending, so freq_score is also descending.
+        // Since value = (1 - probability) * freq_score ≤ freq_score, once freq_score drops
+        // below the Nth-best value we've seen, no subsequent gram can enter the top N.
         let mut text_values: Vec<(NotNan<f32>, SpurGram)> = Vec::new();
         // Min-heap tracking the top early_term_n values for early termination threshold
         let mut top_n: std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>> =
             std::collections::BinaryHeap::new();
         for (gram, frequency) in gram_source.entries.iter() {
-            // Early termination: once we have enough candidates and ln_freq is below
+            // Early termination: once we have enough candidates and freq_score is below
             // the smallest of the top N, no future gram can enter the top N.
             if top_n.len() >= early_term_n {
-                let ln_freq = NotNan::new(frequency.ln_frequency()).unwrap_or_default();
-                if ln_freq < top_n.peek().unwrap().0 {
+                let freq_score = NotNan::new(frequency.frequency_score()).unwrap_or_default();
+                if freq_score < top_n.peek().unwrap().0 {
                     break;
                 }
             }

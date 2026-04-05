@@ -3509,12 +3509,13 @@ impl Context {
         }
     }
 
-    /// Returns the appropriate ln(frequency) for value calculation.
+    /// Returns the frequency score for card value calculation.
     /// Listening grams use actual sentence frequency; other cards use full frequency.
+    /// They are only different for multiword terms.
     fn card_value_frequency(card: &CardIndicator<SpurGram, Spur>, frequency: Frequency) -> f32 {
         match card {
-            CardIndicator::ListeningGram { .. } => frequency.ln_direct_frequency(),
-            _ => frequency.ln_frequency(),
+            CardIndicator::ListeningGram { .. } => frequency.direct_frequency_score(),
+            _ => frequency.frequency_score(),
         }
     }
 
@@ -5155,28 +5156,33 @@ mod tests {
 
         let client = reqwest::Client::new();
 
-        // 1. Look up user by email
+        // 1. Look up user by email (paginated)
         println!("Looking up user: {email}");
-        let resp: serde_json::Value = client
-            .get(format!("{supabase_url}/auth/v1/admin/users"))
-            .header("apikey", &service_role_key)
-            .header("Authorization", format!("Bearer {service_role_key}"))
-            .send()
-            .await
-            .unwrap()
-            .json()
-            .await
-            .unwrap();
+        let mut user_id = None;
+        for page in 1..=20 {
+            let resp: serde_json::Value = client
+                .get(format!(
+                    "{supabase_url}/auth/v1/admin/users?page={page}&per_page=50"
+                ))
+                .header("apikey", &service_role_key)
+                .header("Authorization", format!("Bearer {service_role_key}"))
+                .send()
+                .await
+                .unwrap()
+                .json()
+                .await
+                .unwrap();
 
-        let user_id = resp["users"]
-            .as_array()
-            .expect("Expected users array")
-            .iter()
-            .find(|u| u["email"].as_str() == Some(&email))
-            .unwrap_or_else(|| panic!("No user found with email: {email}"))["id"]
-            .as_str()
-            .unwrap()
-            .to_string();
+            let users = resp["users"].as_array().expect("Expected users array");
+            if users.is_empty() {
+                break;
+            }
+            if let Some(u) = users.iter().find(|u| u["email"].as_str() == Some(&email)) {
+                user_id = Some(u["id"].as_str().unwrap().to_string());
+                break;
+            }
+        }
+        let user_id = user_id.unwrap_or_else(|| panic!("No user found with email: {email}"));
         println!("Found user_id: {user_id}");
 
         // 2. Fetch all events (paginated)

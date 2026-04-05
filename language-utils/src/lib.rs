@@ -1225,11 +1225,11 @@ pub struct Frequency {
 }
 
 impl Frequency {
-    pub fn ln_frequency(&self) -> f32 {
+    pub fn frequency_score(&self) -> f32 {
         (self.count as f32).ln()
     }
 
-    pub fn ln_direct_frequency(&self) -> f32 {
+    pub fn direct_frequency_score(&self) -> f32 {
         (self.direct_count as f32).ln()
     }
 

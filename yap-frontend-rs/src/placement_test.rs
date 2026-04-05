@@ -107,10 +107,10 @@ impl Context {
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 impl Deck {
-    /// Helper function to find the heteronym with ln_frequency closest to the target value
+    /// Helper function to find the heteronym with frequency_score closest to the target value
     /// Uses binary search since gram_frequencies is sorted by frequency (descending)
     /// Returns None if all words at that frequency are excluded
-    pub(crate) fn find_heteronym_near_ln_frequency_for_placement_test(
+    pub(crate) fn find_heteronym_near_frequency_score_for_placement_test(
         &self,
         target_ln_freq: f32,
         excluded_lemmas: &std::collections::HashSet<Spur>,
@@ -121,7 +121,7 @@ impl Deck {
             return None;
         }
 
-        // Binary search to find the closest ln_frequency
+        // Binary search to find the closest frequency_score
         // Note: frequencies are sorted descending, so ln_frequencies are also descending
         let mut left: usize = 0;
         let mut right = frequencies.len();
@@ -339,7 +339,7 @@ impl Deck {
             }
         };
 
-        // Calculate smoothing window (10% of max ln_frequency)
+        // Calculate smoothing window (10% of max frequency_score)
         let smoothing_window = most_common_freq.ease * 0.1;
         let smooth_regression = SmoothRegression::from_regression(regression, smoothing_window);
 
@@ -358,9 +358,9 @@ impl Deck {
                 if target_ln_freq >= least_common_freq.ease
                     && target_ln_freq <= most_common_freq.ease
                 {
-                    // Find a heteronym near this ln_frequency using binary search
+                    // Find a heteronym near this frequency_score using binary search
                     if let Some((heteronym, _freq)) = self
-                        .find_heteronym_near_ln_frequency_for_placement_test(
+                        .find_heteronym_near_frequency_score_for_placement_test(
                             target_ln_freq,
                             &excluded_lemmas,
                         )
