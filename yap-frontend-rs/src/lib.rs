@@ -730,14 +730,16 @@ impl CardData {
         }
     }
 
-    /// Returns positive surprise if there are no lapses, or negative surprise otherwise
+    /// Returns 1.0 if the user never failed this card in the first 5 reviews,
+    /// 0.0 otherwise. Only early lapses count as signal about pre-existing
+    /// knowledge — later lapses are brain farts, not ignorance.
     pub fn pre_existing_knowledge(&self) -> f32 {
         match self {
             CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
-                if fsrs_card.lapses == 0 {
-                    fsrs_card.accumulated_positive_surprise as f32
+                if fsrs_card.early_lapses == 0 {
+                    1.0
                 } else {
-                    -fsrs_card.accumulated_negative_surprise as f32
+                    0.0
                 }
             }
         }
@@ -1591,13 +1593,13 @@ impl weapon::AppState for Deck {
             if let Some(placement_test_results) = &state.placement_test_results {
                 // Use placement test results to create bias points
                 let mut points = context.get_placement_test_points(placement_test_results);
-                points.extend(bias_points(1_f32.ln(), -10.0, 5));
+                points.extend(bias_points(1_f32.ln(), 0.0, 5));
                 points.extend(bias_points(25_f32.ln(), 0.0, 5));
                 points.extend(bias_points(64_f32.ln(), 0.0, 5));
                 points
             } else {
                 let mut points = Vec::new();
-                points.extend(bias_points(1_f32.ln(), -10.0, 5));
+                points.extend(bias_points(1_f32.ln(), 0.0, 5));
                 points.extend(bias_points(25_f32.ln(), 0.0, 5));
                 points.extend(bias_points(64_f32.ln(), 0.0, 5));
                 points.extend(bias_points(400_f32.ln(), 0.0, 3));
@@ -3247,7 +3249,7 @@ impl Deck {
             let Some(knowledge) = regression.interpolate(target_ease) else {
                 continue;
             };
-            let probability = Regressions::knowledge_to_probability(knowledge);
+            let probability = knowledge;
 
             // Find example words near this ease value
             let ease_tolerance = 0.5_f32;
@@ -3537,54 +3539,37 @@ impl Context {
         regressions: &Regressions,
         frequency: Frequency,
     ) -> Option<ordered_float::NotNan<f32>> {
-        let ln_freq = Self::card_value_frequency(card, frequency);
+        let freq_score = Self::card_value_frequency(card, frequency);
 
         // Check if we have a reviewed card (ghost or added)
         if let Some(card_data) = card_data {
-            // Get the FSRS card using explicit pattern match
             let fsrs_card = match card_data {
                 CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => fsrs_card,
             };
 
-            // If it's been reviewed (not new), use the actual knowledge from FSRS
+            // If it's been reviewed (not new), combine actual review data with prediction
             if fsrs_card.state != rs_fsrs::State::New {
-                // Get the predicted knowledge
-                let predicted_knowledge = regressions.predict_card_knowledge(card, frequency)?;
+                let predicted_prob = regressions.predict_card_knowledge(card, frequency)?;
 
-                // Calculate observed knowledge from FSRS data
-                let observed_knowledge: f32 = if fsrs_card.lapses == 0 {
-                    fsrs_card.accumulated_positive_surprise as f32
+                // Average the regression probability toward 1.0 or 0.0 based on
+                // review outcomes, weighting harder with more evidence.
+                let probability = if fsrs_card.early_lapses == 0 {
+                    // Never failed early: average toward 1.0, weighted by number of successes
+                    let w = fsrs_card.reps as f32 / (fsrs_card.reps as f32 + 3.0);
+                    predicted_prob * (1.0 - w) + w
                 } else {
-                    -fsrs_card.accumulated_negative_surprise as f32
+                    // Has early failures: average toward 0.0, weighted by number of early lapses
+                    let w = fsrs_card.early_lapses as f32 / (fsrs_card.early_lapses as f32 + 3.0);
+                    predicted_prob * (1.0 - w)
                 };
 
-                // For ghost cards, combine observed and predicted
-                // For added cards, just use observed
-                let combined_knowledge = match card_data {
-                    CardData::Ghost { .. } => {
-                        if observed_knowledge < 0.0 {
-                            // Has lapses: use whichever is lower (more pessimistic)
-                            observed_knowledge.min(predicted_knowledge)
-                        } else {
-                            // No lapses: add positive surprisal to prediction
-                            observed_knowledge + predicted_knowledge
-                        }
-                    }
-                    CardData::Added { .. } => {
-                        // Added card - use actual knowledge
-                        observed_knowledge
-                    }
-                };
-
-                // Convert knowledge to probability and then to value
-                let probability = Regressions::knowledge_to_probability(combined_knowledge);
-                return ordered_float::NotNan::new((1.0 - probability) * ln_freq).ok();
+                return ordered_float::NotNan::new((1.0 - probability) * freq_score).ok();
             }
         }
 
         // Fall back to regular prediction-based value for new or unadded cards
         let knowledge_probability = self.get_knowledge_probability(card, regressions, frequency);
-        ordered_float::NotNan::new((1.0 - knowledge_probability) * ln_freq).ok()
+        ordered_float::NotNan::new((1.0 - knowledge_probability) * freq_score).ok()
     }
 
     fn get_card_knowledge_probability(
@@ -3726,80 +3711,14 @@ impl Regressions {
     }
 
     /// Get the predicted probability of knowing a card (0.0 to 1.0).
-    /// Based on accumulated surprise (pre-existing knowledge) from review history.
-    /// The relationship maps knowledge to probability:
-    ///
-    /// - Knowledge >= 3.0 = 95% chance of knowing (easy cards)
-    /// - Knowledge = 0 = 50% chance of knowing (neutral)
-    /// - Knowledge <= -2.0 = 10% chance of knowing (failed cards)
-    /// - Linear interpolation between these points
+    /// The regression is trained on binary 0/1 data (never failed vs has failed),
+    /// so its output is directly a probability.
     pub(crate) fn predict_card_knowledge_probability(
         &self,
         card: &CardIndicator<SpurGram, Spur>,
         frequency: Frequency,
     ) -> f32 {
-        let Some(knowledge) = self.predict_card_knowledge(card, frequency) else {
-            return 0.0;
-        };
-        Self::knowledge_to_probability(knowledge)
-    }
-
-    fn knowledge_to_probability(knowledge: f32) -> f32 {
-        // With pre-existing knowledge:
-        // - Positive values indicate easier cards (higher probability)
-        // - Negative values indicate harder cards (lower probability)
-        // - Any negative value indicates at least one lapse
-        //
-        // Based on latest test results:
-        //   - Easy review gives ~4.6 positive surprise
-        //   - Good review gives ~2.3 positive surprise initially
-        //   - Initial again review gives ~0.1 negative surprise
-        //   - Again after success gives ~2.4 negative surprise
-
-        // Key insight: negative values (lapses > 0) always indicate struggling cards
-        if knowledge < 0.0 {
-            // Card has been failed at least once
-            // New algorithm: initial failures have small negative (~0.1)
-            // Failures after success have larger negative (~2.4)
-
-            if knowledge >= -0.15 {
-                // Very small negative (likely initial failure ~0.1): 10-15% probability
-                // Initial failures indicate genuine lack of knowledge
-                0.10 + 0.05 * ((knowledge + 0.15) / 0.15)
-            } else if knowledge >= -1.0 {
-                // Small to moderate negative: 5-10% probability
-                let range = 1.0 - 0.15;
-                0.05 + 0.05 * ((knowledge + 1.0) / range)
-            } else if knowledge >= -3.0 {
-                // Significant negative (failed after knowing ~2.4): 2-5% probability
-                let range = 3.0 - 1.0;
-                0.02 + 0.03 * ((knowledge + 3.0) / range)
-            } else {
-                // Deep negative surprise: cap at 2%
-                0.02
-            }
-        } else {
-            // Card has never been failed (positive knowledge)
-            // Map positive surprise to higher probability
-            const EASY_THRESHOLD: f32 = 4.4; // Easy review level (~4.6)
-            const GOOD_THRESHOLD: f32 = 2.0; // Good review level (~2.3)
-
-            if knowledge >= EASY_THRESHOLD {
-                // Easy-level knowledge: 90-95% probability
-                0.99
-            } else if knowledge >= GOOD_THRESHOLD {
-                // Good-level knowledge: 70-99% probability
-                let range = EASY_THRESHOLD - GOOD_THRESHOLD;
-                0.7 + 0.29 * (knowledge - GOOD_THRESHOLD) / range
-            } else if knowledge > 0.0 {
-                // Low positive knowledge: 10-70% probability
-                let range = GOOD_THRESHOLD;
-                0.1 + 0.6 * knowledge / range
-            } else {
-                // Zero knowledge (new card): 10% probability
-                0.1
-            }
-        }
+        self.predict_card_knowledge(card, frequency).unwrap_or(0.0)
     }
 }
 
@@ -5319,6 +5238,7 @@ mod tests {
         let stream = store
             .get::<EventType<DeckEvent>>("reviews".to_string())
             .expect("reviews stream should exist");
+
         let deck: Deck = stream.state(initial_state, &context);
 
         // 6. Print report

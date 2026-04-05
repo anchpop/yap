@@ -1220,7 +1220,7 @@ pub struct Frequency {
     /// Estimated ease of this gram (higher = easier to already know).
     /// For single-atom grams: ln(count), with a cognate bonus.
     /// For multi-atom grams: depends on compositionality and component word ease.
-    /// Used as the x-axis in the isotonic regression (instead of raw ln_frequency).
+    /// Used as the x-axis in the isotonic regression (instead of raw frequency_score).
     pub ease: f32,
 }
 
