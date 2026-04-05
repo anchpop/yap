@@ -1577,8 +1577,8 @@ impl weapon::AppState for Deck {
             }
         }
 
-        // Add bias points at (0, -10) and (10, -10) to ensure the curve slopes down
-        // This represents a word with 0 occurrences being very difficult. We'll give them a weight of 10 to ensure it's not ignored
+        // Bias points at 0.0 (unknown) anchor the low-frequency end of the
+        // regression curve, giving it the S-shape from "unknown" to "known."
 
         /// Create N unit-weight points spaced 0.01 apart around a center x,
         /// to approximate a single weighted point.
