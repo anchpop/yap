@@ -3108,6 +3108,10 @@ impl Course {
 pub const COURSES: &[Course] = &[
     Course {
         native_language: Language::English,
+        target_language: Language::Hindi,
+    },
+    Course {
+        native_language: Language::English,
         target_language: Language::French,
     },
     Course {

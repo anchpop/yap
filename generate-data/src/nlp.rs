@@ -20,9 +20,10 @@ fn to_lexide_language(lang: Language) -> Option<lexide::Language> {
         Language::Italian => Some(lexide::Language::Italian),
         Language::Portuguese => Some(lexide::Language::Portuguese),
         Language::Russian => Some(lexide::Language::Russian),
+        Language::Hindi => Some(lexide::Language::Hindi),
+        Language::Japanese => Some(lexide::Language::Japanese),
         // Languages not yet supported by lexide
-        Language::Chinese | Language::Japanese => None,
-        _ => todo!(),
+        Language::Chinese => todo!(),
     }
 }
 
@@ -112,7 +113,7 @@ pub async fn process_sentences(
         .ok_or_else(|| anyhow::anyhow!("Language {language} is not yet supported by lexide"))?;
 
     // Initialize lexide
-    let lexide = Lexide::from_server("https://anchpop--lexide-gemma-3-27b-vllm-serve.modal.run")
+    let lexide = Lexide::from_server("https://anchpop--lexide-gemma-4-31b-vllm-serve.modal.run")
         .context("Failed to initialize lexide")?;
 
     // Load already processed sentences from output file (if it exists)

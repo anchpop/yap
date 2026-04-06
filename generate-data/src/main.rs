@@ -488,6 +488,9 @@ async fn main() -> anyhow::Result<()> {
                 .or_insert_with(|| lits.clone());
         }
 
+        println!("stop here - want to manually watch the next step");
+        continue;
+
         // Convert multiword term tokenizations to grams for seeding into omnigram
         let multiword_term_literals = generate_data::nlp::convert_tokens_to_literals(
             &multiword_terms_tokenizations,
