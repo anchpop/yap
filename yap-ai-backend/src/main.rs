@@ -239,7 +239,7 @@ async fn text_to_speech(
         Language::Portuguese => "tS45q0QcrDHqHoaWdCDR", // Lax - Portuguese voice
         Language::Russian => "hLjwV7lYzk15SWLUmhEH", // Russian voice
         Language::Japanese => "GxhGYQesaQaYKePCZDEC", // Japanese voice
-        Language::Hindi => "K24eC7JpUgk8zMtQYrpV",    // Hindi voice
+        Language::Hindi => "K24eC7JpUgk8zMtQYrpV",  // Hindi voice
 
         Language::Chinese => todo!(),
     };

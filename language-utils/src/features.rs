@@ -415,8 +415,42 @@ pub enum Tense {
 /// In Czech and other Slavic languages, aspect is a lexical feature. Pairs of imperfective and perfective verbs exist and are often morphologically related but the space is highly irregular and the verbs are considered to belong to separate lemmas.
 ///
 /// Since we proceed bottom-up, the current standard covers only a few aspect values found in corpora. See Wikipedia (http://en.wikipedia.org/wiki/Grammatical_aspect) for a long list of other possible aspects.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, JsonSchema)]
-pub enum Aspect {}
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    JsonSchema,
+    Ord,
+    PartialOrd,
+    serde::Deserialize,
+    serde::Serialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+    tsify::Tsify,
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum Aspect {
+    /// Imperfect aspect: the action took / takes / will take some time span and there is
+    /// no information whether and when it was / will be completed.
+    Imperfect,
+    /// Perfect aspect: the action has been / will have been completed.
+    Perfect,
+    /// Prospective aspect: relative future — the action is/was/will be expected to take
+    /// place at a moment that follows the reference point.
+    Prospective,
+    /// Progressive aspect: the action is ongoing at the reference point (e.g. English
+    /// "is eating", Hindi रहा/रही/रहे forms).
+    Progressive,
+    /// Habitual aspect: the action takes place habitually or is a usual occurrence
+    /// (e.g. Hindi imperfective participles ending in -ता/-ती/-ते).
+    Habitual,
+    /// Iterative / frequentative aspect: denotes repeated action.
+    Iterative,
+}
 
 /// Voice is typically a feature of verbs. It may also occur with other parts of speech (nouns, adjectives, adverbs), depending on whether borderline word forms such as gerunds and participles are classified as verbs or as the other category.
 ///
@@ -510,9 +544,17 @@ pub enum Person {
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Polite {
-    /// Usage varies but if the language distinguishes levels of politeness, then the informal register is usually meant for communication with family members and close friends.
+    /// The most intimate register, below the ordinary informal/T-form.
+    /// Used in languages with three-way politeness distinctions for addressing small
+    /// children, close family, deities, or (in some contexts) as an insult.
+    /// In Hindi this is तू (tū). Distinct from `Informal` so we don't conflate it
+    /// with the ordinary T-form of European languages.
+    Intimate,
+    /// The ordinary informal / T-form register — for family, friends, and peers.
+    /// In European T-V languages this is tu/du/tú. In Hindi this is तुम (tum).
     Informal,
     /// Usage varies but if the language distinguishes levels of politeness, then the polite register is usually meant for communication with strangers and people of higher social status than the one of the speaker.
+    /// In Hindi this corresponds to आप (āp).
     Formal,
     /// Usage varies but if the language distinguishes levels of politeness, then the elevated register is usually meant for communication with people of higher social status than the one of the speaker.
     Elev,
@@ -540,7 +582,16 @@ impl FeatureSet for PronType {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Num | PartOfSpeech::Adv
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi distinguishes pronoun/determiner types (interrogative कौन/क्या,
+                // demonstrative यह/वह, indefinite कोई/कुछ, relative जो) and has
+                // pronominal adverbs (कहाँ, कब, क्यों).
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Num | PartOfSpeech::Adv
+                )
+            }
         }
     }
 }
@@ -571,7 +622,15 @@ impl FeatureSet for NumType {
                     PartOfSpeech::Num | PartOfSpeech::Det | PartOfSpeech::Adj | PartOfSpeech::Adv
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has cardinal (एक, दो), ordinal (पहला, दूसरा), and adverbial
+                // (एक बार "once") numerals.
+                matches!(
+                    pos,
+                    PartOfSpeech::Num | PartOfSpeech::Det | PartOfSpeech::Adj | PartOfSpeech::Adv
+                )
+            }
         }
     }
 }
@@ -602,7 +661,16 @@ impl FeatureSet for Poss {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adj
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has possessive pronouns/adjectives that agree with the
+                // possessed noun: मेरा/मेरी/मेरे, तुम्हारा, उसका, अपना (reflexive
+                // possessive), etc.
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adj
+                )
+            }
         }
     }
 }
@@ -630,7 +698,12 @@ impl FeatureSet for Reflex {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has reflexive pronouns अपने आप / ख़ुद / स्वयं, and the
+                // reflexive possessive अपना also counts here.
+                matches!(pos, PartOfSpeech::Pron | PartOfSpeech::Det)
+            }
         }
     }
 }
@@ -652,7 +725,8 @@ impl FeatureSet for Clusivity {
             | Language::Italian => false,
             // Russian does not have clusivity
             Language::Russian => false,
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => false,
         }
     }
 }
@@ -701,7 +775,20 @@ impl FeatureSet for Gender {
                         | PartOfSpeech::Aux
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has two genders (masculine, feminine). Affects nouns, pronouns,
+                // adjectives, and verbs (participles and compound tenses agree with the subject).
+                matches!(
+                    pos,
+                    PartOfSpeech::Noun
+                        | PartOfSpeech::Pron
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Det
+                        | PartOfSpeech::Verb
+                        | PartOfSpeech::Aux
+                )
+            }
         }
     }
 }
@@ -733,7 +820,8 @@ impl FeatureSet for Animacy {
                         | PartOfSpeech::Num
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => false,
         }
     }
 }
@@ -754,7 +842,8 @@ impl FeatureSet for NounClass {
             | Language::Italian => false,
             // Russian does not have noun classes
             Language::Russian => false,
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => false,
         }
     }
 }
@@ -814,7 +903,20 @@ impl FeatureSet for Number {
                         | PartOfSpeech::Aux
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has singular and plural. Nouns, pronouns, adjectives, and verbs
+                // (participles + finite agreement) all inflect for number.
+                matches!(
+                    pos,
+                    PartOfSpeech::Noun
+                        | PartOfSpeech::Pron
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Det
+                        | PartOfSpeech::Verb
+                        | PartOfSpeech::Aux
+                )
+            }
         }
     }
 }
@@ -854,7 +956,15 @@ impl FeatureSet for Case {
                         | PartOfSpeech::Num
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has a two-way direct/oblique case distinction (plus vocative),
+                // marked on nouns, pronouns, adjectives, and determiners.
+                matches!(
+                    pos,
+                    PartOfSpeech::Noun | PartOfSpeech::Pron | PartOfSpeech::Adj | PartOfSpeech::Det
+                )
+            }
         }
     }
 }
@@ -880,7 +990,11 @@ impl FeatureSet for Definite {
             }
             // Russian has no articles; definiteness is not morphologically marked
             Language::Russian => false,
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            // Hindi has no articles; definiteness is not morphologically marked
+            // (it's usually inferred from word order and from the presence of
+            // the accusative postposition को).
+            Language::Hindi => false,
         }
     }
 }
@@ -910,7 +1024,16 @@ impl FeatureSet for Deixis {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has a proximal/distal deictic contrast: यह/ये (near),
+                // वह/वे (far), plus proximal/distal adverbs (यहाँ/वहाँ "here/there",
+                // अब/तब "now/then").
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
+                )
+            }
         }
     }
 }
@@ -940,7 +1063,16 @@ impl FeatureSet for DeixisRef {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // DeixisRef (speaker vs. addressee as reference point) isn't strongly
+                // marked in Hindi demonstratives; however the feature applies to
+                // the same word classes as Deixis so we allow it for completeness.
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
+                )
+            }
         }
     }
 }
@@ -967,7 +1099,13 @@ impl FeatureSet for Degree {
             Language::Russian => {
                 matches!(pos, PartOfSpeech::Adj | PartOfSpeech::Adv)
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi marks comparative/superlative analytically (with से and सबसे)
+                // rather than morphologically, but adjectives and adverbs are still
+                // the relevant word classes for any morphological degree marking.
+                matches!(pos, PartOfSpeech::Adj | PartOfSpeech::Adv)
+            }
         }
     }
 }
@@ -998,7 +1136,17 @@ impl FeatureSet for VerbForm {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has a rich set of VerbForms: finite, infinitive (करना),
+                // oblique infinitive (करने), conjunctive participle (करके),
+                // and agreement-bearing participles (habitual/perfective/prospective).
+                // Participles are often tagged as Adj.
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
         }
     }
 }
@@ -1025,7 +1173,10 @@ impl FeatureSet for Mood {
                 // particles and auxiliaries rather than verb forms
                 matches!(pos, PartOfSpeech::Aux)
             }
-            _ => todo!(),
+            Language::Hindi => {
+                // Hindi has indicative, subjunctive, imperative moods
+                matches!(pos, PartOfSpeech::Verb | PartOfSpeech::Aux)
+            }
         }
     }
 }
@@ -1055,7 +1206,14 @@ impl FeatureSet for Tense {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has present, past, future tenses; participles also carry tense
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
         }
     }
 }
@@ -1091,7 +1249,15 @@ impl FeatureSet for Aspect {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi distinguishes habitual, perfective, progressive, and prospective aspects
+                // via participles and auxiliaries. Core to the verb system.
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
         }
     }
 }
@@ -1126,7 +1292,15 @@ impl FeatureSet for Voice {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi has active and passive voice (passive formed with जाना),
+                // plus participles that can carry voice distinctions.
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
+            }
         }
     }
 }
@@ -1146,7 +1320,8 @@ impl FeatureSet for Evident {
             | Language::Portuguese
             | Language::Italian
             | Language::Russian => false,
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => false,
         }
     }
 }
@@ -1192,7 +1367,20 @@ impl FeatureSet for Polarity {
                         | PartOfSpeech::Det
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi negation particles नहीं (general), न (conjunction-negator),
+                // मत (prohibitive imperative) — Polarity applies to verbs, adjectives,
+                // adverbs, and the negator particles themselves.
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb
+                        | PartOfSpeech::Aux
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Adv
+                        | PartOfSpeech::Part
+                )
+            }
         }
     }
 }
@@ -1236,7 +1424,14 @@ impl FeatureSet for Person {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            Language::Hindi => {
+                // Hindi verbs inflect for person (1/2/3); pronouns carry person too.
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
+                )
+            }
         }
     }
 }
@@ -1274,7 +1469,15 @@ impl FeatureSet for Polite {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
                 )
             }
-            _ => todo!(),
+            Language::Japanese | Language::Chinese => todo!(),
+            // Hindi has a three-way politeness distinction (तू / तुम / आप)
+            // marked on both pronouns and verbs (via imperative forms + subject agreement).
+            Language::Hindi => {
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
+                )
+            }
         }
     }
 }
@@ -1306,6 +1509,7 @@ pub struct Morphology {
     pub person: Option<Person>,
     pub case: Option<Case>,
     pub mood: Option<Mood>,
+    pub aspect: Option<Aspect>,
 }
 
 /// Represents a grammatical prefix for a word (like articles in French)
@@ -1390,7 +1594,9 @@ impl Morphology {
                 self.get_russian_verb_prefix()
             }
             (Language::Russian, _) => None,
-            _ => todo!(),
+            // Hindi: no grammatical prefix system (no articles, no obligatory pronouns in dict forms)
+            (Language::Hindi, _) => None,
+            (Language::Japanese | Language::Chinese, _) => todo!(),
         }
     }
 
