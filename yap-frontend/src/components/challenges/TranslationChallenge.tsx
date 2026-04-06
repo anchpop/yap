@@ -32,6 +32,7 @@ import {
 type GramDefinition =
   | { Dictionary: DictionaryEntry }
   | { Phrasebook: PhrasebookDefinitionEntry };
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
@@ -1178,6 +1179,11 @@ export function TranslationChallenge({
     <div className="flex flex-col flex-1 justify-between">
       <div>
         <Card animate className="pt-3 pb-3 pl-3 pr-3 relative gap-2">
+          {sentence.second_chance && (
+            <Badge className="absolute -top-2 -left-2 -rotate-12 z-10 shadow-sm text-sm">
+              Second Chance!
+            </Badge>
+          )}
           <div className="space-y-6">
             <div className="text-center">
               <div className="flex items-center justify-between w-full">

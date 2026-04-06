@@ -52,7 +52,7 @@ use rs_fsrs::FSRS;
 use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::hash::Hash;
 use std::sync::Arc;
 use std::sync::LazyLock;
@@ -632,6 +632,8 @@ pub struct TranslateComprehensibleSentence {
     pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
     /// The gram that motivated this challenge (the one being reviewed via spaced repetition).
     pub primary_expression: Gram<String>,
+    /// True if the user recently got this sentence wrong in a translation challenge.
+    pub second_chance: bool,
 }
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
@@ -643,6 +645,8 @@ pub struct TranscribeComprehensibleSentence {
     pub parts: Vec<transcription_challenge::Part>,
     pub movie_titles: Vec<(String, String)>,
     pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
+    /// True if the user recently got this sentence wrong in a transcription challenge.
+    pub second_chance: bool,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
@@ -845,6 +849,13 @@ pub enum FlashcardType {
     LetterPronunciation,
 }
 
+/// Distinguishes translation vs transcription for tracking wrong sentences.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum SentenceChallengeType {
+    Translation,
+    Transcription,
+}
+
 /// Stats contains review statistics and progress tracking
 #[derive(Clone, Debug)]
 pub struct Stats {
@@ -863,6 +874,8 @@ pub struct Stats {
     pub start_time: Option<DateTime<Utc>>,
     /// Track how many times each flashcard type has been seen (for tutorial purposes)
     pub flashcard_type_seen_count: BTreeMap<FlashcardType, u32>,
+    /// Last 5 sentences the user got wrong, keyed by (sentence, challenge type).
+    pub wrong_sentences: VecDeque<(Spur, SentenceChallengeType)>,
 }
 
 #[derive(
@@ -1339,6 +1352,16 @@ impl weapon::AppState for Deck {
                             deck.log_review(card, current::Rating::Again, *timestamp, context);
                         }
                     }
+
+                    // Track wrong translation sentences (last 5)
+                    if !forgotten_grams.is_empty() {
+                        let entry = (sentence_spur, SentenceChallengeType::Translation);
+                        deck.stats.wrong_sentences.retain(|e| *e != entry);
+                        deck.stats.wrong_sentences.push_back(entry);
+                        if deck.stats.wrong_sentences.len() > 5 {
+                            deck.stats.wrong_sentences.pop_front();
+                        }
+                    }
                 }
             }
             LanguageEventContent::TranscriptionChallenge { challenge } => {
@@ -1519,6 +1542,16 @@ impl weapon::AppState for Deck {
                             .sentences_reviewed
                             .entry(sentence_spur)
                             .or_insert(0) += 1;
+                    }
+
+                    // Track wrong transcription sentences (last 5)
+                    if any_again {
+                        let entry = (sentence_spur, SentenceChallengeType::Transcription);
+                        deck.stats.wrong_sentences.retain(|e| *e != entry);
+                        deck.stats.wrong_sentences.push_back(entry);
+                        if deck.stats.wrong_sentences.len() > 5 {
+                            deck.stats.wrong_sentences.pop_front();
+                        }
                     }
                 }
             }
@@ -1753,6 +1786,7 @@ impl DeckState {
                 past_week_challenges: BTreeMap::new(),
                 start_time: None,
                 flashcard_type_seen_count: BTreeMap::new(),
+                wrong_sentences: VecDeque::new(),
             },
             leeches: BTreeMap::new(),
             goal: None,

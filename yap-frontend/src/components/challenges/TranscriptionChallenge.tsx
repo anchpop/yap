@@ -12,6 +12,7 @@ import {
   type Course,
   type Deck,
 } from "../../../../yap-frontend-rs/pkg/yap_frontend_rs";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { languageToIso6391 } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
@@ -522,6 +523,11 @@ export function TranscriptionChallenge({
     <div className="flex flex-col flex-1 justify-between">
       <div className="flex flex-col gap-2">
         <Card animate className="pt-3 pb-3 pl-3 pr-3 relative gap-0">
+          {challenge.second_chance && (
+            <Badge className="absolute -top-2 -left-2 -rotate-12 z-10 shadow-sm text-sm">
+              Second Chance!
+            </Badge>
+          )}
           {/* Dropdown menu for options */}
           <div className="absolute top-2 right-2">
             <DropdownMenu>

@@ -9,7 +9,8 @@ use lasso::Spur;
 
 use crate::{
     AudioRequest, CardContent, CardIndicator, Challenge, ComprehensibleSentence, Deck, FlashCard,
-    ReviewInfo, TranscribeComprehensibleSentence, TranslateComprehensibleSentence,
+    ReviewInfo, SentenceChallengeType, TranscribeComprehensibleSentence,
+    TranslateComprehensibleSentence,
 };
 
 /// Metadata computed from a CardIndicator and Deck, used to build FlashCardReview
@@ -280,6 +281,10 @@ impl ReviewInfo {
             })
             .collect();
 
+        let second_chance = deck.stats.wrong_sentences.iter().any(|(s, t)| {
+            *s == sentence.target_language && *t == SentenceChallengeType::Transcription
+        });
+
         Some(Challenge::TranscribeComprehensibleSentence(
             TranscribeComprehensibleSentence {
                 target_language: language_pack
@@ -304,6 +309,7 @@ impl ReviewInfo {
                 },
                 movie_titles,
                 proper_noun_definitions,
+                second_chance,
             },
         ))
     }
@@ -454,6 +460,12 @@ impl ReviewInfo {
                 })
                 .collect();
 
+        let second_chance = deck
+            .stats
+            .wrong_sentences
+            .iter()
+            .any(|(s, t)| *s == target_language && *t == SentenceChallengeType::Translation);
+
         Some(Challenge::TranslateComprehensibleSentence(
             TranslateComprehensibleSentence {
                 target_language: language_pack
@@ -497,6 +509,7 @@ impl ReviewInfo {
                     .gram_rodeo
                     .resolve(&gram)
                     .resolve(&language_pack.string_rodeo),
+                second_chance,
             },
         ))
     }
