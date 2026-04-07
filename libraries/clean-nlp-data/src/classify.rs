@@ -2520,6 +2520,10 @@ impl SentenceClassifier for EnglishClassifier {
         for token in &sentence.doc {
             let text_lower = token.text.to_lowercase();
 
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token".to_string());
+            }
+
             // Check for be/have AUX vs VERB disambiguation
             let be_forms = ["am", "is", "are", "was", "were", "be", "been", "being"];
 
@@ -6537,6 +6541,213 @@ impl WordCorrector for ChineseCorrector {
     }
 }
 
+/// Common ichidan verbs (一段動詞). Lemma always ends in る, and the mora
+/// before る is from the え-row or い-row.
+const ICHIDAN_VERBS: &[&str] = &[
+    "いる",
+    "見る",
+    "出る",
+    "食べる",
+    "考える",
+    "教える",
+    "覚える",
+    "変える",
+    "始める",
+    "決める",
+    "止める",
+    "開ける",
+    "閉める",
+    "つける",
+    "受ける",
+    "上げる",
+    "下げる",
+    "見せる",
+    "伝える",
+    "答える",
+    "調べる",
+    "比べる",
+    "並べる",
+    "育てる",
+    "建てる",
+    "立てる",
+    "当てる",
+    "捨てる",
+    "慣れる",
+    "疲れる",
+    "生まれる",
+    "倒れる",
+    "壊れる",
+    "離れる",
+    "逃げる",
+    "投げる",
+    "混ぜる",
+    "見つける",
+    "続ける",
+    "届ける",
+    "助ける",
+    "分ける",
+    "負ける",
+    "迎える",
+    "加える",
+    "与える",
+    "抑える",
+    "支える",
+    "備える",
+    "構える",
+    "据える",
+    "唱える",
+    "訴える",
+    "感じる",
+    "信じる",
+    "応じる",
+    "生じる",
+    "通じる",
+    "禁じる",
+    "命じる",
+    "論じる",
+    "案じる",
+    "報じる",
+    "寝る",
+    "起きる",
+    "降りる",
+    "乗せる",
+    "寄せる",
+    "落ちる",
+    "過ぎる",
+    "すぎる",
+    "知らせる",
+    "褒める",
+    "認める",
+    "求める",
+    "進める",
+    "勧める",
+    "務める",
+    "努める",
+    "入れる",
+    "出かける",
+    "片付ける",
+    "取り付ける",
+    "組み立てる",
+    "作り上げる",
+    "増える",
+    "冷える",
+    "温める",
+    "固める",
+    "広げる",
+    "狭める",
+    "深める",
+    "高める",
+    "強める",
+    "弱める",
+    "早める",
+    "遅れる",
+    "枯れる",
+    "腐れる",
+    "汚れる",
+    "晴れる",
+    "着る",
+    "浴びる",
+    "足りる",
+    "飽きる",
+    "できる",
+    "似る",
+    "煮る",
+    "干る",
+    "見える",
+    "聞こえる",
+    "消える",
+    "現れる",
+    "表れる",
+    "溢れる",
+    "恐れる",
+    "訪れる",
+    "させる",
+    "られる",
+];
+
+/// Godan verbs ending in る (NOT ichidan despite the る ending).
+const GODAN_RU_VERBS: &[&str] = &[
+    "走る",
+    "帰る",
+    "切る",
+    "知る",
+    "入る",
+    "座る",
+    "通る",
+    "取る",
+    "送る",
+    "作る",
+    "売る",
+    "乗る",
+    "残る",
+    "登る",
+    "渡る",
+    "戻る",
+    "回る",
+    "上る",
+    "下る",
+    "太る",
+    "参る",
+    "なる",
+    "ある",
+    "やる",
+    "要る",
+    "釣る",
+    "塗る",
+    "握る",
+    "練る",
+    "蹴る",
+    "散る",
+    "照る",
+    "減る",
+    "滑る",
+    "喋る",
+    "焦る",
+    "限る",
+    "頼る",
+    "怒る",
+    "祈る",
+    "眠る",
+    "異なる",
+    "至る",
+    "被る",
+    "遮る",
+    "罵る",
+];
+
+fn is_ichidan(lemma: &str) -> bool {
+    if !lemma.ends_with("る") {
+        return false;
+    }
+    if lemma == "する" || lemma == "くる" || lemma == "来る" {
+        return false;
+    }
+    if ICHIDAN_VERBS.contains(&lemma) {
+        return true;
+    }
+    if GODAN_RU_VERBS.contains(&lemma) {
+        return false;
+    }
+    let without_ru = &lemma[..lemma.len() - "る".len()];
+    match without_ru.chars().last() {
+        Some(c) => {
+            let e_row = [
+                'え', 'け', 'せ', 'て', 'ね', 'べ', 'め', 'れ', 'げ', 'ぜ', 'で', 'ぺ',
+            ];
+            let i_row = [
+                'い', 'き', 'し', 'ち', 'に', 'び', 'み', 'り', 'ぎ', 'じ', 'ぢ', 'ぴ',
+            ];
+            e_row.contains(&c) || i_row.contains(&c)
+        }
+        None => false,
+    }
+}
+
+/// Japanese compounds where 達 is part of the word, not the plural suffix.
+const TATSU_COMPOUNDS: &[&str] = &[
+    "友達", "発達", "上達", "調達", "伝達", "配達", "到達", "速達", "通達", "熟達", "闊達",
+];
+
 /// Japanese-specific classifier
 struct JapaneseClassifier;
 
@@ -6622,31 +6833,6 @@ impl SentenceClassifier for JapaneseClassifier {
                 ));
             }
 
-            if token.text == "なさい" && token.lemma != "なさる" {
-                reasons.push(format!(
-                    "'なさい' has lemma '{}' — should be 'なさる' (dictionary form).",
-                    token.lemma
-                ));
-            }
-
-            if token.text == "ください" && token.lemma != "くださる" {
-                reasons.push(format!(
-                    "'ください' has lemma '{}' — should be 'くださる' (dictionary form).",
-                    token.lemma
-                ));
-            }
-
-            if token.pos == PartOfSpeechTag::Adv
-                && text.ends_with("く")
-                && token.lemma == text.as_str()
-                && text.chars().count() >= 2
-            {
-                let stem = &text[..text.len() - "く".len()];
-                reasons.push(format!(
-                    "'{text}' (ADV) has lemma '{text}' — this looks like an い-adjective adverbial form. Lemma should be '{stem}い'."
-                ));
-            }
-
             let common_names = [
                 "トム",
                 "ボブ",
@@ -6687,12 +6873,6 @@ impl SentenceClassifier for JapaneseClassifier {
             // --- Adjective checks ---
             if token.pos == PartOfSpeechTag::Adj {
                 let lemma = &token.lemma;
-                // i-adjective adverbial form as lemma
-                if lemma == text && text.ends_with("く") {
-                    reasons.push(format!(
-                        "'{text}' has lemma '{lemma}' — adverbial form, lemma should end in い"
-                    ));
-                }
                 // na-adjective lemma must include だ
                 let common_na_adj = [
                     "きれい",
@@ -7000,6 +7180,89 @@ impl SentenceClassifier for JapaneseClassifier {
                 );
             }
 
+            // --- て (AUX) with lemma いる: impossible ---
+            if text == "て" && token.pos == PartOfSpeechTag::Aux && token.lemma == "いる" {
+                reasons.push(
+                    "'て' (AUX) has lemma 'いる' — て alone can't stand for いる. Either this is a contraction that should have been merged into the preceding verb, or it's mistagged."
+                        .to_string(),
+                );
+            }
+
+            // --- ません split into ませ + ん ---
+            if text == "ん" && token.pos == PartOfSpeechTag::Aux && token.lemma == "ぬ" && idx > 0
+            {
+                let prev = &sentence.doc[idx - 1];
+                if prev.text == "ませ" && prev.pos == PartOfSpeechTag::Aux {
+                    reasons.push(
+                        "'ませ' + 'ん' should be merged into a single AUX token 'ません' (lemma 'ます'). ません is atomic in our spec, not decomposed into ませ + ん."
+                            .to_string(),
+                    );
+                }
+            }
+
+            // --- VERB/AUX ending in ます/ました/ません with non-ます lemma: likely merged ---
+            if matches!(token.pos, PartOfSpeechTag::Aux | PartOfSpeechTag::Verb)
+                && (text.ends_with("ます") || text.ends_with("ました") || text.ends_with("ません"))
+                && token.lemma != "ます"
+                && text != "ます"
+                && text != "ました"
+                && text != "ません"
+            {
+                reasons.push(format!(
+                    "'{text}' ({:?}, lemma '{}') ends in ます/ました/ません but lemma is not 'ます' — verify per the guidelines whether this is a merged stem+ます that should split into separate tokens.",
+                    token.pos, token.lemma
+                ));
+            }
+
+            // --- ADV ending in く with lemma == text: could be i-adj adverbial ---
+            // Many adverbs legitimately end in く and are not derived from i-adjectives
+            // (しばらく, ごく, せっかく, ことごとく, つくづく, ようやく, とにかく, まったく, etc.).
+            // But i-adjective adverbial forms (早く, 大きく) are also tagged ADV by some models
+            // and need their lemma fixed to the い-form. Flag for verification.
+            if token.pos == PartOfSpeechTag::Adv
+                && text.ends_with("く")
+                && token.lemma == text.as_str()
+                && text.chars().count() >= 2
+            {
+                let stem = &text[..text.len() - "く".len()];
+                reasons.push(format!(
+                    "'{text}' (ADV) has lemma '{text}' — verify: if this is an i-adjective adverbial form (e.g., 早く from 早い, 大きく from 大きい), the lemma should be '{stem}い' and POS should be ADJ. If it's a genuine adverb (しばらく, ごく, せっかく, ようやく, ことごとく, つくづく, etc.), the current lemma is correct."
+                ));
+            }
+
+            // --- 一番 is never ADJ (na-adjective) ---
+            if text == "一番" && token.pos == PartOfSpeechTag::Adj {
+                reasons.push(
+                    "'一番' tagged ADJ — 一番 is never a na-adjective (you don't say 一番な). Before の it's NOUN (the best/number one); before an adjective it's ADV (most)."
+                        .to_string(),
+                );
+            }
+
+            // --- VERB containing てみ/でみ — likely merged てみる ---
+            if token.pos == PartOfSpeechTag::Verb
+                && (text.contains("てみ") || text.contains("でみ"))
+                && text != "てみ"
+                && text != "でみ"
+                && text != "てみた"
+                && text != "でみた"
+                && text != "てみたら"
+                && text != "でみたら"
+            {
+                reasons.push(format!(
+                    "'{text}' (VERB) contains てみ/でみ — potentially a merged てみる that should split (e.g., 'やってみたら' → 'やっ' + 'て' + 'み' + 'たら')."
+                ));
+            }
+
+            // --- 別+の or 一番+の where の is tagged AUX ---
+            if (text == "別" || text == "一番") && idx + 1 < sentence.doc.len() {
+                let next = &sentence.doc[idx + 1];
+                if next.text == "の" && next.pos == PartOfSpeechTag::Aux {
+                    reasons.push(format!(
+                        "'{text}' + 'の' where の is tagged AUX — の after {text} may be a genitive ADP, rather than a copula-related auxiliary."
+                    ));
+                }
+            }
+
             // --- Auxiliary chain: た/だ merged into preceding auxiliary ---
             // れた is two morphemes (れ+た), not one. Same for せた, させた, られた.
             if token.pos == PartOfSpeechTag::Aux
@@ -7017,16 +7280,20 @@ impl SentenceClassifier for JapaneseClassifier {
                 }
             }
 
-            // --- たち merged into noun ---
-            if token.pos == PartOfSpeechTag::Noun
-                && text.ends_with("たち")
-                && text.chars().count() > 2
+            // --- たち/達 merged into noun or pron ---
+            if matches!(token.pos, PartOfSpeechTag::Noun | PartOfSpeechTag::Pron)
+                && !TATSU_COMPOUNDS.contains(&text.as_str())
             {
-                let stem = &text[..text.len() - "たち".len()];
-                if !stem.is_empty() {
-                    reasons.push(format!(
-                        "'{text}' has たち (plural) merged. Split: '{stem}' (NOUN) + 'たち' (PART)."
-                    ));
+                for suffix in ["たち", "達"] {
+                    if text.ends_with(suffix) && text.chars().count() > suffix.chars().count() {
+                        let stem = &text[..text.len() - suffix.len()];
+                        if !stem.is_empty() {
+                            reasons.push(format!(
+                                "'{text}' has {suffix} (plural) merged. Split: '{stem}' ({:?}) + '{suffix}' (PART, lemma 'たち').",
+                                token.pos
+                            ));
+                        }
+                    }
                 }
             }
 
@@ -7151,6 +7418,43 @@ impl SentenceClassifier for JapaneseClassifier {
                         token.lemma
                     ));
                 }
+            }
+
+            // --- Contracted form in lemma ---
+            let contracted_forms = [
+                "ちゃう",
+                "ちゃった",
+                "じゃう",
+                "じゃった",
+                "とく",
+                "とった",
+                "とけ",
+                "とける",
+            ];
+            for form in &contracted_forms {
+                if token.lemma.contains(form) && token.lemma != *form {
+                    reasons.push(format!(
+                        "'{}' (lemma '{}') — lemma contains contracted form '{}'. Verify this is the actual dictionary form. Contractions: てしまう→ちゃう, でしまう→じゃう, ておく→とく.",
+                        text, token.lemma, form
+                    ));
+                    break;
+                }
+            }
+
+            // --- Short れる/られる as VERB might be AUX suffix ---
+            if token.pos == PartOfSpeechTag::Verb
+                && (text == "れる"
+                    || text == "られる"
+                    || text == "れた"
+                    || text == "られた"
+                    || text == "れて"
+                    || text == "られて"
+                    || text == "れない"
+                    || text == "られない")
+            {
+                reasons.push(format!(
+                    "'{text}' tagged as VERB — verify: when れる/られる is a passive/potential suffix, it should be AUX. VERB is correct only for standalone use (rare)."
+                ));
             }
 
             if let Some(reason) = check_polysemous(Language::Japanese, &token.text) {
@@ -7418,6 +7722,199 @@ impl SentenceClassifier for JapaneseClassifier {
                 }
             }
 
+            // --- Volitional う after ichidan/する/くる → should be よう ---
+            if token.pos == PartOfSpeechTag::Aux && token.lemma == "う" && idx > 0 {
+                let prev = &tokens[idx - 1];
+                let prev_is_ichidan = prev.pos == PartOfSpeechTag::Verb && is_ichidan(&prev.lemma);
+                let prev_is_suru = prev.pos == PartOfSpeechTag::Verb
+                    && (prev.lemma == "する" || prev.lemma.ends_with("する"));
+                let prev_is_kuru = prev.pos == PartOfSpeechTag::Verb
+                    && (prev.lemma == "くる" || prev.lemma == "来る");
+                if prev_is_ichidan || prev_is_suru || prev_is_kuru {
+                    reasons.push(format!(
+                        "'{}' (AUX, lemma 'う') after '{}' (lemma '{}') — volitional after ichidan/する/くる should have lemma 'よう', not 'う'. う is the godan volitional suffix.",
+                        token.text, prev.text, prev.lemma
+                    ));
+                }
+            }
+
+            // --- VERB text containing 達/たち → should split ---
+            if token.pos == PartOfSpeechTag::Verb
+                && (token.text.ends_with("達") || token.text.ends_with("たち"))
+                && token.text.chars().count() > 1
+            {
+                reasons.push(format!(
+                    "'{}' (VERB) ends with 達/たち — verify: this may be a noun+plural merged into the verb token. Should split if 達/たち is a plural suffix.",
+                    token.text
+                ));
+            }
+
+            // --- ADJ with だ-lemma not on known na-adjective list ---
+            {
+                let common_na_adjectives_check = [
+                    "きれい",
+                    "静か",
+                    "大切",
+                    "大変",
+                    "元気",
+                    "有名",
+                    "便利",
+                    "不便",
+                    "親切",
+                    "丁寧",
+                    "簡単",
+                    "複雑",
+                    "重要",
+                    "特別",
+                    "自由",
+                    "安全",
+                    "危険",
+                    "可能",
+                    "不可能",
+                    "素敵",
+                    "立派",
+                    "無理",
+                    "大丈夫",
+                    "心配",
+                    "好き",
+                    "嫌い",
+                    "上手",
+                    "下手",
+                ];
+                if token.pos == PartOfSpeechTag::Adj && token.lemma.ends_with("だ") {
+                    let stem = &token.lemma[..token.lemma.len() - "だ".len()];
+                    if !common_na_adjectives_check.contains(&stem) {
+                        let next_is_na = tokens.get(idx + 1).is_some_and(|n| n.text == "な");
+                        let next_is_copula = tokens.get(idx + 1).is_some_and(|n| {
+                            matches!(n.text.as_str(), "だ" | "です" | "でした" | "だった")
+                        });
+                        if !next_is_na && !next_is_copula {
+                            reasons.push(format!(
+                                "'{}' tagged ADJ with lemma '{}' — this word isn't on the known na-adjective list, and it doesn't appear before な or copula. Verify this is actually a na-adjective and not a noun used predicatively (e.g., '絶品' is a noun, not a na-adjective).",
+                                token.text, token.lemma
+                            ));
+                        }
+                    }
+                }
+            }
+
+            // --- て (AUX) with lemma いる: impossible ---
+            if token.text == "て" && token.pos == PartOfSpeechTag::Aux && token.lemma == "いる" {
+                reasons.push(
+                    "'て' (AUX) has lemma 'いる' — て alone can't stand for いる. Either this is a contraction that should have been merged into the preceding verb (e.g., 寝てて → 寝て + いて), or it's mistagged."
+                        .to_string(),
+                );
+            }
+
+            // --- ADV ending in く with lemma == text: could be i-adj adverbial ---
+            if token.pos == PartOfSpeechTag::Adv
+                && token.text.ends_with("く")
+                && token.lemma == token.text
+                && token.text.chars().count() >= 2
+            {
+                let stem = &token.text[..token.text.len() - "く".len()];
+                reasons.push(format!(
+                    "'{}' (ADV) has lemma '{}' — verify: if this is an i-adjective adverbial form (e.g., 早く from 早い, 大きく from 大きい), the lemma should be '{stem}い' and POS should be ADJ. If it's a genuine adverb (しばらく, ごく, せっかく, ようやく, ことごとく, つくづく, etc.), the current lemma is correct.",
+                    token.text, token.lemma
+                ));
+            }
+
+            // --- VERB/AUX ending in ます/ました/ません with non-ます lemma: likely merged ---
+            if matches!(token.pos, PartOfSpeechTag::Aux | PartOfSpeechTag::Verb)
+                && (token.text.ends_with("ます")
+                    || token.text.ends_with("ました")
+                    || token.text.ends_with("ません"))
+                && token.lemma != "ます"
+                && token.text != "ます"
+                && token.text != "ました"
+                && token.text != "ません"
+            {
+                reasons.push(format!(
+                    "'{}' ({:?}, lemma '{}') ends in ます/ました/ません but lemma is not 'ます' — this is a merged stem+ます that should split (e.g., います → い (VERB, lemma いる) + ます (AUX, lemma ます); 作っています → 作っ (VERB) + て (SCONJ) + い (AUX, lemma いる) + ます (AUX, lemma ます)).",
+                    token.text, token.pos, token.lemma
+                ));
+            }
+
+            // --- ている/てある merged as one VERB token ---
+            if token.pos == PartOfSpeechTag::Verb
+                && (token.lemma == "いる" || token.lemma == "ある")
+                && token.text.chars().count() > 2
+                && (token.text.starts_with("てい")
+                    || token.text.starts_with("でい")
+                    || token.text.starts_with("てあ")
+                    || token.text.starts_with("であ"))
+            {
+                reasons.push(format!(
+                    "'{}' (VERB, lemma '{}') — ている/てある merged into one token. Should split: the preceding verb's て/で is a separate SCONJ, and いる/ある is a separate AUX (e.g., 話しかけている → 話しかけ (VERB) + て (SCONJ) + いる (AUX)).",
+                    token.text, token.lemma
+                ));
+            }
+
+            // --- あり/い (AUX, lemma ある/いる) without preceding て-form: should be VERB ---
+            if token.pos == PartOfSpeechTag::Aux
+                && (token.lemma == "ある" || token.lemma == "いる")
+                && idx > 0
+            {
+                let prev = &tokens[idx - 1];
+                let prev_is_te = prev.text.ends_with('て') || prev.text.ends_with('で');
+                if !prev_is_te {
+                    reasons.push(format!(
+                        "'{}' (AUX, lemma '{}') after '{}' (not て-form) — ある/いる is AUX only after a て-form. For existence/possession (e.g., 窓がありません = there are no windows), it should be VERB. Retag as VERB.",
+                        token.text, token.lemma, prev.text
+                    ));
+                }
+            }
+
+            // --- ません split into ませ + ん ---
+            if token.text == "ん"
+                && token.pos == PartOfSpeechTag::Aux
+                && token.lemma == "ぬ"
+                && idx > 0
+            {
+                let prev = &tokens[idx - 1];
+                if prev.text == "ませ" && prev.pos == PartOfSpeechTag::Aux {
+                    reasons.push(
+                        "'ませ' + 'ん' should be merged into a single AUX token 'ません' (lemma 'ます'). ません is atomic in our spec, not decomposed into ませ + ん."
+                            .to_string(),
+                    );
+                }
+            }
+
+            // --- は + ね(られる) likely misanalyzed はねる ---
+            if token.text == "ね"
+                && token.pos == PartOfSpeechTag::Verb
+                && token.lemma == "ねる"
+                && idx > 0
+            {
+                let prev = &tokens[idx - 1];
+                if prev.text == "は" && prev.pos == PartOfSpeechTag::Adp {
+                    reasons.push(
+                        "'は' + 'ね' (VERB, lemma 'ねる') — verify: は may not be a topic particle here. はねる ('to hit/run over') is a single godan verb, and は+ね could be a misanalysis (e.g., 車にはねられる = to be hit by a car, where はね is the stem of はねる, not topic は + ね)."
+                            .to_string(),
+                    );
+                }
+            }
+
+            // --- 一番 is never a na-adjective ---
+            if token.text == "一番" && token.pos == PartOfSpeechTag::Adj {
+                reasons.push(
+                    "一番 is not a na-adjective. Before の it's NOUN (the best/number one). Before an adjective it's ADV (most). Never ADJ."
+                        .to_string(),
+                );
+            }
+
+            // --- 別+の where 別 is ADJ with lemma 別だ and の is AUX ---
+            if token.text == "別" && token.pos == PartOfSpeechTag::Adj && token.lemma == "別だ" {
+                if let Some(next) = tokens.get(idx + 1) {
+                    if next.text == "の" && next.pos == PartOfSpeechTag::Aux {
+                        reasons.push(
+                            "'別' (ADJ, lemma '別だ') before の (AUX) — fix: retag 別 as NOUN with lemma '別' (it's a noun meaning 'another/different', not a na-adjective here), and retag の as ADP (genitive)."
+                                .to_string(),
+                        );
+                    }
+                }
+            }
+
             // --- Common names still not tagged PROPN ---
             let common_names = [
                 "トム",
@@ -7486,7 +7983,10 @@ impl WordCorrector for JapaneseCorrector {
             }
 
             // Fix i-adjective adverbial form used as lemma (大きく → 大きい)
-            if (token.pos == PartOfSpeechTag::Adv || token.pos == PartOfSpeechTag::Adj)
+            // Only fire on ADJ: if the model tagged this as ADJ with lemma == text ending in く,
+            // it's almost certainly an i-adjective adverbial form. ADV cases (しばらく, ごく,
+            // せっかく, etc.) are correct as-is and handled by classifier hints instead.
+            if token.pos == PartOfSpeechTag::Adj
                 && token.text.ends_with("く")
                 && token.lemma == token.text
                 && token.text.chars().count() >= 2
@@ -7501,28 +8001,6 @@ impl WordCorrector for JapaneseCorrector {
                 corrected = true;
             }
 
-            // Fix adverbs that aren't derived from い-adjectives
-            // (must run after the い-adjective backformation above, which would incorrectly
-            // produce とにかい, まったい, etc.)
-            let adverb_lemma_overrides = [
-                ("とにかく", "とにかく"),
-                ("まったく", "まったく"),
-                ("たくさん", "たくさん"),
-                ("ちっとも", "ちっとも"),
-                ("すっかり", "すっかり"),
-                ("やっぱり", "やっぱり"),
-            ];
-            for (form, correct_lemma) in adverb_lemma_overrides {
-                if token.text == form && token.lemma != correct_lemma {
-                    corrections.push(format!(
-                        "Fixed '{}' lemma from '{}' to '{}'",
-                        token.text, token.lemma, correct_lemma
-                    ));
-                    token.lemma = correct_lemma.to_string();
-                    corrected = true;
-                }
-            }
-
             // Fix よい/よく lemma → いい (our standard dictionary form)
             if token.lemma == "よい" {
                 corrections.push("Fixed lemma 'よい' to 'いい'".to_string());
@@ -7534,6 +8012,87 @@ impl WordCorrector for JapaneseCorrector {
             if token.text == "達" && token.lemma == "達" {
                 corrections.push("Fixed '達' lemma from '達' to 'たち'".to_string());
                 token.lemma = "たち".to_string();
+                corrected = true;
+            }
+
+            // 一番 is never a na-adjective: fix lemma 一番だ → 一番
+            if token.text == "一番" && token.lemma == "一番だ" {
+                corrections.push("Fixed '一番' lemma from '一番だ' to '一番'".to_string());
+                token.lemma = "一番".to_string();
+                corrected = true;
+            }
+
+            // なさい → なさる (always the dictionary form)
+            if token.text == "なさい" && token.lemma != "なさる" {
+                corrections.push(format!(
+                    "Fixed 'なさい' lemma from '{}' to 'なさる'",
+                    token.lemma
+                ));
+                token.lemma = "なさる".to_string();
+                corrected = true;
+            }
+
+            // ください/下さい → くださる (always the dictionary form)
+            if (token.text == "ください" || token.text == "下さい") && token.lemma != "くださる"
+            {
+                corrections.push(format!(
+                    "Fixed '{}' lemma from '{}' to 'くださる'",
+                    token.text, token.lemma
+                ));
+                token.lemma = "くださる".to_string();
+                corrected = true;
+            }
+
+            // Honorific verbs: never AUX, lemma is the dictionary form.
+            let honorific_verbs: &[(&str, &str)] = &[
+                ("いらっしゃ", "いらっしゃる"),
+                ("おっしゃ", "おっしゃる"),
+                ("召し上が", "召し上がる"),
+            ];
+            for (prefix, dict_form) in honorific_verbs {
+                if token.text.starts_with(prefix) {
+                    if token.lemma != *dict_form {
+                        corrections.push(format!(
+                            "Fixed '{}' lemma from '{}' to '{}'",
+                            token.text, token.lemma, dict_form
+                        ));
+                        token.lemma = dict_form.to_string();
+                        corrected = true;
+                    }
+                    if token.pos != PartOfSpeechTag::Verb {
+                        corrections.push(format!(
+                            "Fixed '{}' POS from {:?} to VERB",
+                            token.text, token.pos
+                        ));
+                        token.pos = PartOfSpeechTag::Verb;
+                        corrected = true;
+                    }
+                    break;
+                }
+            }
+
+            // ございます → ござる
+            if (token.text == "ございます"
+                || token.text == "ございました"
+                || token.text == "ございません")
+                && token.lemma != "ござる"
+            {
+                corrections.push(format!(
+                    "Fixed '{}' lemma from '{}' to 'ござる'",
+                    token.text, token.lemma
+                ));
+                token.lemma = "ござる".to_string();
+                corrected = true;
+            }
+
+            // そう lemma lockdown
+            if token.text == "そう" && token.pos == PartOfSpeechTag::Aux && token.lemma != "そう"
+            {
+                corrections.push(format!(
+                    "Fixed 'そう' (AUX) lemma from '{}' to 'そう'",
+                    token.lemma
+                ));
+                token.lemma = "そう".to_string();
                 corrected = true;
             }
 
@@ -7559,15 +8118,16 @@ impl WordCorrector for JapaneseCorrector {
     }
 
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
-        for token in tokens {
+        for token in tokens.iter_mut() {
             if (token.text == "です" || token.text == "でした")
                 && token.pos == PartOfSpeechTag::Aux
                 && token.lemma != "だ"
             {
                 token.lemma = "だ".to_string();
             }
-            // Fix i-adjective adverbial form used as lemma
-            if (token.pos == PartOfSpeechTag::Adv || token.pos == PartOfSpeechTag::Adj)
+            // Fix i-adjective adverbial form used as lemma — ADJ only.
+            // ADV cases (しばらく, ごく, せっかく, etc.) are correct as-is.
+            if token.pos == PartOfSpeechTag::Adj
                 && token.text.ends_with("く")
                 && token.lemma == token.text
                 && token.text.chars().count() >= 2
@@ -7575,9 +8135,67 @@ impl WordCorrector for JapaneseCorrector {
                 let stem = &token.text[..token.text.len() - "く".len()];
                 token.lemma = format!("{stem}い");
             }
-            // Fix とにかく (must run after i-adjective fixer)
-            if token.text == "とにかく" && token.lemma != "とにかく" {
-                token.lemma = "とにかく".to_string();
+            // Fix よい lemma → いい (our standard dictionary form)
+            if token.lemma == "よい" {
+                token.lemma = "いい".to_string();
+            }
+            // Honorific verbs: never AUX, lemma is the dictionary form
+            let honorific_verbs: &[(&str, &str)] = &[
+                ("いらっしゃ", "いらっしゃる"),
+                ("おっしゃ", "おっしゃる"),
+                ("召し上が", "召し上がる"),
+            ];
+            for (prefix, dict_form) in honorific_verbs {
+                if token.text.starts_with(prefix) {
+                    if token.lemma != *dict_form {
+                        token.lemma = dict_form.to_string();
+                    }
+                    if token.pos != PartOfSpeechTag::Verb {
+                        token.pos = PartOfSpeechTag::Verb;
+                    }
+                    break;
+                }
+            }
+            // 一番 is never a na-adjective
+            if token.text == "一番" && token.lemma == "一番だ" {
+                token.lemma = "一番".to_string();
+            }
+            // なさい → なさる
+            if token.text == "なさい" && token.lemma != "なさる" {
+                token.lemma = "なさる".to_string();
+            }
+            // ください/下さい → くださる
+            if (token.text == "ください" || token.text == "下さい") && token.lemma != "くださる"
+            {
+                token.lemma = "くださる".to_string();
+            }
+            // ございます safety net
+            if (token.text == "ございます"
+                || token.text == "ございました"
+                || token.text == "ございません")
+                && token.lemma != "ござる"
+            {
+                token.lemma = "ござる".to_string();
+            }
+            // そう AUX lemma safety net
+            if token.text == "そう" && token.pos == PartOfSpeechTag::Aux && token.lemma != "そう"
+            {
+                token.lemma = "そう".to_string();
+            }
+        }
+
+        // Volitional う → よう after ichidan/する/くる
+        for i in 1..tokens.len() {
+            if tokens[i].pos == PartOfSpeechTag::Aux && tokens[i].lemma == "う" {
+                let prev = &tokens[i - 1];
+                let prev_is_ichidan = prev.pos == PartOfSpeechTag::Verb && is_ichidan(&prev.lemma);
+                let prev_is_suru = prev.pos == PartOfSpeechTag::Verb
+                    && (prev.lemma == "する" || prev.lemma.ends_with("する"));
+                let prev_is_kuru = prev.pos == PartOfSpeechTag::Verb
+                    && (prev.lemma == "くる" || prev.lemma == "来る");
+                if prev_is_ichidan || prev_is_suru || prev_is_kuru {
+                    tokens[i].lemma = "よう".to_string();
+                }
             }
         }
     }
@@ -7609,6 +8227,21 @@ impl SentenceClassifier for HindiClassifier {
                     "'{}' has lemma with space: '{}'",
                     text, token.lemma
                 ));
+            }
+
+            if let Some(c) = token.text.chars().next() {
+                use unicode_general_category::GeneralCategory;
+                if matches!(
+                    unicode_general_category::get_general_category(c),
+                    GeneralCategory::SpacingMark
+                        | GeneralCategory::NonspacingMark
+                        | GeneralCategory::EnclosingMark
+                ) {
+                    reasons.push(format!(
+                        "Token '{}' starts with a combining character — likely a tokenization bug (Devanagari combining marks should not be split from their base consonant)",
+                        token.text
+                    ));
+                }
             }
 
             // --- Verb lemmatization: Hindi infinitives end in -ना ---
@@ -7647,6 +8280,33 @@ impl SentenceClassifier for HindiClassifier {
                     "'{}' (होना) can be AUX or VERB. AUX for copula ('वह शिक्षक है') and tense auxiliary ('वह खा रहा है'). VERB only for existential ('यहाँ शांति है', 'तुम्हारे पास कंबल हैं'). Current POS: {:?}",
                     text, token.pos
                 ));
+            }
+
+            if token.pos == PartOfSpeechTag::Intj
+                && (text.ends_with("ो") || text.ends_with("इए") || text.ends_with("इये"))
+            {
+                reasons.push(format!(
+                    "'{text}' tagged INTJ but looks like an imperative verb form. Even when used as a discourse marker ('look...', 'come on...'), it should be VERB with infinitive lemma (e.g., देखो → देखना, चलो → चलना) so learners can connect it to the base verb."
+                ));
+            }
+
+            if text == "बहुत"
+                && token.pos == PartOfSpeechTag::Det
+                && let Some(next) = sentence.doc.get(idx + 1)
+                && next.pos == PartOfSpeechTag::Adj
+            {
+                reasons.push(
+                    "'बहुत' tagged DET before ADJ — when modifying an adjective ('बहुत कठोर' = very harsh), बहुत is an intensifier and should be ADV, not DET. DET is correct when quantifying a noun ('बहुत लोग' = many people).".to_string()
+                );
+            }
+
+            // --- की: ambiguous postposition vs feminine past of करना ---
+            if text == "की"
+                && (token.pos == PartOfSpeechTag::Adp || token.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(
+                    "'की' is ambiguous: ADP (postposition 'of', lemma 'की') when linking possessor to noun (e.g., 'राम की किताब'). AUX (feminine past of करना, lemma 'करना') when completing a N+करना light verb construction (e.g., 'निंदा की', 'मदद की', 'शादी की'). Test: does की follow a noun and precede punctuation/clause end with no following noun? → likely करना. Does की link a noun to a following noun? → postposition.".to_string()
+                );
             }
 
             // --- रहा/रही/रहे progressive aspect marker ---
@@ -9265,7 +9925,7 @@ Many na-adjective words also function as nouns. The POS depends on the grammatic
 - 危険な場所 (dangerous place) → 危険 is ADJ (lemma "危険だ"), modifying 場所
 - 必要がある (there is a NEED) → 必要 is NOUN (lemma "必要"), subject of ある
 - 必要な書類 (necessary documents) → 必要 is ADJ (lemma "必要だ"), modifying 書類
-The rule: if followed by が/を/の (case particles treating it as a noun), it's NOUN. If followed by な (modifying a noun) or だ/です (predicate), it's ADJ.
+The rule: if followed by が/を/の (case particles treating it as a noun), it's NOUN. If followed by な (modifying a noun) or だ/です/でした/だった (predicate), it's ADJ. If a word is tagged ADJ with a だ-ending lemma but appears in neither context, double-check whether it's actually a noun being used predicatively (e.g., '絶品' is a noun, not a na-adjective) — only tag as ADJ if you're confident the word genuinely belongs to the na-adjective class.
 
 Words that look like na-adjectives but are always NOUN:
 - 好み (preference/taste): NOUN, not ADJ. "好みの問題" = a matter of preference. Lemma "好み".
@@ -9275,7 +9935,7 @@ Honorific/humble verb forms keep their own lemma (they are distinct dictionary e
 - いらっしゃいます → lemma "いらっしゃる"
 - おっしゃった → lemma "おっしゃる"
 - 召し上がる → lemma "召し上がる"
-- ございます → lemma "ございます"
+- ございます → lemma "ござる" (though ござる is archaic in isolation, we use it as the lemma for paradigm consistency — ございます/ございました/ございません are all ござる forms, and this matches how every other verb in the pipeline uses the bare dictionary form)
 
 ## Tokenization
 
@@ -9405,6 +10065,12 @@ When multiple auxiliaries stack, EACH one is a separate token. Do NOT merge auxi
 - 食べさせられた → "食べ" (VERB) + "させ" (AUX, lemma "させる") + "られ" (AUX, lemma "られる") + "た" (AUX, lemma "た")
 - 書かなかった → "書か" (VERB) + "なかった" (AUX, lemma "ない") — exception: なかった is one AUX because ない conjugates like an い-adjective (ない→なかった), which is an internal stem change, not clean append.
 The principle: た (past) appends cleanly to any auxiliary and should be its own token. Don't merge れた, せた, etc.
+
+Exception (parallel to なかった): たら after an auxiliary merges with it, because たら is an internal conjugation of た, not a clean append of a separate morpheme. So みたら is one AUX (lemma みる), not み + た + ら. Same logic applies to other auxiliary + たら combinations:
+- やってみたら → "やっ" (VERB, lemma "やる") + "て" (SCONJ) + "みたら" (AUX, lemma "みる")
+- 食べさせられたら → "食べ" (VERB) + "させ" (AUX) + "られたら" (AUX, lemma "られる")
+- 書かなかったら → "書か" (VERB) + "なかったら" (AUX, lemma "ない")
+The reasoning is the same as なかった: たら is not a separate clean-append morpheme but a conjugated form of た, and た itself is fused into the auxiliary's conjugation paradigm.
 
 #### Noun suffixes: always SPLIT
 

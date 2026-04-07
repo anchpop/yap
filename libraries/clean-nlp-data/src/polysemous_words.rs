@@ -599,4 +599,6 @@ const HINDI: &[PolysemousWord] = &[
     ("सिर्फ़", &[("सिर्फ़", Adv), ("सिर्फ़", Det)]),          // only (adv) / only (det)
     ("कभी", &[("कभी", Adv), ("कभी", Adv)]),             // ever / sometimes
     ("एक", &[("एक", Det), ("एक", Num)]),                // a/an (article) / one (number)
+    ("कर", &[("करना", Verb), ("कर", Noun)]), // conjunctive participle "having done" (verb form of करना) / tax (noun)
+    ("आ", &[("आना", Verb), ("आ", Intj)]),    // come! (imperative of आना) / ah!/oh! (interjection)
 ];
