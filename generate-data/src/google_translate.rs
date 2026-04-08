@@ -85,7 +85,11 @@ impl GoogleTranslator {
 
         let token = self.get_token().await?;
         let url = format!(
-            "https://translation.googleapis.com/v3/projects/{}:translateText",
+            "https://translation.googleapis.com/v3/projects/{}/locations/us-central1:translateText",
+            self.project_id
+        );
+        let model = format!(
+            "projects/{}/locations/us-central1/models/general/translation-llm",
             self.project_id
         );
         let resp = self
@@ -97,6 +101,7 @@ impl GoogleTranslator {
                 "targetLanguageCode": self.target_language,
                 "contents": [text],
                 "mimeType": "text/plain",
+                "model": model,
             }))
             .send()
             .await
