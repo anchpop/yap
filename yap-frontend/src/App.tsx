@@ -383,6 +383,9 @@ function ReviewPage() {
   const deck = useDeck();
   const deckSelection = useDeckSelection();
   const navigate = useNavigate();
+  const [lastAutoPlayReviewCount, setLastAutoPlayReviewCount] = useState<
+    bigint | null
+  >(null);
 
   useEffect(() => {
     if (deckSelection?.type === "noLanguageSelected") {
@@ -423,6 +426,10 @@ function ReviewPage() {
           { type: "deck", deck: P.not(P.nullish) },
           ({ deck, targetLanguage, nativeLanguage, startingFresh }) => {
             const reviewInfo = deck.get_review_info([], Date.now());
+            const totalReviewsCompleted = deck.get_total_reviews();
+            const autoplayed = lastAutoPlayReviewCount == totalReviewsCompleted;
+            const setAutoplayed = () =>
+              setLastAutoPlayReviewCount(totalReviewsCompleted);
 
             // Calculate movie stats once for use in both Review and Movies components
             const movieStats = deck.get_movie_stats();
@@ -455,6 +462,8 @@ function ReviewPage() {
                     nativeLanguage={nativeLanguage}
                     moviesWithMetadata={moviesWithMetadata}
                     startingFresh={startingFresh}
+                    autoplayed={autoplayed}
+                    setAutoplayed={setAutoplayed}
                   />
                 </TopPageLayout>
                 <Tools deck={deck} />
@@ -700,6 +709,8 @@ interface ReviewProps {
   nativeLanguage: Language;
   moviesWithMetadata: MovieWithMetadata[];
   startingFresh: boolean | undefined;
+  autoplayed: boolean;
+  setAutoplayed: () => void;
 }
 
 function Review({
@@ -710,6 +721,8 @@ function Review({
   nativeLanguage,
   moviesWithMetadata,
   startingFresh,
+  autoplayed,
+  setAutoplayed,
 }: ReviewProps) {
   const weapon = useWeapon();
   const { goal, setGoal } = useGoal(deck.get_goal());
@@ -718,19 +731,11 @@ function Review({
 
   const network = useNetworkState();
   const [cardsBecameDue, setCardsBecameDue] = useState<number>(0);
-  const [lastAutoPlayReviewCount, setLastAutoPlayReviewCount] = useState<
-    bigint | null
-  >(null);
   const [dismissedSetDisplayName, setDismissedSetDisplayName] = useState(() => {
     return localStorage.getItem("yap-skipped-set-display-name") === "true";
   });
 
   const totalReviewsCompleted = deck.get_total_reviews();
-  const autoplayed = lastAutoPlayReviewCount == totalReviewsCompleted;
-  const setAutoplayed = useCallback(
-    () => setLastAutoPlayReviewCount(totalReviewsCompleted),
-    [totalReviewsCompleted],
-  );
 
   const accomplishment: Accomplishment | undefined = deck.get_accomplishment();
   const [dismissedAccomplishment, setDismissedAccomplishment] = useState(false);

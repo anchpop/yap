@@ -628,32 +628,28 @@ export function TranscriptionChallenge({
                         <div className="rounded-lg p-4 border">
                           <div className="flex flex-row items-center gap-3">
                             <p className="text-sm font-medium">Listen:</p>
+                            <AudioButton
+                              audioRequest={{
+                                request: {
+                                  text: gradingState.graded.compare.join(
+                                    " ... ",
+                                  ),
+                                  language: targetLanguage,
+                                },
+                                provider: "ElevenLabs",
+                              }}
+                              accessToken={accessToken}
+                              size="icon"
+                              variant="ghost"
+                            />
                             <div className="flex flex-row flex-wrap justify-around items-center gap-3">
                               {gradingState.graded.compare.map((item, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex items-center gap-1"
-                                >
-                                  <span className="font-medium">
-                                    <TargetLanguageText
-                                      language={targetLanguage}
-                                    >
-                                      {item}
-                                    </TargetLanguageText>
-                                  </span>
-                                  <AudioButton
-                                    audioRequest={{
-                                      request: {
-                                        text: item,
-                                        language: targetLanguage,
-                                      },
-                                      provider: "Google",
-                                    }}
-                                    accessToken={accessToken}
-                                    size="icon"
-                                    variant="ghost"
-                                  />
-                                </div>
+                                <span key={idx} className="font-medium">
+                                  <TargetLanguageText language={targetLanguage}>
+                                    {item}
+                                  </TargetLanguageText>
+                                  {idx < gradingState.graded.compare.length - 1 && ","}
+                                </span>
                               ))}
                             </div>
                           </div>
