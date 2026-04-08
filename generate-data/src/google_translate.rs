@@ -3,9 +3,53 @@ use dashmap::DashMap;
 use gcp_auth::TokenProvider;
 use html_escape::decode_html_entities;
 use language_utils::Language;
+use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::{Duration, Instant};
+use tokio::sync::Mutex;
 use xxhash_rust::xxh3::xxh3_64;
+
+/// Sliding-window rate limiter: at most `max_requests` per `window`.
+struct RateLimiter {
+    max_requests: usize,
+    window: Duration,
+    timestamps: Mutex<VecDeque<Instant>>,
+}
+
+impl RateLimiter {
+    fn new(max_requests: usize, window: Duration) -> Self {
+        Self {
+            max_requests,
+            window,
+            timestamps: Mutex::new(VecDeque::with_capacity(max_requests)),
+        }
+    }
+
+    async fn acquire(&self) {
+        loop {
+            let sleep_for = {
+                let mut ts = self.timestamps.lock().await;
+                let now = Instant::now();
+                while let Some(&front) = ts.front() {
+                    if now.duration_since(front) >= self.window {
+                        ts.pop_front();
+                    } else {
+                        break;
+                    }
+                }
+                if ts.len() < self.max_requests {
+                    ts.push_back(now);
+                    return;
+                }
+                // Need to wait until the oldest entry exits the window.
+                let oldest = *ts.front().unwrap();
+                self.window - now.duration_since(oldest)
+            };
+            tokio::time::sleep(sleep_for).await;
+        }
+    }
+}
 
 pub struct GoogleTranslator {
     client: reqwest::Client,
@@ -16,6 +60,7 @@ pub struct GoogleTranslator {
     cache: DashMap<u64, String>, // hash -> translation
     cache_dir: PathBuf,
     master_cache_file: PathBuf,
+    rate_limiter: RateLimiter,
 }
 
 impl GoogleTranslator {
@@ -47,6 +92,11 @@ impl GoogleTranslator {
             DashMap::new()
         };
 
+        let rpm: usize = std::env::var("TRANSLATE_RPM")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(200);
+
         let res = Self {
             client: reqwest::Client::new(),
             source_language: source_language.iso_639_1().to_string(),
@@ -56,6 +106,7 @@ impl GoogleTranslator {
             cache,
             cache_dir,
             master_cache_file,
+            rate_limiter: RateLimiter::new(rpm, Duration::from_secs(60)),
         };
         res.consolidate_cache();
         Ok(res)
@@ -82,6 +133,8 @@ impl GoogleTranslator {
 
         // Not in cache - make API call
         let cache_file = self.cache_dir.join(format!("{hash}.json"));
+
+        self.rate_limiter.acquire().await;
 
         let token = self.get_token().await?;
         let url = format!(

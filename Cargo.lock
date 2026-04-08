@@ -759,6 +759,7 @@ dependencies = [
  "tokio",
  "tysm",
  "weapon",
+ "xxhash-rust",
  "yap-frontend-rs",
 ]
 
@@ -5263,6 +5264,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e8983c3ab33d6fb807cfcdad2491c4ea8cbc8ed839181c7dfd9c67c83e261b2"
 dependencies = [
  "rustls-pki-types",
+]
+
+[[package]]
+name = "weekly-active-users"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "dotenvy",
+ "reqwest 0.12.23",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]

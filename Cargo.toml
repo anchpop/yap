@@ -13,6 +13,7 @@ members = [
     "libraries/enumap",
     "libraries/opensubtitles-downloader",
     "libraries/omnigram",
+    "libraries/weekly-active-users",
     "generate-dictionary-data",
 ]
 resolver = "3"

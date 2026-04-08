@@ -19,3 +19,12 @@ env_logger = { workspace = true }
 log = { workspace = true }
 rkyv = { workspace = true }
 indicatif = { workspace = true }
+xxhash-rust = { workspace = true }
+
+[[bin]]
+name = "course-spot-check"
+path = "src/main.rs"
+
+[[bin]]
+name = "clear-translation-cache"
+path = "src/clear_translation_cache.rs"
