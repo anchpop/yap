@@ -106,19 +106,25 @@ export const profilerOnRender = (
   // console.log(`id:`, id, `, phase:`, phase, `, actualDuration:`, actualDuration, `, baseDuration:`, baseDuration, `, startTime:`, startTime, `, commitTime:`, commitTime);
 };
 
-let isPlayingAudio = false;
+let currentAudio: HTMLAudioElement | null = null;
 
 export async function playAudio(
   audioRequest: AudioRequest,
   accessToken: string | undefined,
   needsAuth: () => void,
+  onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>,
 ): Promise<void> {
-  if (isPlayingAudio) {
-    console.log("Audio already playing, skipping...");
-    return;
+  // If something else is already playing, stop it so the new request wins.
+  if (currentAudio) {
+    try {
+      currentAudio.pause();
+      currentAudio.src = "";
+    } catch {
+      // ignore
+    }
+    currentAudio = null;
   }
 
-  isPlayingAudio = true;
   try {
     const audioData = await get_audio(audioRequest, accessToken);
 
@@ -126,6 +132,10 @@ export async function playAudio(
     const audioUrl = URL.createObjectURL(audioBlob);
 
     const audio = new Audio(audioUrl);
+    currentAudio = audio;
+    if (onAudioElement) {
+      await onAudioElement(audio);
+    }
 
     return new Promise((resolve, reject) => {
       let errorHandled = false;
@@ -161,10 +171,12 @@ export async function playAudio(
 
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
+        if (currentAudio === audio) currentAudio = null;
         resolve();
       };
 
       audio.onerror = () => {
+        if (currentAudio === audio) currentAudio = null;
         handlePlaybackFailure(new Error("Audio playback failed"));
       };
 
@@ -173,12 +185,13 @@ export async function playAudio(
       });
     });
   } catch (error) {
+    currentAudio = null;
     if (typeof error === "string" && error.includes("400")) {
       needsAuth();
     }
     console.error("Failed to play audio:", error);
     throw error;
   } finally {
-    isPlayingAudio = false;
+    // currentAudio gets cleared by onended/onerror handlers above
   }
 }

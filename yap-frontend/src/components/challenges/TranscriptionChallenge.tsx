@@ -21,7 +21,6 @@ import { playSoundEffect } from "@/lib/sound-effects";
 import { CantListenButton } from "../CantListenButton";
 import { AudioErrorBanner } from "../AudioErrorBanner";
 import { FeedbackDisplay } from "@/components/FeedbackDisplay";
-import { AudioVisualizer } from "../AudioVisualizer";
 import { AccentedCharacterKeyboard } from "../AccentedCharacterKeyboard";
 import { MobileKeyboardTip } from "../MobileKeyboardTip";
 import {
@@ -545,9 +544,9 @@ export function TranscriptionChallenge({
           </div>
 
           <div className="space-y-6">
-            {/* Audio section with waveform */}
-            <div className="flex flex-col items-center space-y-4">
-              <div className="flex items-center gap-4">
+            {/* Audio + sentence with blanks, grouped so they read as one unit */}
+            <div>
+              <div className="flex flex-col items-center gap-2">
                 <AudioButton
                   audioRequest={challenge.audio}
                   accessToken={accessToken}
@@ -557,20 +556,16 @@ export function TranscriptionChallenge({
                   playPreAudio={true}
                   onError={() => setAudioError(true)}
                   onSuccess={() => setAudioError(false)}
+                  visualizer
                 />
-
-                <AudioVisualizer />
+                <p className="text-sm text-muted-foreground">
+                  Listen and fill in the blanks
+                </p>
               </div>
-
-              <p className="text-sm text-muted-foreground">
-                Listen and fill in the blanks
-              </p>
-            </div>
-
-            {/* Sentence with blanks */}
-            <div className="text-center pt-4">
-              <div className="text-2xl font-semibold leading-relaxed">
-                {renderSentenceWithBlanks()}
+              <div className="text-center pt-4">
+                <div className="text-2xl font-semibold leading-relaxed">
+                  {renderSentenceWithBlanks()}
+                </div>
               </div>
             </div>
 
