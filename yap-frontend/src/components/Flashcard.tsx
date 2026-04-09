@@ -195,12 +195,35 @@ const CardBack = ({
     .with({ type: "Listening" }, (content) => {
       const possibleGrams = content.possible_grams;
 
+      const definitionsGloss = (
+        definitions: GramDefinition[],
+      ): string | null => {
+        const parts = definitions.flatMap((definition) => {
+          if ("Dictionary" in definition) {
+            return definition.Dictionary.definitions
+              .map((d: TargetToNativeWord) => d.native)
+              .filter(Boolean);
+          }
+          return definition.Phrasebook.meaning
+            ? [definition.Phrasebook.meaning]
+            : [];
+        });
+        return parts.length > 0 ? parts.join(", ") : null;
+      };
+
       if (possibleGrams.length === 1) {
+        const [, gram, definitions] = possibleGrams[0];
+        const gloss = definitionsGloss(definitions as GramDefinition[]);
         return (
-          <div className="text-3xl font-medium">
-            <TargetLanguageText language={targetLanguage}>
-              {gramDisplayText(possibleGrams[0][1])}
-            </TargetLanguageText>
+          <div className="space-y-2">
+            <div className="text-3xl font-medium">
+              <TargetLanguageText language={targetLanguage}>
+                {gramDisplayText(gram)}
+              </TargetLanguageText>
+            </div>
+            {gloss && (
+              <div className="text-lg text-muted-foreground">{gloss}</div>
+            )}
           </div>
         );
       }
@@ -211,25 +234,37 @@ const CardBack = ({
             It could have been any of these words:
           </div>
           <div className="grid grid-cols-2 gap-2">
-            {possibleGrams.map(([isKnown, gram], index: number) => (
-              <div
-                key={index}
-                className={`text-left p-2 rounded-md ${
-                  isKnown
-                    ? "bg-green-500/10 border border-green-500/20"
-                    : "bg-muted/30 border border-muted/20"
-                }`}
-              >
-                <span className="text-lg">
-                  <TargetLanguageText language={targetLanguage}>
-                    {gramDisplayText(gram)}
-                  </TargetLanguageText>
-                </span>
-                {isKnown && (
-                  <span className="text-sm text-green-600 ml-2">(known)</span>
-                )}
-              </div>
-            ))}
+            {possibleGrams.map(([isKnown, gram, definitions], index: number) => {
+              const gloss = definitionsGloss(definitions as GramDefinition[]);
+              return (
+                <div
+                  key={index}
+                  className={`text-left p-2 rounded-md ${
+                    isKnown
+                      ? "bg-green-500/10 border border-green-500/20"
+                      : "bg-muted/30 border border-muted/20"
+                  }`}
+                >
+                  <div>
+                    <span className="text-lg">
+                      <TargetLanguageText language={targetLanguage}>
+                        {gramDisplayText(gram)}
+                      </TargetLanguageText>
+                    </span>
+                    {isKnown && (
+                      <span className="text-sm text-green-600 ml-2">
+                        (known)
+                      </span>
+                    )}
+                  </div>
+                  {gloss && (
+                    <div className="text-sm text-muted-foreground">
+                      {gloss}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       );

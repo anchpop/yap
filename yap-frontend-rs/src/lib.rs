@@ -3765,7 +3765,7 @@ pub enum CardContent {
         definition: GramDefinition,
     },
     Listening {
-        possible_grams: Vec<(bool, Vec<Literal<String>>)>,
+        possible_grams: Vec<(bool, Vec<Literal<String>>, Vec<GramDefinition>)>,
     },
 }
 

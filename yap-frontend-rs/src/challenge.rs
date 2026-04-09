@@ -66,9 +66,11 @@ impl ReviewInfo {
         };
 
         // Build possible_grams based on whether this is a single-atom or multi-atom gram
-        let possible_grams: Vec<(bool, Vec<Literal<String>>)> = if let Some(heteronym) =
-            single_heteronym
-        {
+        let possible_grams: Vec<(
+            bool,
+            Vec<Literal<String>>,
+            Vec<language_utils::GramDefinition>,
+        )> = if let Some(heteronym) = single_heteronym {
             // Single-atom gram: find homophones (other grams with same pronunciation)
             let pronunciation = language_pack
                 .word_to_pronunciation
@@ -122,7 +124,14 @@ impl ReviewInfo {
                             deck.context.course.target_language,
                         );
 
-                        (gram_known, literals)
+                        let definitions = language_pack
+                            .gram_definitions
+                            .get(&other_gram)
+                            .cloned()
+                            .into_iter()
+                            .collect();
+
+                        (gram_known, literals, definitions)
                     })
                     .collect()
             } else {
@@ -130,28 +139,45 @@ impl ReviewInfo {
                 let gram_resolved = gram_atoms.resolve(&language_pack.string_rodeo);
                 let literals =
                     atoms_to_literals(gram_resolved.as_ref(), deck.context.course.target_language);
-                vec![(true, literals)]
+                let definitions = language_pack
+                    .gram_definitions
+                    .get(&gram)
+                    .cloned()
+                    .into_iter()
+                    .collect();
+                vec![(true, literals, definitions)]
             }
         } else {
             // Multi-atom gram: no homophones, just show this one
             let gram_resolved = gram_atoms.resolve(&language_pack.string_rodeo);
             let literals =
                 atoms_to_literals(gram_resolved.as_ref(), deck.context.course.target_language);
-            vec![(true, literals)]
+            let definitions = language_pack
+                .gram_definitions
+                .get(&gram)
+                .cloned()
+                .into_iter()
+                .collect();
+            vec![(true, literals, definitions)]
         };
 
         // Deduplicate by display text, preserving order, keeping known=true if any duplicate is known
         let possible_grams = {
             let mut seen: std::collections::HashMap<String, usize> =
                 std::collections::HashMap::new();
-            let mut deduped: Vec<(bool, Vec<Literal<String>>)> = Vec::new();
-            for (known, literals) in possible_grams {
+            let mut deduped: Vec<(
+                bool,
+                Vec<Literal<String>>,
+                Vec<language_utils::GramDefinition>,
+            )> = Vec::new();
+            for (known, literals, definitions) in possible_grams {
                 let display = literals_to_text(&literals);
                 if let Some(&idx) = seen.get(&display) {
                     deduped[idx].0 |= known;
+                    deduped[idx].2.extend(definitions);
                 } else {
                     seen.insert(display, deduped.len());
-                    deduped.push((known, literals));
+                    deduped.push((known, literals, definitions));
                 }
             }
             deduped
