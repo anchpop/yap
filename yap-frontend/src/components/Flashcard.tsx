@@ -681,6 +681,7 @@ export const Flashcard = function Flashcard({
                       setAutoplayed={setAutoplayed}
                       onError={() => setAudioError(true)}
                       onSuccess={() => setAudioError(false)}
+                      visualizer={content.type === "Listening" ? "radial" : false}
                     />
                   ) : (
                     <div className="w-10" /> /* Spacer to keep content centered */

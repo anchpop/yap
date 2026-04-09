@@ -806,6 +806,19 @@ pub struct TodayNewCard {
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct DayProgress {
+    /// 0 = Monday, 6 = Sunday
+    pub weekday: u8,
+    pub seconds: u32,
+    pub target_seconds: u32,
+    pub reviews: u32,
+    pub met_goal: bool,
+    pub is_today: bool,
+    pub is_future: bool,
+}
+
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct TodaySummary {
     pub reviews: u32,
     pub time_spent_seconds: u32,
@@ -870,6 +883,12 @@ pub struct Stats {
     /// Track daily challenge completions for the past week
     /// Key is days since epoch, value is number of challenges completed
     pub past_week_challenges: BTreeMap<i64, u32>,
+    /// Seconds spent reviewing per day for the past week.
+    /// Key is days since the common era (NaiveDate::num_days_from_ce in user's local timezone).
+    pub past_week_seconds: BTreeMap<i64, u32>,
+    /// Reviews completed per day for the past week (all review types).
+    /// Key is days since the common era.
+    pub past_week_reviews: BTreeMap<i64, u32>,
     /// Timestamp of the first event processed (when the user started using the app)
     pub start_time: Option<DateTime<Utc>>,
     /// Track how many times each flashcard type has been seen (for tutorial purposes)
@@ -1784,6 +1803,8 @@ impl DeckState {
                 daily_streak: None,
                 today: None,
                 past_week_challenges: BTreeMap::new(),
+                past_week_seconds: BTreeMap::new(),
+                past_week_reviews: BTreeMap::new(),
                 start_time: None,
                 flashcard_type_seen_count: BTreeMap::new(),
                 wrong_sentences: VecDeque::new(),
@@ -1949,6 +1970,20 @@ impl DeckState {
                     forgot: 0,
                 });
             }
+        }
+
+        // Mirror today's stats into the rolling per-day maps and prune to last 7 days
+        if let Some(today) = &self.stats.today {
+            let day_index = day.num_days_from_ce() as i64;
+            self.stats
+                .past_week_seconds
+                .insert(day_index, today.time_spent_seconds);
+            self.stats
+                .past_week_reviews
+                .insert(day_index, today.reviews);
+            let cutoff = day_index - 7;
+            self.stats.past_week_seconds.retain(|&d, _| d > cutoff);
+            self.stats.past_week_reviews.retain(|&d, _| d > cutoff);
         }
     }
 }
@@ -2611,6 +2646,45 @@ impl Deck {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_daily_review_target(&self) -> u32 {
         self.daily_review_target.target_seconds()
+    }
+
+    /// Progress for each day of the current week (Monday → Sunday) in the user's local timezone.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_current_week_progress(&self) -> Vec<DayProgress> {
+        use chrono::Datelike;
+        let timezone = &self.context.timezone;
+        let today = Utc::now().with_timezone(timezone).date_naive();
+        let weekday_from_monday = today.weekday().num_days_from_monday() as i64;
+        let monday = today - chrono::Duration::days(weekday_from_monday);
+        let target = self.daily_review_target.target_seconds();
+
+        (0..7)
+            .map(|offset| {
+                let date = monday + chrono::Duration::days(offset);
+                let day_index = date.num_days_from_ce() as i64;
+                let seconds = self
+                    .stats
+                    .past_week_seconds
+                    .get(&day_index)
+                    .copied()
+                    .unwrap_or(0);
+                let reviews = self
+                    .stats
+                    .past_week_reviews
+                    .get(&day_index)
+                    .copied()
+                    .unwrap_or(0);
+                DayProgress {
+                    weekday: date.weekday().num_days_from_monday() as u8,
+                    seconds,
+                    target_seconds: target,
+                    reviews,
+                    met_goal: target > 0 && seconds >= target,
+                    is_today: date == today,
+                    is_future: date > today,
+                }
+            })
+            .collect()
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]

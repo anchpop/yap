@@ -593,7 +593,61 @@ export const NoCardsReady = memo(function NoCardsReady({
         </Card>
       )}
 
+      {!isEmptyDeck && <WeekProgressStrip deck={deck} />}
+
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
     </div>
   );
 });
+
+const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
+
+function WeekProgressStrip({ deck }: { deck: Deck }) {
+  const week = useMemo(() => deck.get_current_week_progress(), [deck]);
+  return (
+    <div className="flex w-full items-stretch">
+      {week.map((day, i) => {
+        const bg = day.is_future
+          ? "bg-muted/30 text-muted-foreground/60"
+          : day.met_goal
+            ? "bg-green-600 dark:bg-green-500 text-white"
+            : day.reviews > 0
+              ? "bg-green-300 dark:bg-green-800 text-foreground dark:text-white"
+              : "bg-background text-muted-foreground";
+        const borderL = i > 0 && !day.is_today ? "border-l border-border" : "";
+        const rounded =
+          i === 0
+            ? "rounded-l-lg"
+            : i === 6
+              ? "rounded-r-lg"
+              : "";
+        const todayClasses = day.is_today
+          ? "scale-110 z-10 rounded-lg shadow-lg border border-border"
+          : "";
+        return (
+          <Tooltip key={i}>
+            <TooltipTrigger asChild>
+              <div
+                className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 ${bg} ${borderL} ${rounded} ${todayClasses}`}
+              >
+                <span className="text-lg font-semibold leading-none tabular-nums">
+                  {day.is_future ? "·" : `+${day.reviews}`}
+                </span>
+                <span className="text-[10px] uppercase tracking-wide opacity-70">
+                  {DAY_LABELS[i]}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              {day.is_future
+                ? "Upcoming"
+                : day.reviews === 0
+                  ? "No reviews"
+                  : `${day.reviews} review${day.reviews === 1 ? "" : "s"} · ${Math.round(day.seconds / 60)} min${day.met_goal ? " · goal met" : ""}`}
+            </TooltipContent>
+          </Tooltip>
+        );
+      })}
+    </div>
+  );
+}

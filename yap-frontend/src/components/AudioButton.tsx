@@ -24,7 +24,7 @@ interface AudioButtonProps {
   playPreAudio?: boolean;
   onError?: () => void;
   onSuccess?: () => void;
-  visualizer?: boolean;
+  visualizer?: boolean | "radial";
 }
 
 const WAVE_BARS = 36;
@@ -446,19 +446,21 @@ export function AudioButton({
         </svg>
         {button}
       </div>
-      <div
-        ref={waveContainerRef}
-        className="pointer-events-none flex h-12 items-center gap-0.5"
-        aria-hidden
-      >
-        {Array.from({ length: WAVE_BARS }).map((_, i) => (
-          <div
-            key={i}
-            className="w-1 rounded-full bg-primary transition-opacity duration-500 ease-out"
-            style={{ height: "3px", opacity: 0.2 }}
-          />
-        ))}
-      </div>
+      {visualizer !== "radial" && (
+        <div
+          ref={waveContainerRef}
+          className="pointer-events-none flex h-12 items-center gap-0.5"
+          aria-hidden
+        >
+          {Array.from({ length: WAVE_BARS }).map((_, i) => (
+            <div
+              key={i}
+              className="w-1 rounded-full bg-primary transition-opacity duration-500 ease-out"
+              style={{ height: "3px", opacity: 0.2 }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
