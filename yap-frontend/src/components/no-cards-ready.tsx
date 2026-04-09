@@ -606,48 +606,77 @@ function WeekProgressStrip({ deck }: { deck: Deck }) {
   const week = useMemo(() => deck.get_current_week_progress(), [deck]);
   return (
     <div className="flex w-full items-stretch">
-      {week.map((day, i) => {
-        const bg = day.is_future
-          ? "bg-muted/30 text-muted-foreground/60"
-          : day.met_goal
-            ? "bg-green-600 dark:bg-green-500 text-white"
-            : day.reviews > 0
-              ? "bg-green-300 dark:bg-green-800 text-foreground dark:text-white"
-              : "bg-background text-muted-foreground";
-        const borderL = i > 0 && !day.is_today ? "border-l border-border" : "";
-        const rounded =
-          i === 0
-            ? "rounded-l-lg"
-            : i === 6
-              ? "rounded-r-lg"
-              : "";
-        const todayClasses = day.is_today
-          ? "scale-110 z-10 rounded-lg shadow-lg border border-border"
-          : "";
-        return (
-          <Tooltip key={i}>
-            <TooltipTrigger asChild>
-              <div
-                className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 ${bg} ${borderL} ${rounded} ${todayClasses}`}
-              >
-                <span className="text-lg font-semibold leading-none tabular-nums">
-                  {day.is_future ? "·" : `+${day.reviews}`}
-                </span>
-                <span className="text-[10px] uppercase tracking-wide opacity-70">
-                  {DAY_LABELS[i]}
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              {day.is_future
-                ? "Upcoming"
-                : day.reviews === 0
-                  ? "No reviews"
-                  : `${day.reviews} review${day.reviews === 1 ? "" : "s"} · ${Math.round(day.seconds / 60)} min${day.met_goal ? " · goal met" : ""}`}
-            </TooltipContent>
-          </Tooltip>
-        );
-      })}
+      {week.map((day, i) => (
+        <DayCell key={i} day={day} index={i} />
+      ))}
     </div>
+  );
+}
+
+function DayCell({ day, index }: { day: { seconds: number; target_seconds: number; reviews: number; met_goal: boolean; is_today: boolean; is_future: boolean }; index: number }) {
+  const fillPercent = day.is_future || day.target_seconds === 0
+    ? 0
+    : Math.min(100, (day.seconds / day.target_seconds) * 100);
+
+  const borderL = index > 0 && !day.is_today ? "border-l border-border" : "";
+  const rounded =
+    index === 0
+      ? "rounded-l-lg"
+      : index === 6
+        ? "rounded-r-lg"
+        : "";
+  const todayClasses = day.is_today
+    ? "scale-110 z-10 rounded-lg shadow-lg border border-border"
+    : "";
+
+  const content = (
+    <>
+      <span className="text-lg font-semibold leading-none tabular-nums">
+        {day.is_future ? "·" : `+${day.reviews}`}
+      </span>
+      <span className="text-[10px] uppercase tracking-wide opacity-70">
+        {DAY_LABELS[index]}
+      </span>
+    </>
+  );
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div
+          className={`flex-1 relative overflow-hidden ${borderL} ${rounded} ${todayClasses} ${day.is_future ? "bg-muted/30" : "bg-background"}`}
+        >
+          {/* Green fill bar */}
+          {!day.is_future && fillPercent > 0 && (
+            <div
+              className={`absolute inset-0 ${fillPercent >= 100 ? "bg-foreground" : "bg-foreground/90"}`}
+              style={{ clipPath: `inset(${100 - fillPercent}% 0 0 0)` }}
+            />
+          )}
+
+          {/* Base text layer (normal foreground color) */}
+          <div className={`relative flex flex-col items-center justify-center py-3 gap-0.5 ${day.is_future ? "text-muted-foreground/60" : "text-foreground"}`}>
+            {content}
+          </div>
+
+          {/* Clipped text layer (white, revealed by fill) */}
+          {!day.is_future && fillPercent > 0 && (
+            <div
+              className="absolute inset-0 flex flex-col items-center justify-center py-3 gap-0.5 text-background"
+              style={{ clipPath: `inset(${100 - fillPercent}% 0 0 0)` }}
+            >
+              {content}
+            </div>
+          )}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>
+        {day.is_future
+          ? "Upcoming"
+          : day.reviews === 0
+            ? "No reviews"
+            : `${day.reviews} review${day.reviews === 1 ? "" : "s"} · ${Math.round(day.seconds / 60)} min${day.met_goal ? " · goal met" : ""}`}
+      </TooltipContent>
+    </Tooltip>
   );
 }
