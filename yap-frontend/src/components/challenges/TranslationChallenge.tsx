@@ -60,7 +60,7 @@ import { ReportIssueModal } from "./ReportIssueModal";
 import { FeedbackDisplay } from "@/components/FeedbackDisplay";
 import { playSoundEffect } from "@/lib/sound-effects";
 import { useBackground } from "../BackgroundShader";
-import { cn } from "@/lib/utils";
+import { cn, languageToIso6391 } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { TargetLanguageText } from "../TargetLanguageText";
 
@@ -1238,6 +1238,7 @@ export function TranslationChallenge({
               <>
                 <Textarea
                   ref={inputRef}
+                  lang={languageToIso6391(nativeLanguage)}
                   placeholder="Translation..."
                   value={userTranslation}
                   onChange={(e) => setUserTranslation(e.target.value)}
