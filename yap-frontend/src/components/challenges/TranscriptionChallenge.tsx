@@ -42,7 +42,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, X } from "lucide-react";
 import { ReportIssueModal } from "./ReportIssueModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InlineTextarea } from "../ui/textarea";
@@ -156,6 +156,7 @@ export function TranscriptionChallenge({
     return getMovieMetadata(deck, movieIds);
   }, [challenge.movie_titles, deck]);
   const [gradingState, setGradingState] = useState<GradingState>(restored?.gradingState ?? null);
+  const gradingGenerationRef = useRef(0);
   const completedAtMsRef = useRef<number | undefined>(restored?.completedAtMs);
   const [showReportModal, setShowReportModal] = useState(false);
   const [isTranslationRevealed, setIsTranslationRevealed] = useState(false);
@@ -292,6 +293,7 @@ export function TranscriptionChallenge({
 
     completedAtMsRef.current = Date.now();
     bumpBackground(30.0);
+    const generation = ++gradingGenerationRef.current;
     setGradingState({ grading: null });
 
     const request: PartSubmitted[] = challenge.parts.map((part, index) => {
@@ -317,6 +319,8 @@ export function TranscriptionChallenge({
     };
 
     const graded = await autograde_transcription(request, accessToken, course);
+    if (generation !== gradingGenerationRef.current) return;
+
     const isAllCorrect = graded.results.every(
       (result) =>
         result.type === "Provided" ||
@@ -715,39 +719,60 @@ export function TranscriptionChallenge({
 
         {/* Submit/Continue button at the bottom */}
         <div className="sticky bottom-0">
-          <Button
-            onClick={
-              gradingState && "graded" in gradingState
-                ? handleTranscriptionContinue
-                : handleSubmit
-            }
-            disabled={
-              (gradingState === null && !allBlanksFilledOut) ||
-              (gradingState !== null && "grading" in gradingState)
-            }
-            className="w-full h-14 text-lg"
-            size="lg"
-          >
-            {gradingState === null ? (
-              <span className="relative flex items-center justify-center">
-                Check Answer
-                <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
-                  (⏎)
+          {gradingState !== null && "grading" in gradingState ? (
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 h-14 text-lg"
+                size="lg"
+                disabled
+              >
+                AI is grading...
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-14 w-14"
+                onClick={() => {
+                  gradingGenerationRef.current++;
+                  setGradingState(null);
+                }}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          ) : (
+            <Button
+              onClick={
+                gradingState && "graded" in gradingState
+                  ? handleTranscriptionContinue
+                  : handleSubmit
+              }
+              disabled={
+                (gradingState === null && !allBlanksFilledOut) ||
+                (gradingState !== null && "error" in gradingState)
+              }
+              className="w-full h-14 text-lg"
+              size="lg"
+            >
+              {gradingState === null ? (
+                <span className="relative flex items-center justify-center">
+                  Check Answer
+                  <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+                    (⏎)
+                  </span>
                 </span>
-              </span>
-            ) : "grading" in gradingState ? (
-              "AI is grading..."
-            ) : "error" in gradingState ? (
-              "Error"
-            ) : (
-              <span className="relative flex items-center justify-center">
-                {isAllCorrect ? "Nailed it!" : "Continue"}
-                <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
-                  (⏎)
+              ) : "error" in gradingState ? (
+                "Error"
+              ) : (
+                <span className="relative flex items-center justify-center">
+                  {isAllCorrect ? "Nailed it!" : "Continue"}
+                  <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+                    (⏎)
+                  </span>
                 </span>
-              </span>
-            )}
-          </Button>
+              )}
+            </Button>
+          )}
         </div>
       </div>
 

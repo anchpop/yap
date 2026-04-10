@@ -717,6 +717,7 @@ export function TranslationChallenge({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [grade, setGrade] = useState<GradeState>(restored?.grade ?? null);
+  const gradingGenerationRef = useRef(0);
   const completedAtMsRef = useRef<number | undefined>(restored?.completedAtMs);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const phraseRefs = useRef<Map<number, SwipeableWordHandle>>(new Map());
@@ -919,6 +920,7 @@ export function TranslationChallenge({
           nativeLanguage,
         ) ?? sentence.native_translations[0];
       setCorrectTranslation(closest);
+      const generation = ++gradingGenerationRef.current;
       setGrade({ grading: null });
 
       try {
@@ -940,6 +942,8 @@ export function TranslationChallenge({
           sentence.phrase_definitions,
           sentence.primary_expression,
         );
+
+        if (generation !== gradingGenerationRef.current) return;
 
         const encouragement = response.encouragement;
         const explanation = response.explanation;
@@ -976,6 +980,7 @@ export function TranslationChallenge({
           });
         }
       } catch (error) {
+        if (generation !== gradingGenerationRef.current) return;
         console.error("Autograde failed:", error);
         playSoundEffect("aiDoneGrading");
         setGrade({
@@ -1334,6 +1339,27 @@ export function TranslationChallenge({
           >
             Check Answer
           </Button>
+        ) : "grading" in grade ? (
+          <div className="flex gap-2">
+            <Button
+              className="flex-1 h-14 text-lg"
+              size="lg"
+              disabled
+            >
+              AI is grading...
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-14 w-14"
+              onClick={() => {
+                gradingGenerationRef.current++;
+                setGrade(null);
+              }}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
         ) : (
           <Button
             onClick={handleContinue}
@@ -1341,16 +1367,12 @@ export function TranslationChallenge({
             size="lg"
             disabled={!canContinue}
           >
-            {"grading" in grade ? (
-              "AI is grading..."
-            ) : (
-              <span className="relative flex items-center justify-center">
-                {"perfect" in grade.graded ? "Nailed it!" : "Continue"}
-                <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
-                  (⏎)
-                </span>
+            <span className="relative flex items-center justify-center">
+              {"perfect" in grade.graded ? "Nailed it!" : "Continue"}
+              <span className="absolute left-full ml-2 text-sm text-muted-foreground hide-keyboard-hint-mobile">
+                (⏎)
               </span>
-            )}
+            </span>
           </Button>
         )}
       </div>
