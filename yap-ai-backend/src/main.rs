@@ -345,6 +345,54 @@ async fn google_text_to_speech(
     Ok(response_json.audio_content)
 }
 
+async fn openai_text_to_speech(
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(request): Json<TtsRequest>,
+) -> Result<String, StatusCode> {
+    let _claims = verify_jwt(auth.token()).await;
+
+    let client = reqwest::Client::new();
+
+    let openai_api_key =
+        std::env::var("OPENAI_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let mut openai_request = serde_json::json!({
+        "model": "gpt-4o-mini-tts",
+        "input": request.text,
+        "voice": "coral",
+        "response_format": "mp3",
+    });
+
+    if let Some(instructions) = &request.instructions {
+        openai_request["instructions"] = serde_json::Value::String(instructions.clone());
+    }
+
+    let response = client
+        .post("https://api.openai.com/v1/audio/speech")
+        .header("Authorization", format!("Bearer {openai_api_key}"))
+        .header("Content-Type", "application/json")
+        .json(&openai_request)
+        .send()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        eprintln!("OpenAI TTS Error ({status}): {body}");
+        return Err(StatusCode::BAD_GATEWAY);
+    }
+
+    let audio_bytes = response
+        .bytes()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let base64_audio = base64::engine::general_purpose::STANDARD.encode(&audio_bytes);
+
+    Ok(base64_audio)
+}
+
 async fn autograde_translation(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
     Json(request): Json<autograde::AutoGradeTranslationRequest>,
@@ -1637,6 +1685,7 @@ async fn main() {
         .route("/", get(|| async { "Hello from fly.io!" }))
         .route("/tts", post(text_to_speech))
         .route("/tts/google", post(google_text_to_speech))
+        .route("/tts/openai", post(openai_text_to_speech))
         .route("/autograde-translation", post(autograde_translation))
         .route("/autograde-transcription", post(autograde_transcription))
         .route("/language-data", post(serve_language_data))

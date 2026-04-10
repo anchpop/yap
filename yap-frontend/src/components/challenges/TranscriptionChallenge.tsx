@@ -49,6 +49,37 @@ import { InlineTextarea } from "../ui/textarea";
 import { ProperNounDefinitions } from "./TranslationChallenge";
 import { TargetLanguageText } from "../TargetLanguageText";
 
+/** Find the index of a single differing character between two same-length strings. */
+function findSingleCharDiff(
+  a: string,
+  b: string,
+): { idx0: number; idx1: number } | null {
+  const charsA = [...a];
+  const charsB = [...b];
+  if (charsA.length !== charsB.length) return null;
+  let diffIdx: number | null = null;
+  for (let i = 0; i < charsA.length; i++) {
+    if (charsA[i] !== charsB[i]) {
+      if (diffIdx !== null) return null; // more than one difference
+      diffIdx = i;
+    }
+  }
+  if (diffIdx === null) return null;
+  return { idx0: diffIdx, idx1: diffIdx };
+}
+
+/** Render a string with one character bolded at the given index. */
+function renderWithBold(text: string, boldIdx: number) {
+  const chars = [...text];
+  return (
+    <>
+      {chars.slice(0, boldIdx).join("")}
+      <strong>{chars[boldIdx]}</strong>
+      {chars.slice(boldIdx + 1).join("")}
+    </>
+  );
+}
+
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence;
   onComplete: (grade: PartGraded[], completedAtMs: number) => void;
@@ -628,37 +659,65 @@ export function TranscriptionChallenge({
                     />
 
                     {Array.isArray(gradingState.graded.compare) &&
-                      gradingState.graded.compare.length > 0 && (
-                        <div className="rounded-lg p-4 border">
-                          <div className="flex flex-row items-center gap-3">
-                            <p className="text-sm font-medium">Listen:</p>
-                            <AudioButton
-                              audioRequest={{
-                                request: {
-                                  text: gradingState.graded.compare.join(
-                                    " ... ",
-                                  ),
-                                  language: targetLanguage,
-                                },
-                                provider: "ElevenLabs",
-                              }}
-                              accessToken={accessToken}
-                              size="icon"
-                              variant="ghost"
-                            />
-                            <div className="flex flex-row flex-wrap justify-around items-center gap-3">
-                              {gradingState.graded.compare.map((item, idx) => (
-                                <span key={idx} className="font-medium">
-                                  <TargetLanguageText language={targetLanguage}>
-                                    {item}
-                                  </TargetLanguageText>
-                                  {idx < gradingState.graded.compare.length - 1 && ","}
-                                </span>
-                              ))}
+                      gradingState.graded.compare.length > 0 &&
+                      (() => {
+                        const words = gradingState.graded.compare;
+                        // For Korean with exactly 2 words differing by one character,
+                        // highlight the differing character
+                        const diff =
+                          targetLanguage === "Korean" && words.length === 2
+                            ? findSingleCharDiff(words[0], words[1])
+                            : null;
+
+                        const ttsText = diff
+                          ? `"${words[0].slice(0, diff.idx0)}**${words[0][diff.idx0]}**${words[0].slice(diff.idx0 + 1)}" ... "${words[1].slice(0, diff.idx1)}**${words[1][diff.idx1]}**${words[1].slice(diff.idx1 + 1)}"`
+                          : words.map((w) => `"${w}"`).join(" ... ");
+
+                        const instructions =
+                          targetLanguage === "Korean" && diff
+                            ? `A fluent Korean teacher showing a comparison of how to say two or three words, with a bit of a pause between the words. Asterisks are used to emphasize the difference.`
+                            : `A fluent ${targetLanguage} teacher showing a comparison of how to say two or three words, with a bit of a pause between the words.`;
+
+                        return (
+                          <div className="rounded-lg p-4 border">
+                            <div className="flex flex-row items-center gap-3">
+                              <p className="text-sm font-medium">Listen:</p>
+                              <AudioButton
+                                audioRequest={{
+                                  request: {
+                                    text: ttsText,
+                                    language: targetLanguage,
+                                    instructions,
+                                  },
+                                  provider: "OpenAI",
+                                }}
+                                accessToken={accessToken}
+                                size="icon"
+                                variant="ghost"
+                              />
+                              <div className="flex flex-row flex-wrap justify-around items-center gap-3">
+                                {words.map((item, idx) => (
+                                  <span key={idx} className="font-medium">
+                                    <TargetLanguageText
+                                      language={targetLanguage}
+                                    >
+                                      {diff && idx < 2
+                                        ? renderWithBold(
+                                            item,
+                                            idx === 0
+                                              ? diff.idx0
+                                              : diff.idx1,
+                                          )
+                                        : item}
+                                    </TargetLanguageText>
+                                    {idx < words.length - 1 && ","}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
 
                     <div
                       className="rounded-lg p-4 border cursor-pointer select-none"

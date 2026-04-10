@@ -2205,6 +2205,7 @@ impl ConsolidatedLanguageData {
 pub enum TtsProvider {
     ElevenLabs,
     Google,
+    OpenAI,
 }
 
 pub type Pronunciation = String;
@@ -3364,6 +3365,8 @@ pub struct TtsRequest {
     pub language: Language,
     #[serde(default)]
     pub is_ssml: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub instructions: Option<String>,
 }
 
 // ============================================================================

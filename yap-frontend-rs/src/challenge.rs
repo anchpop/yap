@@ -193,6 +193,7 @@ impl ReviewInfo {
                 text: format!("{listening_prefix}... \"{audio_text}\"."),
                 language: deck.context.course.target_language,
                 is_ssml: false,
+                instructions: None,
             },
             provider: TtsProvider::Google,
         };
@@ -330,6 +331,7 @@ impl ReviewInfo {
                             .to_string(),
                         language: deck.context.course.target_language,
                         is_ssml: false,
+                        instructions: None,
                     },
                     provider: TtsProvider::Google,
                 },
@@ -392,6 +394,7 @@ impl ReviewInfo {
                 text: audio_text,
                 language: deck.context.course.target_language,
                 is_ssml: false,
+                instructions: None,
             },
             provider: TtsProvider::Google,
         };
@@ -526,6 +529,7 @@ impl ReviewInfo {
                             .to_string(),
                         language: deck.context.course.target_language,
                         is_ssml: false,
+                        instructions: None,
                     },
                     provider: TtsProvider::ElevenLabs,
                 },
@@ -592,6 +596,7 @@ impl ReviewInfo {
                     ),
                     language: target_language,
                     is_ssml: true,
+                    instructions: None,
                 },
                 provider: TtsProvider::Google,
             })

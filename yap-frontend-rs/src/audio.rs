@@ -29,8 +29,9 @@ impl AudioCache {
     }
 
     pub fn get_cache_filename(request: &TtsRequest, provider: &TtsProvider) -> String {
+        let instructions = request.instructions.as_deref().unwrap_or("");
         let cache_text = format!(
-            "{provider:?}:{text}:{language}",
+            "{provider:?}:{text}:{language}:{instructions}",
             text = request.text,
             language = request.language
         );
@@ -130,6 +131,7 @@ impl AudioCache {
         let endpoint = match provider {
             TtsProvider::Google => "/tts/google",
             TtsProvider::ElevenLabs => "/tts",
+            TtsProvider::OpenAI => "/tts/openai",
         };
 
         let response = hit_ai_server(
