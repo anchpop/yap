@@ -602,8 +602,22 @@ export const NoCardsReady = memo(function NoCardsReady({
 
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
+function useMidnightTick() {
+  const [day, setDay] = useState(() => new Date().toDateString());
+  useEffect(() => {
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const ms = midnight.getTime() - now.getTime();
+    const timer = setTimeout(() => setDay(new Date().toDateString()), ms);
+    return () => clearTimeout(timer);
+  }, [day]);
+  return day;
+}
+
 function WeekProgressStrip({ deck }: { deck: Deck }) {
-  const week = useMemo(() => deck.get_current_week_progress(), [deck]);
+  const day = useMidnightTick();
+  const week = useMemo(() => deck.get_current_week_progress(), [deck, day]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="flex w-full items-stretch">
       {week.map((day, i) => (
@@ -613,7 +627,7 @@ function WeekProgressStrip({ deck }: { deck: Deck }) {
   );
 }
 
-function DayCell({ day, index }: { day: { seconds: number; target_seconds: number; reviews: number; met_goal: boolean; is_today: boolean; is_future: boolean }; index: number }) {
+function DayCell({ day, index }: { day: { seconds: number; target_seconds: number; reviews: number; new_cards: number; learned_cards: number; locked_in_cards: number; met_goal: boolean; is_today: boolean; is_future: boolean }; index: number }) {
   const fillPercent = day.is_future || day.target_seconds === 0
     ? 0
     : Math.min(100, (day.seconds / day.target_seconds) * 100);
@@ -632,7 +646,7 @@ function DayCell({ day, index }: { day: { seconds: number; target_seconds: numbe
   const content = (
     <>
       <span className="text-lg font-semibold leading-none tabular-nums">
-        {day.is_future ? "·" : `+${day.reviews}`}
+        {day.is_future ? "·" : `+${day.new_cards + day.learned_cards + day.locked_in_cards}`}
       </span>
       <span className="text-[10px] uppercase tracking-wide opacity-70">
         {DAY_LABELS[index]}
@@ -644,7 +658,7 @@ function DayCell({ day, index }: { day: { seconds: number; target_seconds: numbe
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={`flex-1 relative overflow-hidden ${borderL} ${rounded} ${todayClasses} ${day.is_future ? "bg-muted/30" : "bg-background"}`}
+          className={`flex-1 relative overflow-hidden ${borderL} ${rounded} ${todayClasses} ${day.is_future ? "bg-muted/30" : "backdrop-brightness-105 backdrop-saturate-120 dark:backdrop-brightness-100 backdrop-blur-sm"}`}
         >
           {/* Green fill bar */}
           {!day.is_future && fillPercent > 0 && (
@@ -674,8 +688,8 @@ function DayCell({ day, index }: { day: { seconds: number; target_seconds: numbe
         {day.is_future
           ? "Upcoming"
           : day.reviews === 0
-            ? "No reviews"
-            : `${day.reviews} review${day.reviews === 1 ? "" : "s"} · ${Math.round(day.seconds / 60)} min${day.met_goal ? " · goal met" : ""}`}
+            ? "No activity"
+            : `${day.new_cards} added · ${day.learned_cards + day.locked_in_cards} back on track`}
       </TooltipContent>
     </Tooltip>
   );

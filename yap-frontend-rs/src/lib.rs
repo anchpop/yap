@@ -776,7 +776,9 @@ pub struct TodayStats {
     pub time_spent_seconds: u32,
     /// Timestamp of the last review (used to compute time between reviews)
     last_review_timestamp: DateTime<Utc>,
-    /// Cards that were in New state when first reviewed today
+    /// Cards the user actually *learned* today: cards that were New and the user
+    /// got wrong at least once (lapses > 0) before learning them. Cards marked
+    /// "remembered" on first review are excluded — the user already knew those.
     pub new_cards: BTreeSet<CardIndicator<SpurGram, Spur>>,
     /// Cards that went from Learning to Review state today
     pub learned_cards: BTreeSet<CardIndicator<SpurGram, Spur>>,
@@ -804,6 +806,16 @@ pub struct TodayNewCard {
     pub card_type: String,
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct DaySummary {
+    pub reviews: u32,
+    pub time_spent_seconds: u32,
+    pub new_cards: u32,
+    /// Cards that went from Learning to Review (introduced on an earlier day)
+    pub learned_cards: u32,
+    pub locked_in_cards: u32,
+}
+
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct DayProgress {
@@ -812,6 +824,12 @@ pub struct DayProgress {
     pub seconds: u32,
     pub target_seconds: u32,
     pub reviews: u32,
+    /// Cards that were in New state when first reviewed this day
+    pub new_cards: u32,
+    /// Cards that went from Learning to Review this day
+    pub learned_cards: u32,
+    /// Cards that went from Relearning back to Review this day
+    pub locked_in_cards: u32,
     pub met_goal: bool,
     pub is_today: bool,
     pub is_future: bool,
@@ -883,12 +901,9 @@ pub struct Stats {
     /// Track daily challenge completions for the past week
     /// Key is days since epoch, value is number of challenges completed
     pub past_week_challenges: BTreeMap<i64, u32>,
-    /// Seconds spent reviewing per day for the past week.
+    /// Summary stats per day for the past week.
     /// Key is days since the common era (NaiveDate::num_days_from_ce in user's local timezone).
-    pub past_week_seconds: BTreeMap<i64, u32>,
-    /// Reviews completed per day for the past week (all review types).
-    /// Key is days since the common era.
-    pub past_week_reviews: BTreeMap<i64, u32>,
+    pub past_days: BTreeMap<i64, DaySummary>,
     /// Timestamp of the first event processed (when the user started using the app)
     pub start_time: Option<DateTime<Utc>>,
     /// Track how many times each flashcard type has been seen (for tutorial purposes)
@@ -1584,6 +1599,7 @@ impl weapon::AppState for Deck {
             }
         }
 
+        deck.sync_past_days();
         deck
     }
 
@@ -1803,8 +1819,7 @@ impl DeckState {
                 daily_streak: None,
                 today: None,
                 past_week_challenges: BTreeMap::new(),
-                past_week_seconds: BTreeMap::new(),
-                past_week_reviews: BTreeMap::new(),
+                past_days: BTreeMap::new(),
                 start_time: None,
                 flashcard_type_seen_count: BTreeMap::new(),
                 wrong_sentences: VecDeque::new(),
@@ -1891,7 +1906,6 @@ impl DeckState {
         // Track in today stats
         if let Some(today) = &mut self.stats.today {
             if was_new {
-                // Only show in "new today" if the user didn't already know it
                 if fsrs_card.lapses > 0 {
                     today.new_cards.insert(card);
                 }
@@ -1971,19 +1985,31 @@ impl DeckState {
                 });
             }
         }
+    }
 
-        // Mirror today's stats into the rolling per-day maps and prune to last 7 days
+    fn sync_past_days(&mut self) {
         if let Some(today) = &self.stats.today {
-            let day_index = day.num_days_from_ce() as i64;
-            self.stats
-                .past_week_seconds
-                .insert(day_index, today.time_spent_seconds);
-            self.stats
-                .past_week_reviews
-                .insert(day_index, today.reviews);
+            let day_index = today.day.num_days_from_ce() as i64;
+            self.stats.past_days.insert(
+                day_index,
+                DaySummary {
+                    reviews: today.reviews,
+                    time_spent_seconds: today.time_spent_seconds,
+                    new_cards: today.new_cards.len() as u32,
+                    learned_cards: today
+                        .learned_cards
+                        .iter()
+                        .filter(|c| !today.new_cards.contains(c))
+                        .count() as u32,
+                    locked_in_cards: today
+                        .locked_in_cards
+                        .iter()
+                        .filter(|c| !today.new_cards.contains(c))
+                        .count() as u32,
+                },
+            );
             let cutoff = day_index - 7;
-            self.stats.past_week_seconds.retain(|&d, _| d > cutoff);
-            self.stats.past_week_reviews.retain(|&d, _| d > cutoff);
+            self.stats.past_days.retain(|&d, _| d > cutoff);
         }
     }
 }
@@ -2662,23 +2688,20 @@ impl Deck {
             .map(|offset| {
                 let date = monday + chrono::Duration::days(offset);
                 let day_index = date.num_days_from_ce() as i64;
-                let seconds = self
-                    .stats
-                    .past_week_seconds
-                    .get(&day_index)
-                    .copied()
-                    .unwrap_or(0);
-                let reviews = self
-                    .stats
-                    .past_week_reviews
-                    .get(&day_index)
-                    .copied()
-                    .unwrap_or(0);
+                let summary = self.stats.past_days.get(&day_index);
+                let seconds = summary.map_or(0, |s| s.time_spent_seconds);
+                let reviews = summary.map_or(0, |s| s.reviews);
+                let new_cards = summary.map_or(0, |s| s.new_cards);
+                let learned_cards = summary.map_or(0, |s| s.learned_cards);
+                let locked_in_cards = summary.map_or(0, |s| s.locked_in_cards);
                 DayProgress {
                     weekday: date.weekday().num_days_from_monday() as u8,
                     seconds,
                     target_seconds: target,
                     reviews,
+                    new_cards,
+                    learned_cards,
+                    locked_in_cards,
                     met_goal: target > 0 && seconds >= target,
                     is_today: date == today,
                     is_future: date > today,
