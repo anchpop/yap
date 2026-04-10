@@ -662,16 +662,24 @@ export function TranscriptionChallenge({
                       gradingState.graded.compare.length > 0 &&
                       (() => {
                         const words = gradingState.graded.compare;
-                        // For Korean with exactly 2 words differing by one character,
-                        // highlight the differing character
+                        const hasShortWord = words.some(
+                          (w) => [...w].length < 4,
+                        );
+
+                        // For Korean with exactly 2 words differing by one character
+                        // (and no short words), highlight the differing character
                         const diff =
-                          targetLanguage === "Korean" && words.length === 2
+                          targetLanguage === "Korean" &&
+                          words.length === 2 &&
+                          !hasShortWord
                             ? findSingleCharDiff(words[0], words[1])
                             : null;
 
+                        const useGoogle = hasShortWord;
+
                         const ttsText = diff
-                          ? `"${words[0].slice(0, diff.idx0)}**${words[0][diff.idx0]}**${words[0].slice(diff.idx0 + 1)}" ... "${words[1].slice(0, diff.idx1)}**${words[1][diff.idx1]}**${words[1].slice(diff.idx1 + 1)}"`
-                          : words.map((w) => `"${w}"`).join(" ... ");
+                          ? `${words[0].slice(0, diff.idx0)}**${words[0][diff.idx0]}**${words[0].slice(diff.idx0 + 1)}, ${words[1].slice(0, diff.idx1)}**${words[1][diff.idx1]}**${words[1].slice(diff.idx1 + 1)}`
+                          : words.join(", ");
 
                         const instructions =
                           targetLanguage === "Korean" && diff
@@ -685,11 +693,17 @@ export function TranscriptionChallenge({
                               <AudioButton
                                 audioRequest={{
                                   request: {
-                                    text: ttsText,
+                                    text: useGoogle
+                                      ? words.join(", ")
+                                      : ttsText,
                                     language: targetLanguage,
-                                    instructions,
+                                    ...(useGoogle
+                                      ? {}
+                                      : { instructions }),
                                   },
-                                  provider: "OpenAI",
+                                  provider: useGoogle
+                                    ? "Google"
+                                    : "OpenAI",
                                 }}
                                 accessToken={accessToken}
                                 size="icon"
@@ -743,7 +757,7 @@ export function TranscriptionChallenge({
           </div>
         </Card>
 
-        {audioError && onCantListen && (
+        {audioError && onCantListen && gradingState === null && (
           <AudioErrorBanner onSkip={onCantListen} />
         )}
 
