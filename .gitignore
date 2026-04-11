@@ -22,6 +22,9 @@ yap-frontend/dev-dist
 .direnv
 .envrc
 
+# Morphology data download cache (re-download with generate_morphology_data.py)
+.cache/morphology/
+
 # Profiling artifacts
 perf.data
 perf.data.old

@@ -327,6 +327,10 @@ pub struct DictionaryEntry {
     pub target_language_word: String,
     pub definitions: Vec<TargetToNativeWord>,
     pub morphology: Vec<Morphology>,
+    /// Surface-level morphological segmentation of the word.
+    /// e.g. "destabilization" → ["de", "stabil", "iz", "ation"]
+    #[serde(default)]
+    pub segments: Vec<String>,
 }
 
 impl From<(DictionaryDefinition, Vec<Morphology>)> for DictionaryEntry {
@@ -336,6 +340,7 @@ impl From<(DictionaryDefinition, Vec<Morphology>)> for DictionaryEntry {
             target_language_word: entry.target_language_word,
             definitions: entry.definitions,
             morphology,
+            segments: Vec::new(),
         }
     }
 }

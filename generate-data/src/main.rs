@@ -1034,6 +1034,43 @@ async fn main() -> anyhow::Result<()> {
                 .context("Failed to parse custom definitions")?
         };
 
+        // Train morphological segmentation model from canonical morphemes + word list
+        let canonical_morphemes_path = PathBuf::from(format!(
+            "generate-data/data/{}/canonical_morphemes.tsv",
+            course.target_language.iso_639_3()
+        ));
+        let morphology_segmentations = if canonical_morphemes_path.exists() {
+            // Extract learnable single-word grams as the word list
+            let learnable_words: Vec<String> = filtered_gram_frequencies
+                .iter()
+                .filter_map(|entry| {
+                    if entry.gram.0.len() != 1 {
+                        return None;
+                    }
+                    match &entry.gram.0[0] {
+                        Atom::Tok(word) if word.heteronym().is_some() => Some(word.text.clone()),
+                        _ => None,
+                    }
+                })
+                .collect();
+            println!(
+                "Training morphology model for {} ({} learnable words)...",
+                course.target_language,
+                learnable_words.len()
+            );
+            generate_data::morphology::build_morphology_segmentations(
+                &canonical_morphemes_path,
+                &learnable_words,
+                3000,
+            )
+        } else {
+            std::collections::BTreeMap::new()
+        };
+        println!(
+            "Morphology segmentations: {} words",
+            morphology_segmentations.len()
+        );
+
         // Create gram dictionary (for single-atom grams)
         // Merge morphology data and custom definitions, producing DictionaryEntry values
         let gram_dict_file = native_specific_dir.join("gram_dictionary.jsonl");
@@ -1060,12 +1097,17 @@ async fn main() -> anyhow::Result<()> {
                     }
                     // Only keep entries that have morphology
                     let morph = morphology.get(&heteronym)?.clone();
+                    let segments = morphology_segmentations
+                        .get(&heteronym.word)
+                        .cloned()
+                        .unwrap_or_default();
                     Some((
                         heteronym,
                         language_utils::DictionaryEntry {
                             target_language_word: def.target_language_word,
                             definitions: def.definitions,
                             morphology: morph,
+                            segments,
                         },
                     ))
                 })

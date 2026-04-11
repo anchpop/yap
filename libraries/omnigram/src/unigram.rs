@@ -367,10 +367,24 @@ impl UnigramTrainer {
     /// Train a Unigram model from a corpus of token sequences.
     /// `seed_sequences` are token sequences that will be injected into the vocabulary
     /// with their actual corpus frequency, and protected from pruning.
+    /// `fixed_counts` are pre-computed expected counts from known segmentations
+    /// (e.g. aligned morphological data). These are added to the EM expected counts
+    /// at each iteration, biasing the model toward known morphemes without needing
+    /// to run EM on those words.
     pub fn train<T: UnigramToken>(
         &self,
         corpus: &[Vec<T>],
         seed_sequences: &[Seq<T>],
+    ) -> UnigramModel<T> {
+        self.train_with_fixed_counts(corpus, seed_sequences, &FxHashMap::default())
+    }
+
+    /// Like [`train`], but with pre-computed fixed counts merged into each EM iteration.
+    pub fn train_with_fixed_counts<T: UnigramToken>(
+        &self,
+        corpus: &[Vec<T>],
+        seed_sequences: &[Seq<T>],
+        fixed_counts: &FxHashMap<Seq<T>, f64>,
     ) -> UnigramModel<T> {
         let em_iterations = self.config.em_iterations.max(1);
 
@@ -504,7 +518,8 @@ impl UnigramTrainer {
 
         while vocab.len() > target_vocab_size {
             let start_size = vocab.len();
-            let (trained_vocab, _, _) = self.run_em(corpus, &vocab, em_iterations, &seed_set);
+            let (trained_vocab, _, _) =
+                self.run_em(corpus, &vocab, em_iterations, &seed_set, fixed_counts);
             vocab = trained_vocab;
             let model = UnigramModel::new(vocab.clone(), self.config.merge_alpha);
             let mut losses = self.compute_prune_losses(corpus, &vocab, &model, &seed_set);
@@ -534,7 +549,7 @@ impl UnigramTrainer {
             }
         }
 
-        let (vocab, _, _) = self.run_em(corpus, &vocab, em_iterations, &seed_set);
+        let (vocab, _, _) = self.run_em(corpus, &vocab, em_iterations, &seed_set, fixed_counts);
         let model = UnigramModel::new(vocab, self.config.merge_alpha);
 
         // Reorder by actual usage when segmenting the corpus
@@ -548,6 +563,7 @@ impl UnigramTrainer {
         vocab: &[VocabEntry<T>],
         iterations: usize,
         _seed_set: &HashSet<&Seq<T>>,
+        fixed_counts: &FxHashMap<Seq<T>, f64>,
     ) -> EmRunResult<T> {
         let mut current: Vec<VocabEntry<T>> = vocab.to_vec();
         let mut last_expected = FxHashMap::default();
@@ -555,8 +571,15 @@ impl UnigramTrainer {
 
         for _ in 0..iterations {
             let model = UnigramModel::new(current.clone(), self.config.merge_alpha);
-            let (expected_counts, corpus_log_likelihood) =
+            let (mut expected_counts, corpus_log_likelihood) =
                 self.compute_expected_counts(corpus, &model);
+
+            // Merge in fixed counts from known segmentations.
+            // These act as a prior: known morphemes get a count boost every iteration,
+            // anchoring the model toward real morphological segments.
+            for (seq, &count) in fixed_counts {
+                *expected_counts.entry(seq.clone()).or_insert(0.0) += count;
+            }
 
             let total_expected = expected_counts.values().sum::<f64>();
             assert!(

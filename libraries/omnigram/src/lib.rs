@@ -82,6 +82,99 @@ impl Sentence {
     }
 }
 
+// --- Plain char for character-level morphology ---
+
+impl UnigramToken for char {
+    fn can_be_sequence_boundary(&self) -> bool {
+        true
+    }
+    fn is_content(&self) -> bool {
+        true
+    }
+    fn is_excluded_from_sequences(&self) -> bool {
+        false
+    }
+}
+
+// --- Positioned character for character-level morphology ---
+
+/// Position of a character within a word.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum CharPosition {
+    Start,
+    Middle,
+    End,
+}
+
+/// A unicode character tagged with its position in the word.
+/// This lets the model distinguish e.g. prefix `re-` from suffix `-re`.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct PChar {
+    pub pos: CharPosition,
+    pub ch: char,
+}
+
+impl PChar {
+    /// Convert a word into a sequence of positioned characters.
+    pub fn from_word(word: &str) -> Vec<PChar> {
+        let chars: Vec<char> = word.chars().collect();
+        match chars.len() {
+            0 => vec![],
+            1 => vec![PChar {
+                pos: CharPosition::Start,
+                ch: chars[0],
+            }],
+            _ => {
+                let last = chars.len() - 1;
+                chars
+                    .iter()
+                    .enumerate()
+                    .map(|(i, &ch)| PChar {
+                        pos: if i == 0 {
+                            CharPosition::Start
+                        } else if i == last {
+                            CharPosition::End
+                        } else {
+                            CharPosition::Middle
+                        },
+                        ch,
+                    })
+                    .collect()
+            }
+        }
+    }
+
+    /// Render a sequence of PChars back to a string (just the characters).
+    pub fn seq_to_string(seq: &[PChar]) -> String {
+        seq.iter().map(|pc| pc.ch).collect()
+    }
+}
+
+impl std::fmt::Display for PChar {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let marker = match self.pos {
+            CharPosition::Start => "^",
+            CharPosition::Middle => "",
+            CharPosition::End => "$",
+        };
+        write!(f, "{}{marker}", self.ch)
+    }
+}
+
+impl UnigramToken for PChar {
+    fn can_be_sequence_boundary(&self) -> bool {
+        true
+    }
+
+    fn is_content(&self) -> bool {
+        true
+    }
+
+    fn is_excluded_from_sequences(&self) -> bool {
+        false
+    }
+}
+
 // --- UnigramToken implementation for Atom<S> ---
 
 impl<S: Clone + Eq + std::hash::Hash + std::fmt::Debug> UnigramToken for Atom<S> {

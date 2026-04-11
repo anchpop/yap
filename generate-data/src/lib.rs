@@ -5,6 +5,7 @@ pub mod dict;
 pub mod disambiguation_practice;
 pub mod frequencies;
 pub mod lexide_token;
+pub mod morphology;
 pub mod morphology_analysis;
 pub mod nlp;
 pub mod pronunciation_patterns;
