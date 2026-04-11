@@ -676,7 +676,7 @@ export const Flashcard = function Flashcard({
                     <AudioButton
                       audioRequest={audioRequest}
                       accessToken={accessToken}
-                      autoPlay={true}
+                      autoPlay={content.type === "Listening" || showAnswer}
                       autoplayed={autoplayed}
                       setAutoplayed={setAutoplayed}
                       onError={() => setAudioError(true)}

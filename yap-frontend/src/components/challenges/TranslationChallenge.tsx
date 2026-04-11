@@ -1195,7 +1195,7 @@ export function TranslationChallenge({
                 <AudioButton
                   audioRequest={sentence.audio}
                   accessToken={accessToken}
-                  autoPlay={true}
+                  autoPlay={grade !== null}
                   autoplayed={autoplayed}
                   setAutoplayed={setAutoplayed}
                 />
