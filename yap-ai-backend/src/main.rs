@@ -393,6 +393,140 @@ async fn openai_text_to_speech(
     Ok(base64_audio)
 }
 
+fn wrap_pcm_in_wav(
+    pcm_data: &[u8],
+    sample_rate: u32,
+    channels: u16,
+    bits_per_sample: u16,
+) -> Vec<u8> {
+    let byte_rate = sample_rate * u32::from(channels) * u32::from(bits_per_sample) / 8;
+    let block_align = channels * bits_per_sample / 8;
+    let data_size = pcm_data.len() as u32;
+    let file_size = 36 + data_size;
+
+    let mut wav = Vec::with_capacity(44 + pcm_data.len());
+    wav.extend_from_slice(b"RIFF");
+    wav.extend_from_slice(&file_size.to_le_bytes());
+    wav.extend_from_slice(b"WAVE");
+    wav.extend_from_slice(b"fmt ");
+    wav.extend_from_slice(&16u32.to_le_bytes()); // PCM chunk size
+    wav.extend_from_slice(&1u16.to_le_bytes()); // PCM format
+    wav.extend_from_slice(&channels.to_le_bytes());
+    wav.extend_from_slice(&sample_rate.to_le_bytes());
+    wav.extend_from_slice(&byte_rate.to_le_bytes());
+    wav.extend_from_slice(&block_align.to_le_bytes());
+    wav.extend_from_slice(&bits_per_sample.to_le_bytes());
+    wav.extend_from_slice(b"data");
+    wav.extend_from_slice(&data_size.to_le_bytes());
+    wav.extend_from_slice(pcm_data);
+    wav
+}
+
+async fn gemini_text_to_speech(
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(request): Json<TtsRequest>,
+) -> Result<String, StatusCode> {
+    let _claims = verify_jwt(auth.token()).await;
+
+    let client = reqwest::Client::new();
+
+    let gemini_api_key =
+        std::env::var("GEMINI_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let speaker_language = match request.language {
+        Language::French => "French",
+        Language::Spanish => "Spanish",
+        Language::English => "English",
+        Language::Korean => "Korean",
+        Language::German => "German",
+        Language::Italian => "Italian",
+        Language::Portuguese => "Portuguese",
+        Language::Russian => "Russian",
+        Language::Chinese => "Chinese",
+        Language::Japanese => "Japanese",
+    };
+
+    let default_instructions = format!(
+        "A fluent {speaker_language} speaker is teaching the listener how to pronounce different {speaker_language} words. Each word is enunciated clearly, with a small gap in between."
+    );
+    let instructions = request
+        .instructions
+        .as_deref()
+        .unwrap_or(&default_instructions);
+
+    let prompt = format!("{instructions}\n{}", request.text);
+
+    let gemini_request = serde_json::json!({
+        "contents": [{
+            "role": "user",
+            "parts": [{ "text": prompt }]
+        }],
+        "generationConfig": {
+            "responseModalities": ["audio"],
+            "temperature": 1,
+            "speech_config": {
+                "voice_config": {
+                    "prebuilt_voice_config": {
+                        "voice_name": "Zephyr"
+                    }
+                }
+            }
+        }
+    });
+
+    let url = format!(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:streamGenerateContent?key={gemini_api_key}"
+    );
+
+    let response = client
+        .post(&url)
+        .header("Content-Type", "application/json")
+        .json(&gemini_request)
+        .send()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        eprintln!("Gemini TTS Error ({status}): {body}");
+        return Err(StatusCode::BAD_GATEWAY);
+    }
+
+    // Gemini streamGenerateContent returns an array of response chunks
+    let response_body: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Collect all audio data chunks from the streaming response
+    let mut audio_data = Vec::new();
+    if let Some(chunks) = response_body.as_array() {
+        for chunk in chunks {
+            if let Some(data) = chunk
+                .pointer("/candidates/0/content/parts/0/inlineData/data")
+                .and_then(|v| v.as_str())
+            {
+                let bytes = base64::engine::general_purpose::STANDARD
+                    .decode(data)
+                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+                audio_data.extend_from_slice(&bytes);
+            }
+        }
+    }
+
+    if audio_data.is_empty() {
+        eprintln!("Gemini TTS Error: no audio data in response");
+        return Err(StatusCode::BAD_GATEWAY);
+    }
+
+    // Gemini returns raw linear16 PCM at 24kHz mono - wrap in a WAV header
+    let wav_data = wrap_pcm_in_wav(&audio_data, 24000, 1, 16);
+    let base64_audio = base64::engine::general_purpose::STANDARD.encode(&wav_data);
+
+    Ok(base64_audio)
+}
+
 async fn autograde_translation(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
     Json(request): Json<autograde::AutoGradeTranslationRequest>,
@@ -1686,6 +1820,7 @@ async fn main() {
         .route("/tts", post(text_to_speech))
         .route("/tts/google", post(google_text_to_speech))
         .route("/tts/openai", post(openai_text_to_speech))
+        .route("/tts/gemini", post(gemini_text_to_speech))
         .route("/autograde-translation", post(autograde_translation))
         .route("/autograde-transcription", post(autograde_transcription))
         .route("/language-data", post(serve_language_data))

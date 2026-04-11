@@ -56,7 +56,7 @@ impl AudioCache {
         {
             match file_handle.read().await {
                 Ok(cached_bytes) => {
-                    if is_valid_mp3_data(&cached_bytes) {
+                    if is_valid_audio_data(&cached_bytes) {
                         return Some(cached_bytes);
                     }
 
@@ -132,6 +132,7 @@ impl AudioCache {
             TtsProvider::Google => "/tts/google",
             TtsProvider::ElevenLabs => "/tts",
             TtsProvider::OpenAI => "/tts/openai",
+            TtsProvider::Gemini => "/tts/gemini",
         };
 
         let response = hit_ai_server(
@@ -200,11 +201,14 @@ impl AudioCache {
     }
 }
 
-fn is_valid_mp3_data(bytes: &[u8]) -> bool {
-    if bytes.len() < 2 {
+fn is_valid_audio_data(bytes: &[u8]) -> bool {
+    if bytes.len() < 4 {
         return false;
     }
 
-    // Valid MP3 files either start with an ID3 tag or an MPEG frame sync (0xFFF)
-    bytes.starts_with(b"ID3") || (bytes[0] == 0xFF && bytes[1] & 0xE0 == 0xE0)
+    // MP3: ID3 tag or MPEG frame sync (0xFFF)
+    // WAV: RIFF header (Gemini TTS returns WAV)
+    bytes.starts_with(b"ID3")
+        || (bytes[0] == 0xFF && bytes[1] & 0xE0 == 0xE0)
+        || bytes.starts_with(b"RIFF")
 }

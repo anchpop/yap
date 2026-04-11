@@ -2206,6 +2206,7 @@ pub enum TtsProvider {
     ElevenLabs,
     Google,
     OpenAI,
+    Gemini,
 }
 
 pub type Pronunciation = String;

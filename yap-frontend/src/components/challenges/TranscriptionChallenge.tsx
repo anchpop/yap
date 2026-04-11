@@ -662,24 +662,29 @@ export function TranscriptionChallenge({
                       gradingState.graded.compare.length > 0 &&
                       (() => {
                         const words = gradingState.graded.compare;
-                        const hasShortWord = words.some(
-                          (w) => [...w].length < 4,
-                        );
 
-                        // For Korean with exactly 2 words differing by one character
-                        // (and no short words), highlight the differing character
                         const diff =
                           targetLanguage === "Korean" &&
-                          words.length === 2 &&
-                          !hasShortWord
+                          words.length === 2
                             ? findSingleCharDiff(words[0], words[1])
                             : null;
 
-                        const useGoogle = hasShortWord;
+                        const spaceOut = (word: string, boldIdx?: number) =>
+                          [...word]
+                            .map((ch, i) =>
+                              i === boldIdx ? `**${ch}**` : ch,
+                            )
+                            .join(" ");
+
+                        const isKorean = targetLanguage === "Korean";
 
                         const ttsText = diff
-                          ? `${words[0].slice(0, diff.idx0)}**${words[0][diff.idx0]}**${words[0].slice(diff.idx0 + 1)}, ${words[1].slice(0, diff.idx1)}**${words[1][diff.idx1]}**${words[1].slice(diff.idx1 + 1)}`
-                          : words.join(", ");
+                          ? `"${spaceOut(words[0], diff.idx0)}"... "${spaceOut(words[1], diff.idx1)}"`
+                          : words
+                              .map((w) =>
+                                `"${isKorean ? spaceOut(w) : w}"`,
+                              )
+                              .join("... ");
 
                         const instructions =
                           targetLanguage === "Korean" && diff
@@ -693,17 +698,11 @@ export function TranscriptionChallenge({
                               <AudioButton
                                 audioRequest={{
                                   request: {
-                                    text: useGoogle
-                                      ? words.join(", ")
-                                      : ttsText,
+                                    text: ttsText,
                                     language: targetLanguage,
-                                    ...(useGoogle
-                                      ? {}
-                                      : { instructions }),
+                                    instructions,
                                   },
-                                  provider: useGoogle
-                                    ? "Google"
-                                    : "OpenAI",
+                                  provider: "Gemini",
                                 }}
                                 accessToken={accessToken}
                                 size="icon"
