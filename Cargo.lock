@@ -526,9 +526,9 @@ checksum = "1a48563284b67c003ba0fb7243c87fab68885e1532c605704228a80238512e31"
 
 [[package]]
 name = "chrono"
-version = "0.4.42"
+version = "0.4.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "145052bdd345b87320e369255277e3fb5152762ad123a901ef5c262dd38fe8d2"
+checksum = "c673075a2e0e5f4a1dde27ce9dee1ea4558c7ffe648f576438a20ca1d2acc4b0"
 dependencies = [
  "iana-time-zone",
  "js-sys",
@@ -3751,7 +3751,7 @@ dependencies = [
 [[package]]
 name = "rs-fsrs"
 version = "1.2.1"
-source = "git+https://github.com/anchpop/rs-fsrs.git?rev=300f493#300f493889e36850e30a2c1d2417d843d57a2ccc"
+source = "git+https://github.com/anchpop/rs-fsrs.git?rev=d287203#d287203ce87741e3d952715923bf99d862d7b0e9"
 dependencies = [
  "chrono",
 ]
