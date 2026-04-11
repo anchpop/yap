@@ -1,6 +1,6 @@
 /// Universal Dependencies morphological features
 /// Categorization of features & descriptions come from https://universaldependencies.org/u/feat/
-use crate::{Language, PartOfSpeech};
+use crate::{Atom, Gram, Language, PartOfSpeech, Word, WordType};
 use schemars::JsonSchema;
 
 pub trait FeatureSet {
@@ -1327,6 +1327,13 @@ pub struct WordPrefix {
 }
 
 impl Morphology {
+    pub fn get_multiword_prefix(gram: &Gram<String>, language: Language) -> Option<WordPrefix> {
+        match language {
+            Language::Korean => get_korean_multiword_prefix(gram),
+            _ => None,
+        }
+    }
+
     /// Generates a grammatical prefix for a word based on its morphology and part of speech.
     ///
     /// Returns the appropriate prefix for:
@@ -1762,5 +1769,76 @@ impl Morphology {
             prefix: prefix.to_string(),
             separator: " ".to_string(),
         })
+    }
+}
+
+fn get_korean_multiword_prefix(gram: &Gram<String>) -> Option<WordPrefix> {
+    // Find the leftmost (innermost) auxiliary verb in the gram. For a
+    // construction like 싶지 않다, this lands on 싶다, whose selector (-고)
+    // is what attaches to the preceding main verb in the full sentence
+    // (e.g., 나가고 싶지 않다). The outer 않다 is internal to the negation
+    // and its own selector (-지) is already satisfied by 싶지.
+    let aux_lemma = gram.0.iter().find_map(|atom| match atom {
+        Atom::Tok(Word {
+            word_type: WordType::Heteronym(h),
+            ..
+        }) if h.pos == PartOfSpeech::Aux => Some(h.lemma.as_str()),
+        _ => None,
+    })?;
+
+    let ending = korean_auxiliary_selector(aux_lemma)?;
+
+    Some(WordPrefix {
+        prefix: ending.to_string(),
+        separator: " ".to_string(),
+    })
+}
+
+/// Returns the connective ending that a Korean auxiliary verb lemma selects
+/// for on its complement, or `None` if the lemma is not a recognized auxiliary.
+///
+/// For polysemous auxiliaries that participate in multiple constructions
+/// with different selectors (있다, 말다), this returns the ending for the
+/// **most frequent** reading:
+/// - 있다 → `-고` (progressive, e.g. 먹고 있다 "is eating"), not `-아/어`
+///   (resultative, e.g. 앉아 있다 "is seated").
+/// - 말다 → `-지` (prohibitive, e.g. 가지 마 "don't go"), not `-고`
+///   (`-고 말다` "end up doing", which is more literary).
+///
+/// The minority readings will display a slightly misleading headword, but
+/// the example sentence shows the actual surface form so the discrepancy
+/// is recoverable for learners.
+fn korean_auxiliary_selector(lemma: &str) -> Option<&'static str> {
+    match lemma {
+        // -고 + aux
+        "싶다" => Some("-고"), // desiderative: -고 싶다 "want to"
+        "있다" => Some("-고"), // progressive (default); resultative -아/어 있다 also exists
+        "나다" => Some("-고"), // -고 나다 "after doing"
+        "들다" => Some("-고"), // -고 들다 "insistently"
+
+        // -아/어 + aux
+        "보다" => Some("-아/어"),   // -아/어 보다 "try"
+        "주다" => Some("-아/어"),   // -아/어 주다 benefactive
+        "두다" => Some("-아/어"),   // -아/어 두다 preparatory
+        "놓다" => Some("-아/어"),   // -아/어 놓다 preparatory
+        "버리다" => Some("-아/어"), // -아/어 버리다 completive
+        "지다" => Some("-아/어"),   // -아/어 지다 passive/inchoative
+        "가다" => Some("-아/어"),   // -아/어 가다 progressive directional
+        "오다" => Some("-아/어"),   // -아/어 오다 progressive directional
+
+        // -게 + aux
+        "되다" => Some("-게"),   // -게 되다 "come to"
+        "만들다" => Some("-게"), // -게 만들다 "make (someone) do"
+
+        // -지 + aux
+        "않다" => Some("-지"),   // -지 않다 negation
+        "못하다" => Some("-지"), // -지 못하다 inability
+        "말다" => Some("-지"),   // prohibitive (default); -고 말다 "end up" also exists
+
+        // 하다 is intentionally omitted: it appears in too many constructions
+        // with different selectors (-게 하다 causative, -아/어야 하다 obligation,
+        // -려고 하다 intention, etc.) to have a sensible default. Multiword
+        // entries containing auxiliary 하다 will not get a prefix.
+        _ => None,
     }
 }

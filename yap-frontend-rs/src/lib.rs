@@ -4060,6 +4060,7 @@ pub fn test_fn(f: js_sys::Function) {
 
 /// Generates a grammatical prefix for a word based on its morphology and part of speech.
 /// Returns the prefix and separator, or null if no prefix is appropriate.
+/// TODO: just pass this in the flashcard challenge and dictionary data I guess, idk wkhy the frontend is calling this
 #[wasm_bindgen]
 pub fn get_word_prefix(
     morphology: &Morphology,

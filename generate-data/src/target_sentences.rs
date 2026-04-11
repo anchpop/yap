@@ -804,6 +804,16 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
         return false;
     }
 
+    // Reject sentences with slashes (subtitle line-break markers or other artifacts)
+    if text.contains('/') || text.contains('\\') {
+        return false;
+    }
+
+    // Reject sentences containing `j"` (a subtitle OCR/encoding artifact)
+    if text.contains("j\"") {
+        return false;
+    }
+
     // Reject sentences with colons (often speaker attribution in subtitles)
     if text.contains(':') {
         return false;
