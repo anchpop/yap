@@ -3751,7 +3751,7 @@ dependencies = [
 [[package]]
 name = "rs-fsrs"
 version = "1.2.1"
-source = "git+https://github.com/anchpop/rs-fsrs.git?rev=ce40ee7#ce40ee7aedcac96803637629dd530ed491e9c0fd"
+source = "git+https://github.com/anchpop/rs-fsrs.git?rev=79393f05a435e31255a1cbfae48ff6f94e214900#79393f05a435e31255a1cbfae48ff6f94e214900"
 dependencies = [
  "chrono",
 ]

@@ -33,11 +33,10 @@ use deck_selection::DailyReviewTarget;
 use deck_selection::DeckSelectionEvent;
 use language_utils::Frequency;
 use language_utils::Literal;
-use language_utils::PartOfSpeech;
 use language_utils::TtsProvider;
 use language_utils::TtsRequest;
 use language_utils::autograde;
-use language_utils::features::{Morphology, WordPrefix};
+use language_utils::features::WordPrefix;
 use language_utils::language_pack::LanguagePack;
 use language_utils::text_cleanup::{find_closest_match, normalize_for_grading};
 use language_utils::transcription_challenge;
@@ -3860,6 +3859,10 @@ pub enum CardContent {
     Gram {
         gram: Vec<Literal<String>>,
         definition: GramDefinition,
+        /// Pre-computed grammatical prefix (e.g., article for nouns, subject pronoun
+        /// for verbs). Computed server-side so the frontend doesn't have to call
+        /// into the WASM module just to render the card front.
+        prefix: Option<WordPrefix>,
     },
     Listening {
         possible_grams: Vec<(bool, Vec<Literal<String>>, Vec<GramDefinition>)>,
@@ -4056,19 +4059,6 @@ impl CardSummary {
 #[wasm_bindgen]
 pub fn test_fn(f: js_sys::Function) {
     f.call0(&JsValue::NULL).unwrap();
-}
-
-/// Generates a grammatical prefix for a word based on its morphology and part of speech.
-/// Returns the prefix and separator, or null if no prefix is appropriate.
-/// TODO: just pass this in the flashcard challenge and dictionary data I guess, idk wkhy the frontend is calling this
-#[wasm_bindgen]
-pub fn get_word_prefix(
-    morphology: &Morphology,
-    word: &str,
-    pos: PartOfSpeech,
-    language: Language,
-) -> Option<WordPrefix> {
-    morphology.get_prefix(word, pos, language)
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]

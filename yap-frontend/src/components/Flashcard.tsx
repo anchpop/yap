@@ -7,7 +7,6 @@ import {
   type PhrasebookDefinitionEntry,
   type Rating,
   type TargetToNativeWord,
-  get_word_prefix,
 } from "../../../yap-frontend-rs/pkg";
 import {
   DropdownMenu,
@@ -96,22 +95,7 @@ const CardFront = ({
       const text = gramDisplayText(content.gram);
 
       if ("Dictionary" in definition) {
-        const dict = definition.Dictionary;
-        // Try to get word prefix from morphology + first heteronym in gram
-        const firstHeteronym = content.gram
-          .map((l) => l.word.word_type)
-          .find((wt) => wt.type === "Heteronym");
-        const wordPrefix =
-          firstHeteronym &&
-          firstHeteronym.type === "Heteronym" &&
-          dict.morphology.length > 0
-            ? get_word_prefix(
-                dict.morphology[0],
-                firstHeteronym.word,
-                firstHeteronym.pos,
-                targetLanguage,
-              )
-            : undefined;
+        const wordPrefix = content.prefix;
         return (
           <h2 className="text-3xl font-semibold">
             <TargetLanguageText language={targetLanguage}>

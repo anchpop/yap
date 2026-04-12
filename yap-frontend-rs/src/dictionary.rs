@@ -1,11 +1,62 @@
 use language_utils::features::{Morphology, WordPrefix};
 use language_utils::text_cleanup::remove_accents_lowercase;
-use language_utils::{Atom, GramDefinition, TargetToNativeWord, WordType};
+use language_utils::{Atom, Gram, GramDefinition, Language, TargetToNativeWord, WordType};
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
 use crate::{CardData, CardIndicator, Deck, DeckEvent, LanguageEvent, LanguageEventContent};
+
+/// Compute the grammatical prefix and morphology for a gram, given its definition
+/// and target language.
+///
+/// For single-word grams (one `Atom::Tok`), uses the per-heteronym single-word
+/// prefix — articles for nouns, subject pronouns for verbs, etc. — based on the
+/// gram's heteronym and the first morphology entry from the dictionary definition.
+/// Single-word prefixes only apply to Dictionary entries (Phrasebook entries lack
+/// per-word morphology).
+///
+/// For multi-word grams (more than one `Atom::Tok`), uses the language-level
+/// multiword prefix (e.g., Korean auxiliary connective endings on compound verbs).
+/// Multi-word prefixes work for both Dictionary and Phrasebook entries since they
+/// only depend on the gram's atom-level heteronym tags.
+///
+/// Morphology is only ever populated from Dictionary entries.
+pub(crate) fn compute_word_prefix_and_morphology(
+    gram: &Gram<String>,
+    definition: &GramDefinition,
+    target_language: Language,
+) -> (Option<WordPrefix>, Option<Morphology>) {
+    let dict_def = match definition {
+        GramDefinition::Dictionary(d) => Some(d),
+        GramDefinition::Phrasebook(_) => None,
+    };
+
+    match gram.atoms() {
+        // Single-word gram: per-heteronym single-word prefix, only meaningful for
+        // Dictionary entries (which carry per-word morphology).
+        [Atom::Tok(word)] => {
+            let WordType::Heteronym(h) = &word.word_type else {
+                return (None, None);
+            };
+            let morphology = dict_def.and_then(|d| d.morphology.first().cloned());
+            let prefix = morphology
+                .as_ref()
+                .and_then(|m| m.get_prefix(&h.word, h.pos, target_language));
+            (prefix, morphology)
+        }
+        // Single-atom gram with no Tok: nothing to compute.
+        [_] => (None, None),
+        // No grams: nothing to compute
+        [] => (None, None),
+        // Multi-word gram: language-level multiword prefix. Dictionary entries
+        // are always single-word, so there's no morphology to surface here.
+        _ => (
+            Morphology::get_multiword_prefix(gram, target_language),
+            None,
+        ),
+    }
+}
 
 /// Get gram dictionary entries ordered by frequency (most common first).
 /// Optionally filters by search query (accent-insensitive) and limits results.
@@ -72,46 +123,29 @@ impl Deck {
                 let card = CardIndicator::WrittenGram { gram: *spur_gram };
                 let is_in_deck = matches!(self.cards.get(&card), Some(CardData::Added { .. }));
 
-                let entry = match gram_def {
-                    GramDefinition::Dictionary(dict_def) => {
-                        // Extract heteronym from the single-atom gram for morphology/prefix lookup
-                        let (prefix, morphology) = gram
-                            .atoms()
-                            .iter()
-                            .find_map(|atom| {
-                                if let Atom::Tok(word) = atom
-                                    && let WordType::Heteronym(h) = &word.word_type
-                                {
-                                    let morph = dict_def.morphology.first().cloned();
-                                    let word_text = string_rodeo.resolve(&h.word);
-                                    let prefix = morph.as_ref().and_then(|m| {
-                                        m.get_prefix(word_text, h.pos, target_language)
-                                    });
-                                    return Some((prefix, morph));
-                                }
-                                None
-                            })
-                            .unwrap_or((None, None));
+                let resolved_gram = gram.resolve(string_rodeo);
+                let (prefix, morphology) =
+                    compute_word_prefix_and_morphology(&resolved_gram, gram_def, target_language);
 
-                        GramDictionaryEntry {
-                            display_text,
-                            frequency_index,
-                            is_in_deck,
-                            is_phrase: false,
-                            prefix,
-                            morphology,
-                            definition: GramDictionaryDefinition::Dictionary {
-                                definitions: dict_def.definitions.clone(),
-                            },
-                        }
-                    }
+                let entry = match gram_def {
+                    GramDefinition::Dictionary(dict_def) => GramDictionaryEntry {
+                        display_text,
+                        frequency_index,
+                        is_in_deck,
+                        is_phrase: false,
+                        prefix,
+                        morphology,
+                        definition: GramDictionaryDefinition::Dictionary {
+                            definitions: dict_def.definitions.clone(),
+                        },
+                    },
                     GramDefinition::Phrasebook(pb_def) => GramDictionaryEntry {
                         display_text,
                         frequency_index,
                         is_in_deck,
                         is_phrase: true,
-                        prefix: None,
-                        morphology: None,
+                        prefix,
+                        morphology,
                         definition: GramDictionaryDefinition::Phrasebook {
                             meaning: pb_def.meaning.clone(),
                             target_language_example: Some(pb_def.target_language_example.clone())

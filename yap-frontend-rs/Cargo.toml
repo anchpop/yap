@@ -48,7 +48,7 @@ console_error_panic_hook = { version = "0.1.7", optional = true }
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
 # code size when deploying.
-rs-fsrs = { git = "https://github.com/anchpop/rs-fsrs.git", rev = "ce40ee7" }
+rs-fsrs = { git = "https://github.com/anchpop/rs-fsrs.git", rev = "79393f05a435e31255a1cbfae48ff6f94e214900" }
 language-utils = { path = "../language-utils" }
 ordered-float = "5.0.0"
 serde-wasm-bindgen = "0.6"

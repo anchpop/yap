@@ -1797,22 +1797,18 @@ fn get_korean_multiword_prefix(gram: &Gram<String>) -> Option<WordPrefix> {
 /// Returns the connective ending that a Korean auxiliary verb lemma selects
 /// for on its complement, or `None` if the lemma is not a recognized auxiliary.
 ///
-/// For polysemous auxiliaries that participate in multiple constructions
-/// with different selectors (있다, 말다), this returns the ending for the
-/// **most frequent** reading:
-/// - 있다 → `-고` (progressive, e.g. 먹고 있다 "is eating"), not `-아/어`
-///   (resultative, e.g. 앉아 있다 "is seated").
-/// - 말다 → `-지` (prohibitive, e.g. 가지 마 "don't go"), not `-고`
-///   (`-고 말다` "end up doing", which is more literary).
+/// Polysemous auxiliaries that participate in multiple constructions with
+/// different selectors are intentionally omitted:
+/// - 있다: -고 있다 (progressive) vs. -아/어 있다 (resultative).
+/// - 말다: -지 말다 (prohibitive) vs. -고 말다 (completive "end up doing").
+/// - 하다: -게 하다 (causative), -아/어야 하다 (obligation), -려고 하다
+///   (intention), etc. — too many readings for a sensible default.
 ///
-/// The minority readings will display a slightly misleading headword, but
-/// the example sentence shows the actual surface form so the discrepancy
-/// is recoverable for learners.
+/// Multiword entries headed by these lemmas will not get a prefix.
 fn korean_auxiliary_selector(lemma: &str) -> Option<&'static str> {
     match lemma {
         // -고 + aux
         "싶다" => Some("-고"), // desiderative: -고 싶다 "want to"
-        "있다" => Some("-고"), // progressive (default); resultative -아/어 있다 also exists
         "나다" => Some("-고"), // -고 나다 "after doing"
         "들다" => Some("-고"), // -고 들다 "insistently"
 
@@ -1833,12 +1829,7 @@ fn korean_auxiliary_selector(lemma: &str) -> Option<&'static str> {
         // -지 + aux
         "않다" => Some("-지"),   // -지 않다 negation
         "못하다" => Some("-지"), // -지 못하다 inability
-        "말다" => Some("-지"),   // prohibitive (default); -고 말다 "end up" also exists
 
-        // 하다 is intentionally omitted: it appears in too many constructions
-        // with different selectors (-게 하다 causative, -아/어야 하다 obligation,
-        // -려고 하다 intention, etc.) to have a sensible default. Multiword
-        // entries containing auxiliary 하다 will not get a prefix.
         _ => None,
     }
 }

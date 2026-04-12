@@ -10,7 +10,7 @@ use lasso::Spur;
 use crate::{
     AudioRequest, CardContent, CardIndicator, Challenge, ComprehensibleSentence, Deck, FlashCard,
     ReviewInfo, SentenceChallengeType, TranscribeComprehensibleSentence,
-    TranslateComprehensibleSentence,
+    TranslateComprehensibleSentence, dictionary::compute_word_prefix_and_morphology,
 };
 
 /// Metadata computed from a CardIndicator and Deck, used to build FlashCardReview
@@ -383,9 +383,16 @@ impl ReviewInfo {
         let literals =
             atoms_to_literals(gram_resolved.as_ref(), deck.context.course.target_language);
 
+        let (prefix, _morphology) = compute_word_prefix_and_morphology(
+            &gram_resolved,
+            &definition,
+            deck.context.course.target_language,
+        );
+
         let content = CardContent::Gram {
             gram: literals,
             definition,
+            prefix,
         };
 
         let audio_text = gram_resolved.to_display_string(deck.context.course.target_language);
