@@ -2390,6 +2390,13 @@ impl Deck {
         if let Err(e) = audio_cache.cleanup_except(requested_filenames).await {
             log::error!("Failed to clean up audio cache: {e:?}");
         }
+
+        // Clean up expired temp audio files (older than 24 hours)
+        if let Ok(mut temp_cache) = audio::TempAudioCache::new().await {
+            if let Err(e) = temp_cache.cleanup_old().await {
+                log::error!("Failed to clean up temp audio cache: {e:?}");
+            }
+        }
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -4080,6 +4087,18 @@ pub async fn get_audio(
 ) -> Result<js_sys::Uint8Array, JsValue> {
     let audio_cache = audio::AudioCache::new().await?;
     let bytes = audio_cache
+        .fetch_and_cache(&request, access_token.as_ref())
+        .await?;
+    Ok(js_sys::Uint8Array::from(&bytes[..]))
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub async fn get_temp_audio(
+    request: AudioRequest,
+    access_token: Option<String>,
+) -> Result<js_sys::Uint8Array, JsValue> {
+    let temp_cache = audio::TempAudioCache::new().await?;
+    let bytes = temp_cache
         .fetch_and_cache(&request, access_token.as_ref())
         .await?;
     Ok(js_sys::Uint8Array::from(&bytes[..]))

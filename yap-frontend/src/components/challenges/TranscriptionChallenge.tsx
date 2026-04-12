@@ -707,6 +707,7 @@ export function TranscriptionChallenge({
                                 accessToken={accessToken}
                                 size="icon"
                                 variant="ghost"
+                                temp
                               />
                               <div className="flex flex-row flex-wrap justify-around items-center gap-3">
                                 {words.map((item, idx) => (

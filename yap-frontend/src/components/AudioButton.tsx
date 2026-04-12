@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Volume2 } from "lucide-react";
-import { playAudio } from "@/lib/utils";
+import { playAudio, playTempAudio } from "@/lib/utils";
 import { type AudioRequest } from "../../../yap-frontend-rs/pkg";
 import { isSoundEffectPlaying } from "@/lib/sound-effects";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ interface AudioButtonProps {
   onError?: () => void;
   onSuccess?: () => void;
   visualizer?: boolean | "radial";
+  temp?: boolean;
 }
 
 const WAVE_BARS = 36;
@@ -101,6 +102,7 @@ export function AudioButton({
   onError,
   onSuccess,
   visualizer = false,
+  temp = false,
 }: AudioButtonProps) {
   "use memo";
   const [isPlaying, setIsPlaying] = useState(false);
@@ -300,16 +302,21 @@ export function AudioButton({
           console.error("Failed to play pre-audio:", error);
         }
 
-        await playAudio(
-          audioRequest,
-          accessToken,
-          () => {
+        const authCallback = () => {
             if (clickedRef.current) {
               setNeedsAuth(true);
             }
-          },
-          visualizer ? attachAnalyser : undefined,
-        );
+          };
+        if (temp) {
+          await playTempAudio(audioRequest, accessToken, authCallback);
+        } else {
+          await playAudio(
+            audioRequest,
+            accessToken,
+            authCallback,
+            visualizer ? attachAnalyser : undefined,
+          );
+        }
         onSuccessRef.current?.();
       } catch (error) {
         console.error("Failed to play audio:", error);
@@ -318,7 +325,7 @@ export function AudioButton({
         setIsPlaying(false);
       }
     },
-    [audioRequest, accessToken, playPreAudio, visualizer, attachAnalyser],
+    [audioRequest, accessToken, playPreAudio, visualizer, attachAnalyser, temp],
   );
 
   // Read latest onSuccess/onError via refs so handlePlayAudio stays stable —

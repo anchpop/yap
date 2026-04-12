@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import {
   get_audio,
+  get_temp_audio,
   invalidate_audio_cache,
   type AudioRequest,
   type Language,
@@ -193,5 +194,55 @@ export async function playAudio(
     throw error;
   } finally {
     // currentAudio gets cleared by onended/onerror handlers above
+  }
+}
+
+export async function playTempAudio(
+  audioRequest: AudioRequest,
+  accessToken: string | undefined,
+  needsAuth: () => void,
+): Promise<void> {
+  if (currentAudio) {
+    try {
+      currentAudio.pause();
+      currentAudio.src = "";
+    } catch {
+      // ignore
+    }
+    currentAudio = null;
+  }
+
+  try {
+    const audioData = await get_temp_audio(audioRequest, accessToken);
+
+    const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    const audio = new Audio(audioUrl);
+    currentAudio = audio;
+
+    return new Promise((resolve, reject) => {
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        if (currentAudio === audio) currentAudio = null;
+        resolve();
+      };
+
+      audio.onerror = () => {
+        if (currentAudio === audio) currentAudio = null;
+        reject(new Error("Audio playback failed"));
+      };
+
+      audio.play().catch((error) => {
+        reject(error);
+      });
+    });
+  } catch (error) {
+    currentAudio = null;
+    if (typeof error === "string" && error.includes("400")) {
+      needsAuth();
+    }
+    console.error("Failed to play temp audio:", error);
+    throw error;
   }
 }
