@@ -409,7 +409,7 @@ export const Flashcard = function Flashcard({
 
   const showAnswerText = match(content)
     .with({ type: "Gram" }, () => `Show ${nativeLanguage}`)
-    .with({ type: "Listening" }, () => "Show missing word")
+    .with({ type: "Listening" }, () => `Show ${targetLanguage} word`)
     .exhaustive();
 
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
@@ -639,30 +639,46 @@ export const Flashcard = function Flashcard({
             <div className="text-center relative z-10 flex flex-col gap-6">
               <div className="justify-center gap-2 flex flex-col items-center w-full">
                 <div
-                  className="flex items-center justify-between w-full"
+                  className="relative flex items-center justify-center w-full"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {content.type === "Listening" ? (
-                    <div className="w-10" />
-                  ) : audioRequest ? (
-                    <AudioButton
-                      audioRequest={audioRequest}
-                      accessToken={accessToken}
-                      autoPlay={showAnswer}
-                      autoplayed={autoplayed}
-                      setAutoplayed={setAutoplayed}
-                      onError={() => setAudioError(true)}
-                      onSuccess={() => setAudioError(false)}
-                    />
+                    audioRequest && (
+                      <AudioButton
+                        audioRequest={audioRequest}
+                        accessToken={accessToken}
+                        autoPlay
+                        autoplayed={autoplayed}
+                        setAutoplayed={setAutoplayed}
+                        onError={() => setAudioError(true)}
+                        onSuccess={() => setAudioError(false)}
+                        visualizer
+                      />
+                    )
                   ) : (
-                    <div className="w-10" /> /* Spacer to keep content centered */
+                    <>
+                      {audioRequest ? (
+                        <AudioButton
+                          audioRequest={audioRequest}
+                          accessToken={accessToken}
+                          autoPlay={showAnswer}
+                          autoplayed={autoplayed}
+                          setAutoplayed={setAutoplayed}
+                          onError={() => setAudioError(true)}
+                          onSuccess={() => setAudioError(false)}
+                        />
+                      ) : (
+                        <div className="w-10" /> /* Spacer to keep content centered */
+                      )}
+
+                      <CardFront
+                        content={content}
+                        targetLanguage={targetLanguage}
+                      />
+                    </>
                   )}
 
-                  <CardFront
-                    content={content}
-                    targetLanguage={targetLanguage}
-                  />
-
+                  <div className="absolute right-0 top-0">
                     {onRating ? (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -710,26 +726,10 @@ export const Flashcard = function Flashcard({
                         </DropdownMenuContent>
                       </DropdownMenu>
                     ) : (
-                      <div className="w-8" /> /* Spacer to keep word centered */
+                      <div className="w-8" />
                     )}
                   </div>
-                  {content.type === "Listening" && audioRequest && (
-                    <div
-                      className="flex items-center justify-center w-full"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <AudioButton
-                        audioRequest={audioRequest}
-                        accessToken={accessToken}
-                        autoPlay
-                        autoplayed={autoplayed}
-                        setAutoplayed={setAutoplayed}
-                        onError={() => setAudioError(true)}
-                        onSuccess={() => setAudioError(false)}
-                        visualizer
-                      />
-                    </div>
-                  )}
+                </div>
                 <CardFrontSubtitle content={content} />
               </div>
 
