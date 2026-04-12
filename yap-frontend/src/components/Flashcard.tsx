@@ -112,7 +112,7 @@ const CardFront = ({
 const CardFrontSubtitle = ({ content }: { content: CardContent }) => {
   return match(content)
     .with({ type: "Listening" }, () => (
-      <span className="text-sm text-muted-foreground"> Fill in the blank!</span>
+      <span className="text-sm text-muted-foreground">Guess what's being said!</span>
     ))
     .with({ type: "Gram" }, (content) => {
       const definition = content.definition as GramDefinition;
