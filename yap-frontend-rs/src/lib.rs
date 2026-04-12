@@ -66,6 +66,14 @@ use crate::next_cards::AllowedCards;
 use crate::utils::hit_ai_server;
 use next_cards::NextCardsIterator;
 
+fn language_pack_lock_name(course: Course) -> String {
+    format!(
+        "language-pack-{}-for-{}",
+        course.target_language.iso_639_3(),
+        course.native_language.iso_639_3()
+    )
+}
+
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn get_available_courses() -> Vec<language_utils::Course> {
     language_utils::COURSES.to_vec()
@@ -570,6 +578,18 @@ impl Weapon {
         if self.language_pack.borrow().get(&course).is_some() {
             return Ok(());
         }
+
+        let _guard = weblocks::acquire(
+            &language_pack_lock_name(course),
+            weblocks::AcquireOptions::exclusive(),
+        )
+        .await
+        .unwrap();
+
+        if self.language_pack.borrow().get(&course).is_some() {
+            return Ok(());
+        }
+
         let language_pack = language_pack::get_language_pack(
             &self.directories.data_directory_handle,
             course,

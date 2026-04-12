@@ -508,8 +508,8 @@ function ReviewPage() {
                   Failed to Load Language Data
                 </h2>
                 <p className="text-muted-foreground mb-4 text-center">
-                  Unable to download the language pack. Please check your
-                  internet connection.
+                  Unable to load the language pack right now. Try again to retry
+                  the download.
                 </p>
                 <ErrorMessage
                   message={message}
@@ -1427,6 +1427,20 @@ export function useDeckSelection():
 
 const LAST_COURSE_KEY = "yap-last-course";
 
+function getCourseKey(
+  course:
+    | Pick<Course, "nativeLanguage" | "targetLanguage">
+    | null
+    | undefined,
+): string | null {
+  if (!course) return null;
+  return `${course.targetLanguage}:${course.nativeLanguage}`;
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 export function useDeck():
   | {
       type: "deck";
@@ -1516,10 +1530,11 @@ export function useDeck():
     return null;
   }, []);
   const course = courseParts ?? cachedCourse;
+  const courseKey = getCourseKey(course);
 
   // Fetch language pack — only re-runs when course changes, not when numEvents changes
   const languagePackResult = useAsyncMemo(async () => {
-    if (!course) return null;
+    if (!course || !courseKey) return null;
     Sentry.addBreadcrumb({
       category: "language-pack",
       message: `Loading language pack: ${course.targetLanguage} → ${course.nativeLanguage}`,
@@ -1538,12 +1553,12 @@ export function useDeck():
         },
       );
       setLoadingState(null);
-      return { ok: true as const };
+      return { courseKey, ok: true as const };
     } catch (error) {
       setLoadingState(null);
-      return { ok: false as const, error };
+      return { courseKey, ok: false as const, error };
     }
-  }, [weapon, course?.targetLanguage, course?.nativeLanguage, retryCount]);
+  }, [weapon, courseKey, retryCount]);
 
   // Build deck — re-runs when language pack is ready or streams change
   const state = useAsyncMemo(async () => {
@@ -1553,13 +1568,13 @@ export function useDeck():
       return { type: "noLanguageSelected" } as { type: "noLanguageSelected" };
     }
 
-    if (!course || !languagePackResult) return null;
+    if (!course || !courseKey || !languagePackResult) return null;
+    if (languagePackResult.courseKey !== courseKey) return null;
 
     if (!languagePackResult.ok) {
       const error = languagePackResult.error;
       console.error("Failed to fetch language pack:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = getErrorMessage(error);
       const isNetworkError = errorMessage.startsWith("Network error:");
       if (!isNetworkError) {
         // Only report non-network errors to Sentry. Network failures are expected
@@ -1583,41 +1598,92 @@ export function useDeck():
       }
       return {
         type: "error",
+        courseKey,
         message: errorMessage,
         retry,
         retryCount,
       } as {
         type: "error";
+        courseKey: string;
         message: string;
         retry: () => void;
         retryCount: number;
       };
     }
 
-    return {
-      type: "deck",
-      startingFresh: deck_selection.onboardingSelections?.startingFresh,
-      nativeLanguage: course.nativeLanguage,
-      targetLanguage: course.targetLanguage,
-      deck: await weapon.get_deck_state(
-        course,
-        new Date().getTimezoneOffset() * -60,
-      ),
-    } as {
-      type: "deck";
-      nativeLanguage: Language;
-      targetLanguage: Language;
-      deck: Deck | null;
-      startingFresh: boolean | undefined;
-    };
-  }, [weapon, numEvents, languagePackResult, retryCount]);
+    try {
+      return {
+        type: "deck",
+        courseKey,
+        startingFresh: deck_selection.onboardingSelections?.startingFresh,
+        nativeLanguage: course.nativeLanguage,
+        targetLanguage: course.targetLanguage,
+        deck: await weapon.get_deck_state(
+          course,
+          new Date().getTimezoneOffset() * -60,
+        ),
+      } as {
+        type: "deck";
+        courseKey: string;
+        nativeLanguage: Language;
+        targetLanguage: Language;
+        deck: Deck | null;
+        startingFresh: boolean | undefined;
+      };
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      Sentry.captureException(error instanceof Error ? error : new Error(errorMessage), {
+        tags: {
+          "language-pack.target": course.targetLanguage,
+          "language-pack.native": course.nativeLanguage,
+          "language-pack.phase": "deck-state",
+        },
+        contexts: {
+          "language-pack": {
+            targetLanguage: course.targetLanguage,
+            nativeLanguage: course.nativeLanguage,
+            rawError: errorMessage,
+          },
+        },
+      });
+      return {
+        type: "error",
+        courseKey,
+        message: errorMessage,
+        retry,
+        retryCount,
+      } as {
+        type: "error";
+        courseKey: string;
+        message: string;
+        retry: () => void;
+        retryCount: number;
+      };
+    }
+  }, [
+    weapon,
+    numEvents,
+    courseKey,
+    languagePackResult,
+    retryCount,
+    deck_selection?.targetLanguage,
+    deck_selection?.nativeLanguage,
+    deck_selection?.onboardingSelections?.startingFresh,
+  ]);
 
-  if (state?.type === "error" && state.retryCount < retryCount) {
+  const currentState =
+    state &&
+    (state.type === "deck" || state.type === "error") &&
+    state.courseKey !== courseKey
+      ? null
+      : state;
+
+  if (currentState?.type === "error" && currentState.retryCount < retryCount) {
     return null;
   }
 
   // If we're loading and have progress info, return loading state
-  if (loadingState && (state === null || state === undefined)) {
+  if (loadingState && (currentState === null || currentState === undefined)) {
     return {
       type: "loading",
       message: loadingState.message,
@@ -1625,7 +1691,7 @@ export function useDeck():
     };
   }
 
-  return state ?? null;
+  return currentState ?? null;
 }
 
 export default App;

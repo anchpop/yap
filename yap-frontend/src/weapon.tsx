@@ -365,6 +365,10 @@ export function useAsyncMemo<T>(
       if (!cancel) {
         setVal(val);
       }
+    }).catch((error) => {
+      if (!cancel) {
+        console.error("useAsyncMemo rejected:", error);
+      }
     });
     return () => {
       cancel = true;

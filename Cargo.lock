@@ -5676,6 +5676,7 @@ dependencies = [
  "wasm-logger",
  "weapon",
  "web-sys",
+ "weblocks",
  "xxhash-rust",
 ]
 
