@@ -194,6 +194,7 @@ impl ReviewInfo {
                 language: deck.context.course.target_language,
                 is_ssml: false,
                 instructions: None,
+                speed: 1.0,
             },
             provider: TtsProvider::Google,
         };
@@ -332,6 +333,7 @@ impl ReviewInfo {
                         language: deck.context.course.target_language,
                         is_ssml: false,
                         instructions: None,
+                        speed: 1.0,
                     },
                     provider: TtsProvider::Google,
                 },
@@ -402,6 +404,7 @@ impl ReviewInfo {
                 language: deck.context.course.target_language,
                 is_ssml: false,
                 instructions: None,
+                speed: 1.0,
             },
             provider: TtsProvider::Google,
         };
@@ -537,6 +540,7 @@ impl ReviewInfo {
                         language: deck.context.course.target_language,
                         is_ssml: false,
                         instructions: None,
+                        speed: 1.0,
                     },
                     provider: TtsProvider::ElevenLabs,
                 },
@@ -604,6 +608,7 @@ impl ReviewInfo {
                     language: target_language,
                     is_ssml: true,
                     instructions: None,
+                    speed: 1.0,
                 },
                 provider: TtsProvider::Google,
             })

@@ -3373,6 +3373,12 @@ pub struct TtsRequest {
     pub is_ssml: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub instructions: Option<String>,
+    #[serde(default = "default_speed")]
+    pub speed: f64,
+}
+
+fn default_speed() -> f64 {
+    1.0
 }
 
 // ============================================================================

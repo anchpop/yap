@@ -176,6 +176,8 @@ struct GoogleTtsVoice {
 struct GoogleTtsAudioConfig {
     #[serde(rename = "audioEncoding")]
     audio_encoding: String,
+    #[serde(rename = "speakingRate")]
+    speaking_rate: f64,
 }
 
 #[derive(Deserialize)]
@@ -315,6 +317,7 @@ async fn google_text_to_speech(
         },
         audio_config: GoogleTtsAudioConfig {
             audio_encoding: "MP3".to_string(),
+            speaking_rate: request.speed,
         },
     };
 

@@ -49,37 +49,6 @@ import { InlineTextarea } from "../ui/textarea";
 import { ProperNounDefinitions } from "./TranslationChallenge";
 import { TargetLanguageText } from "../TargetLanguageText";
 
-/** Find the index of a single differing character between two same-length strings. */
-function findSingleCharDiff(
-  a: string,
-  b: string,
-): { idx0: number; idx1: number } | null {
-  const charsA = [...a];
-  const charsB = [...b];
-  if (charsA.length !== charsB.length) return null;
-  let diffIdx: number | null = null;
-  for (let i = 0; i < charsA.length; i++) {
-    if (charsA[i] !== charsB[i]) {
-      if (diffIdx !== null) return null; // more than one difference
-      diffIdx = i;
-    }
-  }
-  if (diffIdx === null) return null;
-  return { idx0: diffIdx, idx1: diffIdx };
-}
-
-/** Render a string with one character bolded at the given index. */
-function renderWithBold(text: string, boldIdx: number) {
-  const chars = [...text];
-  return (
-    <>
-      {chars.slice(0, boldIdx).join("")}
-      <strong>{chars[boldIdx]}</strong>
-      {chars.slice(boldIdx + 1).join("")}
-    </>
-  );
-}
-
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence;
   onComplete: (grade: PartGraded[], completedAtMs: number) => void;
@@ -663,33 +632,7 @@ export function TranscriptionChallenge({
                       (() => {
                         const words = gradingState.graded.compare;
 
-                        const diff =
-                          targetLanguage === "Korean" &&
-                          words.length === 2
-                            ? findSingleCharDiff(words[0], words[1])
-                            : null;
-
-                        const spaceOut = (word: string, boldIdx?: number) =>
-                          [...word]
-                            .map((ch, i) =>
-                              i === boldIdx ? `**${ch}**` : ch,
-                            )
-                            .join(" ");
-
-                        const isKorean = targetLanguage === "Korean";
-
-                        const ttsText = diff
-                          ? `"${spaceOut(words[0], diff.idx0)}"... "${spaceOut(words[1], diff.idx1)}"`
-                          : words
-                              .map((w) =>
-                                `"${isKorean ? spaceOut(w) : w}"`,
-                              )
-                              .join("... ");
-
-                        const instructions =
-                          targetLanguage === "Korean" && diff
-                            ? `A fluent Korean teacher showing a comparison of how to say two or three words, with a bit of a pause between the words. Asterisks are used to emphasize the difference.`
-                            : `A fluent ${targetLanguage} teacher showing a comparison of how to say two or three words, with a bit of a pause between the words.`;
+                        const ttsText = words.map((w) => `${w};`).join(" ");
 
                         return (
                           <div className="rounded-lg p-4 border">
@@ -700,9 +643,9 @@ export function TranscriptionChallenge({
                                   request: {
                                     text: ttsText,
                                     language: targetLanguage,
-                                    instructions,
+                                    speed: 0.8,
                                   },
-                                  provider: "Gemini",
+                                  provider: "Google",
                                 }}
                                 accessToken={accessToken}
                                 size="icon"
@@ -715,14 +658,7 @@ export function TranscriptionChallenge({
                                     <TargetLanguageText
                                       language={targetLanguage}
                                     >
-                                      {diff && idx < 2
-                                        ? renderWithBold(
-                                            item,
-                                            idx === 0
-                                              ? diff.idx0
-                                              : diff.idx1,
-                                          )
-                                        : item}
+                                      {item}
                                     </TargetLanguageText>
                                     {idx < words.length - 1 && ","}
                                   </span>
