@@ -4687,3 +4687,630 @@ pub mod russian {
         }
     }
 }
+
+pub mod hindi {
+    use super::*;
+
+    /// A single inflected form extracted from a Hindi Wiktionary inflection table.
+    ///
+    /// Hindi inflection tables mark each cell with a `form-of` class containing pipe-
+    /// delimited morphological tags (e.g. `dir|m|s|hab|part` for direct-masculine-
+    /// singular-habitual-participle). A single form may fill multiple cells, in which
+    /// case alternative tag sets are separated by `;` inside the class attribute.
+    /// We preserve ALL tag sets so the morphology stage can attach every interpretation
+    /// (critical for forms like होते which is simultaneously m.pl habitual and
+    /// obl.m.sg habitual).
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct HindiInflectionForm {
+        /// The inflected word in Devanagari.
+        pub word: String,
+        /// One or more tag sets, each a vector of atomic tags (e.g. `["dir","m","s","hab","part"]`).
+        /// When Wiktionary lists multiple alternative interpretations for one cell,
+        /// each becomes a separate tag set. Empty means the class contained no tags.
+        pub tag_sets: Vec<Vec<String>>,
+    }
+
+    /// All inflected forms harvested from a Hindi Wiktionary page for one lemma.
+    ///
+    /// This is intentionally flat and uniform across POS (verb / noun / adjective)
+    /// because the Wiktionary markup is uniform: every inflection cell is a
+    /// `<span class="Deva form-of lang-hi TAGS-form-of ...">` regardless of POS.
+    /// Interpreting the tags into Morphology happens later in morphology_analysis.rs.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct HindiInflection {
+        pub lemma: String,
+        pub forms: Vec<HindiInflectionForm>,
+    }
+
+    /// Extract the Hindi language section from a Wiktionary page.
+    /// Mirrors the approach used for French/English: find the h2#Hindi heading
+    /// and collect every sibling element until the next h2-wrapped heading.
+    pub fn extract_hindi_section(document: &Html) -> anyhow::Result<Html> {
+        let h2_selector = Selector::parse("h2#Hindi").unwrap();
+
+        let hindi_heading = document
+            .select(&h2_selector)
+            .next()
+            .context("Could not find Hindi language section")?;
+
+        let mut hindi_content = String::new();
+        let mut current = hindi_heading.parent();
+
+        while let Some(node) = current {
+            current = node.next_sibling();
+            if let Some(current_node) = current {
+                if let Some(elem) = ElementRef::wrap(current_node) {
+                    if elem.value().name() == "div"
+                        && let Some(first_child) = elem.first_child()
+                        && let Some(child_elem) = ElementRef::wrap(first_child)
+                        && child_elem.value().name() == "h2"
+                    {
+                        break;
+                    }
+                    hindi_content.push_str(&elem.html());
+                }
+            }
+        }
+
+        Ok(Html::parse_fragment(&hindi_content))
+    }
+
+    /// Parse the tag portion of a Hindi `form-of` class attribute into tag sets.
+    ///
+    /// Wiktionary's class looks like:
+    ///   `Deva form-of lang-hi <TAGS>-form-of origin-<LEMMA>`
+    /// where <TAGS> is a pipe-delimited tag list, with `;` separating alternative
+    /// interpretations (e.g. `m|p|hab|part|;|obl|m|s|hab|part`).
+    ///
+    /// A standalone `;` token (between two `|`) is the delimiter between alternative
+    /// tag sets. We also normalise the pseudo-tag `prospective//agentive` to
+    /// `prospective` since the two share the same form and we care about the verbal reading.
+    pub(crate) fn parse_tag_string(tags: &str) -> Vec<Vec<String>> {
+        let mut sets: Vec<Vec<String>> = Vec::new();
+        let mut current: Vec<String> = Vec::new();
+        for raw in tags.split('|') {
+            let tok = raw.trim();
+            if tok.is_empty() {
+                continue;
+            }
+            if tok == ";" {
+                if !current.is_empty() {
+                    sets.push(std::mem::take(&mut current));
+                }
+                continue;
+            }
+            // Normalise dual-purpose tag.
+            let normalized = if tok == "prospective//agentive" {
+                "prospective".to_string()
+            } else {
+                tok.to_string()
+            };
+            current.push(normalized);
+        }
+        if !current.is_empty() {
+            sets.push(current);
+        }
+        sets
+    }
+
+    /// Parse all inflected forms for a Hindi lemma from its Wiktionary page.
+    ///
+    /// Works uniformly for verbs, nouns, and (inflecting) adjectives because
+    /// Wiktionary uses the same `Deva form-of lang-hi` markup for all three.
+    /// Invariable words (e.g. adjective लाल) will return few or no forms — that
+    /// is a signal that the word does not inflect, not an error.
+    pub fn parse_hindi_inflection(html: &str, lemma: &str) -> anyhow::Result<HindiInflection> {
+        let document = Html::parse_document(html);
+        let hindi_section = extract_hindi_section(&document)?;
+
+        // Every inflection cell we care about carries class="Deva form-of lang-hi ..."
+        let form_selector = Selector::parse("span.form-of.lang-hi").unwrap();
+
+        let mut forms: Vec<HindiInflectionForm> = Vec::new();
+        for span in hindi_section.select(&form_selector) {
+            let classes = span.value().attr("class").unwrap_or("");
+            // Find the "<TAGS>-form-of" token inside the class list.
+            let Some(tag_str) = classes
+                .split_ascii_whitespace()
+                .find_map(|c| c.strip_suffix("-form-of"))
+            else {
+                continue;
+            };
+            // Skip the marker pseudo-tag that just means "this is a form-of link".
+            if tag_str.is_empty() {
+                continue;
+            }
+
+            // Extract the visible text (handles <a>, <strong class="selflink">, and
+            // compound forms like `होते-होते`).
+            let word: String = span.text().collect::<String>().trim().to_string();
+            if word.is_empty() {
+                continue;
+            }
+
+            let tag_sets = parse_tag_string(tag_str);
+            if tag_sets.is_empty() {
+                continue;
+            }
+
+            forms.push(HindiInflectionForm { word, tag_sets });
+        }
+
+        Ok(HindiInflection {
+            lemma: lemma.to_string(),
+            forms,
+        })
+    }
+
+    /// Fetch and parse Hindi inflection tables for a batch of lemmas, with on-disk caching.
+    /// Parse failures are logged as warnings (not all words have inflection tables on
+    /// Wiktionary — many don't, especially invariable adjectives like लाल or common
+    /// adverbs) and simply omitted from the result.
+    pub async fn fetch_hindi_inflections(
+        lemmas: &[String],
+        cache_dir: &std::path::Path,
+    ) -> anyhow::Result<std::collections::HashMap<String, HindiInflection>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(lemmas.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} Hindi words ({per_sec}, {msg}, {eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let results: Vec<(String, Result<HindiInflection, String>)> =
+            futures::stream::iter(lemmas.iter())
+                .map(|lemma| {
+                    let pb = pb.clone();
+                    async move {
+                        pb.set_message(lemma.to_string());
+                        let result = match super::get_wiktionary_html(lemma, cache_dir).await {
+                            Ok(html) => parse_hindi_inflection(&html, lemma)
+                                .map_err(|e| format!("parse error: {e}")),
+                            Err(e) => Err(format!("fetch error: {e}")),
+                        };
+                        pb.inc(1);
+                        (lemma.clone(), result)
+                    }
+                })
+                .buffer_unordered(4)
+                .collect()
+                .await;
+
+        pb.finish_and_clear();
+
+        let mut out = std::collections::HashMap::new();
+        for (lemma, result) in results {
+            match result {
+                Ok(inflection) => {
+                    // Skip lemmas whose Hindi section has no inflected forms (invariable words).
+                    if !inflection.forms.is_empty() {
+                        out.insert(lemma, inflection);
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Warning: skipping Hindi word {lemma}: {e}");
+                }
+            }
+        }
+        Ok(out)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        fn load(word: &str) -> String {
+            std::fs::read_to_string(format!("src/wiktionary-examples/hin/{word}.txt"))
+                .unwrap_or_else(|_| panic!("missing test fixture for {word}"))
+        }
+
+        /// Helper: find the first form whose tag_sets contain the given exact tag list.
+        fn find_form<'a>(
+            inflection: &'a HindiInflection,
+            needle: &[&str],
+        ) -> Option<&'a HindiInflectionForm> {
+            let needle: Vec<String> = needle.iter().map(|s| s.to_string()).collect();
+            inflection
+                .forms
+                .iter()
+                .find(|f| f.tag_sets.iter().any(|ts| ts == &needle))
+        }
+
+        #[test]
+        fn parse_tag_string_splits_on_pipe() {
+            assert_eq!(
+                parse_tag_string("dir|m|s|hab|part"),
+                vec![vec![
+                    "dir".to_string(),
+                    "m".to_string(),
+                    "s".to_string(),
+                    "hab".to_string(),
+                    "part".to_string(),
+                ]]
+            );
+        }
+
+        #[test]
+        fn parse_tag_string_splits_alternative_sets() {
+            // Wiktionary's multi-cell form uses `|;|` between alternative interpretations.
+            let got = parse_tag_string("m|p|hab|part|;|obl|m|s|hab|part");
+            assert_eq!(
+                got,
+                vec![
+                    vec![
+                        "m".to_string(),
+                        "p".to_string(),
+                        "hab".to_string(),
+                        "part".to_string(),
+                    ],
+                    vec![
+                        "obl".to_string(),
+                        "m".to_string(),
+                        "s".to_string(),
+                        "hab".to_string(),
+                        "part".to_string(),
+                    ],
+                ]
+            );
+        }
+
+        #[test]
+        fn parse_tag_string_normalises_prospective_agentive() {
+            let got = parse_tag_string("dir|m|s|prospective//agentive|part");
+            assert_eq!(
+                got,
+                vec![vec![
+                    "dir".to_string(),
+                    "m".to_string(),
+                    "s".to_string(),
+                    "prospective".to_string(),
+                    "part".to_string(),
+                ]]
+            );
+        }
+
+        #[test]
+        fn parse_verb_hona_has_core_forms() {
+            let html = load("होना");
+            let infl = parse_hindi_inflection(&html, "होना").unwrap();
+
+            // Non-finite core
+            assert_eq!(
+                find_form(&infl, &["stem"]).map(|f| f.word.as_str()),
+                Some("हो")
+            );
+            assert_eq!(
+                find_form(&infl, &["inf"]).map(|f| f.word.as_str()),
+                Some("होना")
+            );
+            assert_eq!(
+                find_form(&infl, &["obl", "inf"]).map(|f| f.word.as_str()),
+                Some("होने")
+            );
+
+            // Habitual participles: होता/होते/होती/होतीं
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s", "hab", "part"]).map(|f| f.word.as_str()),
+                Some("होता")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "s", "hab", "part"]).map(|f| f.word.as_str()),
+                Some("होती")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "p", "hab", "part"]).map(|f| f.word.as_str()),
+                Some("होतीं")
+            );
+            // The m.pl habitual is होते, which is ALSO the oblique m.sg — both tag
+            // sets must be present on the same form entry.
+            let hote = find_form(&infl, &["m", "p", "hab", "part"]).expect("missing m.pl hab");
+            assert_eq!(hote.word, "होते");
+            assert!(
+                hote.tag_sets.iter().any(|ts| ts.as_slice()
+                    == [
+                        "obl".to_string(),
+                        "m".to_string(),
+                        "s".to_string(),
+                        "hab".to_string(),
+                        "part".to_string(),
+                    ]),
+                "होते should also carry the oblique m.sg habitual tags; got {:?}",
+                hote.tag_sets
+            );
+
+            // Perfective participles of होना are suppletive: हुआ/हुए/हुई/हुईं
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("हुआ")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("हुई")
+            );
+
+            // Future indicative 1s masculine: होऊँगा
+            assert_eq!(
+                find_form(&infl, &["1", "s", "m", "fut", "ind"]).map(|f| f.word.as_str()),
+                Some("होऊँगा")
+            );
+
+            // Imperative present: 2.intim = हो, 2.fam = होओ (NOT हो — that's the intim form),
+            // and the formal/3p cell has TWO alternatives होइये + हूजिये.
+            assert_eq!(
+                find_form(&infl, &["2", "s", "intim", "pres", "imp"]).map(|f| f.word.as_str()),
+                Some("हो")
+            );
+            assert_eq!(
+                find_form(&infl, &["2", "fam", "pres", "imp"]).map(|f| f.word.as_str()),
+                Some("होओ")
+            );
+            // The formal imperative cell contains alternative forms; parser should keep both.
+            let formal_imp: Vec<&str> = infl
+                .forms
+                .iter()
+                .filter(|f| {
+                    f.tag_sets.iter().any(|ts| {
+                        ts == &[
+                            "3".to_string(),
+                            "p".to_string(),
+                            "pres".to_string(),
+                            "imp".to_string(),
+                        ] || ts
+                            == &[
+                                "2".to_string(),
+                                "formal".to_string(),
+                                "pres".to_string(),
+                                "imp".to_string(),
+                            ]
+                    })
+                })
+                .map(|f| f.word.as_str())
+                .collect();
+            assert!(
+                formal_imp.contains(&"होइये") && formal_imp.contains(&"हूजिये"),
+                "expected both होइये and हूजिये formal imperatives, got {formal_imp:?}"
+            );
+
+            // A quirk of होना: the 2.fam future imperative is literally the infinitive होना
+            assert_eq!(
+                find_form(&infl, &["2", "fam", "fut", "imp"]).map(|f| f.word.as_str()),
+                Some("होना")
+            );
+
+            // At least 40 distinct form entries for a common verb
+            assert!(
+                infl.forms.len() >= 40,
+                "expected >=40 forms for होना, got {}",
+                infl.forms.len()
+            );
+        }
+
+        #[test]
+        fn parse_verb_karna_matches_regular_paradigm() {
+            let html = load("करना");
+            let infl = parse_hindi_inflection(&html, "करना").unwrap();
+
+            assert_eq!(
+                find_form(&infl, &["stem"]).map(|f| f.word.as_str()),
+                Some("कर")
+            );
+            assert_eq!(
+                find_form(&infl, &["inf"]).map(|f| f.word.as_str()),
+                Some("करना")
+            );
+            // Perfective is suppletive: किया (not *करा)
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("किया")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("की")
+            );
+            // Subjunctive 1s: करूँ
+            assert_eq!(
+                find_form(&infl, &["1", "s", "fut", "subj"]).map(|f| f.word.as_str()),
+                Some("करूँ")
+            );
+        }
+
+        #[test]
+        fn parse_verb_jana_has_suppletive_perfective() {
+            let html = load("जाना");
+            let infl = parse_hindi_inflection(&html, "जाना").unwrap();
+
+            // जाना has a famously suppletive perfective stem गय-
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("गया")
+            );
+            assert_eq!(
+                find_form(&infl, &["m", "p", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("गए")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("गई")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "p", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("गईं")
+            );
+        }
+
+        #[test]
+        fn parse_verb_dena_irregular_subjunctive() {
+            let html = load("देना");
+            let infl = parse_hindi_inflection(&html, "देना").unwrap();
+
+            // देना has irregular short subjunctive forms: दूँ / दे / दें (not दे-उ-ँ)
+            assert_eq!(
+                find_form(&infl, &["1", "s", "fut", "subj"]).map(|f| f.word.as_str()),
+                Some("दूँ")
+            );
+            assert_eq!(
+                find_form(&infl, &["13", "p", "fut", "subj"]).map(|f| f.word.as_str()),
+                Some("दें")
+            );
+            // Perfective: दिया / दी
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("दिया")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("दी")
+            );
+        }
+
+        #[test]
+        fn parse_verb_pina_irregular_perfective() {
+            let html = load("पीना");
+            let infl = parse_hindi_inflection(&html, "पीना").unwrap();
+
+            // पीना drops its long ī in the perfective: पिया not *पीया
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("पिया")
+            );
+            assert_eq!(
+                find_form(&infl, &["f", "s", "pfv", "part"]).map(|f| f.word.as_str()),
+                Some("पी")
+            );
+        }
+
+        #[test]
+        fn parse_noun_larka_has_direct_oblique_plural() {
+            let html = load("लड़का");
+            let infl = parse_hindi_inflection(&html, "लड़का").unwrap();
+
+            // -ā masculine nouns inflect: लड़का → लड़के (dir.pl / obl.sg) → लड़कों (obl.pl)
+            assert_eq!(
+                find_form(&infl, &["dir", "s"]).map(|f| f.word.as_str()),
+                Some("लड़का")
+            );
+            assert_eq!(
+                find_form(&infl, &["dir", "p"]).map(|f| f.word.as_str()),
+                Some("लड़के")
+            );
+            assert_eq!(
+                find_form(&infl, &["obl", "s"]).map(|f| f.word.as_str()),
+                Some("लड़के")
+            );
+            assert_eq!(
+                find_form(&infl, &["obl", "p"]).map(|f| f.word.as_str()),
+                Some("लड़कों")
+            );
+            assert_eq!(
+                find_form(&infl, &["voc", "p"]).map(|f| f.word.as_str()),
+                Some("लड़को")
+            );
+        }
+
+        #[test]
+        fn parse_noun_kitaab_feminine_plural() {
+            let html = load("किताब");
+            let infl = parse_hindi_inflection(&html, "किताब").unwrap();
+
+            // Consonant-ending feminine: dir.pl adds -ें, obl.pl adds -ों
+            assert_eq!(
+                find_form(&infl, &["dir", "s"]).map(|f| f.word.as_str()),
+                Some("किताब")
+            );
+            assert_eq!(
+                find_form(&infl, &["dir", "p"]).map(|f| f.word.as_str()),
+                Some("किताबें")
+            );
+            assert_eq!(
+                find_form(&infl, &["obl", "p"]).map(|f| f.word.as_str()),
+                Some("किताबों")
+            );
+        }
+
+        #[test]
+        fn parse_noun_aadmi_invariant_in_singular() {
+            let html = load("आदमी");
+            let infl = parse_hindi_inflection(&html, "आदमी").unwrap();
+
+            // आदमी is an -ī masculine noun: dir.s / dir.p / obl.s / voc.s are all आदमी,
+            // only obl.p (आदमियों) and voc.p (आदमियो) differ. This is a famous quirk.
+            assert_eq!(
+                find_form(&infl, &["dir", "s"]).map(|f| f.word.as_str()),
+                Some("आदमी")
+            );
+            assert_eq!(
+                find_form(&infl, &["dir", "p"]).map(|f| f.word.as_str()),
+                Some("आदमी")
+            );
+            assert_eq!(
+                find_form(&infl, &["obl", "s"]).map(|f| f.word.as_str()),
+                Some("आदमी")
+            );
+            assert_eq!(
+                find_form(&infl, &["obl", "p"]).map(|f| f.word.as_str()),
+                Some("आदमियों")
+            );
+        }
+
+        #[test]
+        fn parse_adjective_accha_agrees_in_gender_and_number() {
+            let html = load("अच्छा");
+            let infl = parse_hindi_inflection(&html, "अच्छा").unwrap();
+
+            // -ā inflecting adjective: अच्छा / अच्छे / अच्छी
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s"]).map(|f| f.word.as_str()),
+                Some("अच्छा")
+            );
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "p"]).map(|f| f.word.as_str()),
+                Some("अच्छे")
+            );
+            // Feminine forms all collapse to अच्छी (feminine -ā adjectives don't distinguish
+            // sg/pl in the direct case)
+            assert_eq!(
+                find_form(&infl, &["dir", "f", "s"]).map(|f| f.word.as_str()),
+                Some("अच्छी")
+            );
+            assert_eq!(
+                find_form(&infl, &["dir", "f", "p"]).map(|f| f.word.as_str()),
+                Some("अच्छी")
+            );
+            // Oblique masculine singular becomes अच्छे (same form as direct plural)
+            assert_eq!(
+                find_form(&infl, &["obl", "m", "s"]).map(|f| f.word.as_str()),
+                Some("अच्छे")
+            );
+            // 12 cells expected
+            assert_eq!(
+                infl.forms.len(),
+                12,
+                "expected 12 adjective cells for अच्छा, got {}",
+                infl.forms.len()
+            );
+        }
+
+        #[test]
+        fn parse_adjective_bara_inflects() {
+            let html = load("बड़ा");
+            let infl = parse_hindi_inflection(&html, "बड़ा").unwrap();
+
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "s"]).map(|f| f.word.as_str()),
+                Some("बड़ा")
+            );
+            assert_eq!(
+                find_form(&infl, &["dir", "m", "p"]).map(|f| f.word.as_str()),
+                Some("बड़े")
+            );
+            assert_eq!(
+                find_form(&infl, &["dir", "f", "s"]).map(|f| f.word.as_str()),
+                Some("बड़ी")
+            );
+        }
+    }
+}

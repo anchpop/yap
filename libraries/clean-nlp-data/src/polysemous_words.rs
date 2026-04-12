@@ -17,6 +17,9 @@ pub fn polysemous_words(language: Language) -> &'static [PolysemousWord] {
         Language::German => GERMAN,
         Language::Italian => ITALIAN,
         Language::Portuguese => PORTUGUESE,
+        Language::Chinese => CHINESE,
+        Language::Japanese => JAPANESE,
+        Language::Hindi => HINDI,
         _ => &[],
     }
 }
@@ -443,4 +446,159 @@ const PORTUGUESE: &[PolysemousWord] = &[
     ("vestido", &[("vestido", Noun), ("vestido", Adj)]),
     ("vermelho", &[("vermelho", Adj), ("vermelho", Noun)]),
     ("parte", &[("parte", Noun), ("partir", Verb)]),
+];
+
+const CHINESE: &[PolysemousWord] = &[
+    ("会", &[("会", Aux), ("会", Verb), ("会", Noun)]), // can/will / meet / meeting
+    ("要", &[("要", Aux), ("要", Verb), ("要", Adj)]),  // want/will / want / important
+    ("就", &[("就", Adv), ("就", Cconj)]),              // then/just / then
+    ("还", &[("还", Adv), ("还", Verb)]),               // still/also / return
+    ("过", &[("过", Part), ("过", Verb)]),              // experiential aspect / to pass
+    ("得", &[("得", Part), ("得", Verb)]),              // complement marker / to get
+    ("给", &[("给", Verb), ("给", Adp)]),               // to give / to/for
+    ("到", &[("到", Verb), ("到", Adp)]),               // to arrive / to
+    ("把", &[("把", Adp), ("把", Noun)]),               // BA-construction / handle
+    ("对", &[("对", Adj), ("对", Adp), ("对", Verb)]),  // correct / toward / to face
+    ("让", &[("让", Verb), ("让", Adp)]),               // to let / by (passive)
+    ("想", &[("想", Verb), ("想", Aux)]),               // to think / to want
+    ("点", &[("点", Noun), ("点", Verb), ("点", Num)]), // point / to order / a little
+    ("行", &[("行", Adj), ("行", Verb), ("行", Noun)]), // OK / to walk / row
+    ("回", &[("回", Verb), ("回", Noun)]),              // to return / time(s)
+    ("多", &[("多", Adj), ("多", Adv)]),                // many / how (much)
+    ("快", &[("快", Adj), ("快", Adv)]),                // fast / soon
+    ("长", &[("长", Adj), ("长", Verb)]),               // long / to grow
+    ("好", &[("好", Adj), ("好", Adv), ("好", Intj)]),  // good / very / OK!
+    ("地", &[("地", Part), ("地", Noun)]),              // adverbial marker / earth
+    ("下", &[("下", Verb), ("下", Noun), ("下", Adp)]), // to go down / below / under
+    ("上", &[("上", Verb), ("上", Noun), ("上", Adp)]), // to go up / above / on
+    ("跟", &[("跟", Adp), ("跟", Verb), ("跟", Cconj)]), // with / to follow / and
+];
+
+const JAPANESE: &[PolysemousWord] = &[
+    ("もう", &[("もう", Adv), ("もう", Intj)]), // already / geez!
+    ("まだ", &[("まだ", Adv), ("まだ", Intj)]), // still/not yet
+    ("ちょっと", &[("ちょっと", Adv), ("ちょっと", Intj)]), // a little / hey!
+    ("本当", &[("本当", Noun), ("本当", Adv)]), // truth / really
+    ("大丈夫", &[("大丈夫", Adj), ("大丈夫", Intj)]), // OK (adj) / OK! (intj)
+    ("結構", &[("結構", Adv), ("結構", Adj)]),  // quite / fine/enough
+    ("方", &[("方", Noun), ("方", Noun)]),      // direction / person (polite)
+    ("前", &[("前", Noun), ("前", Adp)]),       // front / before
+    ("後", &[("後", Noun), ("後", Adp)]),       // back / after
+    ("間", &[("間", Noun), ("間", Adp)]),       // between / during
+    ("一番", &[("一番", Adv), ("一番", Noun)]), // most / number one
+    ("自分", &[("自分", Noun), ("自分", Pron)]), // oneself / I (informal)
+    ("いい", &[("いい", Adj), ("いい", Intj)]), // good / OK!/fine!
+    ("よく", &[("よく", Adv), ("よい", Adj)]),  // often/well / good (adverbial)
+    ("よう", &[("よう", Noun), ("よう", Aux)]), // appearance / seeming
+    ("気", &[("気", Noun), ("気", Noun)]),      // spirit/feeling / care/attention
+    ("物", &[("物", Noun), ("物", Noun)]),      // thing / person
+    ("事", &[("事", Noun), ("事", Noun)]),      // thing/matter / experience
+    ("所", &[("所", Noun), ("所", Noun)]),      // place / point/aspect
+    ("中", &[("中", Noun), ("中", Adp)]),       // inside / during/in the middle of
+    ("上", &[("上", Noun), ("上", Adp)]),       // top/above / in terms of
+    ("下", &[("下", Noun), ("下", Adp)]),       // below / under
+    ("先", &[("先", Noun), ("先", Adv)]),       // destination/tip / first/ahead
+    ("外", &[("外", Noun), ("外", Adp)]),       // outside / besides
+    ("通り", &[("通り", Noun), ("通り", Adp)]), // street / as/like
+    ("代わり", &[("代わり", Noun), ("代わり", Adp)]), // substitute / instead of
+    ("やっぱり", &[("やっぱり", Adv), ("やっぱり", Intj)]), // as expected / I knew it!
+    ("確か", &[("確か", Adj), ("確か", Adv)]),  // certain / if I recall
+    ("別", &[("別", Adj), ("別", Noun)]),       // separate / farewell
+    ("無理", &[("無理", Adj), ("無理", Noun)]), // impossible / unreasonableness
+    ("駄目", &[("駄目", Adj), ("駄目", Intj)]), // no good / no!/stop!
+    ("違う", &[("違う", Verb), ("違う", Intj)]), // to differ / no! (disagreement)
+    ("全然", &[("全然", Adv), ("全然", Adv)]),  // not at all / totally (colloquial)
+    ("全部", &[("全部", Noun), ("全部", Adv)]), // everything / entirely
+    ("一度", &[("一度", Adv), ("一度", Noun)]), // once / one time
+    ("急", &[("急", Adj), ("急", Noun)]),       // sudden / urgency
+    ("丁寧", &[("丁寧", Adj), ("丁寧", Noun)]), // polite / politeness
+    ("邪魔", &[("邪魔", Noun), ("邪魔", Adj)]), // hindrance / in the way
+    ("適当", &[("適当", Adj), ("適当", Noun)]), // appropriate / carelessness
+    ("勝手", &[("勝手", Adj), ("勝手", Noun)]), // selfish / one's own way
+    ("変", &[("変", Adj), ("変", Noun)]),       // strange / change
+    ("簡単", &[("簡単", Adj), ("簡単", Noun)]), // easy / simplicity
+    ("最初", &[("最初", Noun), ("最初", Adv)]), // beginning / at first
+    ("最後", &[("最後", Noun), ("最後", Adv)]), // end / lastly
+    ("今度", &[("今度", Noun), ("今度", Adv)]), // next time / this time
+    ("絶対", &[("絶対", Adv), ("絶対", Noun)]), // absolutely / absolute
+    ("特別", &[("特別", Adj), ("特別", Adv)]),  // special / especially
+    ("普通", &[("普通", Adj), ("普通", Adv)]),  // normal / normally
+    ("勉強", &[("勉強", Noun), ("勉強", Verb)]), // study / to study
+    ("練習", &[("練習", Noun), ("練習", Verb)]), // practice / to practice
+    ("心配", &[("心配", Noun), ("心配", Adj)]), // worry / worried
+    ("迷惑", &[("迷惑", Noun), ("迷惑", Adj)]), // trouble / troublesome
+    ("我慢", &[("我慢", Noun), ("我慢", Verb)]), // patience / to endure
+    ("上手", &[("上手", Adj), ("上手", Noun)]), // skillful / skill
+    ("下手", &[("下手", Adj), ("下手", Noun)]), // unskillful / poor skill
+    ("つもり", &[("つもり", Noun), ("つもり", Noun)]), // intention / belief (mistaken)
+    ("さすが", &[("さすが", Adv), ("さすが", Intj)]), // as expected / wow, impressive!
+    ("なかなか", &[("なかなか", Adv), ("なかなか", Adv)]), // quite/fairly / not easily (with neg)
+    ("ほど", &[("ほど", Adp), ("ほど", Noun)]), // about/to the extent / degree
+    ("はず", &[("はず", Noun), ("はず", Noun)]), // should be/expected / rim/edge
+    ("わけ", &[("わけ", Noun), ("わけ", Noun)]), // reason / meaning/situation
+];
+
+const HINDI: &[PolysemousWord] = &[
+    ("सब", &[("सब", Det), ("सब", Pron), ("सब", Noun)]), // all (det/pron) / everyone (noun)
+    ("और", &[("और", Cconj), ("और", Adv)]),              // and / more
+    ("बस", &[("बस", Adv), ("बस", Noun), ("बस", Intj)]), // just / bus / enough!
+    ("पर", &[("पर", Adp), ("पर", Cconj)]),              // on / but
+    ("तो", &[("तो", Part), ("तो", Cconj)]),             // then/emphasis / then/so
+    ("भी", &[("भी", Part), ("भी", Adv)]),               // also / even
+    ("ही", &[("ही", Part), ("ही", Adv)]),               // only/emphasis / only
+    ("अच्छा", &[("अच्छा", Adj), ("अच्छा", Intj)]),         // good / OK!/I see
+    ("ठीक", &[("ठीक", Adj), ("ठीक", Intj), ("ठीक", Adv)]), // fine / OK! / exactly
+    ("बहुत", &[("बहुत", Adv), ("बहुत", Det)]),             // very / much/many
+    ("कुछ", &[("कुछ", Pron), ("कुछ", Det), ("कुछ", Adv)]),  // something / some / somewhat
+    ("यह", &[("यह", Pron), ("यह", Det)]),               // this (pron) / this (det)
+    ("वह", &[("वह", Pron), ("वह", Det)]),               // that (pron) / that (det)
+    ("क्या", &[("क्या", Pron), ("क्या", Part), ("क्या", Adv)]), // what / question marker / how
+    ("बड़ा", &[("बड़ा", Adj), ("बड़ा", Adv)]),             // big / very
+    ("ज़रा", &[("ज़रा", Adv), ("ज़रा", Det)]),             // a little / a bit of
+    ("सीधा", &[("सीधा", Adj), ("सीधा", Adv)]),          // straight / directly
+    ("खुद", &[("खुद", Pron), ("खुद", Adv)]),               // oneself / personally
+    ("बिल्कुल", &[("बिल्कुल", Adv), ("बिल्कुल", Intj)]),      // absolutely / exactly!
+    ("चलो", &[("चलना", Verb), ("चलो", Intj)]),          // let's go / come on!
+    ("देखो", &[("देखना", Verb), ("देखो", Intj)]),          // look (verb) / look!/listen!
+    ("सच", &[("सच", Noun), ("सच", Adj), ("सच", Adv)]),  // truth / true / truly
+    ("ज़रूरी", &[("ज़रूरी", Adj), ("ज़रूरी", Adv)]),          // necessary / necessarily
+    ("पूरा", &[("पूरा", Adj), ("पूरा", Adv)]),             // complete / completely
+    ("साफ़", &[("साफ़", Adj), ("साफ़", Adv)]),             // clean / clearly
+    ("अलग", &[("अलग", Adj), ("अलग", Adv)]),             // separate / separately
+    ("बराबर", &[("बराबर", Adj), ("बराबर", Adv)]),       // equal / equally
+    ("ऊपर", &[("ऊपर", Adv), ("ऊपर", Adp)]),             // above / on top of
+    ("नीचे", &[("नीचे", Adv), ("नीचे", Adp)]),             // below / under
+    ("आगे", &[("आगे", Adv), ("आगे", Adp)]),                // ahead / in front of
+    ("पीछे", &[("पीछे", Adv), ("पीछे", Adp)]),             // behind / after
+    ("बाहर", &[("बाहर", Adv), ("बाहर", Adp)]),          // outside / out of
+    ("अंदर", &[("अंदर", Adv), ("अंदर", Adp)]),             // inside / within
+    ("बीच", &[("बीच", Noun), ("बीच", Adp)]),            // middle / among/between
+    ("बाद", &[("बाद", Noun), ("बाद", Adp)]),            // later / after
+    ("पहले", &[("पहले", Adv), ("पहले", Adp)]),             // first/before (adv) / before (adp)
+    ("दूर", &[("दूर", Adv), ("दूर", Adj)]),                // far / distant
+    ("पास", &[("पास", Adv), ("पास", Adp), ("पास", Noun)]), // nearby / near / pass/possession
+    ("काम", &[("काम", Noun), ("काम", Noun)]),           // work / use/function
+    ("हाल", &[("हाल", Noun), ("हाल", Adj)]),            // condition / recent
+    ("मतलब", &[("मतलब", Noun), ("मतलब", Noun)]),        // meaning / selfishness
+    ("खाना", &[("खाना", Verb), ("खाना", Noun)]),        // to eat / food
+    ("पानी", &[("पानी", Noun), ("पानी", Noun)]),        // water / tears (poetic)
+    ("सवाल", &[("सवाल", Noun), ("सवाल", Noun)]),        // question / matter/issue
+    ("जवाब", &[("जवाब", Noun), ("जवाब", Noun)]),        // answer / response/retort
+    ("ताज़ा", &[("ताज़ा", Adj), ("ताज़ा", Adj)]),          // fresh / recent/latest
+    ("गरम", &[("गरम", Adj), ("गरम", Adj)]),             // hot / heated (angry)
+    ("ठंडा", &[("ठंडा", Adj), ("ठंडा", Adj)]),             // cold / cool/calm
+    ("हल्का", &[("हल्का", Adj), ("हल्का", Adj)]),          // light (weight) / light (color/mild)
+    ("भारी", &[("भारी", Adj), ("भारी", Adj)]),          // heavy / serious/overwhelming
+    ("गहरा", &[("गहरा", Adj), ("गहरा", Adj)]),          // deep / intense/profound
+    ("मज़बूत", &[("मज़बूत", Adj), ("मज़बूत", Adj)]),          // strong / firm/resolute
+    ("कड़ा", &[("कड़ा", Adj), ("कड़ा", Noun)]),            // hard/strict / bangle
+    ("मीठा", &[("मीठा", Adj), ("मीठा", Noun)]),         // sweet / sweets/dessert
+    ("फिर", &[("फिर", Adv), ("फिर", Cconj)]),           // again / then
+    ("अभी", &[("अभी", Adv), ("अभी", Adv)]),             // right now / just now / soon
+    ("तक", &[("तक", Adp), ("तक", Part)]),               // until / even
+    ("सिर्फ़", &[("सिर्फ़", Adv), ("सिर्फ़", Det)]),          // only (adv) / only (det)
+    ("कभी", &[("कभी", Adv), ("कभी", Adv)]),             // ever / sometimes
+    ("एक", &[("एक", Det), ("एक", Num)]),                // a/an (article) / one (number)
+    ("कर", &[("करना", Verb), ("कर", Noun)]), // conjunctive participle "having done" (verb form of करना) / tax (noun)
+    ("आ", &[("आना", Verb), ("आ", Intj)]),    // come! (imperative of आना) / ah!/oh! (interjection)
 ];

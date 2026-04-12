@@ -2468,6 +2468,7 @@ pub enum Language {
     Russian,
     Portuguese,
     Italian,
+    Hindi,
 }
 
 #[derive(
@@ -2493,6 +2494,8 @@ pub enum WritingSystem {
     Han,
     /// Japanese writing system (combines Kanji, Hiragana, and Katakana)
     Japanese,
+    /// Devanagari script (Hindi, etc.)
+    Devanagari,
 }
 
 impl Language {
@@ -2508,6 +2511,7 @@ impl Language {
             Language::Russian => "rus",
             Language::Portuguese => "por",
             Language::Italian => "ita",
+            Language::Hindi => "hin",
         }
     }
 
@@ -2523,6 +2527,7 @@ impl Language {
             "rus" => Language::Russian,
             "por" => Language::Portuguese,
             "ita" => Language::Italian,
+            "hin" => Language::Hindi,
             _ => return None,
         })
     }
@@ -2539,6 +2544,7 @@ impl Language {
             Language::Russian => "ru",
             Language::Portuguese => "pt",
             Language::Italian => "it",
+            Language::Hindi => "hi",
         }
     }
 
@@ -2554,6 +2560,7 @@ impl Language {
             Language::Russian => WritingSystem::Cyrillic,
             Language::Chinese => WritingSystem::Han,
             Language::Japanese => WritingSystem::Japanese,
+            Language::Hindi => WritingSystem::Devanagari,
         }
     }
 
@@ -2565,6 +2572,7 @@ impl Language {
                 | Language::German
                 | Language::Portuguese
                 | Language::Italian
+                | Language::Hindi
         )
     }
 
@@ -2581,6 +2589,7 @@ impl Language {
             Language::Russian => "\u{043a}\u{0430}\u{043a} \u{0432}",
             Language::Portuguese => "como em",
             Language::Italian => "come in",
+            Language::Hindi => "जैसे",
         }
     }
 
@@ -2605,6 +2614,7 @@ impl Language {
             Language::Russian => "ru-RU",
             Language::Portuguese => "pt-BR",
             Language::Italian => "it-IT",
+            Language::Hindi => "hi-IN",
         }
     }
 
@@ -2623,6 +2633,7 @@ impl Language {
             Language::Russian => &["не", "что", "на", "это"],
             Language::Portuguese => &["que", "de", "não", "eu"],
             Language::Italian => &["che", "di", "non", "il"],
+            Language::Hindi => &["है", "में", "के", "को"],
         }
     }
 
@@ -2774,6 +2785,7 @@ impl Language {
             ],
             // No Latin script subtitles for these
             Language::Korean | Language::Chinese | Language::Japanese => &[],
+            Language::Hindi => &[],
         }
     }
 
@@ -2945,7 +2957,7 @@ impl Language {
         // 9. CJK characters in non-CJK subtitle files
         if !matches!(
             self,
-            Language::Chinese | Language::Japanese | Language::Korean
+            Language::Chinese | Language::Japanese | Language::Korean | Language::Hindi
         ) {
             let cjk_count = all_text
                 .chars()
@@ -3070,6 +3082,7 @@ impl std::fmt::Display for Language {
             Language::Russian => write!(f, "Russian"),
             Language::Portuguese => write!(f, "Portuguese"),
             Language::Italian => write!(f, "Italian"),
+            Language::Hindi => write!(f, "Hindi"),
         }
     }
 }
@@ -3100,6 +3113,14 @@ impl Course {
 }
 
 pub const COURSES: &[Course] = &[
+    Course {
+        native_language: Language::English,
+        target_language: Language::Japanese,
+    },
+    Course {
+        native_language: Language::English,
+        target_language: Language::Hindi,
+    },
     Course {
         native_language: Language::English,
         target_language: Language::French,
@@ -3145,6 +3166,7 @@ pub const LANGUAGES: &[Language] = &[
     Language::Russian,
     Language::Portuguese,
     Language::Italian,
+    Language::Hindi,
 ];
 
 /// A sentence example for the landing page showcase.

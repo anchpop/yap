@@ -234,6 +234,32 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0166924",  // Audition
     "tt0046438",  // Tokyo Story
     "tt0156887",  // Perfect Blue
+    // Hindi
+    "tt0264235",  // Lagaan
+    "tt0169102",  // Dil Chahta Hai
+    "tt0986264",  // 3 Idiots
+    "tt1187043",  // Gangs of Wasseypur
+    "tt2338151",  // Queen
+    "tt6439020",  // Andhadhun
+    "tt0374887",  // Rang De Basanti
+    "tt0347304",  // Swades
+    "tt2631186",  // PK
+    "tt4559006",  // Dangal
+    "tt3322420",  // Masaan
+    "tt2390150",  // Haider
+    "tt15745892", // RRR
+    "tt3767372",  // Article 15
+    "tt0150992",  // Dil Se..
+    "tt8239946",  // Gully Boy
+    "tt6644630",  // Tumbbad
+    "tt0348730",  // Kal Ho Naa Ho
+    "tt6766834",  // Super 30
+    "tt3495026",  // Bajrangi Bhaijaan
+    "tt0251075",  // Devdas
+    "tt0319736",  // Black
+    "tt2094990",  // Barfi!
+    "tt2356180",  // Bhaag Milkha Bhaag
+    "tt1562872",  // Zindagi Na Milegi Dobara
     // Russian
     "tt0079944",  // Stalker
     "tt0069293",  // Solaris
@@ -1137,7 +1163,7 @@ async fn process_movie(
 fn parse_language(s: &str) -> Result<Language, String> {
     Language::from_iso_639_3(s).ok_or_else(|| {
         format!(
-            "unsupported language code '{s}'. Supported: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita"
+            "unsupported language code '{s}'. Supported: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita, hin"
         )
     })
 }
@@ -1146,7 +1172,7 @@ fn parse_language(s: &str) -> Result<Language, String> {
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Language codes (ISO 639-3: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita)
+    /// Language codes (ISO 639-3: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita, hin)
     #[arg(short, long, num_args = 1.., value_parser = parse_language)]
     language: Vec<Language>,
 

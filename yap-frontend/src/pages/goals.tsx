@@ -71,7 +71,6 @@ export function GoalsPage() {
         const pimsleurStats = deck.get_pimsleur_stats();
 
         const tierInfo = deck.get_current_tier();
-        const overallPercentKnown = deck.get_percent_of_words_known() * 100;
 
         return (
           <TopPageLayout
@@ -96,7 +95,7 @@ export function GoalsPage() {
                 onClick={() => setGoalAndNavigate({ type: "essential" })}
                 title={`Frequent ${targetLanguage}`}
                 description={`Currently on: ${tierInfo.name} ${targetLanguage} Level ${tierInfo.level} of ${tierInfo.total_levels}`}
-                percentKnown={overallPercentKnown}
+                percentKnown={tierInfo.percent_known}
                 posterUrl="/essential-course.webp"
               />
               {goal.type === "essential" && (

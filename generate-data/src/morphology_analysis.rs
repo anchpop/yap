@@ -167,13 +167,21 @@ mod llm_morphology {
         mood: Option<language_utils::features::Mood>,
     }
 
+    #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
+    struct AspectResponse {
+        #[serde(rename = "1. thoughts")]
+        thoughts: String,
+        #[serde(rename = "2. aspect")]
+        aspect: Option<language_utils::features::Aspect>,
+    }
+
     pub async fn get_morphology(
         language: Language,
         heteronym: Heteronym<String>,
         chat_client: &ChatClient,
     ) -> anyhow::Result<Morphology> {
         use language_utils::features::{
-            Case, FeatureSet, Gender, Mood, Number, Person, Polite, Tense,
+            Aspect, Case, FeatureSet, Gender, Mood, Number, Person, Polite, Tense,
         };
 
         let pos = heteronym.pos;
@@ -186,6 +194,7 @@ mod llm_morphology {
         let person_applies = Person::applies_to(language, pos);
         let case_applies = Case::applies_to(language, pos);
         let mood_applies = Mood::applies_to(language, pos);
+        let aspect_applies = Aspect::applies_to(language, pos);
 
         // Issue concurrent requests for all applicable features
         let gender_future = async {
@@ -380,15 +389,41 @@ If this verb has a fixed mood, provide it. If mood is not applicable or varies, 
             }
         };
 
+        let aspect_future = async {
+            if aspect_applies {
+                let result: Result<AspectResponse, _> = chat_client.chat_with_system_prompt(
+                format!(
+                    r#"Determine the grammatical aspect of the provided {language} word.
+Aspect specifies the internal temporal structure of the action (duration, completion, habituality, etc.).
+
+Common values:
+- Imperfect: action took/takes/will take some time span with no information about completion
+- Perfect: action has been / will have been completed
+- Progressive: action is ongoing at the reference point (e.g. English "is eating", Hindi रहा/रही/रहे forms)
+- Habitual: action takes place habitually or is a usual occurrence (e.g. Hindi -ता/-ती/-ते participles)
+- Prospective: relative future — action expected to take place after the reference point
+- Iterative: repeated action
+
+If this word has a fixed grammatical aspect, provide it. If aspect is not applicable or varies, use `"2. aspect": null`. (Respond with JSON, using "1. thoughts" then "2. aspect".)"#,
+                ),
+                format!("{language} word: {} (lemma: {}) (POS: {pos:?})", heteronym.word, heteronym.lemma)
+            ).await;
+                result.ok().and_then(|r| r.aspect)
+            } else {
+                None
+            }
+        };
+
         // Execute all futures concurrently
-        let (gender, number, politeness, tense, person, case, mood) = futures::join!(
+        let (gender, number, politeness, tense, person, case, mood, aspect) = futures::join!(
             gender_future,
             number_future,
             politeness_future,
             tense_future,
             person_future,
             case_future,
-            mood_future
+            mood_future,
+            aspect_future,
         );
 
         Ok(Morphology {
@@ -399,6 +434,7 @@ If this verb has a fixed mood, provide it. If mood is not applicable or varies, 
             person,
             case,
             mood,
+            aspect,
         })
     }
 }
@@ -476,6 +512,7 @@ pub mod wiktionary_morphology {
             Language::Italian => italian::create_italian_morphology(gram_frequencies).await,
             Language::English => english::create_english_morphology(gram_frequencies).await,
             Language::Russian => russian::create_russian_morphology(gram_frequencies).await,
+            Language::Hindi => hindi::create_hindi_morphology(gram_frequencies).await,
             _ => {
                 // Return empty for unsupported languages
                 Ok(BTreeMap::new())
@@ -522,6 +559,7 @@ pub mod wiktionary_morphology {
                 person: None,
                 case: None,
                 mood: None,
+                aspect: None,
             });
 
         morphology
@@ -627,6 +665,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -641,6 +680,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -658,6 +698,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -677,6 +718,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -696,6 +738,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -711,6 +754,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -743,6 +787,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -759,6 +804,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -775,6 +821,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -791,6 +838,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -807,6 +855,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Conditional),
+                        aspect: None,
                     },
                 );
             }
@@ -823,6 +872,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -839,6 +889,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -860,6 +911,7 @@ pub mod wiktionary_morphology {
                             person: Some(imperative_persons[i]),
                             case: None,
                             mood: Some(Mood::Imperative),
+                            aspect: None,
                         },
                     );
                 }
@@ -1009,6 +1061,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1023,6 +1076,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1037,6 +1091,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1050,6 +1105,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1082,6 +1138,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1097,6 +1154,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1112,6 +1170,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1127,6 +1186,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1142,6 +1202,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Conditional),
+                        aspect: None,
                     },
                 );
             }
@@ -1158,6 +1219,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1173,6 +1235,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1188,6 +1251,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1219,6 +1283,7 @@ pub mod wiktionary_morphology {
                         person: Some(imperative_persons[i]),
                         case: None,
                         mood: Some(Mood::Imperative),
+                        aspect: None,
                     },
                 );
             }
@@ -1320,6 +1385,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1334,6 +1400,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1348,6 +1415,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1381,6 +1449,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1396,6 +1465,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1411,6 +1481,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1426,6 +1497,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1441,6 +1513,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1456,6 +1529,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Conditional),
+                        aspect: None,
                     },
                 );
             }
@@ -1472,6 +1546,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1487,6 +1562,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1502,6 +1578,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1533,6 +1610,7 @@ pub mod wiktionary_morphology {
                         person: Some(imperative_persons[i]),
                         case: None,
                         mood: Some(Mood::Imperative),
+                        aspect: None,
                     },
                 );
             }
@@ -1632,6 +1710,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1646,6 +1725,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1660,6 +1740,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1693,6 +1774,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1708,6 +1790,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1723,6 +1806,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1738,6 +1822,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1753,6 +1838,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Conditional),
+                        aspect: None,
                     },
                 );
             }
@@ -1769,6 +1855,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1784,6 +1871,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -1815,6 +1903,7 @@ pub mod wiktionary_morphology {
                         person: Some(imperative_persons[i]),
                         case: None,
                         mood: Some(Mood::Imperative),
+                        aspect: None,
                     },
                 );
             }
@@ -1913,6 +2002,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1927,6 +2017,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1941,6 +2032,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -1974,6 +2066,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -1990,6 +2083,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -2006,6 +2100,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -2022,6 +2117,7 @@ pub mod wiktionary_morphology {
                         person: Some(persons[i]),
                         case: None,
                         mood: Some(Mood::Subjunctive),
+                        aspect: None,
                     },
                 );
             }
@@ -2041,6 +2137,7 @@ pub mod wiktionary_morphology {
                         person: Some(imperative_persons[i]),
                         case: None,
                         mood: Some(Mood::Imperative),
+                        aspect: None,
                     },
                 );
             }
@@ -2085,6 +2182,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Nominative),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2100,6 +2198,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Genitive),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2115,6 +2214,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Dative),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2130,6 +2230,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Accusative),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2146,6 +2247,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Nominative),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2161,6 +2263,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Genitive),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2176,6 +2279,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Dative),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2191,6 +2295,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: Some(Case::Accusative),
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2276,6 +2381,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -2290,6 +2396,7 @@ pub mod wiktionary_morphology {
                     person: Some(Person::Third),
                     case: None,
                     mood: Some(Mood::Indicative),
+                    aspect: None,
                 },
             );
 
@@ -2304,6 +2411,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -2318,6 +2426,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: Some(Mood::Indicative),
+                    aspect: None,
                 },
             );
 
@@ -2332,6 +2441,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -2454,6 +2564,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: None,
+                    aspect: None,
                 },
             );
 
@@ -2487,6 +2598,7 @@ pub mod wiktionary_morphology {
                             person: Some(persons[i]),
                             case: None,
                             mood: Some(Mood::Indicative),
+                            aspect: None,
                         },
                     );
                 }
@@ -2505,6 +2617,7 @@ pub mod wiktionary_morphology {
                             person: Some(persons[i]),
                             case: None,
                             mood: Some(Mood::Indicative),
+                            aspect: None,
                         },
                     );
                 }
@@ -2527,6 +2640,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: Some(Mood::Indicative),
+                        aspect: None,
                     },
                 );
             }
@@ -2540,6 +2654,7 @@ pub mod wiktionary_morphology {
                     person: None,
                     case: None,
                     mood: Some(Mood::Indicative),
+                    aspect: None,
                 },
             );
 
@@ -2557,6 +2672,7 @@ pub mod wiktionary_morphology {
                             person: Some(Person::Second),
                             case: None,
                             mood: Some(Mood::Imperative),
+                            aspect: None,
                         },
                     );
                 }
@@ -2574,6 +2690,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2588,6 +2705,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2602,6 +2720,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2616,6 +2735,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2632,6 +2752,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2646,6 +2767,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2724,6 +2846,7 @@ pub mod wiktionary_morphology {
                             person: None,
                             case: Some(case),
                             mood: None,
+                            aspect: None,
                         },
                     );
                 }
@@ -2738,6 +2861,7 @@ pub mod wiktionary_morphology {
                             person: None,
                             case: Some(case),
                             mood: None,
+                            aspect: None,
                         },
                     );
                 }
@@ -2779,6 +2903,7 @@ pub mod wiktionary_morphology {
                                 person: None,
                                 case: Some(case),
                                 mood: None,
+                                aspect: None,
                             },
                         );
                     }
@@ -2972,6 +3097,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -2986,6 +3112,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -3000,6 +3127,7 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
@@ -3014,11 +3142,531 @@ pub mod wiktionary_morphology {
                         person: None,
                         case: None,
                         mood: None,
+                        aspect: None,
                     },
                 );
             }
 
             morphology
+        }
+    }
+
+    pub mod hindi {
+        use super::*;
+        use crate::wiktionary_conjugations::hindi::{HindiInflection, fetch_hindi_inflections};
+        use language_utils::features::{Aspect, Case, Gender, Mood, Number, Person, Polite, Tense};
+        use std::collections::HashSet;
+        use std::path::Path;
+
+        pub async fn create_hindi_morphology(
+            gram_frequencies: &[GramFrequencyEntry<String>],
+        ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
+            // Step 1: Extract every Hindi lemma with an inflectable POS.
+            // For Hindi, verbs, nouns, and adjectives all share the same
+            // Wiktionary `form-of` markup, so we fetch them the same way.
+            let mut verb_lemmas: HashSet<String> = HashSet::new();
+            let mut noun_lemmas: HashSet<String> = HashSet::new();
+            let mut adj_lemmas: HashSet<String> = HashSet::new();
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        PartOfSpeech::Verb | PartOfSpeech::Aux => {
+                            verb_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Noun => {
+                            noun_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        PartOfSpeech::Adj => {
+                            adj_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
+                }
+            }
+
+            let cache_dir = Path::new(".cache/wiktionary/hindi");
+
+            // Step 2: Fetch each POS bucket separately so we can record the POS with each entry
+            let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+            let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
+            let adj_lemmas_vec: Vec<String> = adj_lemmas.into_iter().collect();
+
+            let verb_inflections = fetch_hindi_inflections(&verb_lemmas_vec, cache_dir).await?;
+            let noun_inflections = fetch_hindi_inflections(&noun_lemmas_vec, cache_dir).await?;
+            let adj_inflections = fetch_hindi_inflections(&adj_lemmas_vec, cache_dir).await?;
+
+            let mut morphology: BTreeMap<Heteronym<String>, Vec<Morphology>> = BTreeMap::new();
+
+            for (lemma, inflection) in &verb_inflections {
+                merge_in(
+                    &mut morphology,
+                    inflection_to_morphology(lemma, inflection, PartOfSpeech::Verb),
+                );
+                // Some Hindi verbs (होना above all) are also used as auxiliaries
+                merge_in(
+                    &mut morphology,
+                    inflection_to_morphology(lemma, inflection, PartOfSpeech::Aux),
+                );
+            }
+            for (lemma, inflection) in &noun_inflections {
+                merge_in(
+                    &mut morphology,
+                    inflection_to_morphology(lemma, inflection, PartOfSpeech::Noun),
+                );
+            }
+            for (lemma, inflection) in &adj_inflections {
+                merge_in(
+                    &mut morphology,
+                    inflection_to_morphology(lemma, inflection, PartOfSpeech::Adj),
+                );
+            }
+
+            Ok(morphology)
+        }
+
+        fn merge_in(
+            into: &mut BTreeMap<Heteronym<String>, Vec<Morphology>>,
+            from: BTreeMap<Heteronym<String>, Vec<Morphology>>,
+        ) {
+            for (k, v) in from {
+                let entry = into.entry(k).or_default();
+                for morph in v {
+                    if !entry.contains(&morph) {
+                        entry.push(morph);
+                    }
+                }
+            }
+        }
+
+        /// Interpret a single Wiktionary tag set into one or more [`Morphology`] entries.
+        ///
+        /// Returns multiple entries when a single tag set is morphologically ambiguous —
+        /// Hindi's future-tense paradigm has a famous "13" tag (both 1st-person-plural
+        /// AND 3rd-person-plural share the same form), and we want both interpretations
+        /// to be matchable downstream.
+        pub fn tag_set_to_morphologies(tags: &[String]) -> Vec<Morphology> {
+            let mut base = Morphology::default();
+            // Track ambiguous person separately so we can expand it at the end.
+            // `persons` is the set of person values this tag set can carry;
+            // a single-item vec means unambiguous (or unspecified).
+            let mut persons: Vec<Option<Person>> = vec![None];
+
+            for t in tags {
+                match t.as_str() {
+                    "1" => base.person = Some(Person::First),
+                    "2" => base.person = Some(Person::Second),
+                    "3" => base.person = Some(Person::Third),
+                    // "13" is Hindi Wiktionary's shorthand for "1st OR 3rd person plural":
+                    // in the future tense, हम (we) and वे (they) take the same verb form.
+                    "13" => persons = vec![Some(Person::First), Some(Person::Third)],
+                    "s" => base.number = Some(Number::Singular),
+                    "p" => base.number = Some(Number::Plural),
+                    "m" => base.gender = Some(Gender::Masculine),
+                    "f" => base.gender = Some(Gender::Feminine),
+                    // Hindi's direct/oblique distinction is the classic two-case system
+                    // that UD maps onto Nominative/Accusative.
+                    "dir" => base.case = Some(Case::Nominative),
+                    "obl" => base.case = Some(Case::Accusative),
+                    "voc" => base.case = Some(Case::Vocative),
+                    // तू (intimate), तुम (informal T-form), आप (formal V-form).
+                    // We reserve `Intimate` for तू to distinguish it from European
+                    // T-forms like French tu / German du, which map more naturally
+                    // onto तुम (our `Informal`).
+                    "intim" => base.politeness = Some(Polite::Intimate),
+                    "fam" => base.politeness = Some(Polite::Informal),
+                    "formal" => base.politeness = Some(Polite::Formal),
+                    "pres" => base.tense = Some(Tense::Present),
+                    "fut" => base.tense = Some(Tense::Future),
+                    "ind" => base.mood = Some(Mood::Indicative),
+                    "subj" => base.mood = Some(Mood::Subjunctive),
+                    "imp" => base.mood = Some(Mood::Imperative),
+                    // Counterfactual ("would have X'd") behaves as a subjunctive-like mood.
+                    "cfact" => base.mood = Some(Mood::Subjunctive),
+                    "hab" => base.aspect = Some(Aspect::Habitual),
+                    "pfv" => base.aspect = Some(Aspect::Perfect),
+                    "prospective" => base.aspect = Some(Aspect::Prospective),
+                    // `perf|ind` is the finite perfective past: हुआ "became", किया "did"
+                    "perf" => {
+                        base.tense = Some(Tense::Past);
+                        base.aspect = Some(Aspect::Perfect);
+                        base.mood = Some(Mood::Indicative);
+                    }
+                    // `impf|ind` (imperfect indicative) only really appears for होना:
+                    // था/थे/थी/थीं "was/were"
+                    "impf" => {
+                        base.tense = Some(Tense::Past);
+                        base.aspect = Some(Aspect::Imperfect);
+                        base.mood = Some(Mood::Indicative);
+                    }
+                    // Form-type markers with no morphological content of their own.
+                    "part" | "stem" | "inf" | "conj" | "form" => {}
+                    _ => {
+                        // Silently ignore unknown tags; Wiktionary occasionally introduces new ones.
+                    }
+                }
+            }
+
+            if persons.len() > 1 {
+                persons
+                    .into_iter()
+                    .map(|p| {
+                        let mut m = base.clone();
+                        m.person = p;
+                        m
+                    })
+                    .collect()
+            } else {
+                vec![base]
+            }
+        }
+
+        /// Convert a parsed [`HindiInflection`] into morphology entries for a given POS.
+        /// Deduplicates identical (word, morphology) pairs so that a form which appears
+        /// under multiple alternative tag sets does not get duplicated Morphology entries.
+        pub fn inflection_to_morphology(
+            lemma: &str,
+            inflection: &HindiInflection,
+            pos: PartOfSpeech,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut out: BTreeMap<Heteronym<String>, Vec<Morphology>> = BTreeMap::new();
+            for form in &inflection.forms {
+                let heteronym = Heteronym {
+                    word: form.word.clone(),
+                    lemma: lemma.to_string(),
+                    pos,
+                };
+                let entry = out.entry(heteronym).or_default();
+                for tag_set in &form.tag_sets {
+                    for morph in tag_set_to_morphologies(tag_set) {
+                        if !entry.contains(&morph) {
+                            entry.push(morph);
+                        }
+                    }
+                }
+            }
+            out
+        }
+
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+            use crate::wiktionary_conjugations::hindi::parse_hindi_inflection;
+
+            fn load(word: &str) -> String {
+                std::fs::read_to_string(format!("src/wiktionary-examples/hin/{word}.txt"))
+                    .unwrap_or_else(|_| panic!("missing test fixture for {word}"))
+            }
+
+            fn build(
+                word: &str,
+                pos: PartOfSpeech,
+            ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+                let html = load(word);
+                let inflection = parse_hindi_inflection(&html, word).unwrap();
+                inflection_to_morphology(word, &inflection, pos)
+            }
+
+            fn has_morph(
+                map: &BTreeMap<Heteronym<String>, Vec<Morphology>>,
+                word: &str,
+                lemma: &str,
+                pos: PartOfSpeech,
+                pred: impl Fn(&Morphology) -> bool,
+            ) -> bool {
+                let het = Heteronym {
+                    word: word.to_string(),
+                    lemma: lemma.to_string(),
+                    pos,
+                };
+                map.get(&het).map(|ms| ms.iter().any(pred)).unwrap_or(false)
+            }
+
+            #[test]
+            fn tag_13_expands_into_first_and_third_person() {
+                let tags = vec![
+                    "13".to_string(),
+                    "p".to_string(),
+                    "fut".to_string(),
+                    "subj".to_string(),
+                ];
+                let morphs = tag_set_to_morphologies(&tags);
+                assert_eq!(morphs.len(), 2);
+                assert!(morphs.iter().any(|m| m.person == Some(Person::First)));
+                assert!(morphs.iter().any(|m| m.person == Some(Person::Third)));
+                for m in &morphs {
+                    assert_eq!(m.number, Some(Number::Plural));
+                    assert_eq!(m.tense, Some(Tense::Future));
+                    assert_eq!(m.mood, Some(Mood::Subjunctive));
+                }
+            }
+
+            #[test]
+            fn perf_ind_maps_to_past_perfect_indicative() {
+                let tags = vec![
+                    "m".to_string(),
+                    "s".to_string(),
+                    "perf".to_string(),
+                    "ind".to_string(),
+                ];
+                let morphs = tag_set_to_morphologies(&tags);
+                assert_eq!(morphs.len(), 1);
+                let m = &morphs[0];
+                assert_eq!(m.tense, Some(Tense::Past));
+                assert_eq!(m.aspect, Some(Aspect::Perfect));
+                assert_eq!(m.mood, Some(Mood::Indicative));
+                assert_eq!(m.gender, Some(Gender::Masculine));
+                assert_eq!(m.number, Some(Number::Singular));
+            }
+
+            #[test]
+            fn impf_ind_is_past_imperfect_indicative() {
+                let tags = vec![
+                    "f".to_string(),
+                    "p".to_string(),
+                    "impf".to_string(),
+                    "ind".to_string(),
+                ];
+                let morphs = tag_set_to_morphologies(&tags);
+                assert_eq!(morphs.len(), 1);
+                let m = &morphs[0];
+                assert_eq!(m.tense, Some(Tense::Past));
+                assert_eq!(m.aspect, Some(Aspect::Imperfect));
+                assert_eq!(m.mood, Some(Mood::Indicative));
+                assert_eq!(m.gender, Some(Gender::Feminine));
+                assert_eq!(m.number, Some(Number::Plural));
+            }
+
+            #[test]
+            fn hona_yields_gendered_perfective_and_habitual() {
+                let m = build("होना", PartOfSpeech::Verb);
+
+                // Habitual masculine singular: होता
+                assert!(has_morph(
+                    &m,
+                    "होता",
+                    "होना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.aspect == Some(Aspect::Habitual)
+                            && morph.gender == Some(Gender::Masculine)
+                            && morph.number == Some(Number::Singular)
+                    }
+                ));
+
+                // Perfective feminine singular: हुई
+                assert!(has_morph(
+                    &m,
+                    "हुई",
+                    "होना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.aspect == Some(Aspect::Perfect)
+                            && morph.gender == Some(Gender::Feminine)
+                            && morph.number == Some(Number::Singular)
+                    }
+                ));
+
+                // Imperfect past copula feminine plural: थीं
+                assert!(has_morph(
+                    &m,
+                    "थीं",
+                    "होना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.aspect == Some(Aspect::Imperfect)
+                            && morph.tense == Some(Tense::Past)
+                            && morph.gender == Some(Gender::Feminine)
+                            && morph.number == Some(Number::Plural)
+                    }
+                ));
+            }
+
+            #[test]
+            fn hona_three_way_imperative_politeness() {
+                let m = build("होना", PartOfSpeech::Verb);
+
+                // तू (most intimate) → हो: maps to Polite::Intimate, not Informal,
+                // because Informal is reserved for the ordinary T-form (तुम).
+                assert!(has_morph(
+                    &m,
+                    "हो",
+                    "होना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.mood == Some(Mood::Imperative)
+                            && morph.politeness == Some(Polite::Intimate)
+                            && morph.person == Some(Person::Second)
+                    }
+                ));
+
+                // तुम (ordinary informal T-form) → होओ: maps to Polite::Informal.
+                // This is the register you'd use with friends and peers; it lines up
+                // with French tu / German du in everyday use.
+                assert!(has_morph(
+                    &m,
+                    "होओ",
+                    "होना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.mood == Some(Mood::Imperative)
+                            && morph.politeness == Some(Polite::Informal)
+                    }
+                ));
+
+                // Formal present imperative: होइये (आप form, homophonous with 3p.pres.imp)
+                assert!(has_morph(
+                    &m,
+                    "होइये",
+                    "होना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.mood == Some(Mood::Imperative)
+                            && morph.politeness == Some(Polite::Formal)
+                    }
+                ));
+            }
+
+            #[test]
+            fn future_13_form_carries_both_person_readings() {
+                // करना's 13.p.m.fut.ind form is करेंगे, which means both "we will do"
+                // (1p) and "they will do" (3p). Both morphologies must be attached.
+                let m = build("करना", PartOfSpeech::Verb);
+                let het = Heteronym {
+                    word: "करेंगे".to_string(),
+                    lemma: "करना".to_string(),
+                    pos: PartOfSpeech::Verb,
+                };
+                let morphs = m.get(&het).expect("missing करेंगे morphology");
+                assert!(
+                    morphs.iter().any(|mm| mm.person == Some(Person::First)
+                        && mm.number == Some(Number::Plural)
+                        && mm.tense == Some(Tense::Future)),
+                    "करेंगे should have a 1p.fut reading; got {morphs:?}"
+                );
+                assert!(
+                    morphs
+                        .iter()
+                        .any(|mm| mm.person == Some(Person::Third)
+                            && mm.number == Some(Number::Plural)),
+                    "करेंगे should have a 3p.fut reading; got {morphs:?}"
+                );
+            }
+
+            #[test]
+            fn noun_larka_oblique_plural_is_accusative() {
+                let m = build("लड़का", PartOfSpeech::Noun);
+                // लड़कों is obl.p → Accusative (Hindi-style two-case system)
+                assert!(has_morph(
+                    &m,
+                    "लड़कों",
+                    "लड़का",
+                    PartOfSpeech::Noun,
+                    |morph| {
+                        morph.case == Some(Case::Accusative) && morph.number == Some(Number::Plural)
+                    }
+                ));
+                // लड़के is BOTH dir.p (Nominative) AND obl.s (Accusative) — both
+                // tag sets should be kept on the same word.
+                let het = Heteronym {
+                    word: "लड़के".to_string(),
+                    lemma: "लड़का".to_string(),
+                    pos: PartOfSpeech::Noun,
+                };
+                let morphs = m.get(&het).expect("missing लड़के morphology");
+                assert!(
+                    morphs
+                        .iter()
+                        .any(|mm| mm.case == Some(Case::Nominative)
+                            && mm.number == Some(Number::Plural)),
+                    "लड़के should have dir.p reading"
+                );
+                assert!(
+                    morphs.iter().any(|mm| mm.case == Some(Case::Accusative)
+                        && mm.number == Some(Number::Singular)),
+                    "लड़के should have obl.s reading"
+                );
+            }
+
+            #[test]
+            fn noun_vocative_plural_of_larka() {
+                let m = build("लड़का", PartOfSpeech::Noun);
+                assert!(has_morph(
+                    &m,
+                    "लड़को",
+                    "लड़का",
+                    PartOfSpeech::Noun,
+                    |morph| {
+                        morph.case == Some(Case::Vocative) && morph.number == Some(Number::Plural)
+                    }
+                ));
+            }
+
+            #[test]
+            fn adjective_accha_12_cells_with_expected_distribution() {
+                let m = build("अच्छा", PartOfSpeech::Adj);
+                // All four masculine direct cases collapse into just two surface forms
+                // but each cell should still have its own morphology.
+                assert!(has_morph(
+                    &m,
+                    "अच्छा",
+                    "अच्छा",
+                    PartOfSpeech::Adj,
+                    |morph| {
+                        morph.gender == Some(Gender::Masculine)
+                            && morph.number == Some(Number::Singular)
+                            && morph.case == Some(Case::Nominative)
+                    }
+                ));
+                assert!(has_morph(
+                    &m,
+                    "अच्छे",
+                    "अच्छा",
+                    PartOfSpeech::Adj,
+                    |morph| {
+                        morph.gender == Some(Gender::Masculine)
+                            && morph.number == Some(Number::Plural)
+                            && morph.case == Some(Case::Nominative)
+                    }
+                ));
+                // Feminine forms: सारी अच्छी (same form in all cells but still mapped)
+                assert!(has_morph(
+                    &m,
+                    "अच्छी",
+                    "अच्छा",
+                    PartOfSpeech::Adj,
+                    |morph| {
+                        morph.gender == Some(Gender::Feminine) && morph.case == Some(Case::Vocative)
+                    }
+                ));
+            }
+
+            #[test]
+            fn jana_suppletive_perfective_is_tagged_correctly() {
+                let m = build("जाना", PartOfSpeech::Verb);
+                // गया (went — masc sg) must be tagged as perfective for जाना
+                assert!(has_morph(
+                    &m,
+                    "गया",
+                    "जाना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.aspect == Some(Aspect::Perfect)
+                            && morph.gender == Some(Gender::Masculine)
+                            && morph.number == Some(Number::Singular)
+                    }
+                ));
+                assert!(has_morph(
+                    &m,
+                    "गईं",
+                    "जाना",
+                    PartOfSpeech::Verb,
+                    |morph| {
+                        morph.aspect == Some(Aspect::Perfect)
+                            && morph.gender == Some(Gender::Feminine)
+                            && morph.number == Some(Number::Plural)
+                    }
+                ));
+            }
         }
     }
 }

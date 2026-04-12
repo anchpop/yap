@@ -16,3 +16,4 @@ tokio.workspace = true
 futures.workspace = true
 generate-data = { path = "../../generate-data" }
 indicatif.workspace = true
+unicode-general-category = "1.0"

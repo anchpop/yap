@@ -631,6 +631,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tysm",
+ "unicode-general-category",
 ]
 
 [[package]]
@@ -2374,7 +2375,7 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 [[package]]
 name = "lexide"
 version = "0.1.0"
-source = "git+https://github.com/anchpop/lexide.git?rev=c427e2b#c427e2bbcda4c6498bdb46e72121722301b403d5"
+source = "git+https://github.com/anchpop/lexide.git?rev=4871984482c320ef27462644759fde66aefd5a7f#4871984482c320ef27462644759fde66aefd5a7f"
 dependencies = [
  "anyhow",
  "futures",
@@ -4851,10 +4852,9 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 
 [[package]]
 name = "tysm"
-version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8ee8f1c25a66ca9a77ca60a03dabb97cbd81390e16bc6c8d43e4241c173c492"
+version = "0.17.1"
 dependencies = [
+ "base64 0.22.1",
  "dashmap",
  "dotenvy",
  "itertools 0.14.0",
@@ -4884,6 +4884,12 @@ name = "unicase"
 version = "2.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75b844d17643ee918803943289730bec8aac480150456169e647ed0b576ba539"
+
+[[package]]
+name = "unicode-general-category"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b993bddc193ae5bd0d623b49ec06ac3e9312875fdae725a975c51db1cc1677f"
 
 [[package]]
 name = "unicode-ident"

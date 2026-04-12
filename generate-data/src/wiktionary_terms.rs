@@ -36,6 +36,7 @@ pub async fn ensure_multiword_terms_file(
 
         Language::Chinese | Language::Japanese | Language::Russian | Language::Portuguese => vec![],
         Language::Italian => vec![],
+        Language::Hindi => vec![],
     };
     let banned_terms = banned_terms
         .into_iter()
@@ -122,11 +123,22 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
             return Ok(vec![]);
         }
         Language::Japanese => {
-            return Ok(vec![]);
+            // The Japanese_multiword_terms category only has subcategories, no direct entries.
+            // Fetch from the subcategories instead.
+            let mut terms = download_category("Japanese_idioms")
+                .await
+                .unwrap_or_default();
+            terms.extend(
+                download_category("Japanese_phrases")
+                    .await
+                    .unwrap_or_default(),
+            );
+            return Ok(terms);
         }
         Language::Russian => "Russian_multiword_terms",
         Language::Portuguese => "Portuguese_multiword_terms",
         Language::Italian => "Italian_multiword_terms",
+        Language::Hindi => "Hindi_multiword_terms",
     };
 
     let terms = download_category(category)

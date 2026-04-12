@@ -792,6 +792,19 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
                 return false;
             }
         }
+        Language::Hindi => {
+            // Devanagari script — reject sentences with Latin letters
+            if text
+                .chars()
+                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
+            {
+                return false;
+            }
+            // Must end with Devanagari danda, or Western punctuation
+            if last_char != '।' && last_char != '.' && last_char != '!' && last_char != '?' {
+                return false;
+            }
+        }
     }
 
     // Reject sentences with quotes (often dialogue or non-standard)

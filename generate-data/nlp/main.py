@@ -57,7 +57,7 @@ MODEL_MAPPING = {
     "rus": {
         "small": "ru_core_news_lg",
         "large": "ru_core_news_lg"
-    }
+    },
 }
 
 use_big_model = True
