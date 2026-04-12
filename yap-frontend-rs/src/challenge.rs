@@ -51,8 +51,6 @@ impl CardContext {
 impl ReviewInfo {
     pub fn listening_gram_flashcard(&self, deck: &Deck, gram: SpurGram) -> FlashCard {
         let language_pack: &Arc<LanguagePack> = &deck.context.language_pack;
-        let listening_prefix =
-            ReviewInfo::get_listening_prefix(deck.context.course.target_language).to_string();
 
         let gram_atoms = language_pack.gram_rodeo.resolve(&gram);
 
@@ -190,7 +188,7 @@ impl ReviewInfo {
         let audio_text = gram_resolved.to_display_string(deck.context.course.target_language);
         let audio = AudioRequest {
             request: TtsRequest {
-                text: format!("{listening_prefix}... \"{audio_text}\"."),
+                text: audio_text,
                 language: deck.context.course.target_language,
                 is_ssml: false,
                 instructions: None,
@@ -202,7 +200,6 @@ impl ReviewInfo {
         FlashCard {
             content,
             audio: Some(audio),
-            listening_prefix: Some(listening_prefix),
         }
     }
 
@@ -412,7 +409,6 @@ impl ReviewInfo {
         FlashCard {
             content,
             audio: Some(audio),
-            listening_prefix: None,
         }
     }
 

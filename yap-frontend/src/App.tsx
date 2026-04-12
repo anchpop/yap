@@ -1192,7 +1192,6 @@ function Review({
               onCantListen={handleCantListen}
               targetLanguage={targetLanguage}
               nativeLanguage={nativeLanguage}
-              listeningPrefix={currentChallenge.flashcard.listening_prefix}
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
               timesTypeSeen={currentChallenge.times_type_seen}

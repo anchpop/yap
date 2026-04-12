@@ -3889,7 +3889,6 @@ pub struct ReviewInfo {
 pub struct FlashCard {
     pub content: CardContent,
     pub audio: Option<AudioRequest>,
-    pub listening_prefix: Option<String>,
 }
 
 #[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
@@ -3976,21 +3975,6 @@ impl ReviewInfo {
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl ReviewInfo {
-    fn get_listening_prefix(language: Language) -> &'static str {
-        match language {
-            Language::French => "Le mot est",
-            Language::Spanish => "La palabra es",
-            Language::English => "The word is",
-            Language::Korean => "단어는",
-            Language::German => "Das Wort ist",
-            Language::Chinese => "单词是",
-            Language::Japanese => "単語は",
-            Language::Russian => "слово",
-            Language::Portuguese => "A palavra é",
-            Language::Italian => "La parola è",
-        }
-    }
-
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_next_challenge(&self, deck: &Deck) -> Option<Challenge<Gram<String>>> {
         if let Some(due_card) = self.due_cards.first() {

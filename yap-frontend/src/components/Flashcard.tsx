@@ -61,7 +61,6 @@ interface FlashcardProps {
   isNew: boolean;
   targetLanguage: Language;
   nativeLanguage: Language;
-  listeningPrefix?: string;
   autoplayed: boolean;
   setAutoplayed: () => void;
   timesTypeSeen: number;
@@ -69,26 +68,14 @@ interface FlashcardProps {
 
 const CardFront = ({
   content,
-  listeningPrefix,
   targetLanguage,
 }: {
   content: CardContent;
-  listeningPrefix?: string;
   targetLanguage: Language;
 }) => {
   return match(content)
     .with({ type: "Listening" }, () => {
-      const prefix = listeningPrefix || "Le mot est";
-      return (
-        <h2 className="text-3xl font-semibold flex items-center gap-3 flex-wrap justify-center text-center">
-          <span>
-            <TargetLanguageText language={targetLanguage}>
-              {prefix}
-            </TargetLanguageText>{" "}
-            _____.{" "}
-          </span>
-        </h2>
-      );
+      return null;
     })
     .with({ type: "Gram" }, (content) => {
       const definition = content.definition as GramDefinition;
@@ -379,7 +366,6 @@ export const Flashcard = function Flashcard({
   isNew,
   targetLanguage,
   nativeLanguage,
-  listeningPrefix,
   autoplayed,
   setAutoplayed,
   timesTypeSeen,
@@ -656,16 +642,17 @@ export const Flashcard = function Flashcard({
                   className="flex items-center justify-between w-full"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {audioRequest ? (
+                  {content.type === "Listening" ? (
+                    <div className="w-10" />
+                  ) : audioRequest ? (
                     <AudioButton
                       audioRequest={audioRequest}
                       accessToken={accessToken}
-                      autoPlay={content.type === "Listening" || showAnswer}
+                      autoPlay={showAnswer}
                       autoplayed={autoplayed}
                       setAutoplayed={setAutoplayed}
                       onError={() => setAudioError(true)}
                       onSuccess={() => setAudioError(false)}
-                      visualizer={content.type === "Listening" ? "radial" : false}
                     />
                   ) : (
                     <div className="w-10" /> /* Spacer to keep content centered */
@@ -673,60 +660,76 @@ export const Flashcard = function Flashcard({
 
                   <CardFront
                     content={content}
-                    listeningPrefix={listeningPrefix}
                     targetLanguage={targetLanguage}
                   />
 
-                  {onRating ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10"
-                        >
-                          <MoreVertical className="h-6 w-6 size--xl" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            bumpBackground(30.0);
-                            onRating("easy");
-                          }}
-                        >
-                          Easy
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            bumpBackground(30.0);
-                            onRating("good");
-                          }}
-                        >
-                          Good
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            bumpBackground(30.0);
-                            onRating("hard");
-                          }}
-                        >
-                          Hard
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={copyWord}>
-                          Copy word
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setShowReportModal(true)}
-                        >
-                          Report an Issue
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <div className="w-8" /> /* Spacer to keep word centered */
+                    {onRating ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-10 w-10"
+                          >
+                            <MoreVertical className="h-6 w-6 size--xl" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              bumpBackground(30.0);
+                              onRating("easy");
+                            }}
+                          >
+                            Easy
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              bumpBackground(30.0);
+                              onRating("good");
+                            }}
+                          >
+                            Good
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              bumpBackground(30.0);
+                              onRating("hard");
+                            }}
+                          >
+                            Hard
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={copyWord}>
+                            Copy word
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setShowReportModal(true)}
+                          >
+                            Report an Issue
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <div className="w-8" /> /* Spacer to keep word centered */
+                    )}
+                  </div>
+                  {content.type === "Listening" && audioRequest && (
+                    <div
+                      className="flex items-center justify-center w-full"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <AudioButton
+                        audioRequest={audioRequest}
+                        accessToken={accessToken}
+                        autoPlay
+                        autoplayed={autoplayed}
+                        setAutoplayed={setAutoplayed}
+                        onError={() => setAudioError(true)}
+                        onSuccess={() => setAudioError(false)}
+                        visualizer
+                      />
+                    </div>
                   )}
-                </div>
                 <CardFrontSubtitle content={content} />
               </div>
 
