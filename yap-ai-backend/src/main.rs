@@ -451,6 +451,7 @@ async fn gemini_text_to_speech(
         Language::Russian => "Russian",
         Language::Chinese => "Chinese",
         Language::Japanese => "Japanese",
+        Language::Hindi => "Hindi",
     };
 
     let default_instructions = format!(

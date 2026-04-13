@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2591146
-Total errors: 864
+Total predictions: 2684438
+Total errors: 895
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "ver" + "te" (165 occurrences)
+### "ver" + "te" (166 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -30,7 +30,7 @@ Accuracy: 99.97%
   - Bromeas, ¿ verdad, papá?
   - Claro que sí, ¿ verdad?
 
-### "-" + "¡" (13 occurrences)
+### "-" + "¡" (14 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -46,6 +46,14 @@ Accuracy: 99.97%
   - Bueno… -Sí.
   - Deja tu mensaje… -Directo al buzón.
 
+### "-" + "¿" (11 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ARCHIVOS TYRELL - ¿Es artificial?
+  - Algo a lo que usted llama daño deliberado a la propiedad - ¿y qué?
+  - Dice - ¿Quién se cree que es ese Rubliov?
+
 ### "hacer" + "te" (11 occurrences)
 - Predicted: Space
 - Actual: None
@@ -53,14 +61,6 @@ Accuracy: 99.97%
   - Así que voy a hacerte una oferta.
   - Estaba a punto de hacerte la misma pregunta.
   - Mira, tengo que hacerte una pregunta.
-
-### "-" + "¿" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ARCHIVOS TYRELL - ¿Es artificial?
-  - Algo a lo que usted llama daño deliberado a la propiedad - ¿y qué?
-  - Dice - ¿Quién se cree que es ese Rubliov?
 
 ### "," + "'" (8 occurrences)
 - Predicted: None
@@ -238,6 +238,14 @@ Accuracy: 99.97%
   - Eh,sí.
   - Oh,sí.
 
+### "-" + "No" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - He venido a recoger mi diario - No mires, aun llevo la toalla.
+  - No-- No tienes que ayudarme.
+  - Oye, es bueno verte-- No, estaba mirando una película fantástica en la TV.
+
 ### "Babino" + "t" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -334,12 +342,12 @@ Accuracy: 99.97%
   - Pero mi señor,¡Ese no es un oso!
   - Rach,¡tengo tu teléfono!
 
-### "-" + "No" (2 occurrences)
+### "-" + "Hola" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - No-- No tienes que ayudarme.
-  - Oye, es bueno verte-- No, estaba mirando una película fantástica en la TV.
+  - Asi se hace - Hola.
+  - Hola Señora - Hola.
 
 ### "-" + "Yo" (2 occurrences)
 - Predicted: None
@@ -362,20 +370,6 @@ Accuracy: 99.97%
   - Es sólo una muestra de agradecimiento-- por todo.
   - News Today-- por una suma que no se reveló.
 
-### "/" + "TH" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Lo lamento, MU/TH/UR, el Yautja ha muerto.
-  - Tessa, mensaje entrante de MU/TH/UR.
-
-### "/" + "UR" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Lo lamento, MU/TH/UR, el Yautja ha muerto.
-  - Tessa, mensaje entrante de MU/TH/UR.
-
 ### "Cinco Familias" + "'" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -397,26 +391,12 @@ Accuracy: 99.97%
   - Ah, «Family Feud».
   - Estoy viendo «Family Feud».
 
-### "MU" + "/" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Lo lamento, MU/TH/UR, el Yautja ha muerto.
-  - Tessa, mensaje entrante de MU/TH/UR.
-
 ### "Sírve" + "te" (2 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Sírvete un trozo de pastel.
   - Sírvete, no sé si te gustará.
-
-### "TH" + "/" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Lo lamento, MU/TH/UR, el Yautja ha muerto.
-  - Tessa, mensaje entrante de MU/TH/UR.
 
 ### "adiós" + "'" (2 occurrences)
 - Predicted: Space
@@ -431,6 +411,20 @@ Accuracy: 99.97%
 - Examples:
   - Al fin llegó al 'hasta aquí'.
   - Él dice 'la encontré' y luego repite 'está aquí'.
+
+### "conocer" + "te" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Encantado de conocerte a ti también.
+  - La madre del ruso quiere conocerte.
+
+### "de" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La extracción del código puede resultar en de -resolución del transportista.
+  - La madre de -donde?
 
 ### "del" + "Titanic" (2 occurrences)
 - Predicted: Space
@@ -501,6 +495,13 @@ Accuracy: 99.97%
 - Examples:
   - Ese es un gran 'si'.
   - Yo no necesito oír ningún 'si'.
+
+### "vez" + "." (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - El muchacho montó un caballo por primera vez .
+  - Pero voy a orar a Dios Si él viene otra vez .
 
 ### "¿" + "eh" (2 occurrences)
 - Predicted: None
@@ -909,6 +910,12 @@ Accuracy: 99.97%
 - Examples:
   - Y Jakob,sé que las cosas son difíciles en el frente doméstico.
 
+### "," + "también" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Él sentía, en realidad estaba seguro, que Syed,también tiene estreñimiento.
+
 ### "," + "te" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -999,6 +1006,12 @@ Accuracy: 99.97%
 - Examples:
   - En el certificado de nacimiento - Abdias.
 
+### "-" + "Adiós" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Adiós, cuidate - Adiós, adiós.
+
 ### "-" + "Apagado" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1016,6 +1029,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - JUEGO UNO - Buena suerte, caballeros.
+
+### "-" + "Cuidado" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No empuje, estoy tratando de equilibrarme - Cuidado.
 
 ### "-" + "Dijo" (1 occurrences)
 - Predicted: None
@@ -1094,6 +1113,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Sólo-- Oye, ve más despacio.
+
+### "-" + "Papá" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No no yo conozco a esta señora - Papá cállate.
 
 ### "-" + "Quién" (1 occurrences)
 - Predicted: None
@@ -1178,12 +1203,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Yo abrí la caja - estaba vacía.
-
-### "-" + "gallinas" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ordeñadores de chivas, tienta - gallinas, cazadores de pulgas!
 
 ### "-" + "gente" (1 occurrences)
 - Predicted: None
@@ -1413,18 +1432,6 @@ Accuracy: 99.97%
 - Examples:
   - Sí..ver que pasara con el cargo de locutor.
 
-### "/" + "cocinada" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La carne no está lo bastante hecha/cocinada/pasada.
-
-### "/" + "pasada" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La carne no está lo bastante hecha/cocinada/pasada.
-
 ### "/" + "pelo" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1442,6 +1449,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - PRIMER AMOR - ¿No ves lo maravilloso que será?
+
+### "Aal izz Well" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Aal izz Well .
 
 ### "Ah" + "'" (1 occurrences)
 - Predicted: Space
@@ -1473,11 +1486,23 @@ Accuracy: 99.97%
 - Examples:
   - Uno decía 'Vestuario' y el otro 'Artículos Valiosos'.
 
+### "Bhagwan" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bhagwan .
+
 ### "Blanco" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Basta de esta mierda de 'Sr. Blanco'.
+
+### "Bosom" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bosom .
 
 ### "Boston" + "." (1 occurrences)
 - Predicted: None
@@ -1509,6 +1534,12 @@ Accuracy: 99.97%
 - Examples:
   - Decía - ¡Basta ya!
 
+### "Detengase" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Detengase .
+
 ### "Di" + ":" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1527,6 +1558,12 @@ Accuracy: 99.97%
 - Examples:
   - Dicen: 'No tienes que hacer esto'.
 
+### "Didi" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Didi , ¿has visto mis muñecas nuevas?
+
 ### "Dije" + ":" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1544,6 +1581,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Solo hace referencia a 'la mano izquierda de Dios'.
+
+### "Diwali" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Feliz Diwali - ¡Oh!
 
 ### "EVP" + "-" (1 occurrences)
 - Predicted: None
@@ -1587,6 +1630,12 @@ Accuracy: 99.97%
 - Examples:
   - GASOLINERA - Vayamos al siguiente pueblo.
 
+### "Hing" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hing .
+
 ### "Hércules" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1598,6 +1647,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - EDIFICIO DEL SERVICIO DE IMPUESTOS INTERNOS - ¡Rápido, rápido!
+
+### "India" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es Milkha Singh de la India .
 
 ### "Iniciativa" + "'" (1 occurrences)
 - Predicted: Space
@@ -1623,6 +1678,12 @@ Accuracy: 99.97%
 - Examples:
   - Itabaiana -hasta aquí a pié por la ruta.
 
+### "Javed" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Señor Javed .
+
 ### "Kitchen" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1634,6 +1695,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Descuídate, Kozlodóyev .
+
+### "Lavar" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lavar !
 
 ### "Maddalena" + "-" (1 occurrences)
 - Predicted: None
@@ -1689,11 +1756,35 @@ Accuracy: 99.97%
 - Examples:
   - No -¿Quieres algo especial?
 
+### "PK" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Se llama PK .
+
+### "Pakistán" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Multan es ahora de Pakistán .
+
+### "Para" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Para !
+
 ### "Pequeño Chino" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Un tipo al que llaman 'Pequeño Chino'.
+
+### "Perizad" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - NO conoces a Perizad ?
 
 ### "Pero" + "¿" (1 occurrences)
 - Predicted: Space
@@ -1730,6 +1821,18 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Rick Dalton - Whoo!
+
+### "Salud" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Salud !
+
+### "Señora" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hola Señora - Hola.
 
 ### "Shinachiku" + "." (1 occurrences)
 - Predicted: None
@@ -1796,6 +1899,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Los de 'Tráfico' los llaman 'Casa de Huéspedes'.
+
+### "Tómala" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tómala !
 
 ### "UNO" + "-" (1 occurrences)
 - Predicted: None
@@ -1989,6 +2098,12 @@ Accuracy: 99.97%
 - Examples:
   - Un 'bien' más y no le voy a creer.
 
+### "bien" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Creo que estaria bien -¿Eso crees?
+
 ### "bien" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2006,6 +2121,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Necesito una 'buena bola' en diez o quince minutos.
+
+### "buenas" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - A las afueras de la universidad, dan unas Samosas muy buenas .
 
 ### "busca" + "'" (1 occurrences)
 - Predicted: Space
@@ -2073,12 +2194,6 @@ Accuracy: 99.97%
 - Examples:
   - We get inside, turn on that switch, light the clock tower - we find her house.
 
-### "cocinada" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La carne no está lo bastante hecha/cocinada/pasada.
-
 ### "cohete" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2091,17 +2206,17 @@ Accuracy: 99.97%
 - Examples:
   - Por si 'mirar' se vuelve 'comprar'.
 
-### "conocer" + "te" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La madre del ruso quiere conocerte.
-
 ### "consumiste" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Cuantas tazas de café consumiste ?
+
+### "contenido" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - No lo llames «contenido».
 
 ### "contento" + "'" (1 occurrences)
 - Predicted: Space
@@ -2133,6 +2248,12 @@ Accuracy: 99.97%
 - Examples:
   - Creí haber oído 'los cuatro'.
 
+### "cuidate" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Adiós, cuidate - Adiós, adiós.
+
 ### "cuándo" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2144,12 +2265,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Pero sólo le llamaba su 'dama' a una.
-
-### "de" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - La extracción del código puede resultar en de -resolución del transportista.
 
 ### "de" + "The" (1 occurrences)
 - Predicted: Space
@@ -2186,6 +2301,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Si sabes la respuesta, levanta la mano y dila en voz alta.
+
+### "diario" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - He venido a recoger mi diario - No mires, aun llevo la toalla.
 
 ### "diciendo" + "," (1 occurrences)
 - Predicted: None
@@ -2252,6 +2373,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Él dice 'la encontré' y luego repite 'está aquí'.
+
+### "equilibrarme" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No empuje, estoy tratando de equilibrarme - Cuidado.
 
 ### "es" + "-" (1 occurrences)
 - Predicted: None
@@ -2337,17 +2464,17 @@ Accuracy: 99.97%
 - Examples:
   - El cielo está sombrío y gris - un cielo típico de la estación de lluvias.
 
+### "hace" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Asi se hace - Hola.
+
 ### "hacer" + ":" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Una sola persona decide qué voy a hacer: yo.
-
-### "hecha" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La carne no está lo bastante hecha/cocinada/pasada.
 
 ### "hielo" + "'" (1 occurrences)
 - Predicted: Space
@@ -2415,6 +2542,12 @@ Accuracy: 99.97%
 - Examples:
   - Tu dijiste 'El día del juicio'.
 
+### "laddoo" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Coman ese gran laddoo , por favor.
+
 ### "lado" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2426,6 +2559,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Puedo 'lamer' mis propias bolas, muchas gracias.
+
+### "largo" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es de la misma forma en que tu aceleras ante un salto largo .
 
 ### "las" + "joyas" (1 occurrences)
 - Predicted: Space
@@ -2631,6 +2770,12 @@ Accuracy: 99.97%
 - Examples:
   - O, si prefieres, puedes decir 'nuestra'.
 
+### "oficio" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - No lo llames «oficio».
+
 ### "oídos" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2691,6 +2836,12 @@ Accuracy: 99.97%
 - Examples:
   - Esto sólo lo usan los principiantes'.
 
+### "prisa" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vamos, date prisa - ¿Qué es todo esto?
+
 ### "problema" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2750,6 +2901,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Como podrán haber notado, todas contienen 'recuerdos'.
+
+### "rojo" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tu culo también se vuelve rojo , si te pegan varios bastonazos.
 
 ### "rollo" + "'" (1 occurrences)
 - Predicted: Space
@@ -2817,6 +2974,12 @@ Accuracy: 99.97%
 - Examples:
   - La relación señal -ruido es insoportable.
 
+### "señora" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No no yo conozco a esta señora - Papá cállate.
+
 ### "siempre" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2871,17 +3034,17 @@ Accuracy: 99.97%
 - Examples:
   - Sólo hay un derecho para ti - ¡la muerte!
 
+### "ti" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hasta ahora todo lo que hice, lo hice por ti .
+
 ### "tiempo" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Pero ha dicho 'Casi todo el tiempo'.
-
-### "tienta" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ordeñadores de chivas, tienta - gallinas, cazadores de pulgas!
 
 ### "todo" + "-" (1 occurrences)
 - Predicted: None
@@ -2895,11 +3058,23 @@ Accuracy: 99.97%
 - Examples:
   - Que Dios os bendiga a todos'.
 
+### "trabajo" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Entonces hagamos un último trabajo .
+
 ### "tres" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Tengo tres -Bueno.
+
+### "tu" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Milkha ¿Eres tu ?
 
 ### "turista" + "'" (1 occurrences)
 - Predicted: Space
@@ -2948,12 +3123,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Dije: 'Un día seré un policía del espacio verde'.
-
-### "vez" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - El muchacho montó un caballo por primera vez .
 
 ### "vida" + "'" (1 occurrences)
 - Predicted: Space
@@ -3008,12 +3177,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Bueno, ¿ Partimos, sí?
-
-### "¿" + "Y" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Bueno ¿ Y el fusil?
 
 ### "¿" + "adónde" (1 occurrences)
 - Predicted: None

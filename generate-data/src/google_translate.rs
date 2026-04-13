@@ -6,6 +6,7 @@ use language_utils::Language;
 use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
 use xxhash_rust::xxh3::xxh3_64;
@@ -61,6 +62,7 @@ pub struct GoogleTranslator {
     cache_dir: PathBuf,
     master_cache_file: PathBuf,
     rate_limiter: RateLimiter,
+    api_calls: AtomicU64,
 }
 
 impl GoogleTranslator {
@@ -107,9 +109,14 @@ impl GoogleTranslator {
             cache_dir,
             master_cache_file,
             rate_limiter: RateLimiter::new(rpm, Duration::from_secs(60)),
+            api_calls: AtomicU64::new(0),
         };
         res.consolidate_cache();
         Ok(res)
+    }
+
+    pub fn api_calls(&self) -> u64 {
+        self.api_calls.load(Ordering::Relaxed)
     }
 
     async fn get_token(&self) -> anyhow::Result<String> {
@@ -135,6 +142,7 @@ impl GoogleTranslator {
         let cache_file = self.cache_dir.join(format!("{hash}.json"));
 
         self.rate_limiter.acquire().await;
+        self.api_calls.fetch_add(1, Ordering::Relaxed);
 
         let token = self.get_token().await?;
         let url = format!(

@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2793339
-Total errors: 696
-Accuracy: 99.98%
+Total predictions: 2858305
+Total errors: 728
+Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
@@ -77,6 +77,14 @@ Accuracy: 99.98%
   - Mener la mission, c’est notre devoir.
   - Tanjiro, si tu peux encore bouger, c’est le moment !
   - Tous pour un, un pour tous, c’est notre devise.
+
+### "-" + "Salut" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Avec de tels pouvoirs, ça ne rigole pas - Salut, Klaus.
+  - De toute façon, merci, au revoir, - Salut Aman.
+  - Salut - Salut.
 
 ### "-" + "le" (4 occurrences)
 - Predicted: None
@@ -182,6 +190,14 @@ Accuracy: 99.98%
   - Qu‘est—ce tu fais avec ton grenaille ?
   - Qu‘est—ce tu peux faire de mieux ?
 
+### "Rire" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Rire - Oui, ma copine.
+  - Rire -Gros dossier.
+  - Rire -Oui.
+
 ### "est" + "—" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -236,6 +252,13 @@ Accuracy: 99.98%
   - J'ai fait 'rappel' et c'était toi.
   - Je passe après 'tasse', 'piscine' et 'girafe'.
 
+### "," + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - De toute façon, merci, au revoir, - Salut Aman.
+  - Ouais, - merci monsieur.
+
 ### "," + "en" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -278,12 +301,26 @@ Accuracy: 99.98%
   - Comment va-t- elle ?
   - On lui a raconté des choses, elle a fait des rêves - elle a peur.
 
+### "-" + "moi" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Excusez- moi.
+  - Mets- moi du parfum.
+
 ### "-" + "t" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Comment mon garçon a- t-il mérité cela ?
   - Vieil homme, où le Christ a- t-il été crucifié ?
+
+### "-" + "toi" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mets- toi à la page, Photocopie.
+  - Suicide- toi, suicide-toi, suicide-toi.
 
 ### "-" + "tous" (2 occurrences)
 - Predicted: None
@@ -327,12 +364,12 @@ Accuracy: 99.98%
   - Non , non , non !
   - Non , non !
 
-### "Rire" + "-" (2 occurrences)
+### "Salut" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Rire -Gros dossier.
-  - Rire -Oui.
+  - Salut - Salut.
+  - Salut - Salut !
 
 ### "bien" + "," (2 occurrences)
 - Predicted: None
@@ -473,6 +510,13 @@ Accuracy: 99.98%
 - Examples:
   - Avez-vous dit « bonjour » ?
   - Tu as dit « bonjour » ?
+
+### "«" + "soit" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Je dis « soit », tu dis.
+  - Tu dis « soit ».
 
 ### "«" + "vieille" (2 occurrences)
 - Predicted: None
@@ -855,6 +899,30 @@ Accuracy: 99.98%
 - Examples:
   - Ces cartes-- Ces cartes sont pourries.
 
+### "-" + "Chien" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Je faisais partie de la conspiration - Chien !
+
+### "-" + "Des" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ne manque pas mon jeu, mon chéri - Des rubis ?
+
+### "-" + "Dieu" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Oh - Mon - Dieu !
+
+### "-" + "Dis" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Il faut neuf ingrédients - Dis nous !
+
 ### "-" + "Dénissov" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -867,17 +935,41 @@ Accuracy: 99.98%
 - Examples:
   - Quoi-- Es-tu fâchée ?
 
+### "-" + "Mais" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Désolé, je suis en retard - Mais marche alors.
+
 ### "-" + "Merci" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Rires - Merci, Éli.
 
+### "-" + "Mon" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Oh - Mon - Dieu !
+
+### "-" + "Ne" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Elle a toujours été comme ça - Ne dis pas des choses pareilles.
+
 ### "-" + "On" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Touristo russo - On est la morale infuse !
+
+### "-" + "Oui" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Rire - Oui, ma copine.
 
 ### "-" + "Pardon" (1 occurrences)
 - Predicted: None
@@ -896,12 +988,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Soupir - Quelle heure est-il ?
-
-### "-" + "Salut" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Avec de tels pouvoirs, ça ne rigole pas - Salut, Klaus.
 
 ### "-" + "alors" (1 occurrences)
 - Predicted: None
@@ -969,11 +1055,11 @@ Accuracy: 99.98%
 - Examples:
   - Votre équipe - là-bas, derrière la tombe.
 
-### "-" + "moi" (1 occurrences)
+### "-" + "merci" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Excusez- moi.
+  - Ouais, - merci monsieur.
 
 ### "-" + "mon" (1 occurrences)
 - Predicted: None
@@ -1047,12 +1133,6 @@ Accuracy: 99.98%
 - Examples:
   - Vous creusez là - tiens donc, le noyau atomique est constitué de protons.
 
-### "-" + "toi" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Suicide- toi, suicide-toi, suicide-toi.
-
 ### "-" + "trouver" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1113,23 +1193,11 @@ Accuracy: 99.98%
 - Examples:
   - Leur pouvoir vient de leur leader-- qui est en quelque sorte leur cerveau.
 
-### "/" + "Allemandes" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "--" + "un" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Friction dans les relations Allemandes/Allemandes.
-
-### "/" + "nous" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Vos publicités/nous rappellent que les diamants sont éternels.
-
-### "/" + "ou" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Et/ou appréciez-vous la compagnie des femmes ?
+  - Regardez, Monsieur -- un droïde.
 
 ### "<" + "courriel" (1 occurrences)
 - Predicted: Space
@@ -1142,12 +1210,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Agitation -Du calme !
-
-### "Allemandes" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Friction dans les relations Allemandes/Allemandes.
 
 ### "Allez" + "," (1 occurrences)
 - Predicted: None
@@ -1179,6 +1241,12 @@ Accuracy: 99.98%
 - Examples:
   - Angela -Bonjour.
 
+### "Bon" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bon , ça y est, le Rouge ?
+
 ### "Bonjour" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1208,12 +1276,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Courir , rester , alors quoi ?
-
-### "Et" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Et/ou appréciez-vous la compagnie des femmes ?
 
 ### "Excusez" + "—" (1 occurrences)
 - Predicted: Space
@@ -1329,6 +1391,18 @@ Accuracy: 99.98%
 - Examples:
   - Un Millions -Dollars ?
 
+### "Mon" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Oh - Mon - Dieu !
+
+### "Monsieur" + "--" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Regardez, Monsieur -- un droïde.
+
 ### "Mort" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1364,6 +1438,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Précédemment dans The O.C.
+
+### "Oh" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Oh - Mon - Dieu !
 
 ### "Omaticaya" + "." (1 occurrences)
 - Predicted: None
@@ -1617,6 +1697,12 @@ Accuracy: 99.98%
 - Examples:
   - Merci - avoir - gardé collation - pour - mon - officier !
 
+### "babu" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hé Piku, ton Paanchu babu .
+
 ### "baronne" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1652,6 +1738,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Non, je blague; appelez moi Papi.
+
+### "blesser" + ";" (1 occurrences)
+- Predicted: NarrowNbsp
+- Actual: None
+- Examples:
+  - Oui, ça va la blesser; mais il faut voir sur le long terme.
 
 ### "bleu" + "'" (1 occurrences)
 - Predicted: Space
@@ -1755,6 +1847,12 @@ Accuracy: 99.98%
 - Examples:
   - Interrogez-vous sur chaque chose: quelle est son essence ?
 
+### "chéri" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ne manque pas mon jeu, mon chéri - Des rubis ?
+
 ### "cinglé" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1814,6 +1912,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Ce qui est considérable , je présume.
+
+### "conspiration" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Je faisais partie de la conspiration - Chien !
 
 ### "contrat" + "." (1 occurrences)
 - Predicted: None
@@ -1904,6 +2008,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Moi et le mot 'devoir' dans la même phrase.
+
+### "dignité" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Le turban est ta dignité , préserve-la.
 
 ### "ding" + "eringeding" (1 occurrences)
 - Predicted: Space
@@ -2000,6 +2110,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - On l'appelle le 'jeune homme comme il faut'.
+
+### "feu" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dès que prêts, feu .
 
 ### "fille" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
@@ -2114,6 +2230,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Qui 'ils' ?
+
+### "ingrédients" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Il faut neuf ingrédients - Dis nous !
 
 ### "inspecteur" + "'" (1 occurrences)
 - Predicted: Space
@@ -2276,6 +2398,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Matthew va bientôt se marier ; il fera un très beau marié.
+
+### "mascarade" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Je préfère un bon combat à toute cette mascarade .
 
 ### "maxi" + "." (1 occurrences)
 - Predicted: None
@@ -2601,12 +2729,6 @@ Accuracy: 99.98%
 - Examples:
   - Je lui revaudrai ça l'an prochain, promis .
 
-### "publicités" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Vos publicités/nous rappellent que les diamants sont éternels.
-
 ### "puis" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2666,6 +2788,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Courir , rester , alors quoi ?
+
+### "retard" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Désolé, je suis en retard - Mais marche alors.
 
 ### "rien" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
@@ -2967,6 +3095,12 @@ Accuracy: 99.98%
 - Examples:
   - Vous m'avez dit 'un accident de voiture'.
 
+### "voler" + ";" (1 occurrences)
+- Predicted: NarrowNbsp
+- Actual: None
+- Examples:
+  - Vivre signifie séduire et voler; tourbilloner et rayonner.
+
 ### "votre" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3050,6 +3184,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - L’« Opération dîner pour l’agent Wong » ?
+
+### "«" + "Pourquoi" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Isha demandait « Pourquoi Papa a saccagé le bureau ?
 
 ### "«" + "Poètes" (1 occurrences)
 - Predicted: None
@@ -3266,6 +3406,12 @@ Accuracy: 99.98%
 - Actual: None
 - Examples:
   - Et tout sera sec en un clin dâ€™œil.
+
+### "ça" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Elle a toujours été comme ça - Ne dis pas des choses pareilles.
 
 ### "équipe" + "-" (1 occurrences)
 - Predicted: None

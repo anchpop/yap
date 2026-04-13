@@ -632,7 +632,7 @@ function DayCell({ day, index }: { day: { seconds: number; target_seconds: numbe
     ? 0
     : Math.min(100, (day.seconds / day.target_seconds) * 100);
 
-  const borderL = index > 0 && !day.is_today ? "border-l border-border" : "";
+  const borderL = "";
   const rounded =
     index === 0
       ? "rounded-l-lg"
@@ -658,7 +658,7 @@ function DayCell({ day, index }: { day: { seconds: number; target_seconds: numbe
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={`flex-1 relative overflow-hidden ${borderL} ${rounded} ${todayClasses} ${day.is_future ? "bg-muted/30" : "backdrop-brightness-105 backdrop-saturate-120 dark:backdrop-brightness-100 backdrop-blur-sm"}`}
+          className={`flex-1 relative overflow-hidden ${borderL} ${rounded} ${todayClasses} ${day.is_future ? "bg-muted/30" : `backdrop-brightness-105 backdrop-saturate-120 dark:backdrop-brightness-100 backdrop-blur-sm ${day.seconds > 0 ? "bg-foreground/10" : ""}`}`}
         >
           {/* Green fill bar */}
           {!day.is_future && fillPercent > 0 && (

@@ -229,6 +229,22 @@ async fn main() -> anyhow::Result<()> {
             .await
             .context("Failed to create Google Translator")?;
 
+            let total = sentences_with_translations_and_sources.len() as u64;
+            let translate_label = format!(
+                "translations {} → {}",
+                course.target_language.iso_639_1(),
+                course.native_language.iso_639_1(),
+            );
+            let pb = indicatif::ProgressBar::new(total);
+            pb.set_style(
+                indicatif::ProgressStyle::default_bar()
+                    .template(&format!("{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {translate_label} ({{per_sec}}, {{msg}}, {{eta}})"))
+                    .unwrap()
+                    .progress_chars("#>-"),
+            );
+            pb.set_message("0 API calls");
+            pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
             let all_sentences =
                 futures::stream::iter(sentences_with_translations_and_sources.into_iter().map(
                     |(target_language_sentence, native_sentence, source)| async {
@@ -248,12 +264,16 @@ async fn main() -> anyhow::Result<()> {
                         if let Some(native_sentence) = native_sentence {
                             translation_set.insert(native_sentence);
                         }
+                        pb.set_message(format!("{} API calls", translator.api_calls()));
+                        pb.inc(1);
                         (target_language_sentence, (translation_set, source))
                     },
                 ))
                 .buffered(100)
                 .collect::<BTreeMap<_, _>>()
                 .await;
+
+            pb.finish_with_message(format!("{} API calls", translator.api_calls()));
 
             // Drop the translator to trigger the Drop implementation
             drop(translator);
@@ -487,9 +507,6 @@ async fn main() -> anyhow::Result<()> {
                 .entry(text.clone())
                 .or_insert_with(|| lits.clone());
         }
-
-        println!("stop here - want to manually watch the next step");
-        continue;
 
         // Convert multiword term tokenizations to grams for seeding into omnigram
         let multiword_term_literals = generate_data::nlp::convert_tokens_to_literals(
