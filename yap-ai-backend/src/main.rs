@@ -1221,7 +1221,7 @@ async fn generate_pronunciation_feedback(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
     Json(request): Json<PronunciationFeedbackRequest>,
 ) -> Result<Json<PronunciationFeedbackResponse>, StatusCode> {
-    let _claims = verify_jwt(auth.token()).await?;
+    let _claims = verify_jwt(auth.token()).await;
     let http = reqwest::Client::new();
 
     let user_audio_bytes = base64::engine::general_purpose::STANDARD
