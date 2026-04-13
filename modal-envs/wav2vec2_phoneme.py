@@ -14,9 +14,15 @@ image = (
 )
 
 
-@app.cls(gpu="T4", image=image, scaledown_window=300)
+@app.cls(
+    gpu="T4",
+    image=image,
+    scaledown_window=300,
+    enable_memory_snapshot=True,
+    experimental_options={"enable_gpu_snapshot": True},
+)
 class Wav2Vec2Phoneme:
-    @modal.enter()
+    @modal.enter(snap=True)
     def load_model(self):
         import torch
         from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
@@ -28,6 +34,13 @@ class Wav2Vec2Phoneme:
             "facebook/wav2vec2-lv-60-espeak-cv-ft"
         ).to("cuda")
         self.model.eval()
+
+        # Warmup forward pass so JIT/CUDA initialization is captured in snapshot
+        dummy = self.processor(
+            [0.0] * 16000, sampling_rate=16000, return_tensors="pt", padding=True
+        )
+        with torch.no_grad():
+            self.model(dummy.input_values.to("cuda"))
 
     def _decode_with_confidence(self, logits, top_k: int = 3) -> list[dict]:
         """CTC-decode logits and return per-phoneme confidence + top-k alternatives.
