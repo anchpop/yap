@@ -4,7 +4,8 @@ app = modal.App("wav2vec2-phoneme")
 
 image = (
     modal.Image.debian_slim(python_version="3.11")
-    .pip_install("torch", "transformers", "fastapi[standard]")
+    .apt_install("espeak-ng")
+    .pip_install("torch", "torchaudio", "transformers", "fastapi[standard]", "phonemizer")
     .run_commands(
         "python -c \"from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor; "
         "Wav2Vec2Processor.from_pretrained('facebook/wav2vec2-lv-60-espeak-cv-ft'); "
@@ -13,7 +14,7 @@ image = (
 )
 
 
-@app.cls(gpu="T4", image=image, container_idle_timeout=300)
+@app.cls(gpu="T4", image=image, scaledown_window=300)
 class Wav2Vec2Phoneme:
     @modal.enter()
     def load_model(self):
@@ -69,6 +70,7 @@ class Wav2Vec2Phoneme:
         import torch
 
         avg_probs = torch.stack(frame_probs).mean(dim=0)  # (vocab_size,)
+        top_k = min(top_k, avg_probs.numel())
         top_values, top_indices = torch.topk(avg_probs, top_k)
 
         labels = [self.processor.decode(idx.item()) for idx in top_indices]
@@ -86,9 +88,15 @@ class Wav2Vec2Phoneme:
         self, audio_samples: list[float], sample_rate: int = 16000, top_k: int = 3
     ) -> list[dict]:
         import torch
+        import torchaudio.functional as F
+
+        if sample_rate != 16000:
+            samples_tensor = torch.tensor(audio_samples).unsqueeze(0)
+            samples_tensor = F.resample(samples_tensor, sample_rate, 16000)
+            audio_samples = samples_tensor.squeeze(0).tolist()
 
         inputs = self.processor(
-            audio_samples, sampling_rate=sample_rate, return_tensors="pt", padding=True
+            audio_samples, sampling_rate=16000, return_tensors="pt", padding=True
         )
         input_values = inputs.input_values.to("cuda")
 
@@ -97,11 +105,10 @@ class Wav2Vec2Phoneme:
 
         return self._decode_with_confidence(logits, top_k=top_k)
 
-    @modal.web_endpoint(method="POST")
+    @modal.fastapi_endpoint(method="POST")
     def predict(self, request: dict) -> dict:
-        """HTTP endpoint accepting {"audio": [float, ...], "sample_rate": int, "top_k": int}."""
         audio = request["audio"]
-        sample_rate = request.get("sample_rate", 16000)
-        top_k = request.get("top_k", 3)
+        sample_rate = int(request.get("sample_rate", 16000))
+        top_k = min(max(int(request.get("top_k", 3)), 1), 100)
         results = self.transcribe_phonemes.local(audio, sample_rate, top_k)
         return {"phonemes": results}
