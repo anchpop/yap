@@ -440,22 +440,9 @@ async fn gemini_text_to_speech(
     let gemini_api_key =
         std::env::var("GEMINI_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let speaker_language = match request.language {
-        Language::French => "French",
-        Language::Spanish => "Spanish",
-        Language::English => "English",
-        Language::Korean => "Korean",
-        Language::German => "German",
-        Language::Italian => "Italian",
-        Language::Portuguese => "Portuguese",
-        Language::Russian => "Russian",
-        Language::Chinese => "Chinese",
-        Language::Japanese => "Japanese",
-        Language::Hindi => "Hindi",
-    };
-
     let default_instructions = format!(
-        "A fluent {speaker_language} speaker is teaching the listener how to pronounce different {speaker_language} words. Each word is enunciated clearly, with a small gap in between."
+        "A fluent {lang} speaker is teaching the listener how to pronounce different {lang} words. Each word is enunciated clearly, with a small gap in between.",
+        lang = request.language,
     );
     let instructions = request
         .instructions
@@ -596,22 +583,10 @@ async fn autograde_translation(
         }));
     }
 
-    let target_language_name = match target_language {
-        Language::French => "French",
-        Language::Spanish => "Spanish",
-        Language::English => "English",
-        Language::Korean => "Korean",
-        Language::German => "German",
-        Language::Italian => "Italian",
-        Language::Portuguese => "Portuguese",
-        Language::Russian => "Russian",
-        Language::Japanese => "Japanese",
-        Language::Hindi => "Hindi",
-        Language::Chinese => {
-            return Err(StatusCode::NOT_IMPLEMENTED);
-        }
-    };
-
+    if target_language == Language::Chinese {
+        return Err(StatusCode::NOT_IMPLEMENTED);
+    }
+    let target_language_name = target_language.to_string();
     let native_language_name = native_language.to_string();
 
     // Build the literals list with indices for gradable words, _ for ungradable
@@ -1136,7 +1111,12 @@ fn format_phoneme_analysis(phonemes: &[ModalPhoneme]) -> String {
                 .map(|a| format!("{}:{:.0}%", a.phoneme, a.probability * 100.0))
                 .collect::<Vec<_>>()
                 .join(" ");
-            format!("  {} (conf={:.0}%) [{}]", p.phoneme, p.confidence * 100.0, alts)
+            format!(
+                "  {} (conf={:.0}%) [{}]",
+                p.phoneme,
+                p.confidence * 100.0,
+                alts
+            )
         })
         .collect::<Vec<_>>()
         .join("\n")
@@ -1158,8 +1138,9 @@ async fn get_phonemes_from_modal(
     // Actually, the Modal endpoint expects raw float samples. Let's add an mp3 endpoint to Modal instead.
     // For now, let's base64-encode and send to a new Modal endpoint that accepts mp3 directly.
 
-    let modal_url = std::env::var("WAV2VEC2_ENDPOINT_URL")
-        .unwrap_or_else(|_| "https://anchpop--wav2vec2-phoneme-wav2vec2phoneme-predict.modal.run".to_string());
+    let modal_url = std::env::var("WAV2VEC2_ENDPOINT_URL").unwrap_or_else(|_| {
+        "https://anchpop--wav2vec2-phoneme-wav2vec2phoneme-predict.modal.run".to_string()
+    });
 
     // We need to send raw audio samples. Let's decode the mp3 to PCM f32 here.
     // Use a subprocess call to ffmpeg to decode, or add a Rust mp3 decoder.
@@ -1168,11 +1149,10 @@ async fn get_phonemes_from_modal(
     // For now, let's do the conversion here with symphonia.
 
     // Decode mp3 to f32 samples at whatever sample rate, send with sample_rate
-    let (samples, sample_rate) = decode_mp3_to_f32(audio_bytes)
-        .map_err(|e| {
-            eprintln!("Failed to decode mp3: {e}");
-            StatusCode::BAD_REQUEST
-        })?;
+    let (samples, sample_rate) = decode_mp3_to_f32(audio_bytes).map_err(|e| {
+        eprintln!("Failed to decode mp3: {e}");
+        StatusCode::BAD_REQUEST
+    })?;
 
     let payload = serde_json::json!({
         "audio": samples,
@@ -1262,19 +1242,7 @@ async fn generate_pronunciation_feedback(
 
     use tysm::chat_completions::{ChatMessage, ChatMessageContent, InputAudio, Role};
 
-    let language_name = match request.language {
-        Language::French => "French",
-        Language::Spanish => "Spanish",
-        Language::English => "English",
-        Language::Korean => "Korean",
-        Language::German => "German",
-        Language::Italian => "Italian",
-        Language::Portuguese => "Portuguese",
-        Language::Russian => "Russian",
-        Language::Chinese => "Chinese",
-        Language::Japanese => "Japanese",
-        Language::Hindi => "Hindi",
-    };
+    let language_name = &request.language;
 
     let prompt = format!(
         "The user is practicing their {language_name} pronunciation.\n\
@@ -2073,7 +2041,10 @@ async fn main() {
         .route("/tts/gemini", post(gemini_text_to_speech))
         .route("/autograde-translation", post(autograde_translation))
         .route("/autograde-transcription", post(autograde_transcription))
-        .route("/pronunciation-feedback", post(generate_pronunciation_feedback))
+        .route(
+            "/pronunciation-feedback",
+            post(generate_pronunciation_feedback),
+        )
         .route("/language-data", post(serve_language_data))
         .route("/profile", get(get_profile).patch(update_profile))
         .route("/language-stats", post(update_language_stats))
