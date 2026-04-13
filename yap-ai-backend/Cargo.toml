@@ -31,4 +31,5 @@ language-utils = { path = "../language-utils" }
 tsify.workspace = true
 wasm-bindgen.workspace = true
 postgrest = "1.0"
-resend-rs = "0.18"   
+resend-rs = "0.18"
+minimp3 = "0.5"

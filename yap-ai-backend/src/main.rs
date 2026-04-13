@@ -1086,6 +1086,240 @@ Words that need grading:
     Ok(Json(grade))
 }
 
+// --- Pronunciation Feedback ---
+
+#[derive(Deserialize)]
+struct PronunciationFeedbackRequest {
+    /// The sentence being practiced
+    sentence: String,
+    /// Target language
+    language: Language,
+    /// Base64-encoded user audio (mp3)
+    user_audio: String,
+    /// Base64-encoded reference audio (mp3)
+    reference_audio: String,
+}
+
+#[derive(Serialize, Deserialize, schemars::JsonSchema)]
+struct PronunciationFeedbackResponse {
+    /// A brief encouraging remark about what the user did well
+    encouragement: String,
+    /// Detailed chunk-by-chunk feedback on pronunciation errors
+    feedback: String,
+}
+
+#[derive(Deserialize)]
+struct ModalPhonemeResponse {
+    phonemes: Vec<ModalPhoneme>,
+}
+
+#[derive(Deserialize)]
+struct ModalPhoneme {
+    phoneme: String,
+    confidence: f64,
+    top_k: Vec<ModalPhonemeAlt>,
+}
+
+#[derive(Deserialize)]
+struct ModalPhonemeAlt {
+    phoneme: String,
+    probability: f64,
+}
+
+fn format_phoneme_analysis(phonemes: &[ModalPhoneme]) -> String {
+    phonemes
+        .iter()
+        .map(|p| {
+            let alts: String = p
+                .top_k
+                .iter()
+                .map(|a| format!("{}:{:.0}%", a.phoneme, a.probability * 100.0))
+                .collect::<Vec<_>>()
+                .join(" ");
+            format!("  {} (conf={:.0}%) [{}]", p.phoneme, p.confidence * 100.0, alts)
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+static GEMINI_PRO_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
+    let api_key = std::env::var("GEMINI_API_KEY").expect("GEMINI_API_KEY must be set");
+    ChatClient::new(&api_key, "gemini-3.1-pro-preview")
+        .with_url("https://generativelanguage.googleapis.com/v1beta/openai/")
+        .with_reasoning_effort("high")
+});
+
+async fn get_phonemes_from_modal(
+    http: &reqwest::Client,
+    audio_bytes: &[u8],
+) -> Result<Vec<ModalPhoneme>, StatusCode> {
+    // Convert mp3 to f32 samples at 16kHz using symphonia or just send raw and let Modal resample
+    // For now, we send the audio as f32 samples. We need to decode the mp3 first.
+    // Actually, the Modal endpoint expects raw float samples. Let's add an mp3 endpoint to Modal instead.
+    // For now, let's base64-encode and send to a new Modal endpoint that accepts mp3 directly.
+
+    let modal_url = std::env::var("WAV2VEC2_ENDPOINT_URL")
+        .unwrap_or_else(|_| "https://anchpop--wav2vec2-phoneme-wav2vec2phoneme-predict.modal.run".to_string());
+
+    // We need to send raw audio samples. Let's decode the mp3 to PCM f32 here.
+    // Use a subprocess call to ffmpeg to decode, or add a Rust mp3 decoder.
+    // For simplicity in a server context, let's use the `rodio` or `minimp3` crate.
+    // Actually, let's just update the Modal endpoint to accept base64 mp3 directly.
+    // For now, let's do the conversion here with symphonia.
+
+    // Decode mp3 to f32 samples at whatever sample rate, send with sample_rate
+    let (samples, sample_rate) = decode_mp3_to_f32(audio_bytes)
+        .map_err(|e| {
+            eprintln!("Failed to decode mp3: {e}");
+            StatusCode::BAD_REQUEST
+        })?;
+
+    let payload = serde_json::json!({
+        "audio": samples,
+        "sample_rate": sample_rate,
+        "top_k": 5,
+    });
+
+    let response = http
+        .post(&modal_url)
+        .json(&payload)
+        .send()
+        .await
+        .map_err(|e| {
+            eprintln!("Modal request failed: {e}");
+            StatusCode::BAD_GATEWAY
+        })?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        eprintln!("Modal error ({status}): {body}");
+        return Err(StatusCode::BAD_GATEWAY);
+    }
+
+    let result: ModalPhonemeResponse = response.json().await.map_err(|e| {
+        eprintln!("Failed to parse Modal response: {e}");
+        StatusCode::BAD_GATEWAY
+    })?;
+
+    Ok(result.phonemes)
+}
+
+fn decode_mp3_to_f32(mp3_bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {
+    use std::io::Cursor;
+
+    let cursor = Cursor::new(mp3_bytes);
+    let mut decoder = minimp3::Decoder::new(cursor);
+
+    let mut samples: Vec<f32> = Vec::new();
+    let mut sample_rate = 0u32;
+
+    loop {
+        match decoder.next_frame() {
+            Ok(frame) => {
+                sample_rate = frame.sample_rate as u32;
+                let channels = frame.channels;
+                // Convert to mono f32
+                for chunk in frame.data.chunks(channels) {
+                    let mono = chunk.iter().map(|&s| s as f32).sum::<f32>() / channels as f32;
+                    samples.push(mono / 32768.0);
+                }
+            }
+            Err(minimp3::Error::Eof) => break,
+            Err(e) => return Err(format!("mp3 decode error: {e:?}")),
+        }
+    }
+
+    if samples.is_empty() {
+        return Err("No audio data decoded".to_string());
+    }
+
+    Ok((samples, sample_rate))
+}
+
+async fn generate_pronunciation_feedback(
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(request): Json<PronunciationFeedbackRequest>,
+) -> Result<Json<PronunciationFeedbackResponse>, StatusCode> {
+    let _claims = verify_jwt(auth.token()).await?;
+    let http = reqwest::Client::new();
+
+    let user_audio_bytes = base64::engine::general_purpose::STANDARD
+        .decode(&request.user_audio)
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
+    let reference_audio_bytes = base64::engine::general_purpose::STANDARD
+        .decode(&request.reference_audio)
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
+
+    // Get phonemes from Modal for both audio clips in parallel
+    let (user_phonemes, ref_phonemes) = tokio::try_join!(
+        get_phonemes_from_modal(&http, &user_audio_bytes),
+        get_phonemes_from_modal(&http, &reference_audio_bytes),
+    )?;
+
+    let user_detailed = format_phoneme_analysis(&user_phonemes);
+    let ref_detailed = format_phoneme_analysis(&ref_phonemes);
+
+    use tysm::chat_completions::{ChatMessage, ChatMessageContent, InputAudio, Role};
+
+    let language_name = match request.language {
+        Language::French => "French",
+        Language::Spanish => "Spanish",
+        Language::English => "English",
+        Language::Korean => "Korean",
+        Language::German => "German",
+        Language::Italian => "Italian",
+        Language::Portuguese => "Portuguese",
+        Language::Russian => "Russian",
+        Language::Chinese => "Chinese",
+        Language::Japanese => "Japanese",
+        Language::Hindi => "Hindi",
+    };
+
+    let prompt = format!(
+        "The user is practicing their {language_name} pronunciation.\n\
+         They are practicing the sentence: \"{sentence}\".\n\
+         The FIRST audio is the user's attempt.\n\
+         The SECOND audio is a native {language_name} reference pronunciation.\n\n\
+         A phoneme recognition model (wav2vec2) analyzed both recordings.\n\
+         Each phoneme has a confidence score and the top-5 alternative\n\
+         phonemes the model considered, with probabilities.\n\n\
+         USER'S PRONUNCIATION:\n{user_detailed}\n\n\
+         NATIVE REFERENCE:\n{ref_detailed}\n\n\
+         Your analysis should be primarily based on what you hear\n\
+         in the actual audio recordings. The phoneme analysis above is\n\
+         provided only as a jumping-off point and food for thought —\n\
+         use it to guide your attention, but trust your own ears.\n\n\
+         Give detailed chunk-by-chunk feedback.\n\
+         Be strict and honest. Do not give credit for sounds the user\n\
+         did not produce correctly.",
+        sentence = request.sentence,
+    );
+
+    let messages = vec![ChatMessage::new(
+        Role::User,
+        vec![
+            ChatMessageContent::InputAudio {
+                input_audio: InputAudio::mp3(user_audio_bytes),
+            },
+            ChatMessageContent::InputAudio {
+                input_audio: InputAudio::mp3(reference_audio_bytes),
+            },
+            ChatMessageContent::Text { text: prompt },
+        ],
+    )];
+
+    let response: PronunciationFeedbackResponse = GEMINI_PRO_CLIENT
+        .chat_with_messages(messages)
+        .await
+        .map_err(|e| {
+            eprintln!("Gemini pronunciation feedback failed: {e}");
+            StatusCode::BAD_GATEWAY
+        })?;
+
+    Ok(Json(response))
+}
+
 fn slugify(text: &str) -> String {
     text.to_lowercase()
         .chars()
@@ -1839,6 +2073,7 @@ async fn main() {
         .route("/tts/gemini", post(gemini_text_to_speech))
         .route("/autograde-translation", post(autograde_translation))
         .route("/autograde-transcription", post(autograde_transcription))
+        .route("/pronunciation-feedback", post(generate_pronunciation_feedback))
         .route("/language-data", post(serve_language_data))
         .route("/profile", get(get_profile).patch(update_profile))
         .route("/language-stats", post(update_language_stats))
