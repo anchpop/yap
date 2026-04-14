@@ -46,6 +46,7 @@ function getLanguageEmoji(language: Language | undefined): string {
     .with("Russian", () => "🇷🇺")
     .with("Portuguese", () => "🇵🇹")
     .with("Italian", () => "🇮🇹")
+    .with("Hindi", () => "🇮🇳")
     .with(undefined, () => "🌍")
     .exhaustive();
 }

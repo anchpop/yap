@@ -37,6 +37,8 @@ function getLanguageDisplayName(language: Language): string {
       return "Portuguese";
     case "Italian":
       return "Italian";
+    case "Hindi":
+      return "Hindi";
     default: {
       // TypeScript will error if we add a new language and don't handle it
       const exhaustiveCheck: never = language;
@@ -68,6 +70,8 @@ function getLanguageCode(language: Language): string {
       return "PT";
     case "Italian":
       return "IT";
+    case "Hindi":
+      return "HI";
     default: {
       const exhaustiveCheck: never = language;
       throw new Error(`Unhandled language: ${exhaustiveCheck}`);

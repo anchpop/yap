@@ -37,6 +37,7 @@ export function formatMorphology(morphology: Morphology): string {
 
   if (morphology.politeness) {
     const politeMap = {
+      Intimate: "intimate",
       Informal: "informal",
       Formal: "formal",
       Elev: "elevated",

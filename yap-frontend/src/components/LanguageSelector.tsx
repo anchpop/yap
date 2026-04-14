@@ -182,6 +182,7 @@ export function LanguageSelector({
     Russian: "Я говорю по-русски",
     Portuguese: "Eu falo português",
     Italian: "Parlo italiano",
+    Hindi: "मैं हिन्दी बोलता हूँ",
   };
 
   // "Yap.Town" in each language
@@ -196,6 +197,7 @@ export function LanguageSelector({
     Russian: "Yap.Город",
     Portuguese: "Yap.Cidade",
     Italian: "Yap.Città",
+    Hindi: "यैप.टाउन",
   };
 
   const languageColors: Record<
@@ -268,6 +270,13 @@ export function LanguageSelector({
       accent: "#CE2B37",
       gradient:
         "linear-gradient(90deg, #009246 33%, #FFFFFF 33% 66%, #CE2B37 66%)",
+    },
+    Hindi: {
+      primary: "#FF9933",
+      secondary: "#FFFFFF",
+      accent: "#138808",
+      gradient:
+        "linear-gradient(180deg, #FF9933 33%, #FFFFFF 33% 66%, #138808 66%)",
     },
   };
 

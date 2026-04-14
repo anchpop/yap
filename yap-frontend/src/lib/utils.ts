@@ -24,6 +24,7 @@ export const languageFlags: Record<Language, string> = {
   Russian: "🇷🇺",
   Portuguese: "🇧🇷",
   Italian: "🇮🇹",
+  Hindi: "🇮🇳",
 };
 
 export const nativeLanguageNames: Record<Language, string> = {
@@ -37,6 +38,7 @@ export const nativeLanguageNames: Record<Language, string> = {
   Russian: "Русский",
   Portuguese: "Português",
   Italian: "Italiano",
+  Hindi: "हिन्दी",
 };
 
 export function isoCodeToLanguage(isoCode: string): Language | null {
@@ -49,6 +51,7 @@ export function isoCodeToLanguage(isoCode: string): Language | null {
     ita: "Italian",
     por: "Portuguese",
     rus: "Russian",
+    hin: "Hindi",
   };
   return isoToLanguage[isoCode] || null;
 }
@@ -86,6 +89,7 @@ export function languageToIso6391(language: Language): string {
     Russian: "ru",
     Portuguese: "pt",
     Italian: "it",
+    Hindi: "hi",
   };
   return languageToIso[language];
 }

@@ -932,6 +932,7 @@ const letsGoPhrases: Record<Language, string> = {
   Russian: "Пойдем!",
   Portuguese: "Vamos lá!",
   Italian: "Andiamo!",
+  Hindi: "चलो!",
 };
 
 function ReadyScreen({

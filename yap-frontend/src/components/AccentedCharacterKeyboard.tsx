@@ -56,6 +56,7 @@ export function AccentedCharacterKeyboard({
       "ç",
     ])
     .with("Italian", () => ["à", "è", "é", "ì", "ò", "ù"])
+    .with("Hindi", () => [])
     .exhaustive();
 
   const characters = uppercase

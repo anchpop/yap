@@ -639,7 +639,11 @@ export const Flashcard = function Flashcard({
             <div className="text-center relative z-10 flex flex-col gap-6">
               <div className="justify-center gap-2 flex flex-col items-center w-full">
                 <div
-                  className="relative flex items-center justify-center w-full"
+                  className={`relative flex items-center w-full ${
+                    content.type === "Listening"
+                      ? "justify-center"
+                      : "justify-between"
+                  }`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {content.type === "Listening" ? (
@@ -678,7 +682,13 @@ export const Flashcard = function Flashcard({
                     </>
                   )}
 
-                  <div className="absolute right-0 top-0">
+                  <div
+                    className={
+                      content.type === "Listening"
+                        ? "absolute right-0 top-0"
+                        : ""
+                    }
+                  >
                     {onRating ? (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

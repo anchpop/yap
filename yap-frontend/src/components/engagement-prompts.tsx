@@ -96,6 +96,7 @@ export const EngagementPrompts = memo(function EngagementPrompts({ language }: E
     .with("Russian", () => "Stay on track with your Russian learning")
     .with("Portuguese", () => "Stay on track with your Portuguese learning")
     .with("Italian", () => "Stay on track with your Italian learning")
+    .with("Hindi", () => "Stay on track with your Hindi learning")
     .exhaustive();
 
   return (

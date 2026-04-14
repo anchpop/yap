@@ -43,6 +43,7 @@ export function MobileKeyboardTip({
     .with("Russian", () => "Cyrillic")
     .with("Portuguese", () => "accented")
     .with("Italian", () => "accented")
+    .with("Hindi", () => "Devanagari")
     .exhaustive();
 
   // Don't show tip for English
