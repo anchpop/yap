@@ -119,6 +119,16 @@ export function AudioButton({
   const hoverRef = useRef(false);
   const rafRunningRef = useRef(false);
   const kickRafRef = useRef<() => void>(() => {});
+  const abortControllersRef = useRef<Set<AbortController>>(new Set());
+
+  // Abort any in-flight audio fetch/playback when the component unmounts.
+  useEffect(() => {
+    const controllers = abortControllersRef.current;
+    return () => {
+      for (const c of controllers) c.abort();
+      controllers.clear();
+    };
+  }, []);
 
   const attachAnalyser = useCallback(async (audio: HTMLAudioElement) => {
     try {
@@ -280,49 +290,81 @@ export function AudioButton({
       e?.stopPropagation();
       if (isPlayingRef.current) return;
 
+      const controller = new AbortController();
+      abortControllersRef.current.add(controller);
+      const { signal } = controller;
+
+      const isAbort = (error: unknown) =>
+        error instanceof DOMException && error.name === "AbortError";
+
       setIsPlaying(true);
       try {
         // Wait for any currently playing sound effects to finish
         while (isSoundEffectPlaying()) {
+          if (signal.aborted) throw new DOMException("Aborted", "AbortError");
           await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
         // Play pre-audio if enabled (to wake up Bluetooth headphones in low power mode)
-        try {
-          if (playPreAudio) {
+        if (playPreAudio) {
+          try {
             const preAudio = new Audio("/pre-audio.mp3");
-            await new Promise<void>((resolve, reject) => {
-              preAudio.onended = () => resolve();
-              preAudio.onerror = () =>
-                reject(new Error("Failed to play pre-audio"));
-              preAudio.play().catch(reject);
-            });
+            const onAbort = () => {
+              try {
+                preAudio.pause();
+                preAudio.src = "";
+              } catch {
+                // ignore
+              }
+            };
+            signal.addEventListener("abort", onAbort, { once: true });
+            try {
+              await new Promise<void>((resolve, reject) => {
+                preAudio.onended = () => resolve();
+                preAudio.onerror = () =>
+                  reject(new Error("Failed to play pre-audio"));
+                signal.addEventListener(
+                  "abort",
+                  () => reject(new DOMException("Aborted", "AbortError")),
+                  { once: true },
+                );
+                preAudio.play().catch(reject);
+              });
+            } finally {
+              signal.removeEventListener("abort", onAbort);
+            }
+          } catch (error) {
+            if (isAbort(error)) throw error;
+            console.error("Failed to play pre-audio:", error);
           }
-        } catch (error) {
-          console.error("Failed to play pre-audio:", error);
         }
 
+        if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+
         const authCallback = () => {
-            if (clickedRef.current) {
-              setNeedsAuth(true);
-            }
-          };
+          if (clickedRef.current) {
+            setNeedsAuth(true);
+          }
+        };
         if (temp) {
-          await playTempAudio(audioRequest, accessToken, authCallback);
+          await playTempAudio(audioRequest, accessToken, authCallback, signal);
         } else {
           await playAudio(
             audioRequest,
             accessToken,
             authCallback,
             visualizer ? attachAnalyser : undefined,
+            signal,
           );
         }
-        onSuccessRef.current?.();
+        if (!signal.aborted) onSuccessRef.current?.();
       } catch (error) {
+        if (isAbort(error) || signal.aborted) return;
         console.error("Failed to play audio:", error);
         onErrorRef.current?.();
       } finally {
-        setIsPlaying(false);
+        abortControllersRef.current.delete(controller);
+        if (!signal.aborted) setIsPlaying(false);
       }
     },
     [audioRequest, accessToken, playPreAudio, visualizer, attachAnalyser, temp],

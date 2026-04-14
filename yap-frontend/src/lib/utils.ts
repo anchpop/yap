@@ -109,12 +109,19 @@ export const profilerOnRender = (
 
 let currentAudio: HTMLAudioElement | null = null;
 
+function abortError(): DOMException {
+  return new DOMException("Aborted", "AbortError");
+}
+
 export async function playAudio(
   audioRequest: AudioRequest,
   accessToken: string | undefined,
   needsAuth: () => void,
   onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>,
+  signal?: AbortSignal,
 ): Promise<void> {
+  if (signal?.aborted) throw abortError();
+
   // If something else is already playing, stop it so the new request wins.
   if (currentAudio) {
     try {
@@ -128,6 +135,7 @@ export async function playAudio(
 
   try {
     const audioData = await get_audio(audioRequest, accessToken);
+    if (signal?.aborted) throw abortError();
 
     const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
     const audioUrl = URL.createObjectURL(audioBlob);
@@ -137,9 +145,20 @@ export async function playAudio(
     if (onAudioElement) {
       await onAudioElement(audio);
     }
+    if (signal?.aborted) {
+      try {
+        audio.pause();
+        audio.src = "";
+      } catch {
+        // ignore
+      }
+      URL.revokeObjectURL(audioUrl);
+      if (currentAudio === audio) currentAudio = null;
+      throw abortError();
+    }
 
     return new Promise((resolve, reject) => {
-      let errorHandled = false;
+      let settled = false;
 
       const invalidateCache = () => {
         void (async () => {
@@ -151,9 +170,27 @@ export async function playAudio(
         })();
       };
 
+      const onAbort = () => {
+        if (settled) return;
+        settled = true;
+        audio.onended = null;
+        audio.onerror = null;
+        try {
+          audio.pause();
+          audio.src = "";
+        } catch {
+          // ignore
+        }
+        URL.revokeObjectURL(audioUrl);
+        if (currentAudio === audio) currentAudio = null;
+        reject(abortError());
+      };
+      signal?.addEventListener("abort", onAbort, { once: true });
+
       const handlePlaybackFailure = (error: unknown) => {
-        if (errorHandled) return;
-        errorHandled = true;
+        if (settled) return;
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
 
         // Only invalidate cache for actual audio file errors, not autoplay restrictions
         const isNotAllowedError =
@@ -171,6 +208,9 @@ export async function playAudio(
       };
 
       audio.onended = () => {
+        if (settled) return;
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
         URL.revokeObjectURL(audioUrl);
         if (currentAudio === audio) currentAudio = null;
         resolve();
@@ -187,13 +227,18 @@ export async function playAudio(
     });
   } catch (error) {
     currentAudio = null;
-    if (typeof error === "string" && error.includes("400")) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw error;
+    }
+    if (
+      !signal?.aborted &&
+      typeof error === "string" &&
+      error.includes("400")
+    ) {
       needsAuth();
     }
     console.error("Failed to play audio:", error);
     throw error;
-  } finally {
-    // currentAudio gets cleared by onended/onerror handlers above
   }
 }
 
@@ -201,7 +246,10 @@ export async function playTempAudio(
   audioRequest: AudioRequest,
   accessToken: string | undefined,
   needsAuth: () => void,
+  signal?: AbortSignal,
 ): Promise<void> {
+  if (signal?.aborted) throw abortError();
+
   if (currentAudio) {
     try {
       currentAudio.pause();
@@ -214,6 +262,7 @@ export async function playTempAudio(
 
   try {
     const audioData = await get_temp_audio(audioRequest, accessToken);
+    if (signal?.aborted) throw abortError();
 
     const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
     const audioUrl = URL.createObjectURL(audioBlob);
@@ -222,24 +271,59 @@ export async function playTempAudio(
     currentAudio = audio;
 
     return new Promise((resolve, reject) => {
+      let settled = false;
+
+      const onAbort = () => {
+        if (settled) return;
+        settled = true;
+        audio.onended = null;
+        audio.onerror = null;
+        try {
+          audio.pause();
+          audio.src = "";
+        } catch {
+          // ignore
+        }
+        URL.revokeObjectURL(audioUrl);
+        if (currentAudio === audio) currentAudio = null;
+        reject(abortError());
+      };
+      signal?.addEventListener("abort", onAbort, { once: true });
+
       audio.onended = () => {
+        if (settled) return;
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
         URL.revokeObjectURL(audioUrl);
         if (currentAudio === audio) currentAudio = null;
         resolve();
       };
 
       audio.onerror = () => {
+        if (settled) return;
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
         if (currentAudio === audio) currentAudio = null;
         reject(new Error("Audio playback failed"));
       };
 
       audio.play().catch((error) => {
+        if (settled) return;
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
         reject(error);
       });
     });
   } catch (error) {
     currentAudio = null;
-    if (typeof error === "string" && error.includes("400")) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw error;
+    }
+    if (
+      !signal?.aborted &&
+      typeof error === "string" &&
+      error.includes("400")
+    ) {
       needsAuth();
     }
     console.error("Failed to play temp audio:", error);
