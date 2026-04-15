@@ -112,10 +112,6 @@ pub async fn process_sentences(
     let lexide_language = to_lexide_language(language)
         .ok_or_else(|| anyhow::anyhow!("Language {language} is not yet supported by lexide"))?;
 
-    // Initialize lexide
-    let lexide = Lexide::from_server("https://anchpop--lexide-gemma-4-31b-vllm-serve.modal.run")
-        .context("Failed to initialize lexide")?;
-
     // Load already processed sentences from output file (if it exists)
     let mut already_processed: BTreeMap<String, Vec<lexide::Token>> = BTreeMap::new();
     if output_file.exists() {
@@ -128,6 +124,30 @@ pub async fn process_sentences(
             }
         }
     }
+
+    // In cache-only mode, skip the Modal server entirely and return only
+    // sentences already present in the output file.
+    if crate::cache_only() {
+        let missing = sentences
+            .iter()
+            .filter(|s| !already_processed.contains_key(*s))
+            .count();
+        if missing > 0 {
+            eprintln!(
+                "cache-only: skipping {missing} untokenized sentence(s) for {language} (output: {})",
+                output_file.display()
+            );
+        }
+        let result: BTreeMap<String, Vec<lexide::Token>> = sentences
+            .into_iter()
+            .filter_map(|s| already_processed.get(&s).map(|tokens| (s, tokens.clone())))
+            .collect();
+        return Ok(result);
+    }
+
+    // Initialize lexide
+    let lexide = Lexide::from_server("https://anchpop--lexide-gemma-4-31b-vllm-serve.modal.run")
+        .context("Failed to initialize lexide")?;
 
     // Load failure tracking
     let failure_file = get_failure_file_path(output_file);

@@ -138,6 +138,14 @@ impl GoogleTranslator {
             return Ok(t.clone());
         }
 
+        if generate_data::cache_only() {
+            anyhow::bail!(
+                "Google Translate cache miss for '{text}' ({}→{}); cache-only mode is enabled",
+                self.source_language,
+                self.target_language,
+            );
+        }
+
         // Not in cache - make API call
         let cache_file = self.cache_dir.join(format!("{hash}.json"));
 

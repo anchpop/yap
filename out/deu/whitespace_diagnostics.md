@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2863014
-Total errors: 2090
+Total predictions: 2930513
+Total errors: 2120
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
 
-### "…" + "-" (29 occurrences)
+### "…" + "-" (31 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -14,7 +14,7 @@ Accuracy: 99.93%
   - Ah… -Hm?
   - Arme ausgebreitet, sie um dich gelegt und … - - … gedrückt.
 
-### "-" + "und" (26 occurrences)
+### "-" + "und" (27 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -30,6 +30,14 @@ Accuracy: 99.93%
   - Alles, was Sie hier gehört haben, - ist Lüge, Verleumdung!
   - Die Ballerinas trugen Ballettstrumpfhosen, -röckchen und -schuhe.
 
+### "-" + "das" (11 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Den Kindern - das Eis, dem Weib - die Blumen.
+  - Die Leuchtfeuer auf den Bergen - das sind die Rebellen.
+  - Dies - das ist echter Tabak.
+
 ### "-" + "ho" (11 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38,14 +46,6 @@ Accuracy: 99.93%
   - Apropos Kwang- ho.
   - Das bedeutet, Kwang- ho ist unser Zeuge.
 
-### "-" + "das" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Den Kindern - das Eis, dem Weib - die Blumen.
-  - Die Leuchtfeuer auf den Bergen - das sind die Rebellen.
-  - Dies - das ist echter Tabak.
-
 ### "Träne" + "n" (10 occurrences)
 - Predicted: Space
 - Actual: None
@@ -53,6 +53,14 @@ Accuracy: 99.93%
   - Er hat Tränen in den Augen.
   - Ich sehe Tränen in deinen Augen.
   - Mir kamen die Tränen.
+
+### "-" + "wie" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Tschubs sagten ebenfalls, er war nicht an Bord - wie ich.
+  - Er war schön und von heiterer Ruhe - wie ein Erzengel.
+  - Königinnen zu mir herabschauen - wie stehe ich da?
 
 ### "du" + "?" (9 occurrences)
 - Predicted: None
@@ -93,14 +101,6 @@ Accuracy: 99.93%
   - Cha- Cha- Cha!
   - Cha- Cha- Cha!
   - Cha- Cha- Chat!
-
-### "-" + "wie" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Tschubs sagten ebenfalls, er war nicht an Bord - wie ich.
-  - Er war schön und von heiterer Ruhe - wie ein Erzengel.
-  - Königinnen zu mir herabschauen - wie stehe ich da?
 
 ### "Hause" + "!" (8 occurrences)
 - Predicted: None
@@ -278,6 +278,14 @@ Accuracy: 99.93%
   - Man nennt ihn den Tataren - ein Auftragsmörder mit gutem Ruf.
   - Mein Schützling - ein Feind?
 
+### "-" + "für" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ein Falconeri sollte auf unserer Seite kämpfen - für den König.
+  - Head and Shoulders - für alle Fälle!
+  - Ihre Stärke ist, dass sie sich - für Frau Mak hält.
+
 ### "-" + "sie" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -438,14 +446,6 @@ Accuracy: 99.93%
   - Er behauptet, der da habe eine Prostituierte verprügelt - er lügt.
   - Er ist-- er ist einer von denen Sir.
 
-### "-" + "für" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ein Falconeri sollte auf unserer Seite kämpfen - für den König.
-  - Ihre Stärke ist, dass sie sich - für Frau Mak hält.
-  - Von jetzt an werde ich an Ihrer Seite sein - für immer.
-
 ### "-" + "gyu" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -461,6 +461,14 @@ Accuracy: 99.93%
   - Der Ehemann - nach Minsk und die Ehefrau nach links.
   - Und dann schrieb Vater, er könne mir die Reise - nach England nicht bezahlen.
   - Wohin fährst du - nach Amerika?
+
+### "-" + "so" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Seine Hände waren wie Schmetterlinge - so leicht.
+  - Und wenn nicht besser - so zumindest schmackhafter.
+  - Was würde der Senat mit mir anfangen - so einem Gesetzgeber?
 
 ### "-" + "sook" (3 occurrences)
 - Predicted: None
@@ -629,6 +637,14 @@ Accuracy: 99.93%
   - Die alte Hexe ist da !
   - Sie ist da !
   - Was glotzt du da !
+
+### "da" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - He, da - Oh, da.
+  - Hey, wer ist denn da - Vampir Miller!
+  - Versucht man da - aha, der Kern besteht aus Protonen.
 
 ### "das" + "?" (3 occurrences)
 - Predicted: None
@@ -829,6 +845,13 @@ Accuracy: 99.93%
   - Ausgerutscht, gestürzt, bewußtlos geworden, dann - Gips.
   - Bewußtlos geworden, zu sich gekommen - Gips.
 
+### "-" + "Ihr" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - General - Ihr beide kennt euch also, ja?
+  - Leitende Ermittler … - Ihr seid keine leitenden Ermittler.
+
 ### "-" + "Tut" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -877,6 +900,13 @@ Accuracy: 99.93%
 - Examples:
   - Das Folgende anzuhören ist kaum erträglich - es zu sagen ist noch schwerer.
   - Falls irgendwas passiert - es muss jemand Bescheid wissen.
+
+### "-" + "falls" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Den Bourbonen - falls es erlaubt ist, sie zu erwähnen.
+  - Wie wäre denn das weitere Vorgehen - falls wir zustimmen?
 
 ### "-" + "gen" (2 occurrences)
 - Predicted: None
@@ -927,19 +957,19 @@ Accuracy: 99.93%
   - Die Menschen, mit denen ich verkehre, - sind wichtige Leute der Gesellschaft.
   - Staatsstreiche, Mafia, Korruption - sind das nicht Ihre Kunden?
 
-### "-" + "so" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Seine Hände waren wie Schmetterlinge - so leicht.
-  - Was würde der Senat mit mir anfangen - so einem Gesetzgeber?
-
 ### "-" + "um" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Es geht um etwas wichtigeres als die Solaristik - um unser Erkenntnisvermögen.
   - Sie würde es verlangen - um zu überleben.
+
+### "-" + "wir" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Gut - wir sind im Metropol.
+  - Jean-Jacques und ich - wir haben nie Kinder gewollt.
 
 ### "Aber" + "…" (2 occurrences)
 - Predicted: None
@@ -954,6 +984,13 @@ Accuracy: 99.93%
 - Examples:
   - Ich werde Arzt und gehe nach Afrika !
   - Nach Afrika !
+
+### "Armen" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hört auf die Armen -Ist da jemand?
+  - Hört auf die Armen -Was ist das?
 
 ### "Arschloch" + "“" (2 occurrences)
 - Predicted: Space
@@ -1024,6 +1061,13 @@ Accuracy: 99.93%
 - Examples:
   - Ein Bravo auf den Frühling !
   - Es komme der Frühling !
+
+### "Gebete" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Er erhört Ihre Gebete -Wow, Bettler in New York?
+  - Er erhört eure Gebete -Hey, Oma.
 
 ### "Giudizio" + "!" (2 occurrences)
 - Predicted: None
@@ -1276,13 +1320,6 @@ Accuracy: 99.93%
 - Examples:
   - As two neighbors cannot come.
   - Without glasses I cannot read the digits.
-
-### "da" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hey, wer ist denn da - Vampir Miller!
-  - Versucht man da - aha, der Kern besteht aus Protonen.
 
 ### "da" + "?" (2 occurrences)
 - Predicted: None
@@ -1865,6 +1902,12 @@ Accuracy: 99.93%
   - Haben Sie auf „zurücksetzen“ gedrückt?
   - Hast du auf „zurücksetzen“ gedrückt?
 
+### "," + "Umpire" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Sind Sie ganz sicher,Umpire?
+
 ### "," + "bitteee" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2099,12 +2142,6 @@ Accuracy: 99.93%
 - Examples:
   - Ach, das ist eine Kater- Idee.
 
-### "-" + "Ihr" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Leitende Ermittler … - Ihr seid keine leitenden Ermittler.
-
 ### "-" + "Ist" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2206,6 +2243,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ich muss - Nur eine Minute?
+
+### "-" + "Oh" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - He, da - Oh, da.
 
 ### "-" + "Osten" (1 occurrences)
 - Predicted: None
@@ -2369,6 +2412,12 @@ Accuracy: 99.93%
 - Examples:
   - Ich habe sie zufällig getroffen - ausgerechnet in der Mongolei.
 
+### "-" + "außer" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der Mensch hat auf alles eine Antwort - außer auf das Leben selbst.
+
 ### "-" + "bare" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2513,12 +2562,6 @@ Accuracy: 99.93%
 - Examples:
   - Das medizinische Gutachten ist eine Sache, der Fakt - etwas anderes.
 
-### "-" + "falls" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Den Bourbonen - falls es erlaubt ist, sie zu erwähnen.
-
 ### "-" + "familien" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2590,6 +2633,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wie bist du nur da rein- geraten?
+
+### "-" + "gespräch" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Und ich zieh vor dem Vorstellungs- gespräch alle meine Ringe aus.
 
 ### "-" + "gewöhnliche" (1 occurrences)
 - Predicted: None
@@ -2728,6 +2777,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Die Suppe schmeckt, als wären Schweine- knochen zu lang darin gekocht worden.
+
+### "-" + "kollision" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ihre Forschung zur Positronen- kollision sind einzigartig.
 
 ### "-" + "küstenmafia" (1 occurrences)
 - Predicted: None
@@ -2957,6 +3012,12 @@ Accuracy: 99.93%
 - Examples:
   - Dann öffnete ich noch die Flut- ventile und das Boot sackte ab.
 
+### "-" + "verschiedenheit" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Aufgrund einer Meinungs- verschiedenheit wurde er abgetrennt.
+
 ### "-" + "verständlich" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2998,12 +3059,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - In solchen Zeiten sucht die Zauber- welt bei ihren Anführern Stärke!
-
-### "-" + "wir" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Gut - wir sind im Metropol.
 
 ### "-" + "wirklich" (1 occurrences)
 - Predicted: None
@@ -3058,12 +3113,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Was ich anbiete -- ist eine Lüge.
-
-### "/" + "oder" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Unfall und/oder Vorsatz.
 
 ### "AUSSCHREITUNGEN" + "-" (1 occurrences)
 - Predicted: None
@@ -3167,6 +3216,12 @@ Accuracy: 99.93%
 - Examples:
   - Gib mir Antwort !
 
+### "Antwort" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Der Mensch hat auf alles eine Antwort - außer auf das Leben selbst.
+
 ### "Antworte" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3196,6 +3251,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Noahs Arche - das Raumschiff, das Rettung vor der Atomseuche sucht.
+
+### "Arme" + "-Musik" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Komm in meine Arme -Musik.
 
 ### "Arschkriecher" + "wie" (1 occurrences)
 - Predicted: Space
@@ -3958,6 +4019,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Oh, Westley, Geliebter !
+
+### "General" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - General - Ihr beide kennt euch also, ja?
 
 ### "Genug" + "!" (1 occurrences)
 - Predicted: None
@@ -4763,6 +4830,12 @@ Accuracy: 99.93%
 - Examples:
   - Meine Brüste sind voll Milch !
 
+### "Million" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Segnet er euch mit einer Million -Hey, Oma!
+
 ### "Ming" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5477,6 +5550,12 @@ Accuracy: 99.93%
 - Examples:
   - Weißt du überhaupt, was „Sexismus“ bedeutet?
 
+### "Shoulders" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Head and Shoulders - für alle Fälle!
+
 ### "Sicherheits" + "unterweisung" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -5993,6 +6072,12 @@ Accuracy: 99.93%
 - Examples:
   - Alles hat eine Vorder- und eine Rückseite.
 
+### "Vorgehen" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wie wäre denn das weitere Vorgehen - falls wir zustimmen?
+
 ### "Vorsicht" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6088,6 +6173,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - In einem Whisky- oder Longdrink-Glas?
+
+### "Wie" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wie - wie macht man es?
 
 ### "Wiedersehen" + "!" (1 occurrences)
 - Predicted: None
@@ -6443,6 +6534,12 @@ Accuracy: 99.93%
 - Examples:
   - Weisst du, dass der Heilige Ludwig weinen muss, wenn du dich berührst ?
 
+### "besser" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Und wenn nicht besser - so zumindest schmackhafter.
+
 ### "besser" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6790,6 +6887,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wenn der Widerstand es erfährt - - deutsches Baby.
+
+### "erhalten" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wir alle haben ein einzigartiges Geschenk erhalten - das Leben!
 
 ### "erlaubt" + "?" (1 occurrences)
 - Predicted: None
@@ -7270,6 +7373,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Kann ich es nochmals hören ?
+
+### "ich" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Jean-Jacques und ich - wir haben nie Kinder gewollt.
 
 ### "ich" + "“" (1 occurrences)
 - Predicted: Space
@@ -8033,6 +8142,12 @@ Accuracy: 99.93%
 - Examples:
   - Wie das stinkt !
 
+### "stopp" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ok, stopp -Ok.
+
 ### "strawberries" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -8086,12 +8201,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Damit wir für immer zusammenwohnen und -leben können.
-
-### "und" + "/" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Unfall und/oder Vorsatz.
 
 ### "und" + "zu" (1 occurrences)
 - Predicted: Space

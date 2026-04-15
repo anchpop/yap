@@ -9,16 +9,20 @@ use std::sync::LazyLock;
 use tysm::chat_completions::ChatClient;
 
 static CHAT_CLIENT_4O: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-4o")
-        .unwrap()
-        .with_cache_directory("./.cache")
+    crate::apply_cache_only(
+        ChatClient::from_env("gpt-4o")
+            .unwrap()
+            .with_cache_directory("./.cache"),
+    )
 });
 
 static CHAT_CLIENT_5: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-5")
-        .unwrap()
-        .with_cache_directory("./.cache")
-        .with_service_tier("flex")
+    crate::apply_cache_only(
+        ChatClient::from_env("gpt-5")
+            .unwrap()
+            .with_cache_directory("./.cache")
+            .with_service_tier("flex"),
+    )
 });
 
 pub async fn create_morphology(

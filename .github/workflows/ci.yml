@@ -1,8 +1,6 @@
 name: Rust CI
 
 on:
-  push:
-    branches: [main, master]
   pull_request:
     branches: [main, master]
 
@@ -54,7 +52,7 @@ jobs:
           args: --workspace -- -D warnings
 
       - name: Clippy (WASM)
-        run: cargo clippy --target wasm32-unknown-unknown
+        run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
         working-directory: yap-frontend-rs
 
       - uses: taiki-e/install-action@nextest

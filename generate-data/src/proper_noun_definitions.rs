@@ -5,9 +5,11 @@ use std::{collections::BTreeMap, sync::LazyLock};
 use tysm::chat_completions::ChatClient;
 
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-5.4-nano")
-        .unwrap()
-        .with_cache_directory("./.cache")
+    crate::apply_cache_only(
+        ChatClient::from_env("gpt-5.4-nano")
+            .unwrap()
+            .with_cache_directory("./.cache"),
+    )
 });
 
 pub async fn generate_proper_noun_definitions(

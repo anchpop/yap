@@ -1,0 +1,180 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  deploy:
+    runs-on: big-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Pull LFS rkyv files
+        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.88.0"
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-deploy
+          restore-keys: |
+            ${{ runner.os }}-cargo-deploy-
+            ${{ runner.os }}-cargo-
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - uses: taiki-e/install-action@nextest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Auth to Fly registry
+        run: flyctl auth docker
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
+
+      # ===== TEST PHASE =====
+      # Any failure here aborts the whole pipeline before anything is built or deployed.
+
+      - name: Rustfmt
+        run: cargo fmt --all -- --check
+
+      - name: Clippy
+        run: cargo clippy --workspace -- -D warnings
+
+      - name: Clippy (WASM)
+        run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
+        working-directory: yap-frontend-rs
+
+      - name: Tests (default features)
+        run: cargo nextest run --all
+
+      - name: Tests (no default features)
+        run: cargo nextest run --all --no-default-features
+
+      # ===== BUILD PHASE =====
+      # Everything that can fail builds here. Deploys only start once all of these pass.
+
+      - name: Build WASM module
+        run: wasm-pack build --release
+        working-directory: yap-frontend-rs
+
+      - name: Generate dictionary data from language packs
+        run: cargo run --release --bin generate-dictionary-data
+
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: yap-frontend
+
+      - name: Install dictionary site dependencies
+        run: pnpm install
+        working-directory: static-site
+
+      - name: Build dictionary site (SSR)
+        run: pnpm build
+        working-directory: static-site
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+
+      - name: Build frontend (SPA)
+        run: pnpm build
+        working-directory: yap-frontend
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Merge SPA and dictionary into single deploy directory
+        run: |
+          DEPLOY_DIR=deploy-output
+          cp -r static-site/dist "$DEPLOY_DIR"
+          cp -r yap-frontend/dist/* "$DEPLOY_DIR/"
+          node -e "
+            const fs = require('fs');
+            const routes = JSON.parse(fs.readFileSync('$DEPLOY_DIR/_routes.json', 'utf-8'));
+            routes.include = ['/d/*', '/blog/*', '/sitemap*', '/robots.txt'];
+            fs.writeFileSync('$DEPLOY_DIR/_routes.json', JSON.stringify(routes, null, 2));
+          "
+
+      - name: Build and push Fly image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: yap-ai-backend/Dockerfile
+          push: true
+          tags: registry.fly.io/yap-ai-backend:${{ github.sha }}
+          cache-from: type=registry,ref=registry.fly.io/yap-ai-backend:cache
+          cache-to: type=registry,ref=registry.fly.io/yap-ai-backend:cache,mode=max
+
+      - name: Install Modal
+        run: pip install modal
+
+      # ===== DEPLOY PHASE =====
+      # Sequential: Fly first (safest to go early), then Cloudflare Pages, then Modal.
+      # Dictionary KV upload runs last since it's the least critical.
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --image registry.fly.io/yap-ai-backend:${{ github.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: deploy-output
+          command: pages deploy . --project-name=yap
+
+      - name: Deploy Modal apps
+        run: modal deploy modal-envs/wav2vec2_phoneme.py
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+
+      - name: Upload dictionary data to KV
+        run: node scripts/upload-dictionary-to-kv.js
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

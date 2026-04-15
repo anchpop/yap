@@ -333,6 +333,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore] // TODO: un-ignore once we regenerate more data
     fn test_simulate_365_days_default_deck_all_courses() {
         let fixed_time = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
 

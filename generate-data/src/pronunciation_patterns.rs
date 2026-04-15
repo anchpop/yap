@@ -7,10 +7,12 @@ use tysm::chat_completions::ChatClient;
 use unicode_normalization::UnicodeNormalization;
 
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-5.2")
-        .unwrap()
-        .with_reasoning_effort("high")
-        .with_cache_directory("./.cache")
+    crate::apply_cache_only(
+        ChatClient::from_env("gpt-5.2")
+            .unwrap()
+            .with_reasoning_effort("high")
+            .with_cache_directory("./.cache"),
+    )
 });
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]

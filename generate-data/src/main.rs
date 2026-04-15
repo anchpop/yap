@@ -122,8 +122,31 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
     dotenvy::dotenv().ok();
 
-    // Optional: filter to a specific target language (e.g. "deu", "fra", "spa")
-    let lang_filter = std::env::args().nth(1);
+    // Parse CLI args. Supported forms:
+    //   generate-data [--cache-only] [<lang_filter>]
+    // --cache-only puts tysm ChatClients, GoogleTranslator, and lexide
+    // tokenization into cache-only mode (no network calls; cache misses error
+    // out or are skipped for lexide).
+    let mut lang_filter: Option<String> = None;
+    let mut cache_only = false;
+    for arg in std::env::args().skip(1) {
+        match arg.as_str() {
+            "--cache-only" => cache_only = true,
+            s if s.starts_with("--") => {
+                anyhow::bail!("unknown flag: {s}");
+            }
+            _ => {
+                if lang_filter.is_some() {
+                    anyhow::bail!("unexpected positional argument: {arg}");
+                }
+                lang_filter = Some(arg);
+            }
+        }
+    }
+    generate_data::set_cache_only(cache_only);
+    if cache_only {
+        println!("cache-only mode: no API calls will be made");
+    }
 
     // Check and raise the file descriptor limit (macOS often defaults to 256)
     unsafe {

@@ -1,1 +1,0 @@
-How does it work?
