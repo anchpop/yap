@@ -721,13 +721,12 @@ export function TranscriptionChallenge({
         )}
       </div>
 
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="mt-4 flex flex-col gap-2 sticky bottom-0">
         {onCantListen && gradingState === null && (
           <CantListenButton onClick={onCantListen} />
         )}
 
-        {/* Submit/Continue button at the bottom */}
-        <div className="sticky bottom-0">
+        <div>
           {gradingState !== null && "grading" in gradingState ? (
             <div className="flex gap-2">
               <Button

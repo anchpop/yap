@@ -30,6 +30,7 @@ import {
   type Language,
   type LiteralGrades,
   type Gram,
+  type MovieMetadataBasic,
   type /* comes from TranscriptionChallenge */ PartGraded,
   type Rating,
 } from "../../yap-frontend-rs/pkg";
@@ -436,10 +437,10 @@ function ReviewPage() {
             const movieIds = movieStats.map((s) => s.id);
             const metadata = getMovieMetadata(deck, movieIds);
             const metadataMap = new Map(metadata.map((m) => [m.id, m]));
-            const moviesWithMetadata = movieStats.map((stat) => ({
-              ...stat,
-              ...(metadataMap.get(stat.id) || {}),
-            }));
+            const moviesWithMetadata = movieStats.flatMap((stat) => {
+              const meta = metadataMap.get(stat.id);
+              return meta ? [{ ...meta, ...stat }] : [];
+            });
 
             return (
               <>
@@ -691,14 +692,10 @@ function findNextDueCard(deck: Deck): CardSummary | null {
   return futureCards.length > 0 ? futureCards[0] : null;
 }
 
-interface MovieWithMetadata {
-  id: string;
+interface MovieWithMetadata extends MovieMetadataBasic {
   percent_known: number;
   all_available_learned: boolean;
   cards_to_next_milestone: number | null | undefined;
-  title?: string;
-  year?: number;
-  original_language?: string;
 }
 
 interface ReviewProps {

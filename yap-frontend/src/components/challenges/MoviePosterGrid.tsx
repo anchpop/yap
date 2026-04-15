@@ -17,9 +17,7 @@ export function MoviePosterGrid({ movieData, deck }: MoviePosterGridProps) {
       {movieData.slice(0, 4).map((movie, index) => (
         <MoviePosterCard
           key={movie.id}
-          id={movie.id}
-          title={movie.title}
-          year={movie.year}
+          movie={movie}
           deck={deck}
           className={index >= 2 ? "hidden md:block" : undefined}
         />

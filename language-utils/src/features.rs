@@ -1569,7 +1569,7 @@ impl Morphology {
         match (language, pos) {
             (Language::French, PartOfSpeech::Noun) => self.get_french_noun_prefix(word),
             (Language::French, PartOfSpeech::Verb | PartOfSpeech::Aux) => {
-                self.get_french_verb_prefix()
+                self.get_french_verb_prefix(word)
             }
             (Language::French, _) => None,
             (Language::Spanish, PartOfSpeech::Noun) => self.get_spanish_noun_prefix(),
@@ -1608,45 +1608,32 @@ impl Morphology {
     }
 
     fn get_french_noun_prefix(&self, word: &str) -> Option<WordPrefix> {
-        // Check if the word starts with a vowel sound for elision
-        // In French, elision occurs before vowels and silent h
-        let starts_with_vowel = word
-            .chars()
-            .next()
-            .map(|c| {
-                matches!(
-                    c.to_ascii_lowercase(),
-                    'a' | 'e' | 'i' | 'o' | 'u' | 'y' | 'h'
-                )
-            })
-            .unwrap_or(false);
+        // Plural: always "les" (no orthographic elision, only spoken liaison)
+        if let Some(Number::Plural) = self.number {
+            return Some(WordPrefix {
+                prefix: "les".to_string(),
+                separator: " ".to_string(),
+            });
+        }
 
-        if starts_with_vowel {
-            // Use elided form regardless of gender/number
-            Some(WordPrefix {
+        // Singular: elide "le"/"la" to "l'" before a vowel sound.
+        // Approximates mute h as eliding (aspirated h would not, but detecting it
+        // requires per-word lookup).
+        if starts_with_french_vowel_sound(word) {
+            return Some(WordPrefix {
                 prefix: "l'".to_string(),
                 separator: "".to_string(),
-            })
-        } else {
-            // Plural takes precedence over gender
-            if let Some(Number::Plural) = self.number {
-                Some(WordPrefix {
-                    prefix: "les".to_string(),
-                    separator: " ".to_string(),
-                })
-            } else {
-                // Singular: use gender to determine article
-                let prefix = match self.gender {
-                    Some(Gender::Feminine) => "la",
-                    Some(Gender::Masculine) | None => "le",
-                    _ => "le", // Default to masculine for neuter/common
-                };
-                Some(WordPrefix {
-                    prefix: prefix.to_string(),
-                    separator: " ".to_string(),
-                })
-            }
+            });
         }
+
+        let prefix = match self.gender {
+            Some(Gender::Feminine) => "la",
+            _ => "le",
+        };
+        Some(WordPrefix {
+            prefix: prefix.to_string(),
+            separator: " ".to_string(),
+        })
     }
 
     fn get_spanish_noun_prefix(&self) -> Option<WordPrefix> {
@@ -1732,12 +1719,23 @@ impl Morphology {
         })
     }
 
-    fn get_french_verb_prefix(&self) -> Option<WordPrefix> {
+    fn get_french_verb_prefix(&self, word: &str) -> Option<WordPrefix> {
         // For conjugated verbs, add subject pronouns based on person/number
         // For infinitives (no person), no prefix
         let person = self.person?;
         let number = self.number.unwrap_or(Number::Singular);
         let politeness = self.politeness;
+
+        // "je" elides to "j'" before a vowel sound (j'aime, j'habite).
+        // Other subject pronouns (tu, il, nous, vous, ils) do not elide orthographically.
+        if let (Person::First, Number::Singular) = (person, number) {
+            if starts_with_french_vowel_sound(word) {
+                return Some(WordPrefix {
+                    prefix: "j'".to_string(),
+                    separator: "".to_string(),
+                });
+            }
+        }
 
         let prefix = match (person, number, politeness) {
             (Person::First, Number::Singular, _) => "je",
@@ -1977,6 +1975,40 @@ impl Morphology {
             separator: " ".to_string(),
         })
     }
+}
+
+/// Returns true if the word starts with a sound that triggers French elision.
+/// Covers vowels and (approximately) mute h. Aspirated h is not detected —
+/// distinguishing it requires a per-word dictionary.
+fn starts_with_french_vowel_sound(word: &str) -> bool {
+    word.chars()
+        .next()
+        .and_then(|c| c.to_lowercase().next())
+        .map(|c| {
+            matches!(
+                c,
+                'a' | 'e'
+                    | 'i'
+                    | 'o'
+                    | 'u'
+                    | 'y'
+                    | 'h'
+                    | 'à'
+                    | 'â'
+                    | 'é'
+                    | 'è'
+                    | 'ê'
+                    | 'ë'
+                    | 'î'
+                    | 'ï'
+                    | 'ô'
+                    | 'ö'
+                    | 'ù'
+                    | 'û'
+                    | 'ü'
+            )
+        })
+        .unwrap_or(false)
 }
 
 fn get_korean_multiword_prefix(gram: &Gram<String>) -> Option<WordPrefix> {

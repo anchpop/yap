@@ -9,6 +9,7 @@ import type {
   Deck,
   Language,
   ManualAddOption,
+  MovieMetadataBasic,
 } from "../../../yap-frontend-rs/pkg";
 import {
   DropdownMenu,
@@ -37,14 +38,10 @@ import { goalToGoalSelection, type Goal } from "@/hooks/useGoal";
 import { useNavigate } from "react-router-dom";
 import { TargetLanguageText } from "./TargetLanguageText";
 
-export interface MovieWithMetadata {
-  id: string;
+export interface MovieWithMetadata extends MovieMetadataBasic {
   percent_known: number;
   all_available_learned: boolean;
   cards_to_next_milestone: number | null | undefined;
-  title?: string;
-  year?: number;
-  original_language?: string;
 }
 
 interface NoCardsReadyProps {

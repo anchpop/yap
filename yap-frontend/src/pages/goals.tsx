@@ -62,10 +62,10 @@ export function GoalsPage() {
         const metadata = getMovieMetadata(deck, movieIds);
         const metadataMap = new Map(metadata.map((m) => [m.id, m]));
         const moviesWithMetadata = movieStats
-          .map((stat) => ({
-            ...stat,
-            ...(metadataMap.get(stat.id) || {}),
-          }))
+          .flatMap((stat) => {
+            const meta = metadataMap.get(stat.id);
+            return meta ? [{ ...meta, ...stat }] : [];
+          })
           .filter((m) => m.original_language === targetLanguageIso);
 
         const pimsleurStats = deck.get_pimsleur_stats();
