@@ -3831,19 +3831,6 @@ impl Context {
 
         None
     }
-
-    pub(crate) fn is_word_easy(&self, word: &Heteronym<Spur>) -> bool {
-        let Some(grams) = self.language_pack.heteronym_to_grams.get(word) else {
-            return false;
-        };
-        grams.iter().any(|g| {
-            self.language_pack
-                .gram_frequencies
-                .entries
-                .get(g)
-                .is_some_and(|f| f.easy)
-        })
-    }
 }
 
 impl Regressions {
@@ -4821,6 +4808,62 @@ mod tests {
             }
         } else {
             println!("✓ No cards available to add (empty language pack)");
+        }
+    }
+
+    #[test]
+    fn test_first_5_cards_are_easy() {
+        use crate::Deck;
+        use crate::next_cards::AllowedCards;
+
+        let deck = Deck::default();
+        if deck
+            .context
+            .language_pack
+            .gram_frequencies
+            .entries
+            .is_empty()
+            || deck.context.course.teaches_new_writing_system()
+        {
+            return;
+        }
+
+        let freq_entries = &deck.context.language_pack.gram_frequencies.entries;
+        let available_easy_single_word_grams = freq_entries
+            .iter()
+            .filter_map(|(gram, frequency)| {
+                if !frequency.easy {
+                    return None;
+                }
+                let resolved = deck.context.language_pack.gram_rodeo.resolve(gram);
+                let single_word = resolved
+                    .iter()
+                    .filter(|atom| matches!(atom, language_utils::Atom::Tok(_)))
+                    .count()
+                    == 1;
+                single_word.then_some(*gram)
+            })
+            .count();
+        if available_easy_single_word_grams < 5 {
+            return;
+        }
+
+        let cards: Vec<_> = deck
+            .next_unknown_cards(AllowedCards::BannedRequirements(BTreeSet::new()), &None, 5)
+            .take(5)
+            .collect();
+        assert_eq!(cards.len(), 5);
+
+        for card in cards {
+            let CardIndicator::WrittenGram { gram } = card else {
+                panic!("expected a written card in the first 5");
+            };
+            assert!(
+                freq_entries
+                    .get(&gram)
+                    .is_some_and(|frequency| frequency.easy),
+                "expected an easy card in the first 5"
+            );
         }
     }
 

@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use rustc_hash::FxHashMap;
 
 use chrono::Utc;
-use language_utils::{Atom, SpurGram, Word, WordType, grm};
+use language_utils::{Atom, SpurGram, Word, grm};
 use lasso::Spur;
 use ordered_float::NotNan;
 
@@ -50,10 +50,14 @@ pub(crate) struct NextCardsIterator {
     card_type_counts: FxHashMap<CardType, u32>,
     // Precomputed sorted lists (value desc)
     text_values: Vec<(NotNan<f32>, SpurGram)>,
-    /// Indices into text_values for single-word grams (only if added_count < 20 at construction)
-    single_word_indices: Option<Vec<usize>>,
-    /// Indices into text_values for easy single-word grams (only if added_count < 5 and !teaches_new_writing_system)
-    easy_single_word_indices: Option<Vec<usize>>,
+    /// Single-word grams in descending frequency order (only if added_count < 20).
+    /// These must be collected directly from the frequency list because
+    /// single-word onboarding preference is a hard priority over value.
+    single_word_grams: Option<Vec<SpurGram>>,
+    /// Easy single-word grams in descending frequency order (only if added_count < 5
+    /// and !teaches_new_writing_system).
+    /// These must also bypass text_values because easy cards can have very low value.
+    easy_single_word_grams: Option<Vec<SpurGram>>,
     listening_values: Vec<(NotNan<f32>, SpurGram)>,
     pronunciation_values: Vec<(NotNan<f32>, CardIndicator<SpurGram, Spur>)>,
 }
@@ -154,43 +158,50 @@ impl NextCardsIterator {
         }
         partial_sort_desc(&mut text_values, early_term_n);
 
-        // Build single-word indices if needed for early onboarding preference
-        // Only look within the partially-sorted top portion
-        let single_word_indices = if added_count < 20 {
-            let limit = text_values.len().min(early_term_n);
+        // Build single-word grams directly from the full frequency list.
+        // These onboarding priorities are hard preferences, so they can't be
+        // derived from the truncated text_values slice.
+        let single_word_grams = if added_count < 20 {
             Some(
-                text_values[..limit]
+                gram_source
+                    .entries
                     .iter()
-                    .enumerate()
-                    .filter(|(_, (_, gram))| {
-                        gram_single_word(context.language_pack.gram_rodeo.resolve(gram)).is_some()
+                    .filter_map(|(gram, _)| {
+                        let card = CardIndicator::WrittenGram { gram: *gram };
+                        if matches!(cards.get(&card), Some(CardData::Added { .. })) {
+                            return None;
+                        }
+                        gram_single_word(context.language_pack.gram_rodeo.resolve(gram))
+                            .is_some()
+                            .then_some(*gram)
                     })
-                    .map(|(i, _)| i)
-                    .collect::<Vec<usize>>(),
+                    .collect(),
             )
         } else {
             None
         };
 
-        // Build easy single-word indices (subset of single_word_indices)
-        let easy_single_word_indices =
+        // Build easy single-word grams from the full frequency list for the same reason:
+        // the easy-first onboarding rule must not depend on the truncated value ranking.
+        let easy_single_word_grams =
             if added_count < 5 && !context.course.teaches_new_writing_system() {
-                single_word_indices.as_ref().map(|swi| {
-                    swi.iter()
-                        .copied()
-                        .filter(|&i| {
-                            let gram = &text_values[i].1;
-                            let resolved = context.language_pack.gram_rodeo.resolve(gram);
-                            match gram_single_word(resolved) {
-                                Some(word) => match &word.word_type {
-                                    WordType::Heteronym(h) => context.is_word_easy(h),
-                                    _ => true,
-                                },
-                                None => false,
+                Some(
+                    gram_source
+                        .entries
+                        .iter()
+                        .filter_map(|(gram, frequency)| {
+                            if !frequency.easy {
+                                return None;
                             }
+                            let card = CardIndicator::WrittenGram { gram: *gram };
+                            if matches!(cards.get(&card), Some(CardData::Added { .. })) {
+                                return None;
+                            }
+                            gram_single_word(context.language_pack.gram_rodeo.resolve(gram))?;
+                            Some(*gram)
                         })
-                        .collect::<Vec<usize>>()
-                })
+                        .collect(),
+                )
             } else {
                 None
             };
@@ -249,8 +260,8 @@ impl NextCardsIterator {
             added_count,
             card_type_counts,
             text_values,
-            single_word_indices,
-            easy_single_word_indices,
+            single_word_grams,
+            easy_single_word_grams,
             listening_values,
             pronunciation_values,
         }
@@ -262,20 +273,19 @@ impl NextCardsIterator {
     }
 
     fn next_text_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
-        // Try preferred indices first based on added_count thresholds
+        // Try preferred grams first based on added_count thresholds
         let preferred_gram = if self.added_count < 5 {
-            // easy_single_word_indices is Some only when !teaches_new_writing_system at construction
-            if let Some(easy_indices) = &self.easy_single_word_indices {
-                self.first_unadded_text_gram(easy_indices)
-            } else if let Some(sw_indices) = &self.single_word_indices {
+            if let Some(easy_grams) = &self.easy_single_word_grams {
+                self.first_unadded_gram(easy_grams)
+            } else if let Some(single_word_grams) = &self.single_word_grams {
                 // teaches_new_writing_system case: prefer any single-word
-                self.first_unadded_text_gram(sw_indices)
+                self.first_unadded_gram(single_word_grams)
             } else {
                 None
             }
         } else if self.added_count < 20 {
-            if let Some(sw_indices) = &self.single_word_indices {
-                self.first_unadded_text_gram(sw_indices)
+            if let Some(single_word_grams) = &self.single_word_grams {
+                self.first_unadded_gram(single_word_grams)
             } else {
                 None
             }
@@ -303,9 +313,8 @@ impl NextCardsIterator {
         })
     }
 
-    fn first_unadded_text_gram(&self, indices: &[usize]) -> Option<SpurGram> {
-        indices.iter().find_map(|&i| {
-            let gram = self.text_values[i].1;
+    fn first_unadded_gram(&self, grams: &[SpurGram]) -> Option<SpurGram> {
+        grams.iter().find_map(|&gram| {
             let card = CardIndicator::WrittenGram { gram };
             if self.is_added(&card) {
                 None
@@ -423,6 +432,52 @@ impl Iterator for NextCardsIterator {
             Some(card)
         } else {
             None
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeSet;
+
+    use super::{AllowedCards, NextCardsIterator, gram_single_word};
+    use crate::{CardIndicator, Deck};
+
+    #[test]
+    fn test_first_20_cards_stay_single_word_when_available() {
+        let deck = Deck::default();
+        if deck
+            .context
+            .language_pack
+            .gram_frequencies
+            .entries
+            .is_empty()
+        {
+            return;
+        }
+
+        let iter = NextCardsIterator::new(
+            &deck,
+            AllowedCards::BannedRequirements(BTreeSet::new()),
+            &None,
+            20,
+        );
+        let Some(single_word_grams) = &iter.single_word_grams else {
+            return;
+        };
+        if single_word_grams.len() < 20 {
+            return;
+        }
+
+        let cards: Vec<_> = iter.take(20).collect();
+        assert_eq!(cards.len(), 20);
+        for card in cards {
+            let CardIndicator::WrittenGram { gram } = card else {
+                panic!("expected written card during early onboarding");
+            };
+            assert!(
+                gram_single_word(deck.context.language_pack.gram_rodeo.resolve(&gram)).is_some()
+            );
         }
     }
 }
