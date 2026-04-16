@@ -1114,6 +1114,23 @@ async fn main() -> anyhow::Result<()> {
             morphology_segmentations.len()
         );
 
+        // Write morphology segmentations to file
+        {
+            let segmentations_file = target_language_dir.join("morphology_segmentations.jsonl");
+            let mut file = File::create(&segmentations_file)
+                .context("Failed to create morphology segmentations file")?;
+            for (word, segments) in &morphology_segmentations {
+                let json = serde_json::to_string(&(word, segments))
+                    .context("Failed to serialize morphology segmentation")?;
+                writeln!(file, "{json}").context("Failed to write morphology segmentation")?;
+            }
+            println!(
+                "Wrote {} morphology segmentations to {:?}",
+                morphology_segmentations.len(),
+                segmentations_file
+            );
+        }
+
         // Create gram dictionary (for single-atom grams)
         // Merge morphology data and custom definitions, producing DictionaryEntry values
         let gram_dict_file = native_specific_dir.join("gram_dictionary.jsonl");
