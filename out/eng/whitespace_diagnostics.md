@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1975608
-Total errors: 1347
+Total predictions: 1974490
+Total errors: 1346
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -660,12 +660,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Uh,yes.
-
-### "," + "you" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - She was the beautiful Rebecca Hildreth,you know.
 
 ### "-" + "-Save" (1 occurrences)
 - Predicted: None

@@ -15,7 +15,7 @@ use yap_frontend_rs::{
 };
 
 static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    ChatClient::from_env("gpt-5.4-mini")
+    ChatClient::from_env("gpt-5.4-nano")
         .unwrap()
         .with_cache_directory("./.cache")
     //.with_service_tier("flex")

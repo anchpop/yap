@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2930513
-Total errors: 2120
+Total predictions: 2929514
+Total errors: 2118
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -709,14 +709,6 @@ Accuracy: 99.93%
   - Du musst mal ’nen Zahn zulegen.
   - Haste mal ’ne Kippe?
   - Leg mal ’n Zahn zu!
-
-### "mich" + "!" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hier, mich !
-  - Immer foppst du mich !
-  - Lass mich !
 
 ### "oben" + "!" (3 occurrences)
 - Predicted: None
@@ -1523,6 +1515,13 @@ Accuracy: 99.93%
 - Examples:
   - Ich mein … - Wir geben nie einen Fall auf.
   - Ich mein … Nein.
+
+### "mich" + "!" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Immer foppst du mich !
+  - Lass mich !
 
 ### "mir" + "-" (2 occurrences)
 - Predicted: None
@@ -5801,12 +5800,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wie ist sein Titel ?
-
-### "Titta" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Wo ist Titta ?
 
 ### "Tja" + "…" (1 occurrences)
 - Predicted: None

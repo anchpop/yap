@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2857805
-Total errors: 726
+Total predictions: 2857185
+Total errors: 721
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "'" + "?" (19 occurrences)
+### "'" + "?" (18 occurrences)
 - Predicted: None
 - Actual: NarrowNbsp
 - Examples:
@@ -321,13 +321,6 @@ Accuracy: 99.97%
 - Examples:
   - Mets- toi à la page, Photocopie.
   - Suicide- toi, suicide-toi, suicide-toi.
-
-### "-" + "tous" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Chevtchouk, Kintchev, Nastia - tous.
-  - Toi et les autres - tous en tôle.
 
 ### "-" + "un" (2 occurrences)
 - Predicted: None
@@ -670,12 +663,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Excellent,Vidya !
-
-### "," + "Viktor" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sonya,Viktor est la maison ?
 
 ### "," + "Wanna" (1 occurrences)
 - Predicted: Space
@@ -1133,6 +1120,12 @@ Accuracy: 99.97%
 - Examples:
   - Vous creusez là - tiens donc, le noyau atomique est constitué de protons.
 
+### "-" + "tous" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Toi et les autres - tous en tôle.
+
 ### "-" + "trouver" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1420,12 +1413,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - N‘importe quoi !
-
-### "Nastia" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Chevtchouk, Kintchev, Nastia - tous.
 
 ### "Ni" + "'" (1 occurrences)
 - Predicted: Space
@@ -2536,12 +2523,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Vous n'y avez pas été 'obligée', non ?
-
-### "on" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Qui 'on' ?
 
 ### "ongles" + "." (1 occurrences)
 - Predicted: None

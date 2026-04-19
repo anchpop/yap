@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2804749
-Total errors: 650
+Total predictions: 2803699
+Total errors: 649
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -1138,12 +1138,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Charolastra ?
-
-### "Charolastras" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Aos Charolastras !
 
 ### "Charolastras" + "?" (1 occurrences)
 - Predicted: None

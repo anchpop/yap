@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2616706
-Total errors: 2781
+Total predictions: 2615634
+Total errors: 2778
 Accuracy: 99.89%
 
 ## Error Patterns (sorted by frequency)
@@ -46,7 +46,7 @@ Accuracy: 99.89%
   - Aspettare cosa ?
   - Che cosa ?
 
-### "no" + "?" (17 occurrences)
+### "no" + "?" (16 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -885,14 +885,6 @@ Accuracy: 99.89%
   - Inventate il lavoro giorno per giorno ?
   - Non spunterà mai il giorno ?
   - Perché non fa mai giorno ?
-
-### "ieri" + "?" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Come, ieri ?
-  - Paulo ti ha raccontato di ieri ?
-  - Sai che è successo ieri ?
 
 ### "insieme" + "?" (3 occurrences)
 - Predicted: None
@@ -1937,6 +1929,13 @@ Accuracy: 99.89%
 - Examples:
   - Di già ?
   - No, di già ?
+
+### "ieri" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Paulo ti ha raccontato di ieri ?
+  - Sai che è successo ieri ?
 
 ### "in" + "-" (2 occurrences)
 - Predicted: None
@@ -4022,12 +4021,6 @@ Accuracy: 99.89%
 - Actual: Space
 - Examples:
   - Dormi ?
-
-### "Due" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Due !
 
 ### "E" + "-" (1 occurrences)
 - Predicted: None

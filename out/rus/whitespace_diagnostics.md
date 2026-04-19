@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2050861
-Total errors: 11251
+Total predictions: 2049772
+Total errors: 11246
 Accuracy: 99.45%
 
 ## Error Patterns (sorted by frequency)
@@ -478,14 +478,6 @@ Accuracy: 99.45%
   - Брак - вот то, что собрало нас сегодня здесь.
   - Была права я - вот вам весь сказ!
 
-### "-" + "да" (13 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - А мы - да!
-  - В рамках существовавших ограничений - да.
-  - Все остальные - да!
-
 ### "-" + "известный" (13 occurrences)
 - Predicted: None
 - Actual: Space
@@ -573,6 +565,14 @@ Accuracy: 99.45%
   - А Сеул - большой город?
   - Бостон - большой город?
   - Италия - большой музей под открытым небом.
+
+### "-" + "да" (12 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - А мы - да!
+  - В рамках существовавших ограничений - да.
+  - Все остальные - да!
 
 ### "-" + "наша" (12 occurrences)
 - Predicted: None
@@ -1614,14 +1614,6 @@ Accuracy: 99.45%
   - Красный цвет - цвет любви.
   - Мой любимый цвет - голубой.
 
-### "," + "да" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Да,да!
-  - С собой,да?
-  - Ты ведь шутишь,да?
-
 ### "," + "иди" (5 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2022,14 +2014,6 @@ Accuracy: 99.45%
   - Два и два - четыре.
   - Два плюс два - четыре.
 
-### "есть" + "-" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Здесь всё есть -Даже кока-кола.
-  - Когда есть - да.
-  - Но главное, проблема одна есть - конкурент.
-
 ### "же" + "-" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2093,6 +2077,14 @@ Accuracy: 99.45%
   - Один и три - нечётные числа.
   - Пятью три - пятнадцать.
   - Трижды три - девять.
+
+### "," + "да" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Да,да!
+  - Ты ведь шутишь,да?
+  - Ты должно быть ездила Гоа,да?
 
 ### "-" + "Ваш" (4 occurrences)
 - Predicted: None
@@ -2789,6 +2781,14 @@ Accuracy: 99.45%
   - Большинство его друзей - девочки.
   - Большинство её друзей - девочки.
   - Большинство её друзей - мальчики.
+
+### "есть" + "-" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Здесь всё есть -Даже кока-кола.
+  - Но главное, проблема одна есть - конкурент.
+  - Так и есть - любовь и ненависть.
 
 ### "женщина" + "-" (4 occurrences)
 - Predicted: None
@@ -4237,14 +4237,6 @@ Accuracy: 99.45%
   - Порту-Алегри - великолепный город.
   - Порту-Алегри - отличный город.
   - Порту-Алегри - прекрасный город.
-
-### "Потом" + "-" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Потом - Нью-Йорк.
-  - Потом - наверх, а потом - обратно вниз!
-  - Потом - отдать на расправу Гым-Чжа!
 
 ### "Работа" + "-" (3 occurrences)
 - Predicted: None
@@ -7493,6 +7485,13 @@ Accuracy: 99.45%
   - Поньо - какое красивое имя.
   - Поньо, Поньо, Поньо - ребенок рыбы.
 
+### "Потом" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Потом - наверх, а потом - обратно вниз!
+  - Потом - отдать на расправу Гым-Чжа!
+
 ### "Правда" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10358,12 +10357,6 @@ Accuracy: 99.45%
 - Actual: Space
 - Examples:
   - Столица Мавритании - Нуакшот.
-
-### "-" + "Нью-Йорк" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Потом - Нью-Йорк.
 
 ### "-" + "Огня" (1 occurrences)
 - Predicted: None
