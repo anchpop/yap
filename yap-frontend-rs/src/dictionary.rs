@@ -120,6 +120,7 @@ fn compute_morpheme_breakdown(
 /// - Multi-atom grams → **word-level** decomposition: heteronyms contribute
 ///   `(surface, lemma_if_different, Some(gloss))`; punctuation contributes
 ///   `(surface, None, None)`.
+#[allow(clippy::type_complexity)]
 pub fn compute_breakdown(
     gram: &language_utils::grm<lasso::Spur>,
     language_pack: &LanguagePack,

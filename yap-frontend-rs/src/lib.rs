@@ -3882,6 +3882,7 @@ pub enum CardContent {
         /// frontend can skip rendering that row entirely if everything
         /// matches). Gloss is optional: punctuation atoms in multi-word grams
         /// leave the native-language cell blank.
+        #[allow(clippy::type_complexity)]
         breakdown: Option<Vec<(String, Option<String>, Option<String>)>>,
     },
     Listening {
