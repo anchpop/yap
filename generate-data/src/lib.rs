@@ -29,9 +29,11 @@ pub fn apply_cache_only(
 
 pub mod dict;
 pub mod disambiguation_practice;
+pub mod etymology;
 pub mod frequencies;
 pub mod lexide_token;
-pub mod morphology;
+pub mod llm_etymology;
+pub mod morpheme_info;
 pub mod morphology_analysis;
 pub mod nlp;
 pub mod pronunciation_patterns;

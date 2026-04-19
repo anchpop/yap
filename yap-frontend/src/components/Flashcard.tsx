@@ -771,6 +771,85 @@ export const Flashcard = function Flashcard({
           </Card>
         </motion.div>
 
+        {/* Breakdown (morphemes or words), shown after the card is revealed */}
+        {showAnswer &&
+          content.type === "Gram" &&
+          content.breakdown &&
+          content.breakdown.length > 0 &&
+          (() => {
+            const breakdown = content.breakdown;
+            const hasCanonicalRow = breakdown.some(
+              ([, canonical]) => canonical != null,
+            );
+            const glossRow = hasCanonicalRow ? 3 : 2;
+            return (
+              <div className="mt-6 flex flex-col items-center">
+                <div
+                  className="inline-grid gap-x-4 gap-y-1 justify-items-start"
+                  style={{
+                    gridTemplateColumns: `repeat(${breakdown.length}, auto)`,
+                  }}
+                >
+                  {breakdown.flatMap(([surface, canonical, gloss], i) => {
+                    const delay = 1.5 + i * 0.2;
+                    const fadeStyle = {
+                      opacity: 0,
+                      animation: `fade-in 0.4s ease-out ${delay}s forwards`,
+                    };
+                    const cells = [
+                      <div
+                        key={`s-${i}`}
+                        className="font-medium"
+                        style={{
+                          gridRow: 1,
+                          gridColumn: i + 1,
+                          ...fadeStyle,
+                        }}
+                      >
+                        <TargetLanguageText language={targetLanguage}>
+                          {surface}
+                        </TargetLanguageText>
+                      </div>,
+                      <div
+                        key={`g-${i}`}
+                        className="text-muted-foreground"
+                        style={{
+                          gridRow: glossRow,
+                          gridColumn: i + 1,
+                          ...fadeStyle,
+                        }}
+                      >
+                        {gloss ?? ""}
+                      </div>,
+                    ];
+                    if (hasCanonicalRow) {
+                      cells.push(
+                        <div
+                          key={`c-${i}`}
+                          className="text-muted-foreground italic"
+                          style={{
+                            gridRow: 2,
+                            gridColumn: i + 1,
+                            ...fadeStyle,
+                          }}
+                        >
+                          {canonical != null ? (
+                            <TargetLanguageText language={targetLanguage}>
+                              {canonical}
+                            </TargetLanguageText>
+                          ) : (
+                            ""
+                          )}
+                        </div>,
+                      );
+                    }
+                    return cells;
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
         {/* Tutorial text below card */}
         {showTutorial && !showAnswer && (
           <div className="text-center mt-2 text-2xl font-semibold text-muted-foreground flex flex-row justify-center items-end animate-fade-in-delayed">

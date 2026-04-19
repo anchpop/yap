@@ -10,7 +10,8 @@ use lasso::Spur;
 use crate::{
     AudioRequest, CardContent, CardIndicator, Challenge, ComprehensibleSentence, Deck, FlashCard,
     ReviewInfo, SentenceChallengeType, TranscribeComprehensibleSentence,
-    TranslateComprehensibleSentence, dictionary::compute_word_prefix_and_morphology,
+    TranslateComprehensibleSentence,
+    dictionary::{compute_breakdown, compute_word_prefix_and_morphology},
 };
 
 /// Metadata computed from a CardIndicator and Deck, used to build FlashCardReview
@@ -388,10 +389,16 @@ impl ReviewInfo {
             deck.context.course.target_language,
         );
 
+        // Morpheme-level breakdown for single heteronyms, word-level for
+        // multi-atom grams. Punctuation atoms in multi-word grams render with
+        // `None` gloss.
+        let breakdown = compute_breakdown(language_pack.gram_rodeo.resolve(&gram), language_pack);
+
         let content = CardContent::Gram {
             gram: literals,
             definition,
             prefix,
+            breakdown,
         };
 
         let audio_text = gram_resolved.to_display_string(deck.context.course.target_language);

@@ -3877,6 +3877,12 @@ pub enum CardContent {
         /// for verbs). Computed server-side so the frontend doesn't have to call
         /// into the WASM module just to render the card front.
         prefix: Option<WordPrefix>,
+        /// Breakdown of the gram: `(surface, canonical, gloss)` per piece.
+        /// Canonical is `Some` only when it differs from the surface (so the
+        /// frontend can skip rendering that row entirely if everything
+        /// matches). Gloss is optional: punctuation atoms in multi-word grams
+        /// leave the native-language cell blank.
+        breakdown: Option<Vec<(String, Option<String>, Option<String>)>>,
     },
     Listening {
         possible_grams: Vec<(bool, Vec<Literal<String>>, Vec<GramDefinition>)>,

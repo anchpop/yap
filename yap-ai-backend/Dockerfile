@@ -13,6 +13,10 @@ RUN mkdir -p language-utils/src && touch language-utils/src/lib.rs
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
+RUN apt-get update && apt-get install -y \
+    libopus-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=planner /app/recipe.json recipe.json
 COPY --from=planner /app/Cargo.toml Cargo.toml
 COPY Cargo.lock .
@@ -31,6 +35,7 @@ WORKDIR /app
 # Install required runtime dependencies
 RUN apt-get update && apt-get install -y \
     libssl3 \
+    libopus0 \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 

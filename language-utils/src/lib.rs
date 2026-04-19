@@ -327,10 +327,11 @@ pub struct DictionaryEntry {
     pub target_language_word: String,
     pub definitions: Vec<TargetToNativeWord>,
     pub morphology: Vec<Morphology>,
-    /// Surface-level morphological segmentation of the word.
-    /// e.g. "destabilization" → ["de", "stabil", "iz", "ation"]
+    /// Etymological segmentation of the word. Each entry pairs the surface
+    /// substring with its canonical / lemma form — e.g. `destabilize` →
+    /// `[(de, de), (stabl, stable), (ize, ize)]`.
     #[serde(default)]
-    pub segments: Vec<String>,
+    pub segments: Vec<MorphemeSegment<String>>,
 }
 
 impl From<(DictionaryDefinition, Vec<Morphology>)> for DictionaryEntry {
@@ -858,6 +859,71 @@ pub struct Heteronym<S> {
     pub word: S,
     pub lemma: S,
     pub pos: PartOfSpeech,
+}
+
+/// One piece of a word's etymological decomposition.
+///
+/// - `surface`: the literal substring as it appears in the word.
+/// - `canonical`: the dictionary / lemma form that substring refers to
+///   (often differs — e.g. `stabl (stable)`).
+/// - `tag`: optional UniMorph-style grammatical descriptor (e.g. `"pl"`,
+///   `"1sg"`, `"prs.ind.1sg"`). Populated only when the `(surface, canonical)`
+///   pair alone is ambiguous — e.g. French `-s` can be plural or 1sg/2sg verb
+///   ending; English `-s` can be plural, 3sg present, or possessive. The tag
+///   disambiguates so the same surface+canonical can map to distinct
+///   `MorphemeInfo` entries.
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    schemars::JsonSchema,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    tsify::Tsify,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct MorphemeSegment<S> {
+    pub surface: S,
+    pub canonical: S,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tag: Option<S>,
+}
+
+/// Classification + learner-facing info for a single morpheme, as stored in
+/// the language pack. Produced by the morpheme-analysis pass.
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[serde(tag = "type")]
+pub enum MorphemeInfo<S> {
+    /// A content morpheme that corresponds to a dictionary entry
+    /// (e.g. English surface "stabl" whose dictionary form is "stable";
+    /// Korean surface "먹" whose dictionary form is "먹다").
+    Root { heteronym: Heteronym<S> },
+    /// A bound content root — can't stand alone and isn't a standard affix
+    /// (e.g. English "-cide", "-ology", Korean "-학" in 생물학).
+    Bound { meaning: Option<S> },
+    /// A derivational affix — changes meaning or part of speech
+    /// (e.g. English "un-", "-ize"; Korean "-하다", "-화").
+    Derivation { meaning: Option<S> },
+    /// An inflectional affix — grammatical marker
+    /// (e.g. English plural "-s", past "-ed"; Korean "-아", "-요").
+    Inflection { meaning: Option<S> },
 }
 
 /// Type of non-heteronym word
@@ -2030,6 +2096,10 @@ pub struct ConsolidatedLanguageData {
     pub encoded_sentences: Vec<(String, SentenceGrams<Gram<String>>)>,
     /// Gram dictionary: definitions for grams (keyed by Gram for correct surface-form matching)
     pub gram_dictionary: BTreeMap<Gram<String>, DictionaryEntry>,
+    /// Morpheme classification + info, keyed by (surface, canonical) pair.
+    /// The pair prevents ambiguity when the same surface maps to different
+    /// underlying morphemes (e.g. `-er` as agent vs. comparative).
+    pub morphemes: BTreeMap<MorphemeSegment<String>, MorphemeInfo<String>>,
 }
 
 impl ConsolidatedLanguageData {
@@ -2121,6 +2191,28 @@ impl ConsolidatedLanguageData {
         // intern proper noun definitions keys
         for proper_noun in self.proper_noun_definitions.keys() {
             rodeo.get_or_intern(proper_noun);
+        }
+
+        // intern morpheme segment keys (surface + canonical + optional tag) and info payloads
+        for (segment, info) in &self.morphemes {
+            rodeo.get_or_intern(&segment.surface);
+            rodeo.get_or_intern(&segment.canonical);
+            if let Some(tag) = &segment.tag {
+                rodeo.get_or_intern(tag);
+            }
+            match info {
+                MorphemeInfo::Root { heteronym } => {
+                    rodeo.get_or_intern(&heteronym.word);
+                    rodeo.get_or_intern(&heteronym.lemma);
+                }
+                MorphemeInfo::Bound { meaning }
+                | MorphemeInfo::Derivation { meaning }
+                | MorphemeInfo::Inflection { meaning } => {
+                    if let Some(m) = meaning {
+                        rodeo.get_or_intern(m);
+                    }
+                }
+            }
         }
 
         // intern gram vocabulary atom texts

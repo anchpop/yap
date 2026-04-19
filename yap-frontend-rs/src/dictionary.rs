@@ -1,6 +1,10 @@
 use language_utils::features::{Morphology, WordPrefix};
+use language_utils::language_pack::LanguagePack;
 use language_utils::text_cleanup::remove_accents_lowercase;
-use language_utils::{Atom, Gram, GramDefinition, Language, TargetToNativeWord, WordType};
+use language_utils::{
+    Atom, Gram, GramDefinition, Heteronym, Language, MorphemeSegment, TargetToNativeWord, WordType,
+};
+use lasso::Spur;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -55,6 +59,107 @@ pub(crate) fn compute_word_prefix_and_morphology(
             Morphology::get_multiword_prefix(gram, target_language),
             None,
         ),
+    }
+}
+
+/// Break a heteronym's word into its constituent morphemes. Each entry is
+/// `(surface, canonical, gloss)`. The gloss is required for morpheme-level
+/// breakdown (all-or-nothing); canonical is `Some` only when it differs from
+/// the surface.
+fn compute_morpheme_breakdown(
+    heteronym: &Heteronym<Spur>,
+    language_pack: &LanguagePack,
+) -> Option<Vec<(String, Option<String>, String)>> {
+    let rodeo = &language_pack.string_rodeo;
+
+    // The segmentation lives on the DictionaryEntry, which we reach via the
+    // heteronym's first (most frequent) gram.
+    let gram = language_pack.heteronym_to_grams.get(heteronym)?.first()?;
+    let dict_entry = match language_pack.gram_definitions.get(gram)? {
+        GramDefinition::Dictionary(d) => d,
+        GramDefinition::Phrasebook(_) => return None,
+    };
+
+    if dict_entry.segments.len() < 2 {
+        return None;
+    }
+
+    dict_entry
+        .segments
+        .iter()
+        .map(|segment| {
+            let key = MorphemeSegment {
+                surface: rodeo.get(&segment.surface)?,
+                canonical: rodeo.get(&segment.canonical)?,
+                tag: match &segment.tag {
+                    Some(t) => Some(rodeo.get(t)?),
+                    None => None,
+                },
+            };
+            let info = language_pack.morphemes.get(&key)?;
+            let gloss = language_pack.morpheme_gloss(info)?;
+            let canonical = if segment.canonical == segment.surface {
+                None
+            } else {
+                Some(segment.canonical.clone())
+            };
+            Some((segment.surface.clone(), canonical, gloss))
+        })
+        .collect()
+}
+
+/// Compute the learner-facing breakdown for a gram.
+///
+/// Each entry is `(surface, canonical, gloss)`. Canonical is `Some` only when
+/// it differs from the surface (the frontend uses this to decide whether to
+/// render a canonical row at all). Gloss is optional so punctuation atoms in
+/// multi-word grams render with an empty native-language cell.
+///
+/// - Single-heteronym grams → **morpheme-level** decomposition; all glosses
+///   required (all-or-nothing).
+/// - Multi-atom grams → **word-level** decomposition: heteronyms contribute
+///   `(surface, lemma_if_different, Some(gloss))`; punctuation contributes
+///   `(surface, None, None)`.
+pub fn compute_breakdown(
+    gram: &language_utils::grm<lasso::Spur>,
+    language_pack: &LanguagePack,
+) -> Option<Vec<(String, Option<String>, Option<String>)>> {
+    use language_utils::Atom as UAtom;
+
+    match gram.atoms() {
+        [UAtom::Tok(word)] => match &word.word_type {
+            WordType::Heteronym(het) => {
+                let inner = compute_morpheme_breakdown(het, language_pack)?;
+                Some(inner.into_iter().map(|(s, c, g)| (s, c, Some(g))).collect())
+            }
+            _ => None,
+        },
+        atoms => {
+            let rodeo = &language_pack.string_rodeo;
+            let out: Vec<(String, Option<String>, Option<String>)> = atoms
+                .iter()
+                .filter_map(|atom| match atom {
+                    UAtom::Tok(word) => {
+                        let surface = rodeo.resolve(&word.text).to_string();
+                        let (canonical, gloss) = match &word.word_type {
+                            WordType::Heteronym(het) => {
+                                let lemma = rodeo.resolve(&het.lemma);
+                                let canonical = if lemma == surface {
+                                    None
+                                } else {
+                                    Some(lemma.to_string())
+                                };
+                                (canonical, language_pack.heteronym_gloss(het))
+                            }
+                            _ => (None, None),
+                        };
+                        Some((surface, canonical, gloss))
+                    }
+                    _ => None,
+                })
+                .collect();
+            if out.len() < 2 { None } else { Some(out) }
+        }
     }
 }
 

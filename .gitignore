@@ -60,3 +60,5 @@ out/*/pronunciation_to_words.jsonl
 out/*/supertokens.txt
 out/*/vocabulary.jsonl
 out/*/word_to_pronunciation.jsonl
+out/*/etymology_segmentations.jsonl
+out/*/morpheme_info.jsonl

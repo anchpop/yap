@@ -1,0 +1,515 @@
+{"word": "refaire", "morphemes": ["re (re)", "faire (faire)"]}
+{"word": "refait", "morphemes": ["re (re)", "fait (faire)"]}
+{"word": "refaite", "morphemes": ["re (re)", "fait (faire)", "e (e) [f]"]}
+{"word": "redire", "morphemes": ["re (re)", "dire (dire)"]}
+{"word": "redit", "morphemes": ["re (re)", "dit (dire)"]}
+{"word": "revoir", "morphemes": ["re (re)", "voir (voir)"]}
+{"word": "revu", "morphemes": ["re (re)", "vu (voir)"]}
+{"word": "revue", "morphemes": ["re (re)", "vu (voir)", "e (e) [f]"]}
+{"word": "relire", "morphemes": ["re (re)", "lire (lire)"]}
+{"word": "relu", "morphemes": ["re (re)", "lu (lire)"]}
+{"word": "revenir", "morphemes": ["re (re)", "venir (venir)"]}
+{"word": "revenu", "morphemes": ["re (re)", "venu (venir)"]}
+{"word": "revenue", "morphemes": ["re (re)", "venu (venir)", "e (e) [f]"]}
+{"word": "repartir", "morphemes": ["re (re)", "partir (partir)"]}
+{"word": "reparti", "morphemes": ["re (re)", "parti (partir)"]}
+{"word": "reprendre", "morphemes": ["re (re)", "prendre (prendre)"]}
+{"word": "repris", "morphemes": ["re (re)", "pris (prendre)"]}
+{"word": "reprise", "morphemes": ["re (re)", "pris (prendre)", "e (e) [f]"]}
+{"word": "rejouer", "morphemes": ["re (re)", "jouer (jouer)"]}
+{"word": "rejoué", "morphemes": ["re (re)", "joué (jouer)"]}
+{"word": "relever", "morphemes": ["re (re)", "lever (lever)"]}
+{"word": "relevé", "morphemes": ["re (re)", "levé (lever)"]}
+{"word": "remettre", "morphemes": ["re (re)", "mettre (mettre)"]}
+{"word": "remis", "morphemes": ["re (re)", "mis (mettre)"]}
+{"word": "remise", "morphemes": ["re (re)", "mis (mettre)", "e (e) [f]"]}
+{"word": "retourner", "morphemes": ["re (re)", "tourner (tourner)"]}
+{"word": "retourné", "morphemes": ["re (re)", "tourné (tourner)"]}
+{"word": "retrouver", "morphemes": ["re (re)", "trouver (trouver)"]}
+{"word": "retrouvé", "morphemes": ["re (re)", "trouvé (trouver)"]}
+{"word": "recommencer", "morphemes": ["re (re)", "commencer (commencer)"]}
+{"word": "recommencé", "morphemes": ["re (re)", "commencé (commencer)"]}
+{"word": "reconstruire", "morphemes": ["re (re)", "construire (construire)"]}
+{"word": "reconstruit", "morphemes": ["re (re)", "construit (construire)"]}
+{"word": "réécrire", "morphemes": ["ré (re)", "écrire (écrire)"]}
+{"word": "réécrit", "morphemes": ["ré (re)", "écrit (écrire)"]}
+{"word": "réinventer", "morphemes": ["ré (re)", "inventer (inventer)"]}
+{"word": "réinventé", "morphemes": ["ré (re)", "inventé (inventer)"]}
+{"word": "réimaginer", "morphemes": ["ré (re)", "imaginer (imaginer)"]}
+{"word": "réapparaître", "morphemes": ["ré (re)", "apparaître (apparaître)"]}
+{"word": "réorganiser", "morphemes": ["ré (re)", "organiser (organiser)"]}
+{"word": "réutiliser", "morphemes": ["ré (re)", "utiliser (utiliser)"]}
+{"word": "réaffirmer", "morphemes": ["ré (re)", "affirmer (affirmer)"]}
+{"word": "défaire", "morphemes": ["dé (dé)", "faire (faire)"]}
+{"word": "défait", "morphemes": ["dé (dé)", "fait (faire)"]}
+{"word": "défaite", "morphemes": ["dé (dé)", "fait (faire)", "e (e) [f]"]}
+{"word": "décharger", "morphemes": ["dé (dé)", "charger (charger)"]}
+{"word": "déchargé", "morphemes": ["dé (dé)", "chargé (charger)"]}
+{"word": "décoller", "morphemes": ["dé (dé)", "coller (coller)"]}
+{"word": "déposer", "morphemes": ["dé (dé)", "poser (poser)"]}
+{"word": "déposé", "morphemes": ["dé (dé)", "posé (poser)"]}
+{"word": "déplacer", "morphemes": ["dé (dé)", "placer (placer)"]}
+{"word": "déplacé", "morphemes": ["dé (dé)", "placé (placer)"]}
+{"word": "démonter", "morphemes": ["dé (dé)", "monter (monter)"]}
+{"word": "démonté", "morphemes": ["dé (dé)", "monté (monter)"]}
+{"word": "déranger", "morphemes": ["dé (dé)", "ranger (ranger)"]}
+{"word": "dérangé", "morphemes": ["dé (dé)", "rangé (ranger)"]}
+{"word": "désagréable", "morphemes": ["dés (dé)", "agréable (agréable)"]}
+{"word": "désavantage", "morphemes": ["dés (dé)", "avantage (avantage)"]}
+{"word": "désarmer", "morphemes": ["dés (dé)", "armer (armer)"]}
+{"word": "désobéir", "morphemes": ["dés (dé)", "obéir (obéir)"]}
+{"word": "désordre", "morphemes": ["dés (dé)", "ordre (ordre)"]}
+{"word": "déshabiller", "morphemes": ["dés (dé)", "habiller (habiller)"]}
+{"word": "inconnue", "morphemes": ["in (in)", "connu (connaître)", "e (e) [f]"]}
+{"word": "inconnu", "morphemes": ["in (in)", "connu (connaître)"]}
+{"word": "incomplet", "morphemes": ["in (in)", "complet (complet)"]}
+{"word": "incorrect", "morphemes": ["in (in)", "correct (correct)"]}
+{"word": "incorrecte", "morphemes": ["in (in)", "correct (correct)", "e (e) [f]"]}
+{"word": "incapable", "morphemes": ["in (in)", "capable (capable)"]}
+{"word": "injuste", "morphemes": ["in (in)", "juste (juste)"]}
+{"word": "injustice", "morphemes": ["in (in)", "justice (justice)"]}
+{"word": "instable", "morphemes": ["in (in)", "stable (stable)"]}
+{"word": "invisible", "morphemes": ["in (in)", "visible (visible)"]}
+{"word": "impossible", "morphemes": ["im (in)", "possible (possible)"]}
+{"word": "impatient", "morphemes": ["im (in)", "patient (patient)"]}
+{"word": "impatiente", "morphemes": ["im (in)", "patient (patient)", "e (e) [f]"]}
+{"word": "impoli", "morphemes": ["im (in)", "poli (poli)"]}
+{"word": "impolie", "morphemes": ["im (in)", "poli (poli)", "e (e) [f]"]}
+{"word": "imparfait", "morphemes": ["im (in)", "parfait (parfait)"]}
+{"word": "impur", "morphemes": ["im (in)", "pur (pur)"]}
+{"word": "illégal", "morphemes": ["il (in)", "légal (légal)"]}
+{"word": "illisible", "morphemes": ["il (in)", "lisible (lisible)"]}
+{"word": "illogique", "morphemes": ["il (in)", "logique (logique)"]}
+{"word": "irréel", "morphemes": ["ir (in)", "réel (réel)"]}
+{"word": "irrégulier", "morphemes": ["ir (in)", "régulier (régulier)"]}
+{"word": "irresponsable", "morphemes": ["ir (in)", "responsable (responsable)"]}
+{"word": "irrespectueux", "morphemes": ["ir (in)", "respectueux (respectueux)"]}
+{"word": "prévoir", "morphemes": ["pré (pré)", "voir (voir)"]}
+{"word": "prévu", "morphemes": ["pré (pré)", "vu (voir)"]}
+{"word": "prévue", "morphemes": ["pré (pré)", "vu (voir)", "e (e) [f]"]}
+{"word": "prédire", "morphemes": ["pré (pré)", "dire (dire)"]}
+{"word": "prédit", "morphemes": ["pré (pré)", "dit (dire)"]}
+{"word": "préhistoire", "morphemes": ["pré (pré)", "histoire (histoire)"]}
+{"word": "préhistorique", "morphemes": ["pré (pré)", "historique (historique)"]}
+{"word": "prénatal", "morphemes": ["pré (pré)", "natal (natal)"]}
+{"word": "surcharger", "morphemes": ["sur (sur)", "charger (charger)"]}
+{"word": "surchargé", "morphemes": ["sur (sur)", "chargé (charger)"]}
+{"word": "surestimer", "morphemes": ["sur (sur)", "estimer (estimer)"]}
+{"word": "surhumain", "morphemes": ["sur (sur)", "humain (humain)"]}
+{"word": "surnaturel", "morphemes": ["sur (sur)", "naturel (naturel)"]}
+{"word": "surpeuplé", "morphemes": ["sur (sur)", "peuplé (peupler)"]}
+{"word": "surproduction", "morphemes": ["sur (sur)", "production (production)"]}
+{"word": "sous-marin", "morphemes": ["sous (sous)", "-", "marin (marin)"]}
+{"word": "sous-titre", "morphemes": ["sous (sous)", "-", "titre (titre)"]}
+{"word": "sous-sol", "morphemes": ["sous (sous)", "-", "sol (sol)"]}
+{"word": "antinational", "morphemes": ["anti (anti)", "national (national)"]}
+{"word": "antivirus", "morphemes": ["anti (anti)", "virus (virus)"]}
+{"word": "antisocial", "morphemes": ["anti (anti)", "social (social)"]}
+{"word": "autobiographie", "morphemes": ["auto (auto)", "biographie (biographie)"]}
+{"word": "autoportrait", "morphemes": ["auto (auto)", "portrait (portrait)"]}
+{"word": "autoroute", "morphemes": ["auto (auto)", "route (route)"]}
+{"word": "autodéfense", "morphemes": ["auto (auto)", "défense (défense)"]}
+{"word": "autoécole", "morphemes": ["auto (auto)", "école (école)"]}
+{"word": "autodestruction", "morphemes": ["auto (auto)", "destruction (destruction)"]}
+{"word": "autocritique", "morphemes": ["auto (auto)", "critique (critique)"]}
+{"word": "microclimat", "morphemes": ["micro (micro)", "climat (climat)"]}
+{"word": "macroéconomie", "morphemes": ["macro (macro)", "économie (économie)"]}
+{"word": "télévision", "morphemes": ["télé (télé)", "vision (vision)"]}
+{"word": "téléspectateur", "morphemes": ["télé (télé)", "spectateur (spectateur)"]}
+{"word": "télétravail", "morphemes": ["télé (télé)", "travail (travail)"]}
+{"word": "télécommande", "morphemes": ["télé (télé)", "commande (commande)"]}
+{"word": "biologie", "morphemes": ["bio (bio)", "logie (logie)"]}
+{"word": "biologique", "morphemes": ["bio (bio)", "logique (logique)"]}
+{"word": "biographie", "morphemes": ["bio (bio)", "graphie (graphie)"]}
+{"word": "écologie", "morphemes": ["éco (éco)", "logie (logie)"]}
+{"word": "écologique", "morphemes": ["éco (éco)", "logique (logique)"]}
+{"word": "géologie", "morphemes": ["géo (géo)", "logie (logie)"]}
+{"word": "géographie", "morphemes": ["géo (géo)", "graphie (graphie)"]}
+{"word": "géométrie", "morphemes": ["géo (géo)", "métrie (métrie)"]}
+{"word": "photographie", "morphemes": ["photo (photo)", "graphie (graphie)"]}
+{"word": "photographe", "morphemes": ["photo (photo)", "graphe (graphe)"]}
+{"word": "xénophobie", "morphemes": ["xéno (xéno)", "phobie (phobie)"]}
+{"word": "claustrophobie", "morphemes": ["claustro (claustro)", "phobie (phobie)"]}
+{"word": "francophone", "morphemes": ["franco (franco)", "phone (phone)"]}
+{"word": "anglophone", "morphemes": ["anglo (anglo)", "phone (phone)"]}
+{"word": "hispanophone", "morphemes": ["hispano (hispano)", "phone (phone)"]}
+{"word": "psychologie", "morphemes": ["psycho (psycho)", "logie (logie)"]}
+{"word": "psychologue", "morphemes": ["psycho (psycho)", "logue (logue)"]}
+{"word": "sociologie", "morphemes": ["socio (socio)", "logie (logie)"]}
+{"word": "sociologue", "morphemes": ["socio (socio)", "logue (logue)"]}
+{"word": "archéologie", "morphemes": ["archéo (archéo)", "logie (logie)"]}
+{"word": "archéologue", "morphemes": ["archéo (archéo)", "logue (logue)"]}
+{"word": "heureusement", "morphemes": ["heureuse (heureux)", "ment (ment)"]}
+{"word": "malheureusement", "morphemes": ["mal (mal)", "heureuse (heureux)", "ment (ment)"]}
+{"word": "rapidement", "morphemes": ["rapide (rapide)", "ment (ment)"]}
+{"word": "lentement", "morphemes": ["lente (lent)", "ment (ment)"]}
+{"word": "doucement", "morphemes": ["douce (doux)", "ment (ment)"]}
+{"word": "facilement", "morphemes": ["facile (facile)", "ment (ment)"]}
+{"word": "difficilement", "morphemes": ["difficile (difficile)", "ment (ment)"]}
+{"word": "simplement", "morphemes": ["simple (simple)", "ment (ment)"]}
+{"word": "totalement", "morphemes": ["totale (total)", "ment (ment)"]}
+{"word": "naturellement", "morphemes": ["naturelle (naturel)", "ment (ment)"]}
+{"word": "normalement", "morphemes": ["normale (normal)", "ment (ment)"]}
+{"word": "finalement", "morphemes": ["finale (final)", "ment (ment)"]}
+{"word": "généralement", "morphemes": ["générale (général)", "ment (ment)"]}
+{"word": "probablement", "morphemes": ["probable (probable)", "ment (ment)"]}
+{"word": "absolument", "morphemes": ["absolu (absolu)", "ment (ment)"]}
+{"word": "vraiment", "morphemes": ["vrai (vrai)", "ment (ment)"]}
+{"word": "sincèrement", "morphemes": ["sincère (sincère)", "ment (ment)"]}
+{"word": "complètement", "morphemes": ["complète (complet)", "ment (ment)"]}
+{"word": "entièrement", "morphemes": ["entière (entier)", "ment (ment)"]}
+{"word": "immédiatement", "morphemes": ["immédiate (immédiat)", "ment (ment)"]}
+{"word": "directement", "morphemes": ["directe (direct)", "ment (ment)"]}
+{"word": "exactement", "morphemes": ["exacte (exact)", "ment (ment)"]}
+{"word": "parfaitement", "morphemes": ["parfaite (parfait)", "ment (ment)"]}
+{"word": "tristement", "morphemes": ["triste (triste)", "ment (ment)"]}
+{"word": "calmement", "morphemes": ["calme (calme)", "ment (ment)"]}
+{"word": "froidement", "morphemes": ["froide (froid)", "ment (ment)"]}
+{"word": "chaudement", "morphemes": ["chaude (chaud)", "ment (ment)"]}
+{"word": "silencieusement", "morphemes": ["silencieuse (silencieux)", "ment (ment)"]}
+{"word": "dangereusement", "morphemes": ["dangereuse (dangereux)", "ment (ment)"]}
+{"word": "sérieusement", "morphemes": ["sérieuse (sérieux)", "ment (ment)"]}
+{"word": "amoureusement", "morphemes": ["amoureuse (amoureux)", "ment (ment)"]}
+{"word": "curieusement", "morphemes": ["curieuse (curieux)", "ment (ment)"]}
+{"word": "courageusement", "morphemes": ["courageuse (courageux)", "ment (ment)"]}
+{"word": "joyeusement", "morphemes": ["joyeuse (joyeux)", "ment (ment)"]}
+{"word": "généreusement", "morphemes": ["généreuse (généreux)", "ment (ment)"]}
+{"word": "publiquement", "morphemes": ["publique (public)", "ment (ment)"]}
+{"word": "politiquement", "morphemes": ["politique (politique)", "ment (ment)"]}
+{"word": "économiquement", "morphemes": ["économique (économique)", "ment (ment)"]}
+{"word": "historiquement", "morphemes": ["historique (historique)", "ment (ment)"]}
+{"word": "scientifiquement", "morphemes": ["scientifique (scientifique)", "ment (ment)"]}
+{"word": "magnifiquement", "morphemes": ["magnifique (magnifique)", "ment (ment)"]}
+{"word": "tranquillement", "morphemes": ["tranquille (tranquille)", "ment (ment)"]}
+{"word": "chanteuse", "morphemes": ["chant (chanter)", "euse (euse)"]}
+{"word": "danseuse", "morphemes": ["dans (danser)", "euse (euse)"]}
+{"word": "serveuse", "morphemes": ["serv (servir)", "euse (euse)"]}
+{"word": "vendeuse", "morphemes": ["vend (vendre)", "euse (euse)"]}
+{"word": "joueuse", "morphemes": ["jou (jouer)", "euse (euse)"]}
+{"word": "menteuse", "morphemes": ["ment (mentir)", "euse (euse)"]}
+{"word": "voleuse", "morphemes": ["vol (voler)", "euse (euse)"]}
+{"word": "coiffeuse", "morphemes": ["coiff (coiffer)", "euse (euse)"]}
+{"word": "nageuse", "morphemes": ["nag (nager)", "euse (euse)"]}
+{"word": "voyageuse", "morphemes": ["voyag (voyager)", "euse (euse)"]}
+{"word": "rêveuse", "morphemes": ["rêv (rêver)", "euse (euse)"]}
+{"word": "chanteur", "morphemes": ["chant (chanter)", "eur (eur)"]}
+{"word": "danseur", "morphemes": ["dans (danser)", "eur (eur)"]}
+{"word": "vendeur", "morphemes": ["vend (vendre)", "eur (eur)"]}
+{"word": "joueur", "morphemes": ["jou (jouer)", "eur (eur)"]}
+{"word": "menteur", "morphemes": ["ment (mentir)", "eur (eur)"]}
+{"word": "voleur", "morphemes": ["vol (voler)", "eur (eur)"]}
+{"word": "coiffeur", "morphemes": ["coiff (coiffer)", "eur (eur)"]}
+{"word": "nageur", "morphemes": ["nag (nager)", "eur (eur)"]}
+{"word": "voyageur", "morphemes": ["voyag (voyager)", "eur (eur)"]}
+{"word": "rêveur", "morphemes": ["rêv (rêver)", "eur (eur)"]}
+{"word": "travailleur", "morphemes": ["travaill (travailler)", "eur (eur)"]}
+{"word": "travailleuse", "morphemes": ["travaill (travailler)", "euse (euse)"]}
+{"word": "serveur", "morphemes": ["serv (servir)", "eur (eur)"]}
+{"word": "formation", "morphemes": ["form (former)", "ation (ation)"]}
+{"word": "création", "morphemes": ["cré (créer)", "ation (ation)"]}
+{"word": "organisation", "morphemes": ["organis (organiser)", "ation (ation)"]}
+{"word": "préparation", "morphemes": ["prépar (préparer)", "ation (ation)"]}
+{"word": "réparation", "morphemes": ["répar (réparer)", "ation (ation)"]}
+{"word": "réservation", "morphemes": ["réserv (réserver)", "ation (ation)"]}
+{"word": "invitation", "morphemes": ["invit (inviter)", "ation (ation)"]}
+{"word": "imagination", "morphemes": ["imagin (imaginer)", "ation (ation)"]}
+{"word": "présentation", "morphemes": ["présent (présenter)", "ation (ation)"]}
+{"word": "explication", "morphemes": ["explic (expliquer)", "ation (ation)"]}
+{"word": "application", "morphemes": ["applic (appliquer)", "ation (ation)"]}
+{"word": "communication", "morphemes": ["communic (communiquer)", "ation (ation)"]}
+{"word": "publication", "morphemes": ["public (publier)", "ation (ation)"]}
+{"word": "vérification", "morphemes": ["vérific (vérifier)", "ation (ation)"]}
+{"word": "modification", "morphemes": ["modific (modifier)", "ation (ation)"]}
+{"word": "identification", "morphemes": ["identific (identifier)", "ation (ation)"]}
+{"word": "information", "morphemes": ["inform (informer)", "ation (ation)"]}
+{"word": "transformation", "morphemes": ["transform (transformer)", "ation (ation)"]}
+{"word": "admiration", "morphemes": ["admir (admirer)", "ation (ation)"]}
+{"word": "décoration", "morphemes": ["décor (décorer)", "ation (ation)"]}
+{"word": "réalisation", "morphemes": ["réalis (réaliser)", "ation (ation)"]}
+{"word": "utilisation", "morphemes": ["utilis (utiliser)", "ation (ation)"]}
+{"word": "construction", "morphemes": ["construct (construire)", "ion (ion)"]}
+{"word": "destruction", "morphemes": ["destruct (détruire)", "ion (ion)"]}
+{"word": "production", "morphemes": ["product (produire)", "ion (ion)"]}
+{"word": "traduction", "morphemes": ["traduct (traduire)", "ion (ion)"]}
+{"word": "réduction", "morphemes": ["réduct (réduire)", "ion (ion)"]}
+{"word": "introduction", "morphemes": ["introduct (introduire)", "ion (ion)"]}
+{"word": "protection", "morphemes": ["protect (protéger)", "ion (ion)"]}
+{"word": "changement", "morphemes": ["change (changer)", "ment (ment)"]}
+{"word": "logement", "morphemes": ["loge (loger)", "ment (ment)"]}
+{"word": "gouvernement", "morphemes": ["gouverne (gouverner)", "ment (ment)"]}
+{"word": "jugement", "morphemes": ["juge (juger)", "ment (ment)"]}
+{"word": "paiement", "morphemes": ["paie (payer)", "ment (ment)"]}
+{"word": "traitement", "morphemes": ["traite (traiter)", "ment (ment)"]}
+{"word": "classement", "morphemes": ["classe (classer)", "ment (ment)"]}
+{"word": "rangement", "morphemes": ["range (ranger)", "ment (ment)"]}
+{"word": "développement", "morphemes": ["développe (développer)", "ment (ment)"]}
+{"word": "enseignement", "morphemes": ["enseigne (enseigner)", "ment (ment)"]}
+{"word": "remerciement", "morphemes": ["remercie (remercier)", "ment (ment)"]}
+{"word": "commencement", "morphemes": ["commence (commencer)", "ment (ment)"]}
+{"word": "boulangerie", "morphemes": ["boulang (boulanger)", "erie (erie)"]}
+{"word": "pâtisserie", "morphemes": ["pâtiss (pâtissier)", "erie (erie)"]}
+{"word": "boucherie", "morphemes": ["bouch (boucher)", "erie (erie)"]}
+{"word": "épicerie", "morphemes": ["épic (épicier)", "erie (erie)"]}
+{"word": "parfumerie", "morphemes": ["parfum (parfum)", "erie (erie)"]}
+{"word": "laiterie", "morphemes": ["lait (lait)", "erie (erie)"]}
+{"word": "poissonnerie", "morphemes": ["poissonn (poisson)", "erie (erie)"]}
+{"word": "infirmier", "morphemes": ["infirm (infirme)", "ier (ier)"]}
+{"word": "infirmière", "morphemes": ["infirm (infirme)", "ière (ière)"]}
+{"word": "boulanger", "morphemes": ["boulang (boulange)", "er (er)"]}
+{"word": "boulangère", "morphemes": ["boulang (boulange)", "ère (ère)"]}
+{"word": "jardinier", "morphemes": ["jardin (jardin)", "ier (ier)"]}
+{"word": "jardinière", "morphemes": ["jardin (jardin)", "ière (ière)"]}
+{"word": "cuisinier", "morphemes": ["cuisin (cuisine)", "ier (ier)"]}
+{"word": "cuisinière", "morphemes": ["cuisin (cuisine)", "ière (ière)"]}
+{"word": "policier", "morphemes": ["polic (police)", "ier (ier)"]}
+{"word": "policière", "morphemes": ["polic (police)", "ière (ière)"]}
+{"word": "écolier", "morphemes": ["écol (école)", "ier (ier)"]}
+{"word": "écolière", "morphemes": ["écol (école)", "ière (ière)"]}
+{"word": "fermier", "morphemes": ["ferm (ferme)", "ier (ier)"]}
+{"word": "fermière", "morphemes": ["ferm (ferme)", "ière (ière)"]}
+{"word": "égalité", "morphemes": ["égal (égal)", "ité (ité)"]}
+{"word": "réalité", "morphemes": ["réal (réel)", "ité (ité)"]}
+{"word": "possibilité", "morphemes": ["possibil (possible)", "ité (ité)"]}
+{"word": "responsabilité", "morphemes": ["responsabil (responsable)", "ité (ité)"]}
+{"word": "capacité", "morphemes": ["capac (capable)", "ité (ité)"]}
+{"word": "activité", "morphemes": ["activ (actif)", "ité (ité)"]}
+{"word": "créativité", "morphemes": ["créativ (créatif)", "ité (ité)"]}
+{"word": "curiosité", "morphemes": ["curios (curieux)", "ité (ité)"]}
+{"word": "générosité", "morphemes": ["généros (généreux)", "ité (ité)"]}
+{"word": "timidité", "morphemes": ["timid (timide)", "ité (ité)"]}
+{"word": "stupidité", "morphemes": ["stupid (stupide)", "ité (ité)"]}
+{"word": "rapidité", "morphemes": ["rapid (rapide)", "ité (ité)"]}
+{"word": "simplicité", "morphemes": ["simplic (simple)", "ité (ité)"]}
+{"word": "nationalité", "morphemes": ["national (national)", "ité (ité)"]}
+{"word": "spécialité", "morphemes": ["spécial (spécial)", "ité (ité)"]}
+{"word": "actualité", "morphemes": ["actual (actuel)", "ité (ité)"]}
+{"word": "personnalité", "morphemes": ["personnal (personnel)", "ité (ité)"]}
+{"word": "mangeable", "morphemes": ["mange (manger)", "able (able)"]}
+{"word": "buvable", "morphemes": ["buv (boire)", "able (able)"]}
+{"word": "lavable", "morphemes": ["lav (laver)", "able (able)"]}
+{"word": "lisible", "morphemes": ["lis (lire)", "ible (ible)"]}
+{"word": "faisable", "morphemes": ["fais (faire)", "able (able)"]}
+{"word": "acceptable", "morphemes": ["accept (accepter)", "able (able)"]}
+{"word": "raisonnable", "morphemes": ["raisonn (raisonner)", "able (able)"]}
+{"word": "discutable", "morphemes": ["discut (discuter)", "able (able)"]}
+{"word": "préférable", "morphemes": ["préfér (préférer)", "able (able)"]}
+{"word": "réparable", "morphemes": ["répar (réparer)", "able (able)"]}
+{"word": "imaginable", "morphemes": ["imagin (imaginer)", "able (able)"]}
+{"word": "transportable", "morphemes": ["transport (transporter)", "able (able)"]}
+{"word": "utilisable", "morphemes": ["utilis (utiliser)", "able (able)"]}
+{"word": "mangeons", "morphemes": ["mange (manger)", "ons (ons)"]}
+{"word": "mangez", "morphemes": ["mang (manger)", "ez (ez)"]}
+{"word": "mangeait", "morphemes": ["mange (manger)", "ait (ait)"]}
+{"word": "mangeaient", "morphemes": ["mange (manger)", "aient (aient)"]}
+{"word": "mangerai", "morphemes": ["manger (manger)", "ai (ai)"]}
+{"word": "mangeras", "morphemes": ["manger (manger)", "as (as)"]}
+{"word": "mangera", "morphemes": ["manger (manger)", "a (a)"]}
+{"word": "mangerons", "morphemes": ["manger (manger)", "ons (ons)"]}
+{"word": "mangerez", "morphemes": ["manger (manger)", "ez (ez)"]}
+{"word": "mangeront", "morphemes": ["manger (manger)", "ont (ont)"]}
+{"word": "mangerais", "morphemes": ["manger (manger)", "ais (ais)"]}
+{"word": "mangerait", "morphemes": ["manger (manger)", "ait (ait)"]}
+{"word": "parlons", "morphemes": ["parl (parler)", "ons (ons)"]}
+{"word": "parlez", "morphemes": ["parl (parler)", "ez (ez)"]}
+{"word": "parlent", "morphemes": ["parl (parler)", "ent (ent)"]}
+{"word": "parlait", "morphemes": ["parl (parler)", "ait (ait)"]}
+{"word": "parlaient", "morphemes": ["parl (parler)", "aient (aient)"]}
+{"word": "parlerai", "morphemes": ["parler (parler)", "ai (ai)"]}
+{"word": "parlerons", "morphemes": ["parler (parler)", "ons (ons)"]}
+{"word": "parleront", "morphemes": ["parler (parler)", "ont (ont)"]}
+{"word": "parlerait", "morphemes": ["parler (parler)", "ait (ait)"]}
+{"word": "finirai", "morphemes": ["finir (finir)", "ai (ai)"]}
+{"word": "finirons", "morphemes": ["finir (finir)", "ons (ons)"]}
+{"word": "finiront", "morphemes": ["finir (finir)", "ont (ont)"]}
+{"word": "finirait", "morphemes": ["finir (finir)", "ait (ait)"]}
+{"word": "vendons", "morphemes": ["vend (vendre)", "ons (ons)"]}
+{"word": "vendez", "morphemes": ["vend (vendre)", "ez (ez)"]}
+{"word": "vendent", "morphemes": ["vend (vendre)", "ent (ent)"]}
+{"word": "vendait", "morphemes": ["vend (vendre)", "ait (ait)"]}
+{"word": "chats", "morphemes": ["chat (chat)", "s (s) [pl]"]}
+{"word": "chiens", "morphemes": ["chien (chien)", "s (s) [pl]"]}
+{"word": "livres", "morphemes": ["livre (livre)", "s (s) [pl]"]}
+{"word": "maisons", "morphemes": ["maison (maison)", "s (s) [pl]"]}
+{"word": "tables", "morphemes": ["table (table)", "s (s) [pl]"]}
+{"word": "chaises", "morphemes": ["chaise (chaise)", "s (s) [pl]"]}
+{"word": "enfants", "morphemes": ["enfant (enfant)", "s (s) [pl]"]}
+{"word": "amis", "morphemes": ["ami (ami)", "s (s) [pl]"]}
+{"word": "amies", "morphemes": ["ami (ami)", "e (e) [f]", "s (s) [pl]"]}
+{"word": "grands", "morphemes": ["grand (grand)", "s (s) [pl]"]}
+{"word": "grande", "morphemes": ["grand (grand)", "e (e) [f]"]}
+{"word": "grandes", "morphemes": ["grand (grand)", "e (e) [f]", "s (s) [pl]"]}
+{"word": "petite", "morphemes": ["petit (petit)", "e (e) [f]"]}
+{"word": "petits", "morphemes": ["petit (petit)", "s (s) [pl]"]}
+{"word": "petites", "morphemes": ["petit (petit)", "e (e) [f]", "s (s) [pl]"]}
+{"word": "jolie", "morphemes": ["joli (joli)", "e (e) [f]"]}
+{"word": "jolies", "morphemes": ["joli (joli)", "e (e) [f]", "s (s) [pl]"]}
+{"word": "jolis", "morphemes": ["joli (joli)", "s (s) [pl]"]}
+{"word": "verte", "morphemes": ["vert (vert)", "e (e) [f]"]}
+{"word": "vertes", "morphemes": ["vert (vert)", "e (e) [f]", "s (s) [pl]"]}
+{"word": "verts", "morphemes": ["vert (vert)", "s (s) [pl]"]}
+{"word": "bleue", "morphemes": ["bleu (bleu)", "e (e) [f]"]}
+{"word": "bleues", "morphemes": ["bleu (bleu)", "e (e) [f]", "s (s) [pl]"]}
+{"word": "bleus", "morphemes": ["bleu (bleu)", "s (s) [pl]"]}
+{"word": "noire", "morphemes": ["noir (noir)", "e (e) [f]"]}
+{"word": "noires", "morphemes": ["noir (noir)", "e (e) [f]", "s (s) [pl]"]}
+{"word": "noirs", "morphemes": ["noir (noir)", "s (s) [pl]"]}
+{"word": "malheureux", "morphemes": ["mal (mal)", "heureux (heureux)"]}
+{"word": "malhonnête", "morphemes": ["mal (mal)", "honnête (honnête)"]}
+{"word": "malchance", "morphemes": ["mal (mal)", "chance (chance)"]}
+{"word": "maltraiter", "morphemes": ["mal (mal)", "traiter (traiter)"]}
+{"word": "malnutrition", "morphemes": ["mal (mal)", "nutrition (nutrition)"]}
+{"word": "bienvenu", "morphemes": ["bien (bien)", "venu (venir)"]}
+{"word": "bienvenue", "morphemes": ["bien (bien)", "venu (venir)", "e (e) [f]"]}
+{"word": "bienfait", "morphemes": ["bien (bien)", "fait (faire)"]}
+{"word": "coéquipier", "morphemes": ["co (co)", "équipier (équipier)"]}
+{"word": "coauteur", "morphemes": ["co (co)", "auteur (auteur)"]}
+{"word": "copilote", "morphemes": ["co (co)", "pilote (pilote)"]}
+{"word": "coexister", "morphemes": ["co (co)", "exister (exister)"]}
+{"word": "copropriétaire", "morphemes": ["co (co)", "propriétaire (propriétaire)"]}
+{"word": "contredire", "morphemes": ["contre (contre)", "dire (dire)"]}
+{"word": "contrepartie", "morphemes": ["contre (contre)", "partie (partie)"]}
+{"word": "contre-attaque", "morphemes": ["contre (contre)", "-", "attaque (attaque)"]}
+{"word": "contre-exemple", "morphemes": ["contre (contre)", "-", "exemple (exemple)"]}
+{"word": "entreprendre", "morphemes": ["entre (entre)", "prendre (prendre)"]}
+{"word": "entrepris", "morphemes": ["entre (entre)", "pris (prendre)"]}
+{"word": "transporter", "morphemes": ["trans (trans)", "porter (porter)"]}
+{"word": "transport", "morphemes": ["trans (trans)", "port (port)"]}
+{"word": "transatlantique", "morphemes": ["trans (trans)", "atlantique (atlantique)"]}
+{"word": "transnational", "morphemes": ["trans (trans)", "national (national)"]}
+{"word": "exporter", "morphemes": ["ex (ex)", "porter (porter)"]}
+{"word": "importer", "morphemes": ["im (in)", "porter (porter)"]}
+{"word": "reporter", "morphemes": ["re (re)", "porter (porter)"]}
+{"word": "déporter", "morphemes": ["dé (dé)", "porter (porter)"]}
+{"word": "emporter", "morphemes": ["em (en)", "porter (porter)"]}
+{"word": "apporter", "morphemes": ["ap (à)", "porter (porter)"]}
+{"word": "ex-président", "morphemes": ["ex (ex)", "-", "président (président)"]}
+{"word": "ex-femme", "morphemes": ["ex (ex)", "-", "femme (femme)"]}
+{"word": "ex-mari", "morphemes": ["ex (ex)", "-", "mari (mari)"]}
+{"word": "extraordinaire", "morphemes": ["extra (extra)", "ordinaire (ordinaire)"]}
+{"word": "extraterrestre", "morphemes": ["extra (extra)", "terrestre (terrestre)"]}
+{"word": "ultraviolet", "morphemes": ["ultra (ultra)", "violet (violet)"]}
+{"word": "ultrason", "morphemes": ["ultra (ultra)", "son (son)"]}
+{"word": "multinational", "morphemes": ["multi (multi)", "national (national)"]}
+{"word": "multicolore", "morphemes": ["multi (multi)", "colore (colore)"]}
+{"word": "multiculturel", "morphemes": ["multi (multi)", "culturel (culturel)"]}
+{"word": "multimédia", "morphemes": ["multi (multi)", "média (média)"]}
+{"word": "multifonction", "morphemes": ["multi (multi)", "fonction (fonction)"]}
+{"word": "bilingue", "morphemes": ["bi (bi)", "lingue (lingue)"]}
+{"word": "trilingue", "morphemes": ["tri (tri)", "lingue (lingue)"]}
+{"word": "triangle", "morphemes": ["tri (tri)", "angle (angle)"]}
+{"word": "tricycle", "morphemes": ["tri (tri)", "cycle (cycle)"]}
+{"word": "hyperactif", "morphemes": ["hyper (hyper)", "actif (actif)"]}
+{"word": "hypermarché", "morphemes": ["hyper (hyper)", "marché (marché)"]}
+{"word": "supermarché", "morphemes": ["super (super)", "marché (marché)"]}
+{"word": "superstar", "morphemes": ["super (super)", "star (star)"]}
+{"word": "superpuissance", "morphemes": ["super (super)", "puissance (puissance)"]}
+{"word": "parachute", "morphemes": ["para (para)", "chute (chute)"]}
+{"word": "parapluie", "morphemes": ["para (para)", "pluie (pluie)"]}
+{"word": "pare-brise", "morphemes": ["pare (parer)", "-", "brise (brise)"]}
+{"word": "porte-monnaie", "morphemes": ["porte (porter)", "-", "monnaie (monnaie)"]}
+{"word": "porte-clés", "morphemes": ["porte (porter)", "-", "clés (clé)"]}
+{"word": "porte-parole", "morphemes": ["porte (porter)", "-", "parole (parole)"]}
+{"word": "porte-avions", "morphemes": ["porte (porter)", "-", "avions (avion)"]}
+{"word": "grand-père", "morphemes": ["grand (grand)", "-", "père (père)"]}
+{"word": "grand-mère", "morphemes": ["grand (grand)", "-", "mère (mère)"]}
+{"word": "beau-père", "morphemes": ["beau (beau)", "-", "père (père)"]}
+{"word": "belle-mère", "morphemes": ["belle (beau)", "-", "mère (mère)"]}
+{"word": "petit-fils", "morphemes": ["petit (petit)", "-", "fils (fils)"]}
+{"word": "sans-abri", "morphemes": ["sans (sans)", "-", "abri (abri)"]}
+{"word": "sans-papiers", "morphemes": ["sans (sans)", "-", "papiers (papier)"]}
+{"word": "après-midi", "morphemes": ["après (après)", "-", "midi (midi)"]}
+{"word": "avant-garde", "morphemes": ["avant (avant)", "-", "garde (garde)"]}
+{"word": "avant-hier", "morphemes": ["avant (avant)", "-", "hier (hier)"]}
+{"word": "lave-linge", "morphemes": ["lave (laver)", "-", "linge (linge)"]}
+{"word": "lave-vaisselle", "morphemes": ["lave (laver)", "-", "vaisselle (vaisselle)"]}
+{"word": "sèche-cheveux", "morphemes": ["sèche (sécher)", "-", "cheveux (cheveu)"]}
+{"word": "tire-bouchon", "morphemes": ["tire (tirer)", "-", "bouchon (bouchon)"]}
+{"word": "ouvre-boîte", "morphemes": ["ouvre (ouvrir)", "-", "boîte (boîte)"]}
+{"word": "casse-tête", "morphemes": ["casse (casser)", "-", "tête (tête)"]}
+{"word": "essuie-glace", "morphemes": ["essuie (essuyer)", "-", "glace (glace)"]}
+{"word": "chou-fleur", "morphemes": ["chou (chou)", "-", "fleur (fleur)"]}
+{"word": "fermeture", "morphemes": ["ferme (fermer)", "ture (ture)"]}
+{"word": "ouverture", "morphemes": ["ouver (ouvrir)", "ture (ture)"]}
+{"word": "couverture", "morphemes": ["couver (couvrir)", "ture (ture)"]}
+{"word": "nourriture", "morphemes": ["nourri (nourrir)", "ture (ture)"]}
+{"word": "peinture", "morphemes": ["pein (peindre)", "ture (ture)"]}
+{"word": "écriture", "morphemes": ["écri (écrire)", "ture (ture)"]}
+{"word": "lecture", "morphemes": ["lec (lire)", "ture (ture)"]}
+{"word": "blessure", "morphemes": ["bless (blesser)", "ure (ure)"]}
+{"word": "brûlure", "morphemes": ["brûl (brûler)", "ure (ure)"]}
+{"word": "coiffure", "morphemes": ["coiff (coiffer)", "ure (ure)"]}
+{"word": "signature", "morphemes": ["sign (signer)", "ature (ature)"]}
+{"word": "candidature", "morphemes": ["candid (candidat)", "ature (ature)"]}
+{"word": "dictature", "morphemes": ["dict (dicter)", "ature (ature)"]}
+{"word": "intéressant", "morphemes": ["intéress (intéresser)", "ant (ant)"]}
+{"word": "amusant", "morphemes": ["amus (amuser)", "ant (ant)"]}
+{"word": "charmant", "morphemes": ["charm (charmer)", "ant (ant)"]}
+{"word": "passionnant", "morphemes": ["passionn (passionner)", "ant (ant)"]}
+{"word": "surprenant", "morphemes": ["surpren (surprendre)", "ant (ant)"]}
+{"word": "étonnant", "morphemes": ["étonn (étonner)", "ant (ant)"]}
+{"word": "embêtant", "morphemes": ["embêt (embêter)", "ant (ant)"]}
+{"word": "inquiétant", "morphemes": ["inquiét (inquiéter)", "ant (ant)"]}
+{"word": "rassurant", "morphemes": ["rassur (rassurer)", "ant (ant)"]}
+{"word": "thermomètre", "morphemes": ["thermo (thermo)", "mètre (mètre)"]}
+{"word": "kilomètre", "morphemes": ["kilo (kilo)", "mètre (mètre)"]}
+{"word": "centimètre", "morphemes": ["centi (centi)", "mètre (mètre)"]}
+{"word": "millimètre", "morphemes": ["milli (milli)", "mètre (mètre)"]}
+{"word": "millilitre", "morphemes": ["milli (milli)", "litre (litre)"]}
+{"word": "centilitre", "morphemes": ["centi (centi)", "litre (litre)"]}
+{"word": "kilogramme", "morphemes": ["kilo (kilo)", "gramme (gramme)"]}
+{"word": "milligramme", "morphemes": ["milli (milli)", "gramme (gramme)"]}
+{"word": "kilowatt", "morphemes": ["kilo (kilo)", "watt (watt)"]}
+{"word": "mégawatt", "morphemes": ["méga (méga)", "watt (watt)"]}
+{"word": "mégaoctet", "morphemes": ["méga (méga)", "octet (octet)"]}
+{"word": "gigaoctet", "morphemes": ["giga (giga)", "octet (octet)"]}
+{"word": "mécontent", "morphemes": ["mé (mé)", "content (content)"]}
+{"word": "méconnaître", "morphemes": ["mé (mé)", "connaître (connaître)"]}
+{"word": "mésaventure", "morphemes": ["més (mé)", "aventure (aventure)"]}
+{"word": "mésentente", "morphemes": ["més (mé)", "entente (entente)"]}
+{"word": "non-sens", "morphemes": ["non (non)", "-", "sens (sens)"]}
+{"word": "non-fumeur", "morphemes": ["non (non)", "-", "fumeur (fumeur)"]}
+{"word": "non-violence", "morphemes": ["non (non)", "-", "violence (violence)"]}
+{"word": "international", "morphemes": ["inter (inter)", "national (national)"]}
+{"word": "interculturel", "morphemes": ["inter (inter)", "culturel (culturel)"]}
+{"word": "interactif", "morphemes": ["inter (inter)", "actif (actif)"]}
+{"word": "intervenir", "morphemes": ["inter (inter)", "venir (venir)"]}
+{"word": "interconnexion", "morphemes": ["inter (inter)", "connexion (connexion)"]}
+{"word": "postindustriel", "morphemes": ["post (post)", "industriel (industriel)"]}
+{"word": "postnatal", "morphemes": ["post (post)", "natal (natal)"]}
+{"word": "postopératoire", "morphemes": ["post (post)", "opératoire (opératoire)"]}
+{"word": "préférence", "morphemes": ["préfér (préférer)", "ence (ence)"]}
+{"word": "référence", "morphemes": ["référ (référer)", "ence (ence)"]}
+{"word": "différence", "morphemes": ["différ (différer)", "ence (ence)"]}
+{"word": "existence", "morphemes": ["exist (exister)", "ence (ence)"]}
+{"word": "naissance", "morphemes": ["naiss (naître)", "ance (ance)"]}
+{"word": "renaissance", "morphemes": ["re (re)", "naiss (naître)", "ance (ance)"]}
+{"word": "connaissance", "morphemes": ["connaiss (connaître)", "ance (ance)"]}
+{"word": "croissance", "morphemes": ["croiss (croître)", "ance (ance)"]}
+{"word": "assurance", "morphemes": ["assur (assurer)", "ance (ance)"]}
+{"word": "espérance", "morphemes": ["espér (espérer)", "ance (ance)"]}
+{"word": "tolérance", "morphemes": ["tolér (tolérer)", "ance (ance)"]}
+{"word": "dépendance", "morphemes": ["dépend (dépendre)", "ance (ance)"]}
+{"word": "indépendance", "morphemes": ["in (in)", "dépend (dépendre)", "ance (ance)"]}
+{"word": "ignorance", "morphemes": ["ignor (ignorer)", "ance (ance)"]}
+{"word": "vengeance", "morphemes": ["venge (venger)", "ance (ance)"]}
+{"word": "alliance", "morphemes": ["alli (allier)", "ance (ance)"]}
+{"word": "confiance", "morphemes": ["confi (confier)", "ance (ance)"]}
+{"word": "parisien", "morphemes": ["paris (Paris)", "ien (ien)"]}
+{"word": "parisienne", "morphemes": ["paris (Paris)", "ienne (ienne)"]}
+{"word": "italien", "morphemes": ["ital (Italie)", "ien (ien)"]}
+{"word": "italienne", "morphemes": ["ital (Italie)", "ienne (ienne)"]}
+{"word": "canadien", "morphemes": ["canad (Canada)", "ien (ien)"]}
+{"word": "canadienne", "morphemes": ["canad (Canada)", "ienne (ienne)"]}
+{"word": "musicien", "morphemes": ["music (musique)", "ien (ien)"]}
+{"word": "musicienne", "morphemes": ["music (musique)", "ienne (ienne)"]}
+{"word": "électricien", "morphemes": ["électric (électrique)", "ien (ien)"]}
+{"word": "électricienne", "morphemes": ["électric (électrique)", "ienne (ienne)"]}
+{"word": "technicien", "morphemes": ["techn (technique)", "icien (icien)"]}
+{"word": "technicienne", "morphemes": ["techn (technique)", "icienne (icienne)"]}
+{"word": "lavage", "morphemes": ["lav (laver)", "age (age)"]}
+{"word": "passage", "morphemes": ["pass (passer)", "age (age)"]}
+{"word": "mariage", "morphemes": ["mari (marier)", "age (age)"]}
+{"word": "stockage", "morphemes": ["stock (stock)", "age (age)"]}
+{"word": "arrosage", "morphemes": ["arros (arroser)", "age (age)"]}
+{"word": "bricolage", "morphemes": ["bricol (bricoler)", "age (age)"]}
+{"word": "jardinage", "morphemes": ["jardin (jardin)", "age (age)"]}

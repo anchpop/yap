@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2858305
-Total errors: 728
+Total predictions: 2857805
+Total errors: 726
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "'" + "?" (20 occurrences)
+### "'" + "?" (19 occurrences)
 - Predicted: None
 - Actual: NarrowNbsp
 - Examples:
@@ -2224,12 +2224,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Ah, pas spécialement horrible; non, non, pas du tout.
-
-### "ils" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Qui 'ils' ?
 
 ### "ingrédients" + "-" (1 occurrences)
 - Predicted: None

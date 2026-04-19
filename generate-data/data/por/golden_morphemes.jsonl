@@ -1,0 +1,466 @@
+{"word": "falamos", "morphemes": ["fal (falar)", "amos (amos)"]}
+{"word": "falado", "morphemes": ["fal (falar)", "ado (ado) [ptcp]"]}
+{"word": "falando", "morphemes": ["fal (falar)", "ando (ando)"]}
+{"word": "falar", "morphemes": ["fal (falar)", "ar (ar)"]}
+{"word": "falava", "morphemes": ["fal (falar)", "ava (ava)"]}
+{"word": "falavam", "morphemes": ["fal (falar)", "avam (avam)"]}
+{"word": "falaria", "morphemes": ["fal (falar)", "aria (aria) [cond]"]}
+{"word": "falarei", "morphemes": ["fal (falar)", "arei (arei)"]}
+{"word": "falaremos", "morphemes": ["fal (falar)", "aremos (aremos)"]}
+{"word": "falarão", "morphemes": ["fal (falar)", "arão (arão) [3pl.fut]"]}
+{"word": "comemos", "morphemes": ["com (comer)", "emos (emos)"]}
+{"word": "comendo", "morphemes": ["com (comer)", "endo (endo)"]}
+{"word": "comido", "morphemes": ["com (comer)", "ido (ido) [ptcp]"]}
+{"word": "comer", "morphemes": ["com (comer)", "er (er)"]}
+{"word": "comia", "morphemes": ["com (comer)", "ia (ia) [ipfv]"]}
+{"word": "comiam", "morphemes": ["com (comer)", "iam (iam) [ipfv]"]}
+{"word": "comeremos", "morphemes": ["com (comer)", "eremos (eremos)"]}
+{"word": "comeria", "morphemes": ["com (comer)", "eria (eria) [cond]"]}
+{"word": "comerão", "morphemes": ["com (comer)", "erão (erão) [3pl.fut]"]}
+{"word": "comerei", "morphemes": ["com (comer)", "erei (erei)"]}
+{"word": "partimos", "morphemes": ["part (partir)", "imos (imos)"]}
+{"word": "partindo", "morphemes": ["part (partir)", "indo (indo)"]}
+{"word": "partido", "morphemes": ["part (partir)", "ido (ido) [ptcp]"]}
+{"word": "partir", "morphemes": ["part (partir)", "ir (ir)"]}
+{"word": "partia", "morphemes": ["part (partir)", "ia (ia) [ipfv]"]}
+{"word": "partiam", "morphemes": ["part (partir)", "iam (iam) [ipfv]"]}
+{"word": "partiria", "morphemes": ["part (partir)", "iria (iria) [cond]"]}
+{"word": "partirei", "morphemes": ["part (partir)", "irei (irei)"]}
+{"word": "partiremos", "morphemes": ["part (partir)", "iremos (iremos)"]}
+{"word": "partirão", "morphemes": ["part (partir)", "irão (irão) [3pl.fut]"]}
+{"word": "amamos", "morphemes": ["am (amar)", "amos (amos)"]}
+{"word": "amado", "morphemes": ["am (amar)", "ado (ado) [ptcp]"]}
+{"word": "amando", "morphemes": ["am (amar)", "ando (ando)"]}
+{"word": "amar", "morphemes": ["am (amar)", "ar (ar)"]}
+{"word": "amava", "morphemes": ["am (amar)", "ava (ava)"]}
+{"word": "amavam", "morphemes": ["am (amar)", "avam (avam)"]}
+{"word": "amaria", "morphemes": ["am (amar)", "aria (aria) [cond]"]}
+{"word": "amarei", "morphemes": ["am (amar)", "arei (arei)"]}
+{"word": "amaremos", "morphemes": ["am (amar)", "aremos (aremos)"]}
+{"word": "amador", "morphemes": ["am (amar)", "ador (ador)"]}
+{"word": "amante", "morphemes": ["am (amar)", "ante (ante)"]}
+{"word": "amável", "morphemes": ["am (amar)", "ável (ável)"]}
+{"word": "trabalhamos", "morphemes": ["trabalh (trabalhar)", "amos (amos)"]}
+{"word": "trabalhando", "morphemes": ["trabalh (trabalhar)", "ando (ando)"]}
+{"word": "trabalhado", "morphemes": ["trabalh (trabalhar)", "ado (ado) [ptcp]"]}
+{"word": "trabalhar", "morphemes": ["trabalh (trabalhar)", "ar (ar)"]}
+{"word": "trabalhador", "morphemes": ["trabalh (trabalhar)", "ador (ador)"]}
+{"word": "trabalhava", "morphemes": ["trabalh (trabalhar)", "ava (ava)"]}
+{"word": "estudamos", "morphemes": ["estud (estudar)", "amos (amos)"]}
+{"word": "estudando", "morphemes": ["estud (estudar)", "ando (ando)"]}
+{"word": "estudado", "morphemes": ["estud (estudar)", "ado (ado) [ptcp]"]}
+{"word": "estudar", "morphemes": ["estud (estudar)", "ar (ar)"]}
+{"word": "estudante", "morphemes": ["estud (estudar)", "ante (ante)"]}
+{"word": "cantamos", "morphemes": ["cant (cantar)", "amos (amos)"]}
+{"word": "cantando", "morphemes": ["cant (cantar)", "ando (ando)"]}
+{"word": "cantado", "morphemes": ["cant (cantar)", "ado (ado) [ptcp]"]}
+{"word": "cantar", "morphemes": ["cant (cantar)", "ar (ar)"]}
+{"word": "cantor", "morphemes": ["cant (cantar)", "or (or)"]}
+{"word": "cantora", "morphemes": ["cant (cantar)", "ora (ora)"]}
+{"word": "andamos", "morphemes": ["and (andar)", "amos (amos)"]}
+{"word": "andando", "morphemes": ["and (andar)", "ando (ando)"]}
+{"word": "andado", "morphemes": ["and (andar)", "ado (ado) [ptcp]"]}
+{"word": "andar", "morphemes": ["and (andar)", "ar (ar)"]}
+{"word": "chegamos", "morphemes": ["cheg (chegar)", "amos (amos)"]}
+{"word": "chegando", "morphemes": ["cheg (chegar)", "ando (ando)"]}
+{"word": "chegado", "morphemes": ["cheg (chegar)", "ado (ado) [ptcp]"]}
+{"word": "chegar", "morphemes": ["cheg (chegar)", "ar (ar)"]}
+{"word": "chegada", "morphemes": ["cheg (chegar)", "ada (ada)"]}
+{"word": "olhamos", "morphemes": ["olh (olhar)", "amos (amos)"]}
+{"word": "olhando", "morphemes": ["olh (olhar)", "ando (ando)"]}
+{"word": "olhado", "morphemes": ["olh (olhar)", "ado (ado) [ptcp]"]}
+{"word": "olhar", "morphemes": ["olh (olhar)", "ar (ar)"]}
+{"word": "pensamos", "morphemes": ["pens (pensar)", "amos (amos)"]}
+{"word": "pensando", "morphemes": ["pens (pensar)", "ando (ando)"]}
+{"word": "pensado", "morphemes": ["pens (pensar)", "ado (ado) [ptcp]"]}
+{"word": "pensar", "morphemes": ["pens (pensar)", "ar (ar)"]}
+{"word": "pensador", "morphemes": ["pens (pensar)", "ador (ador)"]}
+{"word": "pensamento", "morphemes": ["pens (pensar)", "amento (amento)"]}
+{"word": "pensativo", "morphemes": ["pens (pensar)", "ativo (ativo)"]}
+{"word": "pensável", "morphemes": ["pens (pensar)", "ável (ável)"]}
+{"word": "encontramos", "morphemes": ["encontr (encontrar)", "amos (amos)"]}
+{"word": "encontrando", "morphemes": ["encontr (encontrar)", "ando (ando)"]}
+{"word": "encontrado", "morphemes": ["encontr (encontrar)", "ado (ado) [ptcp]"]}
+{"word": "encontrar", "morphemes": ["encontr (encontrar)", "ar (ar)"]}
+{"word": "entendemos", "morphemes": ["entend (entender)", "emos (emos)"]}
+{"word": "entendendo", "morphemes": ["entend (entender)", "endo (endo)"]}
+{"word": "entendido", "morphemes": ["entend (entender)", "ido (ido) [ptcp]"]}
+{"word": "entender", "morphemes": ["entend (entender)", "er (er)"]}
+{"word": "entendimento", "morphemes": ["entend (entender)", "imento (imento)"]}
+{"word": "aprendemos", "morphemes": ["aprend (aprender)", "emos (emos)"]}
+{"word": "aprendendo", "morphemes": ["aprend (aprender)", "endo (endo)"]}
+{"word": "aprendido", "morphemes": ["aprend (aprender)", "ido (ido) [ptcp]"]}
+{"word": "aprender", "morphemes": ["aprend (aprender)", "er (er)"]}
+{"word": "aprendiz", "morphemes": ["aprend (aprender)", "iz (iz)"]}
+{"word": "aprendizagem", "morphemes": ["aprend (aprender)", "izagem (izagem)"]}
+{"word": "vendemos", "morphemes": ["vend (vender)", "emos (emos)"]}
+{"word": "vendendo", "morphemes": ["vend (vender)", "endo (endo)"]}
+{"word": "vendido", "morphemes": ["vend (vender)", "ido (ido) [ptcp]"]}
+{"word": "vender", "morphemes": ["vend (vender)", "er (er)"]}
+{"word": "vendedor", "morphemes": ["vend (vender)", "edor (edor)"]}
+{"word": "bebemos", "morphemes": ["beb (beber)", "emos (emos)"]}
+{"word": "bebendo", "morphemes": ["beb (beber)", "endo (endo)"]}
+{"word": "bebido", "morphemes": ["beb (beber)", "ido (ido) [ptcp]"]}
+{"word": "beber", "morphemes": ["beb (beber)", "er (er)"]}
+{"word": "bebedor", "morphemes": ["beb (beber)", "edor (edor)"]}
+{"word": "escrevemos", "morphemes": ["escrev (escrever)", "emos (emos)"]}
+{"word": "escrevendo", "morphemes": ["escrev (escrever)", "endo (endo)"]}
+{"word": "escrever", "morphemes": ["escrev (escrever)", "er (er)"]}
+{"word": "corremos", "morphemes": ["corr (correr)", "emos (emos)"]}
+{"word": "correndo", "morphemes": ["corr (correr)", "endo (endo)"]}
+{"word": "corrido", "morphemes": ["corr (correr)", "ido (ido) [ptcp]"]}
+{"word": "correr", "morphemes": ["corr (correr)", "er (er)"]}
+{"word": "corredor", "morphemes": ["corr (correr)", "edor (edor)"]}
+{"word": "decidimos", "morphemes": ["decid (decidir)", "imos (imos)"]}
+{"word": "decidindo", "morphemes": ["decid (decidir)", "indo (indo)"]}
+{"word": "decidido", "morphemes": ["decid (decidir)", "ido (ido) [ptcp]"]}
+{"word": "decidir", "morphemes": ["decid (decidir)", "ir (ir)"]}
+{"word": "abrimos", "morphemes": ["abr (abrir)", "imos (imos)"]}
+{"word": "abrindo", "morphemes": ["abr (abrir)", "indo (indo)"]}
+{"word": "abrir", "morphemes": ["abr (abrir)", "ir (ir)"]}
+{"word": "sentimos", "morphemes": ["sent (sentir)", "imos (imos)"]}
+{"word": "sentindo", "morphemes": ["sent (sentir)", "indo (indo)"]}
+{"word": "sentido", "morphemes": ["sent (sentir)", "ido (ido) [ptcp]"]}
+{"word": "sentir", "morphemes": ["sent (sentir)", "ir (ir)"]}
+{"word": "sentimento", "morphemes": ["sent (sentir)", "imento (imento)"]}
+{"word": "dormimos", "morphemes": ["dorm (dormir)", "imos (imos)"]}
+{"word": "dormindo", "morphemes": ["dorm (dormir)", "indo (indo)"]}
+{"word": "dormido", "morphemes": ["dorm (dormir)", "ido (ido) [ptcp]"]}
+{"word": "dormir", "morphemes": ["dorm (dormir)", "ir (ir)"]}
+{"word": "seguimos", "morphemes": ["segu (seguir)", "imos (imos)"]}
+{"word": "seguindo", "morphemes": ["segu (seguir)", "indo (indo)"]}
+{"word": "seguido", "morphemes": ["segu (seguir)", "ido (ido) [ptcp]"]}
+{"word": "seguir", "morphemes": ["segu (seguir)", "ir (ir)"]}
+{"word": "seguidor", "morphemes": ["segu (seguir)", "idor (idor)"]}
+{"word": "seguimento", "morphemes": ["segu (seguir)", "imento (imento)"]}
+{"word": "comunicação", "morphemes": ["comunic (comunicar)", "ação (ação)"]}
+{"word": "comunicamos", "morphemes": ["comunic (comunicar)", "amos (amos)"]}
+{"word": "comunicar", "morphemes": ["comunic (comunicar)", "ar (ar)"]}
+{"word": "comunicando", "morphemes": ["comunic (comunicar)", "ando (ando)"]}
+{"word": "comunicado", "morphemes": ["comunic (comunicar)", "ado (ado) [ptcp]"]}
+{"word": "educação", "morphemes": ["educ (educar)", "ação (ação)"]}
+{"word": "educar", "morphemes": ["educ (educar)", "ar (ar)"]}
+{"word": "educado", "morphemes": ["educ (educar)", "ado (ado) [adj]"]}
+{"word": "educador", "morphemes": ["educ (educar)", "ador (ador)"]}
+{"word": "informação", "morphemes": ["inform (informar)", "ação (ação)"]}
+{"word": "informar", "morphemes": ["inform (informar)", "ar (ar)"]}
+{"word": "informado", "morphemes": ["inform (informar)", "ado (ado) [ptcp]"]}
+{"word": "informante", "morphemes": ["inform (informar)", "ante (ante)"]}
+{"word": "informativo", "morphemes": ["inform (informar)", "ativo (ativo)"]}
+{"word": "criação", "morphemes": ["cri (criar)", "ação (ação)"]}
+{"word": "criar", "morphemes": ["cri (criar)", "ar (ar)"]}
+{"word": "criador", "morphemes": ["cri (criar)", "ador (ador)"]}
+{"word": "criativo", "morphemes": ["cri (criar)", "ativo (ativo)"]}
+{"word": "criatividade", "morphemes": ["cri (criar)", "atividade (atividade)"]}
+{"word": "construção", "morphemes": ["constru (construir)", "ção (ção)"]}
+{"word": "construir", "morphemes": ["constru (construir)", "ir (ir)"]}
+{"word": "produção", "morphemes": ["produ (produzir)", "ção (ção)"]}
+{"word": "produzir", "morphemes": ["produz (produzir)", "ir (ir)"]}
+{"word": "produtivo", "morphemes": ["produt (produzir)", "ivo (ivo)"]}
+{"word": "produtividade", "morphemes": ["produt (produzir)", "ividade (ividade)"]}
+{"word": "tradução", "morphemes": ["tradu (traduzir)", "ção (ção)"]}
+{"word": "traduzir", "morphemes": ["traduz (traduzir)", "ir (ir)"]}
+{"word": "redução", "morphemes": ["redu (reduzir)", "ção (ção)"]}
+{"word": "reduzir", "morphemes": ["reduz (reduzir)", "ir (ir)"]}
+{"word": "destruição", "morphemes": ["destru (destruir)", "ição (ição)"]}
+{"word": "destruir", "morphemes": ["destru (destruir)", "ir (ir)"]}
+{"word": "destruidor", "morphemes": ["destru (destruir)", "idor (idor)"]}
+{"word": "inventar", "morphemes": ["invent (inventar)", "ar (ar)"]}
+{"word": "rever", "morphemes": ["re (re)", "ver (ver)"]}
+{"word": "refazer", "morphemes": ["re (re)", "fazer (fazer)"]}
+{"word": "reescrever", "morphemes": ["re (re)", "escrever (escrever)"]}
+{"word": "reler", "morphemes": ["re (re)", "ler (ler)"]}
+{"word": "reabrir", "morphemes": ["re (re)", "abrir (abrir)"]}
+{"word": "repensar", "morphemes": ["re (re)", "pensar (pensar)"]}
+{"word": "recomeçar", "morphemes": ["re (re)", "começar (começar)"]}
+{"word": "reaparecer", "morphemes": ["re (re)", "aparecer (aparecer)"]}
+{"word": "reorganizar", "morphemes": ["re (re)", "organizar (organizar)"]}
+{"word": "desfazer", "morphemes": ["des (des)", "fazer (fazer)"]}
+{"word": "desligar", "morphemes": ["des (des)", "ligar (ligar)"]}
+{"word": "desativar", "morphemes": ["des (des)", "ativar (ativar)"]}
+{"word": "descobrir", "morphemes": ["des (des)", "cobrir (cobrir)"]}
+{"word": "desconhecido", "morphemes": ["des (des)", "conhecido (conhecido)"]}
+{"word": "desmontar", "morphemes": ["des (des)", "montar (montar)"]}
+{"word": "desaparecer", "morphemes": ["des (des)", "aparecer (aparecer)"]}
+{"word": "desempregado", "morphemes": ["des (des)", "empregado (empregado)"]}
+{"word": "desigual", "morphemes": ["des (des)", "igual (igual)"]}
+{"word": "desonesto", "morphemes": ["des (des)", "honesto (honesto)"]}
+{"word": "desorganizado", "morphemes": ["des (des)", "organizado (organizado)"]}
+{"word": "desvantagem", "morphemes": ["des (des)", "vantagem (vantagem)"]}
+{"word": "infeliz", "morphemes": ["in (in)", "feliz (feliz)"]}
+{"word": "incapaz", "morphemes": ["in (in)", "capaz (capaz)"]}
+{"word": "injusto", "morphemes": ["in (in)", "justo (justo)"]}
+{"word": "incorreto", "morphemes": ["in (in)", "correto (correto)"]}
+{"word": "inativo", "morphemes": ["in (in)", "ativo (ativo)"]}
+{"word": "incompleto", "morphemes": ["in (in)", "completo (completo)"]}
+{"word": "invisível", "morphemes": ["in (in)", "visível (visível)"]}
+{"word": "impossível", "morphemes": ["im (in)", "possível (possível)"]}
+{"word": "impaciente", "morphemes": ["im (in)", "paciente (paciente)"]}
+{"word": "improvável", "morphemes": ["im (in)", "provável (provável)"]}
+{"word": "imperfeito", "morphemes": ["im (in)", "perfeito (perfeito)"]}
+{"word": "impopular", "morphemes": ["im (in)", "popular (popular)"]}
+{"word": "imoral", "morphemes": ["i (in)", "moral (moral)"]}
+{"word": "ilegal", "morphemes": ["i (in)", "legal (legal)"]}
+{"word": "ilógico", "morphemes": ["i (in)", "lógico (lógico)"]}
+{"word": "irresponsável", "morphemes": ["ir (in)", "responsável (responsável)"]}
+{"word": "irregular", "morphemes": ["ir (in)", "regular (regular)"]}
+{"word": "irreal", "morphemes": ["ir (in)", "real (real)"]}
+{"word": "prever", "morphemes": ["pre (pre)", "ver (ver)"]}
+{"word": "predizer", "morphemes": ["pre (pre)", "dizer (dizer)"]}
+{"word": "prepagar", "morphemes": ["pre (pre)", "pagar (pagar)"]}
+{"word": "preaquecer", "morphemes": ["pre (pre)", "aquecer (aquecer)"]}
+{"word": "predefinido", "morphemes": ["pre (pre)", "definido (definido)"]}
+{"word": "predeterminado", "morphemes": ["pre (pre)", "determinado (determinado)"]}
+{"word": "antibiótico", "morphemes": ["anti (anti)", "biótico (biótico)"]}
+{"word": "antissocial", "morphemes": ["anti (anti)", "social (social)"]}
+{"word": "supermercado", "morphemes": ["super (super)", "mercado (mercado)"]}
+{"word": "superinteressante", "morphemes": ["super (super)", "interessante (interessante)"]}
+{"word": "superlotado", "morphemes": ["super (super)", "lotado (lotado)"]}
+{"word": "superpoder", "morphemes": ["super (super)", "poder (poder)"]}
+{"word": "subsolo", "morphemes": ["sub (sub)", "solo (solo)"]}
+{"word": "subestimar", "morphemes": ["sub (sub)", "estimar (estimar)"]}
+{"word": "subtítulo", "morphemes": ["sub (sub)", "título (título)"]}
+{"word": "subdividir", "morphemes": ["sub (sub)", "dividir (dividir)"]}
+{"word": "contradizer", "morphemes": ["contra (contra)", "dizer (dizer)"]}
+{"word": "ultrapassar", "morphemes": ["ultra (ultra)", "passar (passar)"]}
+{"word": "ultravioleta", "morphemes": ["ultra (ultra)", "violeta (violeta)"]}
+{"word": "extraordinário", "morphemes": ["extra (extra)", "ordinário (ordinário)"]}
+{"word": "extraterrestre", "morphemes": ["extra (extra)", "terrestre (terrestre)"]}
+{"word": "microeconomia", "morphemes": ["micro (micro)", "economia (economia)"]}
+{"word": "macroeconomia", "morphemes": ["macro (macro)", "economia (economia)"]}
+{"word": "ecologia", "morphemes": ["eco (eco)", "logia (logia)"]}
+{"word": "biologia", "morphemes": ["bio (bio)", "logia (logia)"]}
+{"word": "geologia", "morphemes": ["geo (geo)", "logia (logia)"]}
+{"word": "psicologia", "morphemes": ["psico (psico)", "logia (logia)"]}
+{"word": "sociologia", "morphemes": ["socio (socio)", "logia (logia)"]}
+{"word": "tecnologia", "morphemes": ["tecno (tecno)", "logia (logia)"]}
+{"word": "biólogo", "morphemes": ["bio (bio)", "logo (logo)"]}
+{"word": "geólogo", "morphemes": ["geo (geo)", "logo (logo)"]}
+{"word": "psicólogo", "morphemes": ["psico (psico)", "logo (logo)"]}
+{"word": "sociólogo", "morphemes": ["socio (socio)", "logo (logo)"]}
+{"word": "socialismo", "morphemes": ["social (social)", "ismo (ismo)"]}
+{"word": "capitalismo", "morphemes": ["capital (capital)", "ismo (ismo)"]}
+{"word": "comunismo", "morphemes": ["comun (comun)", "ismo (ismo)"]}
+{"word": "realismo", "morphemes": ["real (real)", "ismo (ismo)"]}
+{"word": "idealismo", "morphemes": ["ideal (ideal)", "ismo (ismo)"]}
+{"word": "jornalismo", "morphemes": ["jornal (jornal)", "ismo (ismo)"]}
+{"word": "turismo", "morphemes": ["tur (tur)", "ismo (ismo)"]}
+{"word": "socialista", "morphemes": ["social (social)", "ista (ista)"]}
+{"word": "capitalista", "morphemes": ["capital (capital)", "ista (ista)"]}
+{"word": "comunista", "morphemes": ["comun (comun)", "ista (ista)"]}
+{"word": "jornalista", "morphemes": ["jornal (jornal)", "ista (ista)"]}
+{"word": "artista", "morphemes": ["art (arte)", "ista (ista)"]}
+{"word": "dentista", "morphemes": ["dent (dente)", "ista (ista)"]}
+{"word": "pianista", "morphemes": ["pian (piano)", "ista (ista)"]}
+{"word": "motorista", "morphemes": ["motor (motor)", "ista (ista)"]}
+{"word": "turista", "morphemes": ["tur (tur)", "ista (ista)"]}
+{"word": "especialista", "morphemes": ["especial (especial)", "ista (ista)"]}
+{"word": "realista", "morphemes": ["real (real)", "ista (ista)"]}
+{"word": "idealista", "morphemes": ["ideal (ideal)", "ista (ista)"]}
+{"word": "rapidamente", "morphemes": ["rapida (rápido)", "mente (mente)"]}
+{"word": "felizmente", "morphemes": ["feliz (feliz)", "mente (mente)"]}
+{"word": "tristemente", "morphemes": ["triste (triste)", "mente (mente)"]}
+{"word": "lentamente", "morphemes": ["lenta (lento)", "mente (mente)"]}
+{"word": "claramente", "morphemes": ["clara (claro)", "mente (mente)"]}
+{"word": "fortemente", "morphemes": ["forte (forte)", "mente (mente)"]}
+{"word": "facilmente", "morphemes": ["facil (fácil)", "mente (mente)"]}
+{"word": "raramente", "morphemes": ["rara (raro)", "mente (mente)"]}
+{"word": "totalmente", "morphemes": ["total (total)", "mente (mente)"]}
+{"word": "finalmente", "morphemes": ["final (final)", "mente (mente)"]}
+{"word": "normalmente", "morphemes": ["normal (normal)", "mente (mente)"]}
+{"word": "geralmente", "morphemes": ["geral (geral)", "mente (mente)"]}
+{"word": "principalmente", "morphemes": ["principal (principal)", "mente (mente)"]}
+{"word": "realmente", "morphemes": ["real (real)", "mente (mente)"]}
+{"word": "naturalmente", "morphemes": ["natural (natural)", "mente (mente)"]}
+{"word": "especialmente", "morphemes": ["especial (especial)", "mente (mente)"]}
+{"word": "provavelmente", "morphemes": ["provavel (provável)", "mente (mente)"]}
+{"word": "certamente", "morphemes": ["certa (certo)", "mente (mente)"]}
+{"word": "diretamente", "morphemes": ["direta (direto)", "mente (mente)"]}
+{"word": "rapidez", "morphemes": ["rapid (rápido)", "ez (ez)"]}
+{"word": "beleza", "morphemes": ["bel (belo)", "eza (eza)"]}
+{"word": "tristeza", "morphemes": ["trist (triste)", "eza (eza)"]}
+{"word": "grandeza", "morphemes": ["grand (grande)", "eza (eza)"]}
+{"word": "pobreza", "morphemes": ["pobr (pobre)", "eza (eza)"]}
+{"word": "riqueza", "morphemes": ["riqu (rico)", "eza (eza)"]}
+{"word": "certeza", "morphemes": ["cert (certo)", "eza (eza)"]}
+{"word": "fraqueza", "morphemes": ["fraqu (fraco)", "eza (eza)"]}
+{"word": "natureza", "morphemes": ["natur (natural)", "eza (eza)"]}
+{"word": "timidez", "morphemes": ["timid (tímido)", "ez (ez)"]}
+{"word": "honestidade", "morphemes": ["honest (honesto)", "idade (idade)"]}
+{"word": "realidade", "morphemes": ["real (real)", "idade (idade)"]}
+{"word": "possibilidade", "morphemes": ["possibil (possível)", "idade (idade)"]}
+{"word": "qualidade", "morphemes": ["qual (qual)", "idade (idade)"]}
+{"word": "quantidade", "morphemes": ["quant (quanto)", "idade (idade)"]}
+{"word": "velocidade", "morphemes": ["veloc (veloz)", "idade (idade)"]}
+{"word": "capacidade", "morphemes": ["capac (capaz)", "idade (idade)"]}
+{"word": "facilidade", "morphemes": ["facil (fácil)", "idade (idade)"]}
+{"word": "felicidade", "morphemes": ["felic (feliz)", "idade (idade)"]}
+{"word": "universidade", "morphemes": ["univers (universal)", "idade (idade)"]}
+{"word": "liberdade", "morphemes": ["liber (livre)", "dade (dade)"]}
+{"word": "igualdade", "morphemes": ["igual (igual)", "dade (dade)"]}
+{"word": "maldade", "morphemes": ["mal (mal)", "dade (dade)"]}
+{"word": "bondade", "morphemes": ["bon (bom)", "dade (dade)"]}
+{"word": "casinha", "morphemes": ["cas (casa)", "inha (inha)"]}
+{"word": "mesinha", "morphemes": ["mes (mesa)", "inha (inha)"]}
+{"word": "gatinho", "morphemes": ["gat (gato)", "inho (inho)"]}
+{"word": "cachorrinho", "morphemes": ["cachorr (cachorro)", "inho (inho)"]}
+{"word": "livrinho", "morphemes": ["livr (livro)", "inho (inho)"]}
+{"word": "carrinho", "morphemes": ["carr (carro)", "inho (inho)"]}
+{"word": "pedacinho", "morphemes": ["pedac (pedaço)", "inho (inho)"]}
+{"word": "pouquinho", "morphemes": ["pouqu (pouco)", "inho (inho)"]}
+{"word": "bocadinho", "morphemes": ["bocad (bocado)", "inho (inho)"]}
+{"word": "cafezinho", "morphemes": ["cafez (café)", "inho (inho)"]}
+{"word": "irmãozinho", "morphemes": ["irmão (irmão)", "zinho (zinho)"]}
+{"word": "pãozinho", "morphemes": ["pão (pão)", "zinho (zinho)"]}
+{"word": "mãozinha", "morphemes": ["mão (mão)", "zinha (zinha)"]}
+{"word": "amorzinho", "morphemes": ["amor (amor)", "zinho (zinho)"]}
+{"word": "florzinha", "morphemes": ["flor (flor)", "zinha (zinha)"]}
+{"word": "mulherzinha", "morphemes": ["mulher (mulher)", "zinha (zinha)"]}
+{"word": "portão", "morphemes": ["port (porta)", "ão (ão) [aug]"]}
+{"word": "amigão", "morphemes": ["amig (amigo)", "ão (ão) [aug]"]}
+{"word": "grandão", "morphemes": ["grand (grande)", "ão (ão) [aug]"]}
+{"word": "livrão", "morphemes": ["livr (livro)", "ão (ão) [aug]"]}
+{"word": "agradável", "morphemes": ["agrad (agradar)", "ável (ável)"]}
+{"word": "aceitável", "morphemes": ["aceit (aceitar)", "ável (ável)"]}
+{"word": "comparável", "morphemes": ["compar (comparar)", "ável (ável)"]}
+{"word": "desejável", "morphemes": ["desej (desejar)", "ável (ável)"]}
+{"word": "explicável", "morphemes": ["explic (explicar)", "ável (ável)"]}
+{"word": "notável", "morphemes": ["not (notar)", "ável (ável)"]}
+{"word": "lavável", "morphemes": ["lav (lavar)", "ável (ável)"]}
+{"word": "observável", "morphemes": ["observ (observar)", "ável (ável)"]}
+{"word": "tolerável", "morphemes": ["toler (tolerar)", "ável (ável)"]}
+{"word": "utilizável", "morphemes": ["utiliz (utilizar)", "ável (ável)"]}
+{"word": "variável", "morphemes": ["vari (variar)", "ável (ável)"]}
+{"word": "respeitável", "morphemes": ["respeit (respeitar)", "ável (ável)"]}
+{"word": "responsável", "morphemes": ["respons (responder)", "ável (ável)"]}
+{"word": "acessível", "morphemes": ["acess (acessar)", "ível (ível)"]}
+{"word": "sensível", "morphemes": ["sens (sentir)", "ível (ível)"]}
+{"word": "flexível", "morphemes": ["flex (flexão)", "ível (ível)"]}
+{"word": "gostoso", "morphemes": ["gost (gosto)", "oso (oso)"]}
+{"word": "famoso", "morphemes": ["fam (fama)", "oso (oso)"]}
+{"word": "perigoso", "morphemes": ["perig (perigo)", "oso (oso)"]}
+{"word": "cuidadoso", "morphemes": ["cuidad (cuidado)", "oso (oso)"]}
+{"word": "orgulhoso", "morphemes": ["orgulh (orgulho)", "oso (oso)"]}
+{"word": "carinhoso", "morphemes": ["carinh (carinho)", "oso (oso)"]}
+{"word": "cheiroso", "morphemes": ["cheir (cheiro)", "oso (oso)"]}
+{"word": "corajoso", "morphemes": ["coraj (coragem)", "oso (oso)"]}
+{"word": "estudioso", "morphemes": ["estudi (estudar)", "oso (oso)"]}
+{"word": "ambicioso", "morphemes": ["ambici (ambição)", "oso (oso)"]}
+{"word": "religioso", "morphemes": ["religi (religião)", "oso (oso)"]}
+{"word": "caprichoso", "morphemes": ["caprich (capricho)", "oso (oso)"]}
+{"word": "amoroso", "morphemes": ["amor (amor)", "oso (oso)"]}
+{"word": "silencioso", "morphemes": ["silenci (silêncio)", "oso (oso)"]}
+{"word": "vergonhoso", "morphemes": ["vergonh (vergonha)", "oso (oso)"]}
+{"word": "poderoso", "morphemes": ["poder (poder)", "oso (oso)"]}
+{"word": "caloroso", "morphemes": ["calor (calor)", "oso (oso)"]}
+{"word": "doloroso", "morphemes": ["dolor (dor)", "oso (oso)"]}
+{"word": "movimento", "morphemes": ["mov (mover)", "imento (imento)"]}
+{"word": "pagamento", "morphemes": ["pag (pagar)", "amento (amento)"]}
+{"word": "tratamento", "morphemes": ["trat (tratar)", "amento (amento)"]}
+{"word": "crescimento", "morphemes": ["cresc (crescer)", "imento (imento)"]}
+{"word": "nascimento", "morphemes": ["nasc (nascer)", "imento (imento)"]}
+{"word": "casamento", "morphemes": ["cas (casar)", "amento (amento)"]}
+{"word": "conhecimento", "morphemes": ["conhec (conhecer)", "imento (imento)"]}
+{"word": "mapeamento", "morphemes": ["mape (mapear)", "amento (amento)"]}
+{"word": "esquecimento", "morphemes": ["esquec (esquecer)", "imento (imento)"]}
+{"word": "atendimento", "morphemes": ["atend (atender)", "imento (imento)"]}
+{"word": "desenvolvimento", "morphemes": ["desenvolv (desenvolver)", "imento (imento)"]}
+{"word": "envolvimento", "morphemes": ["envolv (envolver)", "imento (imento)"]}
+{"word": "armamento", "morphemes": ["arm (armar)", "amento (amento)"]}
+{"word": "funcionamento", "morphemes": ["funcion (funcionar)", "amento (amento)"]}
+{"word": "estacionamento", "morphemes": ["estacion (estacionar)", "amento (amento)"]}
+{"word": "fechamento", "morphemes": ["fech (fechar)", "amento (amento)"]}
+{"word": "recolhimento", "morphemes": ["recolh (recolher)", "imento (imento)"]}
+{"word": "acolhimento", "morphemes": ["acolh (acolher)", "imento (imento)"]}
+{"word": "surgimento", "morphemes": ["surg (surgir)", "imento (imento)"]}
+{"word": "jogador", "morphemes": ["jog (jogar)", "ador (ador)"]}
+{"word": "pescador", "morphemes": ["pesc (pescar)", "ador (ador)"]}
+{"word": "comprador", "morphemes": ["compr (comprar)", "ador (ador)"]}
+{"word": "caçador", "morphemes": ["caç (caçar)", "ador (ador)"]}
+{"word": "dançador", "morphemes": ["danç (dançar)", "ador (ador)"]}
+{"word": "nadador", "morphemes": ["nad (nadar)", "ador (ador)"]}
+{"word": "viajante", "morphemes": ["viaj (viajar)", "ante (ante)"]}
+{"word": "importante", "morphemes": ["import (importar)", "ante (ante)"]}
+{"word": "interessante", "morphemes": ["interess (interessar)", "ante (ante)"]}
+{"word": "participante", "morphemes": ["particip (participar)", "ante (ante)"]}
+{"word": "habitante", "morphemes": ["habit (habitar)", "ante (ante)"]}
+{"word": "ignorante", "morphemes": ["ignor (ignorar)", "ante (ante)"]}
+{"word": "governante", "morphemes": ["govern (governar)", "ante (ante)"]}
+{"word": "dominante", "morphemes": ["domin (dominar)", "ante (ante)"]}
+{"word": "comerciante", "morphemes": ["comerci (comerciar)", "ante (ante)"]}
+{"word": "abundante", "morphemes": ["abund (abundar)", "ante (ante)"]}
+{"word": "militante", "morphemes": ["milit (militar)", "ante (ante)"]}
+{"word": "identificar", "morphemes": ["identific (identificar)", "ar (ar)"]}
+{"word": "identificação", "morphemes": ["identific (identificar)", "ação (ação)"]}
+{"word": "classificar", "morphemes": ["classific (classificar)", "ar (ar)"]}
+{"word": "classificação", "morphemes": ["classific (classificar)", "ação (ação)"]}
+{"word": "simplificar", "morphemes": ["simplific (simplificar)", "ar (ar)"]}
+{"word": "simplificação", "morphemes": ["simplific (simplificar)", "ação (ação)"]}
+{"word": "qualificar", "morphemes": ["qualific (qualificar)", "ar (ar)"]}
+{"word": "qualificação", "morphemes": ["qualific (qualificar)", "ação (ação)"]}
+{"word": "verificar", "morphemes": ["verific (verificar)", "ar (ar)"]}
+{"word": "verificação", "morphemes": ["verific (verificar)", "ação (ação)"]}
+{"word": "justificar", "morphemes": ["justific (justificar)", "ar (ar)"]}
+{"word": "justificação", "morphemes": ["justific (justificar)", "ação (ação)"]}
+{"word": "especificar", "morphemes": ["especific (especificar)", "ar (ar)"]}
+{"word": "especificação", "morphemes": ["especific (especificar)", "ação (ação)"]}
+{"word": "modificar", "morphemes": ["modific (modificar)", "ar (ar)"]}
+{"word": "modificação", "morphemes": ["modific (modificar)", "ação (ação)"]}
+{"word": "notificar", "morphemes": ["notific (notificar)", "ar (ar)"]}
+{"word": "notificação", "morphemes": ["notific (notificar)", "ação (ação)"]}
+{"word": "organizar", "morphemes": ["organiz (organizar)", "ar (ar)"]}
+{"word": "organização", "morphemes": ["organiz (organizar)", "ação (ação)"]}
+{"word": "utilizar", "morphemes": ["utiliz (utilizar)", "ar (ar)"]}
+{"word": "utilização", "morphemes": ["utiliz (utilizar)", "ação (ação)"]}
+{"word": "realizar", "morphemes": ["realiz (realizar)", "ar (ar)"]}
+{"word": "realização", "morphemes": ["realiz (realizar)", "ação (ação)"]}
+{"word": "atualizar", "morphemes": ["atualiz (atualizar)", "ar (ar)"]}
+{"word": "atualização", "morphemes": ["atualiz (atualizar)", "ação (ação)"]}
+{"word": "civilizar", "morphemes": ["civiliz (civilizar)", "ar (ar)"]}
+{"word": "civilização", "morphemes": ["civiliz (civilizar)", "ação (ação)"]}
+{"word": "democratizar", "morphemes": ["democratiz (democratizar)", "ar (ar)"]}
+{"word": "globalizar", "morphemes": ["globaliz (globalizar)", "ar (ar)"]}
+{"word": "globalização", "morphemes": ["globaliz (globalizar)", "ação (ação)"]}
+{"word": "modernizar", "morphemes": ["moderniz (modernizar)", "ar (ar)"]}
+{"word": "modernização", "morphemes": ["moderniz (modernizar)", "ação (ação)"]}
+{"word": "nacionalizar", "morphemes": ["nacionaliz (nacionalizar)", "ar (ar)"]}
+{"word": "personalizar", "morphemes": ["personaliz (personalizar)", "ar (ar)"]}
+{"word": "otimizar", "morphemes": ["otimiz (otimizar)", "ar (ar)"]}
+{"word": "otimização", "morphemes": ["otimiz (otimizar)", "ação (ação)"]}
+{"word": "polarizar", "morphemes": ["polariz (polarizar)", "ar (ar)"]}
+{"word": "especializar", "morphemes": ["especializ (especializar)", "ar (ar)"]}
+{"word": "normalizar", "morphemes": ["normaliz (normalizar)", "ar (ar)"]}
+{"word": "autorizar", "morphemes": ["autoriz (autorizar)", "ar (ar)"]}
+{"word": "autorização", "morphemes": ["autoriz (autorizar)", "ação (ação)"]}
+{"word": "colonizar", "morphemes": ["coloniz (colonizar)", "ar (ar)"]}
+{"word": "colonização", "morphemes": ["coloniz (colonizar)", "ação (ação)"]}
+{"word": "formalização", "morphemes": ["formaliz (formalizar)", "ação (ação)"]}
+{"word": "legalização", "morphemes": ["legaliz (legalizar)", "ação (ação)"]}
+{"word": "tempinho", "morphemes": ["temp (tempo)", "inho (inho)"]}
+{"word": "cozinheiro", "morphemes": ["cozinh (cozinhar)", "eiro (eiro)"]}
+{"word": "livreiro", "morphemes": ["livr (livro)", "eiro (eiro)"]}
+{"word": "jardineiro", "morphemes": ["jardin (jardim)", "eiro (eiro)"]}
+{"word": "sapateiro", "morphemes": ["sapat (sapato)", "eiro (eiro)"]}
+{"word": "pedreiro", "morphemes": ["pedr (pedra)", "eiro (eiro)"]}
+{"word": "banheiro", "morphemes": ["banh (banho)", "eiro (eiro)"]}
+{"word": "brasileiro", "morphemes": ["brasil (Brasil)", "eiro (eiro)"]}
+{"word": "feiticeiro", "morphemes": ["feitic (feitiço)", "eiro (eiro)"]}
+{"word": "entristecer", "morphemes": ["en (en)", "trist (triste)", "ecer (ecer)"]}
+{"word": "envelhecer", "morphemes": ["en (en)", "velh (velho)", "ecer (ecer)"]}
+{"word": "empobrecer", "morphemes": ["em (em)", "pobr (pobre)", "ecer (ecer)"]}
+{"word": "enriquecer", "morphemes": ["en (en)", "riqu (rico)", "ecer (ecer)"]}
+{"word": "escurecer", "morphemes": ["es (es)", "cur (escuro)", "ecer (ecer)"]}
+{"word": "esclarecer", "morphemes": ["es (es)", "clar (claro)", "ecer (ecer)"]}
+{"word": "amadurecer", "morphemes": ["a (a)", "madur (maduro)", "ecer (ecer)"]}
+{"word": "hipersensível", "morphemes": ["hiper (hiper)", "sensível (sensível)"]}
+{"word": "hiperativo", "morphemes": ["hiper (hiper)", "ativo (ativo)"]}
+{"word": "transatlântico", "morphemes": ["trans (trans)", "atlântico (atlântico)"]}
+{"word": "transnacional", "morphemes": ["trans (trans)", "nacional (nacional)"]}
+{"word": "internacional", "morphemes": ["inter (inter)", "nacional (nacional)"]}
+{"word": "interestelar", "morphemes": ["inter (inter)", "estelar (estelar)"]}
+{"word": "autoestima", "morphemes": ["auto (auto)", "estima (estima)"]}
+{"word": "autoajuda", "morphemes": ["auto (auto)", "ajuda (ajuda)"]}
+{"word": "autodefesa", "morphemes": ["auto (auto)", "defesa (defesa)"]}
+{"word": "autobiografia", "morphemes": ["auto (auto)", "biografia (biografia)"]}
+{"word": "autoimune", "morphemes": ["auto (auto)", "imune (imune)"]}
+{"word": "semicírculo", "morphemes": ["semi (semi)", "círculo (círculo)"]}

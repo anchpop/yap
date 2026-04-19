@@ -1077,13 +1077,48 @@ async fn main() -> anyhow::Result<()> {
                 .context("Failed to parse custom definitions")?
         };
 
-        // Train morphological segmentation model from canonical morphemes + word list
-        let canonical_morphemes_path = PathBuf::from(format!(
-            "generate-data/data/{}/canonical_morphemes.tsv",
+        // Compute morphology up-front so etymology can see what grammatical
+        // readings each word actually has (disambiguates syncretic tags like
+        // French -e = 1sg AND 3sg). This is the same morphology pass used later
+        // by gram_dictionary, so no duplicated LLM calls.
+        let morphology: BTreeMap<
+            language_utils::Heteronym<String>,
+            Vec<language_utils::features::Morphology>,
+        > = morphology_analysis::create_morphology(
+            course.target_language,
+            &filtered_gram_frequencies,
+        )
+        .await
+        .context("Failed to create morphology")?;
+
+        // Collapse to per-word Leipzig-style summary:
+        //   `VERB rester [1.SG.PRS.IND / 3.SG.PRS.IND]; NOUN reste`
+        let word_morphology: BTreeMap<String, String> = {
+            let mut per_word: BTreeMap<String, Vec<String>> = BTreeMap::new();
+            for (het, morphs) in &morphology {
+                let readings = language_utils::features::Morphology::leipzig_many(morphs);
+                let summary = if readings.is_empty() {
+                    format!("{:?} {}", het.pos, het.lemma)
+                } else {
+                    format!("{:?} {} [{}]", het.pos, het.lemma, readings)
+                };
+                per_word.entry(het.word.clone()).or_default().push(summary);
+            }
+            per_word
+                .into_iter()
+                .map(|(word, summaries)| (word, summaries.join("; ")))
+                .collect()
+        };
+
+        // Build etymology segmentations from the golden JSONL seed plus LLM
+        // fills for anything uncovered.
+        let golden_morphemes_path = PathBuf::from(format!(
+            "generate-data/data/{}/golden_morphemes.jsonl",
             course.target_language.iso_639_3()
         ));
-        let morphology_segmentations = if canonical_morphemes_path.exists() {
-            // Extract learnable single-word grams as the word list
+        let etymology_segmentations = if golden_morphemes_path.exists() {
+            // Extract learnable single-word grams as the word list (sorted by
+            // frequency, since filtered_gram_frequencies is already sorted desc).
             let learnable_words: Vec<String> = filtered_gram_frequencies
                 .iter()
                 .filter_map(|entry| {
@@ -1097,39 +1132,101 @@ async fn main() -> anyhow::Result<()> {
                 })
                 .collect();
             println!(
-                "Training morphology model for {} ({} learnable words)...",
+                "Building etymology segmentations for {} ({} learnable words)...",
                 course.target_language,
                 learnable_words.len()
             );
-            generate_data::morphology::build_morphology_segmentations(
-                &canonical_morphemes_path,
+
+            generate_data::etymology::build_etymology_segmentations_with_llm(
+                *course,
+                &golden_morphemes_path,
                 &learnable_words,
-                3000,
+                &word_morphology,
             )
+            .await?
         } else {
             std::collections::BTreeMap::new()
         };
         println!(
-            "Morphology segmentations: {} words",
-            morphology_segmentations.len()
+            "Etymology segmentations: {} words",
+            etymology_segmentations.len()
         );
 
-        // Write morphology segmentations to file
+        // Write etymology segmentations to file
         {
-            let segmentations_file = target_language_dir.join("morphology_segmentations.jsonl");
+            let segmentations_file = target_language_dir.join("etymology_segmentations.jsonl");
             let mut file = File::create(&segmentations_file)
-                .context("Failed to create morphology segmentations file")?;
-            for (word, segments) in &morphology_segmentations {
+                .context("Failed to create etymology segmentations file")?;
+            for (word, segments) in &etymology_segmentations {
                 let json = serde_json::to_string(&(word, segments))
-                    .context("Failed to serialize morphology segmentation")?;
-                writeln!(file, "{json}").context("Failed to write morphology segmentation")?;
+                    .context("Failed to serialize etymology segmentation")?;
+                writeln!(file, "{json}").context("Failed to write etymology segmentation")?;
             }
             println!(
-                "Wrote {} morphology segmentations to {:?}",
-                morphology_segmentations.len(),
+                "Wrote {} etymology segmentations to {:?}",
+                etymology_segmentations.len(),
                 segmentations_file
             );
         }
+
+        // Classify and define every morpheme that shows up in the segmentations.
+        let morphemes: BTreeMap<
+            language_utils::MorphemeSegment<String>,
+            language_utils::MorphemeInfo<String>,
+        > = if etymology_segmentations.is_empty() {
+            BTreeMap::new()
+        } else {
+            let morpheme_to_words =
+                generate_data::morpheme_info::invert_segmentations(&etymology_segmentations);
+
+            // Build a word → (lemma, POS) map for trie-style prefix lookup.
+            // Used when resolving Free morphemes back to dictionary entries.
+            let word_info: BTreeMap<String, (String, language_utils::PartOfSpeech)> =
+                filtered_gram_frequencies
+                    .iter()
+                    .filter_map(|entry| {
+                        if entry.gram.0.len() != 1 {
+                            return None;
+                        }
+                        match &entry.gram.0[0] {
+                            Atom::Tok(word) => {
+                                let het = word.heteronym()?;
+                                Some((word.text.clone(), (het.lemma.clone(), het.pos)))
+                            }
+                            _ => None,
+                        }
+                    })
+                    .collect();
+
+            println!(
+                "Analyzing {} unique morphemes for {} ({} dictionary words for prefix lookup)...",
+                morpheme_to_words.len(),
+                course.target_language,
+                word_info.len(),
+            );
+            let analyses = generate_data::morpheme_info::analyze_morphemes(
+                *course,
+                &morpheme_to_words,
+                &word_info,
+            )
+            .await;
+
+            let morpheme_info_file = target_language_dir.join("morpheme_info.jsonl");
+            let mut file =
+                File::create(&morpheme_info_file).context("Failed to create morpheme info file")?;
+            for analysis in &analyses {
+                let json =
+                    serde_json::to_string(analysis).context("Failed to serialize morpheme info")?;
+                writeln!(file, "{json}").context("Failed to write morpheme info")?;
+            }
+            println!(
+                "Wrote {} morpheme info entries to {:?}",
+                analyses.len(),
+                morpheme_info_file,
+            );
+
+            analyses.into_iter().map(|a| (a.segment, a.kind)).collect()
+        };
 
         // Create gram dictionary (for single-atom grams)
         // Merge morphology data and custom definitions, producing DictionaryEntry values
@@ -1142,12 +1239,7 @@ async fn main() -> anyhow::Result<()> {
                 generate_data::dict::create_gram_dictionary(*course, &filtered_gram_frequencies)
                     .await
                     .context("Failed to create gram dictionary")?;
-            let morphology = morphology_analysis::create_morphology(
-                course.target_language,
-                &filtered_gram_frequencies,
-            )
-            .await
-            .context("Failed to create morphology")?;
+            // Reuse the morphology we computed earlier (before etymology).
             raw_dictionary
                 .into_iter()
                 .filter_map(|(heteronym, mut def)| {
@@ -1157,7 +1249,7 @@ async fn main() -> anyhow::Result<()> {
                     }
                     // Only keep entries that have morphology
                     let morph = morphology.get(&heteronym)?.clone();
-                    let segments = morphology_segmentations
+                    let segments = etymology_segmentations
                         .get(&heteronym.word)
                         .cloned()
                         .unwrap_or_default();
@@ -2059,6 +2151,7 @@ async fn main() -> anyhow::Result<()> {
             },
             encoded_sentences: encoded_sentences_with_grams,
             gram_dictionary: gram_keyed_dictionary,
+            morphemes,
         };
 
         let language_pack =

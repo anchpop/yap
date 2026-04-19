@@ -45,7 +45,7 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     ));
 
     // Load banned sentences
-    let banned_sentences = load_banned_sentences(&source_data_path)?;
+    let banned_sentences = load_banned_sentences(&source_data_path, course.target_language)?;
 
     // Load manual sentences (should NEVER be filtered)
     let manual_sentences = load_manual_sentences(&source_data_path)?;
@@ -186,9 +186,21 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     })
 }
 
-/// Load banned sentences from both manual and AI-generated files
-fn load_banned_sentences(source_data_path: &std::path::Path) -> anyhow::Result<HashSet<String>> {
+/// Load banned sentences from both manual and AI-generated files.
+///
+/// Entries are normalized through `cleanup_sentence` so they match the form
+/// that input sentences take after cleanup (e.g. thin NBSP before `?` / `!`
+/// in French).
+fn load_banned_sentences(
+    source_data_path: &std::path::Path,
+    language: Language,
+) -> anyhow::Result<HashSet<String>> {
     let mut banned_sentences = HashSet::new();
+
+    let normalize = |raw: &str| {
+        language_utils::text_cleanup::cleanup_sentence(raw.trim().to_string(), language)
+            .to_lowercase()
+    };
 
     // Load manually created banned sentences
     let banned_sentences_file = source_data_path.join("banned_sentences.txt");
@@ -196,9 +208,12 @@ fn load_banned_sentences(source_data_path: &std::path::Path) -> anyhow::Result<H
         let content = std::fs::read_to_string(&banned_sentences_file)
             .context("Failed to read banned sentences file")?;
         for line in content.lines() {
-            let line = line.trim().to_lowercase();
-            if !line.is_empty() {
-                banned_sentences.insert(line);
+            if line.trim_start().starts_with('#') {
+                continue;
+            }
+            let normalized = normalize(line);
+            if !normalized.is_empty() {
+                banned_sentences.insert(normalized);
             }
         }
     }
@@ -213,7 +228,7 @@ fn load_banned_sentences(source_data_path: &std::path::Path) -> anyhow::Result<H
             if let Ok(banned_entry) = serde_json::from_str::<serde_json::Value>(line)
                 && let Some(sentence) = banned_entry.get("sentence").and_then(|s| s.as_str())
             {
-                banned_sentences.insert(sentence.to_lowercase());
+                banned_sentences.insert(normalize(sentence));
             }
         }
     }

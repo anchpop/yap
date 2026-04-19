@@ -1531,7 +1531,211 @@ pub struct WordPrefix {
     pub separator: String,
 }
 
+impl Number {
+    /// Leipzig-glossing-style abbreviation (e.g. `SG`, `PL`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Number::Singular => "SG",
+            Number::Plural => "PL",
+            Number::Dual => "DU",
+            Number::Trial => "TRI",
+            Number::Paucal => "PAUC",
+            Number::GreaterPaucal => "GPAUC",
+            Number::GreaterPlural => "GPL",
+            Number::Inverse => "INV",
+            Number::Count => "COUNT",
+            Number::PluraleTantum => "PLTAN",
+            Number::Collective => "COLL",
+        }
+    }
+}
+
+impl Person {
+    /// Leipzig-glossing-style abbreviation (e.g. `1`, `2`, `3`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Person::Zeroth => "0",
+            Person::First => "1",
+            Person::Second => "2",
+            Person::Third => "3",
+            Person::Fourth => "4",
+        }
+    }
+}
+
+impl Gender {
+    /// Leipzig-glossing-style abbreviation (e.g. `M`, `F`, `N`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Gender::Masculine => "M",
+            Gender::Feminine => "F",
+            Gender::Neuter => "N",
+            Gender::Common => "C",
+        }
+    }
+}
+
+impl Tense {
+    /// Leipzig-glossing-style abbreviation (e.g. `PRS`, `PST`, `FUT`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Tense::Past => "PST",
+            Tense::Present => "PRS",
+            Tense::Future => "FUT",
+            Tense::Imperfect => "IMPF",
+            Tense::Pluperfect => "PLPF",
+        }
+    }
+}
+
+impl Mood {
+    /// Leipzig-glossing-style abbreviation (e.g. `IND`, `SBJV`, `IMP`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Mood::Indicative => "IND",
+            Mood::Imperative => "IMP",
+            Mood::Conditional => "COND",
+            Mood::Potential => "POT",
+            Mood::Subjunctive => "SBJV",
+            Mood::Jussive => "JUS",
+            Mood::Purposive => "PURP",
+            Mood::Quotative => "QUOT",
+            Mood::Optative => "OPT",
+            Mood::Desiderative => "DES",
+            Mood::Necessitative => "NEC",
+            Mood::Admirative => "ADM",
+            Mood::Interrogative => "INT",
+            Mood::Irrealis => "IRR",
+        }
+    }
+}
+
+impl Aspect {
+    /// Leipzig-glossing-style abbreviation (e.g. `PFV`, `IPFV`, `HAB`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Aspect::Imperfect => "IPFV",
+            Aspect::Perfect => "PFV",
+            Aspect::Prospective => "PROSP",
+            Aspect::Progressive => "PROG",
+            Aspect::Habitual => "HAB",
+            Aspect::Iterative => "ITER",
+        }
+    }
+}
+
+impl Case {
+    /// Leipzig-glossing-style abbreviation (e.g. `NOM`, `GEN`, `DAT`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Case::Nominative => "NOM",
+            Case::Accusative => "ACC",
+            Case::Absolutive => "ABS",
+            Case::Ergative => "ERG",
+            Case::Dative => "DAT",
+            Case::Genitive => "GEN",
+            Case::Vocative => "VOC",
+            Case::Instrumental => "INS",
+            Case::Partitive => "PRT",
+            Case::Distributive => "DISTR",
+            Case::Essive => "ESS",
+            Case::Translative => "TRANSL",
+            Case::Comitative => "COM",
+            Case::Abessive => "ABE",
+            Case::Causative => "CAUS",
+            Case::Benefactive => "BEN",
+            Case::Considerative => "CNS",
+            Case::Comparative => "COMP",
+            Case::Equative => "EQU",
+            Case::Locative => "LOC",
+            Case::Lative => "LAT",
+            Case::Terminative => "TERM",
+            Case::Inessive => "INE",
+            Case::Illative => "ILL",
+            Case::Elative => "ELA",
+            Case::Additive => "ADD",
+            Case::Adessive => "ADE",
+            Case::Allative => "ALL",
+            Case::Ablative => "ABL",
+            Case::Superessive => "SUPE",
+            Case::Superlative => "SUPL",
+            Case::Delative => "DEL",
+            Case::Subessive => "SUBE",
+            Case::Sublative => "SUBL",
+            Case::Subelative => "SUBEL",
+            Case::Perlative => "PER",
+            Case::Temporal => "TEMP",
+        }
+    }
+}
+
+impl Polite {
+    /// Leipzig-glossing-style abbreviation (e.g. `INF`, `FORM`).
+    pub fn leipzig(self) -> &'static str {
+        match self {
+            Polite::Intimate => "INTM",
+            Polite::Informal => "INF",
+            Polite::Formal => "FORM",
+            Polite::Elev => "ELEV",
+            Polite::Humb => "HUMB",
+        }
+    }
+}
+
 impl Morphology {
+    /// Leipzig-glossing-style summary of this Morphology, joining populated
+    /// features with dots in a conventional order:
+    /// `PERSON.NUMBER.GENDER.CASE.TENSE.MOOD.ASPECT.POLITENESS`.
+    /// Empty features are omitted. Returns `""` if every field is `None`.
+    ///
+    /// Example: `"3.SG.PRS.IND"` for third-person singular present indicative.
+    pub fn leipzig(&self) -> String {
+        let mut parts: Vec<&'static str> = Vec::new();
+        if let Some(p) = self.person {
+            parts.push(p.leipzig());
+        }
+        if let Some(n) = self.number {
+            parts.push(n.leipzig());
+        }
+        if let Some(g) = self.gender {
+            parts.push(g.leipzig());
+        }
+        if let Some(c) = self.case {
+            parts.push(c.leipzig());
+        }
+        if let Some(t) = self.tense {
+            parts.push(t.leipzig());
+        }
+        if let Some(m) = self.mood {
+            parts.push(m.leipzig());
+        }
+        if let Some(a) = self.aspect {
+            parts.push(a.leipzig());
+        }
+        if let Some(p) = self.politeness {
+            parts.push(p.leipzig());
+        }
+        parts.join(".")
+    }
+
+    /// Format a set of Morphology readings (e.g. the different parses of a
+    /// single surface form) as a `/`-separated list of Leipzig glosses.
+    /// Empty entries are skipped; if no readings have any features populated
+    /// the return value is `""`.
+    ///
+    /// Example: for French `reste` with readings {1sg.prs.ind, 3sg.prs.ind,
+    /// 1sg.prs.sbjv, 3sg.prs.sbjv} → `"1.SG.PRS.IND / 3.SG.PRS.IND / 1.SG.PRS.SBJV / 3.SG.PRS.SBJV"`.
+    pub fn leipzig_many(morphologies: &[Morphology]) -> String {
+        let mut glosses: Vec<String> = morphologies
+            .iter()
+            .map(|m| m.leipzig())
+            .filter(|s| !s.is_empty())
+            .collect();
+        glosses.sort();
+        glosses.dedup();
+        glosses.join(" / ")
+    }
+
     pub fn get_multiword_prefix(gram: &Gram<String>, language: Language) -> Option<WordPrefix> {
         match language {
             Language::Korean => get_korean_multiword_prefix(gram),

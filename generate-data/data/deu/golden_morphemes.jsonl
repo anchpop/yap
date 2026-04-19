@@ -1,0 +1,554 @@
+{"word": "unglücklich", "morphemes": ["un (un)", "glück (Glück)", "lich (lich)"]}
+{"word": "Glücklichkeit", "morphemes": ["Glück (Glück)", "lich (lich)", "keit (keit)"]}
+{"word": "Freundschaft", "morphemes": ["Freund (Freund)", "schaft (schaft)"]}
+{"word": "Freundlichkeit", "morphemes": ["Freund (Freund)", "lich (lich)", "keit (keit)"]}
+{"word": "unfreundlich", "morphemes": ["un (un)", "freund (Freund)", "lich (lich)"]}
+{"word": "Kindheit", "morphemes": ["Kind (Kind)", "heit (heit)"]}
+{"word": "Krankheit", "morphemes": ["Krank (krank)", "heit (heit)"]}
+{"word": "Gesundheit", "morphemes": ["Gesund (gesund)", "heit (heit)"]}
+{"word": "Schönheit", "morphemes": ["Schön (schön)", "heit (heit)"]}
+{"word": "Dunkelheit", "morphemes": ["Dunkel (dunkel)", "heit (heit)"]}
+{"word": "Wahrheit", "morphemes": ["Wahr (wahr)", "heit (heit)"]}
+{"word": "Freiheit", "morphemes": ["Frei (frei)", "heit (heit)"]}
+{"word": "Einheit", "morphemes": ["Ein (ein)", "heit (heit)"]}
+{"word": "Menschheit", "morphemes": ["Mensch (Mensch)", "heit (heit)"]}
+{"word": "Kleinigkeit", "morphemes": ["Klein (klein)", "ig (ig)", "keit (keit)"]}
+{"word": "Müdigkeit", "morphemes": ["Müd (müde)", "ig (ig)", "keit (keit)"]}
+{"word": "Ewigkeit", "morphemes": ["Ew (ewig)", "ig (ig)", "keit (keit)"]}
+{"word": "Richtigkeit", "morphemes": ["Richt (richtig)", "ig (ig)", "keit (keit)"]}
+{"word": "Möglichkeit", "morphemes": ["Mög (mögen)", "lich (lich)", "keit (keit)"]}
+{"word": "Unmöglichkeit", "morphemes": ["Un (un)", "mög (mögen)", "lich (lich)", "keit (keit)"]}
+{"word": "Wirklichkeit", "morphemes": ["Wirk (wirken)", "lich (lich)", "keit (keit)"]}
+{"word": "Sauberkeit", "morphemes": ["Sauber (sauber)", "keit (keit)"]}
+{"word": "Traurigkeit", "morphemes": ["Traur (traurig)", "ig (ig)", "keit (keit)"]}
+{"word": "Schwierigkeit", "morphemes": ["Schwier (schwierig)", "ig (ig)", "keit (keit)"]}
+{"word": "Aufmerksamkeit", "morphemes": ["Auf (auf)", "merk (merken)", "sam (sam)", "keit (keit)"]}
+{"word": "Langsamkeit", "morphemes": ["Lang (lang)", "sam (sam)", "keit (keit)"]}
+{"word": "Einsamkeit", "morphemes": ["Ein (ein)", "sam (sam)", "keit (keit)"]}
+{"word": "Gemeinsamkeit", "morphemes": ["Ge (ge)", "mein (mein)", "sam (sam)", "keit (keit)"]}
+{"word": "arbeitslos", "morphemes": ["arbeit (Arbeit)", "s (s)", "los (los)"]}
+{"word": "hoffnungslos", "morphemes": ["hoffnung (Hoffnung)", "s (s)", "los (los)"]}
+{"word": "kostenlos", "morphemes": ["kosten (kosten)", "los (los)"]}
+{"word": "zwecklos", "morphemes": ["zweck (Zweck)", "los (los)"]}
+{"word": "endlos", "morphemes": ["end (Ende)", "los (los)"]}
+{"word": "sinnlos", "morphemes": ["sinn (Sinn)", "los (los)"]}
+{"word": "farblos", "morphemes": ["farb (Farbe)", "los (los)"]}
+{"word": "schlaflos", "morphemes": ["schlaf (Schlaf)", "los (los)"]}
+{"word": "Hoffnung", "morphemes": ["Hoff (hoffen)", "nung (nung)"]}
+{"word": "Zeitung", "morphemes": ["Zeit (Zeit)", "ung (ung)"]}
+{"word": "Wohnung", "morphemes": ["Wohn (wohnen)", "ung (ung)"]}
+{"word": "Erziehung", "morphemes": ["Er (er)", "zieh (ziehen)", "ung (ung)"]}
+{"word": "Bildung", "morphemes": ["Bild (bilden)", "ung (ung)"]}
+{"word": "Ausbildung", "morphemes": ["Aus (aus)", "bild (bilden)", "ung (ung)"]}
+{"word": "Rechnung", "morphemes": ["Rechn (rechnen)", "ung (ung)"]}
+{"word": "Meinung", "morphemes": ["Mein (meinen)", "ung (ung)"]}
+{"word": "Kleidung", "morphemes": ["Kleid (kleiden)", "ung (ung)"]}
+{"word": "Ordnung", "morphemes": ["Ordn (ordnen)", "ung (ung)"]}
+{"word": "Übung", "morphemes": ["Üb (üben)", "ung (ung)"]}
+{"word": "Lösung", "morphemes": ["Lös (lösen)", "ung (ung)"]}
+{"word": "Erfahrung", "morphemes": ["Er (er)", "fahr (fahren)", "ung (ung)"]}
+{"word": "Bezahlung", "morphemes": ["Be (be)", "zahl (zahlen)", "ung (ung)"]}
+{"word": "Bedeutung", "morphemes": ["Be (be)", "deut (deuten)", "ung (ung)"]}
+{"word": "Beschreibung", "morphemes": ["Be (be)", "schreib (schreiben)", "ung (ung)"]}
+{"word": "Verbindung", "morphemes": ["Ver (ver)", "bind (binden)", "ung (ung)"]}
+{"word": "Vorstellung", "morphemes": ["Vor (vor)", "stell (stellen)", "ung (ung)"]}
+{"word": "Anmeldung", "morphemes": ["An (an)", "meld (melden)", "ung (ung)"]}
+{"word": "Abrechnung", "morphemes": ["Ab (ab)", "rechn (rechnen)", "ung (ung)"]}
+{"word": "Einladung", "morphemes": ["Ein (ein)", "lad (laden)", "ung (ung)"]}
+{"word": "Regierung", "morphemes": ["Regier (regieren)", "ung (ung)"]}
+{"word": "Erklärung", "morphemes": ["Er (er)", "klär (klären)", "ung (ung)"]}
+{"word": "Bewegung", "morphemes": ["Be (be)", "weg (bewegen)", "ung (ung)"]}
+{"word": "Beziehung", "morphemes": ["Be (be)", "zieh (ziehen)", "ung (ung)"]}
+{"word": "Vorbereitung", "morphemes": ["Vor (vor)", "bereit (bereiten)", "ung (ung)"]}
+{"word": "Untersuchung", "morphemes": ["Unter (unter)", "such (suchen)", "ung (ung)"]}
+{"word": "unglaublich", "morphemes": ["un (un)", "glaub (glauben)", "lich (lich)"]}
+{"word": "freundlich", "morphemes": ["freund (Freund)", "lich (lich)"]}
+{"word": "herzlich", "morphemes": ["herz (Herz)", "lich (lich)"]}
+{"word": "täglich", "morphemes": ["täg (Tag)", "lich (lich)"]}
+{"word": "jährlich", "morphemes": ["jähr (Jahr)", "lich (lich)"]}
+{"word": "monatlich", "morphemes": ["monat (Monat)", "lich (lich)"]}
+{"word": "stündlich", "morphemes": ["stünd (Stunde)", "lich (lich)"]}
+{"word": "wahrscheinlich", "morphemes": ["wahr (wahr)", "schein (scheinen)", "lich (lich)"]}
+{"word": "glücklich", "morphemes": ["glück (Glück)", "lich (lich)"]}
+{"word": "schrecklich", "morphemes": ["schreck (Schreck)", "lich (lich)"]}
+{"word": "natürlich", "morphemes": ["natür (Natur)", "lich (lich)"]}
+{"word": "männlich", "morphemes": ["männ (Mann)", "lich (lich)"]}
+{"word": "weiblich", "morphemes": ["weib (Weib)", "lich (lich)"]}
+{"word": "kindlich", "morphemes": ["kind (Kind)", "lich (lich)"]}
+{"word": "kindisch", "morphemes": ["kind (Kind)", "isch (isch)"]}
+{"word": "kritisch", "morphemes": ["krit (Kritik)", "isch (isch)"]}
+{"word": "praktisch", "morphemes": ["prakt (Praxis)", "isch (isch)"]}
+{"word": "politisch", "morphemes": ["polit (Politik)", "isch (isch)"]}
+{"word": "typisch", "morphemes": ["typ (Typ)", "isch (isch)"]}
+{"word": "künstlich", "morphemes": ["künst (Kunst)", "lich (lich)"]}
+{"word": "englisch", "morphemes": ["engl (England)", "isch (isch)"]}
+{"word": "französisch", "morphemes": ["französ (Frankreich)", "isch (isch)"]}
+{"word": "spanisch", "morphemes": ["span (Spanien)", "isch (isch)"]}
+{"word": "italienisch", "morphemes": ["italien (Italien)", "isch (isch)"]}
+{"word": "russisch", "morphemes": ["russ (Russland)", "isch (isch)"]}
+{"word": "essbar", "morphemes": ["ess (essen)", "bar (bar)"]}
+{"word": "trinkbar", "morphemes": ["trink (trinken)", "bar (bar)"]}
+{"word": "lesbar", "morphemes": ["les (lesen)", "bar (bar)"]}
+{"word": "machbar", "morphemes": ["mach (machen)", "bar (bar)"]}
+{"word": "haltbar", "morphemes": ["halt (halten)", "bar (bar)"]}
+{"word": "sichtbar", "morphemes": ["sicht (Sicht)", "bar (bar)"]}
+{"word": "dankbar", "morphemes": ["dank (Dank)", "bar (bar)"]}
+{"word": "fruchtbar", "morphemes": ["frucht (Frucht)", "bar (bar)"]}
+{"word": "sparsam", "morphemes": ["spar (sparen)", "sam (sam)"]}
+{"word": "langsam", "morphemes": ["lang (lang)", "sam (sam)"]}
+{"word": "einsam", "morphemes": ["ein (ein)", "sam (sam)"]}
+{"word": "gemeinsam", "morphemes": ["ge (ge)", "mein (mein)", "sam (sam)"]}
+{"word": "arbeitsam", "morphemes": ["arbeit (Arbeit)", "sam (sam)"]}
+{"word": "seltsam", "morphemes": ["selt (selten)", "sam (sam)"]}
+{"word": "gehört", "morphemes": ["ge (ge) [ptcp]", "hör (hören)", "t (t) [ptcp]"]}
+{"word": "gemacht", "morphemes": ["ge (ge) [ptcp]", "mach (machen)", "t (t) [ptcp]"]}
+{"word": "gekauft", "morphemes": ["ge (ge) [ptcp]", "kauf (kaufen)", "t (t) [ptcp]"]}
+{"word": "gespielt", "morphemes": ["ge (ge) [ptcp]", "spiel (spielen)", "t (t) [ptcp]"]}
+{"word": "gelernt", "morphemes": ["ge (ge) [ptcp]", "lern (lernen)", "t (t) [ptcp]"]}
+{"word": "gearbeitet", "morphemes": ["ge (ge) [ptcp]", "arbeit (arbeiten)", "et (t) [ptcp]"]}
+{"word": "gewohnt", "morphemes": ["ge (ge) [ptcp]", "wohn (wohnen)", "t (t) [ptcp]"]}
+{"word": "gezeigt", "morphemes": ["ge (ge) [ptcp]", "zeig (zeigen)", "t (t) [ptcp]"]}
+{"word": "gefragt", "morphemes": ["ge (ge) [ptcp]", "frag (fragen)", "t (t) [ptcp]"]}
+{"word": "gesagt", "morphemes": ["ge (ge) [ptcp]", "sag (sagen)", "t (t) [ptcp]"]}
+{"word": "gesucht", "morphemes": ["ge (ge) [ptcp]", "such (suchen)", "t (t) [ptcp]"]}
+{"word": "geglaubt", "morphemes": ["ge (ge) [ptcp]", "glaub (glauben)", "t (t) [ptcp]"]}
+{"word": "gekocht", "morphemes": ["ge (ge) [ptcp]", "koch (kochen)", "t (t) [ptcp]"]}
+{"word": "gelebt", "morphemes": ["ge (ge) [ptcp]", "leb (leben)", "t (t) [ptcp]"]}
+{"word": "geliebt", "morphemes": ["ge (ge) [ptcp]", "lieb (lieben)", "t (t) [ptcp]"]}
+{"word": "gelacht", "morphemes": ["ge (ge) [ptcp]", "lach (lachen)", "t (t) [ptcp]"]}
+{"word": "getanzt", "morphemes": ["ge (ge) [ptcp]", "tanz (tanzen)", "t (t) [ptcp]"]}
+{"word": "gekostet", "morphemes": ["ge (ge) [ptcp]", "kost (kosten)", "et (t) [ptcp]"]}
+{"word": "gereist", "morphemes": ["ge (ge) [ptcp]", "reis (reisen)", "t (t) [ptcp]"]}
+{"word": "gesprochen", "morphemes": ["ge (ge) [ptcp]", "sproch (sprechen)", "en (en) [ptcp]"]}
+{"word": "geschrieben", "morphemes": ["ge (ge) [ptcp]", "schrieb (schreiben)", "en (en) [ptcp]"]}
+{"word": "gelesen", "morphemes": ["ge (ge) [ptcp]", "les (lesen)", "en (en) [ptcp]"]}
+{"word": "gegessen", "morphemes": ["ge (ge) [ptcp]", "gess (essen)", "en (en) [ptcp]"]}
+{"word": "getrunken", "morphemes": ["ge (ge) [ptcp]", "trunk (trinken)", "en (en) [ptcp]"]}
+{"word": "geschlafen", "morphemes": ["ge (ge) [ptcp]", "schlaf (schlafen)", "en (en) [ptcp]"]}
+{"word": "gelaufen", "morphemes": ["ge (ge) [ptcp]", "lauf (laufen)", "en (en) [ptcp]"]}
+{"word": "gefahren", "morphemes": ["ge (ge) [ptcp]", "fahr (fahren)", "en (en) [ptcp]"]}
+{"word": "gefunden", "morphemes": ["ge (ge) [ptcp]", "fund (finden)", "en (en) [ptcp]"]}
+{"word": "gegeben", "morphemes": ["ge (ge) [ptcp]", "geb (geben)", "en (en) [ptcp]"]}
+{"word": "genommen", "morphemes": ["ge (ge) [ptcp]", "nomm (nehmen)", "en (en) [ptcp]"]}
+{"word": "gekommen", "morphemes": ["ge (ge) [ptcp]", "komm (kommen)", "en (en) [ptcp]"]}
+{"word": "gegangen", "morphemes": ["ge (ge) [ptcp]", "gang (gehen)", "en (en) [ptcp]"]}
+{"word": "gesehen", "morphemes": ["ge (ge) [ptcp]", "seh (sehen)", "en (en) [ptcp]"]}
+{"word": "geblieben", "morphemes": ["ge (ge) [ptcp]", "blieb (bleiben)", "en (en) [ptcp]"]}
+{"word": "gestanden", "morphemes": ["ge (ge) [ptcp]", "stand (stehen)", "en (en) [ptcp]"]}
+{"word": "gesessen", "morphemes": ["ge (ge) [ptcp]", "sess (sitzen)", "en (en) [ptcp]"]}
+{"word": "gelegen", "morphemes": ["ge (ge) [ptcp]", "leg (liegen)", "en (en) [ptcp]"]}
+{"word": "geholfen", "morphemes": ["ge (ge) [ptcp]", "holf (helfen)", "en (en) [ptcp]"]}
+{"word": "gesungen", "morphemes": ["ge (ge) [ptcp]", "sung (singen)", "en (en) [ptcp]"]}
+{"word": "gewonnen", "morphemes": ["ge (ge) [ptcp]", "wonn (gewinnen)", "en (en) [ptcp]"]}
+{"word": "geworden", "morphemes": ["ge (ge) [ptcp]", "word (werden)", "en (en) [ptcp]"]}
+{"word": "geworfen", "morphemes": ["ge (ge) [ptcp]", "worf (werfen)", "en (en) [ptcp]"]}
+{"word": "geflogen", "morphemes": ["ge (ge) [ptcp]", "flog (fliegen)", "en (en) [ptcp]"]}
+{"word": "geschwommen", "morphemes": ["ge (ge) [ptcp]", "schwomm (schwimmen)", "en (en) [ptcp]"]}
+{"word": "gezogen", "morphemes": ["ge (ge) [ptcp]", "zog (ziehen)", "en (en) [ptcp]"]}
+{"word": "gerufen", "morphemes": ["ge (ge) [ptcp]", "ruf (rufen)", "en (en) [ptcp]"]}
+{"word": "verstanden", "morphemes": ["ver (ver)", "stand (stehen)", "en (en) [ptcp]"]}
+{"word": "bekommen", "morphemes": ["be (be)", "komm (kommen)", "en (en) [ptcp]"]}
+{"word": "erzählt", "morphemes": ["er (er)", "zähl (zählen)", "t (t) [ptcp]"]}
+{"word": "verkauft", "morphemes": ["ver (ver)", "kauf (kaufen)", "t (t) [ptcp]"]}
+{"word": "vergessen", "morphemes": ["ver (ver)", "gess (vergessen)", "en (en) [ptcp]"]}
+{"word": "verloren", "morphemes": ["ver (ver)", "lor (verlieren)", "en (en) [ptcp]"]}
+{"word": "versucht", "morphemes": ["ver (ver)", "such (suchen)", "t (t) [ptcp]"]}
+{"word": "verbracht", "morphemes": ["ver (ver)", "brach (bringen)", "t (t) [ptcp]"]}
+{"word": "zerstört", "morphemes": ["zer (zer)", "stör (stören)", "t (t) [ptcp]"]}
+{"word": "zerbrochen", "morphemes": ["zer (zer)", "broch (brechen)", "en (en) [ptcp]"]}
+{"word": "entdeckt", "morphemes": ["ent (ent)", "deck (decken)", "t (t) [ptcp]"]}
+{"word": "entschieden", "morphemes": ["ent (ent)", "schied (scheiden)", "en (en) [ptcp]"]}
+{"word": "besucht", "morphemes": ["be (be)", "such (suchen)", "t (t) [ptcp]"]}
+{"word": "bezahlt", "morphemes": ["be (be)", "zahl (zahlen)", "t (t) [ptcp]"]}
+{"word": "benutzt", "morphemes": ["be (be)", "nutz (nutzen)", "t (t) [ptcp]"]}
+{"word": "bemerkt", "morphemes": ["be (be)", "merk (merken)", "t (t) [ptcp]"]}
+{"word": "begonnen", "morphemes": ["be (be)", "gonn (beginnen)", "en (en) [ptcp]"]}
+{"word": "erreicht", "morphemes": ["er (er)", "reich (reichen)", "t (t) [ptcp]"]}
+{"word": "erlaubt", "morphemes": ["er (er)", "laub (erlauben)", "t (t) [ptcp]"]}
+{"word": "erzählen", "morphemes": ["er (er)", "zähl (zählen)", "en (en) [inf]"]}
+{"word": "erklären", "morphemes": ["er (er)", "klär (klären)", "en (en) [inf]"]}
+{"word": "erfinden", "morphemes": ["er (er)", "find (finden)", "en (en) [inf]"]}
+{"word": "erholen", "morphemes": ["er (er)", "hol (holen)", "en (en) [inf]"]}
+{"word": "erkennen", "morphemes": ["er (er)", "kenn (kennen)", "en (en) [inf]"]}
+{"word": "misstrauen", "morphemes": ["miss (miss)", "trau (trauen)", "en (en) [inf]"]}
+{"word": "missverstehen", "morphemes": ["miss (miss)", "ver (ver)", "steh (stehen)", "en (en) [inf]"]}
+{"word": "überlegen", "morphemes": ["über (über)", "leg (legen)", "en (en) [inf]"]}
+{"word": "übernachten", "morphemes": ["über (über)", "nacht (Nacht)", "en (en) [inf]"]}
+{"word": "aufstehen", "morphemes": ["auf (auf)", "steh (stehen)", "en (en) [inf]"]}
+{"word": "aufmachen", "morphemes": ["auf (auf)", "mach (machen)", "en (en) [inf]"]}
+{"word": "aufhören", "morphemes": ["auf (auf)", "hör (hören)", "en (en) [inf]"]}
+{"word": "aufwachen", "morphemes": ["auf (auf)", "wach (wachen)", "en (en) [inf]"]}
+{"word": "aussehen", "morphemes": ["aus (aus)", "seh (sehen)", "en (en) [inf]"]}
+{"word": "ausgehen", "morphemes": ["aus (aus)", "geh (gehen)", "en (en) [inf]"]}
+{"word": "aussteigen", "morphemes": ["aus (aus)", "steig (steigen)", "en (en) [inf]"]}
+{"word": "einsteigen", "morphemes": ["ein (ein)", "steig (steigen)", "en (en) [inf]"]}
+{"word": "einkaufen", "morphemes": ["ein (ein)", "kauf (kaufen)", "en (en) [inf]"]}
+{"word": "einladen", "morphemes": ["ein (ein)", "lad (laden)", "en (en) [inf]"]}
+{"word": "einschlafen", "morphemes": ["ein (ein)", "schlaf (schlafen)", "en (en) [inf]"]}
+{"word": "mitkommen", "morphemes": ["mit (mit)", "komm (kommen)", "en (en) [inf]"]}
+{"word": "mitnehmen", "morphemes": ["mit (mit)", "nehm (nehmen)", "en (en) [inf]"]}
+{"word": "mitbringen", "morphemes": ["mit (mit)", "bring (bringen)", "en (en) [inf]"]}
+{"word": "mitmachen", "morphemes": ["mit (mit)", "mach (machen)", "en (en) [inf]"]}
+{"word": "vorstellen", "morphemes": ["vor (vor)", "stell (stellen)", "en (en) [inf]"]}
+{"word": "vorbereiten", "morphemes": ["vor (vor)", "bereit (bereiten)", "en (en) [inf]"]}
+{"word": "vorschlagen", "morphemes": ["vor (vor)", "schlag (schlagen)", "en (en) [inf]"]}
+{"word": "vorlesen", "morphemes": ["vor (vor)", "les (lesen)", "en (en) [inf]"]}
+{"word": "nachdenken", "morphemes": ["nach (nach)", "denk (denken)", "en (en) [inf]"]}
+{"word": "nachsehen", "morphemes": ["nach (nach)", "seh (sehen)", "en (en) [inf]"]}
+{"word": "nachfragen", "morphemes": ["nach (nach)", "frag (fragen)", "en (en) [inf]"]}
+{"word": "anrufen", "morphemes": ["an (an)", "ruf (rufen)", "en (en) [inf]"]}
+{"word": "ankommen", "morphemes": ["an (an)", "komm (kommen)", "en (en) [inf]"]}
+{"word": "anfangen", "morphemes": ["an (an)", "fang (fangen)", "en (en) [inf]"]}
+{"word": "ansehen", "morphemes": ["an (an)", "seh (sehen)", "en (en) [inf]"]}
+{"word": "anziehen", "morphemes": ["an (an)", "zieh (ziehen)", "en (en) [inf]"]}
+{"word": "abfahren", "morphemes": ["ab (ab)", "fahr (fahren)", "en (en) [inf]"]}
+{"word": "abholen", "morphemes": ["ab (ab)", "hol (holen)", "en (en) [inf]"]}
+{"word": "abnehmen", "morphemes": ["ab (ab)", "nehm (nehmen)", "en (en) [inf]"]}
+{"word": "abwarten", "morphemes": ["ab (ab)", "wart (warten)", "en (en) [inf]"]}
+{"word": "zurückkommen", "morphemes": ["zurück (zurück)", "komm (kommen)", "en (en) [inf]"]}
+{"word": "zurückgeben", "morphemes": ["zurück (zurück)", "geb (geben)", "en (en) [inf]"]}
+{"word": "zurückkehren", "morphemes": ["zurück (zurück)", "kehr (kehren)", "en (en) [inf]"]}
+{"word": "Haustür", "morphemes": ["Haus (Haus)", "tür (Tür)"]}
+{"word": "Haustüren", "morphemes": ["Haus (Haus)", "tür (Tür)", "en (en) [pl]"]}
+{"word": "Hausaufgabe", "morphemes": ["Haus (Haus)", "aufgabe (Aufgabe)"]}
+{"word": "Hausaufgaben", "morphemes": ["Haus (Haus)", "aufgabe (Aufgabe)", "n (n) [pl]"]}
+{"word": "Haustier", "morphemes": ["Haus (Haus)", "tier (Tier)"]}
+{"word": "Hausmeister", "morphemes": ["Haus (Haus)", "meister (Meister)"]}
+{"word": "Hausnummer", "morphemes": ["Haus (Haus)", "nummer (Nummer)"]}
+{"word": "Bahnhof", "morphemes": ["Bahn (Bahn)", "hof (Hof)"]}
+{"word": "Flughafen", "morphemes": ["Flug (Flug)", "hafen (Hafen)"]}
+{"word": "Feuerwehr", "morphemes": ["Feuer (Feuer)", "wehr (Wehr)"]}
+{"word": "Handschuh", "morphemes": ["Hand (Hand)", "schuh (Schuh)"]}
+{"word": "Handschuhe", "morphemes": ["Hand (Hand)", "schuh (Schuh)", "e (e) [pl]"]}
+{"word": "Handtuch", "morphemes": ["Hand (Hand)", "tuch (Tuch)"]}
+{"word": "Handtücher", "morphemes": ["Hand (Hand)", "tüch (Tuch)", "er (er) [pl]"]}
+{"word": "Kinderzimmer", "morphemes": ["Kinder (Kind)", "zimmer (Zimmer)"]}
+{"word": "Kindergarten", "morphemes": ["Kinder (Kind)", "garten (Garten)"]}
+{"word": "Schlafzimmer", "morphemes": ["Schlaf (Schlaf)", "zimmer (Zimmer)"]}
+{"word": "Wohnzimmer", "morphemes": ["Wohn (wohnen)", "zimmer (Zimmer)"]}
+{"word": "Badezimmer", "morphemes": ["Bade (baden)", "zimmer (Zimmer)"]}
+{"word": "Esszimmer", "morphemes": ["Ess (essen)", "zimmer (Zimmer)"]}
+{"word": "Arbeitszimmer", "morphemes": ["Arbeit (Arbeit)", "s (s)", "zimmer (Zimmer)"]}
+{"word": "Wartezimmer", "morphemes": ["Warte (warten)", "zimmer (Zimmer)"]}
+{"word": "Spielzeug", "morphemes": ["Spiel (Spiel)", "zeug (Zeug)"]}
+{"word": "Werkzeug", "morphemes": ["Werk (Werk)", "zeug (Zeug)"]}
+{"word": "Fahrzeug", "morphemes": ["Fahr (fahren)", "zeug (Zeug)"]}
+{"word": "Flugzeug", "morphemes": ["Flug (Flug)", "zeug (Zeug)"]}
+{"word": "Feuerzeug", "morphemes": ["Feuer (Feuer)", "zeug (Zeug)"]}
+{"word": "Zahnarzt", "morphemes": ["Zahn (Zahn)", "arzt (Arzt)"]}
+{"word": "Augenarzt", "morphemes": ["Augen (Auge)", "arzt (Arzt)"]}
+{"word": "Tierarzt", "morphemes": ["Tier (Tier)", "arzt (Arzt)"]}
+{"word": "Kinderarzt", "morphemes": ["Kinder (Kind)", "arzt (Arzt)"]}
+{"word": "Hausarzt", "morphemes": ["Haus (Haus)", "arzt (Arzt)"]}
+{"word": "Arbeitsplatz", "morphemes": ["Arbeit (Arbeit)", "s (s)", "platz (Platz)"]}
+{"word": "Parkplatz", "morphemes": ["Park (Park)", "platz (Platz)"]}
+{"word": "Spielplatz", "morphemes": ["Spiel (Spiel)", "platz (Platz)"]}
+{"word": "Marktplatz", "morphemes": ["Markt (Markt)", "platz (Platz)"]}
+{"word": "Sitzplatz", "morphemes": ["Sitz (Sitz)", "platz (Platz)"]}
+{"word": "Schulbuch", "morphemes": ["Schul (Schule)", "buch (Buch)"]}
+{"word": "Kochbuch", "morphemes": ["Koch (kochen)", "buch (Buch)"]}
+{"word": "Wörterbuch", "morphemes": ["Wörter (Wort)", "buch (Buch)"]}
+{"word": "Tagebuch", "morphemes": ["Tage (Tag)", "buch (Buch)"]}
+{"word": "Notizbuch", "morphemes": ["Notiz (Notiz)", "buch (Buch)"]}
+{"word": "Lehrbuch", "morphemes": ["Lehr (lehren)", "buch (Buch)"]}
+{"word": "Hörbuch", "morphemes": ["Hör (hören)", "buch (Buch)"]}
+{"word": "Jahrbuch", "morphemes": ["Jahr (Jahr)", "buch (Buch)"]}
+{"word": "Geburtstag", "morphemes": ["Geburt (Geburt)", "s (s)", "tag (Tag)"]}
+{"word": "Feiertag", "morphemes": ["Feier (Feier)", "tag (Tag)"]}
+{"word": "Werktag", "morphemes": ["Werk (Werk)", "tag (Tag)"]}
+{"word": "Sonntag", "morphemes": ["Sonn (Sonne)", "tag (Tag)"]}
+{"word": "Donnerstag", "morphemes": ["Donner (Donner)", "s (s)", "tag (Tag)"]}
+{"word": "Freitag", "morphemes": ["Frei (frei)", "tag (Tag)"]}
+{"word": "Abendessen", "morphemes": ["Abend (Abend)", "essen (Essen)"]}
+{"word": "Mittagessen", "morphemes": ["Mittag (Mittag)", "essen (Essen)"]}
+{"word": "Frühstück", "morphemes": ["Früh (früh)", "stück (Stück)"]}
+{"word": "Lehrer", "morphemes": ["Lehr (lehren)", "er (er) [agent]"]}
+{"word": "Lehrerin", "morphemes": ["Lehr (lehren)", "er (er) [agent]", "in (in)"]}
+{"word": "Schüler", "morphemes": ["Schül (Schule)", "er (er) [agent]"]}
+{"word": "Schülerin", "morphemes": ["Schül (Schule)", "er (er) [agent]", "in (in)"]}
+{"word": "Arbeiter", "morphemes": ["Arbeit (arbeiten)", "er (er) [agent]"]}
+{"word": "Arbeiterin", "morphemes": ["Arbeit (arbeiten)", "er (er) [agent]", "in (in)"]}
+{"word": "Spieler", "morphemes": ["Spiel (spielen)", "er (er) [agent]"]}
+{"word": "Spielerin", "morphemes": ["Spiel (spielen)", "er (er) [agent]", "in (in)"]}
+{"word": "Sänger", "morphemes": ["Säng (singen)", "er (er) [agent]"]}
+{"word": "Sängerin", "morphemes": ["Säng (singen)", "er (er) [agent]", "in (in)"]}
+{"word": "Fahrer", "morphemes": ["Fahr (fahren)", "er (er) [agent]"]}
+{"word": "Fahrerin", "morphemes": ["Fahr (fahren)", "er (er) [agent]", "in (in)"]}
+{"word": "Leser", "morphemes": ["Les (lesen)", "er (er) [agent]"]}
+{"word": "Leserin", "morphemes": ["Les (lesen)", "er (er) [agent]", "in (in)"]}
+{"word": "Schreiber", "morphemes": ["Schreib (schreiben)", "er (er) [agent]"]}
+{"word": "Läufer", "morphemes": ["Läuf (laufen)", "er (er) [agent]"]}
+{"word": "Käufer", "morphemes": ["Käuf (kaufen)", "er (er) [agent]"]}
+{"word": "Verkäufer", "morphemes": ["Ver (ver)", "käuf (kaufen)", "er (er) [agent]"]}
+{"word": "Verkäuferin", "morphemes": ["Ver (ver)", "käuf (kaufen)", "er (er) [agent]", "in (in)"]}
+{"word": "Besucher", "morphemes": ["Be (be)", "such (suchen)", "er (er) [agent]"]}
+{"word": "Zuschauer", "morphemes": ["Zu (zu)", "schau (schauen)", "er (er) [agent]"]}
+{"word": "Zuhörer", "morphemes": ["Zu (zu)", "hör (hören)", "er (er) [agent]"]}
+{"word": "Raucher", "morphemes": ["Rauch (rauchen)", "er (er) [agent]"]}
+{"word": "Tänzer", "morphemes": ["Tänz (tanzen)", "er (er) [agent]"]}
+{"word": "Maler", "morphemes": ["Mal (malen)", "er (er) [agent]"]}
+{"word": "Bäcker", "morphemes": ["Bäck (backen)", "er (er) [agent]"]}
+{"word": "Forscher", "morphemes": ["Forsch (forschen)", "er (er) [agent]"]}
+{"word": "Denker", "morphemes": ["Denk (denken)", "er (er) [agent]"]}
+{"word": "Ärztin", "morphemes": ["Ärzt (Arzt)", "in (in)"]}
+{"word": "Freundin", "morphemes": ["Freund (Freund)", "in (in)"]}
+{"word": "Nachbarin", "morphemes": ["Nachbar (Nachbar)", "in (in)"]}
+{"word": "Studentin", "morphemes": ["Student (Student)", "in (in)"]}
+{"word": "Königin", "morphemes": ["König (König)", "in (in)"]}
+{"word": "Polizistin", "morphemes": ["Polizist (Polizist)", "in (in)"]}
+{"word": "Mädchen", "morphemes": ["Mäd (Magd)", "chen (chen)"]}
+{"word": "Häuschen", "morphemes": ["Häus (Haus)", "chen (chen)"]}
+{"word": "Hündchen", "morphemes": ["Hünd (Hund)", "chen (chen)"]}
+{"word": "Kätzchen", "morphemes": ["Kätz (Katze)", "chen (chen)"]}
+{"word": "Brötchen", "morphemes": ["Bröt (Brot)", "chen (chen)"]}
+{"word": "Bäumchen", "morphemes": ["Bäum (Baum)", "chen (chen)"]}
+{"word": "Büchlein", "morphemes": ["Büch (Buch)", "lein (lein)"]}
+{"word": "Tischlein", "morphemes": ["Tisch (Tisch)", "lein (lein)"]}
+{"word": "Männlein", "morphemes": ["Männ (Mann)", "lein (lein)"]}
+{"word": "Vöglein", "morphemes": ["Vög (Vogel)", "lein (lein)"]}
+{"word": "Fräulein", "morphemes": ["Fräu (Frau)", "lein (lein)"]}
+{"word": "Häuser", "morphemes": ["Häus (Haus)", "er (er) [pl]"]}
+{"word": "Bücher", "morphemes": ["Büch (Buch)", "er (er) [pl]"]}
+{"word": "Männer", "morphemes": ["Männ (Mann)", "er (er) [pl]"]}
+{"word": "Kinder", "morphemes": ["Kind (Kind)", "er (er) [pl]"]}
+{"word": "Dörfer", "morphemes": ["Dörf (Dorf)", "er (er) [pl]"]}
+{"word": "Wörter", "morphemes": ["Wört (Wort)", "er (er) [pl]"]}
+{"word": "Räder", "morphemes": ["Räd (Rad)", "er (er) [pl]"]}
+{"word": "Gläser", "morphemes": ["Gläs (Glas)", "er (er) [pl]"]}
+{"word": "Blätter", "morphemes": ["Blätt (Blatt)", "er (er) [pl]"]}
+{"word": "Bretter", "morphemes": ["Brett (Brett)", "er (er) [pl]"]}
+{"word": "Eier", "morphemes": ["Ei (Ei)", "er (er) [pl]"]}
+{"word": "schrieben", "morphemes": ["schrieb (schreiben)", "en (en) [pst.pl]"]}
+{"word": "sprachen", "morphemes": ["sprach (sprechen)", "en (en) [pst.pl]"]}
+{"word": "lasen", "morphemes": ["las (lesen)", "en (en) [pst.pl]"]}
+{"word": "aßen", "morphemes": ["aß (essen)", "en (en) [pst.pl]"]}
+{"word": "tranken", "morphemes": ["trank (trinken)", "en (en) [pst.pl]"]}
+{"word": "gingen", "morphemes": ["ging (gehen)", "en (en) [pst.pl]"]}
+{"word": "sahen", "morphemes": ["sah (sehen)", "en (en) [pst.pl]"]}
+{"word": "kamen", "morphemes": ["kam (kommen)", "en (en) [pst.pl]"]}
+{"word": "fuhren", "morphemes": ["fuhr (fahren)", "en (en) [pst.pl]"]}
+{"word": "schliefen", "morphemes": ["schlief (schlafen)", "en (en) [pst.pl]"]}
+{"word": "hörte", "morphemes": ["hör (hören)", "te (te) [pst.weak]"]}
+{"word": "hörten", "morphemes": ["hör (hören)", "te (te) [pst.weak]", "n (n) [pl]"]}
+{"word": "machte", "morphemes": ["mach (machen)", "te (te) [pst.weak]"]}
+{"word": "machten", "morphemes": ["mach (machen)", "te (te) [pst.weak]", "n (n) [pl]"]}
+{"word": "spielte", "morphemes": ["spiel (spielen)", "te (te) [pst.weak]"]}
+{"word": "spielten", "morphemes": ["spiel (spielen)", "te (te) [pst.weak]", "n (n) [pl]"]}
+{"word": "lernte", "morphemes": ["lern (lernen)", "te (te) [pst.weak]"]}
+{"word": "lernten", "morphemes": ["lern (lernen)", "te (te) [pst.weak]", "n (n) [pl]"]}
+{"word": "kaufte", "morphemes": ["kauf (kaufen)", "te (te) [pst.weak]"]}
+{"word": "kauften", "morphemes": ["kauf (kaufen)", "te (te) [pst.weak]", "n (n) [pl]"]}
+{"word": "arbeitete", "morphemes": ["arbeit (arbeiten)", "ete (te) [pst.weak]"]}
+{"word": "arbeiteten", "morphemes": ["arbeit (arbeiten)", "ete (te) [pst.weak]", "n (n) [pl]"]}
+{"word": "wohnte", "morphemes": ["wohn (wohnen)", "te (te) [pst.weak]"]}
+{"word": "fragte", "morphemes": ["frag (fragen)", "te (te) [pst.weak]"]}
+{"word": "sagte", "morphemes": ["sag (sagen)", "te (te) [pst.weak]"]}
+{"word": "suchte", "morphemes": ["such (suchen)", "te (te) [pst.weak]"]}
+{"word": "lebte", "morphemes": ["leb (leben)", "te (te) [pst.weak]"]}
+{"word": "liebte", "morphemes": ["lieb (lieben)", "te (te) [pst.weak]"]}
+{"word": "lachte", "morphemes": ["lach (lachen)", "te (te) [pst.weak]"]}
+{"word": "reiste", "morphemes": ["reis (reisen)", "te (te) [pst.weak]"]}
+{"word": "zeigte", "morphemes": ["zeig (zeigen)", "te (te) [pst.weak]"]}
+{"word": "glaubte", "morphemes": ["glaub (glauben)", "te (te) [pst.weak]"]}
+{"word": "tanzte", "morphemes": ["tanz (tanzen)", "te (te) [pst.weak]"]}
+{"word": "kochte", "morphemes": ["koch (kochen)", "te (te) [pst.weak]"]}
+{"word": "machst", "morphemes": ["mach (machen)", "st (st) [2sg.prs]"]}
+{"word": "machen", "morphemes": ["mach (machen)", "en (en) [inf]"]}
+{"word": "macht", "morphemes": ["mach (machen)", "t (t) [3sg.prs]"]}
+{"word": "spielst", "morphemes": ["spiel (spielen)", "st (st) [2sg.prs]"]}
+{"word": "spielen", "morphemes": ["spiel (spielen)", "en (en) [inf]"]}
+{"word": "spielt", "morphemes": ["spiel (spielen)", "t (t) [3sg.prs]"]}
+{"word": "lernst", "morphemes": ["lern (lernen)", "st (st) [2sg.prs]"]}
+{"word": "lernen", "morphemes": ["lern (lernen)", "en (en) [inf]"]}
+{"word": "lernt", "morphemes": ["lern (lernen)", "t (t) [3sg.prs]"]}
+{"word": "hörst", "morphemes": ["hör (hören)", "st (st) [2sg.prs]"]}
+{"word": "hören", "morphemes": ["hör (hören)", "en (en) [inf]"]}
+{"word": "hört", "morphemes": ["hör (hören)", "t (t) [3sg.prs]"]}
+{"word": "kaufst", "morphemes": ["kauf (kaufen)", "st (st) [2sg.prs]"]}
+{"word": "kaufen", "morphemes": ["kauf (kaufen)", "en (en) [inf]"]}
+{"word": "kauft", "morphemes": ["kauf (kaufen)", "t (t) [3sg.prs]"]}
+{"word": "lesen", "morphemes": ["les (lesen)", "en (en) [inf]"]}
+{"word": "schreibst", "morphemes": ["schreib (schreiben)", "st (st) [2sg.prs]"]}
+{"word": "schreiben", "morphemes": ["schreib (schreiben)", "en (en) [inf]"]}
+{"word": "schreibt", "morphemes": ["schreib (schreiben)", "t (t) [3sg.prs]"]}
+{"word": "sprechen", "morphemes": ["sprech (sprechen)", "en (en) [inf]"]}
+{"word": "geben", "morphemes": ["geb (geben)", "en (en) [inf]"]}
+{"word": "nehmen", "morphemes": ["nehm (nehmen)", "en (en) [inf]"]}
+{"word": "fahren", "morphemes": ["fahr (fahren)", "en (en) [inf]"]}
+{"word": "schlafen", "morphemes": ["schlaf (schlafen)", "en (en) [inf]"]}
+{"word": "laufen", "morphemes": ["lauf (laufen)", "en (en) [inf]"]}
+{"word": "Sprache", "morphemes": ["Sprach (sprechen)", "e (e)"]}
+{"word": "Sprachen", "morphemes": ["Sprach (sprechen)", "en (en) [pl]"]}
+{"word": "Gabe", "morphemes": ["Gab (geben)", "e (e)"]}
+{"word": "Gaben", "morphemes": ["Gab (geben)", "en (en) [pl]"]}
+{"word": "Aufgabe", "morphemes": ["Auf (auf)", "gab (geben)", "e (e)"]}
+{"word": "Ausgabe", "morphemes": ["Aus (aus)", "gab (geben)", "e (e)"]}
+{"word": "Eingabe", "morphemes": ["Ein (ein)", "gab (geben)", "e (e)"]}
+{"word": "Abgabe", "morphemes": ["Ab (ab)", "gab (geben)", "e (e)"]}
+{"word": "Vorgabe", "morphemes": ["Vor (vor)", "gab (geben)", "e (e)"]}
+{"word": "Anfang", "morphemes": ["An (an)", "fang (fangen)"]}
+{"word": "Ausgang", "morphemes": ["Aus (aus)", "gang (gehen)"]}
+{"word": "Eingang", "morphemes": ["Ein (ein)", "gang (gehen)"]}
+{"word": "Zugang", "morphemes": ["Zu (zu)", "gang (gehen)"]}
+{"word": "Abgang", "morphemes": ["Ab (ab)", "gang (gehen)"]}
+{"word": "Untergang", "morphemes": ["Unter (unter)", "gang (gehen)"]}
+{"word": "Aufstieg", "morphemes": ["Auf (auf)", "stieg (steigen)"]}
+{"word": "Abstieg", "morphemes": ["Ab (ab)", "stieg (steigen)"]}
+{"word": "Einstieg", "morphemes": ["Ein (ein)", "stieg (steigen)"]}
+{"word": "Ausstieg", "morphemes": ["Aus (aus)", "stieg (steigen)"]}
+{"word": "Besuch", "morphemes": ["Be (be)", "such (suchen)"]}
+{"word": "Verkauf", "morphemes": ["Ver (ver)", "kauf (kaufen)"]}
+{"word": "Einkauf", "morphemes": ["Ein (ein)", "kauf (kaufen)"]}
+{"word": "Ankauf", "morphemes": ["An (an)", "kauf (kaufen)"]}
+{"word": "Versuch", "morphemes": ["Ver (ver)", "such (suchen)"]}
+{"word": "Vorschlag", "morphemes": ["Vor (vor)", "schlag (schlagen)"]}
+{"word": "Unterschrift", "morphemes": ["Unter (unter)", "schrift (Schrift)"]}
+{"word": "Handschrift", "morphemes": ["Hand (Hand)", "schrift (Schrift)"]}
+{"word": "Vorschrift", "morphemes": ["Vor (vor)", "schrift (Schrift)"]}
+{"word": "Nachschrift", "morphemes": ["Nach (nach)", "schrift (Schrift)"]}
+{"word": "Zeitschrift", "morphemes": ["Zeit (Zeit)", "schrift (Schrift)"]}
+{"word": "Frühling", "morphemes": ["Früh (früh)", "ling (ling)"]}
+{"word": "Flüchtling", "morphemes": ["Flücht (flüchten)", "ling (ling)"]}
+{"word": "Liebling", "morphemes": ["Lieb (lieb)", "ling (ling)"]}
+{"word": "Lehrling", "morphemes": ["Lehr (lehren)", "ling (ling)"]}
+{"word": "nächtlich", "morphemes": ["nächt (Nacht)", "lich (lich)"]}
+{"word": "sommerlich", "morphemes": ["sommer (Sommer)", "lich (lich)"]}
+{"word": "winterlich", "morphemes": ["winter (Winter)", "lich (lich)"]}
+{"word": "herbstlich", "morphemes": ["herbst (Herbst)", "lich (lich)"]}
+{"word": "lebhaft", "morphemes": ["leb (Leben)", "haft (haft)"]}
+{"word": "zweifelhaft", "morphemes": ["zweifel (Zweifel)", "haft (haft)"]}
+{"word": "ernsthaft", "morphemes": ["ernst (Ernst)", "haft (haft)"]}
+{"word": "schmerzhaft", "morphemes": ["schmerz (Schmerz)", "haft (haft)"]}
+{"word": "fehlerhaft", "morphemes": ["fehler (Fehler)", "haft (haft)"]}
+{"word": "gemütlich", "morphemes": ["gemüt (Gemüt)", "lich (lich)"]}
+{"word": "furchtbar", "morphemes": ["furcht (Furcht)", "bar (bar)"]}
+{"word": "wunderbar", "morphemes": ["wunder (Wunder)", "bar (bar)"]}
+{"word": "Krankenhaus", "morphemes": ["Krank (krank)", "en (en)", "haus (Haus)"]}
+{"word": "Krankenschwester", "morphemes": ["Krank (krank)", "en (en)", "schwester (Schwester)"]}
+{"word": "Krankenwagen", "morphemes": ["Krank (krank)", "en (en)", "wagen (Wagen)"]}
+{"word": "Straßenbahn", "morphemes": ["Straße (Straße)", "n (n)", "bahn (Bahn)"]}
+{"word": "Straßenschild", "morphemes": ["Straße (Straße)", "n (n)", "schild (Schild)"]}
+{"word": "Briefkasten", "morphemes": ["Brief (Brief)", "kasten (Kasten)"]}
+{"word": "Briefmarke", "morphemes": ["Brief (Brief)", "marke (Marke)"]}
+{"word": "Regenschirm", "morphemes": ["Regen (Regen)", "schirm (Schirm)"]}
+{"word": "Regenbogen", "morphemes": ["Regen (Regen)", "bogen (Bogen)"]}
+{"word": "Regenmantel", "morphemes": ["Regen (Regen)", "mantel (Mantel)"]}
+{"word": "Sonnenbrille", "morphemes": ["Sonne (Sonne)", "n (n)", "brille (Brille)"]}
+{"word": "Sonnenblume", "morphemes": ["Sonne (Sonne)", "n (n)", "blume (Blume)"]}
+{"word": "Muttersprache", "morphemes": ["Mutter (Mutter)", "sprach (sprechen)", "e (e)"]}
+{"word": "Vatertag", "morphemes": ["Vater (Vater)", "tag (Tag)"]}
+{"word": "Muttertag", "morphemes": ["Mutter (Mutter)", "tag (Tag)"]}
+{"word": "Großvater", "morphemes": ["Groß (groß)", "vater (Vater)"]}
+{"word": "Großmutter", "morphemes": ["Groß (groß)", "mutter (Mutter)"]}
+{"word": "Großeltern", "morphemes": ["Groß (groß)", "eltern (Eltern)"]}
+{"word": "Urgroßvater", "morphemes": ["Ur (ur)", "groß (groß)", "vater (Vater)"]}
+{"word": "Urgroßmutter", "morphemes": ["Ur (ur)", "groß (groß)", "mutter (Mutter)"]}
+{"word": "Enkelkind", "morphemes": ["Enkel (Enkel)", "kind (Kind)"]}
+{"word": "Schwiegervater", "morphemes": ["Schwieger (Schwieger)", "vater (Vater)"]}
+{"word": "Schwiegermutter", "morphemes": ["Schwieger (Schwieger)", "mutter (Mutter)"]}
+{"word": "Gebäude", "morphemes": ["Ge (ge) [coll]", "bäu (bauen)", "de (de)"]}
+{"word": "Geschenk", "morphemes": ["Ge (ge) [coll]", "schenk (schenken)"]}
+{"word": "Getränk", "morphemes": ["Ge (ge) [coll]", "tränk (trinken)"]}
+{"word": "verständlich", "morphemes": ["ver (ver)", "ständ (stehen)", "lich (lich)"]}
+{"word": "unverständlich", "morphemes": ["un (un)", "ver (ver)", "ständ (stehen)", "lich (lich)"]}
+{"word": "Verständnis", "morphemes": ["Ver (ver)", "ständ (stehen)", "nis (nis)"]}
+{"word": "Erlebnis", "morphemes": ["Er (er)", "leb (leben)", "nis (nis)"]}
+{"word": "Ergebnis", "morphemes": ["Er (er)", "geb (geben)", "nis (nis)"]}
+{"word": "Geheimnis", "morphemes": ["Geheim (geheim)", "nis (nis)"]}
+{"word": "Zeugnis", "morphemes": ["Zeug (Zeuge)", "nis (nis)"]}
+{"word": "Wagnis", "morphemes": ["Wag (wagen)", "nis (nis)"]}
+{"word": "Kenntnis", "morphemes": ["Kennt (kennen)", "nis (nis)"]}
+{"word": "Bekanntschaft", "morphemes": ["Be (be)", "kannt (kennen)", "schaft (schaft)"]}
+{"word": "Gesellschaft", "morphemes": ["Gesell (Geselle)", "schaft (schaft)"]}
+{"word": "Wirtschaft", "morphemes": ["Wirt (Wirt)", "schaft (schaft)"]}
+{"word": "Wissenschaft", "morphemes": ["Wissen (wissen)", "schaft (schaft)"]}
+{"word": "Mannschaft", "morphemes": ["Mann (Mann)", "schaft (schaft)"]}
+{"word": "Herrschaft", "morphemes": ["Herr (Herr)", "schaft (schaft)"]}
+{"word": "Nachbarschaft", "morphemes": ["Nachbar (Nachbar)", "schaft (schaft)"]}
+{"word": "Vaterschaft", "morphemes": ["Vater (Vater)", "schaft (schaft)"]}
+{"word": "Mutterschaft", "morphemes": ["Mutter (Mutter)", "schaft (schaft)"]}
+{"word": "Eigenschaft", "morphemes": ["Eigen (eigen)", "schaft (schaft)"]}
+{"word": "Meisterschaft", "morphemes": ["Meister (Meister)", "schaft (schaft)"]}
+{"word": "Landschaft", "morphemes": ["Land (Land)", "schaft (schaft)"]}
+{"word": "Botschaft", "morphemes": ["Bot (Bote)", "schaft (schaft)"]}
+{"word": "Ehrlichkeit", "morphemes": ["Ehr (Ehre)", "lich (lich)", "keit (keit)"]}
+{"word": "Herzlichkeit", "morphemes": ["Herz (Herz)", "lich (lich)", "keit (keit)"]}
+{"word": "Pünktlichkeit", "morphemes": ["Pünkt (Punkt)", "lich (lich)", "keit (keit)"]}
+{"word": "Gerechtigkeit", "morphemes": ["Ge (ge)", "recht (recht)", "ig (ig)", "keit (keit)"]}
+{"word": "Ungerechtigkeit", "morphemes": ["Un (un)", "ge (ge)", "recht (recht)", "ig (ig)", "keit (keit)"]}
+{"word": "Tätigkeit", "morphemes": ["Tät (Tat)", "ig (ig)", "keit (keit)"]}
+{"word": "unehrlich", "morphemes": ["un (un)", "ehr (Ehre)", "lich (lich)"]}
+{"word": "unpünktlich", "morphemes": ["un (un)", "pünkt (Punkt)", "lich (lich)"]}
+{"word": "ungerecht", "morphemes": ["un (un)", "ge (ge)", "recht (recht)"]}
+{"word": "lustig", "morphemes": ["lust (Lust)", "ig (ig)"]}
+{"word": "durstig", "morphemes": ["durst (Durst)", "ig (ig)"]}
+{"word": "mutig", "morphemes": ["mut (Mut)", "ig (ig)"]}
+{"word": "traurig", "morphemes": ["traur (Trauer)", "ig (ig)"]}
+{"word": "blutig", "morphemes": ["blut (Blut)", "ig (ig)"]}
+{"word": "eisig", "morphemes": ["eis (Eis)", "ig (ig)"]}
+{"word": "sonnig", "morphemes": ["sonn (Sonne)", "ig (ig)"]}
+{"word": "windig", "morphemes": ["wind (Wind)", "ig (ig)"]}
+{"word": "stürmisch", "morphemes": ["stürm (Sturm)", "isch (isch)"]}
+{"word": "Schreibtisch", "morphemes": ["Schreib (schreiben)", "tisch (Tisch)"]}
+{"word": "Esstisch", "morphemes": ["Ess (essen)", "tisch (Tisch)"]}
+{"word": "Waschmaschine", "morphemes": ["Wasch (waschen)", "maschine (Maschine)"]}
+{"word": "Spülmaschine", "morphemes": ["Spül (spülen)", "maschine (Maschine)"]}
+{"word": "Nähmaschine", "morphemes": ["Näh (nähen)", "maschine (Maschine)"]}
+{"word": "Kaffeemaschine", "morphemes": ["Kaffee (Kaffee)", "maschine (Maschine)"]}
+{"word": "Waschbecken", "morphemes": ["Wasch (waschen)", "becken (Becken)"]}
+{"word": "Badewanne", "morphemes": ["Bade (baden)", "wanne (Wanne)"]}
+{"word": "Schwimmbad", "morphemes": ["Schwimm (schwimmen)", "bad (Bad)"]}
+{"word": "Zahnbürste", "morphemes": ["Zahn (Zahn)", "bürste (Bürste)"]}
+{"word": "Zahnpasta", "morphemes": ["Zahn (Zahn)", "pasta (Pasta)"]}
+{"word": "Kopfschmerzen", "morphemes": ["Kopf (Kopf)", "schmerz (Schmerz)", "en (en) [pl]"]}
+{"word": "Bauchschmerzen", "morphemes": ["Bauch (Bauch)", "schmerz (Schmerz)", "en (en) [pl]"]}
+{"word": "Rückenschmerzen", "morphemes": ["Rücken (Rücken)", "schmerz (Schmerz)", "en (en) [pl]"]}
+{"word": "Zahnschmerzen", "morphemes": ["Zahn (Zahn)", "schmerz (Schmerz)", "en (en) [pl]"]}
+{"word": "Halsschmerzen", "morphemes": ["Hals (Hals)", "schmerz (Schmerz)", "en (en) [pl]"]}
+{"word": "Arbeitszeit", "morphemes": ["Arbeit (Arbeit)", "s (s)", "zeit (Zeit)"]}
+{"word": "Freizeit", "morphemes": ["Frei (frei)", "zeit (Zeit)"]}
+{"word": "Jahreszeit", "morphemes": ["Jahr (Jahr)", "es (es)", "zeit (Zeit)"]}
+{"word": "Sprachkurs", "morphemes": ["Sprach (Sprache)", "kurs (Kurs)"]}
+{"word": "Tanzkurs", "morphemes": ["Tanz (Tanz)", "kurs (Kurs)"]}
+{"word": "Kochkurs", "morphemes": ["Koch (kochen)", "kurs (Kurs)"]}
+{"word": "Fahrschule", "morphemes": ["Fahr (fahren)", "schule (Schule)"]}
+{"word": "Hochschule", "morphemes": ["Hoch (hoch)", "schule (Schule)"]}
+{"word": "Grundschule", "morphemes": ["Grund (Grund)", "schule (Schule)"]}
+{"word": "Musikschule", "morphemes": ["Musik (Musik)", "schule (Schule)"]}
+{"word": "Vorschule", "morphemes": ["Vor (vor)", "schule (Schule)"]}
+{"word": "Berufsschule", "morphemes": ["Beruf (Beruf)", "s (s)", "schule (Schule)"]}
+{"word": "Geldbeutel", "morphemes": ["Geld (Geld)", "beutel (Beutel)"]}
+{"word": "Geldschein", "morphemes": ["Geld (Geld)", "schein (Schein)"]}
+{"word": "Geldautomat", "morphemes": ["Geld (Geld)", "automat (Automat)"]}
+{"word": "Taschengeld", "morphemes": ["Taschen (Tasche)", "geld (Geld)"]}
+{"word": "Trinkgeld", "morphemes": ["Trink (trinken)", "geld (Geld)"]}
+{"word": "Bestellung", "morphemes": ["Be (be)", "stell (stellen)", "ung (ung)"]}
+{"word": "Berechnung", "morphemes": ["Be (be)", "rechn (rechnen)", "ung (ung)"]}
+{"word": "Belohnung", "morphemes": ["Be (be)", "lohn (lohnen)", "ung (ung)"]}
+{"word": "Beleuchtung", "morphemes": ["Be (be)", "leucht (leuchten)", "ung (ung)"]}
+{"word": "Besprechung", "morphemes": ["Be (be)", "sprech (sprechen)", "ung (ung)"]}
+{"word": "Verbesserung", "morphemes": ["Ver (ver)", "besser (besser)", "ung (ung)"]}
+{"word": "Verfolgung", "morphemes": ["Ver (ver)", "folg (folgen)", "ung (ung)"]}
+{"word": "Vergangenheit", "morphemes": ["Ver (ver)", "gang (gehen)", "en (en)", "heit (heit)"]}
+{"word": "Verlängerung", "morphemes": ["Ver (ver)", "länger (lang)", "ung (ung)"]}
+{"word": "Vermietung", "morphemes": ["Ver (ver)", "miet (mieten)", "ung (ung)"]}
+{"word": "Zusammenarbeit", "morphemes": ["Zusammen (zusammen)", "arbeit (Arbeit)"]}
+{"word": "Zusammenfassung", "morphemes": ["Zusammen (zusammen)", "fass (fassen)", "ung (ung)"]}
+{"word": "Zustimmung", "morphemes": ["Zu (zu)", "stimm (stimmen)", "ung (ung)"]}
+{"word": "Überraschung", "morphemes": ["Über (über)", "rasch (rasch)", "ung (ung)"]}
+{"word": "Übersetzung", "morphemes": ["Über (über)", "setz (setzen)", "ung (ung)"]}
+{"word": "Überweisung", "morphemes": ["Über (über)", "weis (weisen)", "ung (ung)"]}
+{"word": "Ausstellung", "morphemes": ["Aus (aus)", "stell (stellen)", "ung (ung)"]}
+{"word": "Aufführung", "morphemes": ["Auf (auf)", "führ (führen)", "ung (ung)"]}
+{"word": "Abstimmung", "morphemes": ["Ab (ab)", "stimm (stimmen)", "ung (ung)"]}
+{"word": "Entscheidung", "morphemes": ["Ent (ent)", "scheid (scheiden)", "ung (ung)"]}
+{"word": "Entschuldigung", "morphemes": ["Ent (ent)", "schuld (Schuld)", "ig (ig)", "ung (ung)"]}
+{"word": "Erfindung", "morphemes": ["Er (er)", "find (finden)", "ung (ung)"]}
+{"word": "Erholung", "morphemes": ["Er (er)", "hol (holen)", "ung (ung)"]}
+{"word": "Eröffnung", "morphemes": ["Er (er)", "öffn (öffnen)", "ung (ung)"]}
+{"word": "Zerstörung", "morphemes": ["Zer (zer)", "stör (stören)", "ung (ung)"]}
+{"word": "Lieblingsbuch", "morphemes": ["Liebling (Liebling)", "s (s)", "buch (Buch)"]}
+{"word": "Lieblingslied", "morphemes": ["Liebling (Liebling)", "s (s)", "lied (Lied)"]}
+{"word": "Lieblingsfarbe", "morphemes": ["Liebling (Liebling)", "s (s)", "farbe (Farbe)"]}
+{"word": "Lieblingsessen", "morphemes": ["Liebling (Liebling)", "s (s)", "essen (Essen)"]}
+{"word": "Lieblingsfilm", "morphemes": ["Liebling (Liebling)", "s (s)", "film (Film)"]}

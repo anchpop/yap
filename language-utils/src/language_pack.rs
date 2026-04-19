@@ -1,9 +1,9 @@
 use crate::indexmap::IndexMap;
 use crate::{
     Atom, ConsolidatedLanguageData, Course, DictionaryEntry, Frequency, Gram, GramDefinition,
-    Heteronym, HomophonePractice, HomophoneWordPair, Lexeme, Literal, MovieMetadata, PartOfSpeech,
-    PatternPosition, PronunciationData, ProperNounDefinition, SentenceGram, SentenceGrams,
-    SentenceSource, SpurGram, WordType, grm,
+    Heteronym, HomophonePractice, HomophoneWordPair, Lexeme, Literal, MorphemeInfo,
+    MorphemeSegment, MovieMetadata, PartOfSpeech, PatternPosition, PronunciationData,
+    ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram, WordType, grm,
 };
 use lasso::Spur;
 use rustc_hash::FxHashMap;
@@ -52,6 +52,10 @@ pub struct LanguagePack {
     pub sentences_containing_gram_index: FxHashMap<SpurGram, Vec<Spur>>,
     /// Reverse index from display string to grams (for O(1) lookup by phrase text)
     pub string_to_grams: FxHashMap<String, Vec<SpurGram>>,
+    /// Morpheme classification + info, keyed by (surface, canonical) pair
+    /// (both interned). Pair key prevents ambiguity when the same surface
+    /// corresponds to different underlying morphemes.
+    pub morphemes: FxHashMap<MorphemeSegment<Spur>, MorphemeInfo<Spur>>,
 }
 
 impl LanguagePack {
@@ -137,6 +141,35 @@ impl LanguagePack {
         self.pronunciation_max_freq_cache
             .get(pronunciation)
             .copied()
+    }
+
+    /// Native-language gloss for a single heteronym: finds its most-frequent
+    /// gram, looks up the dictionary entry, and returns the first definition.
+    pub fn heteronym_gloss(&self, heteronym: &Heteronym<Spur>) -> Option<String> {
+        let gram = self.heteronym_to_grams.get(heteronym)?.first()?;
+        match self.gram_definitions.get(gram)? {
+            GramDefinition::Dictionary(d) => d.definitions.first().map(|td| td.native.clone()),
+            GramDefinition::Phrasebook(_) => None,
+        }
+    }
+
+    /// Get a learner-facing gloss for a morpheme.
+    ///
+    /// - `Root` morphemes are glossed by looking up the heteronym's first
+    ///   dictionary entry and joining its native-language definitions.
+    /// - `Bound`, `Derivation`, and `Inflection` return their stored `meaning`.
+    ///
+    /// Returns `None` if no gloss is available (e.g. a `Root` whose heteronym
+    /// has no dictionary entry, or an affix with `meaning: None`).
+    pub fn morpheme_gloss(&self, info: &MorphemeInfo<Spur>) -> Option<String> {
+        match info {
+            MorphemeInfo::Root { heteronym } => self.heteronym_gloss(heteronym),
+            MorphemeInfo::Bound { meaning }
+            | MorphemeInfo::Derivation { meaning }
+            | MorphemeInfo::Inflection { meaning } => {
+                meaning.map(|spur| self.string_rodeo.resolve(&spur).to_string())
+            }
+        }
     }
 
     pub fn new(language_data: ConsolidatedLanguageData, course: Course) -> Self {
@@ -607,6 +640,37 @@ impl LanguagePack {
             map
         };
 
+        let morphemes: FxHashMap<MorphemeSegment<Spur>, MorphemeInfo<Spur>> = language_data
+            .morphemes
+            .iter()
+            .map(|(segment, info)| {
+                let key = MorphemeSegment {
+                    surface: rodeo.get(&segment.surface).unwrap(),
+                    canonical: rodeo.get(&segment.canonical).unwrap(),
+                    tag: segment.tag.as_ref().map(|t| rodeo.get(t).unwrap()),
+                };
+                let interned = match info {
+                    MorphemeInfo::Root { heteronym } => MorphemeInfo::Root {
+                        heteronym: Heteronym {
+                            word: rodeo.get(&heteronym.word).unwrap(),
+                            lemma: rodeo.get(&heteronym.lemma).unwrap(),
+                            pos: heteronym.pos,
+                        },
+                    },
+                    MorphemeInfo::Bound { meaning } => MorphemeInfo::Bound {
+                        meaning: meaning.as_ref().map(|m| rodeo.get(m).unwrap()),
+                    },
+                    MorphemeInfo::Derivation { meaning } => MorphemeInfo::Derivation {
+                        meaning: meaning.as_ref().map(|m| rodeo.get(m).unwrap()),
+                    },
+                    MorphemeInfo::Inflection { meaning } => MorphemeInfo::Inflection {
+                        meaning: meaning.as_ref().map(|m| rodeo.get(m).unwrap()),
+                    },
+                };
+                (key, interned)
+            })
+            .collect();
+
         Self {
             string_rodeo: rodeo,
             gram_rodeo,
@@ -628,6 +692,7 @@ impl LanguagePack {
             heteronym_to_grams,
             sentences_containing_gram_index,
             string_to_grams,
+            morphemes,
         }
     }
 }

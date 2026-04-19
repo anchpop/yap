@@ -1,0 +1,825 @@
+{"word": "walked", "morphemes": ["walk (walk)", "ed (ed) [past]"]}
+{"word": "talked", "morphemes": ["talk (talk)", "ed (ed) [past]"]}
+{"word": "played", "morphemes": ["play (play)", "ed (ed) [past]"]}
+{"word": "jumped", "morphemes": ["jump (jump)", "ed (ed) [past]"]}
+{"word": "stopped", "morphemes": ["stopp (stop)", "ed (ed) [past]"]}
+{"word": "planned", "morphemes": ["plann (plan)", "ed (ed) [past]"]}
+{"word": "baked", "morphemes": ["bak (bake)", "ed (ed) [past]"]}
+{"word": "liked", "morphemes": ["lik (like)", "ed (ed) [past]"]}
+{"word": "loved", "morphemes": ["lov (love)", "ed (ed) [past]"]}
+{"word": "moved", "morphemes": ["mov (move)", "ed (ed) [past]"]}
+{"word": "lived", "morphemes": ["liv (live)", "ed (ed) [past]"]}
+{"word": "hoped", "morphemes": ["hop (hope)", "ed (ed) [past]"]}
+{"word": "closed", "morphemes": ["clos (close)", "ed (ed) [past]"]}
+{"word": "opened", "morphemes": ["open (open)", "ed (ed) [past]"]}
+{"word": "started", "morphemes": ["start (start)", "ed (ed) [past]"]}
+{"word": "wanted", "morphemes": ["want (want)", "ed (ed) [past]"]}
+{"word": "needed", "morphemes": ["need (need)", "ed (ed) [past]"]}
+{"word": "ended", "morphemes": ["end (end)", "ed (ed) [past]"]}
+{"word": "added", "morphemes": ["add (add)", "ed (ed) [past]"]}
+{"word": "asked", "morphemes": ["ask (ask)", "ed (ed) [past]"]}
+{"word": "answered", "morphemes": ["answer (answer)", "ed (ed) [past]"]}
+{"word": "called", "morphemes": ["call (call)", "ed (ed) [past]"]}
+{"word": "cleaned", "morphemes": ["clean (clean)", "ed (ed) [past]"]}
+{"word": "cooked", "morphemes": ["cook (cook)", "ed (ed) [past]"]}
+{"word": "crossed", "morphemes": ["cross (cross)", "ed (ed) [past]"]}
+{"word": "dressed", "morphemes": ["dress (dress)", "ed (ed) [past]"]}
+{"word": "dropped", "morphemes": ["dropp (drop)", "ed (ed) [past]"]}
+{"word": "entered", "morphemes": ["enter (enter)", "ed (ed) [past]"]}
+{"word": "filled", "morphemes": ["fill (fill)", "ed (ed) [past]"]}
+{"word": "finished", "morphemes": ["finish (finish)", "ed (ed) [past]"]}
+{"word": "fixed", "morphemes": ["fix (fix)", "ed (ed) [past]"]}
+{"word": "followed", "morphemes": ["follow (follow)", "ed (ed) [past]"]}
+{"word": "guessed", "morphemes": ["guess (guess)", "ed (ed) [past]"]}
+{"word": "happened", "morphemes": ["happen (happen)", "ed (ed) [past]"]}
+{"word": "helped", "morphemes": ["help (help)", "ed (ed) [past]"]}
+{"word": "joined", "morphemes": ["join (join)", "ed (ed) [past]"]}
+{"word": "kicked", "morphemes": ["kick (kick)", "ed (ed) [past]"]}
+{"word": "killed", "morphemes": ["kill (kill)", "ed (ed) [past]"]}
+{"word": "laughed", "morphemes": ["laugh (laugh)", "ed (ed) [past]"]}
+{"word": "learned", "morphemes": ["learn (learn)", "ed (ed) [past]"]}
+{"word": "listened", "morphemes": ["listen (listen)", "ed (ed) [past]"]}
+{"word": "looked", "morphemes": ["look (look)", "ed (ed) [past]"]}
+{"word": "missed", "morphemes": ["miss (miss)", "ed (ed) [past]"]}
+{"word": "noticed", "morphemes": ["notic (notice)", "ed (ed) [past]"]}
+{"word": "offered", "morphemes": ["offer (offer)", "ed (ed) [past]"]}
+{"word": "ordered", "morphemes": ["order (order)", "ed (ed) [past]"]}
+{"word": "painted", "morphemes": ["paint (paint)", "ed (ed) [past]"]}
+{"word": "passed", "morphemes": ["pass (pass)", "ed (ed) [past]"]}
+{"word": "picked", "morphemes": ["pick (pick)", "ed (ed) [past]"]}
+{"word": "pointed", "morphemes": ["point (point)", "ed (ed) [past]"]}
+{"word": "pulled", "morphemes": ["pull (pull)", "ed (ed) [past]"]}
+{"word": "pushed", "morphemes": ["push (push)", "ed (ed) [past]"]}
+{"word": "rained", "morphemes": ["rain (rain)", "ed (ed) [past]"]}
+{"word": "reached", "morphemes": ["reach (reach)", "ed (ed) [past]"]}
+{"word": "received", "morphemes": ["receiv (receive)", "ed (ed) [past]"]}
+{"word": "remembered", "morphemes": ["remember (remember)", "ed (ed) [past]"]}
+{"word": "returned", "morphemes": ["return (return)", "ed (ed) [past]"]}
+{"word": "showed", "morphemes": ["show (show)", "ed (ed) [past]"]}
+{"word": "smiled", "morphemes": ["smil (smile)", "ed (ed) [past]"]}
+{"word": "stayed", "morphemes": ["stay (stay)", "ed (ed) [past]"]}
+{"word": "turned", "morphemes": ["turn (turn)", "ed (ed) [past]"]}
+{"word": "visited", "morphemes": ["visit (visit)", "ed (ed) [past]"]}
+{"word": "waited", "morphemes": ["wait (wait)", "ed (ed) [past]"]}
+{"word": "watched", "morphemes": ["watch (watch)", "ed (ed) [past]"]}
+{"word": "washed", "morphemes": ["wash (wash)", "ed (ed) [past]"]}
+{"word": "worked", "morphemes": ["work (work)", "ed (ed) [past]"]}
+{"word": "walking", "morphemes": ["walk (walk)", "ing (ing) [prog]"]}
+{"word": "talking", "morphemes": ["talk (talk)", "ing (ing) [prog]"]}
+{"word": "running", "morphemes": ["runn (run)", "ing (ing) [prog]"]}
+{"word": "swimming", "morphemes": ["swimm (swim)", "ing (ing) [prog]"]}
+{"word": "sitting", "morphemes": ["sitt (sit)", "ing (ing) [prog]"]}
+{"word": "getting", "morphemes": ["gett (get)", "ing (ing) [prog]"]}
+{"word": "putting", "morphemes": ["putt (put)", "ing (ing) [prog]"]}
+{"word": "cutting", "morphemes": ["cutt (cut)", "ing (ing) [prog]"]}
+{"word": "hitting", "morphemes": ["hitt (hit)", "ing (ing) [prog]"]}
+{"word": "winning", "morphemes": ["winn (win)", "ing (ing) [prog]"]}
+{"word": "making", "morphemes": ["mak (make)", "ing (ing) [prog]"]}
+{"word": "taking", "morphemes": ["tak (take)", "ing (ing) [prog]"]}
+{"word": "giving", "morphemes": ["giv (give)", "ing (ing) [prog]"]}
+{"word": "coming", "morphemes": ["com (come)", "ing (ing) [prog]"]}
+{"word": "going", "morphemes": ["go (go)", "ing (ing) [prog]"]}
+{"word": "doing", "morphemes": ["do (do)", "ing (ing) [prog]"]}
+{"word": "saying", "morphemes": ["say (say)", "ing (ing) [prog]"]}
+{"word": "seeing", "morphemes": ["see (see)", "ing (ing) [prog]"]}
+{"word": "eating", "morphemes": ["eat (eat)", "ing (ing) [prog]"]}
+{"word": "drinking", "morphemes": ["drink (drink)", "ing (ing) [prog]"]}
+{"word": "sleeping", "morphemes": ["sleep (sleep)", "ing (ing) [prog]"]}
+{"word": "reading", "morphemes": ["read (read)", "ing (ing) [prog]"]}
+{"word": "writing", "morphemes": ["writ (write)", "ing (ing) [prog]"]}
+{"word": "singing", "morphemes": ["sing (sing)", "ing (ing) [prog]"]}
+{"word": "dancing", "morphemes": ["danc (dance)", "ing (ing) [prog]"]}
+{"word": "playing", "morphemes": ["play (play)", "ing (ing) [prog]"]}
+{"word": "working", "morphemes": ["work (work)", "ing (ing) [prog]"]}
+{"word": "learning", "morphemes": ["learn (learn)", "ing (ing) [prog]"]}
+{"word": "teaching", "morphemes": ["teach (teach)", "ing (ing) [prog]"]}
+{"word": "thinking", "morphemes": ["think (think)", "ing (ing) [prog]"]}
+{"word": "feeling", "morphemes": ["feel (feel)", "ing (ing) [prog]"]}
+{"word": "looking", "morphemes": ["look (look)", "ing (ing) [prog]"]}
+{"word": "listening", "morphemes": ["listen (listen)", "ing (ing) [prog]"]}
+{"word": "speaking", "morphemes": ["speak (speak)", "ing (ing) [prog]"]}
+{"word": "laughing", "morphemes": ["laugh (laugh)", "ing (ing) [prog]"]}
+{"word": "crying", "morphemes": ["cry (cry)", "ing (ing) [prog]"]}
+{"word": "flying", "morphemes": ["fly (fly)", "ing (ing) [prog]"]}
+{"word": "trying", "morphemes": ["try (try)", "ing (ing) [prog]"]}
+{"word": "buying", "morphemes": ["buy (buy)", "ing (ing) [prog]"]}
+{"word": "selling", "morphemes": ["sell (sell)", "ing (ing) [prog]"]}
+{"word": "building", "morphemes": ["build (build)", "ing (ing) [prog]"]}
+{"word": "cooking", "morphemes": ["cook (cook)", "ing (ing) [prog]"]}
+{"word": "cleaning", "morphemes": ["clean (clean)", "ing (ing) [prog]"]}
+{"word": "dressing", "morphemes": ["dress (dress)", "ing (ing) [prog]"]}
+{"word": "opening", "morphemes": ["open (open)", "ing (ing) [prog]"]}
+{"word": "closing", "morphemes": ["clos (close)", "ing (ing) [prog]"]}
+{"word": "starting", "morphemes": ["start (start)", "ing (ing) [prog]"]}
+{"word": "waiting", "morphemes": ["wait (wait)", "ing (ing) [prog]"]}
+{"word": "watching", "morphemes": ["watch (watch)", "ing (ing) [prog]"]}
+{"word": "helping", "morphemes": ["help (help)", "ing (ing) [prog]"]}
+{"word": "asking", "morphemes": ["ask (ask)", "ing (ing) [prog]"]}
+{"word": "calling", "morphemes": ["call (call)", "ing (ing) [prog]"]}
+{"word": "cats", "morphemes": ["cat (cat)", "s (s) [pl]"]}
+{"word": "dogs", "morphemes": ["dog (dog)", "s (s) [pl]"]}
+{"word": "books", "morphemes": ["book (book)", "s (s) [pl]"]}
+{"word": "cars", "morphemes": ["car (car)", "s (s) [pl]"]}
+{"word": "houses", "morphemes": ["hous (house)", "es (s) [pl]"]}
+{"word": "boxes", "morphemes": ["box (box)", "es (s) [pl]"]}
+{"word": "wishes", "morphemes": ["wish (wish)", "es (s) [pl]"]}
+{"word": "buses", "morphemes": ["bus (bus)", "es (s) [pl]"]}
+{"word": "classes", "morphemes": ["class (class)", "es (s) [pl]"]}
+{"word": "churches", "morphemes": ["church (church)", "es (s) [pl]"]}
+{"word": "babies", "morphemes": ["babi (baby)", "es (s) [pl]"]}
+{"word": "cities", "morphemes": ["citi (city)", "es (s) [pl]"]}
+{"word": "stories", "morphemes": ["stori (story)", "es (s) [pl]"]}
+{"word": "families", "morphemes": ["famili (family)", "es (s) [pl]"]}
+{"word": "countries", "morphemes": ["countri (country)", "es (s) [pl]"]}
+{"word": "parties", "morphemes": ["parti (party)", "es (s) [pl]"]}
+{"word": "companies", "morphemes": ["compani (company)", "es (s) [pl]"]}
+{"word": "ladies", "morphemes": ["ladi (lady)", "es (s) [pl]"]}
+{"word": "puppies", "morphemes": ["puppi (puppy)", "es (s) [pl]"]}
+{"word": "duties", "morphemes": ["duti (duty)", "es (s) [pl]"]}
+{"word": "tables", "morphemes": ["table (table)", "s (s) [pl]"]}
+{"word": "chairs", "morphemes": ["chair (chair)", "s (s) [pl]"]}
+{"word": "windows", "morphemes": ["window (window)", "s (s) [pl]"]}
+{"word": "doors", "morphemes": ["door (door)", "s (s) [pl]"]}
+{"word": "phones", "morphemes": ["phone (phone)", "s (s) [pl]"]}
+{"word": "friends", "morphemes": ["friend (friend)", "s (s) [pl]"]}
+{"word": "teachers", "morphemes": ["teach (teach)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "workers", "morphemes": ["work (work)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "players", "morphemes": ["play (play)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "singers", "morphemes": ["sing (sing)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "writers", "morphemes": ["writ (write)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "readers", "morphemes": ["read (read)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "runners", "morphemes": ["runn (run)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "swimmers", "morphemes": ["swimm (swim)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "dancers", "morphemes": ["danc (dance)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "painters", "morphemes": ["paint (paint)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "drivers", "morphemes": ["driv (drive)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "owners", "morphemes": ["own (own)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "makers", "morphemes": ["mak (make)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "speakers", "morphemes": ["speak (speak)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "farmers", "morphemes": ["farm (farm)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "bakers", "morphemes": ["bak (bake)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "hunters", "morphemes": ["hunt (hunt)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "buyers", "morphemes": ["buy (buy)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "sellers", "morphemes": ["sell (sell)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "builders", "morphemes": ["build (build)", "er (er) [agent]", "s (s) [pl]"]}
+{"word": "teacher", "morphemes": ["teach (teach)", "er (er) [agent]"]}
+{"word": "worker", "morphemes": ["work (work)", "er (er) [agent]"]}
+{"word": "player", "morphemes": ["play (play)", "er (er) [agent]"]}
+{"word": "singer", "morphemes": ["sing (sing)", "er (er) [agent]"]}
+{"word": "writer", "morphemes": ["writ (write)", "er (er) [agent]"]}
+{"word": "reader", "morphemes": ["read (read)", "er (er) [agent]"]}
+{"word": "runner", "morphemes": ["runn (run)", "er (er) [agent]"]}
+{"word": "swimmer", "morphemes": ["swimm (swim)", "er (er) [agent]"]}
+{"word": "dancer", "morphemes": ["danc (dance)", "er (er) [agent]"]}
+{"word": "painter", "morphemes": ["paint (paint)", "er (er) [agent]"]}
+{"word": "driver", "morphemes": ["driv (drive)", "er (er) [agent]"]}
+{"word": "owner", "morphemes": ["own (own)", "er (er) [agent]"]}
+{"word": "maker", "morphemes": ["mak (make)", "er (er) [agent]"]}
+{"word": "speaker", "morphemes": ["speak (speak)", "er (er) [agent]"]}
+{"word": "farmer", "morphemes": ["farm (farm)", "er (er) [agent]"]}
+{"word": "baker", "morphemes": ["bak (bake)", "er (er) [agent]"]}
+{"word": "hunter", "morphemes": ["hunt (hunt)", "er (er) [agent]"]}
+{"word": "buyer", "morphemes": ["buy (buy)", "er (er) [agent]"]}
+{"word": "seller", "morphemes": ["sell (sell)", "er (er) [agent]"]}
+{"word": "builder", "morphemes": ["build (build)", "er (er) [agent]"]}
+{"word": "trainer", "morphemes": ["train (train)", "er (er) [agent]"]}
+{"word": "manager", "morphemes": ["manag (manage)", "er (er) [agent]"]}
+{"word": "cleaner", "morphemes": ["clean (clean)", "er (er) [agent]"]}
+{"word": "helper", "morphemes": ["help (help)", "er (er) [agent]"]}
+{"word": "fighter", "morphemes": ["fight (fight)", "er (er) [agent]"]}
+{"word": "jumper", "morphemes": ["jump (jump)", "er (er) [agent]"]}
+{"word": "smoker", "morphemes": ["smok (smoke)", "er (er) [agent]"]}
+{"word": "printer", "morphemes": ["print (print)", "er (er) [agent]"]}
+{"word": "loader", "morphemes": ["load (load)", "er (er) [agent]"]}
+{"word": "bigger", "morphemes": ["bigg (big)", "er (er) [comp]"]}
+{"word": "smaller", "morphemes": ["small (small)", "er (er) [comp]"]}
+{"word": "faster", "morphemes": ["fast (fast)", "er (er) [comp]"]}
+{"word": "slower", "morphemes": ["slow (slow)", "er (er) [comp]"]}
+{"word": "stronger", "morphemes": ["strong (strong)", "er (er) [comp]"]}
+{"word": "weaker", "morphemes": ["weak (weak)", "er (er) [comp]"]}
+{"word": "taller", "morphemes": ["tall (tall)", "er (er) [comp]"]}
+{"word": "shorter", "morphemes": ["short (short)", "er (er) [comp]"]}
+{"word": "longer", "morphemes": ["long (long)", "er (er) [comp]"]}
+{"word": "older", "morphemes": ["old (old)", "er (er) [comp]"]}
+{"word": "younger", "morphemes": ["young (young)", "er (er) [comp]"]}
+{"word": "colder", "morphemes": ["cold (cold)", "er (er) [comp]"]}
+{"word": "warmer", "morphemes": ["warm (warm)", "er (er) [comp]"]}
+{"word": "hotter", "morphemes": ["hott (hot)", "er (er) [comp]"]}
+{"word": "cooler", "morphemes": ["cool (cool)", "er (er) [comp]"]}
+{"word": "cheaper", "morphemes": ["cheap (cheap)", "er (er) [comp]"]}
+{"word": "richer", "morphemes": ["rich (rich)", "er (er) [comp]"]}
+{"word": "poorer", "morphemes": ["poor (poor)", "er (er) [comp]"]}
+{"word": "happier", "morphemes": ["happi (happy)", "er (er) [comp]"]}
+{"word": "easier", "morphemes": ["easi (easy)", "er (er) [comp]"]}
+{"word": "funnier", "morphemes": ["funni (funny)", "er (er) [comp]"]}
+{"word": "prettier", "morphemes": ["pretti (pretty)", "er (er) [comp]"]}
+{"word": "friendlier", "morphemes": ["friendli (friendly)", "er (er) [comp]"]}
+{"word": "busier", "morphemes": ["busi (busy)", "er (er) [comp]"]}
+{"word": "earlier", "morphemes": ["earli (early)", "er (er) [comp]"]}
+{"word": "biggest", "morphemes": ["bigg (big)", "est (est)"]}
+{"word": "smallest", "morphemes": ["small (small)", "est (est)"]}
+{"word": "fastest", "morphemes": ["fast (fast)", "est (est)"]}
+{"word": "slowest", "morphemes": ["slow (slow)", "est (est)"]}
+{"word": "strongest", "morphemes": ["strong (strong)", "est (est)"]}
+{"word": "weakest", "morphemes": ["weak (weak)", "est (est)"]}
+{"word": "tallest", "morphemes": ["tall (tall)", "est (est)"]}
+{"word": "shortest", "morphemes": ["short (short)", "est (est)"]}
+{"word": "longest", "morphemes": ["long (long)", "est (est)"]}
+{"word": "oldest", "morphemes": ["old (old)", "est (est)"]}
+{"word": "youngest", "morphemes": ["young (young)", "est (est)"]}
+{"word": "coldest", "morphemes": ["cold (cold)", "est (est)"]}
+{"word": "warmest", "morphemes": ["warm (warm)", "est (est)"]}
+{"word": "hottest", "morphemes": ["hott (hot)", "est (est)"]}
+{"word": "cheapest", "morphemes": ["cheap (cheap)", "est (est)"]}
+{"word": "richest", "morphemes": ["rich (rich)", "est (est)"]}
+{"word": "happiest", "morphemes": ["happi (happy)", "est (est)"]}
+{"word": "easiest", "morphemes": ["easi (easy)", "est (est)"]}
+{"word": "funniest", "morphemes": ["funni (funny)", "est (est)"]}
+{"word": "prettiest", "morphemes": ["pretti (pretty)", "est (est)"]}
+{"word": "busiest", "morphemes": ["busi (busy)", "est (est)"]}
+{"word": "earliest", "morphemes": ["earli (early)", "est (est)"]}
+{"word": "quickly", "morphemes": ["quick (quick)", "ly (ly)"]}
+{"word": "slowly", "morphemes": ["slow (slow)", "ly (ly)"]}
+{"word": "quietly", "morphemes": ["quiet (quiet)", "ly (ly)"]}
+{"word": "loudly", "morphemes": ["loud (loud)", "ly (ly)"]}
+{"word": "carefully", "morphemes": ["care (care)", "ful (ful)", "ly (ly)"]}
+{"word": "nicely", "morphemes": ["nice (nice)", "ly (ly)"]}
+{"word": "badly", "morphemes": ["bad (bad)", "ly (ly)"]}
+{"word": "sadly", "morphemes": ["sad (sad)", "ly (ly)"]}
+{"word": "happily", "morphemes": ["happi (happy)", "ly (ly)"]}
+{"word": "easily", "morphemes": ["easi (easy)", "ly (ly)"]}
+{"word": "angrily", "morphemes": ["angri (angry)", "ly (ly)"]}
+{"word": "suddenly", "morphemes": ["sudden (sudden)", "ly (ly)"]}
+{"word": "really", "morphemes": ["real (real)", "ly (ly)"]}
+{"word": "clearly", "morphemes": ["clear (clear)", "ly (ly)"]}
+{"word": "nearly", "morphemes": ["near (near)", "ly (ly)"]}
+{"word": "barely", "morphemes": ["bare (bare)", "ly (ly)"]}
+{"word": "rarely", "morphemes": ["rare (rare)", "ly (ly)"]}
+{"word": "safely", "morphemes": ["safe (safe)", "ly (ly)"]}
+{"word": "freely", "morphemes": ["free (free)", "ly (ly)"]}
+{"word": "truly", "morphemes": ["tru (true)", "ly (ly)"]}
+{"word": "fully", "morphemes": ["ful (full)", "ly (ly)"]}
+{"word": "mostly", "morphemes": ["most (most)", "ly (ly)"]}
+{"word": "exactly", "morphemes": ["exact (exact)", "ly (ly)"]}
+{"word": "completely", "morphemes": ["complete (complete)", "ly (ly)"]}
+{"word": "certainly", "morphemes": ["certain (certain)", "ly (ly)"]}
+{"word": "usually", "morphemes": ["usual (usual)", "ly (ly)"]}
+{"word": "actually", "morphemes": ["actual (actual)", "ly (ly)"]}
+{"word": "naturally", "morphemes": ["natur (nature)", "al (al)", "ly (ly)"]}
+{"word": "beautifully", "morphemes": ["beauti (beauty)", "ful (ful)", "ly (ly)"]}
+{"word": "hopefully", "morphemes": ["hope (hope)", "ful (ful)", "ly (ly)"]}
+{"word": "helpful", "morphemes": ["help (help)", "ful (ful)"]}
+{"word": "careful", "morphemes": ["care (care)", "ful (ful)"]}
+{"word": "useful", "morphemes": ["use (use)", "ful (ful)"]}
+{"word": "beautiful", "morphemes": ["beauti (beauty)", "ful (ful)"]}
+{"word": "wonderful", "morphemes": ["wonder (wonder)", "ful (ful)"]}
+{"word": "powerful", "morphemes": ["power (power)", "ful (ful)"]}
+{"word": "colorful", "morphemes": ["color (color)", "ful (ful)"]}
+{"word": "successful", "morphemes": ["success (success)", "ful (ful)"]}
+{"word": "peaceful", "morphemes": ["peace (peace)", "ful (ful)"]}
+{"word": "painful", "morphemes": ["pain (pain)", "ful (ful)"]}
+{"word": "harmful", "morphemes": ["harm (harm)", "ful (ful)"]}
+{"word": "thankful", "morphemes": ["thank (thank)", "ful (ful)"]}
+{"word": "playful", "morphemes": ["play (play)", "ful (ful)"]}
+{"word": "hopeful", "morphemes": ["hope (hope)", "ful (ful)"]}
+{"word": "fearful", "morphemes": ["fear (fear)", "ful (ful)"]}
+{"word": "stressful", "morphemes": ["stress (stress)", "ful (ful)"]}
+{"word": "respectful", "morphemes": ["respect (respect)", "ful (ful)"]}
+{"word": "meaningful", "morphemes": ["mean (mean)", "ing (ing) [ger]", "ful (ful)"]}
+{"word": "helpless", "morphemes": ["help (help)", "less (less)"]}
+{"word": "careless", "morphemes": ["care (care)", "less (less)"]}
+{"word": "useless", "morphemes": ["use (use)", "less (less)"]}
+{"word": "hopeless", "morphemes": ["hope (hope)", "less (less)"]}
+{"word": "fearless", "morphemes": ["fear (fear)", "less (less)"]}
+{"word": "painless", "morphemes": ["pain (pain)", "less (less)"]}
+{"word": "harmless", "morphemes": ["harm (harm)", "less (less)"]}
+{"word": "endless", "morphemes": ["end (end)", "less (less)"]}
+{"word": "homeless", "morphemes": ["home (home)", "less (less)"]}
+{"word": "jobless", "morphemes": ["job (job)", "less (less)"]}
+{"word": "thankless", "morphemes": ["thank (thank)", "less (less)"]}
+{"word": "restless", "morphemes": ["rest (rest)", "less (less)"]}
+{"word": "powerless", "morphemes": ["power (power)", "less (less)"]}
+{"word": "worthless", "morphemes": ["worth (worth)", "less (less)"]}
+{"word": "colorless", "morphemes": ["color (color)", "less (less)"]}
+{"word": "meaningless", "morphemes": ["mean (mean)", "ing (ing) [ger]", "less (less)"]}
+{"word": "happiness", "morphemes": ["happi (happy)", "ness (ness)"]}
+{"word": "sadness", "morphemes": ["sad (sad)", "ness (ness)"]}
+{"word": "kindness", "morphemes": ["kind (kind)", "ness (ness)"]}
+{"word": "darkness", "morphemes": ["dark (dark)", "ness (ness)"]}
+{"word": "weakness", "morphemes": ["weak (weak)", "ness (ness)"]}
+{"word": "sickness", "morphemes": ["sick (sick)", "ness (ness)"]}
+{"word": "brightness", "morphemes": ["bright (bright)", "ness (ness)"]}
+{"word": "softness", "morphemes": ["soft (soft)", "ness (ness)"]}
+{"word": "hardness", "morphemes": ["hard (hard)", "ness (ness)"]}
+{"word": "coldness", "morphemes": ["cold (cold)", "ness (ness)"]}
+{"word": "madness", "morphemes": ["mad (mad)", "ness (ness)"]}
+{"word": "fairness", "morphemes": ["fair (fair)", "ness (ness)"]}
+{"word": "richness", "morphemes": ["rich (rich)", "ness (ness)"]}
+{"word": "boldness", "morphemes": ["bold (bold)", "ness (ness)"]}
+{"word": "shyness", "morphemes": ["shy (shy)", "ness (ness)"]}
+{"word": "loudness", "morphemes": ["loud (loud)", "ness (ness)"]}
+{"word": "sweetness", "morphemes": ["sweet (sweet)", "ness (ness)"]}
+{"word": "sharpness", "morphemes": ["sharp (sharp)", "ness (ness)"]}
+{"word": "thickness", "morphemes": ["thick (thick)", "ness (ness)"]}
+{"word": "freshness", "morphemes": ["fresh (fresh)", "ness (ness)"]}
+{"word": "tiredness", "morphemes": ["tir (tire)", "ed (ed) [ptcp]", "ness (ness)"]}
+{"word": "unhappy", "morphemes": ["un (un)", "happy (happy)"]}
+{"word": "unkind", "morphemes": ["un (un)", "kind (kind)"]}
+{"word": "unfair", "morphemes": ["un (un)", "fair (fair)"]}
+{"word": "unsafe", "morphemes": ["un (un)", "safe (safe)"]}
+{"word": "unclear", "morphemes": ["un (un)", "clear (clear)"]}
+{"word": "unable", "morphemes": ["un (un)", "able (able)"]}
+{"word": "unknown", "morphemes": ["un (un)", "known (known)"]}
+{"word": "unusual", "morphemes": ["un (un)", "usual (usual)"]}
+{"word": "unlucky", "morphemes": ["un (un)", "lucky (lucky)"]}
+{"word": "unlikely", "morphemes": ["un (un)", "likely (likely)"]}
+{"word": "unexpected", "morphemes": ["un (un)", "expect (expect)", "ed (ed) [ptcp]"]}
+{"word": "unbelievable", "morphemes": ["un (un)", "believ (believe)", "able (able)"]}
+{"word": "undo", "morphemes": ["un (un)", "do (do)"]}
+{"word": "undoing", "morphemes": ["un (un)", "do (do)", "ing (ing) [prog]"]}
+{"word": "unlock", "morphemes": ["un (un)", "lock (lock)"]}
+{"word": "unlocked", "morphemes": ["un (un)", "lock (lock)", "ed (ed) [past]"]}
+{"word": "unlocking", "morphemes": ["un (un)", "lock (lock)", "ing (ing) [prog]"]}
+{"word": "untie", "morphemes": ["un (un)", "tie (tie)"]}
+{"word": "unwrap", "morphemes": ["un (un)", "wrap (wrap)"]}
+{"word": "unpack", "morphemes": ["un (un)", "pack (pack)"]}
+{"word": "unload", "morphemes": ["un (un)", "load (load)"]}
+{"word": "unfold", "morphemes": ["un (un)", "fold (fold)"]}
+{"word": "unplug", "morphemes": ["un (un)", "plug (plug)"]}
+{"word": "unzip", "morphemes": ["un (un)", "zip (zip)"]}
+{"word": "unfriendly", "morphemes": ["un (un)", "friend (friend)", "ly (ly)"]}
+{"word": "unhappiness", "morphemes": ["un (un)", "happi (happy)", "ness (ness)"]}
+{"word": "unkindness", "morphemes": ["un (un)", "kind (kind)", "ness (ness)"]}
+{"word": "unhelpful", "morphemes": ["un (un)", "help (help)", "ful (ful)"]}
+{"word": "uncomfortable", "morphemes": ["un (un)", "comfort (comfort)", "able (able)"]}
+{"word": "rewrite", "morphemes": ["re (re)", "write (write)"]}
+{"word": "reread", "morphemes": ["re (re)", "read (read)"]}
+{"word": "redo", "morphemes": ["re (re)", "do (do)"]}
+{"word": "replay", "morphemes": ["re (re)", "play (play)"]}
+{"word": "rebuild", "morphemes": ["re (re)", "build (build)"]}
+{"word": "rename", "morphemes": ["re (re)", "name (name)"]}
+{"word": "reopen", "morphemes": ["re (re)", "open (open)"]}
+{"word": "restart", "morphemes": ["re (re)", "start (start)"]}
+{"word": "reload", "morphemes": ["re (re)", "load (load)"]}
+{"word": "reappear", "morphemes": ["re (re)", "appear (appear)"]}
+{"word": "reconsider", "morphemes": ["re (re)", "consider (consider)"]}
+{"word": "reconnect", "morphemes": ["re (re)", "connect (connect)"]}
+{"word": "recheck", "morphemes": ["re (re)", "check (check)"]}
+{"word": "reheat", "morphemes": ["re (re)", "heat (heat)"]}
+{"word": "refill", "morphemes": ["re (re)", "fill (fill)"]}
+{"word": "preview", "morphemes": ["pre (pre)", "view (view)"]}
+{"word": "preheat", "morphemes": ["pre (pre)", "heat (heat)"]}
+{"word": "pretest", "morphemes": ["pre (pre)", "test (test)"]}
+{"word": "preorder", "morphemes": ["pre (pre)", "order (order)"]}
+{"word": "preschool", "morphemes": ["pre (pre)", "school (school)"]}
+{"word": "pregame", "morphemes": ["pre (pre)", "game (game)"]}
+{"word": "prepay", "morphemes": ["pre (pre)", "pay (pay)"]}
+{"word": "preplan", "morphemes": ["pre (pre)", "plan (plan)"]}
+{"word": "disagree", "morphemes": ["dis (dis)", "agree (agree)"]}
+{"word": "dislike", "morphemes": ["dis (dis)", "like (like)"]}
+{"word": "disappear", "morphemes": ["dis (dis)", "appear (appear)"]}
+{"word": "disconnect", "morphemes": ["dis (dis)", "connect (connect)"]}
+{"word": "disallow", "morphemes": ["dis (dis)", "allow (allow)"]}
+{"word": "disapprove", "morphemes": ["dis (dis)", "approve (approve)"]}
+{"word": "distrust", "morphemes": ["dis (dis)", "trust (trust)"]}
+{"word": "disobey", "morphemes": ["dis (dis)", "obey (obey)"]}
+{"word": "disorder", "morphemes": ["dis (dis)", "order (order)"]}
+{"word": "dishonest", "morphemes": ["dis (dis)", "honest (honest)"]}
+{"word": "misuse", "morphemes": ["mis (mis)", "use (use)"]}
+{"word": "misread", "morphemes": ["mis (mis)", "read (read)"]}
+{"word": "misunderstand", "morphemes": ["mis (mis)", "understand (understand)"]}
+{"word": "mistreat", "morphemes": ["mis (mis)", "treat (treat)"]}
+{"word": "misplace", "morphemes": ["mis (mis)", "place (place)"]}
+{"word": "misprint", "morphemes": ["mis (mis)", "print (print)"]}
+{"word": "misspell", "morphemes": ["mis (mis)", "spell (spell)"]}
+{"word": "misjudge", "morphemes": ["mis (mis)", "judge (judge)"]}
+{"word": "overeat", "morphemes": ["over (over)", "eat (eat)"]}
+{"word": "overcook", "morphemes": ["over (over)", "cook (cook)"]}
+{"word": "oversleep", "morphemes": ["over (over)", "sleep (sleep)"]}
+{"word": "overwork", "morphemes": ["over (over)", "work (work)"]}
+{"word": "overload", "morphemes": ["over (over)", "load (load)"]}
+{"word": "overpay", "morphemes": ["over (over)", "pay (pay)"]}
+{"word": "overreact", "morphemes": ["over (over)", "react (react)"]}
+{"word": "overheat", "morphemes": ["over (over)", "heat (heat)"]}
+{"word": "overthink", "morphemes": ["over (over)", "think (think)"]}
+{"word": "undercook", "morphemes": ["under (under)", "cook (cook)"]}
+{"word": "underpay", "morphemes": ["under (under)", "pay (pay)"]}
+{"word": "underground", "morphemes": ["under (under)", "ground (ground)"]}
+{"word": "underline", "morphemes": ["under (under)", "line (line)"]}
+{"word": "underwater", "morphemes": ["under (under)", "water (water)"]}
+{"word": "underestimate", "morphemes": ["under (under)", "estimate (estimate)"]}
+{"word": "outrun", "morphemes": ["out (out)", "run (run)"]}
+{"word": "outsmart", "morphemes": ["out (out)", "smart (smart)"]}
+{"word": "outnumber", "morphemes": ["out (out)", "number (number)"]}
+{"word": "output", "morphemes": ["out (out)", "put (put)"]}
+{"word": "outdoor", "morphemes": ["out (out)", "door (door)"]}
+{"word": "outside", "morphemes": ["out (out)", "side (side)"]}
+{"word": "income", "morphemes": ["in (in)", "come (come)"]}
+{"word": "input", "morphemes": ["in (in)", "put (put)"]}
+{"word": "inside", "morphemes": ["in (in)", "side (side)"]}
+{"word": "upload", "morphemes": ["up (up)", "load (load)"]}
+{"word": "update", "morphemes": ["up (up)", "date (date)"]}
+{"word": "upgrade", "morphemes": ["up (up)", "grade (grade)"]}
+{"word": "uphill", "morphemes": ["up (up)", "hill (hill)"]}
+{"word": "download", "morphemes": ["down (down)", "load (load)"]}
+{"word": "downgrade", "morphemes": ["down (down)", "grade (grade)"]}
+{"word": "downhill", "morphemes": ["down (down)", "hill (hill)"]}
+{"word": "downtown", "morphemes": ["down (down)", "town (town)"]}
+{"word": "downstairs", "morphemes": ["down (down)", "stair (stair)", "s (s) [pl]"]}
+{"word": "upstairs", "morphemes": ["up (up)", "stair (stair)", "s (s) [pl]"]}
+{"word": "bedroom", "morphemes": ["bed (bed)", "room (room)"]}
+{"word": "bathroom", "morphemes": ["bath (bath)", "room (room)"]}
+{"word": "classroom", "morphemes": ["class (class)", "room (room)"]}
+{"word": "newspaper", "morphemes": ["news (news)", "paper (paper)"]}
+{"word": "bookstore", "morphemes": ["book (book)", "store (store)"]}
+{"word": "bookshelf", "morphemes": ["book (book)", "shelf (shelf)"]}
+{"word": "bookcase", "morphemes": ["book (book)", "case (case)"]}
+{"word": "notebook", "morphemes": ["note (note)", "book (book)"]}
+{"word": "textbook", "morphemes": ["text (text)", "book (book)"]}
+{"word": "handbook", "morphemes": ["hand (hand)", "book (book)"]}
+{"word": "cookbook", "morphemes": ["cook (cook)", "book (book)"]}
+{"word": "sketchbook", "morphemes": ["sketch (sketch)", "book (book)"]}
+{"word": "notepad", "morphemes": ["note (note)", "pad (pad)"]}
+{"word": "keyboard", "morphemes": ["key (key)", "board (board)"]}
+{"word": "keyring", "morphemes": ["key (key)", "ring (ring)"]}
+{"word": "keyhole", "morphemes": ["key (key)", "hole (hole)"]}
+{"word": "sunlight", "morphemes": ["sun (sun)", "light (light)"]}
+{"word": "sunshine", "morphemes": ["sun (sun)", "shine (shine)"]}
+{"word": "sunrise", "morphemes": ["sun (sun)", "rise (rise)"]}
+{"word": "sunset", "morphemes": ["sun (sun)", "set (set)"]}
+{"word": "sunflower", "morphemes": ["sun (sun)", "flower (flower)"]}
+{"word": "sunglasses", "morphemes": ["sun (sun)", "glass (glass)", "es (s) [pl]"]}
+{"word": "moonlight", "morphemes": ["moon (moon)", "light (light)"]}
+{"word": "starlight", "morphemes": ["star (star)", "light (light)"]}
+{"word": "flashlight", "morphemes": ["flash (flash)", "light (light)"]}
+{"word": "lighthouse", "morphemes": ["light (light)", "house (house)"]}
+{"word": "household", "morphemes": ["house (house)", "hold (hold)"]}
+{"word": "housework", "morphemes": ["house (house)", "work (work)"]}
+{"word": "housewife", "morphemes": ["house (house)", "wife (wife)"]}
+{"word": "birthday", "morphemes": ["birth (birth)", "day (day)"]}
+{"word": "birthplace", "morphemes": ["birth (birth)", "place (place)"]}
+{"word": "daylight", "morphemes": ["day (day)", "light (light)"]}
+{"word": "daytime", "morphemes": ["day (day)", "time (time)"]}
+{"word": "daydream", "morphemes": ["day (day)", "dream (dream)"]}
+{"word": "nighttime", "morphemes": ["night (night)", "time (time)"]}
+{"word": "weekend", "morphemes": ["week (week)", "end (end)"]}
+{"word": "weekday", "morphemes": ["week (week)", "day (day)"]}
+{"word": "somebody", "morphemes": ["some (some)", "body (body)"]}
+{"word": "someone", "morphemes": ["some (some)", "one (one)"]}
+{"word": "something", "morphemes": ["some (some)", "thing (thing)"]}
+{"word": "somewhere", "morphemes": ["some (some)", "where (where)"]}
+{"word": "sometime", "morphemes": ["some (some)", "time (time)"]}
+{"word": "somehow", "morphemes": ["some (some)", "how (how)"]}
+{"word": "anybody", "morphemes": ["any (any)", "body (body)"]}
+{"word": "anyone", "morphemes": ["any (any)", "one (one)"]}
+{"word": "anything", "morphemes": ["any (any)", "thing (thing)"]}
+{"word": "anywhere", "morphemes": ["any (any)", "where (where)"]}
+{"word": "anytime", "morphemes": ["any (any)", "time (time)"]}
+{"word": "anyhow", "morphemes": ["any (any)", "how (how)"]}
+{"word": "everybody", "morphemes": ["every (every)", "body (body)"]}
+{"word": "everyone", "morphemes": ["every (every)", "one (one)"]}
+{"word": "everything", "morphemes": ["every (every)", "thing (thing)"]}
+{"word": "everywhere", "morphemes": ["every (every)", "where (where)"]}
+{"word": "nobody", "morphemes": ["no (no)", "body (body)"]}
+{"word": "nothing", "morphemes": ["no (no)", "thing (thing)"]}
+{"word": "nowhere", "morphemes": ["no (no)", "where (where)"]}
+{"word": "raincoat", "morphemes": ["rain (rain)", "coat (coat)"]}
+{"word": "rainfall", "morphemes": ["rain (rain)", "fall (fall)"]}
+{"word": "snowfall", "morphemes": ["snow (snow)", "fall (fall)"]}
+{"word": "snowball", "morphemes": ["snow (snow)", "ball (ball)"]}
+{"word": "snowflake", "morphemes": ["snow (snow)", "flake (flake)"]}
+{"word": "snowstorm", "morphemes": ["snow (snow)", "storm (storm)"]}
+{"word": "snowman", "morphemes": ["snow (snow)", "man (man)"]}
+{"word": "fireman", "morphemes": ["fire (fire)", "man (man)"]}
+{"word": "firefly", "morphemes": ["fire (fire)", "fly (fly)"]}
+{"word": "fireplace", "morphemes": ["fire (fire)", "place (place)"]}
+{"word": "firework", "morphemes": ["fire (fire)", "work (work)"]}
+{"word": "firewall", "morphemes": ["fire (fire)", "wall (wall)"]}
+{"word": "waterfall", "morphemes": ["water (water)", "fall (fall)"]}
+{"word": "waterproof", "morphemes": ["water (water)", "proof (proof)"]}
+{"word": "watermelon", "morphemes": ["water (water)", "melon (melon)"]}
+{"word": "seafood", "morphemes": ["sea (sea)", "food (food)"]}
+{"word": "seashore", "morphemes": ["sea (sea)", "shore (shore)"]}
+{"word": "seaside", "morphemes": ["sea (sea)", "side (side)"]}
+{"word": "seaweed", "morphemes": ["sea (sea)", "weed (weed)"]}
+{"word": "airport", "morphemes": ["air (air)", "port (port)"]}
+{"word": "airplane", "morphemes": ["air (air)", "plane (plane)"]}
+{"word": "airline", "morphemes": ["air (air)", "line (line)"]}
+{"word": "basketball", "morphemes": ["basket (basket)", "ball (ball)"]}
+{"word": "football", "morphemes": ["foot (foot)", "ball (ball)"]}
+{"word": "baseball", "morphemes": ["base (base)", "ball (ball)"]}
+{"word": "softball", "morphemes": ["soft (soft)", "ball (ball)"]}
+{"word": "eyeball", "morphemes": ["eye (eye)", "ball (ball)"]}
+{"word": "eyelash", "morphemes": ["eye (eye)", "lash (lash)"]}
+{"word": "eyesight", "morphemes": ["eye (eye)", "sight (sight)"]}
+{"word": "toothbrush", "morphemes": ["tooth (tooth)", "brush (brush)"]}
+{"word": "toothpaste", "morphemes": ["tooth (tooth)", "paste (paste)"]}
+{"word": "toothache", "morphemes": ["tooth (tooth)", "ache (ache)"]}
+{"word": "headache", "morphemes": ["head (head)", "ache (ache)"]}
+{"word": "stomachache", "morphemes": ["stomach (stomach)", "ache (ache)"]}
+{"word": "backache", "morphemes": ["back (back)", "ache (ache)"]}
+{"word": "heartbeat", "morphemes": ["heart (heart)", "beat (beat)"]}
+{"word": "heartbreak", "morphemes": ["heart (heart)", "break (break)"]}
+{"word": "footprint", "morphemes": ["foot (foot)", "print (print)"]}
+{"word": "fingerprint", "morphemes": ["finger (finger)", "print (print)"]}
+{"word": "handprint", "morphemes": ["hand (hand)", "print (print)"]}
+{"word": "handbag", "morphemes": ["hand (hand)", "bag (bag)"]}
+{"word": "handcuff", "morphemes": ["hand (hand)", "cuff (cuff)"]}
+{"word": "handshake", "morphemes": ["hand (hand)", "shake (shake)"]}
+{"word": "handmade", "morphemes": ["hand (hand)", "made (made)"]}
+{"word": "handwriting", "morphemes": ["hand (hand)", "writ (write)", "ing (ing) [ger]"]}
+{"word": "homemade", "morphemes": ["home (home)", "made (made)"]}
+{"word": "homework", "morphemes": ["home (home)", "work (work)"]}
+{"word": "homeland", "morphemes": ["home (home)", "land (land)"]}
+{"word": "homepage", "morphemes": ["home (home)", "page (page)"]}
+{"word": "hometown", "morphemes": ["home (home)", "town (town)"]}
+{"word": "mailbox", "morphemes": ["mail (mail)", "box (box)"]}
+{"word": "mailman", "morphemes": ["mail (mail)", "man (man)"]}
+{"word": "postman", "morphemes": ["post (post)", "man (man)"]}
+{"word": "postbox", "morphemes": ["post (post)", "box (box)"]}
+{"word": "postcard", "morphemes": ["post (post)", "card (card)"]}
+{"word": "postgame", "morphemes": ["post (post)", "game (game)"]}
+{"word": "postwar", "morphemes": ["post (post)", "war (war)"]}
+{"word": "biology", "morphemes": ["bio (bio)", "logy (ology)"]}
+{"word": "geology", "morphemes": ["geo (geo)", "logy (ology)"]}
+{"word": "psychology", "morphemes": ["psycho (psycho)", "logy (ology)"]}
+{"word": "sociology", "morphemes": ["socio (socio)", "logy (ology)"]}
+{"word": "mythology", "morphemes": ["mytho (myth)", "logy (ology)"]}
+{"word": "technology", "morphemes": ["techno (techno)", "logy (ology)"]}
+{"word": "zoology", "morphemes": ["zoo (zoo)", "logy (ology)"]}
+{"word": "astrology", "morphemes": ["astro (astro)", "logy (ology)"]}
+{"word": "biologist", "morphemes": ["bio (bio)", "log (log)", "ist (ist)"]}
+{"word": "geologist", "morphemes": ["geo (geo)", "log (log)", "ist (ist)"]}
+{"word": "psychologist", "morphemes": ["psycho (psycho)", "log (log)", "ist (ist)"]}
+{"word": "telephone", "morphemes": ["tele (tele)", "phone (phone)"]}
+{"word": "telegraph", "morphemes": ["tele (tele)", "graph (graph)"]}
+{"word": "telescope", "morphemes": ["tele (tele)", "scope (scope)"]}
+{"word": "television", "morphemes": ["tele (tele)", "vision (vision)"]}
+{"word": "microscope", "morphemes": ["micro (micro)", "scope (scope)"]}
+{"word": "microphone", "morphemes": ["micro (micro)", "phone (phone)"]}
+{"word": "photograph", "morphemes": ["photo (photo)", "graph (graph)"]}
+{"word": "photographer", "morphemes": ["photo (photo)", "graph (graph)", "er (er) [agent]"]}
+{"word": "photography", "morphemes": ["photo (photo)", "graphy (graphy)"]}
+{"word": "autograph", "morphemes": ["auto (auto)", "graph (graph)"]}
+{"word": "biography", "morphemes": ["bio (bio)", "graphy (graphy)"]}
+{"word": "autobiography", "morphemes": ["auto (auto)", "bio (bio)", "graphy (graphy)"]}
+{"word": "geography", "morphemes": ["geo (geo)", "graphy (graphy)"]}
+{"word": "thermometer", "morphemes": ["thermo (thermo)", "meter (meter)"]}
+{"word": "kilometer", "morphemes": ["kilo (kilo)", "meter (meter)"]}
+{"word": "centimeter", "morphemes": ["centi (centi)", "meter (meter)"]}
+{"word": "millimeter", "morphemes": ["milli (milli)", "meter (meter)"]}
+{"word": "claustrophobia", "morphemes": ["claustro (claustro)", "phobia (phobia)"]}
+{"word": "arachnophobia", "morphemes": ["arachno (arachno)", "phobia (phobia)"]}
+{"word": "xenophobia", "morphemes": ["xeno (xeno)", "phobia (phobia)"]}
+{"word": "homicide", "morphemes": ["homi (homi)", "cide (cide)"]}
+{"word": "suicide", "morphemes": ["sui (sui)", "cide (cide)"]}
+{"word": "genocide", "morphemes": ["geno (geno)", "cide (cide)"]}
+{"word": "pesticide", "morphemes": ["pesti (pest)", "cide (cide)"]}
+{"word": "insecticide", "morphemes": ["insecti (insect)", "cide (cide)"]}
+{"word": "action", "morphemes": ["act (act)", "ion (ion)"]}
+{"word": "reaction", "morphemes": ["re (re)", "act (act)", "ion (ion)"]}
+{"word": "attraction", "morphemes": ["attract (attract)", "ion (ion)"]}
+{"word": "collection", "morphemes": ["collect (collect)", "ion (ion)"]}
+{"word": "connection", "morphemes": ["connect (connect)", "ion (ion)"]}
+{"word": "correction", "morphemes": ["correct (correct)", "ion (ion)"]}
+{"word": "direction", "morphemes": ["direct (direct)", "ion (ion)"]}
+{"word": "election", "morphemes": ["elect (elect)", "ion (ion)"]}
+{"word": "inspection", "morphemes": ["inspect (inspect)", "ion (ion)"]}
+{"word": "prediction", "morphemes": ["predict (predict)", "ion (ion)"]}
+{"word": "protection", "morphemes": ["protect (protect)", "ion (ion)"]}
+{"word": "rejection", "morphemes": ["reject (reject)", "ion (ion)"]}
+{"word": "selection", "morphemes": ["select (select)", "ion (ion)"]}
+{"word": "subtraction", "morphemes": ["subtract (subtract)", "ion (ion)"]}
+{"word": "information", "morphemes": ["inform (inform)", "ation (ation)"]}
+{"word": "education", "morphemes": ["educ (educate)", "ation (ation)"]}
+{"word": "creation", "morphemes": ["cre (create)", "ation (ation)"]}
+{"word": "celebration", "morphemes": ["celebr (celebrate)", "ation (ation)"]}
+{"word": "conversation", "morphemes": ["convers (converse)", "ation (ation)"]}
+{"word": "decoration", "morphemes": ["decor (decorate)", "ation (ation)"]}
+{"word": "explanation", "morphemes": ["explan (explain)", "ation (ation)"]}
+{"word": "examination", "morphemes": ["examin (examine)", "ation (ation)"]}
+{"word": "imagination", "morphemes": ["imagin (imagine)", "ation (ation)"]}
+{"word": "invitation", "morphemes": ["invit (invite)", "ation (ation)"]}
+{"word": "organization", "morphemes": ["organiz (organize)", "ation (ation)"]}
+{"word": "preparation", "morphemes": ["prepar (prepare)", "ation (ation)"]}
+{"word": "translation", "morphemes": ["translat (translate)", "ion (ion)"]}
+{"word": "agreement", "morphemes": ["agree (agree)", "ment (ment)"]}
+{"word": "argument", "morphemes": ["argu (argue)", "ment (ment)"]}
+{"word": "development", "morphemes": ["develop (develop)", "ment (ment)"]}
+{"word": "enjoyment", "morphemes": ["enjoy (enjoy)", "ment (ment)"]}
+{"word": "excitement", "morphemes": ["excite (excite)", "ment (ment)"]}
+{"word": "government", "morphemes": ["govern (govern)", "ment (ment)"]}
+{"word": "improvement", "morphemes": ["improve (improve)", "ment (ment)"]}
+{"word": "movement", "morphemes": ["move (move)", "ment (ment)"]}
+{"word": "payment", "morphemes": ["pay (pay)", "ment (ment)"]}
+{"word": "placement", "morphemes": ["place (place)", "ment (ment)"]}
+{"word": "punishment", "morphemes": ["punish (punish)", "ment (ment)"]}
+{"word": "replacement", "morphemes": ["re (re)", "place (place)", "ment (ment)"]}
+{"word": "retirement", "morphemes": ["retire (retire)", "ment (ment)"]}
+{"word": "shipment", "morphemes": ["ship (ship)", "ment (ment)"]}
+{"word": "statement", "morphemes": ["state (state)", "ment (ment)"]}
+{"word": "treatment", "morphemes": ["treat (treat)", "ment (ment)"]}
+{"word": "readable", "morphemes": ["read (read)", "able (able)"]}
+{"word": "workable", "morphemes": ["work (work)", "able (able)"]}
+{"word": "washable", "morphemes": ["wash (wash)", "able (able)"]}
+{"word": "breakable", "morphemes": ["break (break)", "able (able)"]}
+{"word": "teachable", "morphemes": ["teach (teach)", "able (able)"]}
+{"word": "reachable", "morphemes": ["reach (reach)", "able (able)"]}
+{"word": "drinkable", "morphemes": ["drink (drink)", "able (able)"]}
+{"word": "printable", "morphemes": ["print (print)", "able (able)"]}
+{"word": "believable", "morphemes": ["believ (believe)", "able (able)"]}
+{"word": "enjoyable", "morphemes": ["enjoy (enjoy)", "able (able)"]}
+{"word": "lovable", "morphemes": ["lov (love)", "able (able)"]}
+{"word": "movable", "morphemes": ["mov (move)", "able (able)"]}
+{"word": "usable", "morphemes": ["us (use)", "able (able)"]}
+{"word": "valuable", "morphemes": ["valu (value)", "able (able)"]}
+{"word": "likeable", "morphemes": ["like (like)", "able (able)"]}
+{"word": "artist", "morphemes": ["art (art)", "ist (ist)"]}
+{"word": "pianist", "morphemes": ["pian (piano)", "ist (ist)"]}
+{"word": "violinist", "morphemes": ["violin (violin)", "ist (ist)"]}
+{"word": "guitarist", "morphemes": ["guitar (guitar)", "ist (ist)"]}
+{"word": "tourist", "morphemes": ["tour (tour)", "ist (ist)"]}
+{"word": "scientist", "morphemes": ["scient (science)", "ist (ist)"]}
+{"word": "journalist", "morphemes": ["journal (journal)", "ist (ist)"]}
+{"word": "novelist", "morphemes": ["novel (novel)", "ist (ist)"]}
+{"word": "realist", "morphemes": ["real (real)", "ist (ist)"]}
+{"word": "idealist", "morphemes": ["ideal (ideal)", "ist (ist)"]}
+{"word": "modernize", "morphemes": ["modern (modern)", "ize (ize)"]}
+{"word": "organize", "morphemes": ["organ (organ)", "ize (ize)"]}
+{"word": "realize", "morphemes": ["real (real)", "ize (ize)"]}
+{"word": "memorize", "morphemes": ["memor (memory)", "ize (ize)"]}
+{"word": "summarize", "morphemes": ["summar (summary)", "ize (ize)"]}
+{"word": "criticize", "morphemes": ["critic (critic)", "ize (ize)"]}
+{"word": "apologize", "morphemes": ["apolog (apology)", "ize (ize)"]}
+{"word": "harmonize", "morphemes": ["harmon (harmony)", "ize (ize)"]}
+{"word": "symbolize", "morphemes": ["symbol (symbol)", "ize (ize)"]}
+{"word": "visualize", "morphemes": ["visual (visual)", "ize (ize)"]}
+{"word": "normalize", "morphemes": ["normal (normal)", "ize (ize)"]}
+{"word": "personalize", "morphemes": ["personal (personal)", "ize (ize)"]}
+{"word": "specialize", "morphemes": ["special (special)", "ize (ize)"]}
+{"word": "stabilize", "morphemes": ["stabil (stable)", "ize (ize)"]}
+{"word": "sterilize", "morphemes": ["steril (sterile)", "ize (ize)"]}
+{"word": "utilize", "morphemes": ["util (utility)", "ize (ize)"]}
+{"word": "darken", "morphemes": ["dark (dark)", "en (en)"]}
+{"word": "lighten", "morphemes": ["light (light)", "en (en)"]}
+{"word": "brighten", "morphemes": ["bright (bright)", "en (en)"]}
+{"word": "shorten", "morphemes": ["short (short)", "en (en)"]}
+{"word": "lengthen", "morphemes": ["length (length)", "en (en)"]}
+{"word": "strengthen", "morphemes": ["strength (strength)", "en (en)"]}
+{"word": "sharpen", "morphemes": ["sharp (sharp)", "en (en)"]}
+{"word": "soften", "morphemes": ["soft (soft)", "en (en)"]}
+{"word": "harden", "morphemes": ["hard (hard)", "en (en)"]}
+{"word": "weaken", "morphemes": ["weak (weak)", "en (en)"]}
+{"word": "widen", "morphemes": ["wid (wide)", "en (en)"]}
+{"word": "deepen", "morphemes": ["deep (deep)", "en (en)"]}
+{"word": "ripen", "morphemes": ["rip (ripe)", "en (en)"]}
+{"word": "tighten", "morphemes": ["tight (tight)", "en (en)"]}
+{"word": "loosen", "morphemes": ["loos (loose)", "en (en)"]}
+{"word": "fatten", "morphemes": ["fatt (fat)", "en (en)"]}
+{"word": "flatten", "morphemes": ["flatt (flat)", "en (en)"]}
+{"word": "moisten", "morphemes": ["moist (moist)", "en (en)"]}
+{"word": "childish", "morphemes": ["child (child)", "ish (ish)"]}
+{"word": "foolish", "morphemes": ["fool (fool)", "ish (ish)"]}
+{"word": "selfish", "morphemes": ["self (self)", "ish (ish)"]}
+{"word": "reddish", "morphemes": ["redd (red)", "ish (ish)"]}
+{"word": "bluish", "morphemes": ["blu (blue)", "ish (ish)"]}
+{"word": "greenish", "morphemes": ["green (green)", "ish (ish)"]}
+{"word": "yellowish", "morphemes": ["yellow (yellow)", "ish (ish)"]}
+{"word": "boyish", "morphemes": ["boy (boy)", "ish (ish)"]}
+{"word": "girlish", "morphemes": ["girl (girl)", "ish (ish)"]}
+{"word": "sweetish", "morphemes": ["sweet (sweet)", "ish (ish)"]}
+{"word": "cloudy", "morphemes": ["cloud (cloud)", "y (y)"]}
+{"word": "rainy", "morphemes": ["rain (rain)", "y (y)"]}
+{"word": "sunny", "morphemes": ["sunn (sun)", "y (y)"]}
+{"word": "windy", "morphemes": ["wind (wind)", "y (y)"]}
+{"word": "snowy", "morphemes": ["snow (snow)", "y (y)"]}
+{"word": "foggy", "morphemes": ["fogg (fog)", "y (y)"]}
+{"word": "stormy", "morphemes": ["storm (storm)", "y (y)"]}
+{"word": "icy", "morphemes": ["ic (ice)", "y (y)"]}
+{"word": "salty", "morphemes": ["salt (salt)", "y (y)"]}
+{"word": "spicy", "morphemes": ["spic (spice)", "y (y)"]}
+{"word": "sugary", "morphemes": ["sugar (sugar)", "y (y)"]}
+{"word": "juicy", "morphemes": ["juic (juice)", "y (y)"]}
+{"word": "fruity", "morphemes": ["fruit (fruit)", "y (y)"]}
+{"word": "milky", "morphemes": ["milk (milk)", "y (y)"]}
+{"word": "hairy", "morphemes": ["hair (hair)", "y (y)"]}
+{"word": "dusty", "morphemes": ["dust (dust)", "y (y)"]}
+{"word": "dirty", "morphemes": ["dirt (dirt)", "y (y)"]}
+{"word": "rocky", "morphemes": ["rock (rock)", "y (y)"]}
+{"word": "sandy", "morphemes": ["sand (sand)", "y (y)"]}
+{"word": "muddy", "morphemes": ["mudd (mud)", "y (y)"]}
+{"word": "grassy", "morphemes": ["grass (grass)", "y (y)"]}
+{"word": "bumpy", "morphemes": ["bump (bump)", "y (y)"]}
+{"word": "lucky", "morphemes": ["luck (luck)", "y (y)"]}
+{"word": "risky", "morphemes": ["risk (risk)", "y (y)"]}
+{"word": "noisy", "morphemes": ["nois (noise)", "y (y)"]}
+{"word": "sleepy", "morphemes": ["sleep (sleep)", "y (y)"]}
+{"word": "friendly", "morphemes": ["friend (friend)", "ly (ly)"]}
+{"word": "lovely", "morphemes": ["love (love)", "ly (ly)"]}
+{"word": "yearly", "morphemes": ["year (year)", "ly (ly)"]}
+{"word": "monthly", "morphemes": ["month (month)", "ly (ly)"]}
+{"word": "weekly", "morphemes": ["week (week)", "ly (ly)"]}
+{"word": "hourly", "morphemes": ["hour (hour)", "ly (ly)"]}
+{"word": "motherly", "morphemes": ["mother (mother)", "ly (ly)"]}
+{"word": "fatherly", "morphemes": ["father (father)", "ly (ly)"]}
+{"word": "brotherly", "morphemes": ["brother (brother)", "ly (ly)"]}
+{"word": "sisterly", "morphemes": ["sister (sister)", "ly (ly)"]}
+{"word": "manly", "morphemes": ["man (man)", "ly (ly)"]}
+{"word": "worldly", "morphemes": ["world (world)", "ly (ly)"]}
+{"word": "costly", "morphemes": ["cost (cost)", "ly (ly)"]}
+{"word": "likely", "morphemes": ["like (like)", "ly (ly)"]}
+{"word": "timely", "morphemes": ["time (time)", "ly (ly)"]}
+{"word": "deadly", "morphemes": ["dead (dead)", "ly (ly)"]}
+{"word": "childhood", "morphemes": ["child (child)", "hood (hood)"]}
+{"word": "adulthood", "morphemes": ["adult (adult)", "hood (hood)"]}
+{"word": "motherhood", "morphemes": ["mother (mother)", "hood (hood)"]}
+{"word": "fatherhood", "morphemes": ["father (father)", "hood (hood)"]}
+{"word": "parenthood", "morphemes": ["parent (parent)", "hood (hood)"]}
+{"word": "neighborhood", "morphemes": ["neighbor (neighbor)", "hood (hood)"]}
+{"word": "brotherhood", "morphemes": ["brother (brother)", "hood (hood)"]}
+{"word": "sisterhood", "morphemes": ["sister (sister)", "hood (hood)"]}
+{"word": "friendship", "morphemes": ["friend (friend)", "ship (ship)"]}
+{"word": "relationship", "morphemes": ["relation (relation)", "ship (ship)"]}
+{"word": "leadership", "morphemes": ["lead (lead)", "er (er) [agent]", "ship (ship)"]}
+{"word": "membership", "morphemes": ["member (member)", "ship (ship)"]}
+{"word": "ownership", "morphemes": ["own (own)", "er (er) [agent]", "ship (ship)"]}
+{"word": "partnership", "morphemes": ["partner (partner)", "ship (ship)"]}
+{"word": "championship", "morphemes": ["champion (champion)", "ship (ship)"]}
+{"word": "hardship", "morphemes": ["hard (hard)", "ship (ship)"]}
+{"word": "kingdom", "morphemes": ["king (king)", "dom (dom)"]}
+{"word": "freedom", "morphemes": ["free (free)", "dom (dom)"]}
+{"word": "wisdom", "morphemes": ["wis (wise)", "dom (dom)"]}
+{"word": "boredom", "morphemes": ["bore (bore)", "dom (dom)"]}
+{"word": "stardom", "morphemes": ["star (star)", "dom (dom)"]}
+{"word": "antibody", "morphemes": ["anti (anti)", "body (body)"]}
+{"word": "antisocial", "morphemes": ["anti (anti)", "social (social)"]}
+{"word": "antiwar", "morphemes": ["anti (anti)", "war (war)"]}
+{"word": "antivirus", "morphemes": ["anti (anti)", "virus (virus)"]}
+{"word": "antifreeze", "morphemes": ["anti (anti)", "freeze (freeze)"]}
+{"word": "semicircle", "morphemes": ["semi (semi)", "circle (circle)"]}
+{"word": "semifinal", "morphemes": ["semi (semi)", "final (final)"]}
+{"word": "semisweet", "morphemes": ["semi (semi)", "sweet (sweet)"]}
+{"word": "multicolor", "morphemes": ["multi (multi)", "color (color)"]}
+{"word": "multimedia", "morphemes": ["multi (multi)", "media (media)"]}
+{"word": "multipurpose", "morphemes": ["multi (multi)", "purpose (purpose)"]}
+{"word": "multitask", "morphemes": ["multi (multi)", "task (task)"]}
+{"word": "bilingual", "morphemes": ["bi (bi)", "lingual (lingual)"]}
+{"word": "biweekly", "morphemes": ["bi (bi)", "week (week)", "ly (ly)"]}
+{"word": "biannual", "morphemes": ["bi (bi)", "annual (annual)"]}
+{"word": "triangle", "morphemes": ["tri (tri)", "angle (angle)"]}
+{"word": "tricycle", "morphemes": ["tri (tri)", "cycle (cycle)"]}
+{"word": "bicycle", "morphemes": ["bi (bi)", "cycle (cycle)"]}
+{"word": "motorcycle", "morphemes": ["motor (motor)", "cycle (cycle)"]}
+{"word": "autopilot", "morphemes": ["auto (auto)", "pilot (pilot)"]}
+{"word": "automobile", "morphemes": ["auto (auto)", "mobile (mobile)"]}
+{"word": "autocorrect", "morphemes": ["auto (auto)", "correct (correct)"]}
+{"word": "nonstop", "morphemes": ["non (non)", "stop (stop)"]}
+{"word": "nonfiction", "morphemes": ["non (non)", "fiction (fiction)"]}
+{"word": "nonprofit", "morphemes": ["non (non)", "profit (profit)"]}
+{"word": "nonviolent", "morphemes": ["non (non)", "violent (violent)"]}
+{"word": "coexist", "morphemes": ["co (co)", "exist (exist)"]}
+{"word": "coworker", "morphemes": ["co (co)", "work (work)", "er (er) [agent]"]}
+{"word": "cofounder", "morphemes": ["co (co)", "found (found)", "er (er) [agent]"]}
+{"word": "costar", "morphemes": ["co (co)", "star (star)"]}
+{"word": "subway", "morphemes": ["sub (sub)", "way (way)"]}
+{"word": "subtitle", "morphemes": ["sub (sub)", "title (title)"]}
+{"word": "subtotal", "morphemes": ["sub (sub)", "total (total)"]}
+{"word": "subgroup", "morphemes": ["sub (sub)", "group (group)"]}
+{"word": "superhero", "morphemes": ["super (super)", "hero (hero)"]}
+{"word": "supermarket", "morphemes": ["super (super)", "market (market)"]}
+{"word": "superpower", "morphemes": ["super (super)", "power (power)"]}
+{"word": "superhuman", "morphemes": ["super (super)", "human (human)"]}
+{"word": "superstar", "morphemes": ["super (super)", "star (star)"]}
+{"word": "international", "morphemes": ["inter (inter)", "nation (nation)", "al (al)"]}
+{"word": "transplant", "morphemes": ["trans (trans)", "plant (plant)"]}
+{"word": "impossible", "morphemes": ["im (im)", "possible (possible)"]}
+{"word": "impatient", "morphemes": ["im (im)", "patient (patient)"]}
+{"word": "imperfect", "morphemes": ["im (im)", "perfect (perfect)"]}
+{"word": "improper", "morphemes": ["im (im)", "proper (proper)"]}
+{"word": "illegal", "morphemes": ["il (il)", "legal (legal)"]}
+{"word": "illogical", "morphemes": ["il (il)", "logical (logical)"]}
+{"word": "irregular", "morphemes": ["ir (ir)", "regular (regular)"]}
+{"word": "irrational", "morphemes": ["ir (ir)", "rational (rational)"]}
+{"word": "irresponsible", "morphemes": ["ir (ir)", "responsible (responsible)"]}
+{"word": "inactive", "morphemes": ["in (in)", "active (active)"]}
+{"word": "incomplete", "morphemes": ["in (in)", "complete (complete)"]}
+{"word": "incorrect", "morphemes": ["in (in)", "correct (correct)"]}
+{"word": "invisible", "morphemes": ["in (in)", "visible (visible)"]}
+{"word": "informal", "morphemes": ["in (in)", "formal (formal)"]}
+{"word": "indirect", "morphemes": ["in (in)", "direct (direct)"]}
+{"word": "inability", "morphemes": ["in (in)", "abil (able)", "ity (ity)"]}
+{"word": "ability", "morphemes": ["abil (able)", "ity (ity)"]}
+{"word": "activity", "morphemes": ["activ (active)", "ity (ity)"]}
+{"word": "reality", "morphemes": ["real (real)", "ity (ity)"]}
+{"word": "safety", "morphemes": ["safe (safe)", "ty (ty)"]}
+{"word": "loyalty", "morphemes": ["loyal (loyal)", "ty (ty)"]}
+{"word": "royalty", "morphemes": ["royal (royal)", "ty (ty)"]}
+{"word": "cruelty", "morphemes": ["cruel (cruel)", "ty (ty)"]}
+{"word": "creativity", "morphemes": ["creativ (creative)", "ity (ity)"]}
+{"word": "popularity", "morphemes": ["popular (popular)", "ity (ity)"]}
+{"word": "possibility", "morphemes": ["possibil (possible)", "ity (ity)"]}
+{"word": "responsibility", "morphemes": ["responsibil (responsible)", "ity (ity)"]}
+{"word": "electricity", "morphemes": ["electric (electric)", "ity (ity)"]}
+{"word": "personality", "morphemes": ["personal (personal)", "ity (ity)"]}
+{"word": "equality", "morphemes": ["equal (equal)", "ity (ity)"]}
+{"word": "stupidity", "morphemes": ["stupid (stupid)", "ity (ity)"]}
