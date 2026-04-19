@@ -960,10 +960,10 @@ Respond with JSON in this format:
 {{
   "encouragement": "Always provide this: warm, encouraging message highlighting what the user got right and their progress.",
   "explanation": "Only if there are errors: brief explanation of where they made mistakes and how they can improve.",
-  "grades": [{{"Perfect": {{"wrote": "the word the user wrote"}}}}, {{"PhoneticallyIdenticalButContextuallyIncorrect": {{"wrote": "the word the user wrote"}}}}, {{"Missed": {{}}}}, ...]
+  "grades": [{{"grade": "Perfect", "wrote": "the word the user wrote"}}, {{"grade": "PhoneticallyIdenticalButContextuallyIncorrect", "wrote": "the word the user wrote"}}, {{"grade": "Missed", "wrote": null}}, ...]
 }}
 
-The grades array should have one grade for each word the user was asked to transcribe, in the order they appear.
+The grades array should have one grade for each word the user was asked to transcribe, in the order they appear. Set `wrote` to the word the user wrote for that position, or null for Missed.
 
 The encouragement should always be provided, be in {native_language_name}, be a short positive message (1-2 sentences), and focus on what they got right. The explanation should only be provided if there are errors, be in {native_language_name}, focus on their mistakes and how to improve, and help the user learn from their errors. Markdown formatting is allowed, and encouraged for emphasis (just no bullet points or numbered lists). If the user appeared to confuse some words, you can include those words in the compare array, and a TTS example for each word will be generated for the user to hear. {}
 
@@ -1083,46 +1083,48 @@ Words that need grading:
         Ord,
         Hash,
     )]
-    #[serde(tag = "type")]
-    pub enum WordGradeResponse {
-        Perfect {
-            #[serde(default, skip_serializing_if = "Option::is_none")]
-            wrote: Option<String>,
-        },
-        CorrectWithTypo {
-            #[serde(default, skip_serializing_if = "Option::is_none")]
-            wrote: Option<String>,
-        },
-        PhoneticallyIdenticalButContextuallyIncorrect {
-            #[serde(default, skip_serializing_if = "Option::is_none")]
-            wrote: Option<String>,
-        },
-        PhoneticallySimilarButContextuallyIncorrect {
-            #[serde(default, skip_serializing_if = "Option::is_none")]
-            wrote: Option<String>,
-        },
-        Incorrect {
-            #[serde(default, skip_serializing_if = "Option::is_none")]
-            wrote: Option<String>,
-        },
+    pub enum GradeKind {
+        Perfect,
+        CorrectWithTypo,
+        PhoneticallyIdenticalButContextuallyIncorrect,
+        PhoneticallySimilarButContextuallyIncorrect,
+        Incorrect,
         Missed,
+    }
+
+    #[derive(
+        Clone,
+        Debug,
+        serde::Serialize,
+        serde::Deserialize,
+        schemars::JsonSchema,
+        PartialEq,
+        Eq,
+        PartialOrd,
+        Ord,
+        Hash,
+    )]
+    pub struct WordGradeResponse {
+        grade: GradeKind,
+        wrote: Option<String>,
     }
 
     impl From<WordGradeResponse> for transcription_challenge::WordGrade {
         fn from(response: WordGradeResponse) -> Self {
-            match response {
-                WordGradeResponse::Perfect { wrote } => transcription_challenge::WordGrade::Perfect { wrote },
-                WordGradeResponse::CorrectWithTypo { wrote } => transcription_challenge::WordGrade::CorrectWithTypo { wrote },
-                WordGradeResponse::PhoneticallyIdenticalButContextuallyIncorrect { wrote } => transcription_challenge::WordGrade::PhoneticallyIdenticalButContextuallyIncorrect { wrote },
-                WordGradeResponse::PhoneticallySimilarButContextuallyIncorrect { wrote } => transcription_challenge::WordGrade::PhoneticallySimilarButContextuallyIncorrect { wrote },
-                WordGradeResponse::Incorrect { wrote } => transcription_challenge::WordGrade::Incorrect { wrote },
-                WordGradeResponse::Missed => transcription_challenge::WordGrade::Missed {},
+            let WordGradeResponse { grade, wrote } = response;
+            match grade {
+                GradeKind::Perfect => transcription_challenge::WordGrade::Perfect { wrote },
+                GradeKind::CorrectWithTypo => transcription_challenge::WordGrade::CorrectWithTypo { wrote },
+                GradeKind::PhoneticallyIdenticalButContextuallyIncorrect => transcription_challenge::WordGrade::PhoneticallyIdenticalButContextuallyIncorrect { wrote },
+                GradeKind::PhoneticallySimilarButContextuallyIncorrect => transcription_challenge::WordGrade::PhoneticallySimilarButContextuallyIncorrect { wrote },
+                GradeKind::Incorrect => transcription_challenge::WordGrade::Incorrect { wrote },
+                GradeKind::Missed => transcription_challenge::WordGrade::Missed {},
             }
         }
     }
 
     // Get response from LLM
-    #[derive(Deserialize, schemars::JsonSchema)]
+    #[derive(Deserialize, schemars::JsonSchema, Debug)]
     struct LlmResponse {
         encouragement: Option<String>,
         explanation: Option<String>,
@@ -1135,6 +1137,7 @@ Words that need grading:
         .await
         .inspect_err(|e| eprintln!("Error: {e:?}"))
         .map_err(|_e| StatusCode::INTERNAL_SERVER_ERROR)?;
+    eprintln!("Response from LLM: {llm_response:?}");
 
     // Convert LLM response to Grade structure
     let mut results = Vec::new();
@@ -1179,6 +1182,8 @@ Words that need grading:
         results,
         autograding_error: None,
     };
+
+    eprintln!("Response to user: {grade:?}");
 
     Ok(Json(grade))
 }

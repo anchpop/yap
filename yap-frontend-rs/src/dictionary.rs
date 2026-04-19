@@ -2,7 +2,8 @@ use language_utils::features::{Morphology, WordPrefix};
 use language_utils::language_pack::LanguagePack;
 use language_utils::text_cleanup::remove_accents_lowercase;
 use language_utils::{
-    Atom, Gram, GramDefinition, Heteronym, Language, MorphemeSegment, TargetToNativeWord, WordType,
+    Atom, Gram, GramDefinition, Heteronym, Language, MorphemeSegment, SpurGram, TargetToNativeWord,
+    WordType,
 };
 use lasso::Spur;
 
@@ -84,6 +85,8 @@ fn compute_morpheme_breakdown(
         return None;
     }
 
+    let full_word = rodeo.resolve(&heteronym.word);
+
     dict_entry
         .segments
         .iter()
@@ -98,11 +101,12 @@ fn compute_morpheme_breakdown(
             };
             let info = language_pack.morphemes.get(&key)?;
             let gloss = language_pack.morpheme_gloss(info)?;
-            let canonical = if segment.canonical == segment.surface {
-                None
-            } else {
-                Some(segment.canonical.clone())
-            };
+            let canonical =
+                if segment.canonical == segment.surface || segment.canonical == full_word {
+                    None
+                } else {
+                    Some(segment.canonical.clone())
+                };
             Some((segment.surface.clone(), canonical, gloss))
         })
         .collect()
@@ -117,16 +121,17 @@ fn compute_morpheme_breakdown(
 ///
 /// - Single-heteronym grams → **morpheme-level** decomposition; all glosses
 ///   required (all-or-nothing).
-/// - Multi-atom grams → **word-level** decomposition: heteronyms contribute
-///   `(surface, lemma_if_different, Some(gloss))`; punctuation contributes
-///   `(surface, None, None)`.
+/// - Multi-atom grams → **word-level** decomposition, but only when the phrase
+///   has a `Phrasebook` entry flagged as `compositional` — i.e., the parts
+///   actually add up. For idiomatic phrases, per-word glosses are misleading.
 #[allow(clippy::type_complexity)]
 pub fn compute_breakdown(
-    gram: &language_utils::grm<lasso::Spur>,
+    gram_spur: SpurGram,
     language_pack: &LanguagePack,
 ) -> Option<Vec<(String, Option<String>, Option<String>)>> {
     use language_utils::Atom as UAtom;
 
+    let gram = language_pack.gram_rodeo.resolve(&gram_spur);
     match gram.atoms() {
         [UAtom::Tok(word)] => match &word.word_type {
             WordType::Heteronym(het) => {
@@ -136,6 +141,13 @@ pub fn compute_breakdown(
             _ => None,
         },
         atoms => {
+            let is_compositional = matches!(
+                language_pack.gram_definitions.get(&gram_spur),
+                Some(GramDefinition::Phrasebook(entry)) if entry.compositional
+            );
+            if !is_compositional {
+                return None;
+            }
             let rodeo = &language_pack.string_rodeo;
             let out: Vec<(String, Option<String>, Option<String>)> = atoms
                 .iter()

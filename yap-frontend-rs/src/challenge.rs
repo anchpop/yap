@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use language_utils::{
-    Atom, Gram, Heteronym, Literal, PatternPosition, SentenceGram, SpurGram, TtsProvider,
-    TtsRequest, WordType, atoms_to_literals, language_pack::LanguagePack, literals_to_text,
-    transcription_challenge,
+    Atom, Gram, GramDefinition, Heteronym, Literal, PatternPosition, SentenceGram, SpurGram,
+    TtsProvider, TtsRequest, WordType, atoms_to_literals, language_pack::LanguagePack,
+    literals_to_text, transcription_challenge,
 };
 use lasso::Spur;
 
@@ -239,27 +239,55 @@ impl ReviewInfo {
             deck.context.course.target_language,
         );
 
+        type Breakdown = Vec<(String, Option<String>, Option<String>)>;
         let mut parts = Vec::<transcription_challenge::Part>::new();
+        let mut part_gram_indices = Vec::<Vec<usize>>::new();
+        let mut gram_definitions_for_lookup = Vec::<Option<GramDefinition>>::new();
+        let mut gram_breakdowns_for_lookup = Vec::<Option<Breakdown>>::new();
+        let register_gram = |gram_spur: &SpurGram,
+                             defs: &mut Vec<Option<GramDefinition>>,
+                             breakdowns: &mut Vec<Option<Breakdown>>|
+         -> usize {
+            let idx = defs.len();
+            defs.push(language_pack.gram_definitions.get(gram_spur).cloned());
+            breakdowns.push(compute_breakdown(*gram_spur, language_pack));
+            idx
+        };
         for sentence_gram in sentence_grams {
             match sentence_gram {
                 SentenceGram::Learnable((sentence_gram, literals))
                     if sentence_gram == gram
                         || deck.is_listened_gram_comprehensible(&sentence_gram, false) =>
                 {
+                    let gram_idx = register_gram(
+                        &sentence_gram,
+                        &mut gram_definitions_for_lookup,
+                        &mut gram_breakdowns_for_lookup,
+                    );
+                    let new_indices = vec![gram_idx; literals.len()];
                     if let Some(transcription_challenge::Part::AskedToTranscribe {
                         parts: existing_parts,
                     }) = parts.last_mut()
                     {
-                        existing_parts.extend(literals)
+                        existing_parts.extend(literals);
+                        part_gram_indices.last_mut().unwrap().extend(new_indices);
                     } else {
                         parts.push(transcription_challenge::Part::AskedToTranscribe {
                             parts: literals,
                         });
+                        part_gram_indices.push(new_indices);
                     }
                 }
-                SentenceGram::Obvious((_, literals)) | SentenceGram::Learnable((_, literals)) => {
+                SentenceGram::Obvious((sentence_gram, literals))
+                | SentenceGram::Learnable((sentence_gram, literals)) => {
+                    let gram_idx = register_gram(
+                        &sentence_gram,
+                        &mut gram_definitions_for_lookup,
+                        &mut gram_breakdowns_for_lookup,
+                    );
                     for literal in literals {
                         parts.push(transcription_challenge::Part::Provided { part: literal });
+                        part_gram_indices.push(vec![gram_idx]);
                     }
                 }
             }
@@ -322,6 +350,9 @@ impl ReviewInfo {
                     .resolve(sentence.native_languages.first()?)
                     .to_string(),
                 parts,
+                part_gram_indices,
+                gram_definitions_for_lookup,
+                gram_breakdowns_for_lookup,
                 audio: AudioRequest {
                     request: TtsRequest {
                         text: language_pack
@@ -392,7 +423,7 @@ impl ReviewInfo {
         // Morpheme-level breakdown for single heteronyms, word-level for
         // multi-atom grams. Punctuation atoms in multi-word grams render with
         // `None` gloss.
-        let breakdown = compute_breakdown(language_pack.gram_rodeo.resolve(&gram), language_pack);
+        let breakdown = compute_breakdown(gram, language_pack);
 
         let content = CardContent::Gram {
             gram: literals,
@@ -450,6 +481,7 @@ impl ReviewInfo {
         let mut target_language_literals = Vec::new();
         let mut literal_gram_indices = Vec::new();
         let mut gram_definitions_for_lookup = Vec::new();
+        let mut gram_breakdowns_for_lookup = Vec::new();
 
         for sentence_gram in sentence_grams_with_literals {
             let (gram_spur, literals) = match sentence_gram {
@@ -459,6 +491,8 @@ impl ReviewInfo {
             let group_index = gram_definitions_for_lookup.len();
             let definition = language_pack.gram_definitions.get(&gram_spur).cloned();
             gram_definitions_for_lookup.push(definition);
+            let breakdown = compute_breakdown(gram_spur, language_pack);
+            gram_breakdowns_for_lookup.push(breakdown);
 
             for literal in literals {
                 literal_gram_indices.push(group_index);
@@ -517,6 +551,7 @@ impl ReviewInfo {
                 target_language_literals,
                 literal_gram_indices,
                 gram_definitions_for_lookup,
+                gram_breakdowns_for_lookup,
                 unique_target_language_phrases: unique_target_language_phrases
                     .iter()
                     .map(|p| {
@@ -529,6 +564,10 @@ impl ReviewInfo {
                 phrase_definitions: unique_target_language_phrases
                     .iter()
                     .map(|p| language_pack.gram_definitions.get(p).cloned())
+                    .collect(),
+                phrase_breakdowns: unique_target_language_phrases
+                    .iter()
+                    .map(|p| compute_breakdown(*p, language_pack))
                     .collect(),
                 native_translations: native_languages
                     .iter()

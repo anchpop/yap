@@ -60,7 +60,11 @@ impl AudioCache {
                         return Some(cached_bytes);
                     }
 
-                    log::warn!("Invalid audio cache detected for {cache_filename}, refetching");
+                    let head: Vec<u8> = cached_bytes.iter().take(8).copied().collect();
+                    log::warn!(
+                        "Invalid audio cache detected for {cache_filename} ({} bytes, magic={head:02x?}), refetching",
+                        cached_bytes.len()
+                    );
                     let mut audio_dir = self.audio_dir.clone();
                     if let Err(e) = audio_dir.remove_entry(&cache_filename).await {
                         log::warn!("Failed to remove invalid audio cache {cache_filename}: {e:?}");
@@ -388,7 +392,9 @@ fn is_valid_audio_data(bytes: &[u8]) -> bool {
 
     // MP3: ID3 tag or MPEG frame sync (0xFFF)
     // WAV: RIFF header (Gemini TTS returns WAV)
+    // Ogg Opus: "OggS" page header (Google TTS returns OGG_OPUS)
     bytes.starts_with(b"ID3")
         || (bytes[0] == 0xFF && bytes[1] & 0xE0 == 0xE0)
         || bytes.starts_with(b"RIFF")
+        || bytes.starts_with(b"OggS")
 }

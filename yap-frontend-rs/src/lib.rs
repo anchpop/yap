@@ -643,9 +643,17 @@ pub struct TranslateComprehensibleSentence {
     pub literal_gram_indices: Vec<usize>,
     /// Definition for each gram group (indexed by group number). None if no definition is available.
     pub gram_definitions_for_lookup: Vec<Option<GramDefinition>>,
+    /// Morpheme/word breakdown for each gram group (parallel to
+    /// `gram_definitions_for_lookup`). None when the gram has no useful
+    /// breakdown (e.g. unknown word, no morpheme data).
+    #[allow(clippy::type_complexity)]
+    pub gram_breakdowns_for_lookup: Vec<Option<Vec<(String, Option<String>, Option<String>)>>>,
     pub unique_target_language_phrases: Vec<Gram<String>>,
     /// Definition for each phrase in unique_target_language_phrases (indexed in parallel).
     pub phrase_definitions: Vec<Option<GramDefinition>>,
+    /// Breakdown for each phrase (parallel to `unique_target_language_phrases`).
+    #[allow(clippy::type_complexity)]
+    pub phrase_breakdowns: Vec<Option<Vec<(String, Option<String>, Option<String>)>>>,
     pub native_translations: Vec<String>,
     pub movie_titles: Vec<(String, String)>,
     pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
@@ -662,6 +670,16 @@ pub struct TranscribeComprehensibleSentence {
     pub audio: AudioRequest,
     pub native_language: String,
     pub parts: Vec<transcription_challenge::Part>,
+    /// Parallel to `parts`. For each part, one gram-group index per literal
+    /// (length matches the literal count of the corresponding part). Lets the
+    /// frontend map a graded literal back to its gram definition/breakdown.
+    pub part_gram_indices: Vec<Vec<usize>>,
+    /// Gram definitions indexed by gram group.
+    pub gram_definitions_for_lookup: Vec<Option<GramDefinition>>,
+    /// Morpheme/word breakdowns indexed by gram group (parallel to
+    /// `gram_definitions_for_lookup`).
+    #[allow(clippy::type_complexity)]
+    pub gram_breakdowns_for_lookup: Vec<Option<Vec<(String, Option<String>, Option<String>)>>>,
     pub movie_titles: Vec<(String, String)>,
     pub proper_noun_definitions: Vec<(String, ProperNounDefinition)>,
     /// True if the user recently got this sentence wrong in a transcription challenge.

@@ -11,7 +11,14 @@ import {
   type Language,
   type Course,
   type Deck,
+  type DictionaryEntry,
+  type PhrasebookDefinitionEntry,
 } from "../../../../yap-frontend-rs/pkg/yap_frontend_rs";
+
+// GramDefinition is missing from the .d.ts due to a type generator bug
+type GramDefinition =
+  | { Dictionary: DictionaryEntry }
+  | { Phrasebook: PhrasebookDefinitionEntry };
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { languageToIso6391 } from "@/lib/utils";
@@ -46,8 +53,12 @@ import { MoreVertical, X } from "lucide-react";
 import { ReportIssueModal } from "./ReportIssueModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InlineTextarea } from "../ui/textarea";
-import { ProperNounDefinitions } from "./TranslationChallenge";
+import {
+  ProperNounDefinitions,
+  GramDefinitionDisplay,
+} from "./TranslationChallenge";
 import { TargetLanguageText } from "../TargetLanguageText";
+import { type BreakdownRow } from "../MorphemeBreakdown";
 
 interface TranscriptionChallengeProps {
   challenge: TranscribeComprehensibleSentence;
@@ -177,6 +188,41 @@ export function TranscriptionChallenge({
     });
     return blankIndices;
   }, [challenge]);
+
+  // Definitions for literals graded as wrong (anything beyond Perfect / CorrectWithTypo).
+  // Deduplicated per gram group, preserving order.
+  const wrongGramEntries = useMemo(() => {
+    if (!gradingState || !("graded" in gradingState)) return [];
+    const gramDefinitions = challenge.gram_definitions_for_lookup as (
+      | GramDefinition
+      | undefined
+    )[];
+    const gramBreakdowns = challenge.gram_breakdowns_for_lookup as (
+      | BreakdownRow[]
+      | null
+      | undefined
+    )[];
+    const partGramIndices = challenge.part_gram_indices as number[][];
+    const entries: {
+      definition: GramDefinition;
+      breakdown: BreakdownRow[] | null | undefined;
+    }[] = [];
+    const seen = new Set<number>();
+    gradingState.graded.results.forEach((result, partIdx) => {
+      if (result.type !== "AskedToTranscribe") return;
+      result.parts.forEach((p, litIdx) => {
+        const t = p.grade.type;
+        if (t === "Perfect" || t === "CorrectWithTypo") return;
+        const gramIdx = partGramIndices[partIdx]?.[litIdx];
+        if (gramIdx === undefined || seen.has(gramIdx)) return;
+        seen.add(gramIdx);
+        const def = gramDefinitions[gramIdx];
+        if (def)
+          entries.push({ definition: def, breakdown: gramBreakdowns[gramIdx] });
+      });
+    });
+    return entries;
+  }, [gradingState, challenge]);
 
   // Save grade to localStorage when grading completes so it survives navigation
   useEffect(() => {
@@ -686,6 +732,19 @@ export function TranscriptionChallenge({
                         {challenge.native_language}
                       </p>
                     </div>
+
+                    {wrongGramEntries.length > 0 && (
+                      <div className="space-y-2">
+                        {wrongGramEntries.map((entry, i) => (
+                          <GramDefinitionDisplay
+                            key={i}
+                            definition={entry.definition}
+                            breakdown={entry.breakdown}
+                            targetLanguage={targetLanguage}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </>
                 )}
               </div>

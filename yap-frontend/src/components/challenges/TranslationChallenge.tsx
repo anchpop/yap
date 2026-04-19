@@ -63,6 +63,10 @@ import { useBackground } from "../BackgroundShader";
 import { cn, languageToIso6391 } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { TargetLanguageText } from "../TargetLanguageText";
+import {
+  MorphemeBreakdown,
+  type BreakdownRow,
+} from "../MorphemeBreakdown";
 
 interface SentenceChallengeProps {
   sentence: TranslateComprehensibleSentence;
@@ -498,72 +502,93 @@ export function ProperNounDefinitions({
   );
 }
 
-function GramDefinitionDisplay({
+// Exported (not a hook) — see also GramDefinition type at top of file.
+// eslint-disable-next-line react-refresh/only-export-components
+export function GramDefinitionDisplay({
   definition,
+  breakdown,
   targetLanguage,
 }: {
   definition: GramDefinition;
+  breakdown?: BreakdownRow[] | null;
   targetLanguage: Language;
 }) {
-  if ("Dictionary" in definition) {
-    const dict = definition.Dictionary;
-    return (
-      <div className="p-3 border border-card/50 bg-card/30 rounded-md space-y-2">
+  const hasBreakdown = !!breakdown && breakdown.length > 0;
+  const wordText =
+    "Dictionary" in definition
+      ? definition.Dictionary.target_language_word
+      : definition.Phrasebook.target_language_multi_word_term;
+
+  const header = (
+    <div className="flex items-start shrink-0">
+      {hasBreakdown ? (
+        <MorphemeBreakdown
+          breakdown={breakdown!}
+          targetLanguage={targetLanguage}
+          className="text-sm"
+        />
+      ) : (
         <p className="text-sm font-semibold">
           <TargetLanguageText language={targetLanguage}>
-            {dict.target_language_word}
+            {wordText}
           </TargetLanguageText>
-          :
         </p>
-        {dict.definitions.map((def: TargetToNativeWord, i: number) => (
-          <div key={i}>
-            <p className="text-sm">
-              {def.native}
-              {def.note && (
-                <span className="text-xs text-muted-foreground">
-                  {" "}
-                  ({def.note})
-                </span>
+      )}
+      <span className="text-sm font-semibold ml-1">:</span>
+    </div>
+  );
+
+  const body =
+    "Dictionary" in definition ? (
+      <div className="space-y-2 flex-1 min-w-0">
+        {definition.Dictionary.definitions.map(
+          (def: TargetToNativeWord, i: number) => (
+            <div key={i}>
+              <p className="text-sm">
+                {def.native}
+                {def.note && (
+                  <span className="text-xs text-muted-foreground">
+                    {" "}
+                    ({def.note})
+                  </span>
+                )}
+              </p>
+              {def.example_sentence_target_language && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  <p className="italic">
+                    <TargetLanguageText language={targetLanguage}>
+                      "{def.example_sentence_target_language}"
+                    </TargetLanguageText>
+                  </p>
+                  <p>"{def.example_sentence_native_language}"</p>
+                </div>
               )}
-            </p>
-            {def.example_sentence_target_language && (
-              <div className="text-xs text-muted-foreground mt-1">
-                <p className="italic">
-                  <TargetLanguageText language={targetLanguage}>
-                    "{def.example_sentence_target_language}"
-                  </TargetLanguageText>
-                </p>
-                <p>"{def.example_sentence_native_language}"</p>
-              </div>
-            )}
-          </div>
-        ))}
+            </div>
+          ),
+        )}
       </div>
-    );
-  } else {
-    const pb = definition.Phrasebook;
-    return (
-      <div className="p-3 border border-card/50 bg-card/30 rounded-md">
-        <p className="text-sm font-semibold">
-          <TargetLanguageText language={targetLanguage}>
-            {pb.target_language_multi_word_term}
-          </TargetLanguageText>
-          :
-        </p>
-        <p className="text-sm">{pb.meaning}</p>
-        {pb.target_language_example && (
+    ) : (
+      <div className="flex-1 min-w-0">
+        <p className="text-sm">{definition.Phrasebook.meaning}</p>
+        {definition.Phrasebook.target_language_example && (
           <div className="text-xs text-muted-foreground mt-1">
             <p className="italic">
               <TargetLanguageText language={targetLanguage}>
-                "{pb.target_language_example}"
+                "{definition.Phrasebook.target_language_example}"
               </TargetLanguageText>
             </p>
-            <p>"{pb.native_language_example}"</p>
+            <p>"{definition.Phrasebook.native_language_example}"</p>
           </div>
         )}
       </div>
     );
-  }
+
+  return (
+    <div className="p-3 border border-card/50 bg-card/30 rounded-md flex items-start gap-3">
+      {header}
+      {body}
+    </div>
+  );
 }
 
 function ChallengeSentence({
@@ -762,6 +787,11 @@ export function TranslationChallenge({
     | GramDefinition
     | undefined
   )[];
+  const gramBreakdowns = sentence.gram_breakdowns_for_lookup as (
+    | BreakdownRow[]
+    | null
+    | undefined
+  )[];
 
   const handleWordTap = (index: number) => {
     if (!grade) {
@@ -786,14 +816,18 @@ export function TranslationChallenge({
 
   // Definitions to show for tapped gram groups, forgot literals, and forgot phrases
   const tappedDefinitions = useMemo(() => {
-    const defs: GramDefinition[] = [];
+    const entries: {
+      definition: GramDefinition;
+      breakdown: BreakdownRow[] | null | undefined;
+    }[] = [];
     const seen = new Set<number>();
 
     const addGroup = (group: number) => {
       if (seen.has(group)) return;
       seen.add(group);
       const def = gramDefinitions[group];
-      if (def) defs.push(def);
+      if (def)
+        entries.push({ definition: def, breakdown: gramBreakdowns[group] });
     };
 
     for (const group of tappedGramGroups) {
@@ -817,24 +851,35 @@ export function TranslationChallenge({
         | GramDefinition
         | undefined
       )[];
+      const phraseBreakdowns = sentence.phrase_breakdowns as (
+        | BreakdownRow[]
+        | null
+        | undefined
+      )[];
       for (const phrase of grade.graded.phrasesForgot) {
         const phraseIdx = sentence.unique_target_language_phrases.findIndex(
           (p) => gramEq(p, phrase),
         );
         if (phraseIdx !== -1) {
           const def = phraseDefinitions[phraseIdx];
-          if (def) defs.push(def);
+          if (def)
+            entries.push({
+              definition: def,
+              breakdown: phraseBreakdowns[phraseIdx],
+            });
         }
       }
     }
 
-    return defs;
+    return entries;
   }, [
     tappedGramGroups,
     gramDefinitions,
+    gramBreakdowns,
     grade,
     literalGramIndices,
     sentence.phrase_definitions,
+    sentence.phrase_breakdowns,
     sentence.unique_target_language_phrases,
   ]);
 
@@ -1312,10 +1357,11 @@ export function TranslationChallenge({
           </div>
           {tappedDefinitions.length > 0 && (
             <div className="space-y-2">
-              {tappedDefinitions.map((def, i) => (
+              {tappedDefinitions.map((entry, i) => (
                 <GramDefinitionDisplay
                   key={i}
-                  definition={def}
+                  definition={entry.definition}
+                  breakdown={entry.breakdown}
                   targetLanguage={targetLanguage}
                 />
               ))}
