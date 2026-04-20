@@ -381,6 +381,45 @@ Worked examples for {language}:
     })
 }
 
+/// The learner's native-language word for "conjugation". Threaded into the
+/// tag-aware guidance so the gloss is phrased in a term the learner actually
+/// knows, and the model doesn't confuse it with grammar terminology from some
+/// other language.
+fn conjugation_in(native_language: Language) -> &'static str {
+    match native_language {
+        Language::English => "conjugation",
+        Language::French => "conjugaison",
+        Language::Spanish => "conjugación",
+        Language::Italian => "coniugazione",
+        Language::Portuguese => "conjugação",
+        Language::German => "Konjugation",
+        Language::Russian => "спряжение",
+        Language::Korean => "활용",
+        Language::Chinese => "变位",
+        Language::Japanese => "活用",
+        Language::Hindi => "संयुग्मन",
+    }
+}
+
+/// When a morpheme arrives with a grammatical tag, the naive translation of the
+/// Leipzig descriptor into native-language text is usually terrible for
+/// learners ("1st/2nd singular present indicative..."). Tell the model to
+/// re-cast the tag using concrete target-language surface markers (pronouns,
+/// affixes) and learner-friendly terms.
+fn tag_define_guidance(native_language: Language) -> String {
+    let conjugation = conjugation_in(native_language);
+    format!(
+        r#"If the tag marks a {conjugation} or a derivation, please don't output the Leipzig-style tag directly — learners can't parse labels like "1SG;2SG.PRS.IND". Translate it into concrete, learner-friendly terms. Please don't quote the affix itself in the label (e.g. no "-요", "-ed", "-ment") — the learner already sees the affix in the UI, so the label just needs to describe its function. Pronouns like "je/tu" are fine when they make the description clearer. Examples:
+- (french example) "je/tu {conjugation}" rather than "1st/2nd person singular present"
+- "polite ending" rather than "POLITE"
+- "past participle" rather than "PTCP.PST"
+- "adverb marker" rather than "ADV derivation"
+Prefer a terse (but still informative) label over an exhaustive list of every syncretic reading. These labels are for students studying a language, not linguists. If a word can be used for 1st person and 2nd person, that's important, but (for example) if a word can be used for the present tense and also the prophetic future tense, the present tense is the only one that really needs to be mentioned.
+
+Note that you can trust the tags to be accurate. If a tag says the suffix is used for the present tense and the future tense, please trust it, even if that's not universally true. The app will only show your response to the user in cases where the tag applies."#
+    )
+}
+
 async fn define_one(
     course: Course,
     segment: &MorphemeSegment<String>,
@@ -403,10 +442,19 @@ async fn define_one(
         }
         MorphemeCategory::Free => return None,
     };
+    // Only append tag-aware guidance when the segment actually carries a tag.
+    // This splits the system-prompt cache into two variants per language pair
+    // (tagged vs. untagged) but keeps the untagged variant identical to the
+    // pre-existing prompt so its cache entries stay warm.
+    let tag_guidance_block = if segment.tag.is_some() {
+        format!("\n\n{}", tag_define_guidance(native_language))
+    } else {
+        String::new()
+    };
     let system_prompt = format!(
         r#"You are an expert {language} morphologist. You'll be given a {language} morpheme (surface form plus its canonical / lemma hint) and a few example words it appears in. The canonical hint disambiguates the morpheme when multiple underlying morphemes share the same surface.
 
-{category_guidance}
+{category_guidance}{tag_guidance_block}
 
 Write the gloss in {native_language}.
 

@@ -50,12 +50,13 @@ export function MorphemeBreakdown({
             </div>,
             <div
               key={`g-${i}`}
-              className="text-muted-foreground"
+              className="text-muted-foreground max-w-[12rem] line-clamp-3"
               style={{
                 gridRow: glossRow,
                 gridColumn: i + 1,
                 ...fadeStyle,
               }}
+              title={gloss ?? undefined}
             >
               {gloss ?? ""}
             </div>,
@@ -64,12 +65,13 @@ export function MorphemeBreakdown({
             cells.push(
               <div
                 key={`c-${i}`}
-                className="text-muted-foreground italic"
+                className="text-muted-foreground italic max-w-[12rem] line-clamp-3"
                 style={{
                   gridRow: 2,
                   gridColumn: i + 1,
                   ...fadeStyle,
                 }}
+                title={canonical ?? undefined}
               >
                 {canonical != null ? (
                   <TargetLanguageText language={targetLanguage}>
