@@ -14,6 +14,8 @@ interface WorkerMessage {
   height?: number;
   devicePixelRatio?: number;
   multiplier?: number;
+  x?: number;
+  y?: number;
 }
 
 let gl: WebGLRenderingContext | null = null;
@@ -150,35 +152,138 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
     uniform vec2 u_resolution;
     uniform float u_numBands;
     uniform vec3 u_colors[16]; // Pre-calculated colors (max 16 bands)
+    uniform float u_isDark; // 1.0 for waves+glow (dark/oled), 0.0 for metaballs (light)
+    uniform float u_oled; // 1.0 for OLED (pure black base), 0.0 otherwise
+    uniform vec2 u_mouse; // Normalized mouse position (0..1), drives the sun anchor
 
     #define PI 3.14159265359
     #define TAU 6.28318530718
 
-    // === Smooth blob with extended tail ===
+    // === Smooth blob with extended tail (light/oled themes) ===
     float blob(vec2 uv, vec2 center, float radius) {
       float d = distance(uv, center);
       float t = 1.0 - smoothstep(0.0, radius * 2.0, d);
       return t * t;
     }
 
+    // Multi-octave sine ridge: three octaves with decreasing amplitude and
+    // staggered phases so crests don't align into a pure sine.
+    float layerHeight(float x, float baseY, float amp, float freq, float phase) {
+      float h = 0.0;
+      h += 1.00 * sin(x * freq        + phase);
+      h += 0.50 * sin(x * freq * 2.17 + phase * 1.7 + 1.3);
+      h += 0.25 * sin(x * freq * 4.31 + phase * 2.3 + 2.9);
+      h /= (1.00 + 0.50 + 0.25);
+      return baseY + amp * h;
+    }
+
+    // Map a 0..1 point into the same aspect-corrected space used by uvAspect,
+    // so distances are measured on a common coordinate system regardless of
+    // orientation. Keep everything that feeds into lightDist/facing going
+    // through this helper.
+    vec2 toAspect(vec2 p, float aspect) {
+      return aspect > 1.0 ? vec2(p.x * aspect, p.y) : vec2(p.x, p.y / aspect);
+    }
+
     void main() {
       vec2 uv = v_uv;
       float aspect = u_resolution.x / u_resolution.y;
-
-      // Normalize to a consistent coordinate system based on the shorter edge
-      // This ensures blobs appear the same size on both portrait and landscape
-      vec2 uvAspect;
-      if (aspect > 1.0) {
-        // Landscape: scale x to fit
-        uvAspect = vec2(uv.x * aspect, uv.y);
-      } else {
-        // Portrait: scale y to fit
-        uvAspect = vec2(uv.x, uv.y / aspect);
-      }
+      vec2 uvAspect = toAspect(uv, aspect);
 
       float t = u_time;
+      float value = 0.0;
 
-      // Blob definitions
+      if (u_isDark > 0.5) {
+        // ===== Dark theme: layered sine mountains lit from the upper-right =====
+        // u_time accumulates in ms-scale via the render loop's speed factor;
+        // convert to a seconds-ish scale for the per-layer drift.
+        float iTime = t * 0.001;
+
+        vec3 baseCol = mix(vec3(34.0, 21.0, 40.0) / 255.0, vec3(0.0), u_oled);
+        vec3 haloCol = vec3(168.0, 77.0, 74.0) / 255.0;
+        vec3 hotCol  = vec3(248.0, 150.0, 112.0) / 255.0;
+        vec3 lineCol = vec3(228.0, 119.0, 91.0) / 255.0;
+
+        vec2 lightAnchor = toAspect(u_mouse, aspect);
+        float lightDist = distance(uvAspect, lightAnchor);
+        // Tighter falloff for OLED — keeps most of the screen pure black.
+        float haloRadius = mix(1.3, 0.55, u_oled);
+        float coreRadius = mix(0.4, 0.22, u_oled);
+        float lightInfluence = 1.0 - smoothstep(0.0, haloRadius, lightDist);
+        lightInfluence = lightInfluence * lightInfluence;
+
+        float lightCore = 1.0 - smoothstep(0.0, coreRadius, lightDist);
+        lightCore = lightCore * lightCore * lightCore;
+
+        vec3 col = baseCol * 0.35;
+
+        float baseY[5];  float amp[5];  float freq[5];  float phase[5];
+        float speed[5]; float rimDepth[5]; float rimBoost[5];
+
+        speed[0] =  0.07; speed[1] = -0.11; speed[2] =  0.13; speed[3] = -0.05; speed[4] =  0.17;
+
+        // Layer 0 is the "mega-mountain" that sweeps across the upper half.
+        baseY[0] = 0.75; amp[0] = 0.25; freq[0] = 1.4; phase[0] = 0.3 + iTime * speed[0];
+        baseY[1] = 0.42; amp[1] = 0.09; freq[1] = 4.0; phase[1] = 1.7 + iTime * speed[1];
+        baseY[2] = 0.34; amp[2] = 0.07; freq[2] = 5.5; phase[2] = 2.9 + iTime * speed[2];
+        baseY[3] = 0.26; amp[3] = 0.10; freq[3] = 3.5; phase[3] = 0.9 + iTime * speed[3];
+        baseY[4] = 0.18; amp[4] = 0.06; freq[4] = 6.0; phase[4] = 4.2 + iTime * speed[4];
+
+        rimDepth[0] = 0.20; rimDepth[1] = 0.09; rimDepth[2] = 0.08; rimDepth[3] = 0.10; rimDepth[4] = 0.07;
+        rimBoost[0] = 0.30; rimBoost[1] = 0.12; rimBoost[2] = 0.14; rimBoost[3] = 0.16; rimBoost[4] = 0.18;
+
+        for (int i = 0; i < 5; i++) {
+          float h = layerHeight(uv.x, baseY[i], amp[i], freq[i], phase[i]);
+
+          // Outward normal at this x (first-octave approximation of dh/dx).
+          float dhdx = amp[i] * freq[i] * cos(uv.x * freq[i] + phase[i]);
+          vec2 normal = normalize(vec2(-dhdx, 1.0));
+
+          // Direction from the ridge point toward the light (aspect-corrected).
+          vec2 ridgePoint = toAspect(vec2(uv.x, h), aspect);
+          vec2 toLight = normalize(lightAnchor - ridgePoint);
+          float facing = max(dot(normal, toLight), 0.0);
+
+          // Halo: brighten pixels just above the ridge, modulated by light and facing.
+          if (uv.y >= h && uv.y < h + rimDepth[i]) {
+            float ht = 1.0 - clamp((uv.y - h) / rimDepth[i], 0.0, 1.0);
+            ht = ht * ht * ht * ht;
+            float haloFactor = 0.05 + 2.0 * lightInfluence * facing;
+            vec3 localHaloCol = mix(haloCol, hotCol, lightCore);
+            col += localHaloCol * (rimBoost[i] * ht * haloFactor);
+          }
+
+          // Body: fill below the ridge with a depth-weighted warm lift.
+          if (uv.y < h) {
+            float depth = float(i) / 4.0;
+            float depthWeight = 0.3 + 0.9 * depth;
+            float gradDepth = clamp((h - uv.y) / 0.25, 0.0, 1.0);
+            float gradMul = 0.7 + 0.3 * gradDepth;
+
+            vec3 body = baseCol * gradMul;
+            // Warm body-lift is purple-theme only — in OLED the body stays black
+            // so only the ridge halos read as the "sun".
+            float bodyLift = 1.0 - u_oled;
+            body += haloCol * lightInfluence * 0.35 * depthWeight * bodyLift;
+            body += hotCol * lightCore * 0.2 * depthWeight * bodyLift;
+            col = body;
+          }
+
+          // Crisp ridge line — only on slopes facing the light.
+          float lineFalloff = lightInfluence * facing;
+          lineFalloff = lineFalloff * lineFalloff;
+          float lineWidth = (0.3 + 1.2 * lineFalloff) / u_resolution.y;
+          float lineSoftEdge = 1.5 / u_resolution.y;
+          float dist = abs(uv.y - h);
+          float lineMask = 1.0 - smoothstep(lineWidth, lineWidth + lineSoftEdge, dist);
+          col = mix(col, lineCol, lineMask * lineFalloff);
+        }
+
+        gl_FragColor = vec4(col, 1.0);
+        return;
+      }
+
+      // ===== Light / OLED themes: original metaballs =====
       const int NUM_BLOBS = 6;
       vec2 basePos[6];
       float radius[6];
@@ -192,44 +297,29 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
       basePos[4] = vec2(0.85, 0.8);  radius[4] = 0.32; phase[4] = vec2(1.5, 0.3);   weight[4] = 0.9;
       basePos[5] = vec2(0.12, 0.15); radius[5] = 0.28; phase[5] = vec2(2.2, 1.8);   weight[5] = 0.85;
 
-      // Accumulate grayscale value from all blobs
-      float value = 0.0;
-
       for (int i = 0; i < NUM_BLOBS; i++) {
         vec2 offset = vec2(
           sin(t * 0.0003 + phase[i].x) * 0.14,
           cos(t * 0.00025 + phase[i].y) * 0.14
         );
 
-        vec2 pos = basePos[i] + offset;
-
-        // Apply same aspect ratio correction as uvAspect
-        if (aspect > 1.0) {
-          pos.x *= aspect;
-        } else {
-          pos.y /= aspect;
-        }
+        vec2 pos = toAspect(basePos[i] + offset, aspect);
 
         float influence = blob(uvAspect, pos, radius[i]);
         value += influence * weight[i];
       }
 
-      // Add slow-moving background variation
+      // Slow-moving background variation
       float bgWave = sin(uv.x * 2.5 + t * 0.00008) * 0.5 + 0.5;
       bgWave *= sin(uv.y * 2.0 + t * 0.00006) * 0.5 + 0.5;
       float baseVariation = bgWave * 0.4;
 
-      // Blend: use base variation in empty areas, blob value where blobs are
       value = max(value, baseVariation * (1.0 - value * 0.8));
       value = clamp(value, 0.0, 0.99);
 
-      // === QUANTIZE GRAYSCALE ===
       float band = floor(value * u_numBands) / u_numBands;
-
       int bandIndex = int(band * u_numBands);
 
-      // Use pre-calculated color from uniform array
-      // WebGL 1.0 doesn't support dynamic indexing, so we use conditionals
       vec3 color = u_colors[0];
       if (bandIndex == 1) color = u_colors[1];
       else if (bandIndex == 2) color = u_colors[2];
@@ -238,9 +328,8 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
       else if (bandIndex == 5) color = u_colors[5];
       else if (bandIndex == 6) color = u_colors[6];
       else if (bandIndex == 7) color = u_colors[7];
-      else if (bandIndex >= 8) color = u_colors[7]; // Clamp to last color
+      else if (bandIndex >= 8) color = u_colors[7];
 
-      // Subtle vignette
       float vignette = 1.0 - smoothstep(0.5, 1.5, length(v_uv - 0.5) * 1.3);
       color *= 0.94 + 0.06 * vignette;
 
@@ -272,6 +361,9 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
   const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
   const numBandsLocation = gl.getUniformLocation(program, "u_numBands");
   const colorsLocation = gl.getUniformLocation(program, "u_colors");
+  const isDarkLocation = gl.getUniformLocation(program, "u_isDark");
+  const oledLocation = gl.getUniformLocation(program, "u_oled");
+  const mouseLocation = gl.getUniformLocation(program, "u_mouse");
 
   let elapsedTime = 0;
   let lastFrameTime = performance.now();
@@ -287,6 +379,13 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
   let currentColors = [...targetColors]; // Start with target colors
   let numBands = initialColorData.numBands;
 
+  // Mouse-driven sun anchor (normalized 0..1, y is up). Default matches the
+  // fallback upper-right spot, so touch / no-mouse users get the static look.
+  const DEFAULT_MOUSE = [0.95, 0.4];
+  let targetMouse: number[] = [...DEFAULT_MOUSE];
+  let currentMouse: number[] = [...DEFAULT_MOUSE];
+  const MOUSE_THRESHOLD = 0.0005;
+
   function render() {
     if (!canvas || !gl) return;
 
@@ -300,6 +399,9 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
     // Interpolate colors towards target
     currentColors = zeno(currentColors, targetColors, deltaTime / 1000, 18.0);
 
+    // Interpolate the sun toward the mouse cursor (or fall back to default)
+    currentMouse = zeno(currentMouse, targetMouse, deltaTime / 1000, 20.0);
+
     elapsedTime += deltaTime * speed;
 
     gl.useProgram(program);
@@ -312,10 +414,16 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
     gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
     gl.uniform1f(numBandsLocation, numBands);
     gl.uniform3fv(colorsLocation, currentColors);
+    gl.uniform1f(
+      isDarkLocation,
+      currentTheme === "dark" || currentTheme === "oled" ? 1.0 : 0.0,
+    );
+    gl.uniform1f(oledLocation, currentTheme === "oled" ? 1.0 : 0.0);
+    gl.uniform2f(mouseLocation, currentMouse[0], currentMouse[1]);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-    // Check if animation has fully settled (speed near zero and colors converged)
+    // Check if animation has fully settled (speed, colors, and mouse all converged)
     if (speed < SPEED_THRESHOLD) {
       let colorsSettled = true;
       for (let i = 0; i < currentColors.length; i++) {
@@ -324,7 +432,10 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
           break;
         }
       }
-      if (colorsSettled) {
+      const mouseSettled =
+        Math.abs(currentMouse[0] - targetMouse[0]) < MOUSE_THRESHOLD &&
+        Math.abs(currentMouse[1] - targetMouse[1]) < MOUSE_THRESHOLD;
+      if (colorsSettled && mouseSettled) {
         speed = 0;
         isAnimating = false;
         animationFrameId = null;
@@ -375,6 +486,20 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
   ).bumpSpeed = (multiplier = 3.0) => {
     speed = 0.03 * multiplier;
     ensureAnimating();
+  };
+
+  // Expose setMouse for main-thread cursor updates. Always cache the latest
+  // position so a theme switch into dark/oled picks it up immediately, but
+  // only wake the render loop when the active shader actually reads u_mouse.
+  (
+    self as typeof self & {
+      setMouse?: (x: number, y: number) => void;
+    }
+  ).setMouse = (x: number, y: number) => {
+    targetMouse = [x, y];
+    if (currentTheme === "dark" || currentTheme === "oled") {
+      ensureAnimating();
+    }
   };
 
   render();
@@ -451,6 +576,18 @@ self.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
       ).bumpSpeed;
       if (bumpSpeed) {
         bumpSpeed(event.data.multiplier);
+      }
+      break;
+    }
+
+    case "mouse": {
+      const setMouse = (
+        self as typeof self & {
+          setMouse?: (x: number, y: number) => void;
+        }
+      ).setMouse;
+      if (setMouse && event.data.x !== undefined && event.data.y !== undefined) {
+        setMouse(event.data.x, event.data.y);
       }
       break;
     }

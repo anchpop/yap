@@ -150,11 +150,35 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
       });
     };
 
+    // Drive the "sun" anchor from the cursor; y is flipped to match the
+    // shader's bottom-up UV. No-mouse / touch devices simply never fire this
+    // and the shader stays at its default anchor.
+    const handlePointerMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      worker.postMessage({
+        type: "mouse",
+        x: e.clientX / window.innerWidth,
+        y: 1 - e.clientY / window.innerHeight,
+      });
+    };
+
+    // Mouse left the window — ease back to the default anchor.
+    const handlePointerLeave = () => {
+      worker.postMessage({ type: "mouse", x: 0.95, y: 0.4 });
+    };
+
     window.addEventListener("resize", handleResize);
+    window.addEventListener("pointermove", handlePointerMove);
+    document.documentElement.addEventListener("pointerleave", handlePointerLeave);
 
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener(
+        "pointerleave",
+        handlePointerLeave,
+      );
       worker.postMessage({ type: "stop" });
       worker.terminate();
       workerRef.current = null;
