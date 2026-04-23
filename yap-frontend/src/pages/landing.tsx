@@ -6,9 +6,18 @@ import {
 } from "../../../yap-frontend-rs/pkg";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button.tsx";
+import { Card } from "@/components/ui/card.tsx";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
 import { TopPageLayout } from "@/components/TopPageLayout";
-import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  ArrowRight,
+  Volume2,
+  MoreVertical,
+  Moon,
+  Heart,
+} from "lucide-react";
+import type { ReactNode } from "react";
 import type { AppContextType } from "@/App";
 import { useDeckSelection } from "@/App";
 
@@ -188,6 +197,94 @@ function SentenceShowcase({
   );
 }
 
+function FeatureCard({
+  icon,
+  title,
+  description,
+  className,
+  titleClassName,
+}: {
+  icon?: ReactNode;
+  title: string;
+  description: string;
+  className?: string;
+  titleClassName?: string;
+}) {
+  return (
+    <Card
+      variant="light"
+      className={cn("flex-row items-start gap-3 p-4 text-left", className)}
+    >
+      {icon && (
+        <div className="shrink-0 rounded-lg bg-accent-foreground/10 p-2 text-accent-foreground">
+          {icon}
+        </div>
+      )}
+      <div>
+        <h3 className={cn("font-semibold text-base", titleClassName)}>
+          {title}
+        </h3>
+        <p className="text-sm mt-0.5 leading-snug">{description}</p>
+      </div>
+    </Card>
+  );
+}
+
+function MockFlashcard() {
+  const wordClass = "border-b-2 border-dotted border-pink-400 pb-0.5";
+  return (
+    <Card className="w-fit max-w-xl text-left gap-5 p-5 rotate-[5deg]">
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl leading-none" aria-hidden>
+            🇫🇷
+          </span>
+          <span className="font-bold text-lg">Yap</span>
+        </div>
+        <div className="flex items-center gap-3 text-base text-muted-foreground">
+          <span className="rounded-md border border-border/60 px-2 py-0.5 text-sm font-medium">
+            25
+          </span>
+          <span>Andre</span>
+          <Moon className="h-5 w-5" />
+        </div>
+      </div>
+
+      <Card className="gap-4 p-6">
+        <div
+          className="flex items-center gap-3"
+          style={{ anchorName: "--sentence" } as React.CSSProperties}
+        >
+          <Volume2 className="h-6 w-6 text-muted-foreground shrink-0" />
+          <p
+            lang="fr"
+            className="text-2xl md:text-3xl font-semibold tracking-tight flex-1 flex flex-wrap gap-x-2 gap-y-1"
+          >
+            <span className={wordClass}>Il</span>
+            <span className={wordClass}>m'en</span>
+            <span className={wordClass}>faut</span>
+            <span
+              className="inline-flex gap-x-2 text-yellow-400"
+              style={{ anchorName: "--phrase" } as React.CSSProperties}
+            >
+              <span className={wordClass}>un</span>
+              <span className={wordClass}>autre.</span>
+            </span>
+          </p>
+          <MoreVertical className="h-5 w-5 text-muted-foreground shrink-0" />
+        </div>
+        <p className="text-muted-foreground text-lg">Translation...</p>
+      </Card>
+      <p
+        className="text-sm font-medium text-sky-600 dark:text-sky-100 px-2 text-center"
+        style={{ anchorName: "--review" } as React.CSSProperties}
+      >
+        Reviewing 6 words
+      </p>
+    </Card>
+  );
+}
+
 export function LandingPage() {
   const { userInfo } = useOutletContext<AppContextType>();
   const deckSelection = useDeckSelection();
@@ -216,9 +313,10 @@ export function LandingPage() {
       userInfo={userInfo}
       headerProps={{ showSignupNag: false, title: "Yap.Town" }}
     >
-      <div className="relative z-10 flex items-center justify-center">
-        <div className="w-full max-w-2xl flex flex-col items-center text-center">
-          <div className="flex flex-col items-center justify-center gap-8 h-[calc(100dvh-6rem)]">
+      <div className="relative z-10 flex flex-col items-center">
+        <div className="w-screen flex flex-col items-center text-center min-h-[calc(100dvh-6rem)] py-8 px-4">
+          <div className="flex-1 flex flex-col items-center justify-center gap-8 w-full">
+          <div className="flex flex-col items-center gap-6 w-full max-w-3xl">
             <h1
               className="text-5xl md:text-6xl font-black tracking-tight"
               style={{ textWrap: "balance" }}
@@ -264,6 +362,69 @@ export function LandingPage() {
             </div>
           </div>
 
+          <div className="flex flex-col items-center gap-4 relative w-full lg:gap-0 lg:justify-center lg:pb-40">
+            <MockFlashcard />
+
+            <div
+              className="w-full max-w-sm lg:absolute lg:w-64 lg:max-w-none"
+              style={
+                {
+                  positionAnchor: "--sentence",
+                  positionArea: "left",
+                } as React.CSSProperties
+              }
+            >
+              <FeatureCard
+                title="Real sentences"
+                description="Learn words in context, from real movies and TV."
+                className="-rotate-[3deg]"
+                titleClassName="text-pink-400"
+              />
+            </div>
+
+            <div
+              className="w-full max-w-sm lg:absolute lg:w-64 lg:max-w-none"
+              style={
+                {
+                  positionAnchor: "--phrase",
+                  positionArea: "right",
+                } as React.CSSProperties
+              }
+            >
+              <FeatureCard
+                title="Phrase-aware"
+                description="Cards target precise meanings, not just words."
+                className="-rotate-[3deg]"
+                titleClassName="text-yellow-400"
+              />
+            </div>
+
+            <div
+              className="w-full max-w-sm lg:absolute lg:w-64 lg:max-w-none"
+              style={
+                {
+                  positionAnchor: "--review",
+                  positionArea: "bottom",
+                } as React.CSSProperties
+              }
+            >
+              <FeatureCard
+                title="Smarter review"
+                description="SRS ensures you never forget what you learned."
+                className="-rotate-[3deg]"
+                titleClassName="text-sky-600 dark:text-sky-100"
+              />
+            </div>
+          </div>
+          </div>
+
+          <p className="text-base flex items-center gap-2 mt-8">
+            <Heart className="h-4 w-4 fill-accent-foreground text-accent-foreground" />
+            Made for serious language learners who want more than flashcards.
+          </p>
+        </div>
+
+        <div className="w-full max-w-2xl flex flex-col items-center text-center">
           {showcaseData.length > 0 && (
             <SentenceShowcase showcaseData={showcaseData} />
           )}

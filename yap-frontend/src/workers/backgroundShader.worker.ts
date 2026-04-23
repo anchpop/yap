@@ -391,9 +391,9 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
   let currentColors = [...targetColors]; // Start with target colors
   let numBands = initialColorData.numBands;
 
-  // Mouse-driven sun anchor (normalized 0..1, y is up). Default matches the
-  // fallback upper-right spot, so touch / no-mouse users get the static look.
-  const DEFAULT_MOUSE = [0.95, 0.4];
+  // Mouse-driven sun anchor (normalized 0..1, y is up). Default is horizontally
+  // centered so touch / no-mouse users see the sun behind the landing composition.
+  const DEFAULT_MOUSE = [0.5, 0.4];
   let targetMouse: number[] = [...DEFAULT_MOUSE];
   let currentMouse: number[] = [...DEFAULT_MOUSE];
   const MOUSE_THRESHOLD = 0.0005;

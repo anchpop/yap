@@ -178,7 +178,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
 
     // Mouse left the window — ease back to the default anchor.
     const handlePointerLeave = () => {
-      worker.postMessage({ type: "mouse", x: 0.95, y: 0.4 });
+      worker.postMessage({ type: "mouse", x: 0.5, y: 0.4 });
     };
 
     window.addEventListener("resize", handleResize);
