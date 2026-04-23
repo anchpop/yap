@@ -166,6 +166,13 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
       return t * t;
     }
 
+    // A shared slow wave that all layers ride on, creating coherent large-scale
+    // swells. Two sines at different low frequencies, moving in opposite directions.
+    float sharedWave(float x, float t) {
+      return 0.07 * sin(x * 8.8 + t * 0.12)
+           + 0.05 * sin(x * 4.8 - t * 0.08);
+    }
+
     // Multi-octave sine ridge: three octaves with decreasing amplitude and
     // staggered phases so crests don't align into a pure sine.
     float layerHeight(float x, float baseY, float amp, float freq, float phase) {
@@ -233,10 +240,15 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
         rimBoost[0] = 0.30; rimBoost[1] = 0.12; rimBoost[2] = 0.14; rimBoost[3] = 0.16; rimBoost[4] = 0.18;
 
         for (int i = 0; i < 5; i++) {
-          float h = layerHeight(uv.x, baseY[i], amp[i], freq[i], phase[i]);
+          float h = layerHeight(uv.x, baseY[i], amp[i], freq[i], phase[i]) + sharedWave(uv.x, iTime);
 
-          // Outward normal at this x (first-octave approximation of dh/dx).
-          float dhdx = amp[i] * freq[i] * cos(uv.x * freq[i] + phase[i]);
+          // Numerical slope of the full ridge (all fBm octaves + shared wave).
+          // Cheaper to write than to differentiate by hand and automatically
+          // correct if layerHeight or sharedWave changes.
+          float eps = 0.001;
+          float hLeft  = layerHeight(uv.x - eps, baseY[i], amp[i], freq[i], phase[i]) + sharedWave(uv.x - eps, iTime);
+          float hRight = layerHeight(uv.x + eps, baseY[i], amp[i], freq[i], phase[i]) + sharedWave(uv.x + eps, iTime);
+          float dhdx = (hRight - hLeft) / (2.0 * eps);
           vec2 normal = normalize(vec2(-dhdx, 1.0));
 
           // Direction from the ridge point toward the light (aspect-corrected).

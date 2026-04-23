@@ -37,6 +37,14 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   const location = useLocation();
   const blurBackground = location.pathname === "/select-language";
 
+  // Superhot mode: on the landing page, mouse motion advances shader time.
+  // Tracked via a ref so the pointermove listener can see the latest value
+  // without the worker-setup effect being re-run on every navigation.
+  const superhotRef = useRef(false);
+  useEffect(() => {
+    superhotRef.current = location.pathname === "/";
+  }, [location.pathname]);
+
   // Determine actual theme (resolve "system") - memoized to prevent recalculation
   const actualTheme = useMemo(
     () =>
@@ -152,7 +160,8 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
 
     // Drive the "sun" anchor from the cursor; y is flipped to match the
     // shader's bottom-up UV. No-mouse / touch devices simply never fire this
-    // and the shader stays at its default anchor.
+    // and the shader stays at its default anchor. In superhot mode (landing
+    // page), each move also nudges shader time forward via a bump.
     const handlePointerMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
       worker.postMessage({
@@ -160,6 +169,11 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
         x: e.clientX / window.innerWidth,
         y: 1 - e.clientY / window.innerHeight,
       });
+      if (superhotRef.current) {
+        // multiplier ≈ 33 makes iTime advance at roughly real-time during
+        // motion, which is the scale the wave drift constants assume.
+        worker.postMessage({ type: "bump", multiplier: 35.0 });
+      }
     };
 
     // Mouse left the window — ease back to the default anchor.
