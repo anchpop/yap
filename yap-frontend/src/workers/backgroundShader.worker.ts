@@ -192,6 +192,39 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
       return aspect > 1.0 ? vec2(p.x * aspect, p.y) : vec2(p.x, p.y / aspect);
     }
 
+    // Deterministic pseudo-random in [0, 1) from a 2D coordinate.
+    float hash21(vec2 p) {
+      p = fract(p * vec2(443.897, 441.423));
+      p += dot(p, p + 19.19);
+      return fract(p.x * p.y);
+    }
+
+    // Smooth value noise: bilinear interpolation of hash values on a grid,
+    // with smoothstep-eased interpolation weights.
+    float valueNoise(vec2 p) {
+      vec2 i = floor(p);
+      vec2 f = fract(p);
+      f = f * f * (3.0 - 2.0 * f);
+      float a = hash21(i);
+      float b = hash21(i + vec2(1.0, 0.0));
+      float c = hash21(i + vec2(0.0, 1.0));
+      float d = hash21(i + vec2(1.0, 1.0));
+      return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+    }
+
+    // Fractal Brownian motion: 4 octaves of value noise at halving amplitude
+    // and doubling frequency — smoothly varying low-frequency noise.
+    float fbm(vec2 p) {
+      float v = 0.0;
+      float a = 0.5;
+      for (int i = 0; i < 4; i++) {
+        v += a * valueNoise(p);
+        p *= 2.0;
+        a *= 0.5;
+      }
+      return v;
+    }
+
     void main() {
       vec2 uv = v_uv;
       float aspect = u_resolution.x / u_resolution.y;
@@ -284,12 +317,19 @@ function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
           // Crisp ridge line — only on slopes facing the light.
           float lineFalloff = lightInfluence * facing;
           lineFalloff = lineFalloff * lineFalloff;
-          float lineWidth = (0.3 + 1.2 * lineFalloff) / u_resolution.y;
-          float lineSoftEdge = 1.5 / u_resolution.y;
+          float lineWidth = (0.1 + 0.6 * lineFalloff) / u_resolution.y;
+          float lineSoftEdge = 6.0 / u_resolution.y;
           float dist = abs(uv.y - h);
           float lineMask = 1.0 - smoothstep(lineWidth, lineWidth + lineSoftEdge, dist);
-          col = mix(col, lineCol, lineMask * lineFalloff);
+          col = mix(col, lineCol, lineMask * lineFalloff * 0.8);
         }
+
+        // Atmospheric haze: low-frequency fBm noise that slightly lifts darks
+        // and varies smoothly across the image. Cool purple in unlit areas,
+        // warm red near the light (approximates scattering through mist).
+        float haze = fbm(uv * 3.0 + vec2(iTime * 0.02, 0.0));
+        vec3 hazeTint = mix(baseCol * 0.6, haloCol * 0.5, lightInfluence * 0.6);
+        col += hazeTint * haze * 0.15;
 
         gl_FragColor = vec4(col, 1.0);
         return;

@@ -33,7 +33,7 @@ interface BackgroundShaderProps {
 function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const workerRef = useRef<Worker | null>(null);
-  const { theme, animatedBackground } = useTheme();
+  const { theme, animatedBackground, mouseFollow } = useTheme();
   const location = useLocation();
   const blurBackground = location.pathname === "/select-language";
 
@@ -44,6 +44,17 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   useEffect(() => {
     superhotRef.current = location.pathname === "/";
   }, [location.pathname]);
+
+  // Mouse-follow toggle (off by default on dark themes). Tracked via a ref so
+  // the pointermove listener sees the latest value without rebuilding the
+  // worker. When toggled off we also ease the sun back to its default anchor.
+  const mouseFollowRef = useRef(mouseFollow);
+  useEffect(() => {
+    mouseFollowRef.current = mouseFollow;
+    if (!mouseFollow && workerRef.current) {
+      workerRef.current.postMessage({ type: "mouse", x: 0.5, y: 0.4 });
+    }
+  }, [mouseFollow]);
 
   // Determine actual theme (resolve "system") - memoized to prevent recalculation
   const actualTheme = useMemo(
@@ -164,11 +175,13 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     // page), each move also nudges shader time forward via a bump.
     const handlePointerMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
-      worker.postMessage({
-        type: "mouse",
-        x: e.clientX / window.innerWidth,
-        y: 1 - e.clientY / window.innerHeight,
-      });
+      if (mouseFollowRef.current) {
+        worker.postMessage({
+          type: "mouse",
+          x: e.clientX / window.innerWidth,
+          y: 1 - e.clientY / window.innerHeight,
+        });
+      }
       if (superhotRef.current) {
         // multiplier ≈ 33 makes iTime advance at roughly real-time during
         // motion, which is the scale the wave drift constants assume.
@@ -228,7 +241,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
           <>
             <div ref={containerRef} className="contents" />
             <div
-              className="fixed inset-0 w-full h-full opacity-[0.30]"
+              className="fixed inset-0 w-full h-full opacity-[0.7]"
               style={{
                 pointerEvents: "none",
                 backgroundImage:

@@ -11,8 +11,15 @@ import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 export function ModeToggle() {
-  const { theme, setTheme, animatedBackground, toggleAnimatedBackground } =
-    useTheme();
+  const {
+    theme,
+    setTheme,
+    animatedBackground,
+    toggleAnimatedBackground,
+    mouseFollow,
+    toggleMouseFollow,
+  } = useTheme();
+  const isDarkTheme = theme === "dark" || theme === "oled";
 
   const themes = [
     { value: "light" as const, icon: Sun, label: "Light" },
@@ -73,6 +80,20 @@ export function ModeToggle() {
           />
           <span>Animated background</span>
         </button>
+        {isDarkTheme && animatedBackground && (
+          <button
+            onClick={toggleMouseFollow}
+            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
+          >
+            <Check
+              className={cn(
+                "h-4 w-4",
+                mouseFollow ? "opacity-100" : "opacity-0",
+              )}
+            />
+            <span>Mouse follow</span>
+          </button>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

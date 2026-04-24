@@ -8,6 +8,8 @@ type ThemeProviderProps = {
   storageKey?: string;
   animatedBackgroundStorageKey?: string;
   defaultAnimatedBackground?: boolean;
+  mouseFollowStorageKey?: string;
+  defaultMouseFollow?: boolean;
 };
 
 type ThemeProviderState = {
@@ -16,6 +18,9 @@ type ThemeProviderState = {
   animatedBackground: boolean;
   setAnimatedBackground: (enabled: boolean) => void;
   toggleAnimatedBackground: () => void;
+  mouseFollow: boolean;
+  setMouseFollow: (enabled: boolean) => void;
+  toggleMouseFollow: () => void;
 };
 
 const initialState: ThemeProviderState = {
@@ -24,6 +29,9 @@ const initialState: ThemeProviderState = {
   animatedBackground: true,
   setAnimatedBackground: () => null,
   toggleAnimatedBackground: () => null,
+  mouseFollow: false,
+  setMouseFollow: () => null,
+  toggleMouseFollow: () => null,
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -34,6 +42,8 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   animatedBackgroundStorageKey = "yap-animated-background",
   defaultAnimatedBackground = true,
+  mouseFollowStorageKey = "yap-mouse-follow",
+  defaultMouseFollow = false,
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -54,6 +64,15 @@ export function ThemeProvider({
       }
     },
   );
+
+  const [mouseFollow, setMouseFollowState] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem(mouseFollowStorageKey);
+      return stored === null ? defaultMouseFollow : stored === "true";
+    } catch {
+      return defaultMouseFollow;
+    }
+  });
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -88,6 +107,19 @@ export function ThemeProvider({
     setAnimatedBackground(!animatedBackground);
   };
 
+  const setMouseFollow = (enabled: boolean) => {
+    try {
+      localStorage.setItem(mouseFollowStorageKey, String(enabled));
+    } catch {
+      // localStorage unavailable (e.g. private browsing)
+    }
+    setMouseFollowState(enabled);
+  };
+
+  const toggleMouseFollow = () => {
+    setMouseFollow(!mouseFollow);
+  };
+
   const value = {
     theme,
     setTheme: (theme: Theme) => {
@@ -101,6 +133,9 @@ export function ThemeProvider({
     animatedBackground,
     setAnimatedBackground,
     toggleAnimatedBackground,
+    mouseFollow,
+    setMouseFollow,
+    toggleMouseFollow,
   };
 
   return (

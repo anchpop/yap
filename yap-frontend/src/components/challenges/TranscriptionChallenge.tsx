@@ -721,12 +721,12 @@ export function TranscriptionChallenge({
                         setIsTranslationRevealed(!isTranslationRevealed)
                       }
                     >
-                      <p className="text-sm font-medium mb-1 text-muted-foreground">
+                      <p className="text-sm font-medium mb-1">
                         English translation (click to reveal):
                       </p>
                       <p
                         className={`text-lg font-medium transition-all duration-100 ${
-                          isTranslationRevealed ? "" : "blur-md"
+                          isTranslationRevealed ? "" : "blur-sm"
                         }`}
                       >
                         {challenge.native_language}

@@ -547,7 +547,7 @@ export function GramDefinitionDisplay({
               <p className="text-sm">
                 {def.native}
                 {def.note && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-go as text-muted-foreground">
                     {" "}
                     ({def.note})
                   </span>
@@ -584,7 +584,7 @@ export function GramDefinitionDisplay({
     );
 
   return (
-    <div className="p-3 border border-card/50 bg-card/30 rounded-md flex items-start gap-3">
+    <div className="p-3 px-5 flex items-start gap-3">
       {header}
       {body}
     </div>
