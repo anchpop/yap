@@ -33,29 +33,28 @@ fn extract_heteronym(
 }
 
 impl Context {
-    /// Convert PlacementTest results into regression points
-    /// Known words get y=5.0, unknown words get y=0.0
+    /// Convert PlacementTest results into regression points.
+    /// Known words get y=1.0, unknown words get y=0.0, matching the [0, 1]
+    /// range produced by card reviews (see `CardData::pre_existing_knowledge`).
     pub(crate) fn get_placement_test_points(
         &self,
         placement_test: &PlacementTest,
     ) -> Vec<Point<f32, UnitWeight>> {
-        // Each placement test answer gets 3 points (spaced slightly apart)
+        // Each placement test answer gets several points (spaced slightly apart)
         // to give them more weight relative to individual card reviews.
         const POINTS_PER_ANSWER: usize = 5;
 
         let mut points = Vec::new();
 
-        // Add points for known words (y = 5.0)
         for word_str in &placement_test.known_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
                 for i in 0..POINTS_PER_ANSWER {
                     let offset = (i as f32 - (POINTS_PER_ANSWER as f32 - 1.0) / 2.0) * 0.01;
-                    points.push(Point::new_with_weight(freq.ease + offset, 5.0, UnitWeight));
+                    points.push(Point::new_with_weight(freq.ease + offset, 1.0, UnitWeight));
                 }
             }
         }
 
-        // Add points for unknown words (y = 0.0)
         for word_str in &placement_test.unknown_words {
             if let Some((_heteronym, freq)) = self.lookup_word(word_str) {
                 for i in 0..POINTS_PER_ANSWER {
