@@ -233,7 +233,7 @@ async fn text_to_speech(
     // Select voice based on language
     let voice_id = match request.language {
         Language::French => "ohItIVrXTBI80RrUECOD", // Existing French voice
-        Language::Spanish => "zl1Ut8dvwcVSuQSB9XkG", // Ninoska - Spanish voice
+        Language::Spanish => "8mBRP99B2Ng2QwsJMFQl", // Mexican Spanish voice
         Language::English => "ohItIVrXTBI80RrUECOD", // Default to French voice for now
         Language::Korean => "nbrxrAz3eYm9NgojrmFK", // Korean
         Language::German => "IWm8DnJ4NGjFI7QAM5lM", // Stephan - German voice
@@ -288,7 +288,7 @@ async fn google_text_to_speech(
     // Select voice and language code based on language
     let (language_code, voice_name) = match request.language {
         Language::French => ("fr-FR", "fr-FR-Chirp3-HD-Achernar"),
-        Language::Spanish => ("es-ES", "es-ES-Chirp3-HD-Achernar"),
+        Language::Spanish => ("es-US", "es-US-Chirp3-HD-Achernar"),
         Language::English => ("en-US", "en-US-Chirp3-HD-Achernar"),
         Language::Korean => ("ko-KR", "ko-KR-Chirp3-HD-Achernar"),
         Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar"),
