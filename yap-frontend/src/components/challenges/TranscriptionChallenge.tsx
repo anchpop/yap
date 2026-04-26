@@ -671,6 +671,7 @@ export function TranscriptionChallenge({
                       encouragement={gradingState.graded.encouragement}
                       explanation={gradingState.graded.explanation}
                       perfect={isAllCorrect ?? undefined}
+                      targetLanguage={targetLanguage}
                     />
 
                     {Array.isArray(gradingState.graded.compare) &&

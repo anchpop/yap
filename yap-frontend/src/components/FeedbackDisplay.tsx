@@ -1,16 +1,35 @@
-import Markdown from "react-markdown";
+import { useMemo } from "react";
+import Markdown, { type Components } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import type { Language } from "../../../yap-frontend-rs/pkg";
+import { languageToIso6391 } from "@/lib/utils";
 
 interface FeedbackDisplayProps {
   encouragement?: string;
   explanation?: string;
   perfect?: boolean;
+  targetLanguage: Language;
 }
 
 export function FeedbackDisplay({
   encouragement,
   explanation,
   perfect = false,
+  targetLanguage,
 }: FeedbackDisplayProps) {
+  // Custom tags emitted by the autograder LLM. Keys are lowercased because the
+  // HTML parser normalizes tag names. Cast to Components to bypass the
+  // intrinsic-element type constraint.
+  const components = useMemo(
+    () =>
+      ({
+        word: ({ children }: { children?: React.ReactNode }) => (
+          <span lang={languageToIso6391(targetLanguage)}>{children}</span>
+        ),
+      }) as Components,
+    [targetLanguage],
+  );
+
   if (!encouragement && !explanation) {
     return null;
   }
@@ -28,7 +47,9 @@ export function FeedbackDisplay({
                 {perfect ? "🎉" : "☀️"}
               </span>
               <div className="flex-1 font-medium text-green-700 dark:text-green-300">
-                <Markdown>{encouragement}</Markdown>
+                <Markdown rehypePlugins={[rehypeRaw]} components={components}>
+                  {encouragement}
+                </Markdown>
               </div>
             </div>
           </div>
@@ -36,7 +57,9 @@ export function FeedbackDisplay({
 
         {explanation && (
           <div className="animate-fade-in-delay-2">
-            <Markdown>{explanation}</Markdown>
+            <Markdown rehypePlugins={[rehypeRaw]} components={components}>
+              {explanation}
+            </Markdown>
           </div>
         )}
       </div>

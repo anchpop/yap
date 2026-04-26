@@ -549,7 +549,7 @@ export function GramDefinitionDisplay({
                 {def.note && (
                   <span className="text-go as text-muted-foreground">
                     {" "}
-                    ({def.note})
+                    {def.note}
                   </span>
                 )}
               </p>
@@ -1320,6 +1320,7 @@ export function TranslationChallenge({
                         encouragement={grade.graded.encouragement}
                         explanation={grade.graded.explanation}
                         perfect
+                        targetLanguage={targetLanguage}
                       />
                     </div>
                   </>
@@ -1336,6 +1337,7 @@ export function TranslationChallenge({
                     <FeedbackDisplay
                       encouragement={grade.graded.encouragement}
                       explanation={grade.graded.explanation}
+                      targetLanguage={targetLanguage}
                     />
 
                     <PhraseStatuses

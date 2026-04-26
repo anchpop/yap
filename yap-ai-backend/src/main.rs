@@ -829,7 +829,7 @@ Phrases:
 Output:
 {{
   "encouragement": "Good effort tackling this sentence!",
-  "explanation": "The French expression 'se passer' means 'to happen.' You translated it literally as 'pass itself.' A correct translation is: 'It's going well.'",
+  "explanation": "The French expression '<word>se passer</word>' means 'to happen.' You translated it literally as 'pass itself.' A correct translation is: 'It's going well.'",
   "literal_grades": [{{"index": 1, "result": "Remembered"}}, {{"index": 2, "result": "Remembered"}}, {{"index": 3, "result": "Remembered"}}, {{"index": 4, "result": "Remembered"}}],
   "phrases_remembered": [],
   "phrases_forgot": ["se passer"]
@@ -838,6 +838,8 @@ Output:
 Note: Even though "se passer" was forgotten, the individual words "se" and "passe" were understood (the user knew they mean "itself" and "pass"), so they are marked as remembered.
 
 The encouragement should always be provided, focus on what they got right, and be written as if speaking directly to the user. The explanation should only be provided if there are errors. Markdown formatting is allowed (no bullet points or numbered lists). Keep both short and concise. Respond in {native_language_name}!
+
+When you mention a {target_language_name} word or phrase inside the encouragement or explanation, wrap it in a <word>...</word> tag (e.g. <word>word</word>). This lets the UI style and pronounce it correctly. Do not wrap {native_language_name} text.
 "#,
     );
 
@@ -968,6 +970,8 @@ The grades array should have one grade for each word the user was asked to trans
 The encouragement should always be provided, be in {native_language_name}, be a short positive message (1-2 sentences), and focus on what they got right. The explanation should only be provided if there are errors, be in {native_language_name}, focus on their mistakes and how to improve, and help the user learn from their errors. Markdown formatting is allowed, and encouraged for emphasis (just no bullet points or numbered lists). If the user appeared to confuse some words, you can include those words in the compare array, and a TTS example for each word will be generated for the user to hear. {}
 
 The explanation should avoid generic advice like "try to listen more carefully" — the goal is to only write information helpful for the user to understand their mistakes. When a user confuses or misses a word, it is often helpful to break the word down into its component parts (morphemes, compound elements, prefix/suffix structure) so the user can see how simpler pieces they may already know combine into the target word. For example, if the target word was "malheureusement", you might point out that it builds from "mal" (bad) + "heur" (luck) + "euse" (french builds adverbs from the feminine adjective) + "ment" (adverb suffix). This is about practical decomposition — showing recognizable building blocks — not historical etymology. Only do this when the decomposition actually clarifies something (why the word sounds the way it does, why it's spelled that way, how to remember it). If the word is monomorphemic or the breakdown wouldn't help, skip it.
+
+When you mention a {target_language_name} word or phrase inside the encouragement or explanation, wrap it in a <word>...</word> tag (e.g. <word>word</word>). This lets the UI style and pronounce it correctly. Do not wrap {native_language_name} text.
 
 P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may not understand them. But you can still try to explain the phonetic differences in terms that the user might understand."#,
         match target_language {
