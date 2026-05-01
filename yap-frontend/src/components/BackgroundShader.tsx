@@ -51,7 +51,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
   const mouseFollowRef = useRef(mouseFollow);
   useEffect(() => {
     mouseFollowRef.current = mouseFollow;
-    if (!mouseFollow && workerRef.current) {
+    if (!mouseFollow && !superhotRef.current && workerRef.current) {
       workerRef.current.postMessage({ type: "mouse", x: 0.5, y: 0.4 });
     }
   }, [mouseFollow]);
@@ -175,7 +175,7 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
     // page), each move also nudges shader time forward via a bump.
     const handlePointerMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
-      if (mouseFollowRef.current) {
+      if (mouseFollowRef.current || superhotRef.current) {
         worker.postMessage({
           type: "mouse",
           x: e.clientX / window.innerWidth,
@@ -241,7 +241,11 @@ function BackgroundShaderComponent({ children }: BackgroundShaderProps) {
           <>
             <div ref={containerRef} className="contents" />
             <div
-              className="fixed inset-0 w-full h-full opacity-[0.7]"
+              className={
+                actualTheme === "dark" || actualTheme === "oled"
+                  ? "fixed inset-0 w-full h-full opacity-[0.7]"
+                  : "fixed inset-0 w-full h-full opacity-[0.30]"
+              }
               style={{
                 pointerEvents: "none",
                 backgroundImage:
