@@ -786,6 +786,17 @@ impl CardData {
         }
     }
 
+    /// An Added card the user has reviewed at least once and never failed.
+    /// Behaves similar to a ghost: still usable for comprehensible input, but
+    /// excluded from scheduling. Unlike a ghost, it cannot be added to the deck as
+    /// it is already in the deck.
+    pub fn is_already_known(&self) -> bool {
+        match self {
+            CardData::Added { fsrs_card } => fsrs_card.reps >= 1 && fsrs_card.lapses == 0,
+            CardData::Ghost { .. } => false,
+        }
+    }
+
     pub fn due_timestamp_ms(&self) -> f64 {
         match self {
             CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => {
@@ -2119,13 +2130,14 @@ impl Deck {
         }
     }
 
-    /// Returns an iterator over tracked cards (excluding leeches)
-    fn cards_excluding_leeches(
+    /// Returns an iterator over tracked cards that are eligible for scheduling:
+    /// excludes leeches and already-known cards (which behave like ghosts).
+    fn cards_excluding_unschedulable(
         &self,
     ) -> impl Iterator<Item = (&CardIndicator<SpurGram, Spur>, &CardData)> {
-        self.cards
-            .iter()
-            .filter(|(card_indicator, _)| !self.leeches.contains_key(card_indicator))
+        self.cards.iter().filter(|(card_indicator, card_data)| {
+            !self.leeches.contains_key(card_indicator) && !card_data.is_already_known()
+        })
     }
 
     /// Get the set of comprehensible written grams (includes both single-word and multiword grams).
@@ -2306,7 +2318,7 @@ impl Deck {
         let no_text_cards = banned_challenge_types.contains(&ChallengeRequirements::Text);
         let no_speaking_cards = banned_challenge_types.contains(&ChallengeRequirements::Speaking);
 
-        for (card, card_data) in self.cards_excluding_leeches() {
+        for (card, card_data) in self.cards_excluding_unschedulable() {
             if let CardData::Added { fsrs_card } = card_data {
                 let due_date = fsrs_card.due;
 
@@ -3353,7 +3365,7 @@ impl Deck {
         let mut daily_counts: FxHashMap<i64, u32> = FxHashMap::default();
         let mut total_reviews = 0u32;
 
-        for card_data in self.cards.values() {
+        for (_, card_data) in self.cards_excluding_unschedulable() {
             if let CardData::Added { fsrs_card } = card_data {
                 let due_date = fsrs_card.due;
 

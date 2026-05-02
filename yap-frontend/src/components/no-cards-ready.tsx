@@ -128,7 +128,10 @@ export const NoCardsReady = memo(function NoCardsReady({
     <span style={{ fontWeight: "bold" }}>{targetLanguage} pronunciation</span>
   );
 
-  const isEmptyDeck = deck.num_cards() === 0;
+  // We're in NoCardsReady so due_count is 0; if there's also no future card,
+  // there are zero schedulable cards (deck is empty, all leeches, or all already-known).
+  const noSchedulableCards = nextDueCard === null;
+  const hasNeverStudied = noSchedulableCards && deck.get_total_reviews() === 0n;
 
   // Keyboard shortcut to add cards
   useEffect(() => {
@@ -275,11 +278,19 @@ export const NoCardsReady = memo(function NoCardsReady({
       <div className="text-center py-4">
         <div className="flex flex-col gap-2">
           <p className="text-2xl font-bold">
-            {isEmptyDeck ? "Ready to start learning?" : "All caught up!"}
+            {hasNeverStudied
+              ? "Ready to start learning?"
+              : noSchedulableCards
+                ? "Ready for more?"
+                : "All caught up!"}
           </p>
-          {isEmptyDeck ? (
+          {hasNeverStudied ? (
             <p className="text-muted-foreground">
               We'll start with a couple words you might know.
+            </p>
+          ) : noSchedulableCards ? (
+            <p className="text-muted-foreground">
+              Add some cards to keep building your vocabulary.
             </p>
           ) : (
             <p className="text-muted-foreground">
@@ -314,7 +325,7 @@ export const NoCardsReady = memo(function NoCardsReady({
         </div>
       </div>
 
-      {isEmptyDeck ? (
+      {noSchedulableCards ? (
         <div className="flex justify-center">
           <Button
             onClick={addSmartCards}
@@ -590,7 +601,7 @@ export const NoCardsReady = memo(function NoCardsReady({
         </Card>
       )}
 
-      {!isEmptyDeck && <WeekProgressStrip deck={deck} />}
+      {!hasNeverStudied && <WeekProgressStrip deck={deck} />}
 
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
     </div>
