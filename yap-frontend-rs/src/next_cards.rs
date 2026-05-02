@@ -50,14 +50,14 @@ pub(crate) struct NextCardsIterator {
     card_type_counts: FxHashMap<CardType, u32>,
     // Precomputed sorted lists (value desc)
     text_values: Vec<(NotNan<f32>, SpurGram)>,
-    /// Single-word grams in descending frequency order (only if added_count < 20).
-    /// These must be collected directly from the frequency list because
-    /// single-word onboarding preference is a hard priority over value.
-    single_word_grams: Option<Vec<SpurGram>>,
-    /// Easy single-word grams in descending frequency order (only if added_count < 5
-    /// and !teaches_new_writing_system).
-    /// These must also bypass text_values because easy cards can have very low value.
-    easy_single_word_grams: Option<Vec<SpurGram>>,
+    /// Single-word grams sorted by value descending (only if added_count < 20).
+    /// Single-word is a hard onboarding constraint, but the order *within* the
+    /// constraint set respects the regression so the placement test influences
+    /// onboarding instead of being silently overridden by frequency order.
+    single_word_grams: Option<Vec<(NotNan<f32>, SpurGram)>>,
+    /// Easy single-word grams sorted by value descending (only if added_count < 5
+    /// and !teaches_new_writing_system). Same reasoning as `single_word_grams`.
+    easy_single_word_grams: Option<Vec<(NotNan<f32>, SpurGram)>>,
     listening_values: Vec<(NotNan<f32>, SpurGram)>,
     pronunciation_values: Vec<(NotNan<f32>, CardIndicator<SpurGram, Spur>)>,
 }
@@ -121,90 +121,120 @@ impl NextCardsIterator {
                 .and_modify(|count| *count += 1);
         }
 
-        // Precompute text card values: grams not yet Added, partially sorted by value desc.
-        // Ghost cards are included since they can be promoted to Added.
+        // Single fused pass over gram_source.entries that fills three top-N
+        // value rankings of unadded WrittenGrams:
+        //   - text_values:                no constraint (post-onboarding pool)
+        //   - single_word_values:         single-word grams        (cards 5..20)
+        //   - easy_single_word_values:    easy single-word grams   (cards 0..5)
         //
-        // gram_source.entries is sorted by count descending, so freq_score is also descending.
-        // Since value = (1 - probability) * freq_score ≤ freq_score, once freq_score drops
-        // below the Nth-best value we've seen, no subsequent gram can enter the top N.
+        // Per-iteration we compute the regression-based value once, then update
+        // each enabled heap. The single-word predicate is computed once per gram
+        // when either of its dependent heaps is still active.
+        //
+        // gram_source.entries is sorted by count descending, so freq_score is also
+        // descending. Since value = (1 - probability) * freq_score ≤ freq_score,
+        // once freq_score drops below a heap's smallest top-N value, no future gram
+        // can enter that heap. The loop terminates only when *every* enabled heap
+        // is in that state.
+        let need_single_word = added_count < 20;
+        let need_easy_single_word =
+            added_count < 5 && !context.course.teaches_new_writing_system();
+
         let mut text_values: Vec<(NotNan<f32>, SpurGram)> = Vec::new();
-        // Min-heap tracking the top early_term_n values for early termination threshold
-        let mut top_n: std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>> =
+        let mut text_top_n: std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>> =
             std::collections::BinaryHeap::new();
-        for (gram, frequency) in gram_source.entries.iter() {
-            // Early termination: once we have enough candidates and freq_score is below
-            // the smallest of the top N, no future gram can enter the top N.
-            if top_n.len() >= early_term_n {
-                let freq_score = NotNan::new(frequency.frequency_score()).unwrap_or_default();
-                if freq_score < top_n.peek().unwrap().0 {
-                    break;
+        let mut single_word_values: Vec<(NotNan<f32>, SpurGram)> = Vec::new();
+        let mut single_top_n: std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>> =
+            std::collections::BinaryHeap::new();
+        let mut easy_single_word_values: Vec<(NotNan<f32>, SpurGram)> = Vec::new();
+        let mut easy_top_n: std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>> =
+            std::collections::BinaryHeap::new();
+
+        // Inline helper to push a candidate into a (Vec, top-N heap) pair, maintaining
+        // the heap as a min-heap of size at most early_term_n.
+        let push_top_n =
+            |values: &mut Vec<(NotNan<f32>, SpurGram)>,
+             top_n: &mut std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>>,
+             gram: SpurGram,
+             value: NotNan<f32>| {
+                values.push((value, gram));
+                if top_n.len() < early_term_n {
+                    top_n.push(std::cmp::Reverse(value));
+                } else if top_n.peek().is_some_and(|t| value > t.0) {
+                    top_n.pop();
+                    top_n.push(std::cmp::Reverse(value));
                 }
+            };
+
+        for (gram, frequency) in gram_source.entries.iter() {
+            let freq_score = NotNan::new(frequency.frequency_score()).unwrap_or_default();
+
+            // A heap is "saturated" when no future gram can enter it.
+            // Disabled heaps are vacuously saturated.
+            let text_saturated = text_top_n.len() >= early_term_n
+                && text_top_n.peek().is_some_and(|t| freq_score < t.0);
+            let single_saturated = !need_single_word
+                || (single_top_n.len() >= early_term_n
+                    && single_top_n.peek().is_some_and(|t| freq_score < t.0));
+            let easy_saturated = !need_easy_single_word
+                || (easy_top_n.len() >= early_term_n
+                    && easy_top_n.peek().is_some_and(|t| freq_score < t.0));
+
+            if text_saturated && single_saturated && easy_saturated {
+                break;
             }
+
             let card = CardIndicator::WrittenGram { gram: *gram };
             if matches!(cards.get(&card), Some(CardData::Added { .. })) {
                 continue;
             }
-            if let Some(value) =
-                context.card_value_with_frequency(&card, cards.get(&card), regressions, *frequency)
-            {
-                text_values.push((value, *gram));
-                if top_n.len() < early_term_n {
-                    top_n.push(std::cmp::Reverse(value));
-                } else if value > top_n.peek().unwrap().0 {
-                    top_n.pop();
-                    top_n.push(std::cmp::Reverse(value));
+
+            let Some(value) = context
+                .card_value_with_frequency(&card, cards.get(&card), regressions, *frequency)
+            else {
+                continue;
+            };
+
+            if !text_saturated {
+                push_top_n(&mut text_values, &mut text_top_n, *gram, value);
+            }
+
+            // Compute the single-word predicate at most once per gram, and only
+            // when at least one constraint heap still cares.
+            let single_active = need_single_word && !single_saturated;
+            let easy_active = need_easy_single_word && !easy_saturated;
+            if single_active || easy_active {
+                let is_single_word =
+                    gram_single_word(context.language_pack.gram_rodeo.resolve(gram)).is_some();
+                if is_single_word {
+                    if single_active {
+                        push_top_n(&mut single_word_values, &mut single_top_n, *gram, value);
+                    }
+                    if easy_active && frequency.easy {
+                        push_top_n(
+                            &mut easy_single_word_values,
+                            &mut easy_top_n,
+                            *gram,
+                            value,
+                        );
+                    }
                 }
             }
         }
-        partial_sort_desc(&mut text_values, early_term_n);
 
-        // Build single-word grams directly from the full frequency list.
-        // These onboarding priorities are hard preferences, so they can't be
-        // derived from the truncated text_values slice.
-        let single_word_grams = if added_count < 20 {
-            Some(
-                gram_source
-                    .entries
-                    .iter()
-                    .filter_map(|(gram, _)| {
-                        let card = CardIndicator::WrittenGram { gram: *gram };
-                        if matches!(cards.get(&card), Some(CardData::Added { .. })) {
-                            return None;
-                        }
-                        gram_single_word(context.language_pack.gram_rodeo.resolve(gram))
-                            .is_some()
-                            .then_some(*gram)
-                    })
-                    .collect(),
-            )
+        partial_sort_desc(&mut text_values, early_term_n);
+        let single_word_grams = if need_single_word {
+            partial_sort_desc(&mut single_word_values, early_term_n);
+            Some(single_word_values)
         } else {
             None
         };
-
-        // Build easy single-word grams from the full frequency list for the same reason:
-        // the easy-first onboarding rule must not depend on the truncated value ranking.
-        let easy_single_word_grams =
-            if added_count < 5 && !context.course.teaches_new_writing_system() {
-                Some(
-                    gram_source
-                        .entries
-                        .iter()
-                        .filter_map(|(gram, frequency)| {
-                            if !frequency.easy {
-                                return None;
-                            }
-                            let card = CardIndicator::WrittenGram { gram: *gram };
-                            if matches!(cards.get(&card), Some(CardData::Added { .. })) {
-                                return None;
-                            }
-                            gram_single_word(context.language_pack.gram_rodeo.resolve(gram))?;
-                            Some(*gram)
-                        })
-                        .collect(),
-                )
-            } else {
-                None
-            };
+        let easy_single_word_grams = if need_easy_single_word {
+            partial_sort_desc(&mut easy_single_word_values, early_term_n);
+            Some(easy_single_word_values)
+        } else {
+            None
+        };
 
         // Precompute listening card values: grams not yet Added, partially sorted by value desc.
         // Ghost cards are included since they can be promoted to Added.
@@ -313,8 +343,8 @@ impl NextCardsIterator {
         })
     }
 
-    fn first_unadded_gram(&self, grams: &[SpurGram]) -> Option<SpurGram> {
-        grams.iter().find_map(|&gram| {
+    fn first_unadded_gram(&self, grams: &[(NotNan<f32>, SpurGram)]) -> Option<SpurGram> {
+        grams.iter().find_map(|&(_value, gram)| {
             let card = CardIndicator::WrittenGram { gram };
             if self.is_added(&card) {
                 None

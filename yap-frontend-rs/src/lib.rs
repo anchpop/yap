@@ -4892,6 +4892,211 @@ mod tests {
         }
     }
 
+    /// Helper for placement-test integration tests: split the placement-test
+    /// words into a high-frequency "known" half and a low-frequency "unknown"
+    /// half, then apply the resulting `CompletePlacementTest` event.
+    fn apply_placement_test_split(deck: Deck) -> (Deck, Vec<String>, Vec<String>) {
+        use crate::{Deck, DeckState};
+        use weapon::AppState;
+        use weapon::data_model::Timestamped;
+
+        let placement_words = deck.get_placement_test(vec![], vec![]);
+        assert!(
+            placement_words.len() >= 6,
+            "placement test should produce enough words to split into halves; got {}",
+            placement_words.len()
+        );
+        let split = placement_words.len() / 2;
+        let known_words: Vec<String> = placement_words[..split]
+            .iter()
+            .map(|w| w.word.clone())
+            .collect();
+        let unknown_words: Vec<String> = placement_words[split..]
+            .iter()
+            .map(|w| w.word.clone())
+            .collect();
+
+        let event = deck.complete_placement_test(known_words.clone(), unknown_words.clone());
+        let timestamped = Timestamped {
+            timestamp: chrono::Utc::now(),
+            within_device_events_index: 0,
+            event,
+        };
+        let context = deck.context.clone();
+        let state = DeckState::from(deck);
+        let state = Deck::process_event(state, &context, &timestamped);
+        let deck = Deck::finalize(state, &context);
+        (deck, known_words, unknown_words)
+    }
+
+    /// The placement-test results must train the knowledge regression: words
+    /// the user marked "known" (high-frequency end) should get a near-1.0
+    /// knowledge prediction, and "unknown" words (low-frequency end) near-0.0.
+    #[test]
+    fn test_placement_test_trains_regression() {
+        let deck = Deck::default();
+        if deck
+            .context
+            .language_pack
+            .gram_frequencies
+            .entries
+            .is_empty()
+        {
+            return;
+        }
+
+        let (deck, known_words, unknown_words) = apply_placement_test_split(deck);
+
+        assert!(
+            deck.placement_test_results.is_some(),
+            "placement test should be stored on the deck after the event"
+        );
+
+        let target_regression = deck
+            .regressions
+            .target_language_regression
+            .as_ref()
+            .expect("target language regression should be built after placement test");
+
+        let lookup_ease = |w: &str| deck.context.lookup_word(w).map(|(_, f)| f.ease);
+
+        let mut known_predictions = Vec::new();
+        for word in &known_words {
+            let ease = lookup_ease(word).expect("known word should resolve");
+            let predicted = target_regression
+                .interpolate(ease)
+                .expect("regression should interpolate at known word's frequency");
+            println!("known   '{word}' (ease={ease:.3}) → predicted = {predicted:.3}");
+            known_predictions.push(predicted);
+        }
+        let mut unknown_predictions = Vec::new();
+        for word in &unknown_words {
+            let ease = lookup_ease(word).expect("unknown word should resolve");
+            let predicted = target_regression
+                .interpolate(ease)
+                .expect("regression should interpolate at unknown word's frequency");
+            println!("unknown '{word}' (ease={ease:.3}) → predicted = {predicted:.3}");
+            unknown_predictions.push(predicted);
+        }
+
+        let min_known_pred = known_predictions
+            .iter()
+            .copied()
+            .fold(f32::INFINITY, f32::min);
+        let max_unknown_pred = unknown_predictions
+            .iter()
+            .copied()
+            .fold(f32::NEG_INFINITY, f32::max);
+        let max_known_pred = known_predictions
+            .iter()
+            .copied()
+            .fold(f32::NEG_INFINITY, f32::max);
+        let min_unknown_pred = unknown_predictions
+            .iter()
+            .copied()
+            .fold(f32::INFINITY, f32::min);
+
+        assert!(
+            min_known_pred > max_unknown_pred,
+            "regression should rank every known word above every unknown word; \
+             min(known)={min_known_pred:.3} <= max(unknown)={max_unknown_pred:.3}"
+        );
+        assert!(
+            max_known_pred >= 0.95,
+            "highest-frequency known word should regress to near 1.0; \
+             best known prediction = {max_known_pred:.3}"
+        );
+        assert!(
+            min_unknown_pred <= 0.05,
+            "lowest-frequency unknown word should regress to near 0.0; \
+             worst unknown prediction = {min_unknown_pred:.3}"
+        );
+    }
+
+    /// End-to-end: a user who marks the easy half of the placement test as
+    /// "known" should not then be queued the same easy words to learn.
+    /// Onboarding (first 5 cards: easy single-word; next 15: single-word) keeps
+    /// its hard constraints, but the *order within* each constraint set follows
+    /// the regression-based card value, so words the user already knows drop
+    /// to the back.
+    #[test]
+    fn test_placement_test_skips_known_easy_words_in_next_cards() {
+        use crate::next_cards::AllowedCards;
+
+        let deck = Deck::default();
+        if deck
+            .context
+            .language_pack
+            .gram_frequencies
+            .entries
+            .is_empty()
+        {
+            return;
+        }
+
+        let baseline_cards: Vec<_> = deck
+            .next_unknown_cards(AllowedCards::BannedRequirements(BTreeSet::new()), &None, 30)
+            .take(30)
+            .collect();
+
+        let (deck, known_words, _unknown_words) = apply_placement_test_split(deck);
+
+        let after_cards: Vec<_> = deck
+            .next_unknown_cards(AllowedCards::BannedRequirements(BTreeSet::new()), &None, 30)
+            .take(30)
+            .collect();
+        assert!(!after_cards.is_empty(), "should still have cards to teach");
+
+        let freq_entries = &deck.context.language_pack.gram_frequencies.entries;
+        let resolve_word = |gram: &SpurGram| -> String {
+            deck.context
+                .language_pack
+                .gram_rodeo
+                .resolve(gram)
+                .resolve(&deck.context.language_pack.string_rodeo)
+                .to_display_string(deck.context.course.target_language)
+        };
+        let card_word = |c: &CardIndicator<SpurGram, Spur>| -> Option<String> {
+            match c {
+                CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                    Some(resolve_word(gram))
+                }
+                _ => None,
+            }
+        };
+
+        println!("\nBaseline next cards (no placement test):");
+        for (i, card) in baseline_cards.iter().take(15).enumerate() {
+            if let CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } =
+                card
+            {
+                let ease = freq_entries.get(gram).map(|f| f.ease).unwrap_or(f32::NAN);
+                println!("  {}. {} (ease={ease:.3})", i + 1, resolve_word(gram));
+            }
+        }
+        println!("\nNext cards after placement test (known={known_words:?}):");
+        for (i, card) in after_cards.iter().take(15).enumerate() {
+            if let CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } =
+                card
+            {
+                let ease = freq_entries.get(gram).map(|f| f.ease).unwrap_or(f32::NAN);
+                println!("  {}. {} (ease={ease:.3})", i + 1, resolve_word(gram));
+            }
+        }
+
+        let after_words: std::collections::HashSet<String> =
+            after_cards.iter().filter_map(card_word).collect();
+        let leaked: Vec<&String> = known_words
+            .iter()
+            .filter(|w| after_words.contains(*w))
+            .collect();
+        assert!(
+            leaked.is_empty(),
+            "Words the user marked as KNOWN in the placement test are still being queued \
+             as next cards: {leaked:?}"
+        );
+    }
+
     #[test]
     fn test_set_goal_does_not_increment_review_stats() {
         use crate::{Deck, DeckState, GoalSelection};
