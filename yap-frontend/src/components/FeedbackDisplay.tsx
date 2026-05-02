@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import Markdown, { type Components } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import type { Language } from "../../../yap-frontend-rs/pkg";
-import { languageToIso6391 } from "@/lib/utils";
+import { TargetLanguageText } from "./TargetLanguageText";
 
 interface FeedbackDisplayProps {
   encouragement?: string;
@@ -24,7 +24,11 @@ export function FeedbackDisplay({
     () =>
       ({
         word: ({ children }: { children?: React.ReactNode }) => (
-          <span lang={languageToIso6391(targetLanguage)}>{children}</span>
+          <strong>
+            <TargetLanguageText language={targetLanguage}>
+              {children}
+            </TargetLanguageText>
+          </strong>
         ),
       }) as Components,
     [targetLanguage],
