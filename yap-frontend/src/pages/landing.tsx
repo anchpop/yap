@@ -197,6 +197,23 @@ function SentenceShowcase({
   );
 }
 
+function StartLearningButton() {
+  const navigate = useNavigate();
+  return (
+    <span className="rainbow-ripple-wrap">
+      <Button
+        size="lg"
+        onClick={() => navigate("/select-language")}
+        className="text-lg px-8"
+        variant="attention"
+      >
+        Start learning
+        <ArrowRight className="ml-2 h-5 w-5" />
+      </Button>
+    </span>
+  );
+}
+
 function FeatureCard({
   icon,
   title,
@@ -351,14 +368,7 @@ export function LandingPage() {
               >
                 How it works
               </Button>
-              <Button
-                size="lg"
-                onClick={() => navigate("/select-language")}
-                className="text-lg px-8"
-              >
-                Start learning
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <StartLearningButton />
             </div>
           </div>
 
@@ -463,14 +473,7 @@ export function LandingPage() {
                 <span className="text-lg text-muted-foreground">
                   Powered by FSRS
                 </span>
-                <Button
-                  size="lg"
-                  onClick={() => navigate("/select-language")}
-                  className="text-lg px-8"
-                >
-                  Start learning
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <StartLearningButton />
               </div>
               <a
                 href="/blog/"

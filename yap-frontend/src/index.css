@@ -276,6 +276,75 @@ ol {
   to { opacity: 1; transform: translateY(0); }
 }
 
+.rainbow-ripple-wrap {
+  display: inline-block;
+  position: relative;
+  border: 3px solid transparent;
+  border-radius: calc(var(--radius-md) + 3px);
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(
+      90deg,
+      #ff3b8c 0%,
+      #ff8c1a 16%,
+      #ffd60a 32%,
+      #2ec4b6 48%,
+      #38b6ff 64%,
+      #a16dff 82%,
+      #ff3b8c 100%
+    ) border-box;
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  animation: rainbow-ripple 4s linear infinite;
+  animation-play-state: paused;
+}
+
+.rainbow-ripple-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: calc(var(--radius-md) + 11px);
+  background: linear-gradient(
+    90deg,
+    #ff3b8c 0%,
+    #ff8c1a 16%,
+    #ffd60a 32%,
+    #2ec4b6 48%,
+    #38b6ff 64%,
+    #a16dff 82%,
+    #ff3b8c 100%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0%;
+  z-index: -1;
+  filter: blur(12px);
+  opacity: 0.6;
+  transition: opacity 0.4s ease, inset 0.4s ease, filter 0.4s ease, border-radius 0.4s ease;
+  animation: rainbow-ripple 4s linear infinite;
+  animation-play-state: paused;
+}
+
+.rainbow-ripple-wrap:hover,
+.rainbow-ripple-wrap:hover::after,
+.rainbow-ripple-wrap:focus-within,
+.rainbow-ripple-wrap:focus-within::after {
+  animation-play-state: running;
+}
+
+.rainbow-ripple-wrap:hover::after,
+.rainbow-ripple-wrap:focus-within::after {
+  inset: -12px;
+  border-radius: calc(var(--radius-md) + 15px);
+  opacity: 0.9;
+  filter: blur(16px);
+}
+
+@keyframes rainbow-ripple {
+  from { background-position: 200% 0%; }
+  to { background-position: 0% 0%; }
+}
+
 /* Per-language font size adjustments for target language text.
    CJK characters render smaller at the same font size as Latin text.
    Uses em so it scales relative to whatever the parent's font-size is. */
