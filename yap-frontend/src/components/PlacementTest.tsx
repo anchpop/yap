@@ -89,10 +89,11 @@ export function PlacementTest({
   };
 
   return (
-    <Card className="max-w w-full p-0 gap-0 select-none" animate>
-      <div className="px-[5px]">
-        <Progress value={(round / (NUM_ROUNDS + 1)) * 100} />
-      </div>
+    <Card className="max-w w-full p-0 gap-0 select-none overflow-hidden" animate>
+      <Progress
+        value={(round / (NUM_ROUNDS + 1)) * 100}
+        className="rounded-none"
+      />
       <div className="p-6 space-y-4">
         {round > NUM_ROUNDS ? (
           (() => {

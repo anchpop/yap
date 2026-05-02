@@ -131,7 +131,10 @@ export const NoCardsReady = memo(function NoCardsReady({
   // We're in NoCardsReady so due_count is 0; if there's also no future card,
   // there are zero schedulable cards (deck is empty, all leeches, or all already-known).
   const noSchedulableCards = nextDueCard === null;
-  const hasNeverStudied = noSchedulableCards && deck.get_total_reviews() === 0n;
+  // No more cards to schedule AND nothing left to add — we've truly run out.
+  const nothingToDo = noSchedulableCards && info.smart_add_count === 0;
+  // The user has never explicitly added a card (placement-test-only counts).
+  const hasNeverStudied = deck.num_cards_added() === 0 && !nothingToDo;
 
   // Keyboard shortcut to add cards
   useEffect(() => {
@@ -278,19 +281,29 @@ export const NoCardsReady = memo(function NoCardsReady({
       <div className="text-center py-4">
         <div className="flex flex-col gap-2">
           <p className="text-2xl font-bold">
-            {hasNeverStudied
-              ? "Ready to start learning?"
-              : noSchedulableCards
-                ? "Ready for more?"
-                : "All caught up!"}
+            {nothingToDo
+              ? "All done!"
+              : hasNeverStudied
+                ? "Ready to start learning?"
+                : noSchedulableCards
+                  ? info.smart_add_regime === "Easy"
+                    ? "Adding cards is how you learn more!"
+                    : "Ready for more?"
+                  : "All caught up!"}
           </p>
-          {hasNeverStudied ? (
+          {nothingToDo ? (
+            <p className="text-muted-foreground">
+              You've learned all available words!
+            </p>
+          ) : hasNeverStudied ? (
             <p className="text-muted-foreground">
               We'll start with a couple words you might know.
             </p>
           ) : noSchedulableCards ? (
             <p className="text-muted-foreground">
-              Add some cards to keep building your vocabulary.
+              {info.smart_add_regime === "Easy" && info.easy_cards_remaining > 0
+                ? `${info.easy_cards_remaining} more easy ${info.easy_cards_remaining === 1 ? "word" : "words"}, then we'll add harder ones.`
+                : "Add some cards to keep building your vocabulary."}
             </p>
           ) : (
             <p className="text-muted-foreground">
@@ -325,7 +338,7 @@ export const NoCardsReady = memo(function NoCardsReady({
         </div>
       </div>
 
-      {noSchedulableCards ? (
+      {nothingToDo ? null : noSchedulableCards ? (
         <div className="flex justify-center">
           <Button
             onClick={addSmartCards}
@@ -335,7 +348,9 @@ export const NoCardsReady = memo(function NoCardsReady({
           >
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
             <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
-            Start learning
+            {hasNeverStudied
+              ? "Start learning"
+              : `Add ${info.smart_add_count} ${info.smart_add_regime === "Easy" ? "easy " : ""}${info.smart_add_count === 1 ? "card" : "cards"}`}
           </Button>
         </div>
       ) : (
@@ -601,7 +616,7 @@ export const NoCardsReady = memo(function NoCardsReady({
         </Card>
       )}
 
-      {!hasNeverStudied && <WeekProgressStrip deck={deck} />}
+      {!noSchedulableCards && <WeekProgressStrip deck={deck} />}
 
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
     </div>

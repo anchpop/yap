@@ -45,7 +45,7 @@ function Progress({
           "bg-primary h-full w-full flex-1",
           !disableTransition && "transition-all",
         )}
-        style={{ transform: `translateX(-${100 - pct}%)` }}
+        style={{ clipPath: `inset(0 ${100 - pct}% 0 0)` }}
       />
       {(showPercentage || label) && (
         <>

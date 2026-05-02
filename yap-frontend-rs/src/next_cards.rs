@@ -8,7 +8,7 @@ use lasso::Spur;
 use ordered_float::NotNan;
 
 use crate::{
-    CARD_TYPES, CardData, CardIndicator, CardType, ChallengeRequirements, Deck,
+    CARD_TYPES, CardData, CardIndicator, CardType, ChallengeRequirements, Deck, SmartAddRegime,
     deck_event::current::GoalSelection,
 };
 
@@ -108,12 +108,17 @@ impl NextCardsIterator {
 
         let gram_source = goal_freq_list.unwrap_or(&context.language_pack.gram_frequencies);
 
-        // Initialize counts by iterating once over tracked cards
+        // Initialize counts by iterating once over tracked cards. Ghosts are
+        // excluded — onboarding thresholds measure deliberate adds, not words
+        // the user happened to encounter through challenge sentences.
         let mut added_count = 0;
         let mut card_type_counts: FxHashMap<CardType, u32> =
             CARD_TYPES.iter().map(|card_type| (*card_type, 0)).collect();
 
-        for card in cards.keys() {
+        for (card, card_data) in cards.iter() {
+            if !matches!(card_data, CardData::Added { .. }) {
+                continue;
+            }
             added_count += 1;
             let card_type = card.card_type();
             card_type_counts
@@ -137,8 +142,7 @@ impl NextCardsIterator {
         // can enter that heap. The loop terminates only when *every* enabled heap
         // is in that state.
         let need_single_word = added_count < 20;
-        let need_easy_single_word =
-            added_count < 5 && !context.course.teaches_new_writing_system();
+        let need_easy_single_word = added_count < 5 && !context.course.teaches_new_writing_system();
 
         let mut text_values: Vec<(NotNan<f32>, SpurGram)> = Vec::new();
         let mut text_top_n: std::collections::BinaryHeap<std::cmp::Reverse<NotNan<f32>>> =
@@ -189,8 +193,8 @@ impl NextCardsIterator {
                 continue;
             }
 
-            let Some(value) = context
-                .card_value_with_frequency(&card, cards.get(&card), regressions, *frequency)
+            let Some(value) =
+                context.card_value_with_frequency(&card, cards.get(&card), regressions, *frequency)
             else {
                 continue;
             };
@@ -211,12 +215,7 @@ impl NextCardsIterator {
                         push_top_n(&mut single_word_values, &mut single_top_n, *gram, value);
                     }
                     if easy_active && frequency.easy {
-                        push_top_n(
-                            &mut easy_single_word_values,
-                            &mut easy_top_n,
-                            *gram,
-                            value,
-                        );
+                        push_top_n(&mut easy_single_word_values, &mut easy_top_n, *gram, value);
                     }
                 }
             }
@@ -302,28 +301,37 @@ impl NextCardsIterator {
         matches!(self.cards.get(card), Some(CardData::Added { .. }))
     }
 
-    fn next_text_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
-        // Try preferred grams first based on added_count thresholds
-        let preferred_gram = if self.added_count < 5 {
-            if let Some(easy_grams) = &self.easy_single_word_grams {
-                self.first_unadded_gram(easy_grams)
-            } else if let Some(single_word_grams) = &self.single_word_grams {
-                // teaches_new_writing_system case: prefer any single-word
-                self.first_unadded_gram(single_word_grams)
-            } else {
-                None
-            }
-        } else if self.added_count < 20 {
-            if let Some(single_word_grams) = &self.single_word_grams {
-                self.first_unadded_gram(single_word_grams)
-            } else {
-                None
-            }
+    /// Which pool the next text-card pick will come from. The pools'
+    /// existence already encodes the added_count thresholds (the constructor
+    /// only builds easy when added_count<5 and single-word when <20), so
+    /// regime is just "first non-empty preferred pool, else General."
+    pub(crate) fn smart_add_regime(&self) -> SmartAddRegime {
+        if let Some(easy) = &self.easy_single_word_grams
+            && self.first_unadded_gram(easy).is_some()
+        {
+            SmartAddRegime::Easy
+        } else if let Some(single) = &self.single_word_grams
+            && self.first_unadded_gram(single).is_some()
+        {
+            SmartAddRegime::SingleWord
         } else {
-            None
+            SmartAddRegime::General
+        }
+    }
+
+    fn next_text_card(&self) -> Option<(CardIndicator<SpurGram, Spur>, rs_fsrs::Card)> {
+        let preferred_gram = match self.smart_add_regime() {
+            SmartAddRegime::Easy => self
+                .easy_single_word_grams
+                .as_ref()
+                .and_then(|g| self.first_unadded_gram(g)),
+            SmartAddRegime::SingleWord => self
+                .single_word_grams
+                .as_ref()
+                .and_then(|g| self.first_unadded_gram(g)),
+            SmartAddRegime::General => None,
         };
 
-        // Fallback to best overall gram
         let gram = preferred_gram.or_else(|| {
             self.text_values.iter().find_map(|(_, gram)| {
                 let card = CardIndicator::WrittenGram { gram: *gram };

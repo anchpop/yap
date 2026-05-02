@@ -713,10 +713,27 @@ const CARD_TYPES: [CardType; 3] = [
     CardType::LetterPronunciation,
 ];
 
+/// Which onboarding rule next_text_card is using to pick smart-add cards.
+/// Mirrors the thresholds in next_cards::next_text_card so the UI can
+/// describe what "Smart add" is about to do.
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, tsify::Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum SmartAddRegime {
+    /// First 5 cards on a Latin-script course: high-frequency easy single words.
+    Easy,
+    /// Cards 5..20, or first 5 on a new-writing-system course: single-word grams.
+    SingleWord,
+    /// 20+ cards: best card by value, no single-word constraint.
+    General,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct NoCardsReadyInfo {
     pub smart_add_count: u32,
+    pub smart_add_regime: SmartAddRegime,
+    /// Cards remaining in the Easy onboarding window (zero once we've left it).
+    pub easy_cards_remaining: u32,
     /// Display strings for the cards that would be added via smart_add
     pub preview: Vec<String>,
     /// The estimated percent of words known after adding smart_add cards
@@ -2975,7 +2992,7 @@ impl Deck {
     }
 
     fn max_cards_to_add(&self) -> usize {
-        let current_cards = self.num_cards();
+        let current_cards = self.num_cards_added();
 
         if current_cards < 5 {
             1
@@ -3025,15 +3042,15 @@ impl Deck {
             banned_challenge_types.into_iter().collect();
         let max_cards_to_add = self.max_cards_to_add();
 
-        // One next_unknown_cards call for smart add
-        let smart_add_cards: Vec<_> = self
-            .next_unknown_cards(
-                AllowedCards::BannedRequirements(banned_types_set),
-                &goal,
-                max_cards_to_add,
-            )
-            .take(max_cards_to_add)
-            .collect();
+        // One next_unknown_cards call for smart add. Capture the regime
+        // before consuming the iterator so the UI can describe the batch.
+        let next_cards_iter = self.next_unknown_cards(
+            AllowedCards::BannedRequirements(banned_types_set),
+            &goal,
+            max_cards_to_add,
+        );
+        let smart_add_regime = next_cards_iter.smart_add_regime();
+        let smart_add_cards: Vec<_> = next_cards_iter.take(max_cards_to_add).collect();
 
         // Projected percent known
         let mut projected_written = self.get_comprehensible_written_grams(true).clone();
@@ -3128,8 +3145,12 @@ impl Deck {
         let upcoming = self.get_upcoming_week_review_stats();
         let cards_added_past_16_hours = self.get_cards_added_in_past_hours(16.0);
 
+        let easy_cards_remaining = 5_u32.saturating_sub(self.num_cards_added() as u32);
+
         NoCardsReadyInfo {
             smart_add_count: smart_add_cards.len() as u32,
+            smart_add_regime,
+            easy_cards_remaining,
             preview,
             percent_known_after,
             smart_add_event,
@@ -3347,9 +3368,16 @@ impl Deck {
         }))
     }
 
+    /// Count of cards the user has explicitly added (excludes ghosts).
+    /// Use this for onboarding/regime decisions and any "how much have you
+    /// engaged with this deck" UX — a ghost card represents a word the user
+    /// happened to encounter in a sentence, not a deliberate add.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn num_cards(&self) -> usize {
-        self.cards.len()
+    pub fn num_cards_added(&self) -> usize {
+        self.cards
+            .values()
+            .filter(|card| matches!(card, CardData::Added { .. }))
+            .count()
     }
 
     fn get_past_week_challenge_average(&self) -> f64 {
@@ -5151,9 +5179,9 @@ mod tests {
 
         let assert_limits = |deck: &Deck| {
             let info = deck.get_no_cards_ready_info(Vec::new(), None);
-            let expected_max = if deck.num_cards() < 5 {
+            let expected_max = if deck.num_cards_added() < 5 {
                 1
-            } else if deck.num_cards() < 11 {
+            } else if deck.num_cards_added() < 11 {
                 2
             } else {
                 5
@@ -5164,7 +5192,7 @@ mod tests {
 
         assert_limits(&deck);
 
-        while deck.num_cards() < 12 {
+        while deck.num_cards_added() < 12 {
             let Some(event) = deck
                 .get_no_cards_ready_info(Vec::new(), None)
                 .smart_add_event
@@ -5178,13 +5206,13 @@ mod tests {
                 event,
             };
 
-            let previous_cards = deck.num_cards();
+            let previous_cards = deck.num_cards_added();
             let context = deck.context.clone();
             let state = DeckState::from(deck);
             let state = Deck::process_event(state, &context, &timestamped);
             deck = Deck::finalize(state, &context);
             assert!(
-                deck.num_cards() <= previous_cards + 5,
+                deck.num_cards_added() <= previous_cards + 5,
                 "deck should not grow by more than the requested amount"
             );
 
@@ -5294,7 +5322,7 @@ mod tests {
         let deck: Deck = stream.state(initial_state, &context);
 
         // 6. Verify the computed state looks reasonable
-        let num_cards = deck.num_cards();
+        let num_cards = deck.num_cards_added();
         let total_reviews = deck.stats.total_reviews;
         println!("Computed deck state:");
         println!("  Total tracked cards: {num_cards}");
@@ -5673,7 +5701,7 @@ mod tests {
 
         // 6. Print report
         println!("\n=== Deck State ===");
-        println!("  Total cards: {}", deck.num_cards());
+        println!("  Total cards: {}", deck.num_cards_added());
         println!("  Total reviews: {}", deck.stats.total_reviews);
         println!("  XP: {:.1}", deck.stats.xp);
         println!(

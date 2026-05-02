@@ -1079,7 +1079,7 @@ function Review({
       }
 
       if (event.code === "Space" || event.code === "Enter") {
-        if (deck.num_cards() === 0) {
+        if (deck.num_cards_added() === 0) {
           event.preventDefault();
           addSmartCards();
         }
@@ -1106,7 +1106,7 @@ function Review({
   const shouldShowPlacementTest =
     startingFresh === false &&
     !deck.has_taken_placement_test() &&
-    deck.num_cards() < 3;
+    deck.num_cards_added() < 3;
 
   return (
     <>

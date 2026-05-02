@@ -90,7 +90,7 @@ export function AccomplishmentScreen({
   const streak = deck.get_daily_streak();
   const wordsKnown = useMemo(() => {
     const pct = deck.get_percent_of_words_known();
-    return Math.round(pct * deck.num_cards());
+    return Math.round(pct * deck.num_cards_added());
   }, [deck]);
 
   // Create confetti instance bound to our canvas
