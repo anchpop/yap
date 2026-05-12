@@ -323,10 +323,14 @@ async fn read_cached_language_data(
         };
 
         let expected_chunk_len = language_data_chunk_len(expected_size, chunk_index);
-        let actual_chunk_len = file_handle
-            .size()
-            .await
-            .map_err(LanguageDataError::Persistent)? as usize;
+        let actual_chunk_len = match file_handle.size().await {
+            Ok(size) => size,
+            Err(error) => {
+                log::warn!("OPFS size() failed for {filename} ({error:?}), treating as cache miss");
+                let _ = language_directory_handle.remove_entry(filename).await;
+                return Ok(None);
+            }
+        };
 
         if actual_chunk_len != expected_chunk_len {
             log::warn!(
@@ -522,10 +526,14 @@ async fn get_cached_chunk_bytes(
         Ok(file_handle) => file_handle,
         Err(_) => return Ok(None),
     };
-    let chunk_bytes = file_handle
-        .read()
-        .await
-        .map_err(LanguageDataError::Persistent)?;
+    let chunk_bytes = match file_handle.read().await {
+        Ok(bytes) => bytes,
+        Err(error) => {
+            log::warn!("OPFS read() failed for {filename} ({error:?}), treating as cache miss");
+            let _ = language_directory_handle.remove_entry(filename).await;
+            return Ok(None);
+        }
+    };
 
     if chunk_bytes.len() == expected_chunk_len {
         return Ok(Some(chunk_bytes));
