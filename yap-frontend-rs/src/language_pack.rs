@@ -222,11 +222,35 @@ pub(crate) async fn get_language_pack(
     let archived = rkyv::access::<ArchivedLanguagePack, rkyv::rancor::Error>(&bytes[..]);
 
     let deserialized = match archived {
-        Ok(archived) => rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-            .inspect_err(|e| {
-                log::error!("Error deserializing language data: {e:?}");
-            })
-            .map_err(LanguageDataError::Rkyv)?,
+        Ok(archived) => {
+            match rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived) {
+                Ok(d) => d,
+                Err(e) => {
+                    log::error!(
+                        "Error deserializing language data, re-downloading: {e:?}"
+                    );
+                    let bytes = download_and_cache_language_data(
+                        &mut language_directory,
+                        course,
+                        language_data_hash,
+                        language_data_size,
+                        set_loading_state,
+                    )
+                    .await?;
+                    let archived =
+                        rkyv::access::<ArchivedLanguagePack, rkyv::rancor::Error>(&bytes[..])
+                            .inspect_err(|e| {
+                                log::error!("2nd error accessing language data: {e:?}");
+                            })
+                            .map_err(LanguageDataError::Rkyv)?;
+                    rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
+                        .inspect_err(|e| {
+                            log::error!("2nd error deserializing language data: {e:?}");
+                        })
+                        .map_err(LanguageDataError::Rkyv)?
+                }
+            }
+        }
         Err(e) => {
             log::error!("Error when accessing language data: {e}\nre-downloading language data");
             let bytes = download_and_cache_language_data(
