@@ -120,7 +120,8 @@ function AppMain() {
       if (r) {
         setInterval(() => {
           r.update().catch((e) => {
-            if (navigator.onLine) {
+            // InvalidStateError means the SW registration is stale/unregistered — harmless.
+            if (navigator.onLine && !(e instanceof DOMException && e.name === "InvalidStateError")) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
           });

@@ -17,9 +17,13 @@ Sentry.init({
   ],
 
   beforeSend(event) {
-    // Filter out browser extension errors (not our code)
     const message = event.exception?.values?.[0]?.value ?? "";
+    // Browser extension errors — not our code
     if (message.includes("runtime.sendMessage()")) {
+      return null;
+    }
+    // iOS hardware audio error from Howler's internal AudioContext resume — not our code
+    if (message.includes("Failed to start the audio device")) {
       return null;
     }
     return event;
