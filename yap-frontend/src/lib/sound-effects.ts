@@ -28,46 +28,49 @@ let currentSoundEffect: Howl | null = null;
 
 export const playSoundEffect = (type: SoundType): Promise<void> => {
   return new Promise((resolve) => {
-    const sound = getSound(type);
+    try {
+      const sound = getSound(type);
 
-    // Stop any currently playing sound effect
-    if (currentSoundEffect && currentSoundEffect.playing()) {
-      currentSoundEffect.stop();
+      // Stop any currently playing sound effect
+      if (currentSoundEffect && currentSoundEffect.playing()) {
+        currentSoundEffect.stop();
+      }
+
+      currentSoundEffect = sound;
+
+      // Play the sound and resolve when it's done
+      const soundId = sound.play();
+
+      sound.once(
+        "end",
+        () => {
+          currentSoundEffect = null;
+          resolve();
+        },
+        soundId,
+      );
+
+      sound.once(
+        "loaderror",
+        () => {
+          currentSoundEffect = null;
+          resolve();
+        },
+        soundId,
+      );
+
+      sound.once(
+        "playerror",
+        () => {
+          currentSoundEffect = null;
+          resolve();
+        },
+        soundId,
+      );
+    } catch {
+      currentSoundEffect = null;
+      resolve();
     }
-
-    currentSoundEffect = sound;
-
-    // Play the sound and resolve when it's done
-    const soundId = sound.play();
-
-    sound.once(
-      "end",
-      () => {
-        currentSoundEffect = null;
-        resolve();
-      },
-      soundId,
-    );
-
-    sound.once(
-      "loaderror",
-      () => {
-        currentSoundEffect = null;
-        console.error(`Failed to load ${type} sound`);
-        resolve();
-      },
-      soundId,
-    );
-
-    sound.once(
-      "playerror",
-      () => {
-        currentSoundEffect = null;
-        console.error(`Failed to play ${type} sound`);
-        resolve();
-      },
-      soundId,
-    );
   });
 };
 

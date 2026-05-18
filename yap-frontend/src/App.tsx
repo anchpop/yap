@@ -182,7 +182,7 @@ function AppCheckLoggedIn({ weaponToken }: { weaponToken: WeaponToken }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-    });
+    }).catch(() => {});
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
