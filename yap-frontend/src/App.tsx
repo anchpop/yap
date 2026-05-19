@@ -118,8 +118,18 @@ function AppMain() {
   useRegisterSW({
     onRegistered(r) {
       if (r) {
-        setInterval(() => {
+        const intervalId = setInterval(() => {
           r.update().catch((e) => {
+            // SW registration became invalid; stop polling instead of reporting noise
+            const isInvalidState = e instanceof DOMException && e.code === 11;
+            const isNullRegistration =
+              e instanceof TypeError &&
+              typeof e.message === "string" &&
+              e.message.toLowerCase().includes("null");
+            if (isInvalidState || isNullRegistration) {
+              clearInterval(intervalId);
+              return;
+            }
             if (navigator.onLine) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
