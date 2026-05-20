@@ -218,17 +218,21 @@ pub(crate) async fn get_language_pack(
 
     set_loading_state("Deserializing language data", 100.0);
     let loading_perf_timer = utils::PerfTimer::new("Deserializing language data");
-    // Common deserialization logic for both cache hit and miss
-    let archived = rkyv::access::<ArchivedLanguagePack, rkyv::rancor::Error>(&bytes[..]);
 
-    let deserialized = match archived {
-        Ok(archived) => rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-            .inspect_err(|e| {
-                log::error!("Error deserializing language data: {e:?}");
-            })
-            .map_err(LanguageDataError::Rkyv)?,
+    let chunk_filenames = language_data_chunk_filenames(language_data_hash, language_data_size);
+
+    let deserialize_result = rkyv::access::<ArchivedLanguagePack, rkyv::rancor::Error>(&bytes[..])
+        .map_err(|e| format!("access: {e:?}"))
+        .and_then(|archived| {
+            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
+                .map_err(|e| format!("deserialize: {e:?}"))
+        });
+
+    let deserialized = match deserialize_result {
+        Ok(d) => d,
         Err(e) => {
-            log::error!("Error when accessing language data: {e}\nre-downloading language data");
+            log::error!("Error loading language data ({e}), removing cache and re-downloading");
+            remove_language_data_files(&mut language_directory, &chunk_filenames).await;
             let bytes = download_and_cache_language_data(
                 &mut language_directory,
                 course,
@@ -238,14 +242,10 @@ pub(crate) async fn get_language_pack(
             )
             .await?;
             let archived = rkyv::access::<ArchivedLanguagePack, rkyv::rancor::Error>(&bytes[..])
-                .inspect_err(|e| {
-                    log::error!("2nd error accessing language data: {e:?}");
-                })
+                .inspect_err(|e| log::error!("2nd error accessing language data: {e:?}"))
                 .map_err(LanguageDataError::Rkyv)?;
             rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-                .inspect_err(|e| {
-                    log::error!("Error deserializing language data: {e:?}");
-                })
+                .inspect_err(|e| log::error!("2nd error deserializing language data: {e:?}"))
                 .map_err(LanguageDataError::Rkyv)?
         }
     };
