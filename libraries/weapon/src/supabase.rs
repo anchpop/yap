@@ -115,9 +115,10 @@ impl EventStore<String, String> {
             .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
 
         if !response.ok() {
+            let status = response.status();
+            let body = response.text().await.unwrap_or_default();
             return Err(JsValue::from_str(&format!(
-                "Sync failed with status: {}",
-                response.status()
+                "Sync failed with status: {status} - {body}"
             )));
         }
 
@@ -319,9 +320,10 @@ async fn get_clock(
         .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
 
     if !resp.ok() {
+        let status = resp.status();
+        let body = resp.text().await.unwrap_or_default();
         return Err(JsValue::from_str(&format!(
-            "get_clock RPC failed with status: {}",
-            resp.status()
+            "get_clock RPC failed with status: {status} - {body}"
         )));
     }
 
