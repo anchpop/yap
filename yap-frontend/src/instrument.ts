@@ -17,9 +17,17 @@ Sentry.init({
   ],
 
   beforeSend(event) {
-    // Filter out browser extension errors (not our code)
     const message = event.exception?.values?.[0]?.value ?? "";
+    // Browser extension errors
     if (message.includes("runtime.sendMessage()")) {
+      return null;
+    }
+    // WASM compile errors from browsers that don't support reference types (e.g. Chrome <79)
+    if (message.includes("WebAssembly.instantiateStreaming")) {
+      return null;
+    }
+    // IndexedDB backing store errors from old Android/Chrome versions
+    if (message.includes("Internal error opening backing store for indexedDB")) {
       return null;
     }
     return event;

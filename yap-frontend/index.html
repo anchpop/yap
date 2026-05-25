@@ -7,35 +7,39 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
-        // Determine if we're in development or production
-        const isDevelopment = window.location.hostname === 'localhost' || 
-                            window.location.hostname === '127.0.0.1' ||
-                            window.location.hostname.includes('dev') ||
-                            window.location.port === '5173'; // Vite's default dev port
+        try {
+          // Determine if we're in development or production
+          const isDevelopment = window.location.hostname === 'localhost' ||
+                              window.location.hostname === '127.0.0.1' ||
+                              window.location.hostname.includes('dev') ||
+                              window.location.port === '5173'; // Vite's default dev port
 
-        const config = isDevelopment ? {
-          // Local development
-          appId: "cdde60d3-fd8c-4271-87cd-e3f18f6377b4",
-          safari_web_id: "web.onesignal.auto.44e66786-7e94-4ade-8822-3a1650cda83f"
-        } : {
-          // Production
-          appId: "31e87860-a9d1-435b-9838-cb7643bb5cdf",
-          safari_web_id: "web.onesignal.auto.29ad6177-53c3-46b5-8017-0e7b95131b37"
-        };
+          const config = isDevelopment ? {
+            // Local development
+            appId: "cdde60d3-fd8c-4271-87cd-e3f18f6377b4",
+            safari_web_id: "web.onesignal.auto.44e66786-7e94-4ade-8822-3a1650cda83f"
+          } : {
+            // Production
+            appId: "31e87860-a9d1-435b-9838-cb7643bb5cdf",
+            safari_web_id: "web.onesignal.auto.29ad6177-53c3-46b5-8017-0e7b95131b37"
+          };
 
-        console.log(`OneSignal initializing in ${isDevelopment ? 'development' : 'production'} mode`);
+          console.log(`OneSignal initializing in ${isDevelopment ? 'development' : 'production'} mode`);
 
-        await OneSignal.init({
-          ...config,
-          notifyButton: {
-            enable: false, // Disable the default notification button
-          },
-          welcomeNotification: {
-            disable: true  // This disables the welcome notification
-          },
-          serviceWorkerParam: { scope: "/push/onesignal/" },
-          serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js"
-        });
+          await OneSignal.init({
+            ...config,
+            notifyButton: {
+              enable: false, // Disable the default notification button
+            },
+            welcomeNotification: {
+              disable: true  // This disables the welcome notification
+            },
+            serviceWorkerParam: { scope: "/push/onesignal/" },
+            serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js"
+          });
+        } catch (e) {
+          console.warn('OneSignal init failed:', e);
+        }
       });
     </script>
 
@@ -145,6 +149,25 @@
     <div id="root"></div>
     
     <script>
+      // Detect browsers that lack OPFS (required for app) and show a message immediately,
+      // before the React bundle even loads.
+      (function() {
+        var supported = !!(
+          window.WebAssembly &&
+          navigator.storage &&
+          typeof navigator.storage.getDirectory === 'function' &&
+          typeof FileSystemFileHandle !== 'undefined'
+        );
+        if (!supported) {
+          var loadingText = document.getElementById('loading-text');
+          if (loadingText) {
+            loadingText.textContent = 'Your browser is not supported. Please update to a modern version of Chrome, Firefox, or Safari.';
+          }
+          var spinner = document.getElementById('loading-spinner');
+          if (spinner) spinner.style.display = 'none';
+        }
+      })();
+
       // Show reload button after 7 seconds
       setTimeout(function() {
         var button = document.getElementById('reload-button');
@@ -152,7 +175,7 @@
           button.classList.add('show');
         }
       }, 7000);
-      
+
       // Hide loading screen when React app mounts
       // React will call this when it's ready
       window.hideLoadingScreen = function() {
