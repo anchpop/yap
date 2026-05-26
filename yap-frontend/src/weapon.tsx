@@ -308,6 +308,24 @@ async function checkBrowserSupport(
       return;
     }
 
+    // Check WebAssembly reference types (externref) support — required by our
+    // WASM module. Some browsers (Samsung Internet 29, Chrome on iOS 26) either
+    // fail to compile modules that use externref or panic at runtime when the
+    // externref table is exercised. We probe with a tiny valid module so we
+    // can show a proper "unsupported browser" message instead of a cryptic crash.
+    // This check runs every time (not cached) because it's cheap and the cached
+    // OPFS result would otherwise let broken browsers through.
+    const externrefProbe = new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, // magic
+      0x01, 0x00, 0x00, 0x00, // version
+      0x01, 0x06, 0x01,       // type section, 6 bytes, 1 type
+      0x60, 0x01, 0x6f, 0x01, 0x6f, // func (externref) -> (externref)
+    ]);
+    if (!WebAssembly.validate(externrefProbe)) {
+      setBrowserSupported(false);
+      return;
+    }
+
     if (opfsTestPassed === "true") {
       setBrowserSupported(true);
     } else {

@@ -500,11 +500,23 @@ async fn download_language_data_chunk(
         }
     }
 
-    if chunk_bytes.len() != expected_chunk_len {
-        return Err(LanguageDataError::InvalidData(format!(
-            "Downloaded language data chunk {chunk_index} had {actual} bytes, expected {expected_chunk_len}",
-            actual = chunk_bytes.len()
-        )));
+    match chunk_bytes.len().cmp(&expected_chunk_len) {
+        std::cmp::Ordering::Greater => {
+            // The server sent extra bytes (e.g. trailing padding). Truncate and
+            // let the hash check at the end of all chunks decide correctness.
+            log::warn!(
+                "Downloaded language data chunk {chunk_index} had {} bytes, expected {expected_chunk_len}. Truncating extra bytes.",
+                chunk_bytes.len()
+            );
+            chunk_bytes.truncate(expected_chunk_len);
+        }
+        std::cmp::Ordering::Less => {
+            return Err(LanguageDataError::InvalidData(format!(
+                "Downloaded language data chunk {chunk_index} had {} bytes, expected {expected_chunk_len}",
+                chunk_bytes.len()
+            )));
+        }
+        std::cmp::Ordering::Equal => {}
     }
 
     Ok(chunk_bytes)
