@@ -180,9 +180,15 @@ function AppCheckLoggedIn({ weaponToken }: { weaponToken: WeaponToken }) {
   );
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+      })
+      .catch((error) => {
+        console.error("Failed to get session:", error);
+        setSession(null);
+      });
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
