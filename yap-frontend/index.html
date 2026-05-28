@@ -152,7 +152,7 @@
           button.classList.add('show');
         }
       }, 7000);
-      
+
       // Hide loading screen when React app mounts
       // React will call this when it's ready
       window.hideLoadingScreen = function() {
@@ -161,6 +161,19 @@
           loadingScreen.style.display = 'none';
         }
       };
+
+      // If a critical resource fails to load (e.g. WASM binary network error),
+      // show the reload button immediately rather than making the user wait 7s.
+      window.addEventListener('unhandledrejection', function() {
+        var loadingScreen = document.getElementById('loading-screen');
+        // Only act while the loading screen is still visible (before React mounts)
+        if (loadingScreen && loadingScreen.style.display !== 'none') {
+          var text = document.getElementById('loading-text');
+          var button = document.getElementById('reload-button');
+          if (text) text.textContent = 'Failed to load. Please refresh.';
+          if (button) button.classList.add('show');
+        }
+      });
     </script>
     
     <script type="module" src="/src/main.tsx"></script>
