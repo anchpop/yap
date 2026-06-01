@@ -3,6 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 import { AddToHomeScreenModal } from "@/components/add-to-home-screen-modal";
 
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+      install: React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          installurl?: string;
+          manifestid?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+
+const hasInstallElement =
+  typeof window !== "undefined" && "HTMLInstallElement" in window;
+
 interface InstallPwaButtonProps {
   variant?:
     | "default"
@@ -21,6 +38,10 @@ export function InstallPwaButton({
   className,
 }: InstallPwaButtonProps) {
   const [showModal, setShowModal] = useState(false);
+
+  if (hasInstallElement) {
+    return <install className={className} />;
+  }
 
   return (
     <>
