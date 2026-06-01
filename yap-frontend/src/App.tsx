@@ -119,11 +119,7 @@ function AppMain() {
     onRegistered(r) {
       if (r) {
         setInterval(() => {
-          r.update().catch((e) => {
-            if (navigator.onLine) {
-              Sentry.captureException(e, { tags: { "sw.online": true } });
-            }
-          });
+          r.update().catch(() => {});
         }, updateIntervalMS);
       }
     },
