@@ -943,6 +943,13 @@ async fn autograde_transcription(
     let target_language_name = target_language.to_string();
     let native_language_name = native_language.to_string();
 
+    let language_specific_phonetic_note = match target_language {
+        Language::Korean => {
+            "The ㅐ/ㅔ distinction has collapsed in modern Seoul Korean — most speakers can't reliably distinguish them in production or perception. So if the user wrote a word that makes sense and only differs from the expected word by ㅐ/ㅔ, treat it as Perfect (or at worst PhoneticallyIdenticalButContextuallyIncorrect if the resulting word doesn't quite fit the context).\n\n"
+        }
+        _ => "",
+    };
+
     let system_prompt = format!(
         r#"{PERSONALITY}The user is learning {target_language_name} through transcription exercises. They listened to {target_language_name} audio and were asked to transcribe certain parts of the sentence while other parts were provided to them. Your job is to grade their transcription by comparing what they heard with what they wrote.
 
@@ -956,7 +963,7 @@ For each word they were asked to transcribe, assign one of these grades:
 
 Consider common {target_language_name} homophones and near-homophones when grading. Be understanding of minor spelling mistakes if the phonetics are correct.
 
-You should always provide encouragement highlighting what the user did right and acknowledging their progress. If there are any errors, also provide a brief explanation focusing on where they made mistakes and how they can improve.
+{language_specific_phonetic_note}You should always provide encouragement highlighting what the user did right and acknowledging their progress. If there are any errors, also provide a brief explanation focusing on where they made mistakes and how they can improve.
 
 Respond with JSON in this format:
 {{
