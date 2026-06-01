@@ -10,7 +10,10 @@ use lasso::Spur;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-use crate::{CardData, CardIndicator, Deck, DeckEvent, LanguageEvent, LanguageEventContent};
+use crate::{
+    AudioRequest, CardData, CardIndicator, Deck, DeckEvent, LanguageEvent, LanguageEventContent,
+};
+use language_utils::{TtsProvider, TtsRequest};
 
 /// Compute the grammatical prefix and morphology for a gram, given its definition
 /// and target language.
@@ -256,6 +259,7 @@ impl Deck {
                         definition: GramDictionaryDefinition::Dictionary {
                             definitions: dict_def.definitions.clone(),
                         },
+                        target_language,
                     },
                     GramDefinition::Phrasebook(pb_def) => GramDictionaryEntry {
                         display_text,
@@ -271,6 +275,7 @@ impl Deck {
                             native_language_example: Some(pb_def.native_language_example.clone())
                                 .filter(|s| !s.is_empty()),
                         },
+                        target_language,
                     },
                 };
 
@@ -332,6 +337,7 @@ pub struct GramDictionaryEntry {
     prefix: Option<WordPrefix>,
     morphology: Option<Morphology>,
     definition: GramDictionaryDefinition,
+    target_language: Language,
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -369,6 +375,20 @@ impl GramDictionaryEntry {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
     pub fn definition(&self) -> GramDictionaryDefinition {
         self.definition.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn audio_request(&self) -> AudioRequest {
+        AudioRequest {
+            request: TtsRequest {
+                text: self.display_text.clone(),
+                language: self.target_language,
+                is_ssml: false,
+                instructions: None,
+                speed: 1.0,
+            },
+            provider: TtsProvider::Google,
+        }
     }
 }
 

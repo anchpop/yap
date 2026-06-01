@@ -2,14 +2,19 @@ import modal
 
 app = modal.App("wav2vec2-phoneme")
 
+MODEL_ID = "anchpop/lexide-pronunciation-phoneme-xls-r-2b"
+
 image = (
     modal.Image.debian_slim(python_version="3.11")
     .apt_install("espeak-ng")
-    .pip_install("torch", "torchaudio", "transformers", "fastapi[standard]", "phonemizer")
+    .pip_install(
+        "torch", "torchaudio", "transformers", "fastapi[standard]",
+        "phonemizer",
+    )
     .run_commands(
         "python -c \"from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor; "
-        "Wav2Vec2Processor.from_pretrained('facebook/wav2vec2-lv-60-espeak-cv-ft'); "
-        "Wav2Vec2ForCTC.from_pretrained('facebook/wav2vec2-lv-60-espeak-cv-ft')\""
+        f"Wav2Vec2Processor.from_pretrained('{MODEL_ID}'); "
+        f"Wav2Vec2ForCTC.from_pretrained('{MODEL_ID}')\""
     )
 )
 
@@ -27,11 +32,11 @@ class Wav2Vec2Phoneme:
         import torch
         from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 
-        self.processor = Wav2Vec2Processor.from_pretrained(
-            "facebook/wav2vec2-lv-60-espeak-cv-ft"
-        )
+        self.processor = Wav2Vec2Processor.from_pretrained(MODEL_ID)
+        # fp16 keeps the ~8.6GB fp32 xls-r-2b weights comfortably under the
+        # T4's 16GB. Inference quality impact is negligible for CTC decoding.
         self.model = Wav2Vec2ForCTC.from_pretrained(
-            "facebook/wav2vec2-lv-60-espeak-cv-ft"
+            MODEL_ID, torch_dtype=torch.float16
         ).to("cuda")
         self.model.eval()
 
@@ -40,7 +45,7 @@ class Wav2Vec2Phoneme:
             [0.0] * 16000, sampling_rate=16000, return_tensors="pt", padding=True
         )
         with torch.no_grad():
-            self.model(dummy.input_values.to("cuda"))
+            self.model(dummy.input_values.to("cuda").to(torch.float16))
 
     def _decode_with_confidence(self, logits, top_k: int = 3) -> list[dict]:
         """CTC-decode logits and return per-phoneme confidence + top-k alternatives.
@@ -111,7 +116,8 @@ class Wav2Vec2Phoneme:
         inputs = self.processor(
             audio_samples, sampling_rate=16000, return_tensors="pt", padding=True
         )
-        input_values = inputs.input_values.to("cuda")
+        # Cast to fp16 to match the model's dtype (see load_model).
+        input_values = inputs.input_values.to("cuda").to(torch.float16)
 
         with torch.no_grad():
             logits = self.model(input_values).logits

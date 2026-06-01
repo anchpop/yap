@@ -6,6 +6,7 @@ mod deck_event;
 mod deck_selection;
 mod dictionary;
 mod directories;
+mod human_audio;
 mod language_pack;
 mod next_cards;
 mod notifications;
@@ -603,9 +604,11 @@ impl Weapon {
             },
         )
         .await?;
+        let language_pack = Arc::new(language_pack);
+        human_audio::register(course.target_language, Arc::clone(&language_pack));
         self.language_pack
             .borrow_mut()
-            .insert(course, Arc::new(language_pack));
+            .insert(course, language_pack);
         Ok(())
     }
 }
@@ -4136,28 +4139,59 @@ pub struct AudioRequest {
     provider: TtsProvider,
 }
 
+/// Audio bytes plus a sidecar identifying the voice actor, when the clip
+/// came from a human recording rather than TTS.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub struct AudioResult {
+    bytes: Vec<u8>,
+    voice_actor: Option<audio::VoiceActorInfo>,
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl AudioResult {
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn bytes(&self) -> js_sys::Uint8Array {
+        js_sys::Uint8Array::from(&self.bytes[..])
+    }
+
+    /// The voice actor behind the clip when it's human-recorded, else `None`.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn voice_actor(&self) -> Option<audio::VoiceActorInfo> {
+        self.voice_actor.clone()
+    }
+}
+
+impl From<audio::FetchedAudio> for AudioResult {
+    fn from(fetched: audio::FetchedAudio) -> Self {
+        Self {
+            bytes: fetched.bytes,
+            voice_actor: fetched.voice_actor,
+        }
+    }
+}
+
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub async fn get_audio(
     request: AudioRequest,
     access_token: Option<String>,
-) -> Result<js_sys::Uint8Array, JsValue> {
+) -> Result<AudioResult, JsValue> {
     let audio_cache = audio::AudioCache::new().await?;
-    let bytes = audio_cache
+    let fetched = audio_cache
         .fetch_and_cache(&request, access_token.as_ref())
         .await?;
-    Ok(js_sys::Uint8Array::from(&bytes[..]))
+    Ok(fetched.into())
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub async fn get_temp_audio(
     request: AudioRequest,
     access_token: Option<String>,
-) -> Result<js_sys::Uint8Array, JsValue> {
+) -> Result<AudioResult, JsValue> {
     let temp_cache = audio::TempAudioCache::new().await?;
-    let bytes = temp_cache
+    let fetched = temp_cache
         .fetch_and_cache(&request, access_token.as_ref())
         .await?;
-    Ok(js_sys::Uint8Array::from(&bytes[..]))
+    Ok(fetched.into())
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]

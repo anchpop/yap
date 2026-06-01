@@ -6,7 +6,12 @@ import {
   invalidate_audio_cache,
   type AudioRequest,
   type Language,
+  type VoiceActorInfo,
 } from "../../../yap-frontend-rs/pkg";
+
+// Re-exported from the wasm bindings so callers import a single shared type
+// (generated from the Rust `VoiceActorInfo`) rather than a hand-written copy.
+export type { VoiceActorInfo };
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -123,6 +128,7 @@ export async function playAudio(
   needsAuth: () => void,
   onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>,
   signal?: AbortSignal,
+  onVoiceActor?: (info: VoiceActorInfo) => void,
 ): Promise<void> {
   if (signal?.aborted) throw abortError();
 
@@ -138,8 +144,14 @@ export async function playAudio(
   }
 
   try {
-    const audioData = await get_audio(audioRequest, accessToken);
+    const result = await get_audio(audioRequest, accessToken);
     if (signal?.aborted) throw abortError();
+
+    const audioData = result.bytes;
+    const voiceActor = result.voice_actor;
+    if (voiceActor) {
+      onVoiceActor?.(voiceActor);
+    }
 
     const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
     const audioUrl = URL.createObjectURL(audioBlob);
@@ -251,6 +263,7 @@ export async function playTempAudio(
   accessToken: string | undefined,
   needsAuth: () => void,
   signal?: AbortSignal,
+  onVoiceActor?: (info: VoiceActorInfo) => void,
 ): Promise<void> {
   if (signal?.aborted) throw abortError();
 
@@ -265,8 +278,14 @@ export async function playTempAudio(
   }
 
   try {
-    const audioData = await get_temp_audio(audioRequest, accessToken);
+    const result = await get_temp_audio(audioRequest, accessToken);
     if (signal?.aborted) throw abortError();
+
+    const audioData = result.bytes;
+    const voiceActor = result.voice_actor;
+    if (voiceActor) {
+      onVoiceActor?.(voiceActor);
+    }
 
     const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
     const audioUrl = URL.createObjectURL(audioBlob);

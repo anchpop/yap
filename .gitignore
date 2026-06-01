@@ -25,6 +25,10 @@ yap-frontend/dev-dist
 # Morphology data download cache (re-download with generate_morphology_data.py)
 .cache/morphology/
 
+# wav2vec2 prediction cache — regenerated on every compare-audio-models run,
+# partitioned by model/decoder version, can balloon to 10k+ files
+.cache/wav2vec2/
+
 # Profiling artifacts
 perf.data
 perf.data.old
@@ -58,7 +62,13 @@ out/*/proper_noun_definitions.jsonl
 out/*/encoded_sentences.jsonl
 out/*/pronunciation_to_words.jsonl
 out/*/supertokens.txt
+out/*/top_grams.txt
 out/*/vocabulary.jsonl
 out/*/word_to_pronunciation.jsonl
 out/*/etymology_segmentations.jsonl
 out/*/morpheme_info.jsonl
+out/*/minimal_pairs.jsonl
+out/*/audio_verification_failures.jsonl
+out/*/audio_verification_all.jsonl
+
+target-codex/

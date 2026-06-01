@@ -27,10 +27,13 @@ pub fn apply_cache_only(
     }
 }
 
+pub mod audio_verification;
 pub mod dict;
 pub mod disambiguation_practice;
+pub mod espeak;
 pub mod etymology;
 pub mod frequencies;
+pub mod human_audio;
 pub mod lexide_token;
 pub mod llm_etymology;
 pub mod morpheme_info;

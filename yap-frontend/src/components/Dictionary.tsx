@@ -11,6 +11,7 @@ import { formatMorphology } from "@/utils/formatMorphology";
 import { highlightTermInSentence } from "@/utils/highlightTermInSentence";
 import { Card } from "@/components/ui/card";
 import { TargetLanguageText } from "./TargetLanguageText";
+import { AudioButton } from "./AudioButton";
 
 const RESULTS_LIMIT = 100;
 
@@ -84,11 +85,13 @@ export function Dictionary({
   weapon,
   targetLanguage,
   nativeLanguage,
+  accessToken,
 }: {
   deck: Deck;
   weapon: Weapon;
   targetLanguage: Language;
   nativeLanguage: Language;
+  accessToken: string | undefined;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [justAdded, setJustAdded] = useState<Set<number>>(new Set());
@@ -145,22 +148,29 @@ export function Dictionary({
             return (
               <Card key={entry.frequency_index} className="p-4 relative gap-0">
                 <div className="flex items-baseline justify-between gap-4 mb-2">
-                  <h2 className="text-xl font-semibold">
-                    <TargetLanguageText language={targetLanguage}>
-                      {entry.prefix && (
-                        <span className="text-muted-foreground/60">
-                          {entry.prefix.prefix}
-                          {entry.prefix.separator}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <AudioButton
+                      audioRequest={entry.audio_request}
+                      accessToken={accessToken}
+                      className="h-8 w-8 shrink-0"
+                    />
+                    <h2 className="text-xl font-semibold">
+                      <TargetLanguageText language={targetLanguage}>
+                        {entry.prefix && (
+                          <span className="text-muted-foreground/60">
+                            {entry.prefix.prefix}
+                            {entry.prefix.separator}
+                          </span>
+                        )}
+                        {entry.display_text}
+                      </TargetLanguageText>
+                      {entry.is_phrase && (
+                        <span className="text-sm text-muted-foreground/60 font-normal ml-2">
+                          (phrase)
                         </span>
                       )}
-                      {entry.display_text}
-                    </TargetLanguageText>
-                    {entry.is_phrase && (
-                      <span className="text-sm text-muted-foreground/60 font-normal ml-2">
-                        (phrase)
-                      </span>
-                    )}
-                  </h2>
+                    </h2>
+                  </div>
                   {morphologyText && (
                     <span className="text-sm text-muted-foreground italic">
                       {morphologyText}

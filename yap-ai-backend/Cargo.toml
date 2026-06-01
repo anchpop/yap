@@ -32,6 +32,4 @@ tsify.workspace = true
 wasm-bindgen.workspace = true
 postgrest = "1.0"
 resend-rs = "0.18"
-minimp3 = "0.5"
-ogg = "0.9"
-opus = "0.3"
+google-tts = { path = "../libraries/google-tts" }

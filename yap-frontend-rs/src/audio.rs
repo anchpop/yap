@@ -1,10 +1,27 @@
-use crate::{AudioRequest, TtsRequest, persistent, utils::hit_ai_server};
+use crate::{AudioRequest, TtsRequest, human_audio, persistent, utils::hit_ai_server};
 use base64::Engine;
-use language_utils::TtsProvider;
+use language_utils::{Compensation, TtsProvider};
 use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _};
 use std::collections::BTreeSet;
 use wasm_bindgen::JsValue;
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
+
+/// Result of fetching an audio clip — the bytes plus a sidecar saying who
+/// recorded it, when the clip came from a human voice actor (vs. TTS).
+pub struct FetchedAudio {
+    pub bytes: Vec<u8>,
+    pub voice_actor: Option<VoiceActorInfo>,
+}
+
+/// Identifies the voice actor behind a human-recorded clip. Crosses the
+/// wasm boundary as a plain object (`{ name, compensation }`) so the
+/// frontend shares this type rather than redeclaring it.
+#[derive(Clone, serde::Serialize, tsify::Tsify)]
+#[tsify(into_wasm_abi)]
+pub struct VoiceActorInfo {
+    pub name: String,
+    pub compensation: Compensation,
+}
 
 #[derive(Clone)]
 pub struct AudioCache {
@@ -124,50 +141,37 @@ impl AudioCache {
         &self,
         request: &AudioRequest,
         access_token: Option<&String>,
-    ) -> Result<Vec<u8>, JsValue> {
+    ) -> Result<FetchedAudio, JsValue> {
         let AudioRequest { request, provider } = request;
+
+        // Human recordings live in the language pack and don't need OPFS caching.
+        if let Some(human) = human_audio::lookup(request.language, &request.text) {
+            return Ok(FetchedAudio {
+                bytes: human.bytes,
+                voice_actor: Some(VoiceActorInfo {
+                    name: human.actor_name,
+                    compensation: human.compensation,
+                }),
+            });
+        }
 
         // Check cache first
         if let Some(cached_bytes) = self.get_cached(request, provider).await {
-            return Ok(cached_bytes);
+            return Ok(FetchedAudio {
+                bytes: cached_bytes,
+                voice_actor: None,
+            });
         }
 
-        let endpoint = match provider {
-            TtsProvider::Google => "/tts/google",
-            TtsProvider::ElevenLabs => "/tts",
-            TtsProvider::OpenAI => "/tts/openai",
-            TtsProvider::Gemini => "/tts/gemini",
-        };
-
-        let response = hit_ai_server(
-            fetch_happen::Method::POST,
-            endpoint,
-            Some(request),
-            access_token,
-        )
-        .await
-        .map_err(|e| JsValue::from_str(&format!("Request error: {e:?}")))?;
-
-        if !response.ok() {
-            return Err(JsValue::from_str(&format!(
-                "HTTP error: {}",
-                response.status()
-            )));
-        }
-
-        let audio_data = response
-            .text()
-            .await
-            .map_err(|e| JsValue::from_str(&format!("Response parsing error: {e:?}")))?;
-
-        let bytes = base64::engine::general_purpose::STANDARD
-            .decode(&audio_data)
-            .map_err(|e| JsValue::from_str(&format!("Base64 decode error: {e:?}")))?;
+        let bytes = fetch_tts(request, provider, access_token).await?;
 
         // Cache the audio data
         self.cache_audio(request, provider, bytes.clone()).await;
 
-        Ok(bytes)
+        Ok(FetchedAudio {
+            bytes,
+            voice_actor: None,
+        })
     }
 
     pub async fn cleanup_except(
@@ -289,46 +293,31 @@ impl TempAudioCache {
         &self,
         request: &AudioRequest,
         access_token: Option<&String>,
-    ) -> Result<Vec<u8>, JsValue> {
+    ) -> Result<FetchedAudio, JsValue> {
         let AudioRequest { request, provider } = request;
+
+        // Human recordings live in the language pack and don't need OPFS caching.
+        if let Some(human) = human_audio::lookup(request.language, &request.text) {
+            return Ok(FetchedAudio {
+                bytes: human.bytes,
+                voice_actor: Some(VoiceActorInfo {
+                    name: human.actor_name,
+                    compensation: human.compensation,
+                }),
+            });
+        }
+
         let base_filename = Self::get_cache_filename(request, provider);
 
         // Check cache first (match by hash, ignore timestamp)
         if let Some((_filename, bytes)) = self.find_cached(&base_filename).await {
-            return Ok(bytes);
+            return Ok(FetchedAudio {
+                bytes,
+                voice_actor: None,
+            });
         }
 
-        let endpoint = match provider {
-            TtsProvider::Google => "/tts/google",
-            TtsProvider::ElevenLabs => "/tts",
-            TtsProvider::OpenAI => "/tts/openai",
-            TtsProvider::Gemini => "/tts/gemini",
-        };
-
-        let response = hit_ai_server(
-            fetch_happen::Method::POST,
-            endpoint,
-            Some(request),
-            access_token,
-        )
-        .await
-        .map_err(|e| JsValue::from_str(&format!("Request error: {e:?}")))?;
-
-        if !response.ok() {
-            return Err(JsValue::from_str(&format!(
-                "HTTP error: {}",
-                response.status()
-            )));
-        }
-
-        let audio_data = response
-            .text()
-            .await
-            .map_err(|e| JsValue::from_str(&format!("Response parsing error: {e:?}")))?;
-
-        let bytes = base64::engine::general_purpose::STANDARD
-            .decode(&audio_data)
-            .map_err(|e| JsValue::from_str(&format!("Base64 decode error: {e:?}")))?;
+        let bytes = fetch_tts(request, provider, access_token).await?;
 
         // Cache with timestamp in filename
         let temp_filename = Self::temp_filename(&base_filename);
@@ -349,7 +338,10 @@ impl TempAudioCache {
             let _ = writable.close().await;
         }
 
-        Ok(bytes)
+        Ok(FetchedAudio {
+            bytes,
+            voice_actor: None,
+        })
     }
 
     /// Remove all temp audio files older than 24 hours.
@@ -383,6 +375,44 @@ impl TempAudioCache {
 
         Ok(())
     }
+}
+
+async fn fetch_tts(
+    request: &TtsRequest,
+    provider: &TtsProvider,
+    access_token: Option<&String>,
+) -> Result<Vec<u8>, JsValue> {
+    let endpoint = match provider {
+        TtsProvider::Google => "/tts/google",
+        TtsProvider::ElevenLabs => "/tts",
+        TtsProvider::OpenAI => "/tts/openai",
+        TtsProvider::Gemini => "/tts/gemini",
+    };
+
+    let response = hit_ai_server(
+        fetch_happen::Method::POST,
+        endpoint,
+        Some(request),
+        access_token,
+    )
+    .await
+    .map_err(|e| JsValue::from_str(&format!("Request error: {e:?}")))?;
+
+    if !response.ok() {
+        return Err(JsValue::from_str(&format!(
+            "HTTP error: {}",
+            response.status()
+        )));
+    }
+
+    let audio_data = response
+        .text()
+        .await
+        .map_err(|e| JsValue::from_str(&format!("Response parsing error: {e:?}")))?;
+
+    base64::engine::general_purpose::STANDARD
+        .decode(&audio_data)
+        .map_err(|e| JsValue::from_str(&format!("Base64 decode error: {e:?}")))
 }
 
 fn is_valid_audio_data(bytes: &[u8]) -> bool {

@@ -1,6 +1,6 @@
 use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use language_utils::{Course, Pronunciation};
+use language_utils::{Course, Pronunciation, Pronunciations};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashMap};
 use std::{collections::BTreeMap, sync::LazyLock};
@@ -23,11 +23,13 @@ struct PronunciationResponse {
     selected_pronunciation: String,
 }
 
-/// Takes a map of words to their multiple pronunciations and returns the most common one for each
+/// Takes a map of words to their multiple pronunciations and returns the
+/// canonical "main" pronunciation per word plus the remaining wikipron
+/// variants as additional documented alternates.
 pub async fn select_common_pronunciations(
     course: Course,
     words_with_pronunciations: HashMap<String, BTreeSet<String>>,
-) -> anyhow::Result<Vec<(String, Pronunciation)>> {
+) -> anyhow::Result<Vec<(String, Pronunciations)>> {
     let Course {
         target_language, ..
     } = course;
@@ -47,10 +49,21 @@ pub async fn select_common_pronunciations(
         .map(|(word, pronunciations)| {
             let pb = pb.clone();
             async move {
+            let make = |main: Pronunciation| -> (String, Pronunciations) {
+                let others: Vec<Pronunciation> = pronunciations
+                    .iter()
+                    .filter(|p| *p != &main)
+                    .cloned()
+                    .collect();
+                (word.clone(), Pronunciations { main, others })
+            };
+
             // Skip if there's only one pronunciation
             if pronunciations.len() == 1 {
                 pb.inc(1);
-                return Ok::<_, tysm::chat_completions::ChatError>((word.clone(), pronunciations.first().unwrap().clone()));
+                return Ok::<_, tysm::chat_completions::ChatError>(
+                    make(pronunciations.first().unwrap().clone()),
+                );
             }
 
             let response: Result<PronunciationResponse, _> = CHAT_CLIENT.chat_with_system_prompt(
@@ -83,25 +96,25 @@ Output format:
                 Ok(resp) => {
                     // Validate that the selected pronunciation is one of the options
                     if pronunciations.contains(&resp.selected_pronunciation) {
-                        Ok((word.clone(), resp.selected_pronunciation))
+                        Ok(make(resp.selected_pronunciation))
                     } else {
                         // Fallback to first pronunciation if AI response is invalid
                         // usually, the AI just messes up by adding spaces between characters. So let's see if the AI's response is the same as any of the pronunciations without spaces
                         let matching_pronunciation = pronunciations.iter().find(|p| p.replace(" ", "") == resp.selected_pronunciation.replace(" ", ""));
                         if let Some(matching_pronunciation) = matching_pronunciation {
-                            Ok((word.clone(), matching_pronunciation.clone()))
+                            Ok(make(matching_pronunciation.clone()))
                         } else {
                             let selected = resp.selected_pronunciation;
                             let first = pronunciations.first().unwrap().clone();
                             eprintln!("Warning: AI selected invalid pronunciation for '{word}' ({selected}), using first option: {first}");
-                            Ok((word.clone(), first))
+                            Ok(make(first))
                         }
                     }
                 }
                 Err(e) => {
                     eprintln!("Error getting pronunciation for '{word}': {e}");
                     // Fallback to first pronunciation
-                    Ok((word.clone(), pronunciations.first().unwrap().clone()))
+                    Ok(make(pronunciations.first().unwrap().clone()))
                 }
             }
         }

@@ -68,11 +68,9 @@ dependencies = [
  "axum-extra",
  "base64 0.22.1",
  "dotenvy",
+ "google-tts",
  "jsonwebtoken",
  "language-utils",
- "minimp3",
- "ogg",
- "opus",
  "postgrest",
  "reqwest 0.12.23",
  "resend-rs",
@@ -1491,11 +1489,13 @@ name = "generate-data"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "base64 0.22.1",
  "dashmap",
  "dotenvy",
  "env_logger",
  "futures",
  "gcp_auth",
+ "google-tts",
  "html-escape",
  "html2text",
  "image 0.25.9",
@@ -1602,6 +1602,21 @@ name = "glob"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0cc23270f6e1808e30a928bdc84dea0b9b4136a8bc82338574f23baf47bbd280"
+
+[[package]]
+name = "google-tts"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "base64 0.22.1",
+ "log 0.4.27",
+ "minimp3",
+ "ogg",
+ "opus",
+ "reqwest 0.12.23",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "governor"

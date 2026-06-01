@@ -66,7 +66,8 @@ pub fn generate_homophones(
         .map(|h| h.word.clone())
         .collect();
 
-    // Load word_to_pronunciation data
+    // Load word_to_pronunciation data. We only need the main pronunciation
+    // here — alternates only matter for the audio verifier.
     let word_to_pronunciation_file = target_language_dir.join("word_to_pronunciation.jsonl");
     let word_to_pronunciation: BTreeMap<String, String> = if word_to_pronunciation_file.exists() {
         let file = File::open(&word_to_pronunciation_file)
@@ -74,11 +75,15 @@ pub fn generate_homophones(
         let reader = BufReader::new(file);
         reader
             .lines()
-            .filter_map(|line| {
-                let line = line.ok()?;
-                serde_json::from_str::<(String, String)>(&line).ok()
+            .map(|line| {
+                let line = line.context("Failed to read word_to_pronunciation line")?;
+                let (word, pron): (String, language_utils::Pronunciations) =
+                    serde_json::from_str(&line).with_context(|| {
+                        format!("Failed to parse word_to_pronunciation line: {line}")
+                    })?;
+                Ok::<_, anyhow::Error>((word, pron.main))
             })
-            .collect()
+            .collect::<Result<_, _>>()?
     } else {
         return Err(anyhow::anyhow!("word_to_pronunciation file not found"));
     };

@@ -1,6 +1,7 @@
 pub mod features;
 pub mod indexmap;
 pub mod language_pack;
+pub mod minimal_pairs;
 pub mod profile;
 pub mod text_cleanup;
 
@@ -2061,6 +2062,49 @@ impl GramVocabEntry<lasso::Spur> {
     }
 }
 
+/// Whether a voice actor was paid for their recordings or contributed them as a volunteer.
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Eq,
+    PartialEq,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+    tsify::Tsify,
+)]
+#[rkyv(derive(Hash, PartialEq, Eq))]
+#[serde(rename_all = "snake_case")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub enum Compensation {
+    Paid,
+    Volunteer,
+}
+
+/// Identity of a person who contributed human-recorded audio clips.
+///
+/// Used as a map key so each actor's metadata lives once per actor rather
+/// than being duplicated across every clip they recorded.
+#[derive(Debug, Clone, Eq, PartialEq, Hash, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[rkyv(derive(Hash, PartialEq, Eq))]
+pub struct VoiceActor {
+    pub name: String,
+    pub compensation: Compensation,
+}
+
+/// A single human-recorded audio clip.
+///
+/// `bytes` is OGG-encapsulated Opus (the format already accepted by
+/// `is_valid_audio_data` in yap-frontend-rs/src/audio.rs via the `OggS` magic).
+#[derive(Debug, Clone, Eq, PartialEq, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+pub struct Audio {
+    pub bytes: Vec<u8>,
+}
+
 /// Consolidated data structure containing all generated language data
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ConsolidatedLanguageData {
@@ -2077,9 +2121,15 @@ pub struct ConsolidatedLanguageData {
     /// Per-source gram frequencies (movies, Pimsleur lessons, etc.)
     pub source_gram_frequencies: FxHashMap<FrequencySourceId, GramFrequencyList>,
     /// Mapping from words to their IPA pronunciations
-    pub word_to_pronunciation: Vec<(String, Pronunciation)>,
+    /// (one canonical "main" plus optional documented alternates).
+    pub word_to_pronunciation: Vec<(String, Pronunciations)>,
     /// Mapping from IPA pronunciations to lists of words
     pub pronunciation_to_words: Vec<(Pronunciation, Vec<String>)>,
+    /// Minimal pairs grouped by their distinguishing phoneme pair. Built
+    /// once in `generate-data`; the language pack translates this into its
+    /// interned `MinimalPairs` and also derives the inverse
+    /// `word → 1-off words` map from it.
+    pub minimal_pairs: Vec<crate::minimal_pairs::MinimalPairGroup>,
     /// Pronunciation patterns and guides for the course
     pub pronunciation_data: PronunciationData,
     /// Homophone disambiguation practice sentences
@@ -2100,6 +2150,10 @@ pub struct ConsolidatedLanguageData {
     /// The pair prevents ambiguity when the same surface maps to different
     /// underlying morphemes (e.g. `-er` as agent vs. comparative).
     pub morphemes: BTreeMap<MorphemeSegment<String>, MorphemeInfo<String>>,
+    /// Human-recorded audio clips, indexed by voice actor and then by the
+    /// target-language phrase they speak. The nested-map shape enforces that
+    /// each (actor, phrase) pair has at most one clip.
+    pub human_audio: FxHashMap<VoiceActor, FxHashMap<String, Audio>>,
 }
 
 impl ConsolidatedLanguageData {
@@ -2149,9 +2203,31 @@ impl ConsolidatedLanguageData {
             }
         }
 
-        // intern pronunciations
-        for (_word, pronunciation) in &self.word_to_pronunciation {
-            rodeo.get_or_intern(pronunciation);
+        // intern pronunciations (full IPA strings) and their individual phonemes
+        // (space-separated tokens). Per-phoneme Spurs let the minimal-pairs index
+        // store distinguishing phonemes compactly without re-interning sub-tokens.
+        // Only the main pronunciation is interned — alternates exist in the
+        // intermediate JSONL for the audio verifier but aren't part of the
+        // packed data model, so embedding them would just bloat the archive.
+        for (_word, pronunciations) in &self.word_to_pronunciation {
+            rodeo.get_or_intern(&pronunciations.main);
+            for phoneme in pronunciations.main.split_whitespace() {
+                rodeo.get_or_intern(phoneme);
+            }
+        }
+
+        // intern minimal-pair contents (words + distinguishing phonemes). These
+        // strings are almost always already interned via gram_dictionary and
+        // word_to_pronunciation above, but interning explicitly keeps the
+        // field self-contained.
+        for group in &self.minimal_pairs {
+            for phoneme in &group.phonemes {
+                rodeo.get_or_intern(phoneme);
+            }
+            for pair in &group.pairs {
+                rodeo.get_or_intern(&pair.word_a);
+                rodeo.get_or_intern(&pair.word_b);
+            }
         }
 
         // intern pronunciation data
@@ -2307,6 +2383,25 @@ pub enum TtsProvider {
 }
 
 pub type Pronunciation = String;
+
+/// A word's pronunciations. `main` is the canonical pronunciation we show
+/// to learners; `others` are additional documented variants from wikipron.
+///
+/// Each IPA string is space-separated phonemes (same convention as
+/// `Pronunciation`).
+#[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct Pronunciations {
+    pub main: Pronunciation,
+    #[serde(default)]
+    pub others: Vec<Pronunciation>,
+}
+
+impl Pronunciations {
+    /// Iterate the main pronunciation followed by each alternative.
+    pub fn all(&self) -> impl Iterator<Item = &Pronunciation> {
+        std::iter::once(&self.main).chain(self.others.iter())
+    }
+}
 
 #[derive(
     Clone,
@@ -2591,6 +2686,36 @@ pub enum WritingSystem {
 }
 
 impl Language {
+    /// espeak-ng voice code for this language, or `None` if espeak's
+    /// support for it is too weak to trust phonemic output. Used by the
+    /// audio verifier to derive phrase-level IPA (handles liaison,
+    /// connected-speech effects) and by downstream features like
+    /// homophone indexing.
+    ///
+    /// Returning `None` causes callers to fall back to word-by-word
+    /// wikipron lookups, which miss connected-speech effects but at
+    /// least exist for every documented word.
+    pub fn espeak_code(&self) -> Option<&'static str> {
+        match self {
+            // Languages where espeak-ng's IPA output is well-tested and
+            // matches the phonetic conventions our wikipron data uses.
+            Language::French => Some("fr"),
+            Language::English => Some("en-us"),
+            Language::Spanish => Some("es"),
+            Language::German => Some("de"),
+            Language::Italian => Some("it"),
+            Language::Portuguese => Some("pt"),
+            Language::Russian => Some("ru"),
+            Language::Hindi => Some("hi"),
+            // Less trustworthy — espeak produces output but with known
+            // quality issues. Leave off until each is validated against a
+            // ground-truth pronunciation corpus for that language.
+            Language::Korean => None,
+            Language::Japanese => None,
+            Language::Chinese => None,
+        }
+    }
+
     pub fn iso_639_3(&self) -> &str {
         match self {
             Language::French => "fra",

@@ -1421,7 +1421,7 @@ async fn main() -> anyhow::Result<()> {
         }
 
         // Write gram frequencies to file
-        let gram_frequencies_file = native_specific_dir.join("gram_frequencies.jsonl");
+        let gram_frequencies_file = target_language_dir.join("gram_frequencies.jsonl");
         generate_data::frequencies::write_gram_frequencies_file(
             &gram_frequencies,
             &gram_frequencies_file,
@@ -1432,6 +1432,27 @@ async fn main() -> anyhow::Result<()> {
             gram_frequencies.len(),
             gram_frequencies_file
         );
+
+        // Write a human-readable top-grams list (sorted descending, deduped by display text).
+        {
+            let top_grams_file = target_language_dir.join("top_grams.txt");
+            let mut sorted = gram_frequencies.clone();
+            sorted.sort_by_key(|entry| std::cmp::Reverse(entry.clone()));
+            let mut seen = std::collections::HashSet::<String>::new();
+            let mut lines = Vec::new();
+            for entry in &sorted {
+                let display = entry.gram.to_display_string(lang);
+                if seen.insert(display.clone()) {
+                    lines.push(display);
+                    if lines.len() >= 200 {
+                        break;
+                    }
+                }
+            }
+            std::fs::write(&top_grams_file, lines.join("\n") + "\n")
+                .context("Failed to write top grams file")?;
+            println!("Wrote {} top grams to {:?}", lines.len(), top_grams_file);
+        }
 
         let wikipron_path = source_data_path
             .join("pronunciations.tsv")
@@ -1493,9 +1514,11 @@ async fn main() -> anyhow::Result<()> {
                 .map(|(word, counts)| (word, counts.into_iter().max().unwrap_or(0)))
                 .collect();
 
+            // Reverse map uses only the main pronunciation; alternates are
+            // only relevant for verification, not for display lookups.
             let pronunciation_to_words: BTreeMap<String, Vec<String>> = word_to_pronunciation
                 .iter()
-                .map(|(word, pronunciation)| (pronunciation.clone(), word.clone()))
+                .map(|(word, pronunciation)| (pronunciation.main.clone(), word.clone()))
                 .into_group_map()
                 .into_iter()
                 .map(|(ipa, mut words)| {
@@ -1510,7 +1533,7 @@ async fn main() -> anyhow::Result<()> {
                 .collect();
 
             // Convert to Vec format for ConsolidatedLanguageData, sorted by frequency descending
-            let mut word_to_pronunciation: Vec<(String, String)> =
+            let mut word_to_pronunciation: Vec<(String, language_utils::Pronunciations)> =
                 word_to_pronunciation.into_iter().collect();
             word_to_pronunciation.sort_by(|a, b| {
                 let freq_a = word_max_freq.get(a.0.as_str()).copied().unwrap_or(0);
@@ -1726,7 +1749,7 @@ async fn main() -> anyhow::Result<()> {
             reader
                 .lines()
                 .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<(String, String)>, _>>()
+                .collect::<Result<Vec<(String, language_utils::Pronunciations)>, _>>()
                 .context("Failed to parse word to pronunciation data")?
         };
 
@@ -1871,6 +1894,45 @@ async fn main() -> anyhow::Result<()> {
                 .filter(|(word, _)| words_set.contains(word))
                 .collect::<Vec<_>>();
             (pronunciation_to_words, word_to_pronunciation)
+        };
+
+        // Detect minimal pairs once over the FINAL filtered word_to_pronunciation
+        // so the pack's index can't reference words that have been dropped from
+        // word_to_pronunciation by the filter above.
+        let minimal_pair_groups = {
+            let word_max_freq: std::collections::HashMap<&str, u32> = gram_frequencies
+                .iter()
+                .filter_map(|entry| {
+                    let h = entry.gram.heteronym()?;
+                    Some((h.word.as_str(), entry.count))
+                })
+                .into_group_map()
+                .into_iter()
+                .map(|(word, counts)| (word, counts.into_iter().max().unwrap_or(0)))
+                .collect();
+            // Minimal pairs use only the main pronunciation per word.
+            let word_to_main: Vec<(String, String)> = word_to_pronunciation
+                .iter()
+                .map(|(w, p)| (w.clone(), p.main.clone()))
+                .collect();
+            let groups =
+                language_utils::minimal_pairs::find_minimal_pairs(&word_to_main, &word_max_freq);
+            let minimal_pairs_file = target_language_dir.join("minimal_pairs.jsonl");
+            let mut file =
+                File::create(&minimal_pairs_file).context("Failed to create minimal pairs file")?;
+            for group in &groups {
+                let json = serde_json::to_string(group)
+                    .context("Failed to serialize minimal pair group")?;
+                writeln!(file, "{json}").context("Failed to write minimal pair group")?;
+            }
+            let total_pairs: usize = groups.iter().map(|g| g.pairs.len()).sum();
+            println!(
+                "Wrote {} minimal pair groups ({} pairs total) to {:?}",
+                groups.len(),
+                total_pairs,
+                minimal_pairs_file
+            );
+            groups
         };
 
         // Sort sentences by the frequency of their least common gram
@@ -2130,6 +2192,27 @@ async fn main() -> anyhow::Result<()> {
             );
         }
 
+        let audio_failures_log = target_language_dir.join("audio_verification_failures.jsonl");
+        let audio_all_results_log = target_language_dir.join("audio_verification_all.jsonl");
+        let http_client = reqwest::Client::new();
+        let human_audio = generate_data::human_audio::load_human_audio(
+            &source_data_path,
+            &word_to_pronunciation,
+            &audio_failures_log,
+            &audio_all_results_log,
+            course.target_language,
+            &http_client,
+        )
+        .await
+        .with_context(|| format!("Failed to load human audio for {course:?}"))?;
+        if !human_audio.is_empty() {
+            let total_clips: usize = human_audio.values().map(|clips| clips.len()).sum();
+            println!(
+                "Loaded {total_clips} human audio clips from {} voice actor(s)",
+                human_audio.len()
+            );
+        }
+
         // Create consolidated data structure
         let consolidated_data = language_utils::ConsolidatedLanguageData {
             target_language_sentences,
@@ -2140,6 +2223,7 @@ async fn main() -> anyhow::Result<()> {
             source_gram_frequencies,
             word_to_pronunciation,
             pronunciation_to_words,
+            minimal_pairs: minimal_pair_groups,
             pronunciation_data,
             homophone_practice,
             movies,
@@ -2152,6 +2236,7 @@ async fn main() -> anyhow::Result<()> {
             encoded_sentences: encoded_sentences_with_grams,
             gram_dictionary: gram_keyed_dictionary,
             morphemes,
+            human_audio,
         };
 
         let language_pack =

@@ -59,6 +59,10 @@ Key details:
 # Install French NLP model (required first)
 cd ./generate-data/nlp && uv pip install https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.8.0/fr_dep_news_trf-3.8.0-py3-none-any.whl
 
+# Install espeak-ng (required by generate-data for phrase-level phonemization
+# in audio_verification — Mac: `brew install espeak-ng`, Linux: apt/yum)
+espeak-ng --version
+
 # Generate dictionary data from Anki decks
 cargo run --bin generate-data
 
