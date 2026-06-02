@@ -386,9 +386,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
         let is_phrase = gram.len() > 1;
         let pronunciation = if is_phrase { None } else { pronunciation };
 
-        if !is_phrase
-            && let Some(ws) = het_word_spur
-        {
+        if !is_phrase && let Some(ws) = het_word_spur {
             display_text_to_word_spur
                 .entry(display_text.clone())
                 .or_insert(ws);
