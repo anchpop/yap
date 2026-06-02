@@ -398,9 +398,7 @@ pub(crate) fn tts_cache_filename(request: &TtsRequest, provider: &TtsProvider) -
 /// (Provider is deliberately ignored: human audio is preferred over any
 /// TTS provider for a plain request.)
 fn human_audio_applies(request: &TtsRequest) -> bool {
-    !request.is_ssml
-        && request.instructions.is_none()
-        && (request.speed - 1.0).abs() < f64::EPSILON
+    !request.is_ssml && request.instructions.is_none() && (request.speed - 1.0).abs() < f64::EPSILON
 }
 
 async fn fetch_tts(
