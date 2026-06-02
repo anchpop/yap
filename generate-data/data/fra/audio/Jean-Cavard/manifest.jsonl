@@ -1,0 +1,307 @@
+{"text": "tu", "file": "01a_tu.wav"}
+{"text": "tout", "file": "01b_tout.wav"}
+{"text": "lu", "file": "02a_lu.wav"}
+{"text": "loup", "file": "02b_loup.wav"}
+{"text": "su", "file": "03a_su.wav"}
+{"text": "sous", "file": "03b_sous.wav"}
+{"text": "vu", "file": "04a_vu.wav"}
+{"text": "vous", "file": "04b_vous.wav"}
+{"text": "bu", "file": "05a_bu.wav"}
+{"text": "bout", "file": "05b_bout.wav"}
+{"text": "rue", "file": "06a_rue.wav"}
+{"text": "roue", "file": "06b_roue.wav"}
+{"text": "pur", "file": "07a_pur.wav"}
+{"text": "pour", "file": "07b_pour.wav"}
+{"text": "bûche", "file": "08a_buche.wav"}
+{"text": "bouche", "file": "08b_bouche.wav"}
+{"text": "dessous", "file": "09a_dessous.wav"}
+{"text": "dessus", "file": "09b_dessus.wav"}
+{"text": "peu", "file": "10a_peu.wav"}
+{"text": "peur", "file": "10b_peur.wav"}
+{"text": "jeune", "file": "11a_jeune.wav"}
+{"text": "jeûne", "file": "11b_jeune.wav"}
+{"text": "bleu", "file": "12a_bleu.wav"}
+{"text": "fleur", "file": "12b_fleur.wav"}
+{"text": "œuf", "file": "12c_uf.wav"}
+{"text": "heure", "file": "12d_heure.wav"}
+{"text": "ce", "file": "13a_ce.wav"}
+{"text": "ces", "file": "13b_ces.wav"}
+{"text": "ses", "file": "13c_ses.wav"}
+{"text": "c'est", "file": "13d_cest.wav"}
+{"text": "de", "file": "14a_de.wav", "phonemic_transcription": "d ø"}
+{"text": "des", "file": "14b_des.wav"}
+{"text": "me", "file": "15a_me.wav"}
+{"text": "mes", "file": "15b_mes.wav"}
+{"text": "te", "file": "16a_te.wav"}
+{"text": "tes", "file": "16b_tes.wav"}
+{"text": "côte", "file": "17a_cote.wav"}
+{"text": "cotte", "file": "17b_cotte.wav"}
+{"text": "paume", "file": "18a_paume.wav"}
+{"text": "pomme", "file": "18b_pomme.wav"}
+{"text": "poisson", "file": "19a_poisson.wav"}
+{"text": "poison", "file": "19b_poison.wav"}
+{"text": "dessert", "file": "20a_dessert.wav"}
+{"text": "désert", "file": "20b_desert.wav"}
+{"text": "pain", "file": "21a_pain.wav"}
+{"text": "pan", "file": "21b_pan.wav"}
+{"text": "pont", "file": "21c_pont.wav"}
+{"text": "un", "file": "21d_un.wav"}
+{"text": "vin", "file": "22a_vin.wav"}
+{"text": "vent", "file": "22b_vent.wav"}
+{"text": "vont", "file": "22c_vont.wav"}
+{"text": "teint", "file": "23a_teint.wav"}
+{"text": "temps", "file": "23b_temps.wav"}
+{"text": "ton", "file": "23c_ton.wav"}
+{"text": "le", "file": "24a_le.wav"}
+{"text": "la", "file": "24b_la.wav"}
+{"text": "les", "file": "24c_les.wav"}
+{"text": "lui", "file": "24d_lui.wav"}
+{"text": "leur", "file": "24e_leur.wav"}
+{"text": "je", "file": "25a_je.wav"}
+{"text": "j'ai", "file": "25b_jai.wav"}
+{"text": "tu", "file": "26a_tu.wav"}
+{"text": "t'as", "file": "26b_tas.wav"}
+{"text": "il", "file": "27a_il.wav"}
+{"text": "elle", "file": "27b_elle.wav"}
+{"text": "ils", "file": "27c_ils.wav"}
+{"text": "elles", "file": "27d_elles.wav"}
+{"text": "rue", "file": "28a_rue.wav"}
+{"text": "pur", "file": "28b_pur.wav"}
+{"text": "heure", "file": "28c_heure.wav"}
+{"text": "quatre", "file": "28d_quatre.wav"}
+{"text": "les amis", "file": "29a_les_amis.wav"}
+{"text": "très intéressant", "file": "29b_tres_interessant.wav"}
+{"text": "et alors", "file": "29c_et_alors.wav"}
+{"text": "il est", "file": "30a_il_est.wav"}
+{"text": "elle est", "file": "30b_elle_est.wav"}
+{"text": "il a", "file": "31a_il_a.wav"}
+{"text": "elle a", "file": "31b_elle_a.wav"}
+{"text": "tu es", "file": "32a_tu_es.wav"}
+{"text": "tu as", "file": "32b_tu_as.wav"}
+{"text": "je suis", "file": "33a_je_suis.wav"}
+{"text": "je vais", "file": "33b_je_vais.wav"}
+{"text": "je veux", "file": "33c_je_veux.wav"}
+{"text": "je peux", "file": "33d_je_peux.wav"}
+{"text": "j'ai", "file": "34a_jai.wav"}
+{"text": "il a", "file": "34b_il_a.wav"}
+{"text": "tu as", "file": "34c_tu_as.wav"}
+{"text": "il y a", "file": "35a_il_y_a.wav"}
+{"text": "il faut", "file": "35b_il_faut.wav"}
+{"text": "il est", "file": "35c_il_est.wav"}
+{"text": "de la", "file": "36a_de_la.wav"}
+{"text": "de", "file": "36b_de.wav", "phonemic_transcription": "d ø"}
+{"text": "des", "file": "36c_des.wav"}
+{"text": "vous êtes", "file": "37a_vous_etes.wav"}
+{"text": "tu es", "file": "37b_tu_es.wav"}
+{"text": "est-ce que", "file": "38a_est-ce_que.wav"}
+{"text": "qu'est-ce que", "file": "38b_quest-ce_que.wav"}
+{"text": "quelque chose", "file": "39_quelque_chose.wav"}
+{"text": "Bonjour, ça va?", "file": "40_bonjour_ca_va.wav"}
+{"text": "Je voudrais un café, s'il vous plaît.", "file": "41_je_voudrais_un_cafe_sil_vous_plait.wav"}
+{"text": "Il fait beau aujourd'hui.", "file": "42_il_fait_beau_aujourdhui.wav"}
+{"text": "Tu habites où exactement?", "file": "43_tu_habites_ou_exactement.wav"}
+{"text": "Qu'est-ce que tu fais ce soir?", "file": "44_quest-ce_que_tu_fais_ce_soir.wav"}
+{"text": "Je ne te le redemanderai pas.", "file": "45_je_ne_te_le_redemanderai_pas.wav"}
+{"text": "Il a vu la rue où vous habitez.", "file": "46_il_a_vu_la_rue_ou_vous_habitez.wav"}
+{"text": "Le pain et le vin sont sur la table.", "file": "47_le_pain_et_le_vin_sont_sur_la_table.wav"}
+{"text": "On se retrouve devant le café à huit heures.", "file": "48_on_se_retrouve_devant_le_cafe_a_huit_heures.wav"}
+{"text": "de", "file": "b001_de.wav", "phonemic_transcription": "d ø"}
+{"text": "c'est", "file": "b002_c_est.wav"}
+{"text": "et", "file": "b003_et.wav"}
+{"text": "à", "file": "b004_a.wav"}
+{"text": "ne pas", "file": "b005_ne_pas.wav"}
+{"text": "est", "file": "b006_est.wav"}
+{"text": "pas", "file": "b007_pas.wav"}
+{"text": "pour", "file": "b008_pour.wav"}
+{"text": "ça", "file": "b009_ca.wav"}
+{"text": "je suis", "file": "b010_je_suis.wav"}
+{"text": "il", "file": "b011_il.wav"}
+{"text": "ce que", "file": "b012_ce_que.wav"}
+{"text": "il est", "file": "b013_il_est.wav"}
+{"text": "le", "file": "b014_le.wav"}
+{"text": "est un", "file": "b015_est_un.wav"}
+{"text": "je veux", "file": "b016_je_veux.wav"}
+{"text": "est-ce que", "file": "b017_est_ce_que.wav"}
+{"text": "elle", "file": "b018_elle.wav"}
+{"text": "mais", "file": "b019_mais.wav"}
+{"text": "je ne", "file": "b020_je_ne.wav", "phonemic_transcription": "ʒ ø n"}
+{"text": "a un", "file": "b021_a_un.wav"}
+{"text": "ici", "file": "b022_ici.wav"}
+{"text": "vous", "file": "b023_vous.wav"}
+{"text": "que tu", "file": "b024_que_tu.wav"}
+{"text": "il a", "file": "b025_il_a.wav"}
+{"text": "y avoir", "file": "b026_y_avoir.wav"}
+{"text": "que je", "file": "b027_que_je.wav", "phonemic_transcription": "k ə ʒ ø"}
+{"text": "de la", "file": "b028_de_la.wav", "phonemic_transcription": "d ø l a"}
+{"text": "un", "file": "b029_un.wav"}
+{"text": "les", "file": "b030_les.wav"}
+{"text": "est le", "file": "b031_est_le.wav"}
+{"text": "il y a", "file": "b032_il_y_a.wav"}
+{"text": "que", "file": "b033_que.wav"}
+{"text": "des", "file": "b034_des.wav"}
+{"text": "la", "file": "b035_la.wav"}
+{"text": "en", "file": "b036_en.wav"}
+{"text": "tu es", "file": "b037_tu_es.wav"}
+{"text": "dans le", "file": "b038_dans_le.wav"}
+{"text": "avec", "file": "b039_avec.wav"}
+{"text": "il y", "file": "b040_il_y.wav"}
+{"text": "bien", "file": "b041_bien.wav"}
+{"text": "à la", "file": "b042_a_la.wav"}
+{"text": "une", "file": "b043_une.wav"}
+{"text": "quelque chose", "file": "b044_quelque_chose.wav"}
+{"text": "qui", "file": "b045_qui.wav"}
+{"text": "je me", "file": "b046_je_me.wav", "phonemic_transcription": "ʒ ø m"}
+{"text": "vous êtes", "file": "b047_vous_etes.wav"}
+{"text": "je vais", "file": "b048_je_vais.wav"}
+{"text": "je te", "file": "b049_je_te.wav", "phonemic_transcription": "ʒ ə t ø"}
+{"text": "pourquoi", "file": "b050_pourquoi.wav"}
+{"text": "vous avez", "file": "b051_vous_avez.wav"}
+{"text": "j'ai", "file": "b052_j_ai.wav"}
+{"text": "comment", "file": "b053_comment.wav"}
+{"text": "tout le", "file": "b054_tout_le.wav"}
+{"text": "dans", "file": "b055_dans.wav"}
+{"text": "je vous", "file": "b056_je_vous.wav"}
+{"text": "maintenant", "file": "b057_maintenant.wav"}
+{"text": "était", "file": "b058_etait.wav"}
+{"text": "nous", "file": "b059_nous.wav"}
+{"text": "plus", "file": "b060_plus.wav"}
+{"text": "elle est", "file": "b061_elle_est.wav"}
+{"text": "tu veux", "file": "b062_tu_veux.wav"}
+{"text": "il faut", "file": "b063_il_faut.wav"}
+{"text": "je peux", "file": "b064_je_peux.wav"}
+{"text": "au", "file": "b065_au.wav"}
+{"text": "non", "file": "b066_non.wav"}
+{"text": "qu'est-ce que", "file": "b067_qu_est_ce_que.wav"}
+{"text": "on", "file": "b068_on.wav"}
+{"text": "je le", "file": "b069_je_le.wav"}
+{"text": "tu as", "file": "b070_tu_as.wav"}
+{"text": "tout", "file": "b071_tout.wav"}
+{"text": "sont", "file": "b072_sont.wav"}
+{"text": "là", "file": "b073_la.wav"}
+{"text": "où", "file": "b074_ou.wav"}
+{"text": "que vous", "file": "b075_que_vous.wav"}
+{"text": "sur", "file": "b076_sur.wav"}
+{"text": "alors", "file": "b077_alors.wav"}
+{"text": "du", "file": "b078_du.wav"}
+{"text": "les a", "file": "b079_les_a.wav"}
+{"text": "je dois", "file": "b080_je_dois.wav"}
+{"text": "toujours", "file": "b081_toujours.wav"}
+{"text": "je sais", "file": "b082_je_sais.wav"}
+{"text": "je", "file": "b083_je.wav", "phonemic_transcription": "ʒ ø"}
+{"text": "moi", "file": "b084_moi.wav"}
+{"text": "votre", "file": "b085_votre.wav"}
+{"text": "ne", "file": "b086_ne.wav"}
+{"text": "si", "file": "b087_si.wav"}
+{"text": "où est", "file": "b088_ou_est.wav"}
+{"text": "encore", "file": "b089_encore.wav"}
+{"text": "aussi", "file": "b090_aussi.wav"}
+{"text": "nous avons", "file": "b091_nous_avons.wav"}
+{"text": "le monde", "file": "b092_le_monde.wav"}
+{"text": "lui", "file": "b093_lui.wav"}
+{"text": "est en", "file": "b094_est_en.wav"}
+{"text": "je pense", "file": "b095_je_pense.wav"}
+{"text": "elle a", "file": "b096_elle_a.wav"}
+{"text": "me", "file": "b097_me.wav"}
+{"text": "a", "file": "b098_a.wav"}
+{"text": "a dit", "file": "b099_a_dit.wav"}
+{"text": "tu ne", "file": "b100_tu_ne.wav"}
+{"text": "le faire", "file": "b101_le_faire.wav"}
+{"text": "est très", "file": "b102_est_tres.wav"}
+{"text": "penser que", "file": "b103_penser_que.wav"}
+{"text": "sur le", "file": "b104_sur_le.wav"}
+{"text": "ne peut", "file": "b105_ne_peut.wav"}
+{"text": "toi", "file": "b106_toi.wav"}
+{"text": "jamais", "file": "b107_jamais.wav"}
+{"text": "tu dois", "file": "b108_tu_dois.wav"}
+{"text": "cela", "file": "b109_cela.wav"}
+{"text": "ce", "file": "b110_ce.wav"}
+{"text": "je pense que", "file": "b111_je_pense_que.wav"}
+{"text": "faire", "file": "b112_faire.wav"}
+{"text": "mon", "file": "b113_mon.wav"}
+{"text": "c'est un", "file": "b114_c_est_un.wav"}
+{"text": "tout le monde", "file": "b115_tout_le_monde.wav"}
+{"text": "a fait", "file": "b116_a_fait.wav"}
+{"text": "vraiment", "file": "b117_vraiment.wav"}
+{"text": "son", "file": "b118_son.wav"}
+{"text": "ils", "file": "b119_ils.wav"}
+{"text": "se", "file": "b120_se.wav", "phonemic_transcription": "s ø"}
+{"text": "tu", "file": "b121_tu.wav"}
+{"text": "tu sais", "file": "b122_tu_sais.wav"}
+{"text": "ce qui", "file": "b123_ce_qui.wav"}
+{"text": "oui", "file": "b124_oui.wav"}
+{"text": "par", "file": "b125_par.wav"}
+{"text": "il ne", "file": "b126_il_ne.wav"}
+{"text": "a été", "file": "b127_a_ete.wav"}
+{"text": "ou", "file": "b128_ou.wav"}
+{"text": "tu peux", "file": "b129_tu_peux.wav"}
+{"text": "quand", "file": "b130_quand.wav"}
+{"text": "ton", "file": "b131_ton.wav"}
+{"text": "dire que", "file": "b132_dire_que.wav"}
+{"text": "faire cela", "file": "b133_faire_cela.wav"}
+{"text": "être là", "file": "b134_etre_la.wav"}
+{"text": "que ce soit", "file": "b135_que_ce_soit.wav"}
+{"text": "fait", "file": "b136_fait.wav"}
+{"text": "ne sont pas", "file": "b137_ne_sont_pas.wav"}
+{"text": "faire une", "file": "b138_faire_une.wav"}
+{"text": "pour le", "file": "b139_pour_le.wav"}
+{"text": "cette", "file": "b140_cette.wav"}
+{"text": "très", "file": "b141_tres.wav"}
+{"text": "que ça", "file": "b142_que_ca.wav"}
+{"text": "qui est", "file": "b143_qui_est.wav"}
+{"text": "allez", "file": "b144_allez.wav"}
+{"text": "te", "file": "b145_te.wav"}
+{"text": "a des", "file": "b146_a_des.wav"}
+{"text": "être à", "file": "b147_etre_a.wav"}
+{"text": "tous", "file": "b148_tous.wav"}
+{"text": "pas de", "file": "b149_pas_de.wav"}
+{"text": "tu me", "file": "b150_tu_me.wav"}
+{"text": "ne jamais", "file": "b151_ne_jamais.wav"}
+{"text": "comme", "file": "b152_comme.wav"}
+{"text": "de mon", "file": "b153_de_mon.wav"}
+{"text": "dans un", "file": "b154_dans_un.wav"}
+{"text": "savait que", "file": "b155_savait_que.wav"}
+{"text": "quoi", "file": "b156_quoi.wav"}
+{"text": "y aller", "file": "b157_y_aller.wav"}
+{"text": "besoin de", "file": "b158_besoin_de.wav"}
+{"text": "juste", "file": "b159_juste.wav"}
+{"text": "être", "file": "b160_etre.wav"}
+{"text": "qu'il", "file": "b161_qu_il.wav"}
+{"text": "il se", "file": "b162_il_se.wav", "phonemic_transcription": "i l s ø"}
+{"text": "déjà", "file": "b163_deja.wav"}
+{"text": "nous sommes", "file": "b164_nous_sommes.wav"}
+{"text": "croire que", "file": "b165_croire_que.wav"}
+{"text": "vous voulez", "file": "b166_vous_voulez.wav"}
+{"text": "de son", "file": "b167_de_son.wav", "phonemic_transcription": "d ø s ɔ̃"}
+{"text": "que le", "file": "b168_que_le.wav"}
+{"text": "ce sont les", "file": "b169_ce_sont_les.wav"}
+{"text": "c'était", "file": "b170_c_etait.wav"}
+{"text": "veut que", "file": "b171_veut_que.wav", "phonemic_transcription": "v ø k"}
+{"text": "demain", "file": "b172_demain.wav"}
+{"text": "pour moi", "file": "b173_pour_moi.wav"}
+{"text": "t'as", "file": "b174_t_as.wav"}
+{"text": "on est", "file": "b175_on_est.wav"}
+{"text": "de vous", "file": "b176_de_vous.wav"}
+{"text": "merci", "file": "b177_merci.wav"}
+{"text": "est mon", "file": "b178_est_mon.wav"}
+{"text": "vous devez", "file": "b179_vous_devez.wav"}
+{"text": "combien de", "file": "b180_combien_de.wav"}
+{"text": "quel", "file": "b181_quel.wav"}
+{"text": "beaucoup de", "file": "b182_beaucoup_de.wav"}
+{"text": "de temps", "file": "b183_de_temps.wav"}
+{"text": "notre", "file": "b184_notre.wav"}
+{"text": "je sais que", "file": "b185_je_sais_que.wav"}
+{"text": "rien", "file": "b186_rien.wav"}
+{"text": "lui avoir", "file": "b187_lui_avoir.wav"}
+{"text": "peut-être", "file": "b188_peut_etre.wav"}
+{"text": "ces", "file": "b189_ces.wav"}
+{"text": "il fut", "file": "b190_il_fut.wav"}
+{"text": "un bon", "file": "b191_un_bon.wav"}
+{"text": "puis-je", "file": "b192_puis_je.wav"}
+{"text": "personne ne", "file": "b193_personne_ne.wav"}
+{"text": "en avoir", "file": "b194_en_avoir.wav"}
+{"text": "on va", "file": "b195_on_va.wav"}
+{"text": "avoir vu", "file": "b196_avoir_vu.wav"}
+{"text": "je crois", "file": "b197_je_crois.wav"}
+{"text": "tu vas", "file": "b198_tu_vas.wav"}
+{"text": "je me suis", "file": "b199_je_me_suis.wav"}
+{"text": "sans", "file": "b200_sans.wav"}

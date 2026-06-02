@@ -1,10 +1,27 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Volume2 } from "lucide-react";
-import { playAudio, playTempAudio } from "@/lib/utils";
+import { playAudio, playTempAudio, type VoiceActorInfo } from "@/lib/utils";
 import { type AudioRequest } from "../../../yap-frontend-rs/pkg";
 import { isSoundEffectPlaying } from "@/lib/sound-effects";
 import { toast } from "sonner";
+
+const VOICE_ACTOR_TOAST_THROTTLE_MS = 24 * 60 * 60 * 1000;
+
+function shouldShowVoiceActorToast(name: string): boolean {
+  try {
+    const key = `voice-actor-toast:${name}`;
+    const last = localStorage.getItem(key);
+    const now = Date.now();
+    if (last !== null && now - Number(last) < VOICE_ACTOR_TOAST_THROTTLE_MS) {
+      return false;
+    }
+    localStorage.setItem(key, String(now));
+    return true;
+  } catch {
+    return true;
+  }
+}
 
 interface AudioButtonProps {
   audioRequest: AudioRequest;
@@ -346,8 +363,22 @@ export function AudioButton({
             setNeedsAuth(true);
           }
         };
+        const onVoiceActor = ({ name, compensation }: VoiceActorInfo) => {
+          if (!shouldShowVoiceActorToast(name)) return;
+          const credit =
+            compensation === "paid"
+              ? "a paid voice actor"
+              : "a volunteer voice actor";
+          toast(`audio recorded by @${name}, ${credit}`);
+        };
         if (temp) {
-          await playTempAudio(audioRequest, accessToken, authCallback, signal);
+          await playTempAudio(
+            audioRequest,
+            accessToken,
+            authCallback,
+            signal,
+            onVoiceActor,
+          );
         } else {
           await playAudio(
             audioRequest,
@@ -355,6 +386,7 @@ export function AudioButton({
             authCallback,
             visualizer ? attachAnalyser : undefined,
             signal,
+            onVoiceActor,
           );
         }
         if (!signal.aborted) onSuccessRef.current?.();

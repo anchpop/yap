@@ -149,43 +149,6 @@ struct VoiceSettings {
     similarity_boost: f32,
 }
 
-#[derive(Serialize)]
-struct GoogleTtsRequest {
-    input: GoogleTtsInput,
-    voice: GoogleTtsVoice,
-    #[serde(rename = "audioConfig")]
-    audio_config: GoogleTtsAudioConfig,
-}
-
-#[derive(Serialize)]
-struct GoogleTtsInput {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    text: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ssml: Option<String>,
-}
-
-#[derive(Serialize)]
-struct GoogleTtsVoice {
-    #[serde(rename = "languageCode")]
-    language_code: String,
-    name: String,
-}
-
-#[derive(Serialize)]
-struct GoogleTtsAudioConfig {
-    #[serde(rename = "audioEncoding")]
-    audio_encoding: String,
-    #[serde(rename = "speakingRate")]
-    speaking_rate: f64,
-}
-
-#[derive(Deserialize)]
-struct GoogleTtsResponse {
-    #[serde(rename = "audioContent")]
-    audio_content: String,
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims {
     sub: uuid::Uuid, // subject (user id)
@@ -280,12 +243,9 @@ async fn google_text_to_speech(
     // actually, disable authentication for now until people start abusing it:
     let _claims = verify_jwt(auth.token()).await;
 
-    let client = reqwest::Client::new();
-
     let google_api_key =
         std::env::var("GOOGLE_CLOUD_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    // Select voice and language code based on language
     let (language_code, voice_name) = match request.language {
         Language::French => ("fr-FR", "fr-FR-Chirp3-HD-Achernar"),
         Language::Spanish => ("es-US", "es-US-Chirp3-HD-Achernar"),
@@ -301,175 +261,30 @@ async fn google_text_to_speech(
         Language::Chinese => todo!(),
     };
 
-    let input = if request.is_ssml {
-        GoogleTtsInput {
-            text: None,
-            ssml: Some(request.text),
-        }
-    } else {
-        GoogleTtsInput {
-            text: Some(request.text),
-            ssml: None,
-        }
-    };
-
-    let google_request = GoogleTtsRequest {
-        input,
-        voice: GoogleTtsVoice {
+    let client = google_tts::GoogleTtsClient::new(google_api_key);
+    let outcome = client
+        .synthesize(&google_tts::GoogleTtsRequest {
+            text: request.text,
             language_code: language_code.to_string(),
-            name: voice_name.to_string(),
-        },
-        audio_config: GoogleTtsAudioConfig {
-            audio_encoding: "OGG_OPUS".to_string(),
-            speaking_rate: request.speed,
-        },
-    };
+            voice_name: voice_name.to_string(),
+            speed: request.speed,
+            is_ssml: request.is_ssml,
+        })
+        .await
+        .map_err(|e| {
+            eprintln!("Google TTS error: {e:?}");
+            StatusCode::BAD_GATEWAY
+        })?;
 
-    let url =
-        format!("https://texttospeech.googleapis.com/v1beta1/text:synthesize?key={google_api_key}");
-
-    // Google TTS occasionally returns audio with no sound, especially for short
-    // utterances. Regenerate up to 4 times if we detect silence.
-    const MAX_ATTEMPTS: usize = 5;
-    let mut attempts = 0;
-    let mut last_audio_b64: String;
-
-    loop {
-        let response = client
-            .post(&url)
-            .header("Content-Type", "application/json")
-            .json(&google_request)
-            .send()
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        if !response.status().is_success() {
-            let status = response.status();
-            let body = response.text().await.unwrap_or_default();
-            eprintln!("Google TTS Error ({status}): {body}");
-            return Err(StatusCode::BAD_GATEWAY);
-        }
-
-        let response_json: GoogleTtsResponse = response
-            .json()
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        // Google TTS already returns base64-encoded audio
-        last_audio_b64 = response_json.audio_content;
-        let audio_bytes = base64::engine::general_purpose::STANDARD
-            .decode(&last_audio_b64)
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        attempts += 1;
-        match audio_defect(&audio_bytes) {
-            None => return Ok(last_audio_b64),
-            Some(defect) => {
-                eprintln!(
-                    "Google TTS returned defective audio ({defect}) on attempt \
-                     {attempts}/{MAX_ATTEMPTS}, retrying"
-                );
-            }
-        }
-        if attempts >= MAX_ATTEMPTS {
-            break;
-        }
+    if let google_tts::TtsStatus::HitLimit { last_defect } = outcome.status {
+        eprintln!(
+            "Google TTS returned defective audio ({last_defect}) on all {} attempts; \
+             returning last response",
+            outcome.attempts
+        );
     }
 
-    eprintln!(
-        "Google TTS returned defective audio on all {MAX_ATTEMPTS} attempts; returning last response"
-    );
-    Ok(last_audio_b64)
-}
-
-/// Returns `Some(reason)` if the audio looks defective enough to warrant a
-/// retry, or `None` if it's acceptable. Only short clips (<1s) are inspected —
-/// longer outputs are assumed fine, since the failure modes we care about show
-/// up in short utterances.
-fn audio_defect(audio_bytes: &[u8]) -> Option<&'static str> {
-    let (samples, sample_rate) = match decode_audio_to_f32(audio_bytes) {
-        Ok((s, sr)) if !s.is_empty() && sr > 0 => (s, sr),
-        _ => return Some("failed to decode"),
-    };
-
-    let duration_s = samples.len() as f64 / sample_rate as f64;
-    if duration_s >= 1.0 {
-        return None;
-    }
-
-    // Silence check: real speech runs -20 to -10 dB RMS; broken Google TTS
-    // sits near -50 dB. 0.01 (-40 dB) sits cleanly between the two, and using
-    // RMS (not peak) keeps us robust to isolated clicks in otherwise-silent
-    // output.
-    let sum_sq: f64 = samples.iter().map(|&s| (s as f64) * (s as f64)).sum();
-    let rms = (sum_sq / samples.len() as f64).sqrt() as f32;
-    if rms < 0.01 {
-        return Some("silent");
-    }
-
-    // Tail-decay check for very short clips: a full utterance fades 50-70 dB
-    // from its peak to the end of the clip; a truncated one barely drops.
-    if duration_s < 0.5 && tail_decay_db(&samples, sample_rate).is_some_and(|d| d < 15.0) {
-        return Some("cut off");
-    }
-
-    None
-}
-
-/// Estimates how many dB the signal drops between its loudest frame and the
-/// end of the clip, using the slope of the last 100ms of the RMS envelope.
-/// Returns `None` if the clip is too short to build a meaningful envelope.
-fn tail_decay_db(samples: &[f32], sample_rate: u32) -> Option<f32> {
-    const HOP_S: f32 = 0.010;
-    const WIN_S: f32 = 0.020;
-    const TAIL_FRAMES: usize = 10; // 100 ms at 10 ms hop
-
-    let win = (sample_rate as f32 * WIN_S) as usize;
-    let hop = (sample_rate as f32 * HOP_S) as usize;
-    if win == 0 || hop == 0 || samples.len() < win {
-        return None;
-    }
-
-    let mut envelope = Vec::new();
-    let mut start = 0;
-    while start + win <= samples.len() {
-        let slice = &samples[start..start + win];
-        let sum_sq: f64 = slice.iter().map(|&s| (s as f64) * (s as f64)).sum();
-        envelope.push((sum_sq / slice.len() as f64).sqrt() as f32);
-        start += hop;
-    }
-    if envelope.len() < TAIL_FRAMES {
-        return None;
-    }
-
-    // Linear regression of dB vs time over the last 100 ms of the envelope.
-    // The floor on log10 avoids -inf when a frame is effectively zero.
-    let tail_db: Vec<f32> = envelope[envelope.len() - TAIL_FRAMES..]
-        .iter()
-        .map(|&r| 20.0 * r.max(1e-6).log10())
-        .collect();
-    let n = tail_db.len() as f32;
-    let mean_x = (n - 1.0) / 2.0 * HOP_S;
-    let mean_y = tail_db.iter().sum::<f32>() / n;
-    let mut num = 0.0f32;
-    let mut den = 0.0f32;
-    for (i, &y) in tail_db.iter().enumerate() {
-        let x = i as f32 * HOP_S;
-        num += (x - mean_x) * (y - mean_y);
-        den += (x - mean_x).powi(2);
-    }
-    if den == 0.0 {
-        return None;
-    }
-    let slope_db_per_s = num / den;
-
-    let peak_idx = envelope
-        .iter()
-        .enumerate()
-        .max_by(|a, b| a.1.partial_cmp(b.1).unwrap_or(std::cmp::Ordering::Equal))?
-        .0;
-    let peak_to_end_s = (envelope.len() - 1 - peak_idx) as f32 * HOP_S;
-    Some(peak_to_end_s * slope_db_per_s.abs())
+    Ok(base64::engine::general_purpose::STANDARD.encode(&outcome.audio_bytes))
 }
 
 async fn openai_text_to_speech(
@@ -1287,7 +1102,7 @@ async fn get_phonemes_from_modal(
     // For now, let's do the conversion here with symphonia.
 
     // Decode mp3 to f32 samples at whatever sample rate, send with sample_rate
-    let (samples, sample_rate) = decode_mp3_to_f32(audio_bytes).map_err(|e| {
+    let (samples, sample_rate) = google_tts::decode_mp3_to_f32(audio_bytes).map_err(|e| {
         eprintln!("Failed to decode mp3: {e}");
         StatusCode::BAD_REQUEST
     })?;
@@ -1321,102 +1136,6 @@ async fn get_phonemes_from_modal(
     })?;
 
     Ok(result.phonemes)
-}
-
-fn decode_mp3_to_f32(mp3_bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {
-    use std::io::Cursor;
-
-    let cursor = Cursor::new(mp3_bytes);
-    let mut decoder = minimp3::Decoder::new(cursor);
-
-    let mut samples: Vec<f32> = Vec::new();
-    let mut sample_rate = 0u32;
-
-    loop {
-        match decoder.next_frame() {
-            Ok(frame) => {
-                sample_rate = frame.sample_rate as u32;
-                let channels = frame.channels;
-                // Convert to mono f32
-                for chunk in frame.data.chunks(channels) {
-                    let mono = chunk.iter().map(|&s| s as f32).sum::<f32>() / channels as f32;
-                    samples.push(mono / 32768.0);
-                }
-            }
-            Err(minimp3::Error::Eof) => break,
-            Err(e) => return Err(format!("mp3 decode error: {e:?}")),
-        }
-    }
-
-    if samples.is_empty() {
-        return Err("No audio data decoded".to_string());
-    }
-
-    Ok((samples, sample_rate))
-}
-
-/// Dispatches to the right decoder based on magic bytes. We ship OGG Opus from
-/// Google TTS and MP3 from other sources, so those are the only two formats
-/// we handle.
-fn decode_audio_to_f32(bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {
-    if bytes.starts_with(b"OggS") {
-        decode_ogg_opus_to_f32(bytes)
-    } else {
-        decode_mp3_to_f32(bytes)
-    }
-}
-
-fn decode_ogg_opus_to_f32(bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {
-    use std::io::Cursor;
-
-    let mut reader = ogg::PacketReader::new(Cursor::new(bytes));
-
-    // First packet: OpusHead identification header (RFC 7845 §5.1).
-    let header = reader
-        .read_packet_expected()
-        .map_err(|e| format!("ogg read error: {e:?}"))?;
-    if !header.data.starts_with(b"OpusHead") || header.data.len() < 19 {
-        return Err("not an OpusHead packet".to_string());
-    }
-    let channels = header.data[9];
-    let opus_channels = match channels {
-        1 => opus::Channels::Mono,
-        2 => opus::Channels::Stereo,
-        n => return Err(format!("unsupported channel count: {n}")),
-    };
-
-    // Second packet: OpusTags comment header — discard.
-    let _tags = reader
-        .read_packet_expected()
-        .map_err(|e| format!("ogg tags read error: {e:?}"))?;
-
-    // Opus always decodes at 48 kHz internally; pick that as our output rate.
-    const DECODE_RATE: u32 = 48_000;
-    let mut decoder = opus::Decoder::new(DECODE_RATE, opus_channels)
-        .map_err(|e| format!("opus decoder init: {e:?}"))?;
-
-    // Max Opus frame is 120 ms at 48 kHz = 5760 samples per channel.
-    let mut frame_buf = vec![0f32; 5760 * channels as usize];
-    let mut samples: Vec<f32> = Vec::new();
-
-    while let Some(packet) = reader
-        .read_packet()
-        .map_err(|e| format!("ogg packet read: {e:?}"))?
-    {
-        let n = decoder
-            .decode_float(&packet.data, &mut frame_buf, false)
-            .map_err(|e| format!("opus decode: {e:?}"))?;
-        for chunk in frame_buf[..n * channels as usize].chunks(channels as usize) {
-            let mono = chunk.iter().sum::<f32>() / channels as f32;
-            samples.push(mono);
-        }
-    }
-
-    if samples.is_empty() {
-        return Err("No audio data decoded".to_string());
-    }
-
-    Ok((samples, DECODE_RATE))
 }
 
 async fn generate_pronunciation_feedback(

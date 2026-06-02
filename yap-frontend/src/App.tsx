@@ -566,7 +566,7 @@ const Tools = memo(function Tools({ deck: _deck }: { deck: Deck }) {
 });
 
 function DictionaryPage() {
-  const { userInfo } = useOutletContext<AppContextType>();
+  const { userInfo, accessToken } = useOutletContext<AppContextType>();
   const deck = useDeck();
   const weapon = useWeapon();
   const navigate = useNavigate();
@@ -623,6 +623,7 @@ function DictionaryPage() {
         weapon={weapon}
         targetLanguage={deck.targetLanguage}
         nativeLanguage={deck.nativeLanguage}
+        accessToken={accessToken}
       />
     </TopPageLayout>
   );

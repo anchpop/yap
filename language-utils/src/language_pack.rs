@@ -1,9 +1,11 @@
 use crate::indexmap::IndexMap;
+use crate::minimal_pairs::{MinimalPairs, build_minimal_pairs_index};
 use crate::{
-    Atom, ConsolidatedLanguageData, Course, DictionaryEntry, Frequency, Gram, GramDefinition,
-    Heteronym, HomophonePractice, HomophoneWordPair, Lexeme, Literal, MorphemeInfo,
+    Atom, Audio, ConsolidatedLanguageData, Course, DictionaryEntry, Frequency, Gram,
+    GramDefinition, Heteronym, HomophonePractice, HomophoneWordPair, Lexeme, Literal, MorphemeInfo,
     MorphemeSegment, MovieMetadata, PartOfSpeech, PatternPosition, PronunciationData,
-    ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram, WordType, grm,
+    ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram, VoiceActor,
+    WordType, grm,
 };
 use lasso::Spur;
 use rustc_hash::FxHashMap;
@@ -27,6 +29,11 @@ pub struct LanguagePack {
     pub source_gram_frequencies: FxHashMap<crate::FrequencySourceId, FrequencyList>,
     pub word_to_pronunciation: FxHashMap<Spur, Spur>,
     pub pronunciation_to_words: FxHashMap<Spur, Vec<Spur>>,
+    /// Minimal-pair lookups: phoneme-pair → word pairs, and word → 1-off words.
+    /// Computed from `word_to_pronunciation`; the IPA strings and differing
+    /// position can be recovered on demand by diffing the two words'
+    /// pronunciations.
+    pub minimal_pairs: MinimalPairs,
     pub pronunciation_data: PronunciationData,
     pub pattern_frequency_map: FxHashMap<(Spur, PatternPosition), u32>,
     pub homophone_practice: FxHashMap<HomophoneWordPair<Spur>, HomophonePractice<Spur>>,
@@ -56,6 +63,9 @@ pub struct LanguagePack {
     /// (both interned). Pair key prevents ambiguity when the same surface
     /// corresponds to different underlying morphemes.
     pub morphemes: FxHashMap<MorphemeSegment<Spur>, MorphemeInfo<Spur>>,
+    /// Human-recorded audio clips, indexed by voice actor and then by the
+    /// target-language phrase they speak.
+    pub human_audio: FxHashMap<VoiceActor, FxHashMap<String, Audio>>,
 }
 
 impl LanguagePack {
@@ -229,13 +239,15 @@ impl LanguagePack {
             language_data
                 .word_to_pronunciation
                 .iter()
-                .map(|(word, pronunciation)| {
+                .map(|(word, pronunciations)| {
                     (
                         rodeo
                             .get(word)
                             .unwrap_or_else(|| panic!("word not in rodeo: {word:?}")),
-                        rodeo.get(pronunciation).unwrap_or_else(|| {
-                            panic!("pronunciation not in rodeo: {pronunciation:?}")
+                        // Language pack only stores the main pronunciation;
+                        // verifier alternates aren't surfaced to the frontend yet.
+                        rodeo.get(&pronunciations.main).unwrap_or_else(|| {
+                            panic!("pronunciation not in rodeo: {:?}", pronunciations.main)
                         }),
                     )
                 })
@@ -280,6 +292,8 @@ impl LanguagePack {
 
         // Initialize movie data
         let movies = language_data.movies;
+
+        let human_audio = language_data.human_audio.clone();
 
         // Store source_gram_frequencies to convert after gram_rodeo is created
         let source_gram_frequencies_data = language_data.source_gram_frequencies.clone();
@@ -629,6 +643,34 @@ impl LanguagePack {
             })
             .collect();
 
+        // For each word, the max frequency of any single-atom gram whose only
+        // atom is that word — used to sort minimal-pair neighbor lists so the
+        // most common standalone-usage neighbors appear first.
+        // `heteronym_to_grams` is already pre-filtered to single-atom heteronym
+        // grams (its construction at line ~536 enforces that) and sorted by
+        // frequency desc, so the top gram's frequency for each heteronym is
+        // the per-heteronym answer; we take the max across the word's
+        // heteronyms.
+        let word_max_single_gram_freq: FxHashMap<Spur, u32> = words_to_heteronyms
+            .iter()
+            .filter_map(|(word, hets)| {
+                let max = hets
+                    .iter()
+                    .filter_map(|het| {
+                        let top_gram = heteronym_to_grams.get(het)?.first()?;
+                        gram_frequencies.entries.get(top_gram).map(|f| f.count)
+                    })
+                    .max()?;
+                Some((*word, max))
+            })
+            .collect();
+
+        let minimal_pairs = build_minimal_pairs_index(
+            &language_data.minimal_pairs,
+            &rodeo,
+            &word_max_single_gram_freq,
+        );
+
         // Build reverse index from display string to grams
         let string_to_grams: FxHashMap<String, Vec<SpurGram>> = {
             let mut map: FxHashMap<String, Vec<SpurGram>> = FxHashMap::default();
@@ -679,6 +721,7 @@ impl LanguagePack {
             source_gram_frequencies,
             word_to_pronunciation,
             pronunciation_to_words,
+            minimal_pairs,
             pronunciation_data,
             pattern_frequency_map,
             homophone_practice,
@@ -693,6 +736,7 @@ impl LanguagePack {
             sentences_containing_gram_index,
             string_to_grams,
             morphemes,
+            human_audio,
         }
     }
 }

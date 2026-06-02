@@ -1,0 +1,107 @@
+{"text": "tu", "file": "01a_tu.wav"}
+{"text": "tout", "file": "01b_tout.wav"}
+{"text": "lu", "file": "02a_lu.wav"}
+{"text": "loup", "file": "02b_loup.wav"}
+{"text": "su", "file": "03a_su.wav"}
+{"text": "sous", "file": "03b_sous.wav"}
+{"text": "vu", "file": "04a_vu.wav"}
+{"text": "vous", "file": "04b_vous.wav"}
+{"text": "bu", "file": "05a_bu.wav"}
+{"text": "bout", "file": "05b_bout.wav"}
+{"text": "rue", "file": "06a_rue.wav"}
+{"text": "roue", "file": "06b_roue.wav"}
+{"text": "pur", "file": "07a_pur.wav"}
+{"text": "pour", "file": "07b_pour.wav"}
+{"text": "bûche", "file": "08a_buche.wav"}
+{"text": "bouche", "file": "08b_bouche.wav"}
+{"text": "dessous", "file": "09a_dessous.wav"}
+{"text": "dessus", "file": "09b_dessus.wav"}
+{"text": "peu", "file": "10a_peu.wav"}
+{"text": "peur", "file": "10b_peur.wav"}
+{"text": "jeune", "file": "11a_jeune.wav"}
+{"text": "jeûne", "file": "11b_jeune.wav"}
+{"text": "bleu", "file": "12a_bleu.wav"}
+{"text": "fleur", "file": "12b_fleur.wav"}
+{"text": "œuf", "file": "12c_uf.wav"}
+{"text": "heure", "file": "12d_heure.wav"}
+{"text": "ce", "file": "13a_ce.wav"}
+{"text": "ces", "file": "13b_ces.wav"}
+{"text": "ses", "file": "13c_ses.wav"}
+{"text": "c'est", "file": "13d_cest.wav"}
+{"text": "de", "file": "14a_de.wav"}
+{"text": "des", "file": "14b_des.wav"}
+{"text": "me", "file": "15a_me.wav"}
+{"text": "mes", "file": "15b_mes.wav"}
+{"text": "te", "file": "16a_te.wav"}
+{"text": "tes", "file": "16b_tes.wav"}
+{"text": "côte", "file": "17a_cote.wav"}
+{"text": "cotte", "file": "17b_cotte.wav"}
+{"text": "paume", "file": "18a_paume.wav"}
+{"text": "pomme", "file": "18b_pomme.wav"}
+{"text": "poisson", "file": "19a_poisson.wav"}
+{"text": "poison", "file": "19b_poison.wav"}
+{"text": "dessert", "file": "20a_dessert.wav"}
+{"text": "désert", "file": "20b_desert.wav"}
+{"text": "pain", "file": "21a_pain.wav"}
+{"text": "pan", "file": "21b_pan.wav"}
+{"text": "pont", "file": "21c_pont.wav"}
+{"text": "un", "file": "21d_un.wav"}
+{"text": "vin", "file": "22a_vin.wav"}
+{"text": "vent", "file": "22b_vent.wav"}
+{"text": "vont", "file": "22c_vont.wav"}
+{"text": "teint", "file": "23a_teint.wav"}
+{"text": "temps", "file": "23b_temps.wav"}
+{"text": "ton", "file": "23c_ton.wav"}
+{"text": "le", "file": "24a_le.wav"}
+{"text": "la", "file": "24b_la.wav"}
+{"text": "les", "file": "24c_les.wav"}
+{"text": "lui", "file": "24d_lui.wav"}
+{"text": "leur", "file": "24e_leur.wav"}
+{"text": "je", "file": "25a_je.wav"}
+{"text": "j'ai", "file": "25b_jai.wav"}
+{"text": "tu", "file": "26a_tu.wav"}
+{"text": "t'as", "file": "26b_tas.wav"}
+{"text": "il", "file": "27a_il.wav"}
+{"text": "elle", "file": "27b_elle.wav"}
+{"text": "ils", "file": "27c_ils.wav"}
+{"text": "elles", "file": "27d_elles.wav"}
+{"text": "rue", "file": "28a_rue.wav"}
+{"text": "pur", "file": "28b_pur.wav"}
+{"text": "heure", "file": "28c_heure.wav"}
+{"text": "quatre", "file": "28d_quatre.wav"}
+{"text": "les amis", "file": "29a_les_amis.wav"}
+{"text": "très intéressant", "file": "29b_tres_interessant.wav"}
+{"text": "et alors", "file": "29c_et_alors.wav"}
+{"text": "il est", "file": "30a_il_est.wav"}
+{"text": "elle est", "file": "30b_elle_est.wav"}
+{"text": "il a", "file": "31a_il_a.wav"}
+{"text": "elle a", "file": "31b_elle_a.wav"}
+{"text": "tu es", "file": "32a_tu_es.wav"}
+{"text": "tu as", "file": "32b_tu_as.wav"}
+{"text": "je suis", "file": "33a_je_suis.wav"}
+{"text": "je vais", "file": "33b_je_vais.wav"}
+{"text": "je veux", "file": "33c_je_veux.wav"}
+{"text": "je peux", "file": "33d_je_peux.wav"}
+{"text": "j'ai", "file": "34a_jai.wav"}
+{"text": "il a", "file": "34b_il_a.wav"}
+{"text": "tu as", "file": "34c_tu_as.wav"}
+{"text": "il y a", "file": "35a_il_y_a.wav"}
+{"text": "il faut", "file": "35b_il_faut.wav"}
+{"text": "il est", "file": "35c_il_est.wav"}
+{"text": "de la", "file": "36a_de_la.wav"}
+{"text": "de", "file": "36b_de.wav"}
+{"text": "des", "file": "36c_des.wav"}
+{"text": "vous êtes", "file": "37a_vous_etes.wav"}
+{"text": "tu es", "file": "37b_tu_es.wav"}
+{"text": "est-ce que", "file": "38a_est-ce_que.wav"}
+{"text": "qu'est-ce que", "file": "38b_quest-ce_que.wav"}
+{"text": "quelque chose", "file": "39_quelque_chose.wav"}
+{"text": "Bonjour, ça va?", "file": "40_bonjour_ca_va.wav"}
+{"text": "Je voudrais un café, s'il vous plaît.", "file": "41_je_voudrais_un_cafe_sil_vous_plait.wav"}
+{"text": "Il fait beau aujourd'hui.", "file": "42_il_fait_beau_aujourdhui.wav"}
+{"text": "Tu habites où exactement?", "file": "43_tu_habites_ou_exactement.wav"}
+{"text": "Qu'est-ce que tu fais ce soir?", "file": "44_quest-ce_que_tu_fais_ce_soir.wav"}
+{"text": "Je ne te le redemanderai pas.", "file": "45_je_ne_te_le_redemanderai_pas.wav"}
+{"text": "Il a vu la rue où vous habitez.", "file": "46_il_a_vu_la_rue_ou_vous_habitez.wav"}
+{"text": "Le pain et le vin sont sur la table.", "file": "47_le_pain_et_le_vin_sont_sur_la_table.wav"}
+{"text": "On se retrouve devant le café à huit heures.", "file": "48_on_se_retrouve_devant_le_cafe_a_huit_heures.wav"}
