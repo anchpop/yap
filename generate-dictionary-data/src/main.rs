@@ -15,7 +15,28 @@ struct PageEntry {
     /// Best (lowest) frequency rank among all senses
     best_frequency_rank: usize,
     senses: Vec<Sense>,
+    /// Words that sound similar (minimal pairs — differ by exactly one
+    /// phoneme), sorted by frequency. Empty for phrases and words with no
+    /// minimal pairs.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    sounds_similar: Vec<SoundsSimilar>,
 }
+
+/// A word that differs from this page's word by exactly one phoneme.
+#[derive(Serialize)]
+struct SoundsSimilar {
+    word: String,
+    /// Slug of the neighbor's dictionary page — always present, since we only
+    /// emit neighbors that have a page to link to.
+    slug: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pronunciation: Option<String>,
+}
+
+/// Cap on minimal-pair neighbors listed per page (sorted by frequency, so the
+/// most useful appear first). Keeps common short words — which can have dozens
+/// of minimal pairs — from ballooning the page JSON.
+const MAX_SOUNDS_SIMILAR: usize = 24;
 
 /// Morphological information for a word sense.
 #[derive(Serialize)]
@@ -254,6 +275,11 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
     let mut conjugation_index: FxHashMap<(String, PartOfSpeech), Vec<(String, Morphology)>> =
         FxHashMap::default();
 
+    // display_text → heteronym word spur, for minimal-pair ("sounds similar")
+    // lookup. First (most frequent) single-word occurrence wins, matching the
+    // frequency-descending iteration order below.
+    let mut display_text_to_word_spur: FxHashMap<String, Spur> = FxHashMap::default();
+
     for (frequency_index, (spur_gram, freq)) in
         language_pack.gram_frequencies.entries.iter().enumerate()
     {
@@ -284,6 +310,18 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                 }
             })
             .unwrap_or((None, None, None, None));
+
+        // Heteronym word spur (the interned word form) — used to look the word
+        // up in the pack's minimal-pairs index.
+        let het_word_spur: Option<Spur> = gram.atoms().iter().find_map(|atom| {
+            if let Atom::Tok(word) = atom
+                && let WordType::Heteronym(h) = &word.word_type
+            {
+                Some(h.word)
+            } else {
+                None
+            }
+        });
 
         let pronunciation = gram
             .atoms()
@@ -347,6 +385,14 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
 
         let is_phrase = gram.len() > 1;
         let pronunciation = if is_phrase { None } else { pronunciation };
+
+        if !is_phrase
+            && let Some(ws) = het_word_spur
+        {
+            display_text_to_word_spur
+                .entry(display_text.clone())
+                .or_insert(ws);
+        }
 
         // Extract morphology and prefix for single-word dictionary entries
         let (morphology, prefix) = if !is_phrase {
@@ -472,6 +518,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                 display_text,
                 best_frequency_rank,
                 senses,
+                sounds_similar: Vec::new(),
             }
         })
         .collect();
@@ -481,6 +528,47 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
         .iter()
         .map(|p| (p.display_text.clone(), p.slug.clone()))
         .collect();
+
+    // Build the "sounds similar to" (minimal-pair) links. Neighbors come from
+    // the pack's precomputed minimal-pairs index (words differing by exactly
+    // one phoneme, already sorted by frequency); we keep only those that have
+    // their own dictionary page so every link resolves.
+    let word_spur_to_slug: FxHashMap<Spur, String> = display_text_to_word_spur
+        .iter()
+        .filter_map(|(dt, ws)| display_text_to_slug.get(dt).map(|slug| (*ws, slug.clone())))
+        .collect();
+    for page in &mut pages {
+        let Some(word_spur) = display_text_to_word_spur.get(&page.display_text) else {
+            continue;
+        };
+        let Some(neighbors) = language_pack.minimal_pairs.by_word.get(word_spur) else {
+            continue;
+        };
+        let mut seen_slugs: std::collections::HashSet<String> = std::collections::HashSet::new();
+        for neighbor_spur in neighbors {
+            let Some(slug) = word_spur_to_slug.get(neighbor_spur) else {
+                continue;
+            };
+            // Skip self-links and collapse neighbors that share a page.
+            if *slug == page.slug || !seen_slugs.insert(slug.clone()) {
+                continue;
+            }
+            let word = string_rodeo.resolve(neighbor_spur).to_string();
+            let pronunciation = language_pack
+                .word_to_pronunciation
+                .get(neighbor_spur)
+                .map(|p| string_rodeo.resolve(p).to_string())
+                .filter(|s| !s.is_empty());
+            page.sounds_similar.push(SoundsSimilar {
+                word,
+                slug: slug.clone(),
+                pronunciation,
+            });
+            if page.sounds_similar.len() >= MAX_SOUNDS_SIMILAR {
+                break;
+            }
+        }
+    }
 
     // Build SpurGram → (slug, gloss) lookup for cross-linking sentences.
     let mut gram_to_info: FxHashMap<language_utils::SpurGram, GramInfo> = FxHashMap::default();
