@@ -137,7 +137,11 @@ pub fn phonemize_phrase(text: &str, language: Language) -> Result<Option<Vec<Str
 mod tests {
     use super::*;
 
+    // Ignored in CI: requires the espeak-ng binary (and the liaison output
+    // depends on our custom French-stress-liaison build). Run locally with
+    // ESPEAK_NG_BIN set: `cargo test -p generate-data -- --ignored`.
     #[test]
+    #[ignore = "requires espeak-ng binary (custom French-liaison build)"]
     fn french_handles_liaison() {
         // The motivating case: "on est" should produce /ɔ̃ n ɛ/ with
         // both the nasal vowel preserved and the liaison /n/ — neither
@@ -175,7 +179,9 @@ mod tests {
         assert!(result.is_none());
     }
 
+    // Ignored in CI: requires the espeak-ng binary. Run with `--ignored`.
     #[test]
+    #[ignore = "requires espeak-ng binary"]
     fn empty_input_is_ok() {
         let phonemes = phonemize_phrase("", Language::French)
             .expect("espeak invocation failed")

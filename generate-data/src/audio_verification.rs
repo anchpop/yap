@@ -1216,7 +1216,11 @@ mod tests {
         assert_eq!(variants[0], vec!["X"; 5]);
     }
 
+    // Ignored in CI: requires the espeak-ng binary (and the liaison output
+    // depends on our custom French-stress-liaison build). Run locally with
+    // ESPEAK_NG_BIN set: `cargo test -p generate-data -- --ignored`.
     #[test]
+    #[ignore = "requires espeak-ng binary (custom French-liaison build)"]
     fn ground_truth_includes_espeak_variant_for_supported_languages() {
         // For French (espeak-supported), the candidate list should include
         // an espeak-derived variant in addition to the wikipron cross-product.
