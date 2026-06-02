@@ -605,7 +605,9 @@ impl Weapon {
         )
         .await?;
         let language_pack = Arc::new(language_pack);
-        human_audio::register(course.target_language, Arc::clone(&language_pack));
+        // Register before the move below: the registry holds only a Weak, so
+        // the inserted Arc remains the sole owner.
+        human_audio::register(course.target_language, &language_pack);
         self.language_pack
             .borrow_mut()
             .insert(course, language_pack);
@@ -2436,7 +2438,7 @@ impl Deck {
                 // Pre-fetch audio files
                 for request in challenge.audio_requests() {
                     let cache_filename =
-                        audio::AudioCache::get_cache_filename(&request.request, &request.provider);
+                        audio::tts_cache_filename(&request.request, &request.provider);
                     let _ = audio_cache.fetch_and_cache(&request, access_token).await;
                     requested_filenames.insert(cache_filename);
                 }

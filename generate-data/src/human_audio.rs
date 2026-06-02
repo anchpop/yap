@@ -218,6 +218,13 @@ pub async fn load_human_audio(
             }
             let bytes = encode_wav_to_opus(&wav_path)
                 .with_context(|| format!("Failed to encode {} to opus", wav_path.display()))?;
+            // TODO: keep every take rather than last-take-wins. Several
+            // manifest texts are recorded more than once (alternate takes we
+            // commissioned), but the `(actor, text) -> Audio` map discards all
+            // but the last. The plan: make this `(actor, text) -> Vec<Audio>`
+            // and have the frontend `human_audio::lookup` registry rotate
+            // through an actor's takes the same way it already rotates across
+            // actors, so learners hear natural variation instead of one clip.
             if clips
                 .insert(entry.text.clone(), language_utils::Audio { bytes })
                 .is_some()

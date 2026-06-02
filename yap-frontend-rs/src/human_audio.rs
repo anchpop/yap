@@ -1,7 +1,7 @@
 use language_utils::{Compensation, Language, language_pack::LanguagePack};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
-use std::sync::Arc;
+use std::sync::{Arc, Weak};
 
 thread_local! {
     static REGISTRY: RefCell<Registry> = RefCell::new(Registry::default());
@@ -9,13 +9,18 @@ thread_local! {
 
 #[derive(Default)]
 struct Registry {
-    packs: BTreeMap<Language, Arc<LanguagePack>>,
+    /// Weak refs to packs owned by `Weapon.language_pack`. The audio fetch
+    /// path can't reach the `Weapon`, so it looks packs up here — but holding
+    /// `Weak` (not `Arc`) keeps the `Weapon`'s map the sole owner: if a pack
+    /// is dropped there, `upgrade()` fails and `lookup` falls through to TTS
+    /// rather than serving a stale clip. `register` overwrites on reload.
+    packs: BTreeMap<Language, Weak<LanguagePack>>,
     next_actor_index: BTreeMap<(Language, String), usize>,
 }
 
-pub fn register(language: Language, pack: Arc<LanguagePack>) {
+pub fn register(language: Language, pack: &Arc<LanguagePack>) {
     REGISTRY.with(|r| {
-        r.borrow_mut().packs.insert(language, pack);
+        r.borrow_mut().packs.insert(language, Arc::downgrade(pack));
     });
 }
 
@@ -32,7 +37,7 @@ pub fn lookup(language: Language, text: &str) -> Option<HumanAudio> {
     REGISTRY.with(|r| {
         let mut registry = r.borrow_mut();
 
-        let pack = registry.packs.get(&language)?.clone();
+        let pack = registry.packs.get(&language)?.upgrade()?;
 
         let mut actors: Vec<&language_utils::VoiceActor> = pack
             .human_audio

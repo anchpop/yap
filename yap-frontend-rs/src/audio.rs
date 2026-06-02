@@ -45,23 +45,12 @@ impl AudioCache {
         Ok(Self { audio_dir })
     }
 
-    pub fn get_cache_filename(request: &TtsRequest, provider: &TtsProvider) -> String {
-        let instructions = request.instructions.as_deref().unwrap_or("");
-        let cache_text = format!(
-            "{provider:?}:{text}:{language}:{instructions}",
-            text = request.text,
-            language = request.language
-        );
-        let cache_key = const_xxh3(cache_text.as_bytes());
-        format!("{cache_key}.mp3")
-    }
-
     pub async fn get_cached(
         &self,
         request: &TtsRequest,
         provider: &TtsProvider,
     ) -> Option<Vec<u8>> {
-        let cache_filename = Self::get_cache_filename(request, provider);
+        let cache_filename = tts_cache_filename(request, provider);
 
         if let Ok(file_handle) = self
             .audio_dir
@@ -106,7 +95,7 @@ impl AudioCache {
         request: &TtsRequest,
         provider: &TtsProvider,
     ) -> Result<(), JsValue> {
-        let cache_filename = Self::get_cache_filename(request, provider);
+        let cache_filename = tts_cache_filename(request, provider);
 
         let mut audio_dir = self.audio_dir.clone();
         if let Err(e) = audio_dir.remove_entry(&cache_filename).await {
@@ -117,7 +106,7 @@ impl AudioCache {
     }
 
     pub async fn cache_audio(&self, request: &TtsRequest, provider: &TtsProvider, bytes: Vec<u8>) {
-        let cache_filename = Self::get_cache_filename(request, provider);
+        let cache_filename = tts_cache_filename(request, provider);
 
         if let Ok(mut file_handle) = self
             .audio_dir
@@ -145,7 +134,10 @@ impl AudioCache {
         let AudioRequest { request, provider } = request;
 
         // Human recordings live in the language pack and don't need OPFS caching.
-        if let Some(human) = human_audio::lookup(request.language, &request.text) {
+        // Only serve them for a plain request — see `human_audio_applies`.
+        if human_audio_applies(request)
+            && let Some(human) = human_audio::lookup(request.language, &request.text)
+        {
             return Ok(FetchedAudio {
                 bytes: human.bytes,
                 voice_actor: Some(VoiceActorInfo {
@@ -234,17 +226,6 @@ impl TempAudioCache {
         Ok(Self { temp_dir })
     }
 
-    fn get_cache_filename(request: &TtsRequest, provider: &TtsProvider) -> String {
-        let instructions = request.instructions.as_deref().unwrap_or("");
-        let cache_text = format!(
-            "{provider:?}:{text}:{language}:{instructions}",
-            text = request.text,
-            language = request.language
-        );
-        let cache_key = const_xxh3(cache_text.as_bytes());
-        format!("{cache_key}.mp3")
-    }
-
     /// Filename format: `{timestamp_secs}_{hash}.mp3`
     fn temp_filename(base_filename: &str) -> String {
         let now = chrono::Utc::now().timestamp();
@@ -297,7 +278,10 @@ impl TempAudioCache {
         let AudioRequest { request, provider } = request;
 
         // Human recordings live in the language pack and don't need OPFS caching.
-        if let Some(human) = human_audio::lookup(request.language, &request.text) {
+        // Only serve them for a plain request — see `human_audio_applies`.
+        if human_audio_applies(request)
+            && let Some(human) = human_audio::lookup(request.language, &request.text)
+        {
             return Ok(FetchedAudio {
                 bytes: human.bytes,
                 voice_actor: Some(VoiceActorInfo {
@@ -307,7 +291,7 @@ impl TempAudioCache {
             });
         }
 
-        let base_filename = Self::get_cache_filename(request, provider);
+        let base_filename = tts_cache_filename(request, provider);
 
         // Check cache first (match by hash, ignore timestamp)
         if let Some((_filename, bytes)) = self.find_cached(&base_filename).await {
@@ -375,6 +359,48 @@ impl TempAudioCache {
 
         Ok(())
     }
+}
+
+/// Cache filename for a TTS request. The key must include *every* field that
+/// changes the synthesized audio — otherwise a request differing only in, say,
+/// `speed` would be served a stale clip rendered at a different speed. Shared
+/// by both `AudioCache` and `TempAudioCache` so the two can never drift apart.
+pub(crate) fn tts_cache_filename(request: &TtsRequest, provider: &TtsProvider) -> String {
+    // Distinguish instructions None ('n') from Some("") ('s'): the /tts
+    // handlers treat them differently (None = default prompt, Some("") = empty
+    // prefix), so they must key to different clips.
+    let (itag, instructions) = match request.instructions.as_deref() {
+        Some(s) => ('s', s),
+        None => ('n', ""),
+    };
+    // Length-prefix the free-form fields (text, instructions) so two distinct
+    // requests can't collide via a colon embedded in the text — e.g. text
+    // "a:b" vs text "a" + instructions "b" would otherwise hash identically.
+    // The remaining fields have bounded, colon-free Debug/Display/numeric
+    // forms, so they're safe to join directly.
+    let cache_text = format!(
+        "{provider:?}|{language}|{speed}|{is_ssml}|{tlen}:{text}|{itag}{ilen}:{instructions}",
+        language = request.language,
+        speed = request.speed,
+        is_ssml = request.is_ssml,
+        tlen = request.text.len(),
+        text = request.text,
+        ilen = instructions.len(),
+    );
+    let cache_key = const_xxh3(cache_text.as_bytes());
+    format!("{cache_key}.mp3")
+}
+
+/// Whether a human recording may satisfy this request. A human clip is a
+/// single fixed rendering of the phrase, so it can't honor non-default
+/// speed, SSML, or style instructions — when any of those is set we skip
+/// the human clip and fall through to TTS, which can actually apply them.
+/// (Provider is deliberately ignored: human audio is preferred over any
+/// TTS provider for a plain request.)
+fn human_audio_applies(request: &TtsRequest) -> bool {
+    !request.is_ssml
+        && request.instructions.is_none()
+        && (request.speed - 1.0).abs() < f64::EPSILON
 }
 
 async fn fetch_tts(
