@@ -1,4 +1,5 @@
-import { memo, useState, lazy, Suspense, useDeferredValue, useMemo } from "react";
+import { memo, useState, lazy, Suspense, useDeferredValue, useMemo, Component } from "react";
+import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import TimeAgo from "react-timeago";
 import type { Deck, Language } from "../../../yap-frontend-rs/pkg";
@@ -13,12 +14,30 @@ import { useInterval } from "react-use";
 import { NumericStats } from "./numeric-stats";
 import { Card } from "@/components/ui/card";
 
-// Lazy load the chart component - only loads when needed
 const FrequencyKnowledgeChart = lazy(() =>
   import("./FrequencyKnowledgeChart").then((module) => ({
     default: module.FrequencyKnowledgeChart,
   })),
 );
+
+class ChunkErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) return this.props.fallback;
+    return this.props.children;
+  }
+}
 
 interface StatsProps {
   deck: Deck;
@@ -228,15 +247,23 @@ export const Stats = memo(function Stats({ deck: deckProp, targetLanguage }: Sta
               This is used to help Yap decide which words to teach first. (Yap
               tries to avoid teaching you words you already know!)
             </p>
-            <Suspense
+            <ChunkErrorBoundary
               fallback={
                 <div className="h-[400px] flex items-center justify-center text-muted-foreground">
-                  <p>Loading chart...</p>
+                  <p>Chart unavailable. Please refresh the page.</p>
                 </div>
               }
             >
-              <FrequencyKnowledgeChart deck={deck} />
-            </Suspense>
+              <Suspense
+                fallback={
+                  <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                    <p>Loading chart...</p>
+                  </div>
+                }
+              >
+                <FrequencyKnowledgeChart deck={deck} />
+              </Suspense>
+            </ChunkErrorBoundary>
           </Card>
         </CollapsibleContent>
       </Collapsible>
