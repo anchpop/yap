@@ -104,6 +104,8 @@ function grammarSummary(sense: any): string {
   if (sense.is_phrase) parts.push('phrase');
   return parts.join(' · ');
 }
+
+const mainGrammar = grammarSummary(mainSense);
 ---
 
 <Layout
@@ -127,7 +129,10 @@ function grammarSummary(sense: any): string {
       )}{page.display_text}
     </h1>
     <p class="text-xl text-primary mt-1">{getSummary()}</p>
-    <div class="flex items-center gap-3 mt-2 text-sm text-muted-foreground/60">
+    <div class="flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-sm text-muted-foreground/60">
+      {mainGrammar && (
+        <span>{mainGrammar}</span>
+      )}
       {mainSense.pronunciation && (
         <span>{mainSense.pronunciation}</span>
       )}
@@ -414,6 +419,27 @@ function grammarSummary(sense: any): string {
       );
     })}
   </div>
+
+  {/* Sounds similar to — minimal-pair neighbors (differ by one phoneme) */}
+  {page.sounds_similar && page.sounds_similar.length > 0 && (
+    <div class="mt-10 pt-6 border-t border-muted">
+      <h2 class="text-sm font-medium text-muted-foreground/60 mb-3">Sounds similar to</h2>
+      <div class="flex flex-wrap gap-2">
+        {page.sounds_similar.map((s: any) => (
+          <a
+            href={`/d/${courseSlug}/${s.slug}/`}
+            class="inline-flex items-baseline gap-1.5 px-2.5 py-1 rounded-md bg-muted/40 hover:bg-muted text-accent-foreground"
+          >
+            <span>{s.word}</span>
+            {s.pronunciation && (
+              <span class="text-xs text-muted-foreground/60">{s.pronunciation}</span>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+
   <div id="gram-tooltip" popover></div>
 
   <style>
