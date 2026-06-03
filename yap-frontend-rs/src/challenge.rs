@@ -10,8 +10,7 @@ use lasso::Spur;
 use crate::{
     AudioRequest, CardContent, CardIndicator, Challenge, ComprehensibleSentence, Deck, FlashCard,
     ReviewInfo, SentenceChallengeType, TranscribeComprehensibleSentence,
-    TranslateComprehensibleSentence,
-    dictionary::{compute_breakdown, compute_word_prefix_and_morphology},
+    TranslateComprehensibleSentence, dictionary::compute_word_prefix_and_morphology,
 };
 
 /// Metadata computed from a CardIndicator and Deck, used to build FlashCardReview
@@ -250,7 +249,7 @@ impl ReviewInfo {
          -> usize {
             let idx = defs.len();
             defs.push(language_pack.gram_definitions.get(gram_spur).cloned());
-            breakdowns.push(compute_breakdown(*gram_spur, language_pack));
+            breakdowns.push(language_pack.compute_breakdown(*gram_spur));
             idx
         };
         for sentence_gram in sentence_grams {
@@ -423,7 +422,7 @@ impl ReviewInfo {
         // Morpheme-level breakdown for single heteronyms, word-level for
         // multi-atom grams. Punctuation atoms in multi-word grams render with
         // `None` gloss.
-        let breakdown = compute_breakdown(gram, language_pack);
+        let breakdown = language_pack.compute_breakdown(gram);
 
         let content = CardContent::Gram {
             gram: literals,
@@ -491,7 +490,7 @@ impl ReviewInfo {
             let group_index = gram_definitions_for_lookup.len();
             let definition = language_pack.gram_definitions.get(&gram_spur).cloned();
             gram_definitions_for_lookup.push(definition);
-            let breakdown = compute_breakdown(gram_spur, language_pack);
+            let breakdown = language_pack.compute_breakdown(gram_spur);
             gram_breakdowns_for_lookup.push(breakdown);
 
             for literal in literals {
@@ -567,7 +566,7 @@ impl ReviewInfo {
                     .collect(),
                 phrase_breakdowns: unique_target_language_phrases
                     .iter()
-                    .map(|p| compute_breakdown(*p, language_pack))
+                    .map(|p| language_pack.compute_breakdown(*p))
                     .collect(),
                 native_translations: native_languages
                     .iter()

@@ -133,6 +133,19 @@ export function WeaponProvider({
     };
   }, [syncWithSupabase]);
 
+  // Kick off a full sync as soon as the access token becomes available.
+  // On a cold load, the Weapon's initial per-stream sync can run before
+  // supabase.auth.getSession() has resolved (the token is fetched async,
+  // and refreshing an expired one is slow). Without this, server-only
+  // streams like deck_selection stay empty until the 30s periodic sync —
+  // which is why a logged-in user could land on "/" instead of being
+  // redirected to /learn until a manual reload.
+  useEffect(() => {
+    if (!accessToken) return;
+    if (state.type !== "ready") return;
+    void syncWithSupabase();
+  }, [accessToken, state, syncWithSupabase]);
+
   // Set up BroadcastChannel for inter-tab sync
   useEffect(() => {
     if (!window.BroadcastChannel) {

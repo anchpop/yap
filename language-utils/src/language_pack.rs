@@ -182,6 +182,115 @@ impl LanguagePack {
         }
     }
 
+    /// Break a heteronym's word into its constituent morphemes. Each entry is
+    /// `(surface, canonical, gloss)`. The gloss is required for a morpheme-level
+    /// breakdown (all-or-nothing); `canonical` is `Some` only when it differs
+    /// from the surface (and from the full word).
+    fn compute_morpheme_breakdown(
+        &self,
+        heteronym: &Heteronym<Spur>,
+    ) -> Option<Vec<(String, Option<String>, String)>> {
+        let rodeo = &self.string_rodeo;
+
+        // The segmentation lives on the DictionaryEntry, reached via the
+        // heteronym's first (most frequent) gram.
+        let gram = self.heteronym_to_grams.get(heteronym)?.first()?;
+        let dict_entry = match self.gram_definitions.get(gram)? {
+            GramDefinition::Dictionary(d) => d,
+            GramDefinition::Phrasebook(_) => return None,
+        };
+
+        if dict_entry.segments.len() < 2 {
+            return None;
+        }
+
+        let full_word = rodeo.resolve(&heteronym.word);
+
+        dict_entry
+            .segments
+            .iter()
+            .map(|segment| {
+                let key = MorphemeSegment {
+                    surface: rodeo.get(&segment.surface)?,
+                    canonical: rodeo.get(&segment.canonical)?,
+                    tag: match &segment.tag {
+                        Some(t) => Some(rodeo.get(t)?),
+                        None => None,
+                    },
+                };
+                let info = self.morphemes.get(&key)?;
+                let gloss = self.morpheme_gloss(info)?;
+                let canonical =
+                    if segment.canonical == segment.surface || segment.canonical == full_word {
+                        None
+                    } else {
+                        Some(segment.canonical.clone())
+                    };
+                Some((segment.surface.clone(), canonical, gloss))
+            })
+            .collect()
+    }
+
+    /// Learner-facing breakdown of a gram. Each entry is
+    /// `(surface, canonical, gloss)`; `canonical` is `Some` only when it differs
+    /// from the surface, and `gloss` is optional so punctuation atoms in
+    /// multi-word grams can render with an empty native-language cell.
+    ///
+    /// - Single-heteronym grams → **morpheme-level** decomposition (all glosses
+    ///   required, all-or-nothing).
+    /// - Multi-atom grams → **word-level** decomposition, but only when the
+    ///   phrase has a `Phrasebook` entry flagged `compositional` (for idiomatic
+    ///   phrases, per-word glosses are misleading).
+    #[allow(clippy::type_complexity)]
+    pub fn compute_breakdown(
+        &self,
+        gram_spur: SpurGram,
+    ) -> Option<Vec<(String, Option<String>, Option<String>)>> {
+        let gram = self.gram_rodeo.resolve(&gram_spur);
+        match gram.atoms() {
+            [Atom::Tok(word)] => match &word.word_type {
+                WordType::Heteronym(het) => {
+                    let inner = self.compute_morpheme_breakdown(het)?;
+                    Some(inner.into_iter().map(|(s, c, g)| (s, c, Some(g))).collect())
+                }
+                _ => None,
+            },
+            atoms => {
+                let is_compositional = matches!(
+                    self.gram_definitions.get(&gram_spur),
+                    Some(GramDefinition::Phrasebook(entry)) if entry.compositional
+                );
+                if !is_compositional {
+                    return None;
+                }
+                let rodeo = &self.string_rodeo;
+                let out: Vec<(String, Option<String>, Option<String>)> = atoms
+                    .iter()
+                    .filter_map(|atom| match atom {
+                        Atom::Tok(word) => {
+                            let surface = rodeo.resolve(&word.text).to_string();
+                            let (canonical, gloss) = match &word.word_type {
+                                WordType::Heteronym(het) => {
+                                    let lemma = rodeo.resolve(&het.lemma);
+                                    let canonical = if lemma == surface {
+                                        None
+                                    } else {
+                                        Some(lemma.to_string())
+                                    };
+                                    (canonical, self.heteronym_gloss(het))
+                                }
+                                _ => (None, None),
+                            };
+                            Some((surface, canonical, gloss))
+                        }
+                        _ => None,
+                    })
+                    .collect();
+                if out.len() < 2 { None } else { Some(out) }
+            }
+        }
+    }
+
     pub fn new(language_data: ConsolidatedLanguageData, course: Course) -> Self {
         let target_language = course.target_language;
         let rodeo = {

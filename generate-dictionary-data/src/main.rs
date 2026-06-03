@@ -20,6 +20,22 @@ struct PageEntry {
     /// minimal pairs.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     sounds_similar: Vec<SoundsSimilar>,
+    /// Morpheme segmentation of the word (root + affixes, each with a gloss),
+    /// in surface order. Empty unless the word has a ≥2-morpheme breakdown.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    morpheme_breakdown: Vec<MorphemeSeg>,
+}
+
+/// One morpheme in a word's segmentation.
+#[derive(Serialize)]
+struct MorphemeSeg {
+    surface: String,
+    /// Canonical/dictionary form, only when it differs from the surface.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    canonical: Option<String>,
+    /// Native-language gloss for the morpheme.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    gloss: Option<String>,
 }
 
 /// A word that differs from this page's word by exactly one phoneme.
@@ -280,6 +296,11 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
     // frequency-descending iteration order below.
     let mut display_text_to_word_spur: FxHashMap<String, Spur> = FxHashMap::default();
 
+    // display_text → representative single-word gram, for morpheme breakdown.
+    // First (most frequent) single-word occurrence wins.
+    let mut display_text_to_main_gram: FxHashMap<String, language_utils::SpurGram> =
+        FxHashMap::default();
+
     for (frequency_index, (spur_gram, freq)) in
         language_pack.gram_frequencies.entries.iter().enumerate()
     {
@@ -390,6 +411,9 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
             display_text_to_word_spur
                 .entry(display_text.clone())
                 .or_insert(ws);
+            display_text_to_main_gram
+                .entry(display_text.clone())
+                .or_insert(*spur_gram);
         }
 
         // Extract morphology and prefix for single-word dictionary entries
@@ -517,6 +541,7 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                 best_frequency_rank,
                 senses,
                 sounds_similar: Vec::new(),
+                morpheme_breakdown: Vec::new(),
             }
         })
         .collect();
@@ -566,6 +591,26 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                 break;
             }
         }
+    }
+
+    // Attach the morpheme segmentation (root + affixes with glosses) per page,
+    // computed from the page's representative single-word gram. Reuses the same
+    // breakdown logic the app uses (LanguagePack::compute_breakdown).
+    for page in &mut pages {
+        let Some(main_gram) = display_text_to_main_gram.get(&page.display_text) else {
+            continue;
+        };
+        let Some(segments) = language_pack.compute_breakdown(*main_gram) else {
+            continue;
+        };
+        page.morpheme_breakdown = segments
+            .into_iter()
+            .map(|(surface, canonical, gloss)| MorphemeSeg {
+                surface,
+                canonical,
+                gloss,
+            })
+            .collect();
     }
 
     // Build SpurGram → (slug, gloss) lookup for cross-linking sentences.

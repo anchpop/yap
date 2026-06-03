@@ -104,8 +104,6 @@ function grammarSummary(sense: any): string {
   if (sense.is_phrase) parts.push('phrase');
   return parts.join(' · ');
 }
-
-const mainGrammar = grammarSummary(mainSense);
 ---
 
 <Layout
@@ -130,9 +128,6 @@ const mainGrammar = grammarSummary(mainSense);
     </h1>
     <p class="text-xl text-primary mt-1">{getSummary()}</p>
     <div class="flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-sm text-muted-foreground/60">
-      {mainGrammar && (
-        <span>{mainGrammar}</span>
-      )}
       {mainSense.pronunciation && (
         <span>{mainSense.pronunciation}</span>
       )}
@@ -140,6 +135,23 @@ const mainGrammar = grammarSummary(mainSense);
         <span>→ {mainSense.lemma}</span>
       )}
     </div>
+
+    {/* Morpheme breakdown — root + affixes, each with a gloss */}
+    {page.morpheme_breakdown && page.morpheme_breakdown.length > 0 && (
+      <div class="flex flex-wrap items-stretch gap-1.5 mt-4">
+        {page.morpheme_breakdown.map((seg: any, i: number) => (
+          <>
+            {i > 0 && <span class="self-center text-muted-foreground/40 select-none">+</span>}
+            <span class="inline-flex flex-col rounded-md bg-muted/40 px-2 py-1 leading-tight">
+              <span class="font-medium">{seg.surface}</span>
+              {seg.gloss && (
+                <span class="text-xs text-muted-foreground/70">{seg.gloss}</span>
+              )}
+            </span>
+          </>
+        ))}
+      </div>
+    )}
   </div>
 
   <!-- Senses -->
