@@ -17,9 +17,14 @@ Sentry.init({
   ],
 
   beforeSend(event) {
-    // Filter out browser extension errors (not our code)
     const message = event.exception?.values?.[0]?.value ?? "";
+    // Filter out browser extension errors (not our code)
     if (message.includes("runtime.sendMessage()")) {
+      return null;
+    }
+    // Filter out transient service worker update failures — these are
+    // lifecycle race conditions, not actionable bugs.
+    if (message.includes("Failed to update a ServiceWorker")) {
       return null;
     }
     return event;

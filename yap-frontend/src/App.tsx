@@ -119,10 +119,9 @@ function AppMain() {
     onRegistered(r) {
       if (r) {
         setInterval(() => {
-          r.update().catch((e) => {
-            if (navigator.onLine) {
-              Sentry.captureException(e, { tags: { "sw.online": true } });
-            }
+          r.update().catch(() => {
+            // SW update failures (InvalidStateError, network errors) are transient
+            // lifecycle races, not actionable — suppress from error tracking.
           });
         }, updateIntervalMS);
       }
