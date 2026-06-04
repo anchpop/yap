@@ -445,16 +445,15 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
         // Populate conjugation index for single-word dictionary entries with morphology.
         // Use het_word (the normalized heteronym word) rather than display_text (raw surface
         // form which may be capitalized from sentence-initial position).
-        if !is_phrase {
-            if let GramDefinition::Dictionary(dict) = gram_def {
-                if let (Some(lemma_str), Some(pos_val), Some(word)) = (&lemma, het_pos, &het_word) {
-                    for morph in &dict.morphology {
-                        conjugation_index
-                            .entry((lemma_str.clone(), pos_val))
-                            .or_default()
-                            .push((word.clone(), morph.clone()));
-                    }
-                }
+        if !is_phrase
+            && let GramDefinition::Dictionary(dict) = gram_def
+            && let (Some(lemma_str), Some(pos_val), Some(word)) = (&lemma, het_pos, &het_word)
+        {
+            for morph in &dict.morphology {
+                conjugation_index
+                    .entry((lemma_str.clone(), pos_val))
+                    .or_default()
+                    .push((word.clone(), morph.clone()));
             }
         }
 
@@ -696,34 +695,34 @@ fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
                     "Verb" => Some(PartOfSpeech::Verb),
                     _ => None,
                 };
-                if let Some(pos) = pos_val {
-                    if let Some(forms) = conjugation_index.get(&(lemma.clone(), pos)) {
-                        // Deduplicate forms by (word, morphology)
-                        let mut seen_forms: std::collections::HashSet<(&str, &Morphology)> =
-                            std::collections::HashSet::new();
-                        let mut unique_forms: Vec<ConjugationForm> = Vec::new();
-                        for (word, morph) in forms {
-                            if seen_forms.insert((word.as_str(), morph)) {
-                                unique_forms.push(ConjugationForm {
-                                    word: word.clone(),
-                                    slug: display_text_to_slug.get(word).cloned(),
-                                    tense: morph.tense.map(|t| format!("{t:?}").to_lowercase()),
-                                    mood: morph.mood.map(|m| format!("{m:?}").to_lowercase()),
-                                    person: morph.person.map(|p| format!("{p:?}").to_lowercase()),
-                                    number: morph.number.map(|n| format!("{n:?}").to_lowercase()),
-                                    gender: morph.gender.map(|g| format!("{g:?}").to_lowercase()),
-                                    case: morph.case.map(|c| format!("{c:?}").to_lowercase()),
-                                });
-                            }
-                        }
-                        // Only attach if there's more than 1 form
-                        if unique_forms.len() > 1 {
-                            sense.conjugation = Some(ConjugationTable {
-                                lemma: lemma.clone(),
-                                pos: pos_str.clone(),
-                                forms: unique_forms,
+                if let Some(pos) = pos_val
+                    && let Some(forms) = conjugation_index.get(&(lemma.clone(), pos))
+                {
+                    // Deduplicate forms by (word, morphology)
+                    let mut seen_forms: std::collections::HashSet<(&str, &Morphology)> =
+                        std::collections::HashSet::new();
+                    let mut unique_forms: Vec<ConjugationForm> = Vec::new();
+                    for (word, morph) in forms {
+                        if seen_forms.insert((word.as_str(), morph)) {
+                            unique_forms.push(ConjugationForm {
+                                word: word.clone(),
+                                slug: display_text_to_slug.get(word).cloned(),
+                                tense: morph.tense.map(|t| format!("{t:?}").to_lowercase()),
+                                mood: morph.mood.map(|m| format!("{m:?}").to_lowercase()),
+                                person: morph.person.map(|p| format!("{p:?}").to_lowercase()),
+                                number: morph.number.map(|n| format!("{n:?}").to_lowercase()),
+                                gender: morph.gender.map(|g| format!("{g:?}").to_lowercase()),
+                                case: morph.case.map(|c| format!("{c:?}").to_lowercase()),
                             });
                         }
+                    }
+                    // Only attach if there's more than 1 form
+                    if unique_forms.len() > 1 {
+                        sense.conjugation = Some(ConjugationTable {
+                            lemma: lemma.clone(),
+                            pos: pos_str.clone(),
+                            forms: unique_forms,
+                        });
                     }
                 }
             }
@@ -777,10 +776,10 @@ fn resolve_sentence(
     }
 
     // Capitalize first word if needed
-    if sentence_grams.capitalize_first {
-        if let Some((first_word, _, _)) = word_entries.first_mut() {
-            first_word.text = language_utils::capitalize_first_letter(&first_word.text);
-        }
+    if sentence_grams.capitalize_first
+        && let Some((first_word, _, _)) = word_entries.first_mut()
+    {
+        first_word.text = language_utils::capitalize_first_letter(&first_word.text);
     }
 
     // Build segments, grouping consecutive words with the same gram slug

@@ -7,8 +7,8 @@ edition = "2024"
 serde.workspace = true
 serde_json.workspace = true
 language-utils = { path = "../../language-utils" }
-anyhow = "1.0.98"
-rand = "0.9.1"
+anyhow = "1.0.102"
+rand = "0.10.1"
 tysm.workspace = true
 schemars.workspace = true
 sentence-sampler = { path = "../sentence-sampler" }
@@ -16,4 +16,4 @@ tokio.workspace = true
 futures.workspace = true
 generate-data = { path = "../../generate-data" }
 indicatif.workspace = true
-unicode-general-category = "1.0"
+unicode-general-category = "1.1"

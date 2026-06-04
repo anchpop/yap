@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-reqwest = { version = "0.12", default-features = false, features = [
+reqwest = { version = "0.13", default-features = false, features = [
     "json",
-    "rustls-tls",
+    "rustls",
 ] }
 base64 = "0.22"
-axum = "0.8.4"
-tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
+axum = "0.8.9"
+tokio = { version = "1.52.3", features = ["macros", "rt-multi-thread"] }
 tysm.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -23,13 +23,13 @@ tower-http = { version = "0.6", features = [
     "compression-deflate",
     "compression-zstd",
 ] }
-jsonwebtoken = "9.3"
-axum-extra = { version = "0.10.1", features = ["typed-header"] }
+jsonwebtoken = "10.4"
+axum-extra = { version = "0.12.6", features = ["typed-header"] }
 dotenvy = "0.15.7"
-uuid = { version = "1.17", features = ["serde", "v4"] }
+uuid = { version = "1.23", features = ["serde", "v4"] }
 language-utils = { path = "../language-utils" }
 tsify.workspace = true
 wasm-bindgen.workspace = true
-postgrest = "1.0"
-resend-rs = "0.18"
+postgrest = "1.6"
+resend-rs = "0.25"
 google-tts = { path = "../libraries/google-tts" }

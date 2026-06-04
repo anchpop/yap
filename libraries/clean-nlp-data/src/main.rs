@@ -453,7 +453,7 @@ The lemma should be the form a learner would look up in a dictionary.{tips}"#
         );
         pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-        let results = futures::stream::iter(uncached.into_iter())
+        let results = futures::stream::iter(uncached)
             .map(|sentence| {
                 let system_prompt = system_prompt.clone();
                 let pb = pb.clone();
@@ -535,7 +535,7 @@ fn print_random_sentences(sentences: &[NlpAnalyzedSentence], count: usize) {
     let mut rng = rand::rng();
     let sample_size = count.min(sentences.len());
 
-    let sampled: Vec<_> = sentences.choose_multiple(&mut rng, sample_size).collect();
+    let sampled: Vec<_> = sentences.sample(&mut rng, sample_size).collect();
 
     for (i, sentence) in sampled.iter().enumerate() {
         if i > 0 {
@@ -947,7 +947,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let cleaned_results = futures::stream::iter(classified_sentences.into_iter())
+    let cleaned_results = futures::stream::iter(classified_sentences)
         .map(|(sentence, suspicious_reasons)| {
             let pb = pb.clone();
             async move {
@@ -1062,7 +1062,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
             })
             .collect();
 
-        let recheck_results = futures::stream::iter(recheck_items.into_iter())
+        let recheck_results = futures::stream::iter(recheck_items)
             .map(|(sentence_text, tokens, reasons)| {
                 let pb_dc = pb_dc.clone();
                 async move {
@@ -1122,7 +1122,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     );
     pb2.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let results_with_deps = futures::stream::iter(validated_results.into_iter())
+    let results_with_deps = futures::stream::iter(validated_results)
         .map(|(original_sentence, corrected_tokens)| {
             let pb2 = pb2.clone();
             async move {
@@ -1168,7 +1168,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
         let tokens = corrected_tokens
             .into_iter()
-            .zip(dep_response.dependencies.into_iter())
+            .zip(dep_response.dependencies)
             .collect::<Vec<_>>();
         if tokens.iter().any(|(token, dep)| token.text != dep.word) {
             println!(

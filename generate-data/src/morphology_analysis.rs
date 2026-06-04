@@ -92,12 +92,11 @@ pub async fn create_morphology(
         .collect::<Vec<_>>()
         .await
         .into_iter()
-        .filter_map(
-            |(heteronym, morphology_result)| match morphology_result.ok() {
-                Some(morph) => Some((heteronym.clone(), vec![morph])),
-                None => None,
-            },
-        )
+        .filter_map(|(heteronym, morphology_result)| {
+            morphology_result
+                .ok()
+                .map(|morph| (heteronym.clone(), vec![morph]))
+        })
         .collect::<BTreeMap<Heteronym<String>, _>>();
 
     pb.finish_with_message(format!(

@@ -459,15 +459,14 @@ pub mod french {
                                         }
                                         Err(e) => {
                                             // Try fallback for reflexive verbs starting with "s'"
-                                            if !tried_fallback {
-                                                if let Some(base) = verb
+                                            if !tried_fallback
+                                                && let Some(base) = verb
                                                     .strip_prefix("s'")
                                                     .or_else(|| verb.strip_prefix("s\u{2019}"))
-                                                {
-                                                    verb_to_try = base;
-                                                    tried_fallback = true;
-                                                    continue;
-                                                }
+                                            {
+                                                verb_to_try = base;
+                                                tried_fallback = true;
+                                                continue;
                                             }
                                             break Err(format!(
                                                 "Failed to parse French verb '{verb}': {e}"
@@ -477,15 +476,14 @@ pub mod french {
                                 }
                                 Err(e) => {
                                     // Also try fallback on fetch failure (page may not exist)
-                                    if !tried_fallback {
-                                        if let Some(base) = verb
+                                    if !tried_fallback
+                                        && let Some(base) = verb
                                             .strip_prefix("s'")
                                             .or_else(|| verb.strip_prefix("s\u{2019}"))
-                                        {
-                                            verb_to_try = base;
-                                            tried_fallback = true;
-                                            continue;
-                                        }
+                                    {
+                                        verb_to_try = base;
+                                        tried_fallback = true;
+                                        continue;
                                     }
                                     break Err(format!(
                                         "Failed to get HTML for French verb '{verb_to_try}': {e}"
@@ -3424,17 +3422,17 @@ pub mod english {
 
         while let Some(node) = current {
             current = node.next_sibling();
-            if let Some(current_node) = current {
-                if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div"
-                        && let Some(first_child) = elem.first_child()
-                        && let Some(child_elem) = ElementRef::wrap(first_child)
-                        && child_elem.value().name() == "h2"
-                    {
-                        break;
-                    }
-                    english_content.push_str(&elem.html());
+            if let Some(current_node) = current
+                && let Some(elem) = ElementRef::wrap(current_node)
+            {
+                if elem.value().name() == "div"
+                    && let Some(first_child) = elem.first_child()
+                    && let Some(child_elem) = ElementRef::wrap(first_child)
+                    && child_elem.value().name() == "h2"
+                {
+                    break;
                 }
+                english_content.push_str(&elem.html());
             }
         }
 
@@ -3963,17 +3961,17 @@ pub mod russian {
 
         while let Some(node) = current {
             current = node.next_sibling();
-            if let Some(current_node) = current {
-                if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div"
-                        && let Some(first_child) = elem.first_child()
-                        && let Some(child_elem) = ElementRef::wrap(first_child)
-                        && child_elem.value().name() == "h2"
-                    {
-                        break;
-                    }
-                    russian_content.push_str(&elem.html());
+            if let Some(current_node) = current
+                && let Some(elem) = ElementRef::wrap(current_node)
+            {
+                if elem.value().name() == "div"
+                    && let Some(first_child) = elem.first_child()
+                    && let Some(child_elem) = ElementRef::wrap(first_child)
+                    && child_elem.value().name() == "h2"
+                {
+                    break;
                 }
+                russian_content.push_str(&elem.html());
             }
         }
 
@@ -3989,16 +3987,16 @@ pub mod russian {
     /// Strips stress marks (combining acute accent) since they're annotation, not part of the word.
     fn extract_form_text(element: &ElementRef) -> Option<String> {
         let a_selector = Selector::parse("a").unwrap();
-        if let Some(link) = element.select(&a_selector).next() {
-            if let Some(text) = link.text().next() {
-                return Some(strip_stress_marks(text));
-            }
+        if let Some(link) = element.select(&a_selector).next()
+            && let Some(text) = link.text().next()
+        {
+            return Some(strip_stress_marks(text));
         }
         let strong_selector = Selector::parse("strong.selflink").unwrap();
-        if let Some(strong) = element.select(&strong_selector).next() {
-            if let Some(text) = strong.text().next() {
-                return Some(strip_stress_marks(text));
-            }
+        if let Some(strong) = element.select(&strong_selector).next()
+            && let Some(text) = strong.text().next()
+        {
+            return Some(strip_stress_marks(text));
         }
         let text = element.text().collect::<String>().trim().to_string();
         if !text.is_empty() {
@@ -4738,17 +4736,17 @@ pub mod hindi {
 
         while let Some(node) = current {
             current = node.next_sibling();
-            if let Some(current_node) = current {
-                if let Some(elem) = ElementRef::wrap(current_node) {
-                    if elem.value().name() == "div"
-                        && let Some(first_child) = elem.first_child()
-                        && let Some(child_elem) = ElementRef::wrap(first_child)
-                        && child_elem.value().name() == "h2"
-                    {
-                        break;
-                    }
-                    hindi_content.push_str(&elem.html());
+            if let Some(current_node) = current
+                && let Some(elem) = ElementRef::wrap(current_node)
+            {
+                if elem.value().name() == "div"
+                    && let Some(first_child) = elem.first_child()
+                    && let Some(child_elem) = ElementRef::wrap(first_child)
+                    && child_elem.value().name() == "h2"
+                {
+                    break;
                 }
+                hindi_content.push_str(&elem.html());
             }
         }
 

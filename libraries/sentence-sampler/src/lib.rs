@@ -19,7 +19,7 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-use rand::Rng;
+use rand::RngExt;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
@@ -80,7 +80,7 @@ where
             let mut rng = ChaCha8Rng::seed_from_u64(seed);
 
             // Keep this item with probability keep_probability
-            rng.gen::<f64>() < keep_probability
+            rng.random::<f64>() < keep_probability
         })
         .collect()
 }
@@ -133,7 +133,7 @@ where
             key_fn(item).hash(&mut hasher);
             let seed = hasher.finish();
             let mut rng = ChaCha8Rng::seed_from_u64(seed);
-            rng.gen::<f64>() < keep_probability
+            rng.random::<f64>() < keep_probability
         })
         .collect();
 

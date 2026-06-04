@@ -8,11 +8,11 @@ schemars.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tsify.workspace = true
-wasm-bindgen = "0.2.84"
+wasm-bindgen.workspace = true
 rkyv.workspace = true
 lasso.workspace = true
-parse-display = "0.10.0"
-rustc-hash = "2.0"
+parse-display = "0.11.0"
+rustc-hash = "2.1"
 xxhash-rust.workspace = true
 unicode-normalization.workspace = true
 

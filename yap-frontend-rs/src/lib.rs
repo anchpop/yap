@@ -2464,10 +2464,10 @@ impl Deck {
         }
 
         // Clean up expired temp audio files (older than 24 hours)
-        if let Ok(mut temp_cache) = audio::TempAudioCache::new().await {
-            if let Err(e) = temp_cache.cleanup_old().await {
-                log::error!("Failed to clean up temp audio cache: {e:?}");
-            }
+        if let Ok(mut temp_cache) = audio::TempAudioCache::new().await
+            && let Err(e) = temp_cache.cleanup_old().await
+        {
+            log::error!("Failed to clean up temp audio cache: {e:?}");
         }
     }
 

@@ -10,6 +10,6 @@ serde_json = { workspace = true }
 anyhow = "1"
 log = { workspace = true }
 base64 = "0.22"
-minimp3 = "0.5"
+minimp3 = "0.6"
 ogg = "0.9"
 opus = "0.3"

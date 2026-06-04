@@ -27,7 +27,7 @@ wasm-bindgen-futures = { version = "0.4", features = [
     "futures-core-03-stream",
 ] }
 js-sys = "0.3"
-web-sys = { version = "0.3.77", features = [
+web-sys = { version = "0.3.99", features = [
     "Storage",
     "Window",
     "FileSystemDirectoryHandle",
@@ -50,25 +50,25 @@ console_error_panic_hook = { version = "0.1.7", optional = true }
 # code size when deploying.
 rs-fsrs = { git = "https://github.com/anchpop/rs-fsrs.git", rev = "79393f05a435e31255a1cbfae48ff6f94e214900" }
 language-utils = { path = "../language-utils" }
-ordered-float = "5.0.0"
+ordered-float = "5.3.0"
 serde-wasm-bindgen = "0.6"
 base64 = "0.22"
-thiserror = "2.0.12"
+thiserror = "2.0.18"
 weapon = { path = "../libraries/weapon", features = ["supabase", "opfs"] }
 imdex_map = { path = "../libraries/imdex_map" }
 eyedee = { path = "../libraries/eyedee" }
 lasso = { workspace = true }
-unicode-normalization = "0.1.24"
+unicode-normalization = "0.1.25"
 wasm-logger.workspace = true
 log.workspace = true
 pav_regression = { git = "https://github.com/anchpop/pav.rs.git", rev = "1d44104842df02b2b66d9443df6fb540aa368d69" }
-rustc-hash = "2.0"
+rustc-hash = "2.1"
 itertools = "0.14.0"
 weblocks.workspace = true
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.34"
-criterion = { version = "0.5", features = ["html_reports"] }
+wasm-bindgen-test = "0.3.72"
+criterion = { version = "0.8", features = ["html_reports"] }
 tokio = { workspace = true }
 reqwest = { workspace = true }
 

@@ -582,10 +582,10 @@ async fn main() -> Result<()> {
     let mut analyses = Vec::new();
 
     for course in language_utils::COURSES {
-        if let Some(ref filter) = filter {
-            if course.target_language.iso_639_3() != filter {
-                continue;
-            }
+        if let Some(ref filter) = filter
+            && course.target_language.iso_639_3() != filter
+        {
+            continue;
         }
         match analyze_course(*course).await {
             Ok(analysis) => analyses.push(analysis),

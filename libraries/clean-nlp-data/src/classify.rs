@@ -1054,15 +1054,15 @@ impl WordCorrector for SpanishCorrector {
             }
 
             // Contractions keep their contracted form as lemma
-            if let Some(expected) = contraction_lemma(Language::Spanish, &text_lower, token.pos) {
-                if token.lemma != expected {
-                    corrections.push(format!(
-                        "Fixed '{}' lemma from '{}' to '{expected}'",
-                        token.text, token.lemma
-                    ));
-                    token.lemma = expected.to_string();
-                    corrected = true;
-                }
+            if let Some(expected) = contraction_lemma(Language::Spanish, &text_lower, token.pos)
+                && token.lemma != expected
+            {
+                corrections.push(format!(
+                    "Fixed '{}' lemma from '{}' to '{expected}'",
+                    token.text, token.lemma
+                ));
+                token.lemma = expected.to_string();
+                corrected = true;
             }
         }
 
@@ -1117,10 +1117,10 @@ impl WordCorrector for SpanishCorrector {
                 token.lemma = "uno".to_string();
             }
 
-            if let Some(expected) = contraction_lemma(Language::Spanish, &text_lower, token.pos) {
-                if token.lemma != expected {
-                    token.lemma = expected.to_string();
-                }
+            if let Some(expected) = contraction_lemma(Language::Spanish, &text_lower, token.pos)
+                && token.lemma != expected
+            {
+                token.lemma = expected.to_string();
             }
 
             // Normalize clitic pronoun lemmas to singular base form
@@ -1131,10 +1131,10 @@ impl WordCorrector for SpanishCorrector {
                     "les" => Some("le"),
                     _ => None,
                 };
-                if let Some(expected) = expected {
-                    if token.lemma != expected {
-                        token.lemma = expected.to_string();
-                    }
+                if let Some(expected) = expected
+                    && token.lemma != expected
+                {
+                    token.lemma = expected.to_string();
                 }
             }
         }
@@ -1989,15 +1989,14 @@ impl WordCorrector for PortugueseCorrector {
                 // Contractions keep their contracted form as lemma
                 if let Some(expected) =
                     contraction_lemma(Language::Portuguese, &text_lower, token.pos)
+                    && token.lemma != expected
                 {
-                    if token.lemma != expected {
-                        corrections.push(format!(
-                            "Fixed '{}' lemma from '{}' to '{expected}'",
-                            token.text, token.lemma
-                        ));
-                        token.lemma = expected.to_string();
-                        corrected = true;
-                    }
+                    corrections.push(format!(
+                        "Fixed '{}' lemma from '{}' to '{expected}'",
+                        token.text, token.lemma
+                    ));
+                    token.lemma = expected.to_string();
+                    corrected = true;
                 }
 
                 // Split words starting with hyphen (e.g., "-me" from "Deixe-me")
@@ -2116,10 +2115,9 @@ impl WordCorrector for PortugueseCorrector {
             }
 
             if let Some(expected) = contraction_lemma(Language::Portuguese, &text_lower, token.pos)
+                && token.lemma != expected
             {
-                if token.lemma != expected {
-                    token.lemma = expected.to_string();
-                }
+                token.lemma = expected.to_string();
             }
         }
     }
@@ -2378,27 +2376,27 @@ impl SentenceClassifier for KoreanClassifier {
             }
 
             // 제 before a noun should be DET (possessive "my"), not ADJ or PRON
-            if text == "제" && token.pos == PartOfSpeechTag::Adj {
-                if let Some(next) = sentence.doc.get(idx + 1) {
-                    if next.pos == PartOfSpeechTag::Noun {
-                        reasons.push(format!(
+            if text == "제"
+                && token.pos == PartOfSpeechTag::Adj
+                && let Some(next) = sentence.doc.get(idx + 1)
+                && next.pos == PartOfSpeechTag::Noun
+            {
+                reasons.push(format!(
                             "'제' before noun '{}' is a possessive determiner ('my'). Should be DET, not ADJ",
                             next.text
                         ));
-                    }
-                }
             }
 
             // 저 before a noun is demonstrative DET, not PRON
-            if text == "저" && token.pos == PartOfSpeechTag::Pron {
-                if let Some(next) = sentence.doc.get(idx + 1) {
-                    if next.pos == PartOfSpeechTag::Noun {
-                        reasons.push(format!(
+            if text == "저"
+                && token.pos == PartOfSpeechTag::Pron
+                && let Some(next) = sentence.doc.get(idx + 1)
+                && next.pos == PartOfSpeechTag::Noun
+            {
+                reasons.push(format!(
                             "'저' before noun '{}' is likely a demonstrative determiner ('that'), not a pronoun. Should be DET",
                             next.text
                         ));
-                    }
-                }
             }
 
             // 봐 with wrong lemma
@@ -4200,15 +4198,15 @@ impl WordCorrector for GermanCorrector {
             }
 
             // Contractions keep their contracted form as lemma
-            if let Some(expected) = contraction_lemma(Language::German, &text_lower, token.pos) {
-                if token.lemma != expected {
-                    corrections.push(format!(
-                        "Fixed '{}' lemma from '{}' to '{expected}'",
-                        token.text, token.lemma
-                    ));
-                    token.lemma = expected.to_string();
-                    corrected = true;
-                }
+            if let Some(expected) = contraction_lemma(Language::German, &text_lower, token.pos)
+                && token.lemma != expected
+            {
+                corrections.push(format!(
+                    "Fixed '{}' lemma from '{}' to '{expected}'",
+                    token.text, token.lemma
+                ));
+                token.lemma = expected.to_string();
+                corrected = true;
             }
         }
 
@@ -4241,10 +4239,10 @@ impl WordCorrector for GermanCorrector {
                 }
             }
 
-            if let Some(expected) = contraction_lemma(Language::German, &text_lower, token.pos) {
-                if token.lemma != expected {
-                    token.lemma = expected.to_string();
-                }
+            if let Some(expected) = contraction_lemma(Language::German, &text_lower, token.pos)
+                && token.lemma != expected
+            {
+                token.lemma = expected.to_string();
             }
         }
     }
@@ -4292,10 +4290,10 @@ impl WordCorrector for FrenchCorrector {
                 }
             }
 
-            if let Some(expected) = contraction_lemma(Language::French, &text_lower, token.pos) {
-                if token.lemma != expected {
-                    token.lemma = expected.to_string();
-                }
+            if let Some(expected) = contraction_lemma(Language::French, &text_lower, token.pos)
+                && token.lemma != expected
+            {
+                token.lemma = expected.to_string();
             }
         }
     }
@@ -4396,15 +4394,14 @@ impl WordCorrector for FrenchCorrector {
 
                 // Contractions keep their contracted form as lemma
                 if let Some(expected) = contraction_lemma(Language::French, &text_lower, token.pos)
+                    && token.lemma != expected
                 {
-                    if token.lemma != expected {
-                        corrections.push(format!(
-                            "Fixed '{}' lemma from '{}' to '{expected}'",
-                            token.text, token.lemma
-                        ));
-                        token.lemma = expected.to_string();
-                        corrected = true;
-                    }
+                    corrections.push(format!(
+                        "Fixed '{}' lemma from '{}' to '{expected}'",
+                        token.text, token.lemma
+                    ));
+                    token.lemma = expected.to_string();
+                    corrected = true;
                 }
 
                 // Fix "a" in "il y a" construction - should always be Verb
@@ -5244,15 +5241,15 @@ impl SentenceClassifier for ItalianClassifier {
             }
 
             // "Le" as Det vs Pron — when before a verb, it's usually a pronoun (her/to her)
-            if text_lower == "le" && token.pos == PartOfSpeechTag::Det {
-                if let Some(next) = sentence.doc.get(idx + 1) {
-                    if next.pos == PartOfSpeechTag::Verb || next.pos == PartOfSpeechTag::Aux {
-                        reasons.push(format!(
+            if text_lower == "le"
+                && token.pos == PartOfSpeechTag::Det
+                && let Some(next) = sentence.doc.get(idx + 1)
+                && (next.pos == PartOfSpeechTag::Verb || next.pos == PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
                             "'Le' tagged as DET but followed by verb '{}' — likely a pronoun (her/to her), not an article",
                             next.text
                         ));
-                    }
-                }
             }
 
             // Adjectives mistagged as Verb — e.g., "vive" (alive) tagged as Verb/vivere
@@ -5422,15 +5419,15 @@ impl WordCorrector for ItalianCorrector {
             }
 
             // Contractions keep their contracted form as lemma
-            if let Some(expected) = contraction_lemma(Language::Italian, &text_lower, token.pos) {
-                if token.lemma != expected {
-                    corrections.push(format!(
-                        "Fixed '{}' lemma from '{}' to '{expected}'",
-                        token.text, token.lemma
-                    ));
-                    token.lemma = expected.to_string();
-                    corrected = true;
-                }
+            if let Some(expected) = contraction_lemma(Language::Italian, &text_lower, token.pos)
+                && token.lemma != expected
+            {
+                corrections.push(format!(
+                    "Fixed '{}' lemma from '{}' to '{expected}'",
+                    token.text, token.lemma
+                ));
+                token.lemma = expected.to_string();
+                corrected = true;
             }
         }
 
@@ -5467,10 +5464,10 @@ impl WordCorrector for ItalianCorrector {
                 }
             }
 
-            if let Some(expected) = contraction_lemma(Language::Italian, &text_lower, token.pos) {
-                if token.lemma != expected {
-                    token.lemma = expected.to_string();
-                }
+            if let Some(expected) = contraction_lemma(Language::Italian, &text_lower, token.pos)
+                && token.lemma != expected
+            {
+                token.lemma = expected.to_string();
             }
         }
     }
@@ -6031,15 +6028,15 @@ impl WordCorrector for RussianCorrector {
                     _ => None,
                 };
 
-                if let Some(expected) = expected {
-                    if token.lemma != expected {
-                        corrections.push(format!(
-                            "Fixed pronoun '{}' lemma from '{}' to '{}'",
-                            token.text, token.lemma, expected
-                        ));
-                        token.lemma = expected.to_string();
-                        corrected = true;
-                    }
+                if let Some(expected) = expected
+                    && token.lemma != expected
+                {
+                    corrections.push(format!(
+                        "Fixed pronoun '{}' lemma from '{}' to '{}'",
+                        token.text, token.lemma, expected
+                    ));
+                    token.lemma = expected.to_string();
+                    corrected = true;
                 }
             }
 
@@ -6106,10 +6103,10 @@ impl WordCorrector for RussianCorrector {
                     _ => None,
                 };
 
-                if let Some(expected) = expected {
-                    if token.lemma != expected {
-                        token.lemma = expected.to_string();
-                    }
+                if let Some(expected) = expected
+                    && token.lemma != expected
+                {
+                    token.lemma = expected.to_string();
                 }
             }
 
@@ -7054,21 +7051,20 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- のだ/んだ explanatory mood ---
-            if (text == "の" || text == "ん") && token.pos != PartOfSpeechTag::Adp {
-                if let Some(next) = sentence.doc.get(idx + 1) {
-                    if (next.text == "だ"
-                        || next.text == "です"
-                        || next.text == "でした"
-                        || next.text == "だった")
-                        && token.pos != PartOfSpeechTag::Part
-                        && token.pos != PartOfSpeechTag::Noun
-                    {
-                        reasons.push(format!(
-                            "'{}' before '{}' is the explanatory の — should be PART or NOUN",
-                            text, next.text
-                        ));
-                    }
-                }
+            if (text == "の" || text == "ん")
+                && token.pos != PartOfSpeechTag::Adp
+                && let Some(next) = sentence.doc.get(idx + 1)
+                && (next.text == "だ"
+                    || next.text == "です"
+                    || next.text == "でした"
+                    || next.text == "だった")
+                && token.pos != PartOfSpeechTag::Part
+                && token.pos != PartOfSpeechTag::Noun
+            {
+                reasons.push(format!(
+                    "'{}' before '{}' is the explanatory の — should be PART or NOUN",
+                    text, next.text
+                ));
             }
 
             // --- たい baked into verb lemma ---
@@ -7689,10 +7685,11 @@ impl SentenceClassifier for JapaneseClassifier {
                 }
             }
 
-            if token.pos == PartOfSpeechTag::Verb {
-                if let Some(next) = tokens.get(idx + 1) {
-                    let text = &token.text;
-                    let is_split_onbin =
+            if token.pos == PartOfSpeechTag::Verb
+                && let Some(next) = tokens.get(idx + 1)
+            {
+                let text = &token.text;
+                let is_split_onbin =
                         // く/ぐ 音便: 書い+て, つい+た
                         (text.ends_with("い") 
                             && token.lemma.ends_with("く") 
@@ -7713,12 +7710,11 @@ impl SentenceClassifier for JapaneseClassifier {
                                 || token.lemma.ends_with("う"))
                             && matches!(next.text.as_str(), "て" | "た" | "たら" | "たり"));
 
-                    if is_split_onbin {
-                        reasons.push(format!(
+                if is_split_onbin {
+                    reasons.push(format!(
                             "'{}' + '{}' — this is godan 音便 (lemma '{}') and should be one merged VERB token, not split. The い/ん/っ is a phonological artifact, not a splittable boundary.",
                             text, next.text, token.lemma
                         ));
-                    }
                 }
             }
 
@@ -7904,15 +7900,17 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- 別+の where 別 is ADJ with lemma 別だ and の is AUX ---
-            if token.text == "別" && token.pos == PartOfSpeechTag::Adj && token.lemma == "別だ" {
-                if let Some(next) = tokens.get(idx + 1) {
-                    if next.text == "の" && next.pos == PartOfSpeechTag::Aux {
-                        reasons.push(
+            if token.text == "別"
+                && token.pos == PartOfSpeechTag::Adj
+                && token.lemma == "別だ"
+                && let Some(next) = tokens.get(idx + 1)
+                && next.text == "の"
+                && next.pos == PartOfSpeechTag::Aux
+            {
+                reasons.push(
                             "'別' (ADJ, lemma '別だ') before の (AUX) — fix: retag 別 as NOUN with lemma '別' (it's a noun meaning 'another/different', not a na-adjective here), and retag の as ADP (genitive)."
                                 .to_string(),
                         );
-                    }
-                }
             }
 
             // --- Common names still not tagged PROPN ---
@@ -8390,19 +8388,18 @@ impl SentenceClassifier for HindiClassifier {
             // --- Multiword proper nouns should be single tokens ---
             // मेक्सिको नगर, भीतरी मंगोलिया, न्यू यॉर्क, etc. should be one PROPN token
             // Catches PROPN+PROPN, PROPN+NOUN, ADJ+PROPN patterns
-            if token.whitespace == " " {
-                if let Some(next) = sentence.doc.get(idx + 1) {
-                    let both_propn = token.pos == PartOfSpeechTag::Propn
-                        && (next.pos == PartOfSpeechTag::Propn
-                            || next.pos == PartOfSpeechTag::Noun);
-                    let adj_before_propn =
-                        token.pos == PartOfSpeechTag::Adj && next.pos == PartOfSpeechTag::Propn;
-                    if both_propn || adj_before_propn {
-                        reasons.push(format!(
+            if token.whitespace == " "
+                && let Some(next) = sentence.doc.get(idx + 1)
+            {
+                let both_propn = token.pos == PartOfSpeechTag::Propn
+                    && (next.pos == PartOfSpeechTag::Propn || next.pos == PartOfSpeechTag::Noun);
+                let adj_before_propn =
+                    token.pos == PartOfSpeechTag::Adj && next.pos == PartOfSpeechTag::Propn;
+                if both_propn || adj_before_propn {
+                    reasons.push(format!(
                             "'{}' + '{}' — if these form a single proper noun (e.g., a place name), they should be merged into one PROPN token. Apply this consistently across all occurrences.",
                             text, next.text
                         ));
-                    }
                 }
             }
 
@@ -8547,50 +8544,49 @@ impl SentenceClassifier for HindiClassifier {
             // When मेरी or similar possessive-looking forms are followed by को,
             // it's likely a proper noun (मैरी को = to Mary), not a possessive pronoun.
             // Possessives don't take को — you'd say मुझको, not मेरी को.
-            if (text == "मेरी" || text == "मेरे") && token.pos == PartOfSpeechTag::Pron
+            if (text == "मेरी" || text == "मेरे")
+                && token.pos == PartOfSpeechTag::Pron
+                && let Some(next) = sentence.doc.get(idx + 1)
+                && (next.text == "को" || next.text == "ने" || next.text == "से")
             {
-                if let Some(next) = sentence.doc.get(idx + 1) {
-                    if next.text == "को" || next.text == "ने" || next.text == "से" {
-                        reasons.push(format!(
+                reasons.push(format!(
                             "'{}' tagged as PRON but is followed by '{}' — possessive pronouns don't take direct postpositions. This is likely PROPN (a name like मैरी/Mary). If it's a pronoun meaning 'me', the form should be मुझे/मुझको, not मेरी को.",
                             text, next.text
                         ));
-                    }
-                }
             }
 
             // --- Compound postposition consistency ---
             // के लिए / के लिये should be consistently two tokens: के (ADP) + लिए (ADP)
             // Similarly: के साथ, के बारे में, के बाद, etc.
-            if text == "के" && token.pos == PartOfSpeechTag::Adp {
-                if let Some(next) = sentence.doc.get(idx + 1) {
-                    let compound_parts = [
-                        "लिए",
-                        "लिये",
-                        "साथ",
-                        "बारे",
-                        "बाद",
-                        "पहले",
-                        "अंदर",
-                        "बाहर",
-                        "ऊपर",
-                        "नीचे",
-                        "बीच",
-                        "पास",
-                        "द्वारा",
-                        "अलावा",
-                        "बदले",
-                        "बजाय",
-                        "अनुसार",
-                    ];
-                    if compound_parts.contains(&next.text.as_str())
-                        && next.pos != PartOfSpeechTag::Adp
-                    {
-                        reasons.push(format!(
+            if text == "के"
+                && token.pos == PartOfSpeechTag::Adp
+                && let Some(next) = sentence.doc.get(idx + 1)
+            {
+                let compound_parts = [
+                    "लिए",
+                    "लिये",
+                    "साथ",
+                    "बारे",
+                    "बाद",
+                    "पहले",
+                    "अंदर",
+                    "बाहर",
+                    "ऊपर",
+                    "नीचे",
+                    "बीच",
+                    "पास",
+                    "द्वारा",
+                    "अलावा",
+                    "बदले",
+                    "बजाय",
+                    "अनुसार",
+                ];
+                if compound_parts.contains(&next.text.as_str()) && next.pos != PartOfSpeechTag::Adp
+                {
+                    reasons.push(format!(
                             "'{}' after 'के' is part of a compound postposition (के {}) — should be ADP, not {:?}",
                             next.text, next.text, next.pos
                         ));
-                    }
                 }
             }
 
@@ -8808,15 +8804,15 @@ impl WordCorrector for HindiCorrector {
                     _ => None,
                 };
 
-                if let Some(expected) = expected {
-                    if token.lemma != expected {
-                        corrections.push(format!(
-                            "Fixed pronoun/possessive '{}' lemma from '{}' to '{}'",
-                            token.text, token.lemma, expected
-                        ));
-                        token.lemma = expected.to_string();
-                        corrected = true;
-                    }
+                if let Some(expected) = expected
+                    && token.lemma != expected
+                {
+                    corrections.push(format!(
+                        "Fixed pronoun/possessive '{}' lemma from '{}' to '{}'",
+                        token.text, token.lemma, expected
+                    ));
+                    token.lemma = expected.to_string();
+                    corrected = true;
                 }
             }
 
@@ -9058,10 +9054,10 @@ impl WordCorrector for HindiCorrector {
                     _ => None,
                 };
 
-                if let Some(expected) = expected {
-                    if token.lemma != expected {
-                        token.lemma = expected.to_string();
-                    }
+                if let Some(expected) = expected
+                    && token.lemma != expected
+                {
+                    token.lemma = expected.to_string();
                 }
             }
 

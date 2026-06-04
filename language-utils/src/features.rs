@@ -1932,13 +1932,13 @@ impl Morphology {
 
         // "je" elides to "j'" before a vowel sound (j'aime, j'habite).
         // Other subject pronouns (tu, il, nous, vous, ils) do not elide orthographically.
-        if let (Person::First, Number::Singular) = (person, number) {
-            if starts_with_french_vowel_sound(word) {
-                return Some(WordPrefix {
-                    prefix: "j'".to_string(),
-                    separator: "".to_string(),
-                });
-            }
+        if let (Person::First, Number::Singular) = (person, number)
+            && starts_with_french_vowel_sound(word)
+        {
+            return Some(WordPrefix {
+                prefix: "j'".to_string(),
+                separator: "".to_string(),
+            });
         }
 
         let prefix = match (person, number, politeness) {

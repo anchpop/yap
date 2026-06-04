@@ -171,10 +171,10 @@ async fn main() -> anyhow::Result<()> {
     }
 
     for course in COURSES {
-        if let Some(ref filter) = lang_filter {
-            if course.target_language.iso_639_3() != filter {
-                continue;
-            }
+        if let Some(ref filter) = lang_filter
+            && course.target_language.iso_639_3() != filter
+        {
+            continue;
         }
 
         println!();
@@ -957,10 +957,8 @@ async fn main() -> anyhow::Result<()> {
                         let display_text = entry.gram.to_display_string(lang);
                         let is_monosemantic =
                             display_text_counts.get(&display_text).copied().unwrap_or(0) <= 1;
-                        if is_monosemantic {
-                            if let Some(sentences) = old_format.get(&display_text) {
-                                migrated.insert(entry.gram.clone(), sentences.clone());
-                            }
+                        if is_monosemantic && let Some(sentences) = old_format.get(&display_text) {
+                            migrated.insert(entry.gram.clone(), sentences.clone());
                         }
                     }
                 }
@@ -1332,10 +1330,9 @@ async fn main() -> anyhow::Result<()> {
                 if gram.len() == 1
                     && let Some(Atom::Tok(word)) = gram.first()
                     && let language_utils::WordType::Heteronym(heteronym) = &word.word_type
+                    && let Some(dict_entry) = gram_dictionary.get(heteronym)
                 {
-                    if let Some(dict_entry) = gram_dictionary.get(heteronym) {
-                        map.insert(gram.clone(), dict_entry.clone());
-                    }
+                    map.insert(gram.clone(), dict_entry.clone());
                 }
             }
             map

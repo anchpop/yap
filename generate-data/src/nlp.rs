@@ -189,7 +189,7 @@ pub async fn process_sentences(
 
     // Process all sentences concurrently with buffering and collect results
     let mut newly_processed: BTreeMap<String, Vec<lexide::Token>> = BTreeMap::new();
-    let mut results = futures::stream::iter(sentences_to_process.into_iter())
+    let mut results = futures::stream::iter(sentences_to_process)
         .map(|sentence| {
             let lexide = &lexide;
             let pb = pb.clone();

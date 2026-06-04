@@ -579,13 +579,12 @@ impl SentenceGrams<SpurGram> {
         }
 
         // Collect just the words for capitalization
-        if self.capitalize_first {
-            if let Some((_, Atom::Tok(first_word))) = all_atoms
+        if self.capitalize_first
+            && let Some((_, Atom::Tok(first_word))) = all_atoms
                 .iter_mut()
                 .find(|(_, a)| matches!(a, Atom::Tok(_)))
-            {
-                first_word.text = capitalize_first_letter(&first_word.text);
-            }
+        {
+            first_word.text = capitalize_first_letter(&first_word.text);
         }
 
         // Build literals using control tokens for whitespace correction.

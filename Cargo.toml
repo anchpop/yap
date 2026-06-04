@@ -20,38 +20,39 @@ members = [
 resolver = "3"
 
 [workspace.dependencies]
-html2text = "0.15"
+html2text = "0.17"
 html-escape = "0.2"
 markdown-tables = "0.1.0"
-rusqlite = "0.35"
+rusqlite = "0.40"
 serde_json = "1.0"
-tempfile = "3.20.0"
-zip = "4"
+tempfile = "3.27.0"
+zip = "8"
 schemars = "1"
-futures = "0.3.31"
-env_logger = "0.11.8"
-tsify = { version = "0.5.5", features = ["js"], default-features = false }
+futures = "0.3.32"
+env_logger = "0.11.10"
+tsify = { version = "0.5.6", features = ["js"], default-features = false }
 tysm = "0.18.0"
-reqwest = { version = "0.12", features = ["json"] }
-tokio = { version = "1.45.1", features = ["full"] }
+reqwest = { version = "0.13", features = ["json", "query"] }
+tokio = { version = "1.52.3", features = ["full"] }
 opfs = { version = "0.2.0" }
-idb = { version = "0.6.3" }
+idb = { version = "0.6.5" }
 fetch-happen = { version = "0.3.1" }
 xxhash-rust = { version = "0.8.15", features = ["xxh3", "const_xxh3"] }
 indexmap = { version = "2" }
-chrono = "0.4.41"
+chrono = "0.4.44"
 im = { version = "15.1.0", features = ["serde"] }
 log = "0.4"
-wasm-bindgen = "0.2.84"
+wasm-bindgen = "0.2.122"
 thiserror = "2"
-slotmap = { version = "1.0", features = ["serde"] }
+slotmap = { version = "1.1", features = ["serde"] }
 wasm-logger = "0.2.0"
-unicode-normalization = "0.1.24"
-weblocks = { version = "0.1.0" }
+unicode-normalization = "0.1.25"
+# Tracks the web-sys 0.3.99 / wasm-bindgen 0.2.122 update (not yet published to crates.io).
+weblocks = { git = "https://github.com/anchpop/weblocks.git", rev = "03b7adc47ac52f0f0a51313142e83c3e23052694" }
 lexide = { git = "https://github.com/anchpop/lexide.git", rev = "4871984482c320ef27462644759fde66aefd5a7f", features = [
     "remote",
 ] }
-indicatif = "0.17"
+indicatif = "0.18"
 
 [workspace.dependencies.rkyv]
 # path = "../tmp/rkyv/rkyv"

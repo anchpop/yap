@@ -545,18 +545,18 @@ impl LanguagePack {
             let mut single_atom_ease: FxHashMap<Atom<Spur>, f32> = FxHashMap::default();
             for (gram_spur, (count, _direct_count)) in gram_counts.iter() {
                 let gram = gram_rodeo.resolve(gram_spur);
-                if gram.len() == 1 {
-                    if let Some(atom) = gram.iter().next() {
-                        let base_ease = (*count as f32).ln();
-                        let has_cognate = !course.teaches_new_writing_system()
-                            && has_cognate_definition(gram_definitions.get(gram_spur));
-                        let ease = if has_cognate {
-                            base_ease + COGNATE_BONUS
-                        } else {
-                            base_ease
-                        };
-                        single_atom_ease.insert(*atom, ease);
-                    }
+                if gram.len() == 1
+                    && let Some(atom) = gram.iter().next()
+                {
+                    let base_ease = (*count as f32).ln();
+                    let has_cognate = !course.teaches_new_writing_system()
+                        && has_cognate_definition(gram_definitions.get(gram_spur));
+                    let ease = if has_cognate {
+                        base_ease + COGNATE_BONUS
+                    } else {
+                        base_ease
+                    };
+                    single_atom_ease.insert(*atom, ease);
                 }
             }
 

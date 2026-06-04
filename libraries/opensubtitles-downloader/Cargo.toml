@@ -10,7 +10,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 anyhow = "1.0"
 subparse = "0.7"
-regex = "1.11"
+regex = "1.12"
 dotenv = "0.15"
 language-utils = { path = "../../language-utils" }
 clap = { version = "4", features = ["derive"] }

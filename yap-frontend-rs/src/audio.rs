@@ -250,21 +250,18 @@ impl TempAudioCache {
 
         let mut entries = self.temp_dir.entries().await.ok()?;
         while let Some(Ok((filename, _))) = entries.next().await {
-            if Self::parse_base_filename(&filename) == Some(base_filename) {
-                if let Ok(file_handle) = self
+            if Self::parse_base_filename(&filename) == Some(base_filename)
+                && let Ok(file_handle) = self
                     .temp_dir
                     .get_file_handle_with_options(
                         &filename,
                         &opfs::GetFileHandleOptions { create: false },
                     )
                     .await
-                {
-                    if let Ok(bytes) = file_handle.read().await {
-                        if is_valid_audio_data(&bytes) {
-                            return Some((filename, bytes));
-                        }
-                    }
-                }
+                && let Ok(bytes) = file_handle.read().await
+                && is_valid_audio_data(&bytes)
+            {
+                return Some((filename, bytes));
             }
         }
         None
@@ -341,10 +338,10 @@ impl TempAudioCache {
 
             let mut files = Vec::new();
             while let Some(Ok((filename, _))) = entries.next().await {
-                if let Some(ts) = Self::parse_timestamp(&filename) {
-                    if ts < cutoff {
-                        files.push(filename);
-                    }
+                if let Some(ts) = Self::parse_timestamp(&filename)
+                    && ts < cutoff
+                {
+                    files.push(filename);
                 }
             }
             files

@@ -558,7 +558,7 @@ You'll receive a morpheme plus a small sample of words it appears in. Pick the s
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let mut results: Vec<MorphemeAnalysis> = futures::stream::iter(classified.into_iter())
+    let mut results: Vec<MorphemeAnalysis> = futures::stream::iter(classified)
         .map(|(segment, category, example_words)| {
             let pb = pb.clone();
             async move {

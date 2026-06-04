@@ -166,12 +166,12 @@ pub async fn download_alt_forms(
         let reader = BufReader::new(file);
         for line in reader.lines() {
             let line = line?;
-            if let Ok(entry) = serde_json::from_str::<Value>(&line) {
-                if let Some(term) = entry["term"].as_str() {
-                    already_checked.insert(term.to_string());
-                    if let Some(canonical) = entry["canonical"].as_str() {
-                        alt_forms.insert(term.to_string(), canonical.to_string());
-                    }
+            if let Ok(entry) = serde_json::from_str::<Value>(&line)
+                && let Some(term) = entry["term"].as_str()
+            {
+                already_checked.insert(term.to_string());
+                if let Some(canonical) = entry["canonical"].as_str() {
+                    alt_forms.insert(term.to_string(), canonical.to_string());
                 }
             }
         }

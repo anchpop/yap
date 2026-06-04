@@ -6,8 +6,8 @@ edition = "2024"
 [dependencies]
 language-utils = { path = "../../language-utils" }
 serde.workspace = true
-tokenizers = { version = "0.21", default-features = false, features = ["unstable_wasm"] }
-rustc-hash = "2.0"
+tokenizers = { version = "0.23", default-features = false, features = ["unstable_wasm"] }
+rustc-hash = "2.1"
 log.workspace = true
 lasso.workspace = true
-rayon = "1.10"
+rayon = "1.12"

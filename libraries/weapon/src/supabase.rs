@@ -164,8 +164,8 @@ impl EventStore<String, String> {
 
                     // For each device, upload any events not yet on the server
                     device_event_counts
-                        .into_iter()
-                        .flat_map(|(local_device_id, _local_count)| {
+                        .into_keys()
+                        .flat_map(|local_device_id| {
                             let device_events_on_db: usize = remote_clock
                                 .get(stream_id)
                                 .and_then(|device_map| {
