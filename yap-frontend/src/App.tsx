@@ -120,9 +120,7 @@ function AppMain() {
       if (r) {
         setInterval(() => {
           r.update().catch((e) => {
-            if (navigator.onLine) {
-              Sentry.captureException(e, { tags: { "sw.online": true } });
-            }
+            console.warn("Service worker update failed:", e);
           });
         }, updateIntervalMS);
       }
