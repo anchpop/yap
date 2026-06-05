@@ -349,15 +349,14 @@ impl Weapon {
         )
         .await?;
 
-        if is_initial_load {
-            if let (Some(start), Some(perf)) =
+        if is_initial_load
+            && let (Some(start), Some(perf)) =
                 (start_time, web_sys::window().and_then(|w| w.performance()))
-            {
-                log::info!(
-                    "Initial load from disk for {stream_id} took {}ms",
-                    perf.now() - start
-                );
-            }
+        {
+            log::info!(
+                "Initial load from disk for {stream_id} took {}ms",
+                perf.now() - start
+            );
         }
 
         {

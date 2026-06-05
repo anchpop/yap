@@ -771,23 +771,23 @@ pub fn parse_device_counts(bytes: &[u8]) -> BTreeMap<String, usize> {
 
     // Log performance metrics
     #[cfg(target_arch = "wasm32")]
-    if let Some(start) = start_time {
-        if let Some(perf) = web_sys::window().and_then(|w| w.performance()) {
-            let duration = perf.now() - start;
-            let throughput = if duration > 0.0 {
-                bytes_len as f64 / duration / 1024.0 // KB/ms
-            } else {
-                0.0
-            };
-            log::info!(
-                "parse_device_counts: processed {} records from {} bytes in {:.2}ms ({:.2} KB/ms, {:.2} records/ms)",
-                record_count,
-                bytes_len,
-                duration,
-                throughput,
-                record_count as f64 / duration
-            );
-        }
+    if let Some(start) = start_time
+        && let Some(perf) = web_sys::window().and_then(|w| w.performance())
+    {
+        let duration = perf.now() - start;
+        let throughput = if duration > 0.0 {
+            bytes_len as f64 / duration / 1024.0 // KB/ms
+        } else {
+            0.0
+        };
+        log::info!(
+            "parse_device_counts: processed {} records from {} bytes in {:.2}ms ({:.2} KB/ms, {:.2} records/ms)",
+            record_count,
+            bytes_len,
+            duration,
+            throughput,
+            record_count as f64 / duration
+        );
     }
 
     counts
