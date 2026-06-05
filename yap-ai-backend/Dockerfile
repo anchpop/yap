@@ -1,4 +1,8 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
+# Pin the Rust version (keep in sync with rust-toolchain.toml) AND the distro.
+# The distro must match the runtime stage below: a floating tag once silently
+# moved from bookworm to trixie, producing a binary that needed a newer glibc
+# than the runtime had — the machine crash-looped and clients hung forever.
+FROM lukemathwalker/cargo-chef:latest-rust-1.96-trixie AS chef
 WORKDIR /app
 
 FROM chef AS planner
@@ -32,13 +36,15 @@ COPY libraries/google-tts libraries/google-tts
 COPY out out
 RUN cargo build --release --bin ai-backend
 
-# Runtime stage with required libraries
-FROM debian:bookworm-slim AS runtime
+# Runtime stage with required libraries.
+# NOTE: must be the same distro as the builder stage above (or newer), or the
+# binary fails at startup with "GLIBC_x.yz not found" and crash-loops.
+FROM debian:trixie-slim AS runtime
 WORKDIR /app
 
-# Install required runtime dependencies
+# Install required runtime dependencies (libssl3 was renamed libssl3t64 in trixie)
 RUN apt-get update && apt-get install -y \
-    libssl3 \
+    libssl3t64 \
     libopus0 \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
