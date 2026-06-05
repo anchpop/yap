@@ -136,7 +136,7 @@ impl<T: UnigramToken> UnigramModel<T> {
             .zip(self.counts.iter())
             .map(|(seq, &count)| (seq, count))
             .collect();
-        items.sort_by(|a, b| b.1.cmp(&a.1));
+        items.sort_by_key(|b| std::cmp::Reverse(b.1));
         items
     }
 
@@ -310,7 +310,7 @@ impl<T: UnigramToken> UnigramModel<T> {
             .collect();
 
         // Sort by actual usage count descending
-        vocab_with_counts.sort_by(|a, b| b.2.cmp(&a.2));
+        vocab_with_counts.sort_by_key(|b| std::cmp::Reverse(b.2));
 
         UnigramModel::new(vocab_with_counts, self.merge_alpha)
     }

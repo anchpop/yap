@@ -478,7 +478,7 @@ pub fn analyze_morphology(
         .collect();
 
     // Sort by number of forms (descending) for easier analysis
-    groups.sort_by(|a, b| b.forms.len().cmp(&a.forms.len()));
+    groups.sort_by_key(|b| std::cmp::Reverse(b.forms.len()));
 
     groups
 }

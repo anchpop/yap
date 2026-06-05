@@ -338,7 +338,7 @@ impl LanguagePack {
             // Sort each list by frequency descending, then strip the frequencies
             map.into_iter()
                 .map(|(word, mut hets)| {
-                    hets.sort_by(|a, b| b.1.cmp(&a.1));
+                    hets.sort_by_key(|b| std::cmp::Reverse(b.1));
                     (word, hets.into_iter().map(|(h, _)| h).collect::<Vec<_>>())
                 })
                 .collect()
@@ -654,7 +654,7 @@ impl LanguagePack {
             // Sort each list by frequency (highest first) and extract just the spurs
             map.into_iter()
                 .map(|(k, mut v)| {
-                    v.sort_by(|a, b| b.1.count.cmp(&a.1.count));
+                    v.sort_by_key(|b| std::cmp::Reverse(b.1.count));
                     (k, v.into_iter().map(|(spur, _)| spur).collect())
                 })
                 .collect()

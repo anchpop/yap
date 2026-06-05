@@ -26,7 +26,8 @@ impl<E> EventType<E> {
     pub fn map_ref<G, F: Fn(&E) -> G>(&self, f: F) -> EventType<G> {
         match self {
             EventType::User(e) => EventType::User(f(e)),
-            EventType::Meta(e) => EventType::Meta(e.clone()),
+            // MetaEvent is uninhabited, so this arm can never be reached.
+            EventType::Meta(e) => match *e {},
         }
     }
 }
@@ -51,7 +52,8 @@ impl<E: crate::Event> crate::Event for EventType<E> {
     fn from_versioned(versioned: &Self::Versioned, context: &Self::Context) -> Option<Self> {
         match versioned {
             EventType::User(v) => E::from_versioned(v, context).map(EventType::User),
-            EventType::Meta(e) => Some(EventType::Meta(e.clone())),
+            // MetaEvent is uninhabited, so this arm can never be reached.
+            EventType::Meta(e) => match *e {},
         }
     }
 }

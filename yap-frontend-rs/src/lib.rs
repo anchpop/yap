@@ -2853,7 +2853,7 @@ impl Deck {
                         .collect();
 
                     // Sort by frequency descending (most common first).
-                    unknown_words.sort_by(|a, b| b.1.cmp(&a.1));
+                    unknown_words.sort_by_key(|b| std::cmp::Reverse(b.1));
 
                     // Count how many cards we need to learn to reach target
                     let mut accumulated_words = 0u64;

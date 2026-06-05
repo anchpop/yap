@@ -348,7 +348,7 @@ impl WhitespacePredictionSummary {
 
         // Sort patterns by frequency (most common first)
         let mut patterns: Vec<_> = self.by_pattern.iter().collect();
-        patterns.sort_by(|a, b| b.1.len().cmp(&a.1.len()));
+        patterns.sort_by_key(|b| std::cmp::Reverse(b.1.len()));
 
         for ((left, right, predicted, actual), sentences) in patterns {
             let right_str = right.as_deref().unwrap_or("<END>");
