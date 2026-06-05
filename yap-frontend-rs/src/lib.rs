@@ -123,8 +123,10 @@ const LOGGER: LazyLock<()> = LazyLock::new(|| {
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl Weapon {
     // Todo: I want to mostly move this into `weapon`. The one holdup is that wasm-bindgen types can't be generic, necessitating wrappers
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(constructor))]
-    pub async fn new(
+    // Exposed as a static factory rather than a constructor: wasm-bindgen deprecated
+    // async constructors (they generate invalid TS).
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub async fn create(
         user_id: Option<String>,
         sync_stream: js_sys::Function,
     ) -> Result<Self, persistent::Error> {

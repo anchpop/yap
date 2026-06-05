@@ -198,7 +198,7 @@ function WeaponProvider({ userId, children }) {
     useEffect(() => {
         async function init() {
             // Initialize Weapon with sync callback
-            const weaponInstance = await new Weapon(
+            const weaponInstance = await Weapon.create(
                 userId,
                 async (listenerId, streamId) => {
                     // Sync when events change

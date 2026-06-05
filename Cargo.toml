@@ -47,8 +47,7 @@ thiserror = "2"
 slotmap = { version = "1.1", features = ["serde"] }
 wasm-logger = "0.2.0"
 unicode-normalization = "0.1.25"
-# Tracks the web-sys 0.3.99 / wasm-bindgen 0.2.122 update (not yet published to crates.io).
-weblocks = { git = "https://github.com/anchpop/weblocks.git", rev = "03b7adc47ac52f0f0a51313142e83c3e23052694" }
+weblocks = "0.2.0"
 lexide = { git = "https://github.com/anchpop/lexide.git", rev = "4871984482c320ef27462644759fde66aefd5a7f", features = [
     "remote",
 ] }

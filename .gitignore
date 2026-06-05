@@ -72,3 +72,4 @@ out/*/audio_verification_failures.jsonl
 out/*/audio_verification_all.jsonl
 
 target-codex/
+target-review/

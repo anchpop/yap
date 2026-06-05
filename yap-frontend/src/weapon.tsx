@@ -85,7 +85,7 @@ export function WeaponProvider({
       setState({ type: "loading" });
 
       try {
-        const weapon = await new Weapon(userId, sync);
+        const weapon = await Weapon.create(userId, sync);
         if (!abortController.signal.aborted) {
           setState({ type: "ready", weapon });
         }

@@ -5708,8 +5708,9 @@ dependencies = [
 
 [[package]]
 name = "weblocks"
-version = "0.1.0"
-source = "git+https://github.com/anchpop/weblocks.git?rev=03b7adc47ac52f0f0a51313142e83c3e23052694#03b7adc47ac52f0f0a51313142e83c3e23052694"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5d835efa9b443e2edc6ecaf1a1b7773e4d775216215bcc88e687c18282c43ec6"
 dependencies = [
  "futures-channel",
  "js-sys",

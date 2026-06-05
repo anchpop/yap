@@ -222,10 +222,19 @@ function grammarSummary(sense: any): string {
                   // Verb tables: group by (mood, tense)
                   if (pos === 'Verb' || pos === 'Aux') {
                     const allGroups = groupVerbForms(forms);
-                    // Only show groups that contain the current word, or infinitive
-                    const groups = new Map([...allGroups.entries()].filter(([label, groupForms]) =>
-                      label.includes('infinitive') || groupForms.some((f: any) => f.word === page.display_text)
-                    ));
+                    // On the lemma/infinitive page (a form with no inflectional
+                    // features), show the full paradigm. On an inflected-form page,
+                    // show just the group containing that form, plus the infinitive
+                    // (the empty-label group) for reference.
+                    const onLemmaPage = forms.some((f: any) =>
+                      f.word === page.display_text &&
+                      !f.person && !f.number && !f.tense && !f.mood && !f.case && !f.gender
+                    );
+                    const groups = onLemmaPage
+                      ? allGroups
+                      : new Map([...allGroups.entries()].filter(([label, groupForms]) =>
+                          label === '' || groupForms.some((f: any) => f.word === page.display_text)
+                        ));
                     if (groups.size === 0) return null;
                     const renderFormLink = (f: any) => (
                       f.word === page.display_text
