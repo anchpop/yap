@@ -56,6 +56,7 @@ import { LandingPage } from "@/pages/landing";
 import { NotFoundPage } from "@/pages/not-found";
 import { GoalsPage } from "@/pages/goals";
 import { playSoundEffect } from "@/lib/sound-effects";
+import { registerSW } from "virtual:pwa-register";
 import { NoCardsReady } from "@/components/no-cards-ready";
 import { AccomplishmentScreen } from "@/components/AccomplishmentScreen";
 import { useGoal, goalToGoalSelection } from "@/hooks/useGoal";
