@@ -159,6 +159,13 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
 
+      # Probe the machine that's actually serving traffic. This catches
+      # runtime-only breakage that compiles and passes unit tests: missing
+      # crypto providers, glibc mismatches, missing env vars, expired API keys.
+      # (Also runnable locally: ./scripts/smoke_test_server.sh [base-url])
+      - name: Smoke test deployed backend
+        run: ./scripts/smoke_test_server.sh
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

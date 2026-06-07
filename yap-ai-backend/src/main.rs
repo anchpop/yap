@@ -160,15 +160,47 @@ async fn verify_jwt(token: &str) -> Result<Claims, StatusCode> {
     let jwt_secret =
         std::env::var("SUPABASE_JWT_SECRET").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
+    verify_jwt_with_secret(token, jwt_secret.as_ref())
+}
+
+fn verify_jwt_with_secret(token: &str, secret: &[u8]) -> Result<Claims, StatusCode> {
     let mut validation = Validation::new(Algorithm::HS256);
     validation.set_audience(&["authenticated"]);
 
-    let decoding_key = DecodingKey::from_secret(jwt_secret.as_ref());
+    let decoding_key = DecodingKey::from_secret(secret);
 
     match decode::<Claims>(token, &decoding_key, &validation) {
         Ok(token_data) => Ok(token_data.claims),
         Err(_) => Err(StatusCode::UNAUTHORIZED),
     }
+}
+
+/// Health check that exercises the JWT crypto path. jsonwebtoken panics at
+/// runtime (not compile time) if the crate is built without a crypto provider
+/// feature (`rust_crypto`/`aws_lc_rs`), which would otherwise only surface on
+/// the first authenticated request. A panic here drops the connection, so the
+/// fly health check fails and the deploy is rejected.
+async fn health() -> Result<&'static str, StatusCode> {
+    let secret = b"health-check-secret";
+    let exp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .as_secs() as usize
+        + 60;
+    let claims = serde_json::json!({
+        "sub": uuid::Uuid::nil(),
+        "exp": exp,
+        "aud": "authenticated",
+    });
+    let token = jsonwebtoken::encode(
+        &jsonwebtoken::Header::new(Algorithm::HS256),
+        &claims,
+        &jsonwebtoken::EncodingKey::from_secret(secret),
+    )
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    verify_jwt_with_secret(&token, secret)?;
+    Ok("ok")
 }
 
 async fn text_to_speech(
@@ -1944,18 +1976,16 @@ async fn sentry_tunnel(body: Bytes) -> StatusCode {
     }
 }
 
-#[tokio::main]
-async fn main() {
-    dotenvy::dotenv().ok();
-
+fn app() -> Router {
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any)
         .expose_headers(Any);
 
-    let app = Router::new()
+    Router::new()
         .route("/", get(|| async { "Hello from fly.io!" }))
+        .route("/health", get(health))
         .route("/tts", post(text_to_speech))
         .route("/tts/google", post(google_text_to_speech))
         .route("/tts/openai", post(openai_text_to_speech))
@@ -1975,7 +2005,14 @@ async fn main() {
         .route("/follow-status", get(get_follow_status))
         .route("/sentry-tunnel", post(sentry_tunnel))
         .layer(CompressionLayer::new())
-        .layer(cors);
+        .layer(cors)
+}
+
+#[tokio::main]
+async fn main() {
+    dotenvy::dotenv().ok();
+
+    let app = app();
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))
@@ -1983,4 +2020,217 @@ async fn main() {
         .unwrap();
     println!("Listening on port {port}");
     axum::serve(listener, app).await.unwrap();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::body::Body;
+    use axum::http::Request;
+    use tower::ServiceExt;
+
+    const TEST_SECRET: &[u8] = b"test-jwt-secret";
+
+    fn make_token(secret: &[u8], aud: &str, exp_offset_secs: i64) -> String {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        let claims = serde_json::json!({
+            "sub": uuid::Uuid::new_v4(),
+            "exp": now + exp_offset_secs,
+            "aud": aud,
+        });
+        jsonwebtoken::encode(
+            &jsonwebtoken::Header::new(Algorithm::HS256),
+            &claims,
+            &jsonwebtoken::EncodingKey::from_secret(secret),
+        )
+        .unwrap()
+    }
+
+    /// jsonwebtoken only fails at *runtime* when built without a crypto
+    /// provider feature (`rust_crypto`/`aws_lc_rs`) — `cargo check` and clippy
+    /// pass fine. This roundtrip panics, failing the test, in that case.
+    #[test]
+    fn jwt_roundtrip_accepts_valid_token() {
+        let token = make_token(TEST_SECRET, "authenticated", 60);
+        let claims =
+            verify_jwt_with_secret(&token, TEST_SECRET).expect("valid token should verify");
+        assert!(claims.exp > 0);
+    }
+
+    #[test]
+    fn jwt_rejects_wrong_secret() {
+        let token = make_token(b"some-other-secret", "authenticated", 60);
+        assert!(verify_jwt_with_secret(&token, TEST_SECRET).is_err());
+    }
+
+    #[test]
+    fn jwt_rejects_expired_token() {
+        let token = make_token(TEST_SECRET, "authenticated", -3600);
+        assert!(verify_jwt_with_secret(&token, TEST_SECRET).is_err());
+    }
+
+    #[test]
+    fn jwt_rejects_wrong_audience() {
+        let token = make_token(TEST_SECRET, "anon", 60);
+        assert!(verify_jwt_with_secret(&token, TEST_SECRET).is_err());
+    }
+
+    /// Drive a request through the real router. The primary value is that any
+    /// panic in the pre-network handler path (routing, extraction, JWT decode,
+    /// lazy statics) aborts the test — the returned status is secondary.
+    async fn smoke(method: &str, path: &str, body: Option<serde_json::Value>) -> StatusCode {
+        unsafe {
+            // Make sure handlers take the full JWT-decode path instead of
+            // bailing out early on a missing secret...
+            std::env::set_var(
+                "SUPABASE_JWT_SECRET",
+                std::str::from_utf8(TEST_SECRET).unwrap(),
+            );
+            // ...and that they bail before calling external providers, even on
+            // machines where real API keys are exported.
+            for key in [
+                "ELEVENLABS_API_KEY",
+                "GOOGLE_CLOUD_API_KEY",
+                "OPENAI_API_KEY",
+                "GEMINI_API_KEY",
+                "SUPABASE_URL",
+                "SUPABASE_SERVICE_ROLE_KEY",
+            ] {
+                std::env::remove_var(key);
+            }
+        }
+
+        let token = make_token(TEST_SECRET, "authenticated", 60);
+        let mut request = Request::builder()
+            .method(method)
+            .uri(path)
+            .header("authorization", format!("Bearer {token}"));
+        let body = match body {
+            Some(json) => {
+                request = request.header("content-type", "application/json");
+                Body::from(serde_json::to_vec(&json).unwrap())
+            }
+            None => Body::empty(),
+        };
+        app()
+            .oneshot(request.body(body).unwrap())
+            .await
+            .unwrap()
+            .status()
+    }
+
+    #[tokio::test]
+    async fn root_responds() {
+        assert_eq!(smoke("GET", "/", None).await, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn health_responds_ok() {
+        assert_eq!(smoke("GET", "/health", None).await, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn tts_endpoints_respond_without_panicking() {
+        let tts_body = serde_json::to_value(TtsRequest {
+            text: "bonjour".to_string(),
+            language: Language::French,
+            is_ssml: false,
+            instructions: None,
+            speed: 1.0,
+        })
+        .unwrap();
+
+        for path in ["/tts", "/tts/google", "/tts/openai", "/tts/gemini"] {
+            // Provider API keys are stripped, so each handler verifies the JWT
+            // and then errors out before reaching the network. What matters is
+            // that the whole pre-network path runs without panicking.
+            let status = smoke("POST", path, Some(tts_body.clone())).await;
+            assert!(status.is_server_error(), "{path} returned {status}");
+        }
+    }
+
+    #[tokio::test]
+    async fn supabase_endpoints_respond_without_panicking() {
+        // Supabase env vars are stripped, so each handler errors out before
+        // reaching the network — after running JWT verification, including the
+        // endpoints that enforce it.
+        let nil_id = uuid::Uuid::nil().to_string();
+        let gets = [
+            format!("/profile?id={nil_id}"),
+            format!("/user-language-stats?id={nil_id}"),
+            format!("/follow-status?id={nil_id}"),
+        ];
+        for path in &gets {
+            let status = smoke("GET", path, None).await;
+            assert!(status.is_server_error(), "{path} returned {status}");
+        }
+
+        let stats_body = serde_json::to_value(UpdateLanguageStatsRequest {
+            language: Language::French,
+            total_count: 1,
+            daily_streak: 1,
+            daily_streak_expiry: None,
+            xp: 1.0,
+            percent_known: 0.5,
+            start_time: None,
+        })
+        .unwrap();
+        let follow_body = serde_json::to_value(FollowRequest {
+            user_id: nil_id.clone(),
+        })
+        .unwrap();
+        let posts = [
+            ("/language-stats", stats_body),
+            ("/follow", follow_body.clone()),
+            ("/unfollow", follow_body),
+        ];
+        for (path, body) in posts {
+            let status = smoke("POST", path, Some(body)).await;
+            assert!(status.is_server_error(), "{path} returned {status}");
+        }
+    }
+
+    #[tokio::test]
+    async fn language_data_serves_first_chunk() {
+        let body = serde_json::json!({
+            "course": Course {
+                native_language: Language::English,
+                target_language: Language::French,
+            },
+            "chunk_index": 0,
+            "chunk_size": 1024,
+        });
+        assert_eq!(
+            smoke("POST", "/language-data", Some(body)).await,
+            StatusCode::OK
+        );
+    }
+
+    /// The jsonwebtoken outage was misreported by browsers as a CORS failure
+    /// (fly's proxy 502s carry no CORS headers). Keep actual preflight
+    /// behavior pinned so real CORS regressions are distinguishable.
+    #[tokio::test]
+    async fn cors_preflight_allows_any_origin() {
+        let request = Request::builder()
+            .method("OPTIONS")
+            .uri("/tts")
+            .header("origin", "https://yap.town")
+            .header("access-control-request-method", "POST")
+            .header(
+                "access-control-request-headers",
+                "authorization,content-type",
+            )
+            .body(Body::empty())
+            .unwrap();
+        let response = app().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(
+            response
+                .headers()
+                .contains_key("access-control-allow-origin")
+        );
+    }
 }

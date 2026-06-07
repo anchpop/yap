@@ -23,6 +23,16 @@ auto_start_machines = true
 min_machines_running = 0
 processes = ['app']
 
+# /health performs a JWT encode/decode roundtrip, so a deploy whose binary
+# can't do JWT crypto (or boot at all) fails health checks instead of
+# silently serving 502s.
+[[http_service.checks]]
+grace_period = '10s'
+interval = '30s'
+method = 'GET'
+timeout = '5s'
+path = '/health'
+
 [[vm]]
 memory = '1gb'
 cpu_kind = 'shared'
