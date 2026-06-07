@@ -109,7 +109,6 @@ export type AppContextType = {
 };
 
 function AppMain() {
-  // register service worker
   const updateIntervalMS = 60 * 5 * 1000; // every 5 minutes
   useEffect(() => {
     registerSW({ immediate: true });
@@ -118,13 +117,15 @@ function AppMain() {
   useRegisterSW({
     onRegistered(r) {
       if (r) {
-        setInterval(() => {
+        const update = () => {
           r.update().catch((e) => {
-            if (navigator.onLine) {
+            if (navigator.onLine && e?.name !== "InvalidStateError") {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
           });
-        }, updateIntervalMS);
+        };
+        update();
+        setInterval(update, updateIntervalMS);
       }
     },
   });
