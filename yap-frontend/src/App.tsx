@@ -115,8 +115,6 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            // InvalidStateError ("newestWorker is null") is a known Safari/browser
-            // quirk during service worker lifecycle transitions — not actionable.
             if (navigator.onLine && e?.name !== "InvalidStateError") {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
