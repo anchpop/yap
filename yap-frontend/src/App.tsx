@@ -109,6 +109,9 @@ export type AppContextType = {
 
 function AppMain() {
   const updateIntervalMS = 60 * 5 * 1000; // every 5 minutes
+  useEffect(() => {
+    registerSW({ immediate: true });
+  }, []);
 
   useRegisterSW({
     onRegistered(r) {
