@@ -153,12 +153,12 @@ fn is_retryable_persistent_error(error: &persistent::Error) -> bool {
         || error_text.contains("out of memory")
 }
 
-pub(crate) async fn get_language_pack(
+pub(crate) async fn load_language_pack(
     data_directory_handle: &DirectoryHandle,
     course: Course,
     set_loading_state: &impl Fn(&str, f32),
 ) -> Result<LanguagePack, LanguageDataError> {
-    let _perf_timer = utils::PerfTimer::new("get_language_pack");
+    let _perf_timer = utils::PerfTimer::new("load_language_pack");
     let course_directory = course_directory_slug(course);
     let mut language_directory = data_directory_handle
         .get_directory_handle_with_options(

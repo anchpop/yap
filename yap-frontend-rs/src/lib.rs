@@ -564,7 +564,7 @@ impl Weapon {
         &self,
         course: Course,
     ) -> Result<(), language_pack::LanguageDataError> {
-        self.get_language_pack(course, None).await?;
+        self.load_language_pack(course, None).await?;
         Ok(())
     }
 }
@@ -572,7 +572,7 @@ impl Weapon {
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl Weapon {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub async fn get_language_pack(
+    pub async fn load_language_pack(
         &self,
         course: Course,
         on_progress: Option<js_sys::Function>,
@@ -592,7 +592,7 @@ impl Weapon {
             return Ok(());
         }
 
-        let language_pack = language_pack::get_language_pack(
+        let language_pack = language_pack::load_language_pack(
             &self.directories.data_directory_handle,
             course,
             &|message: &str, progress: f32| {
