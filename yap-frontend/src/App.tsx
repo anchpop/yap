@@ -56,7 +56,6 @@ import { LandingPage } from "@/pages/landing";
 import { NotFoundPage } from "@/pages/not-found";
 import { GoalsPage } from "@/pages/goals";
 import { playSoundEffect } from "@/lib/sound-effects";
-import { registerSW } from "virtual:pwa-register";
 import { NoCardsReady } from "@/components/no-cards-ready";
 import { AccomplishmentScreen } from "@/components/AccomplishmentScreen";
 import { useGoal, goalToGoalSelection } from "@/hooks/useGoal";
@@ -110,16 +109,19 @@ export type AppContextType = {
 
 function AppMain() {
   const updateIntervalMS = 60 * 5 * 1000; // every 5 minutes
-  useEffect(() => {
-    registerSW({ immediate: true });
-  }, []);
 
   useRegisterSW({
     onRegistered(r) {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            if (navigator.onLine && e?.name !== "InvalidStateError") {
+            // TypeError covers browser-internal SW failures (network errors, script fetch
+            // failures, uninstalled registrations) — none are actionable from app code.
+            if (
+              navigator.onLine &&
+              e?.name !== "InvalidStateError" &&
+              e?.name !== "TypeError"
+            ) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
           });
