@@ -303,12 +303,38 @@ export function useSyncActions(): {
   return ctx;
 }
 
+// Minimal WASM module using externref (reference types). Returns false on
+// browsers that predate Chrome 86 / Firefox 79 where externref was behind a
+// flag — those browsers can't compile our WASM module at all.
+function supportsWasmExternref(): boolean {
+  try {
+    return WebAssembly.validate(
+      new Uint8Array([
+        0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, // magic + version
+        0x01, 0x05, 0x01, 0x60, 0x00, 0x01, 0x6f, // type section: () -> externref
+        0x03, 0x02, 0x01, 0x00, // function section
+        0x0a, 0x06, 0x01, 0x04, 0x00, 0xd0, 0x6f, 0x0b, // code section
+      ]),
+    );
+  } catch {
+    return false;
+  }
+}
+
 async function checkBrowserSupport(
   setBrowserSupported: (browserSupported: boolean) => void,
 ) {
   try {
     // Check if OPFS test has already passed
     const opfsTestPassed = localStorage.getItem("opfs-test-passed");
+
+    // Reject browsers that don't support WebAssembly reference types
+    // (externref). Our WASM module uses externref, so it can't compile on
+    // Chrome < 86 / Firefox < 79 even if OPFS were somehow present.
+    if (!supportsWasmExternref()) {
+      setBrowserSupported(false);
+      return;
+    }
 
     // Quick JS-level check before calling into WASM (avoids noisy TypeErrors
     // on browsers that lack OPFS entirely or don't support createWritable)
