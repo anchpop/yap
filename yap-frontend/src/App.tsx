@@ -1540,7 +1540,7 @@ export function useDeck():
       level: "info",
     });
     try {
-      await weapon.get_language_pack(
+      await weapon.load_language_pack(
         course,
         (message: string, progress: number) => {
           Sentry.addBreadcrumb({
