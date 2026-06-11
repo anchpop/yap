@@ -33,6 +33,27 @@ pub struct TargetSentences {
 /// Default target maximum number of sentences to import from Tatoeba
 const DEFAULT_TARGET_SENTENCE_COUNT: usize = 200_000;
 
+/// macOS XProtect's `XProtect_MACOS_DAILYDUMPLING_UNST` yara rule SIGKILLs
+/// (silently, with no log entry) any locally built Mach-O binary matching
+/// ALL of {"That's strange", "brainpoolP224r1", "wonder"} AND one of
+/// {"Welcome to H3LL", "Welcome to Paradise"}. Our subtitle corpus is
+/// embedded into binaries via the language packs, so a single line of movie
+/// dialogue can make every local `ai-backend` test binary unrunnable.
+///
+/// Hacky workaround: ban the second group from the corpus (sentences and
+/// translations alike), which defeats the rule's AND condition. Only this
+/// group is bannable — "wonder" and "That's strange" appear in thousands of
+/// legitimate sentences, and "brainpoolP224r1" comes from crypto crates.
+///
+/// The yara rule is case-sensitive (capital W/P/H), so the lowercase
+/// literals below don't themselves trip it — don't "fix" their casing.
+pub fn contains_xprotect_tripwire(s: &str) -> bool {
+    let lower = s.to_lowercase();
+    ["welcome to paradise", "welcome to h3ll"]
+        .iter()
+        .any(|tripwire| lower.contains(tripwire))
+}
+
 /// Get target language sentences with optional translations and source information.
 ///
 /// This function collects sentences from all available sources (Anki, Tatoeba, manual, songs, movies)
@@ -132,6 +153,12 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
         })
         .filter(|(sentence, _, source)| source.is_manual() || !has_encoding_corruption(sentence))
         .chain(manual_sentences_iter)
+        // Applied after the manual-sentence chain on purpose: unlike the
+        // quality filters above, this one must hold even for manual sentences.
+        .filter(|(sentence, native, _)| {
+            !contains_xprotect_tripwire(sentence)
+                && !native.as_deref().is_some_and(contains_xprotect_tripwire)
+        })
         .collect();
 
     // Deduplicate by target sentence while preserving order

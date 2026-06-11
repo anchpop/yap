@@ -122,6 +122,11 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
     dotenvy::dotenv().ok();
 
+    // Some dependency builds rustls without a default crypto provider, which
+    // panics at first TLS use (runtime-only, like the jsonwebtoken incident).
+    // Err here just means a provider is already installed, which is fine.
+    let _ = rustls::crypto::ring::default_provider().install_default();
+
     // Parse CLI args. Supported forms:
     //   generate-data [--cache-only] [<lang_filter>]
     // --cache-only puts tysm ChatClients, GoogleTranslator, and lexide
@@ -287,6 +292,13 @@ async fn main() -> anyhow::Result<()> {
                         if let Some(native_sentence) = native_sentence {
                             translation_set.insert(native_sentence);
                         }
+                        // Machine translation can reintroduce the XProtect tripwire
+                        // even when the corpus filter dropped the original pair
+                        // (e.g. "Bienvenidos al Paraíso." → "Welcome to Paradise."),
+                        // so filter the translations too.
+                        translation_set.retain(|t| {
+                            !generate_data::target_sentences::contains_xprotect_tripwire(t)
+                        });
                         pb.set_message(format!("{} API calls", translator.api_calls()));
                         pb.inc(1);
                         (target_language_sentence, (translation_set, source))
