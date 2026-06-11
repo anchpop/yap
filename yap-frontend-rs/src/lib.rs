@@ -4970,19 +4970,34 @@ mod tests {
     }
 
     /// Helper for placement-test integration tests: split the placement-test
-    /// words into a high-frequency "known" half and a low-frequency "unknown"
-    /// half, then apply the resulting `CompletePlacementTest` event.
+    /// words into a high-ease "known" half and a low-ease "unknown" half,
+    /// then apply the resulting `CompletePlacementTest` event.
+    ///
+    /// The split is by ease (the regression's x-axis), not by the order
+    /// `get_placement_test` returns: word selection binary-searches ease over
+    /// a frequency-sorted list, so cognate bonuses can make the returned
+    /// order non-monotone in ease — and an ease-interleaved known/unknown
+    /// split is one no isotonic regression could separate.
     fn apply_placement_test_split(deck: Deck) -> (Deck, Vec<String>, Vec<String>) {
         use crate::{Deck, DeckState};
         use weapon::AppState;
         use weapon::data_model::Timestamped;
 
-        let placement_words = deck.get_placement_test(vec![], vec![]);
+        let mut placement_words = deck.get_placement_test(vec![], vec![]);
         assert!(
             placement_words.len() >= 6,
             "placement test should produce enough words to split into halves; got {}",
             placement_words.len()
         );
+        placement_words.sort_by(|a, b| {
+            let ease = |w: &crate::placement_test::PlacementTestWord| {
+                deck.context
+                    .lookup_word(&w.word)
+                    .map(|(_, f)| f.ease)
+                    .unwrap_or(f32::NEG_INFINITY)
+            };
+            ease(b).total_cmp(&ease(a))
+        });
         let split = placement_words.len() / 2;
         let known_words: Vec<String> = placement_words[..split]
             .iter()
@@ -5073,10 +5088,13 @@ mod tests {
             .copied()
             .fold(f32::INFINITY, f32::min);
 
+        // >= rather than >: two boundary words can share the exact same ease
+        // (with opposite labels), and the regression then rightly predicts the
+        // same value for both. A real inversion is still strictly less.
         assert!(
-            min_known_pred > max_unknown_pred,
+            min_known_pred >= max_unknown_pred,
             "regression should rank every known word above every unknown word; \
-             min(known)={min_known_pred:.3} <= max(unknown)={max_unknown_pred:.3}"
+             min(known)={min_known_pred:.3} < max(unknown)={max_unknown_pred:.3}"
         );
         assert!(
             max_known_pred >= 0.95,
