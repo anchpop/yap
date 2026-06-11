@@ -310,15 +310,53 @@ fn tail_decay_db(samples: &[f32], sample_rate: u32) -> Option<f32> {
 
 // --- audio decoders ---------------------------------------------------------
 
-/// Dispatches to the right decoder based on magic bytes. Handles the two
-/// formats we actually see from Google TTS / our own pipelines: OGG Opus and
-/// MP3.
+/// Dispatches to the right decoder based on magic bytes. Handles the formats
+/// we actually see from our TTS providers and pipelines: OGG Opus (Google),
+/// WAV (Gemini), and MP3 (OpenAI and others).
 pub fn decode_audio_to_f32(bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {
     if bytes.starts_with(b"OggS") {
         decode_ogg_opus_to_f32(bytes)
+    } else if bytes.starts_with(b"RIFF") {
+        decode_wav_to_f32(bytes)
     } else {
         decode_mp3_to_f32(bytes)
     }
+}
+
+/// Decodes WAV (any bit depth hound supports) to mono f32 samples.
+pub fn decode_wav_to_f32(bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {
+    use std::io::Cursor;
+
+    let mut reader =
+        hound::WavReader::new(Cursor::new(bytes)).map_err(|e| format!("wav read error: {e}"))?;
+    let spec = reader.spec();
+    let channels = spec.channels as usize;
+
+    let interleaved: Vec<f32> = match spec.sample_format {
+        hound::SampleFormat::Float => reader
+            .samples::<f32>()
+            .collect::<Result<_, _>>()
+            .map_err(|e| format!("wav decode error: {e}"))?,
+        hound::SampleFormat::Int => {
+            let max = (1i64 << (spec.bits_per_sample - 1)) as f32;
+            reader
+                .samples::<i32>()
+                .map(|s| s.map(|s| s as f32 / max))
+                .collect::<Result<_, _>>()
+                .map_err(|e| format!("wav decode error: {e}"))?
+        }
+    };
+
+    let samples: Vec<f32> = interleaved
+        .chunks(channels)
+        .map(|chunk| chunk.iter().sum::<f32>() / channels as f32)
+        .collect();
+
+    if samples.is_empty() {
+        return Err("No audio data decoded".to_string());
+    }
+
+    Ok((samples, spec.sample_rate))
 }
 
 pub fn decode_mp3_to_f32(mp3_bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {

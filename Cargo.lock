@@ -1809,6 +1809,7 @@ dependencies = [
  "rkyv",
  "rusqlite",
  "rustc-hash",
+ "rustls 0.23.31",
  "schemars",
  "scraper",
  "sentence-sampler",
@@ -1919,6 +1920,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
+ "hound",
  "log 0.4.31",
  "minimp3",
  "ogg",
@@ -2108,6 +2110,12 @@ checksum = "6303bc9732ae41b04cb554b844a762b4115a61bfaa81e3e83050991eeb56863f"
 dependencies = [
  "digest 0.11.3",
 ]
+
+[[package]]
+name = "hound"
+version = "3.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "62adaabb884c94955b19907d60019f4e145d091c75345379e70d1ee696f7854f"
 
 [[package]]
 name = "html-escape"
@@ -4470,6 +4478,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0ebcbd2f03de0fc1122ad9bb24b127a5a6cd51d72604a3f3c50ac459762b6cc"
 dependencies = [
  "aws-lc-rs",
+ "log 0.4.31",
  "once_cell",
  "ring",
  "rustls-pki-types",

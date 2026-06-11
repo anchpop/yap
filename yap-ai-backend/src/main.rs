@@ -1054,9 +1054,9 @@ struct PronunciationFeedbackRequest {
     sentence: String,
     /// Target language
     language: Language,
-    /// Base64-encoded user audio (mp3)
+    /// Base64-encoded user audio (mp3, ogg opus, or wav)
     user_audio: String,
-    /// Base64-encoded reference audio (mp3)
+    /// Base64-encoded reference audio (mp3, ogg opus, or wav)
     reference_audio: String,
 }
 
@@ -1133,9 +1133,10 @@ async fn get_phonemes_from_modal(
     // Actually, let's just update the Modal endpoint to accept base64 mp3 directly.
     // For now, let's do the conversion here with symphonia.
 
-    // Decode mp3 to f32 samples at whatever sample rate, send with sample_rate
-    let (samples, sample_rate) = google_tts::decode_mp3_to_f32(audio_bytes).map_err(|e| {
-        eprintln!("Failed to decode mp3: {e}");
+    // Decode the audio (mp3 or ogg opus) to f32 samples at whatever sample
+    // rate, send with sample_rate
+    let (samples, sample_rate) = google_tts::decode_audio_to_f32(audio_bytes).map_err(|e| {
+        eprintln!("Failed to decode audio: {e}");
         StatusCode::BAD_REQUEST
     })?;
 
@@ -1170,6 +1171,31 @@ async fn get_phonemes_from_modal(
     Ok(result.phonemes)
 }
 
+/// Gemini's OpenAI-compatible endpoint only accepts "wav" and "mp3" input
+/// audio, so Ogg Opus (what /tts/google returns) is re-encoded as 16-bit PCM
+/// WAV. WAV (what /tts/gemini returns) passes through labeled as such; MP3 is
+/// the fallback for everything else.
+fn gemini_input_audio(
+    audio_bytes: &[u8],
+) -> Result<tysm::chat_completions::InputAudio, StatusCode> {
+    use tysm::chat_completions::InputAudio;
+    if audio_bytes.starts_with(b"RIFF") {
+        return Ok(InputAudio::wav(audio_bytes));
+    }
+    if !audio_bytes.starts_with(b"OggS") {
+        return Ok(InputAudio::mp3(audio_bytes));
+    }
+    let (samples, sample_rate) = google_tts::decode_audio_to_f32(audio_bytes).map_err(|e| {
+        eprintln!("Failed to decode audio: {e}");
+        StatusCode::BAD_REQUEST
+    })?;
+    let pcm: Vec<u8> = samples
+        .iter()
+        .flat_map(|s| ((s.clamp(-1.0, 1.0) * 32767.0) as i16).to_le_bytes())
+        .collect();
+    Ok(InputAudio::wav(wrap_pcm_in_wav(&pcm, sample_rate, 1, 16)))
+}
+
 async fn generate_pronunciation_feedback(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
     Json(request): Json<PronunciationFeedbackRequest>,
@@ -1193,7 +1219,7 @@ async fn generate_pronunciation_feedback(
     let user_detailed = format_phoneme_analysis(&user_phonemes);
     let ref_detailed = format_phoneme_analysis(&ref_phonemes);
 
-    use tysm::chat_completions::{ChatMessage, ChatMessageContent, InputAudio, Role};
+    use tysm::chat_completions::{ChatMessage, ChatMessageContent, Role};
 
     let language_name = &request.language;
 
@@ -1221,10 +1247,10 @@ async fn generate_pronunciation_feedback(
         Role::User,
         vec![
             ChatMessageContent::InputAudio {
-                input_audio: InputAudio::mp3(user_audio_bytes),
+                input_audio: gemini_input_audio(&user_audio_bytes)?,
             },
             ChatMessageContent::InputAudio {
-                input_audio: InputAudio::mp3(reference_audio_bytes),
+                input_audio: gemini_input_audio(&reference_audio_bytes)?,
             },
             ChatMessageContent::Text { text: prompt },
         ],
