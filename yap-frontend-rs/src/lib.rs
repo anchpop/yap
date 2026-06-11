@@ -5815,5 +5815,65 @@ mod tests {
                 println!("    {}. {display} ({card_type}, {freq_info})", i + 1);
             }
         }
+
+        // Optional deep-dive: dump how specific sentences are encoded and why each gram
+        // is (or isn't) considered comprehensible for this user — card state, cached
+        // comprehensibility, and regression-predicted knowledge probability.
+        // Usage: INSPECT_SENTENCE="infecté" (substring match against sentence text)
+        if let Ok(needle) = std::env::var("INSPECT_SENTENCE") {
+            let lp = &deck.context.language_pack;
+            println!("\n=== Sentence inspection: {needle:?} ===");
+            for (sentence_spur, sentence_grams) in lp.encoded_sentences.iter() {
+                let sentence_text = lp.string_rodeo.resolve(sentence_spur);
+                if !sentence_text.contains(&needle) {
+                    continue;
+                }
+                println!("\nSentence: {sentence_text}");
+                let report = |gram: &SpurGram, kind: &str| {
+                    let display = lp
+                        .gram_rodeo
+                        .resolve(gram)
+                        .resolve(&lp.string_rodeo)
+                        .to_display_string(deck.context.course.target_language);
+                    let in_freq = lp.gram_frequencies.entries.contains_key(gram);
+                    let listening_now = deck.comprehensible.listening.now.contains(gram);
+                    let listening_planned =
+                        deck.comprehensible.listening.now_and_planned.contains(gram);
+                    let card = deck
+                        .cards
+                        .get(&CardIndicator::ListeningGram { gram: *gram })
+                        .map(|c| match c {
+                            CardData::Added { fsrs_card } => {
+                                format!("Added(state={:?})", fsrs_card.state)
+                            }
+                            CardData::Ghost { fsrs_card } => {
+                                format!("Ghost(state={:?})", fsrs_card.state)
+                            }
+                        });
+                    let prob = deck
+                        .context
+                        .get_card_knowledge_probability(
+                            &CardIndicator::ListeningGram { gram: *gram },
+                            &deck.regressions,
+                        )
+                        .map(|(p, f)| format!("{p:.3} (count={})", f.count));
+                    println!(
+                        "  [{kind}] {display:?}: in_freq={in_freq} card={card:?} listening_now={listening_now} listening_planned={listening_planned} P(known)={prob:?}"
+                    );
+                };
+                for sg in &sentence_grams.grams {
+                    match sg {
+                        SentenceGram::Learnable(g) => report(g, "learnable"),
+                        SentenceGram::Obvious(g) => report(g, "obvious"),
+                    }
+                }
+                for g in &sentence_grams.multiword_terms {
+                    report(g, "multiword");
+                }
+                for g in &sentence_grams.low_confidence_multiword_terms {
+                    report(g, "low-conf-multiword");
+                }
+            }
+        }
     }
 }

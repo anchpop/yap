@@ -589,9 +589,24 @@ impl LanguagePack {
                         .unwrap_or(ln_count)
                 } else {
                     // Multi-atom gram: ease depends on compositionality and component word ease.
+                    // A learnable component with no standalone gram never occurs outside this
+                    // gram, so it can't be easier than the gram itself — fall back to ln_count
+                    // instead of skipping it. Skipping would let the easy components set the
+                    // ease (e.g. "est infecté" inheriting the ease of "est" when "infecté" has
+                    // no entry of its own).
                     let min_component_ease = gram
                         .iter()
-                        .filter_map(|atom| single_atom_ease.get(atom).copied())
+                        .filter_map(|atom| {
+                            let ease = single_atom_ease.get(atom).copied();
+                            match atom {
+                                Atom::Tok(word)
+                                    if matches!(word.word_type, WordType::Heteronym(_)) =>
+                                {
+                                    Some(ease.unwrap_or(ln_count))
+                                }
+                                _ => ease,
+                            }
+                        })
                         .reduce(f32::min);
 
                     let base_ease = match (
