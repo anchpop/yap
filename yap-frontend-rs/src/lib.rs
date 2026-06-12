@@ -1296,9 +1296,22 @@ impl weapon::AppState for Deck {
                         &literals,
                         &context.language_pack,
                     ) {
+                        let resolved_gram = context.language_pack.gram_rodeo.resolve(&gram);
+
+                        // A literal can fail to match (interning miss above, or
+                        // tokenization drift between the event's pack and the current
+                        // pack), leaving `matched` empty or partial. Only credit the
+                        // gram as remembered when every word of the gram matched a
+                        // remembered literal — an empty match must not count as a
+                        // vacuously-true success.
+                        let expected_matches = resolved_gram
+                            .iter()
+                            .filter(|atom| matches!(atom, Atom::Tok(_)))
+                            .count();
                         let any_hinted = matched.iter().any(|(_, (h, _))| *h);
                         let any_forgotten = matched.iter().any(|(_, (_, r))| *r == Some(false));
-                        let all_remembered = matched.iter().all(|(_, (_, r))| *r == Some(true));
+                        let all_remembered = matched.len() == expected_matches
+                            && matched.iter().all(|(_, (_, r))| *r == Some(true));
 
                         if any_forgotten || any_hinted {
                             forgotten_grams.insert(gram);
@@ -1306,8 +1319,7 @@ impl weapon::AppState for Deck {
                             remembered_grams.insert(gram);
                         }
 
-                        let gram = context.language_pack.gram_rodeo.resolve(&gram);
-                        if gram.len() > 1 {
+                        if resolved_gram.len() > 1 {
                             for (literal, (hinted, remembered)) in matched {
                                 let language_utils::WordType::Heteronym(_) =
                                     &literal.word.word_type

@@ -1009,7 +1009,17 @@ export function TranslationChallenge({
           });
         } else if (
           response.phrases_forgot.length === 0 &&
-          !response.literal_grades.some((g) => g === "Forgot")
+          // Perfect requires every heteronym to be affirmatively graded
+          // "Remembered". An undefined grade means the grader found the word
+          // indeterminate (or returned no grade at all) — promoting that to
+          // perfect would credit words the user never demonstrated, so those
+          // go through the graded path, which preserves indeterminate as
+          // "not reviewed".
+          sentence.target_language_literals.every(
+            (literal, i) =>
+              (literal.word.word_type as { type?: string })?.type !==
+                "Heteronym" || response.literal_grades[i] === "Remembered",
+          )
         ) {
           setGrade({ graded: { perfect: null, encouragement, explanation } });
           playSoundEffect("perfect");
