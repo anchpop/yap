@@ -170,6 +170,20 @@ def _build_regularized_modules(
 class Wav2Vec2Phoneme:
     @modal.enter()
     def load_model(self):
+        # Catch load failures (e.g. a checkpoint whose head shapes don't match
+        # this endpoint) and stash the traceback instead of crashing the
+        # container. predict() then reports it, so the eval harness surfaces the
+        # real error instead of mistaking a dead container for the
+        # warm-container bug and spinning through redeploys.
+        try:
+            self._load_model_impl()
+            self.load_error = None
+        except Exception:
+            import traceback
+            self.load_error = traceback.format_exc()
+            print(f"load_model FAILED:\n{self.load_error}", flush=True)
+
+    def _load_model_impl(self):
         import torch
         import torch.nn as nn
         import torchaudio.transforms as T_audio
@@ -539,6 +553,19 @@ class Wav2Vec2Phoneme:
 
     @modal.fastapi_endpoint(method="POST")
     def predict(self, request: dict) -> dict:
+        # If the model failed to load, report the stashed traceback. The
+        # marker_only probe (eval harness) gets it as a 200 JSON so it can abort
+        # with the real trace; a NORMAL prediction request gets a 503 so
+        # production callers (yap-ai-backend, the verifier) hit their
+        # status-error path instead of parsing a phonemes-less 200.
+        if self.load_error is not None:
+            if request.get("marker_only"):
+                return {"load_error": self.load_error, "deploy_marker": DEPLOY_MARKER}
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=503,
+                detail={"load_error": self.load_error, "deploy_marker": DEPLOY_MARKER},
+            )
         # Freshness check: `{"marker_only": true}` short-circuits inference
         # and returns just this container's deploy marker, so the comparison
         # harness can confirm it's hitting the container it just deployed
@@ -550,6 +577,11 @@ class Wav2Vec2Phoneme:
         sample_rate = int(request.get("sample_rate", 16000))
         top_k = min(max(int(request.get("top_k", 3)), 1), 100)
         return_frames = bool(request.get("return_frames", False))
-        return self.transcribe_phonemes.local(
+        result = self.transcribe_phonemes.local(
             audio, sample_rate, top_k, return_frames
         )
+        # Stamp every prediction with the deploy marker so the verifier can
+        # reject (and refuse to cache) responses served by a stale/contaminated
+        # container — not just the one-shot marker_only probe.
+        result["deploy_marker"] = DEPLOY_MARKER
+        return result

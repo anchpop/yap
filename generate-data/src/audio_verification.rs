@@ -52,6 +52,12 @@ const WAV2VEC2_CACHE_VERSION: &str =
 #[derive(Debug, Clone, Deserialize)]
 struct ModalResponse {
     phonemes: Vec<ModalPhoneme>,
+    /// The deploy marker the serving container reports. Checked against
+    /// `WAV2VEC2_EXPECTED_DEPLOY_MARKER` (when set, by the eval harness) so a
+    /// stale/contaminated container's predictions are rejected before caching.
+    /// Absent for older endpoints / production, where the check is a no-op.
+    #[serde(default)]
+    deploy_marker: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -174,6 +180,10 @@ pub struct VerifyContext<'a> {
     /// Target language — drives per-language phoneme canonicalization (e.g.
     /// collapsing r↔ʁ for French).
     pub target_language: Language,
+    /// When set (`WAV2VEC2_EXPECTED_DEPLOY_MARKER`, by the eval harness), every
+    /// endpoint response must report this exact deploy marker or we bail rather
+    /// than cache a possibly-contaminated prediction. `None` in production.
+    expected_deploy_marker: Option<String>,
 }
 
 impl<'a> VerifyContext<'a> {
@@ -197,12 +207,16 @@ impl<'a> VerifyContext<'a> {
             .ok()
             .and_then(|s| s.parse::<f64>().ok())
             .unwrap_or(0.3);
+        let expected_deploy_marker = std::env::var("WAV2VEC2_EXPECTED_DEPLOY_MARKER")
+            .ok()
+            .filter(|s| !s.is_empty());
         Ok(Self {
             http,
             cache_dir,
             word_to_pronunciation,
             mismatch_threshold: threshold,
             target_language,
+            expected_deploy_marker,
         })
     }
 }
@@ -443,6 +457,20 @@ async fn predict_phonemes(
         .json()
         .await
         .context("Failed to parse Modal wav2vec2 response")?;
+
+    // Per-request freshness check: the one-shot marker_only probe only proves
+    // the *first* request hit a fresh container. Verifying the marker on every
+    // response guarantees no later request was routed to a stale/contaminated
+    // warm container and silently cached under the wrong model's key.
+    if let Some(expected) = &ctx.expected_deploy_marker
+        && modal.deploy_marker.as_deref() != Some(expected.as_str())
+    {
+        anyhow::bail!(
+            "deploy-marker mismatch: endpoint reported {:?}, expected {expected:?} — \
+             refusing to cache a possibly-contaminated prediction",
+            modal.deploy_marker
+        );
+    }
 
     let raw_phonemes: Vec<String> = modal.phonemes.iter().map(|p| p.phoneme.clone()).collect();
     let top_k: Vec<Vec<RawPhonemeAlt>> = modal
