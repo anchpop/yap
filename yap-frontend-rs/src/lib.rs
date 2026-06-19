@@ -586,7 +586,12 @@ impl Weapon {
             weblocks::AcquireOptions::exclusive(),
         )
         .await
-        .unwrap();
+        .map_err(|e| {
+            language_pack::LanguageDataError::InvalidData(
+                e.as_string()
+                    .unwrap_or_else(|| "Failed to acquire language pack lock".to_string()),
+            )
+        })?;
 
         if self.language_pack.borrow().get(&course).is_some() {
             return Ok(());
@@ -2428,12 +2433,20 @@ impl Deck {
             loop {
                 // Yield to the main thread to avoid blocking old devices
                 let promise = js_sys::Promise::new(&mut |resolve, _| {
-                    web_sys::window()
-                        .unwrap()
-                        .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 200)
-                        .unwrap();
+                    if let Some(window) = web_sys::window() {
+                        if window
+                            .set_timeout_with_callback_and_timeout_and_arguments_0(&resolve, 200)
+                            .is_err()
+                        {
+                            // setTimeout failed; resolve immediately rather than hanging
+                            let _ = resolve.call0(&wasm_bindgen::JsValue::UNDEFINED);
+                        }
+                    } else {
+                        // No window (e.g. Worker context); resolve immediately
+                        let _ = resolve.call0(&wasm_bindgen::JsValue::UNDEFINED);
+                    }
                 });
-                wasm_bindgen_futures::JsFuture::from(promise).await.unwrap();
+                let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
 
                 // Early return (not just break) so we skip the audio cleanup below,
                 // preserving any previously cached files that may still be useful.
@@ -2895,7 +2908,7 @@ impl Deck {
         }
 
         // Sort by percent known descending
-        stats.sort_by(|a, b| b.percent_known.partial_cmp(&a.percent_known).unwrap());
+        stats.sort_by(|a, b| b.percent_known.total_cmp(&a.percent_known));
 
         stats
     }
@@ -3666,8 +3679,7 @@ impl Deck {
 
             let native_languages = language_pack
                 .translations
-                .get(&target_language_sentence)
-                .unwrap()
+                .get(&target_language_sentence)?
                 .clone();
 
             return Some(ComprehensibleSentence {
