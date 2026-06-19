@@ -42,8 +42,12 @@ static MODAL_URL: LazyLock<String> = LazyLock::new(|| {
 /// changes — the cache is partitioned by this string so old entries don't
 /// silently get reused with a new model. Format: `<repo>__<decoder>`; keep
 /// this in sync with `MODEL_ID` in `modal-envs/wav2vec2_phoneme.py`
-/// (`anchpop/lexide-pronunciation-phoneme-xls-r-2b`).
-const WAV2VEC2_CACHE_VERSION: &str = "anchpop_lexide-pronunciation-phoneme-xls-r-2b__greedy_v1";
+/// (`anchpop/lexide-pronunciation-vad-clean-sidechannel-degrade`). For ad-hoc
+/// model comparisons, `compare_models.py` overrides this per-run via
+/// `WAV2VEC2_CACHE_VERSION_OVERRIDE`, so this const only governs the default
+/// (production) cache partition.
+const WAV2VEC2_CACHE_VERSION: &str =
+    "anchpop_lexide-pronunciation-vad-clean-sidechannel-degrade@00a661934cdd__greedy_v1";
 
 #[derive(Debug, Clone, Deserialize)]
 struct ModalResponse {
