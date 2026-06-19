@@ -45,3 +45,5 @@ gcp_auth = "0.12"
 image = { version = "0.25.10", default-features = false, features = ["jpeg"] }
 webp = "0.3.1"
 rustls = { version = "0.23", features = ["ring"] }
+clap = { version = "4.6.1", features = ["derive"] }
+regex = "1.12.4"

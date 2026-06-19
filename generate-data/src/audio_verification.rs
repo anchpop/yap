@@ -187,22 +187,18 @@ pub struct VerifyContext<'a> {
 }
 
 impl<'a> VerifyContext<'a> {
+    /// Production / env-driven constructor. The cache version partitions
+    /// predictions by (model, decoder); the compile-time const is the default,
+    /// overridable via `WAV2VEC2_CACHE_VERSION_OVERRIDE`. Threshold and the
+    /// expected deploy marker likewise come from env.
     pub fn new(
         http: &'a reqwest::Client,
         cache_root: &Path,
         word_to_pronunciation: &'a HashMap<String, language_utils::Pronunciations>,
         target_language: Language,
     ) -> Result<Self> {
-        // The cache version partitions predictions by (model, decoder). The
-        // compile-time const is the production default; for ad-hoc model
-        // comparisons (scripts/compare_models.py) set
-        // `WAV2VEC2_CACHE_VERSION_OVERRIDE` so a single binary build can be
-        // pointed at different cache subdirs without recompiling.
         let version = std::env::var("WAV2VEC2_CACHE_VERSION_OVERRIDE")
             .unwrap_or_else(|_| WAV2VEC2_CACHE_VERSION.to_string());
-        let cache_dir = cache_root.join("wav2vec2").join(version);
-        std::fs::create_dir_all(&cache_dir)
-            .with_context(|| format!("Failed to create cache dir {}", cache_dir.display()))?;
         let threshold = std::env::var("AUDIO_VERIFY_THRESHOLD")
             .ok()
             .and_then(|s| s.parse::<f64>().ok())
@@ -210,11 +206,39 @@ impl<'a> VerifyContext<'a> {
         let expected_deploy_marker = std::env::var("WAV2VEC2_EXPECTED_DEPLOY_MARKER")
             .ok()
             .filter(|s| !s.is_empty());
+        Self::with_overrides(
+            http,
+            cache_root,
+            word_to_pronunciation,
+            target_language,
+            version,
+            threshold,
+            expected_deploy_marker,
+        )
+    }
+
+    /// Explicit constructor for in-process callers (the compare-audio-models
+    /// tool) that drive many models in one run and need a distinct cache
+    /// partition + expected deploy marker per model — values that env vars
+    /// can't carry safely when mutated mid-run across async tasks.
+    #[allow(clippy::too_many_arguments)]
+    pub fn with_overrides(
+        http: &'a reqwest::Client,
+        cache_root: &Path,
+        word_to_pronunciation: &'a HashMap<String, language_utils::Pronunciations>,
+        target_language: Language,
+        cache_version: String,
+        mismatch_threshold: f64,
+        expected_deploy_marker: Option<String>,
+    ) -> Result<Self> {
+        let cache_dir = cache_root.join("wav2vec2").join(cache_version);
+        std::fs::create_dir_all(&cache_dir)
+            .with_context(|| format!("Failed to create cache dir {}", cache_dir.display()))?;
         Ok(Self {
             http,
             cache_dir,
             word_to_pronunciation,
-            mismatch_threshold: threshold,
+            mismatch_threshold,
             target_language,
             expected_deploy_marker,
         })
@@ -593,7 +617,7 @@ fn decode_wav_to_f32(wav_bytes: &[u8]) -> Result<Vec<f32>> {
 ///
 /// Combining diacritics inside the phoneme (e.g. the tilde on `ã`) are NOT
 /// touched — those are phonemic.
-fn normalize_phoneme(token: &str, language: Language) -> Option<String> {
+pub fn normalize_phoneme(token: &str, language: Language) -> Option<String> {
     let stripped: String = token
         .chars()
         .filter(|c| {
