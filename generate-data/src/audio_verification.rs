@@ -437,6 +437,16 @@ const MODAL_MIN_SAMPLES: usize = (MODAL_SAMPLE_RATE as usize * 6) / 10;
 /// analysis; trades off cache size linearly. 10 is comfortable for French.
 const MODAL_TOP_K: usize = 10;
 
+/// How many times to attempt a single Modal prediction before giving up.
+/// Transient failures (cold-start 408s, rate limits, 5xx) are retried with a
+/// linear backoff; a non-transient status fails immediately.
+const MODAL_MAX_ATTEMPTS: usize = 5;
+
+/// Whether an HTTP status from the Modal endpoint is worth retrying.
+fn is_transient_status(status: reqwest::StatusCode) -> bool {
+    matches!(status.as_u16(), 408 | 425 | 429 | 500 | 502 | 503 | 504)
+}
+
 async fn predict_phonemes(
     ctx: &VerifyContext<'_>,
     wav_bytes: &[u8],
@@ -465,22 +475,70 @@ async fn predict_phonemes(
         "sample_rate": MODAL_SAMPLE_RATE,
         "top_k": MODAL_TOP_K,
     });
-    let response = ctx
-        .http
-        .post(MODAL_URL.as_str())
-        .json(&payload)
-        .send()
-        .await
-        .context("Failed to call Modal wav2vec2 endpoint")?;
-    let status = response.status();
-    if !status.is_success() {
-        let body = response.text().await.unwrap_or_default();
-        anyhow::bail!("Modal wav2vec2 error ({status}): {body}");
-    }
-    let modal: ModalResponse = response
-        .json()
-        .await
-        .context("Failed to parse Modal wav2vec2 response")?;
+    // Retry transient endpoint failures — cold-start timeouts (408), rate
+    // limits (429), and 5xx — which are otherwise fatal to a long run. A 408
+    // typically means the container was mid-cold-start; a short backoff lets it
+    // finish and the retry lands on the now-warm container.
+    let modal: ModalResponse = {
+        let mut last_err: Option<anyhow::Error> = None;
+        let mut got: Option<ModalResponse> = None;
+        for attempt in 1..=MODAL_MAX_ATTEMPTS {
+            match ctx
+                .http
+                .post(MODAL_URL.as_str())
+                .json(&payload)
+                .send()
+                .await
+            {
+                Err(e) => {
+                    last_err = Some(anyhow::Error::new(e).context("Modal request transport error"));
+                }
+                Ok(response) => {
+                    let status = response.status();
+                    if status.is_success() {
+                        match response.json::<ModalResponse>().await {
+                            Ok(m) => {
+                                got = Some(m);
+                                break;
+                            }
+                            Err(e) => {
+                                last_err = Some(
+                                    anyhow::Error::new(e)
+                                        .context("Failed to parse Modal wav2vec2 response"),
+                                )
+                            }
+                        }
+                    } else if is_transient_status(status) {
+                        let body = response.text().await.unwrap_or_default();
+                        last_err =
+                            Some(anyhow::anyhow!("Modal wav2vec2 transient {status}: {body}"));
+                    } else {
+                        // Non-retryable (e.g. 400): fail immediately.
+                        let body = response.text().await.unwrap_or_default();
+                        anyhow::bail!("Modal wav2vec2 error ({status}): {body}");
+                    }
+                }
+            }
+            if attempt < MODAL_MAX_ATTEMPTS {
+                let delay = std::time::Duration::from_secs(5 * attempt as u64);
+                log::warn!(
+                    "Modal call failed (attempt {attempt}/{MODAL_MAX_ATTEMPTS}), retrying in {}s",
+                    delay.as_secs()
+                );
+                tokio::time::sleep(delay).await;
+            }
+        }
+        match got {
+            Some(m) => m,
+            None => {
+                return Err(last_err
+                    .unwrap_or_else(|| anyhow::anyhow!("Modal call failed"))
+                    .context(format!(
+                        "Modal wav2vec2 endpoint failed after {MODAL_MAX_ATTEMPTS} attempts"
+                    )));
+            }
+        }
+    };
 
     // Per-request freshness check: the one-shot marker_only probe only proves
     // the *first* request hit a fresh container. Verifying the marker on every

@@ -9,13 +9,15 @@ import modal
 APP_NAME = os.environ.get("WAV2VEC2_APP_NAME", "wav2vec2-phoneme")
 app = modal.App(APP_NAME)
 
-# Eval deploys (separate app) need aggressive container teardown to dodge the
-# warm-container contamination bug — model A's container must die before model
-# B's first request. Production serves one stable, SHA-pinned model, so it
-# keeps containers warm far longer to avoid cold-starting the ~2GB backbone
-# (~1-2 min) on every idle user-facing request.
+# Container idle teardown. Contamination between back-to-back eval models is now
+# guarded by the per-request deploy-marker check (the verifier rejects any
+# response whose marker isn't the one just deployed), NOT by racing a 10s
+# scaledown — so eval can keep its container warm through a long sequential
+# verification run, avoiding mid-run cold-starts of the ~2GB backbone (which
+# otherwise outrun Modal's web-endpoint timeout → 408s). Production keeps the
+# longer window so user-facing requests rarely cold-start.
 _IS_EVAL = APP_NAME != "wav2vec2-phoneme"
-_SCALEDOWN_WINDOW = 10 if _IS_EVAL else 600
+_SCALEDOWN_WINDOW = 180 if _IS_EVAL else 600
 
 # Production champion (mel-sidechannel + MLP heads, degrade-augmented).
 MODEL_ID = "anchpop/lexide-pronunciation-vad-clean-sidechannel-degrade"
@@ -146,14 +148,11 @@ def _build_regularized_modules(
 @app.cls(
     gpu="T4",
     image=image,
-    # Eval: short scaledown so an idle container dies quickly — the primary
-    # defense against the warm-container contamination bug, where comparing two
-    # checkpoints back-to-back lets model A's still-warm container serve model
-    # B's first request. The next deploy takes ~70s, far longer than the 10s
-    # window, so A's container is reliably dead by then; requests within a
-    # single compare batch are dense enough to keep the container alive.
-    # Production: a long window, since it serves one stable model and a
-    # cold-start of the ~2GB backbone is expensive for user-facing requests.
+    # Idle-container teardown, set per app above (_SCALEDOWN_WINDOW). Both eval
+    # and production keep a multi-minute window so a long sequential run (eval)
+    # or a sporadic user request (prod) doesn't cold-start the ~2GB backbone
+    # mid-stream. Contamination between back-to-back eval models is guarded by
+    # the per-request deploy-marker check, not by racing a short scaledown.
     scaledown_window=_SCALEDOWN_WINDOW,
     # Memory snapshot disabled. Modal's snapshot caches the loaded model
     # weights across redeploys; in practice it retains state from a prior
