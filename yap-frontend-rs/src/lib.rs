@@ -5873,6 +5873,14 @@ mod tests {
                     continue;
                 }
                 println!("\nSentence: {sentence_text}");
+                let card_state_str = |c: &CardData| match c {
+                    CardData::Added { fsrs_card } => {
+                        format!("Added(state={:?}, due={})", fsrs_card.state, fsrs_card.due)
+                    }
+                    CardData::Ghost { fsrs_card } => {
+                        format!("Ghost(state={:?})", fsrs_card.state)
+                    }
+                };
                 let report = |gram: &SpurGram, kind: &str| {
                     let display = lp
                         .gram_rodeo
@@ -5880,29 +5888,38 @@ mod tests {
                         .resolve(&lp.string_rodeo)
                         .to_display_string(deck.context.course.target_language);
                     let in_freq = lp.gram_frequencies.entries.contains_key(gram);
-                    let listening_now = deck.comprehensible.listening.now.contains(gram);
-                    let listening_planned =
-                        deck.comprehensible.listening.now_and_planned.contains(gram);
-                    let card = deck
+                    // Listening side
+                    let l_now = deck.comprehensible.listening.now.contains(gram);
+                    let l_card = deck
                         .cards
                         .get(&CardIndicator::ListeningGram { gram: *gram })
-                        .map(|c| match c {
-                            CardData::Added { fsrs_card } => {
-                                format!("Added(state={:?})", fsrs_card.state)
-                            }
-                            CardData::Ghost { fsrs_card } => {
-                                format!("Ghost(state={:?})", fsrs_card.state)
-                            }
-                        });
-                    let prob = deck
+                        .map(&card_state_str);
+                    let l_prob = deck
                         .context
                         .get_card_knowledge_probability(
                             &CardIndicator::ListeningGram { gram: *gram },
                             &deck.regressions,
                         )
                         .map(|(p, f)| format!("{p:.3} (count={})", f.count));
+                    // Written/reading side (this is what translation challenges use)
+                    let w_now = deck.comprehensible.written.now.contains(gram);
+                    let w_card = deck
+                        .cards
+                        .get(&CardIndicator::WrittenGram { gram: *gram })
+                        .map(&card_state_str);
+                    let w_prob = deck
+                        .context
+                        .get_card_knowledge_probability(
+                            &CardIndicator::WrittenGram { gram: *gram },
+                            &deck.regressions,
+                        )
+                        .map(|(p, f)| format!("{p:.3} (count={})", f.count));
+                    println!("  [{kind}] {display:?}: in_freq={in_freq}");
                     println!(
-                        "  [{kind}] {display:?}: in_freq={in_freq} card={card:?} listening_now={listening_now} listening_planned={listening_planned} P(known)={prob:?}"
+                        "      WRITTEN:   comprehensible_now={w_now} card={w_card:?} P(known)={w_prob:?}"
+                    );
+                    println!(
+                        "      LISTENING: comprehensible_now={l_now} card={l_card:?} P(known)={l_prob:?}"
                     );
                 };
                 for sg in &sentence_grams.grams {
