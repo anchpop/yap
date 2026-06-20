@@ -34,9 +34,9 @@ import {
 import type { UserInfo } from "@/App";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Poster } from "@/components/Poster";
-import { goalToGoalSelection, type Goal } from "@/hooks/useGoal";
-import { useNavigate } from "react-router-dom";
 import { TargetLanguageText } from "./TargetLanguageText";
+import { sentenceListToSelection, type SentenceList } from "@/hooks/useSentenceList";
+import { useNavigate } from "react-router-dom";
 
 export interface MovieWithMetadata extends MovieMetadataBasic {
   percent_known: number;
@@ -52,8 +52,8 @@ interface NoCardsReadyProps {
   deck: Deck;
   bannedChallengeTypes: ChallengeRequirements[];
   userInfo: UserInfo | undefined;
-  goal: Goal;
-  setGoal: (goal: Goal) => void;
+  sentenceList: SentenceList;
+  setSentenceList: (sentenceList: SentenceList) => void;
   moviesWithMetadata: MovieWithMetadata[];
   hasPimsleur: boolean;
 }
@@ -66,8 +66,8 @@ export const NoCardsReady = memo(function NoCardsReady({
   deck,
   bannedChallengeTypes,
   userInfo,
-  goal,
-  setGoal,
+  sentenceList,
+  setSentenceList,
   moviesWithMetadata,
   hasPimsleur,
 }: NoCardsReadyProps) {
@@ -75,12 +75,12 @@ export const NoCardsReady = memo(function NoCardsReady({
   const [pimsleurAcknowledged, setPimsleurAcknowledged] = useState(
     () => localStorage.getItem("yap-pimsleur-acknowledged") === "true",
   );
-  const goalSelection = goalToGoalSelection(goal);
+  const sentenceListSelection = sentenceListToSelection(sentenceList);
 
   // One memoized call that does the expensive next_unknown_cards computation
   const info = useMemo(
-    () => deck.get_no_cards_ready_info(bannedChallengeTypes, goalSelection),
-    [deck, bannedChallengeTypes, goalSelection],
+    () => deck.get_no_cards_ready_info(bannedChallengeTypes, sentenceListSelection),
+    [deck, bannedChallengeTypes, sentenceListSelection],
   );
 
   // Manual add options — computed lazily on dropdown open
@@ -89,11 +89,11 @@ export const NoCardsReady = memo(function NoCardsReady({
     if (manualAddOptions.length > 0) return;
     const types: CardType[] = ["TargetLanguage", "Listening", "LetterPronunciation"];
     const options = types
-      .map((t) => deck.get_manual_add_option(t, goalSelection))
+      .map((t) => deck.get_manual_add_option(t, sentenceListSelection))
       .filter((o) => userInfo !== undefined || o.card_type === "TargetLanguage" || o.card_type === "LetterPronunciation")
       .filter((o) => userInfo !== undefined || o.count > 0);
     setManualAddOptions(options);
-  }, [deck, goalSelection, userInfo, manualAddOptions.length]);
+  }, [deck, sentenceListSelection, userInfo, manualAddOptions.length]);
 
   const addSmartCards = useCallback(() => {
     if (info.smart_add_event) {
@@ -164,33 +164,33 @@ export const NoCardsReady = memo(function NoCardsReady({
     };
   }, [addSmartCards, info.smart_add_event]);
 
-  // Goal navigation — 3 tabs: essential, movie, pimsleur
-  // Each tab auto-picks the best specific goal within that category
-  type GoalCategory = "essential" | "movie" | "pimsleur";
-  const categories: GoalCategory[] = [
+  // Sentence list navigation — 3 tabs: essential, movie, pimsleur
+  // Each tab auto-picks the best specific sentence list within that category
+  type SentenceListCategory = "essential" | "movie" | "pimsleur";
+  const categories: SentenceListCategory[] = [
     "essential",
     ...(moviesWithMetadata.length > 0 ? ["movie" as const] : []),
     ...(hasPimsleur ? ["pimsleur" as const] : []),
   ];
 
-  const goalCategory = (g: Goal): GoalCategory => g.type;
+  const sentenceListCategory = (sl: SentenceList): SentenceListCategory => sl.type;
 
-  const currentCategory = goalCategory(goal);
+  const currentCategory = sentenceListCategory(sentenceList);
   const currentCategoryIndex = categories.indexOf(currentCategory);
-  // If category not found (e.g. no movies available but goal is movie), fall back to essential
+  // If category not found (e.g. no movies available but sentenceList is movie), fall back to essential
   const effectiveIndex = currentCategoryIndex === -1 ? 0 : currentCategoryIndex;
-  const effectiveGoal: Goal =
-    currentCategoryIndex === -1 ? { type: "essential" } : goal;
+  const effectiveSentenceList: SentenceList =
+    currentCategoryIndex === -1 ? { type: "essential" } : sentenceList;
 
   const canGoLeft = effectiveIndex > 0;
   const canGoRight = effectiveIndex < categories.length - 1;
 
-  const goalForCategory = (category: GoalCategory): Goal => {
+  const sentenceListForCategory = (category: SentenceListCategory): SentenceList => {
     switch (category) {
       case "essential":
         return { type: "essential" };
       case "movie": {
-        const best = deck.get_best_movie_goal();
+        const best = deck.get_best_movie_sentence_list();
         if (best && best.type === "Movie") {
           return { type: "movie", movieId: best.id };
         }
@@ -198,7 +198,7 @@ export const NoCardsReady = memo(function NoCardsReady({
         return { type: "movie", movieId: moviesWithMetadata[0].id };
       }
       case "pimsleur": {
-        const best = deck.get_best_pimsleur_goal();
+        const best = deck.get_best_pimsleur_sentence_list();
         if (best && best.type === "PimsleurLesson") {
           return { type: "pimsleur", level: best.level, lesson: best.lesson };
         }
@@ -207,70 +207,70 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
   };
 
-  const navigateGoal = (direction: "left" | "right") => {
+  const navigateSentenceList = (direction: "left" | "right") => {
     const nextIndex =
       direction === "left" ? effectiveIndex - 1 : effectiveIndex + 1;
     if (nextIndex >= 0 && nextIndex < categories.length) {
-      setGoal(goalForCategory(categories[nextIndex]));
+      setSentenceList(sentenceListForCategory(categories[nextIndex]));
     }
   };
 
-  // Goal progress info
+  // Sentence list progress info
   const tierInfo = info.tier_info;
-  const { goalPercentKnown, goalDone } = (() => {
-    switch (effectiveGoal.type) {
+  const { sentenceListPercentKnown, sentenceListDone } = (() => {
+    switch (effectiveSentenceList.type) {
       case "essential":
-        return { goalPercentKnown: tierInfo.percent_known, goalDone: false };
+        return { sentenceListPercentKnown: tierInfo.percent_known, sentenceListDone: false };
       case "movie": {
         const movie = moviesWithMetadata.find(
-          (m) => m.id === effectiveGoal.movieId,
+          (m) => m.id === effectiveSentenceList.movieId,
         );
         return {
-          goalPercentKnown: movie?.percent_known ?? 0,
-          goalDone: movie?.all_available_learned ?? false,
+          sentenceListPercentKnown: movie?.percent_known ?? 0,
+          sentenceListDone: movie?.all_available_learned ?? false,
         };
       }
       case "pimsleur": {
         const stats = deck.get_pimsleur_stats();
         const lesson = stats.find(
           (l) =>
-            l.level === effectiveGoal.level &&
-            l.lesson === effectiveGoal.lesson,
+            l.level === effectiveSentenceList.level &&
+            l.lesson === effectiveSentenceList.lesson,
         );
         return {
-          goalPercentKnown: lesson?.percent_known ?? 0,
-          goalDone: lesson?.all_available_learned ?? false,
+          sentenceListPercentKnown: lesson?.percent_known ?? 0,
+          sentenceListDone: lesson?.all_available_learned ?? false,
         };
       }
     }
   })();
 
-  const goalLabel = (() => {
-    switch (effectiveGoal.type) {
+  const sentenceListLabel = (() => {
+    switch (effectiveSentenceList.type) {
       case "essential":
         return `${tierInfo.name} ${targetLanguage} Level ${tierInfo.level}`;
       case "movie":
         return (
-          moviesWithMetadata.find((m) => m.id === effectiveGoal.movieId)
+          moviesWithMetadata.find((m) => m.id === effectiveSentenceList.movieId)
             ?.title ?? "Movie"
         );
       case "pimsleur":
-        return `Pimsleur Level ${effectiveGoal.level}, Lesson ${effectiveGoal.lesson}`;
+        return `Pimsleur Level ${effectiveSentenceList.level}, Lesson ${effectiveSentenceList.lesson}`;
     }
   })();
 
   // Check if adding cards would cross a 5% threshold
-  const currentRounded = Math.floor(goalPercentKnown / 5) * 5;
+  const currentRounded = Math.floor(sentenceListPercentKnown / 5) * 5;
   const afterRounded = Math.floor(info.percent_known_after / 5) * 5;
   const crossesThreshold = afterRounded > currentRounded;
   const thresholdTarget = crossesThreshold ? afterRounded : null;
 
-  const goalImage = (() => {
-    switch (effectiveGoal.type) {
+  const sentenceListImage = (() => {
+    switch (effectiveSentenceList.type) {
       case "essential":
         return { type: "url" as const, url: "/essential-course.webp" };
       case "movie":
-        return { type: "movie" as const, movieId: effectiveGoal.movieId };
+        return { type: "movie" as const, movieId: effectiveSentenceList.movieId };
       case "pimsleur":
         return null;
     }
@@ -356,44 +356,44 @@ export const NoCardsReady = memo(function NoCardsReady({
       ) : (
         <Card className="overflow-hidden px-2 py-4 gap-2" animate>
           <p className="text-lg font-semibold px-4 sm:px-8 text-center">
-            {goalDone ? (
+            {sentenceListDone ? (
               <>
                 You're all done with
                 <br />
-                <span className="uppercase font-bold">{goalLabel}!</span>
+                <span className="uppercase font-bold">{sentenceListLabel}!</span>
               </>
             ) : showLightWorkloadNotification && thresholdTarget !== null ? (
               <>
                 Soon you'll hit {thresholdTarget}% on
                 <br />
-                <span className="uppercase font-bold">{goalLabel}!</span>
+                <span className="uppercase font-bold">{sentenceListLabel}!</span>
               </>
             ) : showLightWorkloadNotification ? (
               <>
                 Keep up the momentum on
                 <br />
-                <span className="uppercase font-bold">{goalLabel}!</span>
+                <span className="uppercase font-bold">{sentenceListLabel}!</span>
               </>
             ) : (
               <>
                 You're doing great on
                 <br />
-                <span className="uppercase font-bold">{goalLabel}!</span>
+                <span className="uppercase font-bold">{sentenceListLabel}!</span>
               </>
             )}
           </p>
           <div className="flex items-center justify-between gap-0">
             <button
-              onClick={() => navigateGoal("left")}
+              onClick={() => navigateSentenceList("left")}
               className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
               disabled={!canGoLeft}
-              aria-label="Previous goal"
+              aria-label="Previous sentence list"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
 
             <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">
-              {effectiveGoal.type === "pimsleur" && !pimsleurAcknowledged ? (
+              {effectiveSentenceList.type === "pimsleur" && !pimsleurAcknowledged ? (
                 <div className="flex-1 flex flex-col items-center gap-3 py-4 px-2 text-center">
                   <Headphones className="h-8 w-8 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
@@ -413,20 +413,20 @@ export const NoCardsReady = memo(function NoCardsReady({
               ) : (
                 <>
                   <div
-                    onClick={() => navigate("/goals")}
+                    onClick={() => navigate("/sentence-lists")}
                     className="hidden sm:block sm:order-first w-24 h-36 flex-shrink-0 rounded-lg border border-border/50 overflow-hidden cursor-pointer hover:scale-105 transition-all"
                   >
-                    {goalImage?.type === "url" ? (
+                    {sentenceListImage?.type === "url" ? (
                       <img
-                        src={goalImage.url}
-                        alt={goalLabel}
-                        className={`w-full h-full object-cover opacity-90 saturate-70 dark:opacity-70 dark:saturate-80 hover:opacity-100 hover:saturate-100 transition-all ${effectiveGoal.type === "essential" ? "dark:invert dark:hue-rotate-180" : ""}`}
+                        src={sentenceListImage.url}
+                        alt={sentenceListLabel}
+                        className={`w-full h-full object-cover opacity-90 saturate-70 dark:opacity-70 dark:saturate-80 hover:opacity-100 hover:saturate-100 transition-all ${effectiveSentenceList.type === "essential" ? "dark:invert dark:hue-rotate-180" : ""}`}
                       />
-                    ) : goalImage?.type === "movie" ? (
+                    ) : sentenceListImage?.type === "movie" ? (
                       <Poster
-                        movieId={goalImage.movieId}
+                        movieId={sentenceListImage.movieId}
                         deck={deck}
-                        alt={goalLabel}
+                        alt={sentenceListLabel}
                       />
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -435,16 +435,16 @@ export const NoCardsReady = memo(function NoCardsReady({
                     )}
                   </div>
                   <div className="order-1 sm:order-last flex-1 flex flex-col items-center sm:items-start gap-3 min-w-0 w-full sm:w-auto">
-                    {goalDone ? (
+                    {sentenceListDone ? (
                       (() => {
-                        // Show "next lesson" / "next movie" button when goal is complete
-                        const nextGoal = (() => {
-                          switch (effectiveGoal.type) {
+                        // Show "next lesson" / "next movie" button when sentence list is complete
+                        const nextSentenceList = (() => {
+                          switch (effectiveSentenceList.type) {
                             case "pimsleur": {
-                              const best = deck.get_best_pimsleur_goal();
+                              const best = deck.get_best_pimsleur_sentence_list();
                               if (best && best.type === "PimsleurLesson") {
                                 return {
-                                  goal: {
+                                  sentenceList: {
                                     type: "pimsleur" as const,
                                     level: best.level,
                                     lesson: best.lesson,
@@ -455,10 +455,10 @@ export const NoCardsReady = memo(function NoCardsReady({
                               return null;
                             }
                             case "movie": {
-                              const best = deck.get_best_movie_goal();
+                              const best = deck.get_best_movie_sentence_list();
                               if (best && best.type === "Movie") {
                                 return {
-                                  goal: {
+                                  sentenceList: {
                                     type: "movie" as const,
                                     movieId: best.id,
                                   },
@@ -472,15 +472,15 @@ export const NoCardsReady = memo(function NoCardsReady({
                           }
                         })();
 
-                        return nextGoal ? (
+                        return nextSentenceList ? (
                           <Button
-                            onClick={() => setGoal(nextGoal.goal)}
+                            onClick={() => setSentenceList(nextSentenceList.sentenceList)}
                             variant="default"
                             size="lg"
                             className="group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg"
                           >
                             <ChevronRight className="h-5 w-5 mr-2" />
-                            {nextGoal.label}
+                            {nextSentenceList.label}
                           </Button>
                         ) : (
                           <p className="text-sm">
@@ -553,18 +553,18 @@ export const NoCardsReady = memo(function NoCardsReady({
                     )}
 
                     <Progress
-                      value={goalPercentKnown}
+                      value={sentenceListPercentKnown}
                       projectedValue={
-                        goalDone
+                        sentenceListDone
                           ? undefined
                           : info.percent_known_after
                       }
                       showPercentage
-                      label={goalDone ? "Done!" : undefined}
+                      label={sentenceListDone ? "Done!" : undefined}
                       className="h-6"
                     />
 
-                    {effectiveGoal.type === "essential" && (
+                    {effectiveSentenceList.type === "essential" && (
                       <p className="text-xs text-muted-foreground text-center sm:text-left">
                         When you complete this level, you'll understand{" "}
                         {tierInfo.percent_of_usage.toFixed(1)}% of everyday{" "}
@@ -573,27 +573,27 @@ export const NoCardsReady = memo(function NoCardsReady({
                     )}
 
                     <button
-                      onClick={() => navigate("/goals")}
+                      onClick={() => navigate("/sentence-lists")}
                       className="text-xs text-foreground/60 hover:text-foreground underline underline-offset-2 transition-colors text-left"
                     >
-                      change goal
+                      change sentence list
                     </button>
 
                     {categories.length > 1 && (
                       <div className="flex sm:hidden items-center justify-between w-full">
                         <button
-                          onClick={() => navigateGoal("left")}
+                          onClick={() => navigateSentenceList("left")}
                           className={`p-2 transition-colors ${canGoLeft ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
                           disabled={!canGoLeft}
-                          aria-label="Previous goal"
+                          aria-label="Previous sentence list"
                         >
                           <ChevronLeft className="h-6 w-6" />
                         </button>
                         <button
-                          onClick={() => navigateGoal("right")}
+                          onClick={() => navigateSentenceList("right")}
                           className={`p-2 transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground" : "text-transparent cursor-default"}`}
                           disabled={!canGoRight}
-                          aria-label="Next goal"
+                          aria-label="Next sentence list"
                         >
                           <ChevronRight className="h-6 w-6" />
                         </button>
@@ -605,10 +605,10 @@ export const NoCardsReady = memo(function NoCardsReady({
             </div>
 
             <button
-              onClick={() => navigateGoal("right")}
+              onClick={() => navigateSentenceList("right")}
               className={`hidden sm:flex p-2 self-stretch items-center transition-colors ${canGoRight ? "text-foreground/60 hover:text-foreground hover:bg-muted/50" : "text-transparent cursor-default"}`}
               disabled={!canGoRight}
-              aria-label="Next goal"
+              aria-label="Next sentence list"
             >
               <ChevronRight className="h-6 w-6" />
             </button>

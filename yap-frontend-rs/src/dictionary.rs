@@ -203,7 +203,7 @@ impl Deck {
             native_language: self.context.course.native_language,
             content: LanguageEventContent::AddCards {
                 cards: vec![resolved_card],
-                goal: None,
+                sentence_list: None,
             },
         }))
     }

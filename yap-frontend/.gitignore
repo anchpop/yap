@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 
 bundle-analysis.html
+
+# Playwright screenshot harness
+screenshots-out/
+e2e/.playwright-artifacts/
+playwright-report/
+test-results/

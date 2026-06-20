@@ -1001,8 +1001,8 @@ pub struct DeckState {
     stats: Stats,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
-    /// The most recently selected goal from an AddCards event
-    goal: Option<GoalSelection>,
+    /// The most recently selected sentence list from an AddCards event
+    sentence_list: Option<SentenceListSelection>,
     /// The current accomplishment to display (cleared on each review, set when earned)
     accomplishment: Option<Accomplishment>,
     /// The user's daily study intensity
@@ -1021,8 +1021,8 @@ pub struct Deck {
     pub(crate) comprehensible: CachedComprehensibleGrams,
     /// Maps cards that have been detected as leeches to the total_reviews count when detected
     leeches: BTreeMap<CardIndicator<SpurGram, Spur>, u64>,
-    /// The most recently selected goal from an AddCards event
-    goal: Option<GoalSelection>,
+    /// The most recently selected sentence list from an AddCards event
+    sentence_list: Option<SentenceListSelection>,
     /// The current accomplishment to display (cleared on each review, set when earned)
     accomplishment: Option<Accomplishment>,
     /// The user's daily study intensity
@@ -1066,7 +1066,7 @@ impl From<Deck> for DeckState {
             fsrs: deck.fsrs,
             stats: deck.stats,
             leeches: deck.leeches,
-            goal: deck.goal,
+            sentence_list: deck.sentence_list,
             accomplishment: deck.accomplishment,
             daily_review_target: deck.daily_review_target,
         }
@@ -1101,7 +1101,7 @@ impl weapon::AppState for Deck {
 
         let counts_as_review_activity = !matches!(
             event,
-            LanguageEventContent::SetGoal { .. }
+            LanguageEventContent::SetSentenceList { .. }
                 | LanguageEventContent::SetDailyReviewTarget { .. }
         );
         if counts_as_review_activity {
@@ -1164,8 +1164,11 @@ impl weapon::AppState for Deck {
             LanguageEventContent::CompletePlacementTest { results } => {
                 deck.placement_test_results = Some(results.clone());
             }
-            LanguageEventContent::AddCards { cards, goal } => {
-                deck.goal = goal.clone();
+            LanguageEventContent::AddCards {
+                cards,
+                sentence_list,
+            } => {
+                deck.sentence_list = sentence_list.clone();
                 for (index, card) in cards.iter().enumerate() {
                     if let Some(card) = card.get_interned(
                         &context.language_pack.string_rodeo,
@@ -1672,8 +1675,8 @@ impl weapon::AppState for Deck {
                     }
                 }
             }
-            LanguageEventContent::SetGoal { goal } => {
-                deck.goal = goal.clone();
+            LanguageEventContent::SetSentenceList { sentence_list } => {
+                deck.sentence_list = sentence_list.clone();
             }
             LanguageEventContent::SetDailyReviewTarget {
                 daily_review_target,
@@ -1870,7 +1873,7 @@ impl weapon::AppState for Deck {
             regressions,
             comprehensible,
             leeches: state.leeches,
-            goal: state.goal,
+            sentence_list: state.sentence_list,
             accomplishment: state.accomplishment,
             daily_review_target: state.daily_review_target,
         }
@@ -1908,7 +1911,7 @@ impl DeckState {
                 wrong_sentences: VecDeque::new(),
             },
             leeches: BTreeMap::new(),
-            goal: None,
+            sentence_list: None,
             accomplishment: None,
             daily_review_target: DailyReviewTarget::Regular,
         }
@@ -2252,29 +2255,32 @@ impl Deck {
         tiers::first_incomplete_level_pct(frequency_list, known_written, known_listening)
     }
 
-    /// Get the percent known for a goal. For movies, uses the movie's frequency list.
+    /// Get the percent known for a sentence list. For movies, uses the movie's frequency list.
     /// For essential (None), returns the current tier/level percent.
     #[allow(dead_code)]
-    fn goal_percent_known(&self, goal: &Option<GoalSelection>) -> ComprehensionScore {
+    fn sentence_list_percent_known(
+        &self,
+        sentence_list: &Option<SentenceListSelection>,
+    ) -> ComprehensionScore {
         let written = self.get_comprehensible_written_grams(true);
         let listening = self.get_comprehensible_listening_grams(true);
-        self.goal_percent_known_with(goal, written, listening)
+        self.sentence_list_percent_known_with(sentence_list, written, listening)
     }
 
-    /// Same as goal_percent_known but with pre-computed (possibly projected) gram sets.
-    fn goal_percent_known_with(
+    /// Same as sentence_list_percent_known but with pre-computed (possibly projected) gram sets.
+    fn sentence_list_percent_known_with(
         &self,
-        goal: &Option<GoalSelection>,
+        sentence_list: &Option<SentenceListSelection>,
         known_written: &BTreeSet<SpurGram>,
         known_listening: &BTreeSet<SpurGram>,
     ) -> ComprehensionScore {
-        match goal {
-            Some(goal) => {
-                let source_id = match goal {
-                    GoalSelection::Movie { id } => {
+        match sentence_list {
+            Some(selection) => {
+                let source_id = match selection {
+                    SentenceListSelection::Movie { id } => {
                         language_utils::FrequencySourceId::Movie(id.clone())
                     }
-                    GoalSelection::PimsleurLesson { level, lesson } => {
+                    SentenceListSelection::PimsleurLesson { level, lesson } => {
                         language_utils::FrequencySourceId::PimsleurLesson(
                             language_utils::PimsleurLesson {
                                 level: *level,
@@ -2498,16 +2504,16 @@ impl Deck {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_goal(&self) -> Option<GoalSelection> {
-        self.goal.clone()
+    pub fn get_sentence_list(&self) -> Option<SentenceListSelection> {
+        self.sentence_list.clone()
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn set_goal(&self, goal: Option<GoalSelection>) -> DeckEvent {
+    pub fn set_sentence_list(&self, sentence_list: Option<SentenceListSelection>) -> DeckEvent {
         DeckEvent::Language(LanguageEvent {
             target_language: self.context.course.target_language,
             native_language: self.context.course.native_language,
-            content: LanguageEventContent::SetGoal { goal },
+            content: LanguageEventContent::SetSentenceList { sentence_list },
         })
     }
 
@@ -2543,7 +2549,7 @@ impl Deck {
         let smart_add_cards: Vec<_> = self
             .next_unknown_cards(
                 AllowedCards::BannedRequirements(BTreeSet::new()),
-                &self.goal,
+                &self.sentence_list,
                 max_cards,
             )
             .take(max_cards)
@@ -2934,9 +2940,9 @@ impl Deck {
         stats
     }
 
-    /// Returns the best movie goal: highest RT score among incomplete movies.
+    /// Returns the best movie sentence list: highest RT score among incomplete movies.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_best_movie_goal(&self) -> Option<GoalSelection> {
+    pub fn get_best_movie_sentence_list(&self) -> Option<SentenceListSelection> {
         let stats = self.get_movie_stats();
         let incomplete: std::collections::BTreeSet<_> = stats
             .iter()
@@ -2958,18 +2964,18 @@ impl Deck {
             })
             .filter_map(|(id, meta)| meta.rotten_tomatoes_score.map(|score| (id, score)))
             .max_by_key(|(_, score)| *score)
-            .map(|(id, _)| GoalSelection::Movie { id: id.clone() })
+            .map(|(id, _)| SentenceListSelection::Movie { id: id.clone() })
     }
 
     /// Returns the best Pimsleur lesson: the first incomplete one (by level/lesson).
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn get_best_pimsleur_goal(&self) -> Option<GoalSelection> {
+    pub fn get_best_pimsleur_sentence_list(&self) -> Option<SentenceListSelection> {
         let stats = self.get_pimsleur_stats();
         // Already sorted by level then lesson
         stats
             .into_iter()
             .find(|s| !s.all_available_learned)
-            .map(|s| GoalSelection::PimsleurLesson {
+            .map(|s| SentenceListSelection::PimsleurLesson {
                 level: s.level,
                 lesson: s.lesson,
             })
@@ -3024,7 +3030,7 @@ impl Deck {
     fn cards_to_event(
         &self,
         cards: &[CardIndicator<SpurGram, Spur>],
-        goal: &Option<GoalSelection>,
+        sentence_list: &Option<SentenceListSelection>,
     ) -> Option<DeckEvent> {
         if cards.is_empty() {
             return None;
@@ -3043,7 +3049,7 @@ impl Deck {
             native_language: self.context.course.native_language,
             content: LanguageEventContent::AddCards {
                 cards: resolved,
-                goal: goal.clone(),
+                sentence_list: sentence_list.clone(),
             },
         }))
     }
@@ -3054,7 +3060,7 @@ impl Deck {
     pub fn get_no_cards_ready_info(
         &self,
         banned_challenge_types: Vec<ChallengeRequirements>,
-        goal: Option<GoalSelection>,
+        sentence_list: Option<SentenceListSelection>,
     ) -> NoCardsReadyInfo {
         let banned_types_set: std::collections::BTreeSet<_> =
             banned_challenge_types.into_iter().collect();
@@ -3064,7 +3070,7 @@ impl Deck {
         // before consuming the iterator so the UI can describe the batch.
         let next_cards_iter = self.next_unknown_cards(
             AllowedCards::BannedRequirements(banned_types_set),
-            &goal,
+            &sentence_list,
             max_cards_to_add,
         );
         let smart_add_regime = next_cards_iter.smart_add_regime();
@@ -3085,10 +3091,14 @@ impl Deck {
             }
         }
 
-        let percent_known_after = match &goal {
+        let percent_known_after = match &sentence_list {
             Some(_) => {
-                self.goal_percent_known_with(&goal, &projected_written, &projected_listening)
-                    .percent_known
+                self.sentence_list_percent_known_with(
+                    &sentence_list,
+                    &projected_written,
+                    &projected_listening,
+                )
+                .percent_known
             }
             None => {
                 let freq_list = &self.context.language_pack.gram_frequencies;
@@ -3129,7 +3139,7 @@ impl Deck {
             .collect();
 
         // Pre-build smart add event
-        let smart_add_event = self.cards_to_event(&smart_add_cards, &goal);
+        let smart_add_event = self.cards_to_event(&smart_add_cards, &sentence_list);
 
         // Tier info (reuses the projected grams we already computed)
         let tier_info = {
@@ -3185,14 +3195,18 @@ impl Deck {
     pub fn get_manual_add_option(
         &self,
         card_type: CardType,
-        goal: Option<GoalSelection>,
+        sentence_list: Option<SentenceListSelection>,
     ) -> ManualAddOption {
         let max_cards_to_add = self.max_cards_to_add();
         let cards: Vec<_> = self
-            .next_unknown_cards(AllowedCards::Type(card_type), &goal, max_cards_to_add)
+            .next_unknown_cards(
+                AllowedCards::Type(card_type),
+                &sentence_list,
+                max_cards_to_add,
+            )
             .take(max_cards_to_add)
             .collect();
-        let event = self.cards_to_event(&cards, &goal);
+        let event = self.cards_to_event(&cards, &sentence_list);
         ManualAddOption {
             count: cards.len() as u32,
             card_type,
@@ -3566,11 +3580,11 @@ impl Deck {
     pub(crate) fn next_unknown_cards(
         &self,
         allowed_cards: AllowedCards,
-        goal: &Option<GoalSelection>,
+        sentence_list: &Option<SentenceListSelection>,
         limit: usize,
     ) -> NextCardsIterator {
         log::info!("next_unknown_cards called");
-        NextCardsIterator::new(self, allowed_cards, goal, limit)
+        NextCardsIterator::new(self, allowed_cards, sentence_list, limit)
     }
 
     fn get_comprehensible_sentence_containing(
@@ -5205,14 +5219,14 @@ mod tests {
     }
 
     #[test]
-    fn test_set_goal_does_not_increment_review_stats() {
-        use crate::{Deck, DeckState, GoalSelection};
+    fn test_set_sentence_list_does_not_increment_review_stats() {
+        use crate::{Deck, DeckState, SentenceListSelection};
         use weapon::AppState;
         use weapon::data_model::Timestamped;
 
         let deck = Deck::default();
         let context = deck.context.clone();
-        let event = deck.set_goal(Some(GoalSelection::Movie {
+        let event = deck.set_sentence_list(Some(SentenceListSelection::Movie {
             id: "tt0111161".to_string(),
         }));
         let timestamped = Timestamped {
@@ -5229,8 +5243,8 @@ mod tests {
         assert_eq!(deck.stats.xp, 0.0);
         assert!(deck.stats.daily_streak.is_none());
         assert_eq!(
-            deck.get_goal(),
-            Some(GoalSelection::Movie {
+            deck.get_sentence_list(),
+            Some(SentenceListSelection::Movie {
                 id: "tt0111161".to_string(),
             })
         );
@@ -5777,7 +5791,7 @@ mod tests {
         );
         println!("  Leeches: {}", deck.leeches.len());
         println!("  Start time: {:?}", deck.stats.start_time);
-        println!("  Current goal: {:?}", deck.goal);
+        println!("  Current sentence list: {:?}", deck.sentence_list);
 
         let tier = deck.get_current_tier();
         println!("\n=== Progress ===");
@@ -5787,10 +5801,10 @@ mod tests {
         );
         println!("  Level progress: {:.1}%", tier.percent_known);
 
-        let goal = deck.goal.clone();
+        let sentence_list = deck.sentence_list.clone();
 
         println!("\n=== Add Card Options (Smart Add) ===");
-        let info = deck.get_no_cards_ready_info(vec![], goal);
+        let info = deck.get_no_cards_ready_info(vec![], sentence_list);
         println!("  Smart add count: {}", info.smart_add_count);
         println!(
             "  Projected percent known after: {:.2}%",
@@ -5802,7 +5816,7 @@ mod tests {
             let smart_add_cards: Vec<_> = deck
                 .next_unknown_cards(
                     AllowedCards::BannedRequirements(BTreeSet::new()),
-                    &deck.goal,
+                    &deck.sentence_list,
                     deck.max_cards_to_add(),
                 )
                 .take(deck.max_cards_to_add())

@@ -255,7 +255,7 @@ impl DeckEvent {
                                     .into_iter()
                                     .filter_map(|c| c.into_v3(context))
                                     .collect(),
-                                goal: None,
+                                sentence_list: None,
                             }
                         }
                         LanguageEventContent::ReviewCard { reviewed, rating } => {

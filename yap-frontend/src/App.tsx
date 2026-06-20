@@ -54,12 +54,12 @@ import { UserProfilePage } from "@/pages/user-profile";
 import { AboutPage } from "@/pages/about";
 import { LandingPage } from "@/pages/landing";
 import { NotFoundPage } from "@/pages/not-found";
-import { GoalsPage } from "@/pages/goals";
+import { SentenceListsPage } from "@/pages/sentence-lists";
 import { playSoundEffect } from "@/lib/sound-effects";
 import { registerSW } from "virtual:pwa-register";
 import { NoCardsReady } from "@/components/no-cards-ready";
 import { AccomplishmentScreen } from "@/components/AccomplishmentScreen";
-import { useGoal, goalToGoalSelection } from "@/hooks/useGoal";
+import { useSentenceList, sentenceListToSelection } from "@/hooks/useSentenceList";
 import { SetDisplayName } from "@/components/SetDisplayName";
 
 import type { Dispatch, SetStateAction } from "react";
@@ -726,7 +726,7 @@ function Review({
   setAutoplayed,
 }: ReviewProps) {
   const weapon = useWeapon();
-  const { goal, setGoal } = useGoal(deck.get_goal());
+  const { sentenceList, setSentenceList } = useSentenceList(deck.get_sentence_list());
 
   const CANT_LISTEN_DURATION_MS = 15 * 60 * 1000;
 
@@ -757,7 +757,7 @@ function Review({
 
   const nextDueCard = findNextDueCard(deck);
 
-  // Filter movies to target language for goal selector
+  // Filter movies to target language for sentence list selector
   const targetLanguageIso = languageToIso6391(targetLanguage);
   const targetLanguageMovies = useMemo(() => {
     return moviesWithMetadata.filter(
@@ -936,18 +936,18 @@ function Review({
     };
   }, [deck, accessToken, reviewInfo]);
 
-  const goalSelection = goalToGoalSelection(goal);
+  const sentenceListSelection = sentenceListToSelection(sentenceList);
 
   const addEvent = useCallback((event: DeckEvent) => {
     weapon.add_deck_event(event);
   }, [weapon]);
 
   const addSmartCards = useCallback(() => {
-    const info = deck.get_no_cards_ready_info(bannedChallengeTypes, goalSelection);
+    const info = deck.get_no_cards_ready_info(bannedChallengeTypes, sentenceListSelection);
     if (info.smart_add_event) {
       weapon.add_deck_event(info.smart_add_event);
     }
-  }, [deck, weapon, bannedChallengeTypes, goalSelection]);
+  }, [deck, weapon, bannedChallengeTypes, sentenceListSelection]);
 
   const handleRating = async (rating: Rating) => {
     if (
@@ -1162,8 +1162,8 @@ function Review({
             deck={deck}
             bannedChallengeTypes={bannedChallengeTypes}
             userInfo={userInfo}
-            goal={goal}
-            setGoal={setGoal}
+            sentenceList={sentenceList}
+            setSentenceList={setSentenceList}
             moviesWithMetadata={targetLanguageMovies}
             hasPimsleur={hasPimsleur}
           />
@@ -1267,7 +1267,7 @@ const router = createBrowserRouter([
           { path: "learn", element: <ReviewPage /> },
           { path: "dictionary", element: <DictionaryPage /> },
           { path: "leeches", element: <LeechesPage /> },
-          { path: "goals", element: <GoalsPage /> },
+          { path: "sentence-lists", element: <SentenceListsPage /> },
           { path: "select-language", element: <SelectLanguagePage /> },
           { path: "user/id/:id", element: <UserProfilePage /> },
           { path: "*", element: <NotFoundPage /> },

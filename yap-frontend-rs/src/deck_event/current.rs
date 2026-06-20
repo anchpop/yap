@@ -188,7 +188,7 @@ pub struct PlacementTest {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
-pub enum GoalSelection {
+pub enum SentenceListSelection {
     Movie {
         id: String,
     },
@@ -208,8 +208,8 @@ pub enum LanguageEventContent {
     },
     AddCards {
         cards: Vec<CardIndicator<Gram<String>, String>>,
-        #[serde(default)]
-        goal: Option<GoalSelection>,
+        #[serde(default, alias = "goal")]
+        sentence_list: Option<SentenceListSelection>,
     },
     ReviewCard {
         reviewed: CardIndicator<Gram<String>, String>,
@@ -223,8 +223,10 @@ pub enum LanguageEventContent {
     TranscriptionChallenge {
         challenge: Vec<transcription_challenge::PartGraded>,
     },
-    SetGoal {
-        goal: Option<GoalSelection>,
+    #[serde(alias = "SetGoal")]
+    SetSentenceList {
+        #[serde(alias = "goal")]
+        sentence_list: Option<SentenceListSelection>,
     },
     SetDailyReviewTarget {
         daily_review_target: DailyReviewTarget,

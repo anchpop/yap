@@ -101,6 +101,18 @@ export function WeaponProvider({
     return () => abortController.abort();
   }, [userId, sync]);
 
+  // Dev-only: expose the ready Weapon instance so E2E/screenshot tooling
+  // (Playwright) can seed a deck deterministically without clicking through
+  // onboarding. Never compiled into production builds.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    if (state.type !== "ready") return;
+    (window as unknown as { __weapon?: Weapon }).__weapon = state.weapon;
+    return () => {
+      delete (window as unknown as { __weapon?: Weapon }).__weapon;
+    };
+  }, [state]);
+
   const syncWithSupabase = useCallback(
     async (forceUpload?: boolean) => {
       if (stateRef.current === null) return;

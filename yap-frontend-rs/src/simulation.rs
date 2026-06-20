@@ -210,7 +210,7 @@ impl Deck {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::deck_event::current::GoalSelection;
+    use crate::SentenceListSelection;
     use crate::next_cards::AllowedCards;
     use chrono::TimeZone;
     use language_utils::SentenceGram;
@@ -428,28 +428,28 @@ mod tests {
         let language_pack = load_language_pack(&course);
         let deck = load_test_data_deck(language_pack);
 
-        let mut goals = vec![None];
+        let mut sentence_lists = vec![None];
         for source_id in deck.context.language_pack.source_gram_frequencies.keys() {
-            let goal = match source_id {
+            let selection = match source_id {
                 language_utils::FrequencySourceId::Movie(id) => {
-                    GoalSelection::Movie { id: id.clone() }
+                    SentenceListSelection::Movie { id: id.clone() }
                 }
                 language_utils::FrequencySourceId::PimsleurLesson(lesson) => {
-                    GoalSelection::PimsleurLesson {
+                    SentenceListSelection::PimsleurLesson {
                         level: lesson.level,
                         lesson: lesson.lesson,
                     }
                 }
             };
-            goals.push(Some(goal));
+            sentence_lists.push(Some(selection));
         }
 
-        for goal in goals {
+        for sentence_list in sentence_lists {
             for count in [1, 5, 10, 50, 100] {
                 let result_a: Vec<_> = deck
                     .next_unknown_cards(
                         AllowedCards::BannedRequirements(Default::default()),
-                        &goal,
+                        &sentence_list,
                         count,
                     )
                     .take(count)
@@ -458,7 +458,7 @@ mod tests {
                 let result_b: Vec<_> = deck
                     .next_unknown_cards(
                         AllowedCards::BannedRequirements(Default::default()),
-                        &goal,
+                        &sentence_list,
                         usize::MAX / 4,
                     )
                     .take(count)
@@ -466,7 +466,7 @@ mod tests {
 
                 assert_eq!(
                     result_a, result_b,
-                    "Results differ for goal={goal:?}, count={count}: early-terminated iterator produced different cards than unlimited iterator"
+                    "Results differ for sentence_list={sentence_list:?}, count={count}: early-terminated iterator produced different cards than unlimited iterator"
                 );
             }
         }

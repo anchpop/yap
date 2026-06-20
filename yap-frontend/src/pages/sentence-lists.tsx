@@ -9,10 +9,10 @@ import { getMovieMetadata } from "@/lib/movie-cache";
 import { Poster } from "@/components/Poster";
 import type { Deck as DeckType } from "../../../yap-frontend-rs/pkg";
 import {
-  goalSelectionToGoal,
-  goalToGoalSelection,
-  type Goal,
-} from "@/hooks/useGoal";
+  sentenceListSelectionToSentenceList,
+  sentenceListToSelection,
+  type SentenceList,
+} from "@/hooks/useSentenceList";
 import { useWeapon } from "@/weapon";
 import { match, P } from "ts-pattern";
 import { Check, ChevronDown, Headphones, Sparkles } from "lucide-react";
@@ -26,15 +26,15 @@ const INITIAL_MOVIES_SHOWN = 5;
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export function GoalsPage() {
+export function SentenceListsPage() {
   const { userInfo } = useOutletContext<AppContextType>();
   const deckState = useDeck();
   const navigate = useNavigate();
   const weapon = useWeapon();
-  const goal =
+  const sentenceList =
     deckState?.type === "deck" && deckState.deck
-      ? goalSelectionToGoal(deckState.deck.get_goal())
-      : ({ type: "essential" } as Goal);
+      ? sentenceListSelectionToSentenceList(deckState.deck.get_sentence_list())
+      : ({ type: "essential" } as SentenceList);
   const [pimsleurAcknowledged, setPimsleurAcknowledged] = useState(
     () => localStorage.getItem("yap-pimsleur-acknowledged") === "true",
   );
@@ -50,8 +50,8 @@ export function GoalsPage() {
     .with(
       { type: "deck", deck: P.not(P.nullish) },
       ({ deck, targetLanguage }) => {
-        const setGoalAndNavigate = (g: Goal) => {
-          const event = deck.set_goal(goalToGoalSelection(g));
+        const setSentenceListAndNavigate = (sl: SentenceList) => {
+          const event = deck.set_sentence_list(sentenceListToSelection(sl));
           weapon.add_deck_event(event);
           navigate("/learn");
         };
@@ -77,28 +77,28 @@ export function GoalsPage() {
             userInfo={userInfo}
             headerProps={{
               backButton: {
-                label: "Goal",
+                label: "Sentence List",
                 onBack: () => navigate("/learn"),
               },
-              title: "Choose a Goal",
+              title: "Choose a Sentence List",
             }}
           >
             <div className="space-y-4 max-w-lg mx-auto w-full">
               <p className="text-sm text-muted-foreground text-center">
-                Pick a goal to focus your learning on. Your cards will be
+                Pick a sentence list to focus your learning on. Your cards will be
                 tailored to help you reach it.
               </p>
 
-              {/* Frequent French */}
-              <GoalCard
-                selected={goal.type === "essential"}
-                onClick={() => setGoalAndNavigate({ type: "essential" })}
+              {/* Frequent words */}
+              <SentenceListCard
+                selected={sentenceList.type === "essential"}
+                onClick={() => setSentenceListAndNavigate({ type: "essential" })}
                 title={`Frequent ${targetLanguage}`}
                 description={`Currently on: ${tierInfo.name} ${targetLanguage} Level ${tierInfo.level} of ${tierInfo.total_levels}`}
                 percentKnown={tierInfo.percent_known}
                 posterUrl="/essential-course.webp"
               />
-              {goal.type === "essential" && (
+              {sentenceList.type === "essential" && (
                 <p className="text-xs text-muted-foreground -mt-2 ml-1">
                   The {tierInfo.name} tier covers the{" "}
                   {tierInfo.tier === 1 ? "" : "next "}most frequent{" "}
@@ -108,7 +108,7 @@ export function GoalsPage() {
                 </p>
               )}
 
-              {/* Movie goals */}
+              {/* Movie sentence lists */}
               <h3 className="text-lg font-semibold mt-6">Movies</h3>
               <p className="text-sm text-muted-foreground">
                 Focus on vocabulary from a specific movie. You can usually watch
@@ -127,14 +127,14 @@ export function GoalsPage() {
                     <div className="space-y-2">
                       {visibleMovies.map((movie) => {
                         const isSelected =
-                          goal.type === "movie" && goal.movieId === movie.id;
+                          sentenceList.type === "movie" && sentenceList.movieId === movie.id;
 
                         return (
-                          <GoalCard
+                          <SentenceListCard
                             key={movie.id}
                             selected={isSelected}
                             onClick={() =>
-                              setGoalAndNavigate({
+                              setSentenceListAndNavigate({
                                 type: "movie",
                                 movieId: movie.id,
                               })
@@ -164,7 +164,7 @@ export function GoalsPage() {
                 );
               })()}
 
-              {/* Pimsleur goals */}
+              {/* Pimsleur sentence lists */}
               {pimsleurStats.length > 0 && (
                 <>
                   <h3 className="text-lg font-semibold mt-6">
@@ -215,16 +215,16 @@ export function GoalsPage() {
                                 <div className="space-y-2 mt-2">
                                   {units.map((lesson) => {
                                     const isSelected =
-                                      goal.type === "pimsleur" &&
-                                      goal.level === lesson.level &&
-                                      goal.lesson === lesson.lesson;
+                                      sentenceList.type === "pimsleur" &&
+                                      sentenceList.level === lesson.level &&
+                                      sentenceList.lesson === lesson.lesson;
 
                                     return (
-                                      <GoalCard
+                                      <SentenceListCard
                                         key={`pimsleur-${lesson.level}-${lesson.lesson}`}
                                         selected={isSelected}
                                         onClick={() =>
-                                          setGoalAndNavigate({
+                                          setSentenceListAndNavigate({
                                             type: "pimsleur",
                                             level: lesson.level,
                                             lesson: lesson.lesson,
@@ -265,7 +265,7 @@ export function GoalsPage() {
     ));
 }
 
-function GoalCard({
+function SentenceListCard({
   selected,
   onClick,
   title,

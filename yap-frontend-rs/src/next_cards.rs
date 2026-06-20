@@ -9,7 +9,7 @@ use ordered_float::NotNan;
 
 use crate::{
     CARD_TYPES, CardData, CardIndicator, CardType, ChallengeRequirements, Deck, SmartAddRegime,
-    deck_event::current::GoalSelection,
+    deck_event::current::SentenceListSelection,
 };
 
 /// Partition the top `n` elements to the front (descending by first tuple element),
@@ -75,7 +75,7 @@ impl NextCardsIterator {
     pub fn new(
         deck: &Deck,
         allowed_cards: AllowedCards,
-        goal: &Option<GoalSelection>,
+        sentence_list: &Option<SentenceListSelection>,
         limit: usize,
     ) -> Self {
         // Buffer beyond the requested limit to account for cards split across types
@@ -87,11 +87,13 @@ impl NextCardsIterator {
         let context = &deck.context;
         let regressions = &deck.regressions;
 
-        // Determine which frequency list to use based on goal
-        let goal_freq_list = goal.as_ref().and_then(|g| {
+        // Determine which frequency list to use based on sentence_list
+        let sentence_list_freq_list = sentence_list.as_ref().and_then(|g| {
             let source_id = match g {
-                GoalSelection::Movie { id } => language_utils::FrequencySourceId::Movie(id.clone()),
-                GoalSelection::PimsleurLesson { level, lesson } => {
+                SentenceListSelection::Movie { id } => {
+                    language_utils::FrequencySourceId::Movie(id.clone())
+                }
+                SentenceListSelection::PimsleurLesson { level, lesson } => {
                     language_utils::FrequencySourceId::PimsleurLesson(
                         language_utils::PimsleurLesson {
                             level: *level,
@@ -106,7 +108,8 @@ impl NextCardsIterator {
                 .get(&source_id)
         });
 
-        let gram_source = goal_freq_list.unwrap_or(&context.language_pack.gram_frequencies);
+        let gram_source =
+            sentence_list_freq_list.unwrap_or(&context.language_pack.gram_frequencies);
 
         // Initialize counts by iterating once over tracked cards. Ghosts are
         // excluded — onboarding thresholds measure deliberate adds, not words
