@@ -71,6 +71,8 @@ wasm-bindgen-test = "0.3.72"
 criterion = { version = "0.8", features = ["html_reports"] }
 tokio = { workspace = true }
 reqwest = { workspace = true }
+autograde-core = { path = "../libraries/autograde-core" }
+tysm = { workspace = true }
 
 [[bench]]
 name = "simulation"

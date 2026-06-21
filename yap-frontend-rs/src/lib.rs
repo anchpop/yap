@@ -5937,4 +5937,1003 @@ mod tests {
             }
         }
     }
+
+    // ===================================================================
+    // Translation autograde eval: replays real mistranslations from
+    // Supabase and grades each one with several frontier models via
+    // OpenRouter, reusing the exact backend grading code (autograde-core).
+    //
+    // Run (from repo root, with .env sourced or present):
+    //   cargo test -p yap-frontend-rs translation_autograde_eval -- --ignored --nocapture
+    //
+    // Env:
+    //   OPENROUTER_API_KEY        (required)
+    //   SUPABASE_SERVICE_ROLE_KEY (required)
+    //   SUPABASE_URL              (default: project URL)
+    //   EVAL_PRIMARY_EMAIL        (default: andre@popovit.ch) — French source
+    //   EVAL_SAMPLE               (default: 30) — total cases across all models
+    //   EVAL_MAX_USERS            (default: 80) — users to scan for other languages
+    //
+    // Output: ../out/translation-eval/{eval.json, eval.md}. The markdown has a
+    // blank GOLD column per case so you can hand-label a gold set; eval.json
+    // carries the same data structured for programmatic scoring.
+    // ===================================================================
+
+    /// Language pack + (display-string → gram) lookup, cached per course.
+    type PackEntry = Option<(
+        std::sync::Arc<LanguagePack>,
+        std::collections::HashMap<String, language_utils::Gram<String>>,
+    )>;
+
+    /// Minimal `.env` loader (repo root) so the eval works without sourcing.
+    fn load_dotenv_if_present() {
+        for path in ["../.env", ".env"] {
+            if let Ok(contents) = std::fs::read_to_string(path) {
+                for line in contents.lines() {
+                    let line = line.trim();
+                    if line.is_empty() || line.starts_with('#') {
+                        continue;
+                    }
+                    if let Some((k, v)) = line.split_once('=') {
+                        let k = k.trim();
+                        let v = v.trim().trim_matches('"').trim_matches('\'');
+                        if std::env::var(k).is_err() {
+                            unsafe { std::env::set_var(k, v) };
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[derive(Clone)]
+    struct RawCase {
+        user_email: String,
+        course: Course,
+        challenge: String,
+        submission: String,
+        literals: Vec<(Literal<String>, Option<current::LiteralResult>)>,
+        phrases: Vec<(String, Option<bool>)>,
+    }
+
+    /// Build the language pack + display→gram map for a course, or `None` if the
+    /// pack isn't on disk.
+    fn build_pack_entry(course: Course) -> PackEntry {
+        let path = format!(
+            "../out/{}_for_{}/language_data.rkyv",
+            course.target_language.iso_639_3(),
+            course.native_language.iso_639_3()
+        );
+        let bytes = std::fs::read(&path).ok()?;
+        let archived = rkyv::access::<
+            language_utils::language_pack::ArchivedLanguagePack,
+            rkyv::rancor::Error,
+        >(&bytes)
+        .ok()?;
+        let pack: LanguagePack =
+            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).ok()?;
+        let target = course.target_language;
+        let mut map = std::collections::HashMap::new();
+        for gram_spur in pack.gram_rodeo.strings() {
+            let gram: language_utils::Gram<String> = gram_spur.resolve(&pack.string_rodeo);
+            map.entry(gram.to_display_string(target)).or_insert(gram);
+        }
+        Some((std::sync::Arc::new(pack), map))
+    }
+
+    /// Fetch every event row for a user (paginated).
+    async fn fetch_user_rows(
+        http: &reqwest::Client,
+        supabase_url: &str,
+        key: &str,
+        user_id: &str,
+    ) -> Vec<serde_json::Value> {
+        let mut all = Vec::new();
+        let page_size = 1000;
+        let mut offset = 0;
+        loop {
+            let page: Vec<serde_json::Value> = match http
+                .get(format!(
+                    "{supabase_url}/rest/v1/events?user_id=eq.{user_id}&order=id.asc&limit={page_size}&offset={offset}"
+                ))
+                .header("apikey", key)
+                .header("Authorization", format!("Bearer {key}"))
+                .send()
+                .await
+                .and_then(|r| r.error_for_status())
+            {
+                Ok(r) => r.json().await.unwrap_or_default(),
+                Err(_) => break,
+            };
+            let count = page.len();
+            all.extend(page);
+            if count < page_size {
+                break;
+            }
+            offset += page_size;
+        }
+        all
+    }
+
+    /// Replay a user's events (migrating old V1/V2 events to current via the
+    /// real `from_versioned` path) and extract every graded translation where at
+    /// least one literal or phrase was forgotten.
+    fn extract_mistranslations(
+        rows: &[serde_json::Value],
+        user_email: &str,
+        pack_cache: &mut std::collections::BTreeMap<Course, PackEntry>,
+    ) -> Vec<RawCase> {
+        use weapon::data_model::Event as _;
+        use weapon::data_model::{EventStore, EventType, Timestamped};
+
+        // Group raw rows by (stream, device), like inspect_user_deck.
+        let mut grouped: BTreeMap<String, BTreeMap<String, Vec<Timestamped<serde_json::Value>>>> =
+            BTreeMap::new();
+        for row in rows {
+            let stream_id = row["stream_id"].as_str().unwrap_or("reviews").to_string();
+            let device_id = row["device_id"].as_str().unwrap_or("unknown").to_string();
+            let event_value = match &row["event"] {
+                serde_json::Value::String(s) => match serde_json::from_str(s) {
+                    Ok(v) => v,
+                    Err(_) => continue,
+                },
+                v => v.clone(),
+            };
+            let Ok(timestamped) =
+                serde_json::from_value::<Timestamped<serde_json::Value>>(event_value)
+            else {
+                continue;
+            };
+            grouped
+                .entry(stream_id)
+                .or_default()
+                .entry(device_id)
+                .or_default()
+                .push(timestamped);
+        }
+
+        let mut store: EventStore<String, String> = EventStore::default();
+        store.get_or_insert_default::<EventType<DeckEvent>>("reviews".to_string(), None);
+        store.get_or_insert_default::<EventType<DeckSelectionEvent>>(
+            "deck_selection".to_string(),
+            None,
+        );
+        for (stream_id, devices) in grouped {
+            for (device_id, events) in devices {
+                store.add_device_events_jsons(stream_id.clone(), device_id, events, None);
+            }
+        }
+
+        // Detect the language pair from deck_selection.
+        let deck_selection = store
+            .get::<EventType<DeckSelectionEvent>>("deck_selection".to_string())
+            .map(|s| {
+                s.state(
+                    deck_selection::DeckSelectionPartial {
+                        target_language: None,
+                        native_language: None,
+                        onboarding_selections: BTreeMap::new(),
+                        selected_languages: BTreeSet::new(),
+                        heard_about: None,
+                    },
+                    &(),
+                )
+            });
+        let Some(target) = deck_selection
+            .as_ref()
+            .and_then(|ds: &deck_selection::DeckSelection| ds.target_language)
+        else {
+            return vec![];
+        };
+        let native = deck_selection
+            .as_ref()
+            .and_then(|ds: &deck_selection::DeckSelection| ds.native_language)
+            .unwrap_or(Language::English);
+        let course = Course {
+            target_language: target,
+            native_language: native,
+        };
+
+        // Load the pack for migration context.
+        let entry = pack_cache
+            .entry(course)
+            .or_insert_with(|| build_pack_entry(course));
+        let Some((pack, _map)) = entry else {
+            return vec![];
+        };
+        let context = Context {
+            language_pack: pack.clone(),
+            course,
+            timezone: chrono::FixedOffset::east_opt(0).unwrap(),
+        };
+
+        let Some(stream) = store.get::<EventType<DeckEvent>>("reviews".to_string()) else {
+            return vec![];
+        };
+
+        let mut out = Vec::new();
+        for t in stream.iter() {
+            let EventType::User(versioned) = &t.event else {
+                continue;
+            };
+            let Some(DeckEvent::Language(le)) = DeckEvent::from_versioned(versioned, &context)
+            else {
+                continue;
+            };
+            // Use the event's own languages as the course rather than the
+            // user's currently-detected one — a user may have studied several.
+            let event_course = Course {
+                target_language: le.target_language,
+                native_language: le.native_language,
+            };
+            let LanguageEventContent::TranslationChallenge { review, .. } = le.content else {
+                continue;
+            };
+            let current::SentenceReviewResult::Graded {
+                challenge,
+                submission,
+                literals,
+                phrases,
+            } = review
+            else {
+                continue; // Perfect submissions are not mistranslations
+            };
+            let any_literal_forgot = literals
+                .iter()
+                .any(|(_, r)| matches!(r, Some(lr) if lr.remembered == Some(false)));
+            let any_phrase_forgot = phrases.iter().any(|(_, g)| *g == Some(false));
+            if !any_literal_forgot && !any_phrase_forgot {
+                continue;
+            }
+            out.push(RawCase {
+                user_email: user_email.to_string(),
+                course: event_course,
+                challenge,
+                submission,
+                literals,
+                phrases,
+            });
+        }
+        out
+    }
+
+    fn literal_to_gram(lit: &Literal<String>) -> language_utils::Gram<String> {
+        language_utils::Gram(vec![language_utils::Atom::Tok(lit.word.clone())])
+    }
+
+    /// Heuristic "hardness" of a mistranslation: favors long sentences with many
+    /// gradable words, multiple forgotten items, and real idiomatic phrases —
+    /// the cases where graders actually have to think. Trivial one-word
+    /// interjections score near zero.
+    fn hardness(case: &RawCase) -> u32 {
+        let gradable = case
+            .literals
+            .iter()
+            .filter(|(l, _)| l.word.heteronym().is_some())
+            .count() as u32;
+        let forgotten_lits = case
+            .literals
+            .iter()
+            .filter(|(_, r)| matches!(r, Some(lr) if lr.remembered == Some(false)))
+            .count() as u32;
+        // "Real" phrases are the ones the grader actually graded (Some), not the
+        // liberal false-positive candidates (None).
+        let real_phrases = case.phrases.iter().filter(|(_, g)| g.is_some()).count() as u32;
+        let forgotten_phrases = case
+            .phrases
+            .iter()
+            .filter(|(_, g)| *g == Some(false))
+            .count() as u32;
+        let words = case.challenge.split_whitespace().count() as u32;
+        words + 2 * gradable + 3 * (forgotten_lits + forgotten_phrases) + 2 * real_phrases
+    }
+
+    /// Drop trivial cases (single words, two-word fragments) so the eval focuses
+    /// on sentences that meaningfully exercise the models.
+    fn is_nontrivial(case: &RawCase) -> bool {
+        let gradable = case
+            .literals
+            .iter()
+            .filter(|(l, _)| l.word.heteronym().is_some())
+            .count();
+        let words = case.challenge.split_whitespace().count();
+        gradable >= 3 && words >= 4
+    }
+
+    fn rem_to_str(r: &Option<autograde::Remembered>) -> &'static str {
+        match r {
+            Some(autograde::Remembered::Remembered) => "Remembered",
+            Some(autograde::Remembered::Forgot) => "Forgot",
+            None => "-",
+        }
+    }
+
+    fn bool_to_str(b: &Option<bool>) -> &'static str {
+        match b {
+            Some(true) => "Remembered",
+            Some(false) => "Forgot",
+            None => "-",
+        }
+    }
+
+    #[derive(serde::Serialize)]
+    struct ModelGradesOut {
+        model: String,
+        effort: String,
+        error: Option<String>,
+        encouragement: Option<String>,
+        explanation: Option<String>,
+        /// Aligned to `gradable_words` order.
+        literal_grades: Vec<String>,
+        phrases_remembered: Vec<String>,
+        phrases_forgot: Vec<String>,
+        /// Wall-clock latency of this single grading call.
+        latency_ms: u128,
+    }
+
+    #[derive(serde::Serialize)]
+    struct CaseOut {
+        index: usize,
+        user_email: String,
+        target_language: String,
+        native_language: String,
+        challenge: String,
+        submission: String,
+        primary_expression: String,
+        gradable_words: Vec<String>,
+        production_literal_grades: Vec<String>,
+        phrases: Vec<String>,
+        production_phrase_grades: Vec<String>,
+        models: Vec<ModelGradesOut>,
+        /// Blank slots for you to fill when hand-labeling the gold set.
+        gold_literal_grades: Vec<String>,
+        gold_phrase_grades: Vec<String>,
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn translation_autograde_eval() {
+        use tysm::chat_completions::ChatClient;
+
+        load_dotenv_if_present();
+
+        let openrouter_key = match std::env::var("OPENROUTER_API_KEY") {
+            Ok(k) if !k.is_empty() => k,
+            _ => {
+                println!("Skipping: set OPENROUTER_API_KEY to run this eval");
+                return;
+            }
+        };
+        let service_role_key = match std::env::var("SUPABASE_SERVICE_ROLE_KEY") {
+            Ok(k) if !k.is_empty() => k,
+            _ => {
+                println!("Skipping: set SUPABASE_SERVICE_ROLE_KEY to run this eval");
+                return;
+            }
+        };
+        let supabase_url = std::env::var("SUPABASE_URL")
+            .unwrap_or_else(|_| "https://eearwzqotpfoderpfrqx.supabase.co".to_string());
+        let primary_email =
+            std::env::var("EVAL_PRIMARY_EMAIL").unwrap_or_else(|_| "andre@popovit.ch".to_string());
+        let sample_size: usize = std::env::var("EVAL_SAMPLE")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(30);
+        // OpenRouter reserves max_tokens × price upfront; cap it so the pricier
+        // models (opus, gpt-5.5) and high-reasoning runs fit the key's budget.
+        // Plenty of room for grading output + reasoning on a single sentence.
+        let max_tokens: u32 = std::env::var("EVAL_MAX_TOKENS")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(16000);
+        let max_users: usize = std::env::var("EVAL_MAX_USERS")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(80);
+
+        let http = reqwest::Client::new();
+        let mut pack_cache: std::collections::BTreeMap<Course, PackEntry> = Default::default();
+
+        // ---- 1. List all users; find the primary (French) account ----
+        println!("Listing users...");
+        let mut primary_id = None;
+        let mut all_users: Vec<(String, String)> = Vec::new(); // (id, email)
+        for page in 1..=40 {
+            let resp: serde_json::Value = http
+                .get(format!(
+                    "{supabase_url}/auth/v1/admin/users?page={page}&per_page=50"
+                ))
+                .header("apikey", &service_role_key)
+                .header("Authorization", format!("Bearer {service_role_key}"))
+                .send()
+                .await
+                .unwrap()
+                .json()
+                .await
+                .unwrap();
+            let users = resp["users"].as_array().cloned().unwrap_or_default();
+            if users.is_empty() {
+                break;
+            }
+            for u in &users {
+                let id = u["id"].as_str().unwrap_or("").to_string();
+                let email = u["email"].as_str().unwrap_or("").to_string();
+                if email == primary_email {
+                    primary_id = Some(id.clone());
+                }
+                if !id.is_empty() {
+                    all_users.push((id, email));
+                }
+            }
+        }
+        println!("Discovered {} users total", all_users.len());
+
+        // ---- 2. French mistranslations from the primary account ----
+        let mut french_cases: Vec<RawCase> = Vec::new();
+        if let Some(pid) = &primary_id {
+            let rows = fetch_user_rows(&http, &supabase_url, &service_role_key, pid).await;
+            let cases = extract_mistranslations(&rows, &primary_email, &mut pack_cache);
+            french_cases = cases
+                .into_iter()
+                .filter(|c| c.course.target_language == Language::French)
+                .collect();
+            println!(
+                "Primary account: {} French mistranslations",
+                french_cases.len()
+            );
+        } else {
+            println!("WARNING: primary email {primary_email} not found");
+        }
+
+        // ---- 3. Discover other-language mistranslations from other users ----
+        let other_target = (sample_size * 3 / 5).max(1);
+        let mut other_cases: Vec<RawCase> = Vec::new();
+        let mut scanned = 0usize;
+        for (id, email) in &all_users {
+            if Some(id) == primary_id.as_ref() {
+                continue;
+            }
+            if scanned >= max_users {
+                break;
+            }
+            scanned += 1;
+            let rows = fetch_user_rows(&http, &supabase_url, &service_role_key, id).await;
+            let non_french: Vec<RawCase> = extract_mistranslations(&rows, email, &mut pack_cache)
+                .into_iter()
+                .filter(|c| c.course.target_language != Language::French)
+                .collect();
+            if !non_french.is_empty() {
+                let langs: std::collections::BTreeSet<_> = non_french
+                    .iter()
+                    .map(|c| c.course.target_language)
+                    .collect();
+                println!(
+                    "  {email}: {} non-French mistranslations {:?}",
+                    non_french.len(),
+                    langs
+                );
+                other_cases.extend(non_french);
+            }
+            // Gather a rich pool so the hardness ranking has real choice; only
+            // stop early once we have plenty of hard candidates across languages.
+            let nontrivial = other_cases.iter().filter(|c| is_nontrivial(c)).count();
+            let distinct_langs: std::collections::BTreeSet<_> = other_cases
+                .iter()
+                .filter(|c| is_nontrivial(c))
+                .map(|c| c.course.target_language)
+                .collect();
+            if nontrivial >= other_target * 6 && distinct_langs.len() >= 3 {
+                break;
+            }
+        }
+        println!(
+            "Discovery: scanned {scanned} users, found {} non-French mistranslations",
+            other_cases.len()
+        );
+
+        // ---- 4. Sample HARD cases: round-robin across languages, taking the
+        // hardest remaining case from each. This favors long, multi-error,
+        // idiomatic sentences over trivial one-word interjections, while still
+        // spreading across languages. ----
+        let _ = other_target;
+        let mut by_lang: std::collections::BTreeMap<Language, Vec<RawCase>> =
+            std::collections::BTreeMap::new();
+        for c in french_cases.iter().cloned().chain(other_cases) {
+            if is_nontrivial(&c) {
+                by_lang.entry(c.course.target_language).or_default().push(c);
+            }
+        }
+        // Hardest first within each language.
+        for bucket in by_lang.values_mut() {
+            bucket.sort_by_key(|b| std::cmp::Reverse(hardness(b)));
+        }
+        let mut lang_buckets: Vec<Vec<RawCase>> = by_lang.into_values().collect();
+
+        let mut selected: Vec<RawCase> = Vec::new();
+        let mut li = 0usize;
+        while selected.len() < sample_size && lang_buckets.iter().any(|v| !v.is_empty()) {
+            let n_langs = lang_buckets.len().max(1);
+            let bucket = &mut lang_buckets[li % n_langs];
+            if !bucket.is_empty() {
+                selected.push(bucket.remove(0));
+            }
+            li += 1;
+            if li > n_langs * 100_000 {
+                break;
+            }
+        }
+        // Fallback: if everything was filtered as trivial, take hardest French.
+        if selected.is_empty() {
+            french_cases.sort_by_key(|b| std::cmp::Reverse(hardness(b)));
+            selected = french_cases.iter().take(sample_size).cloned().collect();
+        }
+
+        let lang_breakdown: std::collections::BTreeMap<String, usize> =
+            selected.iter().fold(Default::default(), |mut m, c| {
+                *m.entry(c.course.target_language.to_string()).or_default() += 1;
+                m
+            });
+        let hardness_vals: Vec<u32> = selected.iter().map(hardness).collect();
+        println!(
+            "\nSelected {} cases for eval: {:?}  (hardness min={} max={})",
+            selected.len(),
+            lang_breakdown,
+            hardness_vals.iter().min().copied().unwrap_or(0),
+            hardness_vals.iter().max().copied().unwrap_or(0),
+        );
+        if selected.is_empty() {
+            println!("No mistranslations found — nothing to evaluate.");
+            return;
+        }
+
+        // ---- 5. Reconstruct grading requests (packs already cached) ----
+        let mut requests: Vec<(RawCase, autograde::AutoGradeTranslationRequest)> = Vec::new();
+        for case in selected {
+            let course = case.course;
+            let Some(Some((_pack, disp2gram))) = pack_cache.get(&course) else {
+                continue;
+            };
+            let literals: Vec<Literal<String>> =
+                case.literals.iter().map(|(l, _)| l.clone()).collect();
+            let phrases: Vec<language_utils::Gram<String>> = case
+                .phrases
+                .iter()
+                .filter_map(|(disp, _)| disp2gram.get(disp).cloned())
+                .collect();
+
+            // primary_expression: prefer a forgotten phrase, else a forgotten
+            // heteronym literal, else the first gradable literal.
+            let primary_expression = case
+                .phrases
+                .iter()
+                .find(|(_, g)| *g == Some(false))
+                .and_then(|(disp, _)| disp2gram.get(disp).cloned())
+                .or_else(|| {
+                    case.literals
+                        .iter()
+                        .find(|(l, r)| {
+                            l.word.heteronym().is_some()
+                                && matches!(r, Some(lr) if lr.remembered == Some(false))
+                        })
+                        .map(|(l, _)| literal_to_gram(l))
+                })
+                .or_else(|| {
+                    case.literals
+                        .iter()
+                        .find(|(l, _)| l.word.heteronym().is_some())
+                        .map(|(l, _)| literal_to_gram(l))
+                })
+                .unwrap_or_else(|| {
+                    case.literals
+                        .first()
+                        .map(|(l, _)| literal_to_gram(l))
+                        .unwrap_or(language_utils::Gram(vec![]))
+                });
+
+            let request = autograde::AutoGradeTranslationRequest {
+                course,
+                challenge_sentence: case.challenge.clone(),
+                user_sentence: case.submission.clone(),
+                literals,
+                phrases,
+                primary_expression,
+            };
+            requests.push((case, request));
+        }
+        println!("Reconstructed {} gradable requests", requests.len());
+
+        // ---- 6. Build model×effort variants and grade every case with each ----
+        // Each model is run at several reasoning efforts so we can see how
+        // thinking level trades off grading quality against latency. "minimal"
+        // is only requested where the provider supports it (OpenAI gpt-5.x).
+        struct Variant {
+            model: String,
+            effort: String,
+            client: ChatClient,
+        }
+        let effort_matrix: Vec<(&str, &str, Vec<&str>)> = vec![
+            (
+                "gemini-3.1-pro-preview",
+                "google/gemini-3.1-pro-preview",
+                vec!["low", "high"],
+            ),
+            (
+                "gemini-3.5-flash",
+                "google/gemini-3.5-flash",
+                vec!["low", "high"],
+            ),
+            ("opus-4.8", "anthropic/claude-opus-4.8", vec!["low", "high"]),
+            ("gpt-5.5", "openai/gpt-5.5", vec!["minimal", "low", "high"]),
+        ];
+        let mut variants: Vec<Variant> = Vec::new();
+        for (name, slug, efforts) in &effort_matrix {
+            for eff in efforts {
+                variants.push(Variant {
+                    model: name.to_string(),
+                    effort: eff.to_string(),
+                    // High per-client limit: a global semaphore (below) bounds
+                    // total in-flight calls, so tysm's own semaphore never
+                    // queues inside the timed region and contaminates latency.
+                    client: ChatClient::new(&openrouter_key, *slug)
+                        .with_url("https://openrouter.ai/api/v1/")
+                        .with_reasoning_effort(*eff)
+                        .with_extra_body(serde_json::json!({ "max_tokens": max_tokens }))
+                        .with_max_concurrent_requests(1024),
+                });
+            }
+        }
+        let col_labels: Vec<String> = variants
+            .iter()
+            .map(|v| format!("{} ({})", v.model, v.effort))
+            .collect();
+
+        // Global concurrency limiter so reported latencies are real single-call
+        // model latencies, not inflated by local queueing. The permit is
+        // acquired *before* the timer starts.
+        let concurrency: usize = std::env::var("EVAL_CONCURRENCY")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(16);
+        let limiter = std::sync::Arc::new(tokio::sync::Semaphore::new(concurrency));
+
+        let total_calls = requests.len() * variants.len();
+        println!(
+            "\nRunning {total_calls} grading calls ({} cases × {} variants) via OpenRouter, \
+             {concurrency} at a time...",
+            requests.len(),
+            variants.len()
+        );
+
+        let mut tasks = Vec::new();
+        for (ci, (_case, req)) in requests.iter().enumerate() {
+            for (mi, variant) in variants.iter().enumerate() {
+                let client = &variant.client;
+                let limiter = limiter.clone();
+                tasks.push(async move {
+                    let _permit = limiter.acquire_owned().await.unwrap();
+                    let start = std::time::Instant::now();
+                    let res = autograde_core::grade_translation(client, req).await;
+                    let latency_ms = start.elapsed().as_millis();
+                    (ci, mi, res, latency_ms)
+                });
+            }
+        }
+        let results = futures::future::join_all(tasks).await;
+
+        type Cell = Option<(
+            Result<autograde::AutoGradeTranslationResponse, String>,
+            u128,
+        )>;
+        let mut grid: Vec<Vec<Cell>> = vec![vec![None; variants.len()]; requests.len()];
+        for (ci, mi, res, latency_ms) in results {
+            grid[ci][mi] = Some((res.map_err(|e| format!("{e}")), latency_ms));
+        }
+
+        // ---- 7. Assemble output ----
+        let mut cases_out: Vec<CaseOut> = Vec::new();
+        for (ci, (case, req)) in requests.iter().enumerate() {
+            let target = case.course.target_language;
+            let gradable_positions: Vec<usize> = case
+                .literals
+                .iter()
+                .enumerate()
+                .filter(|(_, (l, _))| l.word.heteronym().is_some())
+                .map(|(i, _)| i)
+                .collect();
+            let gradable_words: Vec<String> = gradable_positions
+                .iter()
+                .map(|&p| case.literals[p].0.word.text.clone())
+                .collect();
+            let production_literal_grades: Vec<String> = gradable_positions
+                .iter()
+                .map(|&p| {
+                    bool_to_str(&case.literals[p].1.as_ref().and_then(|lr| lr.remembered))
+                        .to_string()
+                })
+                .collect();
+            let phrases: Vec<String> = case.phrases.iter().map(|(d, _)| d.clone()).collect();
+            let production_phrase_grades: Vec<String> = case
+                .phrases
+                .iter()
+                .map(|(_, g)| bool_to_str(g).to_string())
+                .collect();
+
+            let mut models_out = Vec::new();
+            for (mi, variant) in variants.iter().enumerate() {
+                let name = &variant.model;
+                let effort = variant.effort.clone();
+                let cell = grid[ci][mi].take();
+                match cell {
+                    Some((Ok(resp), latency_ms)) => {
+                        let literal_grades: Vec<String> = gradable_positions
+                            .iter()
+                            .map(|&p| {
+                                rem_to_str(resp.literal_grades.get(p).unwrap_or(&None)).to_string()
+                            })
+                            .collect();
+                        models_out.push(ModelGradesOut {
+                            model: name.clone(),
+                            effort,
+                            error: None,
+                            encouragement: resp.encouragement.clone(),
+                            explanation: resp.explanation.clone(),
+                            literal_grades,
+                            phrases_remembered: resp
+                                .phrases_remembered
+                                .iter()
+                                .map(|g| g.to_display_string(target))
+                                .collect(),
+                            phrases_forgot: resp
+                                .phrases_forgot
+                                .iter()
+                                .map(|g| g.to_display_string(target))
+                                .collect(),
+                            latency_ms,
+                        });
+                    }
+                    Some((Err(e), latency_ms)) => models_out.push(ModelGradesOut {
+                        model: name.clone(),
+                        effort,
+                        error: Some(e),
+                        encouragement: None,
+                        explanation: None,
+                        literal_grades: vec![],
+                        phrases_remembered: vec![],
+                        phrases_forgot: vec![],
+                        latency_ms,
+                    }),
+                    None => models_out.push(ModelGradesOut {
+                        model: name.clone(),
+                        effort,
+                        error: Some("no response".to_string()),
+                        encouragement: None,
+                        explanation: None,
+                        literal_grades: vec![],
+                        phrases_remembered: vec![],
+                        phrases_forgot: vec![],
+                        latency_ms: 0,
+                    }),
+                }
+            }
+
+            cases_out.push(CaseOut {
+                index: ci,
+                user_email: case.user_email.clone(),
+                target_language: target.to_string(),
+                native_language: case.course.native_language.to_string(),
+                challenge: case.challenge.clone(),
+                submission: case.submission.clone(),
+                primary_expression: req.primary_expression.to_display_string(target),
+                gold_literal_grades: vec![String::new(); gradable_words.len()],
+                gold_phrase_grades: vec![String::new(); phrases.len()],
+                gradable_words,
+                production_literal_grades,
+                phrases,
+                production_phrase_grades,
+                models: models_out,
+            });
+        }
+
+        // ---- 8. Write JSON + Markdown ----
+        std::fs::create_dir_all("../out/translation-eval").unwrap();
+        let json = serde_json::to_string_pretty(&cases_out).unwrap();
+        std::fs::write("../out/translation-eval/eval.json", &json).unwrap();
+
+        let model_names: Vec<&str> = col_labels.iter().map(|s| s.as_str()).collect();
+        let mut md = String::new();
+        md.push_str("# Translation autograde eval\n\n");
+        md.push_str(&format!(
+            "{} cases, {} model×effort variants: {}. max_tokens capped at {}.\n\n\
+             Each model is run at multiple reasoning efforts (gpt-5.5 also at `minimal`) \
+             to see how thinking level trades grading quality against latency.\n\n\
+             Cases are selected hardest-first (long, multi-error, idiomatic sentences) \
+             and spread across languages.\n\n\
+             The **production** column is what gpt-5.4 stored at review time — but it is \
+             *not* ground truth: users self-rate and sometimes overrule the model using \
+             context the model never sees. Fill the **GOLD** column to hand-label the \
+             correct answer.\n\n",
+            cases_out.len(),
+            col_labels.len(),
+            col_labels.join(", "),
+            max_tokens,
+        ));
+        // Per-variant latency + agreement-with-production summary.
+        md.push_str("## Latency & agreement\n\n| variant | calls | errors | median ms | p90 ms | mean ms | agree w/ prod |\n|---|---|---|---|---|---|---|\n");
+        for (mi, name) in col_labels.iter().enumerate() {
+            let mut lats: Vec<u128> = cases_out
+                .iter()
+                .map(|c| c.models[mi].latency_ms)
+                .filter(|&l| l > 0)
+                .collect();
+            lats.sort_unstable();
+            let errors = cases_out
+                .iter()
+                .filter(|c| c.models[mi].error.is_some())
+                .count();
+            let median = lats.get(lats.len() / 2).copied().unwrap_or(0);
+            let p90 = lats.get(lats.len() * 9 / 10).copied().unwrap_or(0);
+            let mean = if lats.is_empty() {
+                0
+            } else {
+                lats.iter().sum::<u128>() / lats.len() as u128
+            };
+            let (mut agree, mut total) = (0usize, 0usize);
+            for c in &cases_out {
+                let m = &c.models[mi];
+                if m.error.is_some() {
+                    continue;
+                }
+                for (wi, prod) in c.production_literal_grades.iter().enumerate() {
+                    if prod == "-" {
+                        continue;
+                    }
+                    if let Some(g) = m.literal_grades.get(wi)
+                        && g != "-"
+                    {
+                        total += 1;
+                        if g == prod {
+                            agree += 1;
+                        }
+                    }
+                }
+            }
+            let pct = if total > 0 {
+                100.0 * agree as f64 / total as f64
+            } else {
+                0.0
+            };
+            md.push_str(&format!(
+                "| {name} | {} | {errors} | {median} | {p90} | {mean} | {agree}/{total} ({pct:.0}%) |\n",
+                cases_out.len()
+            ));
+        }
+        md.push('\n');
+        for c in &cases_out {
+            md.push_str(&format!(
+                "## Case {} — {}→{}  ({})\n\n",
+                c.index, c.target_language, c.native_language, c.user_email
+            ));
+            md.push_str(&format!("- **Challenge:** {}\n", c.challenge));
+            md.push_str(&format!("- **User translation:** {}\n", c.submission));
+            md.push_str(&format!(
+                "- **Primary expression:** {}\n\n",
+                c.primary_expression
+            ));
+
+            md.push_str("| word | production |");
+            for m in &model_names {
+                md.push_str(&format!(" {m} |"));
+            }
+            md.push_str(" GOLD |\n|---|---|");
+            for _ in &model_names {
+                md.push_str("---|");
+            }
+            md.push_str("---|\n");
+            for (wi, word) in c.gradable_words.iter().enumerate() {
+                md.push_str(&format!("| {word} | {} |", c.production_literal_grades[wi]));
+                for m in &c.models {
+                    let g = m.literal_grades.get(wi).cloned().unwrap_or_else(|| {
+                        if m.error.is_some() {
+                            "ERR".to_string()
+                        } else {
+                            "?".to_string()
+                        }
+                    });
+                    md.push_str(&format!(" {g} |"));
+                }
+                md.push_str("  |\n");
+            }
+            md.push('\n');
+
+            if !c.phrases.is_empty() {
+                md.push_str("**Phrases:**\n\n| phrase | production |");
+                for m in &model_names {
+                    md.push_str(&format!(" {m} |"));
+                }
+                md.push_str(" GOLD |\n|---|---|");
+                for _ in &model_names {
+                    md.push_str("---|");
+                }
+                md.push_str("---|\n");
+                for (pi, phrase) in c.phrases.iter().enumerate() {
+                    md.push_str(&format!(
+                        "| {phrase} | {} |",
+                        c.production_phrase_grades[pi]
+                    ));
+                    for m in &c.models {
+                        let verdict = if m.phrases_forgot.contains(phrase) {
+                            "Forgot"
+                        } else if m.phrases_remembered.contains(phrase) {
+                            "Remembered"
+                        } else if m.error.is_some() {
+                            "ERR"
+                        } else {
+                            "-"
+                        };
+                        md.push_str(&format!(" {verdict} |"));
+                    }
+                    md.push_str("  |\n");
+                }
+                md.push('\n');
+            }
+
+            for m in &c.models {
+                if let Some(e) = &m.error {
+                    md.push_str(&format!("> **{}** error: {}\n\n", m.model, e));
+                } else if let Some(exp) = &m.explanation {
+                    md.push_str(&format!("> **{} explanation:** {}\n\n", m.model, exp));
+                }
+            }
+            md.push_str("\n---\n\n");
+        }
+        std::fs::write("../out/translation-eval/eval.md", &md).unwrap();
+
+        println!("\nWrote:");
+        println!("  ../out/translation-eval/eval.json");
+        println!("  ../out/translation-eval/eval.md");
+
+        // Informational: agreement with the production grade.
+        for (mi, name) in model_names.iter().enumerate() {
+            let mut agree = 0usize;
+            let mut total = 0usize;
+            for c in &cases_out {
+                let m = &c.models[mi];
+                if m.error.is_some() {
+                    continue;
+                }
+                for (wi, prod) in c.production_literal_grades.iter().enumerate() {
+                    if prod == "-" {
+                        continue;
+                    }
+                    if let Some(g) = m.literal_grades.get(wi)
+                        && g != "-"
+                    {
+                        total += 1;
+                        if g == prod {
+                            agree += 1;
+                        }
+                    }
+                }
+            }
+            let pct = if total > 0 {
+                100.0 * agree as f64 / total as f64
+            } else {
+                0.0
+            };
+            let mut lats: Vec<u128> = cases_out
+                .iter()
+                .map(|c| c.models[mi].latency_ms)
+                .filter(|&l| l > 0)
+                .collect();
+            lats.sort_unstable();
+            let median = lats.get(lats.len() / 2).copied().unwrap_or(0);
+            let errors = cases_out
+                .iter()
+                .filter(|c| c.models[mi].error.is_some())
+                .count();
+            println!(
+                "  {name}: {agree}/{total} agree with production ({pct:.0}%), median latency {median}ms, {errors} errors"
+            );
+        }
+    }
 }

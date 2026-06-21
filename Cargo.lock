@@ -64,6 +64,7 @@ dependencies = [
 name = "ai-backend"
 version = "0.1.0"
 dependencies = [
+ "autograde-core",
  "axum",
  "axum-extra",
  "base64 0.22.1",
@@ -244,6 +245,17 @@ name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
+
+[[package]]
+name = "autograde-core"
+version = "0.1.0"
+dependencies = [
+ "language-utils",
+ "schemars",
+ "serde",
+ "thiserror 2.0.18",
+ "tysm",
+]
 
 [[package]]
 name = "aws-lc-rs"
@@ -6566,6 +6578,7 @@ checksum = "fdd20c5420375476fbd4394763288da7eb0cc0b8c11deed431a91562af7335d3"
 name = "yap-frontend-rs"
 version = "0.5.0"
 dependencies = [
+ "autograde-core",
  "base64 0.22.1",
  "chrono",
  "console_error_panic_hook",
@@ -6593,6 +6606,7 @@ dependencies = [
  "thiserror 2.0.18",
  "tokio",
  "tsify",
+ "tysm",
  "unicode-normalization",
  "wasm-bindgen",
  "wasm-bindgen-futures",

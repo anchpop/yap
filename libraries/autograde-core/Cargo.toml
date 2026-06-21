@@ -1,0 +1,11 @@
+[package]
+name = "autograde-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+language-utils = { path = "../../language-utils" }
+tysm.workspace = true
+serde.workspace = true
+schemars.workspace = true
+thiserror.workspace = true

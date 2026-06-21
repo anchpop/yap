@@ -4,6 +4,7 @@ members = [
     "generate-data",
     "language-utils",
     "yap-frontend-rs",
+    "libraries/autograde-core",
     "libraries/weapon",
     "libraries/imdex_map",
     "libraries/eyedee",

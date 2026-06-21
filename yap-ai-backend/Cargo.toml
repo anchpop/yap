@@ -28,6 +28,7 @@ axum-extra = { version = "0.12.6", features = ["typed-header"] }
 dotenvy = "0.15.7"
 uuid = { version = "1.23", features = ["serde", "v4"] }
 language-utils = { path = "../language-utils" }
+autograde-core = { path = "../libraries/autograde-core" }
 tsify.workspace = true
 wasm-bindgen.workspace = true
 postgrest = "1.6"
