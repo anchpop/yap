@@ -124,13 +124,13 @@ pub(crate) async fn get_or_create_device_id(
             let bytes = file_handle.read().await?;
             let device_id = String::from_utf8(bytes).unwrap_or_else(|_| {
                 log::error!("Device ID file contained invalid UTF-8 data");
-                eyedee::get_uuid()
+                eyedee::generate_uuid()
             });
             Ok(device_id)
         }
         Err(_) => {
             // Generate new device ID
-            let device_id = eyedee::get_uuid();
+            let device_id = eyedee::generate_uuid();
 
             // Save it to OPFS
             let mut file_handle = weapon_dir

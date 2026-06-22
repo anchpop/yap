@@ -11,7 +11,7 @@ extern "C" {
     fn randomUUID() -> String;
 }
 
-pub fn get_uuid() -> String {
+pub fn generate_uuid() -> String {
     #[cfg(target_arch = "wasm32")]
     {
         randomUUID()
@@ -28,9 +28,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_uuid() {
-        let uuid1 = get_uuid();
-        let uuid2 = get_uuid();
+    fn test_generate_uuid() {
+        let uuid1 = generate_uuid();
+        let uuid2 = generate_uuid();
 
         assert_ne!(uuid1, uuid2);
         assert_eq!(uuid1.len(), 36);
