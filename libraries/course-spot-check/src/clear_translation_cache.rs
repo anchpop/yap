@@ -74,6 +74,7 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
         let ts = Timestamped {
             timestamp: Utc::now(),
             within_device_events_index: 0,
+            timezone: context.timezone,
             event,
         };
         let state = DeckState::from(deck);

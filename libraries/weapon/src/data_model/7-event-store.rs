@@ -295,22 +295,30 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
 impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
     EventStore<Stream, Device>
 {
-    /// Add a raw event (not timestamped). The event is automatically timestamped and
-    /// converted to its versioned form for storage.
+    /// Add a raw event (not timestamped). The event is automatically timestamped (with the
+    /// current time and the given `timezone`) and converted to its versioned form for storage.
     pub fn add_raw_event<Event>(
         &mut self,
         stream: Stream,
         device: Device,
         event: Event,
         modifier: Option<ListenerKey>,
+        timezone: chrono::FixedOffset,
     ) where
         Event: Ord + Clone + crate::Event + 'static,
         Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
     {
-        self.add_raw_event_at(stream, device, event, modifier, chrono::Utc::now());
+        self.add_raw_event_at(
+            stream,
+            device,
+            event,
+            modifier,
+            chrono::Utc::now(),
+            timezone,
+        );
     }
 
-    /// Add a raw event with a specific timestamp.
+    /// Add a raw event with a specific timestamp and timezone.
     pub fn add_raw_event_at<Event>(
         &mut self,
         stream: Stream,
@@ -318,6 +326,7 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         event: Event,
         modifier: Option<ListenerKey>,
         timestamp: chrono::DateTime<chrono::Utc>,
+        timezone: chrono::FixedOffset,
     ) where
         Event: Ord + Clone + crate::Event + 'static,
         Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
@@ -331,6 +340,7 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
             event: EventType::User(event.to_versioned()),
             timestamp,
             within_device_events_index,
+            timezone,
         };
 
         self.add_device_event(stream, device, versioned_event, modifier);

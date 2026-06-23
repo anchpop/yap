@@ -531,6 +531,7 @@ impl Weapon {
             self.device_id.clone(),
             event,
             None,
+            utils::current_local_offset(),
         );
         self.flush_notifications();
     }
@@ -546,6 +547,7 @@ impl Weapon {
             event,
             None,
             timestamp,
+            utils::current_local_offset(),
         );
         self.flush_notifications();
     }
@@ -556,6 +558,7 @@ impl Weapon {
             self.device_id.clone(),
             event,
             None,
+            utils::current_local_offset(),
         );
         self.flush_notifications();
     }
@@ -1092,7 +1095,12 @@ impl weapon::AppState for Deck {
             event,
             timestamp,
             within_device_events_index: _,
+            timezone,
         } = event;
+        // Bucket this event by the user's local day *at the time it was created*, using the
+        // timezone recorded on the event. This is more accurate than the current timezone for
+        // historical events (e.g. ones synced from another device or another locale).
+        let timezone = *timezone;
 
         let DeckEvent::Language(LanguageEvent {
             target_language: event_language,
@@ -1114,7 +1122,7 @@ impl weapon::AppState for Deck {
             // Clear accomplishment on each review
             deck.accomplishment = None;
 
-            let day = timestamp.with_timezone(&context.timezone).date_naive();
+            let day = timestamp.with_timezone(&timezone).date_naive();
             let time_before = deck
                 .stats
                 .today
@@ -1122,7 +1130,7 @@ impl weapon::AppState for Deck {
                 .filter(|t| t.day == day)
                 .map_or(0, |t| t.time_spent_seconds);
 
-            deck.update_daily_activity(timestamp, &context.timezone);
+            deck.update_daily_activity(timestamp, &timezone);
             deck.stats.total_reviews += 1;
 
             // Check if the user just crossed their daily study goal
@@ -1148,7 +1156,7 @@ impl weapon::AppState for Deck {
             LanguageEventContent::TranslationChallenge { .. }
             | LanguageEventContent::TranscriptionChallenge { .. } => {
                 let days_since_epoch = timestamp
-                    .with_timezone(&context.timezone)
+                    .with_timezone(&timezone)
                     .date_naive()
                     .num_days_from_ce() as i64;
                 *deck
@@ -4933,6 +4941,7 @@ mod tests {
             let ts = weapon::data_model::Timestamped {
                 timestamp: chrono::Utc::now(),
                 within_device_events_index: 0,
+                timezone: deck.context.timezone,
                 event,
             };
             let context = deck.context.clone();
@@ -5051,6 +5060,7 @@ mod tests {
         let timestamped = Timestamped {
             timestamp: chrono::Utc::now(),
             within_device_events_index: 0,
+            timezone: deck.context.timezone,
             event,
         };
         let context = deck.context.clone();
@@ -5245,6 +5255,7 @@ mod tests {
         let timestamped = Timestamped {
             timestamp: chrono::Utc::now(),
             within_device_events_index: 0,
+            timezone: context.timezone,
             event,
         };
 
@@ -5297,6 +5308,7 @@ mod tests {
             let timestamped = Timestamped {
                 timestamp: chrono::Utc::now(),
                 within_device_events_index: 0,
+                timezone: deck.context.timezone,
                 event,
             };
 
