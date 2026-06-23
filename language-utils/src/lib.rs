@@ -3358,6 +3358,10 @@ pub const COURSES: &[Course] = &[
         target_language: Language::Portuguese,
     },
     Course {
+        native_language: Language::French,
+        target_language: Language::Portuguese,
+    },
+    Course {
         native_language: Language::English,
         target_language: Language::Russian,
     },

@@ -402,6 +402,9 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
         (Language::English, Language::Portuguese) => {
             include_bytes!("../../../out/por_for_eng/language_data.rkyv").to_vec()
         }
+        (Language::French, Language::Portuguese) => {
+            include_bytes!("../../../out/por_for_fra/language_data.rkyv").to_vec()
+        }
         (Language::English, Language::Russian) => {
             include_bytes!("../../../out/rus_for_eng/language_data.rkyv").to_vec()
         }
