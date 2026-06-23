@@ -120,6 +120,13 @@ static LANGUAGE_DATA: LazyLock<BTreeMap<Course, &'static [u8]>> = LazyLock::new(
     );
     data.insert(
         Course {
+            native_language: Language::French,
+            target_language: Language::Portuguese,
+        },
+        include_bytes!("../../out/por_for_fra/language_data.rkyv") as &'static [u8],
+    );
+    data.insert(
+        Course {
             native_language: Language::English,
             target_language: Language::Russian,
         },
