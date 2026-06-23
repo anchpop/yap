@@ -13,10 +13,11 @@
           overlays = [ rust-overlay.overlays.default ];
         };
 
-        rustToolchain = pkgs.rust-bin.stable.latest.default.override {
-          extensions = [ "rust-src" "rustfmt" "clippy" ];
-          targets = [ "wasm32-unknown-unknown" ];
-        };
+        # Single source of truth: matches rust-toolchain.toml (channel +
+        # components + targets) so the dev shell can never drift from the
+        # pinned compiler (previously `stable.latest` lagged behind and broke
+        # `cfg_select`).
+        rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
@@ -31,6 +32,12 @@
             openssl.dev
             sqlite
             sqlite.dev
+            # audiopus_sys (via opus <- google-tts) links system Opus through
+            # pkg-config; without it the bundled CMake build mis-installs to
+            # lib64/ and the linker can't find -lopus. cmake is a fallback.
+            cmake
+            libopus
+            libopus.dev
 
             # Node / frontend
             nodejs_22
@@ -48,6 +55,12 @@
             PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
             LIBRARY_PATH = "${pkgs.sqlite.out}/lib";
           };
+
+          # generate-data's Google translator (gcp_auth) needs a service-account
+          # JSON, not the API keys in .env. The account is git-crypt'd in the repo.
+          shellHook = ''
+            export GOOGLE_APPLICATION_CREDENTIALS="$PWD/secrets/gcp-service-account.json"
+          '';
         };
       });
 }
