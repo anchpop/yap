@@ -77,7 +77,7 @@ impl DayChallengeIterator {
             let ts = Timestamped {
                 timestamp: self.current_time,
                 within_device_events_index: self.event_index,
-                timezone: deck.context.timezone,
+                timezone: Some(deck.context.timezone),
                 event,
             };
             deck = apply_event(deck, &ts);
@@ -165,7 +165,7 @@ impl Iterator for DayChallengeIterator {
                 let ts = Timestamped {
                     timestamp: self.current_time,
                     within_device_events_index: self.event_index,
-                    timezone: self.deck().context.timezone,
+                    timezone: Some(self.deck().context.timezone),
                     event,
                 };
                 let deck = self.take_deck();

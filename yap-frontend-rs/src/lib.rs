@@ -1099,8 +1099,10 @@ impl weapon::AppState for Deck {
         } = event;
         // Bucket this event by the user's local day *at the time it was created*, using the
         // timezone recorded on the event. This is more accurate than the current timezone for
-        // historical events (e.g. ones synced from another device or another locale).
-        let timezone = *timezone;
+        // historical events (e.g. ones synced from another device or another locale). Events
+        // recorded before timezones existed have no offset; fall back to the deck's current
+        // timezone for those, preserving the pre-timezone bucketing of already-persisted history.
+        let timezone = timezone.unwrap_or(context.timezone);
 
         let DeckEvent::Language(LanguageEvent {
             target_language: event_language,
@@ -4941,7 +4943,7 @@ mod tests {
             let ts = weapon::data_model::Timestamped {
                 timestamp: chrono::Utc::now(),
                 within_device_events_index: 0,
-                timezone: deck.context.timezone,
+                timezone: Some(deck.context.timezone),
                 event,
             };
             let context = deck.context.clone();
@@ -5060,7 +5062,7 @@ mod tests {
         let timestamped = Timestamped {
             timestamp: chrono::Utc::now(),
             within_device_events_index: 0,
-            timezone: deck.context.timezone,
+            timezone: Some(deck.context.timezone),
             event,
         };
         let context = deck.context.clone();
@@ -5255,7 +5257,7 @@ mod tests {
         let timestamped = Timestamped {
             timestamp: chrono::Utc::now(),
             within_device_events_index: 0,
-            timezone: context.timezone,
+            timezone: Some(context.timezone),
             event,
         };
 
@@ -5308,7 +5310,7 @@ mod tests {
             let timestamped = Timestamped {
                 timestamp: chrono::Utc::now(),
                 within_device_events_index: 0,
-                timezone: deck.context.timezone,
+                timezone: Some(deck.context.timezone),
                 event,
             };
 

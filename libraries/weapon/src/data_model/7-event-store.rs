@@ -340,7 +340,7 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
             event: EventType::User(event.to_versioned()),
             timestamp,
             within_device_events_index,
-            timezone,
+            timezone: Some(timezone),
         };
 
         self.add_device_event(stream, device, versioned_event, modifier);

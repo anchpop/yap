@@ -8,32 +8,32 @@
 //! Alongside the UTC `timestamp`, we record the user's `timezone` (offset from UTC) at the moment
 //! the event was created. This lets us reason about local time-of-day, streaks, and behavior
 //! patterns without losing information to UTC normalization. Events serialized before this field
-//! existed deserialize with a UTC (`+00:00`) offset via [`default_timezone`].
+//! existed deserialize to `None`; consumers fall back to the deck's current timezone for those,
+//! preserving the pre-timezone bucketing behavior for already-persisted history.
 
-/// Default timezone (UTC) for events serialized before the `timezone` field existed.
-fn default_timezone() -> chrono::FixedOffset {
-    chrono::FixedOffset::east_opt(0).expect("UTC offset is always valid")
-}
-
-/// (De)serialize a `chrono::FixedOffset` as its offset-from-UTC in seconds (`i32`).
+/// (De)serialize an `Option<chrono::FixedOffset>` as its offset-from-UTC in seconds (`i32`).
 ///
 /// `FixedOffset` has no `Serialize`/`Deserialize`/`Ord` impls we can rely on here, so we store
-/// the raw `local_minus_utc()` seconds. This is stable on disk and trivially orderable.
+/// the raw `local_minus_utc()` seconds. This is stable on disk and trivially orderable. `None`
+/// (an event recorded before timezones existed) round-trips as a missing/null field.
 mod timezone_serde {
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
     pub fn serialize<S: Serializer>(
-        tz: &chrono::FixedOffset,
+        tz: &Option<chrono::FixedOffset>,
         serializer: S,
     ) -> Result<S::Ok, S::Error> {
-        tz.local_minus_utc().serialize(serializer)
+        tz.map(|tz| tz.local_minus_utc()).serialize(serializer)
     }
 
     pub fn deserialize<'de, D: Deserializer<'de>>(
         deserializer: D,
-    ) -> Result<chrono::FixedOffset, D::Error> {
-        let seconds = i32::deserialize(deserializer)?;
+    ) -> Result<Option<chrono::FixedOffset>, D::Error> {
+        let Some(seconds) = Option::<i32>::deserialize(deserializer)? else {
+            return Ok(None);
+        };
         chrono::FixedOffset::east_opt(seconds)
+            .map(Some)
             .ok_or_else(|| serde::de::Error::custom("invalid timezone offset"))
     }
 }
@@ -44,10 +44,12 @@ mod timezone_serde {
 pub struct Timestamped<E> {
     pub timestamp: chrono::DateTime<chrono::Utc>,
     pub within_device_events_index: usize,
-    /// The user's timezone (offset from UTC, in seconds) when the event was created.
-    #[serde(default = "default_timezone", with = "timezone_serde")]
-    #[cfg_attr(target_arch = "wasm32", tsify(type = "number"))]
-    pub timezone: chrono::FixedOffset,
+    /// The user's timezone (offset from UTC, in seconds) when the event was created. `None` for
+    /// events recorded before this field existed — consumers fall back to the deck's current
+    /// timezone for those.
+    #[serde(default, with = "timezone_serde")]
+    #[cfg_attr(target_arch = "wasm32", tsify(optional, type = "number"))]
+    pub timezone: Option<chrono::FixedOffset>,
     pub event: E,
 }
 
