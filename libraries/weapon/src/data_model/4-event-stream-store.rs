@@ -188,6 +188,7 @@ where
                 event: EventType::User(versioned_event),
                 timestamp,
                 within_device_events_index,
+                timezone,
             } => {
                 // Convert from versioned, passing context
                 if let Some(current_event) = E::from_versioned(versioned_event, context) {
@@ -195,6 +196,7 @@ where
                         event: current_event,
                         timestamp: *timestamp,
                         within_device_events_index: *within_device_events_index,
+                        timezone: *timezone,
                     };
                     state = A::process_event(state, context, &timestamped);
                 }

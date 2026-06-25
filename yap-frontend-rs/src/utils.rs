@@ -93,6 +93,25 @@ impl Drop for PerfTimer {
     }
 }
 
+/// The user's current local timezone offset from UTC, as a `chrono::FixedOffset`.
+///
+/// On wasm, this reads the browser's timezone via `js_sys::Date::getTimezoneOffset`, which
+/// returns minutes that are positive when local time is *behind* UTC. Off-wasm (tests, native
+/// tooling) it falls back to UTC.
+pub fn current_local_offset() -> chrono::FixedOffset {
+    #[cfg(target_arch = "wasm32")]
+    let offset_seconds = {
+        // getTimezoneOffset() is minutes and positive when local is behind UTC.
+        let offset_minutes = js_sys::Date::new_0().get_timezone_offset();
+        (-offset_minutes * 60.0) as i32
+    };
+    #[cfg(not(target_arch = "wasm32"))]
+    let offset_seconds = 0;
+
+    chrono::FixedOffset::east_opt(offset_seconds)
+        .unwrap_or_else(|| chrono::FixedOffset::east_opt(0).expect("UTC offset is always valid"))
+}
+
 pub fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
     // `set_panic_hook` function at least once during initialization, and then
