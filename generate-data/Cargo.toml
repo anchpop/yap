@@ -14,6 +14,7 @@ serde.workspace = true
 serde_json.workspace = true
 tokio.workspace = true
 tysm.workspace = true
+osmo.workspace = true
 schemars.workspace = true
 language-utils = { path = "../language-utils" }
 google-tts = { path = "../libraries/google-tts" }
