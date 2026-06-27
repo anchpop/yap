@@ -60,6 +60,16 @@
           # JSON, not the API keys in .env. The account is git-crypt'd in the repo.
           shellHook = ''
             export GOOGLE_APPLICATION_CREDENTIALS="$PWD/secrets/gcp-service-account.json"
+
+            # Cache mirroring via osmo: generate-data warms/flushes .cache to the
+            # `yap-cache` R2 bucket when these are set. Credentials are rendered by
+            # sops-nix to /run/secrets/r2/* (owner andrep). Only export each var if its
+            # secret file is readable, so machines/CI without the secrets are unaffected.
+            export YAP_CACHE_BUCKET="yap-cache"
+            for pair in account_id:R2_ACCOUNT_ID access_key_id:R2_ACCESS_KEY_ID secret_access_key:R2_SECRET_ACCESS_KEY; do
+              secret_file="/run/secrets/r2/''${pair%%:*}"
+              [ -r "$secret_file" ] && export "''${pair##*:}=$(cat "$secret_file")"
+            done
           '';
         };
       });
