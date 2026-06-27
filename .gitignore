@@ -22,8 +22,10 @@ yap-frontend/dev-dist
 .direnv
 .envrc
 
-# Morphology data download cache (re-download with generate_morphology_data.py)
-.cache/morphology/
+# The response/data cache is synced via osmo/R2 (bucket `yap-cache`), not git.
+# Ignore all cache contents but keep the osmo strategy config tracked.
+.cache/*
+!.cache/.osmo.json
 
 # Profiling artifacts
 perf.data
