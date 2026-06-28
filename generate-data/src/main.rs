@@ -14,6 +14,7 @@ use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
 
+mod cache_remote;
 mod google_translate;
 use google_translate::GoogleTranslator;
 
@@ -134,9 +135,11 @@ async fn main() -> anyhow::Result<()> {
     // out or are skipped for lexide).
     let mut lang_filter: Option<String> = None;
     let mut cache_only = false;
+    let mut sync_cache_only = false;
     for arg in std::env::args().skip(1) {
         match arg.as_str() {
             "--cache-only" => cache_only = true,
+            "--sync-cache" => sync_cache_only = true,
             s if s.starts_with("--") => {
                 anyhow::bail!("unknown flag: {s}");
             }
@@ -152,6 +155,21 @@ async fn main() -> anyhow::Result<()> {
     if cache_only {
         println!("cache-only mode: no API calls will be made");
     }
+
+    // `--sync-cache`: just mirror the local .cache dir to/from the bucket and exit.
+    // Useful for warming a fresh machine, or pushing an existing cache, without running
+    // the pipeline. No-op (and exits) if YAP_CACHE_BUCKET isn't set.
+    if sync_cache_only {
+        if !cache_remote::enabled() {
+            anyhow::bail!("--sync-cache requires YAP_CACHE_BUCKET (and R2 credentials) to be set");
+        }
+        cache_remote::warm().await;
+        cache_remote::flush().await;
+        return Ok(());
+    }
+
+    // Warm the local cache from the bucket before anything reads it (best-effort).
+    cache_remote::warm().await;
 
     // Check and raise the file descriptor limit (macOS often defaults to 256)
     unsafe {
@@ -2269,6 +2287,9 @@ async fn main() -> anyhow::Result<()> {
         std::fs::write(&hash_file, format!("{hash};{size}"))
             .context("Failed to write hash file")?;
     }
+
+    // Push any new cache entries (LLM responses, translations, TTS, …) to the bucket.
+    cache_remote::flush().await;
 
     Ok(())
 }

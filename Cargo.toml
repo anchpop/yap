@@ -32,7 +32,12 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-tysm = "0.18.0"
+# Fork's main has the record-log cache (anchpop/tysm#48, merged). Switch to a published
+# version (`tysm = "0.19"`) once released.
+tysm = { git = "https://github.com/anchpop/tysm" }
+# Directory↔R2 sync engine (github.com/anchpop/osmo). generate-data uses it to mirror
+# the .cache directory to a bucket. Git dep until published to crates.io.
+osmo = { git = "https://github.com/anchpop/osmo" }
 reqwest = { version = "0.13", features = ["json", "query"] }
 tokio = { version = "1.52.3", features = ["full"] }
 opfs = { version = "0.2.0" }
