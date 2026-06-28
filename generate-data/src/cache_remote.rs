@@ -20,6 +20,7 @@ const CACHE_DIR: &str = ".cache";
 /// osmo strategy overrides written to `.cache/.osmo.json`:
 /// - tysm's `NNN.kv` shard logs are append-only key→value records (union by key);
 /// - the Google Translate cache is one mutable JSON map (union by top-level key).
+///
 /// Everything else (TTS, wav2vec2, wiktionary) is immutable/content-addressed — the
 /// default `path` strategy, so no rule needed.
 const OSMO_SETTINGS: &str = r#"{"files":[{"path":"*.kv","strategy":"records"},{"path":"google_translate/master_cache.json","strategy":"json_merge"}]}"#;
