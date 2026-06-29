@@ -687,7 +687,7 @@ export function TranslationChallenge({
     return getMovieMetadata(deck, movieIds);
   }, [sentence.movie_titles, deck]);
   const [correctTranslation, setCorrectTranslation] = useState(
-    sentence.native_translations[0],
+    sentence.native_translations[0] ?? "",
   );
   const [selectedPhraseIndex, setSelectedPhraseIndex] = useState<number>(-1);
   const [showReportModal, setShowReportModal] = useState(false);
@@ -963,7 +963,7 @@ export function TranslationChallenge({
           userTranslation,
           sentence.native_translations,
           nativeLanguage,
-        ) ?? sentence.native_translations[0];
+        ) ?? sentence.native_translations[0] ?? "";
       setCorrectTranslation(closest);
       const generation = ++gradingGenerationRef.current;
       setGrade({ grading: null });

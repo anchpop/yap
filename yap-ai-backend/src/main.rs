@@ -237,7 +237,7 @@ async fn text_to_speech(
         Language::Japanese => "GxhGYQesaQaYKePCZDEC", // Japanese voice
         Language::Hindi => "K24eC7JpUgk8zMtQYrpV",  // Hindi voice
 
-        Language::Chinese => todo!(),
+        Language::Chinese => return Err(StatusCode::NOT_IMPLEMENTED),
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -289,7 +289,7 @@ async fn google_text_to_speech(
         Language::Japanese => ("ja-JP", "ja-JP-Chirp3-HD-Achernar"),
         Language::Hindi => ("hi-IN", "hi-IN-Chirp3-HD-Achernar"),
 
-        Language::Chinese => todo!(),
+        Language::Chinese => return Err(StatusCode::NOT_IMPLEMENTED),
     };
 
     let client = google_tts::GoogleTtsClient::new(google_api_key);

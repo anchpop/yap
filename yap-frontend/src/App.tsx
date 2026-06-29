@@ -889,44 +889,6 @@ function Review({
   ]);
 
   useEffect(() => {
-    if (!currentChallenge) {
-      setBannedChallengeTypes(computeBannedChallengeTypes());
-    }
-  }, [currentChallenge, computeBannedChallengeTypes]);
-
-  useEffect(() => {
-    if (currentChallenge) return;
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
-
-    const scheduleRefresh = (storageKey: string) => {
-      const timestamp = localStorage.getItem(storageKey);
-      if (!timestamp) return;
-      const elapsed = Date.now() - parseInt(timestamp);
-      const remaining = CANT_LISTEN_DURATION_MS - elapsed;
-
-      if (remaining > 0) {
-        timeouts.push(
-          setTimeout(() => {
-            setBannedChallengeTypes(computeBannedChallengeTypes());
-          }, remaining),
-        );
-      } else {
-        setBannedChallengeTypes(computeBannedChallengeTypes());
-      }
-    };
-
-    scheduleRefresh("yap-cant-listen-timestamp");
-    scheduleRefresh("yap-cant-speak-timestamp");
-
-    return () => timeouts.forEach((timeout) => clearTimeout(timeout));
-  }, [
-    currentChallenge,
-    bannedChallengeTypes,
-    CANT_LISTEN_DURATION_MS,
-    computeBannedChallengeTypes,
-  ]);
-
-  useEffect(() => {
     const abortController = new AbortController();
 
     deck.cache_challenge_audio(accessToken, abortController.signal);
