@@ -174,8 +174,9 @@ pub async fn grade_translation(
 {primary_expression_system_instruction}
 
 You will be given:
-1. Literals: Individual words in order, each with an index number. Words marked with "_" do not need grading (proper nouns, punctuation, etc.).
-2. Phrases: Multi-word expressions that should be graded as units.
+1. The challenge sentence, sometimes followed by its IPA pronunciation (connected-speech phonemes). Use it to spot pronunciation- or homophone-driven mistakes; it may be absent.
+2. Literals: Individual words in order, each with an index number. Words marked with "_" do not need grading (proper nouns, punctuation, etc.).
+3. Phrases: Multi-word expressions that should be graded as units.
 
 For each indexed literal, decide if the user remembered it ("Remembered"), forgot it ("Forgot"), or if it's indeterminate (null). Grade each literal individually based on the user's translation.
 
@@ -226,9 +227,21 @@ When you mention a {target_language_name} word or phrase inside the encouragemen
 "#,
     );
 
+    // Phonemize the challenge sentence so the LLM can reason about
+    // pronunciation- and homophone-driven mistakes (espeak applies
+    // language-level liaison/elision the per-word data can't). Pure
+    // enrichment: if espeak is unavailable, the language is unsupported, or
+    // anything fails, we just omit the IPA line — grading still proceeds.
+    let challenge_ipa_line = match espeak::phonemize_phrase(challenge_sentence, target_language) {
+        Ok(Some(phonemes)) if !phonemes.is_empty() => {
+            format!("Challenge sentence IPA: /{}/\n", phonemes.join(""))
+        }
+        _ => String::new(),
+    };
+
     let user_prompt = format!(
         r#"Challenge sentence: {challenge_sentence}
-User response: {user_sentence}
+{challenge_ipa_line}User response: {user_sentence}
 
 Literals:
 {literals_display}

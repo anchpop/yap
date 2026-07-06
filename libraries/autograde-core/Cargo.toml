@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 language-utils = { path = "../../language-utils" }
+espeak = { path = "../espeak" }
 tysm.workspace = true
 serde.workspace = true
 schemars.workspace = true

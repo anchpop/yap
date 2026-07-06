@@ -68,3 +68,26 @@ jobs:
         with:
           command: nextest
           args: run --all --no-default-features
+
+  # Verify the custom espeak-ng fork (anchpop/espeak-ng) still builds and can
+  # phonemize — the translation grader shells out to it at runtime. Only the
+  # `espeak-builder` Docker stage is built here (it clones + compiles the fork);
+  # the full image build happens in deploy.yml. This catches a broken fork bump
+  # on the PR instead of at deploy time.
+  espeak:
+    runs-on: big-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Build espeak-ng fork stage
+        run: docker build --target espeak-builder -t espeak-fork -f yap-ai-backend/Dockerfile .
+
+      - name: Verify phonemization
+        run: |
+          docker run --rm espeak-fork sh -c \
+            'LD_LIBRARY_PATH=/espeak-install/usr/lib \
+             /espeak-install/usr/bin/espeak-ng --path=/espeak-install/usr/share \
+             -v fr -q --ipa -x "on est" | grep -q .'

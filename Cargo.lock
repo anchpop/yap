@@ -260,6 +260,7 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 name = "autograde-core"
 version = "0.1.0"
 dependencies = [
+ "espeak",
  "language-utils",
  "schemars",
  "serde",
@@ -1568,6 +1569,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d817e038c30374a4bcb22f94d0a8a0e216958d4c3dcde369b1439fec4bdda6e6"
 
 [[package]]
+name = "espeak"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "language-utils",
+]
+
+[[package]]
 name = "eyedee"
 version = "0.1.0"
 dependencies = [
@@ -1855,6 +1864,7 @@ dependencies = [
  "dashmap",
  "dotenvy",
  "env_logger",
+ "espeak",
  "futures",
  "gcp_auth",
  "google-tts",

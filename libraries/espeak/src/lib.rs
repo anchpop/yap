@@ -139,7 +139,7 @@ mod tests {
 
     // Ignored in CI: requires the espeak-ng binary (and the liaison output
     // depends on our custom French-stress-liaison build). Run locally with
-    // ESPEAK_NG_BIN set: `cargo test -p generate-data -- --ignored`.
+    // ESPEAK_NG_BIN set: `cargo test -p espeak -- --ignored`.
     #[test]
     #[ignore = "requires espeak-ng binary (custom French-liaison build)"]
     fn french_handles_liaison() {
