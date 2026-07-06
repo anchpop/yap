@@ -7,22 +7,25 @@ WORKDIR /app
 
 # Build the custom espeak-ng fork (anchpop/espeak-ng — French-liaison patches).
 # The translation grader shells out to it to phonemize the challenge sentence.
-# Built on trixie so libespeak-ng.so matches the trixie-slim runtime's glibc.
-# `--without-pcaudiolib`/`--without-mbrola` drop the audio backends we never use
-# (we only ever call `-q --ipa`), keeping the binary free of audio .so deps.
+# Built on trixie to match the trixie-slim runtime's glibc. The fork is
+# CMake-based; we build a static libespeak-ng (BUILD_SHARED_LIBS=OFF) so the
+# runtime needs only the binary + data, and skip audio backends (MBROLA off,
+# pcaudio/sonic absent since we never install their -dev libs) — we only ever
+# call `-q --ipa`.
 FROM debian:trixie-slim AS espeak-builder
 # Bump to pull in newer fork commits (anchpop/espeak-ng@master).
 ARG ESPEAK_NG_REF=724808c5a83f9ef95fdd0db886ba7ba537ff224a
 RUN apt-get update && apt-get install -y \
-    git build-essential autoconf automake libtool pkg-config \
+    git build-essential cmake \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/anchpop/espeak-ng.git /src \
     && cd /src \
     && git checkout "$ESPEAK_NG_REF" \
-    && ./autogen.sh \
-    && ./configure --prefix=/usr --without-pcaudiolib --without-mbrola \
-    && make -j"$(nproc)" \
-    && make DESTDIR=/espeak-install install
+    && cmake -Bbuild -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=OFF -DUSE_MBROLA=OFF \
+    && cmake --build build -j"$(nproc)" \
+    && cmake --build build --target data \
+    && DESTDIR=/espeak-install cmake --install build
 
 FROM chef AS planner
 COPY Cargo.toml Cargo.lock ./
@@ -75,13 +78,11 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install the espeak-ng fork: binary, shared lib, and phoneme data. The grader
-# resolves the binary via ESPEAK_NG_BIN and the data dir's parent via
+# Install the espeak-ng fork: the (statically-linked) binary and phoneme data.
+# The grader resolves the binary via ESPEAK_NG_BIN and the data dir's parent via
 # ESPEAK_NG_DATA_PATH (espeak appends `espeak-ng-data` itself).
 COPY --from=espeak-builder /espeak-install/usr/bin/espeak-ng /usr/local/bin/espeak-ng
-COPY --from=espeak-builder /espeak-install/usr/lib/ /usr/local/lib/
 COPY --from=espeak-builder /espeak-install/usr/share/espeak-ng-data/ /usr/local/share/espeak-ng-data/
-RUN ldconfig
 ENV ESPEAK_NG_BIN=/usr/local/bin/espeak-ng \
     ESPEAK_NG_DATA_PATH=/usr/local/share
 # Fail the build loudly if espeak can't phonemize — otherwise a broken install

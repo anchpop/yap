@@ -88,6 +88,5 @@ jobs:
       - name: Verify phonemization
         run: |
           docker run --rm espeak-fork sh -c \
-            'LD_LIBRARY_PATH=/espeak-install/usr/lib \
-             /espeak-install/usr/bin/espeak-ng --path=/espeak-install/usr/share \
+            '/espeak-install/usr/bin/espeak-ng --path=/espeak-install/usr/share \
              -v fr -q --ipa -x "on est" | grep -q .'
