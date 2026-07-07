@@ -10,7 +10,8 @@ export function BetaFeatureBanner({ children }: { children?: ReactNode }) {
     <div className="flex items-center gap-2">
       <Badge variant="secondary">🧪 Beta</Badge>
       <span className="text-sm text-muted-foreground">
-        {children ?? "This is an experimental tool — expect rough edges."}
+        {children ??
+          "This feature isn't ready for prime time yet, but you can test it here if you want."}
       </span>
     </div>
   );
