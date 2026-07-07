@@ -2273,8 +2273,7 @@ impl Deck {
 
     /// Get the percent known for a sentence list. For movies, uses the movie's frequency list.
     /// For essential (None), returns the current tier/level percent.
-    #[allow(dead_code)]
-    fn sentence_list_percent_known(
+    pub(crate) fn sentence_list_percent_known(
         &self,
         sentence_list: &Option<SentenceListSelection>,
     ) -> ComprehensionScore {
@@ -3051,7 +3050,7 @@ impl Deck {
         }
     }
 
-    fn cards_to_event(
+    pub(crate) fn cards_to_event(
         &self,
         cards: &[CardIndicator<SpurGram, Spur>],
         sentence_list: &Option<SentenceListSelection>,
@@ -3576,8 +3575,8 @@ pub struct FrequencyKnowledgePoint {
 }
 
 struct ComprehensionScore {
-    percent_known: f64,
-    all_available_learned: bool,
+    pub(crate) percent_known: f64,
+    pub(crate) all_available_learned: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

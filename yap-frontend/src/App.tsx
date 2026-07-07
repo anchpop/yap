@@ -43,6 +43,7 @@ import { supabase } from "@/lib/supabase";
 import type { Session as SupabaseSession } from "@supabase/supabase-js";
 import { useInterval, useNetworkState } from "react-use";
 import { Flashcard } from "@/components/Flashcard";
+import { Simulate } from "@/components/Simulate";
 import { TranslationChallenge } from "@/components/challenges/TranslationChallenge";
 import { PronunciationChallenge } from "@/components/challenges/PronunciationChallenge";
 import { profilerOnRender, languageToIso6391 } from "./lib/utils";
@@ -563,10 +564,59 @@ const Tools = memo(function Tools({ deck: _deck }: { deck: Deck }) {
           <span>🩹 Leeches</span>
           <span className="text-muted-foreground">→</span>
         </button>
+        <button
+          onClick={() => navigate("/simulate")}
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted transition-colors"
+        >
+          <span>🔮 Simulate</span>
+          <span className="text-muted-foreground">→</span>
+        </button>
       </Card>
     </div>
   );
 });
+
+function SimulatePage() {
+  const { userInfo } = useOutletContext<AppContextType>();
+  const deck = useDeck();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (deck?.type === "noLanguageSelected") {
+      navigate("/", { replace: true });
+    }
+  }, [deck, navigate]);
+
+  if (deck?.type === "noLanguageSelected") {
+    return null;
+  }
+
+  if (deck?.type !== "deck" || !deck.deck) {
+    return (
+      <TopPageLayout
+        userInfo={userInfo}
+        headerProps={{
+          backButton: { label: "Simulate", onBack: () => navigate("/learn") },
+        }}
+      >
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </TopPageLayout>
+    );
+  }
+
+  return (
+    <TopPageLayout
+      userInfo={userInfo}
+      headerProps={{
+        backButton: { label: "Simulate", onBack: () => navigate("/learn") },
+      }}
+    >
+      <Simulate deck={deck.deck} targetLanguage={deck.targetLanguage} />
+    </TopPageLayout>
+  );
+}
 
 function DictionaryPage() {
   const { userInfo, accessToken } = useOutletContext<AppContextType>();
@@ -1267,6 +1317,7 @@ const router = createBrowserRouter([
           { path: "learn", element: <ReviewPage /> },
           { path: "dictionary", element: <DictionaryPage /> },
           { path: "leeches", element: <LeechesPage /> },
+          { path: "simulate", element: <SimulatePage /> },
           { path: "sentence-lists", element: <SentenceListsPage /> },
           { path: "select-language", element: <SelectLanguagePage /> },
           { path: "user/id/:id", element: <UserProfilePage /> },

@@ -1,9 +1,11 @@
 use crate::Rating;
+use crate::next_cards::AllowedCards;
 use crate::{
     Challenge, Deck, DeckState, TranscribeComprehensibleSentence, TranslateComprehensibleSentence,
 };
 use chrono::{DateTime, Duration, Utc};
 use language_utils::{Gram, transcription_challenge};
+use wasm_bindgen::prelude::*;
 use weapon::AppState;
 use weapon::data_model::Timestamped;
 
@@ -21,6 +23,9 @@ pub struct DailySimulationIterator {
     deck: Deck,
     current_time: DateTime<Utc>,
     event_index: usize,
+    /// How many new cards to add at the end of each day. None uses the same
+    /// smart-add batch size the app would offer (ramps up to ~10/day).
+    new_cards_per_day: Option<usize>,
 }
 
 impl DailySimulationIterator {
@@ -29,7 +34,14 @@ impl DailySimulationIterator {
             deck,
             current_time,
             event_index: 0,
+            new_cards_per_day: None,
         }
+    }
+
+    /// Override how many new cards are added per simulated day.
+    pub fn with_new_cards_per_day(mut self, count: usize) -> Self {
+        self.new_cards_per_day = Some(count);
+        self
     }
 
     /// Start iterating over one day's challenges.
@@ -39,6 +51,7 @@ impl DailySimulationIterator {
             deck: Some(self.deck),
             current_time: self.current_time,
             event_index: self.event_index,
+            new_cards_per_day: self.new_cards_per_day,
             done: false,
         }
     }
@@ -52,6 +65,7 @@ pub struct DayChallengeIterator {
     deck: Option<Deck>,
     current_time: DateTime<Utc>,
     event_index: usize,
+    new_cards_per_day: Option<usize>,
     done: bool,
 }
 
@@ -68,12 +82,32 @@ impl DayChallengeIterator {
         self.deck.take().unwrap()
     }
 
-    /// Finish this day: add 10 new cards, advance time, and return the simulation iterator.
+    /// Finish this day: add new cards, advance time, and return the simulation iterator.
     pub fn finish_day(mut self) -> DailySimulationIterator {
         let mut deck = self.take_deck();
 
-        // Add 10 new cards at the end of the day
-        if let Some(event) = deck.get_no_cards_ready_info(vec![], None).smart_add_event {
+        // Add new cards at the end of the day, drawn from the deck's active
+        // sentence list (the AddCards event records the list, and replaying it
+        // with None would reset the deck's selection).
+        let sentence_list = deck.get_sentence_list();
+        let event = match self.new_cards_per_day {
+            Some(count) => {
+                let cards: Vec<_> = deck
+                    .next_unknown_cards(
+                        AllowedCards::BannedRequirements(Default::default()),
+                        &sentence_list,
+                        count,
+                    )
+                    .take(count)
+                    .collect();
+                deck.cards_to_event(&cards, &sentence_list)
+            }
+            None => {
+                deck.get_no_cards_ready_info(vec![], sentence_list)
+                    .smart_add_event
+            }
+        };
+        if let Some(event) = event {
             let ts = Timestamped {
                 timestamp: self.current_time,
                 within_device_events_index: self.event_index,
@@ -88,6 +122,7 @@ impl DayChallengeIterator {
             deck,
             current_time: self.current_time + Duration::days(1),
             event_index: self.event_index,
+            new_cards_per_day: self.new_cards_per_day,
         }
     }
 }
@@ -206,6 +241,97 @@ impl Deck {
     /// callers must be explicit about their time choice.
     pub fn simulate_usage(&self, start_time: DateTime<Utc>) -> DailySimulationIterator {
         DailySimulationIterator::new(self.clone(), start_time)
+    }
+}
+
+/// One simulated day's results, sampled after the day's reviews and new cards.
+#[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
+pub struct SimulationSample {
+    /// Days since the simulation started (1 = end of the first simulated day).
+    pub day: u32,
+    /// Percent known (0-100) of the active sentence list, if one is selected.
+    pub goal_percent: Option<f64>,
+    /// Percent of words known overall (0-100).
+    pub overall_percent: f64,
+    /// Challenges answered on this simulated day.
+    pub reviews: u32,
+    /// Total reviews on the deck by the end of this day (real history + simulated).
+    pub total_reviews: u32,
+    /// New cards added on this simulated day.
+    pub new_cards: u32,
+    /// Total cards on the deck by the end of this day.
+    pub total_cards: u32,
+}
+
+/// A paused simulation of future deck usage. The frontend advances it in
+/// chunks (e.g. two weeks at a time), yielding to the main thread between
+/// chunks and rendering the samples incrementally.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub struct DeckSimulation {
+    iterator: Option<DailySimulationIterator>,
+    day: u32,
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl DeckSimulation {
+    /// Advance the simulation by `days` days, returning one sample per day.
+    pub fn simulate_days(&mut self, days: u32) -> Vec<SimulationSample> {
+        let Some(mut iterator) = self.iterator.take() else {
+            return Vec::new();
+        };
+
+        let mut samples = Vec::with_capacity(days as usize);
+        for _ in 0..days {
+            let cards_before = iterator.deck.num_cards_added();
+            let mut day_iter = iterator.next_day();
+            let reviews = day_iter.by_ref().count() as u32;
+            iterator = day_iter.finish_day();
+            self.day += 1;
+
+            let deck = &iterator.deck;
+            let goal_percent = deck.get_sentence_list().map(|selection| {
+                deck.sentence_list_percent_known(&Some(selection))
+                    .percent_known
+            });
+            let total_cards = deck.num_cards_added();
+            samples.push(SimulationSample {
+                day: self.day,
+                goal_percent,
+                overall_percent: deck.get_percent_of_words_known() * 100.0,
+                reviews,
+                total_reviews: deck.get_total_reviews() as u32,
+                new_cards: total_cards.saturating_sub(cards_before) as u32,
+                total_cards: total_cards as u32,
+            });
+        }
+
+        self.iterator = Some(iterator);
+        samples
+    }
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl Deck {
+    /// Begin a chunked simulation of future usage starting at `timestamp_ms`,
+    /// adding `new_cards_per_day` cards each simulated day (None uses the
+    /// app's default smart-add batch size).
+    /// The deck itself is not modified; the simulation runs on a clone.
+    pub fn start_simulation(
+        &self,
+        timestamp_ms: f64,
+        new_cards_per_day: Option<u32>,
+    ) -> DeckSimulation {
+        let start_time = DateTime::from_timestamp_millis(timestamp_ms as i64)
+            .expect("invalid simulation start timestamp");
+        let mut iterator = self.simulate_usage(start_time);
+        if let Some(count) = new_cards_per_day {
+            iterator = iterator.with_new_cards_per_day(count as usize);
+        }
+        DeckSimulation {
+            iterator: Some(iterator),
+            day: 0,
+        }
     }
 }
 

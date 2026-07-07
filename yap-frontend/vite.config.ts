@@ -32,6 +32,10 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
+  server: {
+    // Allow access through the yap-preview.beef.baby reverse proxy
+    allowedHosts: ["yap-preview.beef.baby"],
+  },
   plugins: [
     staticSitePlugin(),
     VitePWA({ 
