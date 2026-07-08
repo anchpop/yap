@@ -53,9 +53,13 @@ export function LockupOfferScreen({
           if (!cards || cards.length === 0) return null;
           return (
             <div key={type} className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground text-center">
-                {cards.length} {label} {cards.length === 1 ? "card" : "cards"}
-              </p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 border-t border-border" />
+                <p className="text-sm font-medium text-muted-foreground">
+                  {cards.length} {label} {cards.length === 1 ? "card" : "cards"}
+                </p>
+                <div className="flex-1 border-t border-border" />
+              </div>
               <div className="flex flex-wrap justify-center gap-y-1">
                 {cards.map((card, i) => (
                   <span
