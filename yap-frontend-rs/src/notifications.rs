@@ -228,7 +228,7 @@ impl Deck {
         }
 
         // Remove duplicate notifications at the same time
-        notifications.sort_by(|a, b| a.scheduled_at.partial_cmp(&b.scheduled_at).unwrap());
+        notifications.sort_by(|a, b| a.scheduled_at.total_cmp(&b.scheduled_at));
         notifications.dedup_by(|a, b| (a.scheduled_at - b.scheduled_at).abs() < 60000.0); // Within 1 minute
 
         notifications
