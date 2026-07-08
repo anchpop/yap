@@ -1187,6 +1187,7 @@ function Review({
         ) : lockupOffer ? (
           <LockupOfferScreen
             offer={lockupOffer}
+            deck={deck}
             targetLanguage={targetLanguage}
             onAccept={addEvent}
           />

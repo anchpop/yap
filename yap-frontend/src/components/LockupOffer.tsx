@@ -2,14 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type {
   CardSummary,
+  Deck,
   DeckEvent,
   Language,
   LockupOffer,
 } from "../../../yap-frontend-rs/pkg";
 import { TargetLanguageText } from "./TargetLanguageText";
+import { WeekProgressStrip } from "./no-cards-ready";
 
 interface LockupOfferScreenProps {
   offer: LockupOffer;
+  deck: Deck;
   targetLanguage: Language;
   onAccept: (event: DeckEvent) => void;
 }
@@ -24,6 +27,7 @@ const CARD_GROUPS = [
 /// due cards active and sets the rest aside ("lockup").
 export function LockupOfferScreen({
   offer,
+  deck,
   targetLanguage,
   onAccept,
 }: LockupOfferScreenProps) {
@@ -72,9 +76,7 @@ export function LockupOfferScreen({
         );
       })}
 
-      <p className="text-muted-foreground text-center">
-        The rest are set aside for later.
-      </p>
+      <WeekProgressStrip deck={deck} />
 
       <Button onClick={() => onAccept(lockEvent)} size="lg" className="w-full">
         Let's go

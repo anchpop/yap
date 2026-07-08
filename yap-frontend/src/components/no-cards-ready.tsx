@@ -676,7 +676,7 @@ function useMidnightTick() {
   return day;
 }
 
-function WeekProgressStrip({ deck }: { deck: Deck }) {
+export function WeekProgressStrip({ deck }: { deck: Deck }) {
   const day = useMidnightTick();
   const week = useMemo(() => deck.get_current_week_progress(), [deck, day]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
