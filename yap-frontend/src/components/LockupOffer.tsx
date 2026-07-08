@@ -45,7 +45,7 @@ export function LockupOfferScreen({
     <div className="space-y-4">
       <Card className="max-w w-full p-6 gap-6 select-none" animate>
         <h2 className="text-xl font-semibold text-center">
-          Let's review these cards today
+          Today's review plan:
         </h2>
 
         {CARD_GROUPS.map(({ type, label }) => {
@@ -77,7 +77,7 @@ export function LockupOfferScreen({
           size="lg"
           className="w-full"
         >
-          Let's go
+          Let's go!
         </Button>
       </Card>
 
