@@ -125,15 +125,6 @@ export const NoCardsReady = memo(function NoCardsReady({
     [nextDueCard],
   );
 
-  let nextTargetLanguageWord: string | null = null;
-  if (
-    nextDueCard &&
-    (nextDueCard.card_indicator.type === "WrittenPhrase" ||
-      nextDueCard.card_indicator.type === "WrittenGram")
-  ) {
-    nextTargetLanguageWord = nextDueCard?.card_text;
-  }
-
   // Calculate if workload looks light
   const showLightWorkloadNotification =
     info.cards_added_past_16_hours < 20 &&
@@ -332,23 +323,26 @@ export const NoCardsReady = memo(function NoCardsReady({
 
     return (
       <div className="space-y-4">
-        <Card className="max-w w-full p-6 gap-6 select-none" animate>
-          <h2 className="text-xl font-semibold text-center">Nice job!</h2>
-          {nextDueSoon && nextDueCard !== null && (
-            <p className="text-muted-foreground text-center">
-              Your next review is{" "}
-              <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />.
-            </p>
-          )}
+        <div className="text-center py-4">
+          <div className="flex flex-col gap-2">
+            <p className="text-2xl font-bold">Nice job!</p>
+            {nextDueSoon && (
+              <NextReviewLine
+                nextDueCard={nextDueCard}
+                targetLanguage={targetLanguage}
+              />
+            )}
+          </div>
+        </div>
+        <div className="flex justify-center">
           <Button
             onClick={() => setShowReleasePlan(true)}
             size="lg"
             variant="outline"
-            className="w-full"
           >
             Review more
           </Button>
-        </Card>
+        </div>
         <WeekProgressStrip deck={deck} />
       </div>
     );
@@ -384,34 +378,10 @@ export const NoCardsReady = memo(function NoCardsReady({
                 : "Add some cards to keep building your vocabulary."}
             </p>
           ) : (
-            <p className="text-muted-foreground">
-              {nextTargetLanguageWord ? (
-                <>
-                  You'll review{" "}
-                  <span className="font-semibold">
-                    <TargetLanguageText language={targetLanguage}>
-                      {nextTargetLanguageWord}
-                    </TargetLanguageText>
-                  </span>{" "}
-                  {nextDueCard ? (
-                    <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
-                  ) : (
-                    "soon"
-                  )}
-                  .
-                </>
-              ) : (
-                <>
-                  Your next review is{" "}
-                  {nextDueCard ? (
-                    <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
-                  ) : (
-                    "soon"
-                  )}
-                  .
-                </>
-              )}
-            </p>
+            <NextReviewLine
+              nextDueCard={nextDueCard}
+              targetLanguage={targetLanguage}
+            />
           )}
         </div>
       </div>
@@ -700,4 +670,53 @@ export const NoCardsReady = memo(function NoCardsReady({
     </div>
   );
 });
+
+/// "You'll review <word> in 2 minutes." / "Your next review is soon."
+function NextReviewLine({
+  nextDueCard,
+  targetLanguage,
+}: {
+  nextDueCard: CardSummary | null;
+  targetLanguage: Language;
+}) {
+  let nextTargetLanguageWord: string | null = null;
+  if (
+    nextDueCard &&
+    (nextDueCard.card_indicator.type === "WrittenPhrase" ||
+      nextDueCard.card_indicator.type === "WrittenGram")
+  ) {
+    nextTargetLanguageWord = nextDueCard.card_text;
+  }
+
+  return (
+    <p className="text-muted-foreground">
+      {nextTargetLanguageWord ? (
+        <>
+          You'll review{" "}
+          <span className="font-semibold">
+            <TargetLanguageText language={targetLanguage}>
+              {nextTargetLanguageWord}
+            </TargetLanguageText>
+          </span>{" "}
+          {nextDueCard ? (
+            <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
+          ) : (
+            "soon"
+          )}
+          .
+        </>
+      ) : (
+        <>
+          Your next review is{" "}
+          {nextDueCard ? (
+            <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
+          ) : (
+            "soon"
+          )}
+          .
+        </>
+      )}
+    </p>
+  );
+}
 
