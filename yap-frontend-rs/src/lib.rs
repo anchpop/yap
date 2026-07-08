@@ -2700,7 +2700,7 @@ impl Deck {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn set_sentence_list(&self, sentence_list: Option<SentenceListSelection>) -> DeckEvent {
+    pub fn change_sentence_list(&self, sentence_list: Option<SentenceListSelection>) -> DeckEvent {
         DeckEvent::Language(LanguageEvent {
             target_language: self.context.course.target_language,
             native_language: self.context.course.native_language,
@@ -5612,14 +5612,14 @@ mod tests {
     }
 
     #[test]
-    fn test_set_sentence_list_does_not_increment_review_stats() {
+    fn test_change_sentence_list_does_not_increment_review_stats() {
         use crate::{Deck, DeckState, SentenceListSelection};
         use weapon::AppState;
         use weapon::data_model::Timestamped;
 
         let deck = Deck::default();
         let context = deck.context.clone();
-        let event = deck.set_sentence_list(Some(SentenceListSelection::Movie {
+        let event = deck.change_sentence_list(Some(SentenceListSelection::Movie {
             id: "tt0111161".to_string(),
         }));
         let timestamped = Timestamped {
