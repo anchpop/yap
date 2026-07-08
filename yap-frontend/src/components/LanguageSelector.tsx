@@ -293,7 +293,12 @@ export function LanguageSelector({
           targetLanguage: selectionState.targetLanguage,
         })
         .catch((e: unknown) => {
-          Sentry.captureException(e);
+          const message = e instanceof Error ? e.message : String(e);
+          // Network failures are expected on flaky mobile connections during
+          // onboarding; only report unexpected errors to Sentry.
+          if (!message.startsWith("Network error:")) {
+            Sentry.captureException(e);
+          }
         });
     }
   }, [selectionState, weapon]);

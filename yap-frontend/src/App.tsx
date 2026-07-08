@@ -249,7 +249,9 @@ function AppCheckLoggedIn({ weaponToken }: { weaponToken: WeaponToken }) {
       }
     };
 
-    fetchDisplayName();
+    fetchDisplayName().catch((error) => {
+      console.error("Failed to fetch display name", error);
+    });
 
     // Set up realtime subscription for display_name changes
     const channel = supabase

@@ -41,6 +41,12 @@ Sentry.init({
       }
     }
 
+    // Filter WASM streaming-compile failures caused by the network dropping
+    // mid-download. Message is unambiguous on its own (no stack needed).
+    if (message.startsWith("WebAssembly compilation aborted")) {
+      return null;
+    }
+
     return event;
   },
 
