@@ -431,7 +431,6 @@ function ReviewPage() {
         .with(
           { type: "deck", deck: P.not(P.nullish) },
           ({ deck, targetLanguage, nativeLanguage, startingFresh }) => {
-            const reviewInfo = deck.get_review_info([], Date.now());
             const totalReviewsCompleted = deck.get_total_reviews();
             const autoplayed = lastAutoPlayReviewCount == totalReviewsCompleted;
             const setAutoplayed = () =>
@@ -455,7 +454,6 @@ function ReviewPage() {
                     onChangeLanguage: () => navigate("/select-language"),
                     showSignupNag: deck !== null,
                     language: targetLanguage,
-                    dueCount: reviewInfo.due_count || 0,
                     dailyGoalPercent:
                       (deck.get_today_time_spent() / deck.get_daily_review_target()) * 100,
                   }}

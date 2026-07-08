@@ -18,9 +18,9 @@ interface LockupOfferScreenProps {
 }
 
 const CARD_GROUPS = [
-  { type: "WrittenGram", label: "reading", showSubtitle: true },
-  { type: "ListeningGram", label: "listening", showSubtitle: false },
-  { type: "LetterPronunciation", label: "pronunciation", showSubtitle: false },
+  { type: "WrittenGram", label: "reading" },
+  { type: "ListeningGram", label: "listening" },
+  { type: "LetterPronunciation", label: "pronunciation" },
 ] as const;
 
 /// Session-start screen shown when a review backlog builds up: keeps the most
@@ -48,7 +48,7 @@ export function LockupOfferScreen({
           Let's review these cards today
         </h2>
 
-        {CARD_GROUPS.map(({ type, label, showSubtitle }) => {
+        {CARD_GROUPS.map(({ type, label }) => {
           const cards = byType.get(type);
           if (!cards || cards.length === 0) return null;
           return (
@@ -56,20 +56,15 @@ export function LockupOfferScreen({
               <p className="text-sm font-medium text-muted-foreground text-center">
                 {cards.length} {label} {cards.length === 1 ? "card" : "cards"}
               </p>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap justify-center gap-y-1">
                 {cards.map((card, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1.5 rounded-lg border border-border bg-accent/50 text-sm font-medium"
+                    className={`px-3 text-sm font-medium ${i > 0 ? "border-l border-border" : ""}`}
                   >
                     <TargetLanguageText language={targetLanguage}>
                       {card.card_text}
                     </TargetLanguageText>
-                    {showSubtitle && card.card_subtitle && (
-                      <span className="ml-1.5 text-xs text-muted-foreground">
-                        {card.card_subtitle}
-                      </span>
-                    )}
                   </span>
                 ))}
               </div>
