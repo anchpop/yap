@@ -101,6 +101,15 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
   }, [info.smart_add_event, addEvent]);
 
+  // While any cards are set aside in lockup, adding new cards is suppressed
+  // and replaced by releasing the next batch from lockup
+  const releaseOffer = useMemo(() => deck.get_release_offer(), [deck]);
+  const releaseLockedCards = useCallback(() => {
+    if (releaseOffer) {
+      addEvent(releaseOffer.unlock_event);
+    }
+  }, [releaseOffer, addEvent]);
+
   let nextTargetLanguageWord: string | null = null;
   if (
     nextDueCard &&
@@ -148,12 +157,14 @@ export const NoCardsReady = memo(function NoCardsReady({
         return;
       }
 
-      if (
-        (event.code === "Space" || event.code === "Enter") &&
-        info.smart_add_event
-      ) {
-        event.preventDefault();
-        addSmartCards();
+      if (event.code === "Space" || event.code === "Enter") {
+        if (releaseOffer) {
+          event.preventDefault();
+          releaseLockedCards();
+        } else if (info.smart_add_event) {
+          event.preventDefault();
+          addSmartCards();
+        }
       }
     };
 
@@ -162,7 +173,7 @@ export const NoCardsReady = memo(function NoCardsReady({
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [addSmartCards, info.smart_add_event]);
+  }, [addSmartCards, info.smart_add_event, releaseOffer, releaseLockedCards]);
 
   // Sentence list navigation — 3 tabs: essential, movie, pimsleur
   // Each tab auto-picks the best specific sentence list within that category
@@ -275,6 +286,33 @@ export const NoCardsReady = memo(function NoCardsReady({
         return null;
     }
   })();
+
+  // While cards remain set aside in lockup, the whole add-cards area is
+  // replaced by releasing the next batch
+  if (releaseOffer) {
+    const releaseCount = releaseOffer.release_count;
+    return (
+      <div className="space-y-4">
+        <div className="text-center py-4">
+          <p className="text-2xl font-bold">All caught up!</p>
+        </div>
+        <div className="flex justify-center">
+          <Button
+            onClick={releaseLockedCards}
+            variant="default"
+            size="lg"
+            className="group relative overflow-hidden transition-all hover:scale-105 hover:shadow-lg"
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
+            <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
+            Review {releaseCount} more {releaseCount === 1 ? "card" : "cards"}
+          </Button>
+        </div>
+        <WeekProgressStrip deck={deck} />
+        {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

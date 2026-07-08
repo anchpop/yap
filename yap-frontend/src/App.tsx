@@ -96,6 +96,7 @@ import { BackgroundShader } from "@/components/BackgroundShader";
 import { Movies } from "@/components/Movies";
 import { getMovieMetadata } from "@/lib/movie-cache";
 import { PlacementTest } from "@/components/PlacementTest";
+import { LockupOfferScreen } from "@/components/LockupOffer";
 
 // Essential user info to persist for offline functionality
 export interface UserInfo {
@@ -883,9 +884,14 @@ function Review({
     ChallengeRequirements[]
   >(() => computeBannedChallengeTypes());
 
-  const reviewInfo = useMemo(() => {
+  const { reviewInfo, lockupOffer } = useMemo(() => {
     const now = Date.now();
-    return deck.get_review_info(bannedChallengeTypes, now);
+    return {
+      reviewInfo: deck.get_review_info(bannedChallengeTypes, now),
+      // The daily lockup offer: when a review backlog builds up, keep the
+      // most-due cards active and set the rest aside
+      lockupOffer: deck.get_lockup_offer(bannedChallengeTypes, now),
+    };
     // cardsBecameDue is intentionally included to trigger recalculation when cards become due
   }, [deck, bannedChallengeTypes, cardsBecameDue]);
 
@@ -1177,6 +1183,12 @@ function Review({
               );
               weapon.add_deck_event(event);
             }}
+          />
+        ) : lockupOffer ? (
+          <LockupOfferScreen
+            offer={lockupOffer}
+            targetLanguage={targetLanguage}
+            onAccept={addEvent}
           />
         ) : shouldShowSetDisplayName ? (
           <SetDisplayName
