@@ -48,29 +48,31 @@ export function LockupOfferScreen({
           Let's review these cards today
         </h2>
 
-        {CARD_GROUPS.map(({ type, label }) => {
-          const cards = byType.get(type);
-          if (!cards || cards.length === 0) return null;
-          return (
-            <div key={type} className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground text-center">
-                {cards.length} {label} {cards.length === 1 ? "card" : "cards"}
-              </p>
-              <div className="flex flex-wrap justify-center gap-y-1">
-                {cards.map((card, i) => (
-                  <span
-                    key={i}
-                    className={`px-3 text-sm font-medium ${i > 0 ? "border-l border-border" : ""}`}
-                  >
-                    <TargetLanguageText language={targetLanguage}>
-                      {card.card_text}
-                    </TargetLanguageText>
-                  </span>
-                ))}
+        <div className="space-y-6">
+          {CARD_GROUPS.map(({ type, label }) => {
+            const cards = byType.get(type);
+            if (!cards || cards.length === 0) return null;
+            return (
+              <div key={type} className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground text-center">
+                  {cards.length} {label} {cards.length === 1 ? "card" : "cards"}
+                </p>
+                <div className="flex flex-wrap justify-center gap-y-1">
+                  {cards.map((card, i) => (
+                    <span
+                      key={i}
+                      className={`px-3 text-sm font-medium ${i > 0 ? "border-l border-border" : ""}`}
+                    >
+                      <TargetLanguageText language={targetLanguage}>
+                        {card.card_text}
+                      </TargetLanguageText>
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
 
         <Button
           onClick={() => onAccept(lockEvent)}
