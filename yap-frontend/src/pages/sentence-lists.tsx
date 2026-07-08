@@ -51,7 +51,7 @@ export function SentenceListsPage() {
       { type: "deck", deck: P.not(P.nullish) },
       ({ deck, targetLanguage }) => {
         const setSentenceListAndNavigate = (sl: SentenceList) => {
-          const event = deck.set_sentence_list(sentenceListToSelection(sl));
+          const event = deck.change_sentence_list(sentenceListToSelection(sl));
           weapon.add_deck_event(event);
           navigate("/learn");
         };
