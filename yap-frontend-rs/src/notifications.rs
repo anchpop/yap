@@ -318,9 +318,10 @@ impl Deck {
     pub async fn submit_language_stats(&self, access_token: &str) -> Result<(), JsValue> {
         use language_utils::profile::UpdateLanguageStatsRequest;
 
-        // Get current stats from the deck
+        // Get current stats from the deck (locked cards still count — lockup
+        // only hides cards from the review queue)
         let now = js_sys::Date::now();
-        let review_info = self.get_review_info(vec![], now);
+        let review_info = self.get_review_info_including_locked(now);
 
         let total_count = review_info.total_count() as i64;
 
