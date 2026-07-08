@@ -45,7 +45,7 @@ impl AudioCache {
         Ok(Self { audio_dir })
     }
 
-    pub async fn get_cached(
+    pub async fn get_or_evict_cached(
         &self,
         request: &TtsRequest,
         provider: &TtsProvider,
@@ -148,7 +148,7 @@ impl AudioCache {
         }
 
         // Check cache first
-        if let Some(cached_bytes) = self.get_cached(request, provider).await {
+        if let Some(cached_bytes) = self.get_or_evict_cached(request, provider).await {
             return Ok(FetchedAudio {
                 bytes: cached_bytes,
                 voice_actor: None,
