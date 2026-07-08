@@ -76,7 +76,7 @@ export function ReviewPlanCard({
         </Button>
       </Card>
 
-      <WeekProgressStrip deck={deck} className="mt-auto" />
+      <WeekProgressStrip deck={deck} className="mt-auto mb-2" />
     </div>
   );
 }

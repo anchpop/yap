@@ -351,7 +351,7 @@ export const NoCardsReady = memo(function NoCardsReady({
             Review more
           </Button>
         </div>
-        <WeekProgressStrip deck={deck} className="mt-auto" />
+        <WeekProgressStrip deck={deck} className="mt-auto mb-2" />
       </div>
     );
   }
@@ -675,7 +675,7 @@ export const NoCardsReady = memo(function NoCardsReady({
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
 
       {!noSchedulableCards && (
-        <WeekProgressStrip deck={deck} className="mt-auto" />
+        <WeekProgressStrip deck={deck} className="mt-auto mb-2" />
       )}
     </div>
   );
