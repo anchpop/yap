@@ -308,6 +308,7 @@ export const NoCardsReady = memo(function NoCardsReady({
   // only true once nothing is locked. Two phases: a rest screen after today's
   // reviews, then the same review-plan page as the lockup offer.
   if (releaseOffer) {
+    const minutesToday = Math.round(deck.get_today_time_spent() / 60);
     if (releasePlanShown) {
       return (
         <ReviewPlanCard
@@ -326,7 +327,11 @@ export const NoCardsReady = memo(function NoCardsReady({
         <div className="flex flex-col gap-2 text-center">
           <p className="text-2xl font-bold">Nice job!</p>
           <p className="text-muted-foreground">
-            You can take a break, or review more.
+            You reviewed for{" "}
+            {minutesToday < 1
+              ? "less than a minute"
+              : `${minutesToday} ${minutesToday === 1 ? "minute" : "minutes"}`}{" "}
+            today. You can take a break, or review more.
           </p>
           {nextDueSoon && (
             <NextReviewLine
