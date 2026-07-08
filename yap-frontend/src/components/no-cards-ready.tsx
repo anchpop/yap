@@ -322,9 +322,12 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
 
     return (
-      <div className="flex flex-col gap-4 pt-4">
+      <div className="flex flex-col flex-1 gap-4 pt-4">
         <div className="flex flex-col gap-2 text-center">
           <p className="text-2xl font-bold">Nice job!</p>
+          <p className="text-muted-foreground">
+            You can take a break, or review more.
+          </p>
           {nextDueSoon && (
             <NextReviewLine
               nextDueCard={nextDueCard}
@@ -341,13 +344,13 @@ export const NoCardsReady = memo(function NoCardsReady({
             Review more
           </Button>
         </div>
-        <WeekProgressStrip deck={deck} />
+        <WeekProgressStrip deck={deck} className="mt-auto" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col flex-1 gap-4">
       <div className="text-center py-4">
         <div className="flex flex-col gap-2">
           <p className="text-2xl font-bold">
@@ -662,9 +665,11 @@ export const NoCardsReady = memo(function NoCardsReady({
         </Card>
       )}
 
-      {!noSchedulableCards && <WeekProgressStrip deck={deck} />}
-
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
+
+      {!noSchedulableCards && (
+        <WeekProgressStrip deck={deck} className="mt-auto" />
+      )}
     </div>
   );
 });

@@ -43,7 +43,7 @@ export function ReviewPlanCard({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col flex-1 gap-4">
       <Card className="max-w w-full p-6 gap-6 select-none" animate>
         <h2 className="text-xl font-semibold text-center">{title}</h2>
 
@@ -76,7 +76,7 @@ export function ReviewPlanCard({
         </Button>
       </Card>
 
-      <WeekProgressStrip deck={deck} />
+      <WeekProgressStrip deck={deck} className="mt-auto" />
     </div>
   );
 }

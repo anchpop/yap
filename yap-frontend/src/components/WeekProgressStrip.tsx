@@ -21,11 +21,17 @@ function useMidnightTick() {
   return day;
 }
 
-export function WeekProgressStrip({ deck }: { deck: Deck }) {
+export function WeekProgressStrip({
+  deck,
+  className = "",
+}: {
+  deck: Deck;
+  className?: string;
+}) {
   const day = useMidnightTick();
   const week = useMemo(() => deck.get_current_week_progress(), [deck, day]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className="flex w-full items-stretch">
+    <div className={`flex w-full items-stretch ${className}`}>
       {week.map((day, i) => (
         <DayCell key={i} day={day} index={i} />
       ))}
