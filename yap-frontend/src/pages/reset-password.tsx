@@ -55,6 +55,11 @@ export function ResetPassword() {
             // Clear the URL to hide the tokens
             window.history.replaceState(null, "", window.location.pathname);
           }
+        })
+        .catch((e) => {
+          console.error("Unexpected error setting session:", e);
+          setError("Invalid or expired reset link. Please request a new one.");
+          setIsValidToken(false);
         });
     } else {
       console.log("No tokens found in URL");
