@@ -2562,6 +2562,14 @@ impl Deck {
         });
         locked.truncate(REVIEW_LOCKUP_KEEP);
 
+        let release_preview = locked
+            .iter()
+            .filter_map(|card| {
+                self.cards
+                    .get(card)
+                    .and_then(|card_data| self.card_to_summary(card, card_data))
+            })
+            .collect();
         let unlock_event = DeckEvent::Language(LanguageEvent {
             target_language: self.context.course.target_language,
             native_language: self.context.course.native_language,
@@ -2578,7 +2586,7 @@ impl Deck {
             },
         });
         Some(ReleaseOffer {
-            release_count: locked.len(),
+            release_preview,
             unlock_event,
         })
     }
@@ -4192,15 +4200,21 @@ impl LockupOffer {
 /// The "Review N more cards" offer that releases cards from lockup.
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct ReleaseOffer {
-    release_count: usize,
+    release_preview: Vec<CardSummary>,
     unlock_event: DeckEvent,
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl ReleaseOffer {
+    /// The cards that would be released — exactly what the user is shown.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn release_preview(&self) -> Vec<CardSummary> {
+        self.release_preview.clone()
+    }
+
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
     pub fn release_count(&self) -> usize {
-        self.release_count
+        self.release_preview.len()
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
