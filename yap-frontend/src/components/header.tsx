@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +29,6 @@ interface HeaderProps {
     onBack: () => void;
   };
   title?: string;
-  dueCount?: number;
   dailyGoalPercent?: number;
 }
 
@@ -59,7 +57,6 @@ export function Header({
   language,
   backButton,
   title = "Yap.Town",
-  dueCount,
   dailyGoalPercent,
 }: HeaderProps) {
   const [authOpen, setAuthOpen] = useState(false);
@@ -125,14 +122,6 @@ export function Header({
           )}
         </div>
         <div className="flex items-center gap-2">
-          {dueCount !== undefined && dueCount > 0 && (
-            <Badge
-              variant="outline"
-              className="text-xs text-muted-foreground border-muted-foreground"
-            >
-              {dueCount}
-            </Badge>
-          )}
           {userInfo ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

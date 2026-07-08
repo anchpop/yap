@@ -35,6 +35,8 @@ import type { UserInfo } from "@/App";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Poster } from "@/components/Poster";
 import { TargetLanguageText } from "./TargetLanguageText";
+import { ReviewPlanCard } from "./LockupOffer";
+import { WeekProgressStrip } from "./WeekProgressStrip";
 import { sentenceListToSelection, type SentenceList } from "@/hooks/useSentenceList";
 import { useNavigate } from "react-router-dom";
 
@@ -101,14 +103,27 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
   }, [info.smart_add_event, addEvent]);
 
-  let nextTargetLanguageWord: string | null = null;
-  if (
-    nextDueCard &&
-    (nextDueCard.card_indicator.type === "WrittenPhrase" ||
-      nextDueCard.card_indicator.type === "WrittenGram")
-  ) {
-    nextTargetLanguageWord = nextDueCard?.card_text;
-  }
+  // While any cards are set aside in lockup, adding new cards is suppressed
+  // and replaced by releasing the next batch from lockup
+  const releaseOffer = useMemo(() => deck.get_release_offer(), [deck]);
+  const releaseLockedCards = useCallback(() => {
+    if (releaseOffer) {
+      addEvent(releaseOffer.unlock_event);
+    }
+  }, [releaseOffer, addEvent]);
+  // Two-phase release: after reviewing today, first show a "Nice job!" rest
+  // screen; the review plan only appears once the user asks for more
+  const [showReleasePlan, setShowReleasePlan] = useState(false);
+  const releasePlanShown =
+    releaseOffer !== undefined &&
+    (deck.get_today_time_spent() === 0 || showReleasePlan);
+  const nextDueSoon = useMemo(
+    () =>
+      nextDueCard !== null &&
+      // eslint-disable-next-line react-hooks/purity -- point-in-time check; parent re-renders every minute
+      nextDueCard.due_timestamp_ms - Date.now() < 30 * 60 * 1000,
+    [nextDueCard],
+  );
 
   // Calculate if workload looks light
   const showLightWorkloadNotification =
@@ -148,12 +163,18 @@ export const NoCardsReady = memo(function NoCardsReady({
         return;
       }
 
-      if (
-        (event.code === "Space" || event.code === "Enter") &&
-        info.smart_add_event
-      ) {
-        event.preventDefault();
-        addSmartCards();
+      if (event.code === "Space" || event.code === "Enter") {
+        if (releaseOffer) {
+          event.preventDefault();
+          if (releasePlanShown) {
+            releaseLockedCards();
+          } else {
+            setShowReleasePlan(true);
+          }
+        } else if (info.smart_add_event) {
+          event.preventDefault();
+          addSmartCards();
+        }
       }
     };
 
@@ -162,7 +183,13 @@ export const NoCardsReady = memo(function NoCardsReady({
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [addSmartCards, info.smart_add_event]);
+  }, [
+    addSmartCards,
+    info.smart_add_event,
+    releaseOffer,
+    releaseLockedCards,
+    releasePlanShown,
+  ]);
 
   // Sentence list navigation — 3 tabs: essential, movie, pimsleur
   // Each tab auto-picks the best specific sentence list within that category
@@ -276,8 +303,61 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
   })();
 
+  // While cards remain set aside in lockup, the whole add-cards area is
+  // replaced by releasing the next batch. Never says "all caught up" — that's
+  // only true once nothing is locked. Two phases: a rest screen after today's
+  // reviews, then the same review-plan page as the lockup offer.
+  if (releaseOffer) {
+    const minutesToday = Math.round(deck.get_today_time_spent() / 60);
+    if (releasePlanShown) {
+      return (
+        <ReviewPlanCard
+          title="Today's review plan:"
+          cards={releaseOffer.release_preview}
+          buttonLabel="Let's go!"
+          onCommit={releaseLockedCards}
+          deck={deck}
+          targetLanguage={targetLanguage}
+        />
+      );
+    }
+
+    return (
+      <div className="flex flex-col flex-1 gap-4 pt-4">
+        <div className="flex flex-col gap-2 text-center">
+          <p className="text-2xl font-bold">
+            Nice! You reviewed for{" "}
+            {minutesToday < 1
+              ? "less than a minute"
+              : `${minutesToday} ${minutesToday === 1 ? "minute" : "minutes"}`}{" "}
+            today!
+          </p>
+          <p className="text-muted-foreground">
+            You can take a break, or review more.
+          </p>
+          {nextDueSoon && (
+            <NextReviewLine
+              nextDueCard={nextDueCard}
+              targetLanguage={targetLanguage}
+            />
+          )}
+        </div>
+        <div className="flex justify-center">
+          <Button
+            onClick={() => setShowReleasePlan(true)}
+            size="lg"
+            variant="outline"
+          >
+            Review more
+          </Button>
+        </div>
+        <WeekProgressStrip deck={deck} className="mt-auto mb-2" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col flex-1 gap-4">
       <div className="text-center py-4">
         <div className="flex flex-col gap-2">
           <p className="text-2xl font-bold">
@@ -306,34 +386,10 @@ export const NoCardsReady = memo(function NoCardsReady({
                 : "Add some cards to keep building your vocabulary."}
             </p>
           ) : (
-            <p className="text-muted-foreground">
-              {nextTargetLanguageWord ? (
-                <>
-                  You'll review{" "}
-                  <span className="font-semibold">
-                    <TargetLanguageText language={targetLanguage}>
-                      {nextTargetLanguageWord}
-                    </TargetLanguageText>
-                  </span>{" "}
-                  {nextDueCard ? (
-                    <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
-                  ) : (
-                    "soon"
-                  )}
-                  .
-                </>
-              ) : (
-                <>
-                  Your next review is{" "}
-                  {nextDueCard ? (
-                    <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
-                  ) : (
-                    "soon"
-                  )}
-                  .
-                </>
-              )}
-            </p>
+            <NextReviewLine
+              nextDueCard={nextDueCard}
+              targetLanguage={targetLanguage}
+            />
           )}
         </div>
       </div>
@@ -616,104 +672,61 @@ export const NoCardsReady = memo(function NoCardsReady({
         </Card>
       )}
 
-      {!noSchedulableCards && <WeekProgressStrip deck={deck} />}
-
       {showEngagementPrompts && <EngagementPrompts language={targetLanguage} />}
+
+      {!noSchedulableCards && (
+        <WeekProgressStrip deck={deck} className="mt-auto mb-2" />
+      )}
     </div>
   );
 });
 
-const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
-
-function useMidnightTick() {
-  const [day, setDay] = useState(() => new Date().toDateString());
-  useEffect(() => {
-    const now = new Date();
-    const midnight = new Date(now);
-    midnight.setHours(24, 0, 0, 0);
-    const ms = midnight.getTime() - now.getTime();
-    const timer = setTimeout(() => setDay(new Date().toDateString()), ms);
-    return () => clearTimeout(timer);
-  }, [day]);
-  return day;
-}
-
-function WeekProgressStrip({ deck }: { deck: Deck }) {
-  const day = useMidnightTick();
-  const week = useMemo(() => deck.get_current_week_progress(), [deck, day]); // eslint-disable-line react-hooks/exhaustive-deps
-  return (
-    <div className="flex w-full items-stretch">
-      {week.map((day, i) => (
-        <DayCell key={i} day={day} index={i} />
-      ))}
-    </div>
-  );
-}
-
-function DayCell({ day, index }: { day: { seconds: number; target_seconds: number; reviews: number; new_cards: number; learned_cards: number; locked_in_cards: number; met_goal: boolean; is_today: boolean; is_future: boolean }; index: number }) {
-  const fillPercent = day.is_future || day.target_seconds === 0
-    ? 0
-    : Math.min(100, (day.seconds / day.target_seconds) * 100);
-
-  const borderL = "";
-  const rounded =
-    index === 0
-      ? "rounded-l-lg"
-      : index === 6
-        ? "rounded-r-lg"
-        : "";
-  const todayClasses = day.is_today
-    ? "scale-110 z-10 rounded-lg shadow-lg border border-border"
-    : "";
-
-  const content = (
-    <>
-      <span className="text-lg font-semibold leading-none tabular-nums">
-        {day.is_future ? "·" : `+${day.new_cards + day.learned_cards + day.locked_in_cards}`}
-      </span>
-      <span className="text-[10px] uppercase tracking-wide opacity-70">
-        {DAY_LABELS[index]}
-      </span>
-    </>
-  );
+/// "You'll review <word> in 2 minutes." / "Your next review is soon."
+function NextReviewLine({
+  nextDueCard,
+  targetLanguage,
+}: {
+  nextDueCard: CardSummary | null;
+  targetLanguage: Language;
+}) {
+  let nextTargetLanguageWord: string | null = null;
+  if (
+    nextDueCard &&
+    (nextDueCard.card_indicator.type === "WrittenPhrase" ||
+      nextDueCard.card_indicator.type === "WrittenGram")
+  ) {
+    nextTargetLanguageWord = nextDueCard.card_text;
+  }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div
-          className={`flex-1 relative overflow-hidden ${borderL} ${rounded} ${todayClasses} ${day.is_future ? "bg-muted/30" : `backdrop-brightness-105 backdrop-saturate-120 dark:backdrop-brightness-100 backdrop-blur-sm ${day.seconds > 0 ? "bg-foreground/10" : ""}`}`}
-        >
-          {/* Green fill bar */}
-          {!day.is_future && fillPercent > 0 && (
-            <div
-              className={`absolute inset-0 ${fillPercent >= 100 ? "bg-foreground" : "bg-foreground/90"}`}
-              style={{ clipPath: `inset(${100 - fillPercent}% 0 0 0)` }}
-            />
+    <p className="text-muted-foreground">
+      {nextTargetLanguageWord ? (
+        <>
+          You'll review{" "}
+          <span className="font-semibold">
+            <TargetLanguageText language={targetLanguage}>
+              {nextTargetLanguageWord}
+            </TargetLanguageText>
+          </span>{" "}
+          {nextDueCard ? (
+            <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
+          ) : (
+            "soon"
           )}
-
-          {/* Base text layer (normal foreground color) */}
-          <div className={`relative flex flex-col items-center justify-center py-3 gap-0.5 ${day.is_future ? "text-muted-foreground/60" : "text-foreground"}`}>
-            {content}
-          </div>
-
-          {/* Clipped text layer (white, revealed by fill) */}
-          {!day.is_future && fillPercent > 0 && (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center py-3 gap-0.5 text-background"
-              style={{ clipPath: `inset(${100 - fillPercent}% 0 0 0)` }}
-            >
-              {content}
-            </div>
+          .
+        </>
+      ) : (
+        <>
+          Your next review is{" "}
+          {nextDueCard ? (
+            <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />
+          ) : (
+            "soon"
           )}
-        </div>
-      </TooltipTrigger>
-      <TooltipContent>
-        {day.is_future
-          ? "Upcoming"
-          : day.reviews === 0
-            ? "No activity"
-            : `${day.new_cards} added · ${day.learned_cards + day.locked_in_cards} back on track`}
-      </TooltipContent>
-    </Tooltip>
+          .
+        </>
+      )}
+    </p>
   );
 }
+

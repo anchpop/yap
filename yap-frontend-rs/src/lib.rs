@@ -49,7 +49,7 @@ use lasso::Spur;
 use opfs::persistent::{self};
 use pav_regression::{IsotonicRegression, Point, SmoothRegression, UnitWeight};
 use rs_fsrs::FSRS;
-use rustc_hash::FxHashMap;
+use rustc_hash::{FxHashMap, FxHashSet};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
@@ -1016,6 +1016,10 @@ pub struct DeckState {
     accomplishment: Option<Accomplishment>,
     /// The user's daily study intensity
     daily_review_target: DailyReviewTarget,
+    /// Cards set aside ("locked up") and hidden from the review queue
+    locked_cards: FxHashSet<CardIndicator<SpurGram, Spur>>,
+    /// The user's local day of the most recent LockDueCardsExcept event
+    last_lock_day: Option<chrono::NaiveDate>,
 }
 
 #[derive(Clone, Debug)]
@@ -1036,6 +1040,10 @@ pub struct Deck {
     accomplishment: Option<Accomplishment>,
     /// The user's daily study intensity
     daily_review_target: DailyReviewTarget,
+    /// Cards set aside ("locked up") and hidden from the review queue
+    locked_cards: FxHashSet<CardIndicator<SpurGram, Spur>>,
+    /// The user's local day of the most recent LockDueCardsExcept event
+    last_lock_day: Option<chrono::NaiveDate>,
 }
 
 #[derive(Clone, Debug)]
@@ -1078,6 +1086,8 @@ impl From<Deck> for DeckState {
             sentence_list: deck.sentence_list,
             accomplishment: deck.accomplishment,
             daily_review_target: deck.daily_review_target,
+            locked_cards: deck.locked_cards,
+            last_lock_day: deck.last_lock_day,
         }
     }
 }
@@ -1119,6 +1129,8 @@ impl weapon::AppState for Deck {
             event,
             LanguageEventContent::SetSentenceList { .. }
                 | LanguageEventContent::SetDailyReviewTarget { .. }
+                | LanguageEventContent::LockDueCardsExcept { .. }
+                | LanguageEventContent::UnlockCards { .. }
         );
         if counts_as_review_activity {
             // Clear accomplishment on each review
@@ -1230,6 +1242,10 @@ impl weapon::AppState for Deck {
                             .entry(flashcard_type)
                             .or_insert(0) += 1;
                     }
+
+                    // A card being actively reviewed (e.g. from another device)
+                    // is self-evidently not set aside
+                    deck.locked_cards.remove(&reviewed);
 
                     deck.log_review(reviewed, *rating, *timestamp, context);
                 }
@@ -1699,6 +1715,36 @@ impl weapon::AppState for Deck {
             } => {
                 deck.daily_review_target = daily_review_target.clone();
             }
+            LanguageEventContent::LockDueCardsExcept { keep } => {
+                let keep: FxHashSet<_> = keep
+                    .iter()
+                    .filter_map(|card| {
+                        card.get_interned(
+                            &context.language_pack.string_rodeo,
+                            &context.language_pack.gram_rodeo,
+                        )
+                    })
+                    .collect();
+                for (card, card_data) in deck.cards.iter() {
+                    if let CardData::Added { fsrs_card } = card_data
+                        && fsrs_card.due <= *timestamp
+                        && !keep.contains(card)
+                    {
+                        deck.locked_cards.insert(*card);
+                    }
+                }
+                deck.last_lock_day = Some(timestamp.with_timezone(&timezone).date_naive());
+            }
+            LanguageEventContent::UnlockCards { cards } => {
+                for card in cards {
+                    if let Some(card) = card.get_interned(
+                        &context.language_pack.string_rodeo,
+                        &context.language_pack.gram_rodeo,
+                    ) {
+                        deck.locked_cards.remove(&card);
+                    }
+                }
+            }
         }
 
         deck.sync_past_days();
@@ -1892,6 +1938,8 @@ impl weapon::AppState for Deck {
             sentence_list: state.sentence_list,
             accomplishment: state.accomplishment,
             daily_review_target: state.daily_review_target,
+            locked_cards: state.locked_cards,
+            last_lock_day: state.last_lock_day,
         }
     }
 }
@@ -1930,6 +1978,8 @@ impl DeckState {
             sentence_list: None,
             accomplishment: None,
             daily_review_target: DailyReviewTarget::Regular,
+            locked_cards: FxHashSet::default(),
+            last_lock_day: None,
         }
     }
 
@@ -2364,11 +2414,28 @@ impl Deck {
         banned_challenge_types: Vec<ChallengeRequirements>,
         timestamp_ms: f64,
     ) -> ReviewInfo {
+        self.get_review_info_impl(banned_challenge_types, timestamp_ms, false)
+    }
+
+    /// Like `get_review_info`, but treats locked cards as due. Used by the
+    /// simulation so long-range projections aren't skewed by cards frozen in
+    /// lockup.
+    pub(crate) fn get_review_info_including_locked(&self, timestamp_ms: f64) -> ReviewInfo {
+        self.get_review_info_impl(vec![], timestamp_ms, true)
+    }
+
+    fn get_review_info_impl(
+        &self,
+        banned_challenge_types: Vec<ChallengeRequirements>,
+        timestamp_ms: f64,
+        include_locked: bool,
+    ) -> ReviewInfo {
         let now =
             DateTime::<Utc>::from_timestamp_millis(timestamp_ms as i64).unwrap_or_else(Utc::now);
         let mut due_cards = vec![];
         let mut future_cards = vec![];
         let mut due_but_banned_cards = vec![];
+        let mut due_but_locked_cards = vec![];
 
         let no_listening_cards = banned_challenge_types.contains(&ChallengeRequirements::Listening);
         let no_text_cards = banned_challenge_types.contains(&ChallengeRequirements::Text);
@@ -2379,6 +2446,10 @@ impl Deck {
                 let due_date = fsrs_card.due;
 
                 if due_date <= now {
+                    if !include_locked && self.locked_cards.contains(card) {
+                        due_but_locked_cards.push(*card);
+                        continue;
+                    }
                     match card.card_type().challenge_type() {
                         ChallengeRequirements::Text if no_text_cards => {
                             due_but_banned_cards.push(*card);
@@ -2398,29 +2469,126 @@ impl Deck {
         }
 
         // sort by due date, then by card indicator for deterministic ordering
-        due_cards.sort_by_key(|card_indicator| {
+        let sort_key = |card_indicator: &CardIndicator<SpurGram, Spur>| {
             let card_data = self.cards.get(card_indicator).unwrap();
             let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
             (due_timestamp, *card_indicator)
-        });
-
-        due_but_banned_cards.sort_by_key(|card_indicator| {
-            let card_data = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
-            (due_timestamp, *card_indicator)
-        });
-
-        future_cards.sort_by_key(|card_indicator| {
-            let card_data = self.cards.get(card_indicator).unwrap();
-            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
-            (due_timestamp, *card_indicator)
-        });
+        };
+        due_cards.sort_by_key(sort_key);
+        due_but_banned_cards.sort_by_key(sort_key);
+        due_but_locked_cards.sort_by_key(sort_key);
+        future_cards.sort_by_key(sort_key);
 
         ReviewInfo {
             due_cards,
             due_but_banned_cards,
+            due_but_locked_cards,
             future_cards,
         }
+    }
+
+    /// How many cards are currently set aside in lockup.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn locked_count(&self) -> usize {
+        self.locked_cards.len()
+    }
+
+    /// The daily lockup offer ("Let's review these 15 cards today").
+    /// Non-None when more than `REVIEW_LOCKUP_TRIGGER` cards are due and the
+    /// user hasn't locked up yet today; keeps the `REVIEW_LOCKUP_KEEP`
+    /// most-due cards active and sets the rest aside.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_lockup_offer(
+        &self,
+        banned_challenge_types: Vec<ChallengeRequirements>,
+        timestamp_ms: f64,
+    ) -> Option<LockupOffer> {
+        let now =
+            DateTime::<Utc>::from_timestamp_millis(timestamp_ms as i64).unwrap_or_else(Utc::now);
+        // At most one lockup per local day
+        let today = now.with_timezone(&self.context.timezone).date_naive();
+        if self.last_lock_day == Some(today) {
+            return None;
+        }
+
+        let review_info = self.get_review_info(banned_challenge_types, timestamp_ms);
+        if review_info.due_cards.len() <= REVIEW_LOCKUP_TRIGGER {
+            return None;
+        }
+
+        let keep = &review_info.due_cards[..REVIEW_LOCKUP_KEEP];
+        let keep_preview = keep
+            .iter()
+            .filter_map(|card| {
+                self.cards
+                    .get(card)
+                    .and_then(|card_data| self.card_to_summary(card, card_data))
+            })
+            .collect();
+        let lock_event = DeckEvent::Language(LanguageEvent {
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
+            content: LanguageEventContent::LockDueCardsExcept {
+                keep: keep
+                    .iter()
+                    .map(|card| {
+                        card.resolve(
+                            &self.context.language_pack.string_rodeo,
+                            &self.context.language_pack.gram_rodeo,
+                        )
+                    })
+                    .collect(),
+            },
+        });
+        Some(LockupOffer {
+            keep_preview,
+            lock_event,
+        })
+    }
+
+    /// The "Review N more cards" offer: releases the most-due locked cards.
+    /// None when nothing is locked.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_release_offer(&self) -> Option<ReleaseOffer> {
+        if self.locked_cards.is_empty() {
+            return None;
+        }
+
+        let mut locked: Vec<_> = self.locked_cards.iter().copied().collect();
+        locked.sort_by_key(|card_indicator| {
+            let card_data = self.cards.get(card_indicator).unwrap();
+            let due_timestamp = ordered_float::NotNan::new(card_data.due_timestamp_ms()).unwrap();
+            (due_timestamp, *card_indicator)
+        });
+        locked.truncate(REVIEW_LOCKUP_KEEP);
+
+        let release_preview = locked
+            .iter()
+            .filter_map(|card| {
+                self.cards
+                    .get(card)
+                    .and_then(|card_data| self.card_to_summary(card, card_data))
+            })
+            .collect();
+        let unlock_event = DeckEvent::Language(LanguageEvent {
+            target_language: self.context.course.target_language,
+            native_language: self.context.course.native_language,
+            content: LanguageEventContent::UnlockCards {
+                cards: locked
+                    .iter()
+                    .map(|card| {
+                        card.resolve(
+                            &self.context.language_pack.string_rodeo,
+                            &self.context.language_pack.gram_rodeo,
+                        )
+                    })
+                    .collect(),
+            },
+        });
+        Some(ReleaseOffer {
+            release_preview,
+            unlock_event,
+        })
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -4002,11 +4170,65 @@ pub enum CardContent {
     },
 }
 
+/// Lockup ("set cards aside") is offered when more than this many cards are due...
+pub(crate) const REVIEW_LOCKUP_TRIGGER: usize = 20;
+/// ...and keeps this many of the most-due cards active. The gap between the
+/// two is a deliberate wiggle zone so the offer doesn't nag on borderline days.
+pub(crate) const REVIEW_LOCKUP_KEEP: usize = 15;
+
+/// The daily offer to set aside ("lock up") all but the most-due cards.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub struct LockupOffer {
+    keep_preview: Vec<CardSummary>,
+    lock_event: DeckEvent,
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl LockupOffer {
+    /// The cards that stay active — exactly what the user is shown and approves.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn keep_preview(&self) -> Vec<CardSummary> {
+        self.keep_preview.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn lock_event(&self) -> DeckEvent {
+        self.lock_event.clone()
+    }
+}
+
+/// The "Review N more cards" offer that releases cards from lockup.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub struct ReleaseOffer {
+    release_preview: Vec<CardSummary>,
+    unlock_event: DeckEvent,
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl ReleaseOffer {
+    /// The cards that would be released — exactly what the user is shown.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn release_preview(&self) -> Vec<CardSummary> {
+        self.release_preview.clone()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn release_count(&self) -> usize {
+        self.release_preview.len()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn unlock_event(&self) -> DeckEvent {
+        self.unlock_event.clone()
+    }
+}
+
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone)]
 pub struct ReviewInfo {
     due_cards: Vec<CardIndicator<SpurGram, Spur>>,
     due_but_banned_cards: Vec<CardIndicator<SpurGram, Spur>>,
+    due_but_locked_cards: Vec<CardIndicator<SpurGram, Spur>>,
     future_cards: Vec<CardIndicator<SpurGram, Spur>>,
 }
 
@@ -4124,6 +4346,11 @@ impl ReviewInfo {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn due_but_locked_count(&self) -> usize {
+        self.due_but_locked_cards.len()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
     pub fn future_count(&self) -> usize {
         self.future_cards.len()
     }
@@ -4135,6 +4362,7 @@ impl ReviewInfo {
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[derive(Clone)]
 pub struct CardSummary {
     card_indicator: CardIndicator<Gram<String>, String>,
     due_timestamp_ms: f64,
@@ -4960,6 +5188,147 @@ mod tests {
         } else {
             println!("✓ No cards available to add (empty language pack)");
         }
+    }
+
+    fn apply_deck_event(deck: Deck, event: DeckEvent, timestamp: DateTime<Utc>) -> Deck {
+        let ts = weapon::data_model::Timestamped {
+            timestamp,
+            within_device_events_index: 0,
+            timezone: Some(deck.context.timezone),
+            event,
+        };
+        let context = deck.context.clone();
+        let state = DeckState::from(deck);
+        let state = <Deck as weapon::AppState>::process_event(state, &context, &ts);
+        <Deck as weapon::AppState>::finalize(state, &context)
+    }
+
+    /// Add exactly `n` valid written cards (due immediately) at `timestamp`.
+    fn deck_with_n_due_cards(n: usize, timestamp: DateTime<Utc>) -> Deck {
+        let deck = Deck::default();
+        let cards: Vec<_> = deck
+            .context
+            .language_pack
+            .gram_frequencies
+            .entries
+            .keys()
+            .map(|gram| CardIndicator::WrittenGram { gram: *gram })
+            .filter(|card| deck.context.is_card_valid(card))
+            .take(n)
+            .collect();
+        assert_eq!(cards.len(), n, "language pack has too few valid grams");
+        let event = deck.cards_to_event(&cards, &None).unwrap();
+        apply_deck_event(deck, event, timestamp)
+    }
+
+    #[test]
+    fn test_lockup_locks_due_complement_and_release_restores() {
+        use chrono::TimeZone;
+
+        let t0 = Utc.with_ymd_and_hms(2024, 1, 1, 12, 0, 0).unwrap();
+        let t1 = t0 + chrono::Duration::hours(1);
+        let deck = deck_with_n_due_cards(25, t0);
+        let t1_ms = t1.timestamp_millis() as f64;
+
+        let before = deck.get_review_info(vec![], t1_ms);
+        assert_eq!(before.due_count(), 25);
+        assert_eq!(before.due_but_locked_count(), 0);
+
+        let offer = deck
+            .get_lockup_offer(vec![], t1_ms)
+            .expect("offer expected");
+        let deck = apply_deck_event(deck, offer.lock_event(), t1);
+
+        assert_eq!(deck.locked_count(), 10);
+        let after = deck.get_review_info(vec![], t1_ms);
+        assert_eq!(after.due_count(), 15);
+        assert_eq!(after.due_but_locked_count(), 10);
+        // The kept cards are exactly the 15 most-due
+        assert_eq!(after.due_cards, before.due_cards[..15].to_vec());
+
+        // Locked cards are invisible to the queue but included for simulation
+        let simulated = deck.get_review_info_including_locked(t1_ms);
+        assert_eq!(simulated.due_count(), 25);
+        assert_eq!(simulated.due_but_locked_count(), 0);
+
+        // Release restores the most-due locked cards
+        let release = deck.get_release_offer().expect("release expected");
+        assert_eq!(release.release_count(), 10);
+        let deck = apply_deck_event(deck, release.unlock_event(), t1);
+        assert_eq!(deck.locked_count(), 0);
+        assert_eq!(deck.get_review_info(vec![], t1_ms).due_count(), 25);
+        assert!(deck.get_release_offer().is_none());
+    }
+
+    #[test]
+    fn test_lockup_offer_thresholds_and_once_per_day() {
+        use chrono::TimeZone;
+
+        let t0 = Utc.with_ymd_and_hms(2024, 1, 1, 12, 0, 0).unwrap();
+        let t1 = t0 + chrono::Duration::hours(1);
+        let t1_ms = t1.timestamp_millis() as f64;
+
+        // At exactly the trigger count there is no offer (wiggle zone)
+        let deck20 = deck_with_n_due_cards(20, t0);
+        assert!(deck20.get_lockup_offer(vec![], t1_ms).is_none());
+
+        // One past the trigger, the offer keeps 15
+        let deck = deck_with_n_due_cards(21, t0);
+        let offer = deck
+            .get_lockup_offer(vec![], t1_ms)
+            .expect("offer expected");
+        assert_eq!(offer.keep_preview().len(), 15);
+        let deck = apply_deck_event(deck, offer.lock_event(), t1);
+        assert_eq!(deck.locked_count(), 6);
+
+        // Even if the active queue grows past the trigger again on the same
+        // day (here: by releasing cards), there is at most one lockup per day
+        let deck40 = deck_with_n_due_cards(40, t0);
+        let offer = deck40
+            .get_lockup_offer(vec![], t1_ms)
+            .expect("offer expected");
+        let deck40 = apply_deck_event(deck40, offer.lock_event(), t1);
+        assert_eq!(deck40.locked_count(), 25);
+        let release = deck40.get_release_offer().expect("release expected");
+        assert_eq!(release.release_count(), 15);
+        let deck40 = apply_deck_event(deck40, release.unlock_event(), t1);
+        assert_eq!(deck40.get_review_info(vec![], t1_ms).due_count(), 30);
+        assert!(deck40.get_lockup_offer(vec![], t1_ms).is_none());
+
+        // The next local day, the offer returns
+        let t2 = t1 + chrono::Duration::days(1);
+        assert!(
+            deck40
+                .get_lockup_offer(vec![], t2.timestamp_millis() as f64)
+                .is_some()
+        );
+    }
+
+    #[test]
+    fn test_reviewing_a_locked_card_unlocks_it() {
+        use chrono::TimeZone;
+
+        let t0 = Utc.with_ymd_and_hms(2024, 1, 1, 12, 0, 0).unwrap();
+        let t1 = t0 + chrono::Duration::hours(1);
+        let t1_ms = t1.timestamp_millis() as f64;
+        let deck = deck_with_n_due_cards(25, t0);
+
+        let offer = deck
+            .get_lockup_offer(vec![], t1_ms)
+            .expect("offer expected");
+        let deck = apply_deck_event(deck, offer.lock_event(), t1);
+        assert_eq!(deck.locked_count(), 10);
+
+        // A review of a locked card (e.g. from another device) releases it
+        let locked_card = deck.get_review_info(vec![], t1_ms).due_but_locked_cards[0];
+        let resolved = locked_card.resolve(
+            &deck.context.language_pack.string_rodeo,
+            &deck.context.language_pack.gram_rodeo,
+        );
+        let event = deck.review_card(resolved, Rating::Good).unwrap();
+        let deck = apply_deck_event(deck, event, t1);
+        assert_eq!(deck.locked_count(), 9);
+        assert!(!deck.locked_cards.contains(&locked_card));
     }
 
     #[test]

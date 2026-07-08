@@ -135,9 +135,10 @@ impl Iterator for DayChallengeIterator {
             return None;
         }
 
+        // Include locked cards so projections aren't skewed by cards frozen in lockup
         let review_info = self
             .deck()
-            .get_review_info(vec![], self.current_time.timestamp_millis() as f64);
+            .get_review_info_including_locked(self.current_time.timestamp_millis() as f64);
         if let Some(challenge) = review_info.get_next_challenge(self.deck()) {
             let to_return = challenge.clone();
             // Answer the challenge, marking new flashcards as forgotten once
