@@ -325,13 +325,15 @@ export const NoCardsReady = memo(function NoCardsReady({
     return (
       <div className="flex flex-col flex-1 gap-4 pt-4">
         <div className="flex flex-col gap-2 text-center">
-          <p className="text-2xl font-bold">Nice job!</p>
-          <p className="text-muted-foreground">
-            You reviewed for{" "}
+          <p className="text-2xl font-bold">
+            Nice! You reviewed for{" "}
             {minutesToday < 1
               ? "less than a minute"
               : `${minutesToday} ${minutesToday === 1 ? "minute" : "minutes"}`}{" "}
-            today. You can take a break, or review more.
+            today!
+          </p>
+          <p className="text-muted-foreground">
+            You can take a break, or review more.
           </p>
           {nextDueSoon && (
             <NextReviewLine
