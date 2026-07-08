@@ -111,6 +111,19 @@ export const NoCardsReady = memo(function NoCardsReady({
       addEvent(releaseOffer.unlock_event);
     }
   }, [releaseOffer, addEvent]);
+  // Two-phase release: after reviewing today, first show a "Nice job!" rest
+  // screen; the review plan only appears once the user asks for more
+  const [showReleasePlan, setShowReleasePlan] = useState(false);
+  const releasePlanShown =
+    releaseOffer !== undefined &&
+    (deck.get_today_time_spent() === 0 || showReleasePlan);
+  const nextDueSoon = useMemo(
+    () =>
+      nextDueCard !== null &&
+      // eslint-disable-next-line react-hooks/purity -- point-in-time check; parent re-renders every minute
+      nextDueCard.due_timestamp_ms - Date.now() < 30 * 60 * 1000,
+    [nextDueCard],
+  );
 
   let nextTargetLanguageWord: string | null = null;
   if (
@@ -162,7 +175,11 @@ export const NoCardsReady = memo(function NoCardsReady({
       if (event.code === "Space" || event.code === "Enter") {
         if (releaseOffer) {
           event.preventDefault();
-          releaseLockedCards();
+          if (releasePlanShown) {
+            releaseLockedCards();
+          } else {
+            setShowReleasePlan(true);
+          }
         } else if (info.smart_add_event) {
           event.preventDefault();
           addSmartCards();
@@ -175,7 +192,13 @@ export const NoCardsReady = memo(function NoCardsReady({
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [addSmartCards, info.smart_add_event, releaseOffer, releaseLockedCards]);
+  }, [
+    addSmartCards,
+    info.smart_add_event,
+    releaseOffer,
+    releaseLockedCards,
+    releasePlanShown,
+  ]);
 
   // Sentence list navigation — 3 tabs: essential, movie, pimsleur
   // Each tab auto-picks the best specific sentence list within that category
@@ -290,19 +313,44 @@ export const NoCardsReady = memo(function NoCardsReady({
   })();
 
   // While cards remain set aside in lockup, the whole add-cards area is
-  // replaced by releasing the next batch — same layout as the lockup offer,
-  // since both are "commit to some reviews" moments
+  // replaced by releasing the next batch. Never says "all caught up" — that's
+  // only true once nothing is locked. Two phases: a rest screen after today's
+  // reviews, then the same review-plan page as the lockup offer.
   if (releaseOffer) {
-    const releaseCount = releaseOffer.release_count;
+    if (releasePlanShown) {
+      return (
+        <ReviewPlanCard
+          title="Today's review plan:"
+          cards={releaseOffer.release_preview}
+          buttonLabel="Let's go!"
+          onCommit={releaseLockedCards}
+          deck={deck}
+          targetLanguage={targetLanguage}
+        />
+      );
+    }
+
     return (
-      <ReviewPlanCard
-        title="All caught up!"
-        cards={releaseOffer.release_preview}
-        buttonLabel={`Review ${releaseCount} more ${releaseCount === 1 ? "card" : "cards"}`}
-        onCommit={releaseLockedCards}
-        deck={deck}
-        targetLanguage={targetLanguage}
-      />
+      <div className="space-y-4">
+        <Card className="max-w w-full p-6 gap-6 select-none" animate>
+          <h2 className="text-xl font-semibold text-center">Nice job!</h2>
+          {nextDueSoon && nextDueCard !== null && (
+            <p className="text-muted-foreground text-center">
+              Your next review is{" "}
+              <TimeAgo date={new Date(nextDueCard.due_timestamp_ms)} />.
+            </p>
+          )}
+          <Button
+            onClick={() => setShowReleasePlan(true)}
+            size="lg"
+            variant="outline"
+            className="w-full"
+          >
+            Review more
+          </Button>
+        </Card>
+        <WeekProgressStrip deck={deck} />
+      </div>
     );
   }
 
