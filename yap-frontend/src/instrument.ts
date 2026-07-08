@@ -17,11 +17,30 @@ Sentry.init({
   ],
 
   beforeSend(event) {
-    // Filter out browser extension errors (not our code)
     const message = event.exception?.values?.[0]?.value ?? "";
+
+    // Filter out browser extension errors (not our code)
     if (message.includes("runtime.sendMessage()")) {
       return null;
     }
+
+    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
+    // errors during .wasm module initialization — identifiable by "Load failed"
+    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
+    if (message === "Load failed") {
+      const frames =
+        event.exception?.values?.[0]?.stacktrace?.frames ?? [];
+      if (
+        frames.some(
+          (f) =>
+            f.filename?.includes("wasm-helper") ||
+            f.filename?.includes("_bg.wasm"),
+        )
+      ) {
+        return null;
+      }
+    }
+
     return event;
   },
 

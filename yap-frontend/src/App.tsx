@@ -121,7 +121,13 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            if (navigator.onLine && e?.name !== "InvalidStateError") {
+            // Skip network-level fetch failures (TypeError) and InvalidStateError
+            // — these are transient errors that aren't actionable bugs.
+            if (
+              navigator.onLine &&
+              e?.name !== "InvalidStateError" &&
+              e?.name !== "TypeError"
+            ) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
           });
