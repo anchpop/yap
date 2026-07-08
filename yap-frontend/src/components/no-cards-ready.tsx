@@ -322,17 +322,15 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
 
     return (
-      <div className="space-y-4">
-        <div className="text-center py-4">
-          <div className="flex flex-col gap-2">
-            <p className="text-2xl font-bold">Nice job!</p>
-            {nextDueSoon && (
-              <NextReviewLine
-                nextDueCard={nextDueCard}
-                targetLanguage={targetLanguage}
-              />
-            )}
-          </div>
+      <div className="flex flex-col gap-4 pt-4">
+        <div className="flex flex-col gap-2 text-center">
+          <p className="text-2xl font-bold">Nice job!</p>
+          {nextDueSoon && (
+            <NextReviewLine
+              nextDueCard={nextDueCard}
+              targetLanguage={targetLanguage}
+            />
+          )}
         </div>
         <div className="flex justify-center">
           <Button
