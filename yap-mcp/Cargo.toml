@@ -1,0 +1,24 @@
+[package]
+name = "yap-mcp"
+version = "0.1.0"
+authors = ["Andre Popovitch <andre@popovit.ch>"]
+edition = "2024"
+
+[dependencies]
+yap-frontend-rs = { path = "../yap-frontend-rs" }
+language-utils = { path = "../language-utils" }
+weapon = { path = "../libraries/weapon", features = ["supabase"] }
+lasso.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+rkyv.workspace = true
+log.workspace = true
+env_logger.workspace = true
+rmcp = { version = "2.2", features = ["server", "transport-io", "macros", "schemars"] }
+schemars.workspace = true
+rand = "0.9"
+anyhow = "1"
+dotenvy = "0.15"
