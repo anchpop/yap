@@ -1,10 +1,15 @@
 # Cache directories
 .cache/
 
-# Exclude everything in out/ except the rkyv files needed by include_bytes!
+# Exclude the bulky generated data in out/, but keep the files that Rust
+# builds embed: the rkyv packs (ai-backend include_bytes!) plus the hash and
+# showcase files (yap-frontend-rs include_str!/include_bytes!, compiled as a
+# dependency of yap-mcp).
 out/**/*.jsonl
 out/**/*.json
 out/**/*.hash
+!out/**/language_data.hash
+!out/**/showcase.json
 
 # Rust build artifacts
 target/
