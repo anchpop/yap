@@ -203,7 +203,15 @@ jobs:
           cache-to: type=registry,ref=registry.fly.io/yap-mcp:cache,mode=max
 
       - name: Deploy MCP server to Fly.io
-        run: flyctl deploy --config yap-mcp/fly.toml --image registry.fly.io/yap-mcp:${{ github.sha }}
+        run: flyctl deploy --config yap-mcp/fly.toml --ha=false --image registry.fly.io/yap-mcp:${{ github.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
+
+      # OAuth codes and MCP sessions live in memory, so the app must be exactly
+      # one machine. --ha=false stops deploys from creating a second machine;
+      # scale count destroys any extras that already exist (idempotent at 1).
+      - name: Enforce single MCP machine
+        run: flyctl scale count 1 --config yap-mcp/fly.toml --yes
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
 
