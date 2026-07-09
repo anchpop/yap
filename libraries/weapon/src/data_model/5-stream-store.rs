@@ -5,10 +5,10 @@ use std::{
     collections::{BTreeMap, HashMap},
 };
 
-use crate::data_model::{EventStreamStore, Timestamped, ValidToAddEvents};
+use crate::data_model::{EventStreamStore, MaybeSend, Timestamped, ValidToAddEvents};
 use std::hash::Hash;
 
-pub trait StreamStore<Device>: Any {
+pub trait StreamStore<Device>: Any + MaybeSend {
     fn num_events_per_device(&self) -> HashMap<&Device, usize>;
 
     fn num_events(&self) -> usize {
@@ -37,8 +37,8 @@ pub trait StreamStore<Device>: Any {
 
 /// Implementation for stores that hold versioned events (which are Serialize + DeserializeOwned).
 impl<
-    Device: Ord + Eq + Clone + Hash + 'static,
-    VersionedEvent: Ord + Clone + serde::Serialize + serde::de::DeserializeOwned + 'static,
+    Device: Ord + Eq + Clone + Hash + MaybeSend + 'static,
+    VersionedEvent: Ord + Clone + serde::Serialize + serde::de::DeserializeOwned + MaybeSend + 'static,
 > StreamStore<Device> for EventStreamStore<Device, Timestamped<VersionedEvent>>
 {
     fn num_events_per_device(&self) -> HashMap<&Device, usize> {

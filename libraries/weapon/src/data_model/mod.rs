@@ -31,9 +31,43 @@ pub use timestamped::*;
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct ListenerKey(pub(crate) slotmap::DefaultKey);
 
+/// `Send`/`Sync` bounds that apply only off-wasm.
+///
+/// The browser build registers JS-callback listeners, which are inherently
+/// single-threaded and `!Send`; native consumers (yap-mcp, tests) need
+/// `EventStore` to cross thread boundaries. These markers make `Send`
+/// (`+ Sync` for the shared-callback variant) required on native and a no-op
+/// on wasm.
+#[cfg(not(target_arch = "wasm32"))]
+pub trait MaybeSend: Send {}
+#[cfg(not(target_arch = "wasm32"))]
+impl<T: Send + ?Sized> MaybeSend for T {}
+#[cfg(target_arch = "wasm32")]
+pub trait MaybeSend {}
+#[cfg(target_arch = "wasm32")]
+impl<T: ?Sized> MaybeSend for T {}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub trait MaybeSendSync: Send + Sync {}
+#[cfg(not(target_arch = "wasm32"))]
+impl<T: Send + Sync + ?Sized> MaybeSendSync for T {}
+#[cfg(target_arch = "wasm32")]
+pub trait MaybeSendSync {}
+#[cfg(target_arch = "wasm32")]
+impl<T: ?Sized> MaybeSendSync for T {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Off-wasm, `EventStore` must be `Send` so it can live behind an async
+    /// mutex (yap-mcp holds one across await points).
+    #[cfg(not(target_arch = "wasm32"))]
+    #[test]
+    fn event_store_is_send() {
+        fn assert_send<T: Send>() {}
+        assert_send::<EventStore<String, String>>();
+    }
 
     #[test]
     fn test_empty_events() {
