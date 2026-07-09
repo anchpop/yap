@@ -4,14 +4,22 @@ use std::hash::Hash;
 use std::sync::Arc;
 
 use crate::data_model::{
-    DirtyState, DirtyTracker, EventStreamStore, EventType, ListenerKey, StreamStore, Timestamped,
+    DirtyState, DirtyTracker, EventStreamStore, EventType, ListenerKey, MaybeSend, MaybeSendSync,
+    StreamStore, Timestamped,
 };
 
 use super::DirtyOnDerefMut;
 
+/// Listener callbacks are `Send + Sync` off-wasm (so `EventStore` is `Send`)
+/// but may capture JS values in the browser. See `MaybeSendSync`.
+#[cfg(not(target_arch = "wasm32"))]
+type Listener<Stream> = Arc<dyn Fn(ListenerKey, Stream) + Send + Sync>;
+#[cfg(target_arch = "wasm32")]
+type Listener<Stream> = Arc<dyn Fn(ListenerKey, Stream)>;
+
 pub struct EventStore<Stream: Eq + Hash + Clone, Device: Eq + Hash + Clone> {
     streams: HashMap<Stream, DirtyTracker<Box<dyn StreamStore<Device>>>>,
-    listeners: slotmap::SlotMap<slotmap::DefaultKey, Arc<dyn Fn(ListenerKey, Stream)>>,
+    listeners: slotmap::SlotMap<slotmap::DefaultKey, Listener<Stream>>,
 
     /// Updated whenever a sync target is updated.
     sync_states: SyncStates<Stream, Device>,
@@ -151,7 +159,8 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         modifier: Option<ListenerKey>,
     ) -> DirtyOnDerefMut<'_, EventStreamStore<Device, Timestamped<Event::Versioned>>>
     where
-        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
+        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + MaybeSend + 'static,
+        Device: MaybeSend,
     {
         if !self.streams.contains_key(&stream) {
             let store =
@@ -166,7 +175,7 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
     /// The listener is invoked whenever a new stream is added.
     pub fn register_listener(
         &mut self,
-        listener: impl Fn(ListenerKey, Stream) + 'static,
+        listener: impl Fn(ListenerKey, Stream) + MaybeSendSync + 'static,
     ) -> ListenerKey {
         let key = self.listeners.insert(Arc::new(listener));
         ListenerKey(key)
@@ -306,7 +315,8 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         timezone: chrono::FixedOffset,
     ) where
         Event: Ord + Clone + crate::Event + 'static,
-        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
+        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + MaybeSend + 'static,
+        Device: MaybeSend,
     {
         self.add_raw_event_at(
             stream,
@@ -329,7 +339,8 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
         timezone: chrono::FixedOffset,
     ) where
         Event: Ord + Clone + crate::Event + 'static,
-        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + 'static,
+        Event::Versioned: serde::Serialize + serde::de::DeserializeOwned + MaybeSend + 'static,
+        Device: MaybeSend,
     {
         let within_device_events_index = self
             .get_or_insert_default::<EventType<Event>>(stream.clone(), modifier)

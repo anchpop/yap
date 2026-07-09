@@ -69,6 +69,97 @@ pub struct LanguagePack {
 }
 
 impl LanguagePack {
+    /// Intern a resolved gram back into this pack's rodeos. Returns None if
+    /// any token, or the gram itself, was never interned.
+    pub fn intern_gram(&self, gram: &Gram<String>) -> Option<SpurGram> {
+        gram.get_interned(&self.string_rodeo)?
+            .get_interned(&self.gram_rodeo)
+    }
+
+    /// Whether a gram is a real entry in this course. The rodeos intern more
+    /// grams than the course actually teaches; the master frequency list is
+    /// the canonical set.
+    pub fn is_course_gram(&self, gram: &SpurGram) -> bool {
+        self.gram_frequencies.entries.contains_key(gram)
+    }
+
+    /// Intern a gram and require it to be a real course entry.
+    pub fn course_gram(&self, gram: &Gram<String>) -> Option<SpurGram> {
+        self.intern_gram(gram).filter(|g| self.is_course_gram(g))
+    }
+
+    /// Resolve an interned gram back to its owned string form.
+    pub fn resolve_gram(&self, gram: &SpurGram) -> Gram<String> {
+        self.gram_rodeo.resolve(gram).resolve(&self.string_rodeo)
+    }
+
+    /// Sentences that contain `required_gram` (when given) and are otherwise fully
+    /// comprehensible: every learnable gram and multiword term must satisfy
+    /// `is_comprehensible` (the required gram itself always counts), and the
+    /// sentence must have at least one translation.
+    pub fn comprehensible_sentences(
+        &self,
+        required_gram: Option<&SpurGram>,
+        is_comprehensible: impl Fn(&SpurGram) -> bool,
+    ) -> Vec<Spur> {
+        // Search through all sentences - if we have a required gram, only look at sentences containing it
+        let candidate_sentences: Vec<Spur> = if let Some(required) = required_gram {
+            match self.sentences_containing_gram_index.get(required) {
+                Some(sentences) => sentences.clone(),
+                None => return Vec::new(),
+            }
+        } else {
+            // If no required gram/phrase, consider all sentences
+            self.translations.keys().cloned().collect()
+        };
+
+        let is_comprehensible = |gram: &SpurGram| {
+            is_comprehensible(gram) || required_gram.is_some_and(|req| req == gram)
+        };
+
+        let mut possible_sentences = Vec::new();
+
+        // Warning: this loop is HOT!
+        'checkSentences: for sentence in candidate_sentences {
+            let Some(sentence_grams) = self.encoded_sentences.get(&sentence) else {
+                continue;
+            };
+
+            // Check that all learnable grams are comprehensible
+            for sentence_gram in &sentence_grams.grams {
+                if let SentenceGram::Learnable(gram) = sentence_gram
+                    && !is_comprehensible(gram)
+                {
+                    continue 'checkSentences; // Early exit!
+                }
+            }
+
+            // Check that all multiword terms (high and low confidence) are comprehensible
+            for multiword_gram in sentence_grams
+                .multiword_terms
+                .iter()
+                .chain(sentence_grams.low_confidence_multiword_terms.iter())
+            {
+                if !is_comprehensible(multiword_gram) {
+                    continue 'checkSentences; // Early exit!
+                }
+            }
+
+            // Check that the sentence has at least one translation
+            if self
+                .translations
+                .get(&sentence)
+                .is_none_or(|t| t.is_empty())
+            {
+                continue 'checkSentences;
+            }
+
+            possible_sentences.push(sentence);
+        }
+
+        possible_sentences
+    }
+
     /// Get all lexemes for words that share a pronunciation
     /// Returns an iterator over (word, lexeme) pairs
     pub fn pronunciation_to_lexemes(

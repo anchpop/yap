@@ -185,3 +185,31 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # ===== MCP SERVER =====
+      # Deployed last: a failure here must never block the frontend/backend
+      # deploys above. One-time setup before the first run:
+      #   flyctl apps create yap-mcp
+      #   flyctl secrets set --app yap-mcp SUPABASE_JWT_SECRET=...
+
+      - name: Build and push MCP server image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: yap-mcp/Dockerfile
+          push: true
+          tags: registry.fly.io/yap-mcp:${{ github.sha }}
+          cache-from: type=registry,ref=registry.fly.io/yap-mcp:cache
+          cache-to: type=registry,ref=registry.fly.io/yap-mcp:cache,mode=max
+
+      - name: Deploy MCP server to Fly.io
+        run: flyctl deploy --config yap-mcp/fly.toml --image registry.fly.io/yap-mcp:${{ github.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
+
+      # Catches runtime-only breakage: missing secrets, glibc mismatches,
+      # packs missing from the image.
+      - name: Smoke test deployed MCP server
+        run: |
+          curl -fsS https://yap-mcp.fly.dev/health
+          curl -fsS https://yap-mcp.fly.dev/.well-known/oauth-authorization-server | grep -q '"issuer"'

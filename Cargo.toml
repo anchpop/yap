@@ -17,6 +17,7 @@ members = [
     "libraries/weekly-active-users",
     "libraries/google-tts",
     "generate-dictionary-data",
+    "yap-mcp",
 ]
 resolver = "3"
 
