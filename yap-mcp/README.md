@@ -5,11 +5,11 @@ clients: do reviews, add words, look things up in the dictionary, pull
 comprehensible example sentences, and check stats — all backed by the same
 event stream the web app syncs, so everything shows up across devices.
 
-Two binaries:
+One binary, two modes:
 
-- `yap-mcp` — stdio server for local clients (Claude Code/Desktop), bound to
-  one account via env vars and the service role key.
-- `yap-mcp-server` — remote server (streamable HTTP + OAuth 2.1) usable as a
+- `yap-mcp` (or `yap-mcp stdio`) — stdio server for local clients (Claude
+  Code/Desktop), bound to one account via env vars and the service role key.
+- `yap-mcp serve` — remote server (streamable HTTP + OAuth 2.1) usable as a
   claude.ai custom connector; multi-user, each user signs in with their own
   yap credentials.
 
@@ -69,7 +69,7 @@ pack stays resident for the life of the process.
 
 ## Remote server (claude.ai custom connector)
 
-`yap-mcp-server` serves the same tools over streamable HTTP at `/mcp`, wrapped
+`yap-mcp serve` serves the same tools over streamable HTTP at `/mcp`, wrapped
 in an OAuth 2.1 flow that claude.ai's "add custom connector" understands:
 RFC 9728 protected-resource metadata → RFC 8414 authorization-server metadata
 → RFC 7591 dynamic client registration → PKCE (S256) authorization-code flow
@@ -111,8 +111,8 @@ yap login page, and connects.
 
 ## Current limitations
 
-- The stdio binary's auth is service-role + email (fine for personal/local
-  use); the remote binary is the multi-user path.
+- stdio mode's auth is service-role + email (fine for personal/local use);
+  serve mode is the multi-user path.
 - Login is email + password only (matches the yap frontend's auth surface).
 - Listening cards can be quizzed only as text in a chat client.
 - No challenge generation (translation/transcription exercises) yet; the chat

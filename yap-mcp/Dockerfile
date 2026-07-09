@@ -5,7 +5,7 @@
 FROM rust:1.96-trixie AS builder
 WORKDIR /app
 COPY . .
-RUN cargo build --release -p yap-mcp --bin yap-mcp-server
+RUN cargo build --release -p yap-mcp
 
 FROM debian:trixie-slim AS runtime
 WORKDIR /app
@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/yap-mcp-server /usr/local/bin/yap-mcp-server
+COPY --from=builder /app/target/release/yap-mcp /usr/local/bin/yap-mcp
 # Language packs are read from disk at runtime (lazily, per course).
 COPY out /app/out
 ENV YAP_OUT_DIR=/app/out
-ENTRYPOINT ["/usr/local/bin/yap-mcp-server"]
+ENTRYPOINT ["/usr/local/bin/yap-mcp", "serve"]
