@@ -79,8 +79,12 @@ The OAuth layer is a thin shim over Supabase auth:
 
 - The `/oauth/authorize` page is a yap login form (email + password). A
   successful login becomes a single-use authorization code.
-- Access tokens ARE Supabase user JWTs, verified with `SUPABASE_JWT_SECRET`;
-  refresh proxies to Supabase's `grant_type=refresh_token`. No token store.
+- Tokens are MCP-scoped: we mint our own JWTs (`aud: yap-mcp`), with the
+  user's Supabase session embedded **encrypted** (ChaCha20-Poly1305, key
+  derived from `SUPABASE_JWT_SECRET`). The OAuth client never holds a raw
+  Supabase credential — a leaked token is only usable against `/mcp` here,
+  and raw Supabase JWTs are rejected. Refresh decrypts the embedded Supabase
+  refresh token and proxies to Supabase. Still no token store.
 - Client registrations are encoded as signed `client_id`s (the redirect URIs
   live inside the signature), so server restarts don't break connections. The
   only in-memory OAuth state is in-flight authorization codes — which is why

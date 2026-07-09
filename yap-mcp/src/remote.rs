@@ -25,6 +25,10 @@ use axum::{
     routing::{get, post},
 };
 use base64::Engine as _;
+use chacha20poly1305::{
+    ChaCha20Poly1305, Key, Nonce,
+    aead::{Aead as _, KeyInit as _},
+};
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Validation};
 use rand::Rng as _;
 use rmcp::transport::streamable_http_server::{
@@ -102,9 +106,7 @@ pub struct AuthedUser {
 
 /// An authorization code waiting to be exchanged at the token endpoint.
 struct PendingCode {
-    access_token: String,
-    refresh_token: String,
-    expires_in: u64,
+    session: SupabaseSession,
     code_challenge: String,
     client_id: String,
     redirect_uri: String,
@@ -115,6 +117,9 @@ pub struct RemoteApp {
     pub config: RemoteConfig,
     http: reqwest::Client,
     packs: PackCache,
+    /// Encrypts the Supabase session embedded in the tokens we mint, so the
+    /// OAuth client never holds a raw Supabase credential.
+    token_cipher: ChaCha20Poly1305,
     users: Mutex<HashMap<String, Arc<Mutex<YapState>>>>,
     codes: Mutex<HashMap<String, PendingCode>>,
 }
@@ -122,13 +127,41 @@ pub struct RemoteApp {
 impl RemoteApp {
     pub fn new(config: RemoteConfig) -> Self {
         let packs = PackCache::new(config.out_dir.clone());
+        // Domain-separated key derivation from the project JWT secret.
+        let key = Sha256::digest(format!("yap-mcp token encryption:{}", config.jwt_secret));
+        let token_cipher = ChaCha20Poly1305::new(Key::from_slice(&key));
         RemoteApp {
             config,
             http: reqwest::Client::new(),
             packs,
+            token_cipher,
             users: Mutex::new(HashMap::new()),
             codes: Mutex::new(HashMap::new()),
         }
+    }
+
+    fn encrypt(&self, plaintext: &str) -> String {
+        let nonce_bytes: [u8; 12] = rand::rng().random();
+        let nonce = Nonce::from_slice(&nonce_bytes);
+        let ciphertext = self
+            .token_cipher
+            .encrypt(nonce, plaintext.as_bytes())
+            .expect("ChaCha20-Poly1305 encryption cannot fail");
+        let mut blob = nonce_bytes.to_vec();
+        blob.extend(ciphertext);
+        base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(blob)
+    }
+
+    fn decrypt(&self, blob: &str) -> Option<String> {
+        let blob = base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .decode(blob)
+            .ok()?;
+        let (nonce_bytes, ciphertext) = blob.split_at_checked(12)?;
+        let plaintext = self
+            .token_cipher
+            .decrypt(Nonce::from_slice(nonce_bytes), ciphertext)
+            .ok()?;
+        String::from_utf8(plaintext).ok()
     }
 
     /// Get (or lazily initialize) the deck state for an authenticated user,
@@ -238,23 +271,97 @@ fn allowed_hosts(config: &RemoteConfig) -> Vec<String> {
     hosts
 }
 
-#[derive(Deserialize)]
-struct SupabaseClaims {
+/// Audience values for the tokens we mint. Scoping tokens to this server means
+/// the OAuth client (claude.ai) never holds a credential usable against
+/// Supabase directly — only against /mcp here.
+const ACCESS_AUD: &str = "yap-mcp";
+const REFRESH_AUD: &str = "yap-mcp-refresh";
+
+#[derive(Serialize, Deserialize)]
+struct AccessClaims {
+    iss: String,
+    aud: String,
     sub: String,
-    #[expect(unused)]
-    exp: usize,
+    exp: u64,
+    /// The user's Supabase access token, encrypted with the server's key.
+    sb: String,
 }
 
-fn verify_user_token(jwt_secret: &str, token: &str) -> Option<String> {
+#[derive(Serialize, Deserialize)]
+struct RefreshClaims {
+    iss: String,
+    aud: String,
+    sub: String,
+    /// The user's Supabase refresh token, encrypted with the server's key.
+    sbr: String,
+}
+
+/// Mint the OAuth token response for a fresh Supabase session.
+fn issue_tokens(app: &RemoteApp, session: &SupabaseSession) -> serde_json::Value {
+    let key = EncodingKey::from_secret(app.config.jwt_secret.as_bytes());
+    let access = jsonwebtoken::encode(
+        &jsonwebtoken::Header::default(),
+        &AccessClaims {
+            iss: app.config.base_url.clone(),
+            aud: ACCESS_AUD.to_string(),
+            sub: session.user.id.clone(),
+            exp: chrono::Utc::now().timestamp() as u64 + session.expires_in,
+            sb: app.encrypt(&session.access_token),
+        },
+        &key,
+    )
+    .expect("HS256 signing cannot fail");
+    let refresh = jsonwebtoken::encode(
+        &jsonwebtoken::Header::default(),
+        &RefreshClaims {
+            iss: app.config.base_url.clone(),
+            aud: REFRESH_AUD.to_string(),
+            sub: session.user.id.clone(),
+            sbr: app.encrypt(&session.refresh_token),
+        },
+        &key,
+    )
+    .expect("HS256 signing cannot fail");
+    json!({
+        "access_token": access,
+        "token_type": "Bearer",
+        "expires_in": session.expires_in,
+        "refresh_token": refresh,
+        "scope": "yap",
+    })
+}
+
+/// Verify one of our access tokens and recover the user + their Supabase token.
+fn verify_access_token(app: &RemoteApp, token: &str) -> Option<AuthedUser> {
     let mut validation = Validation::new(Algorithm::HS256);
-    validation.set_audience(&["authenticated"]);
-    jsonwebtoken::decode::<SupabaseClaims>(
+    validation.set_audience(&[ACCESS_AUD]);
+    let claims = jsonwebtoken::decode::<AccessClaims>(
         token,
-        &DecodingKey::from_secret(jwt_secret.as_bytes()),
+        &DecodingKey::from_secret(app.config.jwt_secret.as_bytes()),
         &validation,
     )
-    .ok()
-    .map(|data| data.claims.sub)
+    .ok()?
+    .claims;
+    Some(AuthedUser {
+        user_id: claims.sub,
+        bearer: app.decrypt(&claims.sb)?,
+    })
+}
+
+/// Verify one of our refresh tokens and recover the Supabase refresh token.
+fn verify_refresh_token(app: &RemoteApp, token: &str) -> Option<String> {
+    let mut validation = Validation::new(Algorithm::HS256);
+    validation.set_audience(&[REFRESH_AUD]);
+    validation.validate_exp = false;
+    validation.required_spec_claims.clear();
+    let claims = jsonwebtoken::decode::<RefreshClaims>(
+        token,
+        &DecodingKey::from_secret(app.config.jwt_secret.as_bytes()),
+        &validation,
+    )
+    .ok()?
+    .claims;
+    app.decrypt(&claims.sbr)
 }
 
 async fn require_auth(
@@ -267,12 +374,7 @@ async fn require_auth(
         .get(header::AUTHORIZATION)
         .and_then(|v| v.to_str().ok())
         .and_then(|v| v.strip_prefix("Bearer "))
-        .and_then(|token| {
-            verify_user_token(&app.config.jwt_secret, token).map(|user_id| AuthedUser {
-                user_id,
-                bearer: token.to_string(),
-            })
-        });
+        .and_then(|token| verify_access_token(&app, token));
     match user {
         Some(user) => {
             req.extensions_mut().insert(user);
@@ -474,6 +576,12 @@ struct SupabaseSession {
     access_token: String,
     refresh_token: String,
     expires_in: u64,
+    user: SupabaseUser,
+}
+
+#[derive(Deserialize)]
+struct SupabaseUser {
+    id: String,
 }
 
 async fn authorize_submit(
@@ -530,9 +638,7 @@ async fn authorize_submit(
         codes.insert(
             code.clone(),
             PendingCode {
-                access_token: session.access_token,
-                refresh_token: session.refresh_token,
-                expires_in: session.expires_in,
+                session,
                 code_challenge: params.code_challenge.clone(),
                 client_id: params.client_id.clone(),
                 redirect_uri: params.redirect_uri.clone(),
@@ -610,14 +716,7 @@ async fn token(State(app): State<Arc<RemoteApp>>, Form(req): Form<TokenRequest>)
                     "PKCE verification failed",
                 );
             }
-            Json(json!({
-                "access_token": pending.access_token,
-                "token_type": "Bearer",
-                "expires_in": pending.expires_in,
-                "refresh_token": pending.refresh_token,
-                "scope": "yap",
-            }))
-            .into_response()
+            Json(issue_tokens(&app, &pending.session)).into_response()
         }
         "refresh_token" => {
             let Some(refresh_token) = &req.refresh_token else {
@@ -627,6 +726,13 @@ async fn token(State(app): State<Arc<RemoteApp>>, Form(req): Form<TokenRequest>)
                     "missing refresh_token",
                 );
             };
+            let Some(supabase_refresh_token) = verify_refresh_token(&app, refresh_token) else {
+                return oauth_error(
+                    StatusCode::BAD_REQUEST,
+                    "invalid_grant",
+                    "refresh token was rejected",
+                );
+            };
             let resp = app
                 .http
                 .post(format!(
@@ -634,20 +740,13 @@ async fn token(State(app): State<Arc<RemoteApp>>, Form(req): Form<TokenRequest>)
                     app.config.supabase_url
                 ))
                 .header("apikey", &app.config.supabase_anon_key)
-                .json(&json!({ "refresh_token": refresh_token }))
+                .json(&json!({ "refresh_token": supabase_refresh_token }))
                 .send()
                 .await;
             match resp {
                 Ok(resp) if resp.status().is_success() => {
                     match resp.json::<SupabaseSession>().await {
-                        Ok(session) => Json(json!({
-                            "access_token": session.access_token,
-                            "token_type": "Bearer",
-                            "expires_in": session.expires_in,
-                            "refresh_token": session.refresh_token,
-                            "scope": "yap",
-                        }))
-                        .into_response(),
+                        Ok(session) => Json(issue_tokens(&app, &session)).into_response(),
                         Err(e) => {
                             log::error!("failed to parse Supabase refresh response: {e}");
                             oauth_error(StatusCode::BAD_REQUEST, "invalid_grant", "refresh failed")
