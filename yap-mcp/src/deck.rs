@@ -73,6 +73,40 @@ pub fn detect_course(store: &EventStore<String, String>) -> anyhow::Result<Cours
     })
 }
 
+/// Lazily-loaded, shared language packs, keyed by course. Loading deserializes
+/// a >100 MB rkyv archive, so packs are loaded at most once and shared.
+pub struct PackCache {
+    out_dir: std::path::PathBuf,
+    packs: tokio::sync::Mutex<BTreeMap<Course, Arc<LanguagePack>>>,
+}
+
+impl PackCache {
+    pub fn new(out_dir: std::path::PathBuf) -> Self {
+        PackCache {
+            out_dir,
+            packs: tokio::sync::Mutex::new(BTreeMap::new()),
+        }
+    }
+
+    pub async fn get(&self, course: &Course) -> anyhow::Result<Arc<LanguagePack>> {
+        let mut packs = self.packs.lock().await;
+        if let Some(pack) = packs.get(course) {
+            return Ok(pack.clone());
+        }
+        let out_dir = self.out_dir.clone();
+        let course_owned = *course;
+        log::info!(
+            "loading language pack for {} for {} speakers",
+            course.target_language,
+            course.native_language
+        );
+        let pack = tokio::task::spawn_blocking(move || load_language_pack(&out_dir, &course_owned))
+            .await??;
+        packs.insert(*course, pack.clone());
+        Ok(pack)
+    }
+}
+
 /// Load the `.rkyv` language pack for a course from the `out/` directory.
 pub fn load_language_pack(out_dir: &Path, course: &Course) -> anyhow::Result<Arc<LanguagePack>> {
     let path = out_dir

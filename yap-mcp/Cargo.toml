@@ -17,8 +17,21 @@ reqwest.workspace = true
 rkyv.workspace = true
 log.workspace = true
 env_logger.workspace = true
-rmcp = { version = "2.2", features = ["server", "transport-io", "macros", "schemars"] }
+rmcp = { version = "2.2", features = [
+    "server",
+    "transport-io",
+    "transport-streamable-http-server",
+    "macros",
+    "schemars",
+] }
 schemars.workspace = true
 rand = "0.9"
 anyhow = "1"
 dotenvy = "0.15"
+axum = "0.8"
+tower-http = { version = "0.6", features = ["cors"] }
+http = "1"
+jsonwebtoken = { version = "10", features = ["rust_crypto"] }
+sha2 = "0.10"
+base64 = "0.22"
+html-escape.workspace = true

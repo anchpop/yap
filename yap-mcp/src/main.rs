@@ -3,11 +3,8 @@
 //! Reviews, dictionary search, adding words, comprehensible example sentences,
 //! and stats — all backed by the same event stream the web app syncs.
 
-mod deck;
-mod server;
-mod sync;
-
 use rmcp::ServiceExt as _;
+use yap_mcp::server;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

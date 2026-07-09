@@ -15,18 +15,30 @@ pub const DEVICE_ID: &str = "yap-mcp";
 pub const REVIEWS_STREAM: &str = "reviews";
 pub const DECK_SELECTION_STREAM: &str = "deck_selection";
 
+/// Credentials for Supabase REST calls. The stdio server authenticates as the
+/// service role; the remote server authenticates as the user themself (anon
+/// apikey + the user's JWT), staying inside RLS.
 #[derive(Clone)]
-pub struct SupabaseConfig {
+pub struct SupabaseAuth {
     pub url: String,
-    pub service_role_key: String,
+    /// Sent as the `apikey` header.
+    pub apikey: String,
+    /// Sent as the `Authorization: Bearer` token.
+    pub bearer: String,
 }
 
-impl SupabaseConfig {
+impl SupabaseAuth {
+    pub fn service_role(url: String, service_role_key: String) -> Self {
+        SupabaseAuth {
+            url,
+            apikey: service_role_key.clone(),
+            bearer: service_role_key,
+        }
+    }
+
     fn auth(&self, req: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
-        req.header("apikey", &self.service_role_key).header(
-            "Authorization",
-            format!("Bearer {}", &self.service_role_key),
-        )
+        req.header("apikey", &self.apikey)
+            .header("Authorization", format!("Bearer {}", &self.bearer))
     }
 }
 
@@ -41,7 +53,7 @@ pub struct EventRow {
 /// Look up a user's id by email via the Supabase admin API.
 pub async fn find_user_id(
     client: &reqwest::Client,
-    cfg: &SupabaseConfig,
+    cfg: &SupabaseAuth,
     email: &str,
 ) -> anyhow::Result<String> {
     for page in 1..=50 {
@@ -74,7 +86,7 @@ pub async fn find_user_id(
 /// than `after`. Returns the rows and the highest global id seen.
 pub async fn fetch_events(
     client: &reqwest::Client,
-    cfg: &SupabaseConfig,
+    cfg: &SupabaseAuth,
     user_id: &str,
     after: Option<i64>,
 ) -> anyhow::Result<(Vec<EventRow>, Option<i64>)> {
@@ -131,7 +143,7 @@ pub async fn fetch_events(
 /// Uses the same row shape as the web app's sync (see `weapon::supabase`).
 pub async fn upload_events(
     client: &reqwest::Client,
-    cfg: &SupabaseConfig,
+    cfg: &SupabaseAuth,
     user_id: &str,
     stream_id: &str,
     device_id: &str,

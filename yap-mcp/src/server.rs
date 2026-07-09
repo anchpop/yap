@@ -7,9 +7,10 @@ use std::time::{Duration, Instant};
 use anyhow::Context as _;
 use chrono::Utc;
 use rmcp::{
-    ServerHandler,
+    RoleServer, ServerHandler,
     handler::server::wrapper::Parameters,
     model::{CallToolResult, ContentBlock, ServerCapabilities, ServerInfo},
+    service::RequestContext,
     tool, tool_handler, tool_router,
 };
 use schemars::JsonSchema;
@@ -23,16 +24,16 @@ use yap_frontend_rs::{
     CardIndicator, Context, Deck, DeckEvent, LanguageEvent, LanguageEventContent, Rating,
 };
 
-use crate::deck::{build_deck, detect_course, insert_rows, load_language_pack, new_store};
+use crate::deck::{PackCache, build_deck, detect_course, insert_rows, new_store};
 use crate::sync::{
-    DEVICE_ID, REVIEWS_STREAM, SupabaseConfig, fetch_events, find_user_id, upload_events,
+    DEVICE_ID, REVIEWS_STREAM, SupabaseAuth, fetch_events, find_user_id, upload_events,
 };
 
 /// How long fetched events stay fresh before a tool call triggers a re-fetch.
 const REFRESH_INTERVAL: Duration = Duration::from_secs(20);
 
 pub struct Config {
-    pub supabase: SupabaseConfig,
+    pub supabase: SupabaseAuth,
     pub email: String,
     pub out_dir: PathBuf,
 }
@@ -49,10 +50,7 @@ impl Config {
             .map(PathBuf::from)
             .unwrap_or_else(|_| PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../out")));
         Ok(Config {
-            supabase: SupabaseConfig {
-                url,
-                service_role_key,
-            },
+            supabase: SupabaseAuth::service_role(url, service_role_key),
             email,
             out_dir,
         })
@@ -60,7 +58,7 @@ impl Config {
 }
 
 pub struct YapState {
-    supabase: SupabaseConfig,
+    supabase: SupabaseAuth,
     http: reqwest::Client,
     user_id: String,
     context: Context,
@@ -73,14 +71,25 @@ pub struct YapState {
 }
 
 impl YapState {
+    /// stdio mode: resolve the account by email using the service role key.
     pub async fn load(config: Config) -> anyhow::Result<Self> {
         let http = reqwest::Client::new();
-
         log::info!("looking up user {}", config.email);
         let user_id = find_user_id(&http, &config.supabase, &config.email).await?;
+        let packs = PackCache::new(config.out_dir);
+        Self::for_user(config.supabase, user_id, &packs).await
+    }
+
+    /// Fetch a user's events, detect their course, and replay their deck.
+    pub async fn for_user(
+        supabase: SupabaseAuth,
+        user_id: String,
+        packs: &PackCache,
+    ) -> anyhow::Result<Self> {
+        let http = reqwest::Client::new();
 
         log::info!("fetching events for {user_id}");
-        let (rows, last_fetched_id) = fetch_events(&http, &config.supabase, &user_id, None).await?;
+        let (rows, last_fetched_id) = fetch_events(&http, &supabase, &user_id, None).await?;
         log::info!("fetched {} events", rows.len());
 
         let mut store = new_store();
@@ -93,7 +102,7 @@ impl YapState {
             course.native_language
         );
 
-        let language_pack = load_language_pack(&config.out_dir, &course)?;
+        let language_pack = packs.get(&course).await?;
         let timezone = *chrono::Local::now().offset();
         let context = Context {
             language_pack,
@@ -102,7 +111,7 @@ impl YapState {
         };
 
         let mut state = YapState {
-            supabase: config.supabase,
+            supabase,
             http,
             user_id,
             context,
@@ -121,6 +130,12 @@ impl YapState {
             deck.stats().total_reviews
         );
         Ok(state)
+    }
+
+    /// Swap in the bearer token from the current request (remote mode: user
+    /// access tokens rotate on refresh).
+    pub fn set_bearer(&mut self, bearer: String) {
+        self.supabase.bearer = bearer;
     }
 
     fn pack(&self) -> &LanguagePack {
@@ -372,15 +387,52 @@ pub struct GetSentencesParams {
     count: Option<usize>,
 }
 
+/// Where a tool call's deck state comes from.
+#[derive(Clone)]
+enum StateSource {
+    /// stdio mode: one account, resolved at startup.
+    Single(Arc<tokio::sync::Mutex<YapState>>),
+    /// Remote mode: per-user state, resolved from the request's bearer token.
+    PerUser(Arc<crate::remote::RemoteApp>),
+}
+
 #[derive(Clone)]
 pub struct YapMcp {
-    state: Arc<tokio::sync::Mutex<YapState>>,
+    source: StateSource,
 }
 
 impl YapMcp {
     pub fn new(state: YapState) -> Self {
         Self {
-            state: Arc::new(tokio::sync::Mutex::new(state)),
+            source: StateSource::Single(Arc::new(tokio::sync::Mutex::new(state))),
+        }
+    }
+
+    pub fn new_remote(app: Arc<crate::remote::RemoteApp>) -> Self {
+        Self {
+            source: StateSource::PerUser(app),
+        }
+    }
+
+    /// Resolve the deck state for this call. In remote mode the authenticated
+    /// user travels in the propagated HTTP request parts.
+    async fn state_slot(
+        &self,
+        ctx: &RequestContext<RoleServer>,
+    ) -> Result<Arc<tokio::sync::Mutex<YapState>>, String> {
+        match &self.source {
+            StateSource::Single(state) => Ok(state.clone()),
+            StateSource::PerUser(app) => {
+                let user = ctx
+                    .extensions
+                    .get::<http::request::Parts>()
+                    .and_then(|parts| parts.extensions.get::<crate::remote::AuthedUser>())
+                    .ok_or("unauthenticated: no user on this request")?
+                    .clone();
+                app.state_for_user(&user)
+                    .await
+                    .map_err(|e| format!("failed to load your yap account: {e:#}"))
+            }
         }
     }
 }
@@ -392,6 +444,7 @@ impl YapMcp {
     )]
     async fn search_dictionary(
         &self,
+        ctx: RequestContext<RoleServer>,
         Parameters(params): Parameters<SearchDictionaryParams>,
     ) -> CallToolResult {
         let query = params.query.trim().to_string();
@@ -400,7 +453,11 @@ impl YapMcp {
         }
         let limit = params.limit.unwrap_or(20).min(100);
 
-        let mut state = self.state.lock().await;
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
@@ -439,11 +496,19 @@ impl YapMcp {
     #[tool(
         description = "Add words/phrases to the user's yap deck as new flashcards. Takes (language, gram) pairs, normally obtained from search_dictionary; anything that doesn't name a real dictionary entry is rejected. Confirm with the user before adding."
     )]
-    async fn add_cards(&self, Parameters(params): Parameters<AddCardsParams>) -> CallToolResult {
+    async fn add_cards(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<AddCardsParams>,
+    ) -> CallToolResult {
         if params.grams.is_empty() {
             return error("grams must not be empty");
         }
-        let mut state = self.state.lock().await;
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
@@ -510,10 +575,15 @@ impl YapMcp {
     )]
     async fn get_due_cards(
         &self,
+        ctx: RequestContext<RoleServer>,
         Parameters(params): Parameters<GetDueCardsParams>,
     ) -> CallToolResult {
         let limit = params.limit.unwrap_or(10).min(50);
-        let mut state = self.state.lock().await;
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
@@ -552,12 +622,20 @@ impl YapMcp {
     #[tool(
         description = "Record the result of reviewing one card. This updates real spaced-repetition scheduling on the user's account, so only call it after actually quizzing the user, with an honest rating."
     )]
-    async fn log_review(&self, Parameters(params): Parameters<LogReviewParams>) -> CallToolResult {
+    async fn log_review(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<LogReviewParams>,
+    ) -> CallToolResult {
         let rating = match parse_rating(&params.rating) {
             Ok(r) => r,
             Err(e) => return error(e),
         };
-        let mut state = self.state.lock().await;
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
@@ -609,10 +687,15 @@ impl YapMcp {
     )]
     async fn get_sentences(
         &self,
+        ctx: RequestContext<RoleServer>,
         Parameters(params): Parameters<GetSentencesParams>,
     ) -> CallToolResult {
         let count = params.count.unwrap_or(5).clamp(1, 20);
-        let mut state = self.state.lock().await;
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
@@ -685,8 +768,12 @@ impl YapMcp {
     #[tool(
         description = "Get the user's yap stats: streak, XP, review counts, deck size, due cards, comprehension tier, and recent daily activity."
     )]
-    async fn get_stats(&self) -> CallToolResult {
-        let mut state = self.state.lock().await;
+    async fn get_stats(&self, ctx: RequestContext<RoleServer>) -> CallToolResult {
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
