@@ -1,0 +1,4 @@
+name = "yap-mcp-proxy"
+main = "index.js"
+compatibility_date = "2026-07-01"
+routes = [{ pattern = "mcp.yap.town", custom_domain = true }]

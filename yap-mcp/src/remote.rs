@@ -3,8 +3,12 @@
 //!
 //! The OAuth layer is a thin shim over Supabase auth: access tokens ARE
 //! Supabase user JWTs (verified with the project JWT secret, exactly like
-//! yap-ai-backend does), token refresh proxies to Supabase, and the authorize
-//! page logs the user into their yap account with email + password. All event
+//! yap-ai-backend does), token refresh proxies to Supabase, and authorization
+//! happens on the yap.town frontend: /oauth/authorize parks the request and
+//! redirects to yap.town/connect, where the user signs in with their normal
+//! yap auth (passkey-ready, same domain) and approves; the frontend then
+//! posts their proof back to /oauth/approve and we mint the connector a
+//! fresh Supabase session of its own. All event
 //! reads/writes then happen as the user themself, inside RLS. The only
 //! server-side OAuth state is the in-flight authorization codes; client
 //! registrations are encoded as signed client_ids, so restarts don't break
@@ -21,7 +25,7 @@ use axum::{
     extract::{Query, State},
     http::{StatusCode, header},
     middleware::Next,
-    response::{Html, IntoResponse, Redirect, Response},
+    response::{IntoResponse, Redirect, Response},
     routing::{get, post},
 };
 use base64::Engine as _;
@@ -59,6 +63,14 @@ pub struct RemoteConfig {
     /// The Supabase project JWT secret, used to verify user access tokens and
     /// to sign client_ids.
     pub jwt_secret: String,
+    /// Service role key, used only to mint a fresh Supabase session for the
+    /// connector when the user approves on the frontend.
+    pub service_role_key: String,
+    /// The yap.town frontend origin hosting the /connect approval page.
+    pub frontend_url: String,
+    /// Extra hostnames to accept in the Host header (e.g. the fly.dev name
+    /// when the public domain is proxied in front of it).
+    pub extra_allowed_hosts: Vec<String>,
     pub out_dir: PathBuf,
 }
 
@@ -80,6 +92,21 @@ impl RemoteConfig {
             std::env::var("SUPABASE_ANON_KEY").unwrap_or_else(|_| DEFAULT_ANON_KEY.to_string());
         let jwt_secret = std::env::var("SUPABASE_JWT_SECRET")
             .context("SUPABASE_JWT_SECRET env var required (verifies user tokens)")?;
+        let service_role_key = std::env::var("SUPABASE_SERVICE_ROLE_KEY")
+            .context("SUPABASE_SERVICE_ROLE_KEY env var required (mints connector sessions)")?;
+        let frontend_url = std::env::var("YAP_FRONTEND_URL")
+            .unwrap_or_else(|_| "https://yap.town".to_string())
+            .trim_end_matches('/')
+            .to_string();
+        let extra_allowed_hosts = std::env::var("YAP_MCP_ALLOWED_HOSTS")
+            .map(|hosts| {
+                hosts
+                    .split(',')
+                    .map(|host| host.trim().to_string())
+                    .filter(|host| !host.is_empty())
+                    .collect()
+            })
+            .unwrap_or_default();
         let out_dir = std::env::var("YAP_OUT_DIR")
             .map(PathBuf::from)
             .unwrap_or_else(|_| PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../out")));
@@ -89,6 +116,9 @@ impl RemoteConfig {
             supabase_url,
             supabase_anon_key,
             jwt_secret,
+            service_role_key,
+            frontend_url,
+            extra_allowed_hosts,
             out_dir,
         })
     }
@@ -113,6 +143,16 @@ struct PendingCode {
     created: Instant,
 }
 
+/// An authorize request parked while the user signs in and approves it on the
+/// yap.town frontend.
+struct PendingAuth {
+    client_id: String,
+    redirect_uri: String,
+    state: Option<String>,
+    code_challenge: String,
+    created: Instant,
+}
+
 pub struct RemoteApp {
     pub config: RemoteConfig,
     http: reqwest::Client,
@@ -122,6 +162,7 @@ pub struct RemoteApp {
     token_cipher: ChaCha20Poly1305,
     users: Mutex<HashMap<String, Arc<Mutex<YapState>>>>,
     codes: Mutex<HashMap<String, PendingCode>>,
+    pending_auth: Mutex<HashMap<String, PendingAuth>>,
 }
 
 impl RemoteApp {
@@ -137,6 +178,7 @@ impl RemoteApp {
             token_cipher,
             users: Mutex::new(HashMap::new()),
             codes: Mutex::new(HashMap::new()),
+            pending_auth: Mutex::new(HashMap::new()),
         }
     }
 
@@ -230,10 +272,8 @@ pub async fn serve(app: Arc<RemoteApp>) -> anyhow::Result<()> {
             get(authorization_server_metadata),
         )
         .route("/oauth/register", post(register))
-        .route(
-            "/oauth/authorize",
-            get(authorize_page).post(authorize_submit),
-        )
+        .route("/oauth/authorize", get(authorize_page))
+        .route("/oauth/approve", post(approve))
         .route("/oauth/token", post(token))
         .route("/health", get(|| async { "ok" }))
         .with_state(app.clone());
@@ -268,6 +308,7 @@ fn allowed_hosts(config: &RemoteConfig) -> Vec<String> {
             hosts.push(format!("{host}:{port}"));
         }
     }
+    hosts.extend(config.extra_allowed_hosts.iter().cloned());
     hosts
 }
 
@@ -509,8 +550,6 @@ struct AuthorizeParams {
     code_challenge: String,
     #[serde(default)]
     code_challenge_method: Option<String>,
-    #[serde(default)]
-    scope: Option<String>,
 }
 
 fn validate_authorize(app: &RemoteApp, params: &AuthorizeParams) -> Result<(), String> {
@@ -531,6 +570,10 @@ fn validate_authorize(app: &RemoteApp, params: &AuthorizeParams) -> Result<(), S
     }
 }
 
+/// Start the flow: validate the client's request, park it, and send the user
+/// to the yap.town frontend to sign in and approve (auth lives on the main
+/// domain so passkeys can work there). The frontend posts back to
+/// /oauth/approve.
 async fn authorize_page(
     State(app): State<Arc<RemoteApp>>,
     Query(params): Query<AuthorizeParams>,
@@ -538,37 +581,35 @@ async fn authorize_page(
     if let Err(e) = validate_authorize(&app, &params) {
         return (StatusCode::BAD_REQUEST, e).into_response();
     }
-    Html(login_page(&params, None)).into_response()
-}
 
-#[derive(Deserialize)]
-struct LoginForm {
-    email: String,
-    password: String,
-    response_type: String,
-    client_id: String,
-    redirect_uri: String,
-    #[serde(default)]
-    state: Option<String>,
-    code_challenge: String,
-    #[serde(default)]
-    code_challenge_method: Option<String>,
-    #[serde(default)]
-    scope: Option<String>,
-}
-
-impl LoginForm {
-    fn params(&self) -> AuthorizeParams {
-        AuthorizeParams {
-            response_type: self.response_type.clone(),
-            client_id: self.client_id.clone(),
-            redirect_uri: self.redirect_uri.clone(),
-            state: self.state.clone(),
-            code_challenge: self.code_challenge.clone(),
-            code_challenge_method: self.code_challenge_method.clone(),
-            scope: self.scope.clone(),
-        }
+    let request_id = random_token();
+    {
+        let mut pending = app.pending_auth.lock().await;
+        pending.retain(|_, p| p.created.elapsed() < CODE_TTL);
+        pending.insert(
+            request_id.clone(),
+            PendingAuth {
+                client_id: params.client_id.clone(),
+                redirect_uri: params.redirect_uri.clone(),
+                state: params.state.clone(),
+                code_challenge: params.code_challenge.clone(),
+                created: Instant::now(),
+            },
+        );
     }
+
+    let mut url = match reqwest::Url::parse(&format!("{}/connect", app.config.frontend_url)) {
+        Ok(url) => url,
+        Err(_) => {
+            return (StatusCode::INTERNAL_SERVER_ERROR, "bad frontend url").into_response();
+        }
+    };
+    url.query_pairs_mut()
+        .append_pair("request", &request_id)
+        // Which whitelisted MCP origin the frontend should post approval to
+        // (lets the same page work against a locally-run server in dev).
+        .append_pair("mcp", &app.config.base_url);
+    Redirect::to(url.as_str()).into_response()
 }
 
 #[derive(Deserialize)]
@@ -584,54 +625,121 @@ struct SupabaseUser {
     id: String,
 }
 
-async fn authorize_submit(
-    State(app): State<Arc<RemoteApp>>,
-    Form(form): Form<LoginForm>,
-) -> Response {
-    let params = form.params();
-    if let Err(e) = validate_authorize(&app, &params) {
-        return (StatusCode::BAD_REQUEST, e).into_response();
-    }
+/// Claims of a Supabase user access token (as opposed to the tokens we mint).
+#[derive(Deserialize)]
+struct SupabaseAccessClaims {
+    sub: String,
+    email: String,
+}
 
-    let resp = app
+fn verify_supabase_token(app: &RemoteApp, token: &str) -> Option<SupabaseAccessClaims> {
+    let mut validation = Validation::new(Algorithm::HS256);
+    validation.set_audience(&["authenticated"]);
+    jsonwebtoken::decode::<SupabaseAccessClaims>(
+        token,
+        &DecodingKey::from_secret(app.config.jwt_secret.as_bytes()),
+        &validation,
+    )
+    .ok()
+    .map(|data| data.claims)
+}
+
+/// Mint a fresh Supabase session for the connector via the admin
+/// generate_link + verify dance (the same trick the impersonation tool uses).
+/// The browser's own session must not be reused: two devices sharing one
+/// refresh-token rotation family would invalidate each other.
+async fn mint_session(app: &RemoteApp, email: &str) -> anyhow::Result<SupabaseSession> {
+    let service_key = &app.config.service_role_key;
+    let link: serde_json::Value = app
         .http
         .post(format!(
-            "{}/auth/v1/token?grant_type=password",
+            "{}/auth/v1/admin/generate_link",
             app.config.supabase_url
         ))
-        .header("apikey", &app.config.supabase_anon_key)
-        .json(&json!({ "email": form.email, "password": form.password }))
+        .header("apikey", service_key)
+        .header("Authorization", format!("Bearer {service_key}"))
+        .json(&json!({ "type": "magiclink", "email": email }))
         .send()
-        .await;
-    let session: SupabaseSession = match resp {
-        Ok(resp) if resp.status().is_success() => match resp.json().await {
-            Ok(session) => session,
-            Err(e) => {
-                log::error!("failed to parse Supabase session: {e}");
-                return Html(login_page(
-                    &params,
-                    Some("Something went wrong — try again."),
-                ))
-                .into_response();
-            }
-        },
-        Ok(_) => {
-            return Html(login_page(&params, Some("Wrong email or password."))).into_response();
-        }
-        Err(e) => {
-            log::error!("Supabase login request failed: {e}");
-            return Html(login_page(
-                &params,
-                Some("Something went wrong — try again."),
-            ))
-            .into_response();
-        }
+        .await?
+        .error_for_status()?
+        .json()
+        .await?;
+    let token_hash = link["hashed_token"]
+        .as_str()
+        .or_else(|| link["properties"]["hashed_token"].as_str())
+        .context("generate_link response missing hashed_token")?;
+
+    let session: SupabaseSession = app
+        .http
+        .post(format!("{}/auth/v1/verify", app.config.supabase_url))
+        .header("apikey", &app.config.supabase_anon_key)
+        .json(&json!({ "type": "magiclink", "token_hash": token_hash }))
+        .send()
+        .await?
+        .error_for_status()?
+        .json()
+        .await?;
+    Ok(session)
+}
+
+#[derive(Deserialize)]
+struct ApproveRequest {
+    request_id: String,
+    /// The signed-in user's Supabase access token, proving who is approving.
+    access_token: String,
+}
+
+/// Called by the yap.town /connect page when the user approves. Exchanges
+/// their proof of identity for an authorization code and tells the frontend
+/// where to send the user next.
+async fn approve(State(app): State<Arc<RemoteApp>>, Json(req): Json<ApproveRequest>) -> Response {
+    let Some(pending) = app.pending_auth.lock().await.remove(&req.request_id) else {
+        return oauth_error(
+            StatusCode::BAD_REQUEST,
+            "invalid_request",
+            "unknown or expired connect request — start over from your MCP client",
+        );
+    };
+    if pending.created.elapsed() > CODE_TTL {
+        return oauth_error(
+            StatusCode::BAD_REQUEST,
+            "invalid_request",
+            "connect request expired — start over from your MCP client",
+        );
+    }
+    let Some(claims) = verify_supabase_token(&app, &req.access_token) else {
+        return oauth_error(
+            StatusCode::UNAUTHORIZED,
+            "access_denied",
+            "your yap session is invalid or expired — sign in again",
+        );
     };
 
-    let code = {
-        let bytes: [u8; 32] = rand::rng().random();
-        base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
+    let session = match mint_session(&app, &claims.email).await {
+        Ok(session) => session,
+        Err(e) => {
+            log::error!("failed to mint connector session for {}: {e:#}", claims.sub);
+            return oauth_error(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "server_error",
+                "could not create a session — try again",
+            );
+        }
     };
+    if session.user.id != claims.sub {
+        log::error!(
+            "minted session user {} does not match approver {}",
+            session.user.id,
+            claims.sub
+        );
+        return oauth_error(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "server_error",
+            "could not create a session — try again",
+        );
+    }
+
+    let code = random_token();
     {
         let mut codes = app.codes.lock().await;
         codes.retain(|_, pending| pending.created.elapsed() < CODE_TTL);
@@ -639,23 +747,28 @@ async fn authorize_submit(
             code.clone(),
             PendingCode {
                 session,
-                code_challenge: params.code_challenge.clone(),
-                client_id: params.client_id.clone(),
-                redirect_uri: params.redirect_uri.clone(),
+                code_challenge: pending.code_challenge,
+                client_id: pending.client_id,
+                redirect_uri: pending.redirect_uri.clone(),
                 created: Instant::now(),
             },
         );
     }
 
-    let mut url = match reqwest::Url::parse(&params.redirect_uri) {
+    let mut url = match reqwest::Url::parse(&pending.redirect_uri) {
         Ok(url) => url,
         Err(_) => return (StatusCode::BAD_REQUEST, "invalid redirect_uri").into_response(),
     };
     url.query_pairs_mut().append_pair("code", &code);
-    if let Some(state) = &params.state {
+    if let Some(state) = &pending.state {
         url.query_pairs_mut().append_pair("state", state);
     }
-    Redirect::to(url.as_str()).into_response()
+    Json(json!({ "redirect": url.as_str() })).into_response()
+}
+
+fn random_token() -> String {
+    let bytes: [u8; 32] = rand::rng().random();
+    base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
 }
 
 #[derive(Deserialize)]
@@ -774,71 +887,4 @@ fn oauth_error(status: StatusCode, error: &str, description: &str) -> Response {
         Json(json!({ "error": error, "error_description": description })),
     )
         .into_response()
-}
-
-fn login_page(params: &AuthorizeParams, error: Option<&str>) -> String {
-    let attr = |v: &str| html_escape::encode_double_quoted_attribute(v).into_owned();
-    let hidden = |name: &str, value: &str| {
-        format!(
-            r#"<input type="hidden" name="{name}" value="{}">"#,
-            attr(value)
-        )
-    };
-    let mut hidden_fields = String::new();
-    hidden_fields.push_str(&hidden("response_type", &params.response_type));
-    hidden_fields.push_str(&hidden("client_id", &params.client_id));
-    hidden_fields.push_str(&hidden("redirect_uri", &params.redirect_uri));
-    if let Some(state) = &params.state {
-        hidden_fields.push_str(&hidden("state", state));
-    }
-    hidden_fields.push_str(&hidden("code_challenge", &params.code_challenge));
-    if let Some(method) = &params.code_challenge_method {
-        hidden_fields.push_str(&hidden("code_challenge_method", method));
-    }
-    if let Some(scope) = &params.scope {
-        hidden_fields.push_str(&hidden("scope", scope));
-    }
-    let error_html = error
-        .map(|e| format!(r#"<p class="error">{}</p>"#, html_escape::encode_text(e)))
-        .unwrap_or_default();
-
-    format!(
-        r#"<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Connect to yap.town</title>
-<style>
-  body {{ font-family: system-ui, sans-serif; background: #faf7f0; display: flex;
-         justify-content: center; align-items: center; min-height: 100vh; margin: 0; }}
-  .card {{ background: white; border-radius: 12px; padding: 2rem; width: 320px;
-           box-shadow: 0 4px 24px rgba(0,0,0,0.08); }}
-  h1 {{ font-size: 1.2rem; margin: 0 0 0.5rem; }}
-  p {{ color: #555; font-size: 0.9rem; margin: 0 0 1.25rem; }}
-  label {{ display: block; font-size: 0.8rem; color: #333; margin-bottom: 0.25rem; }}
-  input[type=email], input[type=password] {{ width: 100%; box-sizing: border-box;
-    padding: 0.5rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 6px; }}
-  button {{ width: 100%; padding: 0.6rem; background: #1a1a1a; color: white;
-    border: none; border-radius: 6px; font-size: 0.95rem; cursor: pointer; }}
-  .error {{ color: #c0392b; }}
-</style>
-</head>
-<body>
-  <div class="card">
-    <h1>Connect to yap.town</h1>
-    <p>Sign in to let this app do reviews, add words, and read your stats.</p>
-    {error_html}
-    <form method="post" action="/oauth/authorize">
-      {hidden_fields}
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required autofocus>
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required>
-      <button type="submit">Sign in &amp; connect</button>
-    </form>
-  </div>
-</body>
-</html>"#
-    )
 }

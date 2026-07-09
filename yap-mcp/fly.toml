@@ -1,5 +1,6 @@
 # Deploy from the repo root: `flyctl deploy --config yap-mcp/fly.toml`
-# Requires secrets: SUPABASE_JWT_SECRET (flyctl secrets set ...)
+# Requires secrets (flyctl secrets set ...): SUPABASE_JWT_SECRET,
+# SUPABASE_SERVICE_ROLE_KEY (mints connector sessions on approval)
 
 app = 'yap-mcp'
 primary_region = 'ord'
@@ -9,7 +10,10 @@ dockerfile = 'yap-mcp/Dockerfile'
 
 [env]
 PORT = '8080'
-YAP_MCP_BASE_URL = 'https://yap-mcp.fly.dev'
+YAP_MCP_BASE_URL = 'https://mcp.yap.town'
+# The Cloudflare Worker proxy in front of mcp.yap.town forwards with the
+# fly.dev Host header, so both must pass Host validation.
+YAP_MCP_ALLOWED_HOSTS = 'yap-mcp.fly.dev'
 
 [http_service]
 internal_port = 8080
