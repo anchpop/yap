@@ -105,6 +105,19 @@ cargo test
 cd supabase && supabase start
 ```
 
+### yap-mcp smoke tests
+
+`yap-mcp/smoke/` holds end-to-end smoke scripts for the MCP server (see the
+docstring in each for usage). `stdio_read.py` is safe against a real account;
+the write-path and remote-OAuth scripts use the throwaway
+`yap-mcp-test@popovit.ch` account (reset it with `setup_test_user.py`). Run
+them after changing yap-mcp, the deck event flow, or the OAuth layer:
+
+```bash
+YAP_USER_EMAIL=you@example.com python3 yap-mcp/smoke/stdio_read.py target/debug/yap-mcp
+python3 yap-mcp/smoke/remote_oauth.py target/debug/yap-mcp serve
+```
+
 ### Key Technologies
 
 - **Rust**: Core logic, WASM compilation, backend services
