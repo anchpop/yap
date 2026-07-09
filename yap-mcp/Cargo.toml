@@ -34,5 +34,4 @@ http = "1"
 jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 sha2 = "0.10"
 base64 = "0.22"
-html-escape.workspace = true
 chacha20poly1305 = "0.10"

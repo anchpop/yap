@@ -77,8 +77,14 @@ RFC 9728 protected-resource metadata → RFC 8414 authorization-server metadata
 
 The OAuth layer is a thin shim over Supabase auth:
 
-- The `/oauth/authorize` page is a yap login form (email + password). A
-  successful login becomes a single-use authorization code.
+- `/oauth/authorize` parks the client's request and redirects to
+  `yap.town/connect`, where the user signs in with their normal yap auth
+  (same domain, so future passkeys work) and approves. The frontend posts
+  proof back to `/oauth/approve`, which mints the connector a **fresh**
+  Supabase session (admin generate_link + verify — reusing the browser's
+  session would entangle two devices in one refresh-token rotation family)
+  and hands back the redirect with a single-use authorization code. The
+  frontend hardcodes which MCP origins it will send proof to.
 - Tokens are MCP-scoped: we mint our own JWTs (`aud: yap-mcp`), with the
   user's Supabase session embedded **encrypted** (ChaCha20-Poly1305, key
   derived from `SUPABASE_JWT_SECRET`). The OAuth client never holds a raw
@@ -97,9 +103,16 @@ Per-user deck state is initialized lazily on first tool call (event fetch +
 replay) and cached; language packs load lazily per course and are shared
 across users.
 
-Env: `SUPABASE_JWT_SECRET` (required), `YAP_MCP_BASE_URL` (public URL, used in
-metadata and Host validation), `PORT`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
-`YAP_OUT_DIR`.
+Env: `SUPABASE_JWT_SECRET` and `SUPABASE_SERVICE_ROLE_KEY` (required),
+`YAP_MCP_BASE_URL` (public URL, used in metadata and Host validation),
+`YAP_FRONTEND_URL` (where /connect lives), `YAP_MCP_ALLOWED_HOSTS` (extra Host
+values, e.g. the fly.dev name behind the proxy), `PORT`, `SUPABASE_URL`,
+`SUPABASE_ANON_KEY`, `YAP_OUT_DIR`.
+
+The public domain `mcp.yap.town` is a Cloudflare Worker pass-through to
+`yap-mcp.fly.dev` (`proxy-worker/`; deploy with `wrangler deploy` from that
+directory). The worker approach exists because attaching a Workers custom
+domain auto-provisions DNS + TLS without needing Fly-side certificates.
 
 Deploy on Fly (first time: `flyctl launch --no-deploy --copy-config --config
 yap-mcp/fly.toml`, then set the secret):
@@ -110,14 +123,15 @@ flyctl deploy --config yap-mcp/fly.toml
 ```
 
 Then in claude.ai: Settings → Connectors → Add custom connector → URL
-`https://yap-mcp.fly.dev/mcp`. Claude discovers the OAuth endpoints, opens the
+`https://mcp.yap.town/mcp`. Claude discovers the OAuth endpoints, opens the
 yap login page, and connects.
 
 ## Current limitations
 
 - stdio mode's auth is service-role + email (fine for personal/local use);
   serve mode is the multi-user path.
-- Login is email + password only (matches the yap frontend's auth surface).
+- Approval uses whatever auth the yap.town frontend supports (today email +
+  password; passkeys would work there when added).
 - Listening cards can be quizzed only as text in a chat client.
 - No challenge generation (translation/transcription exercises) yet; the chat
   LLM is expected to quiz the user itself, e.g. using `get_sentences`.

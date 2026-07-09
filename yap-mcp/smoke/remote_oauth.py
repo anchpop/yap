@@ -6,7 +6,7 @@ Usage:
     python3 yap-mcp/smoke/remote_oauth.py target/debug/yap-mcp serve
 
 Drives the whole claude.ai connector flow against a locally spawned server:
-OAuth discovery -> dynamic client registration -> login page -> PKCE code
+OAuth discovery -> dynamic client registration -> frontend approve -> PKCE code
 exchange -> refresh -> authenticated streamable-HTTP MCP calls. Asserts the
 security properties: PKCE enforced, codes single-use, redirect URIs pinned,
 tokens MCP-scoped (raw Supabase JWTs rejected at /mcp), embedded Supabase
@@ -152,23 +152,54 @@ auth_params = {
     "response_type": "code", "client_id": client_id, "redirect_uri": REDIRECT_URI,
     "state": "st4te", "code_challenge": challenge, "code_challenge_method": "S256",
 }
-status, _, body = req("GET", f"{BASE}/oauth/authorize?" + urllib.parse.urlencode(auth_params))
-check("authorize page", status == 200 and "Sign in" in body and 'name="code_challenge"' in body)
+ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlYXJ3enFvdHBmb2RlcnBmcnF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMTUwOTIsImV4cCI6MjA2Mzc5MTA5Mn0.BmnDrHtD-THaSLHO9VE2X-PO6B-z9OkbxzjeIinN6b8"
+
+def start_authorize():
+    """GET /oauth/authorize -> parse the yap.town/connect redirect -> request id."""
+    status, headers, _ = req("GET", f"{BASE}/oauth/authorize?" + urllib.parse.urlencode(auth_params),
+                             follow=False)
+    location = headers.get("location", "")
+    q = urllib.parse.parse_qs(urllib.parse.urlparse(location).query)
+    return status, location, q.get("request", [None])[0], q.get("mcp", [None])[0]
+
+status, location, request_id, mcp_origin = start_authorize()
+check("authorize redirects to frontend /connect",
+      status in (302, 303) and "/connect?" in location, location[:140])
+check("redirect carries request id + mcp origin", bool(request_id) and mcp_origin == BASE,
+      f"mcp={mcp_origin}")
 
 bad = dict(auth_params, redirect_uri="https://evil.example/cb")
-status, _, body = req("GET", f"{BASE}/oauth/authorize?" + urllib.parse.urlencode(bad))
+status, _, body = req("GET", f"{BASE}/oauth/authorize?" + urllib.parse.urlencode(bad), follow=False)
 check("authorize rejects unregistered redirect", status == 400, body)
 
-status, _, body = req("POST", f"{BASE}/oauth/authorize",
-                      body=dict(auth_params, email=TEST_EMAIL, password="wrong-password"), form=True)
-check("wrong password re-renders", status == 200 and "Wrong email or password" in body)
+# The user's proof: a real Supabase session for the test account
+status, _, body = req("POST", f"{SUPABASE_URL}/auth/v1/token?grant_type=password",
+                      headers={"apikey": ANON_KEY},
+                      body={"email": TEST_EMAIL, "password": TEST_PASSWORD})
+user_access_token = json.loads(body)["access_token"]
 
-status, headers, body = req("POST", f"{BASE}/oauth/authorize",
-                            body=dict(auth_params, email=TEST_EMAIL, password=TEST_PASSWORD),
-                            form=True, follow=False)
-location = headers.get("location", "")
-check("login redirects with code", status in (302, 303) and location.startswith(REDIRECT_URI), location[:120])
-q = urllib.parse.parse_qs(urllib.parse.urlparse(location).query)
+# Approving with a garbage session must fail (and burns the request id)
+status, _, body = req("POST", f"{BASE}/oauth/approve",
+                      body={"request_id": request_id, "access_token": "garbage"})
+check("approve rejects invalid session", status == 401, body)
+
+status, _, body = req("POST", f"{BASE}/oauth/approve",
+                      body={"request_id": request_id, "access_token": user_access_token})
+check("request id is single-use", status == 400, body)
+
+def approve():
+    """Fresh authorize + approve as the test user; returns the auth code."""
+    _, _, request_id, _ = start_authorize()
+    status, _, body = req("POST", f"{BASE}/oauth/approve",
+                          body={"request_id": request_id, "access_token": user_access_token})
+    resp = json.loads(body)
+    return status, resp
+
+status, resp = approve()
+check("approve returns claude redirect",
+      status == 200 and resp.get("redirect", "").startswith(REDIRECT_URI),
+      json.dumps(resp)[:140])
+q = urllib.parse.parse_qs(urllib.parse.urlparse(resp["redirect"]).query)
 code = q["code"][0]
 check("state round-trips", q.get("state") == ["st4te"])
 
@@ -179,11 +210,9 @@ status, _, body = req("POST", asm["token_endpoint"], form=True, body={
 })
 check("wrong PKCE verifier rejected", status == 400, body)
 
-# The code was consumed by the failed attempt (single use) — do the flow again
-status, headers, _ = req("POST", f"{BASE}/oauth/authorize",
-                         body=dict(auth_params, email=TEST_EMAIL, password=TEST_PASSWORD),
-                         form=True, follow=False)
-code = urllib.parse.parse_qs(urllib.parse.urlparse(headers["location"]).query)["code"][0]
+# The code was consumed by the failed attempt (single use) — approve again
+_, resp = approve()
+code = urllib.parse.parse_qs(urllib.parse.urlparse(resp["redirect"]).query)["code"][0]
 
 status, _, body = req("POST", asm["token_endpoint"], form=True, body={
     "grant_type": "authorization_code", "code": code, "redirect_uri": REDIRECT_URI,

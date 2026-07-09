@@ -51,6 +51,7 @@ import { ResetPassword } from "@/pages/reset-password";
 import { ConfirmEmail } from "@/pages/confirm-email";
 import { AcceptInvite } from "@/pages/accept-invite";
 import { ForgotPassword } from "@/pages/forgot-password";
+import { Connect } from "./pages/connect";
 import { UserProfilePage } from "@/pages/user-profile";
 import { AboutPage } from "@/pages/about";
 import { LandingPage } from "@/pages/landing";
@@ -1287,6 +1288,7 @@ const router = createBrowserRouter([
       { path: "/confirm-email", element: <ConfirmEmail /> },
       { path: "/accept-invite", element: <AcceptInvite /> },
       { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/connect", element: <Connect /> },
       { path: "/about", element: <AboutPage /> },
       {
         path: "/*",
