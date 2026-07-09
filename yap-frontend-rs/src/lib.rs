@@ -3,7 +3,7 @@
 mod audio;
 mod challenge;
 mod deck_event;
-mod deck_selection;
+pub mod deck_selection;
 mod dictionary;
 mod directories;
 mod human_audio;
@@ -43,7 +43,7 @@ use language_utils::text_cleanup::{find_closest_match, normalize_for_grading};
 use language_utils::transcription_challenge;
 use language_utils::{Course, Language};
 use language_utils::{
-    Gram, GramDefinition, Heteronym, MovieMetadataBasic, PronunciationGuide, SentenceGram, WordType,
+    Gram, GramDefinition, Heteronym, MovieMetadataBasic, PronunciationGuide, WordType,
 };
 use lasso::Spur;
 use opfs::persistent::{self};
@@ -2185,12 +2185,7 @@ impl Deck {
             // Compute card_text and card_subtitle based on card type
             let (card_text, card_subtitle) = match card_indicator {
                 CardIndicator::WrittenGram { gram } => {
-                    let gram_resolved = self
-                        .context
-                        .language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&self.context.language_pack.string_rodeo);
+                    let gram_resolved = self.context.language_pack.resolve_gram(gram);
                     let text = gram_resolved.to_display_string(self.context.course.target_language);
                     // Get POS from first heteronym if available for subtitle
                     let subtitle = gram_resolved.0.first().and_then(|atom| {
@@ -2204,13 +2199,11 @@ impl Deck {
                     (text, subtitle)
                 }
                 CardIndicator::ListeningGram { gram } => {
-                    let gram_resolved = self
+                    let text = self
                         .context
                         .language_pack
-                        .gram_rodeo
-                        .resolve(gram)
-                        .resolve(&self.context.language_pack.string_rodeo);
-                    let text = gram_resolved.to_display_string(self.context.course.target_language);
+                        .resolve_gram(gram)
+                        .to_display_string(self.context.course.target_language);
                     (text, Some("listening".to_string()))
                 }
                 CardIndicator::LetterPronunciation { pattern, .. } => {
@@ -3785,67 +3778,15 @@ impl Deck {
         sentences_reviewed: &BTreeMap<Spur, u32>,
         language_pack: &LanguagePack,
     ) -> Option<ComprehensibleSentence> {
-        // Search through all sentences - if we have a required gram, only look at sentences containing it
-        let candidate_sentences: Vec<Spur> = if let Some(required) = required_gram {
-            language_pack
-                .sentences_containing_gram_index
-                .get(required)?
-                .clone()
-        } else {
-            // If no required gram/phrase, consider all sentences
-            language_pack.translations.keys().cloned().collect()
-        };
-
-        let is_comprehensible = |gram: &SpurGram| {
-            comprehensible_grams.contains(gram) || required_gram.is_some_and(|req| req == gram)
-        };
-
-        let mut possible_sentences = Vec::new();
-
-        // Warning: this loop is HOT!
-        'checkSentences: for sentence in &candidate_sentences {
-            let Some(sentence_grams) = language_pack.encoded_sentences.get(sentence) else {
-                continue;
-            };
-
-            // Check that all learnable grams are comprehensible
-            for sentence_gram in &sentence_grams.grams {
-                if let SentenceGram::Learnable(gram) = sentence_gram
-                    && !is_comprehensible(gram)
-                {
-                    continue 'checkSentences; // Early exit!
-                }
-            }
-
-            // Check that all multiword terms (high and low confidence) are comprehensible
-            for multiword_gram in sentence_grams
-                .multiword_terms
-                .iter()
-                .chain(sentence_grams.low_confidence_multiword_terms.iter())
-            {
-                if !is_comprehensible(multiword_gram) {
-                    continue 'checkSentences; // Early exit!
-                }
-            }
-
-            // Check that the sentence has at least one translation
-            if language_pack
-                .translations
-                .get(sentence)
-                .is_none_or(|t| t.is_empty())
-            {
-                continue 'checkSentences;
-            }
-
-            possible_sentences.push(sentence);
-        }
+        let mut possible_sentences = language_pack
+            .comprehensible_sentences(required_gram, |gram| comprehensible_grams.contains(gram));
 
         if !possible_sentences.is_empty() {
             possible_sentences.sort_by_key(|sentence| {
                 let sentence_review_count = sentences_reviewed.get(sentence).unwrap_or(&0);
                 *sentence_review_count
             });
-            let target_language_sentence = **possible_sentences.first()?;
+            let target_language_sentence = *possible_sentences.first()?;
 
             let sentence_grams = language_pack
                 .encoded_sentences
@@ -3908,11 +3849,9 @@ impl Context {
     /// For letter pronunciation cards: checks if the pattern exists in the frequency map
     pub fn is_card_valid(&self, card: &CardIndicator<SpurGram, Spur>) -> bool {
         match card {
-            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => self
-                .language_pack
-                .gram_frequencies
-                .entries
-                .contains_key(gram),
+            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                self.language_pack.is_course_gram(gram)
+            }
             CardIndicator::LetterPronunciation { pattern, position } => self
                 .language_pack
                 .pattern_frequency_map
@@ -4358,6 +4297,57 @@ impl ReviewInfo {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
     pub fn total_count(&self) -> usize {
         self.due_cards.len() + self.future_cards.len()
+    }
+}
+
+/// Accessors for native (non-wasm) consumers like yap-mcp. Kept in a plain impl
+/// block so wasm-bindgen doesn't try to export their non-wasm-compatible types.
+impl Deck {
+    pub fn stats(&self) -> &Stats {
+        &self.stats
+    }
+
+    pub fn current_sentence_list(&self) -> Option<SentenceListSelection> {
+        self.sentence_list.clone()
+    }
+
+    pub fn context(&self) -> &Context {
+        &self.context
+    }
+
+    /// See [`Deck::get_comprehensible_written_grams`].
+    pub fn comprehensible_written_grams(
+        &self,
+        count_added_as_comprehensible: bool,
+    ) -> &BTreeSet<SpurGram> {
+        self.get_comprehensible_written_grams(count_added_as_comprehensible)
+    }
+
+    /// Summaries of all currently-due cards, most overdue first.
+    pub fn due_card_summaries(&self, timestamp_ms: f64) -> Vec<CardSummary> {
+        let review_info = self.get_review_info(vec![], timestamp_ms);
+        review_info
+            .due_cards
+            .iter()
+            .filter_map(|card_indicator| {
+                let card_data = self.cards.get(card_indicator)?;
+                self.card_to_summary(card_indicator, card_data)
+            })
+            .collect()
+    }
+
+    /// Look up a card by its resolved indicator. Returns None if the card isn't
+    /// in the deck (or isn't in the Added state).
+    pub fn find_card_summary(
+        &self,
+        card: &CardIndicator<Gram<String>, String>,
+    ) -> Option<CardSummary> {
+        let card = card.get_interned(
+            &self.context.language_pack.string_rodeo,
+            &self.context.language_pack.gram_rodeo,
+        )?;
+        let card_data = self.cards.get(&card)?;
+        self.card_to_summary(&card, card_data)
     }
 }
 
@@ -4880,6 +4870,7 @@ pub fn get_courses() -> Vec<language_utils::Course> {
 mod tests {
     use super::*;
     use chrono::Days;
+    use language_utils::SentenceGram;
 
     impl Default for Deck {
         fn default() -> Self {

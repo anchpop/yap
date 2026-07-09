@@ -72,8 +72,6 @@ impl Deck {
         limit: usize,
     ) -> Vec<GramDictionaryEntry> {
         let language_pack = &self.context.language_pack;
-        let string_rodeo = &language_pack.string_rodeo;
-        let gram_rodeo = &language_pack.gram_rodeo;
         let target_language = self.context.course.target_language;
 
         let query = search_query
@@ -87,10 +85,8 @@ impl Deck {
             .enumerate()
             .filter_map(|(frequency_index, (spur_gram, _freq))| {
                 let gram_def = language_pack.gram_definitions.get(spur_gram)?;
-                let gram = gram_rodeo.resolve(spur_gram);
-                let display_text = gram
-                    .resolve(string_rodeo)
-                    .to_display_string(target_language);
+                let resolved_gram = language_pack.resolve_gram(spur_gram);
+                let display_text = resolved_gram.to_display_string(target_language);
 
                 // Filter by search query if provided, and compute relevance
                 // 0 = exact match, 1 = starts with, 2 = contains
@@ -126,7 +122,6 @@ impl Deck {
                 let card = CardIndicator::WrittenGram { gram: *spur_gram };
                 let is_in_deck = matches!(self.cards.get(&card), Some(CardData::Added { .. }));
 
-                let resolved_gram = gram.resolve(string_rodeo);
                 let (prefix, morphology) =
                     compute_word_prefix_and_morphology(&resolved_gram, gram_def, target_language);
 
