@@ -229,15 +229,19 @@ When you mention a {target_language_name} word or phrase inside the encouragemen
 
     // Phonemize the challenge sentence so the LLM can reason about
     // pronunciation- and homophone-driven mistakes (espeak applies
-    // language-level liaison/elision the per-word data can't). Pure
-    // enrichment: if espeak is unavailable, the language is unsupported, or
-    // anything fails, we just omit the IPA line — grading still proceeds.
-    let challenge_ipa_line = match espeak::phonemize_phrase(challenge_sentence, target_language) {
-        Ok(Some(phonemes)) if !phonemes.is_empty() => {
-            format!("Challenge sentence IPA: /{}/\n", phonemes.join(""))
-        }
-        _ => String::new(),
-    };
+    // language-level liaison/elision the per-word data can't). We use the
+    // readable IPA form (word boundaries kept) rather than the
+    // model-label tokenization — that exists for the pronunciation
+    // verifier, not for an LLM. Pure enrichment: if espeak is
+    // unavailable, the language is unsupported, or anything fails, we
+    // just omit the IPA line — grading still proceeds.
+    let challenge_ipa_line =
+        match espeak::phonemize_phrase_ipa(challenge_sentence, target_language).await {
+            Ok(Some(ipa)) if !ipa.is_empty() => {
+                format!("Challenge sentence IPA: /{ipa}/\n")
+            }
+            _ => String::new(),
+        };
 
     let user_prompt = format!(
         r#"Challenge sentence: {challenge_sentence}

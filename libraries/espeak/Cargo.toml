@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 language-utils = { path = "../../language-utils" }
 anyhow = "1.0.102"
+tokio = { workspace = true }
