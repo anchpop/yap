@@ -511,16 +511,15 @@ async fn autograde_translation(
     Ok(Json(response))
 }
 
-/// Best-effort `"{label}: /…/\n"` prompt line for a sentence, in espeak's
-/// readable IPA form (word boundaries kept — the model-label tokenization
-/// exists for the pronunciation verifier, not for an LLM). Pure
-/// enrichment: if espeak is unavailable, the language is unsupported, or
-/// anything fails, returns an empty string and grading proceeds without
-/// the line.
-async fn ipa_line(sentence: &str, language: Language, label: &str) -> String {
+/// Best-effort readable IPA for a sentence (word boundaries kept — the
+/// model-label tokenization exists for the pronunciation verifier, not
+/// for an LLM). Pure enrichment: if espeak is unavailable, the language
+/// is unsupported, or anything fails, returns `None` and grading
+/// proceeds without the IPA line.
+async fn readable_ipa(sentence: &str, language: Language) -> Option<String> {
     match espeak::phonemize_phrase_ipa(sentence, language).await {
-        Ok(Some(ipa)) if !ipa.is_empty() => format!("{label}: /{ipa}/\n"),
-        _ => String::new(),
+        Ok(Some(ipa)) if !ipa.is_empty() => Some(ipa),
+        _ => None,
     }
 }
 
@@ -670,8 +669,18 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
     // near-homophones — from actual pronunciations instead of spelling.
     // espeak applies connected-speech rules (liaison, elision) that
     // per-word pronunciation data can't.
-    let heard_ipa_line = ipa_line(&full_sentence, target_language, "User heard IPA").await;
-    let wrote_ipa_line = ipa_line(&user_sentence, target_language, "User wrote IPA").await;
+    let heard_ipa_line = readable_ipa(&full_sentence, target_language)
+        .await
+        .map(|ipa| format!("User heard IPA: /{ipa}/\n"))
+        .unwrap_or_default();
+    let wrote_ipa_line = readable_ipa(&user_sentence, target_language)
+        .await
+        .map(|ipa| {
+            format!(
+                "User wrote IPA: /{ipa}/ (reminder: potentially incorrect if the user's submission contains typos)\n"
+            )
+        })
+        .unwrap_or_default();
 
     let prompt = format!(
         r#"User heard: "{full_sentence}"
