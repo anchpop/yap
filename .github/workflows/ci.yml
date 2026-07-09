@@ -70,7 +70,7 @@ jobs:
           args: run --all --no-default-features
 
   # Verify the custom espeak-ng fork (anchpop/espeak-ng) still builds and can
-  # phonemize — the translation grader shells out to it at runtime. Only the
+  # phonemize — the transcription grader shells out to it at runtime. Only the
   # `espeak-builder` Docker stage is built here (it clones + compiles the fork);
   # the full image build happens in deploy.yml. This catches a broken fork bump
   # on the PR instead of at deploy time.

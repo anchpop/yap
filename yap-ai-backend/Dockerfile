@@ -6,7 +6,8 @@ FROM lukemathwalker/cargo-chef:latest-rust-1.96-trixie AS chef
 WORKDIR /app
 
 # Build the custom espeak-ng fork (anchpop/espeak-ng — French-liaison patches).
-# The translation grader shells out to it to phonemize the challenge sentence.
+# The transcription grader shells out to it to phonemize what the user heard
+# and what they wrote.
 # Built on trixie to match the trixie-slim runtime's glibc. The fork is
 # CMake-based; we build a static libespeak-ng (BUILD_SHARED_LIBS=OFF) so the
 # runtime needs only the binary + data, and skip audio backends (MBROLA off,
@@ -35,8 +36,8 @@ COPY libraries/google-tts/Cargo.toml libraries/google-tts/Cargo.toml
 COPY libraries/autograde-core/Cargo.toml libraries/autograde-core/Cargo.toml
 COPY libraries/espeak/Cargo.toml libraries/espeak/Cargo.toml
 # Trim workspace to only the crates needed for ai-backend (google-tts,
-# autograde-core, and espeak are path dependencies pulled in transitively, so
-# their manifests must be present too — autograde-core depends on espeak).
+# autograde-core, and espeak are path dependencies of yap-ai-backend, so
+# their manifests must be present too).
 RUN sed -i '/^members = \[/,/^\]/c\members = [\n    "yap-ai-backend",\n    "language-utils",\n    "libraries/google-tts",\n    "libraries/autograde-core",\n    "libraries/espeak",\n]' Cargo.toml
 # cargo-chef needs stub source files to prepare the recipe
 RUN mkdir -p yap-ai-backend/src && echo "fn main() {}" > yap-ai-backend/src/main.rs
