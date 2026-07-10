@@ -231,10 +231,11 @@ pub enum LanguageEventContent {
     SetDailyReviewTarget {
         daily_review_target: DailyReviewTarget,
     },
-    /// Lock up every card that is due at this event's timestamp, EXCEPT the
-    /// listed cards. Locked cards are hidden from the review queue until
-    /// released via `UnlockCards`.
-    LockDueCardsExcept {
+    /// Lock up every added card EXCEPT the listed ones. Locked cards are
+    /// hidden from the review queue (and only from the review queue) until
+    /// released via `UnlockCards` or until any review touches them.
+    #[serde(alias = "LockDueCardsExcept")]
+    LockCardsExcept {
         keep: Vec<CardIndicator<Gram<String>, String>>,
     },
     /// Release the listed cards from lockup.

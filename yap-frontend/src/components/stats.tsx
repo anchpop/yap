@@ -37,13 +37,14 @@ export const Stats = memo(function Stats({ deck: deckProp, targetLanguage }: Sta
     10000, // Update every 10 seconds
   );
 
-  const { reviewInfo, readyCards, allCardsSummary } = useMemo(() => {
-    const reviewInfo = deck.get_review_info([], currentTimestamp);
+  // Deliberately lockup-agnostic: locked cards are still cards in the deck,
+  // so they count as ready/not-ready like any other
+  const { readyCards, allCardsSummary } = useMemo(() => {
     const allCardsSummary = deck.get_all_cards_summary();
     const readyCards = allCardsSummary.filter(
       (card) => card.due_timestamp_ms <= currentTimestamp,
     );
-    return { reviewInfo, readyCards, allCardsSummary };
+    return { readyCards, allCardsSummary };
   }, [deck, currentTimestamp]);
   const notReadyCards = allCardsSummary.filter(
     (card) => card.due_timestamp_ms > currentTimestamp,
@@ -77,7 +78,7 @@ export const Stats = memo(function Stats({ deck: deckProp, targetLanguage }: Sta
       <NumericStats
         xp={deck.get_xp()}
         totalCards={allCardsSummary.length}
-        cardsReady={reviewInfo.due_count || 0}
+        cardsReady={readyCards.length}
         percentKnown={deck.get_percent_of_words_known() * 100}
         dailyStreak={deck.get_daily_streak()}
         totalReviews={deck.get_total_reviews()}

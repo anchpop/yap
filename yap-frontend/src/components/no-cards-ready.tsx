@@ -103,9 +103,16 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
   }, [info.smart_add_event, addEvent]);
 
-  // While any cards are set aside in lockup, adding new cards is suppressed
-  // and replaced by releasing the next batch from lockup
-  const releaseOffer = useMemo(() => deck.get_release_offer(), [deck]);
+  // While any locked cards are DUE, adding new cards is suppressed and
+  // replaced by releasing the next batch from lockup. Locked cards scheduled
+  // for the future don't trigger this — they're morally just future cards.
+  // nextDueCard is a fresh object every parent render, so this re-evaluates
+  // as time passes (e.g. when a locked card comes due).
+  const releaseOffer = useMemo(
+    // eslint-disable-next-line react-hooks/purity -- point-in-time check; re-evaluated as the parent re-renders
+    () => deck.get_release_offer(Date.now()),
+    [deck, nextDueCard], // eslint-disable-line react-hooks/exhaustive-deps
+  );
   const releaseLockedCards = useCallback(() => {
     if (releaseOffer) {
       addEvent(releaseOffer.unlock_event);
