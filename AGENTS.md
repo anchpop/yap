@@ -43,7 +43,7 @@ The public dictionary lives at `/d/` and is built as a static site that gets cop
 1. **Rust** (`generate-dictionary-data`): Reads `.rkyv` language pack archives → outputs JSON to `static-site/src/data/`. Produces a lightweight index JSON per course (for listing pages) and individual per-page JSON files (with full sentence data including cross-linked glosses). Data is split this way because loading everything into one JSON would OOM Node during Astro build.
 2. **Astro** (`static-site`): Reads the JSON and generates ~178k static HTML pages with Tailwind CSS v4 (`@tailwindcss/vite`). Output goes directly to `yap-frontend/public/d/` via Astro's `outDir` config.
 3. **Vite**: A custom plugin (`dictionaryStaticPlugin` in `yap-frontend/vite.config.ts`) intercepts `/d/` routes before the SPA fallback, serving the pre-built static HTML instead.
-4. **Vercel**: Serves the static dictionary pages alongside the SPA. The CI workflow builds dictionary data → Astro → then the Vite frontend.
+4. **Cloudflare**: Serves the static dictionary pages alongside the SPA. The CI workflow builds dictionary data → Astro → then the Vite frontend.
 
 Key details:
 - Sentences are cross-linked: each gram in a sentence links to its dictionary page and includes a native-language gloss
@@ -139,6 +139,7 @@ python3 yap-mcp/smoke/remote_oauth.py target/debug/yap-mcp serve
 - Use `uv` for Python dependency management in NLP components
 - Use `pnpm` for JavaScript/TypeScript dependencies
 - All target-language text in yap-frontend should use the TargetLanguage component 
+- The privacy policy at `yap-frontend/src/pages/privacy.tsx` (yap.town/privacy) must stay accurate: whenever a change is privacy-affecting — a new third-party service, new data collected or stored, telemetry changes, a new place user content is sent — update the policy (and its effective date) in the same PR.
 - For spacing between siblings in yap-frontend, prefer parent-driven spacing — Tailwind `gap-*` on a flex/grid parent (e.g. the Card component's gap) or a `space-y-*` wrapper — over per-child margins. Keep spacing uniform at the container level.
 
 Final most important note: We do not have to worry about backwards compatibility with respect to our API. We mostly only have to worry about it for our events, in yap-frontend-rs/src/deck_event, as those types are serialized to disk. We do not worry about it with our API. Rust functions, traits, structs... except for those implicated by yap-frontend-rs/src/deck_event, do not worry! All the code is here, it's basically a monorepo, so we can always fix all the breakage and that's always better than leaving scar tissue from old code. If that makes sense to you, please start conversations by saying "I will maintain backwards compatibility with regards to our structs that get serialized, but make all the changes necessary across the codebase to write clean and minimal code without worrying about backwards compatibility in our internal APIs."

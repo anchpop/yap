@@ -54,6 +54,13 @@ else:
     test_id = created["id"]
     print(f"created test user: {test_id}")
 
+# Directory reviewers sign in with this account on yap.town, so give it a
+# stable password when one is provided.
+password = os.environ.get("YAP_TEST_USER_PASSWORD")
+if password:
+    req("PUT", f"/auth/v1/admin/users/{test_id}", {"password": password})
+    print("password set from YAP_TEST_USER_PASSWORD")
+
 # Wipe any prior test events for repeatability
 req("DELETE", f"/rest/v1/events?user_id=eq.{test_id}")
 

@@ -234,11 +234,7 @@ fn get_definition_preview(sense: &Sense) -> String {
 }
 
 fn course_slug(course: &Course) -> String {
-    format!(
-        "{}-to-{}",
-        course.target_language.to_string().to_lowercase(),
-        course.native_language.to_string().to_lowercase()
-    )
+    course.dictionary_slug()
 }
 
 fn course_dir_name(course: &Course) -> String {
@@ -249,23 +245,7 @@ fn course_dir_name(course: &Course) -> String {
     )
 }
 
-fn text_to_slug(text: &str) -> String {
-    text.chars()
-        .map(|c| {
-            if c.is_alphanumeric() {
-                c.to_lowercase().next().unwrap_or(c)
-            } else if c == ' ' || c == '\'' || c == '-' || c == '\u{2019}' {
-                '-'
-            } else {
-                '_'
-            }
-        })
-        .collect::<String>()
-        .replace("--", "-")
-        .trim_matches('-')
-        .trim_matches('_')
-        .to_string()
-}
+use language_utils::dictionary_entry_slug as text_to_slug;
 
 fn load_language_pack(rkyv_path: &Path) -> Result<LanguagePack> {
     let bytes = std::fs::read(rkyv_path)

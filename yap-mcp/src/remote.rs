@@ -153,6 +153,25 @@ struct PendingAuth {
     created: Instant,
 }
 
+/// A user's cached deck state plus when it was last touched, so idle users
+/// can be evicted (the state is cheap to rebuild from events on their next
+/// request; the heavyweight language packs are shared and stay cached).
+struct UserSlot {
+    state: Arc<Mutex<YapState>>,
+    last_used: Instant,
+}
+
+/// Evict a user's cached state after this much inactivity.
+const USER_STATE_IDLE_TTL: Duration = Duration::from_secs(6 * 60 * 60);
+
+/// One fixed rate-limit window on a public endpoint, keyed by (endpoint, ip).
+struct RateWindow {
+    started: Instant,
+    count: u32,
+}
+
+const RATE_LIMIT_WINDOW: Duration = Duration::from_secs(60);
+
 pub struct RemoteApp {
     pub config: RemoteConfig,
     http: reqwest::Client,
@@ -160,9 +179,10 @@ pub struct RemoteApp {
     /// Encrypts the Supabase session embedded in the tokens we mint, so the
     /// OAuth client never holds a raw Supabase credential.
     token_cipher: ChaCha20Poly1305,
-    users: Mutex<HashMap<String, Arc<Mutex<YapState>>>>,
+    users: Mutex<HashMap<String, UserSlot>>,
     codes: Mutex<HashMap<String, PendingCode>>,
     pending_auth: Mutex<HashMap<String, PendingAuth>>,
+    rate_limits: Mutex<HashMap<(&'static str, String), RateWindow>>,
 }
 
 impl RemoteApp {
@@ -179,7 +199,22 @@ impl RemoteApp {
             users: Mutex::new(HashMap::new()),
             codes: Mutex::new(HashMap::new()),
             pending_auth: Mutex::new(HashMap::new()),
+            rate_limits: Mutex::new(HashMap::new()),
         }
+    }
+
+    /// Fixed-window per-IP rate limit. Returns false when the caller should
+    /// get a 429. Best-effort: the IP comes from proxy headers, so this stops
+    /// floods and accidents, not a determined attacker with many addresses.
+    async fn allow_rate(&self, endpoint: &'static str, ip: String, limit: u32) -> bool {
+        let mut limits = self.rate_limits.lock().await;
+        limits.retain(|_, w| w.started.elapsed() < RATE_LIMIT_WINDOW);
+        let window = limits.entry((endpoint, ip)).or_insert(RateWindow {
+            started: Instant::now(),
+            count: 0,
+        });
+        window.count += 1;
+        window.count <= limit
     }
 
     fn encrypt(&self, plaintext: &str) -> String {
@@ -209,9 +244,16 @@ impl RemoteApp {
     /// Get (or lazily initialize) the deck state for an authenticated user,
     /// refreshing the bearer token it uses for Supabase calls.
     pub async fn state_for_user(&self, user: &AuthedUser) -> anyhow::Result<Arc<Mutex<YapState>>> {
-        if let Some(slot) = self.users.lock().await.get(&user.user_id).cloned() {
-            slot.lock().await.set_bearer(user.bearer.clone());
-            return Ok(slot);
+        {
+            let mut users = self.users.lock().await;
+            users.retain(|_, slot| slot.last_used.elapsed() < USER_STATE_IDLE_TTL);
+            if let Some(slot) = users.get_mut(&user.user_id) {
+                slot.last_used = Instant::now();
+                let state = slot.state.clone();
+                drop(users);
+                state.lock().await.set_bearer(user.bearer.clone());
+                return Ok(state);
+            }
         }
 
         // Initialize outside the map lock so one user's slow first load (event
@@ -225,8 +267,35 @@ impl RemoteApp {
         let state = YapState::for_user(supabase, user.user_id.clone(), &self.packs).await?;
         let slot = Arc::new(Mutex::new(state));
         let mut users = self.users.lock().await;
-        Ok(users.entry(user.user_id.clone()).or_insert(slot).clone())
+        Ok(users
+            .entry(user.user_id.clone())
+            .or_insert(UserSlot {
+                state: slot,
+                last_used: Instant::now(),
+            })
+            .state
+            .clone())
     }
+}
+
+/// Best-effort client IP for rate limiting: Cloudflare's header when we're
+/// behind the mcp.yap.town proxy, Fly's when hit directly, else unknown (one
+/// shared bucket — still bounds total damage).
+fn client_ip(headers: &axum::http::HeaderMap) -> String {
+    for header in ["cf-connecting-ip", "fly-client-ip"] {
+        if let Some(ip) = headers.get(header).and_then(|v| v.to_str().ok()) {
+            return ip.to_string();
+        }
+    }
+    "unknown".to_string()
+}
+
+fn rate_limited() -> Response {
+    oauth_error(
+        StatusCode::TOO_MANY_REQUESTS,
+        "slow_down",
+        "too many requests from your address — wait a minute and try again",
+    )
 }
 
 /// Run the remote server. Serves OAuth + metadata publicly and the MCP
@@ -501,8 +570,12 @@ struct RegistrationRequest {
 
 async fn register(
     State(app): State<Arc<RemoteApp>>,
+    headers: axum::http::HeaderMap,
     Json(req): Json<RegistrationRequest>,
 ) -> Response {
+    if !app.allow_rate("register", client_ip(&headers), 30).await {
+        return rate_limited();
+    }
     if req.redirect_uris.is_empty() {
         return oauth_error(
             StatusCode::BAD_REQUEST,
@@ -576,8 +649,12 @@ fn validate_authorize(app: &RemoteApp, params: &AuthorizeParams) -> Result<(), S
 /// /oauth/approve.
 async fn authorize_page(
     State(app): State<Arc<RemoteApp>>,
+    headers: axum::http::HeaderMap,
     Query(params): Query<AuthorizeParams>,
 ) -> Response {
+    if !app.allow_rate("authorize", client_ip(&headers), 60).await {
+        return rate_limited();
+    }
     if let Err(e) = validate_authorize(&app, &params) {
         return (StatusCode::BAD_REQUEST, e).into_response();
     }
@@ -692,7 +769,14 @@ struct ApproveRequest {
 /// Called by the yap.town /connect page when the user approves. Exchanges
 /// their proof of identity for an authorization code and tells the frontend
 /// where to send the user next.
-async fn approve(State(app): State<Arc<RemoteApp>>, Json(req): Json<ApproveRequest>) -> Response {
+async fn approve(
+    State(app): State<Arc<RemoteApp>>,
+    headers: axum::http::HeaderMap,
+    Json(req): Json<ApproveRequest>,
+) -> Response {
+    if !app.allow_rate("approve", client_ip(&headers), 30).await {
+        return rate_limited();
+    }
     let Some(pending) = app.pending_auth.lock().await.remove(&req.request_id) else {
         return oauth_error(
             StatusCode::BAD_REQUEST,
@@ -786,7 +870,14 @@ struct TokenRequest {
     refresh_token: Option<String>,
 }
 
-async fn token(State(app): State<Arc<RemoteApp>>, Form(req): Form<TokenRequest>) -> Response {
+async fn token(
+    State(app): State<Arc<RemoteApp>>,
+    headers: axum::http::HeaderMap,
+    Form(req): Form<TokenRequest>,
+) -> Response {
+    if !app.allow_rate("token", client_ip(&headers), 120).await {
+        return rate_limited();
+    }
     match req.grant_type.as_str() {
         "authorization_code" => {
             let Some(code) = &req.code else {

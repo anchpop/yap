@@ -35,7 +35,21 @@ real course entry is rejected; the server never guesses.
   `comprehensible_sentences` list otherwise composed only of words the user
   knows, and an `other_sentences` list sampled from everything containing the
   gram regardless of difficulty.
+- `unlock_cards` — release the next batch from lockup (the app's "review N
+   more cards" offer), via the deck's own `get_release_offer`; reviewing a
+   locked card also unlocks it. `get_due_cards` reports `cards_in_lockup`.
 - `get_stats` — streak, XP, review counts, deck size, tier, recent days.
+- `search` / `fetch` — the standard browse/cite pair (required by ChatGPT for
+  deep research and connector validation). `search` returns dictionary entry
+  pages as `{id, title, url}`; `fetch` takes an `id`
+  (`"<course-slug>:<frequency-index>"`) and returns the entry as readable
+  text with a citable `url` into the public dictionary at `yap.town/d/`, plus
+  the exact gram in `metadata`. URLs are best-effort: colliding display texts
+  get a numeric suffix at site build time we can't reproduce, so rare
+  homographs may 404 (sampled hit rate: 39/39).
+
+All tools carry MCP annotations (`title`, `readOnlyHint`/`destructiveHint`,
+etc.), which both the Anthropic and OpenAI directories require.
 
 ## How it works
 
@@ -136,3 +150,34 @@ yap login page, and connects.
 - No challenge generation (translation/transcription exercises) yet; the chat
   LLM is expected to quiz the user itself, e.g. using `get_sentences`.
 - OAuth codes and MCP sessions are in-memory: run exactly one instance.
+- Public OAuth endpoints are rate-limited per client IP (fixed 60s windows);
+  cached per-user deck state is evicted after 6h idle.
+
+## Directory review account
+
+Reviewers for the Anthropic/OpenAI directories get the throwaway account
+`yap-mcp-test@popovit.ch` (see `smoke/`). To reset and re-populate it with a
+believable deck and review history:
+
+```bash
+set -a; source .env; set +a
+YAP_TEST_USER_PASSWORD=<reviewer password> python3 yap-mcp/smoke/setup_test_user.py
+YAP_USER_EMAIL=yap-mcp-test@popovit.ch python3 yap-mcp/smoke/seed_test_user.py target/debug/yap-mcp
+```
+
+Public docs for end users live at `yap.town/mcp`; privacy policy at
+`yap.town/privacy`.
+
+## When Supabase moves to asymmetric signing keys
+
+The current setup verifies user access tokens and signs/encrypts our own MCP
+tokens with the shared `SUPABASE_JWT_SECRET`. Migration is mechanical, and the
+`generate_link` session-minting is unaffected:
+
+1. Verify Supabase user tokens via the project JWKS (RS256/ES256) instead of
+   the HS256 secret (`verify_supabase_token`).
+2. Introduce a dedicated `MCP_TOKEN_SECRET` for signing our access/refresh
+   tokens (`issue_tokens`, `verify_access_token`, `verify_refresh_token`) —
+   they were only ever verified by us.
+3. Derive the session-encryption key from that same new secret
+   (`RemoteApp::new`). Existing connections re-authorize once.
