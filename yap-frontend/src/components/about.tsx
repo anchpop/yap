@@ -5,7 +5,7 @@ export function About() {
     <div className="text-center text-xs text-muted-foreground mt-4">
       yap.town is created by{" "}
       <a href="https://twitter.com/chadnauseam" className="underline">
-        Andre Popovitch
+        André Popovitch
       </a>
       .{" "}
       <a href="https://github.com/yaptown/yap" className="underline">
@@ -18,6 +18,14 @@ export function About() {
       {" | "}
       <Link to="/about" className="underline">
         About
+      </Link>
+      {" | "}
+      <Link to="/privacy" className="underline">
+        Privacy
+      </Link>
+      {" | "}
+      <Link to="/terms" className="underline">
+        Terms
       </Link>
     </div>
   );

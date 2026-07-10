@@ -4,7 +4,7 @@ mod audio;
 mod challenge;
 mod deck_event;
 pub mod deck_selection;
-mod dictionary;
+pub mod dictionary;
 mod directories;
 mod human_audio;
 mod language_pack;

@@ -262,7 +262,7 @@ function MockFlashcard() {
           <span className="rounded-md border border-border/60 px-2 py-0.5 text-sm font-medium">
             25
           </span>
-          <span>Andre</span>
+          <span>André</span>
           <Moon className="h-5 w-5" />
         </div>
       </div>

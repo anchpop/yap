@@ -17,11 +17,15 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use language_utils::{Gram, Language, SpurGram, language_pack::LanguagePack};
+use language_utils::{
+    Course, Gram, Language, SpurGram, dictionary_entry_slug, language_pack::LanguagePack,
+};
 use lasso::Spur;
 use weapon::data_model::{EventStore, EventType};
 use yap_frontend_rs::{
-    CardIndicator, Context, Deck, DeckEvent, LanguageEvent, LanguageEventContent, Rating,
+    CardIndicator, CardSummary, Context, Deck, DeckEvent, LanguageEvent, LanguageEventContent,
+    Rating,
+    dictionary::{GramDictionaryDefinition, GramDictionaryEntry},
 };
 
 use crate::deck::{PackCache, build_deck, detect_course, insert_rows, new_store};
@@ -304,6 +308,68 @@ impl YapState {
         }
         out
     }
+
+    /// Sample sentences containing an interned gram: up to `count` composed
+    /// only of words the user already knows, and up to `count` more from the
+    /// whole corpus, each rendered with translations and attribution.
+    fn sample_sentences(&mut self, interned: SpurGram, count: usize) -> SampledSentences {
+        let comprehensible_pool = {
+            let deck = self.deck();
+            let comprehensible = deck.comprehensible_written_grams(false);
+            deck.context()
+                .language_pack
+                .comprehensible_sentences(Some(&interned), |g| comprehensible.contains(g))
+        };
+
+        use rand::seq::IndexedRandom as _;
+        let chosen_comprehensible: Vec<Spur> = comprehensible_pool
+            .choose_multiple(&mut rand::rng(), count)
+            .copied()
+            .collect();
+
+        let pack = self.pack();
+        let all_containing = pack
+            .sentences_containing_gram_index
+            .get(&interned)
+            .cloned()
+            .unwrap_or_default();
+        let other_pool: Vec<Spur> = all_containing
+            .iter()
+            .copied()
+            .filter(|sentence| !chosen_comprehensible.contains(sentence))
+            .collect();
+        let chosen_other: Vec<Spur> = other_pool
+            .choose_multiple(&mut rand::rng(), count)
+            .copied()
+            .collect();
+
+        let render = |sentence: &Spur| {
+            let text = pack.string_rodeo.resolve(sentence);
+            let translations: Vec<&str> = pack
+                .translations
+                .get(sentence)
+                .map(|ts| ts.iter().map(|t| pack.string_rodeo.resolve(t)).collect())
+                .unwrap_or_default();
+            json!({
+                "text": text,
+                "translations": translations,
+                "sources": self.sentence_sources(sentence),
+            })
+        };
+        SampledSentences {
+            comprehensible: chosen_comprehensible.iter().map(render).collect(),
+            other: chosen_other.iter().map(render).collect(),
+            total_comprehensible: comprehensible_pool.len(),
+            total_containing: all_containing.len(),
+        }
+    }
+}
+
+struct SampledSentences {
+    comprehensible: Vec<serde_json::Value>,
+    other: Vec<serde_json::Value>,
+    total_comprehensible: usize,
+    total_containing: usize,
 }
 
 fn ok_json(value: serde_json::Value) -> CallToolResult {
@@ -312,8 +378,75 @@ fn ok_json(value: serde_json::Value) -> CallToolResult {
     )])
 }
 
+/// Like ok_json, but also sets MCP structured content — ChatGPT's search/fetch
+/// contract wants results both ways.
+fn ok_json_structured(value: serde_json::Value) -> CallToolResult {
+    let mut result = CallToolResult::success(vec![ContentBlock::text(
+        serde_json::to_string_pretty(&value).expect("json serializes"),
+    )]);
+    result.structured_content = Some(value);
+    result
+}
+
+/// The public dictionary, canonical regardless of where the server runs.
+const DICTIONARY_BASE_URL: &str = "https://yap.town/d";
+
+/// A short native-language gloss for titles/citations.
+fn entry_gloss(entry: &GramDictionaryEntry) -> String {
+    match entry.definition() {
+        GramDictionaryDefinition::Dictionary { definitions } => definitions
+            .iter()
+            .take(2)
+            .map(|d| d.native.clone())
+            .collect::<Vec<_>>()
+            .join("; "),
+        GramDictionaryDefinition::Phrasebook { meaning, .. } => meaning,
+    }
+}
+
+fn entry_title(entry: &GramDictionaryEntry) -> String {
+    let gloss = entry_gloss(entry);
+    if gloss.is_empty() {
+        entry.display_text()
+    } else {
+        format!("{} — {}", entry.display_text(), gloss)
+    }
+}
+
+/// Stable id for the search/fetch pair, e.g. "french-to-english:42".
+fn entry_id(course: &Course, entry: &GramDictionaryEntry) -> String {
+    format!("{}:{}", course.dictionary_slug(), entry.frequency_index())
+}
+
+/// Best-effort public URL of the entry's dictionary page. Entries whose
+/// display text collides with another's get a numeric suffix at site build
+/// time that we can't reproduce here, so rare homographs may 404.
+fn entry_url(course: &Course, display_text: &str) -> String {
+    format!(
+        "{DICTIONARY_BASE_URL}/{}/{}/",
+        course.dictionary_slug(),
+        dictionary_entry_slug(display_text)
+    )
+}
+
 fn error(message: impl Into<String>) -> CallToolResult {
     CallToolResult::error(vec![ContentBlock::text(message.into())])
+}
+
+/// The card shape shared by get_due_cards and unlock_cards: everything the
+/// LLM needs to quiz the user and pass the card back to log_review.
+fn card_summary_json(language: &serde_json::Value, summary: &CardSummary) -> serde_json::Value {
+    let indicator = summary.card_indicator();
+    json!({
+        "language": language,
+        "card": serde_json::to_value(&indicator).expect("card serializes"),
+        "text": summary.card_text(),
+        "subtitle": summary.card_subtitle(),
+        "kind": card_kind(&indicator),
+        "fsrs_state": summary.state(),
+        "due": chrono::DateTime::from_timestamp_millis(summary.due_timestamp_ms() as i64)
+            .map(|d| d.to_rfc3339()),
+    })
 }
 
 fn card_kind(card: &CardIndicator<Gram<String>, String>) -> &'static str {
@@ -387,6 +520,20 @@ pub struct GetSentencesParams {
     count: Option<usize>,
 }
 
+#[derive(Serialize, Deserialize, JsonSchema)]
+pub struct SearchParams {
+    /// What to look up: a word or phrase in the language being learned, or a
+    /// native-language meaning. Accent-insensitive.
+    query: String,
+}
+
+#[derive(Serialize, Deserialize, JsonSchema)]
+pub struct FetchParams {
+    /// A result id exactly as returned by the search tool, e.g.
+    /// "french-to-english:42".
+    id: String,
+}
+
 /// Where a tool call's deck state comes from.
 #[derive(Clone)]
 enum StateSource {
@@ -440,7 +587,13 @@ impl YapMcp {
 #[tool_router]
 impl YapMcp {
     #[tool(
-        description = "Search the yap dictionary for words and phrases. Each match includes its language and gram — the token sequence (word + lemma + part of speech) that uniquely identifies it. Other tools take these verbatim; search first rather than constructing grams by hand."
+        title = "Search the dictionary",
+        description = "Search the yap dictionary for words and phrases. Each match includes its language and gram — the token sequence (word + lemma + part of speech) that uniquely identifies it. Other tools take these verbatim; search first rather than constructing grams by hand.",
+        annotations(
+            title = "Search the dictionary",
+            read_only_hint = true,
+            open_world_hint = false
+        )
     )]
     async fn search_dictionary(
         &self,
@@ -494,7 +647,15 @@ impl YapMcp {
     }
 
     #[tool(
-        description = "Add words/phrases to the user's yap deck as new flashcards. Takes (language, gram) pairs, normally obtained from search_dictionary; anything that doesn't name a real dictionary entry is rejected. Confirm with the user before adding."
+        title = "Add flashcards",
+        description = "Add words/phrases to the user's yap deck as new flashcards. Takes (language, gram) pairs, normally obtained from search_dictionary; anything that doesn't name a real dictionary entry is rejected. Confirm with the user before adding.",
+        annotations(
+            title = "Add flashcards",
+            read_only_hint = false,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = false
+        )
     )]
     async fn add_cards(
         &self,
@@ -571,7 +732,13 @@ impl YapMcp {
     }
 
     #[tool(
-        description = "List the user's currently-due yap flashcards, most overdue first. Each entry carries its language and card object; pass both verbatim to log_review after quizzing the user. Gram cards can be quizzed with example sentences from get_sentences."
+        title = "List due flashcards",
+        description = "List the user's currently-due yap flashcards, most overdue first. Each entry carries its language and card object; pass both verbatim to log_review after quizzing the user. Gram cards can be quizzed with example sentences from get_sentences.",
+        annotations(
+            title = "List due flashcards",
+            read_only_hint = true,
+            open_world_hint = false
+        )
     )]
     async fn get_due_cards(
         &self,
@@ -592,35 +759,97 @@ impl YapMcp {
         let deck = state.deck();
         let due = deck.due_card_summaries(now_ms);
         let total_due = due.len();
+        let locked = deck.locked_count();
 
         let cards: Vec<serde_json::Value> = due
             .iter()
             .take(limit)
-            .map(|summary| {
-                let indicator = summary.card_indicator();
-                json!({
-                    "language": language,
-                    "card": serde_json::to_value(&indicator).expect("card serializes"),
-                    "text": summary.card_text(),
-                    "subtitle": summary.card_subtitle(),
-                    "kind": card_kind(&indicator),
-                    "fsrs_state": summary.state(),
-                    "due": chrono::DateTime::from_timestamp_millis(summary.due_timestamp_ms() as i64)
-                        .map(|d| d.to_rfc3339()),
-                })
-            })
+            .map(|summary| card_summary_json(&language, summary))
             .collect();
 
-        ok_json(json!({
+        let mut response = json!({
             "total_due": total_due,
             "showing": cards.len(),
             "cards": cards,
+            "cards_in_lockup": locked,
             "note": "kind 'written' = recognize the written word; 'listening' = normally an audio card (quiz in text as best you can); 'pronunciation' = a letter-sound pattern. A card's gram field can be passed to get_sentences.",
+        });
+        if locked > 0 {
+            response["lockup_note"] = json!(format!(
+                "{locked} cards are set aside in lockup — when a big backlog is due at once, \
+                 yap keeps a manageable handful active and sets the rest aside to be practiced \
+                 later. unlock_cards releases the next batch; reviewing a locked card also \
+                 unlocks it."
+            ));
+        }
+        ok_json(response)
+    }
+
+    #[tool(
+        title = "Unlock cards",
+        description = "Release the next batch of set-aside cards from lockup, putting them back in the due queue. Lockup is how yap keeps sessions manageable: when a big backlog is due at once, it keeps a handful of cards active and sets the rest aside to be practiced later. Reviewing a locked card also unlocks it. Confirm with the user before calling.",
+        annotations(
+            title = "Unlock cards",
+            read_only_hint = false,
+            destructive_hint = false,
+            idempotent_hint = false,
+            open_world_hint = false
+        )
+    )]
+    async fn unlock_cards(&self, ctx: RequestContext<RoleServer>) -> CallToolResult {
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
+        if let Err(e) = state.refresh().await {
+            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        let language = state.target_language_value();
+
+        let (content, unlocked) = {
+            let deck = state.deck();
+            match deck.get_release_offer() {
+                None => {
+                    return ok_json(json!({
+                        "unlocked": [],
+                        "cards_in_lockup": 0,
+                        "note": "no cards are in lockup",
+                    }));
+                }
+                Some(offer) => {
+                    let unlocked: Vec<serde_json::Value> = offer
+                        .release_preview()
+                        .iter()
+                        .map(|summary| card_summary_json(&language, summary))
+                        .collect();
+                    let DeckEvent::Language(event) = offer.unlock_event();
+                    (event.content, unlocked)
+                }
+            }
+        };
+        if let Err(e) = state.append_event(content).await {
+            return error(format!("failed to save: {e:#}"));
+        }
+
+        let remaining = state.deck().locked_count();
+        ok_json(json!({
+            "unlocked": unlocked,
+            "cards_in_lockup": remaining,
+            "note": "these cards are back in the due queue and will show up in get_due_cards.",
         }))
     }
 
     #[tool(
-        description = "Record the result of reviewing one card. This updates real spaced-repetition scheduling on the user's account, so only call it after actually quizzing the user, with an honest rating."
+        title = "Log a review",
+        description = "Record the result of reviewing one card. This updates real spaced-repetition scheduling on the user's account, so only call it after actually quizzing the user, with an honest rating.",
+        annotations(
+            title = "Log a review",
+            read_only_hint = false,
+            destructive_hint = false,
+            idempotent_hint = false,
+            open_world_hint = false
+        )
     )]
     async fn log_review(
         &self,
@@ -683,7 +912,13 @@ impl YapMcp {
     }
 
     #[tool(
-        description = "Get random example sentences (with translations and source attribution) containing a given gram. Returns two lists: comprehensible_sentences, which are otherwise composed only of words the user already knows (great for quizzing), and other_sentences, sampled from everything containing the gram regardless of difficulty."
+        title = "Get example sentences",
+        description = "Get random example sentences (with translations and source attribution) containing a given gram. Returns two lists: comprehensible_sentences, which are otherwise composed only of words the user already knows (great for quizzing), and other_sentences, sampled from everything containing the gram regardless of difficulty.",
+        annotations(
+            title = "Get example sentences",
+            read_only_hint = true,
+            open_world_hint = false
+        )
     )]
     async fn get_sentences(
         &self,
@@ -708,65 +943,25 @@ impl YapMcp {
         };
         let display = gram.to_display_string(state.context.course.target_language);
 
-        let comprehensible_pool = {
-            let deck = state.deck();
-            let comprehensible = deck.comprehensible_written_grams(false);
-            deck.context()
-                .language_pack
-                .comprehensible_sentences(Some(&interned), |g| comprehensible.contains(g))
-        };
-
-        use rand::seq::IndexedRandom as _;
-        let chosen_comprehensible: Vec<Spur> = comprehensible_pool
-            .choose_multiple(&mut rand::rng(), count)
-            .copied()
-            .collect();
-
-        let pack = state.pack();
-        let all_containing = pack
-            .sentences_containing_gram_index
-            .get(&interned)
-            .cloned()
-            .unwrap_or_default();
-        let other_pool: Vec<Spur> = all_containing
-            .iter()
-            .copied()
-            .filter(|sentence| !chosen_comprehensible.contains(sentence))
-            .collect();
-        let chosen_other: Vec<Spur> = other_pool
-            .choose_multiple(&mut rand::rng(), count)
-            .copied()
-            .collect();
-
-        let render = |sentence: &Spur| {
-            let text = pack.string_rodeo.resolve(sentence);
-            let translations: Vec<&str> = pack
-                .translations
-                .get(sentence)
-                .map(|ts| ts.iter().map(|t| pack.string_rodeo.resolve(t)).collect())
-                .unwrap_or_default();
-            json!({
-                "text": text,
-                "translations": translations,
-                "sources": state.sentence_sources(sentence),
-            })
-        };
-        let comprehensible_sentences: Vec<serde_json::Value> =
-            chosen_comprehensible.iter().map(render).collect();
-        let other_sentences: Vec<serde_json::Value> = chosen_other.iter().map(render).collect();
-
+        let sampled = state.sample_sentences(interned, count);
         ok_json(json!({
             "word": display,
-            "comprehensible_sentences": comprehensible_sentences,
-            "total_comprehensible": comprehensible_pool.len(),
-            "other_sentences": other_sentences,
-            "total_containing_word": all_containing.len(),
+            "comprehensible_sentences": sampled.comprehensible,
+            "total_comprehensible": sampled.total_comprehensible,
+            "other_sentences": sampled.other,
+            "total_containing_word": sampled.total_containing,
             "note": "comprehensible_sentences use only words the user already knows; other_sentences are sampled from everything containing the word and may include unknown words (and may lack translations).",
         }))
     }
 
     #[tool(
-        description = "Get the user's yap stats: streak, XP, review counts, deck size, due cards, comprehension tier, and recent daily activity."
+        title = "Get learning stats",
+        description = "Get the user's yap stats: streak, XP, review counts, deck size, due cards, comprehension tier, and recent daily activity.",
+        annotations(
+            title = "Get learning stats",
+            read_only_hint = true,
+            open_world_hint = false
+        )
     )]
     async fn get_stats(&self, ctx: RequestContext<RoleServer>) -> CallToolResult {
         let slot = match self.state_slot(&ctx).await {
@@ -821,6 +1016,200 @@ impl YapMcp {
             "recent_days": past_days,
         }))
     }
+
+    #[tool(
+        title = "Search dictionary pages",
+        description = "Search the dictionary of the user's yap course. Returns matching entry pages as results with id, title, and url (a citable yap.town dictionary link); pass an id to fetch for the full entry. For deck operations that need exact grams (add_cards, get_sentences, log_review), use search_dictionary instead.",
+        annotations(
+            title = "Search dictionary pages",
+            read_only_hint = true,
+            open_world_hint = false
+        )
+    )]
+    async fn search(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<SearchParams>,
+    ) -> CallToolResult {
+        let query = params.query.trim().to_string();
+        if query.is_empty() {
+            return error("query must not be empty");
+        }
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
+        if let Err(e) = state.refresh().await {
+            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        let course = state.context.course;
+        let results: Vec<serde_json::Value> = state
+            .deck()
+            .get_gram_dictionary_entries(Some(query), 10)
+            .iter()
+            .map(|entry| {
+                json!({
+                    "id": entry_id(&course, entry),
+                    "title": entry_title(entry),
+                    "url": entry_url(&course, &entry.display_text()),
+                })
+            })
+            .collect();
+        ok_json_structured(json!({ "results": results }))
+    }
+
+    #[tool(
+        title = "Fetch a dictionary page",
+        description = "Fetch a dictionary entry page by an id returned from the search tool: definitions, frequency rank, whether it's in the user's deck, and example sentences with translations and source attribution. Returns readable text plus a citable url.",
+        annotations(
+            title = "Fetch a dictionary page",
+            read_only_hint = true,
+            open_world_hint = false
+        )
+    )]
+    async fn fetch(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<FetchParams>,
+    ) -> CallToolResult {
+        let parsed = params
+            .id
+            .rsplit_once(':')
+            .and_then(|(slug, idx)| Some((slug.to_string(), idx.parse::<usize>().ok()?)));
+        let Some((course_slug, index)) = parsed else {
+            return error(
+                "invalid id — pass an id exactly as returned by the search tool, e.g. \"french-to-english:42\"",
+            );
+        };
+
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
+        if let Err(e) = state.refresh().await {
+            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        let course = state.context.course;
+        if course_slug != course.dictionary_slug() {
+            return error(format!(
+                "that id belongs to the '{course_slug}' dictionary, but this account's course is '{}'",
+                course.dictionary_slug()
+            ));
+        }
+        let Some(entry) = state.deck().gram_dictionary_entry(index) else {
+            return error(
+                "no dictionary entry with that id — use an id returned by the search tool",
+            );
+        };
+
+        let interned: SpurGram = *state
+            .pack()
+            .gram_frequencies
+            .entries
+            .get_index(index)
+            .expect("index valid: entry was just built from it")
+            .0;
+        let gram_value =
+            serde_json::to_value(state.pack().resolve_gram(&interned)).expect("gram serializes");
+        let language = state.target_language_value();
+        let sampled = state.sample_sentences(interned, 3);
+
+        let display = entry.display_text();
+        let url = entry_url(&course, &display);
+        use std::fmt::Write as _;
+        let mut text = String::new();
+        let _ = writeln!(text, "{display}");
+        match entry.definition() {
+            GramDictionaryDefinition::Dictionary { definitions } => {
+                for def in &definitions {
+                    let _ = write!(text, "• {}", def.native);
+                    if let Some(note) = &def.note {
+                        let _ = write!(text, " ({note})");
+                    }
+                    let _ = writeln!(text);
+                    if !def.example_sentence_target_language.is_empty() {
+                        let _ = writeln!(
+                            text,
+                            "  e.g. “{}” — “{}”",
+                            def.example_sentence_target_language,
+                            def.example_sentence_native_language
+                        );
+                    }
+                }
+            }
+            GramDictionaryDefinition::Phrasebook {
+                meaning,
+                target_language_example,
+                native_language_example,
+            } => {
+                let _ = writeln!(text, "• {meaning}");
+                if let (Some(t), Some(n)) = (target_language_example, native_language_example) {
+                    let _ = writeln!(text, "  e.g. “{t}” — “{n}”");
+                }
+            }
+        }
+        let _ = writeln!(
+            text,
+            "\nFrequency rank {} (1 = most common in this course). {}",
+            entry.frequency_index() + 1,
+            if entry.is_in_deck() {
+                "Already in the user's deck."
+            } else {
+                "Not in the user's deck."
+            }
+        );
+        for (label, list) in [
+            (
+                "Example sentences the user can already fully understand:",
+                &sampled.comprehensible,
+            ),
+            (
+                "More sentences containing it (may use words the user hasn't learned):",
+                &sampled.other,
+            ),
+        ] {
+            if list.is_empty() {
+                continue;
+            }
+            let _ = writeln!(text, "\n{label}");
+            for sentence in list {
+                let _ = write!(
+                    text,
+                    "• “{}”",
+                    sentence["text"].as_str().unwrap_or_default()
+                );
+                if let Some(translation) = sentence["translations"].get(0).and_then(|t| t.as_str())
+                {
+                    let _ = write!(text, " — “{translation}”");
+                }
+                let sources: Vec<&str> = sentence["sources"]
+                    .as_array()
+                    .map(|a| a.iter().filter_map(|s| s.as_str()).collect())
+                    .unwrap_or_default();
+                if !sources.is_empty() {
+                    let _ = write!(text, " (source: {})", sources.join(", "));
+                }
+                let _ = writeln!(text);
+            }
+        }
+        let _ = writeln!(text, "\nDictionary page: {url}");
+
+        ok_json_structured(json!({
+            "id": params.id,
+            "title": entry_title(&entry),
+            "text": text,
+            "url": url,
+            "metadata": {
+                "language": language,
+                "gram": gram_value,
+                "frequency_rank": entry.frequency_index() + 1,
+                "in_deck": entry.is_in_deck(),
+                "is_phrase": entry.is_phrase(),
+            },
+        }))
+    }
 }
 
 #[tool_handler]
@@ -841,7 +1230,11 @@ impl ServerHandler for YapMcp {
              get_due_cards. Pass those objects back verbatim; the server rejects anything \
              that doesn't name a real dictionary entry. To add new words: search_dictionary \
              first, show the user what you found, then pass the matches' language + gram to \
-             add_cards."
+             add_cards.\n\
+             \n\
+             search and fetch are a standard browse/cite pair over the public dictionary at \
+             yap.town/d/ — use them to look up and cite entries; use search_dictionary when \
+             you need exact grams for the deck tools."
                 .to_string(),
         );
         info

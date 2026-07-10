@@ -79,7 +79,7 @@ export function AboutPage() {
                 href="https://twitter.com/chadnauseam"
                 className="underline text-foreground"
               >
-                Andre Popovitch
+                André Popovitch
               </a>
               .{" "}
             </p>

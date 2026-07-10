@@ -54,6 +54,9 @@ import { ForgotPassword } from "@/pages/forgot-password";
 import { Connect } from "./pages/connect";
 import { UserProfilePage } from "@/pages/user-profile";
 import { AboutPage } from "@/pages/about";
+import { PrivacyPage } from "@/pages/privacy";
+import { TermsPage } from "@/pages/terms";
+import { McpDocsPage } from "@/pages/mcp-docs";
 import { LandingPage } from "@/pages/landing";
 import { NotFoundPage } from "@/pages/not-found";
 import { SentenceListsPage } from "@/pages/sentence-lists";
@@ -1290,6 +1293,9 @@ const router = createBrowserRouter([
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/connect", element: <Connect /> },
       { path: "/about", element: <AboutPage /> },
+      { path: "/privacy", element: <PrivacyPage /> },
+      { path: "/terms", element: <TermsPage /> },
+      { path: "/mcp", element: <McpDocsPage /> },
       {
         path: "/*",
         element: <AppMain />,

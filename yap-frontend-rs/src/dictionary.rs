@@ -119,43 +119,7 @@ impl Deck {
                     0
                 };
 
-                let card = CardIndicator::WrittenGram { gram: *spur_gram };
-                let is_in_deck = matches!(self.cards.get(&card), Some(CardData::Added { .. }));
-
-                let (prefix, morphology) =
-                    compute_word_prefix_and_morphology(&resolved_gram, gram_def, target_language);
-
-                let entry = match gram_def {
-                    GramDefinition::Dictionary(dict_def) => GramDictionaryEntry {
-                        display_text,
-                        frequency_index,
-                        is_in_deck,
-                        is_phrase: false,
-                        prefix,
-                        morphology,
-                        definition: GramDictionaryDefinition::Dictionary {
-                            definitions: dict_def.definitions.clone(),
-                        },
-                        target_language,
-                    },
-                    GramDefinition::Phrasebook(pb_def) => GramDictionaryEntry {
-                        display_text,
-                        frequency_index,
-                        is_in_deck,
-                        is_phrase: true,
-                        prefix,
-                        morphology,
-                        definition: GramDictionaryDefinition::Phrasebook {
-                            meaning: pb_def.meaning.clone(),
-                            target_language_example: Some(pb_def.target_language_example.clone())
-                                .filter(|s| !s.is_empty()),
-                            native_language_example: Some(pb_def.native_language_example.clone())
-                                .filter(|s| !s.is_empty()),
-                        },
-                        target_language,
-                    },
-                };
-
+                let entry = self.gram_dictionary_entry(frequency_index)?;
                 Some(((relevance, frequency_index), entry))
             })
             .collect();
@@ -167,6 +131,58 @@ impl Deck {
         entries.sort_by_key(|(key, _)| *key);
 
         entries.into_iter().map(|(_, entry)| entry).collect()
+    }
+
+    /// Build the dictionary entry at a frequency index (None when out of
+    /// range or the gram has no definition).
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn gram_dictionary_entry(&self, frequency_index: usize) -> Option<GramDictionaryEntry> {
+        let language_pack = &self.context.language_pack;
+        let target_language = self.context.course.target_language;
+        let (spur_gram, _freq) = language_pack
+            .gram_frequencies
+            .entries
+            .get_index(frequency_index)?;
+        let gram_def = language_pack.gram_definitions.get(spur_gram)?;
+        let resolved_gram = language_pack.resolve_gram(spur_gram);
+        let display_text = resolved_gram.to_display_string(target_language);
+
+        let card = CardIndicator::WrittenGram { gram: *spur_gram };
+        let is_in_deck = matches!(self.cards.get(&card), Some(CardData::Added { .. }));
+
+        let (prefix, morphology) =
+            compute_word_prefix_and_morphology(&resolved_gram, gram_def, target_language);
+
+        Some(match gram_def {
+            GramDefinition::Dictionary(dict_def) => GramDictionaryEntry {
+                display_text,
+                frequency_index,
+                is_in_deck,
+                is_phrase: false,
+                prefix,
+                morphology,
+                definition: GramDictionaryDefinition::Dictionary {
+                    definitions: dict_def.definitions.clone(),
+                },
+                target_language,
+            },
+            GramDefinition::Phrasebook(pb_def) => GramDictionaryEntry {
+                display_text,
+                frequency_index,
+                is_in_deck,
+                is_phrase: true,
+                prefix,
+                morphology,
+                definition: GramDictionaryDefinition::Phrasebook {
+                    meaning: pb_def.meaning.clone(),
+                    target_language_example: Some(pb_def.target_language_example.clone())
+                        .filter(|s| !s.is_empty()),
+                    native_language_example: Some(pb_def.native_language_example.clone())
+                        .filter(|s| !s.is_empty()),
+                },
+                target_language,
+            },
+        })
     }
 
     /// Get the total number of gram dictionary entries (for "Showing X of Y" display)

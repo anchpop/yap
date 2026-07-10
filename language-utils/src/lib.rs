@@ -3326,6 +3326,37 @@ impl Course {
     pub fn teaches_new_writing_system(&self) -> bool {
         self.native_language.writing_system() != self.target_language.writing_system()
     }
+
+    /// URL slug of this course on the public dictionary site
+    /// (yap.town/d/<slug>/), e.g. "french-to-english".
+    pub fn dictionary_slug(&self) -> String {
+        format!(
+            "{}-to-{}",
+            self.target_language.to_string().to_lowercase(),
+            self.native_language.to_string().to_lowercase()
+        )
+    }
+}
+
+/// URL slug of a dictionary entry on the public dictionary site, derived from
+/// its display text. Colliding slugs get a `-2`/`-3`... suffix at site
+/// generation time, which this function alone cannot know about.
+pub fn dictionary_entry_slug(text: &str) -> String {
+    text.chars()
+        .map(|c| {
+            if c.is_alphanumeric() {
+                c.to_lowercase().next().unwrap_or(c)
+            } else if c == ' ' || c == '\'' || c == '-' || c == '\u{2019}' {
+                '-'
+            } else {
+                '_'
+            }
+        })
+        .collect::<String>()
+        .replace("--", "-")
+        .trim_matches('-')
+        .trim_matches('_')
+        .to_string()
 }
 
 pub const COURSES: &[Course] = &[
