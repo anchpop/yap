@@ -829,7 +829,7 @@ fn ground_truth_phoneme_variants(
     // ground truth for text that wikipron can't decompose — and that's
     // hard to notice unless we surface it. Log the first error per
     // process so a broken environment doesn't disappear into the noise.
-    match crate::espeak::phonemize_phrase(text, language) {
+    match espeak::phonemize_phrase(text, language) {
         Ok(Some(espeak_raw)) => {
             let espeak_seq: Vec<String> = espeak_raw
                 .iter()

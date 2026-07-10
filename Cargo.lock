@@ -79,6 +79,7 @@ dependencies = [
  "axum-extra",
  "base64 0.22.1",
  "dotenvy",
+ "espeak",
  "google-tts",
  "jsonwebtoken",
  "language-utils",
@@ -1568,6 +1569,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d817e038c30374a4bcb22f94d0a8a0e216958d4c3dcde369b1439fec4bdda6e6"
 
 [[package]]
+name = "espeak"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "language-utils",
+ "tokio",
+]
+
+[[package]]
 name = "eyedee"
 version = "0.1.0"
 dependencies = [
@@ -1855,6 +1865,7 @@ dependencies = [
  "dashmap",
  "dotenvy",
  "env_logger",
+ "espeak",
  "futures",
  "gcp_auth",
  "google-tts",

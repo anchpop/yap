@@ -5,6 +5,7 @@ members = [
     "language-utils",
     "yap-frontend-rs",
     "libraries/autograde-core",
+    "libraries/espeak",
     "libraries/weapon",
     "libraries/imdex_map",
     "libraries/eyedee",
