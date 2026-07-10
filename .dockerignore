@@ -37,6 +37,7 @@ Thumbs.db
 
 # Other
 node_modules/
+yap-mcp/widget/node_modules/
 dist/
 tmp/
 logs/

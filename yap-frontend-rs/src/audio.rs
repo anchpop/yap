@@ -155,7 +155,9 @@ impl AudioCache {
             });
         }
 
-        let bytes = fetch_tts(request, provider, access_token).await?;
+        let bytes = fetch_tts(request, provider, access_token)
+            .await
+            .map_err(|e| JsValue::from_str(&e))?;
 
         // Cache the audio data
         self.cache_audio(request, provider, bytes.clone()).await;
@@ -298,7 +300,9 @@ impl TempAudioCache {
             });
         }
 
-        let bytes = fetch_tts(request, provider, access_token).await?;
+        let bytes = fetch_tts(request, provider, access_token)
+            .await
+            .map_err(|e| JsValue::from_str(&e))?;
 
         // Cache with timestamp in filename
         let temp_filename = Self::temp_filename(&base_filename);
@@ -394,21 +398,27 @@ pub(crate) fn tts_cache_filename(request: &TtsRequest, provider: &TtsProvider) -
 /// the human clip and fall through to TTS, which can actually apply them.
 /// (Provider is deliberately ignored: human audio is preferred over any
 /// TTS provider for a plain request.)
-fn human_audio_applies(request: &TtsRequest) -> bool {
+pub fn human_audio_applies(request: &TtsRequest) -> bool {
     !request.is_ssml && request.instructions.is_none() && (request.speed - 1.0).abs() < f64::EPSILON
+}
+
+/// Backend route for each TTS provider — shared with the native MCP server,
+/// whose transport is reqwest rather than the browser fetch used here.
+pub fn tts_endpoint(provider: &TtsProvider) -> &'static str {
+    match provider {
+        TtsProvider::Google => "/tts/google",
+        TtsProvider::ElevenLabs => "/tts",
+        TtsProvider::OpenAI => "/tts/openai",
+        TtsProvider::Gemini => "/tts/gemini",
+    }
 }
 
 async fn fetch_tts(
     request: &TtsRequest,
     provider: &TtsProvider,
     access_token: Option<&String>,
-) -> Result<Vec<u8>, JsValue> {
-    let endpoint = match provider {
-        TtsProvider::Google => "/tts/google",
-        TtsProvider::ElevenLabs => "/tts",
-        TtsProvider::OpenAI => "/tts/openai",
-        TtsProvider::Gemini => "/tts/gemini",
-    };
+) -> Result<Vec<u8>, String> {
+    let endpoint = tts_endpoint(provider);
 
     let response = hit_ai_server(
         fetch_happen::Method::POST,
@@ -417,23 +427,31 @@ async fn fetch_tts(
         access_token,
     )
     .await
-    .map_err(|e| JsValue::from_str(&format!("Request error: {e:?}")))?;
+    .map_err(|e| format!("Request error: {e:?}"))?;
 
     if !response.ok() {
-        return Err(JsValue::from_str(&format!(
-            "HTTP error: {}",
-            response.status()
-        )));
+        return Err(format!("HTTP error: {}", response.status()));
     }
 
     let audio_data = response
         .text()
         .await
-        .map_err(|e| JsValue::from_str(&format!("Response parsing error: {e:?}")))?;
+        .map_err(|e| format!("Response parsing error: {e:?}"))?;
 
     base64::engine::general_purpose::STANDARD
         .decode(&audio_data)
-        .map_err(|e| JsValue::from_str(&format!("Base64 decode error: {e:?}")))
+        .map_err(|e| format!("Base64 decode error: {e:?}"))
+}
+
+/// Container format sniffed from magic bytes, as a mime type for playback.
+pub fn audio_mime_type(bytes: &[u8]) -> &'static str {
+    if bytes.starts_with(b"RIFF") {
+        "audio/wav"
+    } else if bytes.starts_with(b"OggS") {
+        "audio/ogg"
+    } else {
+        "audio/mpeg"
+    }
 }
 
 fn is_valid_audio_data(bytes: &[u8]) -> bool {

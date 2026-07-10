@@ -18,7 +18,10 @@ mod supabase;
 mod tiers;
 mod utils;
 
+pub use audio::{FetchedAudio, VoiceActorInfo, audio_mime_type, human_audio_applies, tts_endpoint};
 pub use deck_event::*;
+pub use human_audio::{lookup as lookup_human_audio, register as register_human_audio};
+pub use utils::ai_server_url;
 
 use language_utils::Atom;
 use language_utils::HomophonePractice;

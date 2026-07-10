@@ -46,7 +46,7 @@ import { Flashcard } from "@/components/Flashcard";
 import { Simulate } from "@/components/Simulate";
 import { TranslationChallenge } from "@/components/challenges/TranslationChallenge";
 import { PronunciationChallenge } from "@/components/challenges/PronunciationChallenge";
-import { profilerOnRender, languageToIso6391 } from "./lib/utils";
+import { profilerOnRender, languageToIso6391 } from "@/lib/utils";
 import { ResetPassword } from "@/pages/reset-password";
 import { ConfirmEmail } from "@/pages/confirm-email";
 import { AcceptInvite } from "@/pages/accept-invite";

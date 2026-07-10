@@ -192,6 +192,11 @@ jobs:
       #   flyctl apps create yap-mcp
       #   flyctl secrets set --app yap-mcp SUPABASE_JWT_SECRET=...
 
+      - name: Build MCP review widget
+        run: |
+          pnpm install --dir yap-mcp/widget
+          pnpm --dir yap-mcp/widget run build
+
       - name: Build and push MCP server image
         uses: docker/build-push-action@v5
         with:

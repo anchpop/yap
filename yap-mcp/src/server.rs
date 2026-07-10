@@ -7,9 +7,13 @@ use std::time::{Duration, Instant};
 use anyhow::Context as _;
 use chrono::Utc;
 use rmcp::{
-    RoleServer, ServerHandler,
+    ErrorData as McpError, RoleServer, ServerHandler,
     handler::server::wrapper::Parameters,
-    model::{CallToolResult, ContentBlock, ServerCapabilities, ServerInfo},
+    model::{
+        CallToolResult, ContentBlock, ListResourcesResult, ListToolsResult, PaginatedRequestParams,
+        ReadResourceRequestParams, ReadResourceResult, Resource, ResourceContents,
+        ServerCapabilities, ServerInfo,
+    },
     service::RequestContext,
     tool, tool_handler, tool_router,
 };
@@ -433,6 +437,83 @@ fn error(message: impl Into<String>) -> CallToolResult {
     CallToolResult::error(vec![ContentBlock::text(message.into())])
 }
 
+/// Resolved audio, cached process-wide: clips aren't user-specific, and the
+/// widget re-requests the same sentences often. Bounded by wholesale clears.
+#[derive(Clone)]
+struct CachedAudio {
+    bytes: Vec<u8>,
+    voice_actor: Option<yap_frontend_rs::VoiceActorInfo>,
+}
+
+static AUDIO_CACHE: std::sync::Mutex<Option<std::collections::HashMap<String, CachedAudio>>> =
+    std::sync::Mutex::new(None);
+const AUDIO_CACHE_MAX: usize = 256;
+
+fn audio_cache_get(key: &str) -> Option<CachedAudio> {
+    AUDIO_CACHE
+        .lock()
+        .expect("audio cache poisoned")
+        .as_ref()
+        .and_then(|cache| cache.get(key).cloned())
+}
+
+fn audio_cache_put(key: &str, audio: CachedAudio) {
+    let mut guard = AUDIO_CACHE.lock().expect("audio cache poisoned");
+    let cache = guard.get_or_insert_with(Default::default);
+    if cache.len() >= AUDIO_CACHE_MAX {
+        cache.clear();
+    }
+    cache.insert(key.to_string(), audio);
+}
+
+/// The native transport for TTS: same backend, same routes as the app's
+/// wasm fetch (fetch-happen is browser-only, so the wire call lives here).
+async fn fetch_tts_native(
+    http: &reqwest::Client,
+    request: &language_utils::TtsRequest,
+    provider: &language_utils::TtsProvider,
+) -> Result<Vec<u8>, String> {
+    use base64::Engine as _;
+    let url = format!(
+        "{}{}",
+        yap_frontend_rs::ai_server_url(),
+        yap_frontend_rs::tts_endpoint(provider)
+    );
+    let response = http
+        .post(url)
+        .header("Authorization", "Bearer anonymous")
+        .json(request)
+        .send()
+        .await
+        .map_err(|e| format!("request error: {e}"))?;
+    if !response.status().is_success() {
+        return Err(format!("HTTP error: {}", response.status()));
+    }
+    let audio_data = response
+        .text()
+        .await
+        .map_err(|e| format!("response error: {e}"))?;
+    base64::engine::general_purpose::STANDARD
+        .decode(&audio_data)
+        .map_err(|e| format!("base64 decode error: {e}"))
+}
+
+fn audio_result(audio: CachedAudio) -> CallToolResult {
+    use base64::Engine as _;
+    let mime_type = yap_frontend_rs::audio_mime_type(&audio.bytes);
+    let source = if audio.voice_actor.is_some() {
+        "human_recording"
+    } else {
+        "tts"
+    };
+    ok_json_structured(json!({
+        "audio_base64": base64::engine::general_purpose::STANDARD.encode(&audio.bytes),
+        "mime_type": mime_type,
+        "voice_actor": audio.voice_actor,
+        "source": source,
+    }))
+}
+
 /// The card shape shared by get_due_cards and unlock_cards: everything the
 /// LLM needs to quiz the user and pass the card back to log_review.
 fn card_summary_json(language: &serde_json::Value, summary: &CardSummary) -> serde_json::Value {
@@ -521,6 +602,31 @@ pub struct GetSentencesParams {
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
+pub struct PresentCardParams {
+    /// The target language of the card, e.g. "French".
+    language: String,
+    /// The card object exactly as returned by get_due_cards or unlock_cards.
+    card: serde_json::Value,
+    /// Optional: the exact text of a corpus sentence containing this card's
+    /// gram, chosen from get_sentences. Omit to let the server pick a
+    /// comprehensible one. Sentences the model writes itself are rejected —
+    /// the sentence, its translation, and its attribution all come from
+    /// yap's corpus.
+    #[serde(default)]
+    sentence: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, JsonSchema)]
+pub struct GetAudioParams {
+    /// The TTS request exactly as provided in widget data: text, language,
+    /// and optional speed/is_ssml/instructions.
+    request: serde_json::Value,
+    /// The TTS provider to synthesize with when no human recording exists,
+    /// exactly as provided in widget data (e.g. "ElevenLabs").
+    provider: serde_json::Value,
+}
+
+#[derive(Serialize, Deserialize, JsonSchema)]
 pub struct SearchParams {
     /// What to look up: a word or phrase in the language being learned, or a
     /// native-language meaning. Accent-insensitive.
@@ -543,20 +649,103 @@ enum StateSource {
     PerUser(Arc<crate::remote::RemoteApp>),
 }
 
+/// URI of the review widget, the interactive card UI hosts render inline
+/// (MCP Apps extension). Served from resources/read.
+pub const WIDGET_URI: &str = "ui://yap/review.html";
+const WIDGET_MIME: &str = "text/html;profile=mcp-app";
+
+/// Load the built review widget. Absent (not built) is fine: widget tools
+/// degrade to text and the resource simply isn't listed.
+pub fn load_widget_html() -> Option<Arc<String>> {
+    let path = std::env::var("YAP_WIDGET_HTML")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| {
+            PathBuf::from(concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/widget/dist/index.html"
+            ))
+        });
+    match std::fs::read_to_string(&path) {
+        Ok(html) => {
+            log::info!(
+                "review widget loaded from {} ({} bytes)",
+                path.display(),
+                html.len()
+            );
+            Some(Arc::new(html))
+        }
+        Err(e) => {
+            log::warn!(
+                "review widget not available ({}: {e}) — widget tools degrade to text",
+                path.display()
+            );
+            None
+        }
+    }
+}
+
+fn meta_from(value: serde_json::Value) -> rmcp::model::Meta {
+    rmcp::model::Meta(
+        value
+            .as_object()
+            .expect("meta literals are objects")
+            .clone(),
+    )
+}
+
+/// `_meta` for the widget resource: a fully closed CSP (the widget talks to
+/// the world only through the host bridge) plus theming and the legacy
+/// OpenAI aliases.
+fn widget_resource_meta() -> rmcp::model::Meta {
+    meta_from(json!({
+        "ui": {
+            "csp": { "connectDomains": [], "resourceDomains": [] },
+            "prefersBorder": false,
+        },
+        "openai/widgetDescription": "An interactive yap flashcard: plays the audio, reveals the answer, and records the user's own grade.",
+        "openai/widgetCSP": { "connect_domains": [], "resource_domains": [] },
+    }))
+}
+
+/// Per-tool `_meta` when the widget is available: template linkage for
+/// present_card, widget-only visibility for get_audio, and widget
+/// callability for the tools the iframe invokes.
+fn widget_tool_meta(tool_name: &str) -> Option<rmcp::model::Meta> {
+    match tool_name {
+        "present_card" => Some(meta_from(json!({
+            "ui": { "resourceUri": WIDGET_URI },
+            "openai/outputTemplate": WIDGET_URI,
+            "openai/toolInvocation/invoking": "Dealing a card…",
+            "openai/toolInvocation/invoked": "Card ready",
+        }))),
+        "get_audio" => Some(meta_from(json!({
+            "ui": { "visibility": ["app"] },
+            "openai/widgetAccessible": true,
+        }))),
+        "log_review" => Some(meta_from(json!({
+            "openai/widgetAccessible": true,
+        }))),
+        _ => None,
+    }
+}
+
 #[derive(Clone)]
 pub struct YapMcp {
     source: StateSource,
+    widget: Option<Arc<String>>,
 }
 
 impl YapMcp {
-    pub fn new(state: YapState) -> Self {
+    pub fn new(state: YapState, widget: Option<Arc<String>>) -> Self {
         Self {
             source: StateSource::Single(Arc::new(tokio::sync::Mutex::new(state))),
+            widget,
         }
     }
 
     pub fn new_remote(app: Arc<crate::remote::RemoteApp>) -> Self {
         Self {
+            widget: app.widget.clone(),
             source: StateSource::PerUser(app),
         }
     }
@@ -838,6 +1027,230 @@ impl YapMcp {
             "cards_in_lockup": remaining,
             "note": "these cards are back in the due queue and will show up in get_due_cards.",
         }))
+    }
+
+    #[tool(
+        title = "Present a card",
+        description = "Present one flashcard to the user as an interactive widget: it shows the sentence or word, plays audio (a human recording when the course has one), reveals the answer, and records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. Optionally pass the exact text of a sentence from get_sentences to control which sentence is used; the server verifies it against the corpus and supplies the real translation.",
+        annotations(
+            title = "Present a card",
+            read_only_hint = true,
+            open_world_hint = false
+        )
+    )]
+    async fn present_card(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<PresentCardParams>,
+    ) -> CallToolResult {
+        if self.widget.is_none() {
+            return error(
+                "the interactive review widget isn't available on this server build — quiz the user in conversation instead (get_due_cards + get_sentences + log_review)",
+            );
+        }
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
+        if let Err(e) = state.refresh().await {
+            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        if let Err(e) = state.check_language(&params.language) {
+            return error(e);
+        }
+        let card = match state.parse_card(&params.card) {
+            Ok(card) => card,
+            Err(e) => return error(e),
+        };
+        let target_language = state.context.course.target_language;
+
+        let gram = match &card {
+            CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
+                gram.clone()
+            }
+            CardIndicator::LetterPronunciation { .. } => {
+                return error(
+                    "pronunciation cards can't be presented as a widget yet — quiz them in conversation instead",
+                );
+            }
+        };
+        let display = gram.to_display_string(target_language);
+        let Some(interned) = state.pack().course_gram(&gram) else {
+            return error("that card's gram isn't a dictionary entry in this course");
+        };
+
+        let (is_new, kind) = {
+            let deck = state.deck();
+            let Some(summary) = deck.find_card_summary(&card) else {
+                return error(
+                    "that card isn't in the user's deck — pass a card exactly as returned by get_due_cards",
+                );
+            };
+            (summary.state() == "New", card_kind(&card))
+        };
+
+        let gloss = {
+            let index = state
+                .pack()
+                .gram_frequencies
+                .entries
+                .get_index_of(&interned);
+            index
+                .and_then(|index| state.deck().gram_dictionary_entry(index))
+                .map(|entry| entry_gloss(&entry))
+                .unwrap_or_default()
+        };
+
+        // The sentence, its translation, and its attribution all come from
+        // the corpus — a model-chosen sentence is only accepted verbatim.
+        let sentence = if let Some(text) = &params.sentence {
+            let text = text.trim();
+            let pack = state.pack();
+            let Some(spur) = pack.string_rodeo.get(text) else {
+                return error(
+                    "that sentence isn't in yap's corpus — pass one exactly as returned by get_sentences, or omit it to let the server pick",
+                );
+            };
+            let contains = pack
+                .sentences_containing_gram_index
+                .get(&interned)
+                .is_some_and(|sentences| sentences.contains(&spur));
+            if !contains {
+                return error(format!(
+                    "that sentence doesn't contain «{display}» — pick one from get_sentences for this word, or omit it"
+                ));
+            }
+            let translations: Vec<String> = pack
+                .translations
+                .get(&spur)
+                .map(|ts| {
+                    ts.iter()
+                        .map(|t| pack.string_rodeo.resolve(t).to_string())
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(json!({
+                "text": text,
+                "translations": translations,
+                "sources": state.sentence_sources(&spur),
+            }))
+        } else {
+            let sampled = state.sample_sentences(interned, 1);
+            sampled
+                .comprehensible
+                .first()
+                .or(sampled.other.first())
+                .cloned()
+        };
+
+        // Mirror the app's provider choice: sentences use ElevenLabs, single
+        // words Google. Human recordings take precedence regardless.
+        let (audio_text, provider) = match &sentence {
+            Some(sentence) => (
+                sentence["text"].as_str().unwrap_or(&display).to_string(),
+                language_utils::TtsProvider::ElevenLabs,
+            ),
+            None => (display.clone(), language_utils::TtsProvider::Google),
+        };
+        let audio_request = language_utils::TtsRequest {
+            text: audio_text,
+            language: target_language,
+            is_ssml: false,
+            instructions: None,
+            speed: 1.0,
+        };
+
+        let language = state.target_language_value();
+        let structured = json!({
+            "challenge": {
+                "language": language,
+                "kind": kind,
+                "is_new": is_new,
+                "card": params.card,
+                "word": { "display": display, "gloss": gloss },
+                "sentence": sentence,
+                "audio": {
+                    "request": serde_json::to_value(&audio_request).expect("request serializes"),
+                    "provider": serde_json::to_value(&provider).expect("provider serializes"),
+                },
+            },
+        });
+        let mut result = CallToolResult::success(vec![ContentBlock::text(format!(
+            "Presented «{display}» to the user as an interactive card. The widget plays the audio and records the user's own grade via log_review — do not call log_review for this card yourself; the outcome will be reported back here."
+        ))]);
+        result.structured_content = Some(structured);
+        result
+    }
+
+    #[tool(
+        title = "Get audio",
+        description = "Fetch pronunciation audio for a widget: the course's human voice-actor recording when one exists, otherwise synthesized speech — the same resolution the yap app uses. Returns base64 audio. Intended for the review widget; not useful in conversation.",
+        annotations(title = "Get audio", read_only_hint = true, open_world_hint = false)
+    )]
+    async fn get_audio(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<GetAudioParams>,
+    ) -> CallToolResult {
+        let request: language_utils::TtsRequest = match serde_json::from_value(params.request) {
+            Ok(request) => request,
+            Err(e) => {
+                return error(format!(
+                    "invalid audio request (pass it exactly as given in the widget data): {e}"
+                ));
+            }
+        };
+        let provider: language_utils::TtsProvider = match serde_json::from_value(params.provider) {
+            Ok(provider) => provider,
+            Err(e) => {
+                return error(format!(
+                    "invalid provider (pass it exactly as given in the widget data): {e}"
+                ));
+            }
+        };
+
+        // Authenticated per-user state must exist before we spend TTS money,
+        // and touching it guarantees the course pack (with its human
+        // recordings) is loaded and registered. Don't hold the lock across
+        // the TTS fetch below.
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let http = slot.lock().await.http.clone();
+
+        let cache_key = format!(
+            "{}|{}",
+            serde_json::to_string(&request).expect("request serializes"),
+            serde_json::to_string(&provider).expect("provider serializes"),
+        );
+        if let Some(cached) = audio_cache_get(&cache_key) {
+            return audio_result(cached);
+        }
+
+        let resolved = if yap_frontend_rs::human_audio_applies(&request)
+            && let Some(human) =
+                yap_frontend_rs::lookup_human_audio(request.language, &request.text)
+        {
+            CachedAudio {
+                bytes: human.bytes,
+                voice_actor: Some(yap_frontend_rs::VoiceActorInfo {
+                    name: human.actor_name,
+                    compensation: human.compensation,
+                }),
+            }
+        } else {
+            match fetch_tts_native(&http, &request, &provider).await {
+                Ok(bytes) => CachedAudio {
+                    bytes,
+                    voice_actor: None,
+                },
+                Err(e) => return error(format!("audio synthesis failed: {e}")),
+            }
+        };
+        audio_cache_put(&cache_key, resolved.clone());
+        audio_result(resolved)
     }
 
     #[tool(
@@ -1214,9 +1627,75 @@ impl YapMcp {
 
 #[tool_handler]
 impl ServerHandler for YapMcp {
+    /// Hand-written (the macro defers to it): injects the MCP Apps `_meta`
+    /// onto widget-related tools, only when the widget is actually built.
+    async fn list_tools(
+        &self,
+        _request: Option<PaginatedRequestParams>,
+        _context: RequestContext<RoleServer>,
+    ) -> Result<ListToolsResult, McpError> {
+        let mut tools = Self::tool_router().list_all();
+        if self.widget.is_some() {
+            for tool in &mut tools {
+                if let Some(meta) = widget_tool_meta(&tool.name) {
+                    tool.meta = Some(meta);
+                }
+            }
+        }
+        Ok(ListToolsResult {
+            tools,
+            ..Default::default()
+        })
+    }
+
+    async fn list_resources(
+        &self,
+        _request: Option<PaginatedRequestParams>,
+        _context: RequestContext<RoleServer>,
+    ) -> Result<ListResourcesResult, McpError> {
+        let mut result = ListResourcesResult::default();
+        if let Some(html) = &self.widget {
+            let mut resource = Resource::new(WIDGET_URI, "yap review card");
+            resource.title = Some("yap review card".to_string());
+            resource.description =
+                Some("Interactive flashcard widget: audio, reveal, and grading.".to_string());
+            resource.mime_type = Some(WIDGET_MIME.to_string());
+            resource.size = Some(html.len() as u64);
+            resource.meta = Some(widget_resource_meta());
+            result.resources.push(resource);
+        }
+        Ok(result)
+    }
+
+    async fn read_resource(
+        &self,
+        request: ReadResourceRequestParams,
+        _context: RequestContext<RoleServer>,
+    ) -> Result<ReadResourceResult, McpError> {
+        match (&self.widget, request.uri.as_str()) {
+            (Some(html), WIDGET_URI) => {
+                let mut result = ReadResourceResult::new(vec![]);
+                result.contents = vec![ResourceContents::TextResourceContents {
+                    uri: WIDGET_URI.to_string(),
+                    mime_type: Some(WIDGET_MIME.to_string()),
+                    text: html.as_ref().clone(),
+                    meta: Some(widget_resource_meta()),
+                }];
+                Ok(result)
+            }
+            _ => Err(McpError::resource_not_found(
+                format!("unknown resource: {}", request.uri),
+                None,
+            )),
+        }
+    }
+
     fn get_info(&self) -> ServerInfo {
         let mut info = ServerInfo::default();
-        info.capabilities = ServerCapabilities::builder().enable_tools().build();
+        info.capabilities = ServerCapabilities::builder()
+            .enable_tools()
+            .enable_resources()
+            .build();
         info.instructions = Some(
             "Access to the user's yap.town language-learning account: their flashcard deck, \
              spaced-repetition reviews, dictionary, and stats.\n\
@@ -1234,7 +1713,13 @@ impl ServerHandler for YapMcp {
              \n\
              search and fetch are a standard browse/cite pair over the public dictionary at \
              yap.town/d/ — use them to look up and cite entries; use search_dictionary when \
-             you need exact grams for the deck tools."
+             you need exact grams for the deck tools.\n\
+             \n\
+             When present_card is available, prefer it for quizzing: it renders the card as \
+             an interactive widget with audio and records the user's own grade — never call \
+             log_review for a card you presented; its outcome is reported back to you. You \
+             may pick the quiz sentence yourself: pass the exact text of any sentence from \
+             get_sentences."
                 .to_string(),
         );
         info

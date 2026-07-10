@@ -179,6 +179,8 @@ pub struct RemoteApp {
     /// Encrypts the Supabase session embedded in the tokens we mint, so the
     /// OAuth client never holds a raw Supabase credential.
     token_cipher: ChaCha20Poly1305,
+    /// The built review widget HTML (None when not built).
+    pub widget: Option<Arc<String>>,
     users: Mutex<HashMap<String, UserSlot>>,
     codes: Mutex<HashMap<String, PendingCode>>,
     pending_auth: Mutex<HashMap<String, PendingAuth>>,
@@ -196,6 +198,7 @@ impl RemoteApp {
             http: reqwest::Client::new(),
             packs,
             token_cipher,
+            widget: crate::server::load_widget_html(),
             users: Mutex::new(HashMap::new()),
             codes: Mutex::new(HashMap::new()),
             pending_auth: Mutex::new(HashMap::new()),

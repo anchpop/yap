@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "types": [
+      "vite-plugin-pwa/react",
+      "vite-plugin-pwa/client",
+      "vite/client"
+    ],
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/lib/utils": [
+        "./src/shims/utils.ts"
+      ],
+      "@/lib/sound-effects": [
+        "./src/shims/sound-effects.ts"
+      ],
+      "@/*": [
+        "../../yap-frontend/src/*"
+      ],
+      "yap-frontend-rs/pkg": [
+        "../../yap-frontend-rs/pkg"
+      ],
+      "react": [
+        "./node_modules/@types/react"
+      ],
+      "react/jsx-runtime": [
+        "./node_modules/@types/react/jsx-runtime"
+      ],
+      "react-dom": [
+        "./node_modules/@types/react-dom"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "../../yap-frontend/src/components/**/*"
+  ]
+}

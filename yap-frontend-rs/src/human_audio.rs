@@ -1,13 +1,16 @@
 use language_utils::{Compensation, Language, language_pack::LanguagePack};
-use std::cell::RefCell;
 use std::collections::BTreeMap;
-use std::sync::{Arc, Weak};
+use std::sync::{Arc, Mutex, Weak};
 
-thread_local! {
-    static REGISTRY: RefCell<Registry> = RefCell::new(Registry::default());
-}
+// A process-wide Mutex (not thread_local): on the native MCP server, lookups
+// happen on arbitrary tokio worker threads and must all see the packs that
+// were registered at load time. On wasm there is one thread and the lock is
+// free.
+static REGISTRY: Mutex<Registry> = Mutex::new(Registry {
+    packs: BTreeMap::new(),
+    next_actor_index: BTreeMap::new(),
+});
 
-#[derive(Default)]
 struct Registry {
     /// Weak refs to packs owned by `Weapon.language_pack`. The audio fetch
     /// path can't reach the `Weapon`, so it looks packs up here — but holding
@@ -19,9 +22,11 @@ struct Registry {
 }
 
 pub fn register(language: Language, pack: &Arc<LanguagePack>) {
-    REGISTRY.with(|r| {
-        r.borrow_mut().packs.insert(language, Arc::downgrade(pack));
-    });
+    REGISTRY
+        .lock()
+        .expect("human audio registry poisoned")
+        .packs
+        .insert(language, Arc::downgrade(pack));
 }
 
 pub struct HumanAudio {
@@ -34,9 +39,9 @@ pub struct HumanAudio {
 /// has a recording for that exact phrase. When multiple actors have a recording,
 /// rotates round-robin across successive calls (actors sorted by name).
 pub fn lookup(language: Language, text: &str) -> Option<HumanAudio> {
-    REGISTRY.with(|r| {
-        let mut registry = r.borrow_mut();
-
+    let mut registry = REGISTRY.lock().expect("human audio registry poisoned");
+    {
+        let registry = &mut *registry;
         let pack = registry.packs.get(&language)?.upgrade()?;
 
         let mut actors: Vec<&language_utils::VoiceActor> = pack
@@ -61,5 +66,5 @@ pub fn lookup(language: Language, text: &str) -> Option<HumanAudio> {
             actor_name: actor.name.clone(),
             compensation: actor.compensation,
         })
-    })
+    }
 }
