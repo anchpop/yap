@@ -809,12 +809,18 @@ impl YapMcp {
 
         let (content, unlocked) = {
             let deck = state.deck();
-            match deck.get_release_offer() {
+            match deck.get_release_offer(Utc::now().timestamp_millis() as f64) {
                 None => {
+                    let locked = deck.locked_count();
+                    let note = if locked == 0 {
+                        "no cards are in lockup"
+                    } else {
+                        "locked cards exist but none are due yet; try again once they're due"
+                    };
                     return ok_json(json!({
                         "unlocked": [],
-                        "cards_in_lockup": 0,
-                        "note": "no cards are in lockup",
+                        "cards_in_lockup": locked,
+                        "note": note,
                     }));
                 }
                 Some(offer) => {
