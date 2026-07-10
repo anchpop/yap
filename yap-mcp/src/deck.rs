@@ -102,6 +102,9 @@ impl PackCache {
         );
         let pack = tokio::task::spawn_blocking(move || load_language_pack(&out_dir, &course_owned))
             .await??;
+        // Same registration the web app does on pack load: lets the shared
+        // audio path serve human voice-actor recordings out of this pack.
+        yap_frontend_rs::register_human_audio(course.target_language, &pack);
         packs.insert(*course, pack.clone());
         Ok(pack)
     }

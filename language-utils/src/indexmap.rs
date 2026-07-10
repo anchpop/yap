@@ -33,6 +33,11 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
         self.order.len()
     }
 
+    /// Returns the insertion index of the key, if present
+    pub fn get_index_of(&self, key: &K) -> Option<usize> {
+        self.indices.get(key).copied()
+    }
+
     /// Returns true if the map contains no elements
     pub fn is_empty(&self) -> bool {
         self.order.is_empty()

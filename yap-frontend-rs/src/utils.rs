@@ -174,6 +174,15 @@ pub(crate) async fn get_or_create_device_id(
     }
 }
 
+/// Base URL of the yap AI backend (compile-time switch for local dev).
+pub fn ai_server_url() -> &'static str {
+    if cfg!(feature = "local-backend") {
+        "http://localhost:21516"
+    } else {
+        "https://yap-ai-backend.fly.dev"
+    }
+}
+
 pub async fn hit_ai_server(
     method: fetch_happen::Method,
     path: &str,
@@ -181,11 +190,7 @@ pub async fn hit_ai_server(
     access_token: Option<&String>,
 ) -> Result<fetch_happen::Response, fetch_happen::Error> {
     let client = fetch_happen::Client;
-    let url = if cfg!(feature = "local-backend") {
-        "http://localhost:21516"
-    } else {
-        "https://yap-ai-backend.fly.dev"
-    };
+    let url = ai_server_url();
     // Always include an Authorization header - use "anonymous" as dummy token when not logged in
     let token = access_token.map(|t| t.as_str()).unwrap_or("anonymous");
 

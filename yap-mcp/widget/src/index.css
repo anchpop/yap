@@ -1,0 +1,11 @@
+/* Reuse yap's whole theme (Tailwind v4 + OKLch tokens + .dark strategy) so
+   the widget is unmistakably yap. Host blending overrides live below. */
+@import "../../../yap-frontend/src/index.css";
+
+/* MCP Apps hosts render the widget inline in the conversation; a transparent
+   body lets it sit on the host's surface (Claude's transparent-theming
+   guidance) while cards/buttons keep yap's glassmorphism. */
+html,
+body {
+  background: transparent;
+}

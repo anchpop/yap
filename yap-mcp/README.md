@@ -39,6 +39,16 @@ real course entry is rejected; the server never guesses.
    more cards" offer), via the deck's own `get_release_offer`; reviewing a
    locked card also unlocks it. `get_due_cards` reports `cards_in_lockup`.
 - `get_stats` — streak, XP, review counts, deck size, tier, recent days.
+- `present_card` — renders one card as an interactive MCP Apps widget
+   (sentence with audio, reveal, grade buttons); the widget logs the user's
+   own grade via `log_review` and reports the outcome into model context.
+   The model may pass the exact text of any corpus sentence from
+   `get_sentences`; the server verifies it and supplies the real translation
+   and attribution. Degrades to a polite error when the widget isn't built.
+- `get_audio` — widget-only (`ui.visibility: ["app"]`): resolves audio the
+   same way the app does (human voice-actor recording from the language pack
+   first — shared `human_audio` registry — then TTS via the AI backend) and
+   returns base64 + attribution.
 - `search` / `fetch` — the standard browse/cite pair (required by ChatGPT for
   deep research and connector validation). `search` returns dictionary entry
   pages as `{id, title, url}`; `fetch` takes an `id`
@@ -152,6 +162,18 @@ yap login page, and connects.
 - OAuth codes and MCP sessions are in-memory: run exactly one instance.
 - Public OAuth endpoints are rate-limited per client IP (fixed 60s windows);
   cached per-user deck state is evicted after 6h idle.
+
+## Review widget (MCP Apps)
+
+`widget/` is a small Vite/React app that reuses yap-frontend components
+verbatim (AudioButton, shadcn ui, theme) via aliases; shims keep the 4 MiB
+WASM out (`src/shims/`). Build with `pnpm install && pnpm build` in
+`yap-mcp/widget/` — the server loads `widget/dist/index.html` at runtime
+(`YAP_WIDGET_HTML` overrides the path) and serves it as
+`ui://yap/review.html` (`text/html;profile=mcp-app`) with a fully closed
+CSP: the widget talks only through the host bridge (`get_audio`,
+`log_review`, `updateModelContext`). CI builds it before the Docker image;
+a server without the file just runs text-only.
 
 ## Directory review account
 

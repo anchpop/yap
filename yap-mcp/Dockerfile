@@ -18,4 +18,8 @@ COPY --from=builder /app/target/release/yap-mcp /usr/local/bin/yap-mcp
 # Language packs are read from disk at runtime (lazily, per course).
 COPY out /app/out
 ENV YAP_OUT_DIR=/app/out
+# The review widget is built by CI (pnpm, outside Docker) and copied in;
+# the server serves it as the MCP Apps ui:// resource.
+COPY yap-mcp/widget/dist/index.html /app/widget/index.html
+ENV YAP_WIDGET_HTML=/app/widget/index.html
 ENTRYPOINT ["/usr/local/bin/yap-mcp", "serve"]

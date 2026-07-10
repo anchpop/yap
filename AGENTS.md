@@ -118,6 +118,11 @@ YAP_USER_EMAIL=you@example.com python3 yap-mcp/smoke/stdio_read.py target/debug/
 python3 yap-mcp/smoke/remote_oauth.py target/debug/yap-mcp serve
 ```
 
+The MCP Apps review widget lives in `yap-mcp/widget/` (Vite; build with
+`pnpm install && pnpm build` there). It reuses yap-frontend components via
+aliases — if you change AudioButton, the ui/ primitives, or lib/pure.ts, run
+the widget's `pnpm check` too.
+
 ### Key Technologies
 
 - **Rust**: Core logic, WASM compilation, backend services

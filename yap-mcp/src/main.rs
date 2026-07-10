@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
 async fn run_stdio() -> anyhow::Result<()> {
     let config = server::Config::from_env()?;
     let state = server::YapState::load(config).await?;
-    let yap = server::YapMcp::new(state);
+    let yap = server::YapMcp::new(state, server::load_widget_html());
 
     log::info!("yap-mcp ready, serving over stdio");
     let service = yap.serve(rmcp::transport::stdio()).await?;
