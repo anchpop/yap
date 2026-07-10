@@ -57,14 +57,21 @@ COPY --from=planner /app/Cargo.toml Cargo.toml
 COPY Cargo.lock .
 # Build dependencies - this is the caching Docker layer!
 RUN cargo chef cook --release --recipe-path recipe.json
-# Copy actual source and data
+# out/ before the sources: this layer (rkyv packs included) is huge and rarely
+# changes — keep it above the every-commit source layers so it isn't re-created
+# (and re-exported to the cache registry) on every deploy.
+COPY out out
 COPY yap-ai-backend yap-ai-backend
 COPY language-utils language-utils
 COPY libraries/google-tts libraries/google-tts
 COPY libraries/autograde-core libraries/autograde-core
 COPY libraries/espeak libraries/espeak
-COPY out out
-RUN cargo build --release --bin ai-backend
+# Drop target/ within the same layer: it's ~hundreds of MB of incremental
+# artifacts that change every commit, and mode=max cache export would ship
+# all of it to the registry each deploy.
+RUN cargo build --release --bin ai-backend \
+    && cp target/release/ai-backend /app/ai-backend \
+    && rm -rf target
 
 # Runtime stage with required libraries.
 # NOTE: must be the same distro as the builder stage above (or newer), or the
@@ -91,5 +98,5 @@ ENV ESPEAK_NG_BIN=/usr/local/bin/espeak-ng \
 RUN espeak-ng --version \
     && espeak-ng --path="$ESPEAK_NG_DATA_PATH" -v fr -q --ipa -x "on est" | grep -q .
 
-COPY --from=builder /app/target/release/ai-backend /usr/local/bin
+COPY --from=builder /app/ai-backend /usr/local/bin/ai-backend
 ENTRYPOINT ["/usr/local/bin/ai-backend"]
