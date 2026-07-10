@@ -24,13 +24,20 @@ Sentry.init({
       return null;
     }
 
-    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
-    // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
-    if (message === "Load failed") {
+    // Filter transient network errors during .wasm module initialization. The
+    // WASM module is pulled in via a top-level await in generated wasm-bindgen
+    // glue, so a dropped connection during the fetch/streaming-compile surfaces
+    // as an uncatchable global error rather than a promise our code could
+    // .catch(). These frequently have no stacktrace, since they happen during
+    // module evaluation before any of our code runs.
+    if (message.includes("WebAssembly compilation aborted: Network error")) {
+      return null;
+    }
+    if (message.includes("Load failed")) {
       const frames =
         event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       if (
+        frames.length === 0 ||
         frames.some(
           (f) =>
             f.filename?.includes("wasm-helper") ||
