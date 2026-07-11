@@ -649,14 +649,33 @@ enum StateSource {
     PerUser(Arc<crate::remote::RemoteApp>),
 }
 
-/// URI of the review widget, the interactive card UI hosts render inline
-/// (MCP Apps extension). Served from resources/read.
-pub const WIDGET_URI: &str = "ui://yap/review.html";
+/// Base URI of the review widget, the interactive card UI hosts render
+/// inline (MCP Apps extension). The URI hosts serve carries a content hash
+/// suffix ([`Widget::uri`]) so a rebuilt widget gets a fresh URI — hosts
+/// (claude.ai) cache `ui://` resources by URI and would otherwise keep
+/// serving a stale iframe after every widget change.
+pub const WIDGET_URI_BASE: &str = "ui://yap/review.html";
 const WIDGET_MIME: &str = "text/html;profile=mcp-app";
+
+/// The built review widget together with its content-addressed URI.
+pub struct Widget {
+    pub html: String,
+    /// `ui://yap/review.html@<12 hex of sha256(html)>`.
+    pub uri: String,
+}
+
+/// Content-addressed URI for a widget build: base + first 12 hex of the
+/// HTML's sha256. Distinct HTML ⇒ distinct URI ⇒ hosts refetch it.
+fn versioned_widget_uri(html: &str) -> String {
+    use sha2::{Digest, Sha256};
+    let digest = Sha256::digest(html.as_bytes());
+    let hex: String = digest.iter().take(6).map(|b| format!("{b:02x}")).collect();
+    format!("{WIDGET_URI_BASE}@{hex}")
+}
 
 /// Load the built review widget. Absent (not built) is fine: widget tools
 /// degrade to text and the resource simply isn't listed.
-pub fn load_widget_html() -> Option<Arc<String>> {
+pub fn load_widget_html() -> Option<Arc<Widget>> {
     let path = std::env::var("YAP_WIDGET_HTML")
         .map(PathBuf::from)
         .unwrap_or_else(|_| {
@@ -667,12 +686,13 @@ pub fn load_widget_html() -> Option<Arc<String>> {
         });
     match std::fs::read_to_string(&path) {
         Ok(html) => {
+            let uri = versioned_widget_uri(&html);
             log::info!(
-                "review widget loaded from {} ({} bytes)",
+                "review widget loaded from {} ({} bytes) as {uri}",
                 path.display(),
                 html.len()
             );
-            Some(Arc::new(html))
+            Some(Arc::new(Widget { html, uri }))
         }
         Err(e) => {
             log::warn!(
@@ -710,11 +730,11 @@ fn widget_resource_meta() -> rmcp::model::Meta {
 /// Per-tool `_meta` when the widget is available: template linkage for
 /// present_card, widget-only visibility for get_audio, and widget
 /// callability for the tools the iframe invokes.
-fn widget_tool_meta(tool_name: &str) -> Option<rmcp::model::Meta> {
+fn widget_tool_meta(tool_name: &str, widget_uri: &str) -> Option<rmcp::model::Meta> {
     match tool_name {
         "present_card" => Some(meta_from(json!({
-            "ui": { "resourceUri": WIDGET_URI },
-            "openai/outputTemplate": WIDGET_URI,
+            "ui": { "resourceUri": widget_uri },
+            "openai/outputTemplate": widget_uri,
             "openai/toolInvocation/invoking": "Dealing a card…",
             "openai/toolInvocation/invoked": "Card ready",
         }))),
@@ -732,11 +752,11 @@ fn widget_tool_meta(tool_name: &str) -> Option<rmcp::model::Meta> {
 #[derive(Clone)]
 pub struct YapMcp {
     source: StateSource,
-    widget: Option<Arc<String>>,
+    widget: Option<Arc<Widget>>,
 }
 
 impl YapMcp {
-    pub fn new(state: YapState, widget: Option<Arc<String>>) -> Self {
+    pub fn new(state: YapState, widget: Option<Arc<Widget>>) -> Self {
         Self {
             source: StateSource::Single(Arc::new(tokio::sync::Mutex::new(state))),
             widget,
@@ -1641,9 +1661,9 @@ impl ServerHandler for YapMcp {
         _context: RequestContext<RoleServer>,
     ) -> Result<ListToolsResult, McpError> {
         let mut tools = Self::tool_router().list_all();
-        if self.widget.is_some() {
+        if let Some(widget) = &self.widget {
             for tool in &mut tools {
-                if let Some(meta) = widget_tool_meta(&tool.name) {
+                if let Some(meta) = widget_tool_meta(&tool.name, &widget.uri) {
                     tool.meta = Some(meta);
                 }
             }
@@ -1660,13 +1680,13 @@ impl ServerHandler for YapMcp {
         _context: RequestContext<RoleServer>,
     ) -> Result<ListResourcesResult, McpError> {
         let mut result = ListResourcesResult::default();
-        if let Some(html) = &self.widget {
-            let mut resource = Resource::new(WIDGET_URI, "yap review card");
+        if let Some(widget) = &self.widget {
+            let mut resource = Resource::new(widget.uri.clone(), "yap review card");
             resource.title = Some("yap review card".to_string());
             resource.description =
                 Some("Interactive flashcard widget: audio, reveal, and grading.".to_string());
             resource.mime_type = Some(WIDGET_MIME.to_string());
-            resource.size = Some(html.len() as u64);
+            resource.size = Some(widget.html.len() as u64);
             resource.meta = Some(widget_resource_meta());
             result.resources.push(resource);
         }
@@ -1678,13 +1698,13 @@ impl ServerHandler for YapMcp {
         request: ReadResourceRequestParams,
         _context: RequestContext<RoleServer>,
     ) -> Result<ReadResourceResult, McpError> {
-        match (&self.widget, request.uri.as_str()) {
-            (Some(html), WIDGET_URI) => {
+        match &self.widget {
+            Some(widget) if widget.uri == request.uri => {
                 let mut result = ReadResourceResult::new(vec![]);
                 result.contents = vec![ResourceContents::TextResourceContents {
-                    uri: WIDGET_URI.to_string(),
+                    uri: widget.uri.clone(),
                     mime_type: Some(WIDGET_MIME.to_string()),
-                    text: html.as_ref().clone(),
+                    text: widget.html.clone(),
                     meta: Some(widget_resource_meta()),
                 }];
                 Ok(result)

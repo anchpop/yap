@@ -284,8 +284,10 @@ status, headers, body = req("POST", f"{BASE}/mcp", headers=mcp_headers, body={
 init = sse_json(body)
 session_id = headers.get("mcp-session-id")
 check("mcp initialize", status == 200 and "serverInfo" in init.get("result", {}), body[:200])
-check("session id issued", bool(session_id), str(session_id))
-mcp_headers["Mcp-Session-Id"] = session_id
+# Stateless streamable HTTP: the server issues no session id, so a deploy
+# that replaces the machine can't strand a client on a stale session. Every
+# request stands alone on its bearer token; there's no Mcp-Session-Id to echo.
+check("no session id issued (stateless)", not session_id, str(session_id))
 
 status, _, body = req("POST", f"{BASE}/mcp", headers=mcp_headers,
                       body={"jsonrpc": "2.0", "method": "notifications/initialized"})
