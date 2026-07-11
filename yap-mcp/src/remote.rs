@@ -179,8 +179,8 @@ pub struct RemoteApp {
     /// Encrypts the Supabase session embedded in the tokens we mint, so the
     /// OAuth client never holds a raw Supabase credential.
     token_cipher: ChaCha20Poly1305,
-    /// The built review widget HTML (None when not built).
-    pub widget: Option<Arc<String>>,
+    /// The built review widget (None when not built).
+    pub widget: Option<Arc<crate::server::Widget>>,
     users: Mutex<HashMap<String, UserSlot>>,
     codes: Mutex<HashMap<String, PendingCode>>,
     pending_auth: Mutex<HashMap<String, PendingAuth>>,
@@ -314,6 +314,15 @@ pub async fn serve(app: Arc<RemoteApp>) -> anyhow::Result<()> {
             {
                 let mut config = StreamableHttpServerConfig::default();
                 config.allowed_hosts = allowed_hosts(&app.config);
+                // Stateless: no server-side session state, so a deploy that
+                // replaces the machine can't strand a client on a session id
+                // the new process never issued (the old failure surfaced by
+                // the Anthropic proxy as an opaque "Invalid content from
+                // server"). Auth is a per-request bearer anyway, so every
+                // request is already self-contained. `json_response` returns
+                // plain application/json instead of SSE framing.
+                config.stateful_mode = false;
+                config.json_response = true;
                 config
             },
         );
