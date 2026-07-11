@@ -19,6 +19,11 @@ export function TranslationCard({ challenge }: { challenge: TranslationChallenge
   const [submitted, setSubmitted] = useState("");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // The server-minted nonce is this challenge's idempotency key: a retried
+  // submit (e.g. the response was lost after the server already graded, or
+  // the widget reloaded and replayed the same tool result) records the
+  // review once and replays the original grade instead of re-running the LLM.
+  const idempotencyToken = challenge.nonce;
 
   const { sentence } = challenge;
 
@@ -35,6 +40,7 @@ export function TranslationCard({ challenge }: { challenge: TranslationChallenge
           card: challenge.card,
           sentence: sentence.text,
           submission,
+          idempotency_token: idempotencyToken,
         },
       });
       if (res.isError) {
@@ -70,7 +76,7 @@ export function TranslationCard({ challenge }: { challenge: TranslationChallenge
     } finally {
       setGrading(false);
     }
-  }, [value, grading, result, challenge, sentence]);
+  }, [value, grading, result, challenge, sentence, idempotencyToken]);
 
   const gradeClass = (index: number): string => {
     const grade = result?.literal_grades[index];

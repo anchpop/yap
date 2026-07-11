@@ -4,6 +4,9 @@
 import type { AudioRequest, Language, Rating } from "../../../yap-frontend-rs/pkg";
 
 interface ChallengeBase {
+  // Server-minted id for this presentation, echoed back as the review's
+  // idempotency token so a retried/re-rendered submit records it once.
+  nonce: string;
   language: Language;
   is_new: boolean;
   card: unknown;

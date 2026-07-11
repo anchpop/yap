@@ -1,5 +1,6 @@
 //! The yap MCP server: state management and tool implementations.
 
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -67,6 +68,36 @@ impl Config {
     }
 }
 
+/// Whether a recorded review event reached the server or is still pending a
+/// retry. Either way the event is recorded in the local working store;
+/// `PendingSync` just means the server copy will catch up on a later call.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SyncStatus {
+    Synced,
+    PendingSync,
+}
+
+/// Result of an idempotency-token lookup.
+enum Replay {
+    /// Seen before for this presentation — replay the cached response.
+    Hit(CallToolResult),
+    /// Seen before for a *different* presentation — reject (one nonce = one
+    /// operation).
+    IdentityConflict,
+    /// Not seen — record normally.
+    Miss,
+}
+
+/// How many recent idempotency tokens to remember. A review session is a
+/// few dozen actions; this is a generous ceiling before the oldest are
+/// dropped wholesale.
+const IDEMPOTENCY_CACHE_MAX: usize = 256;
+
+/// Returned when a nonce is reused for a different card/sentence — the real
+/// widget never does this (each presentation mints its own nonce).
+const IDEMPOTENCY_CONFLICT_MSG: &str = "that idempotency token was already used for a different card — pass the token from the \
+     current challenge, or omit it";
+
 pub struct YapState {
     supabase: SupabaseAuth,
     http: reqwest::Client,
@@ -75,9 +106,23 @@ pub struct YapState {
     store: EventStore<String, String>,
     last_fetched_id: Option<i64>,
     last_fetch: Instant,
+    /// Set when an upload failed, to make the next refresh fetch regardless of
+    /// the throttle: a re-fetch echo-confirms any event whose ack we lost and
+    /// advances uploaded_count past it, so we stop re-sending a committed
+    /// index (which the unique constraint would reject).
+    force_fetch: bool,
     deck: Option<Deck>,
     /// How many of our device's reviews events the server has confirmed received.
     uploaded_count: usize,
+    /// Responses already served for a given idempotency token, so a retried
+    /// review (widget resubmit, or a call whose response was lost in transit
+    /// after the event was recorded) replays the original outcome instead of
+    /// recording a second event. The token is a per-presentation nonce; each
+    /// entry is bound to the presentation's immutable identity (card /
+    /// language / sentence), so a retry — even with an edited answer — replays
+    /// that one review, while a nonce paired with a *different* presentation
+    /// records the real request instead of replaying a stale one.
+    idempotency_cache: HashMap<String, (String, CallToolResult)>,
 }
 
 impl YapState {
@@ -128,8 +173,10 @@ impl YapState {
             store,
             last_fetched_id,
             last_fetch: Instant::now(),
+            force_fetch: false,
             deck: None,
             uploaded_count: 0,
+            idempotency_cache: HashMap::new(),
         };
         // Everything fetched is by definition already on the server.
         state.uploaded_count = state.my_reviews_len();
@@ -169,37 +216,60 @@ impl YapState {
 
     /// Pull down events written by other devices since our last fetch.
     async fn refresh(&mut self) -> anyhow::Result<()> {
-        if self.last_fetch.elapsed() < REFRESH_INTERVAL {
-            return Ok(());
-        }
-        let (new_rows, max_id) = fetch_events(
-            &self.http,
-            &self.supabase,
-            &self.user_id,
-            self.last_fetched_id,
-        )
-        .await?;
-        self.last_fetch = Instant::now();
-        self.last_fetched_id = max_id.or(self.last_fetched_id);
+        if self.force_fetch || self.last_fetch.elapsed() >= REFRESH_INTERVAL {
+            let (new_rows, max_id) = fetch_events(
+                &self.http,
+                &self.supabase,
+                &self.user_id,
+                self.last_fetched_id,
+            )
+            .await?;
+            self.last_fetch = Instant::now();
+            self.force_fetch = false;
+            self.last_fetched_id = max_id.or(self.last_fetched_id);
 
-        // Echoes of our own uploads confirm the server has them (the store
-        // itself dedups the events).
-        for row in &new_rows {
-            if row.device_id == DEVICE_ID && row.stream_id == REVIEWS_STREAM {
-                self.uploaded_count = self
-                    .uploaded_count
-                    .max(row.event.within_device_events_index + 1);
+            // Echoes of our own uploads confirm the server has them (the store
+            // itself dedups the events). This also advances uploaded_count past
+            // any event whose upload ack we lost, so the flush below won't
+            // pointlessly re-send an index the server already has.
+            for row in &new_rows {
+                if row.device_id == DEVICE_ID && row.stream_id == REVIEWS_STREAM {
+                    self.uploaded_count = self
+                        .uploaded_count
+                        .max(row.event.within_device_events_index + 1);
+                }
+            }
+            if insert_rows(&mut self.store, new_rows) > 0 {
+                self.deck = None;
             }
         }
-        if insert_rows(&mut self.store, new_rows) > 0 {
-            self.deck = None;
-        }
+
+        // Retry any locally-recorded reviews the server hasn't confirmed yet,
+        // so a review whose upload failed still reaches Supabase on the user's
+        // next action (even a read-only one) rather than waiting for their
+        // next write.
+        self.flush_pending_uploads().await;
         Ok(())
     }
 
-    /// Append an event to the reviews stream and upload it (plus anything
-    /// still pending from a previously failed upload).
-    async fn append_event(&mut self, content: LanguageEventContent) -> anyhow::Result<()> {
+    /// Record a review event locally and attempt to sync it.
+    ///
+    /// The local event store is the working source of truth (this mirrors the
+    /// app's offline-first model), so recording always succeeds and the
+    /// upload is best-effort: a failure leaves the event pending for the next
+    /// `flush_pending_uploads` to retry rather than surfacing an error. That
+    /// matters because the review widgets let the user retry on error — if
+    /// this returned `Err`, a retry would record a *second* event (a fresh
+    /// per-device index), double-reviewing the card. Returning
+    /// [`SyncStatus`] instead means the widget always sees success and never
+    /// retries; the pending event self-heals on the next call.
+    ///
+    /// Caveat: this store is in-memory (rebuilt from Supabase on start), so a
+    /// pending event is lost if the process exits or the per-user state is
+    /// evicted before a later call flushes it — a rare, low-harm edge (the
+    /// card simply comes due again) that the old error-returning path shared,
+    /// minus the double-record.
+    async fn append_event(&mut self, content: LanguageEventContent) -> SyncStatus {
         let deck_event = DeckEvent::Language(LanguageEvent {
             target_language: self.context.course.target_language,
             native_language: self.context.course.native_language,
@@ -213,15 +283,26 @@ impl YapState {
             self.context.timezone,
         );
         self.deck = None;
+        self.flush_pending_uploads().await
+    }
 
-        // Upload everything not yet confirmed, in order, so the per-device
-        // index sequence on the server never has gaps.
+    /// Upload every locally-recorded event the server hasn't confirmed yet,
+    /// in order so the per-device index sequence never has gaps. Best-effort:
+    /// on failure the events stay pending (uploaded_count isn't advanced) and
+    /// the next call retries them. A committed index that we think is still
+    /// pending (a lost upload ack) would be rejected by the unique constraint
+    /// on re-send, so a failure sets `force_fetch`: the next refresh fetches,
+    /// echo-confirms that index, and advances past it before we'd re-send.
+    async fn flush_pending_uploads(&mut self) -> SyncStatus {
         let pending = self
             .store
             .get_raw(REVIEWS_STREAM.to_string())
             .expect("reviews stream registered in new_store")
             .jsons(&DEVICE_ID.to_string(), self.uploaded_count);
-        upload_events(
+        if pending.is_empty() {
+            return SyncStatus::Synced;
+        }
+        match upload_events(
             &self.http,
             &self.supabase,
             &self.user_id,
@@ -229,9 +310,68 @@ impl YapState {
             DEVICE_ID,
             &pending,
         )
-        .await?;
-        self.uploaded_count += pending.len();
-        Ok(())
+        .await
+        {
+            Ok(()) => {
+                self.uploaded_count += pending.len();
+                SyncStatus::Synced
+            }
+            Err(e) => {
+                log::warn!(
+                    "upload failed, {} review event(s) recorded locally and pending retry: {e:#}",
+                    pending.len()
+                );
+                // Force the next refresh to fetch: if this failure was a lost
+                // ack (the server actually has the event), the echo-confirm
+                // there trims it from pending so we stop hitting the unique
+                // constraint on re-send.
+                self.force_fetch = true;
+                SyncStatus::PendingSync
+            }
+        }
+    }
+
+    /// Look up a prior response for this tool's idempotency token. A nonce
+    /// identifies exactly one presentation, so a hit must also match that
+    /// presentation's identity; a nonce seen with a *different* identity is a
+    /// conflict (a misbehaving client — the real widget always pairs a nonce
+    /// with its own challenge). Tokens are per-account (this state) and
+    /// per-server-lifetime — the retry window we care about is a live widget
+    /// (seconds to minutes), so a token lost to restart or the 256-entry
+    /// bound just misses and records normally.
+    fn replay_idempotent(&self, tool: &str, token: Option<&str>, identity: &str) -> Replay {
+        let Some(token) = token else {
+            return Replay::Miss;
+        };
+        match self.idempotency_cache.get(&idempotency_key(tool, token)) {
+            Some((id, result)) if id == identity => Replay::Hit(result.clone()),
+            Some(_) => Replay::IdentityConflict,
+            None => Replay::Miss,
+        }
+    }
+
+    /// Remember a successful response under its idempotency token and
+    /// presentation identity so a later retry replays it. Errors aren't
+    /// cached — a retry should be free to succeed. Keyed by tool so a token
+    /// can't cross tools.
+    fn remember_idempotent(
+        &mut self,
+        tool: &str,
+        token: Option<&str>,
+        identity: &str,
+        result: &CallToolResult,
+    ) {
+        let Some(token) = token else { return };
+        if result.is_error.unwrap_or(false) {
+            return;
+        }
+        if self.idempotency_cache.len() >= IDEMPOTENCY_CACHE_MAX {
+            self.idempotency_cache.clear();
+        }
+        self.idempotency_cache.insert(
+            idempotency_key(tool, token),
+            (identity.to_string(), result.clone()),
+        );
     }
 
     /// The course's target language, serialized the way tool outputs carry it.
@@ -570,6 +710,20 @@ fn card_kind(card: &CardIndicator<Gram<String>, String>) -> &'static str {
     }
 }
 
+/// A fresh random nonce identifying one card/challenge presentation. The
+/// widget echoes it back as the review's idempotency token, so a retried
+/// submit — including one after the widget iframe reloads and replays the
+/// same tool result — records the review exactly once.
+fn presentation_nonce() -> String {
+    format!("{:032x}", rand::random::<u128>())
+}
+
+/// Namespace an idempotency token by the tool that issued it, so the same
+/// token can never replay another tool's (or payload's) cached response.
+fn idempotency_key(tool: &str, token: &str) -> String {
+    format!("{tool}:{token}")
+}
+
 fn parse_rating(rating: &str) -> Result<Rating, String> {
     match rating {
         "again" => Ok(Rating::Again),
@@ -620,6 +774,12 @@ pub struct LogReviewParams {
     /// How the review went: "again" (forgot), "hard", "good", or "easy".
     /// "remembered" is a simple success when finer grading doesn't apply.
     rating: String,
+    /// Optional idempotency key for one review. Supplied by the review
+    /// widget so that a retried submit (or a call whose response was lost
+    /// after the event was recorded) records the review only once. Omit for
+    /// conversational reviews — a fresh key each call.
+    #[serde(default)]
+    idempotency_token: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
@@ -668,6 +828,11 @@ pub struct GradeTranslationParams {
     sentence: String,
     /// The user's typed translation.
     submission: String,
+    /// Optional idempotency key for one submission, supplied by the review
+    /// widget so a retried submit (or a lost response after the review was
+    /// recorded) grades and records only once — and doesn't re-run the LLM.
+    #[serde(default)]
+    idempotency_token: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
@@ -985,15 +1150,14 @@ impl YapMcp {
         }
 
         let added: Vec<String> = to_add.iter().map(|(_, display)| display.clone()).collect();
+        let mut synced = SyncStatus::Synced;
         if !to_add.is_empty() {
             let sentence_list = deck.current_sentence_list();
             let content = LanguageEventContent::AddCards {
                 cards: to_add.into_iter().map(|(card, _)| card).collect(),
                 sentence_list,
             };
-            if let Err(e) = state.append_event(content).await {
-                return error(format!("failed to save: {e:#}"));
-            }
+            synced = state.append_event(content).await;
         }
 
         let deck = state.deck();
@@ -1001,6 +1165,7 @@ impl YapMcp {
             "added": added,
             "already_in_deck": already_in_deck,
             "total_cards_in_deck": deck.num_cards_added(),
+            "synced": synced == SyncStatus::Synced,
         }))
     }
 
@@ -1107,15 +1272,14 @@ impl YapMcp {
                 }
             }
         };
-        if let Err(e) = state.append_event(content).await {
-            return error(format!("failed to save: {e:#}"));
-        }
+        let synced = state.append_event(content).await;
 
         let remaining = state.deck().locked_count();
         ok_json(json!({
             "unlocked": unlocked,
             "cards_in_lockup": remaining,
             "note": "these cards are back in the due queue and will show up in get_due_cards.",
+            "synced": synced == SyncStatus::Synced,
         }))
     }
 
@@ -1206,6 +1370,7 @@ impl YapMcp {
         let structured = json!({
             "challenge": {
                 "type": "flashcard",
+                "nonce": presentation_nonce(),
                 "language": language,
                 "kind": kind,
                 "is_new": is_new,
@@ -1292,6 +1457,7 @@ impl YapMcp {
         let structured = json!({
             "challenge": {
                 "type": "translation",
+                "nonce": presentation_nonce(),
                 "language": state.target_language_value(),
                 "card": params.card,
                 "is_new": is_new,
@@ -1329,9 +1495,23 @@ impl YapMcp {
             Ok(slot) => slot,
             Err(e) => return error(e),
         };
+        const TOOL: &str = "grade_translation";
+        // The presentation's immutable identity — the mutable submission is
+        // deliberately excluded so an edited retry still replays.
+        let identity = json!([params.card, params.language, params.sentence]).to_string();
         let mut state = slot.lock().await;
+        // Sync first, so a retry after a failed upload drives the pending
+        // flush before we short-circuit on the cached response.
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        // A retry of this presentation (same nonce) replays the first grade —
+        // no second review event, and no second (paid, nondeterministic) LLM
+        // grading — even if the user edited their answer before retrying.
+        match state.replay_idempotent(TOOL, params.idempotency_token.as_deref(), &identity) {
+            Replay::Hit(cached) => return cached,
+            Replay::IdentityConflict => return error(IDEMPOTENCY_CONFLICT_MSG),
+            Replay::Miss => {}
         }
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
@@ -1392,9 +1572,7 @@ impl YapMcp {
         let Some(DeckEvent::Language(event)) = event else {
             return error("could not build the review event for that sentence");
         };
-        if let Err(e) = state.append_event(event.content).await {
-            return error(format!("failed to save the review: {e:#}"));
-        }
+        let synced = state.append_event(event.content).await;
 
         let remaining_due = state
             .deck()
@@ -1405,7 +1583,7 @@ impl YapMcp {
             find_closest_match(&submission, &challenge.native_translations, native_language)
                 .or_else(|| challenge.native_translations.first().cloned());
 
-        ok_json_structured(json!({
+        let result = ok_json_structured(json!({
             "perfect": perfect,
             "correct_translation": correct_translation,
             "encouragement": response.encouragement,
@@ -1431,7 +1609,15 @@ impl YapMcp {
                 .map(|phrase| phrase.to_display_string(target_language))
                 .collect::<Vec<_>>(),
             "remaining_due": remaining_due,
-        }))
+            "synced": synced == SyncStatus::Synced,
+        }));
+        state.remember_idempotent(
+            TOOL,
+            params.idempotency_token.as_deref(),
+            &identity,
+            &result,
+        );
+        result
     }
 
     #[tool(
@@ -1525,9 +1711,22 @@ impl YapMcp {
             Ok(slot) => slot,
             Err(e) => return error(e),
         };
+        const TOOL: &str = "log_review";
+        // The card under review is the presentation's immutable identity; the
+        // mutable rating is excluded so a retry replays the first review.
+        let identity = json!([params.card, params.language]).to_string();
         let mut state = slot.lock().await;
+        // Sync first, so a retry after a failed upload drives the pending
+        // flush before we short-circuit on the cached response.
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        // A retried log of the same presentation (same nonce) replays the
+        // first result instead of recording the card as reviewed twice.
+        match state.replay_idempotent(TOOL, params.idempotency_token.as_deref(), &identity) {
+            Replay::Hit(cached) => return cached,
+            Replay::IdentityConflict => return error(IDEMPOTENCY_CONFLICT_MSG),
+            Replay::Miss => {}
         }
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
@@ -1549,16 +1748,14 @@ impl YapMcp {
             reviewed: card.clone(),
             rating,
         };
-        if let Err(e) = state.append_event(content).await {
-            return error(format!("failed to save review: {e:#}"));
-        }
+        let synced = state.append_event(content).await;
 
         let deck = state.deck();
         let after = deck.find_card_summary(&card);
         let remaining_due = deck
             .due_card_summaries(Utc::now().timestamp_millis() as f64)
             .len();
-        ok_json(json!({
+        let result = ok_json(json!({
             "reviewed": before.card_text(),
             "rating": params.rating,
             "was_due": was_due,
@@ -1569,7 +1766,15 @@ impl YapMcp {
             }),
             "remaining_due": remaining_due,
             "total_reviews": deck.stats().total_reviews,
-        }))
+            "synced": synced == SyncStatus::Synced,
+        }));
+        state.remember_idempotent(
+            TOOL,
+            params.idempotency_token.as_deref(),
+            &identity,
+            &result,
+        );
+        result
     }
 
     #[tool(

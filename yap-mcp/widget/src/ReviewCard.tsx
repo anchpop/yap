@@ -23,6 +23,10 @@ export function ReviewCard({ challenge }: { challenge: FlashcardChallenge }) {
   const [graded, setGraded] = useState<Rating | null>(null);
   const [gradeError, setGradeError] = useState<string | null>(null);
   const [autoplayed, setAutoplayed] = useState(false);
+  // The server-minted nonce is this card's idempotency key: a retried grade
+  // (response lost after the server recorded it, or a widget reload replaying
+  // the same tool result) logs the review only once.
+  const idempotencyToken = challenge.nonce;
 
   const { word, is_new: isNew } = challenge;
   // Listening cards hide the text until revealed, same as in the app.
@@ -42,6 +46,7 @@ export function ReviewCard({ challenge }: { challenge: FlashcardChallenge }) {
             language: challenge.language,
             card: challenge.card,
             rating,
+            idempotency_token: idempotencyToken,
           },
         });
         if (result.isError) {
@@ -67,7 +72,7 @@ export function ReviewCard({ challenge }: { challenge: FlashcardChallenge }) {
         setGrading(false);
       }
     },
-    [challenge, grading, graded, word.display],
+    [challenge, grading, graded, word.display, idempotencyToken],
   );
 
   // Same keyboard map as the app: Space/↓ reveals, ← forgot, → remembered.

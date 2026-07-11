@@ -50,12 +50,9 @@ export function App() {
       )}
       {phase.kind === "challenge" &&
         (phase.challenge.type === "translation" ? (
-          <TranslationCard key={phase.challenge.sentence.text} challenge={phase.challenge} />
+          <TranslationCard key={phase.challenge.nonce} challenge={phase.challenge} />
         ) : (
-          <ReviewCard
-            key={JSON.stringify(phase.challenge.card)}
-            challenge={phase.challenge}
-          />
+          <ReviewCard key={phase.challenge.nonce} challenge={phase.challenge} />
         ))}
       <Toaster />
     </div>
