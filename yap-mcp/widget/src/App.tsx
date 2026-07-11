@@ -4,6 +4,7 @@ import { app, connectOnce } from "./bridge";
 import { prefetchAudio } from "./audio";
 import type { Challenge } from "./types";
 import { ReviewCard } from "./ReviewCard";
+import { TranslationCard } from "./TranslationCard";
 
 type Phase =
   | { kind: "loading" }
@@ -47,9 +48,15 @@ export function App() {
       {phase.kind === "error" && (
         <p className="text-sm text-muted-foreground text-center py-6">{phase.message}</p>
       )}
-      {phase.kind === "challenge" && (
-        <ReviewCard key={JSON.stringify(phase.challenge.card)} challenge={phase.challenge} />
-      )}
+      {phase.kind === "challenge" &&
+        (phase.challenge.type === "translation" ? (
+          <TranslationCard key={phase.challenge.sentence.text} challenge={phase.challenge} />
+        ) : (
+          <ReviewCard
+            key={JSON.stringify(phase.challenge.card)}
+            challenge={phase.challenge}
+          />
+        ))}
       <Toaster />
     </div>
   );

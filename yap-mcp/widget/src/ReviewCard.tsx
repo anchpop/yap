@@ -11,20 +11,20 @@ import {
 import { AudioButton } from "@/components/AudioButton";
 import { TargetLanguageText } from "@/components/TargetLanguageText";
 import { app, resultText } from "./bridge";
-import type { Challenge, Rating } from "./types";
+import type { FlashcardChallenge, Rating } from "./types";
 
 // The same review interaction as the app's Flashcard, driven by tool data
 // instead of the WASM deck: tap (or Space) reveals, then grade. Grades go
 // straight to log_review over the bridge — the user's own finger, no model
 // in between — and the outcome is posted back into the model's context.
-export function ReviewCard({ challenge }: { challenge: Challenge }) {
+export function ReviewCard({ challenge }: { challenge: FlashcardChallenge }) {
   const [revealed, setRevealed] = useState(false);
   const [grading, setGrading] = useState(false);
   const [graded, setGraded] = useState<Rating | null>(null);
   const [gradeError, setGradeError] = useState<string | null>(null);
   const [autoplayed, setAutoplayed] = useState(false);
 
-  const { word, sentence, is_new: isNew } = challenge;
+  const { word, is_new: isNew } = challenge;
   // Listening cards hide the text until revealed, same as in the app.
   const listenFirst = challenge.kind === "listening";
   const leftLabel = isNew ? "Didn't know" : "Forgot";
@@ -105,37 +105,15 @@ export function ReviewCard({ challenge }: { challenge: Challenge }) {
             />
           </div>
 
-          {sentence ? (
-            <>
-              {(!listenFirst || revealed) && (
-                <div className="text-2xl">
-                  <TargetLanguageText language={challenge.language}>
-                    {sentence.text}
-                  </TargetLanguageText>
-                </div>
-              )}
-              {revealed && sentence.translations[0] && (
-                <p className="text-muted-foreground text-lg">{sentence.translations[0]}</p>
-              )}
-              {revealed && sentence.sources.length > 0 && (
-                <p className="text-xs text-muted-foreground font-mono">
-                  {sentence.sources.join(" · ")}
-                </p>
-              )}
-            </>
-          ) : (
-            <>
-              {(!listenFirst || revealed) && (
-                <div className="text-3xl font-semibold">
-                  <TargetLanguageText language={challenge.language}>
-                    {word.display}
-                  </TargetLanguageText>
-                </div>
-              )}
-              {revealed && word.gloss && (
-                <p className="text-muted-foreground text-lg">{word.gloss}</p>
-              )}
-            </>
+          {(!listenFirst || revealed) && (
+            <div className="text-3xl font-semibold">
+              <TargetLanguageText language={challenge.language}>
+                {word.display}
+              </TargetLanguageText>
+            </div>
+          )}
+          {revealed && word.gloss && (
+            <p className="text-muted-foreground text-lg">{word.gloss}</p>
           )}
 
           {!revealed && (

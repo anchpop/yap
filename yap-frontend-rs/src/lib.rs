@@ -1078,6 +1078,42 @@ struct ComprehensibleSentence {
     native_languages: Vec<Spur>,
 }
 
+/// Assemble the challenge-facing view of a corpus sentence: its encoded
+/// grams, unique multiword phrases, and translations. (The name reflects the
+/// struct, not a comprehensibility check — callers pick the sentence.)
+fn comprehensible_sentence_from_spur(
+    language_pack: &LanguagePack,
+    sentence: Spur,
+) -> Option<ComprehensibleSentence> {
+    let sentence_grams = language_pack.encoded_sentences.get(&sentence)?;
+
+    // Collect unique phrases (high and low confidence multiword terms)
+    let unique_target_language_phrases = {
+        let mut unique_phrases = vec![];
+        let mut phrases_set = BTreeSet::new();
+        for phrase in sentence_grams
+            .multiword_terms
+            .iter()
+            .chain(sentence_grams.low_confidence_multiword_terms.iter())
+        {
+            if !phrases_set.contains(phrase) {
+                unique_phrases.push(*phrase);
+                phrases_set.insert(*phrase);
+            }
+        }
+        unique_phrases
+    };
+
+    let native_languages = language_pack.translations.get(&sentence)?.clone();
+
+    Some(ComprehensibleSentence {
+        target_language: sentence,
+        target_language_sentence_grams: sentence_grams.clone(),
+        unique_target_language_phrases,
+        native_languages,
+    })
+}
+
 impl From<Deck> for DeckState {
     fn from(deck: Deck) -> Self {
         DeckState {
@@ -3796,6 +3832,20 @@ impl Deck {
         NextCardsIterator::new(self, allowed_cards, sentence_list, limit)
     }
 
+    /// Pick the least-reviewed comprehensible sentence matching the filter.
+    fn pick_comprehensible_sentence(
+        &self,
+        required_gram: Option<&SpurGram>,
+        comprehensible_grams: &BTreeSet<SpurGram>,
+        sentences_reviewed: &BTreeMap<Spur, u32>,
+        language_pack: &LanguagePack,
+    ) -> Option<Spur> {
+        let mut possible_sentences = language_pack
+            .comprehensible_sentences(required_gram, |gram| comprehensible_grams.contains(gram));
+        possible_sentences.sort_by_key(|sentence| *sentences_reviewed.get(sentence).unwrap_or(&0));
+        possible_sentences.first().copied()
+    }
+
     fn get_comprehensible_sentence_containing(
         &self,
         required_gram: Option<&SpurGram>,
@@ -3803,52 +3853,24 @@ impl Deck {
         sentences_reviewed: &BTreeMap<Spur, u32>,
         language_pack: &LanguagePack,
     ) -> Option<ComprehensibleSentence> {
-        let mut possible_sentences = language_pack
-            .comprehensible_sentences(required_gram, |gram| comprehensible_grams.contains(gram));
+        let sentence = self.pick_comprehensible_sentence(
+            required_gram,
+            comprehensible_grams,
+            sentences_reviewed,
+            language_pack,
+        )?;
+        comprehensible_sentence_from_spur(language_pack, sentence)
+    }
 
-        if !possible_sentences.is_empty() {
-            possible_sentences.sort_by_key(|sentence| {
-                let sentence_review_count = sentences_reviewed.get(sentence).unwrap_or(&0);
-                *sentence_review_count
-            });
-            let target_language_sentence = *possible_sentences.first()?;
-
-            let sentence_grams = language_pack
-                .encoded_sentences
-                .get(&target_language_sentence)?;
-
-            // Collect unique phrases (high and low confidence multiword terms)
-            let unique_target_language_phrases = {
-                let mut unique_phrases = vec![];
-                let mut phrases_set = BTreeSet::new();
-
-                for phrase in sentence_grams
-                    .multiword_terms
-                    .iter()
-                    .chain(sentence_grams.low_confidence_multiword_terms.iter())
-                {
-                    if !phrases_set.contains(phrase) {
-                        unique_phrases.push(*phrase);
-                        phrases_set.insert(*phrase);
-                    }
-                }
-                unique_phrases
-            };
-
-            let native_languages = language_pack
-                .translations
-                .get(&target_language_sentence)?
-                .clone();
-
-            return Some(ComprehensibleSentence {
-                target_language: target_language_sentence,
-                target_language_sentence_grams: sentence_grams.clone(),
-                unique_target_language_phrases,
-                native_languages,
-            });
-        }
-
-        None
+    /// Pick the least-reviewed comprehensible sentence containing `gram`, if
+    /// any exists — the same selection the app's translation challenges use.
+    pub fn pick_translation_sentence(&self, gram: &SpurGram) -> Option<Spur> {
+        self.pick_comprehensible_sentence(
+            Some(gram),
+            self.get_comprehensible_written_grams(false),
+            &self.stats.sentences_reviewed,
+            &self.context.language_pack,
+        )
     }
 
     fn is_listened_gram_comprehensible(
@@ -4510,6 +4532,46 @@ pub fn find_closest_translation(
     find_closest_match(&user_translation, &candidates, language)
 }
 
+/// Grade a translation locally when the submission exactly matches one of
+/// the accepted translations (after normalization): every heteronym counts
+/// as remembered and every phrase as remembered. Returns None when the
+/// submission doesn't exactly match, i.e. when real grading is needed.
+pub fn autograde_perfect_match(
+    user_sentence: &str,
+    native_translations: &[String],
+    literals: &[Literal<String>],
+    phrases: &[Gram<String>],
+    native_language: Language,
+) -> Option<autograde::AutoGradeTranslationResponse> {
+    let normalized_user = normalize_for_grading(user_sentence, native_language);
+    let is_perfect = native_translations
+        .iter()
+        .any(|translation| normalize_for_grading(translation, native_language) == normalized_user);
+    if !is_perfect {
+        return None;
+    }
+
+    // One entry per literal: Some(Remembered) for heteronyms, None for Other types
+    let literal_grades = literals
+        .iter()
+        .map(|lit| {
+            lit.word
+                .heteronym()
+                .is_some()
+                .then_some(autograde::Remembered::Remembered)
+        })
+        .collect();
+
+    Some(autograde::AutoGradeTranslationResponse {
+        literal_grades,
+        phrases_remembered: phrases.to_vec(),
+        phrases_forgot: vec![],
+        encouragement: Some("Perfect! You translated it correctly!".to_string()),
+        explanation: None,
+        autograding_error: None,
+    })
+}
+
 #[allow(clippy::too_many_arguments)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub async fn autograde_translation(
@@ -4527,34 +4589,15 @@ pub async fn autograde_translation(
 ) -> Result<autograde::AutoGradeTranslationResponse, JsValue> {
     let gram_definitions = gram_definitions.0;
     let phrase_definitions = phrase_definitions.0;
-    // Check if the user's translation matches any of the acceptable translations
-    let normalized_user = normalize_for_grading(&user_sentence, course.native_language);
-    let is_perfect = native_translations.iter().any(|translation| {
-        normalize_for_grading(translation, course.native_language) == normalized_user
-    });
-
-    if is_perfect {
-        // Skip server call and return perfect response
-        // One entry per literal: Some(Remembered) for heteronyms, None for Other types
-        let literal_grades = literals
-            .iter()
-            .map(|lit| {
-                if lit.word.heteronym().is_some() {
-                    Some(autograde::Remembered::Remembered)
-                } else {
-                    None
-                }
-            })
-            .collect();
-
-        return Ok(autograde::AutoGradeTranslationResponse {
-            literal_grades,
-            phrases_remembered: phrases,
-            phrases_forgot: vec![],
-            encouragement: Some("Perfect! You translated it correctly!".to_string()),
-            explanation: None,
-            autograding_error: None,
-        });
+    if let Some(response) = autograde_perfect_match(
+        &user_sentence,
+        &native_translations,
+        &literals,
+        &phrases,
+        course.native_language,
+    ) {
+        // Exact match against an accepted translation — skip the server call.
+        return Ok(response);
     }
 
     let request = autograde::AutoGradeTranslationRequest {
@@ -4621,7 +4664,7 @@ fn extract_native_words(definition: &GramDefinition) -> Vec<String> {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn heuristic_grade_translation(
+pub fn heuristic_grade_translation(
     user_sentence: &str,
     literals: &[Literal<String>],
     phrases: &[Gram<String>],

@@ -39,13 +39,22 @@ real course entry is rejected; the server never guesses.
    more cards" offer), via the deck's own `get_release_offer`; reviewing a
    locked card also unlocks it. `get_due_cards` reports `cards_in_lockup`.
 - `get_stats` — streak, XP, review counts, deck size, tier, recent days.
-- `present_card` — renders one card as an interactive MCP Apps widget
-   (the word with audio, reveal, grade buttons); the widget logs the user's
-   own grade via `log_review` and reports the outcome into model context.
-   For sentence-context review the model may pass the exact text of a corpus
-   sentence from `get_sentences`; the server verifies it and supplies the
-   real translation and attribution — the widget then quizzes that sentence
-   instead. Degrades to a polite error when the widget isn't built.
+- `present_card` — renders one gram as an interactive MCP Apps flashcard
+   widget (the word with audio, reveal, grade buttons); the widget logs the
+   user's own grade via `log_review` and reports the outcome into model
+   context. Degrades to a polite error when the widget isn't built.
+- `present_translation` — renders a sentence-translation challenge for a
+   written-gram card, mirroring the app: the user translates a comprehensible
+   corpus sentence containing the word, the widget submits to
+   `grade_translation`, and every word in the sentence gets reviewed. The
+   model may pass the exact text of a corpus sentence from `get_sentences`;
+   omitted, the server picks the app's own least-reviewed comprehensible
+   sentence.
+- `grade_translation` — widget-only (`ui.visibility: ["app"]`): autogrades
+   the user's typed translation (AI backend `/autograde-translation`, with
+   the app's exact-match short-circuit and heuristic fallback), logs the
+   `TranslationChallenge` deck event, and returns per-word grades plus the
+   closest accepted translation.
 - `get_audio` — widget-only (`ui.visibility: ["app"]`): resolves audio the
    same way the app does (human voice-actor recording from the language pack
    first — shared `human_audio` registry — then TTS via the AI backend) and

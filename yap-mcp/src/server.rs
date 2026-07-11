@@ -22,14 +22,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use language_utils::{
-    Course, Gram, Language, SpurGram, dictionary_entry_slug, language_pack::LanguagePack,
+    Course, Gram, Language, SpurGram, autograde, dictionary_entry_slug,
+    language_pack::LanguagePack, text_cleanup::find_closest_match,
 };
 use lasso::Spur;
 use weapon::data_model::{EventStore, EventType};
 use yap_frontend_rs::{
     CardIndicator, CardSummary, Context, Deck, DeckEvent, LanguageEvent, LanguageEventContent,
-    Rating,
+    Rating, TranslateComprehensibleSentence, autograde_perfect_match,
     dictionary::{GramDictionaryDefinition, GramDictionaryEntry},
+    heuristic_grade_translation,
 };
 
 use crate::deck::{PackCache, build_deck, detect_course, insert_rows, new_store};
@@ -282,6 +284,68 @@ impl YapState {
         })
     }
 
+    /// Resolve a written-gram card plus an optional explicit sentence into
+    /// the full translation-challenge payload. Explicit sentences are
+    /// verified against the corpus (a model- or widget-supplied sentence is
+    /// only accepted verbatim); omitted ones use the app's own selection.
+    fn translation_challenge_payload(
+        &mut self,
+        card: &CardIndicator<Gram<String>, String>,
+        sentence: Option<&str>,
+    ) -> Result<(Spur, TranslateComprehensibleSentence), String> {
+        let CardIndicator::WrittenGram { gram } = card else {
+            return Err(
+                "translation challenges quiz written gram cards — present listening and \
+                 pronunciation cards with present_card instead"
+                    .to_string(),
+            );
+        };
+        let display = gram.to_display_string(self.context.course.target_language);
+        let Some(interned) = self.pack().course_gram(gram) else {
+            return Err("that card's gram isn't a dictionary entry in this course".to_string());
+        };
+        let spur = match sentence {
+            Some(text) => {
+                let text = text.trim();
+                let pack = self.pack();
+                let Some(spur) = pack.string_rodeo.get(text) else {
+                    return Err(
+                        "that sentence isn't in yap's corpus — pass one exactly as returned by \
+                         get_sentences, or omit it to let the server pick"
+                            .to_string(),
+                    );
+                };
+                let contains = pack
+                    .sentences_containing_gram_index
+                    .get(&interned)
+                    .is_some_and(|sentences| sentences.contains(&spur));
+                if !contains {
+                    return Err(format!(
+                        "that sentence doesn't contain «{display}» — pick one from get_sentences \
+                         for this word, or omit it"
+                    ));
+                }
+                spur
+            }
+            None => match self.deck().pick_translation_sentence(&interned) {
+                Some(spur) => spur,
+                None => {
+                    return Err(format!(
+                        "no comprehensible sentence contains «{display}» yet — quiz it with \
+                         present_card instead"
+                    ));
+                }
+            },
+        };
+        match self
+            .deck()
+            .translation_challenge_for_sentence(interned, spur)
+        {
+            Some(challenge) => Ok((spur, challenge)),
+            None => Err("could not build a translation challenge for that sentence".to_string()),
+        }
+    }
+
     /// Human-readable provenance for a sentence.
     fn sentence_sources(&self, sentence: &lasso::Spur) -> Vec<String> {
         let pack = self.pack();
@@ -498,6 +562,30 @@ async fn fetch_tts_native(
         .map_err(|e| format!("base64 decode error: {e}"))
 }
 
+/// The native transport for translation autograding: same backend, same
+/// route as the app's wasm fetch. Errors here fall back to heuristic
+/// grading, mirroring the app.
+async fn fetch_autograde_native(
+    http: &reqwest::Client,
+    request: &autograde::AutoGradeTranslationRequest,
+) -> Result<autograde::AutoGradeTranslationResponse, String> {
+    let url = format!("{}/autograde-translation", yap_frontend_rs::ai_server_url());
+    let response = http
+        .post(url)
+        .header("Authorization", "Bearer anonymous")
+        .json(request)
+        .send()
+        .await
+        .map_err(|e| format!("request error: {e}"))?;
+    if !response.status().is_success() {
+        return Err(format!("HTTP error: {}", response.status()));
+    }
+    response
+        .json::<autograde::AutoGradeTranslationResponse>()
+        .await
+        .map_err(|e| format!("response error: {e}"))
+}
+
 fn audio_result(audio: CachedAudio) -> CallToolResult {
     use base64::Engine as _;
     let mime_type = yap_frontend_rs::audio_mime_type(&audio.bytes);
@@ -607,14 +695,35 @@ pub struct PresentCardParams {
     language: String,
     /// The card object exactly as returned by get_due_cards or unlock_cards.
     card: serde_json::Value,
+}
+
+#[derive(Serialize, Deserialize, JsonSchema)]
+pub struct PresentTranslationParams {
+    /// The target language of the card, e.g. "French".
+    language: String,
+    /// The written-gram card being reviewed, exactly as returned by
+    /// get_due_cards or unlock_cards.
+    card: serde_json::Value,
     /// Optional: the exact text of a corpus sentence containing this card's
-    /// gram, chosen from get_sentences. Usually omit it — the widget then
-    /// quizzes just the word, which is the normal way to present a card;
-    /// passing a sentence makes the widget quiz that whole sentence instead.
-    /// Sentences the model writes itself are rejected — the sentence, its
-    /// translation, and its attribution all come from yap's corpus.
+    /// gram, chosen from get_sentences — prefer comprehensible_sentences,
+    /// since the grade reviews every word in the sentence, not just this
+    /// card's. Omit to let the server pick the least-reviewed comprehensible
+    /// sentence, the same selection the yap app uses. Sentences the model
+    /// writes itself are rejected.
     #[serde(default)]
     sentence: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, JsonSchema)]
+pub struct GradeTranslationParams {
+    /// The target language of the challenge, e.g. "French".
+    language: String,
+    /// The card object exactly as given in the widget data.
+    card: serde_json::Value,
+    /// The challenge sentence exactly as given in the widget data.
+    sentence: String,
+    /// The user's typed translation.
+    submission: String,
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
@@ -738,6 +847,16 @@ fn widget_tool_meta(tool_name: &str, widget_uri: &str) -> Option<rmcp::model::Me
             "openai/outputTemplate": widget_uri,
             "openai/toolInvocation/invoking": "Dealing a card…",
             "openai/toolInvocation/invoked": "Card ready",
+        }))),
+        "present_translation" => Some(meta_from(json!({
+            "ui": { "resourceUri": widget_uri },
+            "openai/outputTemplate": widget_uri,
+            "openai/toolInvocation/invoking": "Dealing a sentence…",
+            "openai/toolInvocation/invoked": "Challenge ready",
+        }))),
+        "grade_translation" => Some(meta_from(json!({
+            "ui": { "visibility": ["app"] },
+            "openai/widgetAccessible": true,
         }))),
         "get_audio" => Some(meta_from(json!({
             "ui": { "visibility": ["app"] },
@@ -1058,7 +1177,7 @@ impl YapMcp {
 
     #[tool(
         title = "Present a card",
-        description = "Present one flashcard to the user as an interactive widget: it shows the word being quizzed, plays audio (a human recording when the course has one), reveals the answer, and records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. Present just the one gram: omit the sentence parameter and the widget quizzes the word alone. Only pass a sentence (the exact text of one from get_sentences) when the user asks to review in sentence context — the widget then quizzes that whole sentence; the server verifies it against the corpus and supplies the real translation.",
+        description = "Present one flashcard to the user as an interactive widget: it quizzes the single gram (word), plays audio (a human recording when the course has one), reveals the answer, and records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. For a written card the user has seen before, prefer present_translation instead, like the yap app does.",
         annotations(
             title = "Present a card",
             read_only_hint = true,
@@ -1129,55 +1248,10 @@ impl YapMcp {
                 .unwrap_or_default()
         };
 
-        // No sentence means the widget quizzes the bare word. When one is
-        // passed, it, its translation, and its attribution all come from
-        // the corpus — a model-chosen sentence is only accepted verbatim.
-        let sentence = if let Some(text) = &params.sentence {
-            let text = text.trim();
-            let pack = state.pack();
-            let Some(spur) = pack.string_rodeo.get(text) else {
-                return error(
-                    "that sentence isn't in yap's corpus — pass one exactly as returned by get_sentences, or omit it to quiz the word alone",
-                );
-            };
-            let contains = pack
-                .sentences_containing_gram_index
-                .get(&interned)
-                .is_some_and(|sentences| sentences.contains(&spur));
-            if !contains {
-                return error(format!(
-                    "that sentence doesn't contain «{display}» — pick one from get_sentences for this word, or omit it"
-                ));
-            }
-            let translations: Vec<String> = pack
-                .translations
-                .get(&spur)
-                .map(|ts| {
-                    ts.iter()
-                        .map(|t| pack.string_rodeo.resolve(t).to_string())
-                        .collect()
-                })
-                .unwrap_or_default();
-            Some(json!({
-                "text": text,
-                "translations": translations,
-                "sources": state.sentence_sources(&spur),
-            }))
-        } else {
-            None
-        };
-
-        // Mirror the app's provider choice: sentences use ElevenLabs, single
-        // words Google. Human recordings take precedence regardless.
-        let (audio_text, provider) = match &sentence {
-            Some(sentence) => (
-                sentence["text"].as_str().unwrap_or(&display).to_string(),
-                language_utils::TtsProvider::ElevenLabs,
-            ),
-            None => (display.clone(), language_utils::TtsProvider::Google),
-        };
+        // Mirror the app's provider choice for single words: Google TTS.
+        // Human recordings take precedence regardless.
         let audio_request = language_utils::TtsRequest {
-            text: audio_text,
+            text: display.clone(),
             language: target_language,
             is_ssml: false,
             instructions: None,
@@ -1187,15 +1261,16 @@ impl YapMcp {
         let language = state.target_language_value();
         let structured = json!({
             "challenge": {
+                "type": "flashcard",
                 "language": language,
                 "kind": kind,
                 "is_new": is_new,
                 "card": params.card,
                 "word": { "display": display, "gloss": gloss },
-                "sentence": sentence,
                 "audio": {
                     "request": serde_json::to_value(&audio_request).expect("request serializes"),
-                    "provider": serde_json::to_value(&provider).expect("provider serializes"),
+                    "provider": serde_json::to_value(&language_utils::TtsProvider::Google)
+                        .expect("provider serializes"),
                 },
             },
         });
@@ -1204,6 +1279,243 @@ impl YapMcp {
         ))]);
         result.structured_content = Some(structured);
         result
+    }
+
+    #[tool(
+        title = "Present a translation challenge",
+        description = "Present a sentence-translation challenge for a written-gram card, as an interactive widget: the user reads a corpus sentence containing the word, types a translation, and the server autogrades it and logs the review — every word in the sentence gets reviewed, exactly like translation challenges in the yap app. Prefer this over present_card for written cards the user has seen before (not new). After presenting, do NOT call log_review or grade_translation yourself; the outcome is reported back to you. Optionally pass the exact text of a sentence from get_sentences (prefer comprehensible_sentences — every word in it gets reviewed) to control which sentence is used; omit it to let the server pick the way the app does.",
+        annotations(
+            title = "Present a translation challenge",
+            read_only_hint = true,
+            open_world_hint = false
+        )
+    )]
+    async fn present_translation(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<PresentTranslationParams>,
+    ) -> CallToolResult {
+        if self.widget.is_none() {
+            return error(
+                "the interactive review widget isn't available on this server build — quiz the user in conversation instead (get_due_cards + get_sentences + log_review)",
+            );
+        }
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
+        if let Err(e) = state.refresh().await {
+            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        if let Err(e) = state.check_language(&params.language) {
+            return error(e);
+        }
+        let card = match state.parse_card(&params.card) {
+            Ok(card) => card,
+            Err(e) => return error(e),
+        };
+        let is_new = {
+            let Some(summary) = state.deck().find_card_summary(&card) else {
+                return error(
+                    "that card isn't in the user's deck — pass a card exactly as returned by get_due_cards",
+                );
+            };
+            summary.state() == "New"
+        };
+        let (spur, challenge) =
+            match state.translation_challenge_payload(&card, params.sentence.as_deref()) {
+                Ok(payload) => payload,
+                Err(e) => return error(e),
+            };
+
+        let target_language = state.context.course.target_language;
+        let display = challenge
+            .primary_expression
+            .to_display_string(target_language);
+        let literals: Vec<serde_json::Value> = challenge
+            .target_language_literals
+            .iter()
+            .map(|literal| {
+                json!({
+                    "text": literal.word.text,
+                    "whitespace": literal.whitespace,
+                    "gradable": literal.word.heteronym().is_some(),
+                })
+            })
+            .collect();
+
+        let structured = json!({
+            "challenge": {
+                "type": "translation",
+                "language": state.target_language_value(),
+                "card": params.card,
+                "is_new": is_new,
+                "sentence": {
+                    "text": challenge.target_language,
+                    "literals": literals,
+                    "sources": state.sentence_sources(&spur),
+                },
+                "audio": serde_json::to_value(&challenge.audio).expect("audio serializes"),
+            },
+        });
+        let mut result = CallToolResult::success(vec![ContentBlock::text(format!(
+            "Presented a translation challenge for «{display}»: the user is translating «{}». The widget autogrades the submission and logs the review itself — do not call log_review or grade_translation for it; the outcome will be reported back here.",
+            challenge.target_language
+        ))]);
+        result.structured_content = Some(structured);
+        result
+    }
+
+    #[tool(
+        title = "Grade a translation",
+        description = "Autograde the user's typed translation of a presented challenge sentence and log the review — every word in the sentence gets reviewed. Called by the review widget when the user submits; never call it directly, since only the user's own typed submission should be graded.",
+        annotations(
+            title = "Grade a translation",
+            read_only_hint = false,
+            open_world_hint = false
+        )
+    )]
+    async fn grade_translation(
+        &self,
+        ctx: RequestContext<RoleServer>,
+        Parameters(params): Parameters<GradeTranslationParams>,
+    ) -> CallToolResult {
+        let slot = match self.state_slot(&ctx).await {
+            Ok(slot) => slot,
+            Err(e) => return error(e),
+        };
+        let mut state = slot.lock().await;
+        if let Err(e) = state.refresh().await {
+            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        }
+        if let Err(e) = state.check_language(&params.language) {
+            return error(e);
+        }
+        let card = match state.parse_card(&params.card) {
+            Ok(card) => card,
+            Err(e) => return error(e),
+        };
+        let submission = params.submission.trim().to_string();
+        if submission.is_empty() {
+            return error("the submission is empty — the user needs to type a translation first");
+        }
+        let (_, challenge) =
+            match state.translation_challenge_payload(&card, Some(&params.sentence)) {
+                Ok(payload) => payload,
+                Err(e) => return error(e),
+            };
+
+        let course = state.context.course;
+        let native_language = course.native_language;
+        let response = match autograde_perfect_match(
+            &submission,
+            &challenge.native_translations,
+            &challenge.target_language_literals,
+            &challenge.unique_target_language_phrases,
+            native_language,
+        ) {
+            Some(response) => response,
+            None => {
+                let request = autograde::AutoGradeTranslationRequest {
+                    course,
+                    challenge_sentence: challenge.target_language.clone(),
+                    user_sentence: submission.clone(),
+                    literals: challenge.target_language_literals.clone(),
+                    phrases: challenge.unique_target_language_phrases.clone(),
+                    primary_expression: challenge.primary_expression.clone(),
+                };
+                let http = state.http.clone();
+                match fetch_autograde_native(&http, &request).await {
+                    Ok(response) => response,
+                    Err(e) => {
+                        log::warn!("LLM autograde failed, using heuristic fallback: {e}");
+                        heuristic_grade_translation(
+                            &submission,
+                            &challenge.target_language_literals,
+                            &challenge.unique_target_language_phrases,
+                            &challenge.gram_definitions_for_lookup,
+                            &challenge.literal_gram_indices,
+                            &challenge.phrase_definitions,
+                            native_language,
+                            e,
+                        )
+                    }
+                }
+            }
+        };
+
+        // Perfect requires every heteronym affirmatively graded Remembered,
+        // no phrase forgot, and a real (non-fallback) grading — the same
+        // promotion rule as the app.
+        let perfect = response.autograding_error.is_none()
+            && response.phrases_forgot.is_empty()
+            && challenge
+                .target_language_literals
+                .iter()
+                .zip(response.literal_grades.iter())
+                .all(|(literal, grade)| {
+                    literal.word.heteronym().is_none()
+                        || *grade == Some(autograde::Remembered::Remembered)
+                });
+
+        let event = if perfect {
+            state
+                .deck()
+                .translate_sentence_perfect(vec![], challenge.target_language.clone())
+        } else {
+            state.deck().translate_sentence_wrong(
+                challenge.target_language.clone(),
+                submission.clone(),
+                autograde::LiteralGrades(response.literal_grades.clone()),
+                vec![],
+                response.phrases_remembered.clone(),
+                response.phrases_forgot.clone(),
+            )
+        };
+        let Some(DeckEvent::Language(event)) = event else {
+            return error("could not build the review event for that sentence");
+        };
+        if let Err(e) = state.append_event(event.content).await {
+            return error(format!("failed to save the review: {e:#}"));
+        }
+
+        let remaining_due = state
+            .deck()
+            .due_card_summaries(Utc::now().timestamp_millis() as f64)
+            .len();
+        let target_language = course.target_language;
+        let correct_translation =
+            find_closest_match(&submission, &challenge.native_translations, native_language)
+                .or_else(|| challenge.native_translations.first().cloned());
+
+        ok_json_structured(json!({
+            "perfect": perfect,
+            "correct_translation": correct_translation,
+            "encouragement": response.encouragement,
+            "explanation": response.explanation,
+            "autograding_error": response.autograding_error,
+            "literal_grades": response
+                .literal_grades
+                .iter()
+                .map(|grade| match grade {
+                    Some(autograde::Remembered::Remembered) => json!("remembered"),
+                    Some(autograde::Remembered::Forgot) => json!("forgot"),
+                    None => json!(null),
+                })
+                .collect::<Vec<_>>(),
+            "phrases_remembered": response
+                .phrases_remembered
+                .iter()
+                .map(|phrase| phrase.to_display_string(target_language))
+                .collect::<Vec<_>>(),
+            "phrases_forgot": response
+                .phrases_forgot
+                .iter()
+                .map(|phrase| phrase.to_display_string(target_language))
+                .collect::<Vec<_>>(),
+            "remaining_due": remaining_due,
+        }))
     }
 
     #[tool(
@@ -1738,12 +2050,14 @@ impl ServerHandler for YapMcp {
              yap.town/d/ — use them to look up and cite entries; use search_dictionary when \
              you need exact grams for the deck tools.\n\
              \n\
-             When present_card is available, prefer it for quizzing: it renders the card as \
-             an interactive widget with audio and records the user's own grade — never call \
-             log_review for a card you presented; its outcome is reported back to you. \
-             Present one gram at a time: omit the sentence parameter so the widget quizzes \
-             just the word. Only pass a sentence (the exact text of one from get_sentences) \
-             when the user asks to review in sentence context."
+             When the interactive widgets are available, prefer them for quizzing, and pick \
+             the one the yap app would use: present_translation for a written card the user \
+             has seen before (the user translates a corpus sentence containing the word; the \
+             server autogrades and logs it), and present_card for new cards, listening \
+             cards, and words present_translation says have no comprehensible sentence yet \
+             (a single-gram flashcard the user grades themselves). Never call log_review or \
+             grade_translation for a card you presented — the widget logs the review and \
+             the outcome is reported back to you."
                 .to_string(),
         );
         info

@@ -454,27 +454,45 @@ impl ReviewInfo {
         deck: &Deck,
         gram: SpurGram,
     ) -> Option<Challenge<Gram<String>>> {
-        let language_pack: &Arc<LanguagePack> = &deck.context.language_pack;
+        let sentence = deck.pick_translation_sentence(&gram)?;
+        Some(Challenge::TranslateComprehensibleSentence(
+            deck.translation_challenge_for_sentence(gram, sentence)?,
+        ))
+    }
+}
+
+impl Deck {
+    /// Build the translation-challenge payload for a specific corpus
+    /// sentence containing `gram`. Callers pick the sentence (e.g. via
+    /// `pick_translation_sentence`); everything else derives from the
+    /// language pack. Returns None when the sentence doesn't actually
+    /// contain the gram — the gram is the challenge's primary expression,
+    /// so an unrelated sentence would grade the wrong word.
+    pub fn translation_challenge_for_sentence(
+        &self,
+        gram: SpurGram,
+        sentence: Spur,
+    ) -> Option<TranslateComprehensibleSentence> {
+        let language_pack: &Arc<LanguagePack> = &self.context.language_pack;
+        if !language_pack
+            .sentences_containing_gram_index
+            .get(&gram)
+            .is_some_and(|sentences| sentences.contains(&sentence))
+        {
+            return None;
+        }
         let ComprehensibleSentence {
             target_language,
             target_language_sentence_grams,
             unique_target_language_phrases,
             native_languages,
-        } = {
-            let comprehensible_grams = deck.get_comprehensible_written_grams(false);
-            deck.get_comprehensible_sentence_containing(
-                Some(&gram),
-                comprehensible_grams,
-                &deck.stats.sentences_reviewed,
-                language_pack,
-            )?
-        };
+        } = crate::comprehensible_sentence_from_spur(language_pack, sentence)?;
 
         // Convert sentence grams to literals, preserving gram group mapping
         let sentence_grams_with_literals = target_language_sentence_grams.to_literals(
             &language_pack.string_rodeo,
             &language_pack.gram_rodeo,
-            deck.context.course.target_language,
+            self.context.course.target_language,
         );
 
         let mut target_language_literals = Vec::new();
@@ -535,67 +553,67 @@ impl ReviewInfo {
                 })
                 .collect();
 
-        let second_chance = deck
+        let second_chance = self
             .stats
             .wrong_sentences
             .iter()
             .any(|(s, t)| *s == target_language && *t == SentenceChallengeType::Translation);
 
-        Some(Challenge::TranslateComprehensibleSentence(
-            TranslateComprehensibleSentence {
-                target_language: language_pack
-                    .string_rodeo
-                    .resolve(&target_language)
-                    .to_string(),
-                target_language_literals,
-                literal_gram_indices,
-                gram_definitions_for_lookup,
-                gram_breakdowns_for_lookup,
-                unique_target_language_phrases: unique_target_language_phrases
-                    .iter()
-                    .map(|p| {
-                        language_pack
-                            .gram_rodeo
-                            .resolve(p)
-                            .resolve(&language_pack.string_rodeo)
-                    })
-                    .collect(),
-                phrase_definitions: unique_target_language_phrases
-                    .iter()
-                    .map(|p| language_pack.gram_definitions.get(p).cloned())
-                    .collect(),
-                phrase_breakdowns: unique_target_language_phrases
-                    .iter()
-                    .map(|p| language_pack.compute_breakdown(*p))
-                    .collect(),
-                native_translations: native_languages
-                    .iter()
-                    .map(|n| language_pack.string_rodeo.resolve(n).to_string())
-                    .collect(),
-                audio: AudioRequest {
-                    request: TtsRequest {
-                        text: language_pack
-                            .string_rodeo
-                            .resolve(&target_language)
-                            .to_string(),
-                        language: deck.context.course.target_language,
-                        is_ssml: false,
-                        instructions: None,
-                        speed: 1.0,
-                    },
-                    provider: TtsProvider::ElevenLabs,
+        Some(TranslateComprehensibleSentence {
+            target_language: language_pack
+                .string_rodeo
+                .resolve(&target_language)
+                .to_string(),
+            target_language_literals,
+            literal_gram_indices,
+            gram_definitions_for_lookup,
+            gram_breakdowns_for_lookup,
+            unique_target_language_phrases: unique_target_language_phrases
+                .iter()
+                .map(|p| {
+                    language_pack
+                        .gram_rodeo
+                        .resolve(p)
+                        .resolve(&language_pack.string_rodeo)
+                })
+                .collect(),
+            phrase_definitions: unique_target_language_phrases
+                .iter()
+                .map(|p| language_pack.gram_definitions.get(p).cloned())
+                .collect(),
+            phrase_breakdowns: unique_target_language_phrases
+                .iter()
+                .map(|p| language_pack.compute_breakdown(*p))
+                .collect(),
+            native_translations: native_languages
+                .iter()
+                .map(|n| language_pack.string_rodeo.resolve(n).to_string())
+                .collect(),
+            audio: AudioRequest {
+                request: TtsRequest {
+                    text: language_pack
+                        .string_rodeo
+                        .resolve(&target_language)
+                        .to_string(),
+                    language: self.context.course.target_language,
+                    is_ssml: false,
+                    instructions: None,
+                    speed: 1.0,
                 },
-                movie_titles,
-                proper_noun_definitions,
-                primary_expression: language_pack
-                    .gram_rodeo
-                    .resolve(&gram)
-                    .resolve(&language_pack.string_rodeo),
-                second_chance,
+                provider: TtsProvider::ElevenLabs,
             },
-        ))
+            movie_titles,
+            proper_noun_definitions,
+            primary_expression: language_pack
+                .gram_rodeo
+                .resolve(&gram)
+                .resolve(&language_pack.string_rodeo),
+            second_chance,
+        })
     }
+}
 
+impl ReviewInfo {
     pub fn written_challenge(
         &self,
         deck: &Deck,
