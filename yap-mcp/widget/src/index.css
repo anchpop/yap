@@ -2,6 +2,13 @@
    the widget is unmistakably yap. Host blending overrides live below. */
 @import "../../../yap-frontend/src/index.css";
 
+/* Tailwind v4 auto-scans only this Vite root (widget/) for class names, so
+   utilities used *only* inside the reused yap-frontend components (Card's
+   bg-card, Button's bg-primary/bg-destructive, shadows, rounded-xl…) would
+   never be generated — the card renders as a bare outline and the grade
+   buttons lose their fill. Point Tailwind at the reused component tree too. */
+@source "../../../yap-frontend/src/components";
+
 /* MCP Apps hosts render the widget inline in the conversation; a transparent
    body lets it sit on the host's surface (Claude's transparent-theming
    guidance) while cards/buttons keep yap's glassmorphism. */
