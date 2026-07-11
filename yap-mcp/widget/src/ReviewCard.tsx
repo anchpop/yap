@@ -125,11 +125,13 @@ export function ReviewCard({ challenge }: { challenge: Challenge }) {
             </>
           ) : (
             <>
-              <div className="text-3xl font-semibold">
-                <TargetLanguageText language={challenge.language}>
-                  {word.display}
-                </TargetLanguageText>
-              </div>
+              {(!listenFirst || revealed) && (
+                <div className="text-3xl font-semibold">
+                  <TargetLanguageText language={challenge.language}>
+                    {word.display}
+                  </TargetLanguageText>
+                </div>
+              )}
               {revealed && word.gloss && (
                 <p className="text-muted-foreground text-lg">{word.gloss}</p>
               )}

@@ -608,10 +608,11 @@ pub struct PresentCardParams {
     /// The card object exactly as returned by get_due_cards or unlock_cards.
     card: serde_json::Value,
     /// Optional: the exact text of a corpus sentence containing this card's
-    /// gram, chosen from get_sentences. Omit to let the server pick a
-    /// comprehensible one. Sentences the model writes itself are rejected —
-    /// the sentence, its translation, and its attribution all come from
-    /// yap's corpus.
+    /// gram, chosen from get_sentences. Usually omit it — the widget then
+    /// quizzes just the word, which is the normal way to present a card;
+    /// passing a sentence makes the widget quiz that whole sentence instead.
+    /// Sentences the model writes itself are rejected — the sentence, its
+    /// translation, and its attribution all come from yap's corpus.
     #[serde(default)]
     sentence: Option<String>,
 }
@@ -1057,7 +1058,7 @@ impl YapMcp {
 
     #[tool(
         title = "Present a card",
-        description = "Present one flashcard to the user as an interactive widget: it shows the sentence or word, plays audio (a human recording when the course has one), reveals the answer, and records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. Optionally pass the exact text of a sentence from get_sentences to control which sentence is used; the server verifies it against the corpus and supplies the real translation.",
+        description = "Present one flashcard to the user as an interactive widget: it shows the word being quizzed, plays audio (a human recording when the course has one), reveals the answer, and records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. Present just the one gram: omit the sentence parameter and the widget quizzes the word alone. Only pass a sentence (the exact text of one from get_sentences) when the user asks to review in sentence context — the widget then quizzes that whole sentence; the server verifies it against the corpus and supplies the real translation.",
         annotations(
             title = "Present a card",
             read_only_hint = true,
@@ -1128,14 +1129,15 @@ impl YapMcp {
                 .unwrap_or_default()
         };
 
-        // The sentence, its translation, and its attribution all come from
+        // No sentence means the widget quizzes the bare word. When one is
+        // passed, it, its translation, and its attribution all come from
         // the corpus — a model-chosen sentence is only accepted verbatim.
         let sentence = if let Some(text) = &params.sentence {
             let text = text.trim();
             let pack = state.pack();
             let Some(spur) = pack.string_rodeo.get(text) else {
                 return error(
-                    "that sentence isn't in yap's corpus — pass one exactly as returned by get_sentences, or omit it to let the server pick",
+                    "that sentence isn't in yap's corpus — pass one exactly as returned by get_sentences, or omit it to quiz the word alone",
                 );
             };
             let contains = pack
@@ -1162,12 +1164,7 @@ impl YapMcp {
                 "sources": state.sentence_sources(&spur),
             }))
         } else {
-            let sampled = state.sample_sentences(interned, 1);
-            sampled
-                .comprehensible
-                .first()
-                .or(sampled.other.first())
-                .cloned()
+            None
         };
 
         // Mirror the app's provider choice: sentences use ElevenLabs, single
@@ -1743,9 +1740,10 @@ impl ServerHandler for YapMcp {
              \n\
              When present_card is available, prefer it for quizzing: it renders the card as \
              an interactive widget with audio and records the user's own grade — never call \
-             log_review for a card you presented; its outcome is reported back to you. You \
-             may pick the quiz sentence yourself: pass the exact text of any sentence from \
-             get_sentences."
+             log_review for a card you presented; its outcome is reported back to you. \
+             Present one gram at a time: omit the sentence parameter so the widget quizzes \
+             just the word. Only pass a sentence (the exact text of one from get_sentences) \
+             when the user asks to review in sentence context."
                 .to_string(),
         );
         info

@@ -40,11 +40,12 @@ real course entry is rejected; the server never guesses.
    locked card also unlocks it. `get_due_cards` reports `cards_in_lockup`.
 - `get_stats` — streak, XP, review counts, deck size, tier, recent days.
 - `present_card` — renders one card as an interactive MCP Apps widget
-   (sentence with audio, reveal, grade buttons); the widget logs the user's
+   (the word with audio, reveal, grade buttons); the widget logs the user's
    own grade via `log_review` and reports the outcome into model context.
-   The model may pass the exact text of any corpus sentence from
-   `get_sentences`; the server verifies it and supplies the real translation
-   and attribution. Degrades to a polite error when the widget isn't built.
+   For sentence-context review the model may pass the exact text of a corpus
+   sentence from `get_sentences`; the server verifies it and supplies the
+   real translation and attribution — the widget then quizzes that sentence
+   instead. Degrades to a polite error when the widget isn't built.
 - `get_audio` — widget-only (`ui.visibility: ["app"]`): resolves audio the
    same way the app does (human voice-actor recording from the language pack
    first — shared `human_audio` registry — then TTS via the AI backend) and
