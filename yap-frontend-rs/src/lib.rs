@@ -18,7 +18,9 @@ mod supabase;
 mod tiers;
 mod utils;
 
-pub use audio::{FetchedAudio, VoiceActorInfo, audio_mime_type, human_audio_applies, tts_endpoint};
+pub use audio::{
+    FetchedAudio, VoiceActorInfo, audio_mime_type, fetch_tts, human_audio_applies, tts_endpoint,
+};
 pub use deck_event::*;
 pub use human_audio::{lookup as lookup_human_audio, register as register_human_audio};
 pub use utils::ai_server_url;
@@ -4586,7 +4588,7 @@ pub async fn autograde_translation(
     literal_gram_indices: Vec<usize>,
     phrase_definitions: autograde::GramDefinitions,
     primary_expression: Gram<String>,
-) -> Result<autograde::AutoGradeTranslationResponse, JsValue> {
+) -> autograde::AutoGradeTranslationResponse {
     let gram_definitions = gram_definitions.0;
     let phrase_definitions = phrase_definitions.0;
     if let Some(response) = autograde_perfect_match(
@@ -4597,7 +4599,7 @@ pub async fn autograde_translation(
         course.native_language,
     ) {
         // Exact match against an accepted translation — skip the server call.
-        return Ok(response);
+        return response;
     }
 
     let request = autograde::AutoGradeTranslationRequest {
@@ -4633,11 +4635,11 @@ pub async fn autograde_translation(
     match llm_result {
         Ok(response) => {
             log::info!("Autograde response: {response:#?}");
-            Ok(response)
+            response
         }
         Err(error_msg) => {
             log::warn!("LLM autograde failed, using heuristic fallback: {error_msg}");
-            Ok(heuristic_grade_translation(
+            heuristic_grade_translation(
                 &user_sentence,
                 &literals,
                 &phrases,
@@ -4646,9 +4648,29 @@ pub async fn autograde_translation(
                 &phrase_definitions,
                 course.native_language,
                 error_msg,
-            ))
+            )
         }
     }
+}
+
+/// Whether an autograde response should count the whole sentence as
+/// perfectly translated: no phrase forgotten, every heteronym affirmatively
+/// graded Remembered, and a real (non-heuristic) grading. An indeterminate
+/// or missing grade for a heteronym is not perfect — promoting that would
+/// credit a word the user never demonstrated. Shared by the app's
+/// TranslationChallenge and yap-mcp's grade_translation so the promotion
+/// rule lives in exactly one place.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn translation_is_perfect(
+    literals: Vec<Literal<String>>,
+    response: autograde::AutoGradeTranslationResponse,
+) -> bool {
+    response.autograding_error.is_none()
+        && response.phrases_forgot.is_empty()
+        && literals.iter().enumerate().all(|(i, literal)| {
+            literal.word.heteronym().is_none()
+                || response.literal_grades.get(i) == Some(&Some(autograde::Remembered::Remembered))
+        })
 }
 
 fn extract_native_words(definition: &GramDefinition) -> Vec<String> {

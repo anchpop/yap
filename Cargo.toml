@@ -44,7 +44,9 @@ reqwest = { version = "0.13", features = ["json", "query"] }
 tokio = { version = "1.52.3", features = ["full"] }
 opfs = { version = "0.2.0" }
 idb = { version = "0.6.5" }
-fetch-happen = { version = "0.3.1" }
+# Native + wasm fetch wrapper (github.com/anchpop/fetch-happen). Git dep for
+# the native reqwest transport until 0.4 is published to crates.io.
+fetch-happen = { git = "https://github.com/anchpop/fetch-happen", rev = "879d0fa66bd8ae4331704c5b1d3a193427646336" }
 xxhash-rust = { version = "0.8.15", features = ["xxh3", "const_xxh3"] }
 indexmap = { version = "2" }
 chrono = "0.4.44"

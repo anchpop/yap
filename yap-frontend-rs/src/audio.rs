@@ -413,7 +413,10 @@ pub fn tts_endpoint(provider: &TtsProvider) -> &'static str {
     }
 }
 
-async fn fetch_tts(
+/// Synthesize audio for a request via the AI backend, returning decoded
+/// bytes. Shared with the native MCP server — fetch-happen's native
+/// transport makes the browser and native wire calls identical.
+pub async fn fetch_tts(
     request: &TtsRequest,
     provider: &TtsProvider,
     access_token: Option<&String>,

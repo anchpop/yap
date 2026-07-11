@@ -1648,11 +1648,11 @@ checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 
 [[package]]
 name = "fetch-happen"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc6b17948903874e4bab347361c0bdcf1437d78b733b14062015f0772f925d86"
+version = "0.4.0"
+source = "git+https://github.com/anchpop/fetch-happen?rev=879d0fa66bd8ae4331704c5b1d3a193427646336#879d0fa66bd8ae4331704c5b1d3a193427646336"
 dependencies = [
  "js-sys",
+ "reqwest 0.13.4",
  "serde",
  "serde_json",
  "wasm-bindgen",
@@ -6857,6 +6857,7 @@ dependencies = [
  "chrono",
  "dotenvy",
  "env_logger",
+ "fetch-happen",
  "http 1.3.1",
  "jsonwebtoken",
  "language-utils",

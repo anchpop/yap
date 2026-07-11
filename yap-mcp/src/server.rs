@@ -29,9 +29,9 @@ use lasso::Spur;
 use weapon::data_model::{EventStore, EventType};
 use yap_frontend_rs::{
     CardIndicator, CardSummary, Context, Deck, DeckEvent, LanguageEvent, LanguageEventContent,
-    Rating, TranslateComprehensibleSentence, autograde_perfect_match,
+    Rating, TranslateComprehensibleSentence, autograde_translation,
     dictionary::{GramDictionaryDefinition, GramDictionaryEntry},
-    heuristic_grade_translation,
+    translation_is_perfect,
 };
 
 use crate::deck::{PackCache, build_deck, detect_course, insert_rows, new_store};
@@ -528,62 +528,6 @@ fn audio_cache_put(key: &str, audio: CachedAudio) {
         cache.clear();
     }
     cache.insert(key.to_string(), audio);
-}
-
-/// The native transport for TTS: same backend, same routes as the app's
-/// wasm fetch (fetch-happen is browser-only, so the wire call lives here).
-async fn fetch_tts_native(
-    http: &reqwest::Client,
-    request: &language_utils::TtsRequest,
-    provider: &language_utils::TtsProvider,
-) -> Result<Vec<u8>, String> {
-    use base64::Engine as _;
-    let url = format!(
-        "{}{}",
-        yap_frontend_rs::ai_server_url(),
-        yap_frontend_rs::tts_endpoint(provider)
-    );
-    let response = http
-        .post(url)
-        .header("Authorization", "Bearer anonymous")
-        .json(request)
-        .send()
-        .await
-        .map_err(|e| format!("request error: {e}"))?;
-    if !response.status().is_success() {
-        return Err(format!("HTTP error: {}", response.status()));
-    }
-    let audio_data = response
-        .text()
-        .await
-        .map_err(|e| format!("response error: {e}"))?;
-    base64::engine::general_purpose::STANDARD
-        .decode(&audio_data)
-        .map_err(|e| format!("base64 decode error: {e}"))
-}
-
-/// The native transport for translation autograding: same backend, same
-/// route as the app's wasm fetch. Errors here fall back to heuristic
-/// grading, mirroring the app.
-async fn fetch_autograde_native(
-    http: &reqwest::Client,
-    request: &autograde::AutoGradeTranslationRequest,
-) -> Result<autograde::AutoGradeTranslationResponse, String> {
-    let url = format!("{}/autograde-translation", yap_frontend_rs::ai_server_url());
-    let response = http
-        .post(url)
-        .header("Authorization", "Bearer anonymous")
-        .json(request)
-        .send()
-        .await
-        .map_err(|e| format!("request error: {e}"))?;
-    if !response.status().is_success() {
-        return Err(format!("HTTP error: {}", response.status()));
-    }
-    response
-        .json::<autograde::AutoGradeTranslationResponse>()
-        .await
-        .map_err(|e| format!("response error: {e}"))
 }
 
 fn audio_result(audio: CachedAudio) -> CallToolResult {
@@ -1408,56 +1352,28 @@ impl YapMcp {
 
         let course = state.context.course;
         let native_language = course.native_language;
-        let response = match autograde_perfect_match(
-            &submission,
-            &challenge.native_translations,
-            &challenge.target_language_literals,
-            &challenge.unique_target_language_phrases,
-            native_language,
-        ) {
-            Some(response) => response,
-            None => {
-                let request = autograde::AutoGradeTranslationRequest {
-                    course,
-                    challenge_sentence: challenge.target_language.clone(),
-                    user_sentence: submission.clone(),
-                    literals: challenge.target_language_literals.clone(),
-                    phrases: challenge.unique_target_language_phrases.clone(),
-                    primary_expression: challenge.primary_expression.clone(),
-                };
-                let http = state.http.clone();
-                match fetch_autograde_native(&http, &request).await {
-                    Ok(response) => response,
-                    Err(e) => {
-                        log::warn!("LLM autograde failed, using heuristic fallback: {e}");
-                        heuristic_grade_translation(
-                            &submission,
-                            &challenge.target_language_literals,
-                            &challenge.unique_target_language_phrases,
-                            &challenge.gram_definitions_for_lookup,
-                            &challenge.literal_gram_indices,
-                            &challenge.phrase_definitions,
-                            native_language,
-                            e,
-                        )
-                    }
-                }
-            }
-        };
+        // The exact same grading the app runs (perfect-match short-circuit,
+        // AI backend via fetch-happen, heuristic fallback) — fetch-happen's
+        // native transport lets us call it directly instead of reimplementing
+        // it. Anonymous token, like the widget's TTS path.
+        let response = autograde_translation(
+            challenge.target_language.clone(),
+            submission.clone(),
+            challenge.native_translations.clone(),
+            challenge.target_language_literals.clone(),
+            challenge.unique_target_language_phrases.clone(),
+            None,
+            course,
+            autograde::GramDefinitions(challenge.gram_definitions_for_lookup.clone()),
+            challenge.literal_gram_indices.clone(),
+            autograde::GramDefinitions(challenge.phrase_definitions.clone()),
+            challenge.primary_expression.clone(),
+        )
+        .await;
 
-        // Perfect requires every heteronym affirmatively graded Remembered,
-        // no phrase forgot, and a real (non-fallback) grading — the same
-        // promotion rule as the app.
-        let perfect = response.autograding_error.is_none()
-            && response.phrases_forgot.is_empty()
-            && challenge
-                .target_language_literals
-                .iter()
-                .zip(response.literal_grades.iter())
-                .all(|(literal, grade)| {
-                    literal.word.heteronym().is_none()
-                        || *grade == Some(autograde::Remembered::Remembered)
-                });
+        // The promotion rule is shared Rust — see translation_is_perfect.
+        let perfect =
+            translation_is_perfect(challenge.target_language_literals.clone(), response.clone());
 
         let event = if perfect {
             state
@@ -1546,14 +1462,11 @@ impl YapMcp {
         };
 
         // Authenticated per-user state must exist before we spend TTS money,
-        // and touching it guarantees the course pack (with its human
-        // recordings) is loaded and registered. Don't hold the lock across
-        // the TTS fetch below.
-        let slot = match self.state_slot(&ctx).await {
-            Ok(slot) => slot,
-            Err(e) => return error(e),
-        };
-        let http = slot.lock().await.http.clone();
+        // and loading it registers the course pack's human recordings so the
+        // lookup below can find them.
+        if let Err(e) = self.state_slot(&ctx).await {
+            return error(e);
+        }
 
         let cache_key = format!(
             "{}|{}",
@@ -1576,7 +1489,7 @@ impl YapMcp {
                 }),
             }
         } else {
-            match fetch_tts_native(&http, &request, &provider).await {
+            match yap_frontend_rs::fetch_tts(&request, &provider, None).await {
                 Ok(bytes) => CachedAudio {
                     bytes,
                     voice_actor: None,

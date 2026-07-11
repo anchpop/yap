@@ -14,6 +14,7 @@ serde_json.workspace = true
 chrono.workspace = true
 tokio.workspace = true
 reqwest.workspace = true
+fetch-happen.workspace = true
 rkyv.workspace = true
 log.workspace = true
 env_logger.workspace = true

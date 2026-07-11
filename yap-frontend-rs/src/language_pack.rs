@@ -294,7 +294,7 @@ impl From<LanguageDataError> for wasm_bindgen::JsValue {
             }
             LanguageDataError::AiServer(error) => {
                 let prefix = match &error {
-                    fetch_happen::Error::JsError(_) => "Network error",
+                    fetch_happen::Error::Transport(_) => "Network error",
                     fetch_happen::Error::HttpError(_, _) => "AI server HTTP error",
                     fetch_happen::Error::JsonError(_) => "AI server JSON error",
                     fetch_happen::Error::Aborted => "AI server request aborted",

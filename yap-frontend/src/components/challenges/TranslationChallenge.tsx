@@ -19,6 +19,7 @@ import {
   type PhrasebookDefinitionEntry,
   type TargetToNativeWord,
   autograde_translation,
+  translation_is_perfect,
   find_closest_translation,
   gram_to_display_string,
   get_app_version,
@@ -1008,18 +1009,10 @@ export function TranslationChallenge({
             },
           });
         } else if (
-          response.phrases_forgot.length === 0 &&
-          // Perfect requires every heteronym to be affirmatively graded
-          // "Remembered". An undefined grade means the grader found the word
-          // indeterminate (or returned no grade at all) — promoting that to
-          // perfect would credit words the user never demonstrated, so those
-          // go through the graded path, which preserves indeterminate as
-          // "not reviewed".
-          sentence.target_language_literals.every(
-            (literal, i) =>
-              (literal.word.word_type as { type?: string })?.type !==
-                "Heteronym" || response.literal_grades[i] === "Remembered",
-          )
+          // The promotion rule (no phrase forgotten, every heteronym
+          // affirmatively "Remembered", real grading) lives in Rust so the
+          // app and yap-mcp stay in sync — see translation_is_perfect.
+          translation_is_perfect(sentence.target_language_literals, response)
         ) {
           setGrade({ graded: { perfect: null, encouragement, explanation } });
           playSoundEffect("perfect");
