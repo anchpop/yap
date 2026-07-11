@@ -212,9 +212,13 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
 
-      # OAuth codes and MCP sessions live in memory, so the app must be exactly
-      # one machine. --ha=false stops deploys from creating a second machine;
-      # scale count destroys any extras that already exist (idempotent at 1).
+      # The app must be exactly one machine. First reason (load-bearing): all
+      # processes write events under the shared "yap-mcp" device id, so a second
+      # writer corrupts the per-device event-index sequence and silently drops
+      # events (see the single-writer note in yap-mcp/src/sync.rs). Second:
+      # in-flight OAuth codes and MCP sessions live in memory. --ha=false stops
+      # deploys from creating a second machine; scale count destroys any extras
+      # that already exist (idempotent at 1).
       - name: Enforce single MCP machine
         run: flyctl scale count 1 --config yap-mcp/fly.toml --yes
         env:

@@ -18,7 +18,13 @@ YAP_MCP_ALLOWED_HOSTS = 'yap-mcp.fly.dev'
 [http_service]
 internal_port = 8080
 force_https = true
-# OAuth codes and MCP sessions live in memory: keep exactly one machine, always on.
+# Keep the one machine warm (never idle-stop). The single-INSTANCE cap is
+# enforced by CI, not here: the deploy job runs `flyctl deploy --ha=false` then
+# `flyctl scale count 1`. Hold to one machine — never `fly scale count > 1`:
+#   1. All processes write events under the shared "yap-mcp" device id, so a
+#      second writer corrupts the per-device event-index sequence and silently
+#      drops events (see the single-writer note in src/sync.rs).
+#   2. In-flight OAuth codes and MCP sessions live in memory.
 auto_stop_machines = 'off'
 auto_start_machines = true
 min_machines_running = 1

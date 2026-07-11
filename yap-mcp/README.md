@@ -169,7 +169,26 @@ yap login page, and connects.
 - Listening cards can be quizzed only as text in a chat client.
 - No challenge generation (translation/transcription exercises) yet; the chat
   LLM is expected to quiz the user itself, e.g. using `get_sentences`.
-- OAuth codes and MCP sessions are in-memory: run exactly one instance.
+- **Run exactly one server process per account.** All processes write events
+  under the shared `yap-mcp` device id, so a second concurrent writer corrupts
+  the per-device event-index sequence and silently drops events (see the
+  single-writer note in `src/sync.rs`). The deploy job holds the remote server
+  to one instance — `flyctl deploy --ha=false` then `flyctl scale count 1`
+  (`min_machines_running` only keeps that one machine warm; it's not the cap).
+  So the realistic ways to get two writers are a manual `fly scale count > 1` or
+  two concurrent stdio sessions for one account — don't. It's not a hard
+  guarantee (that would need an exclusivity lease, e.g. a Postgres advisory
+  lock), but the residual window is narrow and the harm self-corrects (a lost
+  review comes due again). In-flight OAuth codes and MCP sessions are also
+  in-memory, which is the other reason to stay single-instance.
+- Only synced state survives a restart. Per-user deck state is rebuilt by
+  re-fetching and replaying events from Supabase, but the unsynced tail can't
+  be — a review/addition/unlock whose upload failed lives only in memory (as
+  does the idempotency cache, which starts empty). It's retried on the next
+  call, but lost if the process exits or the per-user state is evicted first. A
+  lost review just comes due again; a lost `add_cards`/`unlock_cards` means
+  those cards aren't added/unlocked until redone. If it matters, the fix is
+  durable local storage for the unsynced tail.
 - Public OAuth endpoints are rate-limited per client IP (fixed 60s windows);
   cached per-user deck state is evicted after 6h idle.
 

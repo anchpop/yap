@@ -4,12 +4,33 @@
 //! increasing `within_device_events_index`. This server owns the `yap-mcp`
 //! device id, so it can append events without coordinating with other devices;
 //! the web app picks them up on its next sync.
+//!
+//! **Single-writer requirement.** Because every yap-mcp process shares the one
+//! `yap-mcp` device id, there must be exactly one process writing for a given
+//! account at a time. Two concurrent processes each allocate the next index
+//! from their own in-memory view, so they can assign the *same* index to
+//! *different* events; the unique constraint
+//! `(user_id, stream_id, device_id, within_device_events_index)` lets one win,
+//! and the loser — since events are immutable and echo-confirmation matches
+//! only on `(device, index)` — silently treats the winner's row as its own and
+//! drops its event.
+//!
+//! The remote deploy holds to one instance: CI runs `flyctl deploy --ha=false`
+//! (so a deploy never spins up a second machine) followed by
+//! `flyctl scale count 1` (which destroys any extras). The realistic ways to
+//! end up with two concurrent writers are a manual `fly scale count > 1` or two
+//! stdio sessions for the same account. None of this is a *hard* guarantee —
+//! that would need an exclusivity lease (e.g. a Postgres advisory lock) — but
+//! the residual risk is a narrow window with low, self-correcting harm (the
+//! loser drops one event; a review just comes due again), so we accept it.
 
 use anyhow::{Context as _, bail};
 use weapon::data_model::Timestamped;
 use weapon::supabase::SyncableEvent;
 
-/// The device id this server writes events under.
+/// The device id this server writes events under. Shared by every yap-mcp
+/// process, so exactly one may write for an account at a time — see the
+/// single-writer note in the module docs.
 pub const DEVICE_ID: &str = "yap-mcp";
 
 pub const REVIEWS_STREAM: &str = "reviews";
