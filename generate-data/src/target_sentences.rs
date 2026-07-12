@@ -687,6 +687,21 @@ pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
         }
     }
 
+    // 10. Skip sentences with malformed spacing: a comma or semicolon glued directly
+    // to the next word with no space (e.g. "Vous savez,à avoir un boulot ici.").
+    // Well-formed text always puts a space after these marks.
+    {
+        let mut chars = sentence.chars().peekable();
+        while let Some(c) = chars.next() {
+            if matches!(c, ',' | ';')
+                && let Some(&next) = chars.peek()
+                && next.is_alphabetic()
+            {
+                return false;
+            }
+        }
+    }
+
     true
 }
 

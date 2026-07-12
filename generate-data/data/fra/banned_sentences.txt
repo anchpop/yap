@@ -598,3 +598,6 @@ où as tu appris à parler ma langue?
 que vous est il passé par la tête?
 – Que s'est il passé ? – Sainte Marie, Jessica à appelé.
 De que !
+
+# Malformed spacing (punctuation glued to the next word)
+Vous savez,à avoir un boulot ici.
