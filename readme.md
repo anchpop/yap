@@ -125,6 +125,10 @@ cargo run --bin clean-nlp-data clean
 
 Accounts and cross-device sync uses supabase as a backend. Migrations are in the supabase/ folder. Onesignal is used for notifications.
 
+## MCP
+
+You can connect Yap to your LLM provider of choice using the following MCP server: https://mcp.yap.town/mcp
+
 ## Special thanks
 
 ### Data
