@@ -12,8 +12,13 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
 
+# Structure: checks + the three build jobs run in parallel; the deploy jobs
+# gate on ALL of them, so nothing deploys unless every check passes and every
+# artifact builds. (Pushing a :sha image to the Fly registry for a commit that
+# then fails tests is harmless — the image is only deployed by the gated jobs.)
 jobs:
-  deploy:
+  # ===== TEST PHASE =====
+  checks:
     runs-on: big-runner
     steps:
       - name: Checkout
@@ -31,53 +36,24 @@ jobs:
           targets: wasm32-unknown-unknown
           components: rustfmt, clippy
 
+      # Keyed on Cargo.lock so the cache is re-saved whenever dependencies
+      # change. (A constant key is a trap: actions/cache never re-saves on a
+      # primary-key hit, so the cache silently freezes at its first save and
+      # every later run recompiles everything newer than it.)
       - name: Cache cargo
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-deploy
+          key: ${{ runner.os }}-cargo-checks-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-deploy-
+            ${{ runner.os }}-cargo-checks-
             ${{ runner.os }}-cargo-
 
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
       - uses: taiki-e/install-action@nextest
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Setup Fly CLI
-        uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Auth to Fly registry
-        run: flyctl auth docker
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
-
-      # ===== TEST PHASE =====
-      # Any failure here aborts the whole pipeline before anything is built or deployed.
 
       - name: Rustfmt
         run: cargo fmt --all -- --check
@@ -95,8 +71,51 @@ jobs:
       - name: Tests (no default features)
         run: cargo nextest run --all --no-default-features
 
-      # ===== BUILD PHASE =====
-      # Everything that can fail builds here. Deploys only start once all of these pass.
+  # ===== BUILD PHASE =====
+  web-build:
+    runs-on: big-runner
+    outputs:
+      dictionary_changed: ${{ steps.dictionary-digest.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Pull LFS rkyv files
+        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-web-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-web-
+            ${{ runner.os }}-cargo-
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Build WASM module
         run: wasm-pack build --release
@@ -136,6 +155,59 @@ jobs:
             routes.include = ['/d/*', '/blog/*', '/sitemap*', '/robots.txt'];
             fs.writeFileSync('$DEPLOY_DIR/_routes.json', JSON.stringify(routes, null, 2));
           "
+          tar -cf deploy-output.tar deploy-output
+
+      - name: Upload deploy directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-output
+          path: deploy-output.tar
+          retention-days: 3
+
+      # Compare a content digest of the generated dictionary data against the
+      # digest stored in KV. If they match, the ~200k-key KV re-upload (and the
+      # artifact shuffling for it) is skipped entirely. This is an exact
+      # comparison of the generated output, not a path-based heuristic.
+      - name: Check whether dictionary data changed since last KV upload
+        id: dictionary-digest
+        run: node scripts/upload-dictionary-to-kv.js --check
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Pack dictionary data
+        if: steps.dictionary-digest.outputs.changed == 'true'
+        run: tar -cf dictionary-data.tar static-site/src/data static-site/public/search
+
+      - name: Upload dictionary data
+        if: steps.dictionary-digest.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dictionary-data
+          path: dictionary-data.tar
+          retention-days: 3
+
+  backend-image:
+    runs-on: big-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Pull LFS rkyv files
+        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Auth to Fly registry
+        run: flyctl auth docker
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
 
       - name: Build and push Fly image
         uses: docker/build-push-action@v5
@@ -147,51 +219,40 @@ jobs:
           cache-from: type=registry,ref=registry.fly.io/yap-ai-backend:cache
           cache-to: type=registry,ref=registry.fly.io/yap-ai-backend:cache,mode=max
 
-      - name: Install Modal
-        run: pip install modal
+  mcp-image:
+    runs-on: big-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
 
-      # ===== DEPLOY PHASE =====
-      # Sequential: Fly first (safest to go early), then Cloudflare Pages, then Modal.
-      # Dictionary KV upload runs last since it's the least critical.
+      - name: Pull LFS rkyv files
+        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
 
-      - name: Deploy to Fly.io
-        run: flyctl deploy --image registry.fly.io/yap-ai-backend:${{ github.sha }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Auth to Fly registry
+        run: flyctl auth docker
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
 
-      # Probe the machine that's actually serving traffic. This catches
-      # runtime-only breakage that compiles and passes unit tests: missing
-      # crypto providers, glibc mismatches, missing env vars, expired API keys.
-      # (Also runnable locally: ./scripts/smoke_test_server.sh [base-url])
-      - name: Smoke test deployed backend
-        run: ./scripts/smoke_test_server.sh
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: deploy-output
-          command: pages deploy . --project-name=yap
-
-      - name: Deploy Modal apps
-        run: modal deploy modal-envs/wav2vec2_phoneme.py
-        env:
-          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
-          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
-
-      - name: Upload dictionary data to KV
-        run: node scripts/upload-dictionary-to-kv.js
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      # ===== MCP SERVER =====
-      # Deployed last: a failure here must never block the frontend/backend
-      # deploys above. One-time setup before the first run:
-      #   flyctl apps create yap-mcp
-      #   flyctl secrets set --app yap-mcp SUPABASE_JWT_SECRET=...
-
+      # Built outside Docker (the Dockerfile COPYs dist/index.html in);
+      # nothing generated is committed.
       - name: Build MCP review widget
         run: |
           pnpm install --dir yap-mcp/widget
@@ -206,6 +267,101 @@ jobs:
           tags: registry.fly.io/yap-mcp:${{ github.sha }}
           cache-from: type=registry,ref=registry.fly.io/yap-mcp:cache
           cache-to: type=registry,ref=registry.fly.io/yap-mcp:cache,mode=max
+
+  # ===== DEPLOY PHASE =====
+  # Sequential within the job: Fly first (safest to go early), then Cloudflare
+  # Pages, then Modal. Dictionary KV upload runs last since it's the least
+  # critical.
+  deploy:
+    runs-on: big-runner
+    needs: [checks, web-build, backend-image, mcp-image]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --image registry.fly.io/yap-ai-backend:${{ github.sha }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
+
+      # Probe the machine that's actually serving traffic. This catches
+      # runtime-only breakage that compiles and passes unit tests: missing
+      # crypto providers, glibc mismatches, missing env vars, expired API keys.
+      # (Also runnable locally: ./scripts/smoke_test_server.sh [base-url])
+      - name: Smoke test deployed backend
+        run: ./scripts/smoke_test_server.sh
+
+      - name: Download deploy directory
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-output
+
+      - name: Unpack deploy directory
+        run: tar -xf deploy-output.tar
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: deploy-output
+          command: pages deploy . --project-name=yap
+
+      - name: Install Modal
+        run: pip install modal
+
+      - name: Deploy Modal apps
+        run: modal deploy modal-envs/wav2vec2_phoneme.py
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+
+      - name: Download dictionary data
+        if: needs.web-build.outputs.dictionary_changed == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: dictionary-data
+
+      - name: Upload dictionary data to KV
+        if: needs.web-build.outputs.dictionary_changed == 'true'
+        run: |
+          tar -xf dictionary-data.tar
+          node scripts/upload-dictionary-to-kv.js
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  # ===== MCP SERVER =====
+  # A separate deploy job so a failure here never blocks the frontend/backend
+  # deploys above. One-time setup before the first run:
+  #   flyctl apps create yap-mcp
+  #   flyctl secrets set --app yap-mcp SUPABASE_JWT_SECRET=...
+  deploy-mcp:
+    runs-on: big-runner
+    needs: [checks, web-build, backend-image, mcp-image]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy MCP server to Fly.io
         run: flyctl deploy --config yap-mcp/fly.toml --ha=false --image registry.fly.io/yap-mcp:${{ github.sha }}

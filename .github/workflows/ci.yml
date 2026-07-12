@@ -14,60 +14,54 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false
+
+      # Only the rkyv packs are needed to build (ai-backend include_bytes!s
+      # them); pulling all of LFS is several GB slower.
+      - name: Pull LFS rkyv files
+        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
 
       - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: "1.96.0"
-          override: true
+          targets: wasm32-unknown-unknown
           components: rustfmt, clippy
-          target: wasm32-unknown-unknown
 
-      - name: Cache cargo registry
+      # Keyed on Cargo.lock so the cache is re-saved whenever dependencies
+      # change. (A constant key is a trap: actions/cache never re-saves on a
+      # primary-key hit, so the cache silently freezes at its first save and
+      # every later run recompiles everything newer than it.)
+      - name: Cache cargo
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-ci
+          key: ${{ runner.os }}-cargo-ci-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-ci-
             ${{ runner.os }}-cargo-
 
+      - uses: taiki-e/install-action@nextest
+
       - name: Rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
 
       - name: Clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --workspace -- -D warnings
+        run: cargo clippy --workspace -- -D warnings
 
       - name: Clippy (WASM)
         run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
         working-directory: yap-frontend-rs
 
-      - uses: taiki-e/install-action@nextest
-
       - name: Tests (default features)
-        uses: actions-rs/cargo@v1
-        with:
-          command: nextest
-          args: run --all
+        run: cargo nextest run --all
 
       - name: Tests (no default features)
-        uses: actions-rs/cargo@v1
-        with:
-          command: nextest
-          args: run --all --no-default-features
+        run: cargo nextest run --all --no-default-features
 
   # Verify the custom espeak-ng fork (anchpop/espeak-ng) still builds and can
   # phonemize — the transcription grader shells out to it at runtime. Only the
