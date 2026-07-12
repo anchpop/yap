@@ -29,6 +29,12 @@ export function WidgetFlashcard({ challenge }: { challenge: FlashcardChallenge }
   const [graded, setGraded] = useState<Rating | null>(null);
   const [gradeError, setGradeError] = useState<string | null>(null);
   const [autoplayed, setAutoplayed] = useState(false);
+  // A drag-grade flings the card off-screen (framer-motion x:300) before
+  // onRating fires; the app never notices because the parent swaps in the next
+  // card, but here the card stays mounted. If the bridge call then errors we'd
+  // strand it off-screen with no way back — so bump this to remount the card,
+  // resetting its transform and letting the user retry.
+  const [retryKey, setRetryKey] = useState(0);
 
   const display = contentDisplay(challenge.content);
   const leftLabel = challenge.is_new ? "didn't know" : "forgot";
@@ -71,6 +77,9 @@ export function WidgetFlashcard({ challenge }: { challenge: FlashcardChallenge }
         setGradeError(
           `could not save the review — ${e instanceof Error ? e.message : String(e)}`,
         );
+        // Remount the card so a drag-grade's off-screen fling is undone and the
+        // user can retry. (No-op visually for button/keyboard grades.)
+        setRetryKey((k) => k + 1);
       } finally {
         setGrading(false);
       }
@@ -89,6 +98,7 @@ export function WidgetFlashcard({ challenge }: { challenge: FlashcardChallenge }
   return (
     <div className="max-w-md mx-auto min-h-[24rem] flex flex-col">
       <Flashcard
+        key={retryKey}
         audioRequest={challenge.audio}
         content={challenge.content}
         totalCount={challenge.total_count}

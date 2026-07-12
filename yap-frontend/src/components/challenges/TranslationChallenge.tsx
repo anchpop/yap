@@ -451,8 +451,6 @@ export function ProperNounDefinitions({
   );
 }
 
-// Exported (not a hook) — see also GramDefinition type at top of file.
-// eslint-disable-next-line react-refresh/only-export-components
 export function GramDefinitionDisplay({
   definition,
   breakdown,
