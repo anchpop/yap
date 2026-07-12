@@ -29,8 +29,8 @@ use language_utils::{
 use lasso::Spur;
 use weapon::data_model::{EventStore, EventType};
 use yap_frontend_rs::{
-    CardIndicator, CardSummary, Context, Deck, DeckEvent, LanguageEvent, LanguageEventContent,
-    Rating, TranslateComprehensibleSentence, autograde_translation,
+    CardContext, CardIndicator, CardSummary, Context, Deck, DeckEvent, LanguageEvent,
+    LanguageEventContent, Rating, TranslateComprehensibleSentence, autograde_translation,
     dictionary::{GramDictionaryDefinition, GramDictionaryEntry},
     translation_is_perfect,
 };
@@ -1330,57 +1330,64 @@ impl YapMcp {
             }
         };
         let display = gram.to_display_string(target_language);
+        let kind = card_kind(&card);
         let Some(interned) = state.pack().course_gram(&gram) else {
             return error("that card's gram isn't a dictionary entry in this course");
         };
 
-        let (is_new, kind) = {
+        // Mint the exact FlashCard the app renders — same builders over the same
+        // deck + language pack — so the widget can render the app's Flashcard
+        // component verbatim (full card back, morphology, homophone grid) with
+        // no widget-specific projection of the content.
+        let now_ms = Utc::now().timestamp_millis() as f64;
+        let (flashcard, is_new, times_type_seen, total_count) = {
             let deck = state.deck();
-            let Some(summary) = deck.find_card_summary(&card) else {
+            let review_info = deck.get_review_info(vec![], now_ms);
+            let interned_indicator = match &card {
+                CardIndicator::WrittenGram { .. } => CardIndicator::WrittenGram { gram: interned },
+                CardIndicator::ListeningGram { .. } => {
+                    CardIndicator::ListeningGram { gram: interned }
+                }
+                CardIndicator::LetterPronunciation { .. } => unreachable!("rejected above"),
+            };
+            let Some(ctx) = CardContext::new(deck, interned_indicator) else {
                 return error(
                     "that card isn't in the user's deck — pass a card exactly as returned by get_due_cards",
                 );
             };
-            (summary.state() == "New", card_kind(&card))
-        };
-
-        let gloss = {
-            let index = state
-                .pack()
-                .gram_frequencies
-                .entries
-                .get_index_of(&interned);
-            index
-                .and_then(|index| state.deck().gram_dictionary_entry(index))
-                .map(|entry| entry_gloss(&entry))
-                .unwrap_or_default()
-        };
-
-        // Mirror the app's provider choice for single words: Google TTS.
-        // Human recordings take precedence regardless.
-        let audio_request = language_utils::TtsRequest {
-            text: display.clone(),
-            language: target_language,
-            is_ssml: false,
-            instructions: None,
-            speed: 1.0,
+            let flashcard = match &card {
+                CardIndicator::WrittenGram { .. } => {
+                    review_info.written_gram_flashcard(deck, interned)
+                }
+                CardIndicator::ListeningGram { .. } => {
+                    review_info.listening_gram_flashcard(deck, interned)
+                }
+                CardIndicator::LetterPronunciation { .. } => unreachable!("rejected above"),
+            };
+            (
+                flashcard,
+                ctx.is_new,
+                ctx.times_type_seen,
+                review_info.total_count(),
+            )
         };
 
         let language = state.target_language_value();
+        let native_language = serde_json::to_value(state.context.course.native_language)
+            .expect("Language serializes");
         let structured = json!({
             "challenge": {
                 "type": "flashcard",
                 "nonce": presentation_nonce(),
                 "language": language,
+                "native_language": native_language,
                 "kind": kind,
                 "is_new": is_new,
+                "total_count": total_count,
+                "times_type_seen": times_type_seen,
                 "card": params.card,
-                "word": { "display": display, "gloss": gloss },
-                "audio": {
-                    "request": serde_json::to_value(&audio_request).expect("request serializes"),
-                    "provider": serde_json::to_value(&language_utils::TtsProvider::Google)
-                        .expect("provider serializes"),
-                },
+                "content": serde_json::to_value(&flashcard.content).expect("content serializes"),
+                "audio": serde_json::to_value(&flashcard.audio).expect("audio serializes"),
             },
         });
         let mut result = CallToolResult::success(vec![ContentBlock::text(format!(
@@ -1442,17 +1449,11 @@ impl YapMcp {
         let display = challenge
             .primary_expression
             .to_display_string(target_language);
-        let literals: Vec<serde_json::Value> = challenge
-            .target_language_literals
-            .iter()
-            .map(|literal| {
-                json!({
-                    "text": literal.word.text,
-                    "whitespace": literal.whitespace,
-                    "gradable": literal.word.heteronym().is_some(),
-                })
-            })
-            .collect();
+        // Send the full literals (word + word_type + whitespace) so the widget
+        // renders the app's shared ChallengeSentence verbatim, including the
+        // heteronym-aware colouring.
+        let literals =
+            serde_json::to_value(&challenge.target_language_literals).expect("literals serialize");
 
         let structured = json!({
             "challenge": {

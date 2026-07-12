@@ -3,7 +3,7 @@ import { Toaster } from "sonner";
 import { app, connectOnce } from "./bridge";
 import { prefetchAudio } from "./audio";
 import type { Challenge } from "./types";
-import { ReviewCard } from "./ReviewCard";
+import { WidgetFlashcard } from "./WidgetFlashcard";
 import { TranslationCard } from "./TranslationCard";
 
 type Phase =
@@ -52,7 +52,7 @@ export function App() {
         (phase.challenge.type === "translation" ? (
           <TranslationCard key={phase.challenge.nonce} challenge={phase.challenge} />
         ) : (
-          <ReviewCard key={phase.challenge.nonce} challenge={phase.challenge} />
+          <WidgetFlashcard key={phase.challenge.nonce} challenge={phase.challenge} />
         ))}
       <Toaster />
     </div>

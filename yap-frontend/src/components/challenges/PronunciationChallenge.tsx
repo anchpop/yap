@@ -12,7 +12,7 @@ import { useState } from "react";
 import { AudioButton } from "../AudioButton";
 import { CantSpeakButton } from "../CantSpeakButton";
 import { AudioErrorBanner } from "../AudioErrorBanner";
-import { useBackground } from "../BackgroundShader";
+import { useBackground } from "../background-context";
 import { PlayfulArrow } from "../PlayfulArrow";
 import { match } from "ts-pattern";
 import { ArrowLeft, ArrowRight } from "lucide-react";

@@ -35,7 +35,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useBackground } from "../BackgroundShader";
+import { useBackground } from "../background-context";
 import {
   Select,
   SelectContent,

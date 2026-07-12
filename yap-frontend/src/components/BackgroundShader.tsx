@@ -1,30 +1,8 @@
-import {
-  useEffect,
-  useRef,
-  useMemo,
-  memo,
-  createContext,
-  useContext,
-  useCallback,
-  type ReactNode,
-} from "react";
+import { useEffect, useRef, useMemo, memo, useCallback, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { useTheme } from "./theme-provider";
 import { getShaderBackgroundCss } from "@/lib/shader-colors";
-
-interface BackgroundContextType {
-  bumpBackground: (multiplier?: number) => void;
-}
-
-const BackgroundContext = createContext<BackgroundContextType | null>(null);
-
-export function useBackground() {
-  const context = useContext(BackgroundContext);
-  if (!context) {
-    throw new Error("useBackground must be used within a BackgroundShader");
-  }
-  return context;
-}
+import { BackgroundContext } from "./background-context";
 
 interface BackgroundShaderProps {
   children: ReactNode;

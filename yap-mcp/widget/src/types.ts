@@ -1,7 +1,13 @@
 // Mirror of present_card / present_translation's structuredContent.challenge
 // (see yap-mcp/src/server.rs). The card object is opaque: passed back
 // verbatim to log_review / grade_translation, never inspected here.
-import type { AudioRequest, Language, Rating } from "../../../yap-frontend-rs/pkg";
+import type {
+  AudioRequest,
+  CardContent,
+  Language,
+  Literal,
+  Rating,
+} from "../../../yap-frontend-rs/pkg";
 
 interface ChallengeBase {
   // Server-minted id for this presentation, echoed back as the review's
@@ -15,21 +21,24 @@ interface ChallengeBase {
 
 export interface FlashcardChallenge extends ChallengeBase {
   type: "flashcard";
-  kind: "written" | "listening" | "pronunciation";
-  word: { display: string; gloss: string };
-}
-
-export interface SentenceLiteral {
-  text: string;
-  whitespace: string;
-  gradable: boolean;
+  kind: "written" | "listening";
+  // The native language, for the app Flashcard's "Show {nativeLanguage}" label.
+  native_language: Language;
+  // The exact CardContent the app builds — rendered by the app's Flashcard
+  // component verbatim. Type-only import; erases at build (no WASM in the bundle).
+  content: CardContent;
+  // Feed the app Flashcard's show-answer gate and tutorial, same as App.tsx.
+  total_count: number;
+  times_type_seen: number;
 }
 
 export interface TranslationChallenge extends ChallengeBase {
   type: "translation";
   sentence: {
     text: string;
-    literals: SentenceLiteral[];
+    // Full literals (word + word_type + whitespace) so the widget renders the
+    // app's shared ChallengeSentence verbatim. Type-only import; erases.
+    literals: Literal<string>[];
     sources: string[];
   };
 }

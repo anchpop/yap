@@ -43,6 +43,8 @@ import { supabase } from "@/lib/supabase";
 import type { Session as SupabaseSession } from "@supabase/supabase-js";
 import { useInterval, useNetworkState } from "react-use";
 import { Flashcard } from "@/components/Flashcard";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { ReportIssueModal } from "@/components/challenges/ReportIssueModal";
 import { Simulate } from "@/components/Simulate";
 import { TranslationChallenge } from "@/components/challenges/TranslationChallenge";
 import { PronunciationChallenge } from "@/components/challenges/PronunciationChallenge";
@@ -791,6 +793,7 @@ function Review({
 
   const network = useNetworkState();
   const [cardsBecameDue, setCardsBecameDue] = useState<number>(0);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [dismissedSetDisplayName, setDismissedSetDisplayName] = useState(() => {
     return localStorage.getItem("yap-skipped-set-display-name") === "true";
   });
@@ -1229,6 +1232,11 @@ function Review({
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
               timesTypeSeen={currentChallenge.times_type_seen}
+              menuExtras={
+                <DropdownMenuItem onClick={() => setShowReportModal(true)}>
+                  Report an Issue
+                </DropdownMenuItem>
+              }
             />
           ) : currentChallenge.type === "TranslateComprehensibleSentence" ? (
             <TranslationChallenge
@@ -1267,6 +1275,17 @@ function Review({
         )}
       </div>
       {/* /main content */}
+
+      <ReportIssueModal
+        context={
+          currentChallenge?.type === "FlashCardReview"
+            ? JSON.stringify(currentChallenge.flashcard.content)
+            : ""
+        }
+        open={showReportModal}
+        onOpenChange={setShowReportModal}
+        targetLanguage={targetLanguage}
+      />
     </>
   );
 }

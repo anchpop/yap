@@ -21,6 +21,7 @@ mod utils;
 pub use audio::{
     FetchedAudio, VoiceActorInfo, audio_mime_type, fetch_tts, human_audio_applies, tts_endpoint,
 };
+pub use challenge::CardContext;
 pub use deck_event::*;
 pub use human_audio::{lookup as lookup_human_audio, register as register_human_audio};
 pub use utils::ai_server_url;

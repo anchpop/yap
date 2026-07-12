@@ -24,16 +24,15 @@ import {
   useAnimation as animationControls,
   type PanInfo,
 } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import "./Flashcard.css";
 import { AudioButton } from "./AudioButton";
-import { ReportIssueModal } from "./challenges/ReportIssueModal";
 import { CantListenButton } from "./CantListenButton";
 import { AudioErrorBanner } from "./AudioErrorBanner";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { formatMorphology } from "@/utils/formatMorphology";
-import { useBackground } from "./BackgroundShader";
+import { useBackground } from "./background-context";
 import { PlayfulArrow } from "./PlayfulArrow";
 import { cn } from "@/lib/utils";
 import { highlightTermInSentence } from "@/utils/highlightTermInSentence";
@@ -65,6 +64,8 @@ interface FlashcardProps {
   autoplayed: boolean;
   setAutoplayed: () => void;
   timesTypeSeen: number;
+  /** Extra dropdown-menu items (e.g. "Report an Issue"), owned by the caller. */
+  menuExtras?: ReactNode;
 }
 
 const CardFront = ({
@@ -370,11 +371,11 @@ export const Flashcard = function Flashcard({
   autoplayed,
   setAutoplayed,
   timesTypeSeen,
+  menuExtras,
 }: FlashcardProps) {
   const x = useMotionValue(0);
   const controls = animationControls();
   const [isDragging, setIsDragging] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const [audioError, setAudioError] = useState(false);
@@ -729,11 +730,7 @@ export const Flashcard = function Flashcard({
                           <DropdownMenuItem onClick={copyWord}>
                             Copy word
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => setShowReportModal(true)}
-                          >
-                            Report an Issue
-                          </DropdownMenuItem>
+                          {menuExtras}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     ) : (
@@ -864,13 +861,6 @@ export const Flashcard = function Flashcard({
           </div>
         )}
       </div>
-
-      <ReportIssueModal
-        context={`${JSON.stringify(content)}`}
-        open={showReportModal}
-        onOpenChange={setShowReportModal}
-        targetLanguage={targetLanguage}
-      />
     </div>
   );
 };

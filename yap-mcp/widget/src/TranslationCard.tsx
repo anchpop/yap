@@ -3,15 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { AudioButton } from "@/components/AudioButton";
-import { TargetLanguageText } from "@/components/TargetLanguageText";
+import {
+  ChallengeSentence,
+  TranslationVerdict,
+  type TranslationVerdictData,
+} from "@/components/challenges/translation-verdict";
 import { app, resultText } from "./bridge";
 import type { GradeResult, TranslationChallenge } from "./types";
 
-// A slim version of the app's translation challenge: read the sentence,
-// type a translation, submit. Grading goes through grade_translation over
-// the bridge — the server autogrades (AI backend, with the same perfect
-// short-circuit and heuristic fallback as the app) and logs the review
-// itself, then the outcome is posted back into the model's context.
+// The widget's translation container: read the sentence, type a translation,
+// submit. The colored sentence and the verdict stack are the app's shared
+// leaves (ChallengeSentence / TranslationVerdict) rendered verbatim — the only
+// widget-owned parts are the textarea, the submit, and the grade_translation
+// bridge call (which autogrades on the server and logs the review itself).
+// The app's per-phrase grade-adjust UI is deliberately absent (see the merge
+// plan): in an MCP host the user can just tell the model.
 export function TranslationCard({ challenge }: { challenge: TranslationChallenge }) {
   const [value, setValue] = useState("");
   const [grading, setGrading] = useState(false);
@@ -55,7 +61,7 @@ export function TranslationCard({ challenge }: { challenge: TranslationChallenge
       const forgot = [
         ...sentence.literals
           .filter((_, i) => graded.literal_grades[i] === "forgot")
-          .map((literal) => literal.text),
+          .map((literal) => literal.word.text),
         ...graded.phrases_forgot,
       ];
       const summary = graded.perfect
@@ -78,12 +84,16 @@ export function TranslationCard({ challenge }: { challenge: TranslationChallenge
     }
   }, [value, grading, result, challenge, sentence, idempotencyToken]);
 
-  const gradeClass = (index: number): string => {
-    const grade = result?.literal_grades[index];
-    if (grade === "remembered") return "text-green-600 dark:text-green-400";
-    if (grade === "forgot") return "text-red-600 dark:text-red-400";
-    return "";
-  };
+  const verdict: TranslationVerdictData | null = result
+    ? {
+        userTranslation: submitted,
+        correctTranslation: result.correct_translation ?? "",
+        isPerfect: result.perfect,
+        encouragement: result.encouragement,
+        explanation: result.explanation,
+        autogradingError: result.autograding_error,
+      }
+    : null;
 
   return (
     <div className="flex flex-col gap-2 max-w-md mx-auto">
@@ -95,16 +105,12 @@ export function TranslationCard({ challenge }: { challenge: TranslationChallenge
             visualizer
           />
 
-          <div className="text-2xl">
-            <TargetLanguageText language={challenge.language}>
-              {sentence.literals.map((literal, i) => (
-                <span key={i} className={gradeClass(i)}>
-                  {literal.text}
-                  {literal.whitespace}
-                </span>
-              ))}
-            </TargetLanguageText>
-          </div>
+          <ChallengeSentence
+            literals={sentence.literals}
+            grades={result?.literal_grades}
+            isPerfect={result?.perfect}
+            targetLanguage={challenge.language}
+          />
 
           {!result && (
             <>
@@ -135,27 +141,15 @@ export function TranslationCard({ challenge }: { challenge: TranslationChallenge
             </>
           )}
 
-          {result && (
-            <div className="w-full flex flex-col gap-2 text-left">
-              <p className="text-sm text-muted-foreground">
-                you said: <span className="text-foreground">{submitted}</span>
-              </p>
-              {result.correct_translation && (
-                <p className="text-lg font-medium">{result.correct_translation}</p>
-              )}
+          {verdict && result && (
+            <div className="w-full flex flex-col gap-4 text-left">
+              <TranslationVerdict
+                verdict={verdict}
+                targetLanguage={challenge.language}
+              />
               {result.phrases_forgot.length > 0 && (
                 <p className="text-sm text-red-600 dark:text-red-400">
                   phrases missed: {result.phrases_forgot.join(", ")}
-                </p>
-              )}
-              {(result.encouragement ?? result.explanation) && (
-                <p className="text-sm text-muted-foreground">
-                  {[result.encouragement, result.explanation].filter(Boolean).join(" ")}
-                </p>
-              )}
-              {result.autograding_error && (
-                <p className="text-xs text-muted-foreground font-mono">
-                  graded heuristically — the AI grader was unavailable
                 </p>
               )}
               {sentence.sources.length > 0 && (

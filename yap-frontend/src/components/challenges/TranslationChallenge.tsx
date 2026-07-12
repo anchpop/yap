@@ -11,7 +11,6 @@ import { getMovieMetadata } from "@/lib/movie-cache";
 import { MoviePosterGrid } from "./MoviePosterGrid";
 import {
   type TranslateComprehensibleSentence,
-  type Literal,
   type ProperNounDefinition,
   type LiteralGrades,
   type Gram,
@@ -35,7 +34,6 @@ type GramDefinition =
   | { Phrasebook: PhrasebookDefinitionEntry };
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -58,16 +56,24 @@ import {
 import { Check, X, MoreVertical } from "lucide-react";
 import { AudioButton } from "../AudioButton";
 import { ReportIssueModal } from "./ReportIssueModal";
-import { FeedbackDisplay } from "@/components/FeedbackDisplay";
 import { playSoundEffect } from "@/lib/sound-effects";
-import { useBackground } from "../BackgroundShader";
-import { cn, languageToIso6391 } from "@/lib/utils";
+import { useBackground } from "../background-context";
+import { languageToIso6391 } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { TargetLanguageText } from "../TargetLanguageText";
 import {
   MorphemeBreakdown,
   type BreakdownRow,
 } from "../MorphemeBreakdown";
+import {
+  ChallengeSentence,
+  CorrectTranslation,
+  FeedbackSkeleton,
+  TranslationVerdict,
+  YourTranslation,
+  type LiteralGrade,
+  type TranslationVerdictData,
+} from "./translation-verdict";
 
 interface SentenceChallengeProps {
   sentence: TranslateComprehensibleSentence;
@@ -90,17 +96,6 @@ interface SentenceChallengeProps {
   setAutoplayed: () => void;
   deck: Deck;
   totalReviewsCompleted: bigint;
-}
-
-interface ChallengeSentenceProps {
-  literals: Literal<string>[];
-  onWordTap: (index: number) => void;
-  literalGrades?: LiteralGrades;
-  isPerfect?: boolean;
-  tappedWords: Set<number>;
-  literalGramIndices: number[];
-  tappedGramGroups: Set<number>;
-  targetLanguage: Language;
 }
 
 type GradeItem =
@@ -245,53 +240,6 @@ const SwipeablePhrase = forwardRef<SwipeableWordHandle, SwipeablePhraseProps>(
 );
 
 SwipeablePhrase.displayName = "SwipeablePhrase";
-
-function YourTranslation({ userTranslation }: { userTranslation: string }) {
-  return (
-    <div className="rounded-lg p-4 border">
-      <p className="text-sm font-medium mb-1">Your translation:</p>
-      <p className="text-lg font-medium">{userTranslation}</p>
-    </div>
-  );
-}
-
-function CorrectTranslation({ sentence }: { sentence: string }) {
-  return (
-    <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
-      <p className="text-sm font-medium text-green-600 dark:text-green-400 mb-1">
-        Correct translation:
-      </p>
-      <p className="text-lg font-medium">{sentence}</p>
-    </div>
-  );
-}
-
-function FeedbackSkeleton() {
-  return (
-    <div className="space-y-4 mt-4 animate-feedback-in">
-      <div className="space-y-3">
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-4 w-1/2" />
-      </div>
-    </div>
-  );
-}
-
-function AutogradeError() {
-  return (
-    <div
-      className={`rounded-lg p-4 border bg-yellow-500/10 border-yellow-500/20`}
-    >
-      <p
-        className={`text-sm font-medium mb-1 text-yellow-600 dark:text-yellow-400`}
-      >
-        Your submission could not be graded automatically. Please grade the
-        words manually below.
-      </p>
-    </div>
-  );
-}
 
 interface PhraseStatusesProps {
   selectedPhraseIndex: number;
@@ -592,80 +540,6 @@ export function GramDefinitionDisplay({
   );
 }
 
-function ChallengeSentence({
-  literals,
-  literalGrades,
-  isPerfect,
-  onWordTap,
-  tappedWords,
-  literalGramIndices,
-  tappedGramGroups,
-  targetLanguage,
-}: ChallengeSentenceProps) {
-  const getLiteralColorClass = (literal: Literal<string>, i: number) => {
-    if (isPerfect) {
-      return "text-green-600 dark:text-green-400";
-    }
-
-    const isHeteronym =
-      (literal.word.word_type as { type?: string })?.type === "Heteronym";
-
-    // Highlight all literals in a tapped gram group
-    const gramGroup = literalGramIndices[i];
-    if (gramGroup !== undefined && tappedGramGroups.has(gramGroup)) {
-      return "text-yellow-500 dark:text-yellow-400";
-    }
-
-    // Also highlight individually tapped words (backwards compat)
-    if (isHeteronym && tappedWords.has(i)) {
-      return "text-yellow-500 dark:text-yellow-400";
-    }
-
-    if (!literalGrades || !isHeteronym) {
-      return "";
-    }
-
-    const grade = literalGrades[i];
-    if (grade === "Remembered") return "text-green-600 dark:text-green-400";
-    if (grade === "Forgot") return "text-red-600 dark:text-red-400";
-
-    return "";
-  };
-
-  return (
-    <h2 className="text-2xl font-semibold">
-      {literals.map((literal: Literal<string>, i: number) => {
-        const colorClass = getLiteralColorClass(literal, i);
-        const isHeteronym =
-          (literal.word.word_type as { type?: string })?.type === "Heteronym";
-
-        return (
-          <span key={i}>
-            <span
-              className={cn(
-                colorClass,
-                isHeteronym
-                  ? "cursor-pointer underline-offset-3 underline decoration-dotted hover:decoration-solid hover:decoration-3 transition-transform hover:scale-105 inline-block"
-                  : "",
-              )}
-              onClick={() => {
-                if (isHeteronym) {
-                  onWordTap(i);
-                }
-              }}
-            >
-              <TargetLanguageText language={targetLanguage}>
-                {literal.word.text}
-              </TargetLanguageText>
-            </span>
-            {literal.whitespace}
-          </span>
-        );
-      })}
-    </h2>
-  );
-}
-
 export function TranslationChallenge({
   sentence,
   onComplete,
@@ -947,6 +821,30 @@ export function TranslationChallenge({
     "graded" in grade &&
     ("perfect" in grade.graded ||
       gradeItems.some((item) => item.status !== null));
+
+  // Normalize the WASM grade shape into the single shared verdict presentation
+  // (lowercase grades, one boundary). Null while grading is in flight/unstarted.
+  const gradedState = grade && "graded" in grade ? grade.graded : null;
+  const isPerfect = gradedState !== null && "perfect" in gradedState;
+  const normalizedGrades: LiteralGrade[] | undefined =
+    gradedState && "literalGrades" in gradedState
+      ? gradedState.literalGrades.map((g) =>
+          g === "Remembered" ? "remembered" : g === "Forgot" ? "forgot" : null,
+        )
+      : undefined;
+  const verdict: TranslationVerdictData | null = gradedState
+    ? {
+        userTranslation,
+        correctTranslation,
+        isPerfect,
+        encouragement: gradedState.encouragement ?? null,
+        explanation: gradedState.explanation ?? null,
+        autogradingError:
+          "autogradingError" in gradedState
+            ? (gradedState.autogradingError ?? null)
+            : null,
+      }
+    : null;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -1252,19 +1150,8 @@ export function TranslationChallenge({
                   <ChallengeSentence
                     literals={sentence.target_language_literals}
                     onWordTap={handleWordTap}
-                    literalGrades={
-                      grade &&
-                      "graded" in grade &&
-                      "literalGrades" in grade.graded
-                        ? grade.graded.literalGrades
-                        : undefined
-                    }
-                    isPerfect={
-                      (grade &&
-                        "graded" in grade &&
-                        "perfect" in grade.graded) ??
-                      undefined
-                    }
+                    grades={normalizedGrades}
+                    isPerfect={isPerfect}
                     tappedWords={tappedWords}
                     literalGramIndices={literalGramIndices}
                     tappedGramGroups={tappedGramGroups}
@@ -1307,56 +1194,35 @@ export function TranslationChallenge({
             ) : (
               <div className="space-y-4 mt-4 animate-feedback-in">
                 {"grading" in grade ? (
+                  <div className="space-y-2">
+                    <YourTranslation userTranslation={userTranslation} />
+                    <CorrectTranslation sentence={correctTranslation} />
+                    <FeedbackSkeleton />
+                  </div>
+                ) : verdict ? (
                   <>
-                    <div className="space-y-2">
-                      <YourTranslation userTranslation={userTranslation} />
-                      <CorrectTranslation sentence={correctTranslation} />
-                      <FeedbackSkeleton />
-                    </div>
-                  </>
-                ) : "perfect" in grade.graded ? (
-                  <>
-                    <div className="space-y-2">
-                      <CorrectTranslation sentence={correctTranslation} />
+                    <TranslationVerdict
+                      verdict={verdict}
+                      targetLanguage={targetLanguage}
+                    />
 
-                      <FeedbackDisplay
-                        encouragement={grade.graded.encouragement}
-                        explanation={grade.graded.explanation}
-                        perfect
+                    {!verdict.isPerfect && (
+                      <PhraseStatuses
+                        gradeItems={gradeItems}
+                        phraseRefs={phraseRefs}
+                        handleGradeSwipe={handleGradeSwipe}
+                        selectedPhraseIndex={selectedPhraseIndex}
+                        setSelectedPhraseIndex={setSelectedPhraseIndex}
+                        openByDefault={
+                          "graded" in grade &&
+                          "autogradingError" in grade.graded &&
+                          grade.graded.autogradingError !== undefined
+                        }
                         targetLanguage={targetLanguage}
                       />
-                    </div>
+                    )}
                   </>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      <YourTranslation userTranslation={userTranslation} />
-                      <CorrectTranslation sentence={correctTranslation} />
-                    </div>
-
-                    {"autogradingError" in grade.graded &&
-                      grade.graded.autogradingError && <AutogradeError />}
-
-                    <FeedbackDisplay
-                      encouragement={grade.graded.encouragement}
-                      explanation={grade.graded.explanation}
-                      targetLanguage={targetLanguage}
-                    />
-
-                    <PhraseStatuses
-                      gradeItems={gradeItems}
-                      phraseRefs={phraseRefs}
-                      handleGradeSwipe={handleGradeSwipe}
-                      selectedPhraseIndex={selectedPhraseIndex}
-                      setSelectedPhraseIndex={setSelectedPhraseIndex}
-                      openByDefault={
-                        "autogradingError" in grade.graded &&
-                        grade.graded.autogradingError !== undefined
-                      }
-                      targetLanguage={targetLanguage}
-                    />
-                  </>
-                )}
+                ) : null}
               </div>
             )}
           </div>

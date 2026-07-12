@@ -119,9 +119,14 @@ python3 yap-mcp/smoke/remote_oauth.py target/debug/yap-mcp serve
 ```
 
 The MCP Apps review widget lives in `yap-mcp/widget/` (Vite; build with
-`pnpm install && pnpm build` there). It reuses yap-frontend components via
-aliases — if you change AudioButton, the ui/ primitives, or lib/pure.ts, run
-the widget's `pnpm check` too.
+`pnpm install && pnpm build` there). It reuses yap-frontend components
+verbatim via aliases — including the app's own `Flashcard` — so a change to
+those components flows to the widget automatically. If you change AudioButton,
+the ui/ primitives, `Flashcard`, or lib/pure.ts, run the widget's `pnpm check`
+too. Any component reachable from the widget must stay free of WASM *value*
+imports (`import type` is fine): the `wasm-guard` alias turns a stray value
+import into a loud build failure, and `pnpm build` runs in CI, so this is
+enforced mechanically — no human vigilance required.
 
 ### Key Technologies
 
