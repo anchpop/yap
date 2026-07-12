@@ -129,6 +129,8 @@ Accounts and cross-device sync uses supabase as a backend. Migrations are in the
 
 You can connect Yap to your LLM provider of choice using the following MCP server: https://mcp.yap.town/mcp
 
+<img width="1056" height="398" alt="CleanShot 2026-07-11 at 19 30 34@2x" src="https://github.com/user-attachments/assets/9e9046c7-ff4b-401c-8fa2-af9331568b9a" />
+
 ## Special thanks
 
 ### Data
