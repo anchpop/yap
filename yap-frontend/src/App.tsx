@@ -127,12 +127,14 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            // Skip network-level fetch failures (TypeError) and InvalidStateError
+            // Skip network-level fetch failures (TypeError), InvalidStateError,
+            // and SecurityError (blocked by browser privacy/extension settings)
             // — these are transient errors that aren't actionable bugs.
             if (
               navigator.onLine &&
               e?.name !== "InvalidStateError" &&
-              e?.name !== "TypeError"
+              e?.name !== "TypeError" &&
+              e?.name !== "SecurityError"
             ) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
@@ -1690,20 +1692,25 @@ export function useDeck():
       };
     } catch (error) {
       const errorMessage = getErrorMessage(error);
-      Sentry.captureException(error instanceof Error ? error : new Error(errorMessage), {
-        tags: {
-          "language-pack.target": course.targetLanguage,
-          "language-pack.native": course.nativeLanguage,
-          "language-pack.phase": "deck-state",
-        },
-        contexts: {
-          "language-pack": {
-            targetLanguage: course.targetLanguage,
-            nativeLanguage: course.nativeLanguage,
-            rawError: errorMessage,
+      const isNetworkError = errorMessage.startsWith("Network error:");
+      if (!isNetworkError) {
+        // Only report non-network errors to Sentry. Network failures are expected
+        // on flaky mobile connections and the user already sees a retry UI.
+        Sentry.captureException(error instanceof Error ? error : new Error(errorMessage), {
+          tags: {
+            "language-pack.target": course.targetLanguage,
+            "language-pack.native": course.nativeLanguage,
+            "language-pack.phase": "deck-state",
           },
-        },
-      });
+          contexts: {
+            "language-pack": {
+              targetLanguage: course.targetLanguage,
+              nativeLanguage: course.nativeLanguage,
+              rawError: errorMessage,
+            },
+          },
+        });
+      }
       return {
         type: "error",
         courseKey,

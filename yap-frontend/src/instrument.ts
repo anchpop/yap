@@ -26,11 +26,15 @@ Sentry.init({
 
     // Filter WASM fetch failures on iOS/WKWebView. These are transient network
     // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
-    if (message === "Load failed") {
+    // (the iOS Safari message for a failed fetch, sometimes re-wrapped by
+    // wasm-bindgen as "TypeError: Load failed") with a WASM file in the stack.
+    // The module's top-level await means the rejection often carries no
+    // captured call stack at all, so an empty stacktrace also counts as a match.
+    if (message === "Load failed" || message === "TypeError: Load failed") {
       const frames =
         event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       if (
+        frames.length === 0 ||
         frames.some(
           (f) =>
             f.filename?.includes("wasm-helper") ||
@@ -39,6 +43,13 @@ Sentry.init({
       ) {
         return null;
       }
+    }
+
+    // Chrome's equivalent of the above: the .wasm fetch's response stream
+    // aborts mid-flight, so WebAssembly.compile/instantiate reject with this.
+    if (message.startsWith("WebAssembly compilation aborted") ||
+        message.startsWith("WebAssembly instantiation aborted")) {
+      return null;
     }
 
     return event;
