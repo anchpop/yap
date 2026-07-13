@@ -1180,7 +1180,7 @@ function Review({
             targetLanguage={targetLanguage}
             dailyReviewTarget={deck.get_daily_review_target_setting()}
             onChangeDailyReviewTarget={(target: DailyReviewTarget) => {
-              const event = deck.set_daily_review_target(target);
+              const event = deck.change_daily_review_target(target);
               weapon.add_deck_event(event);
             }}
             onDismiss={() => setDismissedAccomplishment(true)}

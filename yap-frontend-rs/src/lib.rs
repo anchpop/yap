@@ -2771,7 +2771,7 @@ impl Deck {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub fn set_daily_review_target(&self, daily_review_target: DailyReviewTarget) -> DeckEvent {
+    pub fn change_daily_review_target(&self, daily_review_target: DailyReviewTarget) -> DeckEvent {
         DeckEvent::Language(LanguageEvent {
             target_language: self.context.course.target_language,
             native_language: self.context.course.native_language,
