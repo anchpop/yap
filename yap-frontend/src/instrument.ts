@@ -18,18 +18,27 @@ Sentry.init({
 
   beforeSend(event) {
     const message = event.exception?.values?.[0]?.value ?? "";
+    const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? [];
 
     // Filter out browser extension errors (not our code)
     if (message.includes("runtime.sendMessage()")) {
       return null;
     }
 
-    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
-    // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
+    // Filter errors thrown from Cloudflare Web Analytics' beacon.min.js — a
+    // third-party script we don't control, injected outside our source tree.
+    // Old browsers (e.g. Chrome <92 lacking Array.prototype.at) crash inside
+    // it with nothing for us to fix.
+    if (frames.some((f) => f.filename?.includes("beacon.min.js"))) {
+      return null;
+    }
+
+    // Filter WASM fetch/compile failures caused by a dropped network
+    // connection during .wasm module initialization — identifiable by
+    // "Load failed" (the iOS Safari message for a failed fetch) with a WASM
+    // file in the stack, or by Chrome's "WebAssembly compilation aborted"
+    // message when streaming instantiation is interrupted mid-transfer.
     if (message === "Load failed") {
-      const frames =
-        event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       if (
         frames.some(
           (f) =>
@@ -39,6 +48,9 @@ Sentry.init({
       ) {
         return null;
       }
+    }
+    if (message.startsWith("WebAssembly compilation aborted")) {
+      return null;
     }
 
     return event;
