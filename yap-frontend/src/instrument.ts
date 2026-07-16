@@ -41,6 +41,14 @@ Sentry.init({
       }
     }
 
+    // Same category of transient network failure, but for the streaming-compile
+    // path: the browser aborts the .wasm response body mid-download (flaky
+    // connection), which surfaces as this WebAssembly-specific message rather
+    // than a generic "Load failed".
+    if (message.startsWith("WebAssembly compilation aborted: Network error")) {
+      return null;
+    }
+
     return event;
   },
 

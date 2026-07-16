@@ -127,12 +127,15 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            // Skip network-level fetch failures (TypeError) and InvalidStateError
-            // — these are transient errors that aren't actionable bugs.
+            // Skip network-level fetch failures (TypeError), InvalidStateError, and
+            // SecurityError (thrown when the browser blocks SW registration/update,
+            // e.g. private browsing) — these are transient errors that aren't
+            // actionable bugs.
             if (
               navigator.onLine &&
               e?.name !== "InvalidStateError" &&
-              e?.name !== "TypeError"
+              e?.name !== "TypeError" &&
+              e?.name !== "SecurityError"
             ) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
