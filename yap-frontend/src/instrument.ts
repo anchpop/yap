@@ -24,21 +24,46 @@ Sentry.init({
       return null;
     }
 
-    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
-    // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
-    if (message === "Load failed") {
-      const frames =
-        event.exception?.values?.[0]?.stacktrace?.frames ?? [];
-      if (
-        frames.some(
-          (f) =>
-            f.filename?.includes("wasm-helper") ||
-            f.filename?.includes("_bg.wasm"),
-        )
-      ) {
-        return null;
-      }
+    // Filter third-party analytics beacon errors (not our code).
+    const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? [];
+    if (frames.some((f) => f.filename?.includes("beacon.min.js"))) {
+      return null;
+    }
+
+    // Filter WASM fetch/compile failures caused by flaky networks or browsers
+    // that predate WebAssembly / reference types. Nothing we can do about
+    // these beyond the existing browser-support check, which only runs once
+    // the module has already loaded.
+    if (
+      message.includes("WebAssembly is not defined") ||
+      message.includes("WebAssembly compilation aborted") ||
+      message.includes("WebAssembly.instantiateStreaming")
+    ) {
+      return null;
+    }
+
+    // Filter WASM load failures. Identifiable by the generic network-error
+    // text browsers use for a failed fetch ("Load failed" on iOS/WKWebView,
+    // "Failed to fetch" on Chromium, "NetworkError" on Firefox) together with
+    // a WASM file in the stack.
+    if (
+      (message.includes("Load failed") ||
+        message.includes("Failed to fetch") ||
+        message.includes("NetworkError")) &&
+      frames.some(
+        (f) =>
+          f.filename?.includes("wasm-helper") ||
+          f.filename?.includes("_bg.wasm"),
+      )
+    ) {
+      return null;
+    }
+
+    // Filter IndexedDB backing-store errors. This is a known browser/OS-level
+    // storage engine fault (not triggered by any of our own indexedDB calls)
+    // seen on constrained or aging devices — there's no app-level recovery.
+    if (message.includes("Internal error opening backing store")) {
+      return null;
     }
 
     return event;

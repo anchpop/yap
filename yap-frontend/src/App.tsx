@@ -142,6 +142,13 @@ function AppMain() {
         setInterval(update, updateIntervalMS);
       }
     },
+    onRegisterError(e) {
+      // Skip network-level failures (TypeError) and browser lockdown errors
+      // (SecurityError) — these are transient/environmental, not actionable bugs.
+      if (e?.name !== "TypeError" && e?.name !== "SecurityError") {
+        Sentry.captureException(e, { tags: { "sw.register_error": true } });
+      }
+    },
   });
 
   return <AppCheckBrowserSupport />;
