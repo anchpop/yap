@@ -1030,6 +1030,7 @@ impl YapMcp {
         annotations(
             title = "Search the dictionary",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1175,6 +1176,7 @@ impl YapMcp {
         annotations(
             title = "List due flashcards",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1289,6 +1291,7 @@ impl YapMcp {
         annotations(
             title = "Present a card",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1403,6 +1406,7 @@ impl YapMcp {
         annotations(
             title = "Present a translation challenge",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1484,6 +1488,7 @@ impl YapMcp {
         annotations(
             title = "Grade a translation",
             read_only_hint = false,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1624,7 +1629,12 @@ impl YapMcp {
     #[tool(
         title = "Get audio",
         description = "Fetch pronunciation audio for a widget: the course's human voice-actor recording when one exists, otherwise synthesized speech — the same resolution the yap app uses. Returns base64 audio. Intended for the review widget; not useful in conversation.",
-        annotations(title = "Get audio", read_only_hint = true, open_world_hint = false)
+        annotations(
+            title = "Get audio",
+            read_only_hint = true,
+            destructive_hint = false,
+            open_world_hint = false
+        )
     )]
     async fn get_audio(
         &self,
@@ -1784,6 +1794,7 @@ impl YapMcp {
         annotations(
             title = "Get example sentences",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1827,6 +1838,7 @@ impl YapMcp {
         annotations(
             title = "Get learning stats",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1890,6 +1902,7 @@ impl YapMcp {
         annotations(
             title = "Search dictionary pages",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]
@@ -1932,6 +1945,7 @@ impl YapMcp {
         annotations(
             title = "Fetch a dictionary page",
             read_only_hint = true,
+            destructive_hint = false,
             open_world_hint = false
         )
     )]

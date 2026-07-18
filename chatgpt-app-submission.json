@@ -1,0 +1,236 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "yap",
+    "subtitle": "Review and learn vocabulary",
+    "description": "yap helps language learners review due flashcards, practice words in example sentences and translation challenges, add vocabulary, search the course dictionary, and check learning progress through ChatGPT.",
+    "category": "EDUCATION"
+  },
+  "tools": {
+    "search_dictionary": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Searches the user's course dictionary and returns matching entries without changing account data.",
+        "open_world_justification": "Does not publish content or modify any public or third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "add_cards": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Appends an event that adds selected vocabulary cards to the user's private yap deck.",
+        "open_world_justification": "Changes only the authenticated user's private yap account and does not publish externally.",
+        "destructive_justification": "Adds cards through an append-only event and does not delete or overwrite existing account data."
+      }
+    },
+    "get_due_cards": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Retrieves currently due cards and lockup counts without changing their scheduling state.",
+        "open_world_justification": "Reads only the authenticated user's private yap deck.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "unlock_cards": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Appends an event that releases the next eligible batch of cards from lockup into the user's due queue.",
+        "open_world_justification": "Changes only the authenticated user's private yap deck and does not publish externally.",
+        "destructive_justification": "Releases cards through an append-only event without deleting or overwriting review history."
+      }
+    },
+    "present_card": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Builds and displays an interactive flashcard challenge without itself recording a review.",
+        "open_world_justification": "Displays private course content inside ChatGPT and does not publish it externally.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "present_translation": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Builds and displays a corpus-based translation challenge without itself recording a review.",
+        "open_world_justification": "Displays private course content inside ChatGPT and does not publish it externally.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "grade_translation": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Autogrades the user's answer and appends a translation-review event that updates private learning progress.",
+        "open_world_justification": "Sends the answer through yap's grading service and changes only the authenticated user's private yap account.",
+        "destructive_justification": "Records an append-only review event and does not delete or overwrite existing review history."
+      }
+    },
+    "get_audio": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Retrieves an existing human recording or synthesizes pronunciation audio without changing learning progress.",
+        "open_world_justification": "Returns audio privately to the widget and does not publish or message any external audience.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "log_review": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Appends the user's chosen review rating and updates spaced-repetition scheduling in their private yap account.",
+        "open_world_justification": "Changes only the authenticated user's private learning data and does not publish externally.",
+        "destructive_justification": "Records an append-only review event and does not delete or overwrite existing review history."
+      }
+    },
+    "get_sentences": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Retrieves attributed example sentences for a validated dictionary gram without changing account data.",
+        "open_world_justification": "Returns course content privately and does not publish or alter an external system.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "get_stats": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Calculates and returns the user's learning statistics without changing account data.",
+        "open_world_justification": "Reads only the authenticated user's private yap learning data.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "search": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Searches public dictionary entries for the user's course without modifying any records.",
+        "open_world_justification": "Returns existing public dictionary links but does not create or modify public content.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    },
+    "fetch": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Retrieves one dictionary entry and its example sentences without modifying any records.",
+        "open_world_justification": "Returns an existing public dictionary link but does not create or modify public content.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or otherwise irreversibly change data."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "Find vocabulary and add a confirmed selection to the user's deck.",
+      "user_prompt": "Find the French word for 'neighborhood', show me the matching dictionary entries, and add the one I confirm to my yap deck.",
+      "file_attachment_urls": null,
+      "tools_triggered": "search_dictionary, add_cards",
+      "expected_output": "Shows validated matching entries before confirmation, then reports which selected card was added or was already present.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Run an interactive flashcard review from the due queue.",
+      "user_prompt": "Show me one due yap card and let me review it interactively.",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_due_cards, present_card, get_audio, log_review",
+      "expected_output": "Displays a due flashcard with pronunciation audio and records only the grade selected by the user in the widget.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Run a corpus-based translation review for an eligible due card.",
+      "user_prompt": "Give me a translation challenge for a written yap card I have reviewed before.",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_due_cards, present_translation, get_audio, grade_translation",
+      "expected_output": "Displays a comprehensible corpus sentence, grades the user's typed translation, explains the result, and records one review event.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Retrieve comprehensible examples for a dictionary word.",
+      "user_prompt": "Look up 'pourtant' in my yap course and give me three example sentences composed of words I already know.",
+      "file_attachment_urls": null,
+      "tools_triggered": "search_dictionary, get_sentences",
+      "expected_output": "Returns the validated entry and up to three comprehensible attributed sentences while separating harder examples.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Summarize progress and provide a citable public dictionary entry.",
+      "user_prompt": "Summarize my yap progress, then find and cite the dictionary page for 'bonjour'. If cards are in lockup, ask before releasing the next batch.",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_stats, search, fetch, unlock_cards",
+      "expected_output": "Summarizes private learning statistics, returns a readable dictionary entry with its public URL, and unlocks cards only after confirmation when applicable.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not trigger for general-purpose translation outside yap practice.",
+      "user_prompt": "Translate this business email into French for me.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because general document translation is outside its supported learning workflows.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for unrelated web research.",
+      "user_prompt": "Search the web for today's news from Paris.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because it searches yap dictionary content rather than the general web or news sources.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for flashcards managed in another product.",
+      "user_prompt": "Create a new Anki deck from these lecture notes.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because it only manages the authenticated user's yap deck and cannot create Anki decks.",
+      "expected_output_url": null
+    }
+  ]
+}
