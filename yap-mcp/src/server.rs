@@ -2204,11 +2204,25 @@ impl ServerHandler for YapMcp {
         request: ReadResourceRequestParams,
         _context: RequestContext<RoleServer>,
     ) -> Result<ReadResourceResult, McpError> {
+        // Any version of the widget URI (bare, current, or a stale hash) gets
+        // the current build. Hosts cache tool metadata across deploys — after
+        // a widget rebuild, ChatGPT still asks for the previous hash, and a
+        // not-found here surfaces as "Failed to fetch template" on every
+        // present_* call until the host refreshes the schema. Serving current
+        // content for a stale URI is strictly better than an error; the hash
+        // still does its cache-busting job by changing the URI hosts fetch.
+        let is_widget_uri = request.uri == WIDGET_URI_BASE
+            || request
+                .uri
+                .strip_prefix(WIDGET_URI_BASE)
+                .is_some_and(|rest| rest.starts_with('@'));
         match &self.widget {
-            Some(widget) if widget.uri == request.uri => {
+            Some(widget) if is_widget_uri => {
                 let mut result = ReadResourceResult::new(vec![]);
                 result.contents = vec![ResourceContents::TextResourceContents {
-                    uri: widget.uri.clone(),
+                    // Echo the requested URI: hosts key the fetched content
+                    // by the URI they asked for.
+                    uri: request.uri.clone(),
                     mime_type: Some(WIDGET_MIME.to_string()),
                     text: widget.html.clone(),
                     meta: Some(widget_resource_meta()),
