@@ -16,15 +16,16 @@ export function WidgetPronunciationCard({
   challenge: PronunciationChallengeData;
 }) {
   const [skipped, setSkipped] = useState(false);
-  const { grading, graded, gradeError, grade } = useLogReview(
+  const { grading, graded, gradeError, grade, claim } = useLogReview(
     challenge,
     challenge.pattern,
   );
 
   const cantSpeak = useCallback(() => {
-    // A grade in flight (or done) wins — don't tell the model the card was
-    // skipped without a review when one was just logged.
-    if (grading || graded) return;
+    // claim() takes the card's one outcome — a skip can't race a pending
+    // or completed grade, so we never tell the model "no review was
+    // logged" when one was.
+    if (!claim()) return;
     setSkipped(true);
     void app
       .updateModelContext({
@@ -36,12 +37,12 @@ export function WidgetPronunciationCard({
         ],
       })
       .catch(() => {});
-  }, [challenge.pattern, grading, graded]);
+  }, [challenge.pattern, claim]);
 
   if (skipped) {
     return (
       <p className="text-sm text-muted-foreground text-center font-mono py-6">
-        skipped — can't speak right now
+        skipped — let the assistant know you can't speak right now
       </p>
     );
   }

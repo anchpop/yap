@@ -21,18 +21,26 @@ export function useLogReview(
   const [grading, setGrading] = useState(false);
   const [graded, setGraded] = useState<Rating | null>(null);
   const [gradeError, setGradeError] = useState<string | null>(null);
-  // Synchronous single-submit lock. State guards alone don't cut it: the app
+  // Synchronous single-outcome lock. State guards alone don't cut it: the app
   // components' keydown effects capture the first render's callback (empty
   // dependency lists), so a stale closure can call grade() with grading/graded
-  // still false. The ref is checked-and-set synchronously, so a second call —
-  // however stale its closure — can never race a pending submission and later
-  // report a rating other than the one actually recorded.
+  // still false — and a drag-grade invokes onRating only after its exit
+  // animation, so a skip click can land in between. The ref is
+  // checked-and-set synchronously, so whichever outcome claims it first
+  // (a grade or a skip) wins and every later attempt is a no-op.
   const submittedRef = useRef(false);
+
+  // Claim the card's one outcome. Skip actions call this too, so a skip and
+  // a grade can never both go through for the same card.
+  const claim = useCallback(() => {
+    if (submittedRef.current) return false;
+    submittedRef.current = true;
+    return true;
+  }, []);
 
   const grade = useCallback(
     async (rating: Rating) => {
-      if (submittedRef.current) return;
-      submittedRef.current = true;
+      if (!claim()) return;
       setGrading(true);
       setGradeError(null);
       try {
@@ -81,8 +89,8 @@ export function useLogReview(
         setGrading(false);
       }
     },
-    [challenge, display, onError],
+    [challenge, display, onError, claim],
   );
 
-  return { grading, graded, gradeError, grade };
+  return { grading, graded, gradeError, grade, claim };
 }
