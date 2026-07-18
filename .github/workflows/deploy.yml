@@ -230,6 +230,28 @@ jobs:
       - name: Pull LFS rkyv files
         run: git lfs pull --include="out/*_for_*/language_data.rkyv"
 
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-web-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-web-
+            ${{ runner.os }}-cargo-
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -250,6 +272,18 @@ jobs:
         run: flyctl auth docker
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
+
+      # The widget reuses yap-frontend components verbatim, so building it
+      # needs the frontend's node_modules and the wasm pkg's .d.ts (type-only
+      # imports — the WASM itself never enters the bundle, but tsc needs the
+      # declarations).
+      - name: Build WASM module (for widget type declarations)
+        run: wasm-pack build --release
+        working-directory: yap-frontend-rs
+
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: yap-frontend
 
       # Built outside Docker (the Dockerfile COPYs dist/index.html in);
       # nothing generated is committed.
