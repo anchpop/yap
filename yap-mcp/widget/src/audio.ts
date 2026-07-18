@@ -2,22 +2,42 @@
 // signatures and playback semantics, but bytes come from the server's
 // app-only `get_audio` tool over the bridge (which runs the app's own
 // resolution: human recording first, TTS fallback) instead of the WASM/OPFS
-// path. A memory cache stands in for OPFS, and audio is fed to the element
-// as a data: URI — the MCP Apps CSP allows `media-src data:` but says
-// nothing about blob:.
+// path. Playback goes through the Web Audio API (decodeAudioData + buffer
+// source) rather than an <audio> element: hosts sandbox the widget iframe
+// with a media-src CSP that may allow neither data: nor blob: URIs (ChatGPT
+// blocks both), and decoding raw bytes never loads a media resource, so no
+// CSP directive applies. The one casualty is onAudioElement (the app's
+// audio visualizer hook) — there is no element to hand it, so the
+// visualizer stays static in the widget.
 import type { AudioRequest, VoiceActorInfo } from "../../../yap-frontend-rs/pkg";
 import { app, connectOnce, resultText } from "./bridge";
 
 interface CachedAudio {
-  dataUri: string;
+  buffer: AudioBuffer;
   voiceActor?: VoiceActorInfo;
 }
 
 const cache = new Map<string, CachedAudio>();
 const inflight = new Map<string, Promise<CachedAudio>>();
 
+let sharedContext: AudioContext | null = null;
+
+function audioContext(): AudioContext {
+  sharedContext ??= new AudioContext();
+  return sharedContext;
+}
+
 function cacheKey(request: AudioRequest): string {
   return JSON.stringify(request);
+}
+
+function decodeBase64(base64: string): ArrayBuffer {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes.buffer;
 }
 
 async function fetchAudio(request: AudioRequest): Promise<CachedAudio> {
@@ -35,16 +55,17 @@ async function fetchAudio(request: AudioRequest): Promise<CachedAudio> {
     });
     const audio = result.structuredContent as {
       audio_base64?: string;
-      mime_type?: string;
       voice_actor?: VoiceActorInfo;
     } | null;
     if (result.isError || !audio?.audio_base64) {
       throw new Error(resultText(result) || "audio unavailable");
     }
-    const entry: CachedAudio = {
-      dataUri: `data:${audio.mime_type ?? "audio/mpeg"};base64,${audio.audio_base64}`,
-      voiceActor: audio.voice_actor,
-    };
+    // Decoding needs no user gesture even while the context is suspended,
+    // so prefetch can warm the cache with ready-to-play buffers.
+    const buffer = await audioContext().decodeAudioData(
+      decodeBase64(audio.audio_base64),
+    );
+    const entry: CachedAudio = { buffer, voiceActor: audio.voice_actor };
     cache.set(key, entry);
     return entry;
   })();
@@ -61,97 +82,85 @@ export function prefetchAudio(request: AudioRequest): void {
   void fetchAudio(request).catch(() => {});
 }
 
-let currentAudio: HTMLAudioElement | null = null;
+let stopCurrent: (() => void) | null = null;
 
 function abortError(): DOMException {
   return new DOMException("Aborted", "AbortError");
+}
+
+/// Autoplay policy for Web Audio: a context created before any user gesture
+/// starts suspended, and resume() just stays pending until a gesture lands.
+/// Mirror what HTMLAudioElement.play() would do — fail fast so the caller's
+/// error path (the audio button's banner) shows instead of hanging a spinner.
+async function ensureRunning(ctx: AudioContext): Promise<void> {
+  if (ctx.state === "running") return;
+  await Promise.race([
+    ctx.resume(),
+    new Promise((resolve) => setTimeout(resolve, 300)),
+  ]);
+  if ((ctx.state as string) !== "running") {
+    throw new Error("Audio requires a user interaction first");
+  }
 }
 
 async function playFetched(
   audioRequest: AudioRequest,
   signal: AbortSignal | undefined,
   onVoiceActor: ((info: VoiceActorInfo) => void) | undefined,
-  onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>,
 ): Promise<void> {
   if (signal?.aborted) throw abortError();
 
   // If something else is already playing, stop it so the new request wins.
-  if (currentAudio) {
-    try {
-      currentAudio.pause();
-      currentAudio.src = "";
-    } catch {
-      // ignore
-    }
-    currentAudio = null;
-  }
+  stopCurrent?.();
 
-  const { dataUri, voiceActor } = await fetchAudio(audioRequest);
+  const { buffer, voiceActor } = await fetchAudio(audioRequest);
   if (signal?.aborted) throw abortError();
   if (voiceActor) {
     onVoiceActor?.(voiceActor);
   }
 
-  const audio = new Audio(dataUri);
-  currentAudio = audio;
-  if (onAudioElement) {
-    await onAudioElement(audio);
-  }
-  if (signal?.aborted) {
-    try {
-      audio.pause();
-      audio.src = "";
-    } catch {
-      // ignore
-    }
-    if (currentAudio === audio) currentAudio = null;
-    throw abortError();
-  }
+  const ctx = audioContext();
+  await ensureRunning(ctx);
+  if (signal?.aborted) throw abortError();
+
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(ctx.destination);
 
   return new Promise((resolve, reject) => {
     let settled = false;
-
-    const onAbort = () => {
+    const settle = (outcome: () => void) => {
       if (settled) return;
       settled = true;
-      audio.onended = null;
-      audio.onerror = null;
+      signal?.removeEventListener("abort", onAbort);
+      if (stopCurrent === stop) stopCurrent = null;
+      outcome();
+    };
+
+    const stop = () => {
       try {
-        audio.pause();
-        audio.src = "";
+        source.stop();
       } catch {
-        // ignore
+        // never started / already stopped
       }
-      if (currentAudio === audio) currentAudio = null;
-      reject(abortError());
+      settle(() => reject(abortError()));
     };
+    const onAbort = () => stop();
+
     signal?.addEventListener("abort", onAbort, { once: true });
+    stopCurrent = stop;
 
-    audio.onended = () => {
-      if (settled) return;
-      settled = true;
-      signal?.removeEventListener("abort", onAbort);
-      if (currentAudio === audio) currentAudio = null;
-      resolve();
-    };
+    // Fires on natural end and after stop(); settle() makes the first
+    // outcome win, so a stopped source still rejects with AbortError.
+    source.onended = () => settle(resolve);
 
-    audio.onerror = () => {
-      if (settled) return;
-      settled = true;
-      signal?.removeEventListener("abort", onAbort);
-      // A bad clip shouldn't stay cached.
-      cache.delete(cacheKey(audioRequest));
-      if (currentAudio === audio) currentAudio = null;
-      reject(new Error("Audio playback failed"));
-    };
-
-    audio.play().catch((error: unknown) => {
-      if (settled) return;
-      settled = true;
-      signal?.removeEventListener("abort", onAbort);
-      if (currentAudio === audio) currentAudio = null;
-      reject(error instanceof Error ? error : new Error(String(error)));
-    });
+    try {
+      source.start();
+    } catch (error) {
+      settle(() =>
+        reject(error instanceof Error ? error : new Error(String(error))),
+      );
+    }
   });
 }
 
@@ -159,11 +168,11 @@ export async function playAudio(
   audioRequest: AudioRequest,
   _accessToken: string | undefined,
   _needsAuth: () => void,
-  onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>,
+  _onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>,
   signal?: AbortSignal,
   onVoiceActor?: (info: VoiceActorInfo) => void,
 ): Promise<void> {
-  return playFetched(audioRequest, signal, onVoiceActor, onAudioElement);
+  return playFetched(audioRequest, signal, onVoiceActor);
 }
 
 export async function playTempAudio(
