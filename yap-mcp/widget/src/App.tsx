@@ -4,6 +4,7 @@ import { app, connectOnce } from "./bridge";
 import { prefetchAudio } from "./audio";
 import type { Challenge } from "./types";
 import { WidgetFlashcard } from "./WidgetFlashcard";
+import { WidgetPronunciationCard } from "./WidgetPronunciationCard";
 import { TranslationCard } from "./TranslationCard";
 
 type Phase =
@@ -26,7 +27,11 @@ export function App() {
         setPhase({ kind: "error", message: "card data missing — ask for the card again" });
         return;
       }
-      prefetchAudio(challenge.audio);
+      if (challenge.type === "pronunciation") {
+        challenge.audio_requests.forEach(prefetchAudio);
+      } else {
+        prefetchAudio(challenge.audio);
+      }
       setPhase({ kind: "challenge", challenge });
     };
     app.onhostcontextchanged = (params) => {
@@ -51,6 +56,8 @@ export function App() {
       {phase.kind === "challenge" &&
         (phase.challenge.type === "translation" ? (
           <TranslationCard key={phase.challenge.nonce} challenge={phase.challenge} />
+        ) : phase.challenge.type === "pronunciation" ? (
+          <WidgetPronunciationCard key={phase.challenge.nonce} challenge={phase.challenge} />
         ) : (
           <WidgetFlashcard key={phase.challenge.nonce} challenge={phase.challenge} />
         ))}

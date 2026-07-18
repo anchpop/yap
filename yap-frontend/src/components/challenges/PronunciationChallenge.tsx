@@ -1,8 +1,7 @@
-import {
-  type AudioRequest,
-  type Language,
-  type Rating,
-  get_pronunciation_connector,
+import type {
+  AudioRequest,
+  Language,
+  Rating,
 } from "../../../../yap-frontend-rs/pkg";
 import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,10 @@ interface PronunciationChallengeProps {
   accessToken: string | undefined;
   onCantSpeak: () => void;
   targetLanguage: Language;
+  // The language's spoken "as in" connector (get_pronunciation_connector).
+  // A prop so this component stays free of WASM value imports — the MCP
+  // widget reuses it and its build bans the WASM module.
+  connector: string;
   isNew: boolean;
   timesTypeSeen: number;
 }
@@ -42,6 +45,7 @@ export function PronunciationChallenge({
   accessToken,
   onCantSpeak,
   targetLanguage,
+  connector,
   isNew,
   timesTypeSeen,
 }: PronunciationChallengeProps) {
@@ -52,8 +56,6 @@ export function PronunciationChallenge({
 
   const leftLabel = isNew ? "Didn't know" : "Forgot";
   const rightLabel = isNew ? "Already knew" : "Remembered";
-
-  const connector = get_pronunciation_connector(targetLanguage);
 
   const rate = (rating: Rating) => {
     bumpBackground(30.0);

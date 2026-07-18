@@ -4302,7 +4302,7 @@ impl ReviewInfo {
             }
             CardIndicator::WrittenGram { gram } => self.written_challenge(deck, &ctx, gram),
             CardIndicator::LetterPronunciation { pattern, position } => {
-                self.pronunciation_challenge(deck, &ctx, pattern, position)
+                self.pronunciation_challenge(deck, &ctx, pattern, position)?
             }
         };
 

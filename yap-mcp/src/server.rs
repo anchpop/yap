@@ -29,7 +29,7 @@ use language_utils::{
 use lasso::Spur;
 use weapon::data_model::{EventStore, EventType};
 use yap_frontend_rs::{
-    CardContext, CardIndicator, CardSummary, Context, Deck, DeckEvent, LanguageEvent,
+    CardContext, CardIndicator, CardSummary, Challenge, Context, Deck, DeckEvent, LanguageEvent,
     LanguageEventContent, Rating, TranslateComprehensibleSentence, autograde_translation,
     dictionary::{GramDictionaryDefinition, GramDictionaryEntry},
     translation_is_perfect,
@@ -1287,7 +1287,7 @@ impl YapMcp {
 
     #[tool(
         title = "Present a card",
-        description = "Present one flashcard to the user as an interactive widget: it quizzes the single gram (word), plays audio (a human recording when the course has one), reveals the answer, and records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. For a written card the user has seen before, prefer present_translation instead, like the yap app does.",
+        description = "Present one card to the user as an interactive widget: a written/listening card quizzes the single gram (word) with audio (a human recording when the course has one) and a reveal; a pronunciation card shows the letter-sound pattern with example words and their audio. The widget records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. For a written card the user has seen before, prefer present_translation instead, like the yap app does.",
         annotations(
             title = "Present a card",
             read_only_hint = true,
@@ -1322,15 +1322,79 @@ impl YapMcp {
         };
         let target_language = state.context.course.target_language;
 
+        // Pronunciation cards have no gram: build the app's own
+        // PronunciationChallenge (guide + per-example audio) and ship that.
+        if let CardIndicator::LetterPronunciation { pattern, position } = &card {
+            let now_ms = Utc::now().timestamp_millis() as f64;
+            let challenge = {
+                let deck = state.deck();
+                let not_in_deck = || {
+                    error(
+                        "that card isn't in the user's deck — pass a card exactly as returned by get_due_cards",
+                    )
+                };
+                let Some(pattern_spur) = deck.context().language_pack.string_rodeo.get(pattern)
+                else {
+                    return not_in_deck();
+                };
+                let interned = CardIndicator::LetterPronunciation {
+                    pattern: pattern_spur,
+                    position: *position,
+                };
+                let Some(card_ctx) = CardContext::new(deck, interned) else {
+                    return not_in_deck();
+                };
+                let review_info = deck.get_review_info(vec![], now_ms);
+                match review_info.pronunciation_challenge(deck, &card_ctx, pattern_spur, *position)
+                {
+                    Some(challenge) => challenge,
+                    None => {
+                        return error(
+                            "no pronunciation guide exists for that pattern in this course — quiz it in conversation instead",
+                        );
+                    }
+                }
+            };
+            let Challenge::PronunciationChallenge {
+                pattern,
+                guide,
+                audio_requests,
+                is_new,
+                times_type_seen,
+                ..
+            } = challenge
+            else {
+                unreachable!("pronunciation_challenge builds a PronunciationChallenge");
+            };
+            let language = state.target_language_value();
+            let structured = json!({
+                "challenge": {
+                    "type": "pronunciation",
+                    "nonce": presentation_nonce(),
+                    "language": language,
+                    "is_new": is_new,
+                    "times_type_seen": times_type_seen,
+                    "card": params.card,
+                    "pattern": pattern,
+                    "guide": guide,
+                    "audio_requests": audio_requests,
+                    // The spoken "as in" connector, precomputed here so the
+                    // widget needs no WASM to render the app's component.
+                    "connector": target_language.pronunciation_connector(),
+                },
+            });
+            let mut result = CallToolResult::success(vec![ContentBlock::text(format!(
+                "Presented the pronunciation pattern «{pattern}» to the user as an interactive card. The widget plays the example audio and records the user's own grade via log_review — do not call log_review for this card yourself; the outcome will be reported back here."
+            ))]);
+            result.structured_content = Some(structured);
+            return result;
+        }
+
         let gram = match &card {
             CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } => {
                 gram.clone()
             }
-            CardIndicator::LetterPronunciation { .. } => {
-                return error(
-                    "pronunciation cards can't be presented as a widget yet — quiz them in conversation instead",
-                );
-            }
+            CardIndicator::LetterPronunciation { .. } => unreachable!("returned above"),
         };
         let display = gram.to_display_string(target_language);
         let kind = card_kind(&card);
@@ -1351,7 +1415,7 @@ impl YapMcp {
                 CardIndicator::ListeningGram { .. } => {
                     CardIndicator::ListeningGram { gram: interned }
                 }
-                CardIndicator::LetterPronunciation { .. } => unreachable!("rejected above"),
+                CardIndicator::LetterPronunciation { .. } => unreachable!("returned above"),
             };
             let Some(ctx) = CardContext::new(deck, interned_indicator) else {
                 return error(
@@ -1365,7 +1429,7 @@ impl YapMcp {
                 CardIndicator::ListeningGram { .. } => {
                     review_info.listening_gram_flashcard(deck, interned)
                 }
-                CardIndicator::LetterPronunciation { .. } => unreachable!("rejected above"),
+                CardIndicator::LetterPronunciation { .. } => unreachable!("returned above"),
             };
             (
                 flashcard,
@@ -2187,8 +2251,9 @@ impl ServerHandler for YapMcp {
              the one the yap app would use: present_translation for a written card the user \
              has seen before (the user translates a corpus sentence containing the word; the \
              server autogrades and logs it), and present_card for new cards, listening \
-             cards, and words present_translation says have no comprehensible sentence yet \
-             (a single-gram flashcard the user grades themselves). Never call log_review or \
+             cards, pronunciation cards, and words present_translation says have no \
+             comprehensible sentence yet (a card the user grades themselves). Never call \
+             log_review or \
              grade_translation for a card you presented — the widget logs the review and \
              the outcome is reported back to you."
                 .to_string(),

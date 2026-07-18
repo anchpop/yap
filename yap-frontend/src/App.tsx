@@ -33,6 +33,7 @@ import {
   type MovieMetadataBasic,
   type /* comes from TranscriptionChallenge */ PartGraded,
   type Rating,
+  get_pronunciation_connector,
 } from "../../yap-frontend-rs/pkg";
 import { Button } from "@/components/ui/button.tsx";
 import { Progress } from "@/components/ui/progress.tsx";
@@ -1213,6 +1214,7 @@ function Review({
               accessToken={accessToken}
               onCantSpeak={handleCantSpeak}
               targetLanguage={targetLanguage}
+              connector={get_pronunciation_connector(targetLanguage)}
               isNew={currentChallenge.is_new}
               timesTypeSeen={currentChallenge.times_type_seen}
               key={totalReviewsCompleted}

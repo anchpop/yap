@@ -632,26 +632,23 @@ impl ReviewInfo {
         ctx.wrap_flashcard(deck, flashcard)
     }
 
+    /// None when the pattern has no pronunciation guide in the language pack
+    /// (a deck/pack mismatch — the card exists but there's nothing to teach).
     pub fn pronunciation_challenge(
         &self,
         deck: &Deck,
         ctx: &CardContext,
         pattern: Spur,
         position: PatternPosition,
-    ) -> Challenge<Gram<String>> {
+    ) -> Option<Challenge<Gram<String>>> {
         let language_pack = &deck.context.language_pack;
         let pattern_str = language_pack.string_rodeo.resolve(&pattern).to_string();
-        let Some(guide) = language_pack
+        let guide = language_pack
             .pronunciation_data
             .guides
             .iter()
             .find(|g| g.pattern == pattern_str && g.position == position)
-            .cloned()
-        else {
-            panic!(
-                "Pattern {pattern_str} with position {position:?} was in the deck, but was not found in pronunciation guides"
-            );
-        };
+            .cloned()?;
 
         let target_language = deck.context.course.target_language;
         let connector = target_language.pronunciation_connector();
@@ -673,7 +670,7 @@ impl ReviewInfo {
             })
             .collect();
 
-        Challenge::PronunciationChallenge {
+        Some(Challenge::PronunciationChallenge {
             indicator: ctx
                 .indicator
                 .resolve(&language_pack.string_rodeo, &language_pack.gram_rodeo),
@@ -682,6 +679,6 @@ impl ReviewInfo {
             audio_requests,
             is_new: ctx.is_new,
             times_type_seen: ctx.times_type_seen,
-        }
+        })
     }
 }
