@@ -20,7 +20,9 @@ _IS_EVAL = APP_NAME != "wav2vec2-phoneme"
 _SCALEDOWN_WINDOW = 180 if _IS_EVAL else 600
 
 # Production champion (mel-sidechannel + MLP heads, degrade-augmented).
-MODEL_ID = "anchpop/lexide-pronunciation-vad-clean-sidechannel-degrade"
+# Renamed on HF from lexide-pronunciation-vad-clean-sidechannel-degrade; the
+# commit SHA below is preserved across the rename.
+MODEL_ID = "anchpop/lexide-pronunciation"
 # Frozen to an exact commit SHA so a force-push to the HF repo can't silently
 # change the weights production serves. The SHA also feeds the image
 # weights-version and the verifier cache key, so a re-pin forces a clean
@@ -51,7 +53,7 @@ image = (
         # The MODEL_WEIGHTS_VERSION echo IS part of the cached layer command,
         # so bumping it forces Modal to rebuild the image and re-download
         # weights when a new epoch is pushed to the model repo.
-        "echo 'MODEL_WEIGHTS_VERSION=anchpop__lexide_pronunciation_vad_clean_sidechannel_degrade__00a661934cdd' && "
+        "echo 'MODEL_WEIGHTS_VERSION=anchpop__lexide_pronunciation__00a661934cdd' && "
         "python -c \"from transformers import Wav2Vec2Model, Wav2Vec2Processor; "
         "from huggingface_hub import hf_hub_download; "
         f"Wav2Vec2Processor.from_pretrained('{MODEL_ID}', revision='{MODEL_REVISION}'); "
