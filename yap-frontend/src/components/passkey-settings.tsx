@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { PasskeyListItem } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,9 @@ export function passkeysSupported(): boolean {
 
 export function PasskeySettings() {
   const [open, setOpen] = useState(false);
+  // Supabase only allows passkey registration for confirmed, non-anonymous
+  // users, so hide the dialog entirely until the email is confirmed.
+  const [emailConfirmed, setEmailConfirmed] = useState(false);
   const [passkeys, setPasskeys] = useState<PasskeyListItem[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +69,13 @@ export function PasskeySettings() {
     setBusy(false);
   };
 
-  if (!passkeysSupported()) {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setEmailConfirmed(Boolean(session?.user.email_confirmed_at));
+    });
+  }, []);
+
+  if (!passkeysSupported() || !emailConfirmed) {
     return null;
   }
 

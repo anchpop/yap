@@ -22,7 +22,7 @@ jobs:
     runs-on: big-runner
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -41,7 +41,7 @@ jobs:
       # primary-key hit, so the cache silently freezes at its first save and
       # every later run recompiles everything newer than it.)
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry/index/
@@ -78,7 +78,7 @@ jobs:
       dictionary_changed: ${{ steps.dictionary-digest.outputs.changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -92,7 +92,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry/index/
@@ -108,12 +108,12 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10
 
@@ -158,7 +158,7 @@ jobs:
           tar -cf deploy-output.tar deploy-output
 
       - name: Upload deploy directory
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deploy-output
           path: deploy-output.tar
@@ -181,7 +181,7 @@ jobs:
 
       - name: Upload dictionary data
         if: steps.dictionary-digest.outputs.changed == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dictionary-data
           path: dictionary-data.tar
@@ -191,7 +191,7 @@ jobs:
     runs-on: big-runner
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -199,7 +199,7 @@ jobs:
         run: git lfs pull --include="out/*_for_*/language_data.rkyv"
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Setup Fly CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
@@ -210,7 +210,7 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_SECRET }}
 
       - name: Build and push Fly image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: yap-ai-backend/Dockerfile
@@ -223,7 +223,7 @@ jobs:
     runs-on: big-runner
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -237,7 +237,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry/index/
@@ -253,17 +253,17 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Setup Fly CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
@@ -293,7 +293,7 @@ jobs:
           pnpm --dir yap-mcp/widget run build
 
       - name: Build and push MCP server image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: yap-mcp/Dockerfile
@@ -311,7 +311,7 @@ jobs:
     needs: [checks, web-build, backend-image, mcp-image]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -319,12 +319,12 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -341,7 +341,7 @@ jobs:
         run: ./scripts/smoke_test_server.sh
 
       - name: Download deploy directory
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: deploy-output
 
@@ -349,7 +349,7 @@ jobs:
         run: tar -xf deploy-output.tar
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -367,7 +367,7 @@ jobs:
 
       - name: Download dictionary data
         if: needs.web-build.outputs.dictionary_changed == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dictionary-data
 
@@ -390,7 +390,7 @@ jobs:
     needs: [checks, web-build, backend-image, mcp-image]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: false
 
