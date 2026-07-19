@@ -16,7 +16,7 @@ pub struct FetchedAudio {
 /// Identifies the voice actor behind a human-recorded clip. Crosses the
 /// wasm boundary as a plain object (`{ name, compensation }`) so the
 /// frontend shares this type rather than redeclaring it.
-#[derive(Clone, serde::Serialize, tsify::Tsify)]
+#[derive(Clone, serde::Serialize, schemars::JsonSchema, tsify::Tsify)]
 #[tsify(into_wasm_abi)]
 pub struct VoiceActorInfo {
     pub name: String,

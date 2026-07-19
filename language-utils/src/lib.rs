@@ -2071,6 +2071,7 @@ impl GramVocabEntry<lasso::Spur> {
     Hash,
     serde::Serialize,
     serde::Deserialize,
+    schemars::JsonSchema,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,

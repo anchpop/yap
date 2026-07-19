@@ -5,6 +5,7 @@
 //! `main.rs` wraps it all in a stdio transport for local use.
 
 pub mod deck;
+pub mod output;
 pub mod remote;
 pub mod server;
 pub mod sync;

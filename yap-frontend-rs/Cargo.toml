@@ -14,6 +14,7 @@ local-backend = []
 [dependencies]
 wasm-bindgen.workspace = true
 serde.workspace = true
+schemars.workspace = true
 serde_json.workspace = true
 chrono.workspace = true
 im.workspace = true

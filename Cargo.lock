@@ -6828,6 +6828,7 @@ dependencies = [
  "rkyv",
  "rs-fsrs",
  "rustc-hash",
+ "schemars",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",

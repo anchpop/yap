@@ -285,7 +285,7 @@ impl GramDictionaryEntry {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 #[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
 #[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub enum GramDictionaryDefinition {

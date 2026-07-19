@@ -36,6 +36,7 @@ use yap_frontend_rs::{
 };
 
 use crate::deck::{PackCache, build_deck, detect_course, insert_rows, new_store};
+use crate::output::*;
 use crate::sync::{
     DEVICE_ID, REVIEWS_STREAM, SupabaseAuth, fetch_events, find_user_id, upload_events,
 };
@@ -551,18 +552,18 @@ impl YapState {
             .copied()
             .collect();
 
-        let render = |sentence: &Spur| {
-            let text = pack.string_rodeo.resolve(sentence);
-            let translations: Vec<&str> = pack
+        let render = |sentence: &Spur| SentenceOut {
+            text: pack.string_rodeo.resolve(sentence).to_string(),
+            translations: pack
                 .translations
                 .get(sentence)
-                .map(|ts| ts.iter().map(|t| pack.string_rodeo.resolve(t)).collect())
-                .unwrap_or_default();
-            json!({
-                "text": text,
-                "translations": translations,
-                "sources": self.sentence_sources(sentence),
-            })
+                .map(|ts| {
+                    ts.iter()
+                        .map(|t| pack.string_rodeo.resolve(t).to_string())
+                        .collect()
+                })
+                .unwrap_or_default(),
+            sources: self.sentence_sources(sentence),
         };
         SampledSentences {
             comprehensible: chosen_comprehensible.iter().map(render).collect(),
@@ -574,26 +575,27 @@ impl YapState {
 }
 
 struct SampledSentences {
-    comprehensible: Vec<serde_json::Value>,
-    other: Vec<serde_json::Value>,
+    comprehensible: Vec<SentenceOut>,
+    other: Vec<SentenceOut>,
     total_comprehensible: usize,
     total_containing: usize,
 }
 
-fn ok_json(value: serde_json::Value) -> CallToolResult {
-    CallToolResult::success(vec![ContentBlock::text(
-        serde_json::to_string_pretty(&value).expect("json serializes"),
-    )])
-}
-
-/// Like ok_json, but also sets MCP structured content — ChatGPT's search/fetch
-/// contract wants results both ways.
+/// Success result carrying the value both as readable text and as MCP
+/// structured content.
 fn ok_json_structured(value: serde_json::Value) -> CallToolResult {
     let mut result = CallToolResult::success(vec![ContentBlock::text(
         serde_json::to_string_pretty(&value).expect("json serializes"),
     )]);
     result.structured_content = Some(value);
     result
+}
+
+/// Success result from a typed output (see [`crate::output`]): the same
+/// value becomes both the readable text and the structured content, so the
+/// payload always matches the tool's declared outputSchema.
+fn ok_typed<T: Serialize>(value: &T) -> CallToolResult {
+    ok_json_structured(serde_json::to_value(value).expect("output serializes"))
 }
 
 /// The public dictionary, canonical regardless of where the server runs.
@@ -678,28 +680,37 @@ fn audio_result(audio: CachedAudio) -> CallToolResult {
     } else {
         "tts"
     };
-    ok_json_structured(json!({
-        "audio_base64": base64::engine::general_purpose::STANDARD.encode(&audio.bytes),
-        "mime_type": mime_type,
-        "voice_actor": audio.voice_actor,
-        "source": source,
-    }))
+    let out = GetAudioOut {
+        audio_base64: base64::engine::general_purpose::STANDARD.encode(&audio.bytes),
+        mime_type: mime_type.to_string(),
+        voice_actor: audio.voice_actor,
+        source: source.to_string(),
+    };
+    // The widget reads structuredContent; the text block is only narration,
+    // so a summary beats duplicating the whole base64 payload.
+    let mut result = CallToolResult::success(vec![ContentBlock::text(format!(
+        "{} audio, {} bytes ({source}) — in structuredContent for the widget",
+        out.mime_type,
+        audio.bytes.len(),
+    ))]);
+    result.structured_content = Some(serde_json::to_value(&out).expect("output serializes"));
+    result
 }
 
 /// The card shape shared by get_due_cards and unlock_cards: everything the
 /// LLM needs to quiz the user and pass the card back to log_review.
-fn card_summary_json(language: &serde_json::Value, summary: &CardSummary) -> serde_json::Value {
+fn card_summary_out(language: Language, summary: &CardSummary) -> CardSummaryOut {
     let indicator = summary.card_indicator();
-    json!({
-        "language": language,
-        "card": serde_json::to_value(&indicator).expect("card serializes"),
-        "text": summary.card_text(),
-        "subtitle": summary.card_subtitle(),
-        "kind": card_kind(&indicator),
-        "fsrs_state": summary.state(),
-        "due": chrono::DateTime::from_timestamp_millis(summary.due_timestamp_ms() as i64)
+    CardSummaryOut {
+        language,
+        card: serde_json::to_value(&indicator).expect("card serializes"),
+        text: summary.card_text(),
+        subtitle: summary.card_subtitle(),
+        kind: card_kind(&indicator).to_string(),
+        fsrs_state: summary.state().to_string(),
+        due: chrono::DateTime::from_timestamp_millis(summary.due_timestamp_ms() as i64)
             .map(|d| d.to_rfc3339()),
-    })
+    }
 }
 
 fn card_kind(card: &CardIndicator<Gram<String>, String>) -> &'static str {
@@ -1026,6 +1037,7 @@ impl YapMcp {
 impl YapMcp {
     #[tool(
         title = "Search the dictionary",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::SearchDictionaryOut>(),
         description = "Search the yap dictionary for words and phrases. Each match includes its language and gram — the token sequence (word + lemma + part of speech) that uniquely identifies it. Other tools take these verbatim; search first rather than constructing grams by hand.",
         annotations(
             title = "Search the dictionary",
@@ -1053,11 +1065,11 @@ impl YapMcp {
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
-        let language = state.target_language_value();
+        let language = state.context.course.target_language;
         let deck = state.deck();
         let pack = &deck.context().language_pack;
         let entries = deck.get_gram_dictionary_entries(Some(query.clone()), limit);
-        let results: Vec<serde_json::Value> = entries
+        let results: Vec<DictionaryMatchOut> = entries
             .iter()
             .map(|entry| {
                 let gram = pack
@@ -1067,26 +1079,27 @@ impl YapMcp {
                     .map(|(spur, _)| {
                         serde_json::to_value(pack.resolve_gram(spur)).expect("gram serializes")
                     });
-                json!({
-                    "language": language,
-                    "gram": gram,
-                    "display_text": entry.display_text(),
-                    "frequency_rank": entry.frequency_index() + 1,
-                    "is_phrase": entry.is_phrase(),
-                    "in_deck": entry.is_in_deck(),
-                    "definition": entry.definition(),
-                })
+                DictionaryMatchOut {
+                    language,
+                    gram,
+                    display_text: entry.display_text(),
+                    frequency_rank: entry.frequency_index() + 1,
+                    is_phrase: entry.is_phrase(),
+                    in_deck: entry.is_in_deck(),
+                    definition: entry.definition(),
+                }
             })
             .collect();
-        ok_json(json!({
-            "query": query,
-            "results": results,
-            "note": "frequency_rank 1 is the most common word in the course. Pass language + gram verbatim to add_cards or get_sentences.",
-        }))
+        ok_typed(&SearchDictionaryOut {
+            query,
+            results,
+            note: "frequency_rank 1 is the most common word in the course. Pass language + gram verbatim to add_cards or get_sentences.".to_string(),
+        })
     }
 
     #[tool(
         title = "Add flashcards",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::AddCardsOut>(),
         description = "Add words/phrases to the user's yap deck as new flashcards. Takes (language, gram) pairs, normally obtained from search_dictionary; anything that doesn't name a real dictionary entry is rejected. Confirm with the user before adding.",
         annotations(
             title = "Add flashcards",
@@ -1162,16 +1175,17 @@ impl YapMcp {
         }
 
         let deck = state.deck();
-        ok_json(json!({
-            "added": added,
-            "already_in_deck": already_in_deck,
-            "total_cards_in_deck": deck.num_cards_added(),
-            "synced": synced == SyncStatus::Synced,
-        }))
+        ok_typed(&AddCardsOut {
+            added,
+            already_in_deck,
+            total_cards_in_deck: deck.num_cards_added(),
+            synced: synced == SyncStatus::Synced,
+        })
     }
 
     #[tool(
         title = "List due flashcards",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::GetDueCardsOut>(),
         description = "List the user's currently-due yap flashcards, most overdue first. Each entry carries its language and card object; pass both verbatim to log_review after quizzing the user. Gram cards can be quizzed with example sentences from get_sentences.",
         annotations(
             title = "List due flashcards",
@@ -1194,39 +1208,37 @@ impl YapMcp {
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
-        let language = state.target_language_value();
+        let language = state.context.course.target_language;
         let now_ms = Utc::now().timestamp_millis() as f64;
         let deck = state.deck();
         let due = deck.due_card_summaries(now_ms);
         let total_due = due.len();
         let locked = deck.locked_count();
 
-        let cards: Vec<serde_json::Value> = due
+        let cards: Vec<CardSummaryOut> = due
             .iter()
             .take(limit)
-            .map(|summary| card_summary_json(&language, summary))
+            .map(|summary| card_summary_out(language, summary))
             .collect();
 
-        let mut response = json!({
-            "total_due": total_due,
-            "showing": cards.len(),
-            "cards": cards,
-            "cards_in_lockup": locked,
-            "note": "kind 'written' = recognize the written word; 'listening' = normally an audio card (quiz in text as best you can); 'pronunciation' = a letter-sound pattern. A card's gram field can be passed to get_sentences.",
-        });
-        if locked > 0 {
-            response["lockup_note"] = json!(format!(
+        ok_typed(&GetDueCardsOut {
+            total_due,
+            showing: cards.len(),
+            cards,
+            cards_in_lockup: locked,
+            note: "kind 'written' = recognize the written word; 'listening' = normally an audio card (quiz in text as best you can); 'pronunciation' = a letter-sound pattern. A card's gram field can be passed to get_sentences.".to_string(),
+            lockup_note: (locked > 0).then(|| format!(
                 "{locked} cards are set aside in lockup — when a big backlog is due at once, \
                  yap keeps a manageable handful active and sets the rest aside to be practiced \
                  later. unlock_cards releases the next batch; reviewing a locked card also \
                  unlocks it."
-            ));
-        }
-        ok_json(response)
+            )),
+        })
     }
 
     #[tool(
         title = "Unlock cards",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::UnlockCardsOut>(),
         description = "Release the next batch of set-aside cards from lockup, putting them back in the due queue. Lockup is how yap keeps sessions manageable: when a big backlog is due at once, it keeps a handful of cards active and sets the rest aside to be practiced later. Reviewing a locked card also unlocks it. Confirm with the user before calling.",
         annotations(
             title = "Unlock cards",
@@ -1245,7 +1257,7 @@ impl YapMcp {
         if let Err(e) = state.refresh().await {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
-        let language = state.target_language_value();
+        let language = state.context.course.target_language;
 
         let (content, unlocked) = {
             let deck = state.deck();
@@ -1257,17 +1269,18 @@ impl YapMcp {
                     } else {
                         "locked cards exist but none are due yet; try again once they're due"
                     };
-                    return ok_json(json!({
-                        "unlocked": [],
-                        "cards_in_lockup": locked,
-                        "note": note,
-                    }));
+                    return ok_typed(&UnlockCardsOut {
+                        unlocked: vec![],
+                        cards_in_lockup: locked,
+                        note: note.to_string(),
+                        synced: None,
+                    });
                 }
                 Some(offer) => {
-                    let unlocked: Vec<serde_json::Value> = offer
+                    let unlocked: Vec<CardSummaryOut> = offer
                         .release_preview()
                         .iter()
-                        .map(|summary| card_summary_json(&language, summary))
+                        .map(|summary| card_summary_out(language, summary))
                         .collect();
                     let DeckEvent::Language(event) = offer.unlock_event();
                     (event.content, unlocked)
@@ -1276,17 +1289,18 @@ impl YapMcp {
         };
         let synced = state.append_event(content).await;
 
-        let remaining = state.deck().locked_count();
-        ok_json(json!({
-            "unlocked": unlocked,
-            "cards_in_lockup": remaining,
-            "note": "these cards are back in the due queue and will show up in get_due_cards.",
-            "synced": synced == SyncStatus::Synced,
-        }))
+        ok_typed(&UnlockCardsOut {
+            unlocked,
+            cards_in_lockup: state.deck().locked_count(),
+            note: "these cards are back in the due queue and will show up in get_due_cards."
+                .to_string(),
+            synced: Some(synced == SyncStatus::Synced),
+        })
     }
 
     #[tool(
         title = "Present a card",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::PresentOut>(),
         description = "Present one card to the user as an interactive widget: a written/listening card quizzes the single gram (word) with audio (a human recording when the course has one) and a reveal; a pronunciation card shows the letter-sound pattern with example words and their audio. The widget records the user's own grade via log_review — so after presenting, do NOT log a review for this card yourself; the outcome is reported back to you. For a written card the user has seen before, prefer present_translation instead, like the yap app does.",
         annotations(
             title = "Present a card",
@@ -1466,6 +1480,7 @@ impl YapMcp {
 
     #[tool(
         title = "Present a translation challenge",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::PresentOut>(),
         description = "Present a sentence-translation challenge for a written-gram card, as an interactive widget: the user reads a corpus sentence containing the word, types a translation, and the server autogrades it and logs the review — every word in the sentence gets reviewed, exactly like translation challenges in the yap app. Prefer this over present_card for written cards the user has seen before (not new). After presenting, do NOT call log_review or grade_translation yourself; the outcome is reported back to you. Optionally pass the exact text of a sentence from get_sentences (prefer comprehensible_sentences — every word in it gets reviewed) to control which sentence is used; omit it to let the server pick the way the app does.",
         annotations(
             title = "Present a translation challenge",
@@ -1548,6 +1563,7 @@ impl YapMcp {
 
     #[tool(
         title = "Grade a translation",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::GradeTranslationOut>(),
         description = "Autograde the user's typed translation of a presented challenge sentence and log the review — every word in the sentence gets reviewed. Called by the review widget when the user submits; never call it directly, since only the user's own typed submission should be graded.",
         annotations(
             title = "Grade a translation",
@@ -1653,34 +1669,34 @@ impl YapMcp {
             find_closest_match(&submission, &challenge.native_translations, native_language)
                 .or_else(|| challenge.native_translations.first().cloned());
 
-        let result = ok_json_structured(json!({
-            "perfect": perfect,
-            "correct_translation": correct_translation,
-            "encouragement": response.encouragement,
-            "explanation": response.explanation,
-            "autograding_error": response.autograding_error,
-            "literal_grades": response
+        let result = ok_typed(&GradeTranslationOut {
+            perfect,
+            correct_translation,
+            encouragement: response.encouragement,
+            explanation: response.explanation,
+            autograding_error: response.autograding_error,
+            literal_grades: response
                 .literal_grades
                 .iter()
                 .map(|grade| match grade {
-                    Some(autograde::Remembered::Remembered) => json!("remembered"),
-                    Some(autograde::Remembered::Forgot) => json!("forgot"),
-                    None => json!(null),
+                    Some(autograde::Remembered::Remembered) => Some(LiteralGradeOut::Remembered),
+                    Some(autograde::Remembered::Forgot) => Some(LiteralGradeOut::Forgot),
+                    None => None,
                 })
-                .collect::<Vec<_>>(),
-            "phrases_remembered": response
+                .collect(),
+            phrases_remembered: response
                 .phrases_remembered
                 .iter()
                 .map(|phrase| phrase.to_display_string(target_language))
-                .collect::<Vec<_>>(),
-            "phrases_forgot": response
+                .collect(),
+            phrases_forgot: response
                 .phrases_forgot
                 .iter()
                 .map(|phrase| phrase.to_display_string(target_language))
-                .collect::<Vec<_>>(),
-            "remaining_due": remaining_due,
-            "synced": synced == SyncStatus::Synced,
-        }));
+                .collect(),
+            remaining_due,
+            synced: synced == SyncStatus::Synced,
+        });
         state.remember_idempotent(
             TOOL,
             params.idempotency_token.as_deref(),
@@ -1692,6 +1708,7 @@ impl YapMcp {
 
     #[tool(
         title = "Get audio",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::GetAudioOut>(),
         description = "Fetch pronunciation audio for a widget: the course's human voice-actor recording when one exists, otherwise synthesized speech — the same resolution the yap app uses. Returns base64 audio. Intended for the review widget; not useful in conversation.",
         annotations(
             title = "Get audio",
@@ -1764,6 +1781,7 @@ impl YapMcp {
 
     #[tool(
         title = "Log a review",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::LogReviewOut>(),
         description = "Record the result of reviewing one card. This updates real spaced-repetition scheduling on the user's account, so only call it after actually quizzing the user, with an honest rating.",
         annotations(
             title = "Log a review",
@@ -1830,19 +1848,19 @@ impl YapMcp {
         let remaining_due = deck
             .due_card_summaries(Utc::now().timestamp_millis() as f64)
             .len();
-        let result = ok_json(json!({
-            "reviewed": before.card_text(),
-            "rating": params.rating,
-            "was_due": was_due,
-            "fsrs_state": after.as_ref().map(|a| a.state()),
-            "next_due": after.and_then(|a| {
+        let result = ok_typed(&LogReviewOut {
+            reviewed: before.card_text(),
+            rating: params.rating.clone(),
+            was_due,
+            fsrs_state: after.as_ref().map(|a| a.state().to_string()),
+            next_due: after.and_then(|a| {
                 chrono::DateTime::from_timestamp_millis(a.due_timestamp_ms() as i64)
                     .map(|d| d.to_rfc3339())
             }),
-            "remaining_due": remaining_due,
-            "total_reviews": deck.stats().total_reviews,
-            "synced": synced == SyncStatus::Synced,
-        }));
+            remaining_due,
+            total_reviews: deck.stats().total_reviews,
+            synced: synced == SyncStatus::Synced,
+        });
         state.remember_idempotent(
             TOOL,
             params.idempotency_token.as_deref(),
@@ -1854,6 +1872,7 @@ impl YapMcp {
 
     #[tool(
         title = "Get example sentences",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::GetSentencesOut>(),
         description = "Get random example sentences (with translations and source attribution) containing a given gram. Returns two lists: comprehensible_sentences, which are otherwise composed only of words the user already knows (great for quizzing), and other_sentences, sampled from everything containing the gram regardless of difficulty.",
         annotations(
             title = "Get example sentences",
@@ -1886,18 +1905,19 @@ impl YapMcp {
         let display = gram.to_display_string(state.context.course.target_language);
 
         let sampled = state.sample_sentences(interned, count);
-        ok_json(json!({
-            "word": display,
-            "comprehensible_sentences": sampled.comprehensible,
-            "total_comprehensible": sampled.total_comprehensible,
-            "other_sentences": sampled.other,
-            "total_containing_word": sampled.total_containing,
-            "note": "comprehensible_sentences use only words the user already knows; other_sentences are sampled from everything containing the word and may include unknown words (and may lack translations).",
-        }))
+        ok_typed(&GetSentencesOut {
+            word: display,
+            comprehensible_sentences: sampled.comprehensible,
+            total_comprehensible: sampled.total_comprehensible,
+            other_sentences: sampled.other,
+            total_containing_word: sampled.total_containing,
+            note: "comprehensible_sentences use only words the user already knows; other_sentences are sampled from everything containing the word and may include unknown words (and may lack translations).".to_string(),
+        })
     }
 
     #[tool(
         title = "Get learning stats",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::GetStatsOut>(),
         description = "Get the user's yap stats: streak, XP, review counts, deck size, due cards, comprehension tier, and recent daily activity.",
         annotations(
             title = "Get learning stats",
@@ -1922,46 +1942,47 @@ impl YapMcp {
         let now_ms = Utc::now().timestamp_millis() as f64;
         let due = deck.due_card_summaries(now_ms).len();
 
-        let past_days: Vec<serde_json::Value> = stats
+        let past_days: Vec<DayOut> = stats
             .past_days
             .iter()
             .rev()
             .take(7)
-            .map(|(day, summary)| {
-                let date = chrono::NaiveDate::from_num_days_from_ce_opt(*day as i32)
-                    .map(|d| d.to_string());
-                json!({
-                    "date": date,
-                    "reviews": summary.reviews,
-                    "time_spent_seconds": summary.time_spent_seconds,
-                    "new_cards": summary.new_cards,
-                    "learned_cards": summary.learned_cards,
-                })
+            .map(|(day, summary)| DayOut {
+                date: chrono::NaiveDate::from_num_days_from_ce_opt(*day as i32)
+                    .map(|d| d.to_string()),
+                reviews: summary.reviews,
+                time_spent_seconds: summary.time_spent_seconds,
+                new_cards: summary.new_cards,
+                learned_cards: summary.learned_cards,
             })
             .collect();
 
-        ok_json(json!({
-            "course": format!("{} for {} speakers", course.target_language, course.native_language),
-            "daily_streak": deck.get_daily_streak(),
-            "xp": stats.xp,
-            "total_reviews": stats.total_reviews,
-            "started": stats.start_time.map(|t| t.to_rfc3339()),
-            "cards_in_deck": deck.num_cards_added(),
-            "cards_due_now": due,
-            "cards_locked_away": deck.locked_count(),
-            "tier": {
-                "name": tier.name,
-                "tier": tier.tier,
-                "level": tier.level,
-                "total_levels": tier.total_levels,
-                "percent_known": tier.percent_known,
+        ok_typed(&GetStatsOut {
+            course: format!(
+                "{} for {} speakers",
+                course.target_language, course.native_language
+            ),
+            daily_streak: deck.get_daily_streak(),
+            xp: stats.xp,
+            total_reviews: stats.total_reviews,
+            started: stats.start_time.map(|t| t.to_rfc3339()),
+            cards_in_deck: deck.num_cards_added(),
+            cards_due_now: due,
+            cards_locked_away: deck.locked_count(),
+            tier: TierOut {
+                name: tier.name,
+                tier: tier.tier,
+                level: tier.level,
+                total_levels: tier.total_levels,
+                percent_known: tier.percent_known,
             },
-            "recent_days": past_days,
-        }))
+            recent_days: past_days,
+        })
     }
 
     #[tool(
         title = "Search dictionary pages",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::SearchOut>(),
         description = "Search the dictionary of the user's yap course. Returns matching entry pages as results with id, title, and url (a citable yap.town dictionary link); pass an id to fetch for the full entry. For deck operations that need exact grams (add_cards, get_sentences, log_review), use search_dictionary instead.",
         annotations(
             title = "Search dictionary pages",
@@ -1988,23 +2009,22 @@ impl YapMcp {
             log::warn!("refresh failed, using possibly-stale events: {e:#}");
         }
         let course = state.context.course;
-        let results: Vec<serde_json::Value> = state
+        let results: Vec<SearchResultOut> = state
             .deck()
             .get_gram_dictionary_entries(Some(query), 10)
             .iter()
-            .map(|entry| {
-                json!({
-                    "id": entry_id(&course, entry),
-                    "title": entry_title(entry),
-                    "url": entry_url(&course, &entry.display_text()),
-                })
+            .map(|entry| SearchResultOut {
+                id: entry_id(&course, entry),
+                title: entry_title(entry),
+                url: entry_url(&course, &entry.display_text()),
             })
             .collect();
-        ok_json_structured(json!({ "results": results }))
+        ok_typed(&SearchOut { results })
     }
 
     #[tool(
         title = "Fetch a dictionary page",
+        output_schema = rmcp::handler::server::common::schema_for_type::<crate::output::FetchOut>(),
         description = "Fetch a dictionary entry page by an id returned from the search tool: definitions, frequency rank, whether it's in the user's deck, and example sentences with translations and source attribution. Returns readable text plus a citable url.",
         annotations(
             title = "Fetch a dictionary page",
@@ -2058,7 +2078,7 @@ impl YapMcp {
             .0;
         let gram_value =
             serde_json::to_value(state.pack().resolve_gram(&interned)).expect("gram serializes");
-        let language = state.target_language_value();
+        let language = state.context.course.target_language;
         let sampled = state.sample_sentences(interned, 3);
 
         let display = entry.display_text();
@@ -2120,40 +2140,31 @@ impl YapMcp {
             }
             let _ = writeln!(text, "\n{label}");
             for sentence in list {
-                let _ = write!(
-                    text,
-                    "• “{}”",
-                    sentence["text"].as_str().unwrap_or_default()
-                );
-                if let Some(translation) = sentence["translations"].get(0).and_then(|t| t.as_str())
-                {
+                let _ = write!(text, "• “{}”", sentence.text);
+                if let Some(translation) = sentence.translations.first() {
                     let _ = write!(text, " — “{translation}”");
                 }
-                let sources: Vec<&str> = sentence["sources"]
-                    .as_array()
-                    .map(|a| a.iter().filter_map(|s| s.as_str()).collect())
-                    .unwrap_or_default();
-                if !sources.is_empty() {
-                    let _ = write!(text, " (source: {})", sources.join(", "));
+                if !sentence.sources.is_empty() {
+                    let _ = write!(text, " (source: {})", sentence.sources.join(", "));
                 }
                 let _ = writeln!(text);
             }
         }
         let _ = writeln!(text, "\nDictionary page: {url}");
 
-        ok_json_structured(json!({
-            "id": params.id,
-            "title": entry_title(&entry),
-            "text": text,
-            "url": url,
-            "metadata": {
-                "language": language,
-                "gram": gram_value,
-                "frequency_rank": entry.frequency_index() + 1,
-                "in_deck": entry.is_in_deck(),
-                "is_phrase": entry.is_phrase(),
+        ok_typed(&FetchOut {
+            id: params.id,
+            title: entry_title(&entry),
+            text,
+            url,
+            metadata: FetchMetadataOut {
+                language,
+                gram: Some(gram_value),
+                frequency_rank: entry.frequency_index() + 1,
+                in_deck: entry.is_in_deck(),
+                is_phrase: entry.is_phrase(),
             },
-        }))
+        })
     }
 }
 
