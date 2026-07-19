@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NotificationSettings } from "@/components/notification-settings";
+import { PasskeySettings } from "@/components/passkey-settings";
 import { LogOut, AlertTriangle, ArrowLeft, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { SyncStatusDialog } from "@/components/sync-status-dialog";
@@ -134,6 +135,7 @@ export function Header({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <NotificationSettings />
+                <PasskeySettings />
                 <DropdownMenuItem
                   onClick={() => navigate(`/user/id/${userInfo.id}`)}
                 >

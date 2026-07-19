@@ -137,6 +137,16 @@ sign_in_sign_ups = 30
 # Number of OTP / Magic link verifications that can be made in a 5 minute interval per IP address.
 token_verifications = 30
 
+# Passkey (WebAuthn) sign-in. Production config lives in the dashboard
+# (Authentication → Passkeys) with RP ID "yap.town"; this covers the local stack.
+[auth.passkey]
+enabled = true
+
+[auth.webauthn]
+rp_display_name = "Yap.Town"
+rp_id = "localhost"
+rp_origins = ["http://localhost:5173", "http://localhost:3000"]
+
 # Configure one of the supported captcha providers: `hcaptcha`, `turnstile`.
 # [auth.captcha]
 # enabled = true

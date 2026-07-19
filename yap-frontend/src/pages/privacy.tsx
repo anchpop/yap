@@ -23,7 +23,7 @@ export function PrivacyPage() {
               sell your data, we don't run ads, and there are no advertising or
               analytics trackers on the site.
             </p>
-            <p className="text-sm">Effective July 9, 2026.</p>
+            <p className="text-sm">Effective July 19, 2026.</p>
           </div>
         </Card>
 
@@ -34,8 +34,10 @@ export function PrivacyPage() {
           <div className="px-2 space-y-2">
             <p>
               <span className="text-foreground">Account.</span> Your email
-              address and password (stored hashed by our auth provider). You
-              can optionally add a display name and bio, which are visible to
+              address and password (stored hashed by our auth provider). If
+              you add a passkey, our auth provider stores its public key; we
+              never receive the private key or your biometric data. You can
+              optionally add a display name and bio, which are visible to
               other users.
             </p>
             <p>

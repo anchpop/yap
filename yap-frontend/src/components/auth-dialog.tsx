@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { passkeysSupported } from "@/components/passkey-settings";
+import { KeyRound } from "lucide-react";
 
 interface AuthDialogProps {
   open: boolean;
@@ -59,6 +61,20 @@ export function AuthDialog({
       } else {
         onOpenChange(false);
       }
+    }
+    setLoading(false);
+  };
+
+  const handlePasskeySignIn = async () => {
+    setError(null);
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPasskey();
+
+    if (error) {
+      setError(error.message);
+    } else {
+      onOpenChange(false);
     }
     setLoading(false);
   };
@@ -131,6 +147,25 @@ export function AuthDialog({
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
+              {passkeysSupported() && (
+                <>
+                  <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs text-muted-foreground">or</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={loading}
+                    onClick={handlePasskeySignIn}
+                  >
+                    <KeyRound className="mr-2 h-4 w-4" />
+                    Sign in with a passkey
+                  </Button>
+                </>
+              )}
               <div className="text-center">
                 <Link
                   to="/forgot-password"
