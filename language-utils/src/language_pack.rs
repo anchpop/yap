@@ -69,9 +69,9 @@ pub struct LanguagePack {
 }
 
 impl LanguagePack {
-    /// Intern a resolved gram back into this pack's rodeos. Returns None if
-    /// any token, or the gram itself, was never interned.
-    pub fn intern_gram(&self, gram: &Gram<String>) -> Option<SpurGram> {
+    /// Look up a resolved gram's already-interned form in this pack's rodeos.
+    /// Returns None if any token, or the gram itself, was never interned.
+    pub fn get_interned_gram(&self, gram: &Gram<String>) -> Option<SpurGram> {
         gram.get_interned(&self.string_rodeo)?
             .get_interned(&self.gram_rodeo)
     }
@@ -83,9 +83,10 @@ impl LanguagePack {
         self.gram_frequencies.entries.contains_key(gram)
     }
 
-    /// Intern a gram and require it to be a real course entry.
+    /// Look up a gram's interned form and require it to be a real course entry.
     pub fn course_gram(&self, gram: &Gram<String>) -> Option<SpurGram> {
-        self.intern_gram(gram).filter(|g| self.is_course_gram(g))
+        self.get_interned_gram(gram)
+            .filter(|g| self.is_course_gram(g))
     }
 
     /// Resolve an interned gram back to its owned string form.
