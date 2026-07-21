@@ -41,6 +41,13 @@ Sentry.init({
       }
     }
 
+    // Filter WASM streaming-compilation failures caused by the network
+    // connection dropping mid-download. This is Chrome's exact message for
+    // that case, so it can't be confused with an unrelated bug.
+    if (message.startsWith("WebAssembly compilation aborted")) {
+      return null;
+    }
+
     return event;
   },
 

@@ -128,12 +128,14 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            // Skip network-level fetch failures (TypeError) and InvalidStateError
+            // Skip network-level fetch failures (TypeError), InvalidStateError,
+            // and AbortError (update cancelled by a concurrent navigation/unload)
             // — these are transient errors that aren't actionable bugs.
             if (
               navigator.onLine &&
               e?.name !== "InvalidStateError" &&
-              e?.name !== "TypeError"
+              e?.name !== "TypeError" &&
+              e?.name !== "AbortError"
             ) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }

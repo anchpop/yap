@@ -293,7 +293,12 @@ export function LanguageSelector({
           targetLanguage: selectionState.targetLanguage,
         })
         .catch((e: unknown) => {
-          Sentry.captureException(e);
+          // Skip network errors — expected on flaky mobile connections and
+          // not actionable; see the same filter in useDeck's language-pack load.
+          const message = e instanceof Error ? e.message : String(e);
+          if (!message.startsWith("Network error:")) {
+            Sentry.captureException(e);
+          }
         });
     }
   }, [selectionState, weapon]);
