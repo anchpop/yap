@@ -128,13 +128,18 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            // Skip network-level fetch failures (TypeError) and InvalidStateError
-            // — these are transient errors that aren't actionable bugs.
-            if (
-              navigator.onLine &&
-              e?.name !== "InvalidStateError" &&
-              e?.name !== "TypeError"
-            ) {
+            // Skip transient, non-actionable failures of the background sw.js
+            // fetch: network errors (TypeError), an update already in flight
+            // (InvalidStateError), the request getting cancelled (AbortError),
+            // and browser security policies blocking the fetch (SecurityError,
+            // e.g. storage-partitioning restrictions on iOS).
+            const transientErrors = [
+              "InvalidStateError",
+              "TypeError",
+              "AbortError",
+              "SecurityError",
+            ];
+            if (navigator.onLine && !transientErrors.includes(e?.name)) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
           });
