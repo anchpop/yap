@@ -24,10 +24,19 @@ Sentry.init({
       return null;
     }
 
-    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
-    // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
-    if (message === "Load failed") {
+    // Filter WASM module load failures. These are all transient/environmental
+    // conditions during .wasm module initialization, not application bugs:
+    // "Load failed" (Safari's fetch failure message), "Failed to fetch"
+    // (Chrome/Firefox's), and "WebAssembly is not defined" (extensions or
+    // embedded webviews that strip the WebAssembly global). Identified by the
+    // vite-generated WASM loader appearing in the stack — these messages are
+    // generic enough (e.g. "Load failed" also covers other fetches) that we
+    // only drop them when the WASM loader is actually on the stack.
+    if (
+      message === "Load failed" ||
+      message === "Failed to fetch" ||
+      message === "WebAssembly is not defined"
+    ) {
       const frames =
         event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       if (
@@ -39,6 +48,14 @@ Sentry.init({
       ) {
         return null;
       }
+    }
+
+    // Chrome's own message when `WebAssembly.instantiateStreaming()` gets cut
+    // off mid-download — unambiguously our single WASM module load (that's
+    // the only streaming-instantiate call site in the app), so no frame check
+    // needed here.
+    if (message.startsWith("WebAssembly compilation aborted")) {
+      return null;
     }
 
     return event;

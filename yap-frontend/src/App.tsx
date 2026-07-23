@@ -128,12 +128,16 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            // Skip network-level fetch failures (TypeError) and InvalidStateError
-            // — these are transient errors that aren't actionable bugs.
+            // Skip network-level fetch failures (TypeError), InvalidStateError,
+            // AbortError (update superseded/cancelled), and SecurityError (e.g.
+            // Safari Private Browsing, which disables service workers) — these
+            // are transient errors that aren't actionable bugs.
             if (
               navigator.onLine &&
               e?.name !== "InvalidStateError" &&
-              e?.name !== "TypeError"
+              e?.name !== "TypeError" &&
+              e?.name !== "AbortError" &&
+              e?.name !== "SecurityError"
             ) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
