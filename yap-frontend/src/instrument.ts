@@ -24,10 +24,17 @@ Sentry.init({
       return null;
     }
 
-    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
-    // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
-    if (message === "Load failed") {
+    // Filter transient failures fetching/instantiating the WASM module. These
+    // happen when the network drops or a browser extension/security policy
+    // interferes mid-fetch — identifiable by the vite wasm-helper or _bg.wasm
+    // file in the stack, regardless of which error message the browser used
+    // ("Load failed" on iOS Safari, "Failed to fetch" elsewhere, or
+    // "WebAssembly is not defined" when something clears the global mid-load).
+    if (
+      message === "Load failed" ||
+      message === "Failed to fetch" ||
+      message === "WebAssembly is not defined"
+    ) {
       const frames =
         event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       if (

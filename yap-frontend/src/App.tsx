@@ -64,7 +64,6 @@ import { LandingPage } from "@/pages/landing";
 import { NotFoundPage } from "@/pages/not-found";
 import { SentenceListsPage } from "@/pages/sentence-lists";
 import { playSoundEffect } from "@/lib/sound-effects";
-import { registerSW } from "virtual:pwa-register";
 import { NoCardsReady } from "@/components/no-cards-ready";
 import { AccomplishmentScreen } from "@/components/AccomplishmentScreen";
 import { useSentenceList, sentenceListToSelection } from "@/hooks/useSentenceList";
@@ -119,9 +118,6 @@ export type AppContextType = {
 
 function AppMain() {
   const updateIntervalMS = 60 * 5 * 1000; // every 5 minutes
-  useEffect(() => {
-    registerSW({ immediate: true });
-  }, []);
 
   useRegisterSW({
     onRegistered(r) {
