@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2615626
-Total errors: 2778
-Accuracy: 99.89%
+Total predictions: 2683573
+Total errors: 2730
+Accuracy: 99.90%
 
 ## Error Patterns (sorted by frequency)
 
@@ -30,14 +30,6 @@ Accuracy: 99.89%
   - Lei ha una figlia, vero ?
   - Lei è Gurin, vero ?
 
-### "Glie" + "lo" (17 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Glielo auguro di cuore.
-  - Glielo auguro.
-  - Glielo chiedi tu o lo faccio io?
-
 ### "cosa" + "?" (17 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53,6 +45,14 @@ Accuracy: 99.89%
   - Bello, no ?
   - Come no ?
   - Difficile, no ?
+
+### "Glie" + "lo" (15 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Glielo auguro di cuore.
+  - Glielo auguro.
+  - Glielo chiedo sempre, ma mi dicono che non posso tornare a casa.
 
 ### "qui" + "?" (14 occurrences)
 - Predicted: None
@@ -422,14 +422,6 @@ Accuracy: 99.89%
   - Dovevo aspettare il tecnico fino a stasera ?
   - Signora Suen, restate a giocare qui stasera ?
 
-### "su" + "!" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Salta su !
-  - Saluta, su !
-  - Su, su !
-
 ### "subito" + "!" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -469,14 +461,6 @@ Accuracy: 99.89%
   - Avete visto ?
   - Che hai visto ?
   - Ha visto ?
-
-### "," + "vero" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Glielo aveva detto,vero?
-  - Io conosco il colonnello Julyan siamo vecchi amici,vero?
-  - Questo non è un incontro casuale,vero Gandalf?
 
 ### "Chan" + "?" (4 occurrences)
 - Predicted: None
@@ -638,6 +622,14 @@ Accuracy: 99.89%
   - Ma questi chi sono ?
   - Per chi sono ?
 
+### "su" + "!" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Salta su !
+  - Saluta, su !
+  - Su, su !
+
 ### "testa" + "!" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -677,30 +669,6 @@ Accuracy: 99.89%
   - Chi è? — Sono io, apri! — Prego, entra pure, la cena è quasi pronta sul tavolo.
   - Grazie mille per l'aiuto! — Prego, figurati, non è stato niente di speciale.
   - Grazie per il passaggio in macchina! — Prego, tanto facevo la stessa strada.
-
-### "," + "andiamo" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Andiamo,andiamo,andiamo.
-  - Andiamo,andiamo,andiamo.
-  - Murph, non abbiamo tempo ,andiamo!
-
-### "," + "no" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,no, non sono stato io!
-  - Oh,no!
-  - Per il bene delle persone, situò,no?
-
-### "," + "non" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Capitano,non sono riuscito a raggiungere il cibo.
-  - Ma poi ritornava al suo solito modo di comportarsi,non si preoccupava.
-  - Perse il suo braccio nei Lavori di Ingegneria Yunyang,non qui.
 
 ### "-" + "-" (3 occurrences)
 - Predicted: None
@@ -845,6 +813,14 @@ Accuracy: 99.89%
   - Per esempio, io devo vivere con voi due !
   - Questo vi servirà da lezione per tutte e due !
   - Uno, due !
+
+### "entrare" + "?" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Chi vi ha permesso di entrare ?
+  - Posso entrare ?
+  - Vuoi entrare ?
 
 ### "fare" + "?" (3 occurrences)
 - Predicted: None
@@ -1180,34 +1156,6 @@ Accuracy: 99.89%
 - Examples:
   - Mi hai detto che R&R ti stava mandando a Barcellona.
   - R&R sta facendo un numero speciale su Barcellona.
-
-### "," + "Jeancojon" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Obbedisci,Jeancojon!
-  - Precedici,Jeancojon.
-
-### "," + "oh" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Oh,oh,oh!
-  - Oh,oh,oh!
-
-### "," + "se" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La banda più stupida di mercenari,se mai ci fosse, Signore.
-  - Posso accendere una luce per indicare quando scherzo,se vi fa piacere?
-
-### "," + "tu" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Se ricordo bene,tu hai la licenza da barcaiolo, non di pescatore.
-  - Senza il mio permesso,tu di qui non esci!
 
 ### "-" + "Ehi" (2 occurrences)
 - Predicted: None
@@ -1825,13 +1773,6 @@ Accuracy: 99.89%
   - Che ti ha detto quella donna ?
   - Conosce questa donna ?
 
-### "entrare" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Chi vi ha permesso di entrare ?
-  - Posso entrare ?
-
 ### "faccio" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2252,6 +2193,13 @@ Accuracy: 99.89%
   - Vi avvicinate a quel quadro ?
   - Volete che vi parli del quadro ?
 
+### "qualcosa" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Forse si è fuso il cervello al sole o cercava qualcosa -Cosa?
+  - No, devo io dare qualcosa - A me?
+
 ### "quanti" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2552,185 +2500,11 @@ Accuracy: 99.89%
 - Examples:
   - Nella seconda parte del corso, - FUOCO!
 
-### "," + "Murph" (1 occurrences)
-- Predicted: Space
-- Actual: None
+### "-" + "A" (1 occurrences)
+- Predicted: None
+- Actual: Space
 - Examples:
-  - Stai dicendo che la mia vita lavorativa non ha senso,Murph?
-
-### "," + "Regni" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - ShiZun ha già abbandonato i Tre,Regni.
-
-### "," + "Tom" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Murph,Tom, avete chiuso le finestre?
-
-### "," + "adesso" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Non andare troppo lontano,adesso.
-
-### "," + "bene" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bene,bene Murph.
-
-### "," + "calmati" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Calmati,calmati, calmati, calmati.
-
-### "," + "cosa" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Cooper,cosa posso fare?
-
-### "," + "cosicché" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Di tutti i generi, oggi avremo denaro,cosicché ti comprerò qualcosa di bere.
-
-### "," + "da" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dimmi, mellon,da quando lasciamo che il male diventi più forte di noi?
-
-### "," + "dai" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Andiamo,dai, andiamo!
-
-### "," + "di" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Gemme bianche,di pura luce stellare.
-
-### "," + "ho" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ho vissuto in Fengjie molto tempo,ho qui ogni tipo di amici.
-
-### "," + "il" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Noi non abbiamo avuto pioggia in tutta la primavera,il grano sta morendo.
-
-### "," + "per" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La gente si è trasferita a Guangdong, Liaoning,per tutto il paese.
-
-### "," + "perfino" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Non vado mai lì,perfino quando sto in città.
-
-### "," + "prestino" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Se vogliono imparare come,prestino molta attenzione!
-
-### "," + "questo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bhe,questo non è molto scientifico Murph.
-
-### "," + "sai" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Balin,sai ancora fare un esplosivo?
-
-### "," + "seguì" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Con gli occhi socchiusi,seguì i suoi passi.
-
-### "," + "signore" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Cosa è andato storto con lui,signore?
-
-### "," + "su" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Va bene,su !
-
-### "," + "svegHafi" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Papà,svegHafi!
-
-### "," + "ti" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Quando finiamo qui,ti seguiremo.
-
-### "," + "tutto" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Romilly,tutto ok ?
-
-### "," + "uomini" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Elfi,uomini e orchi.
-
-### "," + "vai" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Cooper,vai!
-
-### "," + "vatti" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hyeongnim,vatti a pulire.
-
-### "," + "vi" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dai,vi faccio vedere il giardino.
-
-### "," + "vuoi" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Va bene Murph,vuoi parlare di scienza?
-
-### "," + "è" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Cibo,è tutto quello che chiedono.
+  - No, devo io dare qualcosa - A me?
 
 ### "-" + "Adoro" (1 occurrences)
 - Predicted: None
@@ -3026,23 +2800,11 @@ Accuracy: 99.89%
 - Examples:
   - Alcol - mai più!
 
-### "-" + "mi" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Per favore-- mi chiami appena è possibile a questo numero, per confermare.
-
 ### "-" + "moi" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Excusez- moi?
-
-### "-" + "no" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Servono altri test - no!
 
 ### "-" + "oh" (1 occurrences)
 - Predicted: None
@@ -3110,11 +2872,11 @@ Accuracy: 99.89%
 - Examples:
   - Cerco una persona italiana per fare uno scambio italiano - spagnolo.
 
-### "-" + "talkie" (1 occurrences)
+### "-" + "sul" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Non risponde al walkie- talkie.
+  - FRONTEGGIARE I BAMBINI CON PROBLEMI - sul frigorifero.
 
 ### "-" + "tipo" (1 occurrences)
 - Predicted: None
@@ -3152,11 +2914,29 @@ Accuracy: 99.89%
 - Examples:
   - Ma la casa-- Dovrò disdire-- -Sistemato.
 
+### "--" + "Chiamiamo" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Al soldato rimorchio-- Chiamiamo così quello che ci porta.
+
+### "--" + "Credetemi" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Niente è più sexy di una donna-- Credetemi, signori.
+
 ### "--" + "Dovrò" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ma la casa-- Dovrò disdire-- -Sistemato.
+
+### "--" + "E" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Forse-- E sto sono tirando a casaccio.
 
 ### "--" + "No" (1 occurrences)
 - Predicted: None
@@ -4508,6 +4288,12 @@ Accuracy: 99.89%
 - Examples:
   - Congratulazioni, Maestro Huo - Grazie.
 
+### "Incheon" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ti porterà direttamente a Incheon .
+
 ### "Inghilterra" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4880,6 +4666,12 @@ Accuracy: 99.89%
 - Examples:
   - Norma ?
 
+### "Odo" + "ra" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Odora come se tu avessi la gastrite.
+
 ### "Ohh" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4933,6 +4725,12 @@ Accuracy: 99.89%
 - Actual: Space
 - Examples:
   - Ouch !
+
+### "PROBLEMI" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - FRONTEGGIARE I BAMBINI CON PROBLEMI - sul frigorifero.
 
 ### "Paddington" + "?" (1 occurrences)
 - Predicted: None
@@ -7214,6 +7012,12 @@ Accuracy: 99.89%
 - Examples:
   - Voi bene, beh così così .
 
+### "così" + "elegante" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dove vai cosìelegante?
+
 ### "credi" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8360,6 +8164,12 @@ Accuracy: 99.89%
 - Examples:
   - Che hai ?
 
+### "hardcore" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ma sono i Mott the Hoople quindi sempre mitici e hardcore .
+
 ### "harem" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8629,6 +8439,12 @@ Accuracy: 99.89%
 - Actual: Space
 - Examples:
   - Non sono fatti tuoi, lasciami !
+
+### "lavanderie" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Oggigiorno ci sono troppi dilettanti nelle lavanderie .
 
 ### "lavora" + "?" (1 occurrences)
 - Predicted: None
@@ -9104,12 +8920,6 @@ Accuracy: 99.89%
 - Examples:
   - Ci muoviamo ?
 
-### "muro" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Stai leccando il muro -Non sto leccando il muro.
-
 ### "muscoli" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9187,6 +8997,12 @@ Accuracy: 99.89%
 - Actual: Space
 - Examples:
   - Questo lo bevevano i nobili !
+
+### "noi" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Eccoci qui, anche noi -Benvenuti.
 
 ### "noiosa" + "!" (1 occurrences)
 - Predicted: None
@@ -9266,23 +9082,11 @@ Accuracy: 99.89%
 - Examples:
   - Credi che se ti sequestrassi potrei obbligarlo ?
 
-### "ok" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Romilly,tutto ok ?
-
 ### "omaggio" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Puoi disporre della salute del mendicante così come del suo omaggio ?
-
-### "ombrello" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hai un ombrello ?
 
 ### "opportuno" + "!" (1 occurrences)
 - Predicted: None
@@ -10219,12 +10023,6 @@ Accuracy: 99.89%
 - Actual: Space
 - Examples:
   - Hai visto i quadri ?
-
-### "qualcosa" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Forse si è fuso il cervello al sole o cercava qualcosa -Cosa?
 
 ### "qualcuno" + "?" (1 occurrences)
 - Predicted: None
@@ -11552,12 +11350,6 @@ Accuracy: 99.89%
 - Examples:
   - Ora non ho tempo !
 
-### "tempo" + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Murph, non abbiamo tempo ,andiamo!
-
 ### "tenebre" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11581,12 +11373,6 @@ Accuracy: 99.89%
 - Actual: Space
 - Examples:
   - Andare a vivere sotto terra ?
-
-### "test" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Servono altri test - no!
 
 ### "tiene" + "?" (1 occurrences)
 - Predicted: None

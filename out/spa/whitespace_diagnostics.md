@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2683515
-Total errors: 895
+Total predictions: 2848929
+Total errors: 892
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "ver" + "te" (166 occurrences)
+### "ver" + "te" (158 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -14,21 +14,13 @@ Accuracy: 99.97%
   - Alguien llamado Tom quiere verte.
   - Alguien quiere verte.
 
-### "," + "¿" (22 occurrences)
+### "," + "¿" (48 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Bueno,esa es la pregunta que plantea la película,¿no?
+  - Aslam,¿adónde vas?
+  - Así que,¿de veras eres una realizadora de cine?
   - Bueno,¿por qué lo preguntas?
-  - Bueno,¿qué te parece?
-
-### "¿" + "verdad" (16 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Así Ezequiel puede conseguir más crack, ¿ verdad, tío?
-  - Bromeas, ¿ verdad, papá?
-  - Claro que sí, ¿ verdad?
 
 ### "-" + "¡" (14 occurrences)
 - Predicted: None
@@ -37,6 +29,22 @@ Accuracy: 99.97%
   - Decía - ¡Basta ya!
   - EDIFICIO DEL SERVICIO DE IMPUESTOS INTERNOS - ¡Rápido, rápido!
   - EL CAIRO - ¡Sí, entrenador, sí!
+
+### "¿" + "verdad" (14 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Así Ezequiel puede conseguir más crack, ¿ verdad, tío?
+  - Claro que sí, ¿ verdad?
+  - Estamos en guerra, ¿ verdad?
+
+### "haber" + "te" (12 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Debe haberte costado mucho.
+  - Deberías haberte quedado dormido.
+  - Deberías haberte visto, implacable, con Kendrick.
 
 ### "…" + "-" (12 occurrences)
 - Predicted: None
@@ -86,21 +94,13 @@ Accuracy: 99.97%
   - Ella se volvió loca conmigo por haberme salido del camino.
   - Esta mañana, partí hacia la escuela sin haberme lavado la cara.
 
-### "¿" + "qué" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Además, ¿ qué tenía yo que ver con eso?
-  - Cleopatra, por ejemplo, ¿ qué sabe de ella?
-  - Disculpa, pero ¿ qué quieres decir con esto?
-
-### "," + "no" (6 occurrences)
+### "conocer" + "te" (6 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Bueno,no lo estaba.
-  - No sé,no es exactamente el tipo actor.
-  - No,no es eso.
+  - Encantado de conocerte a ti también.
+  - Encantado de conocerte, Hodaka.
+  - Encantado de conocerte, Toni.
 
 ### "¿" + "no" (6 occurrences)
 - Predicted: None
@@ -110,14 +110,6 @@ Accuracy: 99.97%
   - Esos relieves están pintados, ¿ no?
   - Hermoso, ¿ no?
 
-### "," + "gracias" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,gracias por todo lo que has hecho.
-  - Bueno,gracias.
-  - No,gracias.
-
 ### "--" + "¡" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -126,6 +118,14 @@ Accuracy: 99.97%
   - Dentro del auto hay-- ¡Ve despacio!
   - Es gracias a él-- ¡Maldición!
 
+### "¿" + "qué" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Además, ¿ qué tenía yo que ver con eso?
+  - Cleopatra, por ejemplo, ¿ qué sabe de ella?
+  - Señor, ¿ qué está mirando?
+
 ### "," + "-" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -133,14 +133,6 @@ Accuracy: 99.97%
   - Entonces vengan y juzgaremos, - Dijo Dios.
   - Mira aquí, campeón, -Tengo relojes de oro, anillos de diamante.
   - Oh, - ¡Eso fue todo!
-
-### "," + "me" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,me encantaría saber más sobre ella.
-  - Justo lo que le interesa,me parece.
-  - Oh,me encanta Noruega.
 
 ### "--" + "¿" (4 occurrences)
 - Predicted: None
@@ -158,21 +150,13 @@ Accuracy: 99.97%
   - Piérdete, Dursley, bobo majadero.
   - Piérdete, ¿sí?
 
-### "haber" + "te" (4 occurrences)
+### "a" + "juicio" (4 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - No haberte metido en el mercadillo conmigo.
-  - Podrías haberte bajado con el paraguas.
-  - Podrías haberte despedido de él.
-
-### "¿" + "cómo" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Chicos, ¿ cómo los hace sentir esto?
-  - Joe, ¿ cómo te encuentras?
-  - Johnny, ¿ cómo estás?
+  - No, nos vamos ajuicio.
+  - Si esto va ajuicio, necesitarán un sacerdote, no un abogado.
+  - Si nos vamos ajuicio, me lanzo a matar.
 
 ### "'" + "es" (3 occurrences)
 - Predicted: None
@@ -181,62 +165,6 @@ Accuracy: 99.97%
   - Creo que 'él' es más bien 'ella'.
   - El 'soldado' es un cargo de más responsabilidad.
   - Más importante que 'qué' es 'cuándo' .
-
-### "," + "Hu" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hu,Hu,Hu,Hu, ¡date prisa, idiota!
-  - Hu,Hu,Hu,Hu, ¡date prisa, idiota!
-  - Hu,Hu,Hu,Hu, ¡date prisa, idiota!
-
-### "," + "Jack" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Mira,Jack, no contraté a esa muchacha por su grito.
-  - Oye,Jack, ¿adónde carajo vas?
-  - Oye,Jack, ¿de qué estás hablando?
-
-### "," + "el" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No son tantas líneas, pero es una parte clave,el hijo de Rachel.
-  - No,el punto es revisarlo juntos y decidir.
-  - Sí,el papel que no quisiste.
-
-### "," + "esa" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,esa es la pregunta que plantea la película,¿no?
-  - Mierda,esa es Rachel Kemp.
-  - Sabes,esa era la oficina de la abuela antes de que se enfermara.
-
-### "," + "eso" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,eso espero.
-  - Sí,eso ayuda un poco.
-  - Sí,eso dices tú.
-
-### "," + "por" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Abre la puerta,por favor.
-  - Me gustaría ese jarrón,por ejemplo.
-  - No,por supuesto que no.
-
-### "," + "sí" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,sí nos fuimos después de esto.
-  - Eh,sí.
-  - Oh,sí.
 
 ### "-" + "No" (3 occurrences)
 - Predicted: None
@@ -253,6 +181,14 @@ Accuracy: 99.97%
   - Babinot, date prisa, ¿quieres?
   - Babinot, se acabaron las vacaciones.
   - Babinot, ¿qué haces?
+
+### "Pilar" + "," (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Como Pilar , claro que protegería a mis subordinados.
+  - Como Pilar , estoy aquí para investigar.
+  - Eres un Pilar , ¿verdad?
 
 ### "Por" + "qué" (3 occurrences)
 - Predicted: Space
@@ -300,41 +236,6 @@ Accuracy: 99.97%
   - Aunque eso de 'Dios mío' se lo hayas añadido.
   - Por si 'mirar' se vuelve 'comprar'.
 
-### "," + "Sissel" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hay dos versiones de cómo Gustav conoció a su esposa,Sissel.
-  - Seis meses después,Sissel estaba embarazada.
-
-### "," + "está" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,está bien.
-  - Oh,está fuera de lugar.
-
-### "," + "papá" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hola,papá.
-  - No vamos a trabajar juntos,papá.
-
-### "," + "pero" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No voy a dar un discurso,pero siento esta gratitud brotando en mí.
-  - Sé que piensas que eres incapaz de cuidar,pero tú estabas ahí para mí.
-
-### "," + "sólo" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Eh,sólo un café.
-  - No quiero entrometerme,sólo siento que podría ser relevante.
-
 ### "," + "¡" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -349,12 +250,26 @@ Accuracy: 99.97%
   - Asi se hace - Hola.
   - Hola Señora - Hola.
 
+### "-" + "O" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Colocando el marcador a O - O.
+  - Con esto, esta ronda está empatada en O - O.
+
 ### "-" + "Yo" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Nosotros-- Yo estaba en el bosque, tú en el auto.
   - Yo-- Yo te inyecto, y luego tú a mí.
+
+### "-" + "dos" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Cielos-- dos años.
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
 
 ### "--" + "No" (2 occurrences)
 - Predicted: None
@@ -391,6 +306,13 @@ Accuracy: 99.97%
   - Ah, «Family Feud».
   - Estoy viendo «Family Feud».
 
+### "O" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Colocando el marcador a O - O.
+  - Con esto, esta ronda está empatada en O - O.
+
 ### "Sírve" + "te" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -411,13 +333,6 @@ Accuracy: 99.97%
 - Examples:
   - Al fin llegó al 'hasta aquí'.
   - Él dice 'la encontré' y luego repite 'está aquí'.
-
-### "conocer" + "te" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Encantado de conocerte a ti también.
-  - La madre del ruso quiere conocerte.
 
 ### "de" + "-" (2 occurrences)
 - Predicted: None
@@ -496,12 +411,26 @@ Accuracy: 99.97%
   - Ese es un gran 'si'.
   - Yo no necesito oír ningún 'si'.
 
+### "tres" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tengo tres -Bueno.
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "vez" + "." (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - El muchacho montó un caballo por primera vez .
   - Pero voy a orar a Dios Si él viene otra vez .
+
+### "¿" + "cómo" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Joe, ¿ cómo te encuentras?
+  - Johnny, ¿ cómo estás?
 
 ### "¿" + "eh" (2 occurrences)
 - Predicted: None
@@ -652,47 +581,11 @@ Accuracy: 99.97%
 - Examples:
   - Es unazona erógena muy sensible, .
 
-### "," + "Ave" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ave,Ave.
-
 ### "," + "C." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Uno, C.
-
-### "," + "Karin" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Después de la guerra,Karin se casó y se quedó con la casa familiar.
-
-### "," + "María" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ave,María.
-
-### "," + "Michael" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Estoy demasiado cansado,Michael.
-
-### "," + "Nora" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No digas eso,Nora.
-
-### "," + "Running" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La tensión es mayor que nunca,Running fans.
 
 ### "," + "Usted" (1 occurrences)
 - Predicted: Space
@@ -700,287 +593,23 @@ Accuracy: 99.97%
 - Examples:
   - Mi Dios,Usted tiene el caso del Destripador.
 
-### "," + "a" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,a veces me ayuda con investigaciones.
-
-### "," + "aquí" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,aquí no.
-
-### "," + "arriba" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La página anterior,arriba.
-
-### "," + "así" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Vale,así que tardó todos esos años en llegar aquí.
-
-### "," + "claro" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sí,claro.
-
-### "," + "cuando" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Quiero decir,cuando sales al escenario, es tan contraintuitivo.
-
-### "," + "de" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - He estado pensando mucho en tomarme un descanso,de hecho.
-
-### "," + "desapareció" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - El ruido que hacían sus padres,desapareció.
-
-### "," + "durante" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - La fabricación de papel fue,durante mucho tiempo, un secreto de Estado.
-
-### "," + "dímelo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Gracias por hacer el trabajo que haces, y si hay algo,dímelo.
-
-### "," + "ella" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Y recuerda,ella nunca le ha contado esto a nadie.
-
-### "," + "en" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,en realidad no.
-
 ### "," + "entendemos" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Sí,entendemos que ustedes eran amigas de ambas damas.
 
-### "," + "era" (1 occurrences)
+### "," + "me" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - Pero lo que a la casa le disgustaba más que el ruido,era el silencio.
-
-### "," + "espera" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,espera.
-
-### "," + "esto" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,esto no trata sobre mi madre.
-
-### "," + "estoy" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sí,estoy bien.
-
-### "," + "filmo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sabes,filmo con amigos.
-
-### "," + "fue" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Y sí,fue bonito, papá.
-
-### "," + "hablamos" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,hablamos de vez en cuando.
-
-### "," + "hablando" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Así que ella está aquí,hablando con su hijo.
-
-### "," + "ira" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Esta frustración,ira, sensación de injusticia, la carga de la responsabilidad.
-
-### "," + "jefe" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Es el personaje de una tira cómica,jefe.
-
-### "," + "jovencito" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Pero temo,jovencito, que su posición no es negociable.
-
-### "," + "le" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sí,le diste.
-
-### "," + "maldita" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Pero vas a hacer esta película,maldita sea.
-
-### "," + "mierda" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Oh,mierda.
-
-### "," + "ni" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Perdón,ni siquiera puedo hablar bien.
-
-### "," + "primero" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,primero come otra cosa.
-
-### "," + "probablemente" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hace veinte años,probablemente, desde que la vi.
-
-### "," + "puedes" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,puedes acercarte más.
-
-### "," + "realmente" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dios,realmente extraño a Peter.
-
-### "," + "solía" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Cuando era pequeña,solía escuchar sus conversaciones a través de esta estufa.
-
-### "," + "supongo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sí,supongo.
-
-### "," + "sé" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Y Jakob,sé que las cosas son difíciles en el frente doméstico.
-
-### "," + "también" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Él sentía, en realidad estaba seguro, que Syed,también tiene estreñimiento.
-
-### "," + "te" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,te quiero para el papel principal.
-
-### "," + "tengo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Sí,tengo que hacer esto.
-
-### "," + "tiene" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,tiene este proyecto.
-
-### "," + "tomemos" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Vamos,tomemos algo.
-
-### "," + "tuvo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No,tuvo que irse.
-
-### "," + "un" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,un poco sobreescrito.
-
-### "," + "una" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Bueno,una última pregunta antes de dejarte ir.
+  - Justo lo que le interesa,me parece.
 
 ### "," + "vamos" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Está bien,vamos hombres, ya despejen el pasaje.
-
-### "," + "y" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Se abrazan,y él se va.
-
-### "," + "ya" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No quiero decepcionarlo,ya sabes.
-
-### "," + "yo" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Quiero decir,yo también te quiero.
 
 ### "," + "«" (1 occurrences)
 - Predicted: None
@@ -1047,12 +676,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ella-- Ella sigue diciendo mi nombre, pero no sé quién es.
-
-### "-" + "Era" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Era-- Era yo.
 
 ### "-" + "Este" (1 occurrences)
 - Predicted: None
@@ -1144,23 +767,11 @@ Accuracy: 99.97%
 - Examples:
   - Tú-- Tú estás precisando anteojos.
 
-### "-" + "Un" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Tuve un sueño y-- Un momento.
-
 ### "-" + "Vayamos" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - GASOLINERA - Vayamos al siguiente pueblo.
-
-### "-" + "Vete" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sé-- Vete.
 
 ### "-" + "Whoo" (1 occurrences)
 - Predicted: None
@@ -1168,17 +779,23 @@ Accuracy: 99.97%
 - Examples:
   - Rick Dalton - Whoo!
 
+### "-" + "cinco" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "-" + "cristiana" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Usted predica ciencia anti-blancos, anti- cristiana.
 
-### "-" + "dos" (1 occurrences)
+### "-" + "cuatro" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Cielos-- dos años.
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
 
 ### "-" + "es" (1 occurrences)
 - Predicted: None
@@ -1282,6 +899,18 @@ Accuracy: 99.97%
 - Examples:
   - Ser calvo tiene al menos una ventaja - se ahorra mucho en champú.
 
+### "-" + "seis" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
+### "-" + "siete" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "-" + "suaves" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1306,6 +935,12 @@ Accuracy: 99.97%
 - Examples:
   - Atraer hacia sí -de los transeúntes- todos los demonios de la Tierra.
 
+### "-" + "tres" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "-" + "un" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1329,6 +964,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - We get inside, turn on that switch, light the clock tower - we find her house.
+
+### "--" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Pero, ¿cómo-- ?
 
 ### "--" + "Bueno" (1 occurrences)
 - Predicted: None
@@ -1468,6 +1109,12 @@ Accuracy: 99.97%
 - Examples:
   - Alinearlas, alinearlas con un poco de orden, que no suceda como la última vez.
 
+### "Allahabad" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Allahabad .
+
 ### "Alt" + "+" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1480,11 +1127,23 @@ Accuracy: 99.97%
 - Examples:
   - Vaya, 'La Voz de su Amo' otra vez.
 
+### "Aquí" + "tiene" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aquítiene.
+
 ### "Artículos Valiosos" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Uno decía 'Vestuario' y el otro 'Artículos Valiosos'.
+
+### "Baruku Hinda" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Soy Baruku Hinda - ¿Cómo estás?
 
 ### "Bhagwan" + "." (1 occurrences)
 - Predicted: None
@@ -1540,6 +1199,12 @@ Accuracy: 99.97%
 - Examples:
   - Detengase .
 
+### "Dhanbad" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - El carbón era ahora un mero capítulo de la historia de la mafia de Dhanbad .
+
 ### "Di" + ":" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1588,6 +1253,12 @@ Accuracy: 99.97%
 - Examples:
   - Feliz Diwali - ¡Oh!
 
+### "Doms" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sírveme otro trago, Rey de los Doms .
+
 ### "EVP" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1629,6 +1300,30 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - GASOLINERA - Vayamos al siguiente pueblo.
+
+### "Gulabo" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Digas lo que digas Gulabo , necesitas que yo cree el ambiente.
+
+### "Gulabo" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es tan rosada que su nombre debería ser Gulabo .
+
+### "Gwangju" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ciudadanos de Gwangju, ciudadanos de Gwangju ?
+
+### "Han" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bajo el tercer puente del río Han ?
 
 ### "Hing" + "." (1 occurrences)
 - Predicted: None
@@ -1707,6 +1402,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Maddalena -Sigo todavía aquí.
+
+### "Maha Shivratri" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hoy en víspera de Maha Shivratri .
 
 ### "Malcolm" + "-" (1 occurrences)
 - Predicted: None
@@ -1791,6 +1492,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Pero¿qué sé yo?
+
+### "Pilar" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Después de todo, ese es el primer paso para convertirse en Pilar .
 
 ### "Quinta" + "." (1 occurrences)
 - Predicted: None
@@ -1912,6 +1619,18 @@ Accuracy: 99.97%
 - Examples:
   - JUEGO UNO - Buena suerte, caballeros.
 
+### "UP" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Aun no cruce UP .
+
+### "Uno" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "Vamos" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1953,6 +1672,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Ylos látigos, ¿son de juguete?
+
+### "Y" + "puede" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ypuede ser muy depresivo, y, por lo tanto, deprimente.
 
 ### "Y" + "tienes" (1 occurrences)
 - Predicted: Space
@@ -2014,6 +1739,12 @@ Accuracy: 99.97%
 - Examples:
   - Tengo muchas aficiones - pescar y escalar, por ejemplo.
 
+### "alguien" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Se puede lastimar a alguien -Un ingeniero también, ¿no te jode?
+
 ### "americano" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2032,6 +1763,12 @@ Accuracy: 99.97%
 - Examples:
   - La palabra que usé fue 'amor'.
 
+### "anhelo" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nunca olvidaré ese anhelo ?
+
 ### "anoche" + "'?" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2049,6 +1786,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Sólo estoy diciendo , podríamos construir una vida juntos aquí .
+
+### "arrebatado" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Qué crueldad que el tiempo me la haya arrebatado ?
 
 ### "arriba" + "'" (1 occurrences)
 - Predicted: Space
@@ -2182,6 +1925,12 @@ Accuracy: 99.97%
 - Examples:
   - Más la mayor de ellas es la caridad'.
 
+### "cinco" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "cita" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2230,6 +1979,12 @@ Accuracy: 99.97%
 - Examples:
   - Lo llevo en mi corazón'.
 
+### "corazón" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sus ojos resplandecientes aún brillan en mi corazón ?
+
 ### "cosas" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2248,6 +2003,12 @@ Accuracy: 99.97%
 - Examples:
   - Creí haber oído 'los cuatro'.
 
+### "cuatro" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "cuidate" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2259,6 +2020,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Más importante que 'qué' es 'cuándo' .
+
+### "cállate" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sukhi, ¡ cállate !
 
 ### "dama" + "'" (1 occurrences)
 - Predicted: Space
@@ -2343,6 +2110,24 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Un poco del viejo 'uno-dos'.
+
+### "dos" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
+### "día" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - A veces, cuando me siento solo, recuerdo aquel día ?
+
+### "e" + "spiertos!" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hierro, llama, bola de fuego, lanza… ¡Despiertos!
 
 ### "ella" + "'" (1 occurrences)
 - Predicted: Space
@@ -2440,6 +2225,30 @@ Accuracy: 99.97%
 - Examples:
   - Mi punto fuerte es mi filosofía - Nada arriesgado, nada ganado.
 
+### "firdous" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mi amado sigue los pasos del rocío bajo sus pies yace el firdous .
+
+### "fluye" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - El agua del río fluye ?
+
+### "fluyendo" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sigue fluyendo ?
+
+### "follen" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Que te follen .
+
 ### "frita" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2463,6 +2272,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - El cielo está sombrío y gris - un cielo típico de la estación de lluvias.
+
+### "hace" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Si lo hace , no podré salir del bosque.
 
 ### "hace" + "-" (1 occurrences)
 - Predicted: None
@@ -2530,6 +2345,18 @@ Accuracy: 99.97%
 - Examples:
   - Estabas diciendo algo sobre 'la mejor intención'.
 
+### "irte" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tienes que irte -Oye cabrón, ¿qué te pasa?
+
+### "jodiste" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Y tú la jodiste -Porque los españoles hablan español.
+
 ### "juego" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2541,6 +2368,18 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Tu dijiste 'El día del juicio'.
+
+### "juramento" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - E hicimos un solemne juramento ?
+
+### "justicia" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Luchamos por la justicia ?
 
 ### "laddoo" + "," (1 occurrences)
 - Predicted: None
@@ -2590,6 +2429,12 @@ Accuracy: 99.97%
 - Examples:
   - Dieciocho años sin decir ni mu, ni una carta, ni una llamada .
 
+### "lo" + "justo" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Si vendes ahora, te pagaremos lojusto.
+
 ### "locos" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2625,6 +2470,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Él ve nuestra sombra y dice: 'Hágase la luz'.
+
+### "malo" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Es malo -¿Qué es?
 
 ### "mamá" + "," (1 occurrences)
 - Predicted: None
@@ -2685,6 +2536,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Así que de esta forma vive la otra mitad .
+
+### "mojada" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Su corto cabello era como una brizna de hierba recién mojada ?
 
 ### "montaje" + "." (1 occurrences)
 - Predicted: None
@@ -2770,11 +2627,23 @@ Accuracy: 99.97%
 - Examples:
   - O, si prefieres, puedes decir 'nuestra'.
 
+### "odiaba" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - El estado entero le odiaba -¿Le odiaba?
+
 ### "oficio" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - No lo llames «oficio».
+
+### "oportunidad" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Para darnos una oportunidad .
 
 ### "oídos" + "?" (1 occurrences)
 - Predicted: None
@@ -2800,6 +2669,12 @@ Accuracy: 99.97%
 - Examples:
   - Porque muchos otros 'payasos' eligieron este lugar.
 
+### "películas" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - He visto todas sus películas -Estamos muy honrados.
+
 ### "pensando" + ":" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2823,6 +2698,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Es húmedo y redondo, rodeado de pestañas/pelo.
+
+### "plata" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - A él solo le interesa la plata -¿Cómo?
 
 ### "primer" + "jabón" (1 occurrences)
 - Predicted: Space
@@ -2866,6 +2747,12 @@ Accuracy: 99.97%
 - Examples:
   - Algo a lo que usted llama daño deliberado a la propiedad - ¿y qué?
 
+### "proyecto" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Yo solía tipear su proyecto .
+
 ### "pud" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2877,6 +2764,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - No quiero que -reescribas.
+
+### "que" + "iba" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - No, ocurre que el me dijo queiba a venir para mi departamento hoy a la tarde.
 
 ### "quiera" + "'" (1 occurrences)
 - Predicted: Space
@@ -2901,6 +2794,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Como podrán haber notado, todas contienen 'recuerdos'.
+
+### "rodillas" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Preferimos morir de pie que vivir de rodillas ?
 
 ### "rojo" + "," (1 occurrences)
 - Predicted: None
@@ -2956,11 +2855,23 @@ Accuracy: 99.97%
 - Examples:
   - Vamos, vuelvo en seguida - Gracias.
 
+### "seis" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uno - dos - tres - cuatro - cinco - seis - siete.
+
 ### "sensación" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Y como que quizás sea la mejor sensación -en el mundo, ¿sabes?
+
+### "ser" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No puede ser -Acompáñeme por favor.
 
 ### "será" + "'" (1 occurrences)
 - Predicted: Space
@@ -2992,6 +2903,18 @@ Accuracy: 99.97%
 - Examples:
   - El 'soldado' es un cargo de más responsabilidad.
 
+### "soñar" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - A veces, cuando la echo de menos, comienzo a soñar ?
+
+### "spiertos!" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hierro, llama, bola de fuego, lanza… ¡Despiertos!
+
 ### "suficiente" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3015,6 +2938,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ella solía ser una tabla - ¿Cuándo fue que se vino tan grande?
+
+### "tampoco" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Yo tampoco .
 
 ### "tarde" + "'" (1 occurrences)
 - Predicted: Space
@@ -3064,11 +2993,11 @@ Accuracy: 99.97%
 - Examples:
   - Entonces hagamos un último trabajo .
 
-### "tres" + "-" (1 occurrences)
+### "tren" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Tengo tres -Bueno.
+  - Por la mañana tomaríamos el primer tren ?
 
 ### "tu" + "?" (1 occurrences)
 - Predicted: None
@@ -3112,6 +3041,12 @@ Accuracy: 99.97%
 - Examples:
   - Ser calvo tiene al menos una ventaja - se ahorra mucho en champú.
 
+### "ver" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ayer te volví a ver ?
+
 ### "verdad" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3130,11 +3065,23 @@ Accuracy: 99.97%
 - Examples:
   - Le dijimos: 'Así es la vida'.
 
+### "viento" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Como un pájaro, como el viento ?
+
 ### "virgen" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Fue lo de 'virgen' lo que llamó la atención.
+
+### "visiones" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vio visiones -Estoy cansado ya no puedo mas.
 
 ### "visitas" + "." (1 occurrences)
 - Predicted: None
@@ -3160,6 +3107,12 @@ Accuracy: 99.97%
 - Examples:
   - Me gusta hacer las cosas como las hago yo .
 
+### "¡" + "cállate" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sukhi, ¡ cállate !
+
 ### "¿" + "A" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3183,12 +3136,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Anastasia, ¿ adónde vas?
-
-### "¿" + "crecemos" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Claro, ¿ crecemos y tenemos hijos en este sumidero?
 
 ### "¿" + "desearíais" (1 occurrences)
 - Predicted: None
@@ -3249,6 +3196,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Creo que 'él' es más bien 'ella'.
+
+### "únanse" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ciudadanos de Gwangju, únanse ?
 
 ### "‑" + "sensible" (1 occurrences)
 - Predicted: Space
