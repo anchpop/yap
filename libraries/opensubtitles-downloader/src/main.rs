@@ -24,326 +24,392 @@ async fn fetch_image_bytes(client: &reqwest::Client, url: &str) -> Result<Vec<u8
     Ok(bytes.to_vec())
 }
 
+/// Hand-picked movies to fetch subtitles for, on top of whatever
+/// `discover/popular` returns. Every ID here was resolved against TMDB and the
+/// comment is the title and year that ID *actually* points at — so a mistyped or
+/// stale ID shows up as a wrong-looking comment instead of silently downloading
+/// the wrong film. Grouping is by the movie's original language; the list itself
+/// is flat and every entry is tried for every target language.
 const EXTRA_MOVIES: &[&str] = &[
     // English classics & blockbusters
-    "tt6751668",  // Parasite
-    "tt20215234", // Oppenheimer
-    "tt2584384",  // Jojo Rabbit
-    "tt4468740",  // The Dead Don't Die
-    "tt1856101",  // Blade Runner 2049
-    "tt4263482",  // The Handmaiden
-    "tt28607951", // Wicked
-    "tt2582802",  // Whiplash
-    "tt0382932",  // Ratatouille
-    "tt0347149",  // Howl's Moving Castle
-    "tt0299658",  // Chicago
-    "tt0245429",  // Spirited Away
-    "tt0230011",  // Moulin Rouge!
-    "tt2396224",  // Song of the Sea
-    "tt0805564",  // Lars and the Real Girl
-    "tt0460989",  // Juno
-    "tt0320661",  // Kung Fu Hustle
-    "tt0264464",  // Catch Me If You Can
-    "tt0120737",  // LOTR: Fellowship
-    "tt0167261",  // LOTR: Two Towers
-    "tt0167260",  // LOTR: Return of the King
-    "tt0265666",  // The Royal Tenenbaums
-    "tt0137523",  // Fight Club
-    "tt0128445",  // Rushmore
-    "tt0120338",  // Titanic
-    "tt0119698",  // Princess Mononoke
-    "tt0104797",  // A Few Good Men
-    "tt0105236",  // Reservoir Dogs
-    "tt3783958",  // La La Land
-    "tt0099685",  // Goodfellas
-    "tt0097499",  // Field of Dreams
-    "tt0097165",  // Dead Poets Society
-    "tt0097576",  // Indiana Jones and the Last Crusade
-    "tt0097216",  // Die Hard
-    "tt0093779",  // The Princess Bride
-    "tt0096018",  // Cinema Paradiso
-    "tt0181875",  // Almost Famous
-    "tt2194499",  // Moonrise Kingdom
-    "tt0780504",  // Drive
-    "tt7131622",  // Once Upon a Time... in Hollywood
+    "tt20215234", // Conclave (2024)
+    "tt15398776", // Oppenheimer (2023)
+    "tt2584384",  // Jojo Rabbit (2019)
+    "tt4468740",  // Paddington 2 (2017)
+    "tt8695030",  // The Dead Don't Die (2019)
+    "tt1856101",  // Blade Runner 2049 (2017)
+    "tt4263482",  // The Witch (2016)
+    "tt28607951", // Anora (2024)
+    "tt1262426",  // Wicked (2024)
+    "tt2582802",  // Whiplash (2014)
+    "tt0382932",  // Ratatouille (2007)
+    "tt0299658",  // Chicago (2002)
+    "tt0230011",  // Atlantis: The Lost Empire (2001)
+    "tt0203009",  // Moulin Rouge! (2001)
+    "tt2396224",  // It's Such a Beautiful Day (2012)
+    "tt1865505",  // Song of the Sea (2014)
+    "tt0805564",  // Lars and the Real Girl (2007)
+    "tt0460989",  // The Wind That Shakes the Barley (2006)
+    "tt0467406",  // Juno (2007)
+    "tt0264464",  // Catch Me If You Can (2002)
+    "tt0120737",  // The Lord of the Rings: The Fellowship of the Ring (2001)
+    "tt0167261",  // The Lord of the Rings: The Two Towers (2002)
+    "tt0167260",  // The Lord of the Rings: The Return of the King (2003)
+    "tt0265666",  // The Royal Tenenbaums (2001)
+    "tt0137523",  // Fight Club (1999)
+    "tt0128445",  // Rushmore (1998)
+    "tt0120338",  // Titanic (1997)
+    "tt0104797",  // Malcolm X (1992)
+    "tt0104257",  // A Few Good Men (1992)
+    "tt0105236",  // Reservoir Dogs (1992)
+    "tt3783958",  // La La Land (2016)
+    "tt0099685",  // Goodfellas (1990)
+    "tt0097499",  // Henry V (1989)
+    "tt0097351",  // Field of Dreams (1989)
+    "tt0097165",  // Dead Poets Society (1989)
+    "tt0097576",  // Indiana Jones and the Last Crusade (1989)
+    "tt0097216",  // Do the Right Thing (1989)
+    "tt0095016",  // Die Hard (1988)
+    "tt0093779",  // The Princess Bride (1987)
+    "tt0096018",  // Running on Empty (1988)
+    "tt0181875",  // Almost Famous (2000)
+    "tt2194499",  // About Time (2013)
+    "tt1748122",  // Moonrise Kingdom (2012)
+    "tt0780504",  // Drive (2011)
+    "tt7131622",  // Once Upon a Time... in Hollywood (2019)
+    "tt0106856",  // Falling Down (1993)
+    "tt0363589",  // Elephant (2003)
+    "tt0756683",  // The Man from Earth (2007)
+    "tt14444726", // TÁR (2022)
+    "tt0048491",  // Picnic (1955)
+    "tt0082085",  // Blow Out (1981)
+    "tt0120202",  // State and Main (2000)
+    "tt0117093",  // Mother Night (1996)
+    "tt0234853",  // The Tao of Steve (2000)
+    "tt0314331",  // Love Actually (2003)
+    "tt0327056",  // Mystic River (2003)
+    "tt3104988",  // Crazy Rich Asians (2018)
+    "tt0421082",  // Control (2007)
+    "tt1186830",  // Agora (2009)
+    "tt6710474",  // Everything Everywhere All at Once (2022)
+    "tt6644200",  // A Quiet Place (2018)
+    "tt3622120",  // Kajaki (2014)
+    "tt0765429",  // American Gangster (2007)
+    "tt0093389",  // The Last Emperor (1987)
+    "tt5462602",  // The Big Sick (2017)
+    "tt12593682", // Bullet Train (2022)
+    "tt0032976",  // Rebecca (1940)
+    "tt0054215",  // Psycho (1960)
+    "tt0166924",  // Mulholland Drive (2001)
+    "tt6439020",  // The Personal History of David Copperfield (2019)
+    "tt0112883",  // Don Juan DeMarco (1994)
+    "tt0084726",  // Star Trek II: The Wrath of Khan (1982)
+    "tt1424432",  // Senna (2010)
+    "tt0361862",  // The Machinist (2004)
+    "tt0048673",  // Summertime (1955)
+    "tt0036775",  // Double Indemnity (1944)
+    "tt0116209",  // The English Patient (1996)
     // French
-    "tt1675434",  // The Intouchables
-    "tt0110413",  // Léon: The Professional
-    "tt0211915",  // Amélie
-    "tt0119116",  // The Fifth Element
-    "tt2278871",  // Blue Is the Warmest Color
-    "tt0113247",  // La Haine
-    "tt0250223",  // Astérix & Obélix: Mission Cléopâtre
-    "tt1655442",  // The Artist
-    "tt4954522",  // Raw
-    "tt0290673",  // Irréversible
-    "tt1255953",  // Incendies
-    "tt17009710", // Anatomy of a Fall
-    "tt8613070",  // Portrait of a Lady on Fire
-    "tt3612616",  // Mommy
-    "tt0372824",  // The Chorus
-    "tt0053198",  // The 400 Blows
-    "tt7458762",  // The Wolf's Call
-    "tt5078204",  // Two Is a Family
-    "tt0092593",  // Au Revoir Les Enfants
-    "tt0101765",  // Delicatessen
-    "tt0106856",  // Three Colors: Blue
-    "tt0338135",  // Caché (Hidden)
-    "tt0363589",  // The Diving Bell and the Butterfly
-    "tt0401711",  // Tell No One (Ne le dis à personne)
-    "tt0756683",  // A Prophet (Un prophète)
-    "tt14444726", // Titane
-    "tt0070460",  // Day for Night (La Nuit américaine)
-    "tt0048491",  // Les Diaboliques
-    "tt0046268",  // The Wages of Fear (Le Salaire de la peur)
-    "tt0082085",  // Diva
-    "tt0120202",  // Taxi
-    "tt0091288",  // Jean de Florette
-    "tt0091480",  // Manon des Sources
-    "tt0060474",  // La Grande Vadrouille
-    "tt0108500",  // Les Visiteurs
+    "tt1675434",  // The Intouchables (2011)
+    "tt0110413",  // Léon: The Professional (1994)
+    "tt0211915",  // Amélie (2001)
+    "tt0119116",  // The Fifth Element (1997)
+    "tt2278871",  // Blue Is the Warmest Color (2013)
+    "tt0113247",  // La Haine (1995)
+    "tt0250223",  // Astérix & Obélix: Mission Cléopâtre (2002)
+    "tt1655442",  // The Artist (2011)
+    "tt4954522",  // Raw (2017)
+    "tt1255953",  // Incendies (2010)
+    "tt17009710", // Anatomy of a Fall (2023)
+    "tt8613070",  // Portrait of a Lady on Fire (2019)
+    "tt3612616",  // Mommy (2014)
+    "tt0372824",  // The Chorus (2004)
+    "tt0053198",  // The 400 Blows (1959)
+    "tt7458762",  // The Wolf's Call (2019)
+    "tt5078204",  // Two Is a Family (2016)
+    "tt0092593",  // Au Revoir les Enfants (1987)
+    "tt0101765",  // The Double Life of Véronique (1991)
+    "tt0101700",  // Delicatessen (1991)
+    "tt0108394",  // Three Colors: Blue (1993)
+    "tt0338135",  // The Barbarian Invasions (2003)
+    "tt0387898",  // Caché (2005)
+    "tt0401383",  // The Diving Bell and the Butterfly (2007)
+    "tt0401711",  // Paris Je T'aime (2006)
+    "tt0362225",  // Tell No One (2006)
+    "tt1235166",  // A Prophet (2009)
+    "tt10944760", // Titane (2021)
+    "tt0070460",  // Day for Night (1973)
+    "tt0046911",  // Les Diaboliques (1955)
+    "tt0046268",  // The Wages of Fear (1953)
+    "tt0082269",  // Diva (1981)
+    "tt0152930",  // Taxi (1998)
+    "tt0091288",  // Jean de Florette (1986)
+    "tt0091480",  // Manon des Sources (1986)
+    "tt0060474",  // La Grande Vadrouille (1966)
+    "tt0108500",  // Les Visiteurs (1993)
+    "tt1650048",  // Laurence Anyways (2012)
     // Spanish
-    "tt0457430",  // Pan's Labyrinth
-    "tt4857264",  // The Invisible Guest
-    "tt1038988",  // [REC]
-    "tt1189073",  // The Skin I Live In
-    "tt6155172",  // Roma
-    "tt3011894",  // Wild Tales
-    "tt16277242", // Society of the Snow
-    "tt0464141",  // The Orphanage
-    "tt0245712",  // Amores Perros
-    "tt1305806",  // The Secret in Their Eyes
-    "tt0185125",  // All About My Mother
-    "tt6908274",  // Mirage
-    "tt8291806",  // Pain and Glory
-    "tt0441909",  // Volver
-    "tt0245574",  // Y Tu Mamá También
-    "tt0117093",  // Open Your Eyes (Abre los ojos)
-    "tt0091670",  // Women on the Verge of a Nervous Breakdown
-    "tt0234853",  // The Devil's Backbone
-    "tt5765280",  // A Fantastic Woman (Una mujer fantástica)
-    "tt7549996",  // The Platform (El hoyo)
-    "tt0314331",  // Mondays in the Sun (Los lunes al sol)
-    "tt1530509",  // No (2012, Chilean)
-    "tt1650048",  // Even the Rain (También la lluvia)
-    "tt0327056",  // The Motorcycle Diaries
-    "tt0070040",  // The Spirit of the Beehive (El espíritu de la colmena)
-    "tt0287467",  // Talk to Her (Hable con ella)
-    "tt0117883",  // Tesis
+    "tt0457430",  // Pan's Labyrinth (2006)
+    "tt4857264",  // The Invisible Guest (2017)
+    "tt1038988",  // [REC] (2007)
+    "tt1189073",  // The Skin I Live In (2011)
+    "tt6155172",  // Roma (2018)
+    "tt3011894",  // Wild Tales (2014)
+    "tt16277242", // Society of the Snow (2023)
+    "tt0464141",  // The Orphanage (2007)
+    "tt0245712",  // Amores Perros (2000)
+    "tt1305806",  // The Secret in Their Eyes (2009)
+    "tt0185125",  // All About My Mother (1999)
+    "tt6908274",  // Mirage (2018)
+    "tt8291806",  // Pain and Glory (2019)
+    "tt0441909",  // Volver (2006)
+    "tt0245574",  // Y Tu Mamá También (2001)
+    "tt0125659",  // Open Your Eyes (1997)
+    "tt0095675",  // Women on the Verge of a Nervous Breakdown (1988)
+    "tt0256009",  // The Devil's Backbone (2001)
+    "tt5639354",  // A Fantastic Woman (2017)
+    "tt8228288",  // The Platform (2019)
+    "tt0319769",  // Mondays in the Sun (2002)
+    "tt2059255",  // No (2012)
+    "tt1422032",  // Even the Rain (2011)
+    "tt0318462",  // The Motorcycle Diaries (2004)
+    "tt0070040",  // The Spirit of the Beehive (1973)
+    "tt0287467",  // Talk to Her (2002)
+    "tt0117883",  // Tesis (1996)
     // German
-    "tt1016150", // All Quiet on the Western Front
-    "tt0088323", // The NeverEnding Story
-    "tt0405094", // The Lives of Others
-    "tt1063669", // The Wave
-    "tt0017136", // Metropolis
-    "tt0301357", // Good Bye, Lenin!
-    "tt0130827", // Run Lola Run
-    "tt0082096", // Das Boot
-    "tt0022100", // M
-    "tt0013442", // Nosferatu
-    "tt0119167", // Funny Games
-    "tt2987732", // Suck Me Shakespeer
-    "tt3042408", // Who Am I
-    "tt0093191", // Wings of Desire
-    "tt4226388", // Victoria
-    "tt0068182", // Aguirre, the Wrath of God
-    "tt3104988", // Toni Erdmann
-    "tt3615160", // Look Who's Back (Er ist wieder da)
-    "tt4530422", // The Captain (Der Hauptmann)
-    "tt0421082", // The Counterfeiters (Die Fälscher)
-    "tt1186830", // The White Ribbon (Das weiße Band)
-    "tt0076085", // The Tin Drum (Die Blechtrommel)
-    "tt6710474", // System Crasher (Systemsprenger)
-    "tt0250258", // The Experiment (Das Experiment)
-    "tt0363163", // Downfall (Der Untergang)
-    "tt0765432", // The Baader Meinhof Complex (Der Baader Meinhof Komplex)
-    "tt0347048", // Head-On (Gegen die Wand)
-    "tt1954701", // A Coffee in Berlin (Oh Boy)
+    "tt1016150", // All Quiet on the Western Front (2022)
+    "tt0088323", // The NeverEnding Story (1984)
+    "tt0405094", // The Lives of Others (2006)
+    "tt1063669", // The Wave (2008)
+    "tt0017136", // Metropolis (1927)
+    "tt0301357", // Good Bye, Lenin! (2003)
+    "tt0130827", // Run Lola Run (1998)
+    "tt0082096", // Das Boot (1981)
+    "tt0022100", // M (1931)
+    "tt0013442", // Nosferatu (1922)
+    "tt0119167", // Funny Games (1997)
+    "tt2987732", // Suck Me Shakespeer (2013)
+    "tt3042408", // Who Am I (2014)
+    "tt0093191", // Wings of Desire (1987)
+    "tt4226388", // Victoria (2015)
+    "tt0068182", // Aguirre, the Wrath of God (1972)
+    "tt4048272", // Toni Erdmann (2016)
+    "tt4176826", // Look Who's Back (2015)
+    "tt6763252", // The Captain (2018)
+    "tt0813547", // The Counterfeiters (2007)
+    "tt1149362", // The White Ribbon (2009)
+    "tt0078875", // The Tin Drum (1979)
+    "tt8535968", // System Crasher (2019)
+    "tt0250258", // The Experiment (2001)
+    "tt0363163", // Downfall (2004)
+    "tt0765432", // The Baader Meinhof Complex (2008)
+    "tt0347048", // Head-On (2004)
+    "tt1954701", // A Coffee in Berlin (2012)
     // Korean
-    "tt0364569",  // Oldboy
-    "tt5700672",  // Train to Busan
-    "tt0353969",  // Memories of Murder
-    "tt4016934",  // The Handmaiden
-    "tt1588170",  // I Saw the Devil
-    "tt5215952",  // The Wailing
-    "tt0451094",  // Lady Vengeance
-    "tt7282468",  // Burning
-    "tt1216496",  // Mother
-    "tt1190539",  // The Chaser
-    "tt1527788",  // The Man from Nowhere
-    "tt12477480", // Decision to Leave
-    "tt0365376",  // A Tale of Two Sisters
-    "tt0423866",  // 3-Iron
-    "tt0468492",  // The Host
-    "tt6644200",  // A Taxi Driver
-    "tt0469903",  // Thirst
-    "tt1133985",  // Spring, Summer, Fall, Winter... and Spring
-    "tt1278060",  // Secret Sunshine (Milyang)
-    "tt4334266",  // The Age of Shadows
-    "tt13384586", // Broker
-    "tt3622120",  // Assassination
-    "tt0310775",  // Sympathy for Mr. Vengeance
-    // Chinese
-    "tt0190332",  // Crouching Tiger, Hidden Dragon
-    "tt0299977",  // Hero
-    "tt0385004",  // House of Flying Daggers
-    "tt0446059",  // Fearless
-    "tt0425637",  // Red Cliff
-    "tt1410063",  // The Flowers of War
-    "tt10627720", // Ne Zha
-    "tt0101640",  // Raise the Red Lantern
-    "tt0808357",  // Lust, Caution
-    "tt0106332",  // Farewell My Concubine
-    "tt0118694",  // In the Mood for Love
-    "tt0109424",  // Chungking Express
-    "tt0338564",  // Infernal Affairs
-    "tt0112725",  // Eat Drink Man Woman
-    "tt0765429",  // Ip Man
-    "tt0460780",  // Curse of the Golden Flower
-    "tt3810626",  // The Mermaid (Mei ren yu)
-    "tt0112913",  // To Live (Huozhe)
-    "tt0115857",  // Happy Together
-    "tt0093389",  // A Chinese Ghost Story
-    "tt0408664",  // The World (Shìjiè)
-    "tt0859765",  // Still Life (Sānxiá hǎorén)
+    "tt6751668",  // Parasite (2019)
+    "tt4016934",  // The Handmaiden (2016)
+    "tt0364569",  // Oldboy (2003)
+    "tt5700672",  // Train to Busan (2016)
+    "tt0353969",  // Memories of Murder (2003)
+    "tt1588170",  // I Saw the Devil (2010)
+    "tt5215952",  // The Wailing (2016)
+    "tt0451094",  // Lady Vengeance (2005)
+    "tt7282468",  // Burning (2018)
+    "tt1216496",  // Mother (2009)
+    "tt1190539",  // The Chaser (2008)
+    "tt1527788",  // The Man from Nowhere (2010)
+    "tt12477480", // Decision to Leave (2022)
+    "tt0365376",  // A Tale of Two Sisters (2003)
+    "tt0423866",  // 3-Iron (2004)
+    "tt0468492",  // The Host (2006)
+    "tt6878038",  // A Taxi Driver (2017)
+    "tt0762073",  // Thirst (2009)
+    "tt0374546",  // Spring, Summer, Fall, Winter... and Spring (2003)
+    "tt0817225",  // Secret Sunshine (2007)
+    "tt4914580",  // The Age of Shadows (2016)
+    "tt13056052", // Broker (2022)
+    "tt3501416",  // Assassination (2015)
+    "tt0310775",  // Sympathy for Mr. Vengeance (2002)
+    // Chinese (Mandarin & Cantonese)
+    "tt0373074",  // Kung Fu Hustle (2004)
+    "tt0190332",  // Crouching Tiger, Hidden Dragon (2000)
+    "tt0299977",  // Hero (2002)
+    "tt0385004",  // House of Flying Daggers (2004)
+    "tt0446059",  // Fearless (2006)
+    "tt0425637",  // Red Cliff (2008)
+    "tt1410063",  // The Flowers of War (2011)
+    "tt10627720", // Ne Zha (2019)
+    "tt0101640",  // Raise the Red Lantern (1991)
+    "tt0808357",  // Lust, Caution (2007)
+    "tt0106332",  // Farewell My Concubine (1993)
+    "tt0118694",  // In the Mood for Love (2000)
+    "tt0109424",  // Chungking Express (1994)
+    "tt0338564",  // Infernal Affairs (2002)
+    "tt0111797",  // Eat Drink Man Woman (1994)
+    "tt1220719",  // Ip Man (2008)
+    "tt0473444",  // Curse of the Golden Flower (2006)
+    "tt4701660",  // The Mermaid (2016)
+    "tt0112913",  // Fallen Angels (1995)
+    "tt0110081",  // To Live (1994)
+    "tt0118845",  // Happy Together (1997)
+    "tt0093978",  // A Chinese Ghost Story (1987)
+    "tt0423176",  // The World (2004)
+    "tt0859765",  // Still Life (2006)
     // Japanese
-    "tt5311514",  // Your Name.
-    "tt0096283",  // My Neighbor Totoro
-    "tt0095327",  // Grave of the Fireflies
-    "tt0876563",  // Ponyo
-    "tt0094625",  // Akira
-    "tt0092067",  // Castle in the Sky
-    "tt0097814",  // Kiki's Delivery Service
-    "tt5323662",  // A Silent Voice
-    "tt0047478",  // Seven Samurai
-    "tt0087544",  // Nausicaä of the Valley of the Wind
-    "tt0113568",  // Ghost in the Shell
-    "tt0266308",  // Battle Royale
-    "tt0104652",  // Porco Rosso
-    "tt2013293",  // The Wind Rises
-    "tt6587046",  // Shoplifters
-    "tt1568921",  // The Tale of the Princess Kaguya
-    "tt5462602",  // Weathering with You
-    "tt14564098", // Suzume
-    "tt12593682", // Demon Slayer: Mugen Train
-    "tt0831887",  // Departures (Okuribito)
-    "tt0044741",  // Ikiru
-    "tt0032976",  // Rashomon
-    "tt0054215",  // Yojimbo
-    "tt0092048",  // Tampopo
-    "tt0166924",  // Audition
-    "tt0046438",  // Tokyo Story
-    "tt0156887",  // Perfect Blue
-    // Hindi
-    "tt0264235",  // Lagaan
-    "tt0169102",  // Dil Chahta Hai
-    "tt0986264",  // 3 Idiots
-    "tt1187043",  // Gangs of Wasseypur
-    "tt2338151",  // Queen
-    "tt6439020",  // Andhadhun
-    "tt0374887",  // Rang De Basanti
-    "tt0347304",  // Swades
-    "tt2631186",  // PK
-    "tt4559006",  // Dangal
-    "tt3322420",  // Masaan
-    "tt2390150",  // Haider
-    "tt15745892", // RRR
-    "tt3767372",  // Article 15
-    "tt0150992",  // Dil Se..
-    "tt8239946",  // Gully Boy
-    "tt6644630",  // Tumbbad
-    "tt0348730",  // Kal Ho Naa Ho
-    "tt6766834",  // Super 30
-    "tt3495026",  // Bajrangi Bhaijaan
-    "tt0251075",  // Devdas
-    "tt0319736",  // Black
-    "tt2094990",  // Barfi!
-    "tt2356180",  // Bhaag Milkha Bhaag
-    "tt1562872",  // Zindagi Na Milegi Dobara
-    // Russian
-    "tt0079944",  // Stalker
-    "tt0069293",  // Solaris
-    "tt0091251",  // Come and See
-    "tt0072443",  // Mirror
-    "tt2802154",  // Leviathan
-    "tt0060107",  // Andrei Rublev
-    "tt6304162",  // Loveless
-    "tt0376968",  // The Return
-    "tt0318034",  // Russian Ark
-    "tt6537238",  // Salyut-7
-    "tt0118767",  // Brother
-    "tt0050986",  // The Cranes Are Flying
-    "tt0112883",  // Burnt by the Sun
-    "tt0084726",  // Kin-dza-dza!
-    "tt0079579",  // Moscow Does Not Believe in Tears
-    "tt1234530",  // Elena
-    "tt0363187",  // Night Watch
-    "tt0488074",  // Day Watch
-    "tt0015648",  // Battleship Potemkin
-    "tt0056111",  // Ivan's Childhood (Ivanovo detstvo)
-    "tt0063794",  // War and Peace (1966, Bondarchuk)
-    "tt0062759",  // The Diamond Arm (1969, Gaidai)
-    "tt0073179",  // The Irony of Fate (1976, Ryazanov)
-    "tt0076727",  // Office Romance (1977, Ryazanov)
-    "tt0084345",  // My Friend Ivan Lapshin (1985, German)
-    "tt0097561",  // The Needle (1988, Nugmanov)
-    "tt0095574",  // Little Vera (1988, Pichul)
-    "tt0093754",  // Repentance (1987, Abuladze)
-    "tt0101003",  // Freeze, Die, Come to Life (1990, Kanevsky)
-    "tt0100757",  // Taxi Blues (1990, Lungin)
-    "tt0096841",  // The Asthenic Syndrome (1989, Muratova)
-    "tt0126711",  // Is It Easy to Be Young? (1986, Podnieks)
-    "tt0238883",  // Brother 2 (2000, Balabanov)
-    "tt0156849",  // Of Freaks and Men (1998, Balabanov)
-    "tt0124207",  // The Thief (1997, Chukhray)
-    "tt0116754",  // Prisoner of the Mountains (1996, Bodrov Sr.)
-    "tt0156701",  // Khrustalyov, My Car! (1998, German)
-    "tt1588875",  // How I Ended This Summer (2010, Popogrebsky)
-    "tt10199640", // Beanpole (2019, Balagov)
-    "tt0847880",  // Cargo 200 (2007, Balabanov)
+    "tt0347149",  // Howl's Moving Castle (2004)
+    "tt0245429",  // Spirited Away (2001)
+    "tt0119698",  // Princess Mononoke (1997)
+    "tt3615160",  // Genocidal Organ (2017)
+    "tt1278060",  // The Garden of Sinners: Paradox Spiral (2008)
+    "tt0408664",  // Nobody Knows (2004)
+    "tt5311514",  // Your Name. (2016)
+    "tt0096283",  // My Neighbor Totoro (1988)
+    "tt0095327",  // Grave of the Fireflies (1988)
+    "tt0876563",  // Ponyo (2008)
+    "tt0094625",  // Akira (1988)
+    "tt0092067",  // Castle in the Sky (1986)
+    "tt0097814",  // Kiki's Delivery Service (1989)
+    "tt5323662",  // A Silent Voice (2016)
+    "tt0047478",  // Seven Samurai (1954)
+    "tt0087544",  // Nausicaä of the Valley of the Wind (1984)
+    "tt0113568",  // Ghost in the Shell (1995)
+    "tt0266308",  // Battle Royale (2000)
+    "tt0104652",  // Porco Rosso (1992)
+    "tt2013293",  // The Wind Rises (2013)
+    "tt6587046",  // The Boy and the Heron (2023)
+    "tt8075192",  // Shoplifters (2018)
+    "tt1568921",  // The Secret World of Arrietty (2010)
+    "tt2576852",  // The Tale of The Princess Kaguya (2013)
+    "tt9426210",  // Weathering with You (2019)
+    "tt16428256", // Suzume (2022)
+    "tt11032374", // Demon Slayer: Mugen Train (2020)
+    "tt1069238",  // Departures (2008)
+    "tt0044741",  // Ikiru (1952)
+    "tt0042876",  // Rashomon (1950)
+    "tt0055630",  // Yojimbo (1961)
+    "tt0092048",  // Tampopo (1985)
+    "tt0235198",  // Audition (2000)
+    "tt0046438",  // Tokyo Story (1953)
+    "tt0156887",  // Perfect Blue (1998)
+    "tt3398268",  // When Marnie Was There (2014)
+    // Hindi (plus Telugu films with Hindi releases)
+    "tt0169102",  // Lagaan: Once Upon a Time in India (2001)
+    "tt0292490",  // Dil Chahta Hai (2001)
+    "tt0986264",  // Like Stars on Earth (2007)
+    "tt1187043",  // 3 Idiots (2009)
+    "tt1954470",  // Gangs of Wasseypur - Part 1 (2012)
+    "tt2338151",  // PK (2014)
+    "tt3322420",  // Queen (2014)
+    "tt8108198",  // Andhadhun (2018)
+    "tt0374887",  // Munna Bhai M.B.B.S. (2003)
+    "tt0405508",  // Rang De Basanti (2006)
+    "tt0347304",  // Kal Ho Naa Ho (2003)
+    "tt0367110",  // Swades (2004)
+    "tt2631186",  // Bāhubali: The Beginning (2015)
+    "tt5074352",  // Dangal (2016)
+    "tt4635372",  // Masaan (2015)
+    "tt3390572",  // Haider (2014)
+    "tt8178634",  // RRR (2022)
+    "tt3767372",  // Piku (2015)
+    "tt10324144", // Article 15 (2019)
+    "tt0150992",  // Hum Dil De Chuke Sanam (1999)
+    "tt0164538",  // Dil Se.. (1998)
+    "tt8239946",  // Tumbbad (2018)
+    "tt2395469",  // Gully Boy (2019)
+    "tt7485048",  // Super 30 (2019)
+    "tt3863552",  // Bajrangi Bhaijaan (2015)
+    "tt0238936",  // Devdas (2002)
+    "tt0319736",  // The Legend of Bhagat Singh (2002)
+    "tt0375611",  // Black (2005)
+    "tt2082197",  // Barfi! (2012)
+    "tt2356180",  // Bhaag Milkha Bhaag (2013)
+    "tt1562872",  // Zindagi Na Milegi Dobara (2011)
+    // Russian & Soviet
+    "tt0079944",  // Stalker (1979)
+    "tt0069293",  // Solaris (1972)
+    "tt0091251",  // Come and See (1985)
+    "tt0072443",  // Mirror (1975)
+    "tt2802154",  // Leviathan (2014)
+    "tt0060107",  // Andrei Rublev (1966)
+    "tt6304162",  // Loveless (2017)
+    "tt0376968",  // The Return (2003)
+    "tt0318034",  // Russian Ark (2002)
+    "tt6537238",  // Salyut-7 (2017)
+    "tt0118767",  // Brother (1997)
+    "tt0050634",  // The Cranes Are Flying (1957)
+    "tt0111579",  // Burnt by the Sun (1994)
+    "tt0091341",  // Kin-dza-dza! (1986)
+    "tt0079579",  // Moscow Does Not Believe in Tears (1980)
+    "tt1925421",  // Elena (2011)
+    "tt0403358",  // Night Watch (2004)
+    "tt0409904",  // Day Watch (2006)
+    "tt0015648",  // Battleship Potemkin (1925)
+    "tt0056111",  // Ivan's Childhood (1962)
+    "tt0063794",  // War and Peace (1968)
+    "tt0062759",  // The Diamond Arm (1969)
+    "tt0073179",  // The Irony of Fate (1976)
+    "tt0076727",  // Office Romance (1977)
+    "tt0084345",  // My Friend Ivan Lapshin (1985)
+    "tt0097561",  // The Needle (1989)
+    "tt0095574",  // Little Vera (1988)
+    "tt0093754",  // Repentance (1987)
+    "tt0101003",  // Freeze, Die, Come to Life (1990)
+    "tt0100757",  // Taxi Blues (1990)
+    "tt0096841",  // The Asthenic Syndrome (1989)
+    "tt0126711",  // Is It Easy to Be Young? (1986)
+    "tt0238883",  // Brother 2 (2000)
+    "tt0124207",  // The Thief (1997)
+    "tt0116754",  // Prisoner of the Mountains (1996)
+    "tt0156701",  // Khrustalyov, My Car! (1999)
+    "tt1588875",  // How I Ended This Summer (2010)
+    "tt10199640", // Beanpole (2019)
     // Portuguese
-    "tt0317248",  // City of God
-    "tt0861739",  // Elite Squad
-    "tt1555149",  // Elite Squad: The Enemy Within
-    "tt0271383",  // A Dog's Will
-    "tt2762506",  // Bacurau
-    "tt0140888",  // Central Station
-    "tt14961016", // I'm Still Here
-    "tt3742378",  // The Second Mother
-    "tt5221584",  // Aquarius
-    "tt0293007",  // Carandiru
-    "tt0082912",  // Pixote
-    "tt1424432",  // Neighboring Sounds (O Som ao Redor)
-    "tt3398268",  // The Way He Looks (Hoje Eu Quero Voltar Sozinho)
-    "tt0361862",  // City of Men (Cidade dos Homens)
-    "tt0212985",  // Behind the Sun (Abril Despedaçado)
-    "tt0367110",  // Madame Satã
+    "tt0317248",  // City of God (2002)
+    "tt0861739",  // Elite Squad (2007)
+    "tt1555149",  // Elite Squad: The Enemy Within (2010)
+    "tt0271383",  // A Dog's Will (2000)
+    "tt2762506",  // Bacurau (2019)
+    "tt0140888",  // Central Station (1998)
+    "tt14961016", // I'm Still Here (2024)
+    "tt3742378",  // The Second Mother (2015)
+    "tt5221584",  // Aquarius (2016)
+    "tt0293007",  // Carandiru (2003)
+    "tt0082912",  // Pixote (1980)
+    "tt2190367",  // Neighboring Sounds (2012)
+    "tt1702014",  // The Way He Looks (2014)
+    "tt0870090",  // City of Men (2007)
+    "tt0291003",  // Behind the Sun (2001)
+    "tt0317887",  // Madame Satã (2002)
     // Italian
-    "tt0118799", // Life Is Beautiful
-    "tt0060196", // The Good, the Bad and the Ugly
-    "tt0064116", // Once Upon a Time in the West
-    "tt0095765", // Cinema Paradiso
-    "tt0058461", // A Fistful of Dollars
-    "tt4901306", // Perfect Strangers
-    "tt2358891", // The Great Beauty
-    "tt0076786", // Suspiria
-    "tt0040522", // Bicycle Thieves
-    "tt0056801", // 8½
-    "tt0213847", // Malèna
-    "tt0120731", // The Legend of 1900
-    "tt0053779", // La Dolce Vita
-    "tt0048673", // La Strada
-    "tt0036775", // Rome, Open City
-    "tt0116209", // Il Postino
-    "tt5164214", // Happy as Lazzaro (Lazzaro felice)
-    "tt7304534", // The Hand of God (È stata la mano di Dio)
-    "tt0050783", // Nights of Cabiria
-    "tt0057091", // The Leopard (Il Gattopardo)
-    "tt7026672", // Pinocchio (2019, Garrone)
-    "tt0065571", // The Conformist (Il conformista)
-    "tt0071129", // Amarcord
-    "tt0055913", // Divorce Italian Style (Divorzio all'italiana)
-    "tt0065889", // Investigation of a Citizen Above Suspicion
+    "tt0095765",  // Cinema Paradiso (1988)
+    "tt0076085",  // A Special Day (1977)
+    "tt0118799",  // Life Is Beautiful (1997)
+    "tt0060196",  // The Good, the Bad and the Ugly (1966)
+    "tt0064116",  // Once Upon a Time in the West (1968)
+    "tt0058461",  // A Fistful of Dollars (1964)
+    "tt4901306",  // Perfect Strangers (2016)
+    "tt2358891",  // The Great Beauty (2013)
+    "tt0076786",  // Suspiria (1977)
+    "tt0040522",  // Bicycle Thieves (1948)
+    "tt0056801",  // 8½ (1963)
+    "tt0213847",  // Malèna (2000)
+    "tt0120731",  // The Legend of 1900 (1998)
+    "tt0053779",  // La Dolce Vita (1960)
+    "tt0047528",  // La Strada (1954)
+    "tt0038890",  // Rome, Open City (1945)
+    "tt0110877",  // Il Postino (1994)
+    "tt6752992",  // Happy as Lazzaro (2018)
+    "tt12680684", // The Hand of God (2021)
+    "tt0050783",  // Nights of Cabiria (1957)
+    "tt0057091",  // The Leopard (1963)
+    "tt8333746",  // Pinocchio (2019)
+    "tt0065571",  // The Conformist (1971)
+    "tt0071129",  // Amarcord (1973)
+    "tt0055913",  // Divorce Italian Style (1961)
+    "tt0065889",  // Investigation of a Citizen Above Suspicion (1970)
+    // Swedish
+    "tt0091670", // The Sacrifice (1986)
+    "tt0050986", // Wild Strawberries (1957)
 ];
 
 /// OMDB API response
@@ -861,30 +927,26 @@ async fn download_movie_subtitles(
         return Ok(None);
     }
 
+    // Rank best-first: trusted, then most-downloaded, then best-rated. Tuple
+    // ordering is ascending, so each key is negated to put the desirable value
+    // first. Written as a key function rather than a chain of early returns
+    // because the latter is easy to get subtly wrong — the previous version
+    // reported `Less` when *both* sides were trusted, which is not a valid
+    // ordering and left the sort arbitrary among trusted subtitles.
     subtitle_results.sort_by(|a, b| {
-        match (a.attributes.from_trusted, b.attributes.from_trusted) {
-            (Some(true), _) => return std::cmp::Ordering::Less,
-            (_, Some(true)) => return std::cmp::Ordering::Greater,
-            _ => {}
-        }
-        match (a.attributes.download_count, b.attributes.download_count) {
-            (Some(a_count), Some(b_count)) => {
-                if a_count != b_count {
-                    return b_count.cmp(&a_count);
-                }
-            }
-            (Some(_), None) => return std::cmp::Ordering::Less,
-            (None, Some(_)) => return std::cmp::Ordering::Greater,
-            _ => {}
-        }
-        match (a.attributes.ratings, b.attributes.ratings) {
-            (Some(a_rating), Some(b_rating)) => b_rating
-                .partial_cmp(&a_rating)
-                .unwrap_or(std::cmp::Ordering::Equal),
-            (Some(_), None) => std::cmp::Ordering::Less,
-            (None, Some(_)) => std::cmp::Ordering::Greater,
-            _ => std::cmp::Ordering::Equal,
-        }
+        let rank = |s: &SubtitleResult| {
+            (
+                !s.attributes.from_trusted.unwrap_or(false),
+                std::cmp::Reverse(s.attributes.download_count.unwrap_or(0)),
+            )
+        };
+        rank(a).cmp(&rank(b)).then_with(|| {
+            b.attributes
+                .ratings
+                .unwrap_or(0.0)
+                .partial_cmp(&a.attributes.ratings.unwrap_or(0.0))
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
     });
 
     println!("  Found {} subtitle options", subtitle_results.len());

@@ -2812,8 +2812,11 @@ impl Language {
 
     /// OpenSubtitles API language code (usually ISO 639-1, but pt-br for Portuguese)
     pub fn opensubtitles_language_code(&self) -> &'static str {
+        // OpenSubtitles has no bare "zh" or "pt" — those queries silently return
+        // zero results rather than erroring, so the region suffix is mandatory.
         match self {
             Language::Portuguese => "pt-br",
+            Language::Chinese => "zh-cn",
             other => other.iso_639_1(),
         }
     }

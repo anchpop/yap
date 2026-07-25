@@ -275,6 +275,17 @@ async fn main() -> anyhow::Result<()> {
             .await
             .context("Failed to create Google Translator")?;
 
+            // Warm the cache in batched requests first. The Translation LLM quota
+            // is requests-per-minute, so translating the misses in bulk here means
+            // the per-sentence pass below is (almost) all cache hits. Prime shows
+            // its own progress bar, so set up the per-sentence bar afterwards to
+            // avoid two live bars fighting over the terminal.
+            let targets: Vec<String> = sentences_with_translations_and_sources
+                .iter()
+                .map(|(target, _, _)| target.clone())
+                .collect();
+            translator.prime(&targets).await;
+
             let total = sentences_with_translations_and_sources.len() as u64;
             let translate_label = format!(
                 "translations {} → {}",
@@ -288,7 +299,11 @@ async fn main() -> anyhow::Result<()> {
                     .unwrap()
                     .progress_chars("#>-"),
             );
-            pb.set_message("0 API calls");
+            pb.set_message(format!(
+                "~${:.4} · {} calls",
+                translator.cost_estimate_usd(),
+                translator.api_calls()
+            ));
             pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
             let all_sentences =
@@ -317,7 +332,11 @@ async fn main() -> anyhow::Result<()> {
                         translation_set.retain(|t| {
                             !generate_data::target_sentences::contains_xprotect_tripwire(t)
                         });
-                        pb.set_message(format!("{} API calls", translator.api_calls()));
+                        pb.set_message(format!(
+                            "~${:.4} · {} calls",
+                            translator.cost_estimate_usd(),
+                            translator.api_calls()
+                        ));
                         pb.inc(1);
                         (target_language_sentence, (translation_set, source))
                     },
@@ -326,7 +345,11 @@ async fn main() -> anyhow::Result<()> {
                 .collect::<BTreeMap<_, _>>()
                 .await;
 
-            pb.finish_with_message(format!("{} API calls", translator.api_calls()));
+            pb.finish_with_message(format!(
+                "~${:.4} · {} calls",
+                translator.cost_estimate_usd(),
+                translator.api_calls()
+            ));
 
             // Drop the translator to trigger the Drop implementation
             drop(translator);
