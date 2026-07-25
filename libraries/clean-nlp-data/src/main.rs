@@ -1047,6 +1047,13 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         }
         writer.flush().context("Failed to flush writer")?;
         println!("Results written to: {}", output_file.display());
+        set_status(
+            &base_dir,
+            &format!(
+                "done (passthrough): wrote {sample_count} gold sentences, LLM cost ${:.2}",
+                total_llm_cost()
+            ),
+        );
         return Ok(());
     }
 
