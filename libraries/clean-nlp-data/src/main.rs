@@ -863,24 +863,21 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         prior_gold_sentences.len()
     );
 
-    // From-book quota: book prose is the pool's only source of quoted dialogue and long
-    // multi-clause sentences (the OOD structure user documents have), but it's a small
-    // slice of the pool, so plain sampling admits only ~90/run. Guarantee up to
-    // BOOK_QUOTA fresh (not-yet-selected) book sentences per run; previously selected
-    // ones are already pinned via the prior-gold union, so coverage compounds.
+    // From-book quota, same scheme as the other source caps (deterministic
+    // sample_to_target): book prose is the pool's only source of quoted dialogue and
+    // long multi-clause sentences, but it's a small slice, so the plain 8k sample
+    // admits only ~90/run — guarantee ~BOOK_QUOTA of them in the selection. The sampler
+    // is content-deterministic, so this is a stable subset across runs (raising the
+    // quota later supersets it), and prior-gold pinning keeps it monotone.
     const BOOK_QUOTA: usize = 200;
-    let already_selected: std::collections::HashSet<&String> = cached_sentences
+    let pool_book_texts: Vec<String> = book_texts
         .iter()
-        .chain(prior_gold_sentences.iter())
-        .collect();
-    let fresh_book_texts: Vec<String> = book_texts
-        .iter()
-        .filter(|s| other_set.contains(*s) && !already_selected.contains(*s))
+        .filter(|s| other_set.contains(*s))
         .cloned()
         .collect();
-    let book_quota_texts = sample_to_target(fresh_book_texts, BOOK_QUOTA, |s: &String| s.clone());
+    let book_quota_texts = sample_to_target(pool_book_texts, BOOK_QUOTA, |s: &String| s.clone());
     println!(
-        "Book quota: adding {} fresh book sentences (quota {BOOK_QUOTA})",
+        "Book quota: including {} book sentences (quota {BOOK_QUOTA})",
         book_quota_texts.len()
     );
 
