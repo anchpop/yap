@@ -50,5 +50,8 @@ generate-data/data/*/sentence-sources/movies/subtitles/** filter=git-crypt diff=
 # Encrypted Pimsleur transcripts (copyrighted)
 generate-data/data/*/sentence-sources/pimsleur/** filter=git-crypt diff=git-crypt
 
+# Encrypted book sentences (translations of copyrighted books, e.g. Pale Lights)
+generate-data/data/*/sentence-sources/books/** filter=git-crypt diff=git-crypt
+
 # Encrypted secrets
 secrets/** filter=git-crypt diff=git-crypt

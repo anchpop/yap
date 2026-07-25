@@ -14,7 +14,7 @@ use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
 
-mod cache_remote;
+use generate_data::cache_remote;
 mod google_translate;
 use google_translate::GoogleTranslator;
 

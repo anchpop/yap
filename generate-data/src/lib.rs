@@ -28,6 +28,8 @@ pub fn apply_cache_only(
 }
 
 pub mod audio_verification;
+pub mod books;
+pub mod cache_remote;
 pub mod dict;
 pub mod disambiguation_practice;
 pub mod etymology;

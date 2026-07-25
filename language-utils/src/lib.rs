@@ -371,6 +371,10 @@ pub struct SentenceSource {
     pub from_manual: bool,
     /// Sentence came from a song in sentence-sources/songs/
     pub from_song: bool,
+    /// Sentence came from a translated/segmented book in sentence-sources/books/
+    /// (serde default so caches written before this field existed still load)
+    #[serde(default)]
+    pub from_book: bool,
     /// Movie IDs if this sentence appears in movies (e.g., ["tt0211915", "tt0241527"])
     pub movie_ids: Vec<String>,
 }
@@ -383,6 +387,7 @@ impl SentenceSource {
             from_tatoeba: false,
             from_manual: false,
             from_song: false,
+            from_book: false,
             movie_ids: Vec::new(),
         }
     }
@@ -398,6 +403,7 @@ impl SentenceSource {
         self.from_tatoeba |= other.from_tatoeba;
         self.from_manual |= other.from_manual;
         self.from_song |= other.from_song;
+        self.from_book |= other.from_book;
         // Merge movie IDs, avoiding duplicates
         for movie_id in &other.movie_ids {
             if !self.movie_ids.contains(movie_id) {

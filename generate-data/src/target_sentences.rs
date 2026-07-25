@@ -119,11 +119,15 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     // Load movie sentences
     let movie_sentences = load_movie_sentences(&source_data_path, course.target_language)?;
 
+    // Load book sentences (translated + segmented book prose; see crate::books)
+    let book_sentences = crate::books::load_book_sentences(&source_data_path)?;
+
     println!(
-        "  Loaded sentences: Anki: {}, Tatoeba: {}, Movies: {}, Manual: {}",
+        "  Loaded sentences: Anki: {}, Tatoeba: {}, Movies: {}, Books: {}, Manual: {}",
         anki_sentences.len(),
         tatoeba_sentences.len(),
         movie_sentences.len(),
+        book_sentences.len(),
         manual_sentences.len(),
     );
 
@@ -140,6 +144,11 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
         .into_iter()
         .chain(tatoeba_sentences)
         .chain(movie_sentences) // Add movie sentences
+        .chain(
+            book_sentences
+                .into_iter()
+                .map(|(sentence, source)| (sentence, None, source)),
+        )
         .map(|(sentence, native, source)| {
             (
                 language_utils::text_cleanup::cleanup_sentence(sentence, course.target_language),

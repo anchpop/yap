@@ -58,7 +58,7 @@ slotmap = { version = "1.1", features = ["serde"] }
 wasm-logger = "0.2.0"
 unicode-normalization = "0.1.25"
 weblocks = "0.2.0"
-lexide = { git = "https://github.com/anchpop/lexide.git", rev = "4871984482c320ef27462644759fde66aefd5a7f", features = [
+lexide = { git = "https://github.com/anchpop/lexide.git", rev = "8c0a2b093cf70b5797101e36609d92fa6d16fb07", features = [
     "remote",
 ] }
 indicatif = "0.18"

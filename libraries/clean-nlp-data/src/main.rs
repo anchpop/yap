@@ -64,6 +64,10 @@ async fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
+    // Pull the shared LLM/tokenization cache (osmo/R2) before any API calls, so labeling
+    // reuses work done on other machines; push whatever this run adds at the end.
+    generate_data::cache_remote::warm().await;
+
     let command = &args[1];
 
     match command.as_str() {
@@ -136,6 +140,7 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
+    generate_data::cache_remote::flush().await;
     Ok(())
 }
 
