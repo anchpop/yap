@@ -80,6 +80,7 @@ class MultiwordTermDetector:
         
         # Load multiword terms
         print(f"Loading multiword terms from {terms_file}...")
+        self.terms_file = terms_file
         self.multiword_terms = self._load_terms(terms_file)
         print(f"Loaded {len(self.multiword_terms)} multiword terms")
         
@@ -94,18 +95,47 @@ class MultiwordTermDetector:
         with open(terms_file, 'r', encoding='utf-8') as f:
             return [line.strip() for line in f if line.strip()]
     
+    def _parse_terms_cached(self):
+        """Parse all terms, with a DocBin cache next to the terms file: parsing ~200k
+        terms through a transformer model on CPU takes hours, and the parses depend
+        only on (model, terms list) — so cache them keyed by both."""
+        import hashlib
+        import json
+        from spacy.tokens import DocBin
+
+        meta = self.nlp.meta
+        key = hashlib.sha256(
+            (meta["lang"] + meta["name"] + meta["version"] + "\x00"
+             + "\x00".join(self.multiword_terms)).encode()
+        ).hexdigest()
+        cache_base = self.terms_file + ".parsed"
+        meta_path = cache_base + ".json"
+        bin_path = cache_base + ".docbin"
+        try:
+            if json.load(open(meta_path))["key"] == key:
+                print(f"Loading cached term parses from {bin_path}...")
+                doc_bin = DocBin().from_disk(bin_path)
+                return list(doc_bin.get_docs(self.nlp.vocab))
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
+            pass
+
+        docs = []
+        batch_size = 1000
+        for i in tqdm(range(0, len(self.multiword_terms), batch_size), desc="Parsing terms"):
+            docs.extend(self.nlp.pipe(self.multiword_terms[i:i+batch_size], batch_size=100))
+        doc_bin = DocBin(store_user_data=False, docs=docs)
+        doc_bin.to_disk(bin_path)
+        json.dump({"key": key}, open(meta_path, "w"))
+        print(f"Cached {len(docs)} term parses to {bin_path}")
+        return docs
+
     def _create_patterns_and_mappings(self):
         """Create both dependency and phrase patterns for each multiword term, and lemma mappings"""
-        batch_size = 1000
         phrase_patterns = []
-        
-        for i in tqdm(range(0, len(self.multiword_terms), batch_size), desc="Creating patterns and mappings"):
-            batch = self.multiword_terms[i:i+batch_size]
-            
-            # Process batch with nlp.pipe for efficiency (only once!)
-            docs = list(self.nlp.pipe(batch, batch_size=100))
-            
-            for term, doc in zip(batch, docs):
+        all_docs = self._parse_terms_cached()
+
+        if True:  # keep original loop indentation
+            for term, doc in zip(self.multiword_terms, all_docs):
                 # Create lemma mapping
                 lemma_tuple = tuple(token.lemma_ for token in doc)
                 if lemma_tuple not in self.lemma_to_terms:
@@ -135,10 +165,6 @@ class MultiwordTermDetector:
         self.phrase_matcher.add("MULTIWORD_TERMS", phrase_patterns)
 
     def _create_dependency_pattern_for_doc(self, doc) -> Optional[List[Dict]]:
-        print("creating pattern for", doc, ":", [
-            {"lemma": t.lemma_, "text": t.text, "dep": t.dep_, "head": t.head.i}
-            for t in doc
-        ])
 
         # Language-specific pattern handling
         if self.language_code == "fra":
@@ -161,7 +187,6 @@ class MultiwordTermDetector:
                         "RIGHT_ATTRS": {"LEMMA": second},
                     },
                 ]
-                print("negation pattern for", doc, ":", pat)
                 return pat
         elif self.language_code == "spa":
             # Spanish-specific patterns can be added here if needed
@@ -196,7 +221,6 @@ class MultiwordTermDetector:
 
         root = doc[:].sent.root
         pat = self._create_pattern_for_token(root, keep=("LEMMA",))
-        print("pattern for", doc, ":", pat)
         return pat
 
 
