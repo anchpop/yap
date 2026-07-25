@@ -770,6 +770,11 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         .iter()
         .filter(|(_, _, source)| !source.movie_ids.is_empty())
         .count();
+    let book_texts: Vec<String> = app_sentences
+        .iter()
+        .filter(|(_, _, source)| source.from_book)
+        .map(|(s, _, _)| s.clone())
+        .collect();
     let all_raw_sentences: Vec<String> = app_sentences.into_iter().map(|(s, _, _)| s).collect();
     println!(
         "Loaded {} raw sentences ({} from movies)",
@@ -858,19 +863,44 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         prior_gold_sentences.len()
     );
 
+    // From-book quota: book prose is the pool's only source of quoted dialogue and long
+    // multi-clause sentences (the OOD structure user documents have), but it's a small
+    // slice of the pool, so plain sampling admits only ~90/run. Guarantee up to
+    // BOOK_QUOTA fresh (not-yet-selected) book sentences per run; previously selected
+    // ones are already pinned via the prior-gold union, so coverage compounds.
+    const BOOK_QUOTA: usize = 200;
+    let already_selected: std::collections::HashSet<&String> = cached_sentences
+        .iter()
+        .chain(prior_gold_sentences.iter())
+        .collect();
+    let fresh_book_texts: Vec<String> = book_texts
+        .iter()
+        .filter(|s| other_set.contains(*s) && !already_selected.contains(*s))
+        .cloned()
+        .collect();
+    let book_quota_texts = sample_to_target(fresh_book_texts, BOOK_QUOTA, |s: &String| s.clone());
+    println!(
+        "Book quota: adding {} fresh book sentences (quota {BOOK_QUOTA})",
+        book_quota_texts.len()
+    );
+
     let sampled_texts = sample_to_target(other_texts, sample_size, |s: &String| s.clone());
     println!("Sampled {} sentences", sampled_texts.len());
 
-    // Union of sampled + previously cached + prior gold (deduplicated)
+    // Union of sampled + previously cached + prior gold + book quota (deduplicated)
     let mut seen: std::collections::HashSet<String> = sampled_texts.iter().cloned().collect();
     let mut combined_texts = sampled_texts;
-    for s in cached_sentences.into_iter().chain(prior_gold_sentences) {
+    for s in cached_sentences
+        .into_iter()
+        .chain(prior_gold_sentences)
+        .chain(book_quota_texts)
+    {
         if seen.insert(s.clone()) {
             combined_texts.push(s);
         }
     }
     println!(
-        "Combined {} sentences (sampled + previously cached + prior gold)",
+        "Combined {} sentences (sampled + previously cached + prior gold + book quota)",
         combined_texts.len()
     );
     let sampled_texts = combined_texts;
