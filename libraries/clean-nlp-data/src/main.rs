@@ -734,6 +734,14 @@ async fn clean_all_languages() -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Operator-visible heartbeat: overwrite out/clean-nlp-data/<lang>/status.txt with the
+/// current stage (+ live LLM cost where known), so a headless/piped run can be checked
+/// with `cat` — the indicatif bars only render on a tty. File mtime doubles as the
+/// freshness timestamp.
+fn set_status(base_dir: &std::path::Path, msg: &str) {
+    let _ = std::fs::write(base_dir.join("status.txt"), format!("{msg}\n"));
+}
+
 async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     // Load manual sentences that should never be filtered
     let mut manual_sentences = load_manual_sentences(language)?;
@@ -929,6 +937,14 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     // Step 5: Run NLP analysis with caching
     // For languages without spaCy models, use LLM-based NLP (gpt-5.4-nano)
     // For others, use spaCy via Python
+    set_status(
+        &base_dir,
+        &format!(
+            "NLP ({}) over {} selected sentences (uncached subset only)",
+            if needs_llm_nlp(language) { "LLM" } else { "spaCy" },
+            all_needed.len()
+        ),
+    );
     let samples = if needs_llm_nlp(language) {
         run_llm_nlp_cached(language, &all_needed, &nlp_cache_file).await?
     } else {
@@ -942,6 +958,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
     let sample_count = samples.len();
     println!("Total samples for cleaning: {sample_count}");
+    set_status(&base_dir, &format!("LLM cleaning pass: 0/{sample_count}"));
 
     // Check if this language should skip LLM cleaning entirely
     let corrector = get_corrector(language);
@@ -1009,9 +1026,11 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
+    let status_dir = base_dir.clone();
     let cleaned_results = futures::stream::iter(classified_sentences)
         .map(|(sentence, suspicious_reasons)| {
             let pb = pb.clone();
+            let status_dir = status_dir.clone();
             async move {
                 let corrector = get_corrector(language);
                 let result =
@@ -1024,6 +1043,16 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
                 pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
                 pb.inc(1);
+                if pb.position() % 200 == 0 {
+                    set_status(
+                        &status_dir,
+                        &format!(
+                            "LLM cleaning pass: {}/{sample_count} (${:.2})",
+                            pb.position(),
+                            CHAT_CLIENT.cost().unwrap_or(0.0)
+                        ),
+                    );
+                }
 
                 (sentence, result)
             }
@@ -1174,6 +1203,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
     // Second pass: Add dependency information
     let validated_count = validated_results.len();
+    set_status(&base_dir, &format!("dependency pass: 0/{validated_count}"));
 
     let pb2 = ProgressBar::new(validated_count as u64);
     pb2.set_style(
@@ -1184,9 +1214,11 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     );
     pb2.enable_steady_tick(std::time::Duration::from_millis(100));
 
+    let status_dir2 = base_dir.clone();
     let results_with_deps = futures::stream::iter(validated_results)
         .map(|(original_sentence, corrected_tokens)| {
             let pb2 = pb2.clone();
+            let status_dir2 = status_dir2.clone();
             async move {
                 let dep_result = parse_dependencies_with_llm(
                     language,
@@ -1198,6 +1230,16 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
                 pb2.set_message(format!("{:.2}", CHAT_CLIENT_MINI.cost().unwrap_or(0.0)));
                 pb2.inc(1);
+                if pb2.position() % 200 == 0 {
+                    set_status(
+                        &status_dir2,
+                        &format!(
+                            "dependency pass: {}/{validated_count} (${:.2})",
+                            pb2.position(),
+                            CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
+                        ),
+                    );
+                }
 
                 (original_sentence, corrected_tokens, dep_result)
             }
@@ -1209,6 +1251,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     pb2.finish_with_message(format!("{:.2}", CHAT_CLIENT_MINI.cost().unwrap_or(0.0)));
 
     // Write results to file
+    let mut written_count = 0usize;
     for (original_sentence, corrected_tokens, dep_result) in results_with_deps {
         let dep_response = match dep_result {
             Ok(dep_response) => dep_response,
@@ -1271,11 +1314,21 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         });
         writeln!(writer, "{}", serde_json::to_string(&output)?)
             .context("Failed to write to output file")?;
+        written_count += 1;
     }
 
     writer.flush().context("Failed to flush writer")?;
 
     println!("Results written to: {}", output_file.display());
+    let total_cost = CHAT_CLIENT.cost().unwrap_or(0.0)
+        + CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
+        + CHAT_CLIENT_LOW_REASONING.cost().unwrap_or(0.0)
+        + CHAT_CLIENT_NANO.cost().unwrap_or(0.0);
+    println!("Total LLM cost this run: ${total_cost:.2}");
+    set_status(
+        &base_dir,
+        &format!("done: wrote {written_count} gold sentences, LLM cost ${total_cost:.2}"),
+    );
     if auto_fixed_count > 0 {
         println!("Auto-fixed {auto_fixed_count} sentences with single-space mismatches");
     }
