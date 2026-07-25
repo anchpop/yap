@@ -9411,15 +9411,6 @@ pub struct DependencyParseResponse {
     pub dependencies: Vec<TokenDependency>,
 }
 
-/// Response from the LLM for multiword term validation
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
-pub struct MultiwordTermValidationResponse {
-    #[serde(rename = "1. thoughts")]
-    pub thoughts: String,
-    #[serde(rename = "2. validated_multiword_terms")]
-    pub validated_multiword_terms: Vec<String>,
-}
-
 /// Returns language-specific tips for the LLM correction prompt.
 pub fn language_specific_tips(language: Language) -> &'static str {
     match language {
@@ -10580,75 +10571,3 @@ Think through the sentence structure, then provide the dependency analysis for e
     Ok(response)
 }
 
-/// Use GPT to validate and normalize multiword terms in a sentence
-#[allow(unused)] // not needed for now
-pub async fn validate_multiword_terms_with_llm(
-    language: Language,
-    sentence: &str,
-    high_confidence_terms: &[String],
-    low_confidence_terms: &[String],
-    chat_client: &ChatClient,
-) -> anyhow::Result<MultiwordTermValidationResponse> {
-    let system_prompt = format!(
-        r#"You are an expert in {language} linguistics and multiword expressions. Your task is to validate and identify multiword terms (collocations, idioms, phrasal constructions, etc.) in a {language} sentence.
-
-You will be given:
-1. A sentence
-2. Medium-confidence multiword term candidates (more likely correct)
-3. Low-confidence multiword term candidates (may or may not be correct)
-
-Your job is to:
-1. Review all the candidate terms and determine which ones actually appear in the sentence
-2. Identify any additional multiword terms that were missed
-3. Return ALL multiword terms in their INFINITIVE/BASE FORM (not conjugated)
-
-CRITICAL RULE ABOUT BASE FORMS:
-- All multiword terms MUST be in their infinitive/dictionary form
-- If a verb appears in the sentence conjugated, return it in infinitive form
-- For example:
-  * If the sentence has "he needs to", return "need to" (not "needs to")
-  * If the sentence has "we're going", return "be going" (not "we're going" or "are going")
-  * If the sentence has "ont besoin de" (French), return "avoir besoin de" (not "ont besoin de")
-  * If the sentence has "hace falta" (Spanish), return "hacer falta" (not "hace falta")
-
-What counts as a multiword term:
-- Phrasal verbs (e.g., "look up", "give in")
-- Idiomatic expressions (e.g., "break the ice", "piece of cake")
-- Fixed collocations (e.g., "pay attention", "take care")
-- Common verb + particle/preposition combinations
-- Compound structures that function as a unit
-
-What does NOT count:
-- Random word sequences
-- Temporary grammatical constructions
-- Proper nouns (unless they're fixed expressions)
-
-Think carefully about whether each candidate is a genuine multiword term, consider if there are additional multiword terms that were missed and should be added, then provide your final list of validated terms in their base forms."#
-    );
-
-    let mut user_prompt = format!("Sentence: \"{sentence}\"\n\n");
-
-    if !high_confidence_terms.is_empty() {
-        user_prompt.push_str("Medium-confidence multiword term candidates:\n");
-        for term in high_confidence_terms {
-            user_prompt.push_str(&format!("- {term}\n"));
-        }
-        user_prompt.push('\n');
-    }
-
-    if !low_confidence_terms.is_empty() {
-        user_prompt.push_str("Low-confidence multiword term candidates:\n");
-        for term in low_confidence_terms {
-            user_prompt.push_str(&format!("- {term}\n"));
-        }
-        user_prompt.push('\n');
-    }
-
-    user_prompt.push_str("Please validate these candidates and identify any additional multiword terms, returning all in their base/infinitive forms.");
-
-    let response: MultiwordTermValidationResponse = chat_client
-        .chat_with_system_prompt(system_prompt, user_prompt)
-        .await?;
-
-    Ok(response)
-}

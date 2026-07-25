@@ -328,18 +328,9 @@ fn run_nlp_cached(
             writer.flush()?;
         }
 
-        // Run spaCy — with an EMPTY multiword terms file: the detector's pattern build
-        // transformer-parses every term (215k for eng ≈ 11h on CPU) and this pipeline
-        // never reads the resulting multiword_terms field (its one would-be consumer,
-        // validate_multiword_terms_with_llm, has no callers; the LLM-NLP path for
-        // hin/jpn writes the field empty already). The real terms file still feeds
-        // term sampling into the labeled pool — that's independent of the detector.
-        let _ = multiword_terms_file; // kept in the signature for callers that pass it
-        let empty_terms = cache_dir.join("_empty_multiword_terms.txt");
-        if !empty_terms.exists() {
-            File::create(&empty_terms).context("Failed to create empty terms file")?;
-        }
-        run_python_nlp(language, &temp_input, &empty_terms, &temp_output)?;
+        // Run spaCy (the terms-file argument is ignored by main.py since the multiword
+        // detector was deleted — nothing downstream ever consumed its detections).
+        run_python_nlp(language, &temp_input, multiword_terms_file, &temp_output)?;
 
         // Read results and add to cache
         let file = File::open(&temp_output).context("Failed to open temp NLP output file")?;
