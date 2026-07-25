@@ -1013,12 +1013,15 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         })
         .collect();
 
-    // Write results to file
+    // Write results to a temp file, renamed over the real gold only on success — an
+    // abort mid-run (e.g. the cost cap) must not leave cleaned_<lang>.jsonl truncated
+    // (it did exactly that to hin once).
     let output_dir = PathBuf::from("./out");
     std::fs::create_dir_all(&output_dir).context("Failed to create output directory")?;
     let output_file = output_dir.join(format!("cleaned_{}.jsonl", language.iso_639_3()));
-    let file = File::create(&output_file)
-        .context(format!("Failed to create output file: {output_file:?}"))?;
+    let output_tmp = output_dir.join(format!("cleaned_{}.jsonl.tmp", language.iso_639_3()));
+    let file = File::create(&output_tmp)
+        .context(format!("Failed to create output file: {output_tmp:?}"))?;
     let mut writer = BufWriter::new(file);
 
     if is_passthrough {
@@ -1046,6 +1049,8 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                 .context("Failed to write to output file")?;
         }
         writer.flush().context("Failed to flush writer")?;
+        drop(writer);
+        std::fs::rename(&output_tmp, &output_file).context("Failed to move gold into place")?;
         println!("Results written to: {}", output_file.display());
         set_status(
             &base_dir,
@@ -1361,6 +1366,8 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     }
 
     writer.flush().context("Failed to flush writer")?;
+    drop(writer);
+    std::fs::rename(&output_tmp, &output_file).context("Failed to move gold into place")?;
 
     println!("Results written to: {}", output_file.display());
     let total_cost = total_llm_cost();
