@@ -828,19 +828,49 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         cached_sentences.len()
     );
 
+    // Sentences already in the published gold output stay selected forever (as long as
+    // they're still in the pool). The nlp_cache union below only protects reruns on the
+    // SAME machine — the gold file travels in git, so this keeps the gold set monotone
+    // across machines too, and their LLM responses are (osmo-synced) cache hits anyway.
+    // The fresh sample then only controls how many NEW sentences each run adds.
+    let prior_gold_file = PathBuf::from("./out").join(format!(
+        "cleaned_{}.jsonl",
+        course.target_language.iso_639_3()
+    ));
+    let prior_gold_sentences: Vec<String> = if prior_gold_file.exists() {
+        let file =
+            File::open(&prior_gold_file).context("Failed to open prior gold output")?;
+        BufReader::new(file)
+            .lines()
+            .filter_map(|line| {
+                let line = line.ok()?;
+                let value: serde_json::Value = serde_json::from_str(&line).ok()?;
+                let sentence = value.get("sentence")?.as_str()?.to_string();
+                (other_set.contains(&sentence) && !manual_sentences.contains(sentence.as_str()))
+                    .then_some(sentence)
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    println!(
+        "{} prior gold sentences are still in the current sentence pool",
+        prior_gold_sentences.len()
+    );
+
     let sampled_texts = sample_to_target(other_texts, sample_size, |s: &String| s.clone());
     println!("Sampled {} sentences", sampled_texts.len());
 
-    // Union of sampled + previously cached (deduplicated)
+    // Union of sampled + previously cached + prior gold (deduplicated)
     let mut seen: std::collections::HashSet<String> = sampled_texts.iter().cloned().collect();
     let mut combined_texts = sampled_texts;
-    for s in cached_sentences {
+    for s in cached_sentences.into_iter().chain(prior_gold_sentences) {
         if seen.insert(s.clone()) {
             combined_texts.push(s);
         }
     }
     println!(
-        "Combined {} sentences (sampled + previously cached)",
+        "Combined {} sentences (sampled + previously cached + prior gold)",
         combined_texts.len()
     );
     let sampled_texts = combined_texts;
