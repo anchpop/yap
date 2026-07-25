@@ -742,6 +742,39 @@ fn set_status(base_dir: &std::path::Path, msg: &str) {
     let _ = std::fs::write(base_dir.join("status.txt"), format!("{msg}\n"));
 }
 
+/// Total LLM spend so far in this process, across all clients.
+fn total_llm_cost() -> f64 {
+    CHAT_CLIENT.cost().unwrap_or(0.0)
+        + CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
+        + CHAT_CLIENT_LOW_REASONING.cost().unwrap_or(0.0)
+        + CHAT_CLIENT_NANO.cost().unwrap_or(0.0)
+}
+
+/// Hard cost circuit breaker: if this run's total LLM spend exceeds the cap
+/// (CLEAN_NLP_COST_CAP dollars, default 15.0), abort the process. A worst-case cache
+/// miss (changed prompts, cold cache) otherwise silently relabels everything at full
+/// price. Aborting loses no money — completed calls are already in the tysm cache —
+/// only the run's remaining time.
+fn enforce_cost_cap(base_dir: &std::path::Path) {
+    static CAP: LazyLock<f64> = LazyLock::new(|| {
+        std::env::var("CLEAN_NLP_COST_CAP")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(15.0)
+    });
+    let cost = total_llm_cost();
+    if cost > *CAP {
+        let msg = format!(
+            "ABORTED: LLM cost ${cost:.2} exceeded cap ${:.2} (CLEAN_NLP_COST_CAP); \
+             completed calls are cached — investigate cache misses before rerunning",
+            *CAP
+        );
+        eprintln!("{msg}");
+        set_status(base_dir, &msg);
+        std::process::exit(2);
+    }
+}
+
 async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     // Load manual sentences that should never be filtered
     let mut manual_sentences = load_manual_sentences(language)?;
@@ -1052,6 +1085,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                             CHAT_CLIENT.cost().unwrap_or(0.0)
                         ),
                     );
+                    enforce_cost_cap(&status_dir);
                 }
 
                 (sentence, result)
@@ -1239,6 +1273,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                             CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
                         ),
                     );
+                    enforce_cost_cap(&status_dir2);
                 }
 
                 (original_sentence, corrected_tokens, dep_result)
@@ -1320,10 +1355,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     writer.flush().context("Failed to flush writer")?;
 
     println!("Results written to: {}", output_file.display());
-    let total_cost = CHAT_CLIENT.cost().unwrap_or(0.0)
-        + CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
-        + CHAT_CLIENT_LOW_REASONING.cost().unwrap_or(0.0)
-        + CHAT_CLIENT_NANO.cost().unwrap_or(0.0);
+    let total_cost = total_llm_cost();
     println!("Total LLM cost this run: ${total_cost:.2}");
     set_status(
         &base_dir,
