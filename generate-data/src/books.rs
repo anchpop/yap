@@ -35,6 +35,10 @@ pub fn load_book_sentences(
         if path.extension().is_none_or(|e| e != "jsonl") {
             continue;
         }
+        // metadata.jsonl holds BookMetadata records, not sentences
+        if path.file_name().is_some_and(|n| n == "metadata.jsonl") {
+            continue;
+        }
         let content = std::fs::read_to_string(&path)?;
         for line in content.lines().filter(|l| !l.trim().is_empty()) {
             let rec: BookSentence = serde_json::from_str(line)?;
