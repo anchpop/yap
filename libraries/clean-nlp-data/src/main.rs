@@ -812,10 +812,10 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         .iter()
         .filter(|(_, _, source)| !source.movie_ids.is_empty())
         .count();
-    let book_texts: Vec<String> = app_sentences
+    let book_texts: Vec<(String, Vec<String>)> = app_sentences
         .iter()
-        .filter(|(_, _, source)| source.from_book)
-        .map(|(s, _, _)| s.clone())
+        .filter(|(_, _, source)| !source.book_ids.is_empty())
+        .map(|(s, _, source)| (s.clone(), source.book_ids.clone()))
         .collect();
     let all_raw_sentences: Vec<String> = app_sentences.into_iter().map(|(s, _, _)| s).collect();
     println!(
@@ -908,20 +908,29 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     // From-book quota, same scheme as the other source caps (deterministic
     // sample_to_target): book prose is the pool's only source of quoted dialogue and
     // long multi-clause sentences, but it's a small slice, so the plain 8k sample
-    // admits only ~90/run — guarantee ~BOOK_QUOTA of them in the selection. The sampler
-    // is content-deterministic, so this is a stable subset across runs (raising the
-    // quota later supersets it), and prior-gold pinning keeps it monotone.
+    // admits only ~90/run — guarantee ~BOOK_QUOTA per book in the selection. The
+    // sampler is content-deterministic, so this is a stable subset across runs
+    // (raising the quota later supersets it), and prior-gold pinning keeps it
+    // monotone.
     const BOOK_QUOTA: usize = 200;
-    let pool_book_texts: Vec<String> = book_texts
-        .iter()
-        .filter(|s| other_set.contains(*s))
-        .cloned()
-        .collect();
-    let book_quota_texts = sample_to_target(pool_book_texts, BOOK_QUOTA, |s: &String| s.clone());
-    println!(
-        "Book quota: including {} book sentences (quota {BOOK_QUOTA})",
-        book_quota_texts.len()
-    );
+    let mut pool_by_book: std::collections::BTreeMap<&String, Vec<String>> = Default::default();
+    for (s, book_ids) in &book_texts {
+        if !other_set.contains(s) {
+            continue;
+        }
+        for book_id in book_ids {
+            pool_by_book.entry(book_id).or_default().push(s.clone());
+        }
+    }
+    let mut book_quota_texts: Vec<String> = Vec::new();
+    for (book_id, pool) in pool_by_book {
+        let picked = sample_to_target(pool, BOOK_QUOTA, |s: &String| s.clone());
+        println!(
+            "Book quota: {book_id}: including {} sentences (quota {BOOK_QUOTA})",
+            picked.len()
+        );
+        book_quota_texts.extend(picked);
+    }
 
     let sampled_texts = sample_to_target(other_texts, sample_size, |s: &String| s.clone());
     println!("Sampled {} sentences", sampled_texts.len());

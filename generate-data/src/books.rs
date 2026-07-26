@@ -43,7 +43,7 @@ pub fn load_book_sentences(
                 continue;
             }
             let mut source = SentenceSource::none();
-            source.from_book = true;
+            source.book_ids = vec![rec.book.clone()];
             out.push((sentence.to_string(), source));
         }
     }
