@@ -2086,22 +2086,36 @@ async fn main() -> anyhow::Result<()> {
         };
 
         // Load book metadata (attribution for book-sourced sentences, incl. the
-        // machine-translated flag)
+        // machine-translated flag) from each series folder's metadata.jsonl
         let books = {
-            let metadata_file = source_data_path.join("sentence-sources/books/metadata.jsonl");
-            if metadata_file.exists() {
-                let content = std::fs::read_to_string(&metadata_file)
-                    .context("Failed to read book metadata file")?;
-                let mut books = FxHashMap::default();
-                for line in content.lines().filter(|l| !l.trim().is_empty()) {
-                    let book: language_utils::BookMetadata =
-                        serde_json::from_str(line).context("Failed to parse book metadata")?;
-                    books.insert(book.id.clone(), book);
+            let books_dir = source_data_path.join("sentence-sources/books");
+            let mut books = FxHashMap::default();
+            if books_dir.exists() {
+                for series_entry in std::fs::read_dir(&books_dir)
+                    .context("Failed to read books directory")?
+                {
+                    let series_dir = series_entry?.path();
+                    let metadata_file = series_dir.join("metadata.jsonl");
+                    if !series_dir.is_dir() || !metadata_file.exists() {
+                        continue;
+                    }
+                    let content = std::fs::read_to_string(&metadata_file)
+                        .context("Failed to read book metadata file")?;
+                    for line in content.lines().filter(|l| !l.trim().is_empty()) {
+                        let book: language_utils::BookMetadata =
+                            serde_json::from_str(line).context("Failed to parse book metadata")?;
+                        anyhow::ensure!(
+                            series_dir.file_name().is_some_and(|n| *n == *book.series.as_str()),
+                            "book {:?} declares series {:?} but lives in {}",
+                            book.id,
+                            book.series,
+                            series_dir.display()
+                        );
+                        books.insert(book.id.clone(), book);
+                    }
                 }
-                books
-            } else {
-                FxHashMap::default()
             }
+            books
         };
         // Load sentence sources
         let sentence_sources = {

@@ -525,8 +525,8 @@ impl From<MovieMetadataBasic> for MovieMetadata {
 
 /// Metadata for a book used as a sentence source, keyed by the slug that
 /// appears in [`SentenceSource::book_ids`]. Stored per language in
-/// `sentence-sources/books/metadata.jsonl` and carried into the language pack
-/// for attribution display.
+/// `sentence-sources/books/<series>/metadata.jsonl` (one line per book in the
+/// series) and carried into the language pack for attribution display.
 #[derive(
     Clone,
     Debug,
@@ -545,6 +545,9 @@ impl From<MovieMetadataBasic> for MovieMetadata {
 pub struct BookMetadata {
     /// Book slug, e.g. "pale-lights"
     pub id: String,
+    /// Series slug — the folder the book lives in under sentence-sources/books/
+    /// (e.g. "pale-lights"; a standalone book is a one-book series)
+    pub series: String,
     /// Book title (kept in the original language even for translated courses)
     pub title: String,
     /// Author name

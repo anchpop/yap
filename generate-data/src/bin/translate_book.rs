@@ -1,9 +1,11 @@
 //! Translate an English book's extracted chunks into the course languages and segment
-//! them into sentences — producing `data/<lang>/sentence-sources/books/<book>.jsonl`
-//! (the source consumed by `generate_data::books`).
+//! them into sentences — producing `data/<lang>/sentence-sources/books/<series>/<book>.jsonl`
+//! (the source consumed by `generate_data::books`). Remember to add the book to the
+//! series' `metadata.jsonl` in the same folder.
 //!
 //!     cargo run -p generate-data --release --bin translate_book -- \
-//!         --chunks /data/books/pale-lights-extracted/chunks.jsonl --book pale-lights \
+//!         --chunks /data/books/pale-lights-extracted/chunks.jsonl \
+//!         --series pale-lights --book pale-lights \
 //!         [--take 300] [--model gpt-5.6-luna]
 //!
 //! Run from the repo root (paths and `.cache/` are root-relative). Translations go
@@ -84,6 +86,7 @@ async fn main() -> anyhow::Result<()> {
     dotenvy::dotenv().ok();
     let chunks_path = arg_value("--chunks").context("--chunks <chunks.jsonl> is required")?;
     let book = arg_value("--book").context("--book <slug> is required")?;
+    let series = arg_value("--series").context("--series <slug> is required")?;
     let take: usize = arg_value("--take").map(|v| v.parse()).transpose()?.unwrap_or(300);
 
     let all_chunks: Vec<Chunk> = std::fs::read_to_string(&chunks_path)
@@ -109,7 +112,8 @@ async fn main() -> anyhow::Result<()> {
     let segmenter = RemoteClient::new(RemoteConfig::default())?;
 
     for (code, language) in LANGS {
-        let out_dir = PathBuf::from(format!("./generate-data/data/{code}/sentence-sources/books"));
+        let out_dir =
+            PathBuf::from(format!("./generate-data/data/{code}/sentence-sources/books/{series}"));
         std::fs::create_dir_all(&out_dir)?;
         let out_path = out_dir.join(format!("{book}.jsonl"));
 

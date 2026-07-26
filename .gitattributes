@@ -53,7 +53,7 @@ generate-data/data/*/sentence-sources/pimsleur/** filter=git-crypt diff=git-cryp
 # Encrypted book sentences (translations of copyrighted books, e.g. Pale Lights).
 # metadata.jsonl is exempt — attribution facts (title/author/translator), not book text.
 generate-data/data/*/sentence-sources/books/** filter=git-crypt diff=git-crypt
-generate-data/data/*/sentence-sources/books/metadata.jsonl -filter -diff
+generate-data/data/*/sentence-sources/books/**/metadata.jsonl -filter -diff
 
 # Encrypted secrets
 secrets/** filter=git-crypt diff=git-crypt
