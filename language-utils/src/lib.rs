@@ -523,6 +523,49 @@ impl From<MovieMetadataBasic> for MovieMetadata {
     }
 }
 
+/// Metadata for a book used as a sentence source, keyed by the slug that
+/// appears in [`SentenceSource::book_ids`]. Stored per language in
+/// `sentence-sources/books/metadata.jsonl` and carried into the language pack
+/// for attribution display.
+#[derive(
+    Clone,
+    Debug,
+    Eq,
+    serde::Serialize,
+    serde::Deserialize,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
+#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
+pub struct BookMetadata {
+    /// Book slug, e.g. "pale-lights"
+    pub id: String,
+    /// Book title (kept in the original language even for translated courses)
+    pub title: String,
+    /// Author name
+    pub author: String,
+    /// Original language of the book (ISO 639-1 code, e.g. "en")
+    #[serde(default)]
+    pub original_language: Option<String>,
+    /// True when this language's sentences are a machine translation of the
+    /// original. Attribution should then credit the author for the story but
+    /// not the wording — they may not stand by the translation.
+    #[serde(default)]
+    pub machine_translated: bool,
+    /// Model that produced the translation, when `machine_translated`
+    /// (e.g. "gpt-5.6-luna")
+    #[serde(default)]
+    pub translator: Option<String>,
+    /// Where the book lives, e.g. the web serial's site
+    #[serde(default)]
+    pub source_url: Option<String>,
+}
+
 #[derive(
     Clone,
     Debug,
@@ -2148,7 +2191,9 @@ pub struct ConsolidatedLanguageData {
     pub homophone_practice: BTreeMap<HomophoneWordPair<String>, HomophonePractice<String>>,
     /// Movie metadata indexed by movie ID
     pub movies: FxHashMap<String, MovieMetadata>,
-    /// Sentence source provenance tracking (including movie_ids)
+    /// Book metadata indexed by book slug
+    pub books: FxHashMap<String, BookMetadata>,
+    /// Sentence source provenance tracking (including movie_ids/book_ids)
     pub sentence_sources: Vec<(String, SentenceSource)>,
     /// Gram vocabulary: maps gram ID to display info (index = gram ID)
     pub gram_vocabulary: Vec<GramVocabEntry<String>>,

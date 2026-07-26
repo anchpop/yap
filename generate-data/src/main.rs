@@ -2085,6 +2085,24 @@ async fn main() -> anyhow::Result<()> {
             FxHashMap::default()
         };
 
+        // Load book metadata (attribution for book-sourced sentences, incl. the
+        // machine-translated flag)
+        let books = {
+            let metadata_file = source_data_path.join("sentence-sources/books/metadata.jsonl");
+            if metadata_file.exists() {
+                let content = std::fs::read_to_string(&metadata_file)
+                    .context("Failed to read book metadata file")?;
+                let mut books = FxHashMap::default();
+                for line in content.lines().filter(|l| !l.trim().is_empty()) {
+                    let book: language_utils::BookMetadata =
+                        serde_json::from_str(line).context("Failed to parse book metadata")?;
+                    books.insert(book.id.clone(), book);
+                }
+                books
+            } else {
+                FxHashMap::default()
+            }
+        };
         // Load sentence sources
         let sentence_sources = {
             let sentence_sources_file = target_language_dir.join("sentence_sources.jsonl");
@@ -2101,6 +2119,15 @@ async fn main() -> anyhow::Result<()> {
                 Vec::new()
             }
         };
+        for (_, source) in &sentence_sources {
+            for book_id in &source.book_ids {
+                anyhow::ensure!(
+                    books.contains_key(book_id),
+                    "sentence source references book {book_id:?} with no entry in \
+                     sentence-sources/books/metadata.jsonl"
+                );
+            }
+        }
 
         // Build sentence_to_sources map for per-source frequency computation
         let master_gram_set: std::collections::HashSet<Gram<String>> = gram_frequencies
@@ -2277,6 +2304,7 @@ async fn main() -> anyhow::Result<()> {
             pronunciation_data,
             homophone_practice,
             movies,
+            books,
             sentence_sources,
             gram_vocabulary,
             gram_frequencies: language_utils::GramFrequencyList {

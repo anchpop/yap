@@ -3,7 +3,7 @@ use crate::minimal_pairs::{MinimalPairs, build_minimal_pairs_index};
 use crate::{
     Atom, Audio, ConsolidatedLanguageData, Course, DictionaryEntry, Frequency, Gram,
     GramDefinition, Heteronym, HomophonePractice, HomophoneWordPair, Lexeme, Literal, MorphemeInfo,
-    MorphemeSegment, MovieMetadata, PartOfSpeech, PatternPosition, PronunciationData,
+    MorphemeSegment, BookMetadata, MovieMetadata, PartOfSpeech, PatternPosition, PronunciationData,
     ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram, VoiceActor,
     WordType, grm,
 };
@@ -41,6 +41,8 @@ pub struct LanguagePack {
     pub pronunciation_max_freq_cache: FxHashMap<Spur, Frequency>,
     /// Movie metadata indexed by movie ID
     pub movies: FxHashMap<String, MovieMetadata>,
+    /// Book metadata indexed by book slug
+    pub books: FxHashMap<String, BookMetadata>,
     /// Sentence source provenance tracking (maps sentence to its sources)
     pub sentence_sources: FxHashMap<Spur, SentenceSource>,
     /// Global proper noun definitions map
@@ -490,8 +492,9 @@ impl LanguagePack {
             })
             .collect();
 
-        // Initialize movie data
+        // Initialize movie and book data
         let movies = language_data.movies;
+        let books = language_data.books;
 
         let human_audio = language_data.human_audio.clone();
 
@@ -942,6 +945,7 @@ impl LanguagePack {
             homophone_practice,
             pronunciation_max_freq_cache,
             movies,
+            books,
             sentence_sources,
             proper_noun_definitions,
             gram_frequencies,

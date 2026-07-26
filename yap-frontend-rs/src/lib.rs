@@ -3259,6 +3259,15 @@ impl Deck {
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_book_metadata(&self, book_ids: Vec<String>) -> Vec<language_utils::BookMetadata> {
+        let language_pack = &self.context.language_pack;
+        book_ids
+            .into_iter()
+            .filter_map(|book_id| language_pack.books.get(&book_id).cloned())
+            .collect()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_target_language(&self) -> Language {
         self.context.course.target_language
     }
