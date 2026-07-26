@@ -398,6 +398,16 @@ impl SentenceSource {
         self.from_manual
     }
 
+    /// Returns true if book prose is this sentence's *only* source.
+    pub fn is_book_only(&self) -> bool {
+        !self.book_ids.is_empty()
+            && !self.from_anki
+            && !self.from_tatoeba
+            && !self.from_manual
+            && !self.from_song
+            && self.movie_ids.is_empty()
+    }
+
     /// Merge two sources together (OR operation on all fields)
     pub fn merge(&mut self, other: &Self) {
         self.from_anki |= other.from_anki;

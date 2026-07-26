@@ -6,9 +6,10 @@
 //!
 //! The sentence files are produced by `src/bin/translate_book.rs` (LLM translation of
 //! chunks from an English source book, segmented by the parsley `/segment` serve) and are
-//! consumed by [`crate::target_sentences::get_target_sentences`] like any other sentence
-//! source, so book sentences flow into the gold labeling (clean-nlp-data) and everything
-//! downstream.
+//! consumed by [`crate::target_sentences::get_target_sentences`]. Book-only sentences are
+//! returned in a separate `book_sentences` set that clean-nlp-data folds into the gold
+//! labeling pool but generate-data leaves out of the language packs — see the field docs
+//! on [`crate::target_sentences::TargetSentences`].
 
 use std::path::Path;
 

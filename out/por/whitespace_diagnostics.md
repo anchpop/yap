@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1648135
-Total errors: 489
+Total predictions: 1755835
+Total errors: 500
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -93,6 +93,14 @@ Accuracy: 99.97%
   - Ele tem um trabalho a tempo parcial na Embaixada do Paquistão .
   - Embaixada do Paquistão .
   - Eu tenho um trabalho a tempo parcial na Embaixada do Paquistão .
+
+### "V" + "Ocê" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - VOcê disse que estava sujo.
+  - VOcê me disse um milhão de vezes.
+  - VOcê pegou o zelador lá de baixo?
 
 ### "aqui" + "?" (3 occurrences)
 - Predicted: None
@@ -364,6 +372,12 @@ Accuracy: 99.97%
 - Examples:
   - Eu não estou amaldiçoando a minha reputação - Dê uma cadeirada!
 
+### "-" + "Impossível" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Doze e meio - Impossível!
+
 ### "-" + "Mostre" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -532,6 +546,12 @@ Accuracy: 99.97%
 - Examples:
   - Mas não serviria para comer - É a música que estavam cantando.
 
+### "--" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tenho certeza que vai encontrar alguém-- -Oh, por favor!
+
 ### "--" + "isso" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -543,6 +563,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Aquele seu jovem colega-- onde posso encontrá-lo?
+
+### "--" + "todos" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Alemães, Poloneses, Kashubianos-- todos vivemos juntos em paz.
 
 ### "--" + "você" (1 occurrences)
 - Predicted: None
@@ -1174,6 +1200,12 @@ Accuracy: 99.97%
 - Examples:
   - VamosIOúltlmo achegaréchlfrudo!
 
+### "Verdade" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Verdade , Volto aqui amanhã pela furgoneta.
+
 ### "Verde" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1480,6 +1512,12 @@ Accuracy: 99.97%
 - Examples:
   - Um cigarro ?
 
+### "colados" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Estamos também todos colados .
+
 ### "coletor" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1527,6 +1565,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Então, diga a todos agora, qual é o número correto ?
+
+### "darão" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O que tens que fazer é pensar Eles não te darão .
 
 ### "dentes" + "?" (1 occurrences)
 - Predicted: None
@@ -1977,6 +2021,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Não tenho medo .
+
+### "meio" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Doze e meio - Impossível!
 
 ### "menina" + "." (1 occurrences)
 - Predicted: None
@@ -2523,6 +2573,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Não gravou a minha voz ?
+
+### "vá" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Quer que eu vá ?
 
 ### "vão" + "?" (1 occurrences)
 - Predicted: None

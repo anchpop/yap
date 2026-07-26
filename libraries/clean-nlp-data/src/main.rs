@@ -592,7 +592,13 @@ fn ensure_target_sentences_file(
     ))?;
     let mut writer = BufWriter::new(file);
 
-    for (sentence, _, _source) in target_sentences.app_sentences {
+    // Unlike the language packs, the gold pipeline includes book-only sentences —
+    // the gold data is what will teach the models the book distribution.
+    for (sentence, _, _source) in target_sentences
+        .app_sentences
+        .into_iter()
+        .chain(target_sentences.book_sentences)
+    {
         writeln!(writer, "{}", serde_json::to_string(&sentence)?)
             .context("Failed to write target sentence")?;
     }
@@ -805,9 +811,15 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     };
 
     println!("Loading target sentences for {language:?}...");
-    let app_sentences = target_sentences::get_target_sentences(course)
-        .context("Failed to load target sentences")?
-        .app_sentences;
+    let target_sentences = target_sentences::get_target_sentences(course)
+        .context("Failed to load target sentences")?;
+    // Book-only sentences are excluded from the language packs but belong in the gold
+    // pool: labeling them is how the models learn the book distribution.
+    let app_sentences: Vec<_> = target_sentences
+        .app_sentences
+        .into_iter()
+        .chain(target_sentences.book_sentences)
+        .collect();
     let movie_count = app_sentences
         .iter()
         .filter(|(_, _, source)| !source.movie_ids.is_empty())
@@ -885,8 +897,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         course.target_language.iso_639_3()
     ));
     let prior_gold_sentences: Vec<String> = if prior_gold_file.exists() {
-        let file =
-            File::open(&prior_gold_file).context("Failed to open prior gold output")?;
+        let file = File::open(&prior_gold_file).context("Failed to open prior gold output")?;
         BufReader::new(file)
             .lines()
             .filter_map(|line| {
@@ -984,7 +995,11 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         &base_dir,
         &format!(
             "NLP ({}) over {} selected sentences (uncached subset only)",
-            if needs_llm_nlp(language) { "LLM" } else { "spaCy" },
+            if needs_llm_nlp(language) {
+                "LLM"
+            } else {
+                "spaCy"
+            },
             all_needed.len()
         ),
     );
@@ -1098,7 +1113,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
                 pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
                 pb.inc(1);
-                if pb.position() % 200 == 0 {
+                if pb.position().is_multiple_of(200) {
                     set_status(
                         &status_dir,
                         &format!(
@@ -1286,7 +1301,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
                 pb2.set_message(format!("{:.2}", CHAT_CLIENT_MINI.cost().unwrap_or(0.0)));
                 pb2.inc(1);
-                if pb2.position() % 200 == 0 {
+                if pb2.position().is_multiple_of(200) {
                     set_status(
                         &status_dir2,
                         &format!(

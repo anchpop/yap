@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2848929
-Total errors: 892
+Total predictions: 2915652
+Total errors: 943
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "ver" + "te" (158 occurrences)
+### "ver" + "te" (160 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -22,7 +22,7 @@ Accuracy: 99.97%
   - Así que,¿de veras eres una realizadora de cine?
   - Bueno,¿por qué lo preguntas?
 
-### "-" + "¡" (14 occurrences)
+### "-" + "¡" (15 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -86,6 +86,14 @@ Accuracy: 99.97%
   - Di 'por favor' y lo haré.
   - Esa es la de 'impulso' y esa también.
 
+### "--" + "¿" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Cinco-- ¿listo?
+  - Las metáforas son-- ¿Cómo decírtelo?
+  - Mi tesis es sobre-- ¿Conoces al pintor Egon Schiele?
+
 ### "haber" + "me" (7 occurrences)
 - Predicted: Space
 - Actual: None
@@ -134,14 +142,6 @@ Accuracy: 99.97%
   - Mira aquí, campeón, -Tengo relojes de oro, anillos de diamante.
   - Oh, - ¡Eso fue todo!
 
-### "--" + "¿" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Cinco-- ¿listo?
-  - Mi tesis es sobre-- ¿Conoces al pintor Egon Schiele?
-  - No sé qué-- ¿Qué estás buscando?
-
 ### "Piérde" + "te" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -157,6 +157,14 @@ Accuracy: 99.97%
   - No, nos vamos ajuicio.
   - Si esto va ajuicio, necesitarán un sacerdote, no un abogado.
   - Si nos vamos ajuicio, me lanzo a matar.
+
+### "piérde" + "te" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Deja de reírte y piérdete.
+  - No te metas en esto y piérdete.
+  - Vale, Carlo, piérdete.
 
 ### "'" + "es" (3 occurrences)
 - Predicted: None
@@ -205,14 +213,6 @@ Accuracy: 99.97%
   - Con el 'hola' ya era tuya.
   - Luego se paró el motor y alguien dijo 'hola'.
   - Oye un tiro, y antes de eso, 'hola'.
-
-### "piérde" + "te" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No te metas en esto y piérdete.
-  - Vale, Carlo, piérdete.
-  - Vamos, piérdete.
 
 ### "qué" + "'" (3 occurrences)
 - Predicted: Space
@@ -305,6 +305,13 @@ Accuracy: 99.97%
 - Examples:
   - Ah, «Family Feud».
   - Estoy viendo «Family Feud».
+
+### "Hafiz" + "." (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Allah Hafiz .
+  - Bien hermano, cuídate, Allah Hafiz .
 
 ### "O" + "-" (2 occurrences)
 - Predicted: None
@@ -403,6 +410,13 @@ Accuracy: 99.97%
 - Examples:
   - Dije 'te lo prometo'.
   - Dijiste: 'Dime y luego te lo prometo'.
+
+### "selfie" + "." (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Toma una selfie .
+  - Ven hijo, toma una selfie .
 
 ### "si" + "'" (2 occurrences)
 - Predicted: Space
@@ -989,6 +1003,12 @@ Accuracy: 99.97%
 - Examples:
   - Y-- Dices que lo sacaste de un casillero de propiedad escolar.
 
+### "--" + "El" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No, yo-- El estaba mirando la montaña.
+
 ### "--" + "Es" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1012,6 +1032,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - De hecho, me puede dar-- Gracias.
+
+### "--" + "Hace" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tenemos-- Hace mucho tiempo que prometen agua directa.
 
 ### "--" + "Justo" (1 occurrences)
 - Predicted: None
@@ -1139,6 +1165,12 @@ Accuracy: 99.97%
 - Examples:
   - Uno decía 'Vestuario' y el otro 'Artículos Valiosos'.
 
+### "Assalamu Alaikum" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Assalamu Alaikum .
+
 ### "Baruku Hinda" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1150,6 +1182,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Bhagwan .
+
+### "Biryani Bhukhari" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Un poco de Biryani Bhukhari , y un poco de Nalli Nihari .
 
 ### "Blanco" + "'" (1 occurrences)
 - Predicted: Space
@@ -1169,6 +1207,12 @@ Accuracy: 99.97%
 - Examples:
   - En octubre hará tres años que me mudé a Boston .
 
+### "Bueno" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bueno , anda y hacenos café para nosotras.
+
 ### "CAIRO" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1180,6 +1224,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Los de 'Tráfico' los llaman 'Casa de Huéspedes'.
+
+### "Chandni Chowk" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - En el restaurante de Chaudhary en Chandni Chowk .
 
 ### "Ctrl" + "+" (1 occurrences)
 - Predicted: Space
@@ -1264,6 +1314,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ella era EVP -estado vegetativo persistente- igual que Lydia.
+
+### "Eid" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La gente está viniendo desde Karachi para celebrar el Eid .
 
 ### "Es" + "¡" (1 occurrences)
 - Predicted: Space
@@ -1379,6 +1435,12 @@ Accuracy: 99.97%
 - Examples:
   - Señor Javed .
 
+### "Khuda Hafiz" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Khuda Hafiz .
+
 ### "Kitchen" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1390,6 +1452,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Descuídate, Kozlodóyev .
+
+### "Kshatriya" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Debe ser Kshatriya .
 
 ### "Lavar" + "!" (1 occurrences)
 - Predicted: None
@@ -1415,6 +1483,18 @@ Accuracy: 99.97%
 - Examples:
   - Todos sus hijos son delincuentes, y uno, por lo menos - Malcolm - es un ladrón.
 
+### "Mañana Feliz" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Buenos días niños, bienvenidos a otra «Mañana Feliz».
+
+### "Medina" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Por favor, llena mi bolso, oh Dios de Medina .
+
 ### "Ministro" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1433,6 +1513,12 @@ Accuracy: 99.97%
 - Examples:
   - Moveos¡!
 
+### "Muhammad Ali Jinnah" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Muhammad Ali Jinnah .
+
 ### "Muérde" + "te" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1444,6 +1530,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Le he dado el nombre de Génesis, 'Nacimiento'.
+
+### "Nalli Nihari" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Un poco de Biryani Bhukhari , y un poco de Nalli Nihari .
 
 ### "Navidad" + "'" (1 occurrences)
 - Predicted: Space
@@ -1499,6 +1591,18 @@ Accuracy: 99.97%
 - Examples:
   - Después de todo, ese es el primer paso para convertirse en Pilar .
 
+### "Profeta" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Esas personas que tú deseas ver, oh Profeta .
+
+### "Profeta Mohammed" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Por favor, llena mi bolso, oh Profeta Mohammed .
+
 ### "Quinta" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1510,6 +1614,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - RECHAZADO - ¡Evelyn, espera!
+
+### "Ram" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Pide rápido, lo juro por Ram , estoy en problemas .
 
 ### "Repito" + ":" (1 occurrences)
 - Predicted: Space
@@ -1529,6 +1639,12 @@ Accuracy: 99.97%
 - Examples:
   - Rick Dalton - Whoo!
 
+### "Sachin Tendulkar" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sí, y yo soy Sachin Tendulkar .
+
 ### "Salud" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1540,6 +1656,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Hola Señora - Hola.
+
+### "Shawrma" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Trae Shorba, trae Shawrma .
 
 ### "Shinachiku" + "." (1 occurrences)
 - Predicted: None
@@ -1636,6 +1758,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Vamos .
+
+### "Vedas" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mi padre conocía las cuatro Vedas .
 
 ### "Ven" + "." (1 occurrences)
 - Predicted: None
@@ -1738,6 +1866,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Tengo muchas aficiones - pescar y escalar, por ejemplo.
+
+### "ahí" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Si tú estás ahí, yo estoy ahí .
 
 ### "alguien" + "-" (1 occurrences)
 - Predicted: None
@@ -1955,6 +2089,12 @@ Accuracy: 99.97%
 - Examples:
   - Por si 'mirar' se vuelve 'comprar'.
 
+### "conductor" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mi padre es un conductor - ¡Basta!
+
 ### "consumiste" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1972,6 +2112,18 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Como dicen: 'En boca cerrada, corazón contento'.
+
+### "convenzo" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Yo me convenzo .
+
+### "conversaciones" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No hago grandes conversaciones .
 
 ### "corazón" + "'" (1 occurrences)
 - Predicted: Space
@@ -2183,6 +2335,18 @@ Accuracy: 99.97%
 - Examples:
   - Es sólo eso: una historia.
 
+### "estas" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Toma una de estas , bajo no, griten fuerte.
+
+### "estas" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Toma una de estas .
+
 ### "esto" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2249,6 +2413,12 @@ Accuracy: 99.97%
 - Examples:
   - Que te follen .
 
+### "four" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Y ese es un four .
+
 ### "frita" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2266,6 +2436,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Oye, muchísimas gracias -por tu tiempo.
+
+### "gracias" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Es «gracias» en mandarín.
 
 ### "gris" + "-" (1 occurrences)
 - Predicted: None
@@ -2291,6 +2467,12 @@ Accuracy: 99.97%
 - Examples:
   - Una sola persona decide qué voy a hacer: yo.
 
+### "hermano" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tengo aquí a un «hermano» perdido.
+
 ### "hielo" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2308,6 +2490,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Los lectores de ciencia ficción son adeptos a escenarios hipotéticos .
+
+### "hola" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Nunca dice ni «hola», siempre con la cara bajada.
 
 ### "homosexuales" + ".." (1 occurrences)
 - Predicted: None
@@ -2495,6 +2683,12 @@ Accuracy: 99.97%
 - Examples:
   - Ahora sólo usa la palabra 'maricón' durante el sexo.
 
+### "mañana" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Buscando por tus estrellas, encontré mi mañana .
+
 ### "medio" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2549,11 +2743,23 @@ Accuracy: 99.97%
 - Examples:
   - Los construyó sobre una línea de montaje .
 
+### "montaña" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - De un pequeño grano se hizo una montaña .
+
 ### "muerta" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Pensé que habías muerta , hija puta.
+
+### "muevas" + "¡" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - No te muevas¡ No te conviene.
 
 ### "mundo" + "'" (1 occurrences)
 - Predicted: Space
@@ -2590,6 +2796,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Bas dice que sólo lo necesito -sin distracciones.
+
+### "niña" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Toma a la niña .
 
 ### "no" + "'" (1 occurrences)
 - Predicted: Space
@@ -2729,6 +2941,12 @@ Accuracy: 99.97%
 - Examples:
   - La realidad tiene un problema - esta siempre es verdadera.
 
+### "problemas" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Pide rápido, lo juro por Ram , estoy en problemas .
+
 ### "procrastinar" + "–" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -2794,6 +3012,18 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Como podrán haber notado, todas contienen 'recuerdos'.
+
+### "religioso" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tráemelos hoy, no importa si rompo mi código religioso .
+
+### "rickshaw" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La que estaba en su rickshaw .
 
 ### "rodillas" + "?" (1 occurrences)
 - Predicted: None
@@ -3059,6 +3289,12 @@ Accuracy: 99.97%
 - Examples:
   - Dije: 'Un día seré un policía del espacio verde'.
 
+### "vez" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Cada vez , te deseo a ti.
+
 ### "vida" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3095,6 +3331,12 @@ Accuracy: 99.97%
 - Examples:
   - Voy a darle un tiempo y volveré - ¡¿Usted qué?
 
+### "vos" + "¡" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - No envejeciste, sos vos¡ !
+
 ### "yo" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3106,6 +3348,18 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Me gusta hacer las cosas como las hago yo .
+
+### "¡" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No envejeciste, sos vos¡ !
+
+### "¡" + "No" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - No te muevas¡ No te conviene.
 
 ### "¡" + "cállate" (1 occurrences)
 - Predicted: None

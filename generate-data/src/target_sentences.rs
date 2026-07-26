@@ -21,10 +21,17 @@ struct PimsleurSentence {
 
 pub use language_utils::PimsleurLesson;
 
-/// The result of collecting target sentences, split into app and restricted sets.
+/// The result of collecting target sentences, split into app, book, and restricted sets.
 pub struct TargetSentences {
     /// Sentences that can be used in the app (Anki, Tatoeba, manual, movies, songs)
     pub app_sentences: Vec<(String, Option<String>, SentenceSource)>,
+    /// Sentences whose only source is book prose. Kept out of `app_sentences` (and thus
+    /// the language packs) for now: the NLP models generate-data relies on were trained
+    /// on the non-book distribution and mislabel book prose. clean-nlp-data DOES include
+    /// these — the gold data it produces is what will retrain the models on book
+    /// distribution. A sentence that also appears in another source stays in
+    /// `app_sentences` (with its `book_ids` intact).
+    pub book_sentences: Vec<(String, Option<String>, SentenceSource)>,
     /// Restricted sentences (e.g. Pimsleur) — used for frequency/tokenization only, not in the app.
     /// Each entry is (target_sentence, list of lessons it appears in).
     pub restricted_sentences: Vec<(String, Vec<PimsleurLesson>)>,
@@ -188,8 +195,10 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
         }
     }
 
-    // Manual sentences also need cleanup (they weren't cleaned up earlier)
-    let app_sentences = result
+    // Manual sentences also need cleanup (they weren't cleaned up earlier).
+    // Book-only sentences are split off so they stay out of the language packs
+    // (see the field docs on `TargetSentences`).
+    let (book_sentences, app_sentences): (Vec<_>, Vec<_>) = result
         .into_iter()
         .map(|(sentence, native, source)| {
             if source.is_manual() {
@@ -206,7 +215,7 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
                 (sentence, native, source)
             }
         })
-        .collect();
+        .partition(|(_, _, source)| source.is_book_only());
 
     // Load restricted (Pimsleur) sentences
     let restricted_sentences = load_pimsleur_sentences(&source_data_path, course)?;
@@ -218,6 +227,7 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
 
     Ok(TargetSentences {
         app_sentences,
+        book_sentences,
         restricted_sentences,
     })
 }

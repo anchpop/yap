@@ -2091,8 +2091,8 @@ async fn main() -> anyhow::Result<()> {
             let books_dir = source_data_path.join("sentence-sources/books");
             let mut books = FxHashMap::default();
             if books_dir.exists() {
-                for series_entry in std::fs::read_dir(&books_dir)
-                    .context("Failed to read books directory")?
+                for series_entry in
+                    std::fs::read_dir(&books_dir).context("Failed to read books directory")?
                 {
                     let series_dir = series_entry?.path();
                     let metadata_file = series_dir.join("metadata.jsonl");
@@ -2105,7 +2105,9 @@ async fn main() -> anyhow::Result<()> {
                         let book: language_utils::BookMetadata =
                             serde_json::from_str(line).context("Failed to parse book metadata")?;
                         anyhow::ensure!(
-                            series_dir.file_name().is_some_and(|n| *n == *book.series.as_str()),
+                            series_dir
+                                .file_name()
+                                .is_some_and(|n| *n == *book.series.as_str()),
                             "book {:?} declares series {:?} but lives in {}",
                             book.id,
                             book.series,

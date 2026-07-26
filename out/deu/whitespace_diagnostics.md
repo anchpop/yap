@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2973819
-Total errors: 2198
+Total predictions: 3127243
+Total errors: 2279
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
 
-### "…" + "-" (45 occurrences)
+### "…" + "-" (48 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -14,13 +14,13 @@ Accuracy: 99.93%
   - Aber… -Ihr entkommt dem Schicksal nicht.
   - Ah… -Hm?
 
-### "-" + "und" (29 occurrences)
+### "-" + "und" (31 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
+  - Ach, wäre ich doch verliebt in dich - und nicht im Himmel.
   - Als geborene Münchnerin kennt sie die Stadt in- und auswendig.
   - Da triffst du Prinz William - und kannst ihn an seiner Stelle heiraten.
-  - Darum leide ich an Vitamin-A- und Vitamin-E-Mangel.
 
 ### "’" + "ich" (12 occurrences)
 - Predicted: None
@@ -62,6 +62,14 @@ Accuracy: 99.93%
   - Ich sehe Tränen in deinen Augen.
   - Mir kamen die Tränen.
 
+### "-" + "wie" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Tschubs sagten ebenfalls, er war nicht an Bord - wie ich.
+  - Er war schön und von heiterer Ruhe - wie ein Erzengel.
+  - Geister haben ihre eigenen Gesetze - wie wir Menschen!
+
 ### "du" + "?" (9 occurrences)
 - Predicted: None
 - Actual: Space
@@ -93,14 +101,6 @@ Accuracy: 99.93%
   - Cha- Cha- Cha!
   - Cha- Cha- Cha!
   - Cha- Cha- Chat!
-
-### "-" + "wie" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Tschubs sagten ebenfalls, er war nicht an Bord - wie ich.
-  - Er war schön und von heiterer Ruhe - wie ein Erzengel.
-  - Königinnen zu mir herabschauen - wie stehe ich da?
 
 ### "Hause" + "!" (8 occurrences)
 - Predicted: None
@@ -173,6 +173,14 @@ Accuracy: 99.93%
   - Haben Sie „drei Wochen“ oder „drei Monate“ gesagt?
   - Haben Sie „drei Wochen“ oder „drei Monate“ gesagt?
   - Habt ihr „drei Wochen“ oder „drei Monate“ gesagt?
+
+### "-" + "alles" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Buddhaschaft, Ruhe - alles Lüge!
+  - Der Hersteller, die Signatur - alles passt.
+  - Es war wie eine riesige Party, ein grandioses Fest - alles für mich.
 
 ### "-" + "bis" (5 occurrences)
 - Predicted: None
@@ -269,14 +277,6 @@ Accuracy: 99.93%
   - Ich dachte - Wir waren zusammen.
   - Ich mein … - Wir geben nie einen Fall auf.
   - Judy, jetzt … - Wir müssen den Fall lösen.
-
-### "-" + "alles" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Der Hersteller, die Signatur - alles passt.
-  - Es war wie eine riesige Party, ein grandioses Fest - alles für mich.
-  - Gabel, Gangschaltung - alles in allem ein Meisterstück.
 
 ### "-" + "bla" (4 occurrences)
 - Predicted: None
@@ -598,6 +598,14 @@ Accuracy: 99.93%
   - Habt ihr „drei Wochen“ oder „drei Monate“ gesagt?
   - Hast du „drei Wochen“ oder „drei Monate“ gesagt?
 
+### "Ruhe" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Buddhaschaft, Ruhe - alles Lüge!
+  - Er war schön und von heiterer Ruhe - wie ein Erzengel.
+  - Lass mich in Ruhe - Hast du was genommen?
+
 ### "Schild" + "e" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -766,6 +774,22 @@ Accuracy: 99.93%
   - Hank, kannst du das Atelier räumen?
   - Ihr müsst das Zimmer räumen.
 
+### "sagen" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich kann es nicht sagen - Geister benutzen einander wie Menschen.
+  - Mehr kann ich dir nicht sagen - weder dir noch den anderen.
+  - Was Sie auch immer sagen - dieser Zustand wird nicht andauern.
+
+### "sein" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich will kein Mensch mehr sein - und Siu Seen will Mensch werden!
+  - Rebecca, ich werde da sein - und wie!
+  - Von jetzt an werde ich an Ihrer Seite sein - für immer.
+
 ### "sie" + "?" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -773,6 +797,14 @@ Accuracy: 99.93%
   - Wie ist sie ?
   - Willst du sie ?
   - Wo ist sie ?
+
+### "wir" + "jetzt" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Das werden wirjetzt nachholen.
+  - Sollen wirjetzt fahren?
+  - Und dank dieser Quelle sind wirjetzt endlich auch Che-san auf den Fersen.
 
 ### "zwei-" + "oder" (3 occurrences)
 - Predicted: None
@@ -1198,13 +1230,6 @@ Accuracy: 99.93%
   - Geh zurück an deinen Platz !
   - Zurück an deinen Platz !
 
-### "Ruhe" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Er war schön und von heiterer Ruhe - wie ein Erzengel.
-  - Lass mich in Ruhe - Hast du was genommen?
-
 ### "Science" + "“" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1225,6 +1250,13 @@ Accuracy: 99.93%
 - Examples:
   - Wir benutzen sie oft als Sonnen- oder Regenschirme.
   - Wir nutzen sie oft als Sonnen- oder Regenschirme.
+
+### "Sonnen-" + "und" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sonnen- und Regenmädchen entstehen dank Gaias Homöostase.
+  - Sonnen- und Windenergie werden immer kostengünstiger.
 
 ### "Sport" + "“" (2 occurrences)
 - Predicted: Space
@@ -1324,6 +1356,13 @@ Accuracy: 99.93%
   - Hast du nicht heiss damit ?
   - Was meinst du damit ?
 
+### "dich" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ach, wäre ich doch verliebt in dich - und nicht im Himmel.
+  - Ich habe nur Augen für dich - ehrlich.
+
 ### "dich" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1337,6 +1376,13 @@ Accuracy: 99.93%
 - Examples:
   - Mach dieTür auf, Pat!
   - Sie stieg ein und knallte dieTür zu.
+
+### "dir" + "!" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nimm sie dir !
+  - Und jetzt raus mit dir !
 
 ### "dir" + "?" (2 occurrences)
 - Predicted: None
@@ -1386,6 +1432,13 @@ Accuracy: 99.93%
 - Examples:
   - Was schreit er ?
   - Wie ist er ?
+
+### "er?" + "" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Lichter wurden in Auftrag gegeben… -Was machst du hier?
+  - Wer ist populär… hier?
 
 ### "es" + "!" (2 occurrences)
 - Predicted: None
@@ -1583,26 +1636,12 @@ Accuracy: 99.93%
   - Komm runter !
   - Lass mich runter !
 
-### "sagen" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Mehr kann ich dir nicht sagen - weder dir noch den anderen.
-  - Was Sie auch immer sagen - dieser Zustand wird nicht andauern.
-
 ### "sein" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Möge das Paar auf ewig glücklich sein !
   - Wenn es so weitermacht, wird die Schule ein paar Tage zu sein !
-
-### "sein" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Rebecca, ich werde da sein - und wie!
-  - Von jetzt an werde ich an Ihrer Seite sein - für immer.
 
 ### "sein" + "?" (2 occurrences)
 - Predicted: None
@@ -1687,6 +1726,13 @@ Accuracy: 99.93%
 - Examples:
   - Geh weg !
   - Wirf diesen Stein weg !
+
+### "zur" + "japanischen" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aber wie kommt man als Übersetzer für den Widerstand zurjapanischen Polizei?
+  - Sagen Sie, haben Sie in Shanghai Verbindungen zurjapanischen Polizei?
 
 ### "zurücksetzen" + "“" (2 occurrences)
 - Predicted: Space
@@ -2068,6 +2114,12 @@ Accuracy: 99.93%
 - Examples:
   - Ich bekam den Befehl von Ober- Gefreitem Dawson und befolgte ihn!
 
+### "-" + "Geister" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich kann es nicht sagen - Geister benutzen einander wie Menschen.
+
 ### "-" + "Gestalte" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2344,6 +2396,12 @@ Accuracy: 99.93%
 - Examples:
   - Hey, wer ist denn da - Vampir Miller!
 
+### "-" + "Von" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das ist Jürgen Hinzpeter- Von ARD und NDR aus Deutschland.
+
 ### "-" + "Was" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2607,6 +2665,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Und da könnte man Kräuter einpflanzen - frisch zum Tisch.
+
+### "-" + "fromm" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lieber Gott, mach uns - fromm.
 
 ### "-" + "geben" (1 occurrences)
 - Predicted: None
@@ -3070,6 +3134,12 @@ Accuracy: 99.93%
 - Examples:
   - In solchen Zeiten sucht die Zauber- welt bei ihren Anführern Stärke!
 
+### "-" + "wer" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Idiot - wer sonst?
+
 ### "-" + "wir" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3322,6 +3392,12 @@ Accuracy: 99.93%
 - Examples:
   - Nein, sie verließ die Stadt in ihrem eigenen Auto - ihr Chef sah sie.
 
+### "Babu" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wohin gehen wir, Chuni Babu ?
+
 ### "Bacurau" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3381,6 +3457,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Hinsichtlich Bevölkerungs- und Nahrungsproblemen ist der Nutzen eindeutig.
+
+### "Bitte" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Bitte , verschon mich mit deinen Einfällen.
 
 ### "Bla" + "-" (1 occurrences)
 - Predicted: None
@@ -3874,11 +3956,23 @@ Accuracy: 99.93%
 - Examples:
   - Es war wie eine riesige Party, ein grandioses Fest - alles für mich.
 
+### "Feuergottheit" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Vom „Kagura-Tanz der Feuergottheit“ höre ich auch zum ersten Mal.
+
 ### "Fisch" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Aber Mama ist munter wie ein Fisch , das kann ich Ihnen sagen!
+
+### "Flammen-" + "und" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Flammen- und Wasser-Schwertkämpfer.
 
 ### "Fond-de-Veau" + "?" (1 occurrences)
 - Predicted: None
@@ -3994,6 +4088,12 @@ Accuracy: 99.93%
 - Examples:
   - Ich habe auf der Oberschule „Der große Gatsby“ gelesen.
 
+### "Ge" + "sicht?" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Minoru… Hab ich was im Gesicht?
+
 ### "Gebrauchs-" + "anweisung" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4059,6 +4159,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Alle vier verloren ihren Geschmacks- und Geruchssinn.
+
+### "Gesetze" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Geister haben ihre eigenen Gesetze - wie wir Menschen!
 
 ### "Gigliozzi" + "!" (1 occurrences)
 - Predicted: None
@@ -4306,6 +4412,12 @@ Accuracy: 99.93%
 - Examples:
   - Die „Hindenburg“ ging plötzlich in Flammen auf.
 
+### "HintenNäldler" + "‚" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ein paar HintenNäldler‚ die Bomben für unsere Unabhängigkeit werfen.
+
 ### "Hintern" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4372,6 +4484,12 @@ Accuracy: 99.93%
 - Examples:
   - Du musst saugen, Idiot !
 
+### "Idiot" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Idiot - wer sonst?
+
 ### "Idioten" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4413,6 +4531,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Willst du meine Jacke ?
+
+### "Jae" + "—" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Komm hier her, Jae—sik.
 
 ### "Jeans" + "." (1 occurrences)
 - Predicted: None
@@ -5674,12 +5798,6 @@ Accuracy: 99.93%
 - Examples:
   - Sondern … von einer Schlange.
 
-### "Sonnen-" + "und" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sonnen- und Windenergie werden immer kostengünstiger.
-
 ### "Sonnenauf-" + "bis" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6244,6 +6362,12 @@ Accuracy: 99.93%
 - Examples:
   - Da triffst du Prinz William - und kannst ihn an seiner Stelle heiraten.
 
+### "Wirklich" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wirklich ?
+
 ### "Wirtschaft" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -6382,6 +6506,12 @@ Accuracy: 99.93%
 - Examples:
   - Die bekommt man in Sechser-, Zwölfer- oder Achtzehnerpackungen.
 
+### "a" + "s ma" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Lichter wurden in Auftrag gegeben… -Was machst du hier?
+
 ### "a" + "ss da" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -6429,6 +6559,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Schau dich doch selbst an - dreckig wie ein Schwein.
+
+### "an" + "gesehen, h" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
 
 ### "an-" + "und" (1 occurrences)
 - Predicted: None
@@ -6543,6 +6679,18 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ich half, das Totenkleid auszusuchen - Blauviolett.
+
+### "b au" + "f." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Venkata Rama Raju… Gib auf.
+
+### "b ic" + "h wa" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Minoru… Hab ich was im Gesicht?
 
 ### "bald" + "…" (1 occurrences)
 - Predicted: None
@@ -6676,6 +6824,12 @@ Accuracy: 99.93%
 - Examples:
   - Moment, Moment… Sie ist vielleicht noch nicht bereit.
 
+### "ch." + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich hätte nicht… -Beruhige dich.
+
 ### "cht be" + "reit." (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -6687,6 +6841,18 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Elphaba… -Nicht!
+
+### "ckung." + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Runter… Deckung.
+
+### "d lo" + "s!" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Achtung… Und los!
 
 ### "da" + "." (1 occurrences)
 - Predicted: None
@@ -6766,12 +6932,6 @@ Accuracy: 99.93%
 - Examples:
   - Setz dich !
 
-### "dich" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich habe nur Augen für dich - ehrlich.
-
 ### "dich" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -6795,12 +6955,6 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Glauben Sie, ich schaue tatenlos zu, bis dieseJudenschweine mich abmurksen?
-
-### "dir" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Nimm sie dir !
 
 ### "dir" + "jetzt" (1 occurrences)
 - Predicted: Space
@@ -6879,6 +7033,18 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Wie „Buh-duh, buh-duh, buh-duh“.
+
+### "e" + "ruhige di" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich hätte nicht… -Beruhige dich.
+
+### "e ic" + "h he" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Name… -Wie ich heiße?
 
 ### "e is" + "t vi" (1 occurrences)
 - Predicted: Space
@@ -6982,12 +7148,6 @@ Accuracy: 99.93%
 - Examples:
   - Wartet auf Deine Mutter, damit er ’ne Nummer schieben kann!
 
-### "er?" + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Wer ist populär… hier?
-
 ### "erfährt" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7042,6 +7202,12 @@ Accuracy: 99.93%
 - Examples:
   - Genau das ist es .
 
+### "ese be" + "iden?" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hey, Suzume… Wer sind diese beiden?
+
 ### "etwas" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7059,6 +7225,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Mich wollt ihr haben… -Elphie, hör auf!
+
+### "f." + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Venkata Rama Raju… Gib auf.
 
 ### "fallen" + "!" (1 occurrences)
 - Predicted: None
@@ -7258,6 +7430,12 @@ Accuracy: 99.93%
 - Examples:
   - Hast du das Meer schon gesehen ?
 
+### "gesehen, h" + "i" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
+
 ### "getan" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7348,11 +7526,23 @@ Accuracy: 99.93%
 - Examples:
   - Er hat den Kurs mit einem „gut“ bestanden.
 
+### "h he" + "iße?" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Name… -Wie ich heiße?
+
 ### "h mi" + "ch be" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Soll er Ihren Herzenswunsch erfüllen… -Wie soll ich mich beweisen?
+
+### "h wa" + "s im" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Minoru… Hab ich was im Gesicht?
 
 ### "hab" + "’" (1 occurrences)
 - Predicted: None
@@ -7377,6 +7567,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Krieg bestimmt nicht, wer Recht hat - sondern nur, wer am Leben bleibt.
+
+### "hat" + "ja" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Na, das hatja nicht lang gehalten.
 
 ### "hat" + "’" (1 occurrences)
 - Predicted: None
@@ -7444,6 +7640,12 @@ Accuracy: 99.93%
 - Examples:
   - Klettere herunter !
 
+### "hi" + "er?" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Lichter wurden in Auftrag gegeben… -Was machst du hier?
+
 ### "hieb-" + "und" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7486,6 +7688,12 @@ Accuracy: 99.93%
 - Examples:
   - Aber ihr müsst verstehen… Das war vor sehr langer Zeit.
 
+### "ht gr" + "oße Pr" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Jep… Echt große Probleme.
+
 ### "hören" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7504,11 +7712,23 @@ Accuracy: 99.93%
 - Examples:
   - Elphaba… -Nicht!
 
+### "i" + "e ic" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Name… -Wie ich heiße?
+
 ### "i" + "e so" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Soll er Ihren Herzenswunsch erfüllen… -Wie soll ich mich beweisen?
+
+### "i" + "nter de" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
 
 ### "ich" + "“" (1 occurrences)
 - Predicted: Space
@@ -7521,6 +7741,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Das sehe ich … etwas anders.
+
+### "iden?" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hey, Suzume… Wer sind diese beiden?
 
 ### "ihm" + "-" (1 occurrences)
 - Predicted: None
@@ -7587,6 +7813,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Aber ihr müsst verstehen… Das war vor sehr langer Zeit.
+
+### "iße?" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Name… -Wie ich heiße?
 
 ### "ja" + "!" (1 occurrences)
 - Predicted: None
@@ -7774,6 +8006,12 @@ Accuracy: 99.93%
 - Examples:
   - Lass mich die Kracher loslassen !
 
+### "m To" + "r?" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
+
 ### "mach" + "'s" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7852,6 +8090,12 @@ Accuracy: 99.93%
 - Examples:
   - Wir müssen … - Nick.
 
+### "n" + "tworte mi" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aber das war… -Antworte mir!
+
 ### "nach" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7869,6 +8113,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Die Avocado ist eine nahr- und schmackhafte Frucht.
+
+### "nd di" + "ese be" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hey, Suzume… Wer sind diese beiden?
 
 ### "nehmen" + "!" (1 occurrences)
 - Predicted: None
@@ -7936,6 +8186,12 @@ Accuracy: 99.93%
 - Examples:
   - Die sagten, er sei normal !
 
+### "nter de" + "m To" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
+
 ### "nur" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7947,6 +8203,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Wieso nur ?
+
+### "nur" + "kurz" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Jungen des Verwalters meinten, sie hätten Sigi nurkurz gesehen.
 
 ### "nur" + "…" (1 occurrences)
 - Predicted: None
@@ -7972,6 +8234,12 @@ Accuracy: 99.93%
 - Examples:
   - Aber dort oben ?
 
+### "obleme." + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Jep… Echt große Probleme.
+
 ### "oder" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7989,6 +8257,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Haben Sie gesehen wie oft ?
+
+### "oße Pr" + "obleme." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Jep… Echt große Probleme.
 
 ### "paar" + "Tagen" (1 occurrences)
 - Predicted: Space
@@ -8032,11 +8306,29 @@ Accuracy: 99.93%
 - Examples:
   - Aber ihr müsst verstehen… Das war vor sehr langer Zeit.
 
+### "r si" + "nd di" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hey, Suzume… Wer sind diese beiden?
+
 ### "r vo" + "r se" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Aber ihr müsst verstehen… Das war vor sehr langer Zeit.
+
+### "r!" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aber das war… -Antworte mir!
+
+### "r?" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
 
 ### "raufgekommen" + "?" (1 occurrences)
 - Predicted: None
@@ -8098,6 +8390,12 @@ Accuracy: 99.93%
 - Examples:
   - Moment, Moment… Sie ist vielleicht noch nicht bereit.
 
+### "ruhige di" + "ch." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ich hätte nicht… -Beruhige dich.
+
 ### "rum" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8122,11 +8420,29 @@ Accuracy: 99.93%
 - Examples:
   - Sie ist auf sich gestellt… -Lass das Gefasel!
 
+### "s ha" + "st du" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
+
+### "s ma" + "chst du" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Die Lichter wurden in Auftrag gegeben… -Was machst du hier?
+
 ### "s wa" + "r vo" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Aber ihr müsst verstehen… Das war vor sehr langer Zeit.
+
+### "s!" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Achtung… Und los!
 
 ### "sagen" + "…" (1 occurrences)
 - Predicted: None
@@ -8266,6 +8582,12 @@ Accuracy: 99.93%
 - Examples:
   - Sind Sie sicher ?
 
+### "sicht?" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Minoru… Hab ich was im Gesicht?
+
 ### "sie" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8350,6 +8672,12 @@ Accuracy: 99.93%
 - Examples:
   - Wie ihr mit unserer Gedult spielt !
 
+### "spindel" + "dürr" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Du liebe Zeit, die Kleine ist spindeldürr.
+
 ### "spricht" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8422,6 +8750,12 @@ Accuracy: 99.93%
 - Examples:
   - Das werde ich tun !
 
+### "tworte mi" + "r!" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Aber das war… -Antworte mir!
+
 ### "um" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8475,6 +8809,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Es ist unglaublich !
+
+### "uns" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lieber Gott, mach uns - fromm.
 
 ### "unseres" + "…" (1 occurrences)
 - Predicted: None
@@ -8806,12 +9146,6 @@ Accuracy: 99.93%
 - Examples:
   - Werden wirjemals hier rauskommen?
 
-### "wir" + "jetzt" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Das werden wirjetzt nachholen.
-
 ### "wir" + "wären" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -9051,6 +9385,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Ein Quatsch—Detektor.
+
+### "—" + "sik" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Komm hier her, Jae—sik.
 
 ### "’" + "Konto" (1 occurrences)
 - Predicted: None
@@ -9309,6 +9649,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Frauen werden in vielen Liedern des Genres „Rap“ herabgewürdigt.
+
+### "“" + "höre" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vom „Kagura-Tanz der Feuergottheit“ höre ich auch zum ersten Mal.
 
 ### "“" + "im" (1 occurrences)
 - Predicted: None
@@ -9627,6 +9973,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Ich brauche ein Wörterbuch „Japanisch-Englisch“.
+
+### "„" + "Kagura" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Vom „Kagura-Tanz der Feuergottheit“ höre ich auch zum ersten Mal.
 
 ### "„" + "Kaninchenbau" (1 occurrences)
 - Predicted: Space
@@ -10108,11 +10460,53 @@ Accuracy: 99.93%
 - Examples:
   - Aber ihr müsst verstehen… Das war vor sehr langer Zeit.
 
+### "… De" + "ckung." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Runter… Deckung.
+
+### "… Ec" + "ht gr" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Jep… Echt große Probleme.
+
+### "… Gi" + "b au" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Venkata Rama Raju… Gib auf.
+
+### "… Ha" + "b ic" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Minoru… Hab ich was im Gesicht?
+
 ### "… Si" + "e is" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Moment, Moment… Sie ist vielleicht noch nicht bereit.
+
+### "… Un" + "d lo" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Achtung… Und los!
+
+### "… Wa" + "s ha" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Suzume… Was hast du angesehen, hinter dem Tor?
+
+### "… We" + "r si" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Hey, Suzume… Wer sind diese beiden?
 
 ### "… We" + "sir!" (1 occurrences)
 - Predicted: Space

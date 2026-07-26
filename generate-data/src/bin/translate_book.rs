@@ -19,7 +19,7 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::sync::LazyLock;
 
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use futures::StreamExt;
 use generate_data::books::BookSentence;
 use generate_data::cache_remote;
@@ -87,7 +87,10 @@ async fn main() -> anyhow::Result<()> {
     let chunks_path = arg_value("--chunks").context("--chunks <chunks.jsonl> is required")?;
     let book = arg_value("--book").context("--book <slug> is required")?;
     let series = arg_value("--series").context("--series <slug> is required")?;
-    let take: usize = arg_value("--take").map(|v| v.parse()).transpose()?.unwrap_or(300);
+    let take: usize = arg_value("--take")
+        .map(|v| v.parse())
+        .transpose()?
+        .unwrap_or(300);
 
     let all_chunks: Vec<Chunk> = std::fs::read_to_string(&chunks_path)
         .with_context(|| format!("read {chunks_path}"))?
@@ -112,8 +115,9 @@ async fn main() -> anyhow::Result<()> {
     let segmenter = RemoteClient::new(RemoteConfig::default())?;
 
     for (code, language) in LANGS {
-        let out_dir =
-            PathBuf::from(format!("./generate-data/data/{code}/sentence-sources/books/{series}"));
+        let out_dir = PathBuf::from(format!(
+            "./generate-data/data/{code}/sentence-sources/books/{series}"
+        ));
         std::fs::create_dir_all(&out_dir)?;
         let out_path = out_dir.join(format!("{book}.jsonl"));
 
@@ -126,13 +130,23 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
         }
-        let todo: Vec<&&Chunk> = selected.iter().filter(|c| !done_chunks.contains(&c.id)).collect();
-        println!("[{code}] {} chunks to process ({} already done)", todo.len(), done_chunks.len());
+        let todo: Vec<&&Chunk> = selected
+            .iter()
+            .filter(|c| !done_chunks.contains(&c.id))
+            .collect();
+        println!(
+            "[{code}] {} chunks to process ({} already done)",
+            todo.len(),
+            done_chunks.len()
+        );
         if todo.is_empty() {
             continue;
         }
 
-        let out_file = std::fs::OpenOptions::new().create(true).append(true).open(&out_path)?;
+        let out_file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&out_path)?;
         let mut writer = std::io::BufWriter::new(out_file);
 
         let system_prompt = format!(
@@ -181,7 +195,7 @@ async fn main() -> anyhow::Result<()> {
                         n_sent += 1;
                     }
                     n_chunks += 1;
-                    if n_chunks % 25 == 0 {
+                    if n_chunks.is_multiple_of(25) {
                         writer.flush()?;
                         println!(
                             "[{code}] {n_chunks} chunks -> {n_sent} sentences (${:.2})",
@@ -202,7 +216,10 @@ async fn main() -> anyhow::Result<()> {
     }
 
     cache_remote::flush().await;
-    println!("total LLM cost this run: ${:.2}", CHAT_CLIENT.cost().unwrap_or(0.0));
+    println!(
+        "total LLM cost this run: ${:.2}",
+        CHAT_CLIENT.cost().unwrap_or(0.0)
+    );
     Ok(())
 }
 

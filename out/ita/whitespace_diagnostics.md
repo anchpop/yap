@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2683573
-Total errors: 2730
+Total predictions: 2794442
+Total errors: 2833
 Accuracy: 99.90%
 
 ## Error Patterns (sorted by frequency)
@@ -62,6 +62,14 @@ Accuracy: 99.90%
   - Come mai suo marito non è qui ?
   - Come osi venire qui ?
 
+### "Geeta" + "-" (13 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Angelina - cinque; Geeta - uno.
+  - Angelina - quattro; Geeta - uno.
+  - Angelina - quattro; Geeta - zero.
+
 ### "qui" + "!" (13 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86,6 +94,14 @@ Accuracy: 99.90%
   - Ha qualcosa per me ?
   - La fortuna ora si mette a fare la ritrosa con me ?
 
+### "-" + "zero" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Angelina - quattro; Geeta - zero.
+  - Angelina - tre; Geeta - zero.
+  - Geeta - quattro; Angelina - zero.
+
 ### "detto" + "?" (9 occurrences)
 - Predicted: None
 - Actual: Space
@@ -109,6 +125,14 @@ Accuracy: 99.90%
   - Con tutto il rispetto, signor Giroti… - Ghirotti!
   - Lei è Suzy Shafer… - Piacere di conoscerla.
   - Ma Sanjay… - Io sono britannico.
+
+### "Angelina" + "-" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Angelina - cinque; Geeta - uno.
+  - Angelina - quattro; Geeta - uno.
+  - Angelina - quattro; Geeta - zero.
 
 ### "Spegni" + "la" (8 occurrences)
 - Predicted: Space
@@ -206,6 +230,22 @@ Accuracy: 99.90%
   - Come va ?
   - Dove va ?
 
+### "è" + "?" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Che è ?
+  - Chi è ?
+  - Lei chi è ?
+
+### "Melissa" + "-" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Geeta - cinque; Melissa - tre.
+  - Geeta - uno; Melissa - zero.
+  - Geeta- tre; Melissa - zero.
+
 ### "Spegni" + "lo" (6 occurrences)
 - Predicted: Space
 - Actual: None
@@ -286,13 +326,29 @@ Accuracy: 99.90%
   - Cosa ti è successo ?
   - Di quello che é successo ?
 
-### "è" + "?" (6 occurrences)
+### "-" + "quattro" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Che è ?
-  - Chi è ?
-  - Lei chi è ?
+  - Angelina - quattro; Geeta - uno.
+  - Angelina - quattro; Geeta - zero.
+  - Angelina - sei; Geeta - quattro.
+
+### "-" + "tre" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Angelina - tre; Geeta - zero.
+  - Geeta - cinque; Melissa - tre.
+  - Geeta - tre; Angelina - zero.
+
+### "-" + "uno" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Angelina - cinque; Geeta - uno.
+  - Angelina - quattro; Geeta - uno.
+  - Geeta - uno; Angelina - zero.
 
 ### "Clara" + "?" (5 occurrences)
 - Predicted: None
@@ -1171,6 +1227,13 @@ Accuracy: 99.90%
   - Ascoltami - No, sei tu che ascolterai.
   - Sì-- No.
 
+### "-" + "cinque" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Angelina - cinque; Geeta - uno.
+  - Geeta - cinque; Melissa - tre.
+
 ### "-" + "e" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1773,6 +1836,20 @@ Accuracy: 99.90%
   - Che ti ha detto quella donna ?
   - Conosce questa donna ?
 
+### "ego, t" + "i" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dio… ti prego, ti prego, ti prego!
+  - Dio… ti prego, ti prego, ti prego!
+
+### "essere" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Chi pensi di essere ?
+  - Potrebbe essere ?
+
 ### "faccio" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2158,6 +2235,13 @@ Accuracy: 99.90%
   - Siamo usciti un po’ fuori di testa.
   - Stavo andando un po’ fuori di testa, quindi ho fatto impazzire anche loro.
 
+### "pr" + "ego, t" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dio… ti prego, ti prego, ti prego!
+  - Dio… ti prego, ti prego, ti prego!
+
 ### "prende" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2518,6 +2602,12 @@ Accuracy: 99.90%
 - Examples:
   - Maria Eugenia… - Armando.
 
+### "-" + "Aspetta" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Shahida, Rauf - Aspetta.
+
 ### "-" + "Bella" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2596,6 +2686,12 @@ Accuracy: 99.90%
 - Examples:
   - Bhagwan - Dica il nome intero.
 
+### "-" + "E" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Che paura che ha, povera ragazza - E tu?
+
 ### "-" + "Evelyn" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2613,6 +2709,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Con tutto il rispetto, signor Giroti… - Ghirotti!
+
+### "-" + "Gita" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sita - Gita.
 
 ### "-" + "Grazie" (1 occurrences)
 - Predicted: None
@@ -2656,6 +2758,12 @@ Accuracy: 99.90%
 - Examples:
   - Lo so- Lo so- Sento quello che stai dicendo.
 
+### "-" + "Là" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La stessa che era nel tuo risciò - Là.
+
 ### "-" + "Mi" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2686,11 +2794,29 @@ Accuracy: 99.90%
 - Examples:
   - Lei è Suzy Shafer… - Piacere di conoscerla.
 
+### "-" + "Puja" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Payal - Puja.
+
+### "-" + "Santo" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kaushalya Didi - Santo cielo!
+
 ### "-" + "Sento" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Lo so- Lo so- Sento quello che stai dicendo.
+
+### "-" + "Shahida" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Fermala - Shahida!
 
 ### "-" + "Si" (1 occurrences)
 - Predicted: None
@@ -2728,6 +2854,12 @@ Accuracy: 99.90%
 - Examples:
   - Il LEGGA - UNA SELEZIONE CASUALE!
 
+### "-" + "Va" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Servi il piatto migliore a lei - Va bene.
+
 ### "-" + "Vai" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2739,6 +2871,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Sa - ara.
+
+### "-" + "due" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Melissa - tre; Geeta - due.
 
 ### "-" + "era" (1 occurrences)
 - Predicted: None
@@ -2865,6 +3003,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - E per favore, assicurati che mio padre non lo scopra - se lo scopre muore.
+
+### "-" + "sei" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Angelina - sei; Geeta - quattro.
 
 ### "-" + "spagnolo" (1 occurrences)
 - Predicted: None
@@ -3291,6 +3435,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Basta !
+
+### "Beijing" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vedere il mondo senza nemmeno lasciare Beijing .
 
 ### "Bello" + "!" (1 occurrences)
 - Predicted: None
@@ -3832,6 +3982,12 @@ Accuracy: 99.90%
 - Examples:
   - Ehi !
 
+### "Enka" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sembra una scena di una canzone Enka .
+
 ### "Enrico" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4029,6 +4185,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Ferma !
+
+### "Fermala" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Fermala - Shahida!
 
 ### "Fermati" + "!" (1 occurrences)
 - Predicted: None
@@ -4377,6 +4539,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Karitonov !
+
+### "Kaushalya Didi" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Kaushalya Didi - Santo cielo!
 
 ### "Kornikova" + "!" (1 occurrences)
 - Predicted: None
@@ -4792,6 +4960,12 @@ Accuracy: 99.90%
 - Examples:
   - Ah, Paulo ?
 
+### "Payal" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Payal - Puja.
+
 ### "Peccato" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5031,6 +5205,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Ma è un lavoro da Rane !
+
+### "Rauf" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Shahida, Rauf - Aspetta.
 
 ### "Re" + "?" (1 occurrences)
 - Predicted: None
@@ -5295,6 +5475,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Sire !
+
+### "Sita" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sita - Gita.
 
 ### "Situazione" + "?" (1 occurrences)
 - Predicted: None
@@ -5595,6 +5781,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Zitto !
+
+### "a" + "i!" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ehi, ragazzi… lasciate stare, dai!
 
 ### "a po" + "co tr" (1 occurrences)
 - Predicted: Space
@@ -5931,6 +6123,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - In questo modo una mia conoscente ha sposato un architetto !
+
+### "are, d" + "a" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ehi, ragazzi… lasciate stare, dai!
 
 ### "argomento" + "?" (1 occurrences)
 - Predicted: None
@@ -6748,6 +6946,12 @@ Accuracy: 99.90%
 - Examples:
   - Ma che fai, coglione ?
 
+### "colera" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dannata colera !
+
 ### "colore" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7390,6 +7594,24 @@ Accuracy: 99.90%
 - Examples:
   - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
 
+### "edi?" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dovresti tornare… non credi?
+
+### "ego!" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dio… ti prego, ti prego, ti prego!
+
+### "ei." + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Anche la città… e i miei.
+
 ### "ello è S" + "t" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7486,11 +7708,11 @@ Accuracy: 99.90%
 - Examples:
   - Dovete esprimervi !
 
-### "essere" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
+### "esso." + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - Chi pensi di essere ?
+  - Non gli hai voltato le spalle… perché ti ricordava te stesso.
 
 ### "europea" + "?" (1 occurrences)
 - Predicted: None
@@ -7623,6 +7845,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Era meravigliosa, ma ha sposato un altro ed è felice !
+
+### "felice" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - In realtà, ero felice .
 
 ### "fenomeno" + "!" (1 occurrences)
 - Predicted: None
@@ -8182,6 +8410,18 @@ Accuracy: 99.90%
 - Examples:
   - Mi-hee !
 
+### "i" + "ei." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Anche la città… e i miei.
+
+### "i!" + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ehi, ragazzi… lasciate stare, dai!
+
 ### "idioti" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8494,6 +8734,12 @@ Accuracy: 99.90%
 - Examples:
   - Guarderai loro che leggono ?
 
+### "lei" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Servi il piatto migliore a lei - Va bene.
+
 ### "lei" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -8571,6 +8817,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Io non ci entro lì !
+
+### "m" + "i" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Anche la città… e i miei.
 
 ### "macchia" + "?" (1 occurrences)
 - Predicted: None
@@ -8794,6 +9046,12 @@ Accuracy: 99.90%
 - Examples:
   - Come la mettiamo ?
 
+### "metà" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La metà ?
+
 ### "mia" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8931,6 +9189,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Che tipo di musica ?
+
+### "n cr" + "edi?" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dovresti tornare… non credi?
 
 ### "nascita" + "?" (1 occurrences)
 - Predicted: None
@@ -9159,6 +9423,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Mio Dio, tenebre ovunque !
+
+### "padella" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ha bisogno della padella .
 
 ### "padre" + "." (1 occurrences)
 - Predicted: None
@@ -9538,6 +9808,12 @@ Accuracy: 99.90%
 - Examples:
   - O un comune plebeo ?
 
+### "po" + "rtatrice di" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Del mio lavoro… di portatrice di sereno.
+
 ### "po'" + "a" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9801,6 +10077,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Sono un po’ teso.
+
+### "pr" + "ego!" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dio… ti prego, ti prego, ti prego!
 
 ### "pregarti" + "?" (1 occurrences)
 - Predicted: None
@@ -10108,6 +10390,12 @@ Accuracy: 99.90%
 - Examples:
   - Accendi la radio !
 
+### "ragazza" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Che paura che ha, povera ragazza - E tu?
+
 ### "ragazzi" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10168,6 +10456,12 @@ Accuracy: 99.90%
 - Examples:
   - Una setta religiosa ?
 
+### "reno." + "" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Del mio lavoro… di portatrice di sereno.
+
 ### "repubblica" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10191,6 +10485,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Come gli racconto il resto ?
+
+### "ri" + "cordava te" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Non gli hai voltato le spalle… perché ti ricordava te stesso.
 
 ### "ribelli" + "!" (1 occurrences)
 - Predicted: None
@@ -10287,6 +10587,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - No, non si ripeterà !
+
+### "risciò" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - La stessa che era nel tuo risciò - Là.
 
 ### "riso" + "?" (1 occurrences)
 - Predicted: None
@@ -10564,6 +10870,12 @@ Accuracy: 99.90%
 - Examples:
   - Spaccone schifoso !
 
+### "sciate st" + "are, d" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ehi, ragazzi… lasciate stare, dai!
+
 ### "scienze" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10635,6 +10947,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Come si chiama, scusi ?
+
+### "se" + "reno." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Del mio lavoro… di portatrice di sereno.
 
 ### "seccate" + "!" (1 occurrences)
 - Predicted: None
@@ -11085,6 +11403,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Per via di quella gamba nella pancia dello squalo .
+
+### "st" + "esso." (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Non gli hai voltato le spalle… perché ti ricordava te stesso.
 
 ### "stai" + "?" (1 occurrences)
 - Predicted: None
@@ -12177,4 +12501,22 @@ Accuracy: 99.90%
 - Actual: None
 - Examples:
   - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
+
+### "… la" + "sciate st" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ehi, ragazzi… lasciate stare, dai!
+
+### "… no" + "n cr" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dovresti tornare… non credi?
+
+### "… pe" + "rché ti" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Non gli hai voltato le spalle… perché ti ricordava te stesso.
 
