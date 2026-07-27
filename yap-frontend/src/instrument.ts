@@ -17,28 +17,35 @@ Sentry.init({
   ],
 
   beforeSend(event) {
-    const message = event.exception?.values?.[0]?.value ?? "";
+    const value = event.exception?.values?.[0];
+    const message = value?.value ?? "";
+    const type = value?.type ?? "";
 
     // Filter out browser extension errors (not our code)
     if (message.includes("runtime.sendMessage()")) {
       return null;
     }
 
-    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
-    // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
-    if (message === "Load failed") {
-      const frames =
-        event.exception?.values?.[0]?.stacktrace?.frames ?? [];
-      if (
-        frames.some(
-          (f) =>
-            f.filename?.includes("wasm-helper") ||
-            f.filename?.includes("_bg.wasm"),
-        )
-      ) {
-        return null;
-      }
+    // Filter WASM module init failures: transient network errors while
+    // fetching/instantiating the .wasm binary (e.g. "Load failed", the
+    // iOS Safari/WKWebView message for a failed fetch), and browsers that
+    // lack a WebAssembly global entirely. These come from Vite's wasm-loader
+    // helper, whose stack frames are only resolved to a recognizable
+    // filename after Sentry applies sourcemaps server-side — beforeSend only
+    // ever sees the raw bundled chunk URL, so match on message text instead.
+    if (message === "Load failed" || message === "WebAssembly is not defined") {
+      return null;
+    }
+
+    // Service worker update checks interrupted by a dropped connection —
+    // transient and not actionable, same class as the TypeError/
+    // InvalidStateError already excluded around the sw.update() call.
+    if (
+      type === "AbortError" &&
+      (message.includes("The connection was closed") ||
+        message.includes("Failed to update a ServiceWorker"))
+    ) {
+      return null;
     }
 
     return event;
