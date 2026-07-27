@@ -107,7 +107,7 @@ pub struct YapState {
     store: EventStore<String, String>,
     last_fetched_id: Option<i64>,
     last_fetch: Instant,
-    /// Set when an upload failed, to make the next refresh fetch regardless of
+    /// Set when an upload failed, to make the next sync fetch regardless of
     /// the throttle: a re-fetch echo-confirms any event whose ack we lost and
     /// advances uploaded_count past it, so we stop re-sending a committed
     /// index (which the unique constraint would reject).
@@ -215,8 +215,12 @@ impl YapState {
             .unwrap_or(0)
     }
 
-    /// Pull down events written by other devices since our last fetch.
-    async fn refresh(&mut self) -> anyhow::Result<()> {
+    /// Pull down events written by other devices since our last fetch, and
+    /// flush any locally-recorded reviews the server hasn't confirmed yet.
+    /// Called at the top of every tool handler (including read-only ones),
+    /// since a pending upload should reach Supabase on the user's next
+    /// action rather than waiting for their next write.
+    async fn sync(&mut self) -> anyhow::Result<()> {
         if self.force_fetch || self.last_fetch.elapsed() >= REFRESH_INTERVAL {
             let (new_rows, max_id) = fetch_events(
                 &self.http,
@@ -292,7 +296,7 @@ impl YapState {
     /// on failure the events stay pending (uploaded_count isn't advanced) and
     /// the next call retries them. A committed index that we think is still
     /// pending (a lost upload ack) would be rejected by the unique constraint
-    /// on re-send, so a failure sets `force_fetch`: the next refresh fetches,
+    /// on re-send, so a failure sets `force_fetch`: the next sync fetches,
     /// echo-confirms that index, and advances past it before we'd re-send.
     async fn flush_pending_uploads(&mut self) -> SyncStatus {
         let pending = self
@@ -322,7 +326,7 @@ impl YapState {
                     "upload failed, {} review event(s) recorded locally and pending retry: {e:#}",
                     pending.len()
                 );
-                // Force the next refresh to fetch: if this failure was a lost
+                // Force the next sync to fetch: if this failure was a lost
                 // ack (the server actually has the event), the echo-confirm
                 // there trims it from pending so we stop hitting the unique
                 // constraint on re-send.
@@ -1062,8 +1066,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         let language = state.context.course.target_language;
         let deck = state.deck();
@@ -1122,8 +1126,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
@@ -1205,8 +1209,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         let language = state.context.course.target_language;
         let now_ms = Utc::now().timestamp_millis() as f64;
@@ -1254,8 +1258,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         let language = state.context.course.target_language;
 
@@ -1324,8 +1328,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
@@ -1504,8 +1508,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
@@ -1588,8 +1592,8 @@ impl YapMcp {
         let mut state = slot.lock().await;
         // Sync first, so a retry after a failed upload drives the pending
         // flush before we short-circuit on the cached response.
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         // A retry of this presentation (same nonce) replays the first grade —
         // no second review event, and no second (paid, nondeterministic) LLM
@@ -1811,8 +1815,8 @@ impl YapMcp {
         let mut state = slot.lock().await;
         // Sync first, so a retry after a failed upload drives the pending
         // flush before we short-circuit on the cached response.
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         // A retried log of the same presentation (same nonce) replays the
         // first result instead of recording the card as reviewed twice.
@@ -1892,8 +1896,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
@@ -1932,8 +1936,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         let course = state.context.course;
         let deck = state.deck();
@@ -2005,8 +2009,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         let course = state.context.course;
         let results: Vec<SearchResultOut> = state
@@ -2053,8 +2057,8 @@ impl YapMcp {
             Err(e) => return error(e),
         };
         let mut state = slot.lock().await;
-        if let Err(e) = state.refresh().await {
-            log::warn!("refresh failed, using possibly-stale events: {e:#}");
+        if let Err(e) = state.sync().await {
+            log::warn!("sync failed, using possibly-stale events: {e:#}");
         }
         let course = state.context.course;
         if course_slug != course.dictionary_slug() {
