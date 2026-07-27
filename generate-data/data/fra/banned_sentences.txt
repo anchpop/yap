@@ -601,3 +601,13 @@ De que !
 
 # Malformed spacing (punctuation glued to the next word)
 Vous savez,à avoir un boulot ici.
+
+# "Tenaille" is a character nickname, not the common noun — confusing out of context
+Tenaille
+Alors, Tenaille ?
+- Tenaille a rejoint l'Eglise. - AIléluia.
+Le destin a placé Tenaille entre les mains de Dieu.
+
+# Gruesome
+On la charcute avec des scalpels et des tenailles...
+On lui a arraché les seins avec des tenailles.
