@@ -7948,6 +7948,39 @@ impl SentenceClassifier for JapaneseClassifier {
                     token.text, token.pos
                 ));
             }
+
+            // --- Polite auxiliary split into non-words ---
+            // Every token should be something a learner can look up as a word. ます
+            // conjugates internally (ます→ました→ません), exactly like ない→なかった, so its
+            // forms stay whole. Splitting them strands 'まし'/'ませ'/'でし', which are not
+            // dictionary entries in any sense.
+            if let Some(whole) = polite_fragment_repair(tokens, idx) {
+                reasons.push(format!(
+                    "'{}' is not a word on its own — it is a fragment of '{}'. ます and です \
+                     conjugate internally (ます→ました→ません, です→でした), like ない→なかった, \
+                     so each form is ONE AUX token: '{}' (lemma '{}'). Do not split it.",
+                    token.text,
+                    whole,
+                    whole,
+                    if whole.starts_with('で') { "だ" } else { "ます" }
+                ));
+            }
+
+            // --- Polite auxiliary swallowed by the preceding stem ---
+            // The reverse error: ます must stay a separate token so the dictionary holds one
+            // entry per verb, not one per verb×politeness form (the same reason Korean
+            // particles are their own tokens). Lexicalized politeness words are exempt —
+            // すみません and ございます really are single dictionary entries.
+            if matches!(token.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Aux)
+                && let Some((stem, aux)) = merged_polite_split(&token.text, &token.lemma)
+            {
+                reasons.push(format!(
+                    "'{}' merges the polite auxiliary into the stem. Split it: '{}' (lemma \
+                     '{}') + '{}' (AUX). Keeping ます separate is what stops the dictionary \
+                     needing an entry per verb per politeness form.",
+                    token.text, stem, token.lemma, aux
+                ));
+            }
         }
 
         if reasons.is_empty() {
@@ -7956,6 +7989,72 @@ impl SentenceClassifier for JapaneseClassifier {
             Some(reasons)
         }
     }
+}
+
+/// Politeness fragments that are not words: if this token is one, return the whole form it
+/// should have stayed part of (looking at the following token to reconstruct it).
+fn polite_fragment_repair(tokens: &[SimplifiedTokenPrime], idx: usize) -> Option<String> {
+    let fragment = tokens.get(idx)?.text.as_str();
+    if !matches!(fragment, "まし" | "ませ" | "でし") {
+        return None;
+    }
+    let next = tokens.get(idx + 1).map(|t| t.text.as_str()).unwrap_or("");
+    // Only the actual paradigm splits — まし+た, ませ+ん, でし+た. Anything else (notably
+    // いらっしゃい|ませ, where ませ is an imperative, not a fragment) is left alone.
+    let whole = match (fragment, next) {
+        ("まし", "た") => "ました",
+        ("ませ", "ん") => "ません",
+        ("でし", "た") => "でした",
+        _ => return None,
+    };
+    Some(whole.to_string())
+}
+
+/// Politeness lexicalized into a single dictionary word — legitimately one token.
+const LEXICALIZED_POLITE_TEXT: &[&str] = &[
+    "すみません",
+    "すいません",
+    "ございます",
+    "ございました",
+    "ございません",
+    "おめでとうございます",
+    "ありがとうございます",
+    "いらっしゃいませ",
+];
+const LEXICALIZED_POLITE_LEMMA: &[&str] = &[
+    "ござる",
+    "いらっしゃる",
+    "すみません",
+    "おっしゃる",
+    "くださる",
+    "なさる",
+    "いたす",
+    "存じる",
+    "参る",
+    "申す",
+];
+
+/// If `text` has swallowed a polite auxiliary that should be its own token, return
+/// (stem, auxiliary). Verbs whose dictionary form genuinely ends in ます (冷ます, 済ます)
+/// and lexicalized politeness words are left alone.
+fn merged_polite_split(text: &str, lemma: &str) -> Option<(String, &'static str)> {
+    if LEXICALIZED_POLITE_TEXT.contains(&text) || LEXICALIZED_POLITE_LEMMA.contains(&lemma) {
+        return None;
+    }
+    if lemma.ends_with("ます") {
+        return None; // 冷ます / 済ます / 澄ます — the ます is part of the verb itself
+    }
+    // ましょう is deliberately absent: the prompt already rules on the volitional (でしょ+う,
+    // 行こ+う all split), and the data follows it, so it is not an open question here.
+    for aux in ["ませんでした", "ません", "ました", "ます"] {
+        if text != aux && text.ends_with(aux) {
+            let stem = &text[..text.len() - aux.len()];
+            if !stem.is_empty() {
+                return Some((stem.to_string(), aux));
+            }
+        }
+    }
+    None
 }
 
 /// Japanese-specific corrector
@@ -9213,6 +9312,62 @@ mod tests {
         assert!(result.corrected);
         assert_eq!(result.corrections.len(), 1);
         assert_eq!(sentence.doc[0].lemma, "elle");
+    }
+
+    fn jpn_token(text: &str, pos: PartOfSpeechTag, lemma: &str) -> SimplifiedTokenPrime {
+        SimplifiedTokenPrime {
+            text: text.to_string(),
+            whitespace: String::new(),
+            pos,
+            lemma: lemma.to_string(),
+        }
+    }
+
+    #[test]
+    fn test_japanese_polite_fragments() {
+        // 食べ|まし|た strands 'まし', which is not a word — should be 食べ + ました
+        let toks = vec![
+            jpn_token("食べ", PartOfSpeechTag::Verb, "食べる"),
+            jpn_token("まし", PartOfSpeechTag::Aux, "ます"),
+            jpn_token("た", PartOfSpeechTag::Aux, "た"),
+        ];
+        assert_eq!(polite_fragment_repair(&toks, 1).as_deref(), Some("ました"));
+        assert_eq!(polite_fragment_repair(&toks, 0), None);
+
+        // ませ + ん, でし + た
+        let neg = vec![
+            jpn_token("ませ", PartOfSpeechTag::Aux, "ます"),
+            jpn_token("ん", PartOfSpeechTag::Aux, "ぬ"),
+        ];
+        assert_eq!(polite_fragment_repair(&neg, 0).as_deref(), Some("ません"));
+
+        // いらっしゃい|ませ is an imperative, not a stranded fragment
+        let imperative = vec![
+            jpn_token("いらっしゃい", PartOfSpeechTag::Verb, "いらっしゃる"),
+            jpn_token("ませ", PartOfSpeechTag::Aux, "ます"),
+        ];
+        assert_eq!(polite_fragment_repair(&imperative, 1), None);
+    }
+
+    #[test]
+    fn test_japanese_merged_polite() {
+        // the reverse error: the auxiliary swallowed by the stem
+        // the stem left behind is the 連用形, as the prompt has it: 泳ぎ + ます
+        assert_eq!(
+            merged_polite_split("思います", "思う"),
+            Some(("思い".to_string(), "ます"))
+        );
+        assert_eq!(
+            merged_polite_split("いませんでした", "いる"),
+            Some(("い".to_string(), "ませんでした"))
+        );
+        // a bare auxiliary is already correct
+        assert_eq!(merged_polite_split("ます", "ます"), None);
+        // verbs whose dictionary form really ends in ます
+        assert_eq!(merged_polite_split("冷まし", "冷ます"), None);
+        // lexicalized politeness — single dictionary words
+        assert_eq!(merged_polite_split("すみません", "すみません"), None);
+        assert_eq!(merged_polite_split("ございます", "ござる"), None);
     }
 }
 
