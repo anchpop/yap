@@ -6746,6 +6746,21 @@ const TATSU_COMPOUNDS: &[&str] = &[
 ];
 
 /// Japanese-specific classifier
+///
+/// # Stale split rules
+///
+/// Several rules below are marked `STALE (pre-merge split policy)`. They date from when a
+/// Japanese verb and its auxiliaries were separate tokens (食べ|まし|た), and they ask the
+/// labeller to split anything it merged. `JapaneseCorrector::post_corrections` now does the
+/// opposite — a token is a word, and 食べ, まし, だっ, られ are not words — so whatever these
+/// rules talk the labeller into is merged straight back.
+///
+/// They are therefore harmless but wasteful: the emitted tokens are correct either way, and
+/// each flag buys a double-check round trip that is immediately undone. They are left in
+/// place because the gold data was labelled under the old policy, so the guidance still
+/// matches what is on disk. Delete them when the gold data is regenerated under the merge
+/// policy — at that point the labeller's own output will already be word-level and these
+/// rules would be arguing with it rather than with history.
 struct JapaneseClassifier;
 
 impl SentenceClassifier for JapaneseClassifier {
@@ -7197,6 +7212,8 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- VERB/AUX ending in ます/ました/ません with non-ます lemma: likely merged ---
+            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
+            // 思います is now a word, not a merge to be undone.
             if matches!(token.pos, PartOfSpeechTag::Aux | PartOfSpeechTag::Verb)
                 && (text.ends_with("ます") || text.ends_with("ました") || text.ends_with("ません"))
                 && token.lemma != "ます"
@@ -7235,6 +7252,7 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- VERB containing てみ/でみ — likely merged てみる ---
+            // STALE (pre-merge split policy) — see the note on JapaneseClassifier. 食べてみた splits only at て.
             if token.pos == PartOfSpeechTag::Verb
                 && (text.contains("てみ") || text.contains("でみ"))
                 && text != "てみ"
@@ -7335,6 +7353,8 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- Auxiliaries merged into verb: should split ---
+            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
+            // The whole aux_suffixes table below argues the opposite of current policy.
             // Per the merge/split rule: auxiliaries (ない, ます, たい, せる, られる, etc.)
             // append cleanly to conjugated stems and should be separate tokens.
             // Only て/た 音便 forms (where the stem fuses phonologically) merge.
@@ -7394,6 +7414,7 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- Ichidan verb + て/た incorrectly merged ---
+            // STALE (pre-merge split policy) — see the note on JapaneseClassifier. 食べた is a word.
             // Ichidan verbs have NO 音便 — て/た appends cleanly to the stem.
             // Detection: if text = (lemma minus る) + て/た/で, it's a clean append and should split.
             // This catches all ichidan verbs regardless of kanji/kana (見た, 食べた, 決めて, etc.)
@@ -7484,6 +7505,8 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- Noun+する compound merged: should split ---
+            // PARTLY STALE — 確認 + した is right, but the message asks for し + た.
+            // See the note on JapaneseClassifier.
             if token.pos == PartOfSpeechTag::Verb
                 && token.lemma.ends_with("する")
                 && token.lemma != "する"
@@ -7495,6 +7518,8 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- Compound verb ていく/てくる merged ---
+            // PARTLY STALE — 連れて + いった is right, but the message asks for 連れ + て + いった.
+            // See the note on JapaneseClassifier.
             if token.pos == PartOfSpeechTag::Verb
                 && (token.lemma.contains("ていく")
                     || token.lemma.contains("てくる")
@@ -7585,6 +7610,7 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- Ichidan stem + suffix merged: should split ---
+            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
             // Catches patterns the first pass missed: 見せなさい, 食べた, etc.
             if token.pos == PartOfSpeechTag::Verb
                 && token.lemma.ends_with("る")
@@ -7816,6 +7842,8 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- VERB/AUX ending in ます/ました/ません with non-ます lemma: likely merged ---
+            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
+            // 思います is now a word, not a merge to be undone.
             if matches!(token.pos, PartOfSpeechTag::Aux | PartOfSpeechTag::Verb)
                 && (token.text.ends_with("ます")
                     || token.text.ends_with("ました")
