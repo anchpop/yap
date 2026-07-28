@@ -7949,38 +7949,6 @@ impl SentenceClassifier for JapaneseClassifier {
                 ));
             }
 
-            // --- Polite auxiliary split into non-words ---
-            // Every token should be something a learner can look up as a word. ます
-            // conjugates internally (ます→ました→ません), exactly like ない→なかった, so its
-            // forms stay whole. Splitting them strands 'まし'/'ませ'/'でし', which are not
-            // dictionary entries in any sense.
-            if let Some(whole) = polite_fragment_repair(tokens, idx) {
-                reasons.push(format!(
-                    "'{}' is not a word on its own — it is a fragment of '{}'. ます and です \
-                     conjugate internally (ます→ました→ません, です→でした), like ない→なかった, \
-                     so each form is ONE AUX token: '{}' (lemma '{}'). Do not split it.",
-                    token.text,
-                    whole,
-                    whole,
-                    if whole.starts_with('で') { "だ" } else { "ます" }
-                ));
-            }
-
-            // --- Polite auxiliary swallowed by the preceding stem ---
-            // The reverse error: ます must stay a separate token so the dictionary holds one
-            // entry per verb, not one per verb×politeness form (the same reason Korean
-            // particles are their own tokens). Lexicalized politeness words are exempt —
-            // すみません and ございます really are single dictionary entries.
-            if matches!(token.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Aux)
-                && let Some((stem, aux)) = merged_polite_split(&token.text, &token.lemma)
-            {
-                reasons.push(format!(
-                    "'{}' merges the polite auxiliary into the stem. Split it: '{}' (lemma \
-                     '{}') + '{}' (AUX). Keeping ます separate is what stops the dictionary \
-                     needing an entry per verb per politeness form.",
-                    token.text, stem, token.lemma, aux
-                ));
-            }
         }
 
         if reasons.is_empty() {
@@ -7989,72 +7957,6 @@ impl SentenceClassifier for JapaneseClassifier {
             Some(reasons)
         }
     }
-}
-
-/// Politeness fragments that are not words: if this token is one, return the whole form it
-/// should have stayed part of (looking at the following token to reconstruct it).
-fn polite_fragment_repair(tokens: &[SimplifiedTokenPrime], idx: usize) -> Option<String> {
-    let fragment = tokens.get(idx)?.text.as_str();
-    if !matches!(fragment, "まし" | "ませ" | "でし") {
-        return None;
-    }
-    let next = tokens.get(idx + 1).map(|t| t.text.as_str()).unwrap_or("");
-    // Only the actual paradigm splits — まし+た, ませ+ん, でし+た. Anything else (notably
-    // いらっしゃい|ませ, where ませ is an imperative, not a fragment) is left alone.
-    let whole = match (fragment, next) {
-        ("まし", "た") => "ました",
-        ("ませ", "ん") => "ません",
-        ("でし", "た") => "でした",
-        _ => return None,
-    };
-    Some(whole.to_string())
-}
-
-/// Politeness lexicalized into a single dictionary word — legitimately one token.
-const LEXICALIZED_POLITE_TEXT: &[&str] = &[
-    "すみません",
-    "すいません",
-    "ございます",
-    "ございました",
-    "ございません",
-    "おめでとうございます",
-    "ありがとうございます",
-    "いらっしゃいませ",
-];
-const LEXICALIZED_POLITE_LEMMA: &[&str] = &[
-    "ござる",
-    "いらっしゃる",
-    "すみません",
-    "おっしゃる",
-    "くださる",
-    "なさる",
-    "いたす",
-    "存じる",
-    "参る",
-    "申す",
-];
-
-/// If `text` has swallowed a polite auxiliary that should be its own token, return
-/// (stem, auxiliary). Verbs whose dictionary form genuinely ends in ます (冷ます, 済ます)
-/// and lexicalized politeness words are left alone.
-fn merged_polite_split(text: &str, lemma: &str) -> Option<(String, &'static str)> {
-    if LEXICALIZED_POLITE_TEXT.contains(&text) || LEXICALIZED_POLITE_LEMMA.contains(&lemma) {
-        return None;
-    }
-    if lemma.ends_with("ます") {
-        return None; // 冷ます / 済ます / 澄ます — the ます is part of the verb itself
-    }
-    // ましょう is deliberately absent: the prompt already rules on the volitional (でしょ+う,
-    // 行こ+う all split), and the data follows it, so it is not an open question here.
-    for aux in ["ませんでした", "ません", "ました", "ます"] {
-        if text != aux && text.ends_with(aux) {
-            let stem = &text[..text.len() - aux.len()];
-            if !stem.is_empty() {
-                return Some((stem.to_string(), aux));
-            }
-        }
-    }
-    None
 }
 
 /// Japanese-specific corrector
@@ -8295,7 +8197,93 @@ impl WordCorrector for JapaneseCorrector {
                 }
             }
         }
+
+        // A token is a word. Japanese inflection is agglutinative, so a verb or adjective
+        // and the auxiliary chain hanging off it are one word however many morphemes deep
+        // it runs — 食べさせられたくなかった is a word the same way 食べた is. Splitting it
+        // strands pieces (食べ, まし, だっ, られ) that are not words in any sense and that
+        // nobody could be shown on their own. The internal structure is the morpheme
+        // layer's job (generate-data's MorphemeCategory::Inflectional), where each piece
+        // gets a gloss; that is also where a polysemous piece like られ belongs, since it
+        // is only ambiguous in isolation — inside 食べさせられた the reading is forced.
+        //
+        // This mirrors what the Korean prompt already mandates ("conjugated verb forms
+        // should stay as one token... don't split the stem from its endings") and what the
+        // Korean data does: 91% of its verbs are whole, and the splits that remain are
+        // serial verbs (가져|가) whose halves are both real forms — the same category we
+        // keep split here as て-form + auxiliary verb.
+        let mut merged: Vec<SimplifiedTokenPrime> = Vec::with_capacity(tokens.len());
+        for token in tokens.drain(..) {
+            match merged.last_mut() {
+                Some(head) if absorbs_suffix(head, &token) => {
+                    head.text.push_str(&token.text);
+                    // trailing whitespace belongs to whichever piece ended up last
+                    head.whitespace = token.whitespace;
+                    // lemma and POS stay the head's: 食べました is a VERB with lemma 食べる
+                }
+                _ => merged.push(token),
+            }
+        }
+        *tokens = merged;
     }
+}
+
+/// Auxiliaries that are full verbs in their own right. `食べて` + `いる` are both showable
+/// words, so that boundary stays — it is the same split Korean keeps for serial verbs.
+const JAPANESE_AUXILIARY_VERBS: &[&str] = &[
+    "いる",
+    "ある",
+    "くる",
+    "来る",
+    "いく",
+    "行く",
+    "しまう",
+    "みる",
+    "おく",
+    "あげる",
+    "くれる",
+    "もらう",
+    "くださる",
+    "なさる",
+    "ほしい",
+];
+
+/// Should `next` be absorbed into the preceding token to keep every token a word?
+fn absorbs_suffix(head: &SimplifiedTokenPrime, next: &SimplifiedTokenPrime) -> bool {
+    // Anything written apart stays apart — merging across a space would drop it and the
+    // tokens would no longer reconstruct the sentence.
+    if !head.whitespace.is_empty() {
+        return false;
+    }
+    // Pull the て/で of a て-form onto its verb, so the stem stops being stranded:
+    // 食べ|て|いる → 食べて|いる.
+    if next.pos == PartOfSpeechTag::Sconj && matches!(next.text.as_str(), "て" | "で") {
+        return matches!(head.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Adj);
+    }
+    if next.pos != PartOfSpeechTag::Aux {
+        return false;
+    }
+    // Only a predicate has an inflectional tail. A noun keeps the copula separate
+    // (学生|です), exactly as Korean keeps 학생|입니다.
+    if !matches!(
+        head.pos,
+        PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Aux
+    ) {
+        return false;
+    }
+    // After a て-form the auxiliary is a separate word: 食べて|いる, 読んで|しまう.
+    if head.text.ends_with('て') || head.text.ends_with('で') {
+        return false;
+    }
+    if JAPANESE_AUXILIARY_VERBS.contains(&next.lemma.as_str()) {
+        return false;
+    }
+    // な on a na-adjective is a closed-class attributive marker attaching to any stem,
+    // so it is treated like a particle: 綿密|な.
+    if next.text == "な" {
+        return false;
+    }
+    true
 }
 
 /// Hindi-specific classifier
@@ -9323,51 +9311,133 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_japanese_polite_fragments() {
-        // 食べ|まし|た strands 'まし', which is not a word — should be 食べ + ました
-        let toks = vec![
-            jpn_token("食べ", PartOfSpeechTag::Verb, "食べる"),
-            jpn_token("まし", PartOfSpeechTag::Aux, "ます"),
-            jpn_token("た", PartOfSpeechTag::Aux, "た"),
-        ];
-        assert_eq!(polite_fragment_repair(&toks, 1).as_deref(), Some("ました"));
-        assert_eq!(polite_fragment_repair(&toks, 0), None);
-
-        // ませ + ん, でし + た
-        let neg = vec![
-            jpn_token("ませ", PartOfSpeechTag::Aux, "ます"),
-            jpn_token("ん", PartOfSpeechTag::Aux, "ぬ"),
-        ];
-        assert_eq!(polite_fragment_repair(&neg, 0).as_deref(), Some("ません"));
-
-        // いらっしゃい|ませ is an imperative, not a stranded fragment
-        let imperative = vec![
-            jpn_token("いらっしゃい", PartOfSpeechTag::Verb, "いらっしゃる"),
-            jpn_token("ませ", PartOfSpeechTag::Aux, "ます"),
-        ];
-        assert_eq!(polite_fragment_repair(&imperative, 1), None);
+    /// Run the corrector's post_corrections over a token list and return the surfaces.
+    fn jpn_merge(tokens: Vec<SimplifiedTokenPrime>) -> Vec<String> {
+        let mut tokens = tokens;
+        JapaneseCorrector.post_corrections(&mut tokens);
+        tokens.into_iter().map(|t| t.text).collect()
     }
 
     #[test]
-    fn test_japanese_merged_polite() {
-        // the reverse error: the auxiliary swallowed by the stem
-        // the stem left behind is the 連用形, as the prompt has it: 泳ぎ + ます
+    fn test_japanese_inflection_stays_one_word() {
+        use PartOfSpeechTag::{Adj, Aux, Noun, Sconj, Verb};
+
+        // 食べ|まし|た strands 食べ and まし, neither of which is a word
         assert_eq!(
-            merged_polite_split("思います", "思う"),
-            Some(("思い".to_string(), "ます"))
+            jpn_merge(vec![
+                jpn_token("食べ", Verb, "食べる"),
+                jpn_token("まし", Aux, "ます"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["食べました"]
         );
+
+        // however many morphemes deep it runs
         assert_eq!(
-            merged_polite_split("いませんでした", "いる"),
-            Some(("い".to_string(), "ませんでした"))
+            jpn_merge(vec![
+                jpn_token("食べ", Verb, "食べる"),
+                jpn_token("させ", Aux, "させる"),
+                jpn_token("られ", Aux, "られる"),
+                jpn_token("たく", Aux, "たい"),
+                jpn_token("なかっ", Aux, "ない"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["食べさせられたくなかった"]
         );
-        // a bare auxiliary is already correct
-        assert_eq!(merged_polite_split("ます", "ます"), None);
-        // verbs whose dictionary form really ends in ます
-        assert_eq!(merged_polite_split("冷まし", "冷ます"), None);
-        // lexicalized politeness — single dictionary words
-        assert_eq!(merged_polite_split("すみません", "すみません"), None);
-        assert_eq!(merged_polite_split("ございます", "ござる"), None);
+
+        // い-adjective inflection likewise: 高かっ is not a word
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("高かっ", Adj, "高い"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["高かった"]
+        );
+
+        // the noun keeps the copula separate, as Korean keeps 학생|입니다
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("学生", Noun, "学生"),
+                jpn_token("でし", Aux, "だ"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["学生", "でした"]
+        );
+
+        // て-form + auxiliary verb: both halves are real forms, so the split stays —
+        // the same category Korean keeps split for serial verbs (가져|가)
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("食べ", Verb, "食べる"),
+                jpn_token("て", Sconj, "て"),
+                jpn_token("いる", Aux, "いる"),
+            ]),
+            vec!["食べて", "いる"]
+        );
+
+        // noun + する compound: 勉強 is a word and した is a word
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("勉強", Noun, "勉強"),
+                jpn_token("し", Verb, "する"),
+                jpn_token("て", Sconj, "て"),
+                jpn_token("いる", Aux, "いる"),
+            ]),
+            vec!["勉強", "して", "いる"]
+        );
+
+        // な on a na-adjective is treated like a particle
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("綿密", Adj, "綿密だ"),
+                jpn_token("な", Aux, "な"),
+            ]),
+            vec!["綿密", "な"]
+        );
+    }
+
+    #[test]
+    fn test_japanese_merge_preserves_surface_and_head() {
+        use PartOfSpeechTag::{Aux, Verb};
+
+        let mut tokens = vec![
+            jpn_token("思い", Verb, "思う"),
+            jpn_token("ます", Aux, "ます"),
+        ];
+        tokens[1].whitespace = " ".to_string();
+        JapaneseCorrector.post_corrections(&mut tokens);
+
+        assert_eq!(tokens.len(), 1);
+        assert_eq!(tokens[0].text, "思います");
+        // the head keeps its dictionary form and POS, as Korean does with 먹다
+        assert_eq!(tokens[0].lemma, "思う");
+        assert_eq!(tokens[0].pos, Verb);
+        // trailing whitespace follows the last piece, so the surface reconstructs exactly
+        assert_eq!(tokens[0].whitespace, " ");
+    }
+
+    #[test]
+    fn test_japanese_merge_never_swallows_whitespace() {
+        use PartOfSpeechTag::{Aux, Verb};
+
+        // written apart in the source — merging would delete the space
+        let mut tokens = vec![
+            jpn_token("食べ", Verb, "食べる"),
+            jpn_token("ます", Aux, "ます"),
+        ];
+        tokens[0].whitespace = " ".to_string();
+        let before: String = tokens
+            .iter()
+            .map(|t| format!("{}{}", t.text, t.whitespace))
+            .collect();
+        JapaneseCorrector.post_corrections(&mut tokens);
+        let after: String = tokens
+            .iter()
+            .map(|t| format!("{}{}", t.text, t.whitespace))
+            .collect();
+
+        assert_eq!(tokens.len(), 2);
+        assert_eq!(before, after);
     }
 }
 
