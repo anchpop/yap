@@ -27,16 +27,12 @@ Sentry.init({
     // Filter WASM fetch failures on iOS/WKWebView. These are transient network
     // errors during .wasm module initialization — identifiable by "Load failed"
     // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
+    // Note: build output hashes the wasm filename (e.g. "yap_frontend_rs_bg-B6NwGxMP.wasm"),
+    // so match on the ".wasm" extension rather than a fixed "_bg.wasm" substring.
     if (message === "Load failed") {
       const frames =
         event.exception?.values?.[0]?.stacktrace?.frames ?? [];
-      if (
-        frames.some(
-          (f) =>
-            f.filename?.includes("wasm-helper") ||
-            f.filename?.includes("_bg.wasm"),
-        )
-      ) {
+      if (frames.some((f) => f.filename?.includes(".wasm"))) {
         return null;
       }
     }
