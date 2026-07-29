@@ -128,12 +128,15 @@ function AppMain() {
       if (r) {
         const update = () => {
           r.update().catch((e) => {
-            // Skip network-level fetch failures (TypeError) and InvalidStateError
-            // — these are transient errors that aren't actionable bugs.
+            // Skip network-level fetch failures (TypeError), InvalidStateError,
+            // and AbortError (the update fetch getting cancelled by page
+            // unload/navigation) — these are transient errors that aren't
+            // actionable bugs.
             if (
               navigator.onLine &&
               e?.name !== "InvalidStateError" &&
-              e?.name !== "TypeError"
+              e?.name !== "TypeError" &&
+              e?.name !== "AbortError"
             ) {
               Sentry.captureException(e, { tags: { "sw.online": true } });
             }
@@ -1292,6 +1295,28 @@ function Review({
   );
 }
 
+// Not manually reported to Sentry here: @sentry/react's React 19 integration
+// already captures errors caught by any error boundary (including react-router's
+// own) via ReactDOM's onCaughtError hook.
+function RouteErrorFallback() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="max-w-md w-full p-6 text-center gap-0">
+        <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-red-600 dark:text-red-400 text-xl">⚠</span>
+        </div>
+        <h2 className="text-lg font-semibold mb-2">Something went wrong</h2>
+        <p className="text-muted-foreground mb-4">
+          Yap.Town ran into an unexpected error. Reloading usually fixes it.
+        </p>
+        <Button onClick={() => window.location.reload()} variant="outline">
+          Reload
+        </Button>
+      </Card>
+    </div>
+  );
+}
+
 function AppShell() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -1307,6 +1332,7 @@ function AppShell() {
 const router = createBrowserRouter([
   {
     element: <AppShell />,
+    errorElement: <RouteErrorFallback />,
     children: [
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/confirm-email", element: <ConfirmEmail /> },

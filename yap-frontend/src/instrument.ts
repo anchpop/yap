@@ -24,6 +24,15 @@ Sentry.init({
       return null;
     }
 
+    // Filter connection-closed AbortErrors. These fire (as an unhandled
+    // rejection with no stacktrace) when the browser tears down an in-flight
+    // request during page unload/navigation — most visibly alongside the
+    // service worker's own update check being aborted for the same reason.
+    // Not actionable: there's no app code on the other end of this rejection.
+    if (message === "AbortError: The connection was closed.") {
+      return null;
+    }
+
     // Filter WASM fetch failures on iOS/WKWebView. These are transient network
     // errors during .wasm module initialization — identifiable by "Load failed"
     // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
