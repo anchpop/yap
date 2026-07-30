@@ -148,17 +148,34 @@
     <div id="root"></div>
     
     <script>
+      var yapBooted = false;
+
       // Show reload button after 7 seconds
       setTimeout(function() {
         var button = document.getElementById('reload-button');
-        if (button && document.getElementById('loading-screen')) {
+        if (button && !yapBooted) {
           button.classList.add('show');
         }
       }, 7000);
-      
+
+      // If the app fails to boot — e.g. the WASM module can't be fetched
+      // because of a flaky connection or an unsupported browser — surface
+      // the reload button right away instead of leaving the user staring
+      // at a spinner for 7 seconds.
+      function showReloadNow() {
+        if (yapBooted) return;
+        var loadingText = document.getElementById('loading-text');
+        if (loadingText) loadingText.textContent = 'Having trouble loading Yap.Town';
+        var button = document.getElementById('reload-button');
+        if (button) button.classList.add('show');
+      }
+      window.addEventListener('error', showReloadNow);
+      window.addEventListener('unhandledrejection', showReloadNow);
+
       // Hide loading screen when React app mounts
       // React will call this when it's ready
       window.hideLoadingScreen = function() {
+        yapBooted = true;
         var loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
           loadingScreen.style.display = 'none';
