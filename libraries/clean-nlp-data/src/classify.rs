@@ -6538,208 +6538,6 @@ impl WordCorrector for ChineseCorrector {
     }
 }
 
-/// Common ichidan verbs (一段動詞). Lemma always ends in る, and the mora
-/// before る is from the え-row or い-row.
-const ICHIDAN_VERBS: &[&str] = &[
-    "いる",
-    "見る",
-    "出る",
-    "食べる",
-    "考える",
-    "教える",
-    "覚える",
-    "変える",
-    "始める",
-    "決める",
-    "止める",
-    "開ける",
-    "閉める",
-    "つける",
-    "受ける",
-    "上げる",
-    "下げる",
-    "見せる",
-    "伝える",
-    "答える",
-    "調べる",
-    "比べる",
-    "並べる",
-    "育てる",
-    "建てる",
-    "立てる",
-    "当てる",
-    "捨てる",
-    "慣れる",
-    "疲れる",
-    "生まれる",
-    "倒れる",
-    "壊れる",
-    "離れる",
-    "逃げる",
-    "投げる",
-    "混ぜる",
-    "見つける",
-    "続ける",
-    "届ける",
-    "助ける",
-    "分ける",
-    "負ける",
-    "迎える",
-    "加える",
-    "与える",
-    "抑える",
-    "支える",
-    "備える",
-    "構える",
-    "据える",
-    "唱える",
-    "訴える",
-    "感じる",
-    "信じる",
-    "応じる",
-    "生じる",
-    "通じる",
-    "禁じる",
-    "命じる",
-    "論じる",
-    "案じる",
-    "報じる",
-    "寝る",
-    "起きる",
-    "降りる",
-    "乗せる",
-    "寄せる",
-    "落ちる",
-    "過ぎる",
-    "すぎる",
-    "知らせる",
-    "褒める",
-    "認める",
-    "求める",
-    "進める",
-    "勧める",
-    "務める",
-    "努める",
-    "入れる",
-    "出かける",
-    "片付ける",
-    "取り付ける",
-    "組み立てる",
-    "作り上げる",
-    "増える",
-    "冷える",
-    "温める",
-    "固める",
-    "広げる",
-    "狭める",
-    "深める",
-    "高める",
-    "強める",
-    "弱める",
-    "早める",
-    "遅れる",
-    "枯れる",
-    "腐れる",
-    "汚れる",
-    "晴れる",
-    "着る",
-    "浴びる",
-    "足りる",
-    "飽きる",
-    "できる",
-    "似る",
-    "煮る",
-    "干る",
-    "見える",
-    "聞こえる",
-    "消える",
-    "現れる",
-    "表れる",
-    "溢れる",
-    "恐れる",
-    "訪れる",
-    "させる",
-    "られる",
-];
-
-/// Godan verbs ending in る (NOT ichidan despite the る ending).
-const GODAN_RU_VERBS: &[&str] = &[
-    "走る",
-    "帰る",
-    "切る",
-    "知る",
-    "入る",
-    "座る",
-    "通る",
-    "取る",
-    "送る",
-    "作る",
-    "売る",
-    "乗る",
-    "残る",
-    "登る",
-    "渡る",
-    "戻る",
-    "回る",
-    "上る",
-    "下る",
-    "太る",
-    "参る",
-    "なる",
-    "ある",
-    "やる",
-    "要る",
-    "釣る",
-    "塗る",
-    "握る",
-    "練る",
-    "蹴る",
-    "散る",
-    "照る",
-    "減る",
-    "滑る",
-    "喋る",
-    "焦る",
-    "限る",
-    "頼る",
-    "怒る",
-    "祈る",
-    "眠る",
-    "異なる",
-    "至る",
-    "被る",
-    "遮る",
-    "罵る",
-];
-
-fn is_ichidan(lemma: &str) -> bool {
-    if !lemma.ends_with("る") {
-        return false;
-    }
-    if lemma == "する" || lemma == "くる" || lemma == "来る" {
-        return false;
-    }
-    if ICHIDAN_VERBS.contains(&lemma) {
-        return true;
-    }
-    if GODAN_RU_VERBS.contains(&lemma) {
-        return false;
-    }
-    let without_ru = &lemma[..lemma.len() - "る".len()];
-    match without_ru.chars().last() {
-        Some(c) => {
-            let e_row = [
-                'え', 'け', 'せ', 'て', 'ね', 'べ', 'め', 'れ', 'げ', 'ぜ', 'で', 'ぺ',
-            ];
-            let i_row = [
-                'い', 'き', 'し', 'ち', 'に', 'び', 'み', 'り', 'ぎ', 'じ', 'ぢ', 'ぴ',
-            ];
-            e_row.contains(&c) || i_row.contains(&c)
-        }
-        None => false,
-    }
-}
-
 /// Japanese compounds where 達 is part of the word, not the plural suffix.
 const TATSU_COMPOUNDS: &[&str] = &[
     "友達", "発達", "上達", "調達", "伝達", "配達", "到達", "速達", "通達", "熟達", "闊達",
@@ -6747,20 +6545,12 @@ const TATSU_COMPOUNDS: &[&str] = &[
 
 /// Japanese-specific classifier
 ///
-/// # Stale split rules
-///
-/// Several rules below are marked `STALE (pre-merge split policy)`. They date from when a
-/// Japanese verb and its auxiliaries were separate tokens (食べ|まし|た), and they ask the
-/// labeller to split anything it merged. `JapaneseCorrector::post_corrections` now does the
-/// opposite — a token is a word, and 食べ, まし, だっ, られ are not words — so whatever these
-/// rules talk the labeller into is merged straight back.
-///
-/// They are therefore harmless but wasteful: the emitted tokens are correct either way, and
-/// each flag buys a double-check round trip that is immediately undone. They are left in
-/// place because the gold data was labelled under the old policy, so the guidance still
-/// matches what is on disk. Delete them when the gold data is regenerated under the merge
-/// policy — at that point the labeller's own output will already be word-level and these
-/// rules would be arguing with it rather than with history.
+/// Tokenization policy: a token is a word, not a morpheme. A predicate and its bound
+/// auxiliary chain are one token (食べませんでした), while boundaries whose two sides
+/// are both words survive (食べて|いる, 学生|です, 静か|です). The policy is spelled
+/// out in `language_specific_tips` and enforced mechanically by `JapaneseCorrector`
+/// (`merge_japanese_inflection`) on both the NLP proposal and the LLM output; the
+/// rules here only flag what the mechanical pass cannot fix on its own.
 struct JapaneseClassifier;
 
 impl SentenceClassifier for JapaneseClassifier {
@@ -7199,34 +6989,6 @@ impl SentenceClassifier for JapaneseClassifier {
                 );
             }
 
-            // --- ません split into ませ + ん ---
-            if text == "ん" && token.pos == PartOfSpeechTag::Aux && token.lemma == "ぬ" && idx > 0
-            {
-                let prev = &sentence.doc[idx - 1];
-                if prev.text == "ませ" && prev.pos == PartOfSpeechTag::Aux {
-                    reasons.push(
-                        "'ませ' + 'ん' should be merged into a single AUX token 'ません' (lemma 'ます'). ません is atomic in our spec, not decomposed into ませ + ん."
-                            .to_string(),
-                    );
-                }
-            }
-
-            // --- VERB/AUX ending in ます/ました/ません with non-ます lemma: likely merged ---
-            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
-            // 思います is now a word, not a merge to be undone.
-            if matches!(token.pos, PartOfSpeechTag::Aux | PartOfSpeechTag::Verb)
-                && (text.ends_with("ます") || text.ends_with("ました") || text.ends_with("ません"))
-                && token.lemma != "ます"
-                && text != "ます"
-                && text != "ました"
-                && text != "ません"
-            {
-                reasons.push(format!(
-                    "'{text}' ({:?}, lemma '{}') ends in ます/ました/ません but lemma is not 'ます' — verify per the guidelines whether this is a merged stem+ます that should split into separate tokens.",
-                    token.pos, token.lemma
-                ));
-            }
-
             // --- ADV ending in く with lemma == text: could be i-adj adverbial ---
             // Many adverbs legitimately end in く and are not derived from i-adjectives
             // (しばらく, ごく, せっかく, ことごとく, つくづく, ようやく, とにかく, まったく, etc.).
@@ -7251,8 +7013,9 @@ impl SentenceClassifier for JapaneseClassifier {
                 );
             }
 
-            // --- VERB containing てみ/でみ — likely merged てみる ---
-            // STALE (pre-merge split policy) — see the note on JapaneseClassifier. 食べてみた splits only at て.
+            // --- VERB containing てみ/でみ — likely a merged て-form + みる ---
+            // The auxiliary verb みる after a て-form is a word of its own: やってみた
+            // splits as やって|みた, never merges whole.
             if token.pos == PartOfSpeechTag::Verb
                 && (text.contains("てみ") || text.contains("でみ"))
                 && text != "てみ"
@@ -7263,7 +7026,7 @@ impl SentenceClassifier for JapaneseClassifier {
                 && text != "でみたら"
             {
                 reasons.push(format!(
-                    "'{text}' (VERB) contains てみ/でみ — potentially a merged てみる that should split (e.g., 'やってみたら' → 'やっ' + 'て' + 'み' + 'たら')."
+                    "'{text}' (VERB) contains てみ/でみ — potentially a merged てみる. The auxiliary verb after a て-form is its own token: 'やってみたら' → 'やって' (VERB) + 'みたら' (AUX, lemma 'みる')."
                 ));
             }
 
@@ -7273,23 +7036,6 @@ impl SentenceClassifier for JapaneseClassifier {
                 if next.text == "の" && next.pos == PartOfSpeechTag::Aux {
                     reasons.push(format!(
                         "'{text}' + 'の' where の is tagged AUX — の after {text} may be a genitive ADP, rather than a copula-related auxiliary."
-                    ));
-                }
-            }
-
-            // --- Auxiliary chain: た/だ merged into preceding auxiliary ---
-            // れた is two morphemes (れ+た), not one. Same for せた, させた, られた.
-            if token.pos == PartOfSpeechTag::Aux
-                && (text.ends_with("た") || text.ends_with("だ"))
-                && text.chars().count() >= 2
-            {
-                let stem = &text[..text.len() - "た".len()];
-                let aux_stems = ["れ", "せ", "させ", "られ"];
-                if aux_stems.contains(&stem) {
-                    reasons.push(format!(
-                        "'{}' is two auxiliaries merged: '{stem}' + '{}'. Split them — each auxiliary is its own token (e.g., 壊された → 壊さ + れ + た).",
-                        text,
-                        &text[text.len() - "た".len()..]
                     ));
                 }
             }
@@ -7352,91 +7098,6 @@ impl SentenceClassifier for JapaneseClassifier {
                 ));
             }
 
-            // --- Auxiliaries merged into verb: should split ---
-            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
-            // The whole aux_suffixes table below argues the opposite of current policy.
-            // Per the merge/split rule: auxiliaries (ない, ます, たい, せる, られる, etc.)
-            // append cleanly to conjugated stems and should be separate tokens.
-            // Only て/た 音便 forms (where the stem fuses phonologically) merge.
-            if token.pos == PartOfSpeechTag::Verb
-                && text.chars().count() > 3
-                && token.lemma != "ない"
-            {
-                let aux_suffixes: &[(&str, &str)] = &[
-                    (
-                        "ない",
-                        "ない (negative) should split: e.g., '飛べない' → '飛べ' + 'ない'",
-                    ),
-                    (
-                        "なかった",
-                        "なかった (negative past) should split: e.g., '書かなかった' → '書か' + 'なかった'",
-                    ),
-                    ("なく", "なく (negative connective) should split"),
-                    ("なくて", "なくて (negative て-form) should split"),
-                    (
-                        "ます",
-                        "ます (polite) should split: e.g., '食べます' → '食べ' + 'ます'",
-                    ),
-                    (
-                        "ました",
-                        "ました (polite past) should split: e.g., '食べました' → '食べ' + 'ました'",
-                    ),
-                    ("ません", "ません (polite negative) should split"),
-                    (
-                        "たい",
-                        "たい (want) should split: e.g., '食べたい' → '食べ' + 'たい'",
-                    ),
-                    ("たかった", "たかった (wanted) should split"),
-                    (
-                        "させる",
-                        "させる (causative) should split: e.g., '食べさせる' → '食べ' + 'させる'",
-                    ),
-                    ("される", "される (passive) should split"),
-                    (
-                        "られる",
-                        "られる (passive/potential) should split: e.g., '食べられる' → '食べ' + 'られる'",
-                    ),
-                    ("せる", "せる (causative) should split"),
-                    ("れる", "れる (passive) should split"),
-                ];
-                for (suffix, description) in aux_suffixes {
-                    if text.ends_with(suffix) {
-                        // Don't flag if the entire text IS the suffix (standalone auxiliary)
-                        let prefix_len = text.chars().count() - suffix.chars().count();
-                        if prefix_len > 0 {
-                            reasons.push(format!(
-                                "'{text}' (VERB) — verify: {description}. Per our merge/split rule, auxiliaries that append to a conjugated stem should be separate AUX tokens."
-                            ));
-                            break; // only flag the longest matching suffix
-                        }
-                    }
-                }
-            }
-
-            // --- Ichidan verb + て/た incorrectly merged ---
-            // STALE (pre-merge split policy) — see the note on JapaneseClassifier. 食べた is a word.
-            // Ichidan verbs have NO 音便 — て/た appends cleanly to the stem.
-            // Detection: if text = (lemma minus る) + て/た/で, it's a clean append and should split.
-            // This catches all ichidan verbs regardless of kanji/kana (見た, 食べた, 決めて, etc.)
-            // Godan 音便 forms (書いた, 読んだ, 待った) won't match because the stem is altered.
-            if token.pos == PartOfSpeechTag::Verb
-                && (text.ends_with("た") || text.ends_with("て") || text.ends_with("で"))
-                && token.lemma.ends_with("る")
-                && !token.lemma.ends_with("する") // する-verbs have their own merge rule
-                && text.chars().count() >= 2
-            {
-                let suffix = &text[text.len() - "た".len()..];
-                let text_stem = &text[..text.len() - "た".len()];
-                let lemma_stem = &token.lemma[..token.lemma.len() - "る".len()];
-
-                if text_stem == lemma_stem && !text_stem.is_empty() {
-                    reasons.push(format!(
-                        "'{text}' (VERB, lemma '{}') — verify: this appears to be an ichidan verb where て/た cleanly appends to the stem ('{text_stem}' + '{suffix}'). Per our merge/split rule, ichidan て/た should split because there is no phonological fusion.",
-                        token.lemma
-                    ));
-                }
-            }
-
             // --- Contracted form in lemma ---
             let contracted_forms = [
                 "ちゃう",
@@ -7494,32 +7155,44 @@ impl SentenceClassifier for JapaneseClassifier {
         let mut reasons = Vec::new();
 
         for (idx, token) in tokens.iter().enumerate() {
-            // ます not AUX
-            if (token.text == "ます" || token.text == "ました" || token.text == "ません")
-                && token.pos != PartOfSpeechTag::Aux
+            // --- Bound auxiliary stranded as its own token ---
+            // Post-merge, a bound auxiliary surviving alone means the merge pass found
+            // no predicate to its left to absorb it into — either a neighbor's POS is
+            // wrong or the split is. (食べ+ました must come out as 食べました.)
+            let bound_aux_lemmas = [
+                "ます",
+                "た",
+                "たい",
+                "ない",
+                "れる",
+                "られる",
+                "せる",
+                "させる",
+                "ぬ",
+                "う",
+                "まい",
+                "すぎる",
+            ];
+            if token.pos == PartOfSpeechTag::Aux && bound_aux_lemmas.contains(&token.lemma.as_str())
             {
                 reasons.push(format!(
-                    "'{}' tagged {:?} but should be AUX.",
-                    token.text, token.pos
+                    "'{}' (AUX, lemma '{}') is a bound auxiliary stranded as its own token — it belongs inside the predicate it inflects (食べ+ました → 食べました, one VERB token). If it genuinely stands alone as a predicate (e.g. 時間がない), retag it instead (ない → ADJ).",
+                    token.text, token.lemma
                 ));
             }
 
-            // --- Noun+する compound merged: should split ---
-            // PARTLY STALE — 確認 + した is right, but the message asks for し + た.
-            // See the note on JapaneseClassifier.
+            // --- Noun+する compound merged into one token: should split ---
             if token.pos == PartOfSpeechTag::Verb
                 && token.lemma.ends_with("する")
                 && token.lemma != "する"
             {
                 reasons.push(format!(
-                    "'{}' (lemma '{}') — noun+する compound should split: e.g., '確認した' → '確認' (NOUN) + 'し' (VERB) + 'た' (AUX).",
+                    "'{}' (lemma '{}') — noun+する compounds split into noun + する-form: '確認した' → '確認' (NOUN, lemma '確認') + 'した' (VERB, lemma 'する'). The する-form itself stays whole (した, して, される, しました).",
                     token.text, token.lemma
                 ));
             }
 
-            // --- Compound verb ていく/てくる merged ---
-            // PARTLY STALE — 連れて + いった is right, but the message asks for 連れ + て + いった.
-            // See the note on JapaneseClassifier.
+            // --- Compound verb ていく/てくる merged whole ---
             if token.pos == PartOfSpeechTag::Verb
                 && (token.lemma.contains("ていく")
                     || token.lemma.contains("てくる")
@@ -7527,7 +7200,7 @@ impl SentenceClassifier for JapaneseClassifier {
                     || token.lemma.contains("てくる"))
             {
                 reasons.push(format!(
-                "'{}' (lemma '{}') — compound ていく/てくる should split at each boundary, e.g., '連れていった' → '連れ' + 'て' + 'いった'.",
+                "'{}' (lemma '{}') — ていく/てくる splits at the て-form boundary: '連れていった' → '連れて' (VERB, lemma '連れる') + 'いった' (AUX, lemma 'いく').",
                 token.text, token.lemma
             ));
             }
@@ -7609,40 +7282,6 @@ impl SentenceClassifier for JapaneseClassifier {
                 }
             }
 
-            // --- Ichidan stem + suffix merged: should split ---
-            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
-            // Catches patterns the first pass missed: 見せなさい, 食べた, etc.
-            if token.pos == PartOfSpeechTag::Verb
-                && token.lemma.ends_with("る")
-                && !token.lemma.ends_with("する")
-            {
-                let lemma_stem = &token.lemma[..token.lemma.len() - "る".len()];
-                if !lemma_stem.is_empty() {
-                    // Check for ichidan て/た that should have split
-                    for suffix in ["て", "た", "で"] {
-                        if token.text.ends_with(suffix) {
-                            let text_stem = &token.text[..token.text.len() - suffix.len()];
-                            if text_stem == lemma_stem {
-                                reasons.push(format!(
-                                    "'{}' (lemma '{}') — ichidan verb with て/た merged. Should split: '{}' (VERB) + '{}' (AUX). No 音便 fusion here.",
-                                    token.text, token.lemma, text_stem, suffix
-                                ));
-                            }
-                        }
-                    }
-                    // Check for なさい merged (見せなさい, 食べなさい)
-                    if token.text.ends_with("なさい") {
-                        let text_stem = &token.text[..token.text.len() - "なさい".len()];
-                        if text_stem == lemma_stem {
-                            reasons.push(format!(
-                                "'{}' (lemma '{}') — ichidan verb + なさい merged. Should split: '{}' (VERB) + 'なさい' (AUX). なさい is a polite imperative auxiliary.",
-                                token.text, token.lemma, text_stem
-                            ));
-                        }
-                    }
-                }
-            }
-
             // --- な merged into na-adjective: should split ---
             // 綿密な → 綿密 + な, 変な → 変 + な
             if token.pos == PartOfSpeechTag::Adj && token.text.ends_with("な") {
@@ -7688,15 +7327,35 @@ impl SentenceClassifier for JapaneseClassifier {
                     "させる",
                     "たい",
                     "なさる",
+                    "為さる",
                     "くださる",
+                    "下さる",
                     "くれる",
+                    "呉れる",
                     "もらう",
+                    "貰う",
                     "いく",
+                    "行く",
                     "くる",
+                    "来る",
                     "しまう",
+                    "仕舞う",
                     "おく",
+                    "置く",
                     "みる",
+                    "見る",
                     "あげる",
+                    "上げる",
+                    "居る",
+                    "有る",
+                    "ほしい",
+                    "欲しい",
+                    "そう",
+                    "らしい",
+                    "みたい",
+                    "みたいだ",
+                    "ようだ",
+                    "な",
                     "ぬ",
                     "う",
                     "よう",
@@ -7711,55 +7370,6 @@ impl SentenceClassifier for JapaneseClassifier {
                 }
             }
 
-            if token.pos == PartOfSpeechTag::Verb
-                && let Some(next) = tokens.get(idx + 1)
-            {
-                let text = &token.text;
-                let is_split_onbin =
-                        // く/ぐ 音便: 書い+て, つい+た
-                        (text.ends_with("い") 
-                            && token.lemma.ends_with("く") 
-                            && matches!(next.text.as_str(), "て" | "た" | "たら" | "たり"))
-                        || (text.ends_with("い") 
-                            && token.lemma.ends_with("ぐ") 
-                            && matches!(next.text.as_str(), "で" | "だ" | "だら" | "だり"))
-                        // む/ぬ/ぶ 音便: 読ん+で, 死ん+だ
-                        || (text.ends_with("ん") 
-                            && (token.lemma.ends_with("む") 
-                                || token.lemma.ends_with("ぬ") 
-                                || token.lemma.ends_with("ぶ"))
-                            && matches!(next.text.as_str(), "で" | "だ" | "だら" | "だり"))
-                        // つ/る/う 音便: 待っ+て, 走っ+た
-                        || (text.ends_with("っ") 
-                            && (token.lemma.ends_with("つ") 
-                                || token.lemma.ends_with("る") 
-                                || token.lemma.ends_with("う"))
-                            && matches!(next.text.as_str(), "て" | "た" | "たら" | "たり"));
-
-                if is_split_onbin {
-                    reasons.push(format!(
-                            "'{}' + '{}' — this is godan 音便 (lemma '{}') and should be one merged VERB token, not split. The い/ん/っ is a phonological artifact, not a splittable boundary.",
-                            text, next.text, token.lemma
-                        ));
-                }
-            }
-
-            // --- Volitional う after ichidan/する/くる → should be よう ---
-            if token.pos == PartOfSpeechTag::Aux && token.lemma == "う" && idx > 0 {
-                let prev = &tokens[idx - 1];
-                let prev_is_ichidan = prev.pos == PartOfSpeechTag::Verb && is_ichidan(&prev.lemma);
-                let prev_is_suru = prev.pos == PartOfSpeechTag::Verb
-                    && (prev.lemma == "する" || prev.lemma.ends_with("する"));
-                let prev_is_kuru = prev.pos == PartOfSpeechTag::Verb
-                    && (prev.lemma == "くる" || prev.lemma == "来る");
-                if prev_is_ichidan || prev_is_suru || prev_is_kuru {
-                    reasons.push(format!(
-                        "'{}' (AUX, lemma 'う') after '{}' (lemma '{}') — volitional after ichidan/する/くる should have lemma 'よう', not 'う'. う is the godan volitional suffix.",
-                        token.text, prev.text, prev.lemma
-                    ));
-                }
-            }
-
             // --- VERB text containing 達/たち → should split ---
             if token.pos == PartOfSpeechTag::Verb
                 && (token.text.ends_with("達") || token.text.ends_with("たち"))
@@ -7768,6 +7378,49 @@ impl SentenceClassifier for JapaneseClassifier {
                 reasons.push(format!(
                     "'{}' (VERB) ends with 達/たち — verify: this may be a noun+plural merged into the verb token. Should split if 達/たち is a plural suffix.",
                     token.text
+                ));
+            }
+
+            // --- Title suffix stranded after a common noun: over-split ---
+            // Titles stand alone only after proper names (田中|さん). After an ordinary
+            // noun the combination is one lexicalized word: 皆さん, 神様, お客さん.
+            if matches!(token.text.as_str(), "さん" | "様" | "くん" | "ちゃん") && idx > 0 {
+                let prev = &tokens[idx - 1];
+                if prev.pos == PartOfSpeechTag::Noun && prev.whitespace.is_empty() {
+                    reasons.push(format!(
+                        "'{}' + '{}' — a title suffix after a common noun is one fused word (皆さん, 神様, お客さん). Merge them into a single NOUN token — unless '{}' is actually a proper name, in which case retag it PROPN and keep the split.",
+                        prev.text, token.text, prev.text
+                    ));
+                }
+            }
+
+            // --- Name + title merged into one token: should split ---
+            if token.pos == PartOfSpeechTag::Propn {
+                for suffix in ["さん", "様", "くん", "ちゃん"] {
+                    if token.text.ends_with(suffix)
+                        && token.text.chars().count() > suffix.chars().count()
+                    {
+                        reasons.push(format!(
+                            "'{}' (PROPN) ends in {suffix} — a title on a proper name is its own token: 田中さん → 田中 (PROPN) + さん (NOUN).",
+                            token.text
+                        ));
+                        break;
+                    }
+                }
+            }
+
+            // --- ら split from its stem: the ら plurals are single words ---
+            if token.text == "ら"
+                && idx > 0
+                && matches!(
+                    tokens[idx - 1].pos,
+                    PartOfSpeechTag::Pron | PartOfSpeechTag::Noun
+                )
+                && tokens[idx - 1].whitespace.is_empty()
+            {
+                reasons.push(format!(
+                    "'{}' + 'ら' — the ら plurals are single words (彼ら, 僕ら, 奴ら): merge into one token, keeping the analyzer-style lemma (彼等).",
+                    tokens[idx - 1].text
                 ));
             }
 
@@ -7841,26 +7494,8 @@ impl SentenceClassifier for JapaneseClassifier {
                 ));
             }
 
-            // --- VERB/AUX ending in ます/ました/ません with non-ます lemma: likely merged ---
-            // STALE (pre-merge split policy) — see the note on JapaneseClassifier.
-            // 思います is now a word, not a merge to be undone.
-            if matches!(token.pos, PartOfSpeechTag::Aux | PartOfSpeechTag::Verb)
-                && (token.text.ends_with("ます")
-                    || token.text.ends_with("ました")
-                    || token.text.ends_with("ません"))
-                && token.lemma != "ます"
-                && token.text != "ます"
-                && token.text != "ました"
-                && token.text != "ません"
-            {
-                reasons.push(format!(
-                    "'{}' ({:?}, lemma '{}') ends in ます/ました/ません but lemma is not 'ます' — this is a merged stem+ます that should split (e.g., います → い (VERB, lemma いる) + ます (AUX, lemma ます); 作っています → 作っ (VERB) + て (SCONJ) + い (AUX, lemma いる) + ます (AUX, lemma ます)).",
-                    token.text, token.pos, token.lemma
-                ));
-            }
-
-            // --- ている/てある merged as one VERB token ---
-            if token.pos == PartOfSpeechTag::Verb
+            // --- ている/てある bracketed onto the auxiliary instead of the verb ---
+            if matches!(token.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Aux)
                 && (token.lemma == "いる" || token.lemma == "ある")
                 && token.text.chars().count() > 2
                 && (token.text.starts_with("てい")
@@ -7869,7 +7504,7 @@ impl SentenceClassifier for JapaneseClassifier {
                     || token.text.starts_with("であ"))
             {
                 reasons.push(format!(
-                    "'{}' (VERB, lemma '{}') — ている/てある merged into one token. Should split: the preceding verb's て/で is a separate SCONJ, and いる/ある is a separate AUX (e.g., 話しかけている → 話しかけ (VERB) + て (SCONJ) + いる (AUX)).",
+                    "'{}' (lemma '{}') — the て/で belongs to the preceding verb's て-form, not to いる/ある: 話しかけ+ている should be 話しかけて (VERB, lemma 話しかける) + いる (AUX, lemma いる).",
                     token.text, token.lemma
                 ));
             }
@@ -7886,21 +7521,6 @@ impl SentenceClassifier for JapaneseClassifier {
                         "'{}' (AUX, lemma '{}') after '{}' (not て-form) — ある/いる is AUX only after a て-form. For existence/possession (e.g., 窓がありません = there are no windows), it should be VERB. Retag as VERB.",
                         token.text, token.lemma, prev.text
                     ));
-                }
-            }
-
-            // --- ません split into ませ + ん ---
-            if token.text == "ん"
-                && token.pos == PartOfSpeechTag::Aux
-                && token.lemma == "ぬ"
-                && idx > 0
-            {
-                let prev = &tokens[idx - 1];
-                if prev.text == "ませ" && prev.pos == PartOfSpeechTag::Aux {
-                    reasons.push(
-                        "'ませ' + 'ん' should be merged into a single AUX token 'ません' (lemma 'ます'). ません is atomic in our spec, not decomposed into ませ + ん."
-                            .to_string(),
-                    );
                 }
             }
 
@@ -7976,7 +7596,6 @@ impl SentenceClassifier for JapaneseClassifier {
                     token.text, token.pos
                 ));
             }
-
         }
 
         if reasons.is_empty() {
@@ -7987,328 +7606,369 @@ impl SentenceClassifier for JapaneseClassifier {
     }
 }
 
-/// Japanese-specific corrector
+/// Japanese-specific corrector.
+///
+/// Tokenization policy: a token is a word, not a morpheme. The corrector enforces the
+/// policy mechanically in two places — `correct` fixes the NLP proposal before the LLM
+/// ever sees it, and `post_corrections` re-applies the same fixes to whatever the LLM
+/// returns, as a safety net.
 struct JapaneseCorrector;
 
 impl WordCorrector for JapaneseCorrector {
     fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
-        let mut corrected = false;
         let mut corrections = Vec::new();
-
         for token in &mut sentence.doc {
-            // Fix copula lemma: です/でした → だ
-            if (token.text == "です" || token.text == "でした")
-                && token.pos == PartOfSpeechTag::Aux
-                && token.lemma != "だ"
-            {
-                corrections.push(format!(
-                    "Fixed copula '{}' lemma from '{}' to 'だ'",
-                    token.text, token.lemma
-                ));
-                token.lemma = "だ".to_string();
-                corrected = true;
-            }
-
-            // Fix i-adjective adverbial form used as lemma (大きく → 大きい)
-            // Only fire on ADJ: if the model tagged this as ADJ with lemma == text ending in く,
-            // it's almost certainly an i-adjective adverbial form. ADV cases (しばらく, ごく,
-            // せっかく, etc.) are correct as-is and handled by classifier hints instead.
-            if token.pos == PartOfSpeechTag::Adj
-                && token.text.ends_with("く")
-                && token.lemma == token.text
-                && token.text.chars().count() >= 2
-            {
-                let stem = &token.text[..token.text.len() - "く".len()];
-                let fixed = format!("{stem}い");
-                corrections.push(format!(
-                    "Fixed i-adjective lemma '{}' to '{}'",
-                    token.lemma, fixed
-                ));
-                token.lemma = fixed;
-                corrected = true;
-            }
-
-            // Fix よい/よく lemma → いい (our standard dictionary form)
-            if token.lemma == "よい" {
-                corrections.push("Fixed lemma 'よい' to 'いい'".to_string());
-                token.lemma = "いい".to_string();
-                corrected = true;
-            }
-
-            // Fix 達 lemma → たち (normalize kanji to hiragana for consistency)
-            if token.text == "達" && token.lemma == "達" {
-                corrections.push("Fixed '達' lemma from '達' to 'たち'".to_string());
-                token.lemma = "たち".to_string();
-                corrected = true;
-            }
-
-            // 一番 is never a na-adjective: fix lemma 一番だ → 一番
-            if token.text == "一番" && token.lemma == "一番だ" {
-                corrections.push("Fixed '一番' lemma from '一番だ' to '一番'".to_string());
-                token.lemma = "一番".to_string();
-                corrected = true;
-            }
-
-            // なさい → なさる (always the dictionary form)
-            if token.text == "なさい" && token.lemma != "なさる" {
-                corrections.push(format!(
-                    "Fixed 'なさい' lemma from '{}' to 'なさる'",
-                    token.lemma
-                ));
-                token.lemma = "なさる".to_string();
-                corrected = true;
-            }
-
-            // ください/下さい → くださる (always the dictionary form)
-            if (token.text == "ください" || token.text == "下さい") && token.lemma != "くださる"
-            {
-                corrections.push(format!(
-                    "Fixed '{}' lemma from '{}' to 'くださる'",
-                    token.text, token.lemma
-                ));
-                token.lemma = "くださる".to_string();
-                corrected = true;
-            }
-
-            // Honorific verbs: never AUX, lemma is the dictionary form.
-            let honorific_verbs: &[(&str, &str)] = &[
-                ("いらっしゃ", "いらっしゃる"),
-                ("おっしゃ", "おっしゃる"),
-                ("召し上が", "召し上がる"),
-            ];
-            for (prefix, dict_form) in honorific_verbs {
-                if token.text.starts_with(prefix) {
-                    if token.lemma != *dict_form {
-                        corrections.push(format!(
-                            "Fixed '{}' lemma from '{}' to '{}'",
-                            token.text, token.lemma, dict_form
-                        ));
-                        token.lemma = dict_form.to_string();
-                        corrected = true;
-                    }
-                    if token.pos != PartOfSpeechTag::Verb {
-                        corrections.push(format!(
-                            "Fixed '{}' POS from {:?} to VERB",
-                            token.text, token.pos
-                        ));
-                        token.pos = PartOfSpeechTag::Verb;
-                        corrected = true;
-                    }
-                    break;
-                }
-            }
-
-            // ございます → ござる
-            if (token.text == "ございます"
-                || token.text == "ございました"
-                || token.text == "ございません")
-                && token.lemma != "ござる"
-            {
-                corrections.push(format!(
-                    "Fixed '{}' lemma from '{}' to 'ござる'",
-                    token.text, token.lemma
-                ));
-                token.lemma = "ござる".to_string();
-                corrected = true;
-            }
-
-            // そう lemma lockdown
-            if token.text == "そう" && token.pos == PartOfSpeechTag::Aux && token.lemma != "そう"
-            {
-                corrections.push(format!(
-                    "Fixed 'そう' (AUX) lemma from '{}' to 'そう'",
-                    token.lemma
-                ));
-                token.lemma = "そう".to_string();
-                corrected = true;
-            }
-
-            // Fix capitalized lemmas
-            if token.pos != PartOfSpeechTag::Propn
-                && token
-                    .lemma
-                    .chars()
-                    .next()
-                    .is_some_and(|c| c.is_uppercase() && c.is_ascii())
-            {
-                let lower = token.lemma.to_lowercase();
-                corrections.push(format!("Lowercased lemma '{}' to '{}'", token.lemma, lower));
-                token.lemma = lower;
-                corrected = true;
-            }
+            corrections.extend(fix_japanese_token(token));
         }
-
+        let before = sentence.doc.len();
+        merge_japanese_inflection(&mut sentence.doc);
+        if sentence.doc.len() < before {
+            corrections.push(format!(
+                "Merged inflected predicate pieces: {before} tokens → {}",
+                sentence.doc.len()
+            ));
+        }
         CorrectionResult {
-            corrected,
+            corrected: !corrections.is_empty(),
             corrections,
         }
     }
 
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
         for token in tokens.iter_mut() {
-            if (token.text == "です" || token.text == "でした")
-                && token.pos == PartOfSpeechTag::Aux
-                && token.lemma != "だ"
-            {
-                token.lemma = "だ".to_string();
-            }
-            // Fix i-adjective adverbial form used as lemma — ADJ only.
-            // ADV cases (しばらく, ごく, せっかく, etc.) are correct as-is.
-            if token.pos == PartOfSpeechTag::Adj
-                && token.text.ends_with("く")
-                && token.lemma == token.text
-                && token.text.chars().count() >= 2
-            {
-                let stem = &token.text[..token.text.len() - "く".len()];
-                token.lemma = format!("{stem}い");
-            }
-            // Fix よい lemma → いい (our standard dictionary form)
-            if token.lemma == "よい" {
-                token.lemma = "いい".to_string();
-            }
-            // Honorific verbs: never AUX, lemma is the dictionary form
-            let honorific_verbs: &[(&str, &str)] = &[
-                ("いらっしゃ", "いらっしゃる"),
-                ("おっしゃ", "おっしゃる"),
-                ("召し上が", "召し上がる"),
-            ];
-            for (prefix, dict_form) in honorific_verbs {
-                if token.text.starts_with(prefix) {
-                    if token.lemma != *dict_form {
-                        token.lemma = dict_form.to_string();
-                    }
-                    if token.pos != PartOfSpeechTag::Verb {
-                        token.pos = PartOfSpeechTag::Verb;
-                    }
-                    break;
-                }
-            }
-            // 一番 is never a na-adjective
-            if token.text == "一番" && token.lemma == "一番だ" {
-                token.lemma = "一番".to_string();
-            }
-            // なさい → なさる
-            if token.text == "なさい" && token.lemma != "なさる" {
-                token.lemma = "なさる".to_string();
-            }
-            // ください/下さい → くださる
-            if (token.text == "ください" || token.text == "下さい") && token.lemma != "くださる"
-            {
-                token.lemma = "くださる".to_string();
-            }
-            // ございます safety net
-            if (token.text == "ございます"
-                || token.text == "ございました"
-                || token.text == "ございません")
-                && token.lemma != "ござる"
-            {
-                token.lemma = "ござる".to_string();
-            }
-            // そう AUX lemma safety net
-            if token.text == "そう" && token.pos == PartOfSpeechTag::Aux && token.lemma != "そう"
-            {
-                token.lemma = "そう".to_string();
-            }
+            fix_japanese_token(token);
         }
-
-        // Volitional う → よう after ichidan/する/くる
-        for i in 1..tokens.len() {
-            if tokens[i].pos == PartOfSpeechTag::Aux && tokens[i].lemma == "う" {
-                let prev = &tokens[i - 1];
-                let prev_is_ichidan = prev.pos == PartOfSpeechTag::Verb && is_ichidan(&prev.lemma);
-                let prev_is_suru = prev.pos == PartOfSpeechTag::Verb
-                    && (prev.lemma == "する" || prev.lemma.ends_with("する"));
-                let prev_is_kuru = prev.pos == PartOfSpeechTag::Verb
-                    && (prev.lemma == "くる" || prev.lemma == "来る");
-                if prev_is_ichidan || prev_is_suru || prev_is_kuru {
-                    tokens[i].lemma = "よう".to_string();
-                }
-            }
-        }
-
-        // A token is a word. Japanese inflection is agglutinative, so a verb or adjective
-        // and the auxiliary chain hanging off it are one word however many morphemes deep
-        // it runs — 食べさせられたくなかった is a word the same way 食べた is. Splitting it
-        // strands pieces (食べ, まし, だっ, られ) that are not words in any sense and that
-        // nobody could be shown on their own. The internal structure is the morpheme
-        // layer's job (generate-data's MorphemeCategory::Inflectional), where each piece
-        // gets a gloss; that is also where a polysemous piece like られ belongs, since it
-        // is only ambiguous in isolation — inside 食べさせられた the reading is forced.
-        //
-        // This mirrors what the Korean prompt already mandates ("conjugated verb forms
-        // should stay as one token... don't split the stem from its endings") and what the
-        // Korean data does: 91% of its verbs are whole, and the splits that remain are
-        // serial verbs (가져|가) whose halves are both real forms — the same category we
-        // keep split here as て-form + auxiliary verb.
-        let mut merged: Vec<SimplifiedTokenPrime> = Vec::with_capacity(tokens.len());
-        for token in tokens.drain(..) {
-            match merged.last_mut() {
-                Some(head) if absorbs_suffix(head, &token) => {
-                    head.text.push_str(&token.text);
-                    // trailing whitespace belongs to whichever piece ended up last
-                    head.whitespace = token.whitespace;
-                    // lemma and POS stay the head's: 食べました is a VERB with lemma 食べる
-                }
-                _ => merged.push(token),
-            }
-        }
-        *tokens = merged;
+        merge_japanese_inflection(tokens);
     }
 }
 
-/// Auxiliaries that are full verbs in their own right. `食べて` + `いる` are both showable
-/// words, so that boundary stays — it is the same split Korean keeps for serial verbs.
+/// Common view over the two token types the Japanese pipeline touches: the NLP
+/// proposal's `DocToken` and the LLM output's `SimplifiedTokenPrime`.
+trait JaToken {
+    fn text(&self) -> &str;
+    fn whitespace(&self) -> &str;
+    fn pos(&self) -> PartOfSpeechTag;
+    fn lemma(&self) -> &str;
+    fn push_text(&mut self, more: &str);
+    fn set_whitespace(&mut self, ws: String);
+    fn set_pos(&mut self, pos: PartOfSpeechTag);
+    fn set_lemma(&mut self, lemma: String);
+}
+
+macro_rules! impl_ja_token {
+    ($ty:ty) => {
+        impl JaToken for $ty {
+            fn text(&self) -> &str {
+                &self.text
+            }
+            fn whitespace(&self) -> &str {
+                &self.whitespace
+            }
+            fn pos(&self) -> PartOfSpeechTag {
+                self.pos
+            }
+            fn lemma(&self) -> &str {
+                &self.lemma
+            }
+            fn push_text(&mut self, more: &str) {
+                self.text.push_str(more);
+            }
+            fn set_whitespace(&mut self, ws: String) {
+                self.whitespace = ws;
+            }
+            fn set_pos(&mut self, pos: PartOfSpeechTag) {
+                self.pos = pos;
+            }
+            fn set_lemma(&mut self, lemma: String) {
+                self.lemma = lemma;
+            }
+        }
+    };
+}
+
+impl_ja_token!(language_utils::DocToken);
+impl_ja_token!(SimplifiedTokenPrime);
+
+/// Deterministic per-token lemma/POS fixes, applied identically to the NLP proposal
+/// (`correct`) and the LLM output (`post_corrections`). Returns descriptions of what
+/// changed.
+fn fix_japanese_token(token: &mut impl JaToken) -> Vec<String> {
+    let mut fixes = Vec::new();
+
+    // Fix copula lemma → だ. Keyed on the lemma, not the text, so it covers every
+    // copula form the analyzer lemmatizes as です (でしょう, でし, でした…) — a
+    // text-keyed version left でしょう with lemma です while です itself got だ,
+    // splitting one word across two keys.
+    if token.pos() == PartOfSpeechTag::Aux && token.lemma() == "です" {
+        fixes.push(format!(
+            "Fixed copula '{}' lemma from 'です' to 'だ'",
+            token.text()
+        ));
+        token.set_lemma("だ".to_string());
+    }
+
+    // Fix i-adjective adverbial form used as lemma (大きく → 大きい)
+    // Only fire on ADJ: if the model tagged this as ADJ with lemma == text ending in く,
+    // it's almost certainly an i-adjective adverbial form. ADV cases (しばらく, ごく,
+    // せっかく, etc.) are correct as-is and handled by classifier hints instead.
+    if token.pos() == PartOfSpeechTag::Adj
+        && token.text().ends_with("く")
+        && token.lemma() == token.text()
+        && token.text().chars().count() >= 2
+    {
+        let stem = &token.text()[..token.text().len() - "く".len()];
+        let fixed = format!("{stem}い");
+        fixes.push(format!(
+            "Fixed i-adjective lemma '{}' to '{}'",
+            token.lemma(),
+            fixed
+        ));
+        token.set_lemma(fixed);
+    }
+
+    // (Removed: rules that rewrote よい→いい and 達→たち. Both existed to make spelling
+    // variants share one lemma, which the analyzer now does natively — it normalizes both
+    // よい and いい to 良い, and both 子供達 and 子供たち to 子供達. Re-canonicalizing on top
+    // of that does not add grouping, it splits one key into two, which is the exact failure
+    // the lemma exists to prevent. The lemma is an identifier, not a display form.)
+
+    // 一番 is never a na-adjective: fix lemma 一番だ → 一番
+    if token.text() == "一番" && token.lemma() == "一番だ" {
+        fixes.push("Fixed '一番' lemma from '一番だ' to '一番'".to_string());
+        token.set_lemma("一番".to_string());
+    }
+
+    // (Removed: rules that rewrote なさい→なさる and ください→くださる. They were
+    // text-keyed, so くださった kept the analyzer's 下さる while ください became
+    // くださる — one word split across two keys. The analyzer already lemmatizes the
+    // whole paradigm consistently (下さる, 為さる); the lemma is an identifier, so
+    // its spelling only has to be consistent, not kana.)
+
+    // Honorific verbs: never AUX, lemma is the dictionary form.
+    let honorific_verbs: &[(&str, &str)] = &[
+        ("いらっしゃ", "いらっしゃる"),
+        ("おっしゃ", "おっしゃる"),
+        ("召し上が", "召し上がる"),
+    ];
+    for (prefix, dict_form) in honorific_verbs {
+        if token.text().starts_with(prefix) {
+            if token.lemma() != *dict_form {
+                fixes.push(format!(
+                    "Fixed '{}' lemma from '{}' to '{}'",
+                    token.text(),
+                    token.lemma(),
+                    dict_form
+                ));
+                token.set_lemma(dict_form.to_string());
+            }
+            if token.pos() != PartOfSpeechTag::Verb {
+                fixes.push(format!(
+                    "Fixed '{}' POS from {:?} to VERB",
+                    token.text(),
+                    token.pos()
+                ));
+                token.set_pos(PartOfSpeechTag::Verb);
+            }
+            break;
+        }
+    }
+
+    // ございます → ござる
+    if (token.text() == "ございます"
+        || token.text() == "ございました"
+        || token.text() == "ございません")
+        && token.lemma() != "ござる"
+    {
+        fixes.push(format!(
+            "Fixed '{}' lemma from '{}' to 'ござる'",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma("ござる".to_string());
+    }
+
+    // そう lemma lockdown
+    if token.text() == "そう" && token.pos() == PartOfSpeechTag::Aux && token.lemma() != "そう"
+    {
+        fixes.push(format!(
+            "Fixed 'そう' (AUX) lemma from '{}' to 'そう'",
+            token.lemma()
+        ));
+        token.set_lemma("そう".to_string());
+    }
+
+    // Fix capitalized lemmas
+    if token.pos() != PartOfSpeechTag::Propn
+        && token
+            .lemma()
+            .chars()
+            .next()
+            .is_some_and(|c| c.is_uppercase() && c.is_ascii())
+    {
+        let lower = token.lemma().to_lowercase();
+        fixes.push(format!("Lowercased lemma '{}' to '{lower}'", token.lemma()));
+        token.set_lemma(lower);
+    }
+
+    fixes
+}
+
+/// A token is a word. Japanese inflection is agglutinative, so a verb or adjective
+/// and the auxiliary chain hanging off it are one word however many morphemes deep
+/// it runs — 食べさせられたくなかった is a word the same way 食べた is. Splitting it
+/// strands pieces (食べ, まし, だっ, られ) that are not words in any sense and that
+/// nobody could be shown on their own. The internal structure is the morpheme
+/// layer's job (generate-data's MorphemeCategory::Inflectional), where each piece
+/// gets a gloss; that is also where a polysemous piece like られ belongs, since it
+/// is only ambiguous in isolation — inside 食べさせられた the reading is forced.
+///
+/// This mirrors what the Korean prompt already mandates ("conjugated verb forms
+/// should stay as one token... don't split the stem from its endings") and what the
+/// Korean data does: 91% of its verbs are whole, and the splits that remain are
+/// serial verbs (가져|가) whose halves are both real forms — the same category we
+/// keep split here as て-form + auxiliary verb.
+fn merge_japanese_inflection<T: JaToken>(tokens: &mut Vec<T>) {
+    let mut merged: Vec<T> = Vec::with_capacity(tokens.len());
+    for token in tokens.drain(..) {
+        match merged.last_mut() {
+            Some(head) if absorbs_suffix(head, &token) => {
+                head.push_text(token.text());
+                // trailing whitespace belongs to whichever piece ended up last
+                head.set_whitespace(token.whitespace().to_string());
+                // lemma and POS stay the head's: 食べました is a VERB with lemma 食べる
+            }
+            _ => merged.push(token),
+        }
+    }
+    *tokens = merged;
+}
+
+/// Auxiliaries that are full verbs (or adjectives) in their own right. `食べて` +
+/// `いる` are both showable words, so that boundary stays — it is the same split
+/// Korean keeps for serial verbs. なさい is deliberately NOT here: it attaches to a
+/// bare stem (見せ|なさい strands 見せ), so 見せなさい merges into one word.
+// Each verb is listed in both the kana spelling (what the LLM tends to write) and the
+// analyzer's normalized form (what the Sudachi proposal carries) — the carve-out must
+// recognize either.
 const JAPANESE_AUXILIARY_VERBS: &[&str] = &[
     "いる",
+    "居る",
     "ある",
+    "有る",
     "くる",
     "来る",
     "いく",
     "行く",
     "しまう",
+    "仕舞う",
     "みる",
+    "見る",
     "おく",
+    "置く",
     "あげる",
+    "上げる",
     "くれる",
+    "呉れる",
     "もらう",
+    "貰う",
     "くださる",
-    "なさる",
+    "下さる",
     "ほしい",
+    "欲しい",
 ];
 
+/// Is this token already a complete, showable form — the dictionary form itself, or a
+/// finished past/negative? そう・らしい・よう・みたい after such a head are words of
+/// their own (hearsay 降る|そう|だ, 降った|らしい); after a bare stem they are bound
+/// (降りそう, 高そう).
+fn is_japanese_complete_form(head: &impl JaToken) -> bool {
+    head.text() == head.lemma()
+        || head.text().ends_with('た')
+        || head.text().ends_with('だ')
+        || head.text().ends_with("ない")
+}
+
 /// Should `next` be absorbed into the preceding token to keep every token a word?
-fn absorbs_suffix(head: &SimplifiedTokenPrime, next: &SimplifiedTokenPrime) -> bool {
+fn absorbs_suffix<T: JaToken>(head: &T, next: &T) -> bool {
     // Anything written apart stays apart — merging across a space would drop it and the
     // tokens would no longer reconstruct the sentence.
-    if !head.whitespace.is_empty() {
-        return false;
-    }
-    // Pull the て/で of a て-form onto its verb, so the stem stops being stranded:
-    // 食べ|て|いる → 食べて|いる.
-    if next.pos == PartOfSpeechTag::Sconj && matches!(next.text.as_str(), "て" | "で") {
-        return matches!(head.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Adj);
-    }
-    if next.pos != PartOfSpeechTag::Aux {
+    if !head.whitespace().is_empty() {
         return false;
     }
     // Only a predicate has an inflectional tail. A noun keeps the copula separate
     // (学生|です), exactly as Korean keeps 학생|입니다.
     if !matches!(
-        head.pos,
+        head.pos(),
         PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Aux
     ) {
         return false;
     }
-    // After a て-form the auxiliary is a separate word: 食べて|いる, 読んで|しまう.
-    if head.text.ends_with('て') || head.text.ends_with('で') {
+    // Inflectional tails that are not words no matter how the labeller tagged them:
+    // the て/で of a て-form, conditional ば/たら, listing たり, and stem-attaching
+    // ながら/つつ. Pulling them onto the predicate stops the stem being stranded:
+    // 食べ|て|いる → 食べて|いる, 食べれ|ば → 食べれば, 食べ|ながら → 食べながら.
+    // The copula's て-form (で with lemma だ) is not a tail — 静か|で stays split,
+    // like 静か|だ.
+    if matches!(
+        next.text(),
+        "て" | "で" | "ば" | "たら" | "だら" | "たり" | "だり" | "ながら" | "つつ"
+    ) && !matches!(next.lemma(), "だ" | "です")
+        && matches!(
+            next.pos(),
+            PartOfSpeechTag::Sconj
+                | PartOfSpeechTag::Part
+                | PartOfSpeechTag::Adp
+                | PartOfSpeechTag::Aux
+        )
+    {
+        return true;
+    }
+    // そう/らしい/よう/みたい bind to a bare stem but stand alone after a complete
+    // form: 降りそう and 実現しそう merge, 降る|そう|だ splits. Checked before the
+    // AUX gate because Sudachi tags them 形状詞 (mapped ADJ), not AUX.
+    if matches!(
+        next.lemma(),
+        "そう" | "そうだ" | "らしい" | "よう" | "ようだ" | "みたい" | "みたいだ"
+    ) && matches!(next.pos(), PartOfSpeechTag::Aux | PartOfSpeechTag::Adj)
+    {
+        return !is_japanese_complete_form(head)
+            && !head.text().ends_with('て')
+            && !head.text().ends_with('で');
+    }
+    // なさい binds to the bare stem it inflects (し+なさい, 食べ+なさい), and Sudachi
+    // tags it 動詞 — the AUX gate below would miss it.
+    if next.text() == "なさい"
+        && head.pos() == PartOfSpeechTag::Verb
+        && !head.text().ends_with('て')
+        && !head.text().ends_with('で')
+    {
+        return true;
+    }
+    if next.pos() != PartOfSpeechTag::Aux {
         return false;
     }
-    if JAPANESE_AUXILIARY_VERBS.contains(&next.lemma.as_str()) {
+    // The copula family (だ, です, でした, だった, でしょう, なら, じゃ) is a word: it
+    // stays split from nouns and from complete predicates alike — 学生|です,
+    // 静か|だった, 美しい|です, 行く|だろう. Two bound exceptions: the voiced past
+    // tense of a 撥音便 verb also arrives as だ with lemma だ (読ん+だ, 浮かん+だ) —
+    // a verb stem ending in ん is never a complete form, so だ there is inflection,
+    // not the copula — and でした continuing the ます chain (食べません+でした).
+    if matches!(next.lemma(), "だ" | "です") {
+        return (head.pos() == PartOfSpeechTag::Verb && head.text().ends_with('ん'))
+            || head.text().ends_with("ません");
+    }
+    // After a て-form the auxiliary is a separate word: 食べて|いる, 読んで|しまう.
+    // Except た: てた is the contraction of ていた (乗ってた, やってた), and た alone
+    // is stranded either way.
+    if head.text().ends_with('て') || head.text().ends_with('で') {
+        return next.lemma() == "た";
+    }
+    if JAPANESE_AUXILIARY_VERBS.contains(&next.lemma()) {
         return false;
     }
     // な on a na-adjective is a closed-class attributive marker attaching to any stem,
     // so it is treated like a particle: 綿密|な.
-    if next.text == "な" {
+    if next.text() == "な" {
         return false;
     }
     true
@@ -9422,6 +9082,185 @@ mod tests {
             ]),
             vec!["綿密", "な"]
         );
+
+        // the polite negative past is bound end to end
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("食べ", Verb, "食べる"),
+                jpn_token("ませ", Aux, "ます"),
+                jpn_token("ん", Aux, "ぬ"),
+                jpn_token("でし", Aux, "だ"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["食べませんでした"]
+        );
+
+        // なさい attaches to a bare stem, so it merges: 見せ alone is not a word
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("見せ", Verb, "見せる"),
+                jpn_token("なさい", Aux, "なさる"),
+            ]),
+            vec!["見せなさい"]
+        );
+
+        // …including when Sudachi tags なさい as a VERB (動詞/非自立可能)
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("し", Verb, "為る"),
+                jpn_token("なさい", Verb, "為さる"),
+            ]),
+            vec!["しなさい"]
+        );
+
+        // likelihood そう binds to the stem even when tagged ADJ (Sudachi's 形状詞)
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("し", Verb, "為る"),
+                jpn_token("そう", Adj, "そう"),
+            ]),
+            vec!["しそう"]
+        );
+
+        // conditional ば is an inflectional tail, not a word
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("食べれ", Verb, "食べる"),
+                jpn_token("ば", Sconj, "ば"),
+            ]),
+            vec!["食べれば"]
+        );
+
+        // the voiced past of a 撥音便 verb arrives with lemma だ — inflection, not
+        // the copula: 浮かん|だ would strand 浮かん
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("浮かん", Verb, "浮かぶ"),
+                jpn_token("だ", Aux, "だ"),
+            ]),
+            vec!["浮かんだ"]
+        );
+
+        // てた is the contraction of ていた, so た joins the て-form it rides on —
+        // unlike a real auxiliary word after て (乗って|いた stays split)
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("乗って", Verb, "乗る"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["乗ってた"]
+        );
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("乗って", Verb, "乗る"),
+                jpn_token("いた", Aux, "いる"),
+            ]),
+            vec!["乗って", "いた"]
+        );
+    }
+
+    #[test]
+    fn test_japanese_copula_stays_a_word() {
+        use PartOfSpeechTag::{Adj, Aux, Verb};
+
+        // です after an adjective only adds politeness — the adjective is already
+        // complete, so the copula stays its own token, exactly like 学生|です
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("静か", Adj, "静かだ"),
+                jpn_token("です", Aux, "だ"),
+            ]),
+            vec!["静か", "です"]
+        );
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("美しい", Adj, "美しい"),
+                jpn_token("です", Aux, "だ"),
+            ]),
+            vec!["美しい", "です"]
+        );
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("静か", Adj, "静かだ"),
+                jpn_token("だっ", Aux, "だ"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["静か", "だった"]
+        );
+
+        // でしょう/だろう after a complete form is a word of its own (だろ+う still
+        // merge with each other into one AUX token)
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("行く", Verb, "行く"),
+                jpn_token("だろ", Aux, "だ"),
+                jpn_token("う", Aux, "う"),
+            ]),
+            vec!["行く", "だろう"]
+        );
+    }
+
+    #[test]
+    fn test_japanese_sou_binds_to_stems_only() {
+        use PartOfSpeechTag::{Aux, Verb};
+
+        // likelihood そう on a bare stem: 降り is not a word, so it binds
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("降り", Verb, "降る"),
+                jpn_token("そう", Aux, "そう"),
+            ]),
+            vec!["降りそう"]
+        );
+
+        // hearsay そう after a complete form: the predicate is finished, so
+        // そう (and だ) stand alone
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("降る", Verb, "降る"),
+                jpn_token("そう", Aux, "そう"),
+                jpn_token("だ", Aux, "だ"),
+            ]),
+            vec!["降る", "そう", "だ"]
+        );
+    }
+
+    #[test]
+    fn test_japanese_correct_merges_the_proposal() {
+        use PartOfSpeechTag::{Aux, Verb};
+        use language_utils::{DocToken, MultiwordTerms};
+
+        fn doc_token(text: &str, pos: PartOfSpeechTag, lemma: &str) -> DocToken {
+            DocToken {
+                text: text.to_string(),
+                whitespace: String::new(),
+                pos,
+                lemma: lemma.to_string(),
+                morph: BTreeMap::new(),
+            }
+        }
+
+        // the NLP proposal itself gets merged, so the cleaning LLM is shown
+        // word-level tokens instead of having its answer patched afterwards
+        let mut sentence = NlpAnalyzedSentence {
+            sentence: "食べました".to_string(),
+            multiword_terms: MultiwordTerms {
+                high_confidence: vec![],
+                low_confidence: vec![],
+            },
+            doc: vec![
+                doc_token("食べ", Verb, "食べる"),
+                doc_token("まし", Aux, "ます"),
+                doc_token("た", Aux, "た"),
+            ],
+        };
+
+        let result = JapaneseCorrector.correct(&mut sentence);
+        assert!(result.corrected);
+        assert_eq!(sentence.doc.len(), 1);
+        assert_eq!(sentence.doc[0].text, "食べました");
+        assert_eq!(sentence.doc[0].lemma, "食べる");
+        assert_eq!(sentence.doc[0].pos, Verb);
     }
 
     #[test]
@@ -10133,27 +9972,91 @@ VERB when linking subject to predicate (e.g., '他是老师'). AUX only in 是..
         Language::Japanese => {
             r#"
 
-Japanese-specific rules — please follow these carefully. Japanese presents unique challenges because it has no spaces between words, uses three writing systems simultaneously, and has extensive agglutinative verb morphology.
+Japanese-specific rules — please follow these carefully. Japanese presents unique challenges because it has no spaces between words, uses three writing systems simultaneously, and has extensive agglutinative morphology.
+
+## Tokenization: a token is a word, not a morpheme
+
+Every token is shown to a learner on its own, with its own dictionary entry. So the guiding principle is:
+
+**Keep a boundary only when both sides are words a learner could be shown independently. Merge whenever splitting would strand a piece that is not a word.**
+
+A verb or adjective and the entire chain of bound auxiliaries hanging off it are ONE token, however many morphemes deep the chain runs. 食べました is a word the same way 食べた is; so is 食べさせられたくなかった. Splitting them strands pieces — 食べ, まし, だっ, られ — that are not words in any sense: nobody can be shown 食べ on its own and told to learn it. (Word-internal morphology is handled by a separate morpheme layer, not by tokenization.)
+
+Sanity test for a proposed boundary: could は or も be inserted there in natural Japanese? 食べてはいる is fine, so 食べて|いる is a real word boundary. ✗食べはました is not Japanese, so 食べました has no internal boundary. The test is one-directional: successful insertion proves a boundary, but failed insertion does not force a merge. The copula family is the standing exception — ✗学生はです fails only because は slips inside the copula instead (学生ではある), yet 学生|です still splits, because です is a word on its own.
+
+### One token — merge (a split would strand a non-word)
+
+All of these are ONE token each:
+
+- Plain, polite, and negative inflection: 食べる, 食べた, 食べます, 食べました, 食べません, 食べない, 食べなかった — one VERB token each, lemma 食べる. NEVER 食べ + ました, never 食べ + ない.
+- The polite negative past is bound end to end: 食べませんでした is ONE token (VERB, lemma 食べる).
+- Godan 音便 forms: 書いて, 泳いで, 読んだ, 待った, 行って — one VERB token each (lemma 書く, 泳ぐ, 読む, 待つ, 行く).
+- て-forms are complete conjugated words: 食べて, 見て, して, 書いて — the て/で is the tail of the verb's own token, never a separate token after a verb stem.
+- Desiderative, causative, passive, volitional, imperative chains: 食べたい, 食べたかった, 食べさせる, 食べられる, 壊された, 食べさせられたくなかった, 行こう, 食べよう, 食べなさい, 見せなさい — one VERB token each, lemma the dictionary form (食べる, 壊す, 行く, 見せる).
+- Conditional and listing forms: 食べたら, 言ったら, 食べれば, 高ければ, 読んだり — one token.
+- ながら attaches to a stem that is not a word: 食べながら is one VERB token (lemma 食べる).
+- い-adjective inflection: 美しかった, 高くない, よかった — one ADJ token each (lemma 美しい, 高い, 良い — よい and いい are one word and share the lemma 良い).
+- Stem-attaching likelihood そう: 降りそう (VERB, lemma 降る), 高そう (ADJ, lemma 高い) — 降り and 高 alone are not words. (Hearsay そう after a complete form is different — see below.)
+- Contracted casual forms: 見てる (ている→てる), 食べちゃった (てしまう→ちゃう), やっとく (ておく→とく) — one VERB token each; no split point leaves two words. The lemma is the plain verb: 見る, 食べる, やる.
+- Contracted ていく/てくる keep direction in the lemma: てった/てく forms reference 行く (going AWAY); てきた/てくる forms reference 来る (coming TOWARD).
+- Honorific prefix お/ご/御 + its word: お誕生日, ご予定, お名前, お呼び — one token each; お and ご are not words on their own. Keep the analyzer's normalized lemma (御誕生日, 御予定).
+- Number + counter: 一つ, 二本, 三人, 一週間, 何泊 — one NOUN token each (see the counter section below). Keep the analyzer's numeral lemma (1つ, 3人).
+
+The lemma of a merged token is the dictionary form of its head (食べませんでした → 食べる, 書かなかった → 書く, 美しかった → 美しい), and the POS is the head's (VERB for verbs, ADJ for adjectives).
+
+### Separate tokens — the boundary survives (both sides are words)
+
+- て-form | auxiliary verb: 食べて|いる, 読んで|しまう, 待って|ください, 帰って|きた, やって|みた, 持って|いく, 食べて|ほしい, 書いて|ある. The piece after the て-form is a real word with its own dictionary entry. Tag it AUX and keep the analyzer's normalized lemma: 居る (for いる/いた/います), 仕舞う (しまう), 下さる (ください), 来る (きた/きて), 行く (いった/いって), 見る (みた/みる), おく, 上げる (あげる), 呉れる (くれる), 貰う (もらう), 欲しい (ほしい). Do NOT respell these into kana — the lemma is an identifier (see the lemma section), and rewriting 呉れる to くれる splits one word into two entries.
+- Noun | copula: 学生|です, 猫|だ, 学生|でした, 学生|だった, 学生|なら, 学生|じゃない (じゃない is one AUX token, lemma だ).
+- Adjective | politeness です: 美しい|です, 静か|です, 高かった|です — the adjective is already a complete word; です only adds politeness. Never merge です into an adjective.
+- Complete predicate | でしょう/だろう: 行く|でしょう, 美しかった|だろう — でしょう/だろう is one AUX token, lemma だ.
+- Hearsay そう and evidential らしい/みたい after a COMPLETE form: 降る|そう|だ, 降った|らしい, 本当|らしい — the predicate is already finished, so そう/らしい/みたい stand alone (AUX). Contrast the stem-attaching likelihood そう above: 降りそう merges because 降り is not a word.
+- Na-adjective | な: 綿密|な, 変|な, 静か|な — な is a separate token (AUX); the stem is the word (lemma 綿密だ, 変だ, 静かだ).
+- Noun | する verb: 勉強|した, 確認|して, 愛|する, 延期|された, 勉強|しました — the noun is a word (NOUN, lemma 勉強) and the する-form is ONE word (VERB, lemma する). Never split した into し+た, and never merge the noun into the verb. 勉強している → 勉強|して|いる (three tokens).
+- Noun | plural suffix たち/達: 子供|たち, 男|達, 私|たち — the suffix is its own token (NOUN, lemma 達, the shared identifier for both spellings). But the ら plurals are single words: 彼ら, 僕ら, これら, それら, 奴ら are ONE token each (PRON/NOUN, lemma as the analyzer normalized it, e.g. 彼等), never 彼|ら. And 友達 is one word (it is not a plural).
+- Proper name | title suffix: 田中|さん, 田中|様, 山田|くん, 花子|ちゃん — titles split off names (title token: NOUN; keep the analyzer's lemma). But a title fused into an ordinary noun makes a single word: 皆さん, お客さん, お客様, お母さん, お父さん, 神様, 王様, 赤ちゃん are ONE NOUN token each, never 皆|さん or 神|様.
+- Nominalizer の: 食べる|の|が|好き; explanatory んです: 食べた|ん|です (ん is the contracted nominalizer, lemma の).
+- Particles always split, and a complete predicate before a particle keeps its full form: 高く|は|ない (explicit contrast splits the negation — and this ない, standing alone, is the ADJ ない), 食べて|も, 行く|し.
+- Idiomatic compounds split when their parts are words: 気|に|入った (NOUN + ADP + VERB, lemma 入る), 愛|する. Idiomatic meaning is reconstructed at a future vocabulary layer, not by tokenization.
+
+### Particles
+
+Particles (助詞) are always separate tokens:
+- Case particles: が, を, に, へ, で, と, から, まで, より → ADP
+- Topic/contrast: は, も → ADP
+- Genitive: の (after noun, e.g., 猫の名前) → ADP
+- Sentence-final: か, ね, よ, な, ぞ, わ, さ → PART
+- Conjunctive after a complete form: が, けど, けれど, し, ので, のに → SCONJ. (ながら is NOT in this class for verbs — it attaches to a bare stem, so 食べながら is one token.)
+
+の has two distinct functions:
+- Genitive (after noun): ADP — 猫の名前 = cat's name
+- Nominalizer (after verb/adj): SCONJ or PART — 食べるのが好き = I like eating, 鍵を捜すのを手伝って = help me look for the key
+Do NOT tag nominalizer の as ADP. The test: if の follows a verb or adjective and turns the clause into a noun phrase, it's a nominalizer (SCONJ/PART). If it follows a noun showing possession/attribution, it's genitive (ADP).
+
+Examples:
+- "東京に行く" → "東京" (NOUN) + "に" (ADP) + "行く" (VERB)
+- "猫が好きです" → "猫" (NOUN) + "が" (ADP) + "好き" (ADJ, lemma "好きだ") + "です" (AUX, lemma "だ")
+- "食べるのが好き" → "食べる" (VERB) + "の" (SCONJ, nominalizer) + "が" (ADP) + "好き" (ADJ, lemma "好きだ")
 
 ## Lemmatization
 
 Every verb and adjective lemma should be the dictionary form. For verbs, this is the る/う-ending form. For い-adjectives, this is the い-ending form. For な-adjectives, the lemma includes だ (e.g., 静かだ, not 静か). Please don't leave a conjugated form as the lemma.
 
 Verbs (dictionary form ends in -う row kana):
-- 食べました → lemma "食べる"
+- 食べました → one token, lemma "食べる"
 - 飲んだ → lemma "飲む"
 - 行って → lemma "行く"
 - 書かない → lemma "書く"
-- 勉強した → "勉強" (NOUN) + "し" (VERB, lemma "する") + "た" (AUX, lemma "た")
+- 勉強した → "勉強" (NOUN, lemma "勉強") + "した" (VERB, lemma "為る" — the identifier for する, see above)
 
 い-adjectives (dictionary form ends in い):
-- 高くない → lemma "高い"
-- よかった → lemma "いい" (prefer "いい" as standard dictionary form)
+- 高くない → one token, lemma "高い"
+- よかった → lemma "良い" (よい and いい are the same word; 良い is the shared identifier)
 - 大きな → lemma "大きい"
 
 な-adjectives (lemma includes だ to parallel verb dictionary forms):
-- 静かな → lemma "静かだ"
-- きれいだった → lemma "きれいだ"
+- 静かな → "静か" (ADJ, lemma "静かだ") + "な" (AUX)
+- きれいだった → "きれい" (ADJ, lemma "奇麗だ" — the analyzer's normalized spelling + だ; do not respell it) + "だった" (AUX, lemma "だ")
 - 便利な → lemma "便利だ"
 
 Note: na-adjective words can be either ADJ or NOUN depending on context:
@@ -10177,243 +10080,48 @@ Honorific/humble verb forms keep their own lemma (they are distinct dictionary e
 - 召し上がる → lemma "召し上がる"
 - ございます → lemma "ござる" (though ござる is archaic in isolation, we use it as the lemma for paradigm consistency — ございます/ございました/ございません are all ござる forms, and this matches how every other verb in the pipeline uses the bare dictionary form)
 
-## Tokenization
+### The lemma is an identifier, not a display form
 
-A "token" in Japanese is the smallest unit a language learner needs to recognize independently.
+Lemmas are never shown to a learner. They exist to group the inflections and spelling variants of one word onto a single entry, so that やっぱり, やはり and やっぱ all resolve together. Judge a lemma by whether it groups correctly, not by whether it reads like something a person would write.
 
-### Particles
-Particles (助詞) should always be separate tokens:
-- Case particles: が, を, に, へ, で, と, から, まで, より → ADP
-- Topic/contrast: は, も → ADP
-- Genitive: の (after noun, e.g., 猫の名前) → ADP
-- Sentence-final: か, ね, よ, な, ぞ, わ, さ → PART
-- Conjunctive: が, けど, けれど, し, ので, のに, ながら → SCONJ
+The analyzer's normalized forms therefore look odd in a few places, and they are correct as they stand. Leave them:
+- する → 為る — the kanji spelling, even though virtually nobody writes する in kanji in modern Japanese
+- いる → 居る — same
+- ASCII is upper-cased, so Tom → TOM
 
-Note: の has two distinct functions:
-- Genitive (after noun): ADP — 猫の名前 = cat's name
-- Nominalizer (after verb/adj): SCONJ or PART — 食べるのが好き = I like eating, 鍵を捜すのを手伝って = help me look for the key
-Do NOT tag nominalizer の as ADP. The test: if の follows a verb or adjective and turns the clause into a noun phrase, it's a nominalizer (SCONJ/PART). If it follows a noun showing possession/attribution, it's genitive (ADP).
-
-Examples:
-- "東京に行く" → "東京" (NOUN) + "に" (ADP) + "行く" (VERB)
-- "猫が好きです" → "猫" (NOUN) + "が" (ADP) + "好き" (ADJ, lemma "好きだ") + "です" (AUX, lemma "だ")
-- "食べるのが好き" → "食べる" (VERB) + "の" (SCONJ, nominalizer) + "が" (ADP) + "好き" (ADJ, lemma "好きだ")
-
-### Merge/split rule for verb tokenization
-
-The fundamental principle: **merge only when phonological fusion makes the pieces inseparable; split whenever both pieces are individually meaningful and simply concatenated.**
-
-This matters for learners because split tokens can be looked up independently, while fused forms cannot be decomposed without understanding the sound change. The underlying logic:
-
-- If you can draw a clean boundary between two meaningful pieces (stem | suffix), **split**.
-- If a sound change has destroyed the boundary and created a new form that doesn't contain either original piece intact, **merge**.
-
-#### What fusion (音便) looks like — GODAN verbs + て/た
-
-Godan verbs (五段動詞) have stems ending in a consonant. When て or た attaches, the final kana of the dictionary form is *replaced* by a different sound — the original kana is destroyed:
-
-- く → いて/いた: 書**く** → 書**いて** (the く is gone, replaced by い)
-- ぐ → いで/いだ: 泳**ぐ** → 泳**いで** (the ぐ is gone, replaced by い)
-- む → んで/んだ: 読**む** → 読**んで** (the む is gone, replaced by ん)
-- ぬ → んで/んだ: 死**ぬ** → 死**んで**
-- ぶ → んで/んだ: 飛**ぶ** → 飛**んで**
-- つ → って/った: 待**つ** → 待**って** (the つ is gone, replaced by っ)
-- る → って/った: 走**る** → 走**って** (the る is gone)
-- う → って/った: 歌**う** → 歌**って** (the う is gone)
-- す → して/した: 流**す** → 流**して** — NOTE: this is NOT fusion. し is the regular 連用形, no sound change occurs. These SPLIT: "流し" (VERB) + "た" (AUX). Listed here only to prevent confusion with the other godan groups.
-- 行く → 行**って** (irregular)
-
-You cannot split 書いて into 書い + て and have 書い mean anything — the い is a phonological artifact, not a meaningful morpheme. So these are **single VERB tokens**: 書いて, 泳いで, 読んだ, 待った, 走った, 割った, 降って, 聞いて, 呼んで — all one token each, with the dictionary form as lemma.
-
-The same 音便 sound changes apply when たら (conditional) or たり (listing) attaches to godan verbs. These merge for the same reason — the stem is altered:
-
-- 言う → 言ったら (one VERB token, lemma "言う") — NOT 言っ + たら
-- 書く → 書いたら (one VERB token, lemma "書く")
-- 読む → 読んだり (one VERB token, lemma "読む")
-
-Ichidan verbs still split cleanly: 食べ + たら, 見 + たり
-
-#### What clean append looks like — ICHIDAN verbs + て/た + More
-
-Ichidan verbs (一段動詞, also called る-verbs: 食べる, 見る, 決める, etc.) have NO fusion. The stem stays intact and て/た simply appends:
-
-- 食べ**る** → 食べ + て, 食べ + た
-- 見**る** → 見 + て, 見 + た
-- 決め**る** → 決め + て, 決め + た
-- 抑え**る** → 抑え + て, 抑え + た
-- 告げ**る** → 告げ + て, 告げ + た
-- 震え**る** → 震え + て, 震え + た
-- つかまえ**る** → つかまえ + た
-
-Here you CAN draw a clean boundary — 食べ is the stem (meaningful on its own in 連用形), て/た is the suffix. So these **split**: "食べ" (VERB, lemma "食べる") + "た" (AUX, lemma "た").
-
-す-ending godan verbs also have no fusion. し is the regular 連用形 and て/た appends cleanly:
-
-流す → 流し + て, 流し + た
-話す → 話し + て, 話し + た
-尽くす → 尽くし + て, 尽くし + た
-
-These split like ichidan: "流し" (VERB, lemma "流す") + "た" (AUX, lemma "た").
-
-#### い-adjective + た (past): split
-
-い-adjectives conjugate their stem internally (い→かっ), then た appends cleanly:
-
-- "美しかっ" (ADJ, lemma "美しい") + "た" (AUX, lemma "た")
-- "高かっ" (ADJ, lemma "高い") + "た" (AUX, lemma "た")
-- "よかっ" (ADJ, lemma "いい") + "た" (AUX, lemma "た")
-
-#### Idiomatic compound verbs: still split
-
-Even when a multi-word verb has an idiomatic meaning not predictable from its parts, split if the components are individually meaningful:
-
-- "気に入った" → "気" (NOUN, lemma "気") + "に" (ADP) + "入った" (VERB, lemma "入る") — means "to like," but 気, に, and 入る are all common standalone words
-- "愛する" → "愛" (NOUN, lemma "愛") + "する" (VERB, lemma "する") — means "to love"
-
-Idiomatic meanings will be reconstructed at a future vocabulary layer, not the tokenization layer.
-
-#### Summary of the rule
-
-| Verb type | + て/た | Result | Reason |
-|-----------|--------|--------|--------|
-| Godan (書く, 泳ぐ, 読む, 待つ, etc.) | 書いて, 泳いで, 読んで, 待って, 言ったら, 読んだり | **MERGE** (one VERB token) | Sound change fuses stem+suffix |
-| Ichidan (食べる, 見る, 決める, etc.) | 食べ+て, 見+た, 決め+た | **SPLIT** (VERB + AUX) | Clean append, no fusion |
-| する verbs (勉強する, 確認する) | 勉強+し+た, 確認+し+た | **SPLIT** (NOUN + VERB + AUX) | No fusion — し appends cleanly |
-| 行く (irregular) | 行って | **MERGE** | Irregular 音便 |
-| Godan す-ending (流す, 話す, 尽くす) | 流し+た, 話し+て | **SPLIT** (VERB + AUX) | し is regular 連用形, no fusion |
-| い-adjective + た | 美しかっ+た, 高かっ+た | **SPLIT** (ADJ + AUX) | Adjective conjugates internally, た appends cleanly |
-| Volitional/conjectural | 行こ+う, 食べ+よう, でしょ+う | **SPLIT** (VERB/AUX + AUX) | う/よう appends cleanly to volitional stem |
-
-#### Separate auxillaries become separate tokens
-
-Regardless of godan/ichidan, these auxiliaries always append to a regular conjugated stem and are separate AUX tokens:
-- ない (negative): "書か" (VERB) + "ない" (AUX), "食べ" (VERB) + "ない" (AUX)
-- ます (polite): "泳ぎ" (VERB) + "ます" (AUX), "食べ" (VERB) + "ます" (AUX)
-- たい (want): "読み" (VERB) + "たい" (AUX), "食べ" (VERB) + "たい" (AUX)
-- せる/させる (causative): "泳が" (VERB) + "せる" (AUX), "食べ" (VERB) + "させる" (AUX)
-- れる/られる (passive/potential): "書か" (VERB) + "れる" (AUX), "食べ" (VERB) + "られる" (AUX)
-- なさい (polite imperative): "見せ" (VERB, lemma "見せる") + "なさい" (AUX), "食べ" (VERB) + "なさい" (AUX)
-- た/だ (past tense): always a separate AUX when following another auxiliary — see below.
-- う/よう (volitional/conjectural): "行こ" (VERB, lemma "行く") + "う" (AUX, lemma "う"), "食べ" (VERB, lemma "食べる") + "よう" (AUX, lemma "よう"), "でしょ" (AUX, lemma "だ") + "う" (AUX, lemma "う"), "だろ" (AUX, lemma "だ") + "う" (AUX, lemma "う")
-
-This only applies when there are actually two separate auxillaries. For example, たい (desiderative) is an atomic auxiliary, so do NOT decompose into た + い. "食べたい" → "食べ" (VERB) + "たい" (AUX), never "食べ" + "た" + "い".
-
-#### Auxiliary chains: each auxiliary is its own token
-
-When multiple auxiliaries stack, EACH one is a separate token. Do NOT merge auxiliaries with each other:
-- 壊された → "壊さ" (VERB, lemma "壊す") + "れ" (AUX, lemma "れる") + "た" (AUX, lemma "た")
-- 食べさせられた → "食べ" (VERB) + "させ" (AUX, lemma "させる") + "られ" (AUX, lemma "られる") + "た" (AUX, lemma "た")
-- 書かなかった → "書か" (VERB) + "なかった" (AUX, lemma "ない") — exception: なかった is one AUX because ない conjugates like an い-adjective (ない→なかった), which is an internal stem change, not clean append.
-The principle: た (past) appends cleanly to any auxiliary and should be its own token. Don't merge れた, せた, etc.
-
-Exception (parallel to なかった): たら after an auxiliary merges with it, because たら is an internal conjugation of た, not a clean append of a separate morpheme. So みたら is one AUX (lemma みる), not み + た + ら. Same logic applies to other auxiliary + たら combinations:
-- やってみたら → "やっ" (VERB, lemma "やる") + "て" (SCONJ) + "みたら" (AUX, lemma "みる")
-- 食べさせられたら → "食べ" (VERB) + "させ" (AUX) + "られたら" (AUX, lemma "られる")
-- 書かなかったら → "書か" (VERB) + "なかったら" (AUX, lemma "ない")
-The reasoning is the same as なかった: たら is not a separate clean-append morpheme but a conjugated form of た, and た itself is fused into the auxiliary's conjugation paradigm.
-
-#### Noun suffixes: always SPLIT
-
-Suffixes that attach to nouns are separate tokens:
-- たち (plural): "男" (NOUN) + "たち" (PART/NOUN) — NOT "男たち" as one token
-- さん/くん/ちゃん/様 (honorific): "田中" (PROPN) + "さん" (PART)
-
-#### な-adjective + な: always SPLIT
-
-When な attaches to a na-adjective stem, it should be a separate token. な cleanly appends — there's no fusion:
-- "綿密" (ADJ, lemma "綿密だ") + "な" (AUX) — NOT "綿密な" as one ADJ token
-- "変" (ADJ, lemma "変だ") + "な" (AUX)
-- "静か" (ADJ, lemma "静かだ") + "な" (AUX)
-- "きれい" (ADJ, lemma "きれいだ") + "な" (AUX)
-
-#### After a merged て/た form: further auxiliaries always SPLIT
-
-- "書いて" (VERB, lemma "書く") + "いる" (AUX) — progressive
-- "読んで" (VERB, lemma "読む") + "しまう" (AUX) — completion
-- "待って" (VERB, lemma "待つ") + "ください" (AUX) — request
-- "泳いで" (VERB, lemma "泳ぐ") + "いた" (AUX, lemma "いる") — past progressive
-- But also: "食べ" (VERB) + "て" (SCONJ) + "いる" (AUX) — ichidan splits at て too
-
-#### Compound verbs with ていく/てくる: split at each boundary
-
-- "連れていった" → "連れ" (VERB, lemma "連れる") + "て" (SCONJ) + "いった" (AUX, lemma "いく") — ichidan stem splits, て splits, いった merges (godan 音便)
-- "持っていく" → "持って" (VERB, lemma "持つ") + "いく" (AUX, lemma "いく") — godan 音便 merges, いく appends
-- "帰ってきた" → "帰って" (VERB, lemma "帰る") + "きた" (AUX, lemma "くる") — godan 音便 merges, きた appends
-- "食べていく" → "食べ" (VERB, lemma "食べる") + "て" (SCONJ) + "いく" (AUX) — ichidan splits at every boundary
-
-#### Contracted casual forms — merge (can't be visually separated)
-- "食べちゃった" → one VERB token (lemma "食べる") — てしまう→ちゃう
-- "やっとく" → one VERB token (lemma "やる") — ておく→とく
-- "見てる" → one VERB token (lemma "見る") — ている→てる
-
-Direction for contracted ていく/てくる:
-- てった/ていった/てく = いく (going AWAY). Lemma must reference いく.
-- てきた/てくる = くる (coming TOWARD). Lemma must reference くる.
-
-### Copula splits from noun/adjective
-- "学生です" → "学生" (NOUN) + "です" (AUX, lemma "だ")
-- "静かです" → "静か" (ADJ, lemma "静かだ") + "です" (AUX, lemma "だ")
-- "猫だ" → "猫" (NOUN) + "だ" (AUX, lemma "だ")
-
-
-### Noun+する compounds: always split
-
-確認した has no を, but 確認 and し don't fuse — し just appends to 確認. By the merge-only-when-fused rule, they split. A learner knows 確認 (confirmation) and し (do) and た (past) independently. Same for 到着した, 出発した, 使用した — no fusion, all split.
-
-- "確認した" → "確認" (NOUN) + "し" (VERB, lemma "する") + "た" (AUX, lemma "た")
-- "到着した" → "到着" (NOUN) + "し" (VERB, lemma "する") + "た" (AUX)
-- "勉強する" → "勉強" (NOUN) + "する" (VERB, lemma "する")
-- "勉強している" → "勉強" (NOUN) + "し" (VERB, lemma "する") + "て" (SCONJ) + "いる" (AUX)
-- "出発した" → "出発" (NOUN) + "し" (VERB, lemma "する") + "た" (AUX)
-- "使用した" → "使用" (NOUN) + "し" (VERB, lemma "する") + "た" (AUX)
-- "延期された" → "延期" (NOUN) + "さ" (VERB, lemma "する") + "れ" (AUX, lemma "れる") + "た" (AUX, lemma "た")
-- "宿泊手続きをした" → "宿泊手続き" (NOUN) + "を" (ADP) + "し" (VERB, lemma "する") + "た" (AUX)
-
-The を test tells you when to definitely split (を present means there's an explicit particle boundary), but its absence doesn't mean you should merge.
-
-確認した has no を, but 確認 and し don't fuse. し just appends to 確認. The rule is to merge only when spelling changes. So 確認+し+た should split into three tokens. A learner knows 確認 (confirmation) and し (do) and た (past) independently.
-
-Same for 到着した, 出発した, 使用した — no fusion, all should split regardless of whether を appears.
-
-The one edge case is verbs like 愛する where the する has become fully lexicalized and conjugates as part of the word (愛さない, not 愛をしない — you can't insert を). Even there, no fusion happens at the character level, so by the rule it should still split. 愛する does not become its own vocabulary item - it is two tokens, 愛+する
-### たい is always a separate AUX token
-たい (desiderative "want to") should be split from the verb as its own AUX token:
-- "食べたい" → "食べ" (VERB, lemma "食べる") + "たい" (AUX, lemma "たい")
-- "寝たい" → "寝" (VERB, lemma "寝る") + "たい" (AUX, lemma "たい")
-Do NOT merge たい into the verb token or bake it into the lemma (e.g., lemma "応援したい" is wrong).
-
-### Number+counter compounds stay together
-- "三人" → one token (NOUN, lemma "三人")
-- "五冊" → one token (NOUN, lemma "五冊")
-
-### Proper nouns never decompose
-- "トム" → one token (PROPN)
-- "田中さん" → "田中" (PROPN) + "さん" (NOUN)
+Do fix a lemma that is flatly wrong: the wrong word entirely, the wrong verb, or a conjugated form left sitting in the lemma field (食べました → 食べる, never 食べまし). That is a real error. Archaic kanji and capitalization are not — resist the urge to tidy them into する, いる and Tom, because doing so splits one entry into two.
 
 ## Part of Speech
 
+### A merged predicate keeps its head's POS
+食べました, 書かなかった, 行こう are VERB; 美しかった, 高くない are ADJ. Bound auxiliaries never surface as their own tokens — if you find yourself emitting an AUX with lemma ます, た, たい, ない, れる, られる, せる, させる, or う, it should have been merged into the predicate before it.
+
 ### だ/です copula: always AUX with lemma "だ"
-です is the polite form of だ. All forms (だ, です, でした, だった) have lemma "だ".
+です is the polite form of だ. All copula tokens (だ, です, でした, だった, でしょう, なら) have lemma "だ".
 
-### ます: always AUX with lemma "ます"
-ます and its forms (ました, ません) are always AUX. They are never the root verb.
-
-### ない: ADJ when standalone predicate (時間がない), AUX when negation suffix (食べない)
+### ない: ADJ when standalone predicate (時間がない, 高くはない), merged into the predicate when it is the negation suffix (食べない, 高くない)
 
 ### い-adjectives vs な-adjectives
-Both are tagged ADJ. い-adjectives conjugate (高い→高くない). な-adjectives don't conjugate — they use だ/です. Na-adjective lemmas include だ.
+Both are tagged ADJ. い-adjectives conjugate (高い→高くない, one token). な-adjectives don't conjugate — they use だ/です, which stay separate tokens. Na-adjective lemmas include だ.
 
 ### いる/ある
-VERB for existence (猫がいる, 本がある). AUX after て-form (食べている, 書いてある).
+VERB for existence (猫がいる, 本がある). AUX after て-form (食べて|いる, 書いて|ある).
 
-### Causative/passive suffixes: AUX
-させる/せる (causative) and られる/れる (passive/potential) should be AUX, not VERB.
-
-### らしい: productive suffix, not fixed expression
-本当らしい, 男らしい — productive morphology. Tag as AUX or ADJ, not dep:fixed.
+### らしい: a word of its own after nouns and complete predicates
+本当|らしい, 男|らしい, 降った|らしい — split, tagged AUX (or ADJ), not dep:fixed.
 
 ### 必要: context-dependent
-ADJ in 必要だ/必要な (na-adjective). NOUN in 必要がある (subject of ある)."#
+ADJ in 必要だ/必要な (na-adjective). NOUN in 必要がある (subject of ある).
+
+### Number+counter compounds stay together
+- "三人" → one token (NOUN, lemma "3人")
+- "五冊" → one token (NOUN, lemma "5冊")
+- "一つ", "一週間", "何泊" → one token each (NOUN, lemma "1つ", "1週間", "何泊")
+Never split the numeral from its counter (no 一|つ), and keep the analyzer's arabic-numeral lemma — it groups 一つ and 1つ onto one entry.
+
+### Proper nouns never decompose
+- "トム" → one token (PROPN)
+- "田中さん" → "田中" (PROPN) + "さん" (NOUN)"#
         }
 
         Language::Hindi => {
@@ -10643,7 +10351,7 @@ The text of the word should always be the same as it appears in the sentence (in
 
 Hyphenated words should usually be split into three separate tokens. For example, "can-do" should be split into "can", "-", "do". "toi-même" should be split into "toi", "-", "même".
 
-Review the analysis carefully. If you find errors, correct them. If the analysis is already correct, return it unchanged. In either case, you will return all tokens in the sentence. You are the ultimate authority on the correct analysis of the sentence, and your response should stand alone.{suspicion_context}{language_tips}
+Review the analysis carefully. If you find errors, correct them. If the analysis is already correct, return it unchanged. In either case, you will return all tokens in the sentence. You are the ultimate authority on the correct analysis of the sentence, and your response should stand alone.{language_tips}
 
 Think through your analysis, and finally provide the corrected token list. Remember, the provided analysis likely has errors. If it was likely to be good, we would not need you!"#
     );
@@ -10664,8 +10372,14 @@ Think through your analysis, and finally provide the corrected token list. Remem
         })
         .collect();
 
+    // The per-sentence suspicion notes ride in the user message, not the system prompt.
+    // The system prompt must stay byte-identical across sentences so provider-side
+    // prompt caching can reuse it: gpt-5.6+ caches exact prefixes at the latest user
+    // message and re-bills every unique prefix as a paid cache write, and even the
+    // older longest-prefix models stop matching at the first divergent byte — volatile
+    // content in the system prompt would un-cache the entire tips block after it.
     let user_prompt = format!(
-        "Sentence: \"{}\"\n\nCurrent NLP analysis:\n{}",
+        "Sentence: \"{}\"\n\nCurrent NLP analysis:\n{}{suspicion_context}",
         sentence.sentence,
         serde_json::to_string_pretty(&simplified_tokens)?
     );
@@ -10725,10 +10439,7 @@ The analysis consists of tokens, where each token has:
     "4. lemma": string, // dictionary/base form
 }}
 
-Here are specific concerns about the current analysis:
-{reason_list}
-
-Please review these concerns carefully and correct the analysis if needed. Return all tokens, not just the changed ones. The text of each token must remain exactly as it appears in the original sentence. The goal is that you can concatenate the tokens + whitespace in the order they appear in your output to get the original sentence.{language_tips}"#
+Specific concerns about the current analysis are listed alongside the sentence. Please review those concerns carefully and correct the analysis if needed. Return all tokens, not just the changed ones. The text of each token must remain exactly as it appears in the original sentence. The goal is that you can concatenate the tokens + whitespace in the order they appear in your output to get the original sentence.{language_tips}"#
     );
 
     let simplified_tokens: Vec<SimplifiedTokenPrime> = tokens
@@ -10745,8 +10456,11 @@ Please review these concerns carefully and correct the analysis if needed. Retur
         })
         .collect();
 
+    // Concerns are per-sentence, so they go in the user message — the system prompt
+    // stays byte-identical across sentences for provider-side prompt caching (see the
+    // matching note in clean_sentence_with_llm).
     let user_prompt = format!(
-        "Sentence: \"{sentence}\"\n\nCurrent analysis:\n{}",
+        "Sentence: \"{sentence}\"\n\nCurrent analysis:\n{}\n\nSpecific concerns:\n{reason_list}",
         serde_json::to_string_pretty(&simplified_tokens)?
     );
 

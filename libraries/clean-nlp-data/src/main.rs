@@ -49,10 +49,56 @@ static CHAT_CLIENT_NANO: LazyLock<ChatClient> = LazyLock::new(|| {
         .with_cache_directory("./.cache")
 });
 
-/// Languages that use LLM-based NLP instead of spaCy
-/// (either no spaCy model exists, or spaCy output is too inconsistent)
+/// Japanese is the language whose tokenization policy we are actively fixing, and the one
+/// with no analyzer proposing tokens for it — the LLM does the morphology from scratch. It
+/// gets the stronger model. Scoped to Japanese on purpose: the response cache is keyed by
+/// model, so pointing another language here would silently invalidate its entire cache.
+///
+/// gpt-5.6-family prompt caching needs a `prompt_cache_key` for dependable prefix
+/// matching, one key per stable prefix. tysm excludes the key from its on-disk
+/// response-cache key (like service_tier), so it can be set or renamed without
+/// invalidating anything. Throughput past OpenAI's ~15 requests/minute/key guidance
+/// overflows to machines that then warm the same prefix themselves, so the hit rate
+/// degrades gracefully — one key is enough. The gpt-5.4 clients set no key on purpose:
+/// their family still does longest-prefix matching without one.
+static CHAT_CLIENT_LUNA: LazyLock<ChatClient> = LazyLock::new(|| {
+    ChatClient::from_env("gpt-5.6-luna")
+        .unwrap()
+        .with_cache_directory("./.cache")
+        .with_prompt_cache_key("yap-clean-nlp-jpn")
+});
+
+/// The model that does first-pass tokenization/POS/lemma for a language without an analyzer.
+fn nlp_client(language: Language) -> &'static ChatClient {
+    match language {
+        Language::Japanese => &CHAT_CLIENT_LUNA,
+        _ => &CHAT_CLIENT_NANO,
+    }
+}
+
+/// The model that reviews and repairs a suspicious analysis.
+fn cleaning_client(language: Language) -> &'static ChatClient {
+    match language {
+        Language::Japanese => &CHAT_CLIENT_LUNA,
+        _ => &CHAT_CLIENT,
+    }
+}
+
+/// The model for the double-check pass. It reads the same tokenization policy and may
+/// rewrite tokens, so it must not be weaker than the model that produced them — otherwise
+/// it can overrule a better analysis with a worse one.
+fn double_check_client(language: Language) -> &'static ChatClient {
+    match language {
+        Language::Japanese => &CHAT_CLIENT_LUNA,
+        _ => &CHAT_CLIENT_LOW_REASONING,
+    }
+}
+
+/// Languages with no analyzer proposing tokens, where the LLM does the morphology from
+/// scratch. Only Hindi now: Japanese moved to Sudachi (see generate-data/nlp/main.py),
+/// which removed the last language without a deterministic proposer.
 fn needs_llm_nlp(language: Language) -> bool {
-    matches!(language, Language::Hindi | Language::Japanese)
+    matches!(language, Language::Hindi)
 }
 
 #[tokio::main]
@@ -65,9 +111,16 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // Pull the shared LLM/tokenization cache (osmo/R2) before any API calls, so labeling
-    // reuses work done on other machines; push whatever this run adds at the end.
+    // reuses work done on other machines; push whatever this run adds at the end. The
+    // flush runs even when the command fails (e.g. the cost-cap breaker tripped): the
+    // completed calls are paid for either way, so they must reach the shared cache.
     generate_data::cache_remote::warm().await;
+    let result = run_command(&args).await;
+    generate_data::cache_remote::flush().await;
+    result
+}
 
+async fn run_command(args: &[String]) -> anyhow::Result<()> {
     let command = &args[1];
 
     match command.as_str() {
@@ -140,7 +193,6 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
-    generate_data::cache_remote::flush().await;
     Ok(())
 }
 
@@ -342,10 +394,13 @@ fn run_nlp_cached(
             cache.insert(sentence.sentence.clone(), sentence);
         }
 
-        // Write updated cache
+        // Write updated cache, sorted by sentence — the HashMap's iteration order would
+        // reshuffle every line on every run, burying the real additions in diff churn
         let file = File::create(cache_file).context("Failed to write NLP cache")?;
         let mut writer = BufWriter::new(file);
-        for sentence in cache.values() {
+        let mut entries: Vec<&NlpAnalyzedSentence> = cache.values().collect();
+        entries.sort_by(|a, b| a.sentence.cmp(&b.sentence));
+        for sentence in entries {
             writeln!(writer, "{}", serde_json::to_string(sentence)?)
                 .context("Failed to write cache entry")?;
         }
@@ -465,11 +520,11 @@ The lemma should be the form a learner would look up in a dictionary.{tips}"#
                 let pb = pb.clone();
                 async move {
                     let user_prompt = format!("Sentence: \"{sentence}\"");
-                    let result: Result<LlmNlpResponse, _> = CHAT_CLIENT_NANO
+                    let result: Result<LlmNlpResponse, _> = nlp_client(language)
                         .chat_with_system_prompt(&system_prompt, user_prompt)
                         .await;
 
-                    pb.set_message(format!("{:.2}", CHAT_CLIENT_NANO.cost().unwrap_or(0.0)));
+                    pb.set_message(format!("{:.2}", nlp_client(language).cost().unwrap_or(0.0)));
                     pb.inc(1);
 
                     (sentence, result)
@@ -479,7 +534,7 @@ The lemma should be the form a learner would look up in a dictionary.{tips}"#
             .collect::<Vec<_>>()
             .await;
 
-        pb.finish_with_message(format!("{:.2}", CHAT_CLIENT_NANO.cost().unwrap_or(0.0)));
+        pb.finish_with_message(format!("{:.2}", nlp_client(language).cost().unwrap_or(0.0)));
 
         // Convert LLM responses to NlpAnalyzedSentence and add to cache
         let mut success_count = 0;
@@ -518,10 +573,13 @@ The lemma should be the form a learner would look up in a dictionary.{tips}"#
         }
         println!("LLM NLP: {success_count} succeeded, {fail_count} failed");
 
-        // Write updated cache
+        // Write updated cache, sorted by sentence — the HashMap's iteration order would
+        // reshuffle every line on every run, burying the real additions in diff churn
         let file = File::create(cache_file).context("Failed to write LLM NLP cache")?;
         let mut writer = BufWriter::new(file);
-        for sentence in cache.values() {
+        let mut entries: Vec<&NlpAnalyzedSentence> = cache.values().collect();
+        entries.sort_by(|a, b| a.sentence.cmp(&b.sentence));
+        for sentence in entries {
             writeln!(writer, "{}", serde_json::to_string(sentence)?)
                 .context("Failed to write cache entry")?;
         }
@@ -755,20 +813,40 @@ fn total_llm_cost() -> f64 {
         + CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
         + CHAT_CLIENT_LOW_REASONING.cost().unwrap_or(0.0)
         + CHAT_CLIENT_NANO.cost().unwrap_or(0.0)
+        + CHAT_CLIENT_LUNA.cost().unwrap_or(0.0)
 }
 
 /// Hard cost circuit breaker: if this run's total LLM spend exceeds the cap
-/// (CLEAN_NLP_COST_CAP dollars, default 15.0), abort the process. A worst-case cache
-/// miss (changed prompts, cold cache) otherwise silently relabels everything at full
-/// price. Aborting loses no money — completed calls are already in the tysm cache —
+/// (CLEAN_NLP_COST_CAP dollars, default 15.0), abort the run — gracefully. A worst-case
+/// cache miss (changed prompts, cold cache) otherwise silently relabels everything at
+/// full price. Aborting loses no money — completed calls are already in the tysm cache —
 /// only the run's remaining time.
-fn enforce_cost_cap(base_dir: &std::path::Path) {
+///
+/// Tripping the breaker sets a process-wide flag instead of killing the process:
+/// in-flight requests finish (their spend is committed either way), queued tasks drain
+/// without issuing new calls, and each phase bails at its next checkpoint — before any
+/// gold is written, so the rename-on-success protection still holds. Unwinding through
+/// `main` means the R2 cache flush still runs, mirroring the paid-for responses for
+/// other machines. (The old `std::process::exit(2)` skipped that flush and left a
+/// 0-byte gold `.tmp` behind.)
+static COST_CAP_TRIPPED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn cost_cap_tripped() -> bool {
+    COST_CAP_TRIPPED.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+/// Evaluate the cap and trip the breaker if exceeded. Called periodically from every
+/// spending loop; cheap while under the cap.
+fn check_cost_cap(base_dir: &std::path::Path) {
     static CAP: LazyLock<f64> = LazyLock::new(|| {
         std::env::var("CLEAN_NLP_COST_CAP")
             .ok()
             .and_then(|v| v.parse().ok())
             .unwrap_or(15.0)
     });
+    if cost_cap_tripped() {
+        return;
+    }
     let cost = total_llm_cost();
     if cost > *CAP {
         let msg = format!(
@@ -778,8 +856,20 @@ fn enforce_cost_cap(base_dir: &std::path::Path) {
         );
         eprintln!("{msg}");
         set_status(base_dir, &msg);
-        std::process::exit(2);
+        COST_CAP_TRIPPED.store(true, std::sync::atomic::Ordering::Relaxed);
     }
+}
+
+/// Per-phase checkpoint: once the breaker has tripped and the current phase has drained,
+/// propagate the abort as an error so the run unwinds cleanly.
+fn bail_if_cost_capped() -> anyhow::Result<()> {
+    if cost_cap_tripped() {
+        anyhow::bail!(
+            "LLM cost cap exceeded (CLEAN_NLP_COST_CAP) — run aborted; completed calls \
+             are cached, investigate cache misses before rerunning"
+        );
+    }
+    Ok(())
 }
 
 async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
@@ -1037,20 +1127,21 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         })
         .collect();
 
-    // Write results to a temp file, renamed over the real gold only on success — an
+    // Results go to a temp file, renamed over the real gold only on success — an
     // abort mid-run (e.g. the cost cap) must not leave cleaned_<lang>.jsonl truncated
-    // (it did exactly that to hin once).
+    // (it did exactly that to hin once). The tmp is only created right before writing,
+    // so a cost-cap bail during the LLM passes leaves nothing behind.
     let output_dir = PathBuf::from("./out");
     std::fs::create_dir_all(&output_dir).context("Failed to create output directory")?;
     let output_file = output_dir.join(format!("cleaned_{}.jsonl", language.iso_639_3()));
     let output_tmp = output_dir.join(format!("cleaned_{}.jsonl.tmp", language.iso_639_3()));
-    let file = File::create(&output_tmp)
-        .context(format!("Failed to create output file: {output_tmp:?}"))?;
-    let mut writer = BufWriter::new(file);
 
     if is_passthrough {
         // Passthrough mode: skip LLM cleaning and dependency parsing, write spaCy tokens directly
         println!("Passthrough mode — skipping LLM cleaning and dependency parsing");
+        let file = File::create(&output_tmp)
+            .context(format!("Failed to create output file: {output_tmp:?}"))?;
+        let mut writer = BufWriter::new(file);
         for (sentence, _suspicious_reasons) in &classified_sentences {
             let tokens: Vec<_> = sentence
                 .doc
@@ -1102,14 +1193,24 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
             let pb = pb.clone();
             let status_dir = status_dir.clone();
             async move {
+                // Once the breaker trips, drain the queue without issuing new calls.
+                if cost_cap_tripped() {
+                    pb.inc(1);
+                    return (sentence, Err(anyhow!("skipped: cost cap exceeded")));
+                }
+
                 let corrector = get_corrector(language);
-                let result =
-                    clean_sentence_with_llm(language, &sentence, suspicious_reasons, &CHAT_CLIENT)
-                        .await
-                        .map(|mut tokens| {
-                            corrector.post_corrections(&mut tokens);
-                            tokens
-                        });
+                let result = clean_sentence_with_llm(
+                    language,
+                    &sentence,
+                    suspicious_reasons,
+                    cleaning_client(language),
+                )
+                .await
+                .map(|mut tokens| {
+                    corrector.post_corrections(&mut tokens);
+                    tokens
+                });
 
                 pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
                 pb.inc(1);
@@ -1122,7 +1223,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                             CHAT_CLIENT.cost().unwrap_or(0.0)
                         ),
                     );
-                    enforce_cost_cap(&status_dir);
+                    check_cost_cap(&status_dir);
                 }
 
                 (sentence, result)
@@ -1133,6 +1234,10 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         .await;
 
     pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+    // The cap check happens *after* validation below, not here: the stream drains rather
+    // than aborting, so whatever finished before the breaker tripped is real output worth
+    // keeping. Bailing at this point threw it away and left a 0-byte gold .tmp, which made
+    // a small deliberate spend useless for inspecting the result.
 
     let mut skipped_count = 0;
     let mut auto_fixed_count = 0;
@@ -1180,6 +1285,37 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         }
     }
 
+    // If the breaker tripped, everything that did get cleaned is written to a clearly-named
+    // partial file before unwinding. It is deliberately NOT the gold path and never gets
+    // renamed into place — it carries no dependency parses, since that pass costs money and
+    // is skipped. The point is to make a small capped run (CLEAN_NLP_COST_CAP=3) usable for
+    // eyeballing tokenization before committing to a full one.
+    if cost_cap_tripped() {
+        let partial = output_dir.join(format!("cleaned_{}.partial.jsonl", language.iso_639_3()));
+        let f = File::create(&partial).context("Failed to create partial output")?;
+        let mut w = BufWriter::new(f);
+        for (sentence, tokens) in &validated_results {
+            let record = serde_json::json!({
+                "sentence": sentence.sentence,
+                "tokens": tokens.iter().map(|t| serde_json::json!({
+                    "text": t.text,
+                    "whitespace": t.whitespace,
+                    "pos": t.pos,
+                    "lemma": t.lemma,
+                })).collect::<Vec<_>>(),
+            });
+            writeln!(w, "{}", serde_json::to_string(&record)?)?;
+        }
+        w.flush()?;
+        println!(
+            "\ncost cap tripped — wrote {} cleaned sentences to {} for inspection \
+             (no dependency parses; gold left untouched)",
+            validated_results.len(),
+            partial.display()
+        );
+    }
+    bail_if_cost_capped()?;
+
     // Double-check pass: re-check sentences the classifier flags
     let classifier = get_classifier(language);
     let needs_recheck: Vec<_> = validated_results
@@ -1224,20 +1360,31 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
             })
             .collect();
 
+        let status_dir_dc = base_dir.clone();
         let recheck_results = futures::stream::iter(recheck_items)
             .map(|(sentence_text, tokens, reasons)| {
                 let pb_dc = pb_dc.clone();
+                let status_dir_dc = status_dir_dc.clone();
                 async move {
+                    // Once the breaker trips, drain the queue without issuing new calls.
+                    if cost_cap_tripped() {
+                        pb_dc.inc(1);
+                        return (sentence_text, Err(anyhow!("skipped: cost cap exceeded")));
+                    }
+
                     let result = double_check_with_llm(
                         language,
                         &sentence_text,
                         &tokens,
                         reasons,
-                        &CHAT_CLIENT_LOW_REASONING,
+                        double_check_client(language),
                     )
                     .await;
                     pb_dc.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
                     pb_dc.inc(1);
+                    if pb_dc.position().is_multiple_of(200) {
+                        check_cost_cap(&status_dir_dc);
+                    }
                     (sentence_text, result)
                 }
             })
@@ -1246,6 +1393,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
             .await;
 
         pb_dc.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+        bail_if_cost_capped()?;
 
         // Apply double-check results back
         let corrector = get_corrector(language);
@@ -1291,6 +1439,16 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
             let pb2 = pb2.clone();
             let status_dir2 = status_dir2.clone();
             async move {
+                // Once the breaker trips, drain the queue without issuing new calls.
+                if cost_cap_tripped() {
+                    pb2.inc(1);
+                    return (
+                        original_sentence,
+                        corrected_tokens,
+                        Err(anyhow!("skipped: cost cap exceeded")),
+                    );
+                }
+
                 let dep_result = parse_dependencies_with_llm(
                     language,
                     &original_sentence.sentence,
@@ -1310,7 +1468,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                             CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
                         ),
                     );
-                    enforce_cost_cap(&status_dir2);
+                    check_cost_cap(&status_dir2);
                 }
 
                 (original_sentence, corrected_tokens, dep_result)
@@ -1321,8 +1479,12 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         .await;
 
     pb2.finish_with_message(format!("{:.2}", CHAT_CLIENT_MINI.cost().unwrap_or(0.0)));
+    bail_if_cost_capped()?;
 
     // Write results to file
+    let file = File::create(&output_tmp)
+        .context(format!("Failed to create output file: {output_tmp:?}"))?;
+    let mut writer = BufWriter::new(file);
     let mut written_count = 0usize;
     for (original_sentence, corrected_tokens, dep_result) in results_with_deps {
         let dep_response = match dep_result {

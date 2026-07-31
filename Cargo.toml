@@ -86,3 +86,9 @@ lto = true
 inherits = "release"
 debug = true
 strip = "none"
+
+# TEMPORARY — do not ship. Builds against the local tysm checkout for the uncommitted
+# `with_prompt_cache_key` support. Once that lands in anchpop/tysm, delete this patch
+# section (and the Cargo.lock delta it causes) and let the git dependency above pin it.
+[patch."https://github.com/anchpop/tysm"]
+tysm = { path = "../tysm" }
