@@ -34,9 +34,10 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-# Fork's main has the record-log cache (anchpop/tysm#48, merged). Switch to a published
-# version (`tysm = "0.19"`) once released.
-tysm = { git = "https://github.com/anchpop/tysm" }
+# Fork's main has the record-log cache (anchpop/tysm#48, merged). Pinned to the
+# prompt-cache-key branch for `with_prompt_cache_key` (anchpop/tysm#53); drop the `rev`
+# once that merges, and switch to a published version (`tysm = "0.19"`) once released.
+tysm = { git = "https://github.com/anchpop/tysm", rev = "c9667bc3e79b5bf3e50e90f5176b38ffe90d88ba" }
 # Directory↔R2 sync engine (github.com/anchpop/osmo). generate-data uses it to mirror
 # the .cache directory to a bucket. Git dep until published to crates.io.
 osmo = { git = "https://github.com/anchpop/osmo" }
@@ -86,9 +87,3 @@ lto = true
 inherits = "release"
 debug = true
 strip = "none"
-
-# TEMPORARY — do not ship. Builds against the local tysm checkout for the uncommitted
-# `with_prompt_cache_key` support. Once that lands in anchpop/tysm, delete this patch
-# section (and the Cargo.lock delta it causes) and let the git dependency above pin it.
-[patch."https://github.com/anchpop/tysm"]
-tysm = { path = "../tysm" }
