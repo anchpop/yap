@@ -2734,6 +2734,7 @@ pub enum Language {
     Portuguese,
     Italian,
     Hindi,
+    Thai,
 }
 
 #[derive(
@@ -2761,6 +2762,8 @@ pub enum WritingSystem {
     Japanese,
     /// Devanagari script (Hindi, etc.)
     Devanagari,
+    /// Thai script (an abugida; no spaces between words)
+    Thai,
 }
 
 impl Language {
@@ -2791,6 +2794,7 @@ impl Language {
             Language::Korean => None,
             Language::Japanese => None,
             Language::ChineseSimplified | Language::ChineseTraditional => None,
+            Language::Thai => None,
         }
     }
 
@@ -2811,6 +2815,7 @@ impl Language {
             Language::Portuguese => "por",
             Language::Italian => "ita",
             Language::Hindi => "hin",
+            Language::Thai => "tha",
         }
     }
 
@@ -2831,6 +2836,7 @@ impl Language {
             "por" => Language::Portuguese,
             "ita" => Language::Italian,
             "hin" => Language::Hindi,
+            "tha" => Language::Thai,
             _ => return None,
         })
     }
@@ -2848,6 +2854,7 @@ impl Language {
             Language::Portuguese => "pt",
             Language::Italian => "it",
             Language::Hindi => "hi",
+            Language::Thai => "th",
         }
     }
 
@@ -2864,6 +2871,7 @@ impl Language {
             Language::ChineseSimplified | Language::ChineseTraditional => WritingSystem::Han,
             Language::Japanese => WritingSystem::Japanese,
             Language::Hindi => WritingSystem::Devanagari,
+            Language::Thai => WritingSystem::Thai,
         }
     }
 
@@ -2893,6 +2901,7 @@ impl Language {
             Language::Portuguese => "como em",
             Language::Italian => "come in",
             Language::Hindi => "जैसे",
+            Language::Thai => "เหมือนใน",
         }
     }
 
@@ -2923,6 +2932,7 @@ impl Language {
             Language::Portuguese => "pt-BR",
             Language::Italian => "it-IT",
             Language::Hindi => "hi-IN",
+            Language::Thai => "th-TH",
         }
     }
 
@@ -2943,6 +2953,9 @@ impl Language {
             Language::Portuguese => &["que", "de", "não", "eu"],
             Language::Italian => &["che", "di", "non", "il"],
             Language::Hindi => &["है", "में", "के", "को"],
+            // Thai has no spaces between words, so these are checked as
+            // substrings (the non-Latin path in check_subtitle_sanity).
+            Language::Thai => &["ไม่", "ที่", "ได้", "จะ"],
         }
     }
 
@@ -3098,6 +3111,7 @@ impl Language {
             | Language::ChineseTraditional
             | Language::Japanese => &[],
             Language::Hindi => &[],
+            Language::Thai => &[],
         }
     }
 
@@ -3455,6 +3469,28 @@ impl Language {
             }
         }
 
+        // 16. Thai: script must dominate. The four sanity words above still all
+        // appear in a bilingual Thai+English file, or an English file that
+        // quotes a bit of Thai; a genuine Thai subtitle is overwhelmingly Thai
+        // script. Mirrors the han-dominant check for Chinese above.
+        if matches!(self, Language::Thai) {
+            let mut thai = 0usize;
+            let mut non_ws = 0usize;
+            for c in all_text.chars() {
+                if !c.is_whitespace() {
+                    non_ws += 1;
+                }
+                if ('\u{0E00}'..='\u{0E7F}').contains(&c) {
+                    thai += 1;
+                }
+            }
+            if thai * 2 < non_ws {
+                return Err(format!(
+                    "not predominantly Thai: {thai} Thai chars of {non_ws} total (bilingual or wrong language?)"
+                ));
+            }
+        }
+
         Ok(())
     }
 }
@@ -3474,6 +3510,7 @@ impl std::fmt::Display for Language {
             Language::Portuguese => write!(f, "Portuguese"),
             Language::Italian => write!(f, "Italian"),
             Language::Hindi => write!(f, "Hindi"),
+            Language::Thai => write!(f, "Thai"),
         }
     }
 }
@@ -3586,6 +3623,7 @@ pub const LANGUAGES: &[Language] = &[
     Language::Portuguese,
     Language::Italian,
     Language::Hindi,
+    Language::Thai,
 ];
 
 /// A sentence example for the landing page showcase.
@@ -4218,5 +4256,64 @@ mod subtitle_script_tests {
             err.contains("Cantonese") || err.contains("Traditional"),
             "{err}"
         );
+    }
+
+    // Thai has no spaces between words, so the helper above (which relies on a
+    // Chinese filler to supply the sanity words) doesn't fit; build Thai lines
+    // directly. The filler carries all four Thai sanity words: ไม่ ที่ ได้ จะ.
+    fn thai_lines(sample: &[&str]) -> Vec<String> {
+        let filler = "เขาบอกว่าไม่ได้ที่จะไปที่นั่น";
+        let mut out = Vec::new();
+        while out.len() < 80 {
+            out.extend(sample.iter().map(|s| s.to_string()));
+            out.push(filler.to_string());
+        }
+        out
+    }
+
+    #[test]
+    fn thai_passes() {
+        let lines = thai_lines(&[
+            "เรายังไม่ได้เปิดร้านตอนนี้",
+            "สิ่งที่คุณพูดถูกต้องแล้ว",
+            "คำถามนี้ยากมากใครจะตอบได้",
+        ]);
+        Language::Thai
+            .check_subtitle_sanity(lines.iter().map(|s| s.as_str()), &[])
+            .unwrap();
+    }
+
+    #[test]
+    fn bilingual_thai_en_rejected() {
+        // Every line is mostly English with a little Thai, so the sanity words
+        // still appear but Thai script no longer dominates.
+        let lines = thai_lines(&[
+            "ไม่ And the monsters here can help you destroy every one of your enemies.",
+            "ที่ Elixir! This particular line is overwhelmingly English text overall.",
+            "จะ Let us all go now, everyone, because the ceremony is about to begin.",
+        ]);
+        let err = Language::Thai
+            .check_subtitle_sanity(lines.iter().map(|s| s.as_str()), &[])
+            .unwrap_err();
+        assert!(err.contains("predominantly Thai"), "{err}");
+    }
+
+    #[test]
+    fn english_rejected_as_thai() {
+        // A plain English subtitle mislabeled as Thai: no Thai sanity words.
+        let sample = [
+            "I don't know where you are right now, my friend.",
+            "What you said earlier was actually completely correct.",
+            "This question is very hard, who among us could answer it.",
+        ];
+        let mut lines = Vec::new();
+        while lines.len() < 80 {
+            lines.extend(sample.iter().map(|s| s.to_string()));
+        }
+        let err = Language::Thai
+            .check_subtitle_sanity(lines.iter().map(|s| s.as_str()), &[])
+            .unwrap_err();
+        // Fails on the first missing Thai sanity word.
+        assert!(err.contains("missing required word"), "{err}");
     }
 }

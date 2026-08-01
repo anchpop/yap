@@ -233,6 +233,7 @@ pub fn get_classifier(language: Language) -> Box<dyn SentenceClassifier> {
         Language::ChineseSimplified | Language::ChineseTraditional => Box::new(ChineseClassifier),
         Language::Japanese => Box::new(JapaneseClassifier),
         Language::Hindi => Box::new(HindiClassifier),
+        Language::Thai => Box::new(ThaiClassifier),
     }
 }
 
@@ -250,6 +251,7 @@ pub fn get_corrector(language: Language) -> Box<dyn WordCorrector> {
         Language::ChineseSimplified | Language::ChineseTraditional => Box::new(ChineseCorrector),
         Language::Japanese => Box::new(JapaneseCorrector),
         Language::Hindi => Box::new(HindiCorrector),
+        Language::Thai => Box::new(ThaiCorrector),
     }
 }
 
@@ -6671,6 +6673,299 @@ impl WordCorrector for ChineseCorrector {
     }
 }
 
+/// Preverbal tense-aspect-mood markers that are AUX when they modify a following
+/// verb: irrealis จะ, progressive กำลัง, experiential เคย, and the modals. ได้ is
+/// deliberately absent: its preverbal (past attainment), postverbal (potential
+/// "can"), and main-verb ("get") readings need context the adjacency rule can't see.
+const TH_PREVERBAL_AUX: &[&str] = &[
+    "จะ",
+    "กำลัง",
+    "เคย",
+    "ต้อง",
+    "ควร",
+    "อาจ",
+    "คง",
+    "มัก",
+    "น่าจะ",
+    "ย่อม",
+];
+
+/// Words with no content reading at all: the negator ไม่ and the politeness/mood
+/// particles. Always PART. (Question particle ไหม is absent — it is also the noun
+/// "silk"; the sentence-final case is handled in `fix_thai_context`.)
+const TH_ALWAYS_PART: &[&str] = &[
+    "ไม่",
+    "ครับ",
+    "ค่ะ",
+    "คะ",
+    "นะ",
+    "จ้ะ",
+    "จ๊ะ",
+    "ฮะ",
+    "เถอะ",
+    "หรอก",
+    "สิ",
+    "ล่ะ",
+];
+
+/// Deterministic per-token fixes, applied identically to the NLP proposal (`correct`)
+/// and the LLM output (`post_corrections`).
+fn fix_thai_token(token: &mut impl TokenView) -> Vec<String> {
+    let mut fixes = Vec::new();
+
+    // Thai words do not inflect: the lemma is the surface form, for every token —
+    // including colloquial spellings (เค้า, มั้ย), which keep their own spelling.
+    // (Trimmed — the first token of a sentence may carry leading whitespace.)
+    let want_lemma = token.text().trim();
+    if token.lemma() != want_lemma && !want_lemma.is_empty() {
+        fixes.push(format!(
+            "Set lemma of '{}' to its surface form (was '{}')",
+            token.text().trim(),
+            token.lemma()
+        ));
+        token.set_lemma(want_lemma.to_string());
+    }
+
+    let text = token.text().trim();
+    if TH_ALWAYS_PART.contains(&text) && token.pos() != PartOfSpeechTag::Part {
+        fixes.push(format!("Retagged {} from {:?} to PART", text, token.pos()));
+        token.set_pos(PartOfSpeechTag::Part);
+    }
+
+    fixes
+}
+
+/// Deterministic context fixes over the whole token sequence.
+fn fix_thai_context<T: TokenView>(tokens: &mut [T]) -> Vec<String> {
+    let mut fixes = Vec::new();
+
+    for i in 0..tokens.len() {
+        let text = tokens[i].text().trim().to_string();
+        if !TH_PREVERBAL_AUX.contains(&text.as_str()) {
+            continue;
+        }
+        if !matches!(
+            tokens[i].pos(),
+            PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
+        ) {
+            continue;
+        }
+        // Walk past negation (ไม่ — PART) and adverbs (ก็, ยัง, เพิ่ง) to the word the
+        // marker would govern.
+        let next_pos = tokens[i + 1..]
+            .iter()
+            .map(|t| t.pos())
+            .find(|p| !matches!(p, PartOfSpeechTag::Adv | PartOfSpeechTag::Part));
+        // Marker before a verb: AUX (ผมจะไป, เขาคงไม่มา). The standalone direction is
+        // left to the LLM: a bare ต้อง/ควร can still govern an elided verb.
+        if matches!(next_pos, Some(PartOfSpeechTag::Verb | PartOfSpeechTag::Aux))
+            && tokens[i].pos() == PartOfSpeechTag::Verb
+        {
+            fixes.push(format!(
+                "Retagged preverbal marker {text} before a verb to AUX"
+            ));
+            tokens[i].set_pos(PartOfSpeechTag::Aux);
+        }
+    }
+
+    // A sentence-final question particle — last token, or followed only by
+    // punctuation and other particles (ไปไหมครับ) — is PART. Mid-sentence ไหม can be
+    // the noun "silk", so position matters.
+    for i in 0..tokens.len() {
+        let text = tokens[i].text().trim().to_string();
+        if !matches!(text.as_str(), "ไหม" | "มั้ย" | "เหรอ" | "หรอ") {
+            continue;
+        }
+        let only_tail = tokens[i + 1..]
+            .iter()
+            .all(|t| matches!(t.pos(), PartOfSpeechTag::Punct | PartOfSpeechTag::Part));
+        if only_tail && tokens[i].pos() != PartOfSpeechTag::Part {
+            fixes.push(format!(
+                "Retagged sentence-final question particle {text} to PART"
+            ));
+            tokens[i].set_pos(PartOfSpeechTag::Part);
+        }
+    }
+
+    fixes
+}
+
+/// Thai-specific corrector
+struct ThaiCorrector;
+
+impl WordCorrector for ThaiCorrector {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let mut corrections = Vec::new();
+        for token in &mut sentence.doc {
+            corrections.extend(fix_thai_token(token));
+        }
+        corrections.extend(fix_thai_context(&mut sentence.doc));
+        CorrectionResult {
+            corrected: !corrections.is_empty(),
+            corrections,
+        }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens.iter_mut() {
+            fix_thai_token(token);
+        }
+        fix_thai_context(tokens.as_mut_slice());
+    }
+}
+
+/// True for a token that is a single Thai-script character. Thai has essentially no
+/// one-character words (a bare consonant or vowel sign is not a word), so these are
+/// almost always fragments of an unknown word the dictionary-based segmenter
+/// couldn't handle — typically a transliterated name.
+fn is_thai_fragment(text: &str) -> bool {
+    let mut chars = text.trim().chars();
+    match (chars.next(), chars.next()) {
+        (Some(c), None) => ('\u{0E00}'..='\u{0E7F}').contains(&c),
+        _ => false,
+    }
+}
+
+/// Thai-specific classifier
+struct ThaiClassifier;
+
+impl SentenceClassifier for ThaiClassifier {
+    fn classify(&self, sentence: &NlpAnalyzedSentence) -> SentenceClassification {
+        let mut reasons = Vec::new();
+
+        for token in sentence.doc.iter() {
+            let text = token.text.trim();
+
+            if token.pos == PartOfSpeechTag::Space {
+                reasons.push("Contains Space token, which is usually not necessary due to the `whitespace` field".to_string());
+            }
+
+            if token.pos == PartOfSpeechTag::Propn {
+                reasons.push(format!(
+                    "Contains '{text}' classified as a proper noun — subtitle data often over-classifies common words as proper nouns"
+                ));
+            }
+
+            if token.lemma.contains(' ') {
+                reasons.push(format!(
+                    "'{}' has lemma with space: '{}'",
+                    text, token.lemma
+                ));
+            }
+
+            // Thai words don't inflect — surface form is the lemma
+            if token.text != token.lemma && !token.lemma.is_empty() {
+                reasons.push(format!(
+                    "'{}' has different lemma '{}' — Thai words don't inflect, so lemma should match surface form",
+                    token.text, token.lemma
+                ));
+            }
+
+            // Single-character fragments: the dictionary segmenter shreds unknown
+            // words (usually transliterated names) into meaningless pieces.
+            if is_thai_fragment(&token.text) {
+                reasons.push(format!(
+                    "'{text}' is a single Thai character — almost never a real word. Likely a fragment of an unsegmented word (a transliterated name?); merge the whole run into one token."
+                ));
+            }
+
+            // ได้ — three-way ambiguous, the LLM must decide from context
+            if text == "ได้" {
+                reasons.push(format!(
+                    "'ได้' is ambiguous: AUX before a verb (past attainment: ได้ไป), AUX after a verb (potential: ไปได้ = can go), VERB as main verb 'get/receive' (ได้เงิน). Current POS: {:?}",
+                    token.pos
+                ));
+            }
+
+            // ที่ — the most overloaded word in Thai
+            if text == "ที่" {
+                reasons.push(format!(
+                    "'ที่' is ambiguous: ADP 'at' before a place, SCONJ relativizer/complementizer (คนที่มา, ขอโทษที่มาสาย), NOUN 'place/land', or ordinal marker before a numeral (ที่สอง). Current POS: {:?}",
+                    token.pos
+                ));
+            }
+
+            // ให้ — verb vs grammatical marker
+            if text == "ให้" {
+                reasons.push(format!(
+                    "'ให้' is ambiguous: VERB 'give' (ให้เงิน), ADP benefactive 'for' (ทำให้แม่ = do for mother), or causative marker (ทำให้เขาเสียใจ). Current POS: {:?}",
+                    token.pos
+                ));
+            }
+        }
+
+        if reasons.is_empty() {
+            SentenceClassification::Unknown
+        } else {
+            SentenceClassification::Suspicious { reasons }
+        }
+    }
+
+    fn needs_double_check(
+        &self,
+        _sentence: &str,
+        tokens: &[SimplifiedTokenPrime],
+    ) -> Option<Vec<String>> {
+        let mut reasons = Vec::new();
+
+        for (idx, token) in tokens.iter().enumerate() {
+            let text = token.text.trim();
+
+            // จะ has no reading other than the irrealis marker
+            if text == "จะ" && token.pos != PartOfSpeechTag::Aux {
+                reasons.push(format!(
+                    "'จะ' is tagged {:?} — จะ is the irrealis/future marker and should be AUX.",
+                    token.pos
+                ));
+            }
+
+            // A preverbal marker tagged AUX must govern a verb somewhere to its right.
+            if TH_PREVERBAL_AUX.contains(&text)
+                && token.pos == PartOfSpeechTag::Aux
+                && !tokens[idx + 1..]
+                    .iter()
+                    .any(|t| matches!(t.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Aux))
+            {
+                reasons.push(format!(
+                    "marker '{text}' is tagged AUX but no verb follows it — a standalone modal answering a question (ได้, ต้อง) is VERB."
+                ));
+            }
+
+            // Copulas are VERB in this dataset (matching the Chinese 是 convention)
+            if matches!(text, "เป็น" | "คือ") && token.pos == PartOfSpeechTag::Aux {
+                reasons.push(format!(
+                    "'{text}' is tagged AUX — the copula is VERB in this dataset (เขาเป็นครู → เป็น VERB). AUX is only right for postverbal potential เป็น ('know how to')."
+                ));
+            }
+
+            // A single-character fragment survived the LLM pass
+            if is_thai_fragment(&token.text) {
+                reasons.push(format!(
+                    "'{text}' is a single Thai character, which is almost never a real word — is this an unmerged fragment of a longer word or name?"
+                ));
+            }
+
+            // ไหม mid-sentence is the noun "silk", not the question particle
+            if text == "ไหม"
+                && token.pos == PartOfSpeechTag::Part
+                && !tokens[idx + 1..]
+                    .iter()
+                    .all(|t| matches!(t.pos, PartOfSpeechTag::Punct | PartOfSpeechTag::Part))
+            {
+                reasons.push(
+                    "'ไหม' is tagged PART but is not sentence-final — the question particle only appears at the end; mid-sentence ไหม is the noun 'silk'.".to_string(),
+                );
+            }
+        }
+
+        if reasons.is_empty() {
+            None
+        } else {
+            Some(reasons)
+        }
+    }
+}
+
 /// Japanese words where a たち/達 ending is part of the word, not the plural suffix.
 const TATSU_COMPOUNDS: &[&str] = &[
     "友達",
@@ -9904,6 +10199,133 @@ mod tests {
             "unexpected 得 flag: {reasons:?}"
         );
     }
+
+    fn th_token(text: &str, pos: PartOfSpeechTag) -> SimplifiedTokenPrime {
+        SimplifiedTokenPrime {
+            text: text.to_string(),
+            whitespace: String::new(),
+            pos,
+            lemma: text.to_string(),
+        }
+    }
+
+    fn th_fix(tokens: Vec<SimplifiedTokenPrime>) -> Vec<SimplifiedTokenPrime> {
+        let mut tokens = tokens;
+        ThaiCorrector.post_corrections(&mut tokens);
+        tokens
+    }
+
+    #[test]
+    fn test_thai_lemma_is_surface_form() {
+        use PartOfSpeechTag::Verb;
+
+        // Colloquial spellings keep their own spelling as lemma
+        let mut tokens = vec![th_token("กิน", Verb)];
+        tokens[0].lemma = "กินข้าว".to_string();
+        let fixed = th_fix(tokens);
+        assert_eq!(fixed[0].lemma, "กิน");
+    }
+
+    #[test]
+    fn test_thai_particle_enforcement() {
+        use PartOfSpeechTag::{Adv, Noun, Part, Pron, Verb};
+
+        // ไม่ and ครับ are always PART
+        let fixed = th_fix(vec![
+            th_token("ผม", Pron),
+            th_token("ไม่", Adv),
+            th_token("ไป", Verb),
+            th_token("ครับ", Noun),
+        ]);
+        assert_eq!(fixed[1].pos, Part);
+        assert_eq!(fixed[3].pos, Part);
+
+        // Sentence-final question particle → PART, even with a politeness
+        // particle after it
+        let fixed = th_fix(vec![
+            th_token("ไป", Verb),
+            th_token("ไหม", Noun),
+            th_token("ครับ", Part),
+        ]);
+        assert_eq!(fixed[1].pos, Part);
+
+        // Mid-sentence ไหม (silk) is left alone
+        let fixed = th_fix(vec![
+            th_token("ผ้า", Noun),
+            th_token("ไหม", Noun),
+            th_token("สวย", PartOfSpeechTag::Adj),
+        ]);
+        assert_eq!(fixed[1].pos, Noun);
+    }
+
+    #[test]
+    fn test_thai_preverbal_marker_pos_follows_context() {
+        use PartOfSpeechTag::{Aux, Pron, Verb};
+
+        // จะ before a verb → AUX: ผมจะไป
+        let fixed = th_fix(vec![
+            th_token("ผม", Pron),
+            th_token("จะ", Verb),
+            th_token("ไป", Verb),
+        ]);
+        assert_eq!(fixed[1].pos, Aux);
+
+        // Negation (ไม่ → PART) between marker and verb is skipped: ฉันจะไม่ไป
+        let fixed = th_fix(vec![
+            th_token("ฉัน", Pron),
+            th_token("จะ", Verb),
+            th_token("ไม่", PartOfSpeechTag::Part),
+            th_token("ไป", Verb),
+        ]);
+        assert_eq!(fixed[1].pos, Aux);
+
+        // A marker before a noun is left for the LLM: ต้องการ segmented as
+        // ต้อง|การ would be wrong to force
+        let fixed = th_fix(vec![
+            th_token("ผม", Pron),
+            th_token("ต้อง", Verb),
+            th_token("เงิน", PartOfSpeechTag::Noun),
+        ]);
+        assert_eq!(fixed[1].pos, Verb);
+    }
+
+    #[test]
+    fn test_thai_stranded_aux_flagged() {
+        use PartOfSpeechTag::{Aux, Noun, Pron, Verb};
+
+        // AUX marker with no verb after it
+        let tokens = vec![
+            th_token("ผม", Pron),
+            th_token("ต้อง", Aux),
+            th_token("เงิน", Noun),
+        ];
+        let reasons = ThaiClassifier.needs_double_check("ผมต้องเงิน", &tokens);
+        assert!(
+            reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("no verb follows"))),
+            "expected stranded-marker flag, got {reasons:?}"
+        );
+
+        // Well-formed จะ AUX + verb is not flagged
+        let tokens = vec![
+            th_token("ผม", Pron),
+            th_token("จะ", Aux),
+            th_token("ไป", Verb),
+        ];
+        let reasons = ThaiClassifier.needs_double_check("ผมจะไป", &tokens);
+        assert!(reasons.is_none(), "unexpected flags: {reasons:?}");
+
+        // A single-character fragment is flagged
+        let tokens = vec![th_token("มิ", Noun), th_token("น", Noun)];
+        let reasons = ThaiClassifier.needs_double_check("มิน", &tokens);
+        assert!(
+            reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("single Thai character"))),
+            "expected fragment flag, got {reasons:?}"
+        );
+    }
 }
 
 /// Simplified token representation for LLM correction (without morphology)
@@ -10603,6 +11025,92 @@ Single-character localizers after a noun (桌子上, 房间里): 上/里/下/中
 
 ### Proper nouns
 Names of people, places, and organizations — Chinese or transliterated — are PROPN: 爱德华, 洛汗, 刚铎, 明尼苏达州, 张伟. Fictional place/people names from films count. A transliterated name is not a common NOUN just because it is unfamiliar."#
+        }
+        Language::Thai => {
+            r#"
+
+Thai-specific rules — please follow these carefully. Thai is written without spaces between words; a dictionary-based segmenter (PyThaiNLP newmm) has already proposed a segmentation, and your job is to review it. The POS proposal comes from a weak tagger — expect to correct tags freely.
+
+## Tokenization: a token is a word a learner can look up
+
+Every token is shown to a learner on its own, with its own dictionary entry. The guiding principle:
+
+**Keep a boundary only when both sides are words a learner could be shown independently. Merge only when the pieces are not independent words — or when the combination is itself the dictionary word.**
+
+Thai DOES use spaces — between phrases and clauses, not words. A space always goes in the preceding token's `whitespace` field, never in a token's text and never as its own token.
+
+### Merge: fragments of unknown words
+
+The segmenter's dictionary doesn't know transliterated names and shreds them into meaningless fragments: มินนิอาโปลิส (Minneapolis) comes out as มิ|น|นิ|อาโป|ลิ|ส. A single Thai character is almost never a real word — a run of short nonsense fragments is one word, usually a PROPN. Merge the whole run back into one token: มินนิอาโปลิส, เอ็ดเวิร์ด, เน็ตฟลิกซ์. Merge exactly the fragments that belong to the name — check against the original sentence — and never absorb the real word next to it (in ไป|มินนิอาโปลิส the ไป is its own VERB token).
+
+### One token each (do not split)
+
+- Greetings and formulas: สวัสดี, ขอบคุณ, ขอโทษ, ไม่เป็นไร — single tokens (the dictionary lists them; their meaning is not compositional).
+- Question words: อะไร, ทำไม, ยังไง, อย่างไร, ที่ไหน, เมื่อไหร่ — one token each.
+- Lexicalized compounds the dictionary lists: น้ำตา (tears), น้ำแข็ง (ice), รถไฟ (train), ไฟฟ้า (electricity), เมื่อวาน (yesterday), พรุ่งนี้ (tomorrow), หนังสือ (book).
+- Lexicalized การ-/ความ- nominalizations: ความสุข (happiness), ความรัก (love), ความจริง (truth), การบ้าน (homework) — dictionary words, keep whole.
+- Personal names, Thai or transliterated: one PROPN token; never decompose a person's name.
+- Polysyllabic loanwords: คอมพิวเตอร์, แท็กซี่, โซฟา — one token each.
+- Lexicalized โรง-/ร้าน- compounds: โรงแรม (hotel), โรงเรียน (school), ร้านอาหาร (restaurant) — dictionary words, keep whole.
+
+### Separate tokens (do not merge)
+
+- Compositional verb + object collocations, even when the dictionary lists them: กินข้าว → กิน|ข้าว (eat + rice), ปิดไฟ → ปิด|ไฟ (close + light), มาสาย → มา|สาย (come + late), ดูหนัง → ดู|หนัง, อาบน้ำ → อาบ|น้ำ. Each side is a word the learner should meet on its own.
+- Productive (non-lexicalized) การ-/ความ- nominalizations: การ|วิ่ง (the running). But when the whole is itself a dictionary word (ความเร็ว "speed"), keep it whole. When unsure whether it's lexicalized, keep the segmenter's proposal.
+- Pronoun/noun sequences the segmenter glued: ผมชื่อ → ผม|ชื่อ.
+- Number | classifier: สอง|คน, สาม|ตัว — the classifier is its own learnable word (NOUN).
+- Serial verbs and verb chains: ไป|ซื้อ (go buy), อยาก|กิน (want to eat) — each verb (or preverbal marker) is its own token.
+
+### Never rewrite the text
+
+Concatenating the tokens' text + whitespace in order must reproduce the sentence exactly. Colloquial spellings stay exactly as written: เค้า (for เขา), มั้ย (for ไหม), ป่ะ, จิงๆ, งับ — never normalize them, in the text OR the lemma. Never insert, delete, or reorder characters.
+
+## Lemmatization
+
+Thai words do not inflect — the lemma is always identical to the surface form of the token, for every token, including colloquial spellings, particles, punctuation, and proper nouns. (The pipeline enforces this deterministically — a differing lemma is discarded.)
+
+## Part of Speech
+
+### Negation and particles (PART)
+- ไม่ (negator) is always PART (enforced deterministically). Same for มิ.
+- Politeness particles: ครับ, ค่ะ, คะ, นะ, จ้ะ, จ๊ะ, ฮะ (deterministic), plus สิ, เถอะ, หรอก, ล่ะ, น่า, เลย when used as sentence-final mood softeners → PART.
+- Question particles at the end of the sentence: ไหม, มั้ย, เหรอ, หรอ, รึเปล่า (as segmented) → PART. Mid-sentence ไหม is the noun "silk".
+
+### Preverbal markers (AUX)
+จะ (irrealis/future — always AUX), กำลัง (progressive), เคย (experiential), ต้อง (must), ควร (should), อาจ (may), คง (probably), มัก (tend to), น่าจะ (ought to), ย่อม — AUX when they modify a following verb (the adjacent case is enforced deterministically; apply the same rule when the verb sits further right). อยาก (want to) before a verb → AUX. A modal standing alone as an answer (ได้! = "sure, can do") is VERB.
+
+### ได้ — three readings
+- Before a verb: AUX, past attainment (ได้ไป = got to go / did go)
+- After a verb: AUX, potential (ไปได้ = can go, ทำไม่ได้ = can't do)
+- Main verb "get/receive" (ได้เงิน = get money) → VERB
+
+### อยู่ and เป็น
+- อยู่ as main verb "be at / live" (บ้านอยู่ไกล) → VERB; postverbal continuous marker (นั่งอยู่ = is sitting) → AUX.
+- เป็น and คือ as copula → VERB (matching this dataset's convention for Chinese 是; not AUX). Postverbal เป็น "know how to" (พูดเป็น) → AUX.
+- แล้ว (already / and then) → ADV.
+
+### Classifiers (ลักษณนาม)
+คน, ตัว, อัน, เล่ม, ใบ, แก้ว, ครั้ง, ที, ลูก, คัน after a number or in the noun-classifier-demonstrative frame (คนนี้... note คนนี้ segments คน|นี้) → NOUN.
+
+### ที่ — the most overloaded word
+- ADP "at/in" before a place: ที่|บ้าน
+- SCONJ as relativizer/complementizer: คน|ที่|มา (the person who came), ขอโทษ|ที่|มา|สาย (sorry that I'm late)
+- NOUN "place, plot of land": ที่|ของ|เขา
+- Ordinal marker before a numeral: ที่|สอง (second) → ADJ-forming; tag ที่ as PART here.
+
+### ให้
+- Main verb "give": ให้|เงิน → VERB
+- Benefactive "for/to" after a verb phrase: ทำ|ให้|แม่ → ADP
+- Causative ("make/let someone do"): ทำให้ as segmented; the marker ให้ before a clause → SCONJ. When unsure between ADP and SCONJ, prefer ADP.
+
+### Pronouns
+ผม, ฉัน, ดิฉัน, คุณ, เธอ, เขา, เค้า, มัน, เรา, พวกเรา, พวกเขา, แก, กู, มึง → PRON. Kinship/occupation words used as address forms (แม่, พ่อ, พี่, ลุง, ป้า, หมอ) stay NOUN. Reciprocal กัน after a verb (รัก|กัน = love each other) → PRON.
+
+### Linkers and adverbs
+ก็ (then/also/so) → ADV. ยัง (still), เพิ่ง (just), ค่อย, มาก, จริงๆ → ADV. แต่, และ, หรือ, เพราะ, ถ้า → CCONJ/SCONJ as usual.
+
+### Proper nouns
+Names of people, places, organizations, and works — Thai or transliterated — are PROPN: เอ็ดเวิร์ด, กรุงเทพ, เชียงใหม่, เน็ตฟลิกซ์. Fictional names from films count. A transliterated name is not a common NOUN just because it is unfamiliar — and it is definitely not a run of single-character fragments."#
         }
         Language::Japanese => {
             r#"

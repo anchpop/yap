@@ -582,7 +582,10 @@ impl FeatureSet for PronType {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Num | PartOfSpeech::Adv
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -624,7 +627,10 @@ impl FeatureSet for NumType {
                     PartOfSpeech::Num | PartOfSpeech::Det | PartOfSpeech::Adj | PartOfSpeech::Adv
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -665,7 +671,10 @@ impl FeatureSet for Poss {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -704,7 +713,10 @@ impl FeatureSet for Reflex {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -733,7 +745,10 @@ impl FeatureSet for Clusivity {
             | Language::Italian => false,
             // Russian does not have clusivity
             Language::Russian => false,
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => false,
@@ -785,7 +800,10 @@ impl FeatureSet for Gender {
                         | PartOfSpeech::Aux
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -832,7 +850,10 @@ impl FeatureSet for Animacy {
                         | PartOfSpeech::Num
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => false,
@@ -856,7 +877,10 @@ impl FeatureSet for NounClass {
             | Language::Italian => false,
             // Russian does not have noun classes
             Language::Russian => false,
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => false,
@@ -919,7 +943,10 @@ impl FeatureSet for Number {
                         | PartOfSpeech::Aux
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -974,7 +1001,10 @@ impl FeatureSet for Case {
                         | PartOfSpeech::Num
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1010,7 +1040,10 @@ impl FeatureSet for Definite {
             }
             // Russian has no articles; definiteness is not morphologically marked
             Language::Russian => false,
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             // Hindi has no articles; definiteness is not morphologically marked
@@ -1046,7 +1079,10 @@ impl FeatureSet for Deixis {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1087,7 +1123,10 @@ impl FeatureSet for DeixisRef {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1125,7 +1164,10 @@ impl FeatureSet for Degree {
             Language::Russian => {
                 matches!(pos, PartOfSpeech::Adj | PartOfSpeech::Adv)
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1164,7 +1206,10 @@ impl FeatureSet for VerbForm {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1198,9 +1243,9 @@ impl FeatureSet for Mood {
             | Language::Italian => {
                 matches!(pos, PartOfSpeech::Verb | PartOfSpeech::Aux)
             }
-            Language::ChineseSimplified | Language::ChineseTraditional => {
-                // Chinese lacks verb inflection; mood is expressed through
-                // particles and auxiliaries rather than verb forms
+            Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => {
+                // Chinese and Thai lack verb inflection; mood is expressed
+                // through particles and auxiliaries rather than verb forms
                 matches!(pos, PartOfSpeech::Aux)
             }
             Language::Hindi => {
@@ -1236,7 +1281,10 @@ impl FeatureSet for Tense {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1281,7 +1329,10 @@ impl FeatureSet for Aspect {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1326,7 +1377,10 @@ impl FeatureSet for Voice {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1356,7 +1410,10 @@ impl FeatureSet for Evident {
             | Language::Portuguese
             | Language::Italian
             | Language::Russian => false,
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => false,
@@ -1405,7 +1462,10 @@ impl FeatureSet for Polarity {
                         | PartOfSpeech::Det
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1464,7 +1524,10 @@ impl FeatureSet for Person {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             Language::Hindi => {
@@ -1511,7 +1574,10 @@ impl FeatureSet for Polite {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
                 )
             }
-            Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => {
+            Language::Japanese
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Thai => {
                 todo!()
             }
             // Hindi has a three-way politeness distinction (तू / तुम / आप)
@@ -1851,6 +1917,8 @@ impl Morphology {
             (Language::Russian, _) => None,
             // Hindi: no grammatical prefix system (no articles, no obligatory pronouns in dict forms)
             (Language::Hindi, _) => None,
+            // Thai: no articles, no inflection — dictionary forms need no prefix
+            (Language::Thai, _) => None,
             (
                 Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional,
                 _,

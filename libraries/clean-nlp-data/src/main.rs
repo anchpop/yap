@@ -236,8 +236,9 @@ fn parse_language_code(code: &str) -> anyhow::Result<Language> {
         "zho-hant" => Ok(Language::ChineseTraditional),
         "jpn" => Ok(Language::Japanese),
         "hin" => Ok(Language::Hindi),
+        "tha" => Ok(Language::Thai),
         _ => Err(anyhow!(
-            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus, zho-hans, zho-hant, jpn, hin"
+            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus, zho-hans, zho-hant, jpn, hin, tha"
         )),
     }
 }
@@ -792,6 +793,7 @@ async fn clean_all_languages() -> anyhow::Result<()> {
         Language::ChineseSimplified,
         Language::Japanese,
         Language::Hindi,
+        Language::Thai,
     ];
 
     for language in languages {

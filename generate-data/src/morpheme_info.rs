@@ -172,6 +172,12 @@ fn language_examples(language: Language) -> &'static str {
 - Derivational: "-वाला" (doer/possessor), "-पन" (N-forming), "-ी" (diminutive/feminine)
 - Inflectional: "-ना" (infinitive), "-ता" (habitual masc), "-ती" (habitual fem), "-ए" (perfective pl)"#
         }
+        Language::Thai => {
+            r#"- Free: "กิน" (eat), "บ้าน" (house), "ดี" (good), "น้ำ" (water)
+- Bound: "-วิทยา" (study of; ชีววิทยา biology), "-ศาสตร์" (science of; ภาษาศาสตร์ linguistics)
+- Derivational: "การ-" (V-nominalizer; การกิน eating), "ความ-" (ADJ-nominalizer; ความสุข happiness), "นัก-" (agent; นักเรียน student), "ผู้-" (person; ผู้ชาย man)
+- Inflectional: none — Thai has no inflection; aspect and mood are separate words (แล้ว, จะ, กำลัง)"#
+        }
     }
 }
 
@@ -297,6 +303,10 @@ fn lookup_examples(language: Language) -> &'static str {
             r#"- morpheme "खा" with candidates "खाना (lemma: खाना, pos: VERB)", "खाता" → {"word": "खाना", "lemma": "खाना", "pos": "VERB"}
 - morpheme "लाल" with candidates "लाल (lemma: लाल, pos: ADJ)" → {"word": "लाल", "lemma": "लाल", "pos": "ADJ"}"#
         }
+        Language::Thai => {
+            r#"- morpheme "กิน" with candidates "กิน (lemma: กิน, pos: VERB)", "กินข้าว" → {"word": "กิน", "lemma": "กิน", "pos": "VERB"}
+- morpheme "เรียน" with candidates "เรียน (lemma: เรียน, pos: VERB)", "นักเรียน" → {"word": "เรียน", "lemma": "เรียน", "pos": "VERB"}"#
+        }
     }
 }
 
@@ -399,6 +409,7 @@ fn conjugation_in(native_language: Language) -> &'static str {
         Language::ChineseTraditional => "變位",
         Language::Japanese => "活用",
         Language::Hindi => "संयुग्मन",
+        Language::Thai => "การผันกริยา",
     }
 }
 

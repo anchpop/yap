@@ -485,6 +485,74 @@ def chinese_records(sentences):
             }
 
 
+# UPOS tags the Rust side accepts; anything else (a tagger glitch) becomes X.
+_UPOS_VALID = {
+    "ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM",
+    "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "SYM", "VERB", "X",
+}
+
+
+def thai_records(sentences):
+    """Analyze Thai with PyThaiNLP: newmm segmentation + perceptron POS on the
+    TUD treebank (native UPOS).
+
+    newmm is dictionary-based, so every token it emits is a dictionary word by
+    construction; its failure mode is unknown words (transliterated names)
+    shredding into single-character fragments, which the cleaning LLM merges
+    back per the style guide. Thai words don't inflect, so the lemma is always
+    the surface form. Thai's real spaces (phrase separators, not word breaks)
+    are reconstructed into the whitespace field by the surface scan.
+    """
+    from pythainlp.tag import pos_tag
+    from pythainlp.tokenize import word_tokenize
+
+    for sentence in tqdm(sentences, desc="Processing (pythainlp)", unit="sentence"):
+        words = [w for w in word_tokenize(sentence, engine="newmm") if w.strip()]
+        spans = []
+        pos_cursor = 0
+        for word in words:
+            found = sentence.find(word, pos_cursor)
+            if found < 0:
+                break
+            spans.append((found, found + len(word)))
+            pos_cursor = found + len(word)
+        if len(spans) != len(words) or not words:
+            # The tokenizer altered the surface somewhere (never observed, but the
+            # invariant is load-bearing). Emit the sentence as one X token — the
+            # cleaning LLM is allowed to retokenize it from scratch.
+            print(f"WARNING: pythainlp surface mismatch, emitting unsegmented: {sentence!r}")
+            doc = [{
+                "text": sentence,
+                "whitespace": "",
+                "lemma": sentence,
+                "pos": "X",
+                "morph": {},
+            }]
+        else:
+            doc = []
+            tags = pos_tag(words, engine="perceptron", corpus="tud")
+            for j, (word, (_, tag)) in enumerate(zip(words, tags)):
+                end = spans[j][1]
+                nxt = spans[j + 1][0] if j + 1 < len(spans) else len(sentence)
+                doc.append({
+                    "text": word,
+                    "whitespace": sentence[end:nxt],
+                    "lemma": word,
+                    "pos": tag if tag in _UPOS_VALID else "X",
+                    "morph": {},
+                })
+            # leading whitespace has nowhere to attach; prepend it to the first
+            # token's text (the lemma stays the clean word)
+            if spans[0][0] > 0:
+                doc[0]["text"] = sentence[: spans[0][1]]
+        yield {
+            "sentence": sentence,
+            "multiword_terms": {"high_confidence": [], "low_confidence": []},
+            "doc": doc,
+            "entities": [],
+        }
+
+
 def load_model(language_code: str):
     import spacy
 
@@ -505,7 +573,7 @@ def process_sentences(sentences_file: str, terms_file: str, output_file: str, la
         sentences = [json.loads(line) for line in f if line.strip()]
     print(f"Found {len(sentences)} sentences to process")
 
-    analyzers = {"jpn": japanese_records, "zho-hans": chinese_records}
+    analyzers = {"jpn": japanese_records, "zho-hans": chinese_records, "tha": thai_records}
     if language_code in analyzers:
         with open(output_file, "w", encoding="utf-8") as outfile:
             for record in analyzers[language_code](sentences):

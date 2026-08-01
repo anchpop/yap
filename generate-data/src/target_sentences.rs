@@ -881,6 +881,20 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
                 return false;
             }
         }
+        Language::Thai => {
+            // Thai script — reject sentences with Latin letters
+            if text
+                .chars()
+                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
+            {
+                return false;
+            }
+            // Must start with a Thai-script character. No requirement on the
+            // last character: Thai does not use sentence-final punctuation.
+            if !('\u{0E00}'..='\u{0E7F}').contains(&first_char) {
+                return false;
+            }
+        }
     }
 
     // Reject sentences with quotes (often dialogue or non-standard)

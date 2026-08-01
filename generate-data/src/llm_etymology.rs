@@ -278,6 +278,18 @@ fn language_specific_notes(language: Language) -> &'static str {
   - `得`: different tones/functions share the character — `[obtain]` (dé as full verb) vs `[compl]` verb-complement marker (de — 跑得快) vs `[must]` (děi obligation: 得走了)
   - `地`: `[adv]` adverbializer de (慢慢地) vs noun \"ground\" dì. Different tones, same character."
         }
+        Language::Thai => {
+            "\n\nExtra Thai-specific guidance:
+- Thai has no inflection at all — no tense, number, gender, or case endings. Morphology is compounding and a small set of productive derivational prefixes. Split those off when the remainder is a free word:
+  - `การ (การ) [nmlz]` verb nominalizer: `การกิน → การ + กิน` (eating), `การเดินทาง → การ + เดินทาง`
+  - `ความ (ความ) [nmlz]` adjective/abstract nominalizer: `ความสุข → ความ + สุข` (happiness), `ความรัก → ความ + รัก`
+  - `นัก (นัก) [agent]` agentive prefix: `นักเรียน → นัก + เรียน` (student), `นักร้อง → นัก + ร้อง`
+  - `ผู้ (ผู้) [person]` person prefix: `ผู้ชาย → ผู้ + ชาย` (man), `ผู้จัดการ → ผู้ + จัดการ`
+  - `ที่ (ที่) [ord]` ordinalizer before numerals: `ที่สอง → ที่ + สอง` (second)
+- Transparent compounds split into their free-word parts: `น้ำตา → น้ำ + ตา` (tears: water + eye), `ไฟฟ้า → ไฟ + ฟ้า` (electricity: fire + sky).
+- Do NOT split lexicalized words whose pieces aren't productive or whose meaning isn't compositional, and never split inside a transliterated loanword (คอมพิวเตอร์, โรงแรม is โรง + แรม? No — โรงแรม is โรง + แรม only if you can gloss both pieces; when unsure, keep it whole).
+- Royal/formal vocabulary of Khmer or Pali-Sanskrit origin (e.g. ศีรษะ, บิดา) is monomorphemic in modern Thai — don't attempt etymological splits."
+        }
         Language::English | Language::French => "",
     }
 }

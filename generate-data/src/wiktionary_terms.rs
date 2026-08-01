@@ -41,6 +41,7 @@ pub async fn ensure_multiword_terms_file(
         | Language::Portuguese => vec![],
         Language::Italian => vec![],
         Language::Hindi => vec![],
+        Language::Thai => vec![],
     };
     let banned_terms = banned_terms
         .into_iter()
@@ -123,7 +124,9 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
             return Ok(vec![]);
         }
         Language::German => "German_multiword_terms",
-        Language::ChineseSimplified | Language::ChineseTraditional => {
+        Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => {
+            // Unsegmented scripts: "multiword" isn't meaningful the way the
+            // spaCy MWT pass uses it — the tokenizer decides word boundaries.
             return Ok(vec![]);
         }
         Language::Japanese => {

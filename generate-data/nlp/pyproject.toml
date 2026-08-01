@@ -15,4 +15,6 @@ dependencies = [
     "hanlp>=2.1.3",
     # hanlp 2.1.x still calls the encode_plus API that transformers 5 removed
     "transformers<5",
+    # Thai: newmm segmentation + TUD perceptron POS — see thai_records in main.py
+    "pythainlp>=5.3",
 ]

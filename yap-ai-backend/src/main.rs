@@ -237,7 +237,7 @@ async fn text_to_speech(
         Language::Japanese => "GxhGYQesaQaYKePCZDEC", // Japanese voice
         Language::Hindi => "K24eC7JpUgk8zMtQYrpV",  // Hindi voice
 
-        Language::ChineseSimplified | Language::ChineseTraditional => {
+        Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => {
             return Err(StatusCode::NOT_IMPLEMENTED);
         }
     };
@@ -291,7 +291,7 @@ async fn google_text_to_speech(
         Language::Japanese => ("ja-JP", "ja-JP-Chirp3-HD-Achernar"),
         Language::Hindi => ("hi-IN", "hi-IN-Chirp3-HD-Achernar"),
 
-        Language::ChineseSimplified | Language::ChineseTraditional => {
+        Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => {
             return Err(StatusCode::NOT_IMPLEMENTED);
         }
     };
@@ -601,6 +601,8 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
                 r#"For example, if the user confused "行って" and "言って", or "聞く" and "効く", you could generate ["行って", "言って"] or ["聞く", "効く"] in the compare array."#,
             Language::Hindi =>
                 r#"For example, if the user confused "सुनना" and "सुनाना", or "बोलना" and "बुलाना", you could generate ["सुनना", "सुनाना"] or ["बोलना", "बुलाना"] in the compare array."#,
+            Language::Thai =>
+                r#"For example, if the user confused "ใกล้" (near) and "ไกล" (far), or "หมา" and "ม้า", you could generate ["ใกล้", "ไกล"] or ["หมา", "ม้า"] in the compare array."#,
 
             Language::ChineseSimplified | Language::ChineseTraditional => {
                 return Err(StatusCode::NOT_IMPLEMENTED);
