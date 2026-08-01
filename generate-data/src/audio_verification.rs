@@ -4,7 +4,7 @@
 //! For each clip we:
 //! 1. Hash the raw .wav bytes (xxh3_64) and check
 //!    `.cache/wav2vec2/<WAV2VEC2_CACHE_VERSION>/<hash>.json` — same caching
-//!    philosophy as `google_translate.rs` and the tysm chat clients (hash
+//!    philosophy as `translate.rs` and the tysm chat clients (hash
 //!    → response file). The model/decoder version is part of the path so a
 //!    model swap can't silently reuse stale predictions.
 //! 2. On cache miss, decode WAV → f32 mono 16kHz via ffmpeg and POST to the

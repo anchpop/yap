@@ -15,8 +15,8 @@ use std::path::{Path, PathBuf};
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
 
 use generate_data::cache_remote;
-mod google_translate;
-use google_translate::GoogleTranslator;
+mod translate;
+use translate::{TranslationBackend, Translator};
 
 use generate_data::morphology_analysis;
 
@@ -130,7 +130,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Parse CLI args. Supported forms:
     //   generate-data [--cache-only] [<lang_filter>]
-    // --cache-only puts tysm ChatClients, GoogleTranslator, and lexide
+    // --cache-only puts tysm ChatClients, the Translator, and lexide
     // tokenization into cache-only mode (no network calls; cache misses error
     // out or are skipped for lexide).
     let mut lang_filter: Option<String> = None;
@@ -267,13 +267,20 @@ async fn main() -> anyhow::Result<()> {
             let sentences_with_translations_and_sources = target_sentences_result.app_sentences;
 
             // Create the translator once and share it across all async tasks
-            let translator = GoogleTranslator::new(
+            let translator = Translator::new(
                 course.target_language, // translate from target to native
                 course.native_language,
                 PathBuf::from(".cache/google_translate/"),
+                // Luna over the OpenAI Batch API is ~50x cheaper than Google's
+                // translation-llm; anything already in the Google cache is
+                // still reused (see translate.rs). Swap in
+                // `TranslationBackend::Google` to go back.
+                TranslationBackend::OpenAi {
+                    model: "gpt-5.6-luna".to_string(),
+                },
             )
             .await
-            .context("Failed to create Google Translator")?;
+            .context("Failed to create translator")?;
 
             // Warm the cache in batched requests first. The Translation LLM quota
             // is requests-per-minute, so translating the misses in bulk here means

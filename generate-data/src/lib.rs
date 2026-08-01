@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 static CACHE_ONLY: AtomicBool = AtomicBool::new(false);
 
 /// Enable cache-only mode process-wide. In this mode, tysm ChatClients,
-/// GoogleTranslator, and lexide tokenization will never make network calls —
+/// the Translator, and lexide tokenization will never make network calls —
 /// cache misses produce errors (or are skipped, for lexide).
 pub fn set_cache_only(enabled: bool) {
     CACHE_ONLY.store(enabled, Ordering::Relaxed);
