@@ -1240,7 +1240,7 @@ async fn process_movie(
 
 /// Parse a Language from an ISO 639-3 code for clap
 fn parse_language(s: &str) -> Result<Language, String> {
-    Language::from_iso_639_3(s).ok_or_else(|| {
+    Language::from_code(s).ok_or_else(|| {
         format!(
             "unsupported language code '{s}'. Supported: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita, hin"
         )
@@ -1299,7 +1299,7 @@ async fn main() -> Result<()> {
 
     // Process each language
     for language in languages {
-        let language_iso639_3 = language.iso_639_3();
+        let language_iso639_3 = language.code();
         let language_iso639_1 = language.opensubtitles_language_code();
         let tmdb_language = language.tmdb_language_code();
 

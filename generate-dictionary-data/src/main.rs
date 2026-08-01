@@ -240,8 +240,8 @@ fn course_slug(course: &Course) -> String {
 fn course_dir_name(course: &Course) -> String {
     format!(
         "{}_for_{}",
-        course.target_language.iso_639_3(),
-        course.native_language.iso_639_3()
+        course.target_language.code(),
+        course.native_language.code()
     )
 }
 

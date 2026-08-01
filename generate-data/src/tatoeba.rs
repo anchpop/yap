@@ -40,8 +40,8 @@ pub fn get_tatoeba_pairs(
     }
 
     // Get language codes
-    let target_lang_code = course.target_language.iso_639_3();
-    let native_lang_code = course.native_language.iso_639_3();
+    let target_lang_code = course.target_language.code();
+    let native_lang_code = course.native_language.code();
 
     // Read entire sentences file at once to avoid per-line allocations
     let sentences_data = match std::fs::read_to_string(&sentences_file) {

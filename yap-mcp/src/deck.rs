@@ -115,8 +115,8 @@ pub fn load_language_pack(out_dir: &Path, course: &Course) -> anyhow::Result<Arc
     let path = out_dir
         .join(format!(
             "{}_for_{}",
-            course.target_language.iso_639_3(),
-            course.native_language.iso_639_3()
+            course.target_language.code(),
+            course.native_language.code()
         ))
         .join("language_data.rkyv");
     let bytes = std::fs::read(&path)

@@ -34,7 +34,11 @@ pub async fn ensure_multiword_terms_file(
         Language::Korean => vec![],
         Language::German => vec!["daß"],
 
-        Language::Chinese | Language::Japanese | Language::Russian | Language::Portuguese => vec![],
+        Language::ChineseSimplified
+        | Language::ChineseTraditional
+        | Language::Japanese
+        | Language::Russian
+        | Language::Portuguese => vec![],
         Language::Italian => vec![],
         Language::Hindi => vec![],
     };
@@ -65,7 +69,7 @@ pub async fn ensure_multiword_terms_file(
 /// original extra_multiword_terms files). These patterns have gaps where other tokens
 /// appear between the anchors (e.g., French "ne...que", German "weder...noch").
 pub fn get_discontinuous_terms(course: &Course) -> BTreeSet<String> {
-    let language_code = course.target_language.iso_639_3();
+    let language_code = course.target_language.code();
     let mut discontinuous = BTreeSet::new();
 
     for suffix in ["extra_multiword_terms.txt"] {
@@ -88,7 +92,7 @@ pub fn get_discontinuous_terms(course: &Course) -> BTreeSet<String> {
 }
 
 async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>> {
-    let language_code = language.iso_639_3();
+    let language_code = language.code();
     let mut terms = Vec::new();
 
     // Read manually curated extra multiword terms
@@ -119,7 +123,7 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
             return Ok(vec![]);
         }
         Language::German => "German_multiword_terms",
-        Language::Chinese => {
+        Language::ChineseSimplified | Language::ChineseTraditional => {
             return Ok(vec![]);
         }
         Language::Japanese => {

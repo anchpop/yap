@@ -232,11 +232,12 @@ fn parse_language_code(code: &str) -> anyhow::Result<Language> {
         "por" => Ok(Language::Portuguese),
         "ita" => Ok(Language::Italian),
         "rus" => Ok(Language::Russian),
-        "zho" => Ok(Language::Chinese),
+        "zho-hans" => Ok(Language::ChineseSimplified),
+        "zho-hant" => Ok(Language::ChineseTraditional),
         "jpn" => Ok(Language::Japanese),
         "hin" => Ok(Language::Hindi),
         _ => Err(anyhow!(
-            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus, zho, jpn, hin"
+            "Unknown language code '{code}'. Supported codes: fra, deu, spa, eng, kor, por, ita, rus, zho-hans, zho-hant, jpn, hin"
         )),
     }
 }
@@ -245,7 +246,7 @@ fn parse_language_code(code: &str) -> anyhow::Result<Language> {
 fn load_manual_sentences(language: Language) -> anyhow::Result<std::collections::HashSet<String>> {
     let manual_file = PathBuf::from(format!(
         "./generate-data/data/{}/sentence-sources/extra/manual.txt",
-        language.iso_639_3()
+        language.code()
     ));
 
     let mut manual_sentences = std::collections::HashSet::new();
@@ -624,7 +625,7 @@ fn default_native_language(language: Language) -> Language {
 }
 
 fn base_output_directory(language: Language) -> PathBuf {
-    PathBuf::from(format!("./out/clean-nlp-data/{}", language.iso_639_3()))
+    PathBuf::from(format!("./out/clean-nlp-data/{}", language.code()))
 }
 
 fn ensure_target_sentences_file(
@@ -753,7 +754,7 @@ fn run_python_nlp(
     let status = Command::new("uv")
         .arg("run")
         .arg("main.py")
-        .arg(language.iso_639_3())
+        .arg(language.code())
         .arg(target_sentences_path)
         .arg(multiword_terms_file)
         .arg(nlp_output_path)
@@ -786,7 +787,9 @@ async fn clean_all_languages() -> anyhow::Result<()> {
         Language::Portuguese,
         Language::Italian,
         Language::Russian,
-        Language::Chinese,
+        // Chinese (either script) is deliberately absent: there is no NLP
+        // segmentation path for it yet, so a clean-all run would die on the
+        // now-nonempty zho corpora. Add zho-hans here once segmentation exists.
         Language::Japanese,
         Language::Hindi,
     ];
@@ -982,10 +985,8 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     // SAME machine — the gold file travels in git, so this keeps the gold set monotone
     // across machines too, and their LLM responses are (osmo-synced) cache hits anyway.
     // The fresh sample then only controls how many NEW sentences each run adds.
-    let prior_gold_file = PathBuf::from("./out").join(format!(
-        "cleaned_{}.jsonl",
-        course.target_language.iso_639_3()
-    ));
+    let prior_gold_file =
+        PathBuf::from("./out").join(format!("cleaned_{}.jsonl", course.target_language.code()));
     let prior_gold_sentences: Vec<String> = if prior_gold_file.exists() {
         let file = File::open(&prior_gold_file).context("Failed to open prior gold output")?;
         BufReader::new(file)
@@ -1133,8 +1134,8 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     // so a cost-cap bail during the LLM passes leaves nothing behind.
     let output_dir = PathBuf::from("./out");
     std::fs::create_dir_all(&output_dir).context("Failed to create output directory")?;
-    let output_file = output_dir.join(format!("cleaned_{}.jsonl", language.iso_639_3()));
-    let output_tmp = output_dir.join(format!("cleaned_{}.jsonl.tmp", language.iso_639_3()));
+    let output_file = output_dir.join(format!("cleaned_{}.jsonl", language.code()));
+    let output_tmp = output_dir.join(format!("cleaned_{}.jsonl.tmp", language.code()));
 
     if is_passthrough {
         // Passthrough mode: skip LLM cleaning and dependency parsing, write spaCy tokens directly
@@ -1291,7 +1292,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     // is skipped. The point is to make a small capped run (CLEAN_NLP_COST_CAP=3) usable for
     // eyeballing tokenization before committing to a full one.
     if cost_cap_tripped() {
-        let partial = output_dir.join(format!("cleaned_{}.partial.jsonl", language.iso_639_3()));
+        let partial = output_dir.join(format!("cleaned_{}.partial.jsonl", language.code()));
         let f = File::create(&partial).context("Failed to create partial output")?;
         let mut w = BufWriter::new(f);
         for (sentence, tokens) in &validated_results {

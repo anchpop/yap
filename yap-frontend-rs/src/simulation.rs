@@ -349,8 +349,8 @@ mod tests {
     fn load_language_pack(course: &language_utils::Course) -> Arc<LanguagePack> {
         let path = format!(
             "../out/{}_for_{}/language_data.rkyv",
-            course.target_language.iso_639_3(),
-            course.native_language.iso_639_3()
+            course.target_language.code(),
+            course.native_language.code()
         );
         let bytes = std::fs::read(&path).unwrap_or_else(|e| panic!("Failed to read {path}: {e}"));
         let archived = rkyv::access::<
@@ -367,8 +367,8 @@ mod tests {
         let lang = course.target_language;
         let label = format!(
             "{} -> {}",
-            course.native_language.iso_639_3(),
-            course.target_language.iso_639_3()
+            course.native_language.code(),
+            course.target_language.code()
         );
 
         fn assert_frequency_list_sorted<'a>(

@@ -76,8 +76,8 @@ use next_cards::NextCardsIterator;
 fn language_pack_lock_name(course: Course) -> String {
     format!(
         "language-pack-{}-for-{}",
-        course.target_language.iso_639_3(),
-        course.native_language.iso_639_3()
+        course.target_language.code(),
+        course.native_language.code()
     )
 }
 
@@ -6371,8 +6371,8 @@ mod tests {
         // 5. Load language pack and compute deck state
         let rkyv_path = format!(
             "../out/{}_for_{}/language_data.rkyv",
-            target.iso_639_3(),
-            native.iso_639_3()
+            target.code(),
+            native.code()
         );
         let bytes =
             std::fs::read(&rkyv_path).unwrap_or_else(|e| panic!("Failed to read {rkyv_path}: {e}"));
@@ -6622,8 +6622,8 @@ mod tests {
     fn build_pack_entry(course: Course) -> PackEntry {
         let path = format!(
             "../out/{}_for_{}/language_data.rkyv",
-            course.target_language.iso_639_3(),
-            course.native_language.iso_639_3()
+            course.target_language.code(),
+            course.native_language.code()
         );
         let bytes = std::fs::read(&path).ok()?;
         let archived = rkyv::access::<

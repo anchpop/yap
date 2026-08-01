@@ -154,7 +154,7 @@ fn language_examples(language: Language) -> &'static str {
 - Derivational: "-하다" (verbalizer; 공부하다), "-화" (-ization; 현대화), "-적" (-ic; 사회적), "-자" (agent; 학자)
 - Inflectional: "-아", "-어" (connective ending), "-았", "-었" (past), "-요" (politeness), "-ㄴ"/"-은" (attributive), "-다" (declarative)"#
         }
-        Language::Chinese => {
+        Language::ChineseSimplified | Language::ChineseTraditional => {
             r#"- Free: "吃", "好", "学生", "学校"
 - Bound: "-炎" (-itis; 肺炎), "-症" (condition; 癌症)
 - Derivational: "-化" (-ization; 现代化), "-者" (-er; 学者), "-性" (-ness; 可能性), "-的" (attributive)
@@ -285,7 +285,7 @@ fn lookup_examples(language: Language) -> &'static str {
             r#"- morpheme "괜찮" with candidates "괜찮아요", "괜찮은", "괜찮음" (note: the canonical dictionary form "괜찮다" isn't among the candidates) → {"word": "괜찮다", "lemma": "괜찮다", "pos": "ADJ"}
 - morpheme "먹" with candidates "먹다 (lemma: 먹다, pos: VERB)", "먹어요" → {"word": "먹다", "lemma": "먹다", "pos": "VERB"}"#
         }
-        Language::Chinese => {
+        Language::ChineseSimplified | Language::ChineseTraditional => {
             r#"- morpheme "吃" with candidates "吃 (lemma: 吃, pos: VERB)", "吃饭" → {"word": "吃", "lemma": "吃", "pos": "VERB"}
 - morpheme "学生" with candidates "学生 (lemma: 学生, pos: NOUN)" → {"word": "学生", "lemma": "学生", "pos": "NOUN"}"#
         }
@@ -395,7 +395,8 @@ fn conjugation_in(native_language: Language) -> &'static str {
         Language::German => "Konjugation",
         Language::Russian => "спряжение",
         Language::Korean => "활용",
-        Language::Chinese => "变位",
+        Language::ChineseSimplified => "变位",
+        Language::ChineseTraditional => "變位",
         Language::Japanese => "活用",
         Language::Hindi => "संयुग्मन",
     }

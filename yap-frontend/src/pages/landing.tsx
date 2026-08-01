@@ -29,7 +29,8 @@ const LANGUAGE_DISPLAY_NAMES: Record<string, string> = {
   German: "German",
   Italian: "Italian",
   Portuguese: "Portuguese",
-  Chinese: "Chinese",
+  ChineseSimplified: "Chinese (Simplified)",
+  ChineseTraditional: "Chinese (Traditional)",
   Japanese: "Japanese",
   Russian: "Russian",
 };

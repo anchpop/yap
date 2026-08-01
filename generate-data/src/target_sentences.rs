@@ -69,7 +69,7 @@ pub fn contains_xprotect_tripwire(s: &str) -> bool {
 pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     let source_data_path = PathBuf::from(format!(
         "./generate-data/data/{}",
-        course.target_language.iso_639_3()
+        course.target_language.code()
     ));
 
     // Load banned sentences
@@ -386,7 +386,7 @@ fn load_pimsleur_sentences(
 ) -> anyhow::Result<Vec<(String, Vec<PimsleurLesson>)>> {
     let pimsleur_dir = source_data_path.join(format!(
         "sentence-sources/pimsleur/for_{}",
-        course.native_language.iso_639_3()
+        course.native_language.code()
     ));
 
     if !pimsleur_dir.exists() {
@@ -812,7 +812,7 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
                 return false;
             }
         }
-        Language::Chinese => {
+        Language::ChineseSimplified | Language::ChineseTraditional => {
             // Chinese sentences should not contain Latin letters (except maybe proper nouns)
             // But we'll be strict and reject any with Latin letters
             if text

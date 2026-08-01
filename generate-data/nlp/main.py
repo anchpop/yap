@@ -37,7 +37,9 @@ MODEL_MAPPING = {
         "small": "de_core_news_sm",
         "large": "de_dep_news_trf"
     },
-    "zho": {
+    # spaCy's Chinese models are trained on Simplified text (OntoNotes);
+    # there is no model for zho-hant.
+    "zho-hans": {
         "small": "zh_core_web_trf",
         "large": "zh_core_web_trf"
     },

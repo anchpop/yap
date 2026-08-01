@@ -230,7 +230,7 @@ pub fn get_classifier(language: Language) -> Box<dyn SentenceClassifier> {
         Language::English => Box::new(EnglishClassifier),
         Language::Italian => Box::new(ItalianClassifier),
         Language::Russian => Box::new(RussianClassifier),
-        Language::Chinese => Box::new(ChineseClassifier),
+        Language::ChineseSimplified | Language::ChineseTraditional => Box::new(ChineseClassifier),
         Language::Japanese => Box::new(JapaneseClassifier),
         Language::Hindi => Box::new(HindiClassifier),
     }
@@ -247,7 +247,7 @@ pub fn get_corrector(language: Language) -> Box<dyn WordCorrector> {
         Language::English => Box::new(EnglishCorrector),
         Language::Italian => Box::new(ItalianCorrector),
         Language::Russian => Box::new(RussianCorrector),
-        Language::Chinese => Box::new(ChineseCorrector),
+        Language::ChineseSimplified | Language::ChineseTraditional => Box::new(ChineseCorrector),
         Language::Japanese => Box::new(JapaneseCorrector),
         Language::Hindi => Box::new(HindiCorrector),
     }
@@ -6439,7 +6439,7 @@ impl SentenceClassifier for ChineseClassifier {
             }
 
             // Check polysemous words
-            if let Some(reason) = check_polysemous(Language::Chinese, &token.text) {
+            if let Some(reason) = check_polysemous(Language::ChineseSimplified, &token.text) {
                 reasons.push(reason);
             }
         }
@@ -6538,9 +6538,20 @@ impl WordCorrector for ChineseCorrector {
     }
 }
 
-/// Japanese compounds where 達 is part of the word, not the plural suffix.
+/// Japanese words where a たち/達 ending is part of the word, not the plural suffix.
 const TATSU_COMPOUNDS: &[&str] = &[
-    "友達", "発達", "上達", "調達", "伝達", "配達", "到達", "速達", "通達", "熟達", "闊達",
+    "友達",
+    "発達",
+    "上達",
+    "調達",
+    "伝達",
+    "配達",
+    "到達",
+    "速達",
+    "通達",
+    "熟達",
+    "闊達",
+    "かたち",
 ];
 
 /// Japanese-specific classifier
@@ -7182,9 +7193,13 @@ impl SentenceClassifier for JapaneseClassifier {
             }
 
             // --- Noun+する compound merged into one token: should split ---
+            // Only when the stem is a standalone word (≥2 chars): 勉強する flags, but
+            // grammaticalized する-verbs whose stem can't stand alone (対する, 関する,
+            // 愛する) are single analyzer lexemes and stay whole.
             if token.pos == PartOfSpeechTag::Verb
                 && token.lemma.ends_with("する")
                 && token.lemma != "する"
+                && token.lemma.chars().count() >= 4
             {
                 reasons.push(format!(
                     "'{}' (lemma '{}') — noun+する compounds split into noun + する-form: '確認した' → '確認' (NOUN, lemma '確認') + 'した' (VERB, lemma 'する'). The する-form itself stays whole (した, して, される, しました).",
@@ -7350,6 +7365,25 @@ impl SentenceClassifier for JapaneseClassifier {
                     "有る",
                     "ほしい",
                     "欲しい",
+                    "やる",
+                    "遣る",
+                    "いただく",
+                    "頂く",
+                    "おる",
+                    "いい",
+                    "良い",
+                    "無い",
+                    "出来る",
+                    "できる",
+                    "為る",
+                    "終わる",
+                    "じゃ",
+                    "ず",
+                    "なり",
+                    "ごとし",
+                    "つう",
+                    "き",
+                    "む",
                     "そう",
                     "らしい",
                     "みたい",
@@ -7873,6 +7907,11 @@ const JAPANESE_AUXILIARY_VERBS: &[&str] = &[
     "貰う",
     "くださる",
     "下さる",
+    "やる",
+    "遣る",
+    "いただく",
+    "頂く",
+    "おる",
     "ほしい",
     "欲しい",
 ];
@@ -7953,15 +7992,15 @@ fn absorbs_suffix<T: JaToken>(head: &T, next: &T) -> bool {
     // tense of a 撥音便 verb also arrives as だ with lemma だ (読ん+だ, 浮かん+だ) —
     // a verb stem ending in ん is never a complete form, so だ there is inflection,
     // not the copula — and でした continuing the ます chain (食べません+でした).
-    if matches!(next.lemma(), "だ" | "です") {
+    if matches!(next.lemma(), "だ" | "です" | "じゃ") {
         return (head.pos() == PartOfSpeechTag::Verb && head.text().ends_with('ん'))
             || head.text().ends_with("ません");
     }
     // After a て-form the auxiliary is a separate word: 食べて|いる, 読んで|しまう.
-    // Except た: てた is the contraction of ていた (乗ってた, やってた), and た alone
-    // is stranded either way.
+    // Except てた/てない/てます — contractions of ていた/ていない/ています (乗ってた,
+    // 言ってない, 書いてます) — where the piece after て is bound.
     if head.text().ends_with('て') || head.text().ends_with('で') {
-        return next.lemma() == "た";
+        return matches!(next.lemma(), "た" | "ない" | "無い" | "ます");
     }
     if JAPANESE_AUXILIARY_VERBS.contains(&next.lemma()) {
         return false;
@@ -9141,8 +9180,9 @@ mod tests {
             vec!["浮かんだ"]
         );
 
-        // てた is the contraction of ていた, so た joins the て-form it rides on —
-        // unlike a real auxiliary word after て (乗って|いた stays split)
+        // てた/てない/てます are contractions of ていた/ていない/ています, so the piece
+        // joins the て-form it rides on — unlike a real auxiliary word after て
+        // (乗って|いた stays split)
         assert_eq!(
             jpn_merge(vec![
                 jpn_token("乗って", Verb, "乗る"),
@@ -9152,10 +9192,35 @@ mod tests {
         );
         assert_eq!(
             jpn_merge(vec![
+                jpn_token("言って", Verb, "言う"),
+                jpn_token("ない", Aux, "無い"),
+            ]),
+            vec!["言ってない"]
+        );
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("書いて", Verb, "書く"),
+                jpn_token("ます", Aux, "ます"),
+            ]),
+            vec!["書いてます"]
+        );
+        assert_eq!(
+            jpn_merge(vec![
                 jpn_token("乗って", Verb, "乗る"),
                 jpn_token("いた", Aux, "いる"),
             ]),
             vec!["乗って", "いた"]
+        );
+
+        // じゃ carries lemma じゃ (not だ), but it is still the copula family: it must
+        // not absorb into the predicate before it, and ない then joins it — 言った|じゃない
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("言った", Verb, "言う"),
+                jpn_token("じゃ", Aux, "じゃ"),
+                jpn_token("ない", Aux, "ない"),
+            ]),
+            vec!["言った", "じゃない"]
         );
     }
 
@@ -9910,7 +9975,7 @@ Short-form neuter adjectives used as predicatives: нужно (нужный), д
 
 Participles used as adjectives: when a participle modifies a noun (e.g., "уставший человек", "написанное письмо"), tag as ADJ and use the verb infinitive as lemma. When part of a verb phrase, tag as VERB."#
         }
-        Language::Chinese => {
+        Language::ChineseSimplified | Language::ChineseTraditional => {
             r#"
 
 Chinese-specific rules — please follow these carefully:

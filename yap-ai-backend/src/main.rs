@@ -237,7 +237,9 @@ async fn text_to_speech(
         Language::Japanese => "GxhGYQesaQaYKePCZDEC", // Japanese voice
         Language::Hindi => "K24eC7JpUgk8zMtQYrpV",  // Hindi voice
 
-        Language::Chinese => return Err(StatusCode::NOT_IMPLEMENTED),
+        Language::ChineseSimplified | Language::ChineseTraditional => {
+            return Err(StatusCode::NOT_IMPLEMENTED);
+        }
     };
     let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
@@ -289,7 +291,9 @@ async fn google_text_to_speech(
         Language::Japanese => ("ja-JP", "ja-JP-Chirp3-HD-Achernar"),
         Language::Hindi => ("hi-IN", "hi-IN-Chirp3-HD-Achernar"),
 
-        Language::Chinese => return Err(StatusCode::NOT_IMPLEMENTED),
+        Language::ChineseSimplified | Language::ChineseTraditional => {
+            return Err(StatusCode::NOT_IMPLEMENTED);
+        }
     };
 
     let client = google_tts::GoogleTtsClient::new(google_api_key);
@@ -598,7 +602,7 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
             Language::Hindi =>
                 r#"For example, if the user confused "सुनना" and "सुनाना", or "बोलना" and "बुलाना", you could generate ["सुनना", "सुनाना"] or ["बोलना", "बुलाना"] in the compare array."#,
 
-            Language::Chinese => {
+            Language::ChineseSimplified | Language::ChineseTraditional => {
                 return Err(StatusCode::NOT_IMPLEMENTED);
             }
         }

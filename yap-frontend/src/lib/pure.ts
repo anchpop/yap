@@ -15,7 +15,8 @@ export const languageFlags: Record<Language, string> = {
   Korean: "🇰🇷",
   English: "🇬🇧",
   German: "🇩🇪",
-  Chinese: "🇨🇳",
+  ChineseSimplified: "🇨🇳",
+  ChineseTraditional: "🇹🇼",
   Japanese: "🇯🇵",
   Russian: "🇷🇺",
   Portuguese: "🇧🇷",
@@ -29,7 +30,8 @@ export const nativeLanguageNames: Record<Language, string> = {
   Spanish: "Español",
   Korean: "한국어",
   German: "Deutsch",
-  Chinese: "中文",
+  ChineseSimplified: "简体中文",
+  ChineseTraditional: "繁體中文",
   Japanese: "日本語",
   Russian: "Русский",
   Portuguese: "Português",
@@ -48,6 +50,8 @@ export function isoCodeToLanguage(isoCode: string): Language | null {
     por: "Portuguese",
     rus: "Russian",
     hin: "Hindi",
+    "zho-hans": "ChineseSimplified",
+    "zho-hant": "ChineseTraditional",
   };
   return isoToLanguage[isoCode] || null;
 }
@@ -80,7 +84,10 @@ export function languageToIso6391(language: Language): string {
     Spanish: "es",
     Korean: "ko",
     German: "de",
-    Chinese: "zh",
+    // BCP 47 script subtags: the lang attribute drives Han glyph
+    // selection in browsers, so the script must be explicit.
+    ChineseSimplified: "zh-Hans",
+    ChineseTraditional: "zh-Hant",
     Japanese: "ja",
     Russian: "ru",
     Portuguese: "pt",

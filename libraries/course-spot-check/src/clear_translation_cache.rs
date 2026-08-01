@@ -166,7 +166,7 @@ fn main() -> Result<()> {
 
     for course in language_utils::COURSES {
         if let Some(ref filter) = filter
-            && course.target_language.iso_639_3() != filter
+            && course.target_language.code() != filter
         {
             continue;
         }

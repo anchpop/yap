@@ -28,8 +28,10 @@ function getLanguageDisplayName(language: Language): string {
       return "Korean";
     case "German":
       return "German";
-    case "Chinese":
-      return "Chinese";
+    case "ChineseSimplified":
+      return "Chinese (Simplified)";
+    case "ChineseTraditional":
+      return "Chinese (Traditional)";
     case "Japanese":
       return "Japanese";
     case "Russian":
@@ -61,8 +63,10 @@ function getLanguageCode(language: Language): string {
       return "KO";
     case "German":
       return "DE";
-    case "Chinese":
+    case "ChineseSimplified":
       return "ZH";
+    case "ChineseTraditional":
+      return "ZHT";
     case "Japanese":
       return "JA";
     case "Russian":

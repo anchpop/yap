@@ -463,7 +463,7 @@ fn write_results_to_files(analyses: &[CourseAnalysis]) -> Result<()> {
             analysis.all_issues.len()
         );
 
-        let lang_dir = analysis.course.target_language.iso_639_3();
+        let lang_dir = analysis.course.target_language.code();
         // Use absolute path from current working directory
         let data_dir = PathBuf::from(format!("./generate-data/data/{lang_dir}"));
 
@@ -587,7 +587,7 @@ async fn main() -> Result<()> {
 
     for course in language_utils::COURSES {
         if let Some(ref filter) = filter
-            && course.target_language.iso_639_3() != filter
+            && course.target_language.code() != filter
         {
             continue;
         }

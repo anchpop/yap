@@ -17,7 +17,7 @@ pub fn polysemous_words(language: Language) -> &'static [PolysemousWord] {
         Language::German => GERMAN,
         Language::Italian => ITALIAN,
         Language::Portuguese => PORTUGUESE,
-        Language::Chinese => CHINESE,
+        Language::ChineseSimplified | Language::ChineseTraditional => CHINESE,
         Language::Japanese => JAPANESE,
         Language::Hindi => HINDI,
         _ => &[],

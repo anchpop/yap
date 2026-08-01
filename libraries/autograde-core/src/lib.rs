@@ -86,7 +86,10 @@ pub async fn grade_translation(
         });
     }
 
-    if target_language == Language::Chinese {
+    if matches!(
+        target_language,
+        Language::ChineseSimplified | Language::ChineseTraditional
+    ) {
         return Err(GradeError::UnsupportedLanguage(target_language));
     }
     let target_language_name = target_language.to_string();

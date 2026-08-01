@@ -177,7 +177,8 @@ export function LanguageSelector({
     Spanish: "Hablo español",
     Korean: "한국어를 합니다",
     German: "Ich spreche Deutsch",
-    Chinese: "我说中文",
+    ChineseSimplified: "我说中文",
+    ChineseTraditional: "我說中文",
     Japanese: "日本語を話します",
     Russian: "Я говорю по-русски",
     Portuguese: "Eu falo português",
@@ -192,7 +193,8 @@ export function LanguageSelector({
     Spanish: "Yap.Ciudad",
     Korean: "얍.타운",
     German: "Yap.Stadt",
-    Chinese: "Yap.城",
+    ChineseSimplified: "Yap.城",
+    ChineseTraditional: "Yap.城",
     Japanese: "Yap.町",
     Russian: "Yap.Город",
     Portuguese: "Yap.Cidade",
@@ -238,11 +240,17 @@ export function LanguageSelector({
       gradient:
         "linear-gradient(180deg, #000000 33%, #DD0000 33% 66%, #FFCE00 66%)",
     },
-    Chinese: {
+    ChineseSimplified: {
       primary: "#DE2910",
       secondary: "#FFDE00",
       accent: "#DE2910",
       gradient: "linear-gradient(135deg, #DE2910 50%, #FFDE00 50%)",
+    },
+    ChineseTraditional: {
+      primary: "#000095",
+      secondary: "#FFFFFF",
+      accent: "#FE0000",
+      gradient: "linear-gradient(135deg, #000095 50%, #FE0000 50%)",
     },
     Japanese: {
       primary: "#FFFFFF",

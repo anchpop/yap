@@ -99,8 +99,8 @@ fn language_data_hash_for_course(course: Course) -> Option<&'static str> {
 fn course_directory_slug(course: Course) -> String {
     format!(
         "{}_for_{}",
-        course.target_language.iso_639_3(),
-        course.native_language.iso_639_3()
+        course.target_language.code(),
+        course.native_language.code()
     )
 }
 

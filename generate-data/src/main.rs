@@ -195,7 +195,7 @@ async fn main() -> anyhow::Result<()> {
 
     for course in COURSES {
         if let Some(ref filter) = lang_filter
-            && course.target_language.iso_639_3() != filter
+            && course.target_language.code() != filter
         {
             continue;
         }
@@ -208,8 +208,7 @@ async fn main() -> anyhow::Result<()> {
         );
         println!("================================================");
 
-        let target_language_dir =
-            PathBuf::from(format!("./out/{}", course.target_language.iso_639_3()));
+        let target_language_dir = PathBuf::from(format!("./out/{}", course.target_language.code()));
         std::fs::create_dir_all(&target_language_dir)
             .context("Failed to create target language directory")?;
         let target_language_dir = target_language_dir
@@ -218,8 +217,8 @@ async fn main() -> anyhow::Result<()> {
 
         let native_specific_dir = PathBuf::from(format!(
             "./out/{}_for_{}",
-            course.target_language.iso_639_3(),
-            course.native_language.iso_639_3()
+            course.target_language.code(),
+            course.native_language.code()
         ));
         std::fs::create_dir_all(&native_specific_dir)
             .context("Failed to create native-specific directory")?;
@@ -227,10 +226,7 @@ async fn main() -> anyhow::Result<()> {
             .canonicalize()
             .context("Failed to canonicalize native-specific output directory")?;
 
-        let source_data_path = format!(
-            "./generate-data/data/{}",
-            course.target_language.iso_639_3()
-        );
+        let source_data_path = format!("./generate-data/data/{}", course.target_language.code());
         let source_data_path = Path::new(source_data_path.as_str());
 
         let banned_words_file = source_data_path.join("banned_words.jsonl");
@@ -1172,7 +1168,7 @@ async fn main() -> anyhow::Result<()> {
         // fills for anything uncovered.
         let golden_morphemes_path = PathBuf::from(format!(
             "generate-data/data/{}/golden_morphemes.jsonl",
-            course.target_language.iso_639_3()
+            course.target_language.code()
         ));
         let etymology_segmentations = if golden_morphemes_path.exists() {
             // Extract learnable single-word grams as the word list (sorted by
@@ -2030,7 +2026,7 @@ async fn main() -> anyhow::Result<()> {
         // Load movie metadata and subtitles
         let source_data_path = std::path::PathBuf::from(format!(
             "./generate-data/data/{}",
-            course.target_language.iso_639_3()
+            course.target_language.code()
         ));
         // Load movie metadata
         let movies_dir = source_data_path.join("sentence-sources/movies");

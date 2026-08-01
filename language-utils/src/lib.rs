@@ -2720,7 +2720,15 @@ pub enum Language {
     Spanish,
     Korean,
     German,
-    Chinese,
+    /// Mandarin Chinese written in Simplified script (zh-CN).
+    ///
+    /// The Simplified/Traditional split is first-class: the two scripts have
+    /// different corpora and dictionaries, and mixed-script data is exactly
+    /// the bug the subtitle sanity checks exist to catch.
+    #[serde(alias = "Chinese")]
+    ChineseSimplified,
+    /// Mandarin Chinese written in Traditional script (zh-TW).
+    ChineseTraditional,
     Japanese,
     Russian,
     Portuguese,
@@ -2782,18 +2790,22 @@ impl Language {
             // ground-truth pronunciation corpus for that language.
             Language::Korean => None,
             Language::Japanese => None,
-            Language::Chinese => None,
+            Language::ChineseSimplified | Language::ChineseTraditional => None,
         }
     }
 
-    pub fn iso_639_3(&self) -> &str {
+    /// Stable short code used for CLI arguments, data directories, and file
+    /// names. ISO 639-3 where that's unambiguous; the Chinese variants append
+    /// an ISO 15924 script subtag because 639-3 alone can't distinguish them.
+    pub fn code(&self) -> &str {
         match self {
             Language::French => "fra",
             Language::English => "eng",
             Language::Spanish => "spa",
             Language::Korean => "kor",
             Language::German => "deu",
-            Language::Chinese => "zho",
+            Language::ChineseSimplified => "zho-hans",
+            Language::ChineseTraditional => "zho-hant",
             Language::Japanese => "jpn",
             Language::Russian => "rus",
             Language::Portuguese => "por",
@@ -2802,14 +2814,18 @@ impl Language {
         }
     }
 
-    pub fn from_iso_639_3(code: &str) -> Option<Self> {
+    /// Inverse of [`Language::code`]. Bare "zho" is deliberately not accepted:
+    /// it doesn't say which script, and the whole point of the split is to
+    /// make that ambiguity a loud error instead of a silent default.
+    pub fn from_code(code: &str) -> Option<Self> {
         Some(match code {
             "fra" => Language::French,
             "eng" => Language::English,
             "spa" => Language::Spanish,
             "kor" => Language::Korean,
             "deu" => Language::German,
-            "zho" => Language::Chinese,
+            "zho-hans" => Language::ChineseSimplified,
+            "zho-hant" => Language::ChineseTraditional,
             "jpn" => Language::Japanese,
             "rus" => Language::Russian,
             "por" => Language::Portuguese,
@@ -2826,7 +2842,7 @@ impl Language {
             Language::Spanish => "es",
             Language::Korean => "ko",
             Language::German => "de",
-            Language::Chinese => "zh",
+            Language::ChineseSimplified | Language::ChineseTraditional => "zh",
             Language::Japanese => "ja",
             Language::Russian => "ru",
             Language::Portuguese => "pt",
@@ -2845,7 +2861,7 @@ impl Language {
             | Language::Italian => WritingSystem::Latin,
             Language::Korean => WritingSystem::Hangul,
             Language::Russian => WritingSystem::Cyrillic,
-            Language::Chinese => WritingSystem::Han,
+            Language::ChineseSimplified | Language::ChineseTraditional => WritingSystem::Han,
             Language::Japanese => WritingSystem::Japanese,
             Language::Hindi => WritingSystem::Devanagari,
         }
@@ -2871,7 +2887,7 @@ impl Language {
             Language::Korean => "\u{cc98}\u{b7fc}",
             Language::English => "as in",
             Language::German => "wie in",
-            Language::Chinese => "\u{5982}",
+            Language::ChineseSimplified | Language::ChineseTraditional => "\u{5982}",
             Language::Japanese => "\u{306e}\u{3088}\u{3046}\u{306b}",
             Language::Russian => "\u{043a}\u{0430}\u{043a} \u{0432}",
             Language::Portuguese => "como em",
@@ -2886,7 +2902,8 @@ impl Language {
         // zero results rather than erroring, so the region suffix is mandatory.
         match self {
             Language::Portuguese => "pt-br",
-            Language::Chinese => "zh-cn",
+            Language::ChineseSimplified => "zh-cn",
+            Language::ChineseTraditional => "zh-tw",
             other => other.iso_639_1(),
         }
     }
@@ -2899,7 +2916,8 @@ impl Language {
             Language::Spanish => "es-ES",
             Language::German => "de-DE",
             Language::Korean => "ko-KR",
-            Language::Chinese => "zh-CN",
+            Language::ChineseSimplified => "zh-CN",
+            Language::ChineseTraditional => "zh-TW",
             Language::Japanese => "ja-JP",
             Language::Russian => "ru-RU",
             Language::Portuguese => "pt-BR",
@@ -2918,7 +2936,8 @@ impl Language {
             Language::Spanish => &["el", "de", "no", "que"],
             Language::German => &["ich", "das", "nicht", "du"],
             Language::Korean => &["이", "는", "을", "에"],
-            Language::Chinese => &["的", "了", "是", "不"],
+            // 的/了/是/不 are written identically in both scripts.
+            Language::ChineseSimplified | Language::ChineseTraditional => &["的", "了", "是", "不"],
             Language::Japanese => &["の", "は", "を", "に"],
             Language::Russian => &["не", "что", "на", "это"],
             Language::Portuguese => &["que", "de", "não", "eu"],
@@ -3074,7 +3093,10 @@ impl Language {
                 ("3де", "Зде"),
             ],
             // No Latin script subtitles for these
-            Language::Korean | Language::Chinese | Language::Japanese => &[],
+            Language::Korean
+            | Language::ChineseSimplified
+            | Language::ChineseTraditional
+            | Language::Japanese => &[],
             Language::Hindi => &[],
         }
     }
@@ -3247,7 +3269,11 @@ impl Language {
         // 9. CJK characters in non-CJK subtitle files
         if !matches!(
             self,
-            Language::Chinese | Language::Japanese | Language::Korean | Language::Hindi
+            Language::ChineseSimplified
+                | Language::ChineseTraditional
+                | Language::Japanese
+                | Language::Korean
+                | Language::Hindi
         ) {
             let cjk_count = all_text
                 .chars()
@@ -3355,6 +3381,80 @@ impl Language {
             }
         }
 
+        // 18. Chinese script/variety check. OpenSubtitles files labeled zh-CN
+        // are frequently Traditional (zh-TW/zh-HK) or even written Cantonese,
+        // and vice versa — the sanity words 的/了/是/不 are identical in both
+        // scripts, so this needs its own check. The wrong-script rejection is
+        // symmetric: the Simplified course rejects Traditional-dominant files,
+        // the Traditional course rejects Simplified-dominant ones.
+        if matches!(
+            self,
+            Language::ChineseSimplified | Language::ChineseTraditional
+        ) {
+            // Characters used ONLY in simplified or ONLY in traditional text.
+            // Forms valid in both (里/后/云/台/只/干/面/…) are deliberately absent.
+            const SIMPLIFIED_ONLY: &str = "国会这说对时们来学见还没电车门问间东儿点开关认让话语读写听号妈谁么几个长张马鸟鱼龙风华为乐现买卖医难题双观欢击级红纪经给绝统继续绿网罗办变边币标产称迟处传单当党动断队发刚归龟汉护记举剧亲轻确热伤审圣书树术岁孙态万习县响择泽针诊争证织职执质钟种众专转庄状准务议译异样养药钥远运杂灾脏则贼赠纸骂";
+            const TRADITIONAL_ONLY: &str = "國會這說對時們來學見還沒電車門問間東兒點開關認讓話語讀寫聽號媽誰麼幾個長張馬鳥魚龍風華為樂現買賣醫難題雙觀歡擊級紅紀經給絕統繼續綠網羅辦變邊幣標產稱遲處傳單當黨動斷隊發剛歸龜漢護記舉劇親輕確熱傷審聖書樹術歲孫態萬習縣響擇澤針診爭證織職執質鐘種眾專轉莊狀準務議譯異樣養藥鑰遠運雜災臟則賊贈紙罵";
+            // Written-Cantonese function words — Mandarin text has ~none.
+            const CANTONESE_MARKERS: &str = "嘅咗唔佢哋冇咁嚟啲喺嗰乜嘢噉氹攞";
+
+            let mut simplified = 0usize;
+            let mut traditional = 0usize;
+            let mut cantonese = 0usize;
+            let mut han = 0usize;
+            let mut kana = 0usize;
+            let mut non_ws = 0usize;
+            for c in all_text.chars() {
+                if !c.is_whitespace() {
+                    non_ws += 1;
+                }
+                if ('\u{3040}'..='\u{30FF}').contains(&c) {
+                    kana += 1;
+                }
+                if ('\u{4E00}'..='\u{9FFF}').contains(&c) || ('\u{3400}'..='\u{4DBF}').contains(&c)
+                {
+                    han += 1;
+                    if SIMPLIFIED_ONLY.contains(c) {
+                        simplified += 1;
+                    } else if TRADITIONAL_ONLY.contains(c) {
+                        traditional += 1;
+                    }
+                    if CANTONESE_MARKERS.contains(c) {
+                        cantonese += 1;
+                    }
+                }
+            }
+            // Japanese subs share han characters, so the sanity words alone
+            // don't exclude them — kana does.
+            if kana * 50 > non_ws {
+                return Err(format!(
+                    "Japanese contamination: {kana} kana characters in Chinese subtitles"
+                ));
+            }
+            // Bilingual zh+en subs (every line carries an English translation)
+            // still contain all the sanity words; require han-dominant text.
+            if han * 2 < non_ws {
+                return Err(format!(
+                    "not predominantly Chinese: {han} han chars of {non_ws} total (bilingual or wrong language?)"
+                ));
+            }
+            let marked = simplified + traditional;
+            let (wrong_script, wrong_name, want_name) = match self {
+                Language::ChineseSimplified => (traditional, "Traditional", "Simplified"),
+                _ => (simplified, "Simplified", "Traditional"),
+            };
+            if marked >= 20 && wrong_script * 2 > marked {
+                return Err(format!(
+                    "{wrong_name} Chinese script ({wrong_script} of {marked} script-marked chars) — want {want_name}"
+                ));
+            }
+            if cantonese >= 10 && cantonese * 1000 > han * 3 {
+                return Err(format!(
+                    "written Cantonese ({cantonese} Cantonese-only chars in {han} han chars)"
+                ));
+            }
+        }
+
         Ok(())
     }
 }
@@ -3367,7 +3467,8 @@ impl std::fmt::Display for Language {
             Language::Spanish => write!(f, "Spanish"),
             Language::Korean => write!(f, "Korean"),
             Language::German => write!(f, "German"),
-            Language::Chinese => write!(f, "Chinese"),
+            Language::ChineseSimplified => write!(f, "Chinese (Simplified)"),
+            Language::ChineseTraditional => write!(f, "Chinese (Traditional)"),
             Language::Japanese => write!(f, "Japanese"),
             Language::Russian => write!(f, "Russian"),
             Language::Portuguese => write!(f, "Portuguese"),
@@ -3478,7 +3579,8 @@ pub const LANGUAGES: &[Language] = &[
     Language::English,
     Language::Korean,
     Language::German,
-    Language::Chinese,
+    Language::ChineseSimplified,
+    Language::ChineseTraditional,
     Language::Japanese,
     Language::Russian,
     Language::Portuguese,
@@ -4000,4 +4102,121 @@ pub fn literals_to_text(literals: &[Literal<String>]) -> String {
         .iter()
         .map(|lit| format!("{}{}", lit.word.text, lit.whitespace))
         .collect()
+}
+
+#[cfg(test)]
+mod subtitle_script_tests {
+    use super::*;
+
+    // check_subtitle_sanity rejects anything under 75 lines before the script
+    // check runs, so repeat the sample enough times to clear that bar. The
+    // sanity words 的/了/是/不 must also all appear; the filler providing them
+    // matches the script under test so it doesn't skew the script counts.
+    fn lines(sample: &[&str], filler: &str) -> Vec<String> {
+        let mut out = Vec::new();
+        while out.len() < 80 {
+            out.extend(sample.iter().map(|s| s.to_string()));
+            out.push(filler.to_string());
+        }
+        out
+    }
+
+    fn check_as(language: Language, sample: &[&str]) -> Result<(), String> {
+        let filler = if language == Language::ChineseTraditional {
+            "他說的是不了"
+        } else {
+            "他说的是不了"
+        };
+        let lines = lines(sample, filler);
+        language.check_subtitle_sanity(lines.iter().map(|s| s.as_str()), &[])
+    }
+
+    fn check(sample: &[&str]) -> Result<(), String> {
+        check_as(Language::ChineseSimplified, sample)
+    }
+
+    #[test]
+    fn simplified_mandarin_passes() {
+        check(&[
+            "我们这时候还没开门",
+            "你说的对，他们来学校了",
+            "这个问题很难，谁能回答",
+        ])
+        .unwrap();
+    }
+
+    #[test]
+    fn traditional_script_rejected() {
+        let err = check(&[
+            "我們這時候還沒開門",
+            "你說的對，他們來學校了",
+            "這個問題很難，誰能回答",
+        ])
+        .unwrap_err();
+        assert!(err.contains("Traditional"), "{err}");
+    }
+
+    #[test]
+    fn traditional_passes_for_traditional_course() {
+        check_as(
+            Language::ChineseTraditional,
+            &[
+                "我們這時候還沒開門",
+                "你說的對，他們來學校了",
+                "這個問題很難，誰能回答",
+            ],
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn simplified_rejected_for_traditional_course() {
+        let err = check_as(
+            Language::ChineseTraditional,
+            &[
+                "我们这时候还没开门",
+                "你说的对，他们来学校了",
+                "这个问题很难，谁能回答",
+            ],
+        )
+        .unwrap_err();
+        assert!(err.contains("Simplified"), "{err}");
+    }
+
+    #[test]
+    fn bilingual_zh_en_rejected() {
+        let err = check(&[
+            "深渊怪物能助你 And the Abyss monsters can help destroy your enemy.",
+            "修复仙酿！ Elixir Reparo! This line is mostly English text overall.",
+            "我们走吧 Let us go now, everyone, the ceremony is about to begin.",
+        ])
+        .unwrap_err();
+        assert!(err.contains("predominantly"), "{err}");
+    }
+
+    #[test]
+    fn japanese_kana_rejected() {
+        let err = check(&[
+            "骗人的吧",
+            "そうですね、これは日本語の字幕ですから、だめですよ",
+            "什么意思",
+        ])
+        .unwrap_err();
+        assert!(err.contains("Japanese"), "{err}");
+    }
+
+    #[test]
+    fn written_cantonese_rejected() {
+        let err = check(&[
+            "佢哋唔知道你喺邊度",
+            "我冇嘢講，你咁樣做係唔啱嘅",
+            "佢咗嗰度攞啲嘢",
+        ])
+        .unwrap_err();
+        // Cantonese subs are usually Traditional too; either rejection is correct.
+        assert!(
+            err.contains("Cantonese") || err.contains("Traditional"),
+            "{err}"
+        );
+    }
 }

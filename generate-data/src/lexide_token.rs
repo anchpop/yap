@@ -396,7 +396,8 @@ fn heteronym_from_lexide_token(
         language_utils::Language::Italian
         | language_utils::Language::Portuguese
         | language_utils::Language::Russian
-        | language_utils::Language::Chinese
+        | language_utils::Language::ChineseSimplified
+        | language_utils::Language::ChineseTraditional
         | language_utils::Language::Japanese => {
             // Simple normalization for unsupported languages
             let text = strip_punctuation(text);

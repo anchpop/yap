@@ -39,7 +39,8 @@ export function AccentedCharacterKeyboard({
     .with("German", () => ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"])
     .with("Korean", () => [])
     .with("English", () => [])
-    .with("Chinese", () => [])
+    .with("ChineseSimplified", () => [])
+    .with("ChineseTraditional", () => [])
     .with("Japanese", () => [])
     .with("Russian", () => [])
     .with("Portuguese", () => [

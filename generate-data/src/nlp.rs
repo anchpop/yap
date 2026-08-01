@@ -23,7 +23,7 @@ fn to_lexide_language(lang: Language) -> Option<lexide::Language> {
         Language::Hindi => Some(lexide::Language::Hindi),
         Language::Japanese => Some(lexide::Language::Japanese),
         // Languages not yet supported by lexide
-        Language::Chinese => todo!(),
+        Language::ChineseSimplified | Language::ChineseTraditional => todo!(),
     }
 }
 

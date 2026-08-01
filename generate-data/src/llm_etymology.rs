@@ -262,7 +262,7 @@ fn language_specific_notes(language: Language) -> &'static str {
   - `ão (ão)` has many functions: `[3pl.fut]` (falarão), `[3pl.prs]` for irregulars (são, têm, vão), `[aug]` augmentative (carrão), `[nmlz]` in `-ação`/`-ção` nominalizations (though those have distinct canonicals)
 - `mente (mente) [adv]` for adverbializer."
         }
-        Language::Chinese => {
+        Language::ChineseSimplified | Language::ChineseTraditional => {
             "\n\nExtra Chinese-specific guidance:
 - Chinese has minimal grammatical morphology, but several characters serve multiple grammatical roles on the same surface form. Tag aggressively for these:
   - `了`: `[pfv]` perfective aspect (吃了 ate) vs `[cos]` change-of-state sentence-final
