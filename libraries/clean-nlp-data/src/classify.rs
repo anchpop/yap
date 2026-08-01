@@ -6485,6 +6485,68 @@ impl SentenceClassifier for ChineseClassifier {
                     ));
                 }
             }
+
+            // Complement-marker 得 (PART) only exists after a verb/adjective. Anywhere
+            // else it is the modal děi (AUX) or the verb dé.
+            if token.text == "得" && token.pos == PartOfSpeechTag::Part {
+                let prev_pos = idx.checked_sub(1).map(|i| tokens[i].pos);
+                if !matches!(
+                    prev_pos,
+                    Some(PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Aux)
+                ) {
+                    reasons.push(format!(
+                        "'得' is tagged PART but does not follow a verb/adjective (previous: {}) — the complement marker only appears after a predicate. Is this the modal 得 (AUX, 'must') or the verb 得 ('to get')?",
+                        idx.checked_sub(1)
+                            .map(|i| tokens[i].text.as_str())
+                            .unwrap_or("<start>")
+                    ));
+                }
+            }
+
+            // A modal tagged AUX must govern a verb somewhere to its right. The
+            // deterministic rule already fixes the adjacent cases; this catches an AUX
+            // stranded before a pure noun phrase.
+            if ZH_MODAL_VERBS.contains(&token.text.as_str())
+                && token.pos == PartOfSpeechTag::Aux
+                && !tokens[idx + 1..]
+                    .iter()
+                    .any(|t| matches!(t.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Aux))
+            {
+                reasons.push(format!(
+                    "modal '{}' is tagged AUX but no verb follows it — a standalone modal (e.g. 我要这个, 我不会) is VERB.",
+                    token.text
+                ));
+            }
+
+            // 是 is only ever the copula (VERB), the 是...的 focus marker (AUX), or a
+            // bare "yes" reply (INTJ). Anything else — the ADV it sometimes gets in
+            // 是不是 A-not-A strings — is a mistag.
+            if token.text == "是"
+                && !matches!(
+                    token.pos,
+                    PartOfSpeechTag::Verb | PartOfSpeechTag::Aux | PartOfSpeechTag::Intj
+                )
+            {
+                reasons.push(format!(
+                    "'是' is tagged {:?} — 是 is VERB (copula), AUX (是...的 focus), or INTJ (bare reply); in 是不是 each 是 is VERB.",
+                    token.pos
+                ));
+            }
+
+            // Aspect particles attach to a preceding predicate (or, for sentence-final
+            // 了, at least a preceding phrase). At the start of a sentence or right
+            // after punctuation they cannot be aspect markers.
+            if matches!(token.text.as_str(), "了" | "过" | "着")
+                && token.pos == PartOfSpeechTag::Part
+            {
+                let prev_pos = idx.checked_sub(1).map(|i| tokens[i].pos);
+                if prev_pos.is_none() || prev_pos == Some(PartOfSpeechTag::Punct) {
+                    reasons.push(format!(
+                        "'{}' is tagged PART but starts the sentence/follows punctuation — an aspect particle needs something before it. Retokenization may be needed.",
+                        token.text
+                    ));
+                }
+            }
         }
 
         if reasons.is_empty() {
@@ -6495,46 +6557,117 @@ impl SentenceClassifier for ChineseClassifier {
     }
 }
 
+/// Modal verbs that are AUX when they modify a following verb — the prompt's modal rule,
+/// enforced deterministically. 是 is deliberately absent: its AUX use (是...的 focus) is
+/// not decidable from adjacency. 得 is included: tagged VERB before another verb it is
+/// the modal děi (我得走), while its PART complement-marker use is untouched.
+const ZH_MODAL_VERBS: &[&str] = &[
+    "会", "能", "能够", "可以", "应该", "应当", "必须", "敢", "肯", "愿意", "想", "要", "得",
+];
+
+/// Deterministic per-token fixes, applied identically to the NLP proposal (`correct`)
+/// and the LLM output (`post_corrections`).
+fn fix_chinese_token(token: &mut impl TokenView) -> Vec<String> {
+    let mut fixes = Vec::new();
+
+    // Chinese words do not inflect: the lemma is the surface form, for every token.
+    // (Trimmed — the first token of a sentence may carry leading whitespace in its text
+    // to keep the reconstruction invariant, and that whitespace is not part of the word.)
+    let want_lemma = token.text().trim();
+    if token.lemma() != want_lemma && !want_lemma.is_empty() {
+        fixes.push(format!(
+            "Set lemma of '{}' to its surface form (was '{}')",
+            token.text().trim(),
+            token.lemma()
+        ));
+        token.set_lemma(want_lemma.to_string());
+    }
+
+    // 的 is always the structural particle in modern text — attributive, genitive, or
+    // nominalizing, all PART. (的 as part of a content word never stands alone.)
+    if token.text().trim() == "的" && token.pos() != PartOfSpeechTag::Part {
+        fixes.push(format!("Retagged 的 from {:?} to PART", token.pos()));
+        token.set_pos(PartOfSpeechTag::Part);
+    }
+
+    // Standalone 了 is always a particle (perfective or change-of-state). The verb
+    // reading liǎo only survives inside compounds (了解, 受不了), which are one token.
+    if token.text().trim() == "了" && token.pos() != PartOfSpeechTag::Part {
+        fixes.push(format!("Retagged 了 from {:?} to PART", token.pos()));
+        token.set_pos(PartOfSpeechTag::Part);
+    }
+
+    fixes
+}
+
+/// Deterministic context fixes over the whole token sequence.
+fn fix_chinese_context<T: TokenView>(tokens: &mut [T]) -> Vec<String> {
+    let mut fixes = Vec::new();
+
+    for i in 0..tokens.len() {
+        let text = tokens[i].text().trim().to_string();
+        if !ZH_MODAL_VERBS.contains(&text.as_str()) {
+            continue;
+        }
+        // The complement-marker 得 (PART) is a different word; only the verb readings
+        // participate in the modal rule.
+        if !matches!(
+            tokens[i].pos(),
+            PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
+        ) {
+            continue;
+        }
+        // Walk past adverbs (negation, degree, time: 不, 没, 也, 再, 很) to the word the
+        // modal would govern.
+        let next_pos = tokens[i + 1..]
+            .iter()
+            .map(|t| t.pos())
+            .find(|p| *p != PartOfSpeechTag::Adv);
+        match next_pos {
+            // Modal before a verb: AUX (我会说中文, 你应该不去).
+            Some(PartOfSpeechTag::Verb | PartOfSpeechTag::Aux) => {
+                if tokens[i].pos() == PartOfSpeechTag::Verb {
+                    fixes.push(format!("Retagged modal {text} before a verb to AUX"));
+                    tokens[i].set_pos(PartOfSpeechTag::Aux);
+                }
+            }
+            // Standalone modal — sentence-final or followed only by particles/punctuation:
+            // VERB (我不会。, 他会的). Anything else (nouns, 把-phrases…) is left for the
+            // LLM: the verb the modal governs may sit further right.
+            None | Some(PartOfSpeechTag::Part | PartOfSpeechTag::Punct)
+                if tokens[i].pos() == PartOfSpeechTag::Aux =>
+            {
+                fixes.push(format!("Retagged standalone modal {text} to VERB"));
+                tokens[i].set_pos(PartOfSpeechTag::Verb);
+            }
+            _ => {}
+        }
+    }
+
+    fixes
+}
+
 /// Chinese-specific corrector
 struct ChineseCorrector;
 
 impl WordCorrector for ChineseCorrector {
     fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
-        let mut corrected = false;
         let mut corrections = Vec::new();
-
         for token in &mut sentence.doc {
-            // Chinese lemmas should generally be the surface form (no inflection)
-            if (token.pos == PartOfSpeechTag::Verb
-                || token.pos == PartOfSpeechTag::Adj
-                || token.pos == PartOfSpeechTag::Noun)
-                && token.text != token.lemma
-                && !token.lemma.is_empty()
-                && !token.text.is_empty()
-            {
-                corrections.push(format!(
-                    "Fixed '{}' lemma from '{}' to surface form",
-                    token.text, token.lemma
-                ));
-                token.lemma = token.text.clone();
-                corrected = true;
-            }
-
-            // Fix capitalized lemmas (shouldn't happen in Chinese, but just in case)
-            if token.pos != PartOfSpeechTag::Propn
-                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
-            {
-                let lower = token.lemma.to_lowercase();
-                corrections.push(format!("Lowercased lemma '{}' to '{}'", token.lemma, lower));
-                token.lemma = lower;
-                corrected = true;
-            }
+            corrections.extend(fix_chinese_token(token));
         }
-
+        corrections.extend(fix_chinese_context(&mut sentence.doc));
         CorrectionResult {
-            corrected,
+            corrected: !corrections.is_empty(),
             corrections,
         }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        for token in tokens.iter_mut() {
+            fix_chinese_token(token);
+        }
+        fix_chinese_context(tokens.as_mut_slice());
     }
 }
 
@@ -9642,6 +9775,135 @@ mod tests {
             "expected conjunct-verb flag, got {reasons:?}"
         );
     }
+
+    fn zh_token(text: &str, pos: PartOfSpeechTag) -> SimplifiedTokenPrime {
+        SimplifiedTokenPrime {
+            text: text.to_string(),
+            whitespace: String::new(),
+            pos,
+            lemma: text.to_string(),
+        }
+    }
+
+    fn zh_fix(tokens: Vec<SimplifiedTokenPrime>) -> Vec<SimplifiedTokenPrime> {
+        let mut tokens = tokens;
+        ChineseCorrector.post_corrections(&mut tokens);
+        tokens
+    }
+
+    #[test]
+    fn test_chinese_lemma_is_surface_form() {
+        use PartOfSpeechTag::{Punct, Verb};
+
+        let mut tokens = vec![zh_token("吃", Verb), zh_token("。", Punct)];
+        tokens[0].lemma = "吃饭".to_string();
+        let fixed = zh_fix(tokens);
+        assert_eq!(fixed[0].lemma, "吃");
+    }
+
+    #[test]
+    fn test_chinese_modal_pos_follows_context() {
+        use PartOfSpeechTag::{Adv, Aux, Noun, Pron, Punct, Verb};
+
+        // Modal before a verb → AUX: 我会说中文
+        let fixed = zh_fix(vec![
+            zh_token("我", Pron),
+            zh_token("会", Verb),
+            zh_token("说", Verb),
+            zh_token("中文", Noun),
+        ]);
+        assert_eq!(fixed[1].pos, Aux);
+
+        // Negation between modal and verb is skipped: 你应该不去
+        let fixed = zh_fix(vec![
+            zh_token("你", Pron),
+            zh_token("应该", Verb),
+            zh_token("不", Adv),
+            zh_token("去", Verb),
+        ]);
+        assert_eq!(fixed[1].pos, Aux);
+
+        // Standalone modal (sentence-final after negation) → VERB: 我不会。
+        let fixed = zh_fix(vec![
+            zh_token("我", Pron),
+            zh_token("不", Adv),
+            zh_token("会", Aux),
+            zh_token("。", Punct),
+        ]);
+        assert_eq!(fixed[2].pos, Verb);
+
+        // Modal before a noun phrase is left alone (the governed verb may sit
+        // further right, e.g. behind a 把-phrase): 我要这个
+        let fixed = zh_fix(vec![
+            zh_token("我", Pron),
+            zh_token("要", Aux),
+            zh_token("这个", Pron),
+        ]);
+        assert_eq!(fixed[1].pos, Aux);
+    }
+
+    #[test]
+    fn test_chinese_particle_enforcement() {
+        use PartOfSpeechTag::{Noun, Part, Pron, Verb};
+
+        // 的 and standalone 了 are always PART
+        let fixed = zh_fix(vec![
+            zh_token("我", Pron),
+            zh_token("的", Verb),
+            zh_token("书", Noun),
+        ]);
+        assert_eq!(fixed[1].pos, Part);
+
+        let fixed = zh_fix(vec![zh_token("吃", Verb), zh_token("了", Verb)]);
+        assert_eq!(fixed[1].pos, Part);
+    }
+
+    #[test]
+    fn test_chinese_stranded_particles_flagged() {
+        use PartOfSpeechTag::{Aux, Noun, Part, Pron, Verb};
+
+        // 得 tagged PART with no predicate before it
+        let tokens = vec![
+            zh_token("我", Pron),
+            zh_token("得", Part),
+            zh_token("走", Verb),
+        ];
+        let reasons = ChineseClassifier.needs_double_check("我得走", &tokens);
+        assert!(
+            reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("complement marker"))),
+            "expected 得-PART flag, got {reasons:?}"
+        );
+
+        // Modal AUX with no verb anywhere after it
+        let tokens = vec![
+            zh_token("我", Pron),
+            zh_token("要", Aux),
+            zh_token("水", Noun),
+        ];
+        let reasons = ChineseClassifier.needs_double_check("我要水", &tokens);
+        assert!(
+            reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("no verb follows"))),
+            "expected stranded-modal flag, got {reasons:?}"
+        );
+
+        // A well-formed 跑得快 is not flagged for 得
+        let tokens = vec![
+            zh_token("跑", Verb),
+            zh_token("得", Part),
+            zh_token("快", PartOfSpeechTag::Adj),
+        ];
+        let reasons = ChineseClassifier.needs_double_check("跑得快", &tokens);
+        assert!(
+            !reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("complement marker"))),
+            "unexpected 得 flag: {reasons:?}"
+        );
+    }
 }
 
 /// Simplified token representation for LLM correction (without morphology)
@@ -10249,36 +10511,67 @@ Participles used as adjectives: when a participle modifies a noun (e.g., "уст
         Language::ChineseSimplified | Language::ChineseTraditional => {
             r#"
 
-Chinese-specific rules — please follow these carefully:
+Chinese-specific rules — please follow these carefully. Chinese is written without spaces between words; a neural segmenter (fine-grained CTB standard) has already proposed a segmentation, and your job is to review it.
+
+## Tokenization: a token is a word a learner can look up
+
+Every token is shown to a learner on its own, with its own dictionary entry (think CC-CEDICT granularity). The guiding principle:
+
+**Keep a boundary only when both sides are words a learner could be shown independently. Merge only when the pieces are not independent words — or when the combination is itself the dictionary word.**
+
+Unlike Japanese, Chinese has no inflection to strand, so fine-grained segmentation is usually right: 都是 → 都|是, 很快 → 很|快, 不要 → 不|要 — each piece is a word, and none of those combinations is a dictionary entry. Where the segmenter keeps a compound whole (没有, 为什么, 已经, 放下), it is because the compound IS the dictionary word.
+
+Common errors to fix:
+- Over-segmenting: two adjacent single-character tokens that form one dictionary word (因|为 → 因为, 可|以 → 可以, 已|经 → 已经, 你|好 → 你好 as a greeting). If two adjacent single-character tokens have no whitespace between them and their combination is a common word used as that word here, merge them.
+- Under-segmenting: two words fused into one token (他们说 → 他们|说).
+
+### One token each (do not split)
+
+- Greetings and formulas: 你好, 谢谢, 对不起, 没关系, 再见 — single INTJ (or VERB for 谢谢 with an object) tokens.
+- Lexicalized verb compounds the dictionary lists: 放下, 起来, 回来, 出去, 得到, 看见, 听说, 觉得, 认识, 知道.
+- Reduplicated verbs: 看看, 想想, 试试, 看一看, 聊聊天 — one token, lemma is the token itself.
+- Erhua: 花儿, 一点儿, 一会儿 — the 儿 stays attached.
+- Personal names: 张伟, 汤姆, 克里斯汀 — one PROPN token; never decompose a person's name, Chinese or transliterated. Surname and given name written together stay together (张伟, not 张|伟).
+- Separable verbs (离合词) written contiguously: 见面, 睡觉, 吃饭, 帮忙 — one VERB token. When actually separated (睡了一觉, 帮个忙), the pieces are already separate tokens: label them individually (睡 VERB, 觉 NOUN).
+
+### Never reorder the text — tokens must reproduce the sentence
+
+Concatenating the tokens' text + whitespace in order must reproduce the sentence exactly. In particular, a separable verb with an INFIXED aspect particle stays in surface order as separate tokens:
+- 结过婚 → 结|过|婚 (结 VERB, 过 PART, 婚 NOUN) — NEVER "结婚|过", which reorders the characters
+- 堕过胎 → 堕|过|胎, 干过架 → 干|过|架, 做过爱 → 做|过|爱, 洗了澡 → 洗|了|澡
+The urge to reunite the dictionary word 结婚 is wrong here — the sentence's own character order always wins.
+
+Likewise, never INSERT characters the sentence doesn't contain. Colloquial elisions and contractions stay as written: 听过 stays 听|过 (do not expand to 听说过), the A-not-A contraction 知不知道 stays 知|不|知道 (do not expand to 知道不知道; tag the clipped 知 as VERB). The token texts must use exactly the sentence's characters, no more, no fewer.
+
+### Separate tokens (do not merge)
+
+- Number | measure word: 三|本, 一|杯, 这|个 — the measure word is its own learnable word (NOUN). Exception: 一下 is one token (a dictionary word).
+- Verb | aspect particle: 吃|了, 去|过, 拿|着.
+- Verb | complement 得|地|的 constructions: 跑|得|快, 慢慢|地|走.
+- Adjacent verbs in serial constructions: 去|买, 想|吃.
+- Institutional/geographic compound names may stay as the segmenter proposed (中华|人民|共和国 is fine — each part is a word); only person names are atomic.
 
 ## Lemmatization
 
-Chinese words do not inflect — the lemma should always be identical to the surface form. Do not change the lemma to a different word.
-
-## Tokenization
-
-Chinese is written without spaces between words. The tokenizer has already segmented the text. Review the segmentation carefully — common errors include:
-- Over-segmenting: splitting a two-character word into two single characters (e.g., 因为 split into 因 + 为, 可以 split into 可 + 以, 已经 split into 已 + 经). If two adjacent single-character tokens of the same POS have no whitespace between them, consider whether they should be one word.
-- Under-segmenting: keeping two words fused (e.g., 他们说 should be 他们 + 说)
-- Multiword proper nouns should be kept as single tokens (e.g., 中华人民共和国)
+Chinese words do not inflect — the lemma is always identical to the surface form of the token, for every token, including particles, punctuation, and proper nouns. Do not "normalize" 得/地/的, do not substitute synonyms, do not convert between scripts. (The pipeline enforces this deterministically — a differing lemma is discarded.)
 
 ## Part of Speech
 
 ### Structural particles (助词)
-的 (attributive), 地 (adverbial) should be tagged PART.
+的 (attributive/genitive/nominalizing), 地 (adverbial) should be tagged PART.
 
 得 is three-way ambiguous — handle carefully:
-- PART: complement marker after a verb (e.g., 跑得快 = runs fast)
+- PART: complement marker after a verb/adjective (e.g., 跑得快 = runs fast)
 - AUX: modal "must" (pronunciation děi, e.g., 我得走了 = I must go)
 - VERB: "to get/obtain" (pronunciation dé, rare standalone, common in compounds like 得到)
 
 ### Aspect particles (also PART)
-了: perfective aspect (after verb: 吃了) or sentence-final change-of-state. Should be PART, NOT VERB.
+了: perfective aspect (after verb: 吃了) or sentence-final change-of-state. Always PART, never VERB.
 过: experiential aspect after a verb (e.g., 我去过中国 = I have been to China) → PART. But 过 as a standalone main verb meaning "to pass/cross" (e.g., 过马路) → VERB.
 着: durative aspect after a verb (e.g., 开着门 = the door is open) → PART. But 着 as a standalone verb is rare in modern Chinese.
 
 ### Sentence-final particles
-吗 (yes/no question), 呢 (follow-up/topic), 吧 (suggestion/uncertainty) should be PART.
+吗 (yes/no question), 呢 (follow-up/topic), 吧 (suggestion/uncertainty), 啊/呀/嘛/啦/哦 (tone) should be PART when sentence-final. Standing alone as an exclamation (啊！), they are INTJ.
 
 ### 在 (zài) — highly ambiguous
 - VERB: locative copula (他在家 = he is at home)
@@ -10287,23 +10580,29 @@ Chinese is written without spaces between words. The tokenizer has already segme
 When 在 appears directly before a verb, it's typically ADV (progressive). When before a noun/place, it's ADP. When it IS the main predicate with a location, it's VERB.
 
 ### 把 and 被 — grammatical markers
-把: most commonly ADP (disposal/object-fronting construction: 把书放下 = put the book down). Rarely VERB "to hold/guard". As measure word after a number/demonstrative, it should be NOUN.
+把: most commonly ADP (disposal/object-fronting construction: 把书放下 = put the book down). Rarely VERB "to hold/guard". As measure word after a number/demonstrative (一把刀), it should be NOUN.
 被: most commonly ADP (passive marker: 被打了 = was hit, 被老师批评了 = was criticized by the teacher). Rarely VERB "to cover" in modern Chinese.
 
 ### 是 (shì) as copula
 VERB when linking subject to predicate (e.g., '他是老师'). AUX only in 是...的 focus constructions (e.g., '他是昨天来的').
 
 ### Modal verbs
-会/能/可以/要/想/应该/必须: AUX when modifying another verb, VERB when standalone with a direct object.
+会/能/能够/可以/要/想/应该/必须/敢/肯/愿意: AUX when modifying another verb (我会说中文 → 会 AUX), VERB when standalone with a direct object or sentence-final (我要这个, 我不会 → VERB). The pipeline enforces the adjacent cases deterministically — please apply the same rule when the governed verb sits further away (你应该把它放下 → 应该 AUX).
 
 ### Measure words/classifiers (量词)
-个, 只, 条, 张, etc. after a number or demonstrative (这/那/哪/每/几) should be tagged NOUN.
+个, 只, 条, 张, 本, 杯, etc. after a number or demonstrative (这/那/哪/每/几) should be tagged NOUN.
+
+### Localizers (方位词)
+Single-character localizers after a noun (桌子上, 房间里): 上/里/下/中/外 → ADP. Two-character position words (上面, 里面, 旁边, 中间) → NOUN.
 
 ### Negation
-不 and 没 should be ADV. 没有 can be ADV (negation: '没有去过') or VERB (non-possession: '我没有钱').
+不 and 没 should be ADV (不 standing entirely alone as a reply — 不。 — is INTJ). 没有 can be ADV (negation: '没有去过') or VERB (non-possession: '我没有钱').
 
 ### Demonstratives
-这/那 before a noun: DET. Standing alone: PRON."#
+这/那 before a noun or measure word: DET. Standing alone: PRON.
+
+### Proper nouns
+Names of people, places, and organizations — Chinese or transliterated — are PROPN: 爱德华, 洛汗, 刚铎, 明尼苏达州, 张伟. Fictional place/people names from films count. A transliterated name is not a common NOUN just because it is unfamiliar."#
         }
         Language::Japanese => {
             r#"

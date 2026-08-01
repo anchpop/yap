@@ -56,9 +56,17 @@
             LIBRARY_PATH = "${pkgs.sqlite.out}/lib";
           };
 
+          # manylinux wheels in the NLP venv (numpy, torch) dlopen the system
+          # libstdc++/zlib, which NixOS doesn't provide globally; torch also
+          # needs the NixOS driver dir for libcuda.so.1 or it silently falls
+          # back to CPU. Appended (not set via `env`) so an inherited
+          # LD_LIBRARY_PATH survives.
+          LD_LIBRARY_PATH_EXTRA = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib:/run/opengl-driver/lib";
+
           # generate-data's Google translator (gcp_auth) needs a service-account
           # JSON, not the API keys in .env. The account is git-crypt'd in the repo.
           shellHook = ''
+            export LD_LIBRARY_PATH="$LD_LIBRARY_PATH_EXTRA''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
             export GOOGLE_APPLICATION_CREDENTIALS="$PWD/secrets/gcp-service-account.json"
 
             # Cache mirroring via osmo: generate-data warms/flushes .cache to the

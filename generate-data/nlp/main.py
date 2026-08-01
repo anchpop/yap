@@ -37,12 +37,7 @@ MODEL_MAPPING = {
         "small": "de_core_news_sm",
         "large": "de_dep_news_trf"
     },
-    # spaCy's Chinese models are trained on Simplified text (OntoNotes);
-    # there is no model for zho-hant.
-    "zho-hans": {
-        "small": "zh_core_web_trf",
-        "large": "zh_core_web_trf"
-    },
+    # Chinese does not go through spaCy — see the HanLP section below.
     "ita": {
         "small": "it_core_news_lg",
         "large": "it_core_news_lg"
@@ -363,6 +358,133 @@ def japanese_records(sentences):
         }
 
 
+# ---------------------------------------------------------------------------------------
+# Chinese: HanLP, not spaCy
+#
+# Same reasoning as the Sudachi section above: the LLM reviews a deterministic proposal,
+# and the better the proposal, the cheaper and more consistent the review. spaCy's zh
+# models segment with pkuseg (statistical, 2019, news-domain, ~95 F1); HanLP's ELECTRA
+# models are neural, trained on CTB9 (which includes broadcast conversation — much closer
+# to our subtitle corpus), and score ~98 F1. The multi-task base model gives fine-grained
+# tokenization and CTB POS in one pass, on GPU when available.
+#
+# Fine-grained (CTB standard) over coarse is deliberate — the mirror image of Japanese
+# choosing mode C. Japanese merges because splitting strands bound morphemes that are not
+# words; Chinese fine-grained splits because coarse merges strand nothing: 都是 → 都|是 and
+# 很快 → 很|快 leave two words a learner can look up, and neither compound is a dictionary
+# entry. Where fine keeps a compound (没有, 放下, 为什么), it is because the compound IS the
+# dictionary word.
+#
+# The tokenizer preserves surface text exactly (fullwidth chars, punctuation), so token
+# offsets can be recovered by scanning — verified against the whitespace-reconstruction
+# invariant the pipeline requires.
+HANLP_ZH_MODEL = "CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH"
+
+# CTB → UPOS. Nearly mechanical, like the Sudachi table: the residual ambiguities (modal
+# VV vs AUX, 是...的 focus 是) are context rules applied downstream by ChineseCorrector
+# and the cleaning LLM, not guessed here.
+_CTB_UPOS = {
+    "AD": "ADV",     # adverb (也, 不, 很)
+    "AS": "PART",    # aspect particle (了, 着, 过)
+    "BA": "ADP",     # 把 disposal marker
+    "CC": "CCONJ",   # coordinating conjunction (和, 或者)
+    "CD": "NUM",     # cardinal number
+    "CS": "SCONJ",   # subordinating conjunction (如果, 虽然)
+    "DEC": "PART",   # 的 relativizer/nominalizer
+    "DEG": "PART",   # 的 genitive
+    "DER": "PART",   # 得 complement marker
+    "DEV": "PART",   # 地 adverbializer
+    "DT": "DET",     # determiner (这, 那, 每)
+    "EM": "SYM",     # emoticon
+    "ETC": "PART",   # 等/等等
+    "FW": "X",       # foreign word
+    "IC": "X",       # incomplete word
+    "IJ": "INTJ",    # interjection
+    "JJ": "ADJ",     # attributive adjective
+    "LB": "ADP",     # 被 long passive
+    "LC": "ADP",     # localizer (上, 里, 中)
+    "M": "NOUN",     # measure word — the pipeline's policy tags classifiers NOUN
+    "MSP": "PART",   # 所
+    "NN": "NOUN",
+    "NOI": "X",      # noise
+    "NR": "PROPN",   # proper noun
+    "NT": "NOUN",    # temporal noun (今天, 明年)
+    "OD": "NUM",     # ordinal (第一)
+    "ON": "ADV",     # onomatopoeia (adverbial in CTB)
+    "P": "ADP",      # preposition
+    "PN": "PRON",
+    "PU": "PUNCT",
+    "SB": "ADP",     # 被 short passive
+    "SP": "PART",    # sentence-final particle (吗, 呢, 吧)
+    "URL": "SYM",
+    "VA": "ADJ",     # predicative adjective (快 in 很快)
+    "VC": "VERB",    # copula (是, 为)
+    "VE": "VERB",    # existential 有
+    "VV": "VERB",
+    "X": "X",
+}
+
+
+def chinese_records(sentences):
+    """Analyze Simplified Chinese with HanLP, yielding the spaCy record shape.
+
+    Chinese words do not inflect, so the lemma is always the surface form; there is no
+    normalization layer to apply. Whitespace between tokens is reconstructed from a
+    surface scan, keeping the text+whitespace == sentence invariant.
+    """
+    import hanlp
+
+    mtl = hanlp.load(getattr(hanlp.pretrained.mtl, HANLP_ZH_MODEL))
+
+    batch_size = 128
+    for i in tqdm(range(0, len(sentences), batch_size), desc="Processing (hanlp)", unit="batch"):
+        chunk = sentences[i : i + batch_size]
+        out = mtl(chunk, tasks=["tok/fine", "pos/ctb"])
+        for sentence, words, tags in zip(chunk, out["tok/fine"], out["pos/ctb"]):
+            spans = []
+            pos_cursor = 0
+            for word in words:
+                found = sentence.find(word, pos_cursor)
+                if found < 0:
+                    break
+                spans.append((found, found + len(word)))
+                pos_cursor = found + len(word)
+            if len(spans) != len(words) or not words:
+                # The tokenizer altered the surface somewhere (never observed, but the
+                # invariant is load-bearing). Emit the sentence as one X token — the
+                # cleaning LLM is allowed to retokenize it from scratch.
+                print(f"WARNING: hanlp surface mismatch, emitting unsegmented: {sentence!r}")
+                doc = [{
+                    "text": sentence,
+                    "whitespace": "",
+                    "lemma": sentence,
+                    "pos": "X",
+                    "morph": {},
+                }]
+            else:
+                doc = []
+                for j, (word, tag) in enumerate(zip(words, tags)):
+                    end = spans[j][1]
+                    nxt = spans[j + 1][0] if j + 1 < len(spans) else len(sentence)
+                    doc.append({
+                        "text": word,
+                        "whitespace": sentence[end:nxt],
+                        "lemma": word,
+                        "pos": _CTB_UPOS.get(tag, "X"),
+                        "morph": {},
+                    })
+                # leading whitespace has nowhere to attach; prepend it to the first
+                # token's text (the lemma stays the clean word)
+                if spans[0][0] > 0:
+                    doc[0]["text"] = sentence[: spans[0][1]]
+            yield {
+                "sentence": sentence,
+                "multiword_terms": {"high_confidence": [], "low_confidence": []},
+                "doc": doc,
+                "entities": [],
+            }
+
+
 def load_model(language_code: str):
     import spacy
 
@@ -383,9 +505,10 @@ def process_sentences(sentences_file: str, terms_file: str, output_file: str, la
         sentences = [json.loads(line) for line in f if line.strip()]
     print(f"Found {len(sentences)} sentences to process")
 
-    if language_code == "jpn":
+    analyzers = {"jpn": japanese_records, "zho-hans": chinese_records}
+    if language_code in analyzers:
         with open(output_file, "w", encoding="utf-8") as outfile:
-            for record in japanese_records(sentences):
+            for record in analyzers[language_code](sentences):
                 outfile.write(json.dumps(record, ensure_ascii=False) + "\n")
         print(f"\nProcessing complete! Output written to {output_file}")
         return

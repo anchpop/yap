@@ -11,4 +11,8 @@ dependencies = [
     # Japanese does not go through spaCy — see the Sudachi section of main.py
     "sudachipy>=0.6.8",
     "sudachidict-core>=20240109",
+    # Chinese does not go through spaCy either — see the HanLP section of main.py
+    "hanlp>=2.1.3",
+    # hanlp 2.1.x still calls the encode_plus API that transformers 5 removed
+    "transformers<5",
 ]

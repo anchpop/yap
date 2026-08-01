@@ -787,9 +787,9 @@ async fn clean_all_languages() -> anyhow::Result<()> {
         Language::Portuguese,
         Language::Italian,
         Language::Russian,
-        // Chinese (either script) is deliberately absent: there is no NLP
-        // segmentation path for it yet, so a clean-all run would die on the
-        // now-nonempty zho corpora. Add zho-hans here once segmentation exists.
+        // Simplified only: the corpora and the HanLP segmentation path (see
+        // generate-data/nlp/main.py) are zho-hans; there is no zho-hant model.
+        Language::ChineseSimplified,
         Language::Japanese,
         Language::Hindi,
     ];
