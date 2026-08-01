@@ -343,6 +343,22 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt2082197",  // Barfi! (2012)
     "tt2356180",  // Bhaag Milkha Bhaag (2013)
     "tt1562872",  // Zindagi Na Milegi Dobara (2011)
+    // Thai
+    "tt1588895",  // Uncle Boonmee Who Can Recall His Past Lives (2010)
+    "tt0381668",  // Tropical Malady (2004)
+    "tt0477731",  // Syndromes and a Century (2006)
+    "tt2818654",  // Cemetery of Splendor (2015)
+    "tt0217680",  // Nang Nak (1999)
+    "tt0440803",  // Shutter (2004)
+    "tt31392609", // How to Make Millions Before Grandma Dies (2024)
+    "tt2776344",  // Pee Mak (2013)
+    "tt6788942",  // Bad Genius (2017)
+    "tt0368909",  // Ong-Bak: The Thai Warrior (2003)
+    "tt0345549",  // Last Life in the Universe (2003)
+    "tt0269217",  // Tears of the Black Tiger (2000)
+    "tt0269587",  // Mysterious Object at Noon (2000)
+    "tt0415046",  // The Overture (2004)
+    "tt1844735",  // Mekong Hotel (2012)
     // Russian & Soviet
     "tt0079944",  // Stalker (1979)
     "tt0069293",  // Solaris (1972)
@@ -1242,7 +1258,7 @@ async fn process_movie(
 fn parse_language(s: &str) -> Result<Language, String> {
     Language::from_code(s).ok_or_else(|| {
         format!(
-            "unsupported language code '{s}'. Supported: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita, hin"
+            "unsupported language code '{s}'. Supported: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita, hin, tha"
         )
     })
 }
@@ -1251,7 +1267,7 @@ fn parse_language(s: &str) -> Result<Language, String> {
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Language codes (ISO 639-3: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita, hin)
+    /// Language codes (ISO 639-3: fra, eng, spa, deu, kor, zho, jpn, rus, por, ita, hin, tha)
     #[arg(short, long, num_args = 1.., value_parser = parse_language)]
     language: Vec<Language>,
 

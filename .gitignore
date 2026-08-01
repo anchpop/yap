@@ -68,6 +68,8 @@ out/*/morpheme_info.jsonl
 out/*/minimal_pairs.jsonl
 out/*/audio_verification_failures.jsonl
 out/*/audio_verification_all.jsonl
+out/cleaned_*.partial.jsonl
+out/clean-nlp-data/*/status.txt
 
 target-codex/
 target-review/
