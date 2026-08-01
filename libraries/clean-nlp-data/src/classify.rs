@@ -7676,22 +7676,25 @@ impl WordCorrector for JapaneseCorrector {
     }
 }
 
-/// Common view over the two token types the Japanese pipeline touches: the NLP
-/// proposal's `DocToken` and the LLM output's `SimplifiedTokenPrime`.
-trait JaToken {
+/// Common view over the two token types the correctors touch: the NLP
+/// proposal's `DocToken` and the LLM output's `SimplifiedTokenPrime`. Lets a
+/// deterministic fix be written once and applied identically in `correct`
+/// (pre-LLM) and `post_corrections` (post-LLM).
+trait TokenView {
     fn text(&self) -> &str;
     fn whitespace(&self) -> &str;
     fn pos(&self) -> PartOfSpeechTag;
     fn lemma(&self) -> &str;
     fn push_text(&mut self, more: &str);
+    fn set_text(&mut self, text: String);
     fn set_whitespace(&mut self, ws: String);
     fn set_pos(&mut self, pos: PartOfSpeechTag);
     fn set_lemma(&mut self, lemma: String);
 }
 
-macro_rules! impl_ja_token {
+macro_rules! impl_token_view {
     ($ty:ty) => {
-        impl JaToken for $ty {
+        impl TokenView for $ty {
             fn text(&self) -> &str {
                 &self.text
             }
@@ -7707,6 +7710,9 @@ macro_rules! impl_ja_token {
             fn push_text(&mut self, more: &str) {
                 self.text.push_str(more);
             }
+            fn set_text(&mut self, text: String) {
+                self.text = text;
+            }
             fn set_whitespace(&mut self, ws: String) {
                 self.whitespace = ws;
             }
@@ -7720,13 +7726,13 @@ macro_rules! impl_ja_token {
     };
 }
 
-impl_ja_token!(language_utils::DocToken);
-impl_ja_token!(SimplifiedTokenPrime);
+impl_token_view!(language_utils::DocToken);
+impl_token_view!(SimplifiedTokenPrime);
 
 /// Deterministic per-token lemma/POS fixes, applied identically to the NLP proposal
 /// (`correct`) and the LLM output (`post_corrections`). Returns descriptions of what
 /// changed.
-fn fix_japanese_token(token: &mut impl JaToken) -> Vec<String> {
+fn fix_japanese_token(token: &mut impl TokenView) -> Vec<String> {
     let mut fixes = Vec::new();
 
     // Fix copula lemma → だ. Keyed on the lemma, not the text, so it covers every
@@ -7861,7 +7867,7 @@ fn fix_japanese_token(token: &mut impl JaToken) -> Vec<String> {
 /// Korean data does: 91% of its verbs are whole, and the splits that remain are
 /// serial verbs (가져|가) whose halves are both real forms — the same category we
 /// keep split here as て-form + auxiliary verb.
-fn merge_japanese_inflection<T: JaToken>(tokens: &mut Vec<T>) {
+fn merge_japanese_inflection<T: TokenView>(tokens: &mut Vec<T>) {
     let mut merged: Vec<T> = Vec::with_capacity(tokens.len());
     for token in tokens.drain(..) {
         match merged.last_mut() {
@@ -7920,7 +7926,7 @@ const JAPANESE_AUXILIARY_VERBS: &[&str] = &[
 /// finished past/negative? そう・らしい・よう・みたい after such a head are words of
 /// their own (hearsay 降る|そう|だ, 降った|らしい); after a bare stem they are bound
 /// (降りそう, 高そう).
-fn is_japanese_complete_form(head: &impl JaToken) -> bool {
+fn is_japanese_complete_form(head: &impl TokenView) -> bool {
     head.text() == head.lemma()
         || head.text().ends_with('た')
         || head.text().ends_with('だ')
@@ -7928,7 +7934,7 @@ fn is_japanese_complete_form(head: &impl JaToken) -> bool {
 }
 
 /// Should `next` be absorbed into the preceding token to keep every token a word?
-fn absorbs_suffix<T: JaToken>(head: &T, next: &T) -> bool {
+fn absorbs_suffix<T: TokenView>(head: &T, next: &T) -> bool {
     // Anything written apart stays apart — merging across a space would drop it and the
     // tokens would no longer reconstruct the sentence.
     if !head.whitespace().is_empty() {
@@ -8531,6 +8537,74 @@ impl SentenceClassifier for HindiClassifier {
                 }
             }
 
+            // --- Stranded aspectual auxiliary ---
+            // These lemmas are AUX only as vector verbs after a verb stem
+            // (खा लिया, जा सकते, कर रहा). AUX with no VERB/AUX host to the left
+            // usually means a main-verb use was mistagged (standalone जाओ, or
+            // motion गया after a noun). देना/लेना/करना/होना are excluded: they
+            // are legitimately AUX after nouns (conjunct verbs, copula).
+            let vector_only_lemmas = [
+                "जाना",
+                "सकना",
+                "चुकना",
+                "पड़ना",
+                "रहना",
+                "डालना",
+                "बैठना",
+                "उठना",
+            ];
+            if token.pos == PartOfSpeechTag::Aux
+                && vector_only_lemmas.contains(&token.lemma.as_str())
+            {
+                let host = tokens[..idx]
+                    .iter()
+                    .rev()
+                    .find(|t| !is_hindi_aux_intervener(&t.text));
+                let has_verbal_host = host
+                    .is_some_and(|t| matches!(t.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Aux));
+                if !has_verbal_host {
+                    reasons.push(format!(
+                        "'{}' (lemma '{}') is tagged AUX but has no verb to its left — aspectual auxiliaries attach to a verb stem (खा लिया, जा सकते). If it is the main verb here (e.g. imperative or motion), it should be VERB.",
+                        token.text, token.lemma
+                    ));
+                }
+            }
+
+            // --- करना tagged VERB right after a NOUN/ADJ ---
+            // Usually a conjunct verb where policy wants AUX (मदद करो, खत्म कर).
+            // Interrogatives/demonstratives (कैसा कर रहा है, ऐसा करो) and
+            // temporal nouns (कल करने वाला) are real main-verb uses, so this is
+            // a flag for review, not a hard fix.
+            if token.lemma == "करना" && token.pos == PartOfSpeechTag::Verb && idx > 0 {
+                let prev = &tokens[idx - 1];
+                let prev_is_non_conjunct = matches!(
+                    prev.text.as_str(),
+                    "कैसा"
+                        | "कैसी"
+                        | "कैसे"
+                        | "ऐसा"
+                        | "ऐसी"
+                        | "ऐसे"
+                        | "वैसा"
+                        | "वैसी"
+                        | "वैसे"
+                        | "क्या"
+                        | "कुछ"
+                        | "सब"
+                        | "कल"
+                        | "आज"
+                        | "परसों"
+                );
+                if matches!(prev.pos, PartOfSpeechTag::Noun | PartOfSpeechTag::Adj)
+                    && !prev_is_non_conjunct
+                {
+                    reasons.push(format!(
+                        "'{}' (करना) tagged VERB after '{}' ({:?}) — if '{} {}' is a conjunct verb (the noun/adjective carries the meaning), करना is the verbalizer and should be AUX. Keep VERB only if '{}' is a real object or modifier of an independent करना.",
+                        token.text, prev.text, prev.pos, prev.text, token.text, prev.text
+                    ));
+                }
+            }
+
             // --- Adjacent NOUN/ADJ tokens that should be a single compound token ---
             // काला बाज़ार, भीतरी मंगोलिया, etc.
             // If a content word is tagged AUX/VERB but is clearly a noun (बाज़ार as AUX),
@@ -8558,431 +8632,462 @@ impl SentenceClassifier for HindiClassifier {
 /// Hindi-specific corrector
 struct HindiCorrector;
 
+/// Deterministic per-token lemma/POS fixes for Hindi, applied identically to the
+/// NLP proposal (`correct`) and the LLM output (`post_corrections`). Returns
+/// descriptions of what changed.
+fn fix_hindi_token(token: &mut impl TokenView) -> Vec<String> {
+    let mut fixes = Vec::new();
+
+    // Lemma hygiene: no stray whitespace (a ',' token once got lemma ", ").
+    let trimmed = token.lemma().trim();
+    if trimmed != token.lemma() {
+        fixes.push(format!("Trimmed whitespace from lemma '{}'", token.lemma()));
+        let trimmed = trimmed.to_string();
+        token.set_lemma(trimmed);
+    }
+
+    // A single-word token must not carry a multiword lemma (पास once got lemma
+    // "के पास"). When the token itself is one of the lemma's words, use it.
+    if !token.text().contains(' ')
+        && token.lemma().contains(' ')
+        && token.lemma().split_whitespace().any(|w| w == token.text())
+    {
+        fixes.push(format!(
+            "Collapsed multiword lemma '{}' to '{}'",
+            token.lemma(),
+            token.text()
+        ));
+        token.set_lemma(token.text().to_string());
+    }
+
+    // Pronoun/possessive lemma normalization to base nominative pronoun.
+    // Applies to both PRON and DET (possessives are often tagged DET).
+    if token.pos() == PartOfSpeechTag::Pron || token.pos() == PartOfSpeechTag::Det {
+        let expected = match token.text() {
+            "मुझे" | "मुझको" | "मुझसे" | "मुझमें" | "मेरा" | "मेरी" | "मेरे" => {
+                Some("मैं")
+            }
+            "तुझे" | "तुझको" | "तुझसे" | "तेरा" | "तेरी" | "तेरे" => {
+                Some("तू")
+            }
+            "तुम्हें" | "तुम्हारा" | "तुम्हारी" | "तुम्हारे" => {
+                Some("तुम")
+            }
+            "आपको" | "आपसे" | "आपका" | "आपकी" | "आपके" => {
+                Some("आप")
+            }
+            "उसे" | "उसको" | "उससे" | "उसमें" | "उसका" | "उसकी" | "उसके" | "उसने" => {
+                Some("वह")
+            }
+            "इसे" | "इसको" | "इससे" | "इसमें" | "इसका" | "इसकी" | "इसके" | "इसने" => {
+                Some("यह")
+            }
+            "उन्हें" | "उनसे" | "उनका" | "उनकी" | "उनके" | "उन्होंने" | "वे" => {
+                Some("वह")
+            }
+            "इन्हें" | "इनसे" | "इनका" | "इनकी" | "इनके" | "इन्होंने" | "ये" => {
+                Some("यह")
+            }
+            "हमें" | "हमसे" | "हमारा" | "हमारी" | "हमारे" | "हमने" => {
+                Some("हम")
+            }
+            _ => None,
+        };
+
+        if let Some(expected) = expected
+            && token.lemma() != expected
+        {
+            fixes.push(format!(
+                "Fixed pronoun/possessive '{}' lemma from '{}' to '{}'",
+                token.text(),
+                token.lemma(),
+                expected
+            ));
+            token.set_lemma(expected.to_string());
+        }
+    }
+
+    // Possessives are DET regardless of syntactic position.
+    let possessive_forms = [
+        "मेरा",
+        "मेरी",
+        "मेरे",
+        "तेरा",
+        "तेरी",
+        "तेरे",
+        "तुम्हारा",
+        "तुम्हारी",
+        "तुम्हारे",
+        "आपका",
+        "आपकी",
+        "आपके",
+        "उसका",
+        "उसकी",
+        "उसके",
+        "इसका",
+        "इसकी",
+        "इसके",
+        "उनका",
+        "उनकी",
+        "उनके",
+        "इनका",
+        "इनकी",
+        "इनके",
+        "हमारा",
+        "हमारी",
+        "हमारे",
+    ];
+    if possessive_forms.contains(&token.text()) && token.pos() == PartOfSpeechTag::Pron {
+        fixes.push(format!(
+            "Fixed possessive '{}' POS from PRON to DET",
+            token.text()
+        ));
+        token.set_pos(PartOfSpeechTag::Det);
+    }
+
+    // Normalize लिये → लिए spelling.
+    if token.text() == "लिये" {
+        fixes.push("Normalized 'लिये' to 'लिए'".to_string());
+        token.set_text("लिए".to_string());
+        token.set_lemma("लिए".to_string());
+    }
+
+    // Normalize the misspelling चहिए → चाहिए so the word stays under one key.
+    if token.text() == "चहिए" {
+        fixes.push("Normalized 'चहिए' to 'चाहिए'".to_string());
+        token.set_text("चाहिए".to_string());
+    }
+
+    // चाहिए is its own lemma (dictionaries list it as its own entry, and it
+    // means "is needed/should", not चाहना "to want"). Its POS is contextual and
+    // set in fix_hindi_context.
+    if token.text() == "चाहिए" && token.lemma() != "चाहिए" {
+        fixes.push(format!(
+            "Fixed 'चाहिए' lemma from '{}' to 'चाहिए'",
+            token.lemma()
+        ));
+        token.set_lemma("चाहिए".to_string());
+    }
+
+    // लाइए is the honorific imperative of लाना (to bring), not लेना (to take).
+    // This regresses repeatedly so it needs a deterministic fix.
+    if token.text() == "लाइए" && token.lemma() == "लेना" {
+        fixes.push("Fixed 'लाइए' lemma from 'लेना' to 'लाना'".to_string());
+        token.set_lemma("लाना".to_string());
+    }
+
+    // जनता (NOUN "the public") vs जानता (VERB "knows", from जानना).
+    if token.text() == "जनता" && token.pos() == PartOfSpeechTag::Verb {
+        fixes.push(
+            "Fixed 'जनता' from VERB to NOUN — the verb form is 'जानता' (lemma जानना), the noun is 'जनता' (the public)"
+                .to_string(),
+        );
+        token.set_pos(PartOfSpeechTag::Noun);
+        token.set_lemma("जनता".to_string());
+    }
+
+    // किसी… → कोई (oblique → base indefinite pronoun).
+    if matches!(token.text(), "किसी" | "किसीने" | "किसीको" | "किसीसे") && token.lemma() != "कोई"
+    {
+        fixes.push(format!(
+            "Fixed '{}' lemma from '{}' to 'कोई' (oblique → base form)",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma("कोई".to_string());
+    }
+
+    // किस… → कौन (oblique of कौन, not क्या).
+    if matches!(token.text(), "किस" | "किसे" | "किसने" | "किसको" | "किससे") && token.lemma() != "कौन"
+    {
+        fixes.push(format!(
+            "Fixed '{}' lemma from '{}' to 'कौन' (किस is oblique of कौन, not क्या)",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma("कौन".to_string());
+    }
+
+    // और is CCONJ ("and") or ADV ("more"), never ADJ.
+    if token.text() == "और" && token.pos() == PartOfSpeechTag::Adj {
+        fixes.push("Fixed 'और' POS from ADJ to CCONJ".to_string());
+        token.set_pos(PartOfSpeechTag::Cconj);
+    }
+
+    // Simple postpositions lemmatize to themselves (के once got lemma का).
+    if matches!(
+        token.text(),
+        "में" | "पर" | "को" | "से" | "के" | "का" | "की" | "ने" | "तक" | "द्वारा"
+    ) && token.pos() == PartOfSpeechTag::Adp
+        && token.lemma() != token.text()
+    {
+        fixes.push(format!(
+            "Fixed postposition '{}' lemma from '{}' to itself",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma(token.text().to_string());
+    }
+
+    // पहले: as ADV ("earlier/first") it lemmatizes to पहला; as ADP
+    // (compound postposition के पहले) it is its own lemma.
+    if token.text() == "पहले" {
+        if token.pos() == PartOfSpeechTag::Adv && token.lemma() != "पहला" {
+            fixes.push(format!(
+                "Fixed 'पहले' ADV lemma from '{}' to 'पहला'",
+                token.lemma()
+            ));
+            token.set_lemma("पहला".to_string());
+        }
+        if token.pos() == PartOfSpeechTag::Adp && token.lemma() != "पहले" {
+            fixes.push(format!(
+                "Fixed 'पहले' ADP lemma from '{}' to 'पहले'",
+                token.lemma()
+            ));
+            token.set_lemma("पहले".to_string());
+        }
+    }
+
+    // कैसे as ADV ("how") is its own dictionary headword, not a form of कैसा.
+    if token.text() == "कैसे" && token.pos() == PartOfSpeechTag::Adv && token.lemma() != "कैसे"
+    {
+        fixes.push(format!(
+            "Fixed 'कैसे' ADV lemma from '{}' to 'कैसे'",
+            token.lemma()
+        ));
+        token.set_lemma("कैसे".to_string());
+    }
+
+    // रहा/रही/रहे/रहीं are forms of रहना only — never करना or होना.
+    if matches!(token.text(), "रहा" | "रही" | "रहे" | "रहीं")
+        && matches!(token.lemma(), "करना" | "होना")
+    {
+        fixes.push(format!(
+            "Fixed '{}' lemma from '{}' to 'रहना'",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma("रहना".to_string());
+    }
+
+    // Negation नहीं/न/मत → ADV.
+    if matches!(token.text(), "नहीं" | "न" | "मत") && token.pos() != PartOfSpeechTag::Adv
+    {
+        fixes.push(format!(
+            "Fixed '{}' POS from {:?} to ADV",
+            token.text(),
+            token.pos()
+        ));
+        token.set_pos(PartOfSpeechTag::Adv);
+    }
+
+    // Reflexive possessive अपना family: lemma अपना.
+    if matches!(token.text(), "अपना" | "अपने" | "अपनी" | "अपनों") && token.lemma() != "अपना"
+    {
+        fixes.push(format!(
+            "Fixed reflexive possessive '{}' lemma from '{}' to 'अपना'",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma("अपना".to_string());
+    }
+
+    // वह/यह tagged CCONJ → PRON.
+    if matches!(token.text(), "वह" | "यह") && token.pos() == PartOfSpeechTag::Cconj {
+        fixes.push(format!("Fixed '{}' POS from CCONJ to PRON", token.text()));
+        token.set_pos(PartOfSpeechTag::Pron);
+    }
+
+    // Focus particles ही/भी → PART.
+    if matches!(token.text(), "ही" | "भी") && token.pos() != PartOfSpeechTag::Part {
+        fixes.push(format!(
+            "Fixed '{}' POS from {:?} to Part",
+            token.text(),
+            token.pos()
+        ));
+        token.set_pos(PartOfSpeechTag::Part);
+    }
+
+    // Lowercase non-PROPN lemmas (only affects stray Latin text).
+    if token.pos() != PartOfSpeechTag::Propn
+        && token
+            .lemma()
+            .chars()
+            .next()
+            .is_some_and(|c| c.is_uppercase())
+    {
+        let lower = token.lemma().to_lowercase();
+        fixes.push(format!(
+            "Lowercased lemma '{}' to '{}'",
+            token.lemma(),
+            lower
+        ));
+        token.set_lemma(lower);
+    }
+
+    fixes
+}
+
+/// Tokens skipped when looking for the verbal host of a Hindi auxiliary:
+/// focus particles, negation, and displaced interrogatives can all intervene
+/// (करना ही नहीं चाहिए; तुम्हें हो क्या गया था?; कह कैसे सकती हो?).
+fn is_hindi_aux_intervener(text: &str) -> bool {
+    matches!(text, "ही" | "भी" | "तो" | "नहीं" | "न" | "मत" | "क्या" | "कैसे")
+}
+
+/// Deterministic context-dependent Hindi fixes (these need neighbor access),
+/// applied identically in `correct` and `post_corrections`.
+fn fix_hindi_context<T: TokenView>(tokens: &mut [T]) -> Vec<String> {
+    let mut fixes = Vec::new();
+
+    // "X जाने" where X ∈ {ईश्वर, खुदा, भगवान, कौन, अल्लाह} — जाने = subjunctive
+    // of जानना (to know), not जाना (to go). Fixed idioms meaning "God/who knows."
+    for i in 0..tokens.len().saturating_sub(1) {
+        if matches!(tokens[i].text(), "ईश्वर" | "खुदा" | "भगवान" | "कौन" | "अल्लाह")
+            && tokens[i + 1].text() == "जाने"
+            && tokens[i + 1].lemma() == "जाना"
+        {
+            fixes.push(format!(
+                "Fixed 'जाने' after '{}' — lemma 'जाना' (to go) → 'जानना' (to know). '{} जाने' = '{} knows'",
+                tokens[i].text(),
+                tokens[i].text(),
+                tokens[i].text()
+            ));
+            tokens[i + 1].set_lemma("जानना".to_string());
+            tokens[i + 1].set_pos(PartOfSpeechTag::Verb);
+        }
+    }
+
+    // चाहिए POS is decided by what it follows. After an infinitive (-ना/-नी/-ने
+    // verb form, possibly with particles/negation in between) it is the deontic
+    // "should" → AUX (जाना चाहिए). Anywhere else it is the main predicate of
+    // need, "X को Y चाहिए" → VERB (मुझे चाय चाहिए).
+    for i in 0..tokens.len() {
+        if tokens[i].text() != "चाहिए" {
+            continue;
+        }
+        let mut host_idx = None;
+        let mut j = i;
+        while j > 0 {
+            j -= 1;
+            if is_hindi_aux_intervener(tokens[j].text()) {
+                continue;
+            }
+            host_idx = Some(j);
+            break;
+        }
+        let deontic = host_idx.is_some_and(|j| {
+            matches!(
+                tokens[j].pos(),
+                PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
+            ) && (tokens[j].text().ends_with("ना")
+                || tokens[j].text().ends_with("नी")
+                || tokens[j].text().ends_with("ने"))
+        });
+        let want = if deontic {
+            PartOfSpeechTag::Aux
+        } else {
+            PartOfSpeechTag::Verb
+        };
+        if tokens[i].pos() != want {
+            fixes.push(format!(
+                "Fixed 'चाहिए' POS from {:?} to {:?} — AUX after an infinitive (deontic 'should'), VERB otherwise (need: 'X को Y चाहिए')",
+                tokens[i].pos(),
+                want
+            ));
+            tokens[i].set_pos(want);
+        }
+    }
+
+    // ठीक/अच्छा before लगना is a predicative complement ("seems fine", "feels
+    // good") → ADJ, not ADV. Manner uses before other verbs stay ADV
+    // (अच्छा खेलता है, ठीक कहा).
+    for i in 0..tokens.len() {
+        if !matches!(tokens[i].text(), "ठीक" | "अच्छा" | "अच्छी" | "अच्छे")
+            || tokens[i].pos() != PartOfSpeechTag::Adv
+        {
+            continue;
+        }
+        let mut j = i + 1;
+        while j < tokens.len() && is_hindi_aux_intervener(tokens[j].text()) {
+            j += 1;
+        }
+        if j < tokens.len() && tokens[j].lemma() == "लगना" {
+            fixes.push(format!(
+                "Fixed '{}' POS from ADV to ADJ — predicative complement of लगना",
+                tokens[i].text()
+            ));
+            tokens[i].set_pos(PartOfSpeechTag::Adj);
+        }
+    }
+
+    // ADJ+करना conjunct verbs: after these unambiguous conjunct hosts, करना is
+    // the verbalizer → AUX (खत्म कर दें, चुप करो, दूर कर देगी). Interrogatives
+    // like कैसा कर रहा है are real main-verb uses and are not in this list.
+    const CONJUNCT_ADJ_HOSTS: &[&str] = &[
+        "खत्म",
+        "ख़त्म",
+        "दूर",
+        "चुप",
+        "बंद",
+        "साफ",
+        "साफ़",
+        "शुरू",
+        "शुरु",
+        "पूरा",
+        "पूरी",
+        "पूरे",
+        "माफ",
+        "माफ़",
+        "ठीक",
+        "तैयार",
+        "ख़ुश",
+        "खुश",
+        "अलग",
+        "समाप्त",
+        "कम",
+        "तर",
+    ];
+    for i in 1..tokens.len() {
+        if tokens[i].lemma() == "करना"
+            && tokens[i].pos() == PartOfSpeechTag::Verb
+            && CONJUNCT_ADJ_HOSTS.contains(&tokens[i - 1].text())
+        {
+            fixes.push(format!(
+                "Fixed '{}' POS from VERB to AUX — verbalizer in the conjunct verb '{} {}'",
+                tokens[i].text(),
+                tokens[i - 1].text(),
+                tokens[i].text()
+            ));
+            tokens[i].set_pos(PartOfSpeechTag::Aux);
+        }
+    }
+
+    fixes
+}
+
 impl WordCorrector for HindiCorrector {
     fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
-        let mut corrected = false;
-        let mut corrections = Vec::new();
-
-        // --- Pre-pass: context-dependent fixes that need index access ---
-
-        // "ईश्वर जाने", "खुदा जाने", "भगवान जाने", "कौन जाने" — जाने = subjunctive
-        // of जानना (to know), not जाना (to go). These are fixed idioms meaning "God/who knows."
-        let god_knows_triggers = ["ईश्वर", "खुदा", "भगवान", "कौन", "अल्लाह"];
-        for i in 0..sentence.doc.len().saturating_sub(1) {
-            if god_knows_triggers.contains(&sentence.doc[i].text.as_str())
-                && sentence.doc[i + 1].text == "जाने"
-                && sentence.doc[i + 1].lemma == "जाना"
-            {
-                corrections.push(format!(
-                    "Fixed 'जाने' after '{}' — lemma 'जाना' (to go) → 'जानना' (to know). '{} जाने' = '{} knows'",
-                    sentence.doc[i].text, sentence.doc[i].text, sentence.doc[i].text
-                ));
-                sentence.doc[i + 1].lemma = "जानना".to_string();
-                sentence.doc[i + 1].pos = PartOfSpeechTag::Verb;
-                corrected = true;
-            }
-        }
-
+        let mut corrections = fix_hindi_context(&mut sentence.doc);
         for token in &mut sentence.doc {
-            // --- Pronoun/possessive lemma normalization to base nominative pronoun ---
-            // Applies to both PRON and DET (possessives are often tagged DET)
-            if token.pos == PartOfSpeechTag::Pron || token.pos == PartOfSpeechTag::Det {
-                let expected = match token.text.as_str() {
-                    "मुझे" | "मुझको" | "मुझसे" | "मुझमें" | "मेरा" | "मेरी" | "मेरे" => {
-                        Some("मैं")
-                    }
-                    "तुझे" | "तुझको" | "तुझसे" | "तेरा" | "तेरी" | "तेरे" => {
-                        Some("तू")
-                    }
-                    "तुम्हें" | "तुम्हारा" | "तुम्हारी" | "तुम्हारे" => {
-                        Some("तुम")
-                    }
-                    "आपको" | "आपसे" | "आपका" | "आपकी" | "आपके" => {
-                        Some("आप")
-                    }
-                    "उसे" | "उसको" | "उससे" | "उसमें" | "उसका" | "उसकी" | "उसके" | "उसने" => {
-                        Some("वह")
-                    }
-                    "इसे" | "इसको" | "इससे" | "इसमें" | "इसका" | "इसकी" | "इसके" | "इसने" => {
-                        Some("यह")
-                    }
-                    "उन्हें" | "उनसे" | "उनका" | "उनकी" | "उनके" | "उन्होंने" | "वे" => {
-                        Some("वह")
-                    }
-                    "इन्हें" | "इनसे" | "इनका" | "इनकी" | "इनके" | "इन्होंने" | "ये" => {
-                        Some("यह")
-                    }
-                    "हमें" | "हमसे" | "हमारा" | "हमारी" | "हमारे" | "हमने" => {
-                        Some("हम")
-                    }
-                    _ => None,
-                };
-
-                if let Some(expected) = expected
-                    && token.lemma != expected
-                {
-                    corrections.push(format!(
-                        "Fixed pronoun/possessive '{}' lemma from '{}' to '{}'",
-                        token.text, token.lemma, expected
-                    ));
-                    token.lemma = expected.to_string();
-                    corrected = true;
-                }
-            }
-
-            // --- Normalize लिये → लिए spelling ---
-            if token.text == "लिये" {
-                corrections.push("Normalized 'लिये' to 'लिए'".to_string());
-                token.text = "लिए".to_string();
-                token.lemma = "लिए".to_string();
-                corrected = true;
-            }
-
-            // --- Fix लाइए lemma: लाना not लेना ---
-            // लाइए is the honorific imperative of लाना (to bring), not लेना (to take).
-            // This regresses repeatedly so it needs a deterministic fix.
-            if token.text == "लाइए" && token.lemma == "लेना" {
-                corrections.push("Fixed 'लाइए' lemma from 'लेना' to 'लाना'".to_string());
-                token.lemma = "लाना".to_string();
-                corrected = true;
-            }
-
-            // --- Fix जनता tagged as VERB → should be NOUN ---
-            // जनता (NOUN "the public") vs जानता (VERB "knows", from जानना).
-            // If the pipeline produces जनता as VERB, it's a spelling/tagging error.
-            if token.text == "जनता" && token.pos == PartOfSpeechTag::Verb {
-                corrections.push(
-                    "Fixed 'जनता' from VERB to NOUN — the verb form is 'जानता' (lemma जानना), the noun is 'जनता' (the public)"
-                        .to_string(),
-                );
-                token.pos = PartOfSpeechTag::Noun;
-                token.lemma = "जनता".to_string();
-                corrected = true;
-            }
-
-            // --- Fix किसी lemma → कोई, किस lemma → कौन ---
-            if token.text == "किसी" && token.lemma != "कोई" {
-                corrections.push(format!(
-                    "Fixed 'किसी' lemma from '{}' to 'कोई' (oblique → base form)",
-                    token.lemma
-                ));
-                token.lemma = "कोई".to_string();
-                corrected = true;
-            }
-            // Also fix किसीने, किसीको, etc.
-            if (token.text == "किसीने" || token.text == "किसीको" || token.text == "किसीसे")
-                && token.lemma != "कोई"
-            {
-                corrections.push(format!(
-                    "Fixed '{}' lemma from '{}' to 'कोई'",
-                    token.text, token.lemma
-                ));
-                token.lemma = "कोई".to_string();
-                corrected = true;
-            }
-
-            // --- Fix किस/किसे/किसने lemma → कौन (oblique of कौन, not क्या) ---
-            if (token.text == "किस"
-                || token.text == "किसे"
-                || token.text == "किसने"
-                || token.text == "किसको"
-                || token.text == "किससे")
-                && token.lemma != "कौन"
-            {
-                corrections.push(format!(
-                    "Fixed '{}' lemma from '{}' to 'कौन' (किस is oblique of कौन, not क्या)",
-                    token.text, token.lemma
-                ));
-                token.lemma = "कौन".to_string();
-                corrected = true;
-            }
-
-            // --- Fix और tagged ADJ → CCONJ ---
-            if token.text == "और" && token.pos == PartOfSpeechTag::Adj {
-                corrections.push("Fixed 'और' POS from ADJ to CCONJ".to_string());
-                token.pos = PartOfSpeechTag::Cconj;
-                corrected = true;
-            }
-
-            // --- Fix possessives to DET consistently ---
-            let possessive_forms = [
-                "मेरा",
-                "मेरी",
-                "मेरे",
-                "तेरा",
-                "तेरी",
-                "तेरे",
-                "तुम्हारा",
-                "तुम्हारी",
-                "तुम्हारे",
-                "आपका",
-                "आपकी",
-                "आपके",
-                "उसका",
-                "उसकी",
-                "उसके",
-                "इसका",
-                "इसकी",
-                "इसके",
-                "उनका",
-                "उनकी",
-                "उनके",
-                "इनका",
-                "इनकी",
-                "इनके",
-                "हमारा",
-                "हमारी",
-                "हमारे",
-            ];
-            if possessive_forms.contains(&token.text.as_str()) && token.pos == PartOfSpeechTag::Pron
-            {
-                corrections.push(format!(
-                    "Fixed possessive '{}' POS from PRON to DET",
-                    token.text
-                ));
-                token.pos = PartOfSpeechTag::Det;
-                corrected = true;
-            }
-
-            // --- Fix चाहिए lemma ---
-            if token.text == "चाहिए" && token.lemma == "चाहना" {
-                corrections.push("Fixed 'चाहिए' lemma from 'चाहना' to 'चाहिए'".to_string());
-                token.lemma = "चाहिए".to_string();
-                corrected = true;
-            }
-
-            // --- Fix पहले ADV lemma ---
-            if token.text == "पहले" && token.pos == PartOfSpeechTag::Adv && token.lemma != "पहला"
-            {
-                corrections.push(format!(
-                    "Fixed 'पहले' ADV lemma from '{}' to 'पहला'",
-                    token.lemma
-                ));
-                token.lemma = "पहला".to_string();
-                corrected = true;
-            }
-
-            // --- Fix नहीं/न/मत POS to ADV ---
-            if (token.text == "नहीं" || token.text == "न" || token.text == "मत")
-                && token.pos != PartOfSpeechTag::Adv
-            {
-                corrections.push(format!(
-                    "Fixed '{}' POS from {:?} to ADV",
-                    token.text, token.pos
-                ));
-                token.pos = PartOfSpeechTag::Adv;
-                corrected = true;
-            }
-
-            // --- Fix अपना/अपने/अपनी lemma → अपना ---
-            let apna_forms = ["अपना", "अपने", "अपनी", "अपनों"];
-            if apna_forms.contains(&token.text.as_str()) && token.lemma != "अपना" {
-                corrections.push(format!(
-                    "Fixed reflexive possessive '{}' lemma from '{}' to 'अपना'",
-                    token.text, token.lemma
-                ));
-                token.lemma = "अपना".to_string();
-                corrected = true;
-            }
-
-            // --- Fix वह/यह tagged CCONJ → PRON ---
-            if (token.text == "वह" || token.text == "यह") && token.pos == PartOfSpeechTag::Cconj
-            {
-                corrections.push(format!("Fixed '{}' POS from CCONJ to PRON", token.text));
-                token.pos = PartOfSpeechTag::Pron;
-                corrected = true;
-            }
-
-            // --- Fix ही/भी POS to PART ---
-            if (token.text == "ही" || token.text == "भी") && token.pos != PartOfSpeechTag::Part
-            {
-                corrections.push(format!(
-                    "Fixed '{}' POS from {:?} to Part",
-                    token.text, token.pos
-                ));
-                token.pos = PartOfSpeechTag::Part;
-                corrected = true;
-            }
-
-            // --- Fix capitalized lemmas ---
-            if token.pos != PartOfSpeechTag::Propn
-                && token.lemma.chars().next().is_some_and(|c| c.is_uppercase())
-            {
-                let lower = token.lemma.to_lowercase();
-                corrections.push(format!("Lowercased lemma '{}' to '{}'", token.lemma, lower));
-                token.lemma = lower;
-                corrected = true;
-            }
+            corrections.extend(fix_hindi_token(token));
         }
+        // Context rules can be enabled by per-token normalizations (चहिए →
+        // चाहिए), so run the context pass again after the token pass.
+        corrections.extend(fix_hindi_context(&mut sentence.doc));
 
         CorrectionResult {
-            corrected,
+            corrected: !corrections.is_empty(),
             corrections,
         }
     }
 
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
-        // Pre-pass: "X जाने" where X ∈ {ईश्वर, खुदा, भगवान, कौन, अल्लाह} → जाने lemma = जानना
-        let god_knows_triggers = ["ईश्वर", "खुदा", "भगवान", "कौन", "अल्लाह"];
-        for i in 0..tokens.len().saturating_sub(1) {
-            if god_knows_triggers.contains(&tokens[i].text.as_str())
-                && tokens[i + 1].text == "जाने"
-                && tokens[i + 1].lemma == "जाना"
-            {
-                tokens[i + 1].lemma = "जानना".to_string();
-                tokens[i + 1].pos = PartOfSpeechTag::Verb;
-            }
+        fix_hindi_context(tokens.as_mut_slice());
+        for token in tokens.iter_mut() {
+            fix_hindi_token(token);
         }
-
-        for token in tokens {
-            // Pronoun/possessive lemma normalization (both PRON and DET)
-            if token.pos == PartOfSpeechTag::Pron || token.pos == PartOfSpeechTag::Det {
-                let expected = match token.text.as_str() {
-                    "मुझे" | "मुझको" | "मुझसे" | "मुझमें" | "मेरा" | "मेरी" | "मेरे" => {
-                        Some("मैं")
-                    }
-                    "तुझे" | "तुझको" | "तुझसे" | "तेरा" | "तेरी" | "तेरे" => {
-                        Some("तू")
-                    }
-                    "तुम्हें" | "तुम्हारा" | "तुम्हारी" | "तुम्हारे" => {
-                        Some("तुम")
-                    }
-                    "आपको" | "आपसे" | "आपका" | "आपकी" | "आपके" => {
-                        Some("आप")
-                    }
-                    "उसे" | "उसको" | "उससे" | "उसमें" | "उसने" | "उसका" | "उसकी" | "उसके" => {
-                        Some("वह")
-                    }
-                    "इसे" | "इसको" | "इससे" | "इसमें" | "इसने" | "इसका" | "इसकी" | "इसके" => {
-                        Some("यह")
-                    }
-                    "उन्हें" | "उनसे" | "उन्होंने" | "उनका" | "उनकी" | "उनके" | "वे" => {
-                        Some("वह")
-                    }
-                    "इन्हें" | "इनसे" | "इन्होंने" | "इनका" | "इनकी" | "इनके" | "ये" => {
-                        Some("यह")
-                    }
-                    "हमें" | "हमसे" | "हमने" | "हमारा" | "हमारी" | "हमारे" => {
-                        Some("हम")
-                    }
-                    _ => None,
-                };
-
-                if let Some(expected) = expected
-                    && token.lemma != expected
-                {
-                    token.lemma = expected.to_string();
-                }
-            }
-
-            // Fix possessives to DET
-            let possessive_forms = [
-                "मेरा",
-                "मेरी",
-                "मेरे",
-                "तेरा",
-                "तेरी",
-                "तेरे",
-                "तुम्हारा",
-                "तुम्हारी",
-                "तुम्हारे",
-                "आपका",
-                "आपकी",
-                "आपके",
-                "उसका",
-                "उसकी",
-                "उसके",
-                "इसका",
-                "इसकी",
-                "इसके",
-                "उनका",
-                "उनकी",
-                "उनके",
-                "इनका",
-                "इनकी",
-                "इनके",
-                "हमारा",
-                "हमारी",
-                "हमारे",
-            ];
-            if possessive_forms.contains(&token.text.as_str()) && token.pos == PartOfSpeechTag::Pron
-            {
-                token.pos = PartOfSpeechTag::Det;
-            }
-
-            // Fix चाहिए lemma
-            if token.text == "चाहिए" && token.lemma == "चाहना" {
-                token.lemma = "चाहिए".to_string();
-            }
-
-            // Fix पहले ADV lemma
-            if token.text == "पहले" && token.pos == PartOfSpeechTag::Adv && token.lemma != "पहला"
-            {
-                token.lemma = "पहला".to_string();
-            }
-
-            // Fix वह/यह CCONJ → PRON
-            if (token.text == "वह" || token.text == "यह") && token.pos == PartOfSpeechTag::Cconj
-            {
-                token.pos = PartOfSpeechTag::Pron;
-            }
-
-            // Fix नहीं/न/मत → ADV
-            if (token.text == "नहीं" || token.text == "न" || token.text == "मत")
-                && token.pos != PartOfSpeechTag::Adv
-            {
-                token.pos = PartOfSpeechTag::Adv;
-            }
-
-            // Fix अपना/अपने/अपनी lemma
-            let apna_forms = ["अपना", "अपने", "अपनी", "अपनों"];
-            if apna_forms.contains(&token.text.as_str()) && token.lemma != "अपना" {
-                token.lemma = "अपना".to_string();
-            }
-
-            // Fix लाइए lemma
-            if token.text == "लाइए" && token.lemma == "लेना" {
-                token.lemma = "लाना".to_string();
-            }
-
-            // Fix जनता VERB → NOUN
-            if token.text == "जनता" && token.pos == PartOfSpeechTag::Verb {
-                token.pos = PartOfSpeechTag::Noun;
-                token.lemma = "जनता".to_string();
-            }
-
-            // Fix किसी lemma → कोई
-            if (token.text == "किसी"
-                || token.text == "किसीने"
-                || token.text == "किसीको"
-                || token.text == "किसीसे")
-                && token.lemma != "कोई"
-            {
-                token.lemma = "कोई".to_string();
-            }
-
-            // Fix किस/किसे/किसने lemma → कौन
-            if (token.text == "किस"
-                || token.text == "किसे"
-                || token.text == "किसने"
-                || token.text == "किसको"
-                || token.text == "किससे")
-                && token.lemma != "कौन"
-            {
-                token.lemma = "कौन".to_string();
-            }
-
-            // Fix और ADJ → CCONJ
-            if token.text == "और" && token.pos == PartOfSpeechTag::Adj {
-                token.pos = PartOfSpeechTag::Cconj;
-            }
-
-            // Fix ही/भी POS
-            if (token.text == "ही" || token.text == "भी") && token.pos != PartOfSpeechTag::Part
-            {
-                token.pos = PartOfSpeechTag::Part;
-            }
-        }
+        fix_hindi_context(tokens.as_mut_slice());
     }
 }
 
@@ -9370,6 +9475,172 @@ mod tests {
 
         assert_eq!(tokens.len(), 2);
         assert_eq!(before, after);
+    }
+
+    fn hin_token(text: &str, pos: PartOfSpeechTag, lemma: &str) -> SimplifiedTokenPrime {
+        SimplifiedTokenPrime {
+            text: text.to_string(),
+            whitespace: " ".to_string(),
+            pos,
+            lemma: lemma.to_string(),
+        }
+    }
+
+    fn hin_fix(tokens: Vec<SimplifiedTokenPrime>) -> Vec<SimplifiedTokenPrime> {
+        let mut tokens = tokens;
+        HindiCorrector.post_corrections(&mut tokens);
+        tokens
+    }
+
+    #[test]
+    fn test_hindi_chahiye_pos_follows_context() {
+        use PartOfSpeechTag::{Adv, Aux, Noun, Pron, Verb};
+
+        // Need-sense: "मुझे चाय चाहिए" → चाहिए is VERB
+        let fixed = hin_fix(vec![
+            hin_token("मुझे", Pron, "मैं"),
+            hin_token("चाय", Noun, "चाय"),
+            hin_token("चाहिए", Aux, "चाहिए"),
+        ]);
+        assert_eq!(fixed[2].pos, Verb);
+
+        // Deontic after infinitive: "तुम्हें जाना चाहिए" → चाहिए is AUX
+        let fixed = hin_fix(vec![
+            hin_token("तुम्हें", Pron, "तुम"),
+            hin_token("जाना", Verb, "जाना"),
+            hin_token("चाहिए", Verb, "चाहिए"),
+        ]);
+        assert_eq!(fixed[2].pos, Aux);
+
+        // Negation between infinitive and चाहिए does not break the rule,
+        // and the चहिए misspelling is normalized first
+        let fixed = hin_fix(vec![
+            hin_token("ऐसा", Pron, "ऐसा"),
+            hin_token("करना", Verb, "करना"),
+            hin_token("नहीं", Adv, "नहीं"),
+            hin_token("चहिए", Verb, "चाहना"),
+        ]);
+        assert_eq!(fixed[3].text, "चाहिए");
+        assert_eq!(fixed[3].lemma, "चाहिए");
+        assert_eq!(fixed[3].pos, Aux);
+    }
+
+    #[test]
+    fn test_hindi_theek_accha_before_lagna_is_adj() {
+        use PartOfSpeechTag::{Adj, Adv, Aux, Pron, Verb};
+
+        // "आप ठीक लग रहे हो" → ठीक is ADJ (complement of लगना)
+        let fixed = hin_fix(vec![
+            hin_token("आप", Pron, "आप"),
+            hin_token("ठीक", Adv, "ठीक"),
+            hin_token("लग", Verb, "लगना"),
+            hin_token("रहे", Aux, "रहना"),
+        ]);
+        assert_eq!(fixed[1].pos, Adj);
+
+        // "मुझे अच्छा नहीं लगा" → अच्छा is ADJ (negation skipped)
+        let fixed = hin_fix(vec![
+            hin_token("मुझे", Pron, "मैं"),
+            hin_token("अच्छा", Adv, "अच्छा"),
+            hin_token("नहीं", Adv, "नहीं"),
+            hin_token("लगा", Verb, "लगना"),
+        ]);
+        assert_eq!(fixed[1].pos, Adj);
+
+        // Manner use before another verb stays ADV: "अच्छा खेलता है"
+        let fixed = hin_fix(vec![
+            hin_token("अच्छा", Adv, "अच्छा"),
+            hin_token("खेलता", Verb, "खेलना"),
+        ]);
+        assert_eq!(fixed[0].pos, Adv);
+    }
+
+    #[test]
+    fn test_hindi_conjunct_adj_karna_is_aux() {
+        use PartOfSpeechTag::{Adj, Aux, Pron, Verb};
+
+        // "उसे खत्म कर दें" → कर is the verbalizer, AUX
+        let fixed = hin_fix(vec![
+            hin_token("उसे", Pron, "वह"),
+            hin_token("खत्म", Adj, "खत्म"),
+            hin_token("कर", Verb, "करना"),
+            hin_token("दें", Aux, "देना"),
+        ]);
+        assert_eq!(fixed[2].pos, Aux);
+
+        // "कैसा कर रहा है" — interrogative host, कर stays VERB
+        let fixed = hin_fix(vec![
+            hin_token("कैसा", Adj, "कैसा"),
+            hin_token("कर", Verb, "करना"),
+            hin_token("रहा", Aux, "रहना"),
+        ]);
+        assert_eq!(fixed[1].pos, Verb);
+    }
+
+    #[test]
+    fn test_hindi_mechanical_lemma_fixes() {
+        use PartOfSpeechTag::{Adp, Aux, Punct};
+
+        let fixed = hin_fix(vec![
+            hin_token(",", Punct, ", "),
+            hin_token("के", Adp, "का"),
+            hin_token("पास", Adp, "के पास"),
+            hin_token("रही", Aux, "होना"),
+        ]);
+        assert_eq!(fixed[0].lemma, ",");
+        assert_eq!(fixed[1].lemma, "के");
+        assert_eq!(fixed[2].lemma, "पास");
+        assert_eq!(fixed[3].lemma, "रहना");
+    }
+
+    #[test]
+    fn test_hindi_stranded_aux_flagged() {
+        use PartOfSpeechTag::{Aux, Noun, Pron, Verb};
+
+        // "वह घर गया" with गया tagged AUX → stranded, flagged
+        let tokens = vec![
+            hin_token("वह", Pron, "वह"),
+            hin_token("घर", Noun, "घर"),
+            hin_token("गया", Aux, "जाना"),
+        ];
+        let reasons = HindiClassifier.needs_double_check("वह घर गया", &tokens);
+        assert!(
+            reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("no verb to its left"))),
+            "expected stranded-aux flag, got {reasons:?}"
+        );
+
+        // "खा रहा है" — रहा has a verbal host, no stranded flag
+        let tokens = vec![
+            hin_token("खा", Verb, "खाना"),
+            hin_token("रहा", Aux, "रहना"),
+            hin_token("है", Aux, "होना"),
+        ];
+        let reasons = HindiClassifier.needs_double_check("खा रहा है", &tokens);
+        assert!(
+            !reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("no verb to its left"))),
+            "unexpected stranded-aux flag: {reasons:?}"
+        );
+    }
+
+    #[test]
+    fn test_hindi_karna_verb_after_noun_flagged() {
+        use PartOfSpeechTag::{Noun, Verb};
+
+        let tokens = vec![
+            hin_token("मदद", Noun, "मदद"),
+            hin_token("करो", Verb, "करना"),
+        ];
+        let reasons = HindiClassifier.needs_double_check("मदद करो", &tokens);
+        assert!(
+            reasons
+                .as_ref()
+                .is_some_and(|r| r.iter().any(|s| s.contains("conjunct"))),
+            "expected conjunct-verb flag, got {reasons:?}"
+        );
     }
 }
 
@@ -10284,10 +10555,10 @@ Hindi extensively uses compound verbs where a main verb stem combines with a lig
 When used independently, these are VERB: लेना = to take, देना = to give, जाना = to go.
 
 ### Multiword verb lemmas
-Each token gets its own single-word lemma. No multiword lemmas. The multiword meaning is reconstructed at a later vocabulary layer.
-- "दिखाई देता है" → "दिखाई" (NOUN, lemma "दिखाई") + "देता" (VERB, lemma "देना") + "है" (AUX, lemma "होना")
-- "पसंद करता है" → "पसंद" (NOUN, lemma "पसंद") + "करता" (VERB, lemma "करना") + "है" (AUX, lemma "होना")
-- "मदद करो" → "मदद" (NOUN, lemma "मदद") + "करो" (VERB, lemma "करना")
+Each token gets its own single-word lemma. No multiword lemmas. The multiword meaning is reconstructed at a later vocabulary layer. (POS follows the conjunct-verb rule below: the light verb is AUX.)
+- "दिखाई देता है" → "दिखाई" (NOUN, lemma "दिखाई") + "देता" (AUX, lemma "देना") + "है" (AUX, lemma "होना")
+- "पसंद करता है" → "पसंद" (NOUN, lemma "पसंद") + "करता" (AUX, lemma "करना") + "है" (AUX, lemma "होना")
+- "मदद करो" → "मदद" (NOUN, lemma "मदद") + "करो" (AUX, lemma "करना")
 
 ### Noun/adjective + करना: करना is AUX (light verb)
 When करना follows a noun or participial adjective to form a compound verb, करना is AUX and the noun is the lexical head:
@@ -10341,6 +10612,15 @@ Use "के लिए" consistently (not "के लिये" — both spelling
 ### चाहिए: lemma is "चाहिए", not "चाहना"
 चाहिए means "is needed/should" while चाहना means "to want." A learner looking up चाहना will find "to want," not "to need." Most Hindi dictionaries list चाहिए as its own entry. Use lemma "चाहिए" for चाहिए, and lemma "चाहना" for चाहता/चाहती/चाहते (forms of "to want").
 
+चाहिए's POS is decided by context, and the pipeline enforces this rule deterministically — please apply it exactly:
+- After an infinitive (a verb form ending -ना/-नी/-ने, possibly with नहीं or a focus particle in between): deontic "should" → AUX. "तुम्हें जाना चाहिए" → जाना (VERB) + चाहिए (AUX). "ऐसा नहीं करना चाहिए" → करना (VERB) + चाहिए (AUX).
+- Otherwise: main predicate of need, "X को Y चाहिए" → VERB. "मुझे चाय चाहिए" → चाहिए is VERB. "तुम्हें किसलिए चाहिए?" → VERB.
+
+### ठीक and अच्छा: ADJ vs ADV vs INTJ
+- Predicative or attributive → ADJ: "यह ठीक है", "मेरा अच्छा दोस्त". This includes the complement of लगना: "आप ठीक लग रहे हो", "मुझे अच्छा लगा" → ADJ, not ADV (enforced deterministically).
+- Manner adverb modifying another verb → ADV: "वह टेनिस अच्छा खेलता है", "ठीक कहा".
+- Standalone discourse formula → INTJ: "ठीक है।" as a bare reply ("Okay."), "अच्छा!" ("Oh, I see!"), "बहुत अच्छा!" ("Very good!"). If the clause has its own subject ("यह ठीक है"), it is ADJ, not INTJ.
+
 ### Common lemma errors to watch for
 - लाइए → lemma "लाना" (to bring), not "लेना" (to take). लाइए is the honorific imperative of लाना.
 - किसी/किसीने/किसीको → lemma "कोई" (oblique form → base indefinite pronoun)
@@ -10348,6 +10628,9 @@ Use "के लिए" consistently (not "के लिये" — both spelling
 - जनता = NOUN "the public" (lemma जनता). जानता = VERB "knows" (lemma जानना). These are different words.
 - जाने after ईश्वर/खुदा/भगवान/कौन = subjunctive of जानना (to know), lemma "जानना". "ईश्वर जाने" = "God knows", not "God goes." Also "कौन जाने" = "who knows."
 - और = CCONJ (conjunction "and") or ADV (adverb "more"). It is never ADJ.
+- कैसे as ADV ("how") → lemma "कैसे" (its own headword). कैसा/कैसी (ADJ "what kind") → lemma "कैसा".
+- रहा/रही/रहे/रहीं are forms of रहना only — never lemma "करना" or "होना".
+- Simple postpositions lemmatize to themselves: के → lemma "के" (never "का").
 
 ### वाला/वाली/वाले
 Multifunctional — tag based on context:
