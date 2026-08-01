@@ -1,11 +1,9 @@
 """spaCy sentence analysis for the gold-labeling pipeline (clean-nlp-data).
 
 Parses sentences into tokens (text/whitespace/lemma/pos/morph) as NlpAnalyzedSentence
-JSONL. Historical note: this used to also run a MultiwordTermDetector (dependency +
-phrase matchers built from a terms file — 215k transformer parses for eng, hours of
-CPU); nothing ever consumed those detections downstream, so the subsystem was deleted
-and `multiword_terms` is always emitted empty. The terms-file CLI argument is kept for
-interface compatibility and ignored.
+JSONL. Multiword terms are not detected here: they are downloaded from Wiktionary and
+fed through this same pipeline as if they were sentences, so `multiword_terms` on
+each record is always emitted empty.
 """
 import json
 import sys
@@ -565,10 +563,8 @@ def load_model(language_code: str):
     return nlp
 
 
-def process_sentences(sentences_file: str, terms_file: str, output_file: str, language_code: str):
-    """Parse sentences from JSONL and write analyzed records (terms_file is ignored)."""
-    del terms_file  # kept in the CLI for compatibility; detections were never consumed
-
+def process_sentences(sentences_file: str, output_file: str, language_code: str):
+    """Parse sentences from JSONL and write analyzed records."""
     with open(sentences_file, "r", encoding="utf-8") as f:
         sentences = [json.loads(line) for line in f if line.strip()]
     print(f"Found {len(sentences)} sentences to process")
@@ -612,17 +608,16 @@ def process_sentences(sentences_file: str, terms_file: str, output_file: str, la
 
 
 def main():
-    if len(sys.argv) != 5:
-        print("Usage: python main.py <language_code> <sentences.jsonl> <multiword_terms.txt> <output.jsonl>")
+    if len(sys.argv) != 4:
+        print("Usage: python main.py <language_code> <sentences.jsonl> <output.jsonl>")
         print("Language code should be ISO 639-3 (e.g., 'fra' for French, 'spa' for Spanish)")
         sys.exit(1)
 
     language_code = sys.argv[1]
     sentences_file = sys.argv[2]
-    terms_file = sys.argv[3]
-    output_file = sys.argv[4]
+    output_file = sys.argv[3]
 
-    process_sentences(sentences_file, terms_file, output_file, language_code)
+    process_sentences(sentences_file, output_file, language_code)
 
 
 if __name__ == "__main__":

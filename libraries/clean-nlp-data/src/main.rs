@@ -317,7 +317,6 @@ fn load_multiword_term_strings(multiword_terms_file: &Path) -> anyhow::Result<Ve
 fn run_nlp_cached(
     language: Language,
     sentences: &[String],
-    multiword_terms_file: &Path,
     cache_file: &Path,
 ) -> anyhow::Result<Vec<NlpAnalyzedSentence>> {
     // Load existing cache
@@ -382,9 +381,7 @@ fn run_nlp_cached(
             writer.flush()?;
         }
 
-        // Run spaCy (the terms-file argument is ignored by main.py since the multiword
-        // detector was deleted — nothing downstream ever consumed its detections).
-        run_python_nlp(language, &temp_input, multiword_terms_file, &temp_output)?;
+        run_python_nlp(language, &temp_input, &temp_output)?;
 
         // Read results and add to cache
         let file = File::open(&temp_output).context("Failed to open temp NLP output file")?;
@@ -724,16 +721,9 @@ async fn ensure_nlp_file(language: Language) -> anyhow::Result<PathBuf> {
                 "Running Python NLP pipeline for {:?}...",
                 course.target_language
             );
-            // Create an empty multiword terms file for now
-            let multiword_terms_file = base_dir.join("multiword_terms.jsonl");
-            if !multiword_terms_file.exists() {
-                File::create(&multiword_terms_file)
-                    .context("Failed to create empty multiword terms file")?;
-            }
             run_python_nlp(
                 course.target_language,
                 &target_sentences_path,
-                &multiword_terms_file,
                 &nlp_file_path,
             )?;
         }
@@ -745,7 +735,6 @@ async fn ensure_nlp_file(language: Language) -> anyhow::Result<PathBuf> {
 fn run_python_nlp(
     language: Language,
     target_sentences_path: &Path,
-    multiword_terms_file: &Path,
     nlp_output_path: &Path,
 ) -> anyhow::Result<()> {
     let script_path = Path::new("./generate-data/nlp/")
@@ -757,7 +746,6 @@ fn run_python_nlp(
         .arg("main.py")
         .arg(language.code())
         .arg(target_sentences_path)
-        .arg(multiword_terms_file)
         .arg(nlp_output_path)
         .current_dir(script_path)
         .status()
@@ -1099,12 +1087,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     let samples = if needs_llm_nlp(language) {
         run_llm_nlp_cached(language, &all_needed, &nlp_cache_file).await?
     } else {
-        run_nlp_cached(
-            language,
-            &all_needed,
-            &multiword_terms_file,
-            &nlp_cache_file,
-        )?
+        run_nlp_cached(language, &all_needed, &nlp_cache_file)?
     };
 
     let sample_count = samples.len();

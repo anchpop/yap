@@ -2766,7 +2766,25 @@ pub enum WritingSystem {
     Thai,
 }
 
+/// Characters used ONLY in simplified or ONLY in traditional Chinese text.
+/// Forms valid in both (里/后/云/台/只/干/面/…) are deliberately absent.
+const SIMPLIFIED_ONLY: &str = "国会这说对时们来学见还没电车门问间东儿点开关认让话语读写听号妈谁么几个长张马鸟鱼龙风华为乐现买卖医难题双观欢击级红纪经给绝统继续绿网罗办变边币标产称迟处传单当党动断队发刚归龟汉护记举剧亲轻确热伤审圣书树术岁孙态万习县响择泽针诊争证织职执质钟种众专转庄状准务议译异样养药钥远运杂灾脏则贼赠纸骂";
+const TRADITIONAL_ONLY: &str = "國會這說對時們來學見還沒電車門問間東兒點開關認讓話語讀寫聽號媽誰麼幾個長張馬鳥魚龍風華為樂現買賣醫難題雙觀歡擊級紅紀經給絕統繼續綠網羅辦變邊幣標產稱遲處傳單當黨動斷隊發剛歸龜漢護記舉劇親輕確熱傷審聖書樹術歲孫態萬習縣響擇澤針診爭證織職執質鐘種眾專轉莊狀準務議譯異樣養藥鑰遠運雜災臟則賊贈紙罵";
+
 impl Language {
+    /// True if `text` contains Han characters that belong exclusively to the
+    /// *other* Chinese script (e.g. Traditional-only characters when `self` is
+    /// `ChineseSimplified`). Always false for non-Chinese languages. Used to
+    /// filter mixed-script sources like Wiktionary category listings, which
+    /// interleave Simplified and Traditional page titles.
+    pub fn contains_wrong_han_script(&self, text: &str) -> bool {
+        match self {
+            Language::ChineseSimplified => text.chars().any(|c| TRADITIONAL_ONLY.contains(c)),
+            Language::ChineseTraditional => text.chars().any(|c| SIMPLIFIED_ONLY.contains(c)),
+            _ => false,
+        }
+    }
+
     /// espeak-ng voice code for this language, or `None` if espeak's
     /// support for it is too weak to trust phonemic output. Used by the
     /// audio verifier to derive phrase-level IPA (handles liaison,
@@ -3405,10 +3423,6 @@ impl Language {
             self,
             Language::ChineseSimplified | Language::ChineseTraditional
         ) {
-            // Characters used ONLY in simplified or ONLY in traditional text.
-            // Forms valid in both (里/后/云/台/只/干/面/…) are deliberately absent.
-            const SIMPLIFIED_ONLY: &str = "国会这说对时们来学见还没电车门问间东儿点开关认让话语读写听号妈谁么几个长张马鸟鱼龙风华为乐现买卖医难题双观欢击级红纪经给绝统继续绿网罗办变边币标产称迟处传单当党动断队发刚归龟汉护记举剧亲轻确热伤审圣书树术岁孙态万习县响择泽针诊争证织职执质钟种众专转庄状准务议译异样养药钥远运杂灾脏则贼赠纸骂";
-            const TRADITIONAL_ONLY: &str = "國會這說對時們來學見還沒電車門問間東兒點開關認讓話語讀寫聽號媽誰麼幾個長張馬鳥魚龍風華為樂現買賣醫難題雙觀歡擊級紅紀經給絕統繼續綠網羅辦變邊幣標產稱遲處傳單當黨動斷隊發剛歸龜漢護記舉劇親輕確熱傷審聖書樹術歲孫態萬習縣響擇澤針診爭證織職執質鐘種眾專轉莊狀準務議譯異樣養藥鑰遠運雜災臟則賊贈紙罵";
             // Written-Cantonese function words — Mandarin text has ~none.
             const CANTONESE_MARKERS: &str = "嘅咗唔佢哋冇咁嚟啲喺嗰乜嘢噉氹攞";
 

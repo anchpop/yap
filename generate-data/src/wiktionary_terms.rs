@@ -124,10 +124,37 @@ async fn download_multiword_terms(language: Language) -> anyhow::Result<Vec<Stri
             return Ok(vec![]);
         }
         Language::German => "German_multiword_terms",
-        Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => {
-            // Unsegmented scripts: "multiword" isn't meaningful the way the
-            // spaCy MWT pass uses it — the tokenizer decides word boundaries.
+        Language::ChineseSimplified => {
+            // No bare Chinese_multiword_terms category exists. Phrases carry the
+            // multi-token set expressions (怎么回事-class) that segmentation alone
+            // can't teach; idioms/chengyu mostly come out single-token but are
+            // teachable items in their own right. Wiktionary interleaves
+            // Simplified and Traditional page titles (and the Mandarin
+            // subcategory holds pinyin soft-redirects), so keep only pure-Han,
+            // Simplified-compatible titles.
+            let mut terms = Vec::new();
+            for category in ["Chinese_phrases", "Mandarin_phrases", "Chinese_idioms"] {
+                terms.extend(download_category(category).await.unwrap_or_default());
+            }
+            terms.retain(|t| {
+                let has_han = t.chars().any(|c| {
+                    ('\u{4E00}'..='\u{9FFF}').contains(&c) || ('\u{3400}'..='\u{4DBF}').contains(&c)
+                });
+                let has_latin = t.chars().any(|c| c.is_ascii_alphabetic());
+                has_han && !has_latin && !language.contains_wrong_han_script(t)
+            });
+            return Ok(terms);
+        }
+        Language::ChineseTraditional => {
+            // No zho-hant pipeline yet (no corpora, no segmentation model).
             return Ok(vec![]);
+        }
+        Language::Thai => {
+            let mut terms = Vec::new();
+            for category in ["Thai_phrases", "Thai_idioms", "Thai_proverbs"] {
+                terms.extend(download_category(category).await.unwrap_or_default());
+            }
+            return Ok(terms);
         }
         Language::Japanese => {
             // The Japanese_multiword_terms category only has subcategories, no direct entries.

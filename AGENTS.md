@@ -30,7 +30,7 @@ Cloudflare for hosting.
 
 ### Data Flow
 
-1. Anki decks are processed by `generate-data` using Python spaCy NLP for French multiword term detection
+1. Sentence corpora (movie subtitles, Tatoeba, books) are processed with per-language NLP layers (spaCy for European languages and Korean, Sudachi for Japanese, HanLP for Chinese, PyThaiNLP for Thai); multiword terms come from Wiktionary category listings and are processed through the same pipeline as sentences
 2. Generated data is embedded into the WASM module as static assets
 3. Frontend uses WASM module for offline-first language learning features
 4. Supabase handles user authentication and event syncing
@@ -137,7 +137,7 @@ enforced mechanically — no human vigilance required.
 - **Tailwind CSS + Radix UI**: Styling and components
 - **Supabase**: Database, auth, and real-time features
 - **OPFS**: Browser-based persistent file storage for offline data
-- **spaCy**: French NLP processing for multiword term detection
+- **spaCy / Sudachi / HanLP / PyThaiNLP**: per-language NLP base layers for sentence analysis
 - **FSRS**: Spaced repetition algorithm implementation
 
 ### Important Notes
