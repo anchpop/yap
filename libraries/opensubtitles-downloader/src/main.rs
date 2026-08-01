@@ -238,6 +238,45 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0093978",  // A Chinese Ghost Story (1987)
     "tt0423176",  // The World (2004)
     "tt0859765",  // Still Life (2006)
+    "tt0286112",  // Shaolin Soccer (2001)
+    "tt0188766",  // King of Comedy (1999)
+    "tt0116426",  // The God of Cookery (1996)
+    "tt0092263",  // A Better Tomorrow (1986)
+    "tt0089374",  // Police Story (1985)
+    "tt0103285",  // Once Upon a Time in China (1991)
+    "tt0244316",  // Yi Yi (2000)
+    "tt0101258",  // Days of Being Wild (1990)
+    "tt0212712",  // 2046 (2004)
+    "tt1462900",  // The Grandmaster (2013)
+    "tt0117905",  // Comrades: Almost a Love Story (1996)
+    "tt0209189",  // Not One Less (1999)
+    "tt0235060",  // The Road Home (1999)
+    "tt0215369",  // Shower (1999)
+    "tt0107156",  // The Wedding Banquet (1993)
+    "tt0234837",  // Suzhou River (2000)
+    "tt0276501",  // Beijing Bicycle (2001)
+    "tt0111786",  // In the Heat of the Sun (1994)
+    "tt0434008",  // Election (2005)
+    "tt1267160",  // Cape No. 7 (2008)
+    "tt2036416",  // You Are the Apple of My Eye (2011)
+    "tt4967094",  // Our Times (2015)
+    "tt6054290",  // Soulmate (2016)
+    "tt8033592",  // Us and Them (2018)
+    "tt10883506", // A Sun (2019)
+    "tt5290882",  // Detective Chinatown (2015)
+    "tt2459022",  // Lost in Thailand (2012)
+    "tt7362036",  // Dying to Survive (2018)
+    "tt9586294",  // Better Days (2019)
+    "tt7131870",  // Wolf Warrior 2 (2017)
+    "tt7605074",  // The Wandering Earth (2019)
+    "tt13539646", // The Wandering Earth II (2023)
+    "tt13364790", // Hi, Mom (2021)
+    "tt28151876", // Yolo (2024)
+    "tt21148018", // Full River Red (2023)
+    "tt34956443", // Ne Zha 2 (2025)
+    "tt25434854", // Deep Sea (2023)
+    "tt9288776",  // White Snake (2019)
+    "tt1920885",  // Big Fish & Begonia (2016)
     // Japanese
     "tt0347149",  // Howl's Moving Castle (2004)
     "tt0245429",  // Spirited Away (2001)
@@ -749,6 +788,12 @@ fn cleanup_subtitle_text(text: &str) -> String {
 
     // Remove HTML tags
     result = strip_html_tags(&result);
+
+    // Remove SSA/ASS override tags ({\an8}, {\i1}, {\pos(200,100)}, …) and
+    // ASS escapes for line break / hard space
+    let re_ssa = regex::Regex::new(r"\{\\[^}]*\}").unwrap();
+    result = re_ssa.replace_all(&result, "").to_string();
+    result = result.replace("\\N", " ").replace("\\h", " ");
 
     // Remove hearing-impaired annotations
     result = result
