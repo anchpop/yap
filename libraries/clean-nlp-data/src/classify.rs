@@ -6726,9 +6726,16 @@ fn fix_thai_token(token: &mut impl TokenView) -> Vec<String> {
         token.set_lemma(want_lemma.to_string());
     }
 
-    let text = token.text().trim();
-    if TH_ALWAYS_PART.contains(&text) && token.pos() != PartOfSpeechTag::Part {
+    let text = token.text().trim().to_string();
+    if TH_ALWAYS_PART.contains(&text.as_str()) && token.pos() != PartOfSpeechTag::Part {
         fixes.push(format!("Retagged {} from {:?} to PART", text, token.pos()));
+        token.set_pos(PartOfSpeechTag::Part);
+    }
+
+    // The repetition mark ๆ is a grammatical sign (pluralize/intensify the previous
+    // word), not punctuation — PART, its own token.
+    if text == "ๆ" && token.pos() != PartOfSpeechTag::Part {
+        fixes.push(format!("Retagged ๆ from {:?} to PART", token.pos()));
         token.set_pos(PartOfSpeechTag::Part);
     }
 
@@ -6817,10 +6824,12 @@ impl WordCorrector for ThaiCorrector {
 /// True for a token that is a single Thai-script character. Thai has essentially no
 /// one-character words (a bare consonant or vowel sign is not a word), so these are
 /// almost always fragments of an unknown word the dictionary-based segmenter
-/// couldn't handle — typically a transliterated name.
+/// couldn't handle — typically a transliterated name. The two real one-character
+/// signs are exempt: ๆ (mai yamok, repetition) and ฯ (paiyannoi, abbreviation).
 fn is_thai_fragment(text: &str) -> bool {
     let mut chars = text.trim().chars();
     match (chars.next(), chars.next()) {
+        (Some('ๆ') | Some('ฯ'), None) => false,
         (Some(c), None) => ('\u{0E00}'..='\u{0E7F}').contains(&c),
         _ => false,
     }
@@ -6942,6 +6951,32 @@ impl SentenceClassifier for ThaiClassifier {
             if is_thai_fragment(&token.text) {
                 reasons.push(format!(
                     "'{text}' is a single Thai character, which is almost never a real word — is this an unmerged fragment of a longer word or name?"
+                ));
+            }
+
+            // ได้ has exactly two tags: AUX (preverbal attainment / postverbal
+            // potential) or VERB ("get/receive")
+            if text == "ได้" && !matches!(token.pos, PartOfSpeechTag::Verb | PartOfSpeechTag::Aux)
+            {
+                reasons.push(format!(
+                    "'ได้' is tagged {:?} — ได้ is AUX (before a verb: attainment; after a verb: potential) or VERB ('get/receive'), never anything else.",
+                    token.pos
+                ));
+            }
+
+            // ที่ has a closed set of readings
+            if text == "ที่"
+                && !matches!(
+                    token.pos,
+                    PartOfSpeechTag::Adp
+                        | PartOfSpeechTag::Sconj
+                        | PartOfSpeechTag::Noun
+                        | PartOfSpeechTag::Part
+                )
+            {
+                reasons.push(format!(
+                    "'ที่' is tagged {:?} — ที่ is ADP ('at'), SCONJ (relativizer/complementizer), NOUN ('place'), or PART (ordinal marker). A locative like ที่นั่น/ที่นี่ should be one merged token instead.",
+                    token.pos
                 ));
             }
 
@@ -11045,8 +11080,8 @@ The segmenter's dictionary doesn't know transliterated names and shreds them int
 
 ### One token each (do not split)
 
-- Greetings and formulas: สวัสดี, ขอบคุณ, ขอโทษ, ไม่เป็นไร — single tokens (the dictionary lists them; their meaning is not compositional).
-- Question words: อะไร, ทำไม, ยังไง, อย่างไร, ที่ไหน, เมื่อไหร่ — one token each.
+- Greetings and formulas: สวัสดี, ขอบคุณ, ขอโทษ, ไม่เป็นไร — single tokens (the dictionary lists them; their meaning is not compositional). But a compositional greeting PHRASE stays split: สุขสันต์|วันคริสต์มาส (happy + Christmas day), ราตรี|สวัสดิ์ stays as the dictionary segments it.
+- Question words and deictic locations: อะไร, ทำไม, ยังไง, อย่างไร, ที่ไหน, เมื่อไหร่, ที่นี่, ที่นั่น, ที่โน่น — one token each (do not split ที่ off of ที่นี่/ที่นั่น/ที่ไหน).
 - Lexicalized compounds the dictionary lists: น้ำตา (tears), น้ำแข็ง (ice), รถไฟ (train), ไฟฟ้า (electricity), เมื่อวาน (yesterday), พรุ่งนี้ (tomorrow), หนังสือ (book).
 - Lexicalized การ-/ความ- nominalizations: ความสุข (happiness), ความรัก (love), ความจริง (truth), การบ้าน (homework) — dictionary words, keep whole.
 - Personal names, Thai or transliterated: one PROPN token; never decompose a person's name.
@@ -11056,6 +11091,8 @@ The segmenter's dictionary doesn't know transliterated names and shreds them int
 ### Separate tokens (do not merge)
 
 - Compositional verb + object collocations, even when the dictionary lists them: กินข้าว → กิน|ข้าว (eat + rice), ปิดไฟ → ปิด|ไฟ (close + light), มาสาย → มา|สาย (come + late), ดูหนัง → ดู|หนัง, อาบน้ำ → อาบ|น้ำ. Each side is a word the learner should meet on its own.
+- Compositional role/agent compounds: ผู้ดูแล|ระบบ (administrator + system), หัวหน้า|ทีม (head + team) — split when each side is a word and the meaning is transparent.
+- The repetition mark ๆ is always its own token (PART), attached to nothing: เร็ว|ๆ, มาก|ๆ.
 - Productive (non-lexicalized) การ-/ความ- nominalizations: การ|วิ่ง (the running). But when the whole is itself a dictionary word (ความเร็ว "speed"), keep it whole. When unsure whether it's lexicalized, keep the segmenter's proposal.
 - Pronoun/noun sequences the segmenter glued: ผมชื่อ → ผม|ชื่อ.
 - Number | classifier: สอง|คน, สาม|ตัว — the classifier is its own learnable word (NOUN).
@@ -11079,10 +11116,11 @@ Thai words do not inflect — the lemma is always identical to the surface form 
 ### Preverbal markers (AUX)
 จะ (irrealis/future — always AUX), กำลัง (progressive), เคย (experiential), ต้อง (must), ควร (should), อาจ (may), คง (probably), มัก (tend to), น่าจะ (ought to), ย่อม — AUX when they modify a following verb (the adjacent case is enforced deterministically; apply the same rule when the verb sits further right). อยาก (want to) before a verb → AUX. A modal standing alone as an answer (ได้! = "sure, can do") is VERB.
 
-### ได้ — three readings
+### ได้ — three readings, two tags
 - Before a verb: AUX, past attainment (ได้ไป = got to go / did go)
-- After a verb: AUX, potential (ไปได้ = can go, ทำไม่ได้ = can't do)
+- After a verb: AUX, potential (ไปได้ = can go, ทำไม่ได้ = can't do, รู้ได้ไง = how would you know)
 - Main verb "get/receive" (ได้เงิน = get money) → VERB
+ได้ is never ADV or anything else — AUX or VERB only.
 
 ### อยู่ and เป็น
 - อยู่ as main verb "be at / live" (บ้านอยู่ไกล) → VERB; postverbal continuous marker (นั่งอยู่ = is sitting) → AUX.
@@ -11101,7 +11139,10 @@ Thai words do not inflect — the lemma is always identical to the surface form 
 ### ให้
 - Main verb "give": ให้|เงิน → VERB
 - Benefactive "for/to" after a verb phrase: ทำ|ให้|แม่ → ADP
-- Causative ("make/let someone do"): ทำให้ as segmented; the marker ให้ before a clause → SCONJ. When unsure between ADP and SCONJ, prefer ADP.
+- Causative ("make/let someone do"): ทำให้ as segmented; the marker ให้ before a clause → SCONJ.
+- Manner/result complement (verb ให้ adjective, "do it such that..."): พูด|ให้|ชัดเจน → SCONJ.
+- Jussive at the start of a clause ("let/may...", including the exclamation ให้ตายสิ/เหอะ): → AUX.
+These five cover every use — ให้ is never ADV or PART. When unsure between ADP and SCONJ, prefer ADP.
 
 ### Pronouns
 ผม, ฉัน, ดิฉัน, คุณ, เธอ, เขา, เค้า, มัน, เรา, พวกเรา, พวกเขา, แก, กู, มึง → PRON. Kinship/occupation words used as address forms (แม่, พ่อ, พี่, ลุง, ป้า, หมอ) stay NOUN. Reciprocal กัน after a verb (รัก|กัน = love each other) → PRON.
