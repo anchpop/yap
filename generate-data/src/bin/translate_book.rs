@@ -27,17 +27,21 @@ use lexide::{Language, RemoteClient, RemoteConfig};
 use serde::{Deserialize, Serialize};
 use tysm::chat_completions::ChatClient;
 
-const LANGS: [(&str, Language); 10] = [
-    ("deu", Language::German),
-    ("eng", Language::English),
-    ("fra", Language::French),
-    ("hin", Language::Hindi),
-    ("ita", Language::Italian),
-    ("jpn", Language::Japanese),
-    ("kor", Language::Korean),
-    ("por", Language::Portuguese),
-    ("rus", Language::Russian),
-    ("spa", Language::Spanish),
+/// (output code, display name for the translation prompt, segmenter language hint).
+/// Simplified Chinese has no `lexide::Language` variant, so it segments with no hint —
+/// the parsley `/segment` serve splits on Chinese sentence punctuation without one.
+const LANGS: [(&str, &str, Option<Language>); 11] = [
+    ("deu", "German", Some(Language::German)),
+    ("eng", "English", Some(Language::English)),
+    ("fra", "French", Some(Language::French)),
+    ("hin", "Hindi", Some(Language::Hindi)),
+    ("ita", "Italian", Some(Language::Italian)),
+    ("jpn", "Japanese", Some(Language::Japanese)),
+    ("kor", "Korean", Some(Language::Korean)),
+    ("por", "Portuguese", Some(Language::Portuguese)),
+    ("rus", "Russian", Some(Language::Russian)),
+    ("spa", "Spanish", Some(Language::Spanish)),
+    ("zho-hans", "Simplified Chinese", None),
 ];
 
 static MODEL: LazyLock<String> = LazyLock::new(|| {
@@ -91,6 +95,8 @@ async fn main() -> anyhow::Result<()> {
         .map(|v| v.parse())
         .transpose()?
         .unwrap_or(300);
+    // Restrict the run to a single output code (e.g. `--only zho-hans`); others are skipped.
+    let only = arg_value("--only");
 
     let all_chunks: Vec<Chunk> = std::fs::read_to_string(&chunks_path)
         .with_context(|| format!("read {chunks_path}"))?
@@ -114,7 +120,12 @@ async fn main() -> anyhow::Result<()> {
     cache_remote::warm().await;
     let segmenter = RemoteClient::new(RemoteConfig::default())?;
 
-    for (code, language) in LANGS {
+    for (code, lang_name, seg_hint) in LANGS {
+        if let Some(ref o) = only {
+            if o != code {
+                continue;
+            }
+        }
         let out_dir = PathBuf::from(format!(
             "./generate-data/data/{code}/sentence-sources/books/{series}"
         ));
@@ -153,7 +164,7 @@ async fn main() -> anyhow::Result<()> {
             "Translate this excerpt from an English fantasy novel into natural, fluent {}. \
              Preserve the paragraph breaks. Keep names as a native translation would \
              (transliterate where that is the convention). Return only the translation.",
-            language_name(language)
+            lang_name
         );
 
         let mut results = futures::stream::iter(todo)
@@ -170,10 +181,11 @@ async fn main() -> anyhow::Result<()> {
                             .with_context(|| format!("translate chunk {}", chunk.id))?;
                         response.translation
                     };
-                    let sentences = segmenter
-                        .segment_sentences_in(&text, language)
-                        .await
-                        .with_context(|| format!("segment chunk {}", chunk.id))?;
+                    let sentences = match seg_hint {
+                        Some(l) => segmenter.segment_sentences_in(&text, l).await,
+                        None => segmenter.segment_sentences(&text).await,
+                    }
+                    .with_context(|| format!("segment chunk {}", chunk.id))?;
                     anyhow::Ok((chunk.id.clone(), sentences))
                 }
             })
@@ -221,19 +233,4 @@ async fn main() -> anyhow::Result<()> {
         CHAT_CLIENT.cost().unwrap_or(0.0)
     );
     Ok(())
-}
-
-fn language_name(language: Language) -> &'static str {
-    match language {
-        Language::German => "German",
-        Language::English => "English",
-        Language::French => "French",
-        Language::Hindi => "Hindi",
-        Language::Italian => "Italian",
-        Language::Japanese => "Japanese",
-        Language::Korean => "Korean",
-        Language::Portuguese => "Portuguese",
-        Language::Russian => "Russian",
-        Language::Spanish => "Spanish",
-    }
 }
