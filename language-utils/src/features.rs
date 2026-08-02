@@ -586,7 +586,13 @@ impl FeatureSet for PronType {
             | Language::ChineseSimplified
             | Language::ChineseTraditional
             | Language::Thai => {
-                todo!()
+                // All three have personal, demonstrative, and interrogative
+                // pronouns/determiners plus pronominal adverbs (どこ/いつ, 哪里/什么,
+                // ที่ไหน/อะไร) even though none of them inflect.
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Num | PartOfSpeech::Adv
+                )
             }
             Language::Hindi => {
                 // Hindi distinguishes pronoun/determiner types (interrogative कौन/क्या,
@@ -631,7 +637,13 @@ impl FeatureSet for NumType {
             | Language::ChineseSimplified
             | Language::ChineseTraditional
             | Language::Thai => {
-                todo!()
+                // Cardinal vs. ordinal numerals exist in all three (一/一番目,
+                // 一/第一, หนึ่ง/ที่หนึ่ง), formed analytically but still numeral
+                // word classes.
+                matches!(
+                    pos,
+                    PartOfSpeech::Num | PartOfSpeech::Det | PartOfSpeech::Adj | PartOfSpeech::Adv
+                )
             }
             Language::Hindi => {
                 // Hindi has cardinal (एक, दो), ordinal (पहला, दूसरा), and adverbial
@@ -675,7 +687,9 @@ impl FeatureSet for Poss {
             | Language::ChineseSimplified
             | Language::ChineseTraditional
             | Language::Thai => {
-                todo!()
+                // Possession is fully analytic (の, 的, ของ as separate tokens);
+                // there are no fused possessive pronoun/determiner forms.
+                false
             }
             Language::Hindi => {
                 // Hindi has possessive pronouns/adjectives that agree with the
@@ -717,7 +731,9 @@ impl FeatureSet for Reflex {
             | Language::ChineseSimplified
             | Language::ChineseTraditional
             | Language::Thai => {
-                todo!()
+                // Dedicated reflexive pronouns exist: 自分 (ja), 自己 (zh),
+                // ตัวเอง (th).
+                matches!(pos, PartOfSpeech::Pron | PartOfSpeech::Det)
             }
             Language::Hindi => {
                 // Hindi has reflexive pronouns अपने आप / ख़ुद / स्वयं, and the
@@ -745,12 +761,12 @@ impl FeatureSet for Clusivity {
             | Language::Italian => false,
             // Russian does not have clusivity
             Language::Russian => false,
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            Language::ChineseSimplified | Language::ChineseTraditional => {
+                // Mandarin distinguishes inclusive 咱们/咱們 from neutral 我们/我們.
+                matches!(_pos, PartOfSpeech::Pron)
             }
+            // Japanese and Thai first-person plurals do not mark clusivity.
+            Language::Japanese | Language::Thai => false,
             Language::Hindi => false,
         }
     }
@@ -800,12 +816,18 @@ impl FeatureSet for Gender {
                         | PartOfSpeech::Aux
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            // Japanese has no grammatical gender (pronoun choice like 彼/彼女 is
+            // lexical, not agreement-triggering).
+            Language::Japanese => false,
+            Language::ChineseSimplified | Language::ChineseTraditional => {
+                // Written Mandarin distinguishes 他/她/它 (and 他们/她们/它们) in the
+                // third person. Purely a written-language distinction, but it is
+                // exactly what a learner reading the dictionary needs to see.
+                matches!(pos, PartOfSpeech::Pron)
             }
+            // Thai pronoun/particle choice tracks the *speaker's* gender
+            // (ผม vs. ฉัน, ครับ vs. ค่ะ), which is not grammatical gender.
+            Language::Thai => false,
             Language::Hindi => {
                 // Hindi has two genders (masculine, feminine). Affects nouns, pronouns,
                 // adjectives, and verbs (participles and compound tenses agree with the subject).
@@ -850,12 +872,12 @@ impl FeatureSet for Animacy {
                         | PartOfSpeech::Num
                 )
             }
+            // Not a grammatical category in Japanese, Mandarin, or Thai
+            // (Japanese いる/ある animacy selection is lexical, not inflectional).
             Language::Japanese
             | Language::ChineseSimplified
             | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
-            }
+            | Language::Thai => false,
             Language::Hindi => false,
         }
     }
@@ -877,12 +899,12 @@ impl FeatureSet for NounClass {
             | Language::Italian => false,
             // Russian does not have noun classes
             Language::Russian => false,
+            // Numeral classifiers (本/枚, 个/本, ตัว/คน) are separate words,
+            // not Bantu-style noun-class morphology.
             Language::Japanese
             | Language::ChineseSimplified
             | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
-            }
+            | Language::Thai => false,
             Language::Hindi => false,
         }
     }
@@ -943,11 +965,23 @@ impl FeatureSet for Number {
                         | PartOfSpeech::Aux
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            Language::Japanese => {
+                // Verbs/nouns don't mark number and the plural suffix たち is
+                // tokenized as its own particle, but plural pronouns exist as
+                // single tokens (私達, 我々, 彼ら, これら).
+                matches!(pos, PartOfSpeech::Pron)
+            }
+            Language::ChineseSimplified | Language::ChineseTraditional => {
+                // The collective suffix 们/們 gives pronouns a real singular/plural
+                // contrast (我/我们). A handful of nouns take 们 too, but they are
+                // rare enough (and lemmatized as their own entries) that we keep
+                // Number restricted to pronouns.
+                matches!(pos, PartOfSpeech::Pron)
+            }
+            Language::Thai => {
+                // Thai nouns/verbs don't mark number, but distinct plural pronouns
+                // exist as separate lexemes (เรา, พวกเขา, พวกเรา).
+                matches!(pos, PartOfSpeech::Pron)
             }
             Language::Hindi => {
                 // Hindi has singular and plural. Nouns, pronouns, adjectives, and verbs
@@ -1001,12 +1035,15 @@ impl FeatureSet for Case {
                         | PartOfSpeech::Num
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            Language::Japanese => {
+                // Case is marked by postpositional particles (が, を, に, の, から...),
+                // tagged Adp in our UD pipeline — mirroring how Korean handles
+                // its case particles.
+                matches!(pos, PartOfSpeech::Adp)
             }
+            // Mandarin and Thai have no case marking at all (word order and
+            // prepositions do the work).
+            Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => false,
             Language::Hindi => {
                 // Hindi has a two-way direct/oblique case distinction (plus vocative),
                 // marked on nouns, pronouns, adjectives, and determiners.
@@ -1040,12 +1077,11 @@ impl FeatureSet for Definite {
             }
             // Russian has no articles; definiteness is not morphologically marked
             Language::Russian => false,
+            // No articles and no morphological definiteness in any of the three.
             Language::Japanese
             | Language::ChineseSimplified
             | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
-            }
+            | Language::Thai => false,
             // Hindi has no articles; definiteness is not morphologically marked
             // (it's usually inferred from word order and from the presence of
             // the accusative postposition को).
@@ -1083,7 +1119,12 @@ impl FeatureSet for Deixis {
             | Language::ChineseSimplified
             | Language::ChineseTraditional
             | Language::Thai => {
-                todo!()
+                // All three have demonstrative systems: Japanese even has a
+                // three-way これ/それ/あれ contrast; 这/那; นี่/นั่น/โน่น.
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
+                )
             }
             Language::Hindi => {
                 // Hindi has a proximal/distal deictic contrast: यह/ये (near),
@@ -1127,7 +1168,12 @@ impl FeatureSet for DeixisRef {
             | Language::ChineseSimplified
             | Language::ChineseTraditional
             | Language::Thai => {
-                todo!()
+                // Same word classes as Deixis; Japanese そ-series is in fact
+                // addressee-anchored, so the feature is genuinely meaningful there.
+                matches!(
+                    pos,
+                    PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Adv
+                )
             }
             Language::Hindi => {
                 // DeixisRef (speaker vs. addressee as reference point) isn't strongly
@@ -1164,12 +1210,12 @@ impl FeatureSet for Degree {
             Language::Russian => {
                 matches!(pos, PartOfSpeech::Adj | PartOfSpeech::Adv)
             }
+            // Comparison is fully analytic in all three (もっと/一番, 更/最,
+            // กว่า/ที่สุด) — adjectives never inflect for degree.
             Language::Japanese
             | Language::ChineseSimplified
             | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
-            }
+            | Language::Thai => false,
             Language::Hindi => {
                 // Hindi marks comparative/superlative analytically (with से and सबसे)
                 // rather than morphologically, but adjectives and adverbs are still
@@ -1206,12 +1252,16 @@ impl FeatureSet for VerbForm {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            Language::Japanese => {
+                // Japanese verbs and i-adjectives conjugate (stems, te-form,
+                // ta-form...); auxiliaries conjugate the same way.
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
             }
+            // Mandarin and Thai verbs are invariant.
+            Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => false,
             Language::Hindi => {
                 // Hindi has a rich set of VerbForms: finite, infinitive (करना),
                 // oblique infinitive (करने), conjunctive participle (करके),
@@ -1281,12 +1331,18 @@ impl FeatureSet for Tense {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            Language::Japanese => {
+                // Past た attaches to verb, auxiliary, and i-adjective stems, and
+                // contracted single-token past forms (行った, 高かった, なかった)
+                // are common in our Sudachi tokenization.
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
+                )
             }
+            // Mandarin and Thai have no tense morphology (temporal adverbs and
+            // aspect markers do the work).
+            Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => false,
             Language::Hindi => {
                 // Hindi has present, past, future tenses; participles also carry tense
                 matches!(
@@ -1329,11 +1385,17 @@ impl FeatureSet for Aspect {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            // Japanese aspect is periphrastic (ている), carried by the auxiliary.
+            Language::Japanese => matches!(pos, PartOfSpeech::Aux),
+            Language::ChineseSimplified | Language::ChineseTraditional => {
+                // Aspect is THE Mandarin verbal category, but it lives on the
+                // particles 了/着/过 (了/著/過 in Traditional), which our
+                // pipeline tags as Part.
+                matches!(pos, PartOfSpeech::Part)
+            }
+            Language::Thai => {
+                // Thai aspect/irrealis markers (จะ, กำลัง, อยู่, ได้) are tagged Aux.
+                matches!(pos, PartOfSpeech::Aux)
             }
             Language::Hindi => {
                 // Hindi distinguishes habitual, perfective, progressive, and prospective aspects
@@ -1377,12 +1439,11 @@ impl FeatureSet for Voice {
                     PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Adj
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
-            }
+            // Japanese passive/causative れる/られる/せる/させる are separate
+            // auxiliary tokens under Sudachi.
+            Language::Japanese => matches!(pos, PartOfSpeech::Aux),
+            // Mandarin 被 and Thai ถูก are free-standing words, not verb morphology.
+            Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => false,
             Language::Hindi => {
                 // Hindi has active and passive voice (passive formed with जाना),
                 // plus participles that can carry voice distinctions.
@@ -1410,12 +1471,12 @@ impl FeatureSet for Evident {
             | Language::Portuguese
             | Language::Italian
             | Language::Russian => false,
+            // Japanese hearsay そうだ/らしい is analytic; no grammaticalized
+            // evidentiality in Mandarin or Thai either.
             Language::Japanese
             | Language::ChineseSimplified
             | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
-            }
+            | Language::Thai => false,
             Language::Hindi => false,
         }
     }
@@ -1462,11 +1523,31 @@ impl FeatureSet for Polarity {
                         | PartOfSpeech::Det
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            Language::Japanese => {
+                // Negative auxiliaries ない/ぬ/ん and negative single-token verb and
+                // adjective forms (なかった), plus いいえ-type interjections.
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb
+                        | PartOfSpeech::Aux
+                        | PartOfSpeech::Adj
+                        | PartOfSpeech::Part
+                        | PartOfSpeech::Intj
+                )
+            }
+            Language::ChineseSimplified | Language::ChineseTraditional => {
+                // Negators 不/没(沒) are tagged Adv in UD Chinese.
+                matches!(
+                    pos,
+                    PartOfSpeech::Adv | PartOfSpeech::Part | PartOfSpeech::Intj
+                )
+            }
+            Language::Thai => {
+                // ไม่ is tagged Part in our PyThaiNLP pipeline.
+                matches!(
+                    pos,
+                    PartOfSpeech::Adv | PartOfSpeech::Part | PartOfSpeech::Intj
+                )
             }
             Language::Hindi => {
                 // Hindi negation particles नहीं (general), न (conjunction-negator),
@@ -1528,7 +1609,10 @@ impl FeatureSet for Person {
             | Language::ChineseSimplified
             | Language::ChineseTraditional
             | Language::Thai => {
-                todo!()
+                // Verbs never agree in person, but personal pronouns carry it
+                // lexically (私/あなた/彼, 我/你/他, ผม/คุณ/เขา) — same treatment
+                // as Korean.
+                matches!(pos, PartOfSpeech::Pron)
             }
             Language::Hindi => {
                 // Hindi verbs inflect for person (1/2/3); pronouns carry person too.
@@ -1574,11 +1658,22 @@ impl FeatureSet for Polite {
                     PartOfSpeech::Pron | PartOfSpeech::Det | PartOfSpeech::Verb | PartOfSpeech::Aux
                 )
             }
-            Language::Japanese
-            | Language::ChineseSimplified
-            | Language::ChineseTraditional
-            | Language::Thai => {
-                todo!()
+            // Full honorific system marked on verbs/auxiliaries (ます, です,
+            // なさる...) plus a rich register system in pronouns (私/俺, あなた/君).
+            Language::Japanese => {
+                matches!(
+                    pos,
+                    PartOfSpeech::Verb | PartOfSpeech::Aux | PartOfSpeech::Pron
+                )
+            }
+            // Mandarin politeness is only lexicalized in the pronoun 你 vs. 您.
+            Language::ChineseSimplified | Language::ChineseTraditional => {
+                matches!(pos, PartOfSpeech::Pron)
+            }
+            // Thai politeness lives in the sentence-final particles (ครับ/ค่ะ/คะ)
+            // and in pronoun choice (คุณ vs. แก vs. มึง).
+            Language::Thai => {
+                matches!(pos, PartOfSpeech::Part | PartOfSpeech::Pron)
             }
             // Hindi has a three-way politeness distinction (तू / तुम / आप)
             // marked on both pronouns and verbs (via imperative forms + subject agreement).
@@ -1919,10 +2014,11 @@ impl Morphology {
             (Language::Hindi, _) => None,
             // Thai: no articles, no inflection — dictionary forms need no prefix
             (Language::Thai, _) => None,
+            // Japanese and Chinese: no articles either — dictionary forms stand alone
             (
                 Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional,
                 _,
-            ) => todo!(),
+            ) => None,
         }
     }
 

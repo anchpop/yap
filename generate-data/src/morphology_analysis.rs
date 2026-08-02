@@ -40,10 +40,9 @@ pub async fn create_morphology(
     }
 
     // Try Wiktionary first for supported languages
-    let mut morphology =
-        wiktionary_morphology::create_morphology_from_wiktionary(language, gram_frequencies)
-            .await
-            .unwrap_or_default();
+    let mut morphology = gold_morphology::create_gold_morphology(language, gram_frequencies)
+        .await
+        .unwrap_or_default();
 
     // Filter out heteronyms that already have morphology from Wiktionary
     let mut remaining_heteronyms = BTreeMap::new();
@@ -498,10 +497,10 @@ pub fn write_conjugations_jsonl(
     Ok(())
 }
 
-pub mod wiktionary_morphology {
+pub mod gold_morphology {
     use super::*;
 
-    pub async fn create_morphology_from_wiktionary(
+    pub async fn create_gold_morphology(
         language: Language,
         gram_frequencies: &[GramFrequencyEntry<String>],
     ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
@@ -516,10 +515,16 @@ pub mod wiktionary_morphology {
             Language::English => english::create_english_morphology(gram_frequencies).await,
             Language::Russian => russian::create_russian_morphology(gram_frequencies).await,
             Language::Hindi => hindi::create_hindi_morphology(gram_frequencies).await,
-            _ => {
-                // Return empty for unsupported languages
-                Ok(BTreeMap::new())
-            }
+            Language::Japanese => japanese::create_japanese_morphology(gram_frequencies).await,
+            Language::ChineseSimplified => Ok(chinese::create_chinese_morphology(
+                chinese::Script::Simplified,
+            )),
+            Language::ChineseTraditional => Ok(chinese::create_chinese_morphology(
+                chinese::Script::Traditional,
+            )),
+            Language::Thai => Ok(thai::create_thai_morphology()),
+            // Korean is the one remaining LLM-only language.
+            Language::Korean => Ok(BTreeMap::new()),
         }
     }
 
@@ -3669,6 +3674,1107 @@ pub mod wiktionary_morphology {
                             && morph.number == Some(Number::Plural)
                     }
                 ));
+            }
+        }
+    }
+
+    pub mod japanese {
+        use super::*;
+        use crate::wiktionary_conjugations::japanese::{
+            JapaneseAdjectiveInflection, JapaneseVerbConjugation,
+            fetch_japanese_adjective_inflections, fetch_japanese_verb_conjugations,
+        };
+        use language_utils::features::{Case, Mood, Number, Person, Polite, Tense};
+        use std::collections::HashSet;
+        use std::path::Path;
+
+        pub async fn create_japanese_morphology(
+            gram_frequencies: &[GramFrequencyEntry<String>],
+        ) -> anyhow::Result<BTreeMap<Heteronym<String>, Vec<Morphology>>> {
+            // Hand-coded ground truth for the closed classes first: functional
+            // auxiliaries (た, だ, ます...), case particles, and pronouns.
+            let gold = closed_class_gold();
+            let gold_aux_lemmas: HashSet<String> = gold
+                .keys()
+                .filter(|h| h.pos == PartOfSpeech::Aux)
+                .map(|h| h.lemma.clone())
+                .collect();
+            let mut morphology = gold;
+
+            // Open classes come from Wiktionary conjugation tables.
+            let mut verb_lemmas: HashSet<String> = HashSet::new();
+            let mut adj_lemmas: HashSet<String> = HashSet::new();
+            for entry in gram_frequencies {
+                if let Some(heteronym) = entry.gram.heteronym() {
+                    match heteronym.pos {
+                        // Auxiliary uses of real verbs (いる, ある, くる...) share
+                        // the verb's conjugation, so both POS go through the same
+                        // fetch. Pure suffix auxiliaries are covered by the gold
+                        // table and skipped here.
+                        PartOfSpeech::Verb | PartOfSpeech::Aux => {
+                            if !gold_aux_lemmas.contains(&heteronym.lemma) {
+                                verb_lemmas.insert(heteronym.lemma.clone());
+                            }
+                        }
+                        PartOfSpeech::Adj => {
+                            adj_lemmas.insert(heteronym.lemma.clone());
+                        }
+                        _ => {}
+                    }
+                }
+            }
+
+            // Na-adjectives are lemmatized with the copula attached (好きだ,
+            // 必要だ); the bare stem is the only surface form (だ/な/に are
+            // separate tokens) and carries no features of its own. No fetch
+            // needed — this IS the ground truth for na-adjectives.
+            let (na_adj_lemmas, i_adj_lemmas): (Vec<String>, Vec<String>) = adj_lemmas
+                .into_iter()
+                .partition(|lemma| lemma.ends_with('だ'));
+            for lemma in &na_adj_lemmas {
+                let stem = lemma.strip_suffix('だ').unwrap();
+                if stem.is_empty() {
+                    continue;
+                }
+                merge_in(
+                    &mut morphology,
+                    BTreeMap::from([(
+                        Heteronym {
+                            word: stem.to_string(),
+                            lemma: lemma.clone(),
+                            pos: PartOfSpeech::Adj,
+                        },
+                        vec![Morphology::default()],
+                    )]),
+                );
+            }
+
+            let cache_dir = Path::new(".cache/wiktionary/japanese");
+            let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
+            let conjugations =
+                fetch_japanese_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+            let adj_inflections =
+                fetch_japanese_adjective_inflections(&i_adj_lemmas, cache_dir).await?;
+
+            for conjugation in conjugations.values() {
+                // Verbs double as auxiliaries (いる in 食べている); insert both.
+                merge_in(
+                    &mut morphology,
+                    verb_conjugation_to_morphology(conjugation, PartOfSpeech::Verb),
+                );
+                merge_in(
+                    &mut morphology,
+                    verb_conjugation_to_morphology(conjugation, PartOfSpeech::Aux),
+                );
+            }
+            for inflection in adj_inflections.values() {
+                merge_in(
+                    &mut morphology,
+                    adjective_inflection_to_morphology(inflection),
+                );
+            }
+
+            Ok(morphology)
+        }
+
+        fn merge_in(
+            into: &mut BTreeMap<Heteronym<String>, Vec<Morphology>>,
+            from: BTreeMap<Heteronym<String>, Vec<Morphology>>,
+        ) {
+            for (k, v) in from {
+                let entry = into.entry(k).or_default();
+                for morph in v {
+                    if !entry.contains(&morph) {
+                        entry.push(morph);
+                    }
+                }
+            }
+        }
+
+        fn add(
+            out: &mut BTreeMap<Heteronym<String>, Vec<Morphology>>,
+            word: &str,
+            lemma: &str,
+            pos: PartOfSpeech,
+            morph: Morphology,
+        ) {
+            let entry = out
+                .entry(Heteronym {
+                    word: word.to_string(),
+                    lemma: lemma.to_string(),
+                    pos,
+                })
+                .or_default();
+            if !entry.contains(&morph) {
+                entry.push(morph);
+            }
+        }
+
+        /// Convert a scraped verb conjugation into per-form morphology.
+        ///
+        /// Sudachi's short-unit segmentation means only some table rows surface
+        /// as corpus tokens: the six stems, the single-token perfective/
+        /// conjunctive forms (行った/行って), and the volitional stem (行こ,
+        /// tokenized before the auxiliary う). Feature assignment:
+        /// - terminal/attributive → plain non-past → Tense=Present
+        /// - perfective → Tense=Past
+        /// - meireikei → Mood=Imperative
+        /// - kateikei (pre-ば stem) → Mood=Conditional
+        /// - everything else is a bound stem with no features of its own —
+        ///   recorded with an empty Morphology so the LLM doesn't guess at it.
+        pub fn verb_conjugation_to_morphology(
+            conjugation: &JapaneseVerbConjugation,
+            pos: PartOfSpeech,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let lemma = &conjugation.lemma;
+            let mut out = BTreeMap::new();
+
+            let present = Morphology {
+                tense: Some(Tense::Present),
+                ..Default::default()
+            };
+            let past = Morphology {
+                tense: Some(Tense::Past),
+                ..Default::default()
+            };
+            let imperative = Morphology {
+                mood: Some(Mood::Imperative),
+                ..Default::default()
+            };
+            let conditional = Morphology {
+                mood: Some(Mood::Conditional),
+                ..Default::default()
+            };
+
+            for form in &conjugation.shushikei {
+                add(&mut out, form, lemma, pos, present.clone());
+            }
+            for form in &conjugation.rentaikei {
+                add(&mut out, form, lemma, pos, present.clone());
+            }
+            for form in &conjugation.perfective {
+                add(&mut out, form, lemma, pos, past.clone());
+            }
+            for form in &conjugation.meireikei {
+                add(&mut out, form, lemma, pos, imperative.clone());
+            }
+            for form in &conjugation.kateikei {
+                add(&mut out, form, lemma, pos, conditional.clone());
+            }
+            for form in &conjugation.mizenkei {
+                add(&mut out, form, lemma, pos, Morphology::default());
+            }
+            for form in &conjugation.renyokei {
+                add(&mut out, form, lemma, pos, Morphology::default());
+            }
+            for form in &conjugation.conjunctive {
+                add(&mut out, form, lemma, pos, Morphology::default());
+            }
+            // 行こう is tokenized 行こ + う; record the stem.
+            for form in &conjugation.volitional {
+                if let Some(stem) = form.strip_suffix('う')
+                    && !stem.is_empty()
+                {
+                    add(&mut out, stem, lemma, pos, Morphology::default());
+                }
+            }
+
+            out
+        }
+
+        /// Convert a scraped i-adjective inflection into per-form morphology.
+        ///
+        /// Beyond the table rows, two derived stems matter for Sudachi tokens:
+        /// the onbin past stem (高かっ, from 高かった minus た) and the bare stem
+        /// (大き, from 大きい minus い, as in 大きすぎる).
+        pub fn adjective_inflection_to_morphology(
+            inflection: &JapaneseAdjectiveInflection,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let lemma = &inflection.lemma;
+            let pos = PartOfSpeech::Adj;
+            let mut out = BTreeMap::new();
+
+            let present = Morphology {
+                tense: Some(Tense::Present),
+                ..Default::default()
+            };
+            let past = Morphology {
+                tense: Some(Tense::Past),
+                ..Default::default()
+            };
+            let imperative = Morphology {
+                mood: Some(Mood::Imperative),
+                ..Default::default()
+            };
+            let conditional = Morphology {
+                mood: Some(Mood::Conditional),
+                ..Default::default()
+            };
+
+            for form in &inflection.shushikei {
+                add(&mut out, form, lemma, pos, present.clone());
+                // Bare stem, as tokenized in 大きすぎる → 大き + すぎる.
+                if let Some(stem) = form.strip_suffix('い')
+                    && !stem.is_empty()
+                {
+                    add(&mut out, stem, lemma, pos, Morphology::default());
+                }
+            }
+            for form in &inflection.rentaikei {
+                add(&mut out, form, lemma, pos, present.clone());
+            }
+            for form in &inflection.informal_past {
+                add(&mut out, form, lemma, pos, past.clone());
+                // Onbin past stem, as tokenized in 高かった → 高かっ + た.
+                if let Some(stem) = form.strip_suffix('た')
+                    && !stem.is_empty()
+                {
+                    add(&mut out, stem, lemma, pos, Morphology::default());
+                }
+            }
+            for form in &inflection.meireikei {
+                add(&mut out, form, lemma, pos, imperative.clone());
+            }
+            for form in &inflection.kateikei {
+                add(&mut out, form, lemma, pos, conditional.clone());
+            }
+            for form in &inflection.mizenkei {
+                add(&mut out, form, lemma, pos, Morphology::default());
+            }
+            for form in &inflection.renyokei {
+                add(&mut out, form, lemma, pos, Morphology::default());
+            }
+            for form in &inflection.conjunctive {
+                add(&mut out, form, lemma, pos, Morphology::default());
+            }
+
+            out
+        }
+
+        /// Hand-coded ground truth for Japanese closed classes: the functional
+        /// auxiliaries Sudachi splits off, the case particles, and the
+        /// pronouns. These are small, fully-enumerable classes where a lookup
+        /// table is strictly more reliable (and cheaper) than either scraping
+        /// or an LLM.
+        ///
+        /// Empty-morphology entries are deliberate: they mark bound stems and
+        /// featureless words as *known*, which stops the LLM fallback from
+        /// inventing features for them.
+        pub fn closed_class_gold() -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let mut out = BTreeMap::new();
+
+            let none = Morphology::default();
+            let present = Morphology {
+                tense: Some(Tense::Present),
+                ..Default::default()
+            };
+            let past = Morphology {
+                tense: Some(Tense::Past),
+                ..Default::default()
+            };
+            let conditional = Morphology {
+                mood: Some(Mood::Conditional),
+                ..Default::default()
+            };
+            let formal = Morphology {
+                politeness: Some(Polite::Formal),
+                ..Default::default()
+            };
+            let formal_present = Morphology {
+                tense: Some(Tense::Present),
+                politeness: Some(Polite::Formal),
+                ..Default::default()
+            };
+            let formal_past = Morphology {
+                tense: Some(Tense::Past),
+                politeness: Some(Polite::Formal),
+                ..Default::default()
+            };
+            let formal_imperative = Morphology {
+                mood: Some(Mood::Imperative),
+                politeness: Some(Polite::Formal),
+                ..Default::default()
+            };
+            let desiderative = Morphology {
+                mood: Some(Mood::Desiderative),
+                ..Default::default()
+            };
+            let desiderative_present = Morphology {
+                tense: Some(Tense::Present),
+                mood: Some(Mood::Desiderative),
+                ..Default::default()
+            };
+
+            // ---- Auxiliaries (word, lemma, morphologies) ----
+            let aux: &[(&str, &str, Vec<Morphology>)] = &[
+                // Past-tense marker
+                ("た", "た", vec![past.clone()]),
+                ("たら", "た", vec![conditional.clone()]),
+                ("たろ", "た", vec![none.clone()]),
+                // Copula だ and its polite forms
+                ("だ", "だ", vec![present.clone()]),
+                ("です", "だ", vec![formal_present.clone()]),
+                ("でし", "だ", vec![formal.clone()]),
+                ("でしょ", "だ", vec![formal.clone()]),
+                ("だっ", "だ", vec![none.clone()]),
+                ("だろ", "だ", vec![none.clone()]),
+                ("で", "だ", vec![none.clone()]),
+                ("な", "だ", vec![none.clone()]),
+                ("なら", "だ", vec![conditional.clone()]),
+                ("じゃ", "だ", vec![none.clone()]),
+                // Polite ます
+                ("ます", "ます", vec![formal_present.clone()]),
+                ("ました", "ます", vec![formal_past.clone()]),
+                ("ません", "ます", vec![formal_present.clone()]),
+                ("まし", "ます", vec![formal.clone()]),
+                ("ませ", "ます", vec![formal.clone()]),
+                ("ましょ", "ます", vec![formal.clone()]),
+                // Negative ない (as auxiliary; the adjective reading is scraped)
+                ("ない", "ない", vec![present.clone()]),
+                ("なかった", "ない", vec![past.clone()]),
+                ("なかっ", "ない", vec![none.clone()]),
+                ("なく", "ない", vec![none.clone()]),
+                ("なけれ", "ない", vec![conditional.clone()]),
+                ("なきゃ", "ない", vec![conditional.clone()]),
+                // Literary negative ぬ
+                ("ぬ", "ぬ", vec![none.clone()]),
+                ("ん", "ぬ", vec![none.clone()]),
+                ("ず", "ぬ", vec![none.clone()]),
+                // Volitional
+                ("う", "う", vec![none.clone()]),
+                ("よう", "よう", vec![none.clone()]),
+                // Desiderative たい
+                ("たい", "たい", vec![desiderative_present.clone()]),
+                ("たく", "たい", vec![desiderative.clone()]),
+                ("たかっ", "たい", vec![desiderative.clone()]),
+                // Honorific imperatives
+                ("なさい", "なさる", vec![formal_imperative.clone()]),
+                ("なさっ", "なさる", vec![formal.clone()]),
+                ("なさる", "なさる", vec![formal_present.clone()]),
+                ("ください", "くださる", vec![formal_imperative.clone()]),
+                ("下さい", "くださる", vec![formal_imperative.clone()]),
+                ("くださっ", "くださる", vec![formal.clone()]),
+                // Voice auxiliaries (ichidan stems + non-past)
+                ("れ", "れる", vec![none.clone()]),
+                ("れる", "れる", vec![present.clone()]),
+                ("られ", "られる", vec![none.clone()]),
+                ("られる", "られる", vec![present.clone()]),
+                ("せ", "せる", vec![none.clone()]),
+                ("せる", "せる", vec![present.clone()]),
+                ("させ", "させる", vec![none.clone()]),
+                ("させる", "させる", vec![present.clone()]),
+                // Deontic べし
+                ("べき", "べし", vec![none.clone()]),
+                ("べく", "べし", vec![none.clone()]),
+                // Negative volitional
+                ("まい", "まい", vec![none.clone()]),
+            ];
+            for (word, lemma, morphs) in aux {
+                out.insert(
+                    Heteronym {
+                        word: word.to_string(),
+                        lemma: lemma.to_string(),
+                        pos: PartOfSpeech::Aux,
+                    },
+                    morphs.clone(),
+                );
+            }
+
+            // ---- Case particles (tagged Adp) ----
+            let case = |case: Case| Morphology {
+                case: Some(case),
+                ..Default::default()
+            };
+            let adp: &[(&str, Vec<Morphology>)] = &[
+                ("が", vec![case(Case::Nominative)]),
+                ("を", vec![case(Case::Accusative)]),
+                ("に", vec![case(Case::Dative)]),
+                ("の", vec![case(Case::Genitive)]),
+                ("へ", vec![case(Case::Allative)]),
+                ("から", vec![case(Case::Ablative)]),
+                ("まで", vec![case(Case::Terminative)]),
+                ("と", vec![case(Case::Comitative)]),
+                ("より", vec![case(Case::Comparative)]),
+                // Topic/focus particles and multi-role で carry no single case.
+                ("は", vec![none.clone()]),
+                ("も", vec![none.clone()]),
+                ("で", vec![none.clone()]),
+                ("ほど", vec![none.clone()]),
+            ];
+            for (word, morphs) in adp {
+                out.insert(
+                    Heteronym {
+                        word: word.to_string(),
+                        lemma: word.to_string(),
+                        pos: PartOfSpeech::Adp,
+                    },
+                    morphs.clone(),
+                );
+            }
+
+            // ---- Pronouns ----
+            let person = |p: Person| Morphology {
+                person: Some(p),
+                ..Default::default()
+            };
+            let person_polite = |p: Person, polite: Polite| Morphology {
+                person: Some(p),
+                politeness: Some(polite),
+                ..Default::default()
+            };
+            let person_plural = |p: Person| Morphology {
+                person: Some(p),
+                number: Some(Number::Plural),
+                ..Default::default()
+            };
+            let plural = Morphology {
+                number: Some(Number::Plural),
+                ..Default::default()
+            };
+            let pron: &[(&str, Vec<Morphology>)] = &[
+                ("私", vec![person(Person::First)]),
+                ("僕", vec![person_polite(Person::First, Polite::Informal)]),
+                ("俺", vec![person_polite(Person::First, Polite::Informal)]),
+                (
+                    "あたし",
+                    vec![person_polite(Person::First, Polite::Informal)],
+                ),
+                ("我々", vec![person_plural(Person::First)]),
+                ("私達", vec![person_plural(Person::First)]),
+                ("私たち", vec![person_plural(Person::First)]),
+                ("あなた", vec![person(Person::Second)]),
+                (
+                    "あんた",
+                    vec![person_polite(Person::Second, Polite::Informal)],
+                ),
+                ("君", vec![person_polite(Person::Second, Polite::Informal)]),
+                (
+                    "お前",
+                    vec![person_polite(Person::Second, Polite::Informal)],
+                ),
+                ("彼", vec![person(Person::Third)]),
+                ("彼女", vec![person(Person::Third)]),
+                ("彼ら", vec![person_plural(Person::Third)]),
+                (
+                    "あいつ",
+                    vec![person_polite(Person::Third, Polite::Informal)],
+                ),
+                (
+                    "こいつ",
+                    vec![person_polite(Person::Third, Polite::Informal)],
+                ),
+                (
+                    "そいつ",
+                    vec![person_polite(Person::Third, Polite::Informal)],
+                ),
+                // Demonstratives, interrogatives, and other featureless pronouns
+                ("これ", vec![none.clone()]),
+                ("それ", vec![none.clone()]),
+                ("あれ", vec![none.clone()]),
+                ("どれ", vec![none.clone()]),
+                ("これら", vec![plural.clone()]),
+                ("ここ", vec![none.clone()]),
+                ("そこ", vec![none.clone()]),
+                ("あそこ", vec![none.clone()]),
+                ("どこ", vec![none.clone()]),
+                ("こちら", vec![none.clone()]),
+                ("そちら", vec![none.clone()]),
+                ("あちら", vec![none.clone()]),
+                ("どちら", vec![none.clone()]),
+                ("何", vec![none.clone()]),
+                ("何か", vec![none.clone()]),
+                ("誰", vec![none.clone()]),
+                ("だれ", vec![none.clone()]),
+                ("誰か", vec![none.clone()]),
+                ("いつ", vec![none.clone()]),
+                ("自分", vec![none.clone()]),
+                ("みんな", vec![none.clone()]),
+                ("皆", vec![none.clone()]),
+                ("の", vec![none.clone()]),
+            ];
+            for (word, morphs) in pron {
+                out.insert(
+                    Heteronym {
+                        word: word.to_string(),
+                        lemma: word.to_string(),
+                        pos: PartOfSpeech::Pron,
+                    },
+                    morphs.clone(),
+                );
+            }
+
+            out
+        }
+
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+            use crate::wiktionary_conjugations::japanese::{
+                parse_japanese_adjective_inflection, parse_japanese_verb_conjugation,
+            };
+
+            fn load(word: &str) -> String {
+                std::fs::read_to_string(format!("src/wiktionary-examples/jpn/{word}.txt"))
+                    .unwrap_or_else(|_| panic!("missing test fixture for {word}"))
+            }
+
+            fn has_morph(
+                m: &BTreeMap<Heteronym<String>, Vec<Morphology>>,
+                word: &str,
+                lemma: &str,
+                pos: PartOfSpeech,
+                pred: impl Fn(&Morphology) -> bool,
+            ) -> bool {
+                m.get(&Heteronym {
+                    word: word.to_string(),
+                    lemma: lemma.to_string(),
+                    pos,
+                })
+                .map(|morphs| morphs.iter().any(pred))
+                .unwrap_or(false)
+            }
+
+            #[test]
+            fn iku_morphology() {
+                let conj = parse_japanese_verb_conjugation(&load("行く"), "行く").unwrap();
+                let m = verb_conjugation_to_morphology(&conj, PartOfSpeech::Verb);
+
+                // Plain non-past
+                assert!(has_morph(&m, "行く", "行く", PartOfSpeech::Verb, |x| x
+                    .tense
+                    == Some(Tense::Present)));
+                // Perfective 行った is the single-token past
+                assert!(has_morph(
+                    &m,
+                    "行った",
+                    "行く",
+                    PartOfSpeech::Verb,
+                    |x| x.tense == Some(Tense::Past)
+                ));
+                // 行け is both the imperative and the pre-ば conditional stem
+                assert!(has_morph(&m, "行け", "行く", PartOfSpeech::Verb, |x| x
+                    .mood
+                    == Some(Mood::Imperative)));
+                assert!(has_morph(&m, "行け", "行く", PartOfSpeech::Verb, |x| x
+                    .mood
+                    == Some(Mood::Conditional)));
+                // Volitional stem 行こ (行こう minus う)
+                assert!(has_morph(&m, "行こ", "行く", PartOfSpeech::Verb, |x| x
+                    == &Morphology::default()));
+                // Continuative stem 行き — known, featureless
+                assert!(has_morph(&m, "行き", "行く", PartOfSpeech::Verb, |x| x
+                    == &Morphology::default()));
+                // Te-form 行って — known, featureless
+                assert!(has_morph(
+                    &m,
+                    "行って",
+                    "行く",
+                    PartOfSpeech::Verb,
+                    |x| x == &Morphology::default()
+                ));
+            }
+
+            #[test]
+            fn takai_morphology() {
+                let infl = parse_japanese_adjective_inflection(&load("高い"), "高い").unwrap();
+                let m = adjective_inflection_to_morphology(&infl);
+
+                assert!(has_morph(&m, "高い", "高い", PartOfSpeech::Adj, |x| x
+                    .tense
+                    == Some(Tense::Present)));
+                assert!(has_morph(
+                    &m,
+                    "高かった",
+                    "高い",
+                    PartOfSpeech::Adj,
+                    |x| x.tense == Some(Tense::Past)
+                ));
+                // Onbin past stem, as tokenized before た
+                assert!(has_morph(
+                    &m,
+                    "高かっ",
+                    "高い",
+                    PartOfSpeech::Adj,
+                    |x| x == &Morphology::default()
+                ));
+                // Adverbial/continuative 高く
+                assert!(has_morph(&m, "高く", "高い", PartOfSpeech::Adj, |x| x
+                    == &Morphology::default()));
+                // Pre-ば conditional stem
+                assert!(has_morph(
+                    &m,
+                    "高けれ",
+                    "高い",
+                    PartOfSpeech::Adj,
+                    |x| x.mood == Some(Mood::Conditional)
+                ));
+                // Bare stem (高すぎる → 高 + すぎる)
+                assert!(has_morph(&m, "高", "高い", PartOfSpeech::Adj, |x| x
+                    == &Morphology::default()));
+            }
+
+            #[test]
+            fn closed_class_gold_covers_core_auxiliaries() {
+                let gold = closed_class_gold();
+
+                assert!(has_morph(&gold, "た", "た", PartOfSpeech::Aux, |x| x
+                    .tense
+                    == Some(Tense::Past)));
+                assert!(has_morph(&gold, "です", "だ", PartOfSpeech::Aux, |x| {
+                    x.tense == Some(Tense::Present) && x.politeness == Some(Polite::Formal)
+                }));
+                assert!(has_morph(
+                    &gold,
+                    "ました",
+                    "ます",
+                    PartOfSpeech::Aux,
+                    |x| { x.tense == Some(Tense::Past) && x.politeness == Some(Polite::Formal) }
+                ));
+                assert!(has_morph(
+                    &gold,
+                    "なさい",
+                    "なさる",
+                    PartOfSpeech::Aux,
+                    |x| {
+                        x.mood == Some(Mood::Imperative) && x.politeness == Some(Polite::Formal)
+                    }
+                ));
+                assert!(has_morph(
+                    &gold,
+                    "たい",
+                    "たい",
+                    PartOfSpeech::Aux,
+                    |x| x.mood == Some(Mood::Desiderative)
+                ));
+
+                // Case particles
+                assert!(has_morph(&gold, "が", "が", PartOfSpeech::Adp, |x| x
+                    .case
+                    == Some(Case::Nominative)));
+                assert!(has_morph(&gold, "を", "を", PartOfSpeech::Adp, |x| x
+                    .case
+                    == Some(Case::Accusative)));
+
+                // Pronouns
+                assert!(has_morph(
+                    &gold,
+                    "私達",
+                    "私達",
+                    PartOfSpeech::Pron,
+                    |x| { x.person == Some(Person::First) && x.number == Some(Number::Plural) }
+                ));
+                assert!(has_morph(&gold, "俺", "俺", PartOfSpeech::Pron, |x| {
+                    x.person == Some(Person::First) && x.politeness == Some(Polite::Informal)
+                }));
+            }
+        }
+    }
+
+    pub mod chinese {
+        use super::*;
+        use language_utils::features::{Aspect, Gender, Number, Person, Polite};
+
+        /// Which Chinese script the course uses. The closed-class table is
+        /// shared; only the spellings differ.
+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+        pub enum Script {
+            Simplified,
+            Traditional,
+        }
+
+        /// Mandarin has no inflectional morphology at all — verbs, nouns, and
+        /// adjectives are invariant, so there is nothing to scrape from
+        /// Wiktionary. The entire (tiny) morphology of the language lives in
+        /// two closed classes, which we hard-code as ground truth:
+        ///
+        /// - pronouns: person, 们/們 plurals, the written 他/她/它 gender
+        ///   distinction, and the 你/您 T-V politeness contrast
+        /// - the aspect particles 了/着/过 (了/著/過)
+        ///
+        /// Empty-morphology entries on the other frequent particles mark them
+        /// as *known featureless* so the LLM fallback doesn't guess.
+        pub fn create_chinese_morphology(
+            script: Script,
+        ) -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let none = Morphology::default();
+            let m = |person: Option<Person>,
+                     number: Option<Number>,
+                     gender: Option<Gender>,
+                     politeness: Option<Polite>| Morphology {
+                person,
+                number,
+                gender,
+                politeness,
+                ..Default::default()
+            };
+
+            use Gender::{Feminine, Masculine, Neuter};
+            use Number::{Plural, Singular};
+            use Person::{First, Second, Third};
+
+            // (simplified, traditional, morphologies)
+            let pron: &[(&str, &str, Vec<Morphology>)] = &[
+                ("我", "我", vec![m(Some(First), Some(Singular), None, None)]),
+                (
+                    "你",
+                    "你",
+                    vec![m(Some(Second), Some(Singular), None, None)],
+                ),
+                (
+                    "您",
+                    "您",
+                    vec![m(Some(Second), Some(Singular), None, Some(Polite::Formal))],
+                ),
+                (
+                    "他",
+                    "他",
+                    vec![m(Some(Third), Some(Singular), Some(Masculine), None)],
+                ),
+                (
+                    "她",
+                    "她",
+                    vec![m(Some(Third), Some(Singular), Some(Feminine), None)],
+                ),
+                (
+                    "它",
+                    "它",
+                    vec![m(Some(Third), Some(Singular), Some(Neuter), None)],
+                ),
+                (
+                    "我们",
+                    "我們",
+                    vec![m(Some(First), Some(Plural), None, None)],
+                ),
+                (
+                    "咱们",
+                    "咱們",
+                    vec![m(Some(First), Some(Plural), None, None)],
+                ),
+                ("咱", "咱", vec![m(Some(First), None, None, None)]),
+                (
+                    "你们",
+                    "你們",
+                    vec![m(Some(Second), Some(Plural), None, None)],
+                ),
+                // 他们 covers mixed groups, so no gender claim; 她们/它们 are marked.
+                (
+                    "他们",
+                    "他們",
+                    vec![m(Some(Third), Some(Plural), None, None)],
+                ),
+                (
+                    "她们",
+                    "她們",
+                    vec![m(Some(Third), Some(Plural), Some(Feminine), None)],
+                ),
+                (
+                    "它们",
+                    "它們",
+                    vec![m(Some(Third), Some(Plural), Some(Neuter), None)],
+                ),
+                ("这些", "這些", vec![m(None, Some(Plural), None, None)]),
+                ("那些", "那些", vec![m(None, Some(Plural), None, None)]),
+                ("自己", "自己", vec![none.clone()]),
+                ("什么", "什麼", vec![none.clone()]),
+                ("谁", "誰", vec![none.clone()]),
+                ("这", "這", vec![none.clone()]),
+                ("那", "那", vec![none.clone()]),
+                ("这里", "這裡", vec![none.clone()]),
+                ("那里", "那裡", vec![none.clone()]),
+                ("哪里", "哪裡", vec![none.clone()]),
+                ("这儿", "這兒", vec![none.clone()]),
+                ("那儿", "那兒", vec![none.clone()]),
+                ("哪儿", "哪兒", vec![none.clone()]),
+                ("大家", "大家", vec![none.clone()]),
+                ("人家", "人家", vec![none.clone()]),
+                ("别人", "別人", vec![none.clone()]),
+            ];
+
+            let aspect = |a: Aspect| Morphology {
+                aspect: Some(a),
+                ..Default::default()
+            };
+            let part: &[(&str, &str, Vec<Morphology>)] = &[
+                // The three aspect particles — the heart of Mandarin "morphology"
+                ("了", "了", vec![aspect(Aspect::Perfect)]),
+                ("着", "著", vec![aspect(Aspect::Progressive)]),
+                // Experiential 过 ("have ever...") is a completed-action aspect
+                ("过", "過", vec![aspect(Aspect::Perfect)]),
+                // Featureless structural / sentence-final particles
+                ("的", "的", vec![none.clone()]),
+                ("吗", "嗎", vec![none.clone()]),
+                ("吧", "吧", vec![none.clone()]),
+                ("呢", "呢", vec![none.clone()]),
+                ("啊", "啊", vec![none.clone()]),
+                ("呀", "呀", vec![none.clone()]),
+                ("啦", "啦", vec![none.clone()]),
+                ("地", "地", vec![none.clone()]),
+                ("得", "得", vec![none.clone()]),
+                ("之", "之", vec![none.clone()]),
+                ("嘛", "嘛", vec![none.clone()]),
+            ];
+
+            let mut out = BTreeMap::new();
+            for (entries, pos) in [(pron, PartOfSpeech::Pron), (part, PartOfSpeech::Part)] {
+                for (simplified, traditional, morphs) in entries {
+                    let word = match script {
+                        Script::Simplified => simplified,
+                        Script::Traditional => traditional,
+                    };
+                    out.insert(
+                        Heteronym {
+                            word: word.to_string(),
+                            lemma: word.to_string(),
+                            pos,
+                        },
+                        morphs.clone(),
+                    );
+                }
+            }
+            out
+        }
+
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+            use language_utils::features::{Aspect, Gender, Number, Person, Polite};
+
+            #[test]
+            fn simplified_gold() {
+                let m = create_chinese_morphology(Script::Simplified);
+
+                let ta = &m[&Heteronym {
+                    word: "她".to_string(),
+                    lemma: "她".to_string(),
+                    pos: PartOfSpeech::Pron,
+                }][0];
+                assert_eq!(ta.person, Some(Person::Third));
+                assert_eq!(ta.number, Some(Number::Singular));
+                assert_eq!(ta.gender, Some(Gender::Feminine));
+
+                let nin = &m[&Heteronym {
+                    word: "您".to_string(),
+                    lemma: "您".to_string(),
+                    pos: PartOfSpeech::Pron,
+                }][0];
+                assert_eq!(nin.politeness, Some(Polite::Formal));
+
+                let le = &m[&Heteronym {
+                    word: "了".to_string(),
+                    lemma: "了".to_string(),
+                    pos: PartOfSpeech::Part,
+                }][0];
+                assert_eq!(le.aspect, Some(Aspect::Perfect));
+
+                let zhe = &m[&Heteronym {
+                    word: "着".to_string(),
+                    lemma: "着".to_string(),
+                    pos: PartOfSpeech::Part,
+                }][0];
+                assert_eq!(zhe.aspect, Some(Aspect::Progressive));
+            }
+
+            #[test]
+            fn traditional_uses_traditional_spellings() {
+                let m = create_chinese_morphology(Script::Traditional);
+
+                // 她們 exists, 她们 does not
+                assert!(m.contains_key(&Heteronym {
+                    word: "她們".to_string(),
+                    lemma: "她們".to_string(),
+                    pos: PartOfSpeech::Pron,
+                }));
+                assert!(!m.contains_key(&Heteronym {
+                    word: "她们".to_string(),
+                    lemma: "她们".to_string(),
+                    pos: PartOfSpeech::Pron,
+                }));
+                // Progressive particle is 著 in traditional script
+                let zhe = &m[&Heteronym {
+                    word: "著".to_string(),
+                    lemma: "著".to_string(),
+                    pos: PartOfSpeech::Part,
+                }][0];
+                assert_eq!(
+                    zhe.aspect,
+                    Some(language_utils::features::Aspect::Progressive)
+                );
+            }
+        }
+    }
+
+    pub mod thai {
+        use super::*;
+        use language_utils::features::{Aspect, Number, Person, Polite};
+
+        /// Thai, like Mandarin, is an isolating language: no word inflects, so
+        /// there is nothing to scrape from Wiktionary. Its morphology-adjacent
+        /// ground truth is a pair of closed classes we hard-code:
+        ///
+        /// - pronouns, which lexically encode person and register (ผม/ฉัน/กู...)
+        /// - the sentence-final politeness particles (ครับ/ค่ะ/คะ...)
+        /// - the preverbal aspect/irrealis auxiliaries (จะ, กำลัง, อยู่...)
+        pub fn create_thai_morphology() -> BTreeMap<Heteronym<String>, Vec<Morphology>> {
+            let none = Morphology::default();
+            let person = |p: Person| Morphology {
+                person: Some(p),
+                ..Default::default()
+            };
+            let person_polite = |p: Person, polite: Polite| Morphology {
+                person: Some(p),
+                politeness: Some(polite),
+                ..Default::default()
+            };
+            let person_plural = |p: Person| Morphology {
+                person: Some(p),
+                number: Some(Number::Plural),
+                ..Default::default()
+            };
+            let polite = |p: Polite| Morphology {
+                politeness: Some(p),
+                ..Default::default()
+            };
+
+            use Person::{First, Second, Third};
+            use Polite::{Formal, Informal, Intimate};
+
+            let pron: &[(&str, Vec<Morphology>)] = &[
+                // First person: register is baked into the pronoun choice.
+                ("ผม", vec![person(First)]), // male speaker, neutral-polite
+                ("ฉัน", vec![person(First)]), // neutral, mostly female
+                ("ดิฉัน", vec![person_polite(First, Formal)]), // formal female
+                ("เรา", vec![person(First)]), // "we", also casual "I"
+                ("ข้า", vec![person_polite(First, Informal)]), // archaic/rough
+                ("กู", vec![person_polite(First, Intimate)]), // vulgar/very close
+                ("หนู", vec![person_polite(First, Informal)]), // child/junior speaker
+                ("พวกเรา", vec![person_plural(First)]),
+                // Second person
+                ("คุณ", vec![person_polite(Second, Formal)]),
+                ("เธอ", vec![person_polite(Second, Informal), person(Third)]), // "you" (close) or "she"
+                ("นาย", vec![person_polite(Second, Informal)]),
+                ("แก", vec![person_polite(Second, Informal)]),
+                ("มึง", vec![person_polite(Second, Intimate)]), // vulgar/very close
+                ("เจ้า", vec![person_polite(Second, Informal)]),
+                (
+                    "ท่าน",
+                    vec![person_polite(Second, Formal), person_polite(Third, Formal)],
+                ),
+                ("พวกเธอ", vec![person_plural(Second)]),
+                // Third person
+                ("เขา", vec![person(Third)]),
+                ("มัน", vec![person_polite(Third, Informal)]), // "it"; rude for people
+                ("พวกเขา", vec![person_plural(Third)]),
+                ("พวกมัน", vec![person_plural(Third)]),
+                // Featureless pronouns
+                ("อะไร", vec![none.clone()]),
+                ("ใคร", vec![none.clone()]),
+                ("ไหน", vec![none.clone()]),
+                ("นี่", vec![none.clone()]),
+                ("นั่น", vec![none.clone()]),
+                ("โน่น", vec![none.clone()]),
+                ("กัน", vec![none.clone()]),
+                ("ทุกคน", vec![none.clone()]),
+                ("บางคน", vec![none.clone()]),
+                ("ตัวเอง", vec![none.clone()]),
+            ];
+
+            let part: &[(&str, Vec<Morphology>)] = &[
+                // Politeness particles: the core of Thai politeness marking.
+                ("ครับ", vec![polite(Formal)]),  // male speaker
+                ("ค่ะ", vec![polite(Formal)]),   // female speaker, statements
+                ("คะ", vec![polite(Formal)]),   // female speaker, questions
+                ("ฮะ", vec![polite(Informal)]), // casual ครับ
+                ("จ้ะ", vec![polite(Informal)]),
+                ("จ๊ะ", vec![polite(Informal)]),
+                ("ว่ะ", vec![polite(Intimate)]), // rude/blunt
+                ("วะ", vec![polite(Intimate)]), // rude/blunt
+                // Featureless discourse particles
+                ("นะ", vec![none.clone()]),
+                ("สิ", vec![none.clone()]),
+                ("เถอะ", vec![none.clone()]),
+                ("ล่ะ", vec![none.clone()]),
+                ("น่ะ", vec![none.clone()]),
+                ("เหรอ", vec![none.clone()]),
+                ("หรอ", vec![none.clone()]),
+                ("ไหม", vec![none.clone()]),
+                ("มั้ย", vec![none.clone()]),
+                ("หรอก", vec![none.clone()]),
+                ("เลย", vec![none.clone()]),
+                ("ไม่", vec![none.clone()]),
+                ("ๆ", vec![none.clone()]),
+            ];
+
+            let aspect = |a: Aspect| Morphology {
+                aspect: Some(a),
+                ..Default::default()
+            };
+            let aux: &[(&str, Vec<Morphology>)] = &[
+                // Irrealis/future จะ = prospective aspect
+                ("จะ", vec![aspect(Aspect::Prospective)]),
+                ("กำลัง", vec![aspect(Aspect::Progressive)]),
+                ("อยู่", vec![aspect(Aspect::Progressive)]),
+                // Modal / attainment auxiliaries carry no aspect of their own
+                ("ได้", vec![none.clone()]),
+                ("ต้อง", vec![none.clone()]),
+                ("อยาก", vec![none.clone()]),
+                ("เคย", vec![none.clone()]),
+                ("ควร", vec![none.clone()]),
+                ("คง", vec![none.clone()]),
+                ("อาจ", vec![none.clone()]),
+                ("น่า", vec![none.clone()]),
+            ];
+
+            let mut out = BTreeMap::new();
+            for (entries, pos) in [
+                (pron, PartOfSpeech::Pron),
+                (part, PartOfSpeech::Part),
+                (aux, PartOfSpeech::Aux),
+            ] {
+                for (word, morphs) in entries {
+                    out.insert(
+                        Heteronym {
+                            word: word.to_string(),
+                            lemma: word.to_string(),
+                            pos,
+                        },
+                        morphs.clone(),
+                    );
+                }
+            }
+            out
+        }
+
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+            use language_utils::features::{Aspect, Person, Polite};
+
+            #[test]
+            fn thai_gold() {
+                let m = create_thai_morphology();
+
+                let khrap = &m[&Heteronym {
+                    word: "ครับ".to_string(),
+                    lemma: "ครับ".to_string(),
+                    pos: PartOfSpeech::Part,
+                }][0];
+                assert_eq!(khrap.politeness, Some(Polite::Formal));
+
+                let ja = &m[&Heteronym {
+                    word: "จะ".to_string(),
+                    lemma: "จะ".to_string(),
+                    pos: PartOfSpeech::Aux,
+                }][0];
+                assert_eq!(ja.aspect, Some(Aspect::Prospective));
+
+                // เธอ is ambiguous: intimate "you" or "she" — both readings present.
+                let thoe = &m[&Heteronym {
+                    word: "เธอ".to_string(),
+                    lemma: "เธอ".to_string(),
+                    pos: PartOfSpeech::Pron,
+                }];
+                assert!(thoe.iter().any(|x| x.person == Some(Person::Second)));
+                assert!(thoe.iter().any(|x| x.person == Some(Person::Third)));
             }
         }
     }

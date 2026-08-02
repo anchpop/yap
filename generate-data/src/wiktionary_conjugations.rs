@@ -701,7 +701,7 @@ pub mod french {
 
         #[test]
         fn test_etre_morphology_for_fus() {
-            use crate::morphology_analysis::wiktionary_morphology::french::conjugation_to_morphology;
+            use crate::morphology_analysis::gold_morphology::french::conjugation_to_morphology;
             use language_utils::features::{Number, Person};
             use language_utils::{Heteronym, PartOfSpeech};
 
@@ -5309,6 +5309,763 @@ pub mod hindi {
                 find_form(&infl, &["dir", "f", "s"]).map(|f| f.word.as_str()),
                 Some("बड़ी")
             );
+        }
+    }
+}
+
+pub mod japanese {
+    use super::*;
+
+    /// Conjugation of a Japanese verb, scraped from the modern-Japanese
+    /// `Conjugation of "LEMMA"` table on Wiktionary (the `jconj` inflection table).
+    ///
+    /// Every field holds the *kanji-column* forms (the first cell of each row),
+    /// which is what our Sudachi tokenization produces as surface text. A row can
+    /// list several variants (e.g. meireikei 食べよ/食べろ), hence `Vec<String>`.
+    ///
+    /// We keep the six katsuyōkei stem forms plus the three "key constructions"
+    /// that surface as *single tokens* in Sudachi's short-unit segmentation:
+    /// perfective (行った), conjunctive (行って), and volitional (行こう — whose
+    /// stem 行こ appears as a token before the auxiliary う). The remaining key
+    /// constructions (passive, causative, potential, negative, formal) are
+    /// separate lexemes or multi-token sequences and are intentionally skipped.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct JapaneseVerbConjugation {
+        pub lemma: String,
+        /// 未然形 — pre-negative/pre-volitional stem (行か)
+        pub mizenkei: Vec<String>,
+        /// 連用形 — continuative stem (行き)
+        pub renyokei: Vec<String>,
+        /// 終止形 — terminal / plain non-past (行く)
+        pub shushikei: Vec<String>,
+        /// 連体形 — attributive (行く)
+        pub rentaikei: Vec<String>,
+        /// 仮定形 — hypothetical, pre-ば stem (行け)
+        pub kateikei: Vec<String>,
+        /// 命令形 — imperative (行け; 食べよ/食べろ)
+        pub meireikei: Vec<String>,
+        /// Volitional (行こう)
+        pub volitional: Vec<String>,
+        /// Perfective / plain past (行った)
+        pub perfective: Vec<String>,
+        /// Conjunctive / te-form (行って)
+        pub conjunctive: Vec<String>,
+    }
+
+    /// Inflection of a Japanese i-adjective, scraped from the `Inflection of LEMMA`
+    /// table on Wiktionary. Same kanji-column / `Vec<String>` conventions as
+    /// [`JapaneseVerbConjugation`].
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+    pub struct JapaneseAdjectiveInflection {
+        pub lemma: String,
+        /// 未然形 — imperfective (高かろ)
+        pub mizenkei: Vec<String>,
+        /// 連用形 — continuative / adverbial (高く)
+        pub renyokei: Vec<String>,
+        /// 終止形 — terminal / plain non-past (高い)
+        pub shushikei: Vec<String>,
+        /// 連体形 — attributive (高い)
+        pub rentaikei: Vec<String>,
+        /// 仮定形 — hypothetical, pre-ば stem (高けれ)
+        pub kateikei: Vec<String>,
+        /// 命令形 — imperative (高かれ)
+        pub meireikei: Vec<String>,
+        /// Informal past (高かった; its stem 高かっ is what Sudachi emits before た)
+        pub informal_past: Vec<String>,
+        /// Conjunctive / te-form (高くて)
+        pub conjunctive: Vec<String>,
+    }
+
+    /// Extract the Japanese language section from a Wiktionary page.
+    pub fn extract_japanese_section(document: &Html) -> anyhow::Result<Html> {
+        let h2_selector = Selector::parse("h2#Japanese").unwrap();
+
+        let heading = document
+            .select(&h2_selector)
+            .next()
+            .context("Could not find Japanese language section")?;
+
+        let mut content = String::new();
+        let mut current = heading.parent();
+
+        while let Some(node) = current {
+            current = node.next_sibling();
+            if let Some(current_node) = current
+                && let Some(elem) = ElementRef::wrap(current_node)
+            {
+                if elem.value().name() == "div"
+                    && let Some(first_child) = elem.first_child()
+                    && let Some(child_elem) = ElementRef::wrap(first_child)
+                    && child_elem.value().name() == "h2"
+                {
+                    break;
+                }
+                content.push_str(&elem.html());
+            }
+        }
+
+        Ok(Html::parse_fragment(&content))
+    }
+
+    /// Extract the forms from one cell of a Japanese inflection table.
+    ///
+    /// A cell looks like `<td><span class="Jpan">行かせる<br/><br/>行かす</span></td>`:
+    /// variants are separated by `<br/>` (and, in irregular tables like する's
+    /// さ・し・せ, by `・`). Footnote markers (`¹²³`, `*`, `[1]`) are attached to
+    /// the form text and must be stripped.
+    fn cell_forms(td: ElementRef) -> Vec<String> {
+        // Walk the cell's tree in document order, accumulating text and starting
+        // a new form at each <br>. <sup> elements are footnote references, skipped.
+        let mut parts = vec![String::new()];
+        let mut stack: Vec<_> = td.children().rev().collect();
+        while let Some(node) = stack.pop() {
+            match node.value() {
+                scraper::Node::Element(el) if el.name() == "br" => parts.push(String::new()),
+                scraper::Node::Element(el) if el.name() == "sup" => {}
+                scraper::Node::Text(t) => parts.last_mut().unwrap().push_str(&t.text),
+                scraper::Node::Element(_) => stack.extend(node.children().rev()),
+                _ => {}
+            }
+        }
+
+        let mut forms = Vec::new();
+        for part in parts {
+            for piece in part.split(['・', '、']) {
+                let cleaned: String = piece
+                    .chars()
+                    .filter(|c| {
+                        !c.is_whitespace()
+                            && !matches!(c, '¹' | '²' | '³' | '*' | '[' | ']' | '—')
+                            && !c.is_ascii_digit()
+                    })
+                    .collect();
+                if !cleaned.is_empty() && !forms.contains(&cleaned) {
+                    forms.push(cleaned);
+                }
+            }
+        }
+        forms
+    }
+
+    /// The row label of an inflection-table row: the text of its first `<th>`,
+    /// truncated before any parenthetical gloss.
+    ///
+    /// `Mizenkei ("imperfective")` → `Mizenkei`; `Imperfective (未然形)` → `Imperfective`;
+    /// `Perfective` → `Perfective`.
+    fn row_label(tr: ElementRef) -> Option<String> {
+        let th_selector = Selector::parse("th").unwrap();
+        let th = tr.select(&th_selector).next()?;
+        let text: String = th.text().collect();
+        let text = text.trim();
+        let label = text.split(" (").next().unwrap_or(text).trim();
+        if label.is_empty() {
+            None
+        } else {
+            Some(label.to_string())
+        }
+    }
+
+    /// All rows of an inflection table, as (label, per-column form lists).
+    fn table_rows(table: ElementRef) -> Vec<(String, Vec<Vec<String>>)> {
+        let tr_selector = Selector::parse("tr").unwrap();
+        let td_selector = Selector::parse("td").unwrap();
+        table
+            .select(&tr_selector)
+            .filter_map(|tr| {
+                let label = row_label(tr)?;
+                let cells: Vec<Vec<String>> = tr.select(&td_selector).map(cell_forms).collect();
+                Some((label, cells))
+            })
+            .collect()
+    }
+
+    /// Decide which column of the table carries the lemma's spelling.
+    ///
+    /// Verb tables have kanji, kana, and romaji columns — except when the lemma
+    /// itself is kana, in which case the kanji column is absent (する) or spells
+    /// an alternative kanji form (ある's first column reads 有る/有った). We pick
+    /// the column whose terminal-form cell contains the lemma verbatim,
+    /// defaulting to the first column.
+    fn lemma_column(
+        rows: &[(String, Vec<Vec<String>>)],
+        terminal_label: &str,
+        lemma: &str,
+    ) -> usize {
+        rows.iter()
+            .filter(|(label, _)| label == terminal_label)
+            .find_map(|(_, cells)| {
+                cells
+                    .iter()
+                    .position(|forms| forms.iter().any(|f| f == lemma))
+            })
+            .unwrap_or(0)
+    }
+
+    /// Find the modern inflection table for `lemma` in the Japanese section.
+    ///
+    /// Candidate tables are those whose caption starts with `caption_prefix`
+    /// (`Conjugation of "` for verbs, `Inflection of` for adjectives) —
+    /// "Classical conjugation of ..." tables never qualify. Among candidates we
+    /// prefer one whose terminal-form row actually contains the lemma in some
+    /// column: that's what resolves both 来る (two modern tables, kuru before
+    /// the literary kitaru) and kana lemmas hosted on a kanji page (くる lives
+    /// in 来る's kana column). If no table names the lemma, fall back to the
+    /// first candidate — the redirect respell path parses host pages this way.
+    fn find_inflection_table<'a>(
+        section: &'a Html,
+        caption_prefix: &str,
+        terminal_label: &str,
+        lemma: &str,
+    ) -> Option<ElementRef<'a>> {
+        let table_selector = Selector::parse("table.inflection-table").unwrap();
+        let caption_selector = Selector::parse("caption").unwrap();
+
+        let candidates: Vec<ElementRef<'a>> = section
+            .select(&table_selector)
+            .filter(|table| {
+                table
+                    .select(&caption_selector)
+                    .next()
+                    .is_some_and(|caption| {
+                        caption
+                            .text()
+                            .collect::<String>()
+                            .trim()
+                            .starts_with(caption_prefix)
+                    })
+            })
+            .collect();
+
+        candidates
+            .iter()
+            .find(|table| {
+                table_rows(**table).iter().any(|(label, cells)| {
+                    label == terminal_label
+                        && cells.iter().any(|forms| forms.iter().any(|f| f == lemma))
+                })
+            })
+            .or(candidates.first())
+            .copied()
+    }
+
+    /// Parse the modern conjugation table for a Japanese verb from its Wiktionary page.
+    pub fn parse_japanese_verb_conjugation(
+        html: &str,
+        lemma: &str,
+    ) -> anyhow::Result<JapaneseVerbConjugation> {
+        let document = Html::parse_document(html);
+        let section = extract_japanese_section(&document)?;
+
+        let table = find_inflection_table(&section, "Conjugation of \"", "Shūshikei", lemma)
+            .context(format!("No modern conjugation table found for {lemma}"))?;
+
+        let rows = table_rows(table);
+        let column = lemma_column(&rows, "Shūshikei", lemma);
+        // If the lemma appears nowhere in the table, this page doesn't host our
+        // word's conjugation (it may be a ja-see stub) — refuse rather than
+        // silently return another spelling's forms.
+        if !rows.iter().any(|(label, cells)| {
+            label == "Shūshikei" && cells.iter().any(|forms| forms.iter().any(|f| f == lemma))
+        }) {
+            anyhow::bail!("Conjugation table does not contain the lemma {lemma}");
+        }
+
+        let mut conjugation = JapaneseVerbConjugation {
+            lemma: lemma.to_string(),
+            mizenkei: Vec::new(),
+            renyokei: Vec::new(),
+            shushikei: Vec::new(),
+            rentaikei: Vec::new(),
+            kateikei: Vec::new(),
+            meireikei: Vec::new(),
+            volitional: Vec::new(),
+            perfective: Vec::new(),
+            conjunctive: Vec::new(),
+        };
+
+        for (label, cells) in rows {
+            let Some(forms) = cells.get(column) else {
+                continue;
+            };
+            // Wiktionary renders the katsuyōkei labels with a typographic
+            // apostrophe (Ren’yōkei); match Rentaikei exactly *before* the
+            // Ren-prefix arm so the two don't collide.
+            let target = match label.as_str() {
+                "Mizenkei" => &mut conjugation.mizenkei,
+                "Rentaikei" => &mut conjugation.rentaikei,
+                l if l.starts_with("Ren") && l.ends_with("kei") => &mut conjugation.renyokei,
+                "Shūshikei" => &mut conjugation.shushikei,
+                "Kateikei" => &mut conjugation.kateikei,
+                "Meireikei" => &mut conjugation.meireikei,
+                "Volitional" => &mut conjugation.volitional,
+                "Perfective" => &mut conjugation.perfective,
+                "Conjunctive" => &mut conjugation.conjunctive,
+                _ => continue,
+            };
+            *target = forms.clone();
+        }
+
+        if conjugation.shushikei.is_empty() {
+            anyhow::bail!("Conjugation table for {lemma} has no terminal (shūshikei) form");
+        }
+
+        Ok(conjugation)
+    }
+
+    /// Parse the inflection table for a Japanese i-adjective from its Wiktionary page.
+    pub fn parse_japanese_adjective_inflection(
+        html: &str,
+        lemma: &str,
+    ) -> anyhow::Result<JapaneseAdjectiveInflection> {
+        let document = Html::parse_document(html);
+        let section = extract_japanese_section(&document)?;
+
+        let table = find_inflection_table(&section, "Inflection of", "Terminal", lemma)
+            .context(format!("No adjective inflection table found for {lemma}"))?;
+
+        let rows = table_rows(table);
+        let column = lemma_column(&rows, "Terminal", lemma);
+        if !rows.iter().any(|(label, cells)| {
+            label == "Terminal" && cells.iter().any(|forms| forms.iter().any(|f| f == lemma))
+        }) {
+            anyhow::bail!("Inflection table does not contain the lemma {lemma}");
+        }
+
+        let mut inflection = JapaneseAdjectiveInflection {
+            lemma: lemma.to_string(),
+            mizenkei: Vec::new(),
+            renyokei: Vec::new(),
+            shushikei: Vec::new(),
+            rentaikei: Vec::new(),
+            kateikei: Vec::new(),
+            meireikei: Vec::new(),
+            informal_past: Vec::new(),
+            conjunctive: Vec::new(),
+        };
+
+        for (label, cells) in rows {
+            let Some(forms) = cells.get(column) else {
+                continue;
+            };
+            let target = match label.as_str() {
+                "Imperfective" => &mut inflection.mizenkei,
+                "Continuative" => &mut inflection.renyokei,
+                "Terminal" => &mut inflection.shushikei,
+                "Attributive" => &mut inflection.rentaikei,
+                "Hypothetical" => &mut inflection.kateikei,
+                "Imperative" => &mut inflection.meireikei,
+                "Informal past" => &mut inflection.informal_past,
+                "Conjunctive" => &mut inflection.conjunctive,
+                _ => continue,
+            };
+            *target = forms.clone();
+        }
+
+        if inflection.shushikei.is_empty() {
+            anyhow::bail!("Inflection table for {lemma} has no terminal form");
+        }
+
+        Ok(inflection)
+    }
+
+    /// Both inflection structs expose their form lists so redirect handling can
+    /// respell them uniformly.
+    pub trait JapaneseInflection {
+        fn lemma_mut(&mut self) -> &mut String;
+        fn form_lists_mut(&mut self) -> Vec<&mut Vec<String>>;
+    }
+
+    impl JapaneseInflection for JapaneseVerbConjugation {
+        fn lemma_mut(&mut self) -> &mut String {
+            &mut self.lemma
+        }
+        fn form_lists_mut(&mut self) -> Vec<&mut Vec<String>> {
+            vec![
+                &mut self.mizenkei,
+                &mut self.renyokei,
+                &mut self.shushikei,
+                &mut self.rentaikei,
+                &mut self.kateikei,
+                &mut self.meireikei,
+                &mut self.volitional,
+                &mut self.perfective,
+                &mut self.conjunctive,
+            ]
+        }
+    }
+
+    impl JapaneseInflection for JapaneseAdjectiveInflection {
+        fn lemma_mut(&mut self) -> &mut String {
+            &mut self.lemma
+        }
+        fn form_lists_mut(&mut self) -> Vec<&mut Vec<String>> {
+            vec![
+                &mut self.mizenkei,
+                &mut self.renyokei,
+                &mut self.shushikei,
+                &mut self.rentaikei,
+                &mut self.kateikei,
+                &mut self.meireikei,
+                &mut self.informal_past,
+                &mut self.conjunctive,
+            ]
+        }
+    }
+
+    /// Detect a `ja-see` soft redirect: pages like 飲む carry no conjugation
+    /// table of their own, only a "For pronunciation and definitions of 飲む –
+    /// see the following entry. 【のむ】" box pointing at the kana entry that
+    /// hosts the real tables.
+    pub fn parse_ja_see_redirect(html: &str) -> Option<String> {
+        let document = Html::parse_document(html);
+        let section = extract_japanese_section(&document).ok()?;
+        let link_selector = Selector::parse("table.ja-see a").unwrap();
+        let link = section.select(&link_selector).next()?;
+        let target: String = link.text().collect::<String>().trim().to_string();
+        if target.is_empty() {
+            None
+        } else {
+            Some(target)
+        }
+    }
+
+    /// Respell forms parsed from a kana host entry back into the requested
+    /// lemma's spelling.
+    ///
+    /// The host entry のむ conjugates as のんだ/のんで/…; our corpus lemma is
+    /// 飲む, whose forms are 飲んだ/飲んで. The two spellings share their kana
+    /// tail (む), so we swap the differing stem prefix (の → 飲) on every form.
+    pub fn respell_from_host<T: JapaneseInflection>(parsed: &mut T, lemma: &str, host: &str) {
+        let lemma_chars: Vec<char> = lemma.chars().collect();
+        let host_chars: Vec<char> = host.chars().collect();
+        let mut common = 0;
+        while common < lemma_chars.len()
+            && common < host_chars.len()
+            && lemma_chars[lemma_chars.len() - 1 - common]
+                == host_chars[host_chars.len() - 1 - common]
+        {
+            common += 1;
+        }
+        let lemma_stem: String = lemma_chars[..lemma_chars.len() - common].iter().collect();
+        let host_stem: String = host_chars[..host_chars.len() - common].iter().collect();
+        if host_stem.is_empty() {
+            *parsed.lemma_mut() = lemma.to_string();
+            return;
+        }
+
+        for list in parsed.form_lists_mut() {
+            for form in list.iter_mut() {
+                if let Some(rest) = form.strip_prefix(&host_stem) {
+                    *form = format!("{lemma_stem}{rest}");
+                }
+            }
+        }
+        *parsed.lemma_mut() = lemma.to_string();
+    }
+
+    /// Fetch and parse conjugation tables for a batch of Japanese verb lemmas,
+    /// with on-disk caching. Pages that are `ja-see` soft redirects (飲む → のむ)
+    /// are followed once and their forms respelled into the requested lemma's
+    /// spelling. Lemmas without a parseable table (suru-compounds, missing
+    /// pages) are logged and skipped — the LLM fallback picks them up.
+    pub async fn fetch_japanese_verb_conjugations(
+        lemmas: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, JapaneseVerbConjugation>> {
+        fetch_japanese(lemmas, cache_dir, "verbs", parse_japanese_verb_conjugation).await
+    }
+
+    /// Fetch and parse inflection tables for a batch of Japanese i-adjective lemmas.
+    pub async fn fetch_japanese_adjective_inflections(
+        lemmas: &[String],
+        cache_dir: &Path,
+    ) -> anyhow::Result<HashMap<String, JapaneseAdjectiveInflection>> {
+        fetch_japanese(
+            lemmas,
+            cache_dir,
+            "adjectives",
+            parse_japanese_adjective_inflection,
+        )
+        .await
+    }
+
+    async fn fetch_japanese<T: Clone + JapaneseInflection>(
+        lemmas: &[String],
+        cache_dir: &Path,
+        what: &str,
+        parse: impl Fn(&str, &str) -> anyhow::Result<T> + Copy,
+    ) -> anyhow::Result<HashMap<String, T>> {
+        use futures::StreamExt;
+
+        let pb = indicatif::ProgressBar::new(lemmas.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template(&format!("{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} Japanese {what} ({{per_sec}}, {{msg}}, {{eta}})"))
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        let results: Vec<(String, Result<T, String>)> = futures::stream::iter(lemmas.iter())
+            .map(|lemma| {
+                let pb = pb.clone();
+                async move {
+                    pb.set_message(lemma.to_string());
+                    let result = match super::get_wiktionary_html(lemma, cache_dir).await {
+                        Ok(html) => match parse(&html, lemma) {
+                            Ok(parsed) => Ok(parsed),
+                            Err(parse_err) => {
+                                // Follow a ja-see soft redirect (飲む → のむ) once.
+                                if let Some(host) = parse_ja_see_redirect(&html) {
+                                    match super::get_wiktionary_html(&host, cache_dir).await {
+                                        // The host page often carries our lemma's
+                                        // spelling in another table column (くる sits
+                                        // in 来る's kana column, complete with the
+                                        // irregular きた/きて readings) — prefer a
+                                        // direct parse under the original lemma, and
+                                        // only respell the host's own forms when the
+                                        // lemma appears nowhere on the host page
+                                        // (飲む is absent from のむ's tables).
+                                        Ok(host_html) => match parse(&host_html, lemma) {
+                                            Ok(parsed) => Ok(parsed),
+                                            Err(_) => match parse(&host_html, &host) {
+                                                Ok(mut parsed) => {
+                                                    respell_from_host(&mut parsed, lemma, &host);
+                                                    Ok(parsed)
+                                                }
+                                                Err(e) => Err(format!(
+                                                    "parse error via redirect {host}: {e}"
+                                                )),
+                                            },
+                                        },
+                                        Err(e) => {
+                                            Err(format!("fetch error via redirect {host}: {e}"))
+                                        }
+                                    }
+                                } else {
+                                    Err(format!("parse error: {parse_err}"))
+                                }
+                            }
+                        },
+                        Err(e) => Err(format!("fetch error: {e}")),
+                    };
+                    pb.inc(1);
+                    (lemma.clone(), result)
+                }
+            })
+            .buffer_unordered(4)
+            .collect()
+            .await;
+
+        pb.finish_and_clear();
+
+        let mut out = HashMap::new();
+        let mut skipped = 0;
+        for (lemma, result) in results {
+            match result {
+                Ok(parsed) => {
+                    out.insert(lemma, parsed);
+                }
+                Err(e) => {
+                    eprintln!("Warning: skipping Japanese {what} lemma {lemma}: {e}");
+                    skipped += 1;
+                }
+            }
+        }
+        println!(
+            "Japanese {what}: {}/{} parsed ({skipped} skipped)",
+            out.len(),
+            lemmas.len()
+        );
+        Ok(out)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        fn load(word: &str) -> String {
+            std::fs::read_to_string(format!("src/wiktionary-examples/jpn/{word}.txt"))
+                .unwrap_or_else(|_| panic!("missing test fixture for {word}"))
+        }
+
+        #[test]
+        fn parse_taberu_ichidan() {
+            let conj = parse_japanese_verb_conjugation(&load("食べる"), "食べる").unwrap();
+            assert_eq!(conj.mizenkei, vec!["食べ"]);
+            assert_eq!(conj.renyokei, vec!["食べ"]);
+            assert_eq!(conj.shushikei, vec!["食べる"]);
+            assert_eq!(conj.rentaikei, vec!["食べる"]);
+            assert_eq!(conj.kateikei, vec!["食べれ"]);
+            // Written imperative 食べよ, spoken imperative 食べろ — footnote
+            // superscripts must be stripped.
+            assert_eq!(conj.meireikei, vec!["食べよ", "食べろ"]);
+            assert_eq!(conj.volitional, vec!["食べよう"]);
+            assert_eq!(conj.perfective, vec!["食べた"]);
+            assert_eq!(conj.conjunctive, vec!["食べて"]);
+        }
+
+        #[test]
+        fn parse_iku_godan_with_onbin() {
+            let conj = parse_japanese_verb_conjugation(&load("行く"), "行く").unwrap();
+            assert_eq!(conj.mizenkei, vec!["行か"]);
+            assert_eq!(conj.renyokei, vec!["行き"]);
+            assert_eq!(conj.shushikei, vec!["行く"]);
+            assert_eq!(conj.kateikei, vec!["行け"]);
+            assert_eq!(conj.meireikei, vec!["行け"]);
+            assert_eq!(conj.volitional, vec!["行こう"]);
+            // The whole point of scraping: the irregular sokuonbin past/te forms.
+            assert_eq!(conj.perfective, vec!["行った"]);
+            assert_eq!(conj.conjunctive, vec!["行って"]);
+        }
+
+        #[test]
+        fn parse_suru_irregular() {
+            let conj = parse_japanese_verb_conjugation(&load("する"), "する").unwrap();
+            // さ・し・せ* — split on the nakaguro, strip the footnote asterisk
+            assert_eq!(conj.mizenkei, vec!["さ", "し", "せ"]);
+            assert_eq!(conj.renyokei, vec!["し"]);
+            assert_eq!(conj.shushikei, vec!["する"]);
+            assert_eq!(conj.kateikei, vec!["すれ"]);
+            assert_eq!(conj.meireikei, vec!["せよ", "しろ"]);
+            assert_eq!(conj.perfective, vec!["した"]);
+            assert_eq!(conj.conjunctive, vec!["して"]);
+        }
+
+        #[test]
+        fn parse_kuru_takes_first_modern_table() {
+            // 来る has conjugation tables for both くる and the literary きたる;
+            // we must pick the first (くる).
+            let conj = parse_japanese_verb_conjugation(&load("来る"), "来る").unwrap();
+            assert_eq!(conj.mizenkei, vec!["来"]);
+            assert_eq!(conj.renyokei, vec!["来"]);
+            assert_eq!(conj.shushikei, vec!["来る"]);
+            assert_eq!(conj.meireikei, vec!["来い"]);
+            assert_eq!(conj.perfective, vec!["来た"]);
+            assert_eq!(conj.conjunctive, vec!["来て"]);
+        }
+
+        #[test]
+        fn parse_onbin_classes() {
+            // Each godan onbin class produces a distinct past/te stem — exactly
+            // the ground truth an LLM tends to fumble.
+            let cases = [
+                ("言う", "言った", "言って"), // u → った
+                ("持つ", "持った", "持って"), // tsu → った
+                ("死ぬ", "死んだ", "死んで"), // nu → んだ
+                ("遊ぶ", "遊んだ", "遊んで"), // bu → んだ
+                ("話す", "話した", "話して"), // su → した
+                ("ある", "あった", "あって"), // ru → った
+                ("なる", "なった", "なって"), // ru → った
+            ];
+            for (lemma, past, te) in cases {
+                let conj = parse_japanese_verb_conjugation(&load(lemma), lemma).unwrap();
+                assert_eq!(conj.perfective, vec![past], "perfective of {lemma}");
+                assert_eq!(conj.conjunctive, vec![te], "conjunctive of {lemma}");
+            }
+        }
+
+        #[test]
+        fn parse_aru_uses_kana_column() {
+            // ある's table spells its kanji column 有る/有った; the kana column
+            // must be selected because the lemma is written in kana.
+            let conj = parse_japanese_verb_conjugation(&load("ある"), "ある").unwrap();
+            assert_eq!(conj.shushikei, vec!["ある"]);
+            assert_eq!(conj.mizenkei, vec!["あら"]);
+            assert_eq!(conj.perfective, vec!["あった"]);
+            assert_eq!(conj.conjunctive, vec!["あって"]);
+        }
+
+        #[test]
+        fn parse_iru_ichidan_aux() {
+            // いる is both a verb and the progressive auxiliary; same table.
+            let conj = parse_japanese_verb_conjugation(&load("いる"), "いる").unwrap();
+            assert_eq!(conj.mizenkei, vec!["い"]);
+            assert_eq!(conj.perfective, vec!["いた"]);
+            assert_eq!(conj.conjunctive, vec!["いて"]);
+        }
+
+        #[test]
+        fn parse_miru_ichidan() {
+            let conj = parse_japanese_verb_conjugation(&load("見る"), "見る").unwrap();
+            assert_eq!(conj.mizenkei, vec!["見"]);
+            assert_eq!(conj.shushikei, vec!["見る"]);
+            assert_eq!(conj.perfective, vec!["見た"]);
+        }
+
+        #[test]
+        fn parse_takai_adjective() {
+            let infl = parse_japanese_adjective_inflection(&load("高い"), "高い").unwrap();
+            assert_eq!(infl.mizenkei, vec!["高かろ"]);
+            assert_eq!(infl.renyokei, vec!["高く"]);
+            assert_eq!(infl.shushikei, vec!["高い"]);
+            assert_eq!(infl.rentaikei, vec!["高い"]);
+            assert_eq!(infl.kateikei, vec!["高けれ"]);
+            assert_eq!(infl.meireikei, vec!["高かれ"]);
+            assert_eq!(infl.informal_past, vec!["高かった"]);
+            assert_eq!(infl.conjunctive, vec!["高くて"]);
+        }
+
+        #[test]
+        fn parse_ii_suppletive_adjective() {
+            // いい inflects on the よ- stem — pure ground truth an LLM can garble.
+            let infl = parse_japanese_adjective_inflection(&load("いい"), "いい").unwrap();
+            assert_eq!(infl.shushikei, vec!["いい"]);
+            assert_eq!(infl.renyokei, vec!["よく"]);
+            assert_eq!(infl.mizenkei, vec!["よかろ"]);
+            assert_eq!(infl.informal_past, vec!["よかった"]);
+        }
+
+        #[test]
+        fn ja_see_redirect_detected() {
+            // 飲む has no conjugation table of its own; it soft-redirects to のむ.
+            assert!(parse_japanese_verb_conjugation(&load("飲む"), "飲む").is_err());
+            assert_eq!(
+                parse_ja_see_redirect(&load("飲む")).as_deref(),
+                Some("のむ")
+            );
+        }
+
+        #[test]
+        fn kana_lemma_on_kanji_host_uses_kana_column() {
+            // くる is a ja-see stub pointing at 来る; parsing 来る's page under
+            // the lemma くる must select the kana column — the irregular きた/きて
+            // readings that respelling can't produce (来 reads こ/き, not く).
+            assert_eq!(
+                parse_ja_see_redirect(&load("くる")).as_deref(),
+                Some("来る")
+            );
+            let conj = parse_japanese_verb_conjugation(&load("来る"), "くる").unwrap();
+            assert_eq!(conj.shushikei, vec!["くる"]);
+            assert_eq!(conj.mizenkei, vec!["こ"]);
+            assert_eq!(conj.renyokei, vec!["き"]);
+            assert_eq!(conj.meireikei, vec!["こい"]);
+            assert_eq!(conj.perfective, vec!["きた"]);
+            assert_eq!(conj.conjunctive, vec!["きて"]);
+        }
+
+        #[test]
+        fn respell_nomu_from_kana_host() {
+            let mut conj = parse_japanese_verb_conjugation(&load("のむ"), "のむ").unwrap();
+            respell_from_host(&mut conj, "飲む", "のむ");
+            assert_eq!(conj.lemma, "飲む");
+            assert_eq!(conj.mizenkei, vec!["飲ま"]);
+            assert_eq!(conj.renyokei, vec!["飲み"]);
+            assert_eq!(conj.shushikei, vec!["飲む"]);
+            assert_eq!(conj.perfective, vec!["飲んだ"]);
+            assert_eq!(conj.conjunctive, vec!["飲んで"]);
+            assert_eq!(conj.volitional, vec!["飲もう"]);
+        }
+
+        #[test]
+        fn parse_nai_adjective() {
+            // ない has an adjective inflection table; its forms double as the
+            // negative auxiliary's forms.
+            let infl = parse_japanese_adjective_inflection(&load("ない"), "ない").unwrap();
+            assert_eq!(infl.shushikei, vec!["ない"]);
+            assert_eq!(infl.renyokei, vec!["なく"]);
+            assert_eq!(infl.kateikei, vec!["なけれ"]);
+            assert_eq!(infl.informal_past, vec!["なかった"]);
         }
     }
 }

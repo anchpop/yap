@@ -2902,6 +2902,10 @@ impl Language {
                 | Language::Portuguese
                 | Language::Italian
                 | Language::Hindi
+                // Mandarin's politeness contrast is exactly 你 vs. 您 — a classic
+                // second-person-only T-V distinction.
+                | Language::ChineseSimplified
+                | Language::ChineseTraditional
         )
     }
 
