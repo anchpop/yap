@@ -4,8 +4,8 @@ mod utils;
 
 use anyhow::{Context, anyhow};
 use classify::{
-    SentenceClassification, clean_sentence_with_llm, double_check_with_llm, get_classifier,
-    get_corrector, language_specific_tips, parse_dependencies_with_llm,
+    SentenceClassification, SimplifiedTokenPrime, clean_sentence_with_llm, double_check_with_llm,
+    get_classifier, get_corrector, language_specific_tips, parse_dependencies_with_llm,
 };
 use futures::StreamExt;
 use generate_data::target_sentences;
@@ -766,6 +766,97 @@ fn run_python_nlp(
     Ok(())
 }
 
+/// Conform each multiword-term entry's tokenization to the majority tokenization of its
+/// aligned occurrences inside sentences.
+///
+/// A term entry is cleaned context-free, so on boundary-ambiguous strings the LLM can
+/// land on a different segmentation than it gives the same span inside sentences — e.g.
+/// reading the explanatory なんだ as the exclamation 何だ (何/"what" is a nonsense gloss
+/// in context), or splitting a chengyu that the sentence pass keeps whole. Sentences
+/// carry the disambiguating context, so they win: where the aligned in-sentence
+/// occurrences of a term agree on a modal token pattern different from the term entry's
+/// own, the entry's tokens are replaced with a copy of a modal occurrence (final
+/// whitespace cleared so the texts still concatenate to the term). Ties between
+/// patterns leave the entry alone, as do terms that never occur inside a sentence.
+///
+/// An "aligned occurrence" is a contiguous token window whose text+whitespace
+/// concatenation equals the term exactly; spans that cross token boundaries mid-token
+/// don't count.
+fn reconcile_term_entries(
+    term_set: &std::collections::HashSet<String>,
+    results: &mut [(NlpAnalyzedSentence, Vec<SimplifiedTokenPrime>)],
+) -> usize {
+    let max_term_len = term_set.iter().map(|t| t.len()).max().unwrap_or(0);
+    if max_term_len == 0 {
+        return 0;
+    }
+
+    // term → (pattern key → (count, representative token window)). Fully owned so the
+    // later mutable pass over `results` doesn't fight the borrow checker.
+    let pattern_key = |tokens: &[SimplifiedTokenPrime]| -> String {
+        tokens
+            .iter()
+            .map(|t| t.text.trim())
+            .collect::<Vec<_>>()
+            .join("\u{1f}")
+    };
+    let mut occurrences: HashMap<String, HashMap<String, (usize, Vec<SimplifiedTokenPrime>)>> =
+        HashMap::new();
+    for (sentence, tokens) in results.iter() {
+        if term_set.contains(&sentence.sentence) {
+            continue;
+        }
+        for i in 0..tokens.len() {
+            let mut window = tokens[i].text.clone();
+            for j in i..tokens.len() {
+                if j > i {
+                    window.push_str(&tokens[j - 1].whitespace);
+                    window.push_str(&tokens[j].text);
+                }
+                if window.len() > max_term_len {
+                    break;
+                }
+                if term_set.contains(window.as_str()) {
+                    let slice = &tokens[i..=j];
+                    let (count, _) = occurrences
+                        .entry(window.clone())
+                        .or_default()
+                        .entry(pattern_key(slice))
+                        .or_insert_with(|| (0, slice.to_vec()));
+                    *count += 1;
+                }
+            }
+        }
+    }
+
+    let mut changed = 0;
+    for (sentence, tokens) in results.iter_mut() {
+        if !term_set.contains(&sentence.sentence) {
+            continue;
+        }
+        let Some(patterns) = occurrences.get(&sentence.sentence) else {
+            continue;
+        };
+        let mut ranked: Vec<_> = patterns.iter().collect();
+        ranked.sort_by(|a, b| b.1.0.cmp(&a.1.0).then(a.0.cmp(b.0)));
+        let (modal_key, modal) = ranked[0];
+        // A tie means the sentences themselves disagree — no majority to conform to.
+        if ranked.len() > 1 && ranked[1].1.0 == modal.0 {
+            continue;
+        }
+        if &pattern_key(tokens) == modal_key {
+            continue;
+        }
+        let mut new_tokens = modal.1.clone();
+        if let Some(last) = new_tokens.last_mut() {
+            last.whitespace = String::new();
+        }
+        *tokens = new_tokens;
+        changed += 1;
+    }
+    changed
+}
+
 async fn clean_all_languages() -> anyhow::Result<()> {
     let languages = vec![
         Language::French,
@@ -1056,6 +1147,11 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     let sampled_term_strings =
         sample_to_target(term_strings, term_sample_size, |s: &String| s.clone());
     println!("Sampled {} multiword terms", sampled_term_strings.len());
+
+    // Kept for the post-cleaning reconciliation pass, which identifies term entries in
+    // the cleaned results by exact text match.
+    let term_set: std::collections::HashSet<String> =
+        sampled_term_strings.iter().cloned().collect();
 
     // Step 4: Combine all sentences that need NLP processing
     let all_needed: Vec<String> = sampled_texts
@@ -1404,6 +1500,15 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
         }
     }
 
+    // Term entries are cleaned context-free, so on boundary-ambiguous strings they can
+    // disagree with how sentences tokenize the same span in context. Conform them to
+    // the in-sentence majority before the dependency pass, so parses see the final
+    // tokens.
+    let reconciled = reconcile_term_entries(&term_set, &mut validated_results);
+    if reconciled > 0 {
+        println!("Reconciled {reconciled} term entries to their majority in-sentence tokenization");
+    }
+
     println!("\n=== Pass 2: Adding dependency information ===");
 
     // Second pass: Add dependency information
@@ -1556,4 +1661,91 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use language_utils::PartOfSpeechTag;
+
+    fn entry(sentence: &str) -> NlpAnalyzedSentence {
+        serde_json::from_value(serde_json::json!({
+            "sentence": sentence,
+            "multiword_terms": {"high_confidence": [], "low_confidence": []},
+            "doc": [],
+            "entities": [],
+        }))
+        .unwrap()
+    }
+
+    fn tok(text: &str, pos: PartOfSpeechTag) -> SimplifiedTokenPrime {
+        SimplifiedTokenPrime {
+            text: text.to_string(),
+            whitespace: String::new(),
+            pos,
+            lemma: text.to_string(),
+        }
+    }
+
+    #[test]
+    fn test_reconcile_term_entry_to_sentence_majority() {
+        use PartOfSpeechTag::{Noun, Verb};
+        let term_set = std::collections::HashSet::from(["xy".to_string()]);
+
+        let mut results = vec![
+            // two sentences tokenize the span as x|y
+            (
+                entry("axyb"),
+                vec![
+                    tok("a", Noun),
+                    tok("x", Verb),
+                    tok("y", Noun),
+                    tok("b", Noun),
+                ],
+            ),
+            (
+                entry("xyb"),
+                vec![tok("x", Verb), tok("y", Noun), tok("b", Noun)],
+            ),
+            // the context-free term entry merged it
+            (entry("xy"), vec![tok("xy", Noun)]),
+        ];
+
+        let changed = reconcile_term_entries(&term_set, &mut results);
+        assert_eq!(changed, 1);
+        let term_tokens = &results[2].1;
+        assert_eq!(
+            term_tokens
+                .iter()
+                .map(|t| t.text.as_str())
+                .collect::<Vec<_>>(),
+            vec!["x", "y"]
+        );
+        assert_eq!(term_tokens[0].pos, PartOfSpeechTag::Verb);
+        assert_eq!(term_tokens.last().unwrap().whitespace, "");
+    }
+
+    #[test]
+    fn test_reconcile_skips_ties_and_agreement() {
+        use PartOfSpeechTag::Noun;
+        let term_set = std::collections::HashSet::from(["xy".to_string()]);
+
+        // one sentence merges, one splits — a tie, so the entry is left alone
+        let mut results = vec![
+            (entry("axy"), vec![tok("a", Noun), tok("xy", Noun)]),
+            (
+                entry("xyb"),
+                vec![tok("x", Noun), tok("y", Noun), tok("b", Noun)],
+            ),
+            (entry("xy"), vec![tok("xy", Noun)]),
+        ];
+        assert_eq!(reconcile_term_entries(&term_set, &mut results), 0);
+
+        // agreement with the majority is also untouched
+        let mut results = vec![
+            (entry("axy"), vec![tok("a", Noun), tok("xy", Noun)]),
+            (entry("xy"), vec![tok("xy", Noun)]),
+        ];
+        assert_eq!(reconcile_term_entries(&term_set, &mut results), 0);
+    }
 }
