@@ -20,16 +20,28 @@ Sentry.init({
     const message = event.exception?.values?.[0]?.value ?? "";
 
     // Filter out browser extension errors (not our code)
-    if (message.includes("runtime.sendMessage()")) {
+    if (
+      message.includes("runtime.sendMessage()") ||
+      message.includes("__firefox__.reader") ||
+      message.includes("Can't find variable: DarkReader")
+    ) {
       return null;
     }
 
-    // Filter WASM fetch failures on iOS/WKWebView. These are transient network
-    // errors during .wasm module initialization — identifiable by "Load failed"
-    // (the iOS Safari message for a failed fetch) with a WASM file in the stack.
-    if (message === "Load failed") {
-      const frames =
-        event.exception?.values?.[0]?.stacktrace?.frames ?? [];
+    // Filter WASM init failures caused by the environment, not our code:
+    // transient network errors fetching/compiling the .wasm module (iOS
+    // Safari's "Load failed", Chrome's "WebAssembly compilation aborted:
+    // Network error"), and embedded webviews (e.g. Twitter's in-app browser)
+    // that don't expose a WebAssembly global at all. These already surface a
+    // friendly reload prompt via the page-level listener in index.html.
+    if (message.includes("Can't find variable: WebAssembly")) {
+      return null;
+    }
+    if (
+      message.includes("Load failed") ||
+      message.includes("WebAssembly compilation aborted")
+    ) {
+      const frames = event.exception?.values?.[0]?.stacktrace?.frames ?? [];
       if (
         frames.some(
           (f) =>
