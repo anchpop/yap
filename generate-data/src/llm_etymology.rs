@@ -7,7 +7,6 @@
 //!
 //! tysm handles caching per-call, so we don't persist anything ourselves.
 
-use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{Course, Language, MorphemeSegment};
 use sentence_sampler::sample_to_target;
@@ -18,15 +17,8 @@ use tysm::chat_completions::ChatClient;
 
 use crate::etymology::AlignedEntry;
 
-static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.4-mini")
-            .unwrap()
-            .with_cache_directory("./.cache")
-            .with_reasoning_effort("low")
-            .with_service_tier("flex"),
-    )
-});
+static CHAT_CLIENT: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-luna"));
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 struct EtymologyResponse {
@@ -339,6 +331,7 @@ pub async fn generate_llm_aligned_entries(
     }
 
     let language = course.target_language;
+    let chat_client = &*CHAT_CLIENT;
     let examples = build_examples(golden_entries);
     let examples_block = examples
         .iter()
@@ -395,62 +388,61 @@ Here are {n} real examples:
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let results: Vec<AlignedEntry> = futures::stream::iter(candidate_words.iter())
+    let prompts = candidate_words
+        .iter()
         .map(|word| {
-            let pb = pb.clone();
-            let system_prompt = system_prompt.clone();
-            async move {
-                let morphology_line = word_morphology
-                    .get(word.as_str())
-                    .map(|m| format!("\nknown readings: {m}"))
-                    .unwrap_or_default();
-                let user = format!(
-                    "word: {word}\nspelled: {spelled}{morphology_line}",
-                    spelled = spell_out(word),
-                );
-                let response: Result<EtymologyResponse, _> = CHAT_CLIENT
-                    .chat_with_system_prompt(system_prompt, user)
-                    .await;
-
-                pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
-                pb.inc(1);
-
-                let response = response.ok()?;
-                if response.morphemes.is_empty() {
-                    return None;
-                }
-
-                let segments: Vec<MorphemeSegment<String>> = response
-                    .morphemes
-                    .iter()
-                    .map(|m| parse_morpheme_pair(m))
-                    .collect::<Option<Vec<_>>>()?;
-
-                // Surfaces must literally concatenate back to the word.
-                if segments
-                    .iter()
-                    .map(|s| s.surface.as_str())
-                    .collect::<String>()
-                    != *word
-                    || segments.iter().any(|s| s.surface.is_empty())
-                {
-                    return None;
-                }
-
-                Some(AlignedEntry {
-                    word: word.clone(),
-                    segments,
-                })
-            }
+            let morphology_line = word_morphology
+                .get(word.as_str())
+                .map(|m| format!("\nknown readings: {m}"))
+                .unwrap_or_default();
+            let user = format!(
+                "word: {word}\nspelled: {spelled}{morphology_line}",
+                spelled = spell_out(word),
+            );
+            (word.clone(), user)
         })
-        .buffer_unordered(50)
-        .collect::<Vec<_>>()
+        .collect::<Vec<_>>();
+    let results: Vec<AlignedEntry> = chat_client
+        .batch_chat_with_system_prompt_fn::<_, _, EtymologyResponse>(
+            system_prompt,
+            &prompts,
+            |(_, prompt)| prompt.clone(),
+        )
         .await
+        .unwrap_or_default()
         .into_iter()
-        .flatten()
+        .filter_map(|((word, _), response)| {
+            pb.inc(1);
+            let response = response.ok()?;
+            if response.morphemes.is_empty() {
+                return None;
+            }
+
+            let segments: Vec<MorphemeSegment<String>> = response
+                .morphemes
+                .iter()
+                .map(|m| parse_morpheme_pair(m))
+                .collect::<Option<Vec<_>>>()?;
+
+            // Surfaces must literally concatenate back to the word.
+            if segments
+                .iter()
+                .map(|s| s.surface.as_str())
+                .collect::<String>()
+                != *word
+                || segments.iter().any(|s| s.surface.is_empty())
+            {
+                return None;
+            }
+
+            Some(AlignedEntry {
+                word: word.clone(),
+                segments,
+            })
+        })
         .collect();
 
-    pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+    pb.finish_with_message(format!("{:.2}", chat_client.cost().unwrap_or(0.0)));
 
     results
 }

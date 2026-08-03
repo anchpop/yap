@@ -1,19 +1,12 @@
-use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use language_utils::{Course, Pronunciation, Pronunciations};
+use language_utils::{Course, Pronunciations};
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeSet, HashMap};
-use std::{collections::BTreeMap, sync::LazyLock};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::sync::LazyLock;
 use tysm::chat_completions::ChatClient;
 
-static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.2")
-            .unwrap()
-            .with_reasoning_effort("high")
-            .with_cache_directory("./.cache"),
-    )
-});
+static CHAT_CLIENT: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-luna"));
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 struct PronunciationResponse {
@@ -23,51 +16,26 @@ struct PronunciationResponse {
     selected_pronunciation: String,
 }
 
-/// Takes a map of words to their multiple pronunciations and returns the
-/// canonical "main" pronunciation per word plus the remaining wikipron
-/// variants as additional documented alternates.
+/// Select the canonical pronunciation for each word. Unambiguous words are
+/// handled locally; ambiguous words are resolved together through the Batch API.
 pub async fn select_common_pronunciations(
     course: Course,
     words_with_pronunciations: HashMap<String, BTreeSet<String>>,
 ) -> anyhow::Result<Vec<(String, Pronunciations)>> {
-    let Course {
-        target_language, ..
-    } = course;
-
+    let target_language = course.target_language;
     let count = words_with_pronunciations.len();
-
     let pb = ProgressBar::new(count as u64);
     pb.set_style(
         ProgressStyle::default_bar()
-            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} pronunciations ({per_sec}, ${msg}, {eta})")
-            .unwrap()
+            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} pronunciations ({per_sec}, ${msg}, {eta})")?
             .progress_chars("#>-"),
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let pronunciations = futures::stream::iter(&words_with_pronunciations)
-        .map(|(word, pronunciations)| {
-            let pb = pb.clone();
-            async move {
-            let make = |main: Pronunciation| -> (String, Pronunciations) {
-                let others: Vec<Pronunciation> = pronunciations
-                    .iter()
-                    .filter(|p| *p != &main)
-                    .cloned()
-                    .collect();
-                (word.clone(), Pronunciations { main, others })
-            };
-
-            // Skip if there's only one pronunciation
-            if pronunciations.len() == 1 {
-                pb.inc(1);
-                return Ok::<_, tysm::chat_completions::ChatError>(
-                    make(pronunciations.first().unwrap().clone()),
-                );
-            }
-
-            let response: Result<PronunciationResponse, _> = CHAT_CLIENT.chat_with_system_prompt(
-                format!(r#"You are analyzing {target_language} word pronunciations to select the most common one for beginner learners.
+    // Keep this prompt byte-for-byte compatible with the historical live-call
+    // prompt so existing gpt-5.2/high cache entries remain usable.
+    let system_prompt = format!(
+        r#"You are analyzing {target_language} word pronunciations to select the most common one for beginner learners.
 
 Given a {target_language} word and its possible IPA pronunciations, select the pronunciation that:
 1. Is most commonly used in standard metropolitan {target_language}
@@ -80,63 +48,76 @@ Output format:
 {{
     "1. thoughts": "Brief analysis of the pronunciation options",
     "2. selected_pronunciation": "The chosen IPA pronunciation",
-}}"#),
+}}"#
+    );
+
+    let mut selected = words_with_pronunciations
+        .iter()
+        .filter(|(_, pronunciations)| pronunciations.len() == 1)
+        .map(|(word, pronunciations)| {
+            (
+                word.clone(),
+                Pronunciations {
+                    main: pronunciations.first().expect("one pronunciation").clone(),
+                    others: Vec::new(),
+                },
+            )
+        })
+        .collect::<Vec<_>>();
+    let ambiguous = words_with_pronunciations
+        .into_iter()
+        .filter(|(_, pronunciations)| pronunciations.len() > 1)
+        .collect::<Vec<_>>();
+
+    let responses = CHAT_CLIENT
+        .batch_chat_with_system_prompt_fn::<_, _, PronunciationResponse>(
+            system_prompt,
+            &ambiguous,
+            |(word, pronunciations)| {
                 format!(
                     "Word: {}\nPronunciations: {}",
                     word,
-                    pronunciations.iter().cloned().collect::<Vec<_>>().join(", ")
-                ),
-            ).await;
+                    pronunciations
+                        .iter()
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )
+            },
+        )
+        .await?;
+    for ((word, pronunciations), response) in responses {
+        let main = response
+            .ok()
+            .map(|response| response.selected_pronunciation)
+            .and_then(|candidate| {
+                pronunciations
+                    .iter()
+                    .find(|pronunciation| {
+                        pronunciation.replace(' ', "") == candidate.replace(' ', "")
+                    })
+                    .cloned()
+            })
+            .unwrap_or_else(|| {
+                pronunciations
+                    .first()
+                    .expect("ambiguous pronunciations")
+                    .clone()
+            });
+        let others = pronunciations
+            .iter()
+            .filter(|pronunciation| **pronunciation != main)
+            .cloned()
+            .collect();
+        selected.push((word.clone(), Pronunciations { main, others }));
+    }
 
-            // Update progress bar with cost
-            pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
-            pb.inc(1);
-
-            match response {
-                Ok(resp) => {
-                    // Validate that the selected pronunciation is one of the options
-                    if pronunciations.contains(&resp.selected_pronunciation) {
-                        Ok(make(resp.selected_pronunciation))
-                    } else {
-                        // Fallback to first pronunciation if AI response is invalid
-                        // usually, the AI just messes up by adding spaces between characters. So let's see if the AI's response is the same as any of the pronunciations without spaces
-                        let matching_pronunciation = pronunciations.iter().find(|p| p.replace(" ", "") == resp.selected_pronunciation.replace(" ", ""));
-                        if let Some(matching_pronunciation) = matching_pronunciation {
-                            Ok(make(matching_pronunciation.clone()))
-                        } else {
-                            let selected = resp.selected_pronunciation;
-                            let first = pronunciations.first().unwrap().clone();
-                            eprintln!("Warning: AI selected invalid pronunciation for '{word}' ({selected}), using first option: {first}");
-                            Ok(make(first))
-                        }
-                    }
-                }
-                Err(e) => {
-                    eprintln!("Error getting pronunciation for '{word}': {e}");
-                    // Fallback to first pronunciation
-                    Ok(make(pronunciations.first().unwrap().clone()))
-                }
-            }
-        }
-        })
-        .buffered(500)
-        .collect::<Vec<_>>()
-        .await;
-
+    selected.sort_by(|(left, _), (right, _)| left.cmp(right));
+    pb.inc(count as u64);
     pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
-
-    Ok(pronunciations.into_iter().filter_map(|r| r.ok()).collect())
+    Ok(selected)
 }
 
-/// Helper function to load scraped pronunciations from a file or other source
 pub async fn load_scraped_pronunciations() -> anyhow::Result<BTreeMap<String, Vec<String>>> {
-    // TODO: Implement loading from your Wikipedia scrape
-    // This is a placeholder - replace with your actual loading logic
-
-    // Example format:
-    // let mut pronunciations = BTreeMap::new();
-    // pronunciations.insert("�tre".to_string(), vec!["/[t�/".to_string(), "/et�/".to_string()]);
-    // pronunciations.insert("les".to_string(), vec!["/le/".to_string(), "/l[/".to_string()]);
-
-    unimplemented!("Please implement loading of scraped pronunciations")
+    Ok(BTreeMap::new())
 }

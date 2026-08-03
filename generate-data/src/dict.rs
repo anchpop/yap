@@ -9,45 +9,80 @@ use sentence_sampler::sample_to_target;
 use std::{collections::BTreeMap, sync::LazyLock};
 use tysm::chat_completions::{ChatClient, ChatMessage};
 
-static CHAT_CLIENT_LIGHT_DICTIONARY: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.2")
-            .unwrap()
-            .with_cache_directory("./.cache")
-            .with_reasoning_effort("low")
-            .with_service_tier("flex"),
-    )
-});
+static CHAT_CLIENT_LUNA: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-luna"));
 
-static CHAT_CLIENT_LIGHTER: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.4-mini")
-            .unwrap()
-            .with_cache_directory("./.cache")
-            .with_reasoning_effort("low")
-            .with_service_tier("flex"),
-    )
-});
+static CHAT_CLIENT_TERRA: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-terra"));
 
-static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.4")
-            .unwrap()
-            .with_cache_directory("./.cache")
-            .with_reasoning_effort("low")
-            .with_service_tier("flex"),
-    )
-});
+async fn generate_dictionary_group(
+    client: &ChatClient,
+    entries: &[(Heteronym<String>, u32)],
+    system_prompt: &str,
+    native_language: language_utils::Language,
+    target_language: language_utils::Language,
+) -> anyhow::Result<Vec<(Heteronym<String>, DictionaryDefinition)>> {
+    let initial = client
+        .batch_chat_with_system_prompt_fn::<_, _, DictionaryDefinition>(
+            system_prompt,
+            entries,
+            |(heteronym, _)| {
+                format!(
+                    "word: `{word}`\nlemma: `{lemma}`,\npos: {pos}",
+                    word = heteronym.word,
+                    lemma = heteronym.lemma,
+                    pos = heteronym.pos
+                )
+            },
+        )
+        .await?;
 
-static CHAT_CLIENT_HEAVY: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.4")
-            .unwrap()
-            .with_cache_directory("./.cache")
-            .with_reasoning_effort("high")
-            .with_service_tier("flex"),
-    )
-});
+    let mut accepted = Vec::new();
+    let mut retries = Vec::new();
+    for ((heteronym, _), response) in initial {
+        let Ok(response) = response else { continue };
+        let bad_examples = response
+            .definitions
+            .iter()
+            .filter(|definition| {
+                !definition
+                    .example_sentence_target_language
+                    .to_lowercase()
+                    .contains(&heteronym.word.to_lowercase())
+            })
+            .map(|definition| definition.example_sentence_target_language.clone())
+            .collect::<Vec<_>>();
+        if bad_examples.is_empty() {
+            accepted.push((heteronym.clone(), response));
+        } else {
+            retries.push((heteronym.clone(), response, bad_examples));
+        }
+    }
+
+    let retried = client
+        .batch_chat_with_messages_fn::<_, DictionaryDefinition>(&retries, |(heteronym, response, bad)| {
+            let previous_json = serde_json::to_string(response).unwrap_or_default();
+            vec![
+                ChatMessage::system(format!(
+                    "You are a {target_language} dictionary entry generator for {native_language} speakers."
+                )),
+                ChatMessage::user(format!(
+                    "I asked you to generate a dictionary entry for the {target_language} word `{word}`, and you gave me this response:\n\n{previous_json}\n\nHowever, some of the example sentences don't contain the exact word `{word}`. The following sentences are missing it: {bad}\n\nPlease regenerate the entire response with the same format, making sure every example_sentence_target_language contains the exact word `{word}`.",
+                    word = heteronym.word,
+                    bad = bad.join("; "),
+                )),
+            ]
+        })
+        .await?;
+    accepted.extend(
+        retried
+            .into_iter()
+            .filter_map(|((heteronym, _, _), response)| {
+                response.ok().map(|response| (heteronym.clone(), response))
+            }),
+    );
+    Ok(accepted)
+}
 
 /// Internal helper that generates dictionary definitions for a map of heteronyms with frequencies.
 /// Used by both `create_dictionary` and `create_gram_dictionary`.
@@ -72,18 +107,11 @@ async fn generate_dictionary_definitions(
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let dictionary = futures::stream::iter(target_language_heteronyms.iter()).map(async |(heteronym, &freq)| {
-        let cost = CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHT_DICTIONARY.cost().unwrap_or(0.0);
-        pb.set_message(format!("{cost:.2} ({},{},{})", heteronym.word, heteronym.lemma, heteronym.pos));
-
-        let chat_client = if freq > 500 { &*CHAT_CLIENT_HEAVY } else { &*CHAT_CLIENT_LIGHT_DICTIONARY };
-
-        let dict_response = {
-            let response: Result<DictionaryDefinition, _> = chat_client.chat_with_system_prompt(
-            format!(r#"The input is a {target_language} word, along with its morphological information. Generate a dictionary entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}). First, the JSON schema gives an opportunity to write {target_language} word, then provide a list of one or more {native_language} translations/definitions. Each definition will be a JSON object with the following fields:
+    let system_prompt = format!(
+        r#"The input is a {target_language} word, along with its morphological information. Generate a dictionary entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}). First, the JSON schema gives an opportunity to write {target_language} word, then provide a list of one or more {native_language} translations/definitions. Each definition will be a JSON object with the following fields:
 
 - "native" (string): The {native_language} translation(s) of the word. If a word has multiple very similar meanings (e.g. "this" and "that"), include them in the same string separated by commas. (If it's a verb, you don't have to include the infinitive form or information about conjugation - that will be displayed separately in the app.) The "native" field should just have the closest word (or short phrase) to the target language word. Don't capitalize the first letter unless it makes sense (e.g. english proper nouns, german nouns, etc).
-- "note" (string, optional): Use only for extra info about usage that is *not already implied* by the other fields. (For example, you can note that "tu" is informal.) The "note" is a perfect place for this, so there's no need to include it in the "native" field. 
+- "note" (string, optional): Use only for extra info about usage that is *not already implied* by the other fields. (For example, you can note that "tu" is informal.) The "note" is a perfect place for this, so there's no need to include it in the "native" field.
 - "example_sentence_target_language" (string): A natural example sentence using the word in {target_language}. (Be sure that the word's usage in the example sentence has the same morphology as is provided.)
 - "example_sentence_native_language" (string): A natural {native_language} translation of the example sentence.
 - "cognate": (bool) whether the {target_language} word is a cognate in {native_language}. For our purposes, a word is a cognate to a definition if it looks similar to the {native_language} word. So "avocat" is a cognate for "avocado", but not "lawyer".
@@ -99,66 +127,41 @@ However:
 
 Each definition must correspond to exactly the word that is given. Do not define related forms or alternate spellings. If the word is ambiguous between forms (e.g. "avocat"), return all common meanings, but **do not speculate**.
 
-Just like how the definition needs to respect the provided morphology, the example sentences should as well. For example, if the french word "est" were provided as an auxiliary, a good translation into english might be "has" and the example sentence should use "est" as an auxiliary (such that the english translation contains "has"). 
+Just like how the definition needs to respect the provided morphology, the example sentences should as well. For example, if the french word "est" were provided as an auxiliary, a good translation into english might be "has" and the example sentence should use "est" as an auxiliary (such that the english translation contains "has").
 
-One last thing. The input may be conjugated. For example, it may be the italian word "è". Using an english translation for the sake of example, it should simply be "is". Not "he is". The UI layer will take care of ensuring the user sees the conjugation in the correct context. 
+One last thing. The input may be conjugated. For example, it may be the italian word "è". Using an english translation for the sake of example, it should simply be "is". Not "he is". The UI layer will take care of ensuring the user sees the conjugation in the correct context.
 
 Do not add pronunciation, IPA, part of speech, gender, or conjugation info unless it's in the "note" field and truly necessary.
 
-Output the result as a JSON object containing an array of one or more definition objects. Of course, their native language is {native_language}, so you should write the notes in {native_language}."#),
-                format!("word: `{word}`\nlemma: `{lemma}`,\npos: {pos}", word=heteronym.word, lemma=heteronym.lemma, pos=heteronym.pos),
-            ).await.inspect_err(|e| {
-                println!("error: {e:#?}");
-            });
-
-            // If any example sentence doesn't contain the word, retry with feedback
-
-
-            if let Ok(ref resp) = response {
-                let bad_examples: Vec<_> = resp.definitions.iter()
-                    .filter(|d| !d.example_sentence_target_language.to_lowercase().contains(&heteronym.word.to_lowercase()))
-                    .map(|d| d.example_sentence_target_language.as_str())
-                    .collect();
-                if !bad_examples.is_empty() {
-                    let previous_json = serde_json::to_string(resp).unwrap_or_default();
-                    chat_client.chat_with_messages(vec![
-                        ChatMessage::system(format!("You are a {target_language} dictionary entry generator for {native_language} speakers.")),
-                        ChatMessage::user(format!(
-                            "I asked you to generate a dictionary entry for the {target_language} word `{word}`, and you gave me this response:\n\n{previous_json}\n\nHowever, some of the example sentences don't contain the exact word `{word}`. The following sentences are missing it: {bad}\n\nPlease regenerate the entire response with the same format, making sure every example_sentence_target_language contains the exact word `{word}`.",
-                            word = heteronym.word,
-                            bad = bad_examples.join("; "),
-                        )),
-                    ]).await.inspect_err(|e| {
-                        println!("retry error: {e:#?}");
-                    })
-                } else {
-                    response
-                }
-            } else {
-                response
-            }
-        };
-
-        pb.inc(1);
-
-        (heteronym, dict_response)
-    })
-    .buffer_unordered(15)
-    .collect::<Vec<_>>()
-    .await
-    .into_iter()
-    .filter_map(|(heteronym, dict_response)| {
-        dict_response.ok().map(|entry| (heteronym.clone(), entry))
-    })
-    .collect::<BTreeMap<Heteronym<String>, DictionaryDefinition>>();
-
+Output the result as a JSON object containing an array of one or more definition objects. Of course, their native language is {native_language}, so you should write the notes in {native_language}."#
+    );
+    let (terra, luna): (Vec<_>, Vec<_>) = target_language_heteronyms
+        .into_iter()
+        .partition(|(_, frequency)| *frequency > 500);
+    let mut entries = generate_dictionary_group(
+        &CHAT_CLIENT_TERRA,
+        &terra,
+        &system_prompt,
+        native_language,
+        target_language,
+    )
+    .await?;
+    entries.extend(
+        generate_dictionary_group(
+            &CHAT_CLIENT_LUNA,
+            &luna,
+            &system_prompt,
+            native_language,
+            target_language,
+        )
+        .await?,
+    );
+    pb.inc(count as u64);
     pb.finish_with_message(format!(
         "{:.2}",
-        CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0)
-            + CHAT_CLIENT_LIGHT_DICTIONARY.cost().unwrap_or(0.0)
+        CHAT_CLIENT_TERRA.cost().unwrap_or(0.0) + CHAT_CLIENT_LUNA.cost().unwrap_or(0.0)
     ));
-
-    Ok(dictionary)
+    Ok(entries.into_iter().collect())
 }
 
 /// Extracts unique heteronyms from single-atom grams in the gram vocabulary.
@@ -310,8 +313,8 @@ pub async fn create_gram_phrasebook(
         .map(|(gram, &freq)| {
             let pb = pb.clone();
             let gram_text = gram.to_display_string(target_language);
-            let cost =
-                CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0) + CHAT_CLIENT_LIGHTER.cost().unwrap_or(0.0) + CHAT_CLIENT.cost().unwrap_or(0.0);
+            let cost = CHAT_CLIENT_TERRA.cost().unwrap_or(0.0)
+                + CHAT_CLIENT_LUNA.cost().unwrap_or(0.0);
             pb.set_message(format!("{cost:.2} ({gram_text})"));
 
             let example_sentences = gram_sentences
@@ -332,11 +335,9 @@ pub async fn create_gram_phrasebook(
                 };
 
                 let chat_client = if freq > 250 {
-                    &*CHAT_CLIENT_HEAVY
-                } else if freq > 150 {
-                    &*CHAT_CLIENT
+                    &*CHAT_CLIENT_TERRA
                 } else {
-                    &*CHAT_CLIENT_LIGHTER
+                    &*CHAT_CLIENT_LUNA
                 };
 
                 // kind of ugly, but the old system prompt is bad, but it's too expensive to regenerate all of them so i'll just do it for the most important words
@@ -458,9 +459,7 @@ Of course, their native language is {native_language}, so you should write the m
 
     pb.finish_with_message(format!(
         "{:.2}",
-        CHAT_CLIENT_HEAVY.cost().unwrap_or(0.0)
-            + CHAT_CLIENT_LIGHTER.cost().unwrap_or(0.0)
-            + CHAT_CLIENT.cost().unwrap_or(0.0)
+        CHAT_CLIENT_TERRA.cost().unwrap_or(0.0) + CHAT_CLIENT_LUNA.cost().unwrap_or(0.0)
     ));
 
     Ok(phrasebook)

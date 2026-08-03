@@ -34,7 +34,7 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-tysm = "0.20"
+tysm = { git = "https://github.com/anchpop/tysm.git", rev = "d86e6faa68bce9cdbc27ca7ca996ec55d09a41c6" }
 # Directory↔R2 sync engine (github.com/anchpop/osmo). generate-data uses it to mirror
 # the .cache directory to a bucket. Git dep until published to crates.io.
 osmo = { git = "https://github.com/anchpop/osmo" }
@@ -56,7 +56,7 @@ slotmap = { version = "1.1", features = ["serde"] }
 wasm-logger = "0.2.0"
 unicode-normalization = "0.1.25"
 weblocks = "0.2.0"
-lexide = { git = "https://github.com/anchpop/lexide.git", rev = "8c0a2b093cf70b5797101e36609d92fa6d16fb07", features = [
+lexide = { git = "https://github.com/anchpop/lexide.git", rev = "3feb835e7763e1991e45de3ac9170d55bde936bb", features = [
     "remote",
 ] }
 indicatif = "0.18"

@@ -27,6 +27,44 @@ pub fn apply_cache_only(
     }
 }
 
+fn cached_chat_client(model: &str, reasoning_effort: &str) -> tysm::chat_completions::ChatClient {
+    tysm::chat_completions::ChatClient::from_env(model)
+        .unwrap()
+        .with_cache_directory("./.cache")
+        .with_reasoning_effort(reasoning_effort)
+        .with_service_tier("flex")
+}
+
+fn cached_default_chat_client(model: &str) -> tysm::chat_completions::ChatClient {
+    tysm::chat_completions::ChatClient::from_env(model)
+        .unwrap()
+        .with_cache_directory("./.cache")
+}
+
+fn cached_reasoning_chat_client(
+    model: &str,
+    reasoning_effort: &str,
+) -> tysm::chat_completions::ChatClient {
+    cached_default_chat_client(model).with_reasoning_effort(reasoning_effort)
+}
+
+/// A current generation client whose cache is checked first, followed by historical model
+/// configurations newest-to-oldest. Only the current model may make an API request.
+pub fn migrating_chat_client(model: &str) -> tysm::chat_completions::ChatClient {
+    apply_cache_only(
+        cached_chat_client(model, "low")
+            .with_cache_fallback(cached_chat_client("gpt-5.4", "high"))
+            .with_cache_fallback(cached_chat_client("gpt-5.4", "low"))
+            .with_cache_fallback(cached_chat_client("gpt-5.4-mini", "low"))
+            .with_cache_fallback(cached_default_chat_client("gpt-5.4-nano"))
+            .with_cache_fallback(cached_reasoning_chat_client("gpt-5.2", "high"))
+            .with_cache_fallback(cached_chat_client("gpt-5.2", "low"))
+            .with_cache_fallback(cached_default_chat_client("gpt-5"))
+            .with_cache_fallback(cached_default_chat_client("gpt-5").with_service_tier("flex"))
+            .with_cache_fallback(cached_default_chat_client("gpt-4o")),
+    )
+}
+
 pub mod audio_verification;
 pub mod books;
 pub mod cache_remote;
