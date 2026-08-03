@@ -107,11 +107,14 @@ async fn generate_dictionary_definitions(
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
+    // These three historical trailing spaces are part of the tysm cache key.
+    // Spell them as a format substitution so rustfmt cannot strip them.
+    let historical_space = " ";
     let system_prompt = format!(
         r#"The input is a {target_language} word, along with its morphological information. Generate a dictionary entry for it, to be used in an app for beginner {target_language} learners (whose native language is {native_language}). First, the JSON schema gives an opportunity to write {target_language} word, then provide a list of one or more {native_language} translations/definitions. Each definition will be a JSON object with the following fields:
 
 - "native" (string): The {native_language} translation(s) of the word. If a word has multiple very similar meanings (e.g. "this" and "that"), include them in the same string separated by commas. (If it's a verb, you don't have to include the infinitive form or information about conjugation - that will be displayed separately in the app.) The "native" field should just have the closest word (or short phrase) to the target language word. Don't capitalize the first letter unless it makes sense (e.g. english proper nouns, german nouns, etc).
-- "note" (string, optional): Use only for extra info about usage that is *not already implied* by the other fields. (For example, you can note that "tu" is informal.) The "note" is a perfect place for this, so there's no need to include it in the "native" field.
+- "note" (string, optional): Use only for extra info about usage that is *not already implied* by the other fields. (For example, you can note that "tu" is informal.) The "note" is a perfect place for this, so there's no need to include it in the "native" field.{historical_space}
 - "example_sentence_target_language" (string): A natural example sentence using the word in {target_language}. (Be sure that the word's usage in the example sentence has the same morphology as is provided.)
 - "example_sentence_native_language" (string): A natural {native_language} translation of the example sentence.
 - "cognate": (bool) whether the {target_language} word is a cognate in {native_language}. For our purposes, a word is a cognate to a definition if it looks similar to the {native_language} word. So "avocat" is a cognate for "avocado", but not "lawyer".
@@ -127,9 +130,9 @@ However:
 
 Each definition must correspond to exactly the word that is given. Do not define related forms or alternate spellings. If the word is ambiguous between forms (e.g. "avocat"), return all common meanings, but **do not speculate**.
 
-Just like how the definition needs to respect the provided morphology, the example sentences should as well. For example, if the french word "est" were provided as an auxiliary, a good translation into english might be "has" and the example sentence should use "est" as an auxiliary (such that the english translation contains "has").
+Just like how the definition needs to respect the provided morphology, the example sentences should as well. For example, if the french word "est" were provided as an auxiliary, a good translation into english might be "has" and the example sentence should use "est" as an auxiliary (such that the english translation contains "has").{historical_space}
 
-One last thing. The input may be conjugated. For example, it may be the italian word "è". Using an english translation for the sake of example, it should simply be "is". Not "he is". The UI layer will take care of ensuring the user sees the conjugation in the correct context.
+One last thing. The input may be conjugated. For example, it may be the italian word "è". Using an english translation for the sake of example, it should simply be "is". Not "he is". The UI layer will take care of ensuring the user sees the conjugation in the correct context.{historical_space}
 
 Do not add pronunciation, IPA, part of speech, gender, or conjugation info unless it's in the "note" field and truly necessary.
 
