@@ -360,10 +360,16 @@ impl ReviewInfo {
                             .to_string(),
                         language: deck.context.course.target_language,
                         is_ssml: false,
+                        // Left at the provider default so a human recording of
+                        // this sentence still wins over TTS — see
+                        // `human_audio_applies`.
                         instructions: None,
                         speed: 1.0,
                     },
-                    provider: TtsProvider::Google,
+                    // Gemini reads whole sentences with far more natural
+                    // prosody than Chirp3, which is what a transcription
+                    // exercise is actually testing.
+                    provider: TtsProvider::Gemini,
                 },
                 movie_titles,
                 proper_noun_definitions,
