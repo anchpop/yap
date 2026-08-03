@@ -467,7 +467,7 @@ export function GramDefinitionDisplay({
       : definition.Phrasebook.target_language_multi_word_term;
 
   const header = (
-    <div className="flex items-start shrink-0">
+    <div className="flex items-start min-w-0 max-w-full">
       {hasBreakdown ? (
         <MorphemeBreakdown
           breakdown={breakdown!}
@@ -487,7 +487,7 @@ export function GramDefinitionDisplay({
 
   const body =
     "Dictionary" in definition ? (
-      <div className="space-y-2 flex-1 min-w-0">
+      <div className="space-y-2 grow basis-56 min-w-0">
         {definition.Dictionary.definitions.map(
           (def: TargetToNativeWord, i: number) => (
             <div key={i}>
@@ -515,7 +515,7 @@ export function GramDefinitionDisplay({
         )}
       </div>
     ) : (
-      <div className="flex-1 min-w-0">
+      <div className="grow basis-56 min-w-0">
         <p className="text-sm">{definition.Phrasebook.meaning}</p>
         {definition.Phrasebook.target_language_example && (
           <div className="text-xs text-muted-foreground mt-1">
@@ -531,7 +531,10 @@ export function GramDefinitionDisplay({
     );
 
   return (
-    <div className="p-3 px-5 flex items-start gap-3">
+    // Wrapping row: the definition sits beside the word when it can still get a
+    // readable width, and drops to its own full-width line under a wide
+    // breakdown instead of being squeezed into a sliver.
+    <div className="p-3 px-5 flex flex-wrap items-start gap-x-3 gap-y-1">
       {header}
       {body}
     </div>

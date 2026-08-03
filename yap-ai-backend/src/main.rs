@@ -399,28 +399,46 @@ fn wrap_pcm_in_wav(
     wav
 }
 
-async fn gemini_text_to_speech(
-    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-    Json(request): Json<TtsRequest>,
-) -> Result<String, StatusCode> {
-    let _claims = verify_jwt(auth.token()).await;
+/// Gemini's TTS model. Unlike Google Cloud TTS it has no per-language voice
+/// list — one voice speaks every language, picked from the text itself — and
+/// no `speakingRate` knob, so delivery is steered entirely by the prompt that
+/// precedes the text. Language coverage includes every [`Language`] we ship.
+const GEMINI_TTS_MODEL: &str = "gemini-3.1-flash-tts-preview";
 
-    let client = reqwest::Client::new();
+/// House style for Gemini TTS when the caller doesn't ask for something else.
+const GEMINI_TTS_DEFAULT_INSTRUCTIONS: &str = "Read aloud in a warm welcoming tone";
 
-    let gemini_api_key =
-        std::env::var("GEMINI_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+/// Retry budget for defective audio, matching `google-tts`'s default. Gemini
+/// is generative, so the occasional silent or truncated clip is expected.
+const GEMINI_TTS_MAX_ATTEMPTS: usize = 3;
 
-    let default_instructions = format!(
-        "A fluent {lang} speaker is teaching the listener how to pronounce different {lang} words. Each word is enunciated clearly, with a small gap in between.",
-        lang = request.language,
-    );
+/// Builds the prompt Gemini speaks. Everything before the newline is
+/// direction, everything after is the text to voice — which is also how the
+/// speaking rate gets expressed, since the API has no rate parameter.
+fn gemini_tts_prompt(request: &TtsRequest) -> String {
     let instructions = request
         .instructions
         .as_deref()
-        .unwrap_or(&default_instructions);
+        .unwrap_or(GEMINI_TTS_DEFAULT_INSTRUCTIONS);
 
-    let prompt = format!("{instructions}\n{}", request.text);
+    let pace = if request.speed < 0.95 {
+        ", speaking slowly and deliberately"
+    } else if request.speed > 1.05 {
+        ", speaking briskly"
+    } else {
+        ""
+    };
 
+    format!("{instructions}{pace}\n{}", request.text)
+}
+
+/// One synthesis round-trip. Returns WAV bytes, or `None` when the response
+/// carried no audio (a transient Gemini failure worth retrying).
+async fn gemini_tts_attempt(
+    client: &reqwest::Client,
+    api_key: &str,
+    prompt: &str,
+) -> Result<Option<Vec<u8>>, StatusCode> {
     let gemini_request = serde_json::json!({
         "contents": [{
             "role": "user",
@@ -440,7 +458,7 @@ async fn gemini_text_to_speech(
     });
 
     let url = format!(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:streamGenerateContent?key={gemini_api_key}"
+        "https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_TTS_MODEL}:generateContent?key={api_key}"
     );
 
     let response = client
@@ -458,38 +476,70 @@ async fn gemini_text_to_speech(
         return Err(StatusCode::BAD_GATEWAY);
     }
 
-    // Gemini streamGenerateContent returns an array of response chunks
     let response_body: serde_json::Value = response
         .json()
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    // Collect all audio data chunks from the streaming response
-    let mut audio_data = Vec::new();
-    if let Some(chunks) = response_body.as_array() {
-        for chunk in chunks {
-            if let Some(data) = chunk
-                .pointer("/candidates/0/content/parts/0/inlineData/data")
-                .and_then(|v| v.as_str())
-            {
-                let bytes = base64::engine::general_purpose::STANDARD
-                    .decode(data)
-                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-                audio_data.extend_from_slice(&bytes);
+    // Audio arrives as one or more inlineData parts of raw linear16 PCM.
+    let mut pcm = Vec::new();
+    for part in response_body
+        .pointer("/candidates/0/content/parts")
+        .and_then(|v| v.as_array())
+        .map(Vec::as_slice)
+        .unwrap_or_default()
+    {
+        if let Some(data) = part.pointer("/inlineData/data").and_then(|v| v.as_str()) {
+            let bytes = base64::engine::general_purpose::STANDARD
+                .decode(data)
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+            pcm.extend_from_slice(&bytes);
+        }
+    }
+
+    if pcm.is_empty() {
+        return Ok(None);
+    }
+
+    // Gemini returns raw linear16 PCM at 24kHz mono - wrap in a WAV header
+    Ok(Some(wrap_pcm_in_wav(&pcm, 24000, 1, 16)))
+}
+
+async fn gemini_text_to_speech(
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(request): Json<TtsRequest>,
+) -> Result<String, StatusCode> {
+    let _claims = verify_jwt(auth.token()).await;
+
+    let client = reqwest::Client::new();
+
+    let gemini_api_key =
+        std::env::var("GEMINI_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let prompt = gemini_tts_prompt(&request);
+
+    let mut last_wav: Option<Vec<u8>> = None;
+    for attempt in 1..=GEMINI_TTS_MAX_ATTEMPTS {
+        let Some(wav) = gemini_tts_attempt(&client, &gemini_api_key, &prompt).await? else {
+            eprintln!("Gemini TTS: no audio data on attempt {attempt}, retrying");
+            continue;
+        };
+        match google_tts::audio_defect(&wav) {
+            None => return Ok(base64::engine::general_purpose::STANDARD.encode(&wav)),
+            Some(defect) => {
+                eprintln!("Gemini TTS: defective audio ({defect}) on attempt {attempt}, retrying");
+                last_wav = Some(wav);
             }
         }
     }
 
-    if audio_data.is_empty() {
-        eprintln!("Gemini TTS Error: no audio data in response");
-        return Err(StatusCode::BAD_GATEWAY);
-    }
-
-    // Gemini returns raw linear16 PCM at 24kHz mono - wrap in a WAV header
-    let wav_data = wrap_pcm_in_wav(&audio_data, 24000, 1, 16);
-    let base64_audio = base64::engine::general_purpose::STANDARD.encode(&wav_data);
-
-    Ok(base64_audio)
+    // Every attempt was flagged — hand back the last one rather than nothing,
+    // same bargain `google-tts` makes: imperfect audio beats a dead button.
+    let wav = last_wav.ok_or_else(|| {
+        eprintln!("Gemini TTS Error: no audio data in {GEMINI_TTS_MAX_ATTEMPTS} attempts");
+        StatusCode::BAD_GATEWAY
+    })?;
+    Ok(base64::engine::general_purpose::STANDARD.encode(&wav))
 }
 
 async fn autograde_translation(

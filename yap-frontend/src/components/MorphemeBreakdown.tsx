@@ -1,4 +1,5 @@
 import { type Language } from "../../../yap-frontend-rs/pkg";
+import { cn } from "@/lib/pure";
 import { TargetLanguageText } from "./TargetLanguageText";
 
 export type BreakdownRow = [string, string | null | undefined, string | null | undefined];
@@ -18,9 +19,14 @@ export function MorphemeBreakdown({
   const hasCanonicalRow = breakdown.some(([, canonical]) => canonical != null);
   const glossRow = hasCanonicalRow ? 3 : 2;
   return (
-    <div className={className}>
+    // min-w-0 so the scrolling grid below can actually clamp to the space it
+    // has: without it this wrapper is floored at the grid's min-content width
+    // and a long breakdown pushes past its container instead.
+    <div className={cn("min-w-0", className)}>
+      {/* An interlinear grid can't wrap without losing column alignment, so a
+          long breakdown scrolls sideways rather than widening its container. */}
       <div
-        className="inline-grid gap-x-4 gap-y-1 justify-items-start"
+        className="inline-grid gap-x-4 gap-y-1 justify-items-start max-w-full overflow-x-auto"
         style={{
           gridTemplateColumns: `repeat(${breakdown.length}, auto)`,
         }}
