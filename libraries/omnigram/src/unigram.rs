@@ -5,6 +5,7 @@
 //! the token type via the [`UnigramToken`] trait.
 
 use rustc_hash::FxHashMap;
+use std::borrow::Borrow;
 use std::collections::HashSet;
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -13,7 +14,7 @@ const LOG_PROB_FLOOR: f64 = -99.0;
 type VocabEntry<T> = (Seq<T>, f64, u32);
 type ExpectedCounts<T> = FxHashMap<Seq<T>, f64>;
 type EmRunResult<T> = (Vec<VocabEntry<T>>, ExpectedCounts<T>, f64);
-type SentenceLattice<T> = Vec<Vec<(usize, Seq<T>, f64)>>;
+type SentenceLattice = Vec<Vec<(usize, u32, f64)>>;
 
 /// Trait for tokens that can be used with the unigram model.
 ///
@@ -64,6 +65,12 @@ impl<T> Seq<T> {
     }
 }
 
+impl<T> Borrow<[T]> for Seq<T> {
+    fn borrow(&self) -> &[T] {
+        &self.0
+    }
+}
+
 impl<T: Hash> Seq<T> {
     /// Returns a disambiguation key for this sequence, used to maintain consistent
     /// ordering of sequences with the same frequency.
@@ -75,17 +82,20 @@ impl<T: Hash> Seq<T> {
     }
 }
 
-fn logsumexp(values: &[f64]) -> f64 {
+fn logsumexp_by<T>(values: &[T], value: impl Fn(&T) -> f64) -> f64 {
     if values.is_empty() {
         return f64::NEG_INFINITY;
     }
 
-    let max = values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+    let max = values.iter().map(&value).fold(f64::NEG_INFINITY, f64::max);
     if !max.is_finite() {
         return max;
     }
 
-    let sum = values.iter().map(|v| (v - max).exp()).sum::<f64>();
+    let sum = values
+        .iter()
+        .map(|item| (value(item) - max).exp())
+        .sum::<f64>();
     max + sum.ln()
 }
 
@@ -194,6 +204,12 @@ impl<T: UnigramToken> UnigramModel<T> {
             .map(|log_prob| self.sequence_score_from_log_prob(log_prob))
     }
 
+    fn vocab_entry(&self, tokens: &[T]) -> Option<(u32, f64)> {
+        self.vocab
+            .get(tokens)
+            .map(|&(id, log_prob)| (id, self.sequence_score_from_log_prob(log_prob)))
+    }
+
     /// Segment a sequence of tokens using Viterbi algorithm.
     /// Returns a list of sequences, where each sequence is a segment.
     pub fn segment(&self, tokens: &[T]) -> Vec<Seq<T>> {
@@ -205,8 +221,8 @@ impl<T: UnigramToken> UnigramModel<T> {
 
         // best_score[i] = best log probability to reach position i
         let mut best_score = vec![f64::NEG_INFINITY; n + 1];
-        // best_prev[i] = (previous position, sequence that got us here)
-        let mut best_prev: Vec<Option<(usize, Seq<T>)>> = vec![None; n + 1];
+        // best_prev[i] = previous position on the best path to i
+        let mut best_prev: Vec<Option<usize>> = vec![None; n + 1];
 
         best_score[0] = 0.0;
 
@@ -217,15 +233,14 @@ impl<T: UnigramToken> UnigramModel<T> {
 
             // Try all possible next sequences starting at position i
             for end in i + 1..=n.min(i + self.max_piece_length) {
-                let seq = Seq(tokens[i..end].to_vec());
-                let Some(score) = self.vocab_score(&seq) else {
+                let Some((_, score)) = self.vocab_entry(&tokens[i..end]) else {
                     continue;
                 };
                 let new_score = best_score[i] + score;
 
                 if new_score > best_score[end] {
                     best_score[end] = new_score;
-                    best_prev[end] = Some((i, seq));
+                    best_prev[end] = Some(i);
                 }
             }
         }
@@ -245,7 +260,7 @@ impl<T: UnigramToken> UnigramModel<T> {
         );
 
         while pos > 0 {
-            let (prev_pos, seq) = best_prev[pos].take().unwrap_or_else(|| {
+            let prev_pos = best_prev[pos].take().unwrap_or_else(|| {
                 panic!(
                     "UnigramModel::segment lost a backpointer while reconstructing the best path.\n\
                      position={pos}\n\
@@ -257,7 +272,7 @@ impl<T: UnigramToken> UnigramModel<T> {
                     self.max_piece_length, tokens, best_score, best_prev
                 )
             });
-            result.push(seq);
+            result.push(Seq(tokens[prev_pos..pos].to_vec()));
             pos = prev_pos;
         }
 
@@ -277,7 +292,7 @@ impl<T: UnigramToken> UnigramModel<T> {
 
     /// Compute actual usage counts by segmenting the corpus and counting sequence occurrences.
     /// Returns a new model with IDs reassigned so that ID 0 = most frequently used sequence.
-    pub fn reorder_by_actual_usage(self, corpus: &[Vec<T>], seed_set: &HashSet<&Seq<T>>) -> Self {
+    pub fn reorder_by_actual_usage(self, corpus: &[Vec<T>], seed_set: &HashSet<Seq<T>>) -> Self {
         // Count actual usage of each sequence when segmenting
         let mut usage_counts: Vec<u64> = vec![0; self.id_to_seq.len()];
 
@@ -397,7 +412,7 @@ impl UnigramTrainer {
             .filter(|seq| is_representable_supertoken_sequence(seq))
             .cloned()
             .collect();
-        let seed_set: HashSet<&Seq<T>> = filtered_seeds.iter().collect();
+        let seed_set: HashSet<Seq<T>> = filtered_seeds.iter().cloned().collect();
 
         // Index seeds by first token for fast lookup during counting
         let mut seeds_by_first_token: FxHashMap<&T, Vec<&Seq<T>>> = FxHashMap::default();
@@ -426,9 +441,12 @@ impl UnigramTrainer {
                         }
                     }
 
-                    let seq = Seq(slice.to_vec());
-                    if !seed_set.contains(&seq) {
-                        *ngram_counts.entry(seq).or_insert(0) += 1;
+                    if !seed_set.contains(slice) {
+                        if let Some(count) = ngram_counts.get_mut(slice) {
+                            *count += 1;
+                        } else {
+                            ngram_counts.insert(Seq(slice.to_vec()), 1);
+                        }
                     }
                 }
 
@@ -464,7 +482,7 @@ impl UnigramTrainer {
         if multiword_count > initial_multiword_budget {
             let mut multiwords: Vec<(Seq<T>, u32)> = ngram_counts
                 .iter()
-                .filter(|(seq, _)| seq.len() >= 2 && !seed_set.contains(seq))
+                .filter(|(seq, _)| seq.len() >= 2 && !seed_set.contains(*seq))
                 .map(|(seq, count)| (seq.clone(), *count))
                 .collect();
             multiwords.sort_by(|a, b| {
@@ -562,7 +580,7 @@ impl UnigramTrainer {
         corpus: &[Vec<T>],
         vocab: &[VocabEntry<T>],
         iterations: usize,
-        _seed_set: &HashSet<&Seq<T>>,
+        _seed_set: &HashSet<Seq<T>>,
         fixed_counts: &FxHashMap<Seq<T>, f64>,
     ) -> EmRunResult<T> {
         let mut current: Vec<VocabEntry<T>> = vocab.to_vec();
@@ -648,7 +666,8 @@ impl UnigramTrainer {
             corpus_log_likelihood += sentence_log_prob;
 
             for edges in outgoing.iter().take(n) {
-                for (end, seq, log_prob) in edges {
+                for (end, id, log_prob) in edges {
+                    let seq = &model.id_to_seq[*id as usize];
                     let start = end - seq.len();
                     let marginal =
                         (alpha[start] + *log_prob + beta[*end] - sentence_log_prob).exp();
@@ -665,10 +684,10 @@ impl UnigramTrainer {
         corpus: &[Vec<T>],
         vocab: &[VocabEntry<T>],
         model: &UnigramModel<T>,
-        seed_set: &HashSet<&Seq<T>>,
+        seed_set: &HashSet<Seq<T>>,
     ) -> Vec<(usize, f64)> {
         let mut sentence_scores = Vec::with_capacity(corpus.len());
-        let mut token_to_sentences: FxHashMap<Seq<T>, Vec<usize>> = FxHashMap::default();
+        let mut token_to_sentences = vec![Vec::new(); model.id_to_seq.len()];
 
         for (sentence_idx, sentence) in corpus.iter().enumerate() {
             let (segmentation, score) = self
@@ -676,12 +695,9 @@ impl UnigramTrainer {
                 .expect("single-token fallback should always permit segmentation");
             sentence_scores.push(score);
 
-            let unique_tokens: HashSet<Seq<T>> = segmentation.into_iter().collect();
-            for seq in unique_tokens {
-                token_to_sentences
-                    .entry(seq)
-                    .or_default()
-                    .push(sentence_idx);
+            let unique_tokens: HashSet<u32> = segmentation.into_iter().collect();
+            for id in unique_tokens {
+                token_to_sentences[id as usize].push(sentence_idx);
             }
         }
 
@@ -692,10 +708,11 @@ impl UnigramTrainer {
                 continue;
             }
 
-            let Some(sentence_indices) = token_to_sentences.get(seq) else {
+            let sentence_indices = &token_to_sentences[idx];
+            if sentence_indices.is_empty() {
                 losses.push((idx, 0.0));
                 continue;
-            };
+            }
 
             let mut loss = 0.0;
             for &sentence_idx in sentence_indices {
@@ -744,14 +761,14 @@ impl UnigramTrainer {
         sentence: &[T],
         model: &UnigramModel<T>,
         forbidden: Option<&Seq<T>>,
-    ) -> Option<(Vec<Seq<T>>, f64)> {
+    ) -> Option<(Vec<u32>, f64)> {
         if sentence.is_empty() {
             return Some((Vec::new(), 0.0));
         }
 
         let n = sentence.len();
         let mut best_score = vec![f64::NEG_INFINITY; n + 1];
-        let mut best_prev: Vec<Option<(usize, Seq<T>)>> = vec![None; n + 1];
+        let mut best_prev: Vec<Option<(usize, u32)>> = vec![None; n + 1];
         best_score[0] = 0.0;
 
         for start in 0..n {
@@ -760,17 +777,17 @@ impl UnigramTrainer {
             }
 
             for end in start + 1..=n.min(start + model.max_piece_length) {
-                let seq = Seq(sentence[start..end].to_vec());
-                if forbidden == Some(&seq) {
+                let slice = &sentence[start..end];
+                if forbidden.is_some_and(|forbidden| forbidden.0 == slice) {
                     continue;
                 }
-                let Some(score) = model.vocab_score(&seq) else {
+                let Some((id, score)) = model.vocab_entry(slice) else {
                     continue;
                 };
                 let candidate = best_score[start] + score;
                 if candidate > best_score[end] {
                     best_score[end] = candidate;
-                    best_prev[end] = Some((start, seq));
+                    best_prev[end] = Some((start, id));
                 }
             }
         }
@@ -783,8 +800,8 @@ impl UnigramTrainer {
         let mut pos = n;
         let mut segments = Vec::new();
         while pos > 0 {
-            let (start, seq) = best_prev[pos].take()?;
-            segments.push(seq);
+            let (start, id) = best_prev[pos].take()?;
+            segments.push(id);
             pos = start;
         }
         segments.reverse();
@@ -812,11 +829,11 @@ impl UnigramTrainer {
             }
 
             for end in start + 1..=n.min(start + model.max_piece_length) {
-                let seq = Seq(sentence[start..end].to_vec());
-                if &seq == forbidden {
+                let slice = &sentence[start..end];
+                if forbidden.0 == slice {
                     continue;
                 }
-                let Some(score) = model.vocab_score(&seq) else {
+                let Some((_, score)) = model.vocab_entry(slice) else {
                     continue;
                 };
                 let candidate = best_score[start] + score;
@@ -880,52 +897,47 @@ impl UnigramTrainer {
         &self,
         sentence: &[T],
         model: &UnigramModel<T>,
-    ) -> (SentenceLattice<T>, SentenceLattice<T>) {
+    ) -> (SentenceLattice, SentenceLattice) {
         let n = sentence.len();
-        let mut incoming: SentenceLattice<T> = vec![Vec::new(); n + 1];
-        let mut outgoing: SentenceLattice<T> = vec![Vec::new(); n + 1];
+        let mut incoming: SentenceLattice = vec![Vec::new(); n + 1];
+        let mut outgoing: SentenceLattice = vec![Vec::new(); n + 1];
 
         for start in 0..n {
             for end in start + 1..=n.min(start + model.max_piece_length) {
-                let seq = Seq(sentence[start..end].to_vec());
-                let Some(score) = model.vocab_score(&seq) else {
+                let Some((id, score)) = model.vocab_entry(&sentence[start..end]) else {
                     continue;
                 };
-                incoming[end].push((start, seq.clone(), score));
-                outgoing[start].push((end, seq, score));
+                incoming[end].push((start, id, score));
+                outgoing[start].push((end, id, score));
             }
         }
 
         (incoming, outgoing)
     }
 
-    fn forward_pass<T: UnigramToken>(&self, incoming: &SentenceLattice<T>) -> Vec<f64> {
+    fn forward_pass(&self, incoming: &SentenceLattice) -> Vec<f64> {
         let n = incoming.len() - 1;
         let mut alpha = vec![f64::NEG_INFINITY; n + 1];
         alpha[0] = 0.0;
 
         for end in 1..=n {
-            let terms: Vec<f64> = incoming[end]
-                .iter()
-                .map(|(start, _, log_prob)| alpha[*start] + *log_prob)
-                .collect();
-            alpha[end] = logsumexp(&terms);
+            alpha[end] = logsumexp_by(&incoming[end], |(start, _, log_prob)| {
+                alpha[*start] + *log_prob
+            });
         }
 
         alpha
     }
 
-    fn backward_pass<T: UnigramToken>(&self, outgoing: &SentenceLattice<T>) -> Vec<f64> {
+    fn backward_pass(&self, outgoing: &SentenceLattice) -> Vec<f64> {
         let n = outgoing.len() - 1;
         let mut beta = vec![f64::NEG_INFINITY; n + 1];
         beta[n] = 0.0;
 
         for start in (0..n).rev() {
-            let terms: Vec<f64> = outgoing[start]
-                .iter()
-                .map(|(end, _, log_prob)| *log_prob + beta[*end])
-                .collect();
-            beta[start] = logsumexp(&terms);
+            beta[start] = logsumexp_by(&outgoing[start], |(end, _, log_prob)| {
+                *log_prob + beta[*end]
+            });
         }
 
         beta
