@@ -80,6 +80,14 @@ features = ["derive"]
 opt-level = "s"
 lto = true
 
+# Iterative native tools such as generate-data rarely benefit enough from full
+# whole-program LTO to justify its multi-minute final rustc step. Use with
+# `cargo run --profile release-fast --bin generate-data -- <language>`.
+[profile.release-fast]
+inherits = "release"
+lto = "thin"
+codegen-units = 16
+
 [profile.profiling]
 inherits = "release"
 debug = true

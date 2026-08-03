@@ -27,6 +27,7 @@
 
             # Native build deps for Rust crates (openssl-sys, rusqlite, etc.)
             gcc
+            mold
             pkg-config
             openssl
             openssl.dev
@@ -54,6 +55,10 @@
           env = {
             PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
             LIBRARY_PATH = "${pkgs.sqlite.out}/lib";
+            # Native Linux builds in this dev shell use mold without imposing
+            # a mold dependency on non-Nix CI or passing ELF flags to wasm32.
+            CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS =
+              "--cfg=web_sys_unstable_apis -C link-arg=-fuse-ld=mold";
           };
 
           # manylinux wheels in the NLP venv (numpy, torch) dlopen the system
