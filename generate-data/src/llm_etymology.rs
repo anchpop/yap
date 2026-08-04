@@ -407,12 +407,12 @@ Here are {n} real examples:
             system_prompt,
             &prompts,
             |(_, prompt)| prompt.clone(),
+            |batch| crate::report_batch_progress(&pb, 0, prompts.len(), batch),
         )
         .await
         .unwrap_or_default()
         .into_iter()
         .filter_map(|((word, _), response)| {
-            pb.inc(1);
             let response = response.ok()?;
             if response.morphemes.is_empty() {
                 return None;

@@ -21,6 +21,8 @@ async fn generate_dictionary_group(
     system_prompt: &str,
     native_language: language_utils::Language,
     target_language: language_utils::Language,
+    progress: &ProgressBar,
+    progress_offset: u64,
 ) -> anyhow::Result<Vec<(Heteronym<String>, DictionaryDefinition)>> {
     let initial = client
         .batch_chat_with_system_prompt_fn::<_, _, DictionaryDefinition>(
@@ -34,6 +36,7 @@ async fn generate_dictionary_group(
                     pos = heteronym.pos
                 )
             },
+            |batch| crate::report_batch_progress(progress, progress_offset, entries.len(), batch),
         )
         .await?;
 
@@ -72,7 +75,7 @@ async fn generate_dictionary_group(
                     bad = bad.join("; "),
                 )),
             ]
-        })
+        }, |_| {})
         .await?;
     accepted.extend(
         retried
@@ -147,6 +150,8 @@ Output the result as a JSON object containing an array of one or more definition
         &system_prompt,
         native_language,
         target_language,
+        &pb,
+        0,
     )
     .await?;
     entries.extend(
@@ -156,10 +161,12 @@ Output the result as a JSON object containing an array of one or more definition
             &system_prompt,
             native_language,
             target_language,
+            &pb,
+            terra.len() as u64,
         )
         .await?,
     );
-    pb.inc(count as u64);
+    pb.set_position(count as u64);
     pb.finish_with_message(format!(
         "{:.2}",
         CHAT_CLIENT_TERRA.cost().unwrap_or(0.0) + CHAT_CLIENT_LUNA.cost().unwrap_or(0.0)

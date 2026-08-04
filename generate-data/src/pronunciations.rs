@@ -84,6 +84,7 @@ Output format:
                         .join(", ")
                 )
             },
+            |batch| crate::report_batch_progress(&pb, 0, ambiguous.len(), batch),
         )
         .await?;
     for ((word, pronunciations), response) in responses {
@@ -113,7 +114,7 @@ Output format:
     }
 
     selected.sort_by(|(left, _), (right, _)| left.cmp(right));
-    pb.inc(count as u64);
+    pb.set_position(count as u64);
     pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
     Ok(selected)
 }

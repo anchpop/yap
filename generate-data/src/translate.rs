@@ -725,6 +725,7 @@ impl Translator {
         // OpenAI's side, and sequential submission keeps the enqueued-token
         // footprint bounded.
         for chunk in pending.chunks(OPENAI_BATCH_CHUNK) {
+            let chunk_start = pb.position();
             if self.over_budget() {
                 pb.inc(chunk.len() as u64);
                 continue;
@@ -735,6 +736,7 @@ impl Translator {
                 .batch_chat_with_system_prompt::<TranslationResponse>(
                     &system_prompt,
                     chunk.to_vec(),
+                    |batch| crate::report_batch_progress(pb, chunk_start, chunk.len(), batch),
                 )
                 .await
             {
@@ -749,8 +751,8 @@ impl Translator {
                             Ok(_) => {}
                             Err(e) => eprintln!("Batch item failed for '{text}': {e}"),
                         }
-                        pb.inc(1);
                     }
+                    pb.set_position(chunk_start + chunk.len() as u64);
                 }
                 Err(e) => {
                     eprintln!("OpenAI batch translate failed ({} texts): {e}", chunk.len());

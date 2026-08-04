@@ -134,11 +134,11 @@ Output JSON format:
             system_prompt,
             &prompts,
             |(_, prompt)| prompt.clone(),
+            |batch| crate::report_batch_progress(&pb, 0, prompts.len(), batch),
         )
         .await?
         .into_iter()
         .filter_map(|((proper_noun, _), response)| {
-            pb.inc(1);
             response
                 .ok()
                 .map(|definition| (proper_noun.clone(), definition))

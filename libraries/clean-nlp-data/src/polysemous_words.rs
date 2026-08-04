@@ -485,44 +485,44 @@ const JAPANESE: &[PolysemousWord] = &[
     ("前", &[("前", Noun), ("前", Adp)]),       // front / before
     ("後", &[("後", Noun), ("後", Adp)]),       // back / after
     ("間", &[("間", Noun), ("間", Adp)]),       // between / during
-    ("一番", &[("一番", Adv), ("一番", Noun)]), // most / number one
+    ("一番", &[("1番", Adv), ("1番", Noun)]), // most / number one (the analyzer's arabic-numeral lemma)
     ("自分", &[("自分", Noun), ("自分", Pron)]), // oneself / I (informal)
     ("いい", &[("いい", Adj), ("いい", Intj)]), // good / OK!/fine!
-    ("よく", &[("よく", Adv), ("よい", Adj)]),  // often/well / good (adverbial)
+    ("よく", &[("良く", Adv), ("良い", Adj)]), // often/well / good (adverbial) — analyzer-normalized lemmas
     ("よう", &[("よう", Noun), ("よう", Aux)]), // appearance / seeming
-    ("気", &[("気", Noun), ("気", Noun)]),      // spirit/feeling / care/attention
-    ("物", &[("物", Noun), ("物", Noun)]),      // thing / person
-    ("事", &[("事", Noun), ("事", Noun)]),      // thing/matter / experience
-    ("所", &[("所", Noun), ("所", Noun)]),      // place / point/aspect
-    ("中", &[("中", Noun), ("中", Adp)]),       // inside / during/in the middle of
-    ("上", &[("上", Noun), ("上", Adp)]),       // top/above / in terms of
-    ("下", &[("下", Noun), ("下", Adp)]),       // below / under
-    ("先", &[("先", Noun), ("先", Adv)]),       // destination/tip / first/ahead
-    ("外", &[("外", Noun), ("外", Adp)]),       // outside / besides
+    ("気", &[("気", Noun), ("気", Noun)]),     // spirit/feeling / care/attention
+    ("物", &[("物", Noun), ("物", Noun)]),     // thing / person
+    ("事", &[("事", Noun), ("事", Noun)]),     // thing/matter / experience
+    ("所", &[("所", Noun), ("所", Noun)]),     // place / point/aspect
+    ("中", &[("中", Noun), ("中", Adp)]),      // inside / during/in the middle of
+    ("上", &[("上", Noun), ("上", Adp)]),      // top/above / in terms of
+    ("下", &[("下", Noun), ("下", Adp)]),      // below / under
+    ("先", &[("先", Noun), ("先", Adv)]),      // destination/tip / first/ahead
+    ("外", &[("外", Noun), ("外", Adp)]),      // outside / besides
     ("通り", &[("通り", Noun), ("通り", Adp)]), // street / as/like
     ("代わり", &[("代わり", Noun), ("代わり", Adp)]), // substitute / instead of
     ("やっぱり", &[("やっぱり", Adv), ("やっぱり", Intj)]), // as expected / I knew it!
-    ("確か", &[("確か", Adj), ("確か", Adv)]),  // certain / if I recall
-    ("別", &[("別", Adj), ("別", Noun)]),       // separate / farewell
+    ("確か", &[("確かだ", Adj), ("確か", Adv)]), // certain (na-adjective) / if I recall
+    ("別", &[("別だ", Adj), ("別", Noun)]),    // separate (na-adjective) / distinction
     ("無理", &[("無理", Adj), ("無理", Noun)]), // impossible / unreasonableness
     ("駄目", &[("駄目", Adj), ("駄目", Intj)]), // no good / no!/stop!
     ("違う", &[("違う", Verb), ("違う", Intj)]), // to differ / no! (disagreement)
-    ("全然", &[("全然", Adv), ("全然", Adv)]),  // not at all / totally (colloquial)
+    ("全然", &[("全然", Adv), ("全然", Adv)]), // not at all / totally (colloquial)
     ("全部", &[("全部", Noun), ("全部", Adv)]), // everything / entirely
     ("一度", &[("一度", Adv), ("一度", Noun)]), // once / one time
-    ("急", &[("急", Adj), ("急", Noun)]),       // sudden / urgency
+    ("急", &[("急", Adj), ("急", Noun)]),      // sudden / urgency
     ("丁寧", &[("丁寧", Adj), ("丁寧", Noun)]), // polite / politeness
     ("邪魔", &[("邪魔", Noun), ("邪魔", Adj)]), // hindrance / in the way
     ("適当", &[("適当", Adj), ("適当", Noun)]), // appropriate / carelessness
     ("勝手", &[("勝手", Adj), ("勝手", Noun)]), // selfish / one's own way
-    ("変", &[("変", Adj), ("変", Noun)]),       // strange / change
+    ("変", &[("変", Adj), ("変", Noun)]),      // strange / change
     ("簡単", &[("簡単", Adj), ("簡単", Noun)]), // easy / simplicity
     ("最初", &[("最初", Noun), ("最初", Adv)]), // beginning / at first
     ("最後", &[("最後", Noun), ("最後", Adv)]), // end / lastly
     ("今度", &[("今度", Noun), ("今度", Adv)]), // next time / this time
     ("絶対", &[("絶対", Adv), ("絶対", Noun)]), // absolutely / absolute
-    ("特別", &[("特別", Adj), ("特別", Adv)]),  // special / especially
-    ("普通", &[("普通", Adj), ("普通", Adv)]),  // normal / normally
+    ("特別", &[("特別", Adj), ("特別", Adv)]), // special / especially
+    ("普通", &[("普通", Adj), ("普通", Adv)]), // normal / normally
     ("勉強", &[("勉強", Noun), ("勉強", Verb)]), // study / to study
     ("練習", &[("練習", Noun), ("練習", Verb)]), // practice / to practice
     ("心配", &[("心配", Noun), ("心配", Adj)]), // worry / worried

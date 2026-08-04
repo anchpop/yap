@@ -16,6 +16,21 @@ pub fn cache_only() -> bool {
     CACHE_ONLY.load(Ordering::Relaxed)
 }
 
+/// Update an indicatif bar from a Batch API status poll. `offset` is the number
+/// of items handled by earlier batches and `expected` includes cache hits, which
+/// OpenAI's request counts do not include.
+pub(crate) fn report_batch_progress(
+    progress: &indicatif::ProgressBar,
+    offset: u64,
+    expected: usize,
+    batch: &tysm::batch::Batch,
+) {
+    let total = u64::from(batch.request_counts.total);
+    let processed = u64::from(batch.request_counts.completed + batch.request_counts.failed);
+    let cached = (expected as u64).saturating_sub(total);
+    progress.set_position(offset + cached + processed);
+}
+
 /// Apply the process-wide cache-only setting to a tysm ChatClient.
 pub fn apply_cache_only(
     client: tysm::chat_completions::ChatClient,

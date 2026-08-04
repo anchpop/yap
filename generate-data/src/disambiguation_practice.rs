@@ -182,6 +182,7 @@ Output format:
             system_prompt,
             &word_pairs,
             |(word1, word2)| format!("word1: `{word1}`\nword2: `{word2}`"),
+            |batch| crate::report_batch_progress(&pb, 0, word_pairs.len(), batch),
         )
         .await?;
 
@@ -190,7 +191,6 @@ Output format:
     // Process the responses
     let mut practices = BTreeMap::new();
     for ((word1, word2), response) in practice_data {
-        pb.inc(1);
         if let Ok(thoughts) = response {
             let word_pair = HomophoneWordPair::new(word1.clone(), word2.clone())
                 .expect("Homophone words should be different");

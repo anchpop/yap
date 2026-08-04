@@ -498,12 +498,12 @@ You'll receive a morpheme plus a small sample of words it appears in. Pick the s
             &classify_prompt,
             &prompts,
             |(_, _, user)| user.clone(),
+            |batch| crate::report_batch_progress(&pb, 0, prompts.len(), batch),
         )
         .await
         .unwrap_or_default()
         .into_iter()
         .filter_map(|((segment, examples, _), response)| {
-            pb.inc(1);
             response
                 .ok()
                 .map(|response| (segment.clone(), response.category, examples.clone()))
@@ -549,6 +549,7 @@ You'll receive a morpheme plus a small sample of words it appears in. Pick the s
             |(segment, examples, candidates)| {
                 lookup_messages(language, segment, candidates, examples)
             },
+            |batch| crate::report_batch_progress(&pb, 0, free.len(), batch),
         )
         .await
         .unwrap_or_default();
@@ -556,6 +557,7 @@ You'll receive a morpheme plus a small sample of words it appears in. Pick the s
         .batch_chat_with_messages_fn::<_, DefineResponse>(
             &nonfree,
             |(segment, category, examples)| define_messages(course, segment, *category, examples),
+            |batch| crate::report_batch_progress(&pb, free.len() as u64, nonfree.len(), batch),
         )
         .await
         .unwrap_or_default();
@@ -599,7 +601,7 @@ You'll receive a morpheme plus a small sample of words it appears in. Pick the s
                 }
             }),
     );
-    pb.inc(classified.len() as u64);
+    pb.set_position(classified.len() as u64);
     pb.finish_with_message(format!("{:.2}", define_client.cost().unwrap_or(0.0)));
     results.sort_by(|a, b| a.segment.cmp(&b.segment));
     results
