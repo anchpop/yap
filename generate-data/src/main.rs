@@ -7,7 +7,7 @@ use language_utils::{
     SentenceGram, SentenceGrams,
 };
 use rustc_hash::FxHashMap;
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fs::File;
 use std::hash::Hash;
 use std::io::{BufRead, BufReader, BufWriter, Write};
@@ -1525,31 +1525,59 @@ async fn main() -> anyhow::Result<()> {
             // Create a set of words that appear in our frequency list for quick lookup
             let frequent_words = &frequent_heteronym_words;
 
-            let phonetics_file =
-                File::open(wikipron_path).context("Failed to open wikipron pronunciations file")?;
-            let phonetics_file = BufReader::new(phonetics_file);
-            let extra_phonetics_file = File::open(extra_pronunciations_path)
-                .context("Failed to open extra pronunciations file")?;
-            let extra_phonetics_file = BufReader::new(extra_phonetics_file);
-            let word_to_pronunciations = phonetics_file
-                .lines()
-                .chain(extra_phonetics_file.lines())
-                .filter_map(|line| {
-                    let line = line.unwrap();
-                    if line.trim().is_empty() {
-                        return None;
-                    }
-                    let (word, ipa) = line.split_once('\t').unwrap();
-                    let word = word.trim().to_lowercase();
-                    let ipa = ipa.trim().to_string();
-                    Some((word, ipa))
-                })
-                .filter(|(word, _)| frequent_words.contains(word))
+            let parse_pronunciation_lines = |file: File| {
+                BufReader::new(file)
+                    .lines()
+                    .filter_map(|line| {
+                        let line = line.unwrap();
+                        if line.trim().is_empty() {
+                            return None;
+                        }
+                        let (word, ipa) = line.split_once('\t').unwrap();
+                        Some((word.trim().to_lowercase(), ipa.trim().to_string()))
+                    })
+                    .filter(|(word, _)| frequent_words.contains(word))
+                    .collect::<Vec<_>>()
+            };
+            let wikipron_lines = parse_pronunciation_lines(
+                File::open(wikipron_path).context("Failed to open wikipron pronunciations file")?,
+            );
+            let extra_lines = parse_pronunciation_lines(
+                File::open(extra_pronunciations_path)
+                    .context("Failed to open extra pronunciations file")?,
+            );
+
+            let mut word_to_pronunciations: HashMap<String, BTreeSet<String>> = wikipron_lines
+                .into_iter()
                 .into_group_map()
                 .into_iter()
                 .map(|(word, pronunciations)| (word, pronunciations.into_iter().collect()))
                 .collect();
-            let word_to_pronunciation =
+
+            // Hand-curated entries always win: a word listed in
+            // extra_pronunciations.tsv takes its first listed entry as the main
+            // pronunciation (WikiPron entries are demoted to alternates) and
+            // skips LLM selection entirely.
+            let mut extra_by_word: BTreeMap<String, Vec<String>> = BTreeMap::new();
+            for (word, ipa) in extra_lines {
+                extra_by_word.entry(word).or_default().push(ipa);
+            }
+            let manual_pronunciations: BTreeMap<String, language_utils::Pronunciations> =
+                extra_by_word
+                    .into_iter()
+                    .map(|(word, pronunciations)| {
+                        let mut pronunciations = pronunciations.into_iter();
+                        let main = pronunciations.next().expect("at least one pronunciation");
+                        let others = pronunciations
+                            .chain(word_to_pronunciations.remove(&word).into_iter().flatten())
+                            .filter(|p| *p != main)
+                            .unique()
+                            .collect();
+                        (word, language_utils::Pronunciations { main, others })
+                    })
+                    .collect();
+
+            let mut word_to_pronunciation =
                 generate_data::pronunciations::select_common_pronunciations(
                     *course,
                     word_to_pronunciations,
@@ -1558,6 +1586,7 @@ async fn main() -> anyhow::Result<()> {
                 .context("Failed to select common pronunciations")?
                 .into_iter()
                 .collect::<BTreeMap<_, _>>();
+            word_to_pronunciation.extend(manual_pronunciations);
 
             // Build word -> max frequency map for sorting
             let word_max_freq: std::collections::HashMap<&str, u32> = gram_frequencies
