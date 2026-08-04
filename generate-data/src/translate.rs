@@ -736,7 +736,9 @@ impl Translator {
                 .batch_chat_with_system_prompt::<TranslationResponse>(
                     &system_prompt,
                     chunk.to_vec(),
-                    |batch| crate::report_batch_progress(pb, chunk_start, chunk.len(), batch),
+                    |batch| {
+                        generate_data::report_batch_progress(pb, chunk_start, chunk.len(), batch)
+                    },
                 )
                 .await
             {

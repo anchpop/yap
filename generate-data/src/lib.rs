@@ -19,7 +19,7 @@ pub fn cache_only() -> bool {
 /// Update an indicatif bar from a Batch API status poll. `offset` is the number
 /// of items handled by earlier batches and `expected` includes cache hits, which
 /// OpenAI's request counts do not include.
-pub(crate) fn report_batch_progress(
+pub fn report_batch_progress(
     progress: &indicatif::ProgressBar,
     offset: u64,
     expected: usize,
