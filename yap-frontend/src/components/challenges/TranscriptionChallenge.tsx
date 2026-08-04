@@ -21,7 +21,7 @@ type GramDefinition =
   | { Phrasebook: PhrasebookDefinitionEntry };
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { languageToIso6391 } from "@/lib/utils";
+import { languageToBcp47 } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { AudioButton } from "../AudioButton";
 import { playSoundEffect } from "@/lib/sound-effects";
@@ -502,7 +502,7 @@ export function TranscriptionChallenge({
                 // The accent keyboard will refocus when clicked
               }}
               disabled={gradingState !== null}
-              lang={languageToIso6391(targetLanguage)}
+              lang={languageToBcp47(targetLanguage)}
               autoCorrect="off"
               autoCapitalize={index === 0 ? "sentences" : "off"}
               spellCheck={false}

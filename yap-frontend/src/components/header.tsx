@@ -17,7 +17,7 @@ import { SyncStatusDialog } from "@/components/sync-status-dialog";
 import type { UserInfo } from "@/App";
 import { AuthDialog } from "@/components/auth-dialog";
 import type { Language } from "../../../yap-frontend-rs/pkg";
-import { match } from "ts-pattern";
+import { LANGUAGES } from "@/lib/languages";
 
 interface HeaderProps {
   userInfo: UserInfo | undefined;
@@ -34,21 +34,7 @@ interface HeaderProps {
 }
 
 function getLanguageEmoji(language: Language | undefined): string {
-  return match(language)
-    .with("French", () => "🇫🇷")
-    .with("Spanish", () => "🇪🇸")
-    .with("Korean", () => "🇰🇷")
-    .with("English", () => "🇬🇧")
-    .with("German", () => "🇩🇪")
-    .with("ChineseSimplified", () => "🇨🇳")
-    .with("ChineseTraditional", () => "🇹🇼")
-    .with("Japanese", () => "🇯🇵")
-    .with("Russian", () => "🇷🇺")
-    .with("Portuguese", () => "🇵🇹")
-    .with("Italian", () => "🇮🇹")
-    .with("Hindi", () => "🇮🇳")
-    .with(undefined, () => "🌍")
-    .exhaustive();
+  return language ? LANGUAGES[language].flag : "🌍";
 }
 
 export function Header({

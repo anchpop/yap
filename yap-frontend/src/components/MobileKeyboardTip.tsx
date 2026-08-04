@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type Language } from "../../../yap-frontend-rs/pkg/yap_frontend_rs";
-import { match } from "ts-pattern";
+import { LANGUAGES } from "@/lib/languages";
 
 interface MobileKeyboardTipProps {
   language: Language;
@@ -32,23 +32,10 @@ export function MobileKeyboardTip({
     return null;
   }
 
-  const characterType = match(language)
-    .with("French", () => "accented")
-    .with("Spanish", () => "accented")
-    .with("German", () => "accented")
-    .with("Korean", () => "hangul")
-    .with("English", () => null)
-    .with("ChineseSimplified", () => "Chinese")
-    .with("ChineseTraditional", () => "Chinese")
-    .with("Japanese", () => "Japanese")
-    .with("Russian", () => "Cyrillic")
-    .with("Portuguese", () => "accented")
-    .with("Italian", () => "accented")
-    .with("Hindi", () => "Devanagari")
-    .exhaustive();
+  const { scriptName, englishName } = LANGUAGES[language];
 
-  // Don't show tip for English
-  if (!characterType) {
+  // Languages with no special characters (English) don't need the tip.
+  if (!scriptName) {
     return null;
   }
 
@@ -57,8 +44,8 @@ export function MobileKeyboardTip({
       className={`md:hidden flex items-center justify-between gap-2 p-3 mt-3 border rounded-lg bg-muted/30 ${className}`}
     >
       <p className="text-sm text-muted-foreground flex-1">
-        <span className="font-medium">Tip:</span> Enable the {language} keyboard
-        on your device to easily type {characterType} characters
+        <span className="font-medium">Tip:</span> Enable the {englishName}{" "}
+        keyboard on your device to easily type {scriptName} characters
       </p>
       <Button
         variant="ghost"

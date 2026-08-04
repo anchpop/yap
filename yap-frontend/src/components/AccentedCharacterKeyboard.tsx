@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { type Language } from "../../../yap-frontend-rs/pkg/yap_frontend_rs";
-import { match } from "ts-pattern";
+import { LANGUAGES } from "@/lib/languages";
 import { Card } from "./ui/card";
 
 interface AccentedCharacterKeyboardProps {
@@ -16,49 +16,7 @@ export function AccentedCharacterKeyboard({
   className = "",
   uppercase = false,
 }: AccentedCharacterKeyboardProps) {
-  const baseCharacters = match(language)
-    .with("French", () => [
-      "à",
-      "â",
-      "é",
-      "è",
-      "ê",
-      "ë",
-      "î",
-      "ï",
-      "ô",
-      "ù",
-      "û",
-      "ü",
-      "ÿ",
-      "ç",
-      "œ",
-      "æ",
-    ])
-    .with("Spanish", () => ["á", "é", "í", "ó", "ú", "ü", "ñ", "¿", "¡"])
-    .with("German", () => ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"])
-    .with("Korean", () => [])
-    .with("English", () => [])
-    .with("ChineseSimplified", () => [])
-    .with("ChineseTraditional", () => [])
-    .with("Japanese", () => [])
-    .with("Russian", () => [])
-    .with("Portuguese", () => [
-      "á",
-      "é",
-      "í",
-      "ó",
-      "ú",
-      "â",
-      "ê",
-      "ô",
-      "ã",
-      "õ",
-      "ç",
-    ])
-    .with("Italian", () => ["à", "è", "é", "ì", "ò", "ù"])
-    .with("Hindi", () => [])
-    .exhaustive();
+  const baseCharacters = LANGUAGES[language].accentedCharacters;
 
   const characters = uppercase
     ? [...new Set(baseCharacters.map((c) => c.toUpperCase()))]

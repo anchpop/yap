@@ -5,7 +5,7 @@ import { useOneSignalNotifications } from "@/hooks/use-onesignal-notifications";
 import { useIsInstalled } from "@/hooks/use-is-installed";
 import { InstallPwaButton } from "@/components/InstallPwaButton";
 import { Card } from "@/components/ui/card";
-import { match } from "ts-pattern";
+import { LANGUAGES } from "@/lib/languages";
 import type { Language } from "../../../yap-frontend-rs/pkg";
 
 interface EngagementPromptsProps {
@@ -85,20 +85,7 @@ export const EngagementPrompts = memo(function EngagementPrompts({ language }: E
     return null;
   }
 
-  const headingText = match(language)
-    .with("French", () => "Stay on track with your French learning")
-    .with("Spanish", () => "Stay on track with your Spanish learning")
-    .with("Korean", () => "Stay on track with your Korean learning")
-    .with("English", () => "Stay on track with your English learning")
-    .with("German", () => "Stay on track with your German learning")
-    .with("ChineseSimplified", () => "Stay on track with your Chinese learning")
-    .with("ChineseTraditional", () => "Stay on track with your Chinese learning")
-    .with("Japanese", () => "Stay on track with your Japanese learning")
-    .with("Russian", () => "Stay on track with your Russian learning")
-    .with("Portuguese", () => "Stay on track with your Portuguese learning")
-    .with("Italian", () => "Stay on track with your Italian learning")
-    .with("Hindi", () => "Stay on track with your Hindi learning")
-    .exhaustive();
+  const headingText = `Stay on track with your ${LANGUAGES[language].commonName} learning`;
 
   return (
     <Card variant="light" animate className="gap-0 px-3 py-4 sm:p-6">

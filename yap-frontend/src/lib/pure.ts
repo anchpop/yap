@@ -3,98 +3,45 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Language } from "../../../yap-frontend-rs/pkg";
+import { LANGUAGES, isLanguage, isoCodeToLanguage } from "./languages";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Language utility functions
-export const languageFlags: Record<Language, string> = {
-  French: "🇫🇷",
-  Spanish: "🇪🇸",
-  Korean: "🇰🇷",
-  English: "🇬🇧",
-  German: "🇩🇪",
-  ChineseSimplified: "🇨🇳",
-  ChineseTraditional: "🇹🇼",
-  Japanese: "🇯🇵",
-  Russian: "🇷🇺",
-  Portuguese: "🇧🇷",
-  Italian: "🇮🇹",
-  Hindi: "🇮🇳",
-};
+// Language utility functions. The data itself lives in ./languages — these
+// are the shorthands that callers reach for most often.
+export const languageFlags: Record<Language, string> = Object.fromEntries(
+  Object.entries(LANGUAGES).map(([language, meta]) => [language, meta.flag]),
+) as Record<Language, string>;
 
-export const nativeLanguageNames: Record<Language, string> = {
-  English: "English",
-  French: "Français",
-  Spanish: "Español",
-  Korean: "한국어",
-  German: "Deutsch",
-  ChineseSimplified: "简体中文",
-  ChineseTraditional: "繁體中文",
-  Japanese: "日本語",
-  Russian: "Русский",
-  Portuguese: "Português",
-  Italian: "Italiano",
-  Hindi: "हिन्दी",
-};
+export const nativeLanguageNames: Record<Language, string> =
+  Object.fromEntries(
+    Object.entries(LANGUAGES).map(([language, meta]) => [
+      language,
+      meta.nativeName,
+    ]),
+  ) as Record<Language, string>;
 
-export function isoCodeToLanguage(isoCode: string): Language | null {
-  const isoToLanguage: Record<string, Language> = {
-    fra: "French",
-    eng: "English",
-    spa: "Spanish",
-    kor: "Korean",
-    deu: "German",
-    ita: "Italian",
-    por: "Portuguese",
-    rus: "Russian",
-    hin: "Hindi",
-    "zho-hans": "ChineseSimplified",
-    "zho-hant": "ChineseTraditional",
-  };
-  return isoToLanguage[isoCode] || null;
-}
-
+// Accepts either a `Language` variant name or a pipeline ISO code, since
+// server-side stats hand back the latter.
 export function getLanguageFlag(isoCodeOrLanguage: string): string {
-  // Check if it's already a Language type
-  if (isoCodeOrLanguage in languageFlags) {
-    return languageFlags[isoCodeOrLanguage as Language];
-  }
-  // Otherwise convert from ISO code
-  const language = isoCodeToLanguage(isoCodeOrLanguage);
-  return language ? languageFlags[language] : "🌐";
+  const language = isLanguage(isoCodeOrLanguage)
+    ? isoCodeOrLanguage
+    : isoCodeToLanguage(isoCodeOrLanguage);
+  return language ? LANGUAGES[language].flag : "🌐";
 }
 
 export function getLanguageName(isoCodeOrLanguage: string): string {
-  // Check if it's already a Language type
-  if (isoCodeOrLanguage in nativeLanguageNames) {
-    return nativeLanguageNames[isoCodeOrLanguage as Language];
-  }
-  // Otherwise convert from ISO code
-  const language = isoCodeToLanguage(isoCodeOrLanguage);
-  return language ? nativeLanguageNames[language] : isoCodeOrLanguage;
+  const language = isLanguage(isoCodeOrLanguage)
+    ? isoCodeOrLanguage
+    : isoCodeToLanguage(isoCodeOrLanguage);
+  return language ? LANGUAGES[language].nativeName : isoCodeOrLanguage;
 }
 
-// Convert Language to ISO 639-1 2-letter language code for HTML lang attribute
-export function languageToIso6391(language: Language): string {
-  const languageToIso: Record<Language, string> = {
-    French: "fr",
-    English: "en",
-    Spanish: "es",
-    Korean: "ko",
-    German: "de",
-    // BCP 47 script subtags: the lang attribute drives Han glyph
-    // selection in browsers, so the script must be explicit.
-    ChineseSimplified: "zh-Hans",
-    ChineseTraditional: "zh-Hant",
-    Japanese: "ja",
-    Russian: "ru",
-    Portuguese: "pt",
-    Italian: "it",
-    Hindi: "hi",
-  };
-  return languageToIso[language];
+/** BCP 47 tag for the HTML `lang` attribute. */
+export function languageToBcp47(language: Language): string {
+  return LANGUAGES[language].bcp47;
 }
 
 export const profilerOnRender = (

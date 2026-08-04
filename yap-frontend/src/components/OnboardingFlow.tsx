@@ -36,6 +36,7 @@ import type {
   OnboardingSelections,
 } from "../../../yap-frontend-rs/pkg/yap_frontend_rs";
 import { nativeLanguageNames, languageFlags } from "@/lib/utils";
+import { LANGUAGES } from "@/lib/languages";
 import { useOneSignalNotifications } from "@/hooks/use-onesignal-notifications";
 
 // Re-export for use in LanguageSelector
@@ -921,21 +922,6 @@ function NotificationScreen({ onNext }: { onNext: () => void }) {
 }
 
 // Screen 7: Ready to start
-const letsGoPhrases: Record<Language, string> = {
-  French: "Allons-y !",
-  Spanish: "¡Vamos!",
-  Korean: "가자!",
-  English: "Let's go!",
-  German: "Los geht's!",
-  ChineseSimplified: "走吧！",
-  ChineseTraditional: "走吧！",
-  Japanese: "行こう！",
-  Russian: "Пойдем!",
-  Portuguese: "Vamos lá!",
-  Italian: "Andiamo!",
-  Hindi: "चलो!",
-};
-
 function ReadyScreen({
   targetLanguage,
   experience,
@@ -988,7 +974,7 @@ function ReadyScreen({
           className="mt-2 px-8 text-base bg-primary hover:bg-primary/90"
           onClick={() => onComplete(true)}
         >
-          {letsGoPhrases[targetLanguage]}
+          {LANGUAGES[targetLanguage].letsGo}
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       ) : (

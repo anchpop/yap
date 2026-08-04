@@ -10,79 +10,11 @@ import { toast } from "sonner";
 import { formatMorphology } from "@/utils/formatMorphology";
 import { highlightTermInSentence } from "@/utils/highlightTermInSentence";
 import { Card } from "@/components/ui/card";
+import { LANGUAGES } from "@/lib/languages";
 import { TargetLanguageText } from "./TargetLanguageText";
 import { AudioButton } from "./AudioButton";
 
 const RESULTS_LIMIT = 100;
-
-// Helper function to get language display name (exhaustive)
-function getLanguageDisplayName(language: Language): string {
-  switch (language) {
-    case "French":
-      return "French";
-    case "English":
-      return "English";
-    case "Spanish":
-      return "Spanish";
-    case "Korean":
-      return "Korean";
-    case "German":
-      return "German";
-    case "ChineseSimplified":
-      return "Chinese (Simplified)";
-    case "ChineseTraditional":
-      return "Chinese (Traditional)";
-    case "Japanese":
-      return "Japanese";
-    case "Russian":
-      return "Russian";
-    case "Portuguese":
-      return "Portuguese";
-    case "Italian":
-      return "Italian";
-    case "Hindi":
-      return "Hindi";
-    default: {
-      // TypeScript will error if we add a new language and don't handle it
-      const exhaustiveCheck: never = language;
-      throw new Error(`Unhandled language: ${exhaustiveCheck}`);
-    }
-  }
-}
-
-// Helper function to get language code (exhaustive)
-function getLanguageCode(language: Language): string {
-  switch (language) {
-    case "French":
-      return "FR";
-    case "English":
-      return "EN";
-    case "Spanish":
-      return "ES";
-    case "Korean":
-      return "KO";
-    case "German":
-      return "DE";
-    case "ChineseSimplified":
-      return "ZH";
-    case "ChineseTraditional":
-      return "ZHT";
-    case "Japanese":
-      return "JA";
-    case "Russian":
-      return "RU";
-    case "Portuguese":
-      return "PT";
-    case "Italian":
-      return "IT";
-    case "Hindi":
-      return "HI";
-    default: {
-      const exhaustiveCheck: never = language;
-      throw new Error(`Unhandled language: ${exhaustiveCheck}`);
-    }
-  }
-}
 
 export function Dictionary({
   deck,
@@ -107,10 +39,10 @@ export function Dictionary({
   );
 
   // Get language codes and display names for UI
-  const targetLangCode = getLanguageCode(targetLanguage);
-  const nativeLangCode = getLanguageCode(nativeLanguage);
-  const targetLangName = getLanguageDisplayName(targetLanguage);
-  const nativeLangName = getLanguageDisplayName(nativeLanguage);
+  const { badge: targetLangCode, englishName: targetLangName } =
+    LANGUAGES[targetLanguage];
+  const { badge: nativeLangCode, englishName: nativeLangName } =
+    LANGUAGES[nativeLanguage];
 
   const handleAddCard = (entry: GramDictionaryEntry) => {
     const event = deck.add_gram_by_frequency_index(entry.frequency_index);

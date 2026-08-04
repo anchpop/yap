@@ -23,6 +23,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn, languageFlags, nativeLanguageNames } from "@/lib/utils";
+import { LANGUAGES, detectBrowserLanguage } from "@/lib/languages";
 import type { Language } from "../../../yap-frontend-rs/pkg/yap_frontend_rs";
 import { useWeapon } from "@/weapon";
 import { get_available_courses } from "../../../yap-frontend-rs/pkg/yap_frontend_rs";
@@ -96,31 +97,9 @@ export function LanguageSelector({
     return Array.from(uniqueNative);
   }, [availableCourses]);
 
-  // Map browser language codes to our Language types and detect browser language
-  // NOTE: This language map must be updated whenever a new language is added to the Language enum
+  // Detect the browser's language, but only honour it if we teach in it.
   const detectedLanguage = useMemo(() => {
-    const languageMap: Record<string, Language> = {
-      en: "English",
-      "en-US": "English",
-      "en-GB": "English",
-      fr: "French",
-      "fr-FR": "French",
-      es: "Spanish",
-      "es-ES": "Spanish",
-      ko: "Korean",
-      "ko-KR": "Korean",
-      ru: "Russian",
-      "ru-RU": "Russian",
-    };
-
-    // Get browser language
-    const browserLang = navigator.language || navigator.languages?.[0];
-
-    // Check if browser language is supported
-    const detectedLang = browserLang
-      ? languageMap[browserLang] || languageMap[browserLang.split("-")[0]]
-      : null;
-
+    const detectedLang = detectBrowserLanguage();
     return detectedLang && nativeLanguages.includes(detectedLang)
       ? detectedLang
       : null;
@@ -138,17 +117,6 @@ export function LanguageSelector({
     }
   }, [selectionState.stage, detectedLanguage]);
 
-  // Determine language stability level
-  const getLanguageStatus = (lang: Language): "stable" | "alpha" | "beta" => {
-    if (lang === "Russian" || lang === "Korean") {
-      return "alpha";
-    }
-    if (lang === "Italian" || lang === "Portuguese") {
-      return "beta";
-    }
-    return "stable";
-  };
-
   // Get target languages available for selected native language
   const targetLanguages =
     selectionState.stage === "selectingNative"
@@ -161,132 +129,14 @@ export function LanguageSelector({
 
   // Group languages by stability status
   const stableLanguages = targetLanguages.filter(
-    (lang) => getLanguageStatus(lang) === "stable",
+    (lang) => LANGUAGES[lang].status === "stable",
   );
   const alphaLanguages = targetLanguages.filter(
-    (lang) => getLanguageStatus(lang) === "alpha",
+    (lang) => LANGUAGES[lang].status === "alpha",
   );
   const betaLanguages = targetLanguages.filter(
-    (lang) => getLanguageStatus(lang) === "beta",
+    (lang) => LANGUAGES[lang].status === "beta",
   );
-
-  // "I speak [language]" in each language
-  const iSpeakPhrases: Record<Language, string> = {
-    English: "I speak English",
-    French: "Je parle français",
-    Spanish: "Hablo español",
-    Korean: "한국어를 합니다",
-    German: "Ich spreche Deutsch",
-    ChineseSimplified: "我说中文",
-    ChineseTraditional: "我說中文",
-    Japanese: "日本語を話します",
-    Russian: "Я говорю по-русски",
-    Portuguese: "Eu falo português",
-    Italian: "Parlo italiano",
-    Hindi: "मैं हिन्दी बोलता हूँ",
-  };
-
-  // "Yap.Town" in each language
-  const yaptownNames: Record<Language, string> = {
-    English: "Yap.Town",
-    French: "Yap.Ville",
-    Spanish: "Yap.Ciudad",
-    Korean: "얍.타운",
-    German: "Yap.Stadt",
-    ChineseSimplified: "Yap.城",
-    ChineseTraditional: "Yap.城",
-    Japanese: "Yap.町",
-    Russian: "Yap.Город",
-    Portuguese: "Yap.Cidade",
-    Italian: "Yap.Città",
-    Hindi: "यैप.टाउन",
-  };
-
-  const languageColors: Record<
-    Language,
-    { primary: string; secondary: string; accent: string; gradient: string }
-  > = {
-    French: {
-      primary: "#002395",
-      secondary: "#FFFFFF",
-      accent: "#ED2939",
-      gradient:
-        "linear-gradient(90deg, #002395 33%, #FFFFFF 33% 66%, #ED2939 66%)",
-    },
-    Spanish: {
-      primary: "#C60B1E",
-      secondary: "#FFC400",
-      accent: "#C60B1E",
-      gradient:
-        "linear-gradient(180deg, #C60B1E 25%, #FFC400 25% 75%, #C60B1E 75%)",
-    },
-    Korean: {
-      primary: "#003478",
-      secondary: "#FFFFFF",
-      accent: "#C60B1E",
-      gradient: "linear-gradient(180deg, #FFFFFF 50%, #C60B1E 50%)",
-    },
-    English: {
-      primary: "#012169",
-      secondary: "#FFFFFF",
-      accent: "#C8102E",
-      gradient:
-        "linear-gradient(90deg, #012169 33%, #FFFFFF 33% 66%, #C8102E 66%)",
-    },
-    German: {
-      primary: "#000000",
-      secondary: "#DD0000",
-      accent: "#FFCE00",
-      gradient:
-        "linear-gradient(180deg, #000000 33%, #DD0000 33% 66%, #FFCE00 66%)",
-    },
-    ChineseSimplified: {
-      primary: "#DE2910",
-      secondary: "#FFDE00",
-      accent: "#DE2910",
-      gradient: "linear-gradient(135deg, #DE2910 50%, #FFDE00 50%)",
-    },
-    ChineseTraditional: {
-      primary: "#000095",
-      secondary: "#FFFFFF",
-      accent: "#FE0000",
-      gradient: "linear-gradient(135deg, #000095 50%, #FE0000 50%)",
-    },
-    Japanese: {
-      primary: "#FFFFFF",
-      secondary: "#BC002D",
-      accent: "#BC002D",
-      gradient: "linear-gradient(180deg, #FFFFFF 50%, #BC002D 50%)",
-    },
-    Russian: {
-      primary: "#FFFFFF",
-      secondary: "#0039A6",
-      accent: "#D52B1E",
-      gradient:
-        "linear-gradient(180deg, #FFFFFF 33%, #0039A6 33% 66%, #D52B1E 66%)",
-    },
-    Portuguese: {
-      primary: "#009B3A",
-      secondary: "#FFDF00",
-      accent: "#002776",
-      gradient:
-        "linear-gradient(135deg, #009B3A 40%, #FFDF00 40% 60%, #002776 60%)",
-    },
-    Italian: {
-      primary: "#009246",
-      secondary: "#FFFFFF",
-      accent: "#CE2B37",
-      gradient:
-        "linear-gradient(90deg, #009246 33%, #FFFFFF 33% 66%, #CE2B37 66%)",
-    },
-    Hindi: {
-      primary: "#FF9933",
-      secondary: "#FFFFFF",
-      accent: "#138808",
-      gradient:
-        "linear-gradient(180deg, #FF9933 33%, #FFFFFF 33% 66%, #138808 66%)",
-    },
-  };
 
   useEffect(() => {
     if (selectionState.stage === "onboarding") {
@@ -309,7 +159,7 @@ export function LanguageSelector({
   // Determine the Yaptown title to display based on selection state
   const yaptownTitle =
     selectionState.stage === "onboarding"
-      ? yaptownNames[selectionState.targetLanguage]
+      ? LANGUAGES[selectionState.targetLanguage].yaptownName
       : "Yap.Town";
 
   return (
@@ -363,14 +213,14 @@ export function LanguageSelector({
                     >
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                        style={{ background: languageColors[lang]?.gradient }}
+                        style={{ background: LANGUAGES[lang].colors.gradient }}
                       />
                       <div className="relative z-10">
                         <div className="text-8xl mb-4">
                           {languageFlags[lang]}
                         </div>
                         <h2 className="text-2xl font-bold mb-1">
-                          {iSpeakPhrases[lang]}
+                          {LANGUAGES[lang].iSpeak}
                         </h2>
                         <p className="text-lg text-muted-foreground">
                           {nativeLanguageNames[lang]}
@@ -405,7 +255,7 @@ export function LanguageSelector({
                     className="relative overflow-hidden p-6 text-center group transition-all duration-300 hover:shadow-2xl cursor-pointer border-4"
                     style={{
                       borderColor:
-                        languageColors[currentTargetLanguage]?.primary,
+                        LANGUAGES[currentTargetLanguage].colors.primary,
                     }}
                     onClick={onResume}
                     animate
@@ -414,7 +264,7 @@ export function LanguageSelector({
                       className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300"
                       style={{
                         background:
-                          languageColors[currentTargetLanguage]?.gradient,
+                          LANGUAGES[currentTargetLanguage].colors.gradient,
                       }}
                     />
                     <div className="relative z-10 flex items-center justify-center gap-4">
@@ -471,7 +321,7 @@ export function LanguageSelector({
                       >
                         <div
                           className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                          style={{ background: languageColors[lang]?.gradient }}
+                          style={{ background: LANGUAGES[lang].colors.gradient }}
                         />
                         <div className="relative z-10">
                           <div className="md:text-8xl text-6xl mb-4">
@@ -522,7 +372,7 @@ export function LanguageSelector({
                           <div
                             className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
                             style={{
-                              background: languageColors[lang]?.gradient,
+                              background: LANGUAGES[lang].colors.gradient,
                             }}
                           />
                           <div className="relative z-10">
@@ -575,7 +425,7 @@ export function LanguageSelector({
                           <div
                             className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
                             style={{
-                              background: languageColors[lang]?.gradient,
+                              background: LANGUAGES[lang].colors.gradient,
                             }}
                           />
                           <div className="relative z-10">

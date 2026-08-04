@@ -3,7 +3,9 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   get_showcase_data,
   type CourseShowcase,
+  type Language,
 } from "../../../yap-frontend-rs/pkg";
+import { LANGUAGES, detectBrowserLanguage } from "@/lib/languages";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card.tsx";
@@ -21,51 +23,8 @@ import type { ReactNode } from "react";
 import type { AppContextType } from "@/App";
 import { useDeckSelection } from "@/App";
 
-const LANGUAGE_DISPLAY_NAMES: Record<string, string> = {
-  French: "French",
-  English: "English",
-  Spanish: "Spanish",
-  Korean: "Korean",
-  German: "German",
-  Italian: "Italian",
-  Portuguese: "Portuguese",
-  ChineseSimplified: "Chinese (Simplified)",
-  ChineseTraditional: "Chinese (Traditional)",
-  Japanese: "Japanese",
-  Russian: "Russian",
-};
-
-const BROWSER_LANG_MAP: Record<string, string> = {
-  en: "English",
-  "en-US": "English",
-  "en-GB": "English",
-  fr: "French",
-  "fr-FR": "French",
-  es: "Spanish",
-  "es-ES": "Spanish",
-  ko: "Korean",
-  "ko-KR": "Korean",
-  de: "German",
-  "de-DE": "German",
-  it: "Italian",
-  "it-IT": "Italian",
-  pt: "Portuguese",
-  "pt-BR": "Portuguese",
-  "pt-PT": "Portuguese",
-  ru: "Russian",
-  "ru-RU": "Russian",
-};
-
-function useDetectedNativeLanguage(): string {
-  return useMemo(() => {
-    const browserLang = navigator.language || navigator.languages?.[0];
-    if (!browserLang) return "English";
-    return (
-      BROWSER_LANG_MAP[browserLang] ||
-      BROWSER_LANG_MAP[browserLang.split("-")[0]] ||
-      "English"
-    );
-  }, []);
+function useDetectedNativeLanguage(): Language {
+  return useMemo(() => detectBrowserLanguage() ?? "English", []);
 }
 
 function HighlightPhrase({ text, phrase }: { text: string; phrase: string }) {
@@ -144,7 +103,7 @@ function SentenceShowcase({
         <TabsList className="flex-wrap h-auto gap-1">
           {filteredData.map((c, i) => (
             <TabsTrigger key={i} value={String(i)}>
-              {LANGUAGE_DISPLAY_NAMES[c.targetLanguage] ?? c.targetLanguage}
+              {LANGUAGES[c.targetLanguage].englishName}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -182,8 +141,7 @@ function SentenceShowcase({
 
           <p className="text-sm text-muted-foreground">
             {course.sentenceCount.toLocaleString()} sentences in{" "}
-            {LANGUAGE_DISPLAY_NAMES[course.targetLanguage] ??
-              course.targetLanguage}
+            {LANGUAGES[course.targetLanguage].englishName}
           </p>
         </motion.div>
       </AnimatePresence>
