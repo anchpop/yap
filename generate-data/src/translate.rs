@@ -758,7 +758,7 @@ impl Translator {
                 }
                 Err(e) => {
                     eprintln!("OpenAI batch translate failed ({} texts): {e}", chunk.len());
-                    pb.inc(chunk.len() as u64);
+                    pb.set_position(chunk_start + chunk.len() as u64);
                 }
             }
 

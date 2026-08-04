@@ -28,7 +28,8 @@ pub fn report_batch_progress(
     let total = u64::from(batch.request_counts.total);
     let processed = u64::from(batch.request_counts.completed + batch.request_counts.failed);
     let cached = (expected as u64).saturating_sub(total);
-    progress.set_position(offset + cached + processed);
+    let position = offset + cached + processed;
+    progress.set_position(position.min(progress.length().unwrap_or(u64::MAX)));
 }
 
 /// Apply the process-wide cache-only setting to a tysm ChatClient.
