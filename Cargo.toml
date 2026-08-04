@@ -34,7 +34,7 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-tysm = { git = "https://github.com/anchpop/tysm.git", rev = "2c1962e25cb670fe26e52c7b06510a34f4c8c695" }
+tysm = { git = "https://github.com/anchpop/tysm.git", rev = "af0945438c2c584f6a50f95e4ee7efc52ddc856d" }
 # Directory↔R2 sync engine (github.com/anchpop/osmo). generate-data uses it to mirror
 # the .cache directory to a bucket. Git dep until published to crates.io.
 osmo = { git = "https://github.com/anchpop/osmo" }
