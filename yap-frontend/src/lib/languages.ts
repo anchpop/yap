@@ -396,6 +396,18 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
 /** Every language, in the order the table declares them. */
 export const ALL_LANGUAGES = Object.keys(LANGUAGES) as Language[];
 
+/**
+ * Project one field out of the table into its own lookup. The cast is safe —
+ * and lives here alone — because the source keys are exactly `Language`.
+ */
+export function mapLanguages<T>(
+  select: (meta: LanguageMeta) => T,
+): Record<Language, T> {
+  return Object.fromEntries(
+    ALL_LANGUAGES.map((language) => [language, select(LANGUAGES[language])]),
+  ) as Record<Language, T>;
+}
+
 const BY_ISO_CODE: Record<string, Language> = Object.fromEntries(
   ALL_LANGUAGES.map((language) => [LANGUAGES[language].isoCode, language]),
 );

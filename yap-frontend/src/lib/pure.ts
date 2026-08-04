@@ -3,7 +3,12 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Language } from "../../../yap-frontend-rs/pkg";
-import { LANGUAGES, isLanguage, isoCodeToLanguage } from "./languages";
+import {
+  LANGUAGES,
+  isLanguage,
+  isoCodeToLanguage,
+  mapLanguages,
+} from "./languages";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,17 +16,9 @@ export function cn(...inputs: ClassValue[]) {
 
 // Language utility functions. The data itself lives in ./languages — these
 // are the shorthands that callers reach for most often.
-export const languageFlags: Record<Language, string> = Object.fromEntries(
-  Object.entries(LANGUAGES).map(([language, meta]) => [language, meta.flag]),
-) as Record<Language, string>;
+export const languageFlags = mapLanguages((meta) => meta.flag);
 
-export const nativeLanguageNames: Record<Language, string> =
-  Object.fromEntries(
-    Object.entries(LANGUAGES).map(([language, meta]) => [
-      language,
-      meta.nativeName,
-    ]),
-  ) as Record<Language, string>;
+export const nativeLanguageNames = mapLanguages((meta) => meta.nativeName);
 
 // Accepts either a `Language` variant name or a pipeline ISO code, since
 // server-side stats hand back the latter.
