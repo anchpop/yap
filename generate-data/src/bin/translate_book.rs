@@ -121,10 +121,10 @@ async fn main() -> anyhow::Result<()> {
     let segmenter = RemoteClient::new(RemoteConfig::default())?;
 
     for (code, lang_name, seg_hint) in LANGS {
-        if let Some(ref o) = only {
-            if o != code {
-                continue;
-            }
+        if let Some(ref o) = only
+            && o != code
+        {
+            continue;
         }
         let out_dir = PathBuf::from(format!(
             "./generate-data/data/{code}/sentence-sources/books/{series}"

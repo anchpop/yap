@@ -1,5 +1,4 @@
 use anyhow::Context;
-use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{
     Course, GramFrequencyEntry, HomophonePractice, HomophoneSentencePair, HomophoneWordPair,
@@ -27,13 +26,8 @@ struct HomophonePracticeThoughts {
     sentence_pairs: Vec<RawSentencePair>,
 }
 
-static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5")
-            .unwrap()
-            .with_cache_directory("./.cache"),
-    )
-});
+static CHAT_CLIENT: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-luna"));
 
 /// Generate homophones file for the top N most frequent words in the language.
 /// Returns a map from pronunciations to sets of words that share that pronunciation.
@@ -136,6 +130,7 @@ pub async fn generate_homophone_practice(
         target_language,
         ..
     } = course;
+    let chat_client = &*CHAT_CLIENT;
 
     // Create word pairs from homophones (only pairs, skip groups of 3+)
     let word_pairs: Vec<(String, String)> = homophones
@@ -155,17 +150,8 @@ pub async fn generate_homophone_practice(
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let practice_data = futures::stream::iter(word_pairs.iter())
-        .map(|(word1, word2)| {
-            let pb = pb.clone();
-            async move {
-                let cost = CHAT_CLIENT.cost().unwrap_or(0.0);
-                pb.set_message(format!("{cost:.2} ({word1} / {word2})"));
-
-                let response: Result<HomophonePracticeThoughts, _> = CHAT_CLIENT
-                    .chat_with_system_prompt(
-                        format!(
-                            r#"You are generating practice sentences to help {native_language} speakers learning {target_language} distinguish between homophones (words that sound the same but have different meanings).
+    let system_prompt = format!(
+        r#"You are generating practice sentences to help {native_language} speakers learning {target_language} distinguish between homophones (words that sound the same but have different meanings).
 
 You will be given two {target_language} words that sound identical. Generate 30 pairs of example sentences that clearly demonstrate the difference in meaning between the two words.
 
@@ -190,28 +176,21 @@ Output format:
         ... (30 pairs total)
     ]
 }}"#
-                        ),
-                        format!("word1: `{word1}`\nword2: `{word2}`"),
-                    )
-                    .await
-                    .inspect_err(|e| {
-                        println!("error generating practice for {word1}/{word2}: {e:#?}");
-                    });
+    );
+    let practice_data = chat_client
+        .batch_chat_with_system_prompt_fn::<_, _, HomophonePracticeThoughts>(
+            system_prompt,
+            &word_pairs,
+            |(word1, word2)| format!("word1: `{word1}`\nword2: `{word2}`"),
+            |batch| crate::report_batch_progress(&pb, 0, word_pairs.len(), batch),
+        )
+        .await?;
 
-                pb.inc(1);
-
-                (response, word1.clone(), word2.clone())
-            }
-        })
-        .buffer_unordered(10)
-        .collect::<Vec<_>>()
-        .await;
-
-    pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+    pb.finish_with_message(format!("{:.2}", chat_client.cost().unwrap_or(0.0)));
 
     // Process the responses
     let mut practices = BTreeMap::new();
-    for (response, word1, word2) in practice_data {
+    for ((word1, word2), response) in practice_data {
         if let Ok(thoughts) = response {
             let word_pair = HomophoneWordPair::new(word1.clone(), word2.clone())
                 .expect("Homophone words should be different");

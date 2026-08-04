@@ -7,7 +7,6 @@
 //! morphemes). We invert that into morpheme → words-it-appears-in, show the
 //! model a stable sample of those words, and ask it to classify the morpheme.
 
-use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{Course, Heteronym, Language, MorphemeInfo, MorphemeSegment, PartOfSpeech};
 use sentence_sampler::sample_to_target;
@@ -15,25 +14,8 @@ use std::collections::BTreeMap;
 use std::sync::LazyLock;
 use tysm::chat_completions::ChatClient;
 
-static CLASSIFY_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.4-mini")
-            .unwrap()
-            .with_cache_directory("./.cache")
-            .with_reasoning_effort("low")
-            .with_service_tier("flex"),
-    )
-});
-
-static DEFINE_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.4")
-            .unwrap()
-            .with_cache_directory("./.cache")
-            .with_reasoning_effort("low")
-            .with_service_tier("flex"),
-    )
-});
+static CHAT_CLIENT: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-luna"));
 
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, schemars::JsonSchema,
@@ -221,32 +203,6 @@ fn pick_example_words(words: &[String], n: usize) -> Vec<String> {
     sampled
 }
 
-async fn classify_one(
-    system_prompt: &str,
-    segment: &MorphemeSegment<String>,
-    example_words: &[String],
-) -> Option<MorphemeCategory> {
-    let tag_line = segment
-        .tag
-        .as_ref()
-        .map(|t| {
-            format!(
-                "\ngrammatical tag: {t}  (UniMorph-style descriptor identifying this morpheme instance's specific grammatical function — use it to disambiguate from other uses of the same surface/canonical)"
-            )
-        })
-        .unwrap_or_default();
-    let user = format!(
-        "morpheme surface: {surface}\ncanonical / dictionary form: {canonical}{tag_line}\nexample words: {examples}",
-        surface = segment.surface,
-        canonical = segment.canonical,
-        examples = example_words.join(", "),
-    );
-    let response: Result<ClassifyResponse, _> = CLASSIFY_CLIENT
-        .chat_with_system_prompt(system_prompt, user)
-        .await;
-    response.ok().map(|r| r.category)
-}
-
 fn pos_str(pos: PartOfSpeech) -> String {
     serde_json::to_value(pos)
         .ok()
@@ -332,65 +288,6 @@ fn prefix_candidates(
     out
 }
 
-async fn lookup_one(
-    language: Language,
-    segment: &MorphemeSegment<String>,
-    prefix_candidates: &[(String, String, PartOfSpeech)],
-    example_words: &[String],
-) -> Option<Heteronym<String>> {
-    // Prefer trie-derived prefix candidates since they carry lemma + POS. Fall
-    // back to the raw example words if the prefix search came up empty.
-    let candidates_block = if !prefix_candidates.is_empty() {
-        prefix_candidates
-            .iter()
-            .map(|(w, l, p)| format!("  - {w} (lemma: {l}, pos: {})", pos_str(*p)))
-            .collect::<Vec<_>>()
-            .join("\n")
-    } else {
-        example_words
-            .iter()
-            .map(|w| format!("  - {w}"))
-            .collect::<Vec<_>>()
-            .join("\n")
-    };
-
-    let examples = lookup_examples(language);
-    let system_prompt = format!(
-        r#"You are an expert {language} morphologist. You'll be given a {language} morpheme (surface form plus its canonical / lemma hint) and a list of candidate dictionary words (words that start with this morpheme, each with their lemma + POS). Return the dictionary entry this morpheme corresponds to.
-
-The morpheme is often the bound surface form of a word — return the free-standing dictionary form. The canonical hint tells you what dictionary form the segmentation intended, so let it disambiguate cases where the surface alone could map to several lemmas.
-
-Prefer a `word` that appears in the candidate list when one is the right lemma. Otherwise return the lemma that those surface forms inflect from, even if it doesn't appear in the candidates.
-
-Return null for `entry` if the morpheme doesn't cleanly correspond to a single dictionary word.
-
-Worked examples for {language}:
-{examples}"#
-    );
-    let tag_line = segment
-        .tag
-        .as_ref()
-        .map(|t| {
-            format!(
-                "\ngrammatical tag: {t}  (UniMorph-style descriptor identifying this morpheme instance's specific grammatical function — use it to disambiguate from other uses of the same surface/canonical)"
-            )
-        })
-        .unwrap_or_default();
-    let user = format!(
-        "morpheme surface: {surface}\ncanonical / dictionary form: {canonical}{tag_line}\ncandidate words:\n{candidates_block}",
-        surface = segment.surface,
-        canonical = segment.canonical,
-    );
-    let response: Result<LookupResponse, _> = DEFINE_CLIENT
-        .chat_with_system_prompt(system_prompt, user)
-        .await;
-    response.ok().and_then(|r| r.entry).map(|e| Heteronym {
-        word: e.word,
-        lemma: e.lemma,
-        pos: e.pos,
-    })
-}
-
 /// The learner's native-language word for "conjugation". Threaded into the
 /// tag-aware guidance so the gloss is phrased in a term the learner actually
 /// knows, and the model doesn't confuse it with grammar terminology from some
@@ -432,12 +329,62 @@ Note that you can trust the tags to be accurate. If a tag says the suffix is use
     )
 }
 
-async fn define_one(
+fn lookup_messages(
+    language: Language,
+    segment: &MorphemeSegment<String>,
+    candidates: &[(String, String, PartOfSpeech)],
+    example_words: &[String],
+) -> Vec<tysm::chat_completions::ChatMessage> {
+    let candidates_block = if candidates.is_empty() {
+        example_words
+            .iter()
+            .map(|word| format!("  - {word}"))
+            .collect::<Vec<_>>()
+            .join("\n")
+    } else {
+        candidates
+            .iter()
+            .map(|(word, lemma, pos)| {
+                format!("  - {word} (lemma: {lemma}, pos: {})", pos_str(*pos))
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    let examples = lookup_examples(language);
+    let system = format!(
+        r#"You are an expert {language} morphologist. You'll be given a {language} morpheme (surface form plus its canonical / lemma hint) and a list of candidate dictionary words (words that start with this morpheme, each with their lemma + POS). Return the dictionary entry this morpheme corresponds to.
+
+The morpheme is often the bound surface form of a word — return the free-standing dictionary form. The canonical hint tells you what dictionary form the segmentation intended, so let it disambiguate cases where the surface alone could map to several lemmas.
+
+Prefer a `word` that appears in the candidate list when one is the right lemma. Otherwise return the lemma that those surface forms inflect from, even if it doesn't appear in the candidates.
+
+Return null for `entry` if the morpheme doesn't cleanly correspond to a single dictionary word.
+
+Worked examples for {language}:
+{examples}"#
+    );
+    let tag_line = segment
+        .tag
+        .as_ref()
+        .map(|tag| format!("\ngrammatical tag: {tag}  (UniMorph-style descriptor identifying this morpheme instance's specific grammatical function — use it to disambiguate from other uses of the same surface/canonical)"))
+        .unwrap_or_default();
+    let user = format!(
+        "morpheme surface: {surface}\ncanonical / dictionary form: {canonical}{tag_line}\ncandidate words:\n{candidates_block}",
+        surface = segment.surface,
+        canonical = segment.canonical,
+    );
+    vec![
+        tysm::chat_completions::ChatMessage::system(system),
+        tysm::chat_completions::ChatMessage::user(user),
+    ]
+}
+
+fn define_messages(
     course: Course,
     segment: &MorphemeSegment<String>,
     category: MorphemeCategory,
     example_words: &[String],
-) -> Option<String> {
+) -> Vec<tysm::chat_completions::ChatMessage> {
     let Course {
         target_language: language,
         native_language,
@@ -452,18 +399,14 @@ async fn define_one(
         MorphemeCategory::Inflectional => {
             "This is an inflectional affix — a grammatical marker (like plural, past tense, politeness). Return a terse grammatical label — the equivalent of \"Plural\", \"Past tense\", \"1sg present\", \"Polite\"."
         }
-        MorphemeCategory::Free => return None,
+        MorphemeCategory::Free => unreachable!(),
     };
-    // Only append tag-aware guidance when the segment actually carries a tag.
-    // This splits the system-prompt cache into two variants per language pair
-    // (tagged vs. untagged) but keeps the untagged variant identical to the
-    // pre-existing prompt so its cache entries stay warm.
-    let tag_guidance_block = if segment.tag.is_some() {
-        format!("\n\n{}", tag_define_guidance(native_language))
-    } else {
-        String::new()
-    };
-    let system_prompt = format!(
+    let tag_guidance_block = segment
+        .tag
+        .as_ref()
+        .map(|_| format!("\n\n{}", tag_define_guidance(native_language)))
+        .unwrap_or_default();
+    let system = format!(
         r#"You are an expert {language} morphologist. You'll be given a {language} morpheme (surface form plus its canonical / lemma hint) and a few example words it appears in. The canonical hint disambiguates the morpheme when multiple underlying morphemes share the same surface.
 
 {category_guidance}{tag_guidance_block}
@@ -475,11 +418,7 @@ Return null for the `definition` field if the morpheme has no useful synchronic 
     let tag_line = segment
         .tag
         .as_ref()
-        .map(|t| {
-            format!(
-                "\ngrammatical tag: {t}  (UniMorph-style descriptor identifying this morpheme instance's specific grammatical function — use it to disambiguate from other uses of the same surface/canonical)"
-            )
-        })
+        .map(|tag| format!("\ngrammatical tag: {tag}  (UniMorph-style descriptor identifying this morpheme instance's specific grammatical function — use it to disambiguate from other uses of the same surface/canonical)"))
         .unwrap_or_default();
     let user = format!(
         "morpheme surface: {surface}\ncanonical / dictionary form: {canonical}{tag_line}\nexample words: {examples}",
@@ -487,10 +426,10 @@ Return null for the `definition` field if the morpheme has no useful synchronic 
         canonical = segment.canonical,
         examples = example_words.join(", "),
     );
-    let response: Result<DefineResponse, _> = DEFINE_CLIENT
-        .chat_with_system_prompt(system_prompt, user)
-        .await;
-    response.ok().and_then(|r| r.definition)
+    vec![
+        tysm::chat_completions::ChatMessage::system(system),
+        tysm::chat_completions::ChatMessage::user(user),
+    ]
 }
 
 /// Classify every morpheme, then resolve it: Free morphemes get mapped to a
@@ -506,6 +445,8 @@ pub async fn analyze_morphemes(
     word_info: &BTreeMap<String, (String, PartOfSpeech)>,
 ) -> Vec<MorphemeAnalysis> {
     let language = course.target_language;
+    let classify_client = &*CHAT_CLIENT;
+    let define_client = &*CHAT_CLIENT;
     let examples_block = language_examples(language);
     let classify_prompt = format!(
         r#"You are an expert {language} morphologist. Classify the given {language} morpheme as one of:
@@ -534,27 +475,42 @@ You'll receive a morpheme plus a small sample of words it appears in. Pick the s
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let classified: Vec<(MorphemeSegment<String>, MorphemeCategory, Vec<String>)> =
-        futures::stream::iter(morpheme_to_words.iter())
+    let prompts = morpheme_to_words
+            .iter()
             .map(|(segment, words)| {
-                let pb = pb.clone();
-                let classify_prompt = classify_prompt.clone();
-                async move {
-                    let examples = pick_example_words(words, 10);
-                    let category = classify_one(&classify_prompt, segment, &examples).await?;
-                    pb.set_message(format!("{:.2}", CLASSIFY_CLIENT.cost().unwrap_or(0.0)));
-                    pb.inc(1);
-                    Some((segment.clone(), category, examples))
-                }
+                let examples = pick_example_words(words, 10);
+                let tag_line = segment
+                    .tag
+                    .as_ref()
+                    .map(|tag| format!("\ngrammatical tag: {tag}  (UniMorph-style descriptor identifying this morpheme instance's specific grammatical function — use it to disambiguate from other uses of the same surface/canonical)"))
+                    .unwrap_or_default();
+                let user = format!(
+                    "morpheme surface: {surface}\ncanonical / dictionary form: {canonical}{tag_line}\nexample words: {examples}",
+                    surface = segment.surface,
+                    canonical = segment.canonical,
+                    examples = examples.join(", "),
+                );
+                (segment.clone(), examples, user)
             })
-            .buffer_unordered(50)
-            .collect::<Vec<_>>()
-            .await
-            .into_iter()
-            .flatten()
-            .collect();
+            .collect::<Vec<_>>();
+    let classified: Vec<(MorphemeSegment<String>, MorphemeCategory, Vec<String>)> = classify_client
+        .batch_chat_with_system_prompt_fn::<_, _, ClassifyResponse>(
+            &classify_prompt,
+            &prompts,
+            |(_, _, user)| user.clone(),
+            |batch| crate::report_batch_progress(&pb, 0, prompts.len(), batch),
+        )
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(|((segment, examples, _), response)| {
+            response
+                .ok()
+                .map(|response| (segment.clone(), response.category, examples.clone()))
+        })
+        .collect();
 
-    pb.finish_with_message(format!("{:.2}", CLASSIFY_CLIENT.cost().unwrap_or(0.0)));
+    pb.finish_with_message(format!("{:.2}", classify_client.cost().unwrap_or(0.0)));
 
     // Phase 2: resolve each morpheme — Free morphemes get a dictionary lookup,
     // Bound / Derivational / Inflectional get a short gloss.
@@ -570,49 +526,83 @@ You'll receive a morpheme plus a small sample of words it appears in. Pick the s
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let mut results: Vec<MorphemeAnalysis> = futures::stream::iter(classified)
-        .map(|(segment, category, example_words)| {
-            let pb = pb.clone();
-            async move {
-                let kind = match category {
-                    MorphemeCategory::Free => {
-                        let candidates = prefix_candidates(word_info, &segment.surface, 15);
-                        match lookup_one(language, &segment, &candidates, &example_words).await {
-                            Some(heteronym) => MorphemeInfo::Root { heteronym },
-                            // Fallback: the LLM couldn't resolve a dictionary entry for this
-                            // Free-classified morpheme. Store it as a bound morpheme with no
-                            // gloss rather than dropping it entirely.
-                            None => MorphemeInfo::Bound { meaning: None },
-                        }
-                    }
-                    MorphemeCategory::Bound => {
-                        let def = define_one(course, &segment, category, &example_words).await;
-                        MorphemeInfo::Bound { meaning: def }
-                    }
-                    MorphemeCategory::Derivational => {
-                        let def = define_one(course, &segment, category, &example_words).await;
-                        MorphemeInfo::Derivation { meaning: def }
-                    }
-                    MorphemeCategory::Inflectional => {
-                        let def = define_one(course, &segment, category, &example_words).await;
-                        MorphemeInfo::Inflection { meaning: def }
-                    }
-                };
-                pb.set_message(format!("{:.2}", DEFINE_CLIENT.cost().unwrap_or(0.0)));
-                pb.inc(1);
-                MorphemeAnalysis {
-                    segment,
-                    kind,
-                    example_words,
-                }
+    let free = classified
+        .iter()
+        .filter(|(_, category, _)| *category == MorphemeCategory::Free)
+        .map(|(segment, _, examples)| {
+            (
+                segment.clone(),
+                examples.clone(),
+                prefix_candidates(word_info, &segment.surface, 15),
+            )
+        })
+        .collect::<Vec<_>>();
+    let nonfree = classified
+        .iter()
+        .filter(|(_, category, _)| *category != MorphemeCategory::Free)
+        .cloned()
+        .collect::<Vec<_>>();
+
+    let roots = define_client
+        .batch_chat_with_messages_fn::<_, LookupResponse>(
+            &free,
+            |(segment, examples, candidates)| {
+                lookup_messages(language, segment, candidates, examples)
+            },
+            |batch| crate::report_batch_progress(&pb, 0, free.len(), batch),
+        )
+        .await
+        .unwrap_or_default();
+    let glosses = define_client
+        .batch_chat_with_messages_fn::<_, DefineResponse>(
+            &nonfree,
+            |(segment, category, examples)| define_messages(course, segment, *category, examples),
+            |batch| crate::report_batch_progress(&pb, free.len() as u64, nonfree.len(), batch),
+        )
+        .await
+        .unwrap_or_default();
+
+    let mut results = roots
+        .into_iter()
+        .map(|((segment, examples, _), response)| {
+            let kind = response
+                .ok()
+                .and_then(|response| response.entry)
+                .map(|entry| MorphemeInfo::Root {
+                    heteronym: Heteronym {
+                        word: entry.word,
+                        lemma: entry.lemma,
+                        pos: entry.pos,
+                    },
+                })
+                .unwrap_or(MorphemeInfo::Bound { meaning: None });
+            MorphemeAnalysis {
+                segment: segment.clone(),
+                kind,
+                example_words: examples.clone(),
             }
         })
-        .buffer_unordered(30)
-        .collect::<Vec<_>>()
-        .await;
-
-    pb.finish_with_message(format!("{:.2}", DEFINE_CLIENT.cost().unwrap_or(0.0)));
-
+        .collect::<Vec<_>>();
+    results.extend(
+        glosses
+            .into_iter()
+            .map(|((segment, category, examples), response)| {
+                let meaning = response.ok().and_then(|response| response.definition);
+                let kind = match category {
+                    MorphemeCategory::Bound => MorphemeInfo::Bound { meaning },
+                    MorphemeCategory::Derivational => MorphemeInfo::Derivation { meaning },
+                    MorphemeCategory::Inflectional => MorphemeInfo::Inflection { meaning },
+                    MorphemeCategory::Free => unreachable!(),
+                };
+                MorphemeAnalysis {
+                    segment: segment.clone(),
+                    kind,
+                    example_words: examples.clone(),
+                }
+            }),
+    );
+    pb.set_position(classified.len() as u64);
+    pb.finish_with_message(format!("{:.2}", define_client.cost().unwrap_or(0.0)));
     results.sort_by(|a, b| a.segment.cmp(&b.segment));
     results
 }

@@ -4,6 +4,7 @@ use omnigram::unigram::{UnigramTrainer, UnigramTrainerConfig};
 use serde::Deserialize;
 use std::collections::HashSet;
 use std::fs::File;
+use std::hash::{DefaultHasher, Hash, Hasher};
 use std::hint::black_box;
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
@@ -233,10 +234,16 @@ fn main() {
         .iter()
         .filter(|seq| seq.len() >= 2)
         .count();
+    let mut fingerprint = DefaultHasher::new();
+    for (seq, count) in model.get_vocab_in_id_order() {
+        seq.hash(&mut fingerprint);
+        count.hash(&mut fingerprint);
+    }
+    let fingerprint = fingerprint.finish();
     black_box(model.vocab_size());
 
     println!(
-        "Finished training in {:.2?}\n  vocab_size={}\n  multiword_vocab_size={}",
+        "Finished training in {:.2?}\n  vocab_size={}\n  multiword_vocab_size={}\n  fingerprint={fingerprint:016x}",
         elapsed,
         model.vocab_size(),
         multiword_vocab

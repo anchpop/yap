@@ -7319,6 +7319,15 @@ impl SentenceClassifier for JapaneseClassifier {
                 ));
             }
 
+            // --- Indefinite 何か/誰か vs embedded question 何|か ---
+            if matches!(text.as_str(), "何" | "誰" | "どこ" | "いつ")
+                && sentence.doc.get(idx + 1).is_some_and(|n| n.text == "か")
+            {
+                reasons.push(format!(
+                    "'{text}' + 'か' — verify the boundary: the indefinite '{text}か' (something/someone/somewhere/sometime, e.g. 何か食べたい, 誰か助けて) is ONE token with lemma '{text}か'. Keep the split only when か is the question particle of an embedded question (彼が誰|か|知らない = I don't know WHO he is)."
+                ));
+            }
+
             // --- Copula だ/です: always AUX, lemma だ ---
             if (text == "だ" || text == "です" || text == "でした" || text == "だった")
                 && token.pos != PartOfSpeechTag::Aux
@@ -8117,6 +8126,7 @@ impl WordCorrector for JapaneseCorrector {
         for token in &mut sentence.doc {
             corrections.extend(fix_japanese_token(token));
         }
+        corrections.extend(fix_japanese_copula_negation(&mut sentence.doc));
         let before = sentence.doc.len();
         merge_japanese_inflection(&mut sentence.doc);
         if sentence.doc.len() < before {
@@ -8135,6 +8145,7 @@ impl WordCorrector for JapaneseCorrector {
         for token in tokens.iter_mut() {
             fix_japanese_token(token);
         }
+        fix_japanese_copula_negation(tokens);
         merge_japanese_inflection(tokens);
     }
 }
@@ -8235,10 +8246,97 @@ fn fix_japanese_token(token: &mut impl TokenView) -> Vec<String> {
     // of that does not add grouping, it splits one key into two, which is the exact failure
     // the lemma exists to prevent. The lemma is an identifier, not a display form.)
 
-    // 一番 is never a na-adjective: fix lemma 一番だ → 一番
-    if token.text() == "一番" && token.lemma() == "一番だ" {
-        fixes.push("Fixed '一番' lemma from '一番だ' to '一番'".to_string());
-        token.set_lemma("一番".to_string());
+    // Punctuation lemmas drift between the analyzer's normalization and the mark
+    // itself (？ carries lemma "?" and "？" in the same corpus). Pure noise —
+    // canonicalize so one mark is one key.
+    let punct_lemma = match token.text() {
+        "？" => Some("?"),
+        "！" => Some("!"),
+        "…" => Some("…"),
+        _ => None,
+    };
+    if let Some(canonical) = punct_lemma
+        && token.lemma() != canonical
+    {
+        fixes.push(format!(
+            "Fixed punctuation '{}' lemma from '{}' to '{canonical}'",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma(canonical.to_string());
+    }
+
+    // The analyzer normalizes numerals in lemmas to arabic (一つ→1つ, 三人→3人);
+    // the LLM drifts back to kanji. Keep the arabic identifier so 一番/1番 and
+    // 一人/1人 each group onto one key. (一番だ also lands here: 一番 is never a
+    // na-adjective.)
+    let numeral_lemma = match token.lemma() {
+        "一番" | "一番だ" => Some("1番"),
+        "一人" => Some("1人"),
+        _ => None,
+    };
+    if let Some(canonical) = numeral_lemma
+        && token.pos() != PartOfSpeechTag::Propn
+    {
+        fixes.push(format!(
+            "Fixed '{}' lemma from '{}' to '{canonical}'",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma(canonical.to_string());
+    }
+
+    // The adverb よく (well/often) is the analyzer's 良く — one word whether written
+    // よく or 良く. The LLM drifts to 良い (the adjective's lemma) or leaves よく;
+    // both split the key three ways.
+    if matches!(token.text(), "よく" | "良く")
+        && token.pos() == PartOfSpeechTag::Adv
+        && token.lemma() != "良く"
+    {
+        fixes.push(format!(
+            "Fixed adverb '{}' lemma from '{}' to '良く'",
+            token.text(),
+            token.lemma()
+        ));
+        token.set_lemma("良く".to_string());
+    }
+
+    // Quotative/topic って is its own word, not a spelling variant of と.
+    if token.text() == "って" && token.pos() == PartOfSpeechTag::Adp && token.lemma() != "って"
+    {
+        fixes.push(format!(
+            "Fixed 'って' lemma from '{}' to 'って'",
+            token.lemma()
+        ));
+        token.set_lemma("って".to_string());
+    }
+
+    // Sentence adverb 確か ("if I recall") is its own key, distinct from both the
+    // na-adjective 確かだ and the adverb 確かに.
+    if token.text() == "確か" && token.pos() == PartOfSpeechTag::Adv && token.lemma() != "確か"
+    {
+        fixes.push(format!(
+            "Fixed adverb '確か' lemma from '{}' to '確か'",
+            token.lemma()
+        ));
+        token.set_lemma("確か".to_string());
+    }
+
+    // A single token 別に is always the adverb — 別に払う "separately" and
+    // 別に急いでない "(not) particularly" alike — never the noun 別 or the
+    // na-adjective 別だ (those readings belong to the bare token 別).
+    if token.text() == "別に" {
+        if token.pos() != PartOfSpeechTag::Adv {
+            fixes.push(format!("Fixed '別に' POS from {:?} to ADV", token.pos()));
+            token.set_pos(PartOfSpeechTag::Adv);
+        }
+        if token.lemma() != "別に" {
+            fixes.push(format!(
+                "Fixed '別に' lemma from '{}' to '別に'",
+                token.lemma()
+            ));
+            token.set_lemma("別に".to_string());
+        }
     }
 
     // (Removed: rules that rewrote なさい→なさる and ください→くださる. They were
@@ -8313,6 +8411,55 @@ fn fix_japanese_token(token: &mut impl TokenView) -> Vec<String> {
         token.set_lemma(lower);
     }
 
+    fixes
+}
+
+/// The negated copula must never be one token: じゃない fused whole can only carry
+/// lemma だ, which erases the negation from the lemma entirely. The copula じゃ and
+/// the negation ない are both words, so the boundary is real. Splits a fused
+/// じゃない/じゃなかった/じゃなくて back apart, and retags a ない that already
+/// stands after the copula as the standalone ADJ 無い.
+fn fix_japanese_copula_negation<T: TokenView + Clone>(tokens: &mut Vec<T>) -> Vec<String> {
+    let mut fixes = Vec::new();
+    let mut i = 0;
+    while i < tokens.len() {
+        let negation = match tokens[i].text() {
+            "じゃない" => Some("ない"),
+            "じゃなかった" => Some("なかった"),
+            "じゃなくて" => Some("なくて"),
+            _ => None,
+        };
+        if let Some(negation) = negation {
+            fixes.push(format!(
+                "Split '{}' into じゃ (AUX, lemma だ) + {negation} (ADJ, lemma 無い)",
+                tokens[i].text()
+            ));
+            // the clone keeps the original trailing whitespace, so the surface
+            // still reconstructs exactly
+            let mut nai = tokens[i].clone();
+            nai.set_text(negation.to_string());
+            nai.set_pos(PartOfSpeechTag::Adj);
+            nai.set_lemma("無い".to_string());
+            let ja = &mut tokens[i];
+            ja.set_text("じゃ".to_string());
+            ja.set_whitespace(String::new());
+            ja.set_pos(PartOfSpeechTag::Aux);
+            ja.set_lemma("だ".to_string());
+            tokens.insert(i + 1, nai);
+        } else if i > 0
+            && matches!(tokens[i - 1].lemma(), "だ" | "です" | "じゃ")
+            && matches!(tokens[i].lemma(), "ない" | "無い")
+            && (tokens[i].pos() != PartOfSpeechTag::Adj || tokens[i].lemma() != "無い")
+        {
+            fixes.push(format!(
+                "Retagged '{}' after the copula to ADJ, lemma 無い",
+                tokens[i].text()
+            ));
+            tokens[i].set_pos(PartOfSpeechTag::Adj);
+            tokens[i].set_lemma("無い".to_string());
+        }
+        i += 1;
+    }
     fixes
 }
 
@@ -8464,6 +8611,14 @@ fn absorbs_suffix<T: TokenView>(head: &T, next: &T) -> bool {
     if matches!(next.lemma(), "だ" | "です" | "じゃ") {
         return (head.pos() == PartOfSpeechTag::Verb && head.text().ends_with('ん'))
             || head.text().ends_with("ません");
+    }
+    // ない after the copula is the standalone negation — a word of its own (無い):
+    // 学生|じゃ|ない, 静か|で|ない. Folding it in would produce a token whose lemma
+    // is だ, erasing the negation from the lemma entirely. Checked before the て/で
+    // contraction rule below, which would otherwise swallow ない after the copula で.
+    if matches!(head.lemma(), "だ" | "です" | "じゃ") && matches!(next.lemma(), "ない" | "無い")
+    {
+        return false;
     }
     // After a て-form the auxiliary is a separate word: 食べて|いる, 読んで|しまう.
     // Except てた/てない/てます — contractions of ていた/ていない/ています (乗ってた,
@@ -9781,14 +9936,88 @@ mod tests {
         );
 
         // じゃ carries lemma じゃ (not だ), but it is still the copula family: it must
-        // not absorb into the predicate before it, and ない then joins it — 言った|じゃない
+        // not absorb into the predicate before it, and ない after it stays a word of
+        // its own — 言った|じゃ|ない, never じゃない fused (whose lemma could only be
+        // だ, erasing the negation)
         assert_eq!(
             jpn_merge(vec![
                 jpn_token("言った", Verb, "言う"),
                 jpn_token("じゃ", Aux, "じゃ"),
                 jpn_token("ない", Aux, "ない"),
             ]),
-            vec!["言った", "じゃない"]
+            vec!["言った", "じゃ", "ない"]
+        );
+    }
+
+    #[test]
+    fn test_japanese_copula_negation_stays_split() {
+        use PartOfSpeechTag::{Adj, Aux, Noun};
+
+        // ない after the copula is the standalone negation — a word of its own
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("学生", Noun, "学生"),
+                jpn_token("じゃ", Aux, "だ"),
+                jpn_token("ない", Aux, "無い"),
+            ]),
+            vec!["学生", "じゃ", "ない"]
+        );
+
+        // the copula て-form likewise: 静か|で|ない, not 静か|でない
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("静か", Adj, "静かだ"),
+                jpn_token("で", Aux, "だ"),
+                jpn_token("ない", Aux, "無い"),
+            ]),
+            vec!["静か", "で", "ない"]
+        );
+
+        // …but the negation still takes its own inflection: じゃ|なかっ|た → じゃ|なかった
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("じゃ", Aux, "だ"),
+                jpn_token("なかっ", Aux, "ない"),
+                jpn_token("た", Aux, "た"),
+            ]),
+            vec!["じゃ", "なかった"]
+        );
+
+        // a fused じゃない from the LLM is split back apart, keeping the surface —
+        // じゃ gets the copula's identity and ない gets the negation's
+        let mut tokens = vec![
+            jpn_token("学生", Noun, "学生"),
+            jpn_token("じゃない", Aux, "だ"),
+        ];
+        tokens[1].whitespace = " ".to_string();
+        JapaneseCorrector.post_corrections(&mut tokens);
+        assert_eq!(tokens.len(), 3);
+        assert_eq!(tokens[1].text, "じゃ");
+        assert_eq!(tokens[1].lemma, "だ");
+        assert_eq!(tokens[1].whitespace, "");
+        assert_eq!(tokens[2].text, "ない");
+        assert_eq!(tokens[2].pos, Adj);
+        assert_eq!(tokens[2].lemma, "無い");
+        assert_eq!(tokens[2].whitespace, " ");
+
+        // ない that already stands after the copula is retagged to the ADJ 無い
+        let mut tokens = vec![
+            jpn_token("学生", Noun, "学生"),
+            jpn_token("じゃ", Aux, "だ"),
+            jpn_token("ない", Aux, "ない"),
+        ];
+        JapaneseCorrector.post_corrections(&mut tokens);
+        assert_eq!(tokens[2].pos, Adj);
+        assert_eq!(tokens[2].lemma, "無い");
+
+        // …while ない after anything that isn't the copula is left alone
+        // (the contraction 言ってない still merges)
+        assert_eq!(
+            jpn_merge(vec![
+                jpn_token("言って", PartOfSpeechTag::Verb, "言う"),
+                jpn_token("ない", Aux, "無い"),
+            ]),
+            vec!["言ってない"]
         );
     }
 
@@ -11191,7 +11420,7 @@ The lemma of a merged token is the dictionary form of its head (食べません�
 ### Separate tokens — the boundary survives (both sides are words)
 
 - て-form | auxiliary verb: 食べて|いる, 読んで|しまう, 待って|ください, 帰って|きた, やって|みた, 持って|いく, 食べて|ほしい, 書いて|ある. The piece after the て-form is a real word with its own dictionary entry. Tag it AUX and keep the analyzer's normalized lemma: 居る (for いる/いた/います), 仕舞う (しまう), 下さる (ください), 来る (きた/きて), 行く (いった/いって), 見る (みた/みる), おく, 上げる (あげる), 呉れる (くれる), 貰う (もらう), 欲しい (ほしい). Do NOT respell these into kana — the lemma is an identifier (see the lemma section), and rewriting 呉れる to くれる splits one word into two entries.
-- Noun | copula: 学生|です, 猫|だ, 学生|でした, 学生|だった, 学生|なら, 学生|じゃない (じゃない is one AUX token, lemma だ).
+- Noun | copula: 学生|です, 猫|だ, 学生|でした, 学生|だった, 学生|なら. The negated copula splits one step further: 学生|じゃ|ない, 静か|で|ない, 学生|じゃ|なかった — じゃ/で is the copula (AUX, lemma だ) and the negation is a word of its own (ADJ, lemma 無い). Never emit じゃない as one token: its lemma would be だ and the negation would vanish from the lemma entirely.
 - Adjective | politeness です: 美しい|です, 静か|です, 高かった|です — the adjective is already a complete word; です only adds politeness. Never merge です into an adjective.
 - Complete predicate | でしょう/だろう: 行く|でしょう, 美しかった|だろう — でしょう/だろう is one AUX token, lemma だ.
 - Hearsay そう and evidential らしい/みたい after a COMPLETE form: 降る|そう|だ, 降った|らしい, 本当|らしい — the predicate is already finished, so そう/らしい/みたい stand alone (AUX). Contrast the stem-attaching likelihood そう above: 降りそう merges because 降り is not a word.
@@ -11217,6 +11446,14 @@ Particles (助詞) are always separate tokens:
 - Nominalizer (after verb/adj): SCONJ or PART — 食べるのが好き = I like eating, 鍵を捜すのを手伝って = help me look for the key
 Do NOT tag nominalizer の as ADP. The test: if の follows a verb or adjective and turns the clause into a noun phrase, it's a nominalizer (SCONJ/PART). If it follows a noun showing possession/attribution, it's genitive (ADP).
 
+Quotative って (casual と): ADP, lemma って — its own dictionary word; do not lemmatize it to と. (と itself keeps lemma と.)
+
+### Indefinite compounds 何か/誰か/どこか/いつか
+
+何か (something), 誰か (someone), どこか (somewhere), いつか (someday/sometime) are dictionary words — ONE token each, with the か inside: 何か|食べたい, 何か|する|？, 誰か|助けて. PRON for 何か/誰か/どこか, ADV for いつか; the lemma is the whole word (何か, 誰か…). Do not split 何|か just because bare 何 would also parse — the sentence's meaning decides, not the analyzer's mood.
+
+The split survives only when か is the question particle of an embedded question — when the clause means "what/who it is", not "something/someone": 彼が誰|か|知らない (I don't know WHO he is), これが何|か|教えて (tell me WHAT this is). Test with the translation: "some-" → one token; an indirect question word → split.
+
 Examples:
 - "東京に行く" → "東京" (NOUN) + "に" (ADP) + "行く" (VERB)
 - "猫が好きです" → "猫" (NOUN) + "が" (ADP) + "好き" (ADJ, lemma "好きだ") + "です" (AUX, lemma "だ")
@@ -11238,6 +11475,8 @@ Verbs (dictionary form ends in -う row kana):
 - よかった → lemma "良い" (よい and いい are the same word; 良い is the shared identifier)
 - 大きな → lemma "大きい"
 
+The adverb よく (well/often, ADV) → lemma "良く", the analyzer's normalized adverb entry — not 良い (that lemma belongs to the adjective) and not よく.
+
 な-adjectives (lemma includes だ to parallel verb dictionary forms):
 - 静かな → "静か" (ADJ, lemma "静かだ") + "な" (AUX)
 - きれいだった → "きれい" (ADJ, lemma "奇麗だ" — the analyzer's normalized spelling + だ; do not respell it) + "だった" (AUX, lemma "だ")
@@ -11257,6 +11496,12 @@ The rule: if followed by が/を/の (case particles treating it as a noun), it'
 Words that look like na-adjectives but are always NOUN:
 - 好み (preference/taste): NOUN, not ADJ. "好みの問題" = a matter of preference. Lemma "好み".
 - みんな (everyone): PRON or NOUN, not ADV. "みんな来て" = everyone come.
+
+### Lexicalized に-adverbs: 確かに, 本当に, 別に
+
+These are single ADV tokens — never split the に off. 別に is ALWAYS ADV with lemma 別に, in both senses (別に払う "separately", 別に急いでない "(not) particularly") — never the noun 別 and never the na-adjective 別だ; those readings belong to the bare token 別. Bare 確か as a sentence adverb (確かこの店だ "if I remember right, ...") is ADV with lemma 確か — a different word from both the na-adjective 確かだ and the adverb 確かに.
+
+A repeated stem never changes the analysis: in 確かこの店だが、確かにおいしい, or 本当に本当のことを言って, or 別の時間に来て、別に急いでない, analyze each occurrence on its own — the bare 確か/本当/別 nearby must not bleed into the analysis of 確かに/本当に/別に, nor the other way around.
 
 Honorific/humble verb forms keep their own lemma (they are distinct dictionary entries):
 - いらっしゃいます → lemma "いらっしゃる"
@@ -11283,7 +11528,7 @@ Do fix a lemma that is flatly wrong: the wrong word entirely, the wrong verb, or
 ### だ/です copula: always AUX with lemma "だ"
 です is the polite form of だ. All copula tokens (だ, です, でした, だった, でしょう, なら) have lemma "だ".
 
-### ない: ADJ when standalone predicate (時間がない, 高くはない), merged into the predicate when it is the negation suffix (食べない, 高くない)
+### ない: ADJ (lemma 無い) when it stands alone — as a predicate (時間がない), after explicit contrast (高く|は|ない), or negating the copula (学生|じゃ|ない, 静か|で|ない) — merged into the predicate when it is the negation suffix (食べない, 高くない)
 
 ### い-adjectives vs な-adjectives
 Both are tagged ADJ. い-adjectives conjugate (高い→高くない, one token). な-adjectives don't conjugate — they use だ/です, which stay separate tokens. Na-adjective lemmas include だ.
@@ -11301,7 +11546,8 @@ ADJ in 必要だ/必要な (na-adjective). NOUN in 必要がある (subject of �
 - "三人" → one token (NOUN, lemma "3人")
 - "五冊" → one token (NOUN, lemma "5冊")
 - "一つ", "一週間", "何泊" → one token each (NOUN, lemma "1つ", "1週間", "何泊")
-Never split the numeral from its counter (no 一|つ), and keep the analyzer's arabic-numeral lemma — it groups 一つ and 1つ onto one entry.
+- 一番 → one token, lemma "1番" (ADV "most" or NOUN "number one"); 一人 → lemma "1人"
+Never split the numeral from its counter (no 一|つ), and keep the analyzer's arabic-numeral lemma — it groups 一つ and 1つ onto one entry. The arabic numeral stays in the lemma even when the word functions as an adverb (一番).
 
 ### Proper nouns never decompose
 - "トム" → one token (PROPN)

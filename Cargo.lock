@@ -1550,7 +1550,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "778e2ac28f6c47af28e4907f13ffd1e1ddbd400980a9abd7c8df189bf578a5ad"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2895,8 +2895,8 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 
 [[package]]
 name = "lexide"
-version = "0.1.0"
-source = "git+https://github.com/anchpop/lexide.git?rev=8c0a2b093cf70b5797101e36609d92fa6d16fb07#8c0a2b093cf70b5797101e36609d92fa6d16fb07"
+version = "0.1.1"
+source = "git+https://github.com/anchpop/lexide.git?rev=3feb835e7763e1991e45de3ac9170d55bde936bb#3feb835e7763e1991e45de3ac9170d55bde936bb"
 dependencies = [
  "anyhow",
  "futures",
@@ -3290,7 +3290,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4640,7 +4640,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4720,7 +4720,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5189,7 +5189,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "52d1cfed4120b4d927bf7c0f86d2087a4a7d6027c906d9f9d525a80573b9be51"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.1",
 ]
 
 [[package]]
@@ -5451,7 +5451,7 @@ dependencies = [
  "getrandom 0.4.2",
  "once_cell",
  "rustix",
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5841,8 +5841,7 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 [[package]]
 name = "tysm"
 version = "0.20.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5409dedc129e3bcdf2e16eea885e173bc822868d72b4a772213646f3b3f22f3"
+source = "git+https://github.com/anchpop/tysm.git?rev=af0945438c2c584f6a50f95e4ee7efc52ddc856d#af0945438c2c584f6a50f95e4ee7efc52ddc856d"
 dependencies = [
  "base64 0.22.1",
  "dashmap",
@@ -6362,7 +6361,7 @@ version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0978bf7171b3d90bac376700cb56d606feb40f251a475a5d6634613564460b22"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

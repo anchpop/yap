@@ -16,6 +16,22 @@ pub fn cache_only() -> bool {
     CACHE_ONLY.load(Ordering::Relaxed)
 }
 
+/// Update an indicatif bar from a Batch API status poll. `offset` is the number
+/// of items handled by earlier batches and `expected` includes cache hits, which
+/// OpenAI's request counts do not include.
+pub fn report_batch_progress(
+    progress: &indicatif::ProgressBar,
+    offset: u64,
+    expected: usize,
+    batch: &tysm::batch::Batch,
+) {
+    let total = u64::from(batch.request_counts.total);
+    let processed = u64::from(batch.request_counts.completed + batch.request_counts.failed);
+    let cached = (expected as u64).saturating_sub(total);
+    let position = offset + cached + processed;
+    progress.set_position(position.min(progress.length().unwrap_or(u64::MAX)));
+}
+
 /// Apply the process-wide cache-only setting to a tysm ChatClient.
 pub fn apply_cache_only(
     client: tysm::chat_completions::ChatClient,
@@ -25,6 +41,44 @@ pub fn apply_cache_only(
     } else {
         client
     }
+}
+
+fn cached_chat_client(model: &str, reasoning_effort: &str) -> tysm::chat_completions::ChatClient {
+    tysm::chat_completions::ChatClient::from_env(model)
+        .unwrap()
+        .with_cache_directory("./.cache")
+        .with_reasoning_effort(reasoning_effort)
+        .with_service_tier("flex")
+}
+
+fn cached_default_chat_client(model: &str) -> tysm::chat_completions::ChatClient {
+    tysm::chat_completions::ChatClient::from_env(model)
+        .unwrap()
+        .with_cache_directory("./.cache")
+}
+
+fn cached_reasoning_chat_client(
+    model: &str,
+    reasoning_effort: &str,
+) -> tysm::chat_completions::ChatClient {
+    cached_default_chat_client(model).with_reasoning_effort(reasoning_effort)
+}
+
+/// A current generation client whose cache is checked first, followed by historical model
+/// configurations newest-to-oldest. Only the current model may make an API request.
+pub fn migrating_chat_client(model: &str) -> tysm::chat_completions::ChatClient {
+    apply_cache_only(
+        cached_chat_client(model, "low")
+            .with_cache_fallback(cached_chat_client("gpt-5.4", "high"))
+            .with_cache_fallback(cached_chat_client("gpt-5.4", "low"))
+            .with_cache_fallback(cached_chat_client("gpt-5.4-mini", "low"))
+            .with_cache_fallback(cached_default_chat_client("gpt-5.4-nano"))
+            .with_cache_fallback(cached_reasoning_chat_client("gpt-5.2", "high"))
+            .with_cache_fallback(cached_chat_client("gpt-5.2", "low"))
+            .with_cache_fallback(cached_default_chat_client("gpt-5"))
+            .with_cache_fallback(cached_default_chat_client("gpt-5").with_service_tier("flex"))
+            .with_cache_fallback(cached_default_chat_client("gpt-4o")),
+    )
 }
 
 pub mod audio_verification;

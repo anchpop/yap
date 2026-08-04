@@ -2766,6 +2766,22 @@ pub enum WritingSystem {
     Thai,
 }
 
+impl WritingSystem {
+    /// Whether this script separates words with spaces. Scriptio continua
+    /// systems (Han, Japanese, Thai) attach adjacent words directly; the
+    /// spaces that do appear in such text (e.g. subtitle pause marks, Thai
+    /// phrase boundaries) are the exception, not the rule.
+    pub fn separates_words_with_spaces(&self) -> bool {
+        match self {
+            WritingSystem::Latin
+            | WritingSystem::Hangul
+            | WritingSystem::Cyrillic
+            | WritingSystem::Devanagari => true,
+            WritingSystem::Han | WritingSystem::Japanese | WritingSystem::Thai => false,
+        }
+    }
+}
+
 /// Characters used ONLY in simplified or ONLY in traditional Chinese text.
 /// Forms valid in both (里/后/云/台/只/干/面/…) are deliberately absent.
 const SIMPLIFIED_ONLY: &str = "国会这说对时们来学见还没电车门问间东儿点开关认让话语读写听号妈谁么几个长张马鸟鱼龙风华为乐现买卖医难题双观欢击级红纪经给绝统继续绿网罗办变边币标产称迟处传单当党动断队发刚归龟汉护记举剧亲轻确热伤审圣书树术岁孙态万习县响择泽针诊争证织职执质钟种众专转庄状准务议译异样养药钥远运杂灾脏则贼赠纸骂";
@@ -2902,6 +2918,10 @@ impl Language {
                 | Language::Portuguese
                 | Language::Italian
                 | Language::Hindi
+                // Mandarin's politeness contrast is exactly 你 vs. 您 — a classic
+                // second-person-only T-V distinction.
+                | Language::ChineseSimplified
+                | Language::ChineseTraditional
         )
     }
 
@@ -3896,8 +3916,9 @@ const NO_SPACE_AFTER: &[char] = &[
 /// Punctuation that typically has no space before it
 /// Note: apostrophe/quote chars are handled specially (opening vs closing)
 /// Note: French » (closing guillemet) has space BEFORE it, so not in this list
+/// Note: । and ॥ are the Devanagari danda/double danda (Hindi sentence enders)
 const NO_SPACE_BEFORE: &[char] = &[
-    ')', ']', '}', ',', '.', '?', '!', ';', '\u{2019}', '"', '\u{201D}', '-', '…',
+    ')', ']', '}', ',', '.', '?', '!', ';', '\u{2019}', '"', '\u{201D}', '-', '…', '।', '॥',
 ];
 
 /// Characters that end words and attach directly (apostrophes, hyphens in compounds)
@@ -4055,6 +4076,13 @@ pub fn predict_whitespace(
         }
     }
 
+    // Scriptio continua (Japanese, Chinese, Thai): words attach directly.
+    // Real spaces in source text (subtitle pauses, Thai phrase boundaries)
+    // are the exception and get encoded as control tokens.
+    if !language.writing_system().separates_words_with_spaces() {
+        return Whitespace::None;
+    }
+
     // Default: regular space
     Whitespace::Space
 }
@@ -4154,6 +4182,75 @@ pub fn literals_to_text(literals: &[Literal<String>]) -> String {
         .iter()
         .map(|lit| format!("{}{}", lit.word.text, lit.whitespace))
         .collect()
+}
+
+#[cfg(test)]
+mod predict_whitespace_tests {
+    use super::*;
+
+    fn word(text: &str, pos: PartOfSpeech) -> Word<String> {
+        Word {
+            text: text.to_string(),
+            word_type: WordType::Heteronym(Heteronym {
+                word: text.to_string(),
+                lemma: text.to_string(),
+                pos,
+            }),
+        }
+    }
+
+    fn predict(left: &Word<String>, right: &Word<String>, language: Language) -> Whitespace {
+        predict_whitespace(left, Some(right), language)
+    }
+
+    #[test]
+    fn japanese_words_attach() {
+        let kare = word("彼", PartOfSpeech::Pron);
+        let wa = word("は", PartOfSpeech::Adp);
+        assert_eq!(predict(&kare, &wa, Language::Japanese), Whitespace::None);
+    }
+
+    #[test]
+    fn chinese_words_attach() {
+        let wo = word("我", PartOfSpeech::Pron);
+        let hao = word("好", PartOfSpeech::Adj);
+        assert_eq!(
+            predict(&wo, &hao, Language::ChineseSimplified),
+            Whitespace::None
+        );
+        assert_eq!(
+            predict(&wo, &hao, Language::ChineseTraditional),
+            Whitespace::None
+        );
+    }
+
+    #[test]
+    fn thai_words_attach() {
+        let sawasdee = word("สวัสดี", PartOfSpeech::Intj);
+        let khrap = word("ครับ", PartOfSpeech::Part);
+        assert_eq!(predict(&sawasdee, &khrap, Language::Thai), Whitespace::None);
+    }
+
+    #[test]
+    fn hindi_words_are_spaced_but_danda_attaches() {
+        let hai = word("है", PartOfSpeech::Aux);
+        let acha = word("अच्छा", PartOfSpeech::Adj);
+        let danda = Word {
+            text: "।".to_string(),
+            word_type: WordType::Other(OtherWord {
+                other_tag: OtherWordType::Punct,
+            }),
+        };
+        assert_eq!(predict(&acha, &hai, Language::Hindi), Whitespace::Space);
+        assert_eq!(predict(&hai, &danda, Language::Hindi), Whitespace::None);
+    }
+
+    #[test]
+    fn spaced_languages_unchanged() {
+        let le = word("le", PartOfSpeech::Det);
+        let chat = word("chat", PartOfSpeech::Noun);
+        assert_eq!(predict(&le, &chat, Language::French), Whitespace::Space);
+    }
 }
 
 #[cfg(test)]

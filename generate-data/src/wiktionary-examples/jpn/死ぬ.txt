@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html class="client-nojs vector-feature-language-in-header-enabled vector-feature-language-in-main-menu-disabled vector-feature-language-in-main-page-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-custom-font-size-clientpref-1 vector-feature-appearance-pinned-clientpref-1 skin-theme-clientpref-day vector-feature-navigation-update-disabled vector-sticky-header-enabled vector-toc-available skin-thumbsize-clientpref-standard" lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>死ぬ - Wiktionary, the free dictionary</title>
+<script>(function(){var className="client-js vector-feature-language-in-header-enabled vector-feature-language-in-main-menu-disabled vector-feature-language-in-main-page-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-custom-font-size-clientpref-1 vector-feature-appearance-pinned-clientpref-1 skin-theme-clientpref-day vector-feature-navigation-update-disabled vector-sticky-header-enabled vector-toc-available skin-thumbsize-clientpref-standard";var cookie=document.cookie.match(/(?:^|; )enwiktionarymwclientpreferences=([^;]+)/);if(cookie){cookie[1].split('%2C').forEach(function(pref){className=className.replace(new RegExp('(^| )'+pref.replace(/-clientpref-\w+$|[^\w-]+/g,'')+'-clientpref-\\w+( |$)'),'$1'+pref+'$2');});}document.documentElement.className=className;}());RLCONF={"wgBreakFrames":false,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"5276644b-f4b7-4a36-8c2f-25b31a9662b9","wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"死ぬ","wgTitle":"死ぬ","wgCurRevisionId":89466989,"wgRevisionId":89466989,"wgArticleId":8930,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["Japanese links with redundant wikilinks","Japanese links with redundant alt parameters","Japanese terms with redundant sortkeys","Japanese links with manual fragments","Pages with entries","Pages with 1 entry","Japanese terms with redundant script codes","Requests for example sentences in Japanese","Japanese terms spelled with 死 read as し","Japanese terms read with kun'yomi","Japanese terms inherited from Old Japanese","Japanese terms derived from Old Japanese","Japanese terms inherited from Proto-Japonic","Japanese terms derived from Proto-Japonic","Japanese terms with IPA pronunciation","Japanese terms with Heiban pitch accent (Tōkyō)","Japanese terms with IPA pronunciation with pitch accent","Japanese lemmas","Japanese verbs","Japanese intransitive verbs","Japanese godan verbs","Japanese godan verbs ending with -nu","Japanese terms spelled with third grade kanji","Japanese terms with 1 kanji","Japanese terms with usage examples","ja:Death"],"wgPageViewLanguage":"en","wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"死ぬ","wgRelevantArticleId":8930,"wgTempUserName":null,"wgIsProbablyEditable":true,"wgRelevantPageIsProbablyEditable":true,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgNoticeProject":"wiktionary","wgConfirmEditCaptchaNeededForGenericEdit":"hcaptcha","wgConfirmEditForceShowCaptcha":false,"wgConfirmEditHCaptchaSiteKey":"5d0c670e-a5f4-4258-ad16-1f42792c9c62","wgMediaViewerOnClick":true,"wgMediaViewerEnabledByDefault":true,"wgMediaViewerMobileBeta":false,"wgVisualEditor":{"pageLanguageCode":"en","pageLanguageDir":"ltr","pageVariantFallbacks":"en"},"wgMFDisplayWikibaseDescriptions":{"search":true,"watchlist":true,"tagline":false,"nearby":true},"wgWMESchemaEditAttemptStepOversample":false,"wgWMEPageLength":7000,"wgTestKitchenUserExperiments":{"overrides":[],"enrolled":[],"assigned":[],"subject_ids":[]},"wgEditSubmitButtonLabelPublish":true,"wgVisualEditorPageIsDisambiguation":false,"wgULSPosition":"interlanguage","wgULSisCompactLinksEnabled":false,"wgVector2022LanguageInHeader":true,"wgULSisLanguageSelectorEmpty":false,"wgULSLanguageSelectorV2Enabled":true,"wgCheckUserClientHintsHeadersJsApi":["brands","architecture","bitness","fullVersionList","mobile","model","platform","platformVersion"]};
+RLSTATE={"ext.gadget.LanguagesAndScripts":"ready","ext.gadget.Palette":"ready","ext.gadget.Site":"ready","ext.gadget.InflectionTable":"ready","ext.globalCssJs.user.styles":"ready","site.styles":"ready","user.styles":"ready","ext.globalCssJs.user":"ready","user":"ready","user.options":"loading","ext.cite.styles":"ready","ext.wikimediamessages.styles":"ready","skins.vector.search.codex.styles":"ready","skins.vector.styles":"ready","skins.vector.icons":"ready","mediawiki.skins.legacy":"ready","ext.visualEditor.desktopArticleTarget.noscript":"ready","ext.uls.interlanguage":"ready"};RLPAGEMODULES=["ext.cite.ux-enhancements","site","mediawiki.page.ready","mediawiki.toc","skins.vector.js","ext.centralNotice.geoIP","ext.centralNotice.startUp","ext.gadget.PagePreviews","ext.gadget.ReferenceTooltips","ext.gadget.defaultVisibilityToggles","ext.gadget.DialectMap","ext.gadget.DocTabs","ext.gadget.Edittools","ext.gadget.UnsupportedTitles","ext.gadget.SiteJS","ext.gadget.WiktGadgetPrefs","ext.urlShortener.toolbar","ext.centralauth.centralautologin","ext.testKitchen","mmv.bootstrap","ext.visualEditor.desktopArticleTarget.init","ext.echo.centralauth","ext.eventLogging","ext.wikimediaEvents","ext.navigationTiming","ext.uls.interface","wikibase.databox.fromWikidata","ext.checkUser.clientHints"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+}];});});</script>
+<link rel="stylesheet" href="/w/load.php?lang=en&amp;modules=ext.cite.styles%7Cext.uls.interlanguage%7Cext.visualEditor.desktopArticleTarget.noscript%7Cext.wikimediamessages.styles%7Cmediawiki.skins.legacy%7Cskins.vector.icons%2Cstyles%7Cskins.vector.search.codex.styles&amp;only=styles&amp;skin=vector-2022">
+<script async="" src="/w/load.php?lang=en&amp;modules=startup&amp;only=scripts&amp;raw=1&amp;skin=vector-2022"></script>
+<meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="/w/load.php?lang=en&amp;modules=ext.gadget.InflectionTable%2CLanguagesAndScripts%2CPalette%2CSite&amp;only=styles&amp;skin=vector-2022">
+<link rel="stylesheet" href="/w/load.php?lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=vector-2022">
+<meta name="generator" content="MediaWiki 1.47.0-wmf.13">
+<meta name="referrer" content="origin">
+<meta name="referrer" content="origin-when-cross-origin">
+<meta name="robots" content="max-image-preview:standard">
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="width=1120">
+<meta property="og:site_name" content="Wiktionary">
+<meta property="og:title" content="死ぬ - Wiktionary, the free dictionary">
+<meta property="og:type" content="website">
+<link rel="alternate" type="application/x-wiki" title="Edit" href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit">
+<link rel="apple-touch-icon" href="/static/apple-touch/wiktionary/en.png">
+<link rel="icon" href="/static/favicon/wiktionary/en.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="/w/rest.php/v1/search" title="Wiktionary (en)">
+<link rel="EditURI" type="application/rsd+xml" href="//en.wiktionary.org/w/api.php?action=rsd">
+<link rel="canonical" href="https://en.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC">
+<link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">
+<link rel="alternate" type="application/atom+xml" title="Wiktionary Atom feed" href="/w/index.php?title=Special:RecentChanges&amp;feed=atom">
+<link rel="dns-prefetch" href="//meta.wikimedia.org" />
+<link rel="dns-prefetch" href="auth.wikimedia.org">
+</head>
+<body class="skin--responsive skin-vector skin-vector-search-vue mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject mw-editable page-死ぬ rootpage-死ぬ skin-vector-2022 action-view">
+<div id="mw-aria-live-region" class="mw-aria-live-region" aria-live="polite"></div><a class="mw-jump-link" href="#bodyContent">Jump to content</a>
+<div class="vector-header-container">
+	<header class="vector-header mw-header no-font-mode-scale">
+		<div class="vector-header-start">
+			<nav class="vector-main-menu-landmark" aria-label="Site">
+				
+<div id="vector-main-menu-dropdown" class="vector-dropdown vector-main-menu-dropdown vector-button-flush-left vector-button-flush-right"  title="Main menu" >
+	<input type="checkbox" id="vector-main-menu-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-main-menu-dropdown" class="vector-dropdown-checkbox "  aria-label="Main menu"   >
+	<label id="vector-main-menu-dropdown-label" for="vector-main-menu-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-menu mw-ui-icon-wikimedia-menu cdx-button__icon"></span>
+
+<span class="vector-dropdown-label-text">Main menu</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+				<div id="vector-main-menu-unpinned-container" class="vector-unpinned-container">
+		
+<div id="vector-main-menu" class="vector-main-menu vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-main-menu-pinnable-header vector-pinnable-header-unpinned"
+	data-feature-name="main-menu-pinned"
+	data-pinnable-element-id="vector-main-menu"
+	data-pinned-container-id="vector-main-menu-pinned-container"
+	data-unpinned-container-id="vector-main-menu-unpinned-container"
+>
+	<div class="vector-pinnable-header-label">Main menu</div>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-main-menu.pin" aria-label="Move Main menu to sidebar">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-main-menu.unpin" aria-label="Hide Main menu">hide</button>
+</div>
+
+	
+<div id="p-navigation" class="vector-menu mw-portlet mw-portlet-navigation"  >
+	<div class="vector-menu-heading">
+		Navigation
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-mainpage-description" class="mw-list-item"><a href="/wiki/Wiktionary:Main_Page" title="Visit the main page [z]" accesskey="z"><span>Main page</span></a></li><li id="n-portal" class="mw-list-item"><a href="/wiki/Wiktionary:Community_portal" title="About the project, what you can do, where to find things"><span>Community portal</span></a></li><li id="n-requestedarticles" class="mw-list-item"><a href="/wiki/Wiktionary:Requested_entries"><span>Requested entries</span></a></li><li id="n-recentchanges" class="mw-list-item"><a href="/wiki/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r"><span>Recent changes</span></a></li><li id="n-randompage" class="mw-list-item"><a href="/wiki/Special:Random" title="Load a random page [x]" accesskey="x"><span>Random entry</span></a></li><li id="n-help" class="mw-list-item"><a href="https://en.wiktionary.org/wiki/Help:Contents" title="The place to find out"><span>Help</span></a></li><li id="n-Glossary" class="mw-list-item"><a href="/wiki/Appendix:Glossary"><span>Glossary</span></a></li><li id="n-contact" class="mw-list-item"><a href="/wiki/Wiktionary:Contact_us"><span>Contact us</span></a></li><li id="n-specialpages" class="mw-list-item"><a href="/wiki/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q"><span>Special pages</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+	
+</div>
+
+				</div>
+
+	</div>
+</div>
+
+		</nav>
+			
+<a href="/wiki/Wiktionary:Main_Page" class="mw-logo">
+	<img class="mw-logo-icon" src="/static/images/icons/enwiktionary.svg" alt="" aria-hidden="true" height="50" width="50">
+	<span class="mw-logo-container skin-invert">
+		<img class="mw-logo-wordmark" alt="Wiktionary" src="/static/images/mobile/copyright/wiktionary-wordmark-en.svg" style="width: 6.6875em; height: 1.1875em;">
+		<img class="mw-logo-tagline" alt="The Free Dictionary" src="/static/images/mobile/copyright/wiktionary-tagline-en.svg" width="110" height="15" style="width: 6.875em; height: 0.9375em;">
+	</span>
+</a>
+
+		</div>
+		<div class="vector-header-end">
+			
+<div id="p-search" role="search" class="vector-search-box-vue  vector-search-box-collapses vector-search-box-show-thumbnail vector-search-box-auto-expand-width vector-search-box">
+	<a href="/wiki/Special:Search" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only search-toggle" title="Search Wiktionary [f]" accesskey="f"><span class="vector-icon mw-ui-icon-search mw-ui-icon-wikimedia-search cdx-button__icon"></span>
+
+<span>Search</span>
+	</a>
+	<div class="vector-typeahead-search-container">
+		<div class="cdx-typeahead-search cdx-typeahead-search--show-thumbnail cdx-typeahead-search--auto-expand-width">
+			<form action="/w/index.php" id="searchform" class="cdx-search-input cdx-search-input--has-end-button">
+				<div id="simpleSearch" class="cdx-search-input__input-wrapper"  data-search-loc="header-moved">
+					<div class="cdx-text-input cdx-text-input--has-start-icon">
+						<input
+							class="cdx-text-input__input mw-searchInput" autocomplete="off"
+							 type="search" name="search" placeholder="Search Wiktionary" aria-label="Search Wiktionary" autocapitalize="none" spellcheck="false" title="Search Wiktionary [f]" accesskey="f" id="searchInput"
+							>
+						<span class="cdx-text-input__icon cdx-text-input__start-icon"></span>
+					</div>
+					<input type="hidden" name="title" value="Special:Search">
+				</div>
+				<button class="cdx-button cdx-search-input__end-button">Search</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+			<nav class="vector-user-links vector-user-links-wide" aria-label="Personal tools">
+	<div class="vector-user-links-main">
+	
+<div id="p-vector-user-menu-preferences" class="vector-menu mw-portlet emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+	
+<div id="p-vector-user-menu-userpage" class="vector-menu mw-portlet emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+	<nav class="vector-appearance-landmark" aria-label="Appearance">
+		
+<div id="vector-appearance-dropdown" class="vector-dropdown "  title="Change the appearance of the page&#039;s font size, width, and color" >
+	<input type="checkbox" id="vector-appearance-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-appearance-dropdown" class="vector-dropdown-checkbox "  aria-label="Appearance"   >
+	<label id="vector-appearance-dropdown-label" for="vector-appearance-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-appearance mw-ui-icon-wikimedia-appearance cdx-button__icon"></span>
+
+<span class="vector-dropdown-label-text">Appearance</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+			<div id="vector-appearance-unpinned-container" class="vector-unpinned-container">
+				
+			</div>
+		
+	</div>
+</div>
+
+	</nav>
+	
+<div id="p-vector-user-menu-notifications" class="vector-menu mw-portlet emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+	
+<div id="p-vector-user-menu-overflow" class="vector-menu mw-portlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			<li id="pt-sitesupport-2" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="https://donate.wikimedia.org/?wmf_source=donate&amp;wmf_medium=sidebar&amp;wmf_campaign=en.wiktionary.org&amp;uselang=en" data-mw-donate-attempt="top_link" class=""><span>Donations</span></a>
+</li>
+<li id="pt-createaccount-2" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="/w/index.php?title=Special:CreateAccount&amp;returnto=%E6%AD%BB%E3%81%AC" title="You are encouraged to create an account and log in; however, it is not mandatory" class=""><span>Create account</span></a>
+</li>
+<li id="pt-login-2" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="/w/index.php?title=Special:UserLogin&amp;returnto=%E6%AD%BB%E3%81%AC" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o" class=""><span>Log in</span></a>
+</li>
+
+			
+		</ul>
+		
+	</div>
+</div>
+
+	</div>
+	
+<div id="vector-user-links-dropdown" class="vector-dropdown vector-user-menu vector-button-flush-right vector-user-menu-logged-out vector-user-links-dropdown--collapsible"  title="More options" >
+	<input type="checkbox" id="vector-user-links-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-user-links-dropdown" class="vector-dropdown-checkbox "  aria-label="Personal tools"   >
+	<label id="vector-user-links-dropdown-label" for="vector-user-links-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-ellipsis mw-ui-icon-wikimedia-ellipsis cdx-button__icon"></span>
+
+<span class="vector-dropdown-label-text">Personal tools</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+		
+<div id="p-personal" class="vector-menu mw-portlet mw-portlet-personal"  title="User menu" >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			<li id="pt-sitesupport" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="https://donate.wikimedia.org/?wmf_source=donate&amp;wmf_medium=sidebar&amp;wmf_campaign=en.wiktionary.org&amp;uselang=en" data-mw-donate-attempt="top_link" class=""><span class="vector-icon mw-ui-icon-heart mw-ui-icon-wikimedia-heart cdx-button__icon"></span>
+
+<span>Donations</span></a>
+</li>
+<li id="pt-createaccount" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="/w/index.php?title=Special:CreateAccount&amp;returnto=%E6%AD%BB%E3%81%AC" title="You are encouraged to create an account and log in; however, it is not mandatory" class=""><span class="vector-icon mw-ui-icon-userAvatar mw-ui-icon-wikimedia-userAvatar cdx-button__icon"></span>
+
+<span>Create account</span></a>
+</li>
+<li id="pt-login" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="/w/index.php?title=Special:UserLogin&amp;returnto=%E6%AD%BB%E3%81%AC" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o" class=""><span class="vector-icon mw-ui-icon-logIn mw-ui-icon-wikimedia-logIn cdx-button__icon"></span>
+
+<span>Log in</span></a>
+</li>
+
+			
+		</ul>
+		
+	</div>
+</div>
+
+	
+	</div>
+</div>
+
+</nav>
+
+		</div>
+	</header>
+</div>
+<div class="mw-page-container">
+	<div class="mw-page-container-inner">
+		<div class="vector-sitenotice-container">
+			<div id="siteNotice"><!-- CentralNotice --></div>
+		</div>
+		<div class="vector-column-start">
+			<div class="vector-main-menu-container">
+		<div id="mw-navigation">
+			<nav id="mw-panel" class="vector-main-menu-landmark" aria-label="Site">
+				<div id="vector-main-menu-pinned-container" class="vector-pinned-container">
+				
+				</div>
+		</nav>
+		</div>
+	</div>
+	<div class="vector-sticky-pinned-container">
+				<nav id="mw-panel-toc" aria-label="Contents" data-event-name="ui.sidebar-toc" class="mw-table-of-contents-container vector-toc-landmark">
+					<div id="vector-toc-pinned-container" class="vector-pinned-container">
+					<div id="vector-toc" class="vector-toc vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-toc-pinnable-header vector-pinnable-header-pinned"
+	data-feature-name="toc-pinned"
+	data-pinnable-element-id="vector-toc"
+	data-pinned-container-id="vector-toc-pinned-container"
+	data-unpinned-container-id="vector-toc-unpinned-container"
+>
+	<h2 class="vector-pinnable-header-label">Contents</h2>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-toc.pin" aria-label="Move Contents to sidebar">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-toc.unpin" aria-label="Hide Contents">hide</button>
+</div>
+
+
+	<ul class="vector-toc-contents" id="mw-panel-toc-list">
+		<li id="toc-mw-content-text"
+			class="vector-toc-list-item vector-toc-level-1">
+			<a href="#" class="vector-toc-link">
+				<div class="vector-toc-text">Beginning</div>
+			</a>
+		</li>
+		<li id="toc-Japanese"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Japanese">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">1</span>
+				<span>Japanese</span>
+			</div>
+		</a>
+		
+			<button aria-controls="toc-Japanese-sublist" class="cdx-button cdx-button--weight-quiet cdx-button--icon-only vector-toc-toggle">
+				<span class="vector-icon mw-ui-icon-wikimedia-expand"></span>
+				<span>Toggle Japanese subsection</span>
+			</button>
+		
+		<ul id="toc-Japanese-sublist" class="vector-toc-list">
+			<li id="toc-Etymology"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#Etymology">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.1</span>
+					<span>Etymology</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Etymology-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Pronunciation"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#Pronunciation">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.2</span>
+					<span>Pronunciation</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Pronunciation-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Verb"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#Verb">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.3</span>
+					<span>Verb</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Verb-sublist" class="vector-toc-list">
+				<li id="toc-Usage_notes"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Usage_notes">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.3.1</span>
+					<span>Usage notes</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Usage_notes-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Conjugation"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Conjugation">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.3.2</span>
+					<span>Conjugation</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Conjugation-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Synonyms"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Synonyms">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.3.3</span>
+					<span>Synonyms</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Synonyms-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Antonyms"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Antonyms">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.3.4</span>
+					<span>Antonyms</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Antonyms-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Related_terms"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Related_terms">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.3.5</span>
+					<span>Related terms</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Related_terms-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+		</li>
+		<li id="toc-Trivia"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#Trivia">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.4</span>
+					<span>Trivia</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Trivia-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-References"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#References">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.5</span>
+					<span>References</span>
+				</div>
+			</a>
+			
+			<ul id="toc-References-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+</div>
+
+					</div>
+		</nav>
+			</div>
+		</div>
+		<div class="mw-content-container">
+			<main id="content" class="mw-body">
+				<header class="mw-body-header vector-page-titlebar no-font-mode-scale">
+					<nav aria-label="Contents" class="vector-toc-landmark">
+						
+<div id="vector-page-titlebar-toc" class="vector-dropdown vector-page-titlebar-toc vector-button-flush-left"  title="Table of Contents" >
+	<input type="checkbox" id="vector-page-titlebar-toc-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-page-titlebar-toc" class="vector-dropdown-checkbox "  aria-label="Toggle the table of contents"   >
+	<label id="vector-page-titlebar-toc-label" for="vector-page-titlebar-toc-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-listBullet mw-ui-icon-wikimedia-listBullet cdx-button__icon"></span>
+
+<span class="vector-dropdown-label-text">Toggle the table of contents</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+							<div id="vector-page-titlebar-toc-unpinned-container" class="vector-unpinned-container">
+			</div>
+		
+	</div>
+</div>
+
+					</nav>
+					<h1 id="firstHeading" class="firstHeading mw-first-heading"><span class="Jpan">死ぬ</span></h1>
+							
+<div id="p-lang-btn" class="vector-dropdown mw-portlet mw-portlet-lang"  >
+	<input type="checkbox" id="p-lang-btn-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-p-lang-btn" class="vector-dropdown-checkbox mw-interlanguage-selector"  aria-label="23 languages" aria-description="Go to an article in another language. Available in 23 languages"  >
+	<label id="p-lang-btn-label" for="p-lang-btn-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--action-progressive mw-portlet-lang-heading-23" aria-hidden="true"  ><span class="vector-icon mw-ui-icon-language-progressive mw-ui-icon-wikimedia-language-progressive cdx-button__icon"></span>
+
+<span class="vector-dropdown-label-text">23 languages</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+		<div class="vector-menu-content">
+			
+			<ul class="vector-menu-content-list">
+				
+				<li class="interlanguage-link interwiki-af mw-list-item"><a href="https://af.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Afrikaans" lang="af" hreflang="af" data-title="死ぬ" data-language-autonym="Afrikaans" data-language-local-name="Afrikaans" class="interlanguage-link-target"><span>Afrikaans</span></a></li><li class="interlanguage-link interwiki-cs mw-list-item"><a href="https://cs.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Czech" lang="cs" hreflang="cs" data-title="死ぬ" data-language-autonym="Čeština" data-language-local-name="Czech" class="interlanguage-link-target"><span>Čeština</span></a></li><li class="interlanguage-link interwiki-et mw-list-item"><a href="https://et.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Estonian" lang="et" hreflang="et" data-title="死ぬ" data-language-autonym="Eesti" data-language-local-name="Estonian" class="interlanguage-link-target"><span>Eesti</span></a></li><li class="interlanguage-link interwiki-fi mw-list-item"><a href="https://fi.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Finnish" lang="fi" hreflang="fi" data-title="死ぬ" data-language-autonym="Suomi" data-language-local-name="Finnish" class="interlanguage-link-target"><span>Suomi</span></a></li><li class="interlanguage-link interwiki-fj mw-list-item"><a href="https://fj.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Fijian" lang="fj" hreflang="fj" data-title="死ぬ" data-language-autonym="Na Vosa Vakaviti" data-language-local-name="Fijian" class="interlanguage-link-target"><span>Na Vosa Vakaviti</span></a></li><li class="interlanguage-link interwiki-fr mw-list-item"><a href="https://fr.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – French" lang="fr" hreflang="fr" data-title="死ぬ" data-language-autonym="Français" data-language-local-name="French" class="interlanguage-link-target"><span>Français</span></a></li><li class="interlanguage-link interwiki-hu mw-list-item"><a href="https://hu.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Hungarian" lang="hu" hreflang="hu" data-title="死ぬ" data-language-autonym="Magyar" data-language-local-name="Hungarian" class="interlanguage-link-target"><span>Magyar</span></a></li><li class="interlanguage-link interwiki-id mw-list-item"><a href="https://id.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Indonesian" lang="id" hreflang="id" data-title="死ぬ" data-language-autonym="Bahasa Indonesia" data-language-local-name="Indonesian" class="interlanguage-link-target"><span>Bahasa Indonesia</span></a></li><li class="interlanguage-link interwiki-it mw-list-item"><a href="https://it.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Italian" lang="it" hreflang="it" data-title="死ぬ" data-language-autonym="Italiano" data-language-local-name="Italian" class="interlanguage-link-target"><span>Italiano</span></a></li><li class="interlanguage-link interwiki-ja mw-list-item"><a href="https://ja.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Japanese" lang="ja" hreflang="ja" data-title="死ぬ" data-language-autonym="日本語" data-language-local-name="Japanese" class="interlanguage-link-target"><span>日本語</span></a></li><li class="interlanguage-link interwiki-ko mw-list-item"><a href="https://ko.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Korean" lang="ko" hreflang="ko" data-title="死ぬ" data-language-autonym="한국어" data-language-local-name="Korean" class="interlanguage-link-target"><span>한국어</span></a></li><li class="interlanguage-link interwiki-ku mw-list-item"><a href="https://ku.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Kurdish" lang="ku" hreflang="ku" data-title="死ぬ" data-language-autonym="Kurdî" data-language-local-name="Kurdish" class="interlanguage-link-target"><span>Kurdî</span></a></li><li class="interlanguage-link interwiki-la mw-list-item"><a href="https://la.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Latin" lang="la" hreflang="la" data-title="死ぬ" data-language-autonym="Latina" data-language-local-name="Latin" class="interlanguage-link-target"><span>Latina</span></a></li><li class="interlanguage-link interwiki-li mw-list-item"><a href="https://li.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Limburgish" lang="li" hreflang="li" data-title="死ぬ" data-language-autonym="Limburgs" data-language-local-name="Limburgish" class="interlanguage-link-target"><span>Limburgs</span></a></li><li class="interlanguage-link interwiki-lt mw-list-item"><a href="https://lt.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Lithuanian" lang="lt" hreflang="lt" data-title="死ぬ" data-language-autonym="Lietuvių" data-language-local-name="Lithuanian" class="interlanguage-link-target"><span>Lietuvių</span></a></li><li class="interlanguage-link interwiki-mg mw-list-item"><a href="https://mg.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Malagasy" lang="mg" hreflang="mg" data-title="死ぬ" data-language-autonym="Malagasy" data-language-local-name="Malagasy" class="interlanguage-link-target"><span>Malagasy</span></a></li><li class="interlanguage-link interwiki-nl mw-list-item"><a href="https://nl.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Dutch" lang="nl" hreflang="nl" data-title="死ぬ" data-language-autonym="Nederlands" data-language-local-name="Dutch" class="interlanguage-link-target"><span>Nederlands</span></a></li><li class="interlanguage-link interwiki-pl mw-list-item"><a href="https://pl.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Polish" lang="pl" hreflang="pl" data-title="死ぬ" data-language-autonym="Polski" data-language-local-name="Polish" class="interlanguage-link-target"><span>Polski</span></a></li><li class="interlanguage-link interwiki-pt mw-list-item"><a href="https://pt.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Portuguese" lang="pt" hreflang="pt" data-title="死ぬ" data-language-autonym="Português" data-language-local-name="Portuguese" class="interlanguage-link-target"><span>Português</span></a></li><li class="interlanguage-link interwiki-ru mw-list-item"><a href="https://ru.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Russian" lang="ru" hreflang="ru" data-title="死ぬ" data-language-autonym="Русский" data-language-local-name="Russian" class="interlanguage-link-target"><span>Русский</span></a></li><li class="interlanguage-link interwiki-sv mw-list-item"><a href="https://sv.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Swedish" lang="sv" hreflang="sv" data-title="死ぬ" data-language-autonym="Svenska" data-language-local-name="Swedish" class="interlanguage-link-target"><span>Svenska</span></a></li><li class="interlanguage-link interwiki-yue mw-list-item"><a href="https://yue.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Cantonese" lang="yue" hreflang="yue" data-title="死ぬ" data-language-autonym="粵語" data-language-local-name="Cantonese" class="interlanguage-link-target"><span>粵語</span></a></li><li class="interlanguage-link interwiki-zh mw-list-item"><a href="https://zh.wiktionary.org/wiki/%E6%AD%BB%E3%81%AC" title="死ぬ – Chinese" lang="zh" hreflang="zh" data-title="死ぬ" data-language-autonym="中文" data-language-local-name="Chinese" class="interlanguage-link-target"><span>中文</span></a></li>
+			</ul>
+			
+		</div>
+
+	</div>
+</div>
+</header>
+				<div class="vector-page-toolbar">
+					<div class="vector-page-toolbar-container">
+						<div id="left-navigation">
+							<nav aria-label="Namespaces">
+								
+<div id="p-associated-pages" class="vector-menu vector-menu-tabs mw-portlet mw-portlet-associated-pages"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			<li id="ca-nstab-main" class="selected mw-list-item vector-tab-noicon"><a data-mw-interface  href="/wiki/%E6%AD%BB%E3%81%AC" title="View the content page [c]" accesskey="c" class=""><span>Entry</span></a>
+</li>
+<li id="ca-talk" class="mw-list-item vector-tab-noicon"><a data-mw-interface  href="/wiki/Talk:%E6%AD%BB%E3%81%AC" rel="discussion" title="Discussion about the content page [t]" accesskey="t" class=""><span>Discussion</span></a>
+</li>
+
+			
+		</ul>
+		
+	</div>
+</div>
+
+								
+<div id="vector-variants-dropdown" class="vector-dropdown emptyPortlet"  >
+	<input type="checkbox" id="vector-variants-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-variants-dropdown" class="vector-dropdown-checkbox " aria-label="Change language variant"    >
+	<label id="vector-variants-dropdown-label" for="vector-variants-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" aria-hidden="true"  ><span class="vector-dropdown-label-text">English</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+					
+<div id="p-variants" class="vector-menu mw-portlet mw-portlet-variants emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+				
+	</div>
+</div>
+
+							</nav>
+						</div>
+						<div id="right-navigation" class="vector-collapsible">
+							<nav aria-label="Views">
+			    
+<div id="p-views" class="vector-menu vector-menu-tabs mw-portlet mw-portlet-views"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			<li id="ca-view" class="selected mw-list-item vector-menu-item--collapsible vector-tab-noicon"><a data-mw-interface  href="/wiki/%E6%AD%BB%E3%81%AC" class=""><span>Read</span></a>
+</li>
+<li id="ca-edit" class="mw-list-item vector-menu-item--collapsible vector-tab-noicon"><a data-mw-interface  href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit" title="Edit this page [e]" accesskey="e" class=""><span>Edit</span></a>
+</li>
+<li id="ca-history" class="mw-list-item vector-menu-item--collapsible vector-tab-noicon"><a data-mw-interface  href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=history" title="Past revisions of this page [h]" accesskey="h" class=""><span>View history</span></a>
+</li>
+
+			
+		</ul>
+		
+	</div>
+</div>
+
+			</nav>
+
+							<nav class="vector-page-tools-landmark" aria-label="Page tools">
+								
+<div id="vector-page-tools-dropdown" class="vector-dropdown vector-page-tools-dropdown"  >
+	<input type="checkbox" id="vector-page-tools-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-page-tools-dropdown" class="vector-dropdown-checkbox "  aria-label="Tools"   >
+	<label id="vector-page-tools-dropdown-label" for="vector-page-tools-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-verticalEllipsis mw-ui-icon-wikimedia-verticalEllipsis cdx-button__icon"></span>
+
+<span class="vector-dropdown-label-text">Tools</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+									<div id="vector-page-tools-unpinned-container" class="vector-unpinned-container">
+						
+<div id="vector-page-tools" class="vector-page-tools vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-page-tools-pinnable-header vector-pinnable-header-unpinned"
+	data-feature-name="page-tools-pinned"
+	data-pinnable-element-id="vector-page-tools"
+	data-pinned-container-id="vector-page-tools-pinned-container"
+	data-unpinned-container-id="vector-page-tools-unpinned-container"
+>
+	<div class="vector-pinnable-header-label">Tools</div>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-page-tools.pin" aria-label="Move Tools to sidebar">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-page-tools.unpin" aria-label="Hide Tools">hide</button>
+</div>
+
+	
+<div id="p-cactions" class="vector-menu mw-portlet mw-portlet-cactions emptyPortlet"  >
+	<div class="vector-menu-heading">
+		Actions
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			<li id="ca-view-more" class="selected mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="/wiki/%E6%AD%BB%E3%81%AC" class=""><span class="vector-icon mw-ui-icon-eye mw-ui-icon-wikimedia-eye cdx-button__icon"></span>
+
+<span>Read</span></a>
+</li>
+<li id="ca-edit-more" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit" title="Edit this page [e]" accesskey="e" class=""><span class="vector-icon mw-ui-icon-edit mw-ui-icon-wikimedia-edit cdx-button__icon"></span>
+
+<span>Edit</span></a>
+</li>
+<li id="ca-history-more" class="mw-list-item vector-menu-item--collapsible"><a data-mw-interface  href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=history" title="Past revisions of this page [h]" accesskey="h" class=""><span class="vector-icon mw-ui-icon-history mw-ui-icon-wikimedia-history cdx-button__icon"></span>
+
+<span>View history</span></a>
+</li>
+
+			
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-tb" class="vector-menu mw-portlet mw-portlet-tb"  >
+	<div class="vector-menu-heading">
+		General
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="t-whatlinkshere" class="mw-list-item"><a href="/wiki/Special:WhatLinksHere/%E6%AD%BB%E3%81%AC" title="A list of all wiki pages that link here [j]" accesskey="j"><span>What links here</span></a></li><li id="t-recentchangeslinked" class="mw-list-item"><a href="/wiki/Special:RecentChangesLinked/%E6%AD%BB%E3%81%AC" rel="nofollow" title="Recent changes in pages linked from this page [k]" accesskey="k"><span>Related changes</span></a></li><li id="t-upload" class="mw-list-item"><a href="//commons.wikimedia.org/wiki/Special:UploadWizard?uselang=en" title="Upload files [u]" accesskey="u"><span>Upload file</span></a></li><li id="t-permalink" class="mw-list-item"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;oldid=89466989" title="Permanent link to this revision of this page"><span>Permanent link</span></a></li><li id="t-info" class="mw-list-item"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=info" title="More information about this page"><span>Page information</span></a></li><li id="t-cite" class="mw-list-item"><a href="/w/index.php?title=Special:CiteThisPage&amp;page=%E6%AD%BB%E3%81%AC&amp;id=89466989&amp;wpFormIdentifier=titleform" title="Information on how to cite this page"><span>Cite this page</span></a></li><li id="t-urlshortener" class="mw-list-item"><a href="/w/index.php?title=Special:UrlShortener&amp;url=https%3A%2F%2Fen.wiktionary.org%2Fwiki%2F%25E6%25AD%25BB%25E3%2581%25AC"><span>Get shortened URL</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-coll-print_export" class="vector-menu mw-portlet mw-portlet-coll-print_export"  >
+	<div class="vector-menu-heading">
+		Print/export
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="coll-create_a_book" class="mw-list-item"><a href="/w/index.php?title=Special:Book&amp;bookcmd=book_creator&amp;referer=%E6%AD%BB%E3%81%AC"><span>Create a book</span></a></li><li id="coll-download-as-rl" class="mw-list-item"><a href="/w/index.php?title=Special:DownloadAsPdf&amp;page=%E6%AD%BB%E3%81%AC&amp;action=show-download-screen"><span>Download as PDF</span></a></li><li id="t-print" class="mw-list-item"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;printable=yes" title="Printable version of this page [p]" accesskey="p"><span>Printable version</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-wikibase-otherprojects" class="vector-menu mw-portlet mw-portlet-wikibase-otherprojects emptyPortlet"  >
+	<div class="vector-menu-heading">
+		In other projects
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+</div>
+
+									</div>
+				
+	</div>
+</div>
+
+							</nav>
+						</div>
+					</div>
+				</div>
+				<div class="vector-column-end no-font-mode-scale">
+					<div class="vector-sticky-pinned-container">
+						<nav class="vector-page-tools-landmark" aria-label="Page tools">
+							<div id="vector-page-tools-pinned-container" class="vector-pinned-container">
+				
+							</div>
+		</nav>
+						<nav class="vector-appearance-landmark" aria-label="Appearance">
+							<div id="vector-appearance-pinned-container" class="vector-pinned-container">
+				<div id="vector-appearance" class="vector-appearance vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-appearance-pinnable-header vector-pinnable-header-pinned"
+	data-feature-name="appearance-pinned"
+	data-pinnable-element-id="vector-appearance"
+	data-pinned-container-id="vector-appearance-pinned-container"
+	data-unpinned-container-id="vector-appearance-unpinned-container"
+>
+	<div class="vector-pinnable-header-label">Appearance</div>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-appearance.pin" aria-label="Move Appearance to sidebar">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-appearance.unpin" aria-label="Hide Appearance">hide</button>
+</div>
+
+
+</div>
+
+							</div>
+		</nav>
+					</div>
+				</div>
+				<div id="bodyContent" class="vector-body" aria-labelledby="firstHeading" data-mw-ve-target-container>
+					<div class="vector-body-before-content">
+							<div class="mw-indicators">
+		</div>
+
+						<div id="siteSub" class="noprint">From Wiktionary, the free dictionary</div>
+					</div>
+					<div id="contentSub"><div id="mw-content-subtitle"></div></div>
+					
+					
+					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><meta property="mw:PageProp/toc" />
+<div class="mw-heading mw-heading2"><h2 id="Japanese">Japanese</h2><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=1" title="Edit section: Japanese"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<table class="wikitable kanji-table floatright" style="text-align: center;">
+<tbody><tr>
+<th style="font-weight: normal;"><a href="/wiki/Appendix:Japanese_glossary#kanji" title="Appendix:Japanese glossary">Kanji</a> in this term
+</th></tr>
+
+<tr lang="ja" class="Jpan" style="font-size: 2em; background: var(--wikt-palette-white,#ffffff); color: inherit; line-height: 1em;">
+<td style="padding: 0.5em;"><a href="/wiki/%E6%AD%BB#Japanese" title="死">死</a>
+</td></tr>
+<tr style="background: var(--wikt-palette-white,#ffffff); color: inherit;">
+<td><span class="Jpan" lang="ja">し</span><br /><small><a href="/wiki/Appendix:Japanese_glossary#kyōiku_kanji" title="Appendix:Japanese glossary">Grade: 3</a></small>
+</td></tr>
+<tr>
+<td colspan="1"><a href="/wiki/Appendix:Japanese_glossary#kun&#39;yomi" title="Appendix:Japanese glossary">kun'yomi</a>
+</td></tr></tbody></table>
+<table class="wikitable floatright">
+<tbody><tr>
+<th style="font-weight:normal">Alternative spellings
+</th></tr>
+<tr>
+<td style="text-align:center;font-size:108%"><span class="Jpan" lang="ja" style="font-size:140%"><a href="/wiki/%E6%B0%8F%E3%81%AC#Japanese" title="氏ぬ">氏ぬ</a></span> <small><span class="usage-label-sense"><span class="ib-brac label-brac">(</span><span class="ib-content label-content">filter-avoidance</span><span class="ib-brac label-brac">)</span></span></small><br /><span class="Jpan" lang="ja" style="font-size:140%"><a href="/wiki/4%E3%81%AC#Japanese" title="4ぬ">4ぬ</a></span> <small><span class="usage-label-sense"><span class="ib-brac label-brac">(</span><span class="ib-content label-content">filter-avoidance</span><span class="ib-brac label-brac">)</span></span></small>
+</td></tr></tbody></table>
+<div class="mw-heading mw-heading3"><h3 id="Etymology">Etymology</h3><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=2" title="Edit section: Etymology"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<p>From <span class="etyl"><a href="https://en.wikipedia.org/wiki/Old_Japanese" class="extiw" title="w:Old Japanese">Old Japanese</a></span>, from <span class="etyl"><a href="https://en.wikipedia.org/wiki/Proto-Japonic_language" class="extiw" title="w:Proto-Japonic language">Proto-Japonic</a></span> <i class="Latn mention" lang="jpx-pro"><a href="/wiki/Reconstruction:Proto-Japonic/sin-" title="Reconstruction:Proto-Japonic/sin-">&#42;sin-</a></i>. Appears in the oldest Japanese texts, including the <i><a href="https://en.wikipedia.org/wiki/Nihon_Shoki" class="extiw" title="w:Nihon Shoki">Nihon Shoki</a></i> of 720 <small class="ce-date"><a href="/wiki/Appendix:Glossary#CE" title="Appendix:Glossary"><span title="Glossary and display preference">CE</span></a></small> and the <i><a href="https://en.wikipedia.org/wiki/Man%27y%C5%8Dsh%C5%AB" class="extiw" title="w:Man&#39;yōshū">Man'yōshū</a></i><sup id="cite&#95;ref-1" class="reference"><a href="#cite_note-1"><span class="cite-bracket">&#91;</span>1<span class="cite-bracket">&#93;</span></a></sup> of 759 <small class="ce-date"><a href="/wiki/Appendix:Glossary#CE" title="Appendix:Glossary"><span title="Glossary and display preference">CE</span></a></small>.<sup id="cite&#95;ref-KDJ&#95;2-0" class="reference"><a href="#cite_note-KDJ-2"><span class="cite-bracket">&#91;</span>2<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-DJR&#95;3-0" class="reference"><a href="#cite_note-DJR-3"><span class="cite-bracket">&#91;</span>3<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-DJS&#95;4-0" class="reference"><a href="#cite_note-DJS-4"><span class="cite-bracket">&#91;</span>4<span class="cite-bracket">&#93;</span></a></sup>
+</p><p>The <span class="Jpan" lang="ja"><a href="/wiki/%E3%81%AC#Japanese" title="ぬ">ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>-nu</i></span><span class="mention-gloss-paren annotation-paren">)</span> ending historically had an irregular conjugation pattern, shared only by now-obsolete verb <span class="Jpan" lang="ja"><a href="/wiki/%E5%BE%80%E3%81%AC#Japanese" title="往ぬ"><ruby>往<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span>, <span class="Jpan" lang="ja"><a href="/wiki/%E5%8E%BB%E3%81%AC#Japanese" title="去ぬ"><ruby>去<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>inu</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss">to <a href="/wiki/go_away" title="go away">go away</a>, to <a href="/wiki/go" title="go">go</a>, to <a href="/wiki/leave" title="leave">leave</a>, to <a href="/wiki/pass" title="pass">pass</a>, to <a href="/wiki/disappear" title="disappear">disappear</a></span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span> and auxiliary verb <span class="Jpan" lang="ja"><a href="/wiki/%E3%81%AC#Japanese" title="ぬ">ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>nu</i></span>, <span class="ann-pos">indicating completion, generally reserved for non-intentional, spontaneous, or intransitive actions</span><span class="mention-gloss-paren annotation-paren">)</span>.  The <span class="Jpan" lang="ja"><a href="/wiki/%E3%81%AC#Japanese" title="ぬ">ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>-nu</i></span><span class="mention-gloss-paren annotation-paren">)</span> in verb <span class="Jpan" lang="ja"><strong class="selflink"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>ぬ</strong></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>shinu</i></span><span class="mention-gloss-paren annotation-paren">)</span> was viewed as identical to the auxiliary,<sup id="cite&#95;ref-DJS&#95;4-1" class="reference"><a href="#cite_note-DJS-4"><span class="cite-bracket">&#91;</span>4<span class="cite-bracket">&#93;</span></a></sup> and the verb <span class="Jpan" lang="ja"><strong class="selflink"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>ぬ</strong></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>shinu</i></span><span class="mention-gloss-paren annotation-paren">)</span> initially was thus never conjugated with this auxiliary as an additional suffix.<sup id="cite&#95;ref-KDJ&#95;2-1" class="reference"><a href="#cite_note-KDJ-2"><span class="cite-bracket">&#91;</span>2<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-DJR&#95;3-1" class="reference"><a href="#cite_note-DJR-3"><span class="cite-bracket">&#91;</span>3<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-DJS&#95;4-2" class="reference"><a href="#cite_note-DJS-4"><span class="cite-bracket">&#91;</span>4<span class="cite-bracket">&#93;</span></a></sup>
+</p><p>The auxiliary itself may have derived from the verb <span class="Jpan" lang="ja"><a href="/wiki/%E5%BE%80%E3%81%AC#Japanese" title="往ぬ"><ruby>往<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span>, <span class="Jpan" lang="ja"><a href="/wiki/%E5%8E%BB%E3%81%AC#Japanese" title="去ぬ"><ruby>去<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>inu</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss">to <a href="/wiki/go_away" title="go away">go away</a>, to <a href="/wiki/go" title="go">go</a>, to <a href="/wiki/leave" title="leave">leave</a>, to <a href="/wiki/pass" title="pass">pass</a>, to <a href="/wiki/disappear" title="disappear">disappear</a></span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span>,<sup id="cite&#95;ref-KDJ&#95;2-2" class="reference"><a href="#cite_note-KDJ-2"><span class="cite-bracket">&#91;</span>2<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-DJR&#95;3-2" class="reference"><a href="#cite_note-DJR-3"><span class="cite-bracket">&#91;</span>3<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-DJS&#95;4-3" class="reference"><a href="#cite_note-DJS-4"><span class="cite-bracket">&#91;</span>4<span class="cite-bracket">&#93;</span></a></sup> raising the possibility that the verb <span class="Jpan" lang="ja"><strong class="selflink"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>ぬ</strong></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>shinu</i></span><span class="mention-gloss-paren annotation-paren">)</span> may have derived from a fusion of <span class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB#Japanese" title="死"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby></a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>shi</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss"><a href="/wiki/death" title="death">death</a></span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span> + <span class="Jpan" lang="ja"><a href="/wiki/%E5%BE%80%E3%81%AC#Japanese" title="往ぬ"><ruby>往<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span>, <span class="Jpan" lang="ja"><a href="/wiki/%E5%8E%BB%E3%81%AC#Japanese" title="去ぬ"><ruby>去<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>inu</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss">to <a href="/wiki/go_away" title="go away">go away</a>, to <a href="/wiki/go" title="go">go</a>, to <a href="/wiki/leave" title="leave">leave</a>, to <a href="/wiki/pass" title="pass">pass</a>, to <a href="/wiki/disappear" title="disappear">disappear</a></span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span>; the second element could also be the auxiliary <span class="Jpan" lang="ja"><a href="/wiki/%E3%81%AC#Japanese" title="ぬ">ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>-nu</i></span><span class="mention-gloss-paren annotation-paren">)</span> or its suggested ancient stative verb origin.
+</p><p>The transition from the <span class="Jpan" lang="ja"><a href="/wiki/%E3%83%8A%E8%A1%8C%E5%A4%89%E6%A0%BC%E6%B4%BB%E7%94%A8#Japanese" title="ナ行変格活用">ナ<ruby>行<rp>(</rp><rt>ぎょう</rt><rp>)</rp></ruby><ruby>変<rp>(</rp><rt>へん</rt><rp>)</rp></ruby><ruby>格<rp>(</rp><rt>かく</rt><rp>)</rp></ruby><ruby>活<rp>(</rp><rt>かつ</rt><rp>)</rp></ruby><ruby>用<rp>(</rp><rt>よう</rt><rp>)</rp></ruby></a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>na-gyō henkaku katsuyō</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss"><i>na</i>-row irregular conjugation</span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span> pattern to the regular <span class="Jpan" lang="ja"><a href="/wiki/%E5%9B%9B%E6%AE%B5%E6%B4%BB%E7%94%A8#Japanese" title="四段活用"><ruby>四<rp>(</rp><rt>よ</rt><rp>)</rp></ruby><ruby>段<rp>(</rp><rt>だん</rt><rp>)</rp></ruby><ruby>活<rp>(</rp><rt>かつ</rt><rp>)</rp></ruby><ruby>用<rp>(</rp><rt>よう</rt><rp>)</rp></ruby></a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>yodan katsuyō</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss"><a href="/wiki/quadrigrade" title="quadrigrade">quadrigrade</a> conjugation</span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span> appears in texts from the <a href="https://en.wikipedia.org/wiki/Muromachi_period" class="extiw" title="w:Muromachi period">Muromachi period</a> (1336–1573) and on.<sup id="cite&#95;ref-KDJ&#95;2-3" class="reference"><a href="#cite_note-KDJ-2"><span class="cite-bracket">&#91;</span>2<span class="cite-bracket">&#93;</span></a></sup>  The <i>na</i> irregular pattern persisted in increasingly limited use until the <a href="https://en.wikipedia.org/wiki/Meiji_period" class="extiw" title="w:Meiji period">Meiji period</a> (1868–1929).<sup id="cite&#95;ref-DJR&#95;3-3" class="reference"><a href="#cite_note-DJR-3"><span class="cite-bracket">&#91;</span>3<span class="cite-bracket">&#93;</span></a></sup>
+</p>
+<div class="mw-heading mw-heading3"><h3 id="Pronunciation">Pronunciation</h3><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=3" title="Edit section: Pronunciation"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<ul style="container-type: normal;"><li><a href="/wiki/Wiktionary:International_Phonetic_Alphabet" title="Wiktionary:International Phonetic Alphabet">IPA</a><sup>(<a href="/wiki/Appendix:Japanese_pronunciation" title="Appendix:Japanese pronunciation">key</a>)</sup>:&#32;<span class="IPA nowrap">[ɕinɯ̟]</span></li><li style="margin-top: 1cqh;"><span class="usage-label-accent"><span class="ib-brac label-brac">(</span><span class="ib-content label-content"><a href="https://en.wikipedia.org/wiki/Tokyo_dialect" class="extiw" title="w:Tokyo dialect">Tokyo</a></span><span class="ib-brac label-brac">)</span></span> <span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">ぬ</span></span> <span class="Latn"><samp>[shìnú]</samp></span> (<a href="/wiki/%E5%B9%B3%E6%9D%BF%E5%9E%8B" title="平板型">Heiban</a> – [0])<sup id="cite&#95;ref-DJR&#95;3-4" class="reference"><a href="#cite_note-DJR-3"><span class="cite-bracket">&#91;</span>3<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-NHK&#95;5-0" class="reference"><a href="#cite_note-NHK-5"><span class="cite-bracket">&#91;</span>5<span class="cite-bracket">&#93;</span></a></sup><sup id="cite&#95;ref-SMK5&#95;6-0" class="reference"><a href="#cite_note-SMK5-6"><span class="cite-bracket">&#91;</span>6<span class="cite-bracket">&#93;</span></a></sup></li></ul>
+<div class="vsSwitcher" data-toggle-category="accent">
+<div style="display: inline-block;">
+<ul><li>Tokyo pitch accent of conjugated forms of <span lang="ja" class="Jpan">死ぬ</span><span class="vsToggleElement" style="margin-left: 1em;"></span></li></ul></div>
+<div class="vsHide">
+<table class="wikitable" style="white-space: nowrap;">
+<tbody><tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja">死ぬ</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">ぬ</span></span>
+</td>
+<td><span class="Latn"><samp>[shìnú]</samp></span>
+</td></tr>
+<tr>
+<th>Conjunctive
+</th>
+<td><span class="Jpan" lang="ja">死んで</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">んで</span></span>
+</td>
+<td><span class="Latn"><samp>[shìńdé]</samp></span>
+</td></tr>
+<tr>
+<th>Perfective
+</th>
+<td><span class="Jpan" lang="ja">死んだ</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">んだ</span></span>
+</td>
+<td><span class="Latn"><samp>[shìńdá]</samp></span>
+</td></tr>
+<tr>
+<th>Negative
+</th>
+<td><span class="Jpan" lang="ja">死なない</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">なない</span></span>
+</td>
+<td><span class="Latn"><samp>[shìnánáí]</samp></span>
+</td></tr>
+<tr>
+<th>Negative perfective
+</th>
+<td><span class="Jpan" lang="ja">死ななかった</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">なな<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>かった</span>
+</td>
+<td><span class="Latn"><samp>[shìnánáꜜkàttà]</samp></span>
+</td></tr>
+<tr>
+<th>Hypothetical conditional
+</th>
+<td><span class="Jpan" lang="ja">死ねば</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">ね<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>ば</span>
+</td>
+<td><span class="Latn"><samp>[shìnéꜜbà]</samp></span>
+</td></tr>
+<tr>
+<th>Past conditional
+</th>
+<td><span class="Jpan" lang="ja">死んだら</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">んだ<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>ら</span>
+</td>
+<td><span class="Latn"><samp>[shìńdáꜜrà]</samp></span>
+</td></tr>
+<tr>
+<th>Imperative
+</th>
+<td><span class="Jpan" lang="ja">死ね</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">ね</span></span>
+</td>
+<td><span class="Latn"><samp>[shìné]</samp></span>
+</td></tr>
+<tr>
+<th>Volitional
+</th>
+<td><span class="Jpan" lang="ja">死のう</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">の<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>ー</span>
+</td>
+<td><span class="Latn"><samp>[shìnóꜜò]</samp></span>
+</td></tr>
+<tr>
+<th>Desiderative
+</th>
+<td><span class="Jpan" lang="ja">死にたい</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">にたい</span></span>
+</td>
+<td><span class="Latn"><samp>[shìnítáí]</samp></span>
+</td></tr>
+<tr>
+<th>Formal
+</th>
+<td><span class="Jpan" lang="ja">死にます</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">にま<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>す</span>
+</td>
+<td><span class="Latn"><samp>[shìnímáꜜsù]</samp></span>
+</td></tr>
+<tr>
+<th>Formal negative
+</th>
+<td><span class="Jpan" lang="ja">死にません</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">にませ<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>ん</span>
+</td>
+<td><span class="Latn"><samp>[shìnímáséꜜǹ]</samp></span>
+</td></tr>
+<tr>
+<th>Formal volitional
+</th>
+<td><span class="Jpan" lang="ja">死にましょう</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">にましょ<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>ー</span>
+</td>
+<td><span class="Latn"><samp>[shìnímáshóꜜò]</samp></span>
+</td></tr>
+<tr>
+<th>Formal perfective
+</th>
+<td><span class="Jpan" lang="ja">死にました</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">にま<span style="position:absolute;top:0;bottom:67%;right:0%;border-right:1px solid;"></span></span>した</span>
+</td>
+<td><span class="Latn"><samp>[shìnímáꜜshìtà]</samp></span>
+</td></tr>
+<tr>
+<th>Continuative
+</th>
+<td><span class="Jpan" lang="ja">死に</span><br /><span class="Jpan" lang="ja">死にに</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">に</span></span><br /><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">にに</span></span>
+</td>
+<td><span class="Latn"><samp>[shìní]</samp></span><br /><span class="Latn"><samp>[shìní ní]</samp></span>
+</td></tr>
+<tr>
+<th>Negative continuative
+</th>
+<td><span class="Jpan" lang="ja">死なず</span><br /><span class="Jpan" lang="ja">死なずに</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">なず</span></span><br /><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">なずに</span></span>
+</td>
+<td><span class="Latn"><samp>[shìnázú]</samp></span><br /><span class="Latn"><samp>[shìnázú ní]</samp></span>
+</td></tr>
+<tr>
+<th>Passive
+</th>
+<td><span class="Jpan" lang="ja">死なれる</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">なれる</span></span>
+</td>
+<td><span class="Latn"><samp>[shìnárérú]</samp></span>
+</td></tr>
+<tr>
+<th>Causative
+</th>
+<td><span class="Jpan" lang="ja">死なせる</span><br /><span class="Jpan" lang="ja">死なす</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">なせる</span></span><br /><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">なす</span></span>
+</td>
+<td><span class="Latn"><samp>[shìnásérú]</samp></span><br /><span class="Latn"><samp>[shìnású]</samp></span>
+</td></tr>
+<tr>
+<th>Potential
+</th>
+<td><span class="Jpan" lang="ja">死ねる</span>
+</td>
+<td><span lang="ja" class="Jpan">し<span style="border-top:1px solid;position:relative;padding:1px;">ねる</span></span>
+</td>
+<td><span class="Latn"><samp>[shìnérú]</samp></span>
+</td></tr>
+</tbody></table></div></div>
+<div class="mw-heading mw-heading3"><h3 id="Verb">Verb</h3><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=4" title="Edit section: Verb"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<p><span class="headword-line"><strong class="Jpan headword" lang="ja"><ruby>死<rp>(</rp><rt><a href="/wiki/%E3%81%97%E3%81%AC#Japanese" title="しぬ">し</a></rt><rp>)</rp></ruby>ぬ</strong> <a href="/wiki/Wiktionary:Japanese_transliteration" title="Wiktionary:Japanese transliteration">•</a> (<span class="headword-tr tr" dir="ltr"><span class="Latn" lang="ja"><a href="/wiki/shinu#Japanese" title="shinu">shinu</a></span></span>)&#160;<i>intransitive&#160;<abbr title="godan (group 1) conjugation">godan</abbr></i> (<i>stem</i> <b class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB%E3%81%AB#Japanese" title="死に"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>に</a></b> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr">shini</span><span class="mention-gloss-paren annotation-paren">)</span>, <i>past</i> <b class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB%E3%82%93%E3%81%A0#Japanese" title="死んだ"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>んだ</a></b> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr">shinda</span><span class="mention-gloss-paren annotation-paren">)</span>)</span>
+</p>
+<ol><li>to <a href="/wiki/die" title="die">die</a>
+<dl><dd><span lang="ja" class="Jpan e-example"><b><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>にたい</b><a href="/wiki/%E3%81%BB%E3%81%A9#Japanese" title="ほど">ほど</a><a href="/wiki/%E8%8B%A6%E3%81%97%E3%81%84#Japanese" title="苦しい"><ruby>苦<rp>(</rp><rt>くる</rt><rp>)</rp></ruby>しい</a></span><dl><dd><i><span class="e-transliteration tr"><b>shinitai</b> hodo kurushii</span></i></dd><dd><span class="e-translation">so excruciating one <b>wishes to die</b></span></dd></dl></dd>
+<dd><span lang="ja" class="Jpan e-example"><a href="/wiki/%E5%A4%A7%E4%BA%8B#Japanese" title="大事"><ruby>大<rp>(</rp><rt>だい</rt><rp>)</rp></ruby><ruby>事<rp>(</rp><rt>じ</rt><rp>)</rp></ruby></a>な<a href="/wiki/%E4%BA%BA#Japanese" title="人"><ruby>人<rp>(</rp><rt>ひと</rt><rp>)</rp></ruby></a>に<b><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>なれる</b></span><dl><dd><i><span class="e-transliteration tr">daiji na hito ni <b>shinareru</b></span></i></dd><dd><span class="e-translation">to have someone important <b>die on you</b> → to lose someone important</span></dd></dl></dd></dl>
+<ul><li><div class="citation-whole"><span class="cited-source"><b>2001</b> January 23, <a href="https://en.wikipedia.org/wiki/Masami_Kurumada" class="extiw" title="w:Masami Kurumada">Masami Kurumada</a>, “<span class="Jpan" lang="ja"><ruby>女神<rp>(</rp><rt>アテナ</rt><rp>)</rp></ruby>の<ruby>聖闘士<rp>(</rp><rt>セイント</rt><rp>)</rp></ruby>の<ruby>巻<rp>(</rp><rt>まき</rt><rp>)</rp></ruby></span> &#91;<span class="e-translation">Athena’s Saints</span>&#93;”, in <cite><span class="Jpan" lang="ja"><a href="https://en.wikipedia.org/wiki/ja:%E8%81%96%E9%97%98%E5%A3%AB%E6%98%9F%E7%9F%A2" class="extiw" title="w:ja:聖闘士星矢"><ruby>Saint<rp>(</rp><rt>セイント</rt><rp>)</rp></ruby><ruby>星<rp>(</rp><rt>セイ</rt><rp>)</rp></ruby><ruby>矢<rp>(</rp><rt>ヤ</rt><rp>)</rp></ruby></a></span></cite> &#91;<cite><span class="e-translation"><a href="https://en.wikipedia.org/wiki/Saint_Seiya" class="extiw" title="w:Saint Seiya">Saint Seiya</a></span></cite>&#93;, volume 1 (fiction), Tokyo&#58; Shueisha, <small><a href="/wiki/Special:BookSources/4-08-617650-5" title="Special:BookSources/4-08-617650-5">→ISBN</a></small>, page <span class="None" lang="und">298</span>:</span></div>
+<dl><dd><span lang="ja" class="Jpan e-example"><a href="/wiki/%E3%83%89%E3%83%A9%E3%82%B4%E3%83%B3#Japanese" title="ドラゴン">ドラゴン</a><ruby>紫<rp>(</rp><rt>シ</rt><rp>)</rp></ruby><ruby>龍<rp>(</rp><rt>リュウ</rt><rp>)</rp></ruby>は<b><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>んだ</b>‼</span><dl><dd><i><span class="e-transliteration tr">Doragon Shiryū wa <b>shinda</b>‼</span></i></dd><dd><span class="e-translation">Dragon Shiryū is dead!!</span></dd></dl></dd></dl></li>
+<li><div class="citation-whole"><span class="cited-source"><span class="None" lang="und"><b>2010</b></span>, “<span class="Jpan" lang="ja"><a href="https://en.wikipedia.org/wiki/ja:%E5%A4%95%E6%96%B9%E3%81%AE%E3%83%94%E3%82%A2%E3%83%8E" class="extiw" title="w:ja:夕方のピアノ"><ruby>夕方<rp>(</rp><rt>ゆうがた</rt><rp>)</rp></ruby>のピアノ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>Yūgata no piano</i></span><span class="mention-gloss-paren annotation-paren">)</span>”, <span class="Jpan" lang="ja"><a href="https://en.wikipedia.org/wiki/ja:%E3%81%AE%E5%AD%90" class="extiw" title="w:ja:の子">の<ruby>子<rp>(</rp><rt>こ</rt><rp>)</rp></ruby></a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>Noko</i></span><span class="mention-gloss-paren annotation-paren">)</span> (lyrics), performed by <span class="Jpan" lang="ja"><a href="https://en.wikipedia.org/wiki/ja:%E7%A5%9E%E8%81%96%E3%81%8B%E3%81%BE%E3%81%A3%E3%81%A6%E3%81%A1%E3%82%83%E3%82%93" class="extiw" title="w:ja:神聖かまってちゃん"><ruby>神聖<rp>(</rp><rt>しんせい</rt><rp>)</rp></ruby>かまってちゃん</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>Shinsei Kamattechan</i></span><span class="mention-gloss-paren annotation-paren">)</span> &#91;<a href="https://en.wikipedia.org/wiki/Shinsei_Kamattechan" class="extiw" title="w:Shinsei Kamattechan">Shinsei Kamattechan</a>&#93;:</span></div>
+<dl><dd><span lang="ja" class="Jpan e-example"><b><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>ね</b>よ<ruby>佐藤<rp>(</rp><rt>さとう</rt><rp>)</rp></ruby>　<a href="/wiki/%E3%81%8A%E3%81%BE%E3%81%88#Japanese" title="おまえ">おまえ</a>の<a href="/wiki/%E3%81%9F%E3%82%81#Japanese" title="ため">ため</a>に</span><dl><dd><i><span class="e-transliteration tr"><b>Shine</b> yo Satō omae no tame ni</span></i></dd><dd><span class="e-translation">Go kill yourself, Sato, for your own fucking sake</span></dd><dd>(literally, “<span class="e-literally"><b>Die</b>, Sato, for your own sake</span>”)</dd></dl></dd></dl></li></ul></li>
+<li><span class="usage-label-sense"><span class="ib-brac label-brac">(</span><span class="ib-content label-content">by extension</span><span class="ib-brac label-brac">)</span></span> to <a href="/wiki/die" title="die">die</a>,  to <a href="/wiki/perish" title="perish">perish</a>, to <a href="/wiki/cease" title="cease">cease</a> to be anymore
+<dl><dd><span class="maintenance-line">(Can we add an <a href="/wiki/Wiktionary:Example_sentences" title="Wiktionary:Example sentences">example</a> for this sense?)</span></dd></dl></li>
+<li>to <a href="/wiki/become" title="become">become</a> <a href="/wiki/lifeless" title="lifeless">lifeless</a>, to <a href="/wiki/lack" title="lack">lack</a> <a href="/wiki/vitality" title="vitality">vitality</a>, to show a <a href="/wiki/lack" title="lack">lack</a> of <a href="/wiki/vigor" title="vigor">vigor</a>
+<dl><dd><span lang="ja" class="Jpan e-example"><a href="/wiki/%E7%9B%AE#Japanese" title="目"><ruby>目<rp>(</rp><rt>め</rt><rp>)</rp></ruby></a>が<b><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>んだ</b>ような<a href="/wiki/%E4%BA%BA#Japanese" title="人"><ruby>人<rp>(</rp><rt>ひと</rt><rp>)</rp></ruby></a></span><dl><dd><i><span class="e-transliteration tr">me ga <b>shinda</b> yō na hito</span></i></dd><dd><span class="e-translation">person with <b>dead</b> eyes</span></dd><dd>(literally, “<span class="e-literally">person with eyes that appear to <b>have died</b></span>”)</dd></dl></dd></dl></li></ol>
+<div class="mw-heading mw-heading4"><h4 id="Usage_notes">Usage notes</h4><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=5" title="Edit section: Usage notes"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<p>This Japanese verb denotes an <a href="/wiki/instantaneous" title="instantaneous">instantaneous</a> action.  The Japanese <i>-te / -de</i> + <i>iru</i> grammatical form is usually described in English as equivalent to the <a href="/wiki/present_progressive" title="present progressive">present progressive</a>.  However, for Japanese instantaneous verbs, this <i>-te / -de</i> + <i>iru</i> grammatical form instead more commonly indicates that the action of the verb has completed, and the result of the verb is the new current state.
+</p><p>For instance, <i>shinu</i> specifically denotes the <a href="/wiki/instantaneous" title="instantaneous">instantaneous</a> action of dying, whereas the English verb <i class="Latn mention" lang="en"><a href="/wiki/die#English" title="die">die</a></i> denotes more of a process.  To express the idea of <i>someone is now in the process of transitioning from alive to dead</i>, English speakers would use the present continuous construction, <i>someone <b>is dying</b></i>.  However, the similar grammatical construction in Japanese, <span class="Jpan" lang="ja"><a href="/wiki/%E8%AA%B0%E3%81%8B#Japanese" title="誰か"><ruby>誰<rp>(</rp><rt>だれ</rt><rp>)</rp></ruby>か</a><a href="/wiki/%E3%81%8C#Japanese" title="が">が</a><b><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>んで<a href="/wiki/%E3%81%84%E3%82%8B#Japanese" title="いる">いる</a></b></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>dare ka ga <b>shinde iru</b></i></span><span class="mention-gloss-paren annotation-paren">)</span>, instead means that <i>someone <b>is dead</b></i>.  To express the process in Japanese, speakers use the alternative constructions <span class="Jpan" lang="ja"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>んで<a href="/wiki/%E3%81%84%E3%82%8B#Japanese" title="いる">いる</a><b><a href="/wiki/%E6%89%80#Japanese" title="所">ところ</a><a href="/wiki/%E3%81%A0#Japanese" title="だ">だ</a></b></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>shinde iru <b>tokoro da</b></i></span>, literally <span class="mention-gloss-double-quote">“</span><span class="mention-gloss"><b>it is the moment of</b> dying</span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span> or <span class="Jpan" lang="ja"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>に<b><a href="/wiki/%E6%8E%9B%E3%81%91%E3%82%8B#Japanese" title="掛ける">かけて</a><a href="/wiki/%E3%81%84%E3%82%8B#Japanese" title="いる">いる</a></b></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>shini<b>kakete iru</b></i></span>, literally <span class="mention-gloss-double-quote">“</span><span class="mention-gloss"><b>starting</b> to die</span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span>.
+</p>
+<div class="mw-heading mw-heading4"><h4 id="Conjugation">Conjugation</h4><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=6" title="Edit section: Conjugation"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<div class="inflection-table-wrapper inflection-table-collapsible inflection-table-collapsed no-vc" style="width: fit-content" data-wikt-palette-p="red" data-toggle-category="inflection">
+<table class="inflection-table">
+<caption class="inflection-table-title">Conjugation of "<span class="Jpan" lang="ja">死ぬ</span>" (See <a href="/wiki/Appendix:Japanese_verbs" title="Appendix:Japanese verbs">Appendix:Japanese verbs</a>)
+</caption>
+
+<tbody><tr>
+<th colspan="4" class="outer"><a href="/wiki/Appendix:Japanese_glossary#katsuyōkei" title="Appendix:Japanese glossary"><i>Katsuyōkei</i></a> ("stem forms")
+</th></tr>
+<tr>
+<th style="width:20%"><a href="/wiki/Appendix:Japanese_glossary#mizenkei" title="Appendix:Japanese glossary"><i>Mizenkei</i></a> ("imperfective")
+</th>
+<td><span class="Jpan" lang="ja">死な</span>
+</td>
+<td><span class="Jpan" lang="ja">しな</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shina</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#ren&#39;yōkei" title="Appendix:Japanese glossary"><i>Ren’yōkei</i></a> ("continuative")
+</th>
+<td><span class="Jpan" lang="ja">死に</span>
+</td>
+<td><span class="Jpan" lang="ja">しに</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shini</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#shūshikei" title="Appendix:Japanese glossary"><i>Shūshikei</i></a> ("terminal")
+</th>
+<td><span class="Jpan" lang="ja">死ぬ</span>
+</td>
+<td><span class="Jpan" lang="ja">しぬ</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinu</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#rentaikei" title="Appendix:Japanese glossary"><i>Rentaikei</i></a> ("attributive")
+</th>
+<td><span class="Jpan" lang="ja">死ぬ</span>
+</td>
+<td><span class="Jpan" lang="ja">しぬ</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinu</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#kateikei" title="Appendix:Japanese glossary"><i>Kateikei</i></a> ("hypothetical")
+</th>
+<td><span class="Jpan" lang="ja">死ね</span>
+</td>
+<td><span class="Jpan" lang="ja">しね</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shine</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#meireikei" title="Appendix:Japanese glossary"><i>Meireikei</i></a> ("imperative")
+</th>
+<td><span class="Jpan" lang="ja">死ね</span>
+</td>
+<td><span class="Jpan" lang="ja">しね</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shine</span>
+</td></tr>
+<tr>
+<th colspan="4" class="outer">Key constructions
+</th></tr>
+<tr>
+<th>Passive
+</th>
+<td><span class="Jpan" lang="ja">死なれる</span>
+</td>
+<td><span class="Jpan" lang="ja">しなれる</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinareru</span>
+</td></tr>
+<tr>
+<th>Causative
+</th>
+<td><span class="Jpan" lang="ja">死なせる<br />死なす</span>
+</td>
+<td><span class="Jpan" lang="ja">しなせる<br />しなす</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinaseru<br />shinasu</span>
+</td></tr>
+<tr>
+<th>Potential
+</th>
+<td><span class="Jpan" lang="ja">死ねる</span>
+</td>
+<td><span class="Jpan" lang="ja">しねる</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shineru</span>
+</td></tr>
+<tr>
+<th>Volitional
+</th>
+<td><span class="Jpan" lang="ja">死のう</span>
+</td>
+<td><span class="Jpan" lang="ja">しのう</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinō</span>
+</td></tr>
+<tr>
+<th>Negative
+</th>
+<td><span class="Jpan" lang="ja">死なない</span>
+</td>
+<td><span class="Jpan" lang="ja">しなない</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinanai</span>
+</td></tr>
+<tr>
+<th>Negative continuative
+</th>
+<td><span class="Jpan" lang="ja">死なず</span>
+</td>
+<td><span class="Jpan" lang="ja">しなず</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinazu</span>
+</td></tr>
+<tr>
+<th>Formal
+</th>
+<td><span class="Jpan" lang="ja">死にます</span>
+</td>
+<td><span class="Jpan" lang="ja">しにます</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinimasu</span>
+</td></tr>
+<tr>
+<th>Perfective
+</th>
+<td><span class="Jpan" lang="ja">死んだ</span>
+</td>
+<td><span class="Jpan" lang="ja">しんだ</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinda</span>
+</td></tr>
+<tr>
+<th>Conjunctive
+</th>
+<td><span class="Jpan" lang="ja">死んで</span>
+</td>
+<td><span class="Jpan" lang="ja">しんで</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shinde</span>
+</td></tr>
+<tr>
+<th>Hypothetical conditional
+</th>
+<td><span class="Jpan" lang="ja">死ねば</span>
+</td>
+<td><span class="Jpan" lang="ja">しねば</span>
+</td>
+<td><span class="Latn" lang="ja-Latn">shineba</span>
+</td></tr></tbody></table>
+</div>
+<div class="inflection-table-wrapper inflection-table-collapsible inflection-table-collapsed no-vc" style="width: fit-content" data-wikt-palette-p="rose" data-toggle-category="inflection">
+<table class="inflection-table">
+<caption class="inflection-table-title">Classical conjugation of "<span class="Jpan" lang="ja">死ぬ</span>" (<span class="Jpan" lang="ja"><a href="/wiki/%E3%83%8A%E8%A1%8C%E5%A4%89%E6%A0%BC%E6%B4%BB%E7%94%A8#Japanese" title="ナ行変格活用">ナ行変格活用</a></span>, see <a href="/wiki/Appendix:Japanese_verbs" title="Appendix:Japanese verbs">Appendix:Japanese verbs</a>.)
+</caption>
+<tbody><tr>
+<th colspan="4" class="outer">Stem forms
+</th></tr>
+<tr>
+<th style="width:20%;">Irrealis (<span class="Jpan" lang="ja"><a href="/wiki/%E6%9C%AA%E7%84%B6%E5%BD%A2#Japanese" title="未然形">未然形</a></span>)
+</th>
+<td><span class="Jpan" lang="ja">死な</span></td>
+<td><span class="Jpan" lang="ja">しな</span></td>
+<td><span class="Latn" lang="ja-Latn">sina</span>
+</td></tr>
+<tr>
+<th>Continuative (<span class="Jpan" lang="ja"><a href="/wiki/%E9%80%A3%E7%94%A8%E5%BD%A2#Japanese" title="連用形">連用形</a></span>)
+</th>
+<td><span class="Jpan" lang="ja">死に</span></td>
+<td><span class="Jpan" lang="ja">しに</span></td>
+<td><span class="Latn" lang="ja-Latn">sini</span>
+</td></tr>
+<tr>
+<th>Terminal (<span class="Jpan" lang="ja"><a href="/wiki/%E7%B5%82%E6%AD%A2%E5%BD%A2#Japanese" title="終止形">終止形</a></span>)
+</th>
+<td><span class="Jpan" lang="ja">死ぬ</span></td>
+<td><span class="Jpan" lang="ja">しぬ</span></td>
+<td><span class="Latn" lang="ja-Latn">sinu</span>
+</td></tr>
+<tr>
+<th>Attributive (<span class="Jpan" lang="ja"><a href="/wiki/%E9%80%A3%E4%BD%93%E5%BD%A2#Japanese" title="連体形">連体形</a></span>)
+</th>
+<td><span class="Jpan" lang="ja">死ぬる</span></td>
+<td><span class="Jpan" lang="ja">しぬる</span></td>
+<td><span class="Latn" lang="ja-Latn">sinuru</span>
+</td></tr>
+<tr>
+<th>Realis (<span class="Jpan" lang="ja"><a href="/wiki/%E5%B7%B2%E7%84%B6%E5%BD%A2#Japanese" title="已然形">已然形</a></span>)
+</th>
+<td><span class="Jpan" lang="ja">死ぬれ</span></td>
+<td><span class="Jpan" lang="ja">しぬれ</span></td>
+<td><span class="Latn" lang="ja-Latn">sinure</span>
+</td></tr>
+<tr>
+<th>Imperative (<span class="Jpan" lang="ja"><a href="/wiki/%E5%91%BD%E4%BB%A4%E5%BD%A2#Japanese" title="命令形">命令形</a></span>)
+</th>
+<td><span class="Jpan" lang="ja">死ね</span></td>
+<td><span class="Jpan" lang="ja">しね</span></td>
+<td><span class="Latn" lang="ja-Latn">sine</span>
+</td></tr>
+<tr>
+<th colspan="4" class="outer">Key constructions
+</th></tr>
+<tr>
+<th>Negative
+</th>
+<td><span class="Jpan" lang="ja">死なず</span></td>
+<td><span class="Jpan" lang="ja">しなず</span></td>
+<td><span class="Latn" lang="ja-Latn">sinazu</span>
+</td></tr>
+<tr>
+<th>Contrasting conjunction
+</th>
+<td><span class="Jpan" lang="ja">死ぬれど</span></td>
+<td><span class="Jpan" lang="ja">しぬれど</span></td>
+<td><span class="Latn" lang="ja-Latn">sinuredo</span>
+</td></tr>
+<tr>
+<th>Causal conjunction
+</th>
+<td><span class="Jpan" lang="ja">死ぬれば</span></td>
+<td><span class="Jpan" lang="ja">しぬれば</span></td>
+<td><span class="Latn" lang="ja-Latn">sinureba</span>
+</td></tr>
+<tr>
+<th>Conditional conjunction
+</th>
+<td><span class="Jpan" lang="ja">死なば</span></td>
+<td><span class="Jpan" lang="ja">しなば</span></td>
+<td><span class="Latn" lang="ja-Latn">sinaba</span>
+</td></tr>
+<tr>
+<th>Past tense (firsthand knowledge)
+</th>
+<td><span class="Jpan" lang="ja">死にき</span></td>
+<td><span class="Jpan" lang="ja">しにき</span></td>
+<td><span class="Latn" lang="ja-Latn">siniki</span>
+</td></tr>
+<tr>
+<th>Past tense (secondhand knowledge)
+</th>
+<td><span class="Jpan" lang="ja">死にけり</span></td>
+<td><span class="Jpan" lang="ja">しにけり</span></td>
+<td><span class="Latn" lang="ja-Latn">sinikeri</span>
+</td></tr>
+<tr>
+<th>Perfect tense (conscious action)
+</th>
+<td><span class="Jpan" lang="ja">死につ</span></td>
+<td><span class="Jpan" lang="ja">しにつ</span></td>
+<td><span class="Latn" lang="ja-Latn">sinitu</span>
+</td></tr>
+<tr>
+<th>Perfect tense (natural event)
+</th>
+<td><span class="Jpan" lang="ja">死にぬ</span></td>
+<td><span class="Jpan" lang="ja">しにぬ</span></td>
+<td><span class="Latn" lang="ja-Latn">sininu</span>
+</td></tr>
+<tr>
+<th>Perfect-continuative tense
+</th>
+<td><span class="Jpan" lang="ja">死にたり</span></td>
+<td><span class="Jpan" lang="ja">しにたり</span></td>
+<td><span class="Latn" lang="ja-Latn">sinitari</span>
+</td></tr>
+<tr>
+<th>Volitional
+</th>
+<td><span class="Jpan" lang="ja">死なむ</span></td>
+<td><span class="Jpan" lang="ja">しなむ</span></td>
+<td><span class="Latn" lang="ja-Latn">sinamu</span>
+</td></tr></tbody></table>
+</div>
+<div class="inflection-table-wrapper inflection-box inflection-table-narrow inflection-table-collapsible inflection-table-collapsed no-vc tr-alongside flow-vertical" style="width: fit-content" data-toggle-category="inflection">
+<table class="inflection-box-content">
+<caption class="inflection-table-title">Extended conjugation of <i>shinu</i> "<span class="Jpan" lang="ja">死ぬ</span>" (Class:&#160;<a href="/wiki/Appendix:Japanese_verbs#Five-grade_(五段_godan)" title="Appendix:Japanese verbs"><i>godan</i></a> "pentagrade")
+</caption>
+<tbody><tr>
+<td>
+<div class="inflection-table-wrapper inflection-table-no-title" style="width: fit-content" data-wikt-palette-p="magenta" data-toggle-category="inflection">
+<table class="inflection-table">
+
+<tbody><tr>
+<th colspan="3" class="outer">(See <a href="/wiki/Appendix:Japanese_verbs" title="Appendix:Japanese verbs">Appendix:Japanese verbs</a> and <a href="https://en.wikipedia.org/wiki/Japanese_conjugation" class="extiw" title="w:Japanese conjugation">Japanese conjugation</a>)
+</th></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#ren&#39;yōkei" title="Appendix:Japanese glossary"><i>Ren’yōkei</i></a> ("continuative form")
+</th>
+<td colspan="2"><span class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB%E3%81%AB#Japanese" title="死に">死に</a></span> <span>[shini]</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#rentaikei" title="Appendix:Japanese glossary"><i>Rentaikei</i></a> ("attributive form")
+</th>
+<td colspan="2"><span class="Jpan" lang="ja"><b>死ぬ</b></span> <span>[shinu]</span>
+</td></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Conjunctive (<i>te</i>-form)
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a></span> <span>[shinde]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA%E3%81%AA%E3%81%84&amp;action=edit&amp;redlink=1" class="new" title="死なない (page does not exist)">死なない</a><a href="/wiki/%E3%81%A7#Japanese" title="で">で</a></span> <span>[shinanai de]</span><br /><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA&amp;action=edit&amp;redlink=1" class="new" title="死な (page does not exist)">死な</a><a href="/w/index.php?title=%E3%81%AA%E3%81%8F%E3%81%A6&amp;action=edit&amp;redlink=1" class="new" title="なくて (page does not exist)">なくて</a></span> <span>[shinanakute]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Non-past / Imperfective
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><b>死ぬ</b></span> <span>[shinu]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA%E3%81%AA%E3%81%84&amp;action=edit&amp;redlink=1" class="new" title="死なない (page does not exist)">死なない</a></span> <span>[shinanai]</span>
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AB%E3%81%BE%E3%81%99&amp;action=edit&amp;redlink=1" class="new" title="死にます (page does not exist)">死にます</a></span> <span>[shinimasu]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AB%E3%81%BE%E3%81%9B%E3%82%93&amp;action=edit&amp;redlink=1" class="new" title="死にません (page does not exist)">死にません</a></span> <span>[shinimasen]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Past / Perfective
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB%E3%82%93%E3%81%A0#Japanese" title="死んだ">死んだ</a></span> <span>[shinda]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA&amp;action=edit&amp;redlink=1" class="new" title="死な (page does not exist)">死な</a><a href="/wiki/%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F#Japanese" title="なかった">なかった</a></span> <span>[shinanakatta]</span>
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja">死に<a href="/wiki/%E3%81%BE%E3%81%97%E3%81%9F#Japanese" title="ました">ました</a></span> <span>[shinimashita]</span>
+</td>
+<td><span class="Jpan" lang="ja">死に<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a><a href="/wiki/%E3%81%A7%E3%81%97%E3%81%9F#Japanese" title="でした">でした</a></span> <span>[shinimasen deshita]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Passive
+</th></tr>
+<tr>
+<th>Verb stem
+</th>
+<td colspan="2"><span class="Jpan" lang="ja">死な<a href="/wiki/%E3%82%8C%E3%82%8B#Suffix" title="れる">れ</a></span> <span>[shinare]</span>
+</td></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA%E3%82%8C%E3%82%8B&amp;action=edit&amp;redlink=1" class="new" title="死なれる (page does not exist)">死なれる</a></span> <span>[shinareru]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なれ<a href="/wiki/%E3%81%AA%E3%81%84#Japanese" title="ない">ない</a></span> <span>[shinarenai]</span>
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja">死なれ<a href="/wiki/%E3%81%BE%E3%81%99#Japanese" title="ます">ます</a></span> <span>[shinaremasu]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なれ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a></span> <span>[shinaremasen]</span>
+</td></tr>
+<tr>
+<th>Past
+</th>
+<td><span class="Jpan" lang="ja">死なれ<a href="/wiki/%E3%81%9F#Japanese" title="た">た</a></span> <span>[shinareta]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なれ<a href="/wiki/%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F#Japanese" title="なかった">なかった</a></span> <span>[shinarenakatta]</span>
+</td></tr>
+<tr>
+<th>Polite past
+</th>
+<td><span class="Jpan" lang="ja">死なれ<a href="/wiki/%E3%81%BE%E3%81%97%E3%81%9F#Japanese" title="ました">ました</a></span> <span>[shinaremashita]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なれ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a><a href="/wiki/%E3%81%A7%E3%81%97%E3%81%9F#Japanese" title="でした">でした</a></span> <span>[shinaremasen deshita]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Causative
+</th></tr>
+<tr>
+<th>Verb stem
+</th>
+<td colspan="2"><span class="Jpan" lang="ja">死な<a href="/wiki/%E3%81%9B%E3%82%8B#Etymology_1" title="せる">せ</a></span> <span>[shinase]</span>
+</td></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA%E3%81%9B%E3%82%8B&amp;action=edit&amp;redlink=1" class="new" title="死なせる (page does not exist)">死なせる</a></span> <span>[shinaseru]</span><br /><i>short form:</i> <span class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB%E3%81%AA%E3%81%99#Japanese" title="死なす">死なす</a></span> <span>[shinasu]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせ<a href="/wiki/%E3%81%AA%E3%81%84#Japanese" title="ない">ない</a></span> <span>[shinasenai]</span>
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja">死なせ<a href="/wiki/%E3%81%BE%E3%81%99#Japanese" title="ます">ます</a></span> <span>[shinasemasu]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a></span> <span>[shinasemasen]</span>
+</td></tr>
+<tr>
+<th>Past
+</th>
+<td><span class="Jpan" lang="ja">死なせ<a href="/wiki/%E3%81%9F#Japanese" title="た">た</a></span> <span>[shinaseta]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせ<a href="/wiki/%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F#Japanese" title="なかった">なかった</a></span> <span>[shinasenakatta]</span>
+</td></tr>
+<tr>
+<th>Polite past
+</th>
+<td><span class="Jpan" lang="ja">死なせ<a href="/wiki/%E3%81%BE%E3%81%97%E3%81%9F#Japanese" title="ました">ました</a></span> <span>[shinasemashita]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a><a href="/wiki/%E3%81%A7%E3%81%97%E3%81%9F#Japanese" title="でした">でした</a></span> <span>[shinasemasen deshita]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Potential
+</th></tr>
+<tr>
+<th>Verb stem
+</th>
+<td colspan="2"><span class="Jpan" lang="ja">死ね</span> <span>[shine]</span>
+</td></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AD%E3%82%8B&amp;action=edit&amp;redlink=1" class="new" title="死ねる (page does not exist)">死ねる</a></span> <span>[shineru]</span>
+</td>
+<td><span class="Jpan" lang="ja">死ね<a href="/wiki/%E3%81%AA%E3%81%84#Japanese" title="ない">ない</a></span> <span>[shinenai]</span>
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja">死ね<a href="/wiki/%E3%81%BE%E3%81%99#Japanese" title="ます">ます</a></span> <span>[shinemasu]</span>
+</td>
+<td><span class="Jpan" lang="ja">死ね<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a></span> <span>[shinemasen]</span>
+</td></tr>
+<tr>
+<th>Past
+</th>
+<td><span class="Jpan" lang="ja">死ね<a href="/wiki/%E3%81%9F#Japanese" title="た">た</a></span> <span>[shineta]</span>
+</td>
+<td><span class="Jpan" lang="ja">死ね<a href="/wiki/%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F#Japanese" title="なかった">なかった</a></span> <span>[shinenakatta]</span>
+</td></tr>
+<tr>
+<th>Polite past
+</th>
+<td><span class="Jpan" lang="ja">死ね<a href="/wiki/%E3%81%BE%E3%81%97%E3%81%9F#Japanese" title="ました">ました</a></span> <span>[shinemashita]</span>
+</td>
+<td><span class="Jpan" lang="ja">死ね<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a><a href="/wiki/%E3%81%A7%E3%81%97%E3%81%9F#Japanese" title="でした">でした</a></span> <span>[shinemasen deshita]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Imperative
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th><a href="/wiki/Appendix:Japanese_glossary#meireikei" title="Appendix:Japanese glossary"><i>Meireikei</i></a> / Firm instruction
+</th>
+<td><span class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB%E3%81%AD#Japanese" title="死ね">死ね</a></span> <span>[shine]</span>
+</td>
+<td>—
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Other imperative constructions
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Polite request
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84#Japanese" title="ください">ください</a></span> <span>[shinde kudasai]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA%E3%81%AA%E3%81%84&amp;action=edit&amp;redlink=1" class="new" title="死なない (page does not exist)">死なない</a><a href="/wiki/%E3%81%A7#Japanese" title="で">で</a><a href="/wiki/%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84#Japanese" title="ください">ください</a></span> <span>[shinanai de kudasai]</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/%E3%81%AA%E3%81%95%E3%81%84#Japanese" title="なさい"><i>-nasai</i></a> form
+</th>
+<td><span class="Jpan" lang="ja">死に<a href="/wiki/%E3%81%AA%E3%81%95%E3%81%84#Japanese" title="なさい">なさい</a></span> <span>[shininasai]</span>
+</td>
+<td>—
+</td></tr>
+
+<tr>
+<th>Prohibitive / Do not ~
+</th>
+<td>—
+</td>
+<td><span class="Jpan" lang="ja"><a class="mw-selflink-fragment" href="#Japanese">死ぬ</a><a href="/wiki/%E3%81%AA#Etymology_4" title="な">な</a></span> <span>[shinu na]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Volitional / Presumptive
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AE%E3%81%86&amp;action=edit&amp;redlink=1" class="new" title="死のう (page does not exist)">死のう</a></span> <span>[shinō]</span>
+</td>
+<td>—
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja">死に<a href="/wiki/%E3%81%BE%E3%81%97%E3%82%87%E3%81%86#Japanese" title="ましょう">ましょう</a></span> <span>[shinimashō]</span>
+</td>
+<td>—
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Conditional
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Hypothetical / Provisional
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AD%E3%81%B0&amp;action=edit&amp;redlink=1" class="new" title="死ねば (page does not exist)">死ねば</a></span> <span>[shineba]</span>
+</td>
+<td><span class="Jpan" lang="ja">死ななければ</span> <span>[shinanakereba]</span><br /><i>colloquial:</i> <span class="Jpan" lang="ja">死な<a href="/wiki/%E3%81%AA%E3%81%8D%E3%82%83#Japanese" title="なきゃ">なきゃ</a></span> <span>[shinanakya]</span>
+</td></tr>
+<tr>
+<th><a href="/wiki/%E3%81%9F%E3%82%89#Etymology_1" title="たら"><i>-tara</i></a> form
+</th>
+<td><span class="Jpan" lang="ja">死んだ<a href="/wiki/%E3%81%9F%E3%82%89#Etymology_1" title="たら">ら</a></span> <span>[shindara]</span>
+</td>
+<td><span class="Jpan" lang="ja">死ななかったら</span> <span>[shinanakattara]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Causative passive
+</th></tr>
+<tr>
+<th>Verb stem
+</th>
+<td colspan="2"><i>standard:</i> <span class="Jpan" lang="ja">死な<a href="/wiki/%E3%81%9B%E3%82%8B#Suffix" title="せる">せ</a><a href="/wiki/%E3%82%89%E3%82%8C%E3%82%8B#Suffix" title="られる">られ</a></span> <span>[shinaserare]</span><br /><i>colloquial:</i> <span class="Jpan" lang="ja">死なされ</span> <span>[shinasare]</span>&#160;¹
+</td></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA%E3%81%9B%E3%82%89%E3%82%8C%E3%82%8B&amp;action=edit&amp;redlink=1" class="new" title="死なせられる (page does not exist)">死なせられる</a></span> <span>[shinaserareru]</span><br /><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA%E3%81%95%E3%82%8C%E3%82%8B&amp;action=edit&amp;redlink=1" class="new" title="死なされる (page does not exist)">死なされる</a></span> <span>[shinasareru]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせられ<a href="/wiki/%E3%81%AA%E3%81%84#Japanese" title="ない">ない</a></span> <span>[shinaserarenai]</span><br /><span class="Jpan" lang="ja">死なされ<a href="/wiki/%E3%81%AA%E3%81%84#Japanese" title="ない">ない</a></span> <span>[shinasarenai]</span>
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja">死なせられ<a href="/wiki/%E3%81%BE%E3%81%99#Japanese" title="ます">ます</a></span> <span>[shinaseraremasu]</span><br /><span class="Jpan" lang="ja">死なされ<a href="/wiki/%E3%81%BE%E3%81%99#Japanese" title="ます">ます</a></span> <span>[shinasaremasu]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせられ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a></span> <span>[shinaseraremasen]</span><br /><span class="Jpan" lang="ja">死なされ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a></span> <span>[shinasaremasen]</span>
+</td></tr>
+<tr>
+<th>Past
+</th>
+<td><span class="Jpan" lang="ja">死なせられ<a href="/wiki/%E3%81%9F#Japanese" title="た">た</a></span> <span>[shinaserareta]</span><br /><span class="Jpan" lang="ja">死なされ<a href="/wiki/%E3%81%9F#Japanese" title="た">た</a></span> <span>[shinasareta]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせられ<a href="/wiki/%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F#Japanese" title="なかった">なかった</a></span> <span>[shinaserarenakatta]</span><br /><span class="Jpan" lang="ja">死なされ<a href="/wiki/%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F#Japanese" title="なかった">なかった</a></span> <span>[shinasarenakatta]</span>
+</td></tr>
+<tr>
+<th>Polite past
+</th>
+<td><span class="Jpan" lang="ja">死なせられ<a href="/wiki/%E3%81%BE%E3%81%97%E3%81%9F#Japanese" title="ました">ました</a></span> <span>[shinaseraremashita]</span><br /><span class="Jpan" lang="ja">死なされ<a href="/wiki/%E3%81%BE%E3%81%97%E3%81%9F#Japanese" title="ました">ました</a></span> <span>[shinasaremashita]</span>
+</td>
+<td><span class="Jpan" lang="ja">死なせられ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a><a href="/wiki/%E3%81%A7%E3%81%97%E3%81%9F#Japanese" title="でした">でした</a></span> <span>[shinaseraremasen deshita]</span><br /><span class="Jpan" lang="ja">死なされ<a href="/wiki/%E3%81%BE%E3%81%9B%E3%82%93#Japanese" title="ません">ません</a><a href="/wiki/%E3%81%A7%E3%81%97%E3%81%9F#Japanese" title="でした">でした</a></span> <span>[shinasaremasen deshita]</span>
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Desiderative (<a href="/wiki/%E3%81%9F%E3%81%84#Suffix" title="たい"><i>-tai</i></a> form)
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja">死に<a href="/wiki/%E3%81%9F%E3%81%84#Japanese" title="たい">たい</a></span> <span>[shinitai]</span>
+</td>
+<td><span class="Jpan" lang="ja">死に<a href="/wiki/%E3%81%9F%E3%81%8F#Japanese" title="たく">たく</a><a href="/wiki/%E3%81%AA%E3%81%84#Japanese" title="ない">ない</a></span> <span>[shinitaku nai]</span>
+</td></tr>
+<tr>
+<th>
+</th>
+<td colspan="2">For other desiderative forms, see <a href="/wiki/%E3%81%9F%E3%81%84#Inflection" title="たい"><span class="Jpan" lang="ja">たい</span>#Inflection</a>.
+</td></tr>
+<tr>
+<th colspan="3" class="outer">Progressive action and current state (<a href="/wiki/%E3%81%84%E3%82%8B" title="いる"><i>-te iru</i></a> form)
+</th></tr>
+<tr>
+<th>
+</th>
+<th>Positive
+</th>
+<th>Negative
+</th></tr>
+<tr>
+<th>Plain
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%84%E3%82%8B#Japanese" title="いる">いる</a></span> <span>[shinde iru]</span><br /><i>contraction:</i> <span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%A6%E3%82%8B#Suffix" title="てる">る</a></span> <span>[shinderu]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%84%E3%81%AA%E3%81%84#Japanese" title="いない">いない</a></span> <span>[shinde inai]</span><br /><i>contraction:</i> <span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%84%E3%81%AA%E3%81%84#Etymology_2" title="いない">ない</a></span> <span>[shindenai]</span>
+</td></tr>
+<tr>
+<th>Polite
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%84%E3%81%BE%E3%81%99#Japanese" title="います">います</a></span> <span>[shinde imasu]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/w/index.php?title=%E3%81%84%E3%81%BE%E3%81%9B%E3%82%93&amp;action=edit&amp;redlink=1" class="new" title="いません (page does not exist)">いません</a></span> <span>[shinde imasen]</span>
+</td></tr>
+<tr>
+<th>Past
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%84%E3%81%9F#Japanese" title="いた">いた</a></span> <span>[shinde ita]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/wiki/%E3%81%84%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F#Japanese" title="いなかった">いなかった</a></span> <span>[shinde inakatta]</span>
+</td></tr>
+<tr>
+<th>Polite past
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/w/index.php?title=%E3%81%84%E3%81%BE%E3%81%97%E3%81%9F&amp;action=edit&amp;redlink=1" class="new" title="いました (page does not exist)">いました</a></span> <span>[shinde imashita]</span>
+</td>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%82%93%E3%81%A7&amp;action=edit&amp;redlink=1" class="new" title="死んで (page does not exist)">死んで</a><a href="/w/index.php?title=%E3%81%84%E3%81%BE%E3%81%9B%E3%82%93&amp;action=edit&amp;redlink=1" class="new" title="いません (page does not exist)">いません</a><a href="/wiki/%E3%81%A7%E3%81%97%E3%81%9F#Japanese" title="でした">でした</a></span> <span>[shinde imasen deshita]</span>
+</td></tr>
+</tbody></table>
+</div><div class="inflection-table-wrapper inflection-table-no-title" style="width: fit-content" data-wikt-palette-p="magenta" data-toggle-category="inflection">
+<table class="inflection-table">
+
+<tbody><tr>
+<th colspan="2">Other forms and constructions
+</th></tr>
+<tr>
+<th>Archaic or classical negative
+</th>
+<td rowspan="2"><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA&amp;action=edit&amp;redlink=1" class="new" title="死な (page does not exist)">死な</a><a href="/wiki/%E3%81%AC#Etymology_2" title="ぬ">ぬ</a></span> <span>[shinanu]</span>&#160;²
+</td></tr>
+<tr>
+<th>Archaic attributive negative
+</th></tr>
+<tr>
+<th>Colloquial or dialectal <span class="Jpan" lang="ja">-ん</span> negative
+</th>
+<td><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA&amp;action=edit&amp;redlink=1" class="new" title="死な (page does not exist)">死な</a><a href="/wiki/%E3%82%93#Etymology_2" title="ん">ん</a></span> <span>[shinan]</span>
+</td></tr>
+
+<tr>
+<th>Negative continuative
+</th>
+<td rowspan="2"><span class="Jpan" lang="ja"><a href="/w/index.php?title=%E6%AD%BB%E3%81%AA&amp;action=edit&amp;redlink=1" class="new" title="死な (page does not exist)">死な</a><a href="/wiki/%E3%81%9A#Suffix" title="ず">ず</a></span> <span>[shinazu]</span>&#160;²
+</td></tr>
+<tr>
+<th>(〜<span class="Jpan" lang="ja"><a href="/wiki/%E3%81%9A%E3%81%AB" title="ずに">に</a></span>): without ~ing
+</th></tr>
+<tr>
+<th>Representative / Listing examples
+</th>
+<td><span class="Jpan" lang="ja"><a href="/wiki/%E6%AD%BB%E3%82%93%E3%81%A0#Japanese" title="死んだ">死んだ</a><a href="/wiki/%E3%81%9F%E3%82%8A#Particle" title="たり">り</a></span> <span>[shindari]</span>
+</td></tr>
+</tbody></table>
+<div class="inflection-table-notes">
+<p>¹ In everyday speech, <span class="Jpan" lang="ja">せら</span> is shortened into <span class="Jpan" lang="ja">さ</span> in the causative passive forms of <a href="/wiki/Appendix:Japanese_verbs#Five-grade_(五段_godan)" title="Appendix:Japanese verbs"><i>godan</i></a> verbs: <span class="Jpan" lang="ja">死な<b>せら</b>れる</span> → <span class="Jpan" lang="ja">死な<b>さ</b>れる</span>.<br />² Archaic form, now mostly used in set phrases, written language and formal speech.
+</p>
+</div>
+</div>
+</td></tr></tbody></table>
+</div>
+<div class="mw-heading mw-heading4"><h4 id="Synonyms">Synonyms</h4><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=7" title="Edit section: Synonyms"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<ul><li>See <a href="/wiki/Thesaurus:%E6%AD%BB%E3%81%AC" title="Thesaurus:死ぬ">Thesaurus:死ぬ</a></li></ul>
+<div class="mw-heading mw-heading4"><h4 id="Antonyms">Antonyms</h4><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=8" title="Edit section: Antonyms"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<ul><li><span class="Jpan" lang="ja"><a href="/wiki/%E7%94%9F%E3%81%BE%E3%82%8C%E3%82%8B#Japanese" title="生まれる"><ruby>生<rp>(</rp><rt>う</rt><rp>)</rp></ruby>まれる</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>umareru</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss"><a href="/wiki/be_born" title="be born">be born</a></span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span></li>
+<li><span class="Jpan" lang="ja"><a href="/wiki/%E7%94%9F%E3%81%8D%E3%82%8B#Japanese" title="生きる"><ruby>生<rp>(</rp><rt>い</rt><rp>)</rp></ruby>きる</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>ikiru</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss"><a href="/wiki/live" title="live">live</a></span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span></li></ul>
+<div class="mw-heading mw-heading4"><h4 id="Related_terms">Related terms</h4><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=9" title="Edit section: Related terms"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<ul><li><span class="Jpan" lang="ja"><a href="/wiki/%E6%BB%85%E3%81%B3%E3%82%8B#Japanese" title="滅びる"><ruby>滅<rp>(</rp><rt>ほろ</rt><rp>)</rp></ruby>びる</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>horobiru</i></span><span class="mention-gloss-paren annotation-paren">)</span>, <span class="Jpan" lang="ja"><a href="/wiki/%E6%BB%85%E3%81%B6#Japanese" title="滅ぶ"><ruby>滅<rp>(</rp><rt>ほろ</rt><rp>)</rp></ruby>ぶ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>horobu</i></span><span class="mention-gloss-paren annotation-paren">)</span></li>
+<li><span class="Jpan" lang="ja"><a href="/wiki/%E6%BD%B0%E3%82%8C%E3%82%8B#Japanese" title="潰れる"><ruby>潰<rp>(</rp><rt>つぶ</rt><rp>)</rp></ruby>れる</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>tsubureru</i></span><span class="mention-gloss-paren annotation-paren">)</span>, <span class="Jpan" lang="ja"><a href="/wiki/%E6%BD%B0%E3%81%88%E3%82%8B#Japanese" title="潰える"><ruby>潰<rp>(</rp><rt>つい</rt><rp>)</rp></ruby>える</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>tsuieru</i></span><span class="mention-gloss-paren annotation-paren">)</span></li></ul>
+<div class="mw-heading mw-heading3"><h3 id="Trivia">Trivia</h3><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=10" title="Edit section: Trivia"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<p><span class="Jpan" lang="ja"><strong class="selflink"><ruby>死<rp>(</rp><rt>し</rt><rp>)</rp></ruby>ぬ</strong></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>shinu</i></span><span class="mention-gloss-paren annotation-paren">)</span> is the only modern Japanese verb which ends in <span class="Jpan" lang="ja">〜ぬ</span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>-nu</i></span><span class="mention-gloss-paren annotation-paren">)</span> (an older example is <span class="Jpan" lang="ja"><a href="/wiki/%E5%BE%80%E3%81%AC#Japanese" title="往ぬ"><ruby>往<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span>, <span class="Jpan" lang="ja"><a href="/wiki/%E5%8E%BB%E3%81%AC#Japanese" title="去ぬ"><ruby>去<rp>(</rp><rt>い</rt><rp>)</rp></ruby>ぬ</a></span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>inu</i></span>, <span class="mention-gloss-double-quote">“</span><span class="mention-gloss">to <a href="/wiki/go_away" title="go away">go away</a>, to <a href="/wiki/go" title="go">go</a>, to <a href="/wiki/leave" title="leave">leave</a>, to <a href="/wiki/pass" title="pass">pass</a>, to <a href="/wiki/disappear" title="disappear">disappear</a></span><span class="mention-gloss-double-quote">”</span><span class="mention-gloss-paren annotation-paren">)</span>, which is now archaic). Accordingly, it is often used in textbooks to illustrate the conjugation pattern for <span class="Jpan" lang="ja">〜ぬ</span> <span class="mention-gloss-paren annotation-paren">(</span><span class="tr"><i>-nu</i></span><span class="mention-gloss-paren annotation-paren">)</span> verbs.
+</p>
+<div class="mw-heading mw-heading3"><h3 id="References">References</h3><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;action=edit&amp;section=11" title="Edit section: References"><span>edit</span></a><span class="mw-editsection-bracket">]</span></span></div>
+<div class="mw-references-wrap"><ol class="references">
+<li id="cite&#95;note-1"><a href="#cite_ref-1"> ^ </a> <span class="reference-text"><div class="citation-whole"><span class="cited-source"><i><a href="/wiki/Appendix:Glossary#c." title="Appendix:Glossary"><abbr title="circa">c.</abbr></a></i> <span class="None" lang="und"><b>759</b></span>, <cite><a href="https://en.wikipedia.org/wiki/Man%E2%80%99y%C5%8Dsh%C5%AB" class="extiw" title="w:Man’yōshū">Man’yōshū</a></cite>, <a rel="nofollow" class="external text" href="https://jti.lib.virginia.edu/japanese/manyoshu/Man5Yos.html#889">book 5, poem 889</a>:</span></div>, text <a rel="nofollow" class="external text" href="https://web.archive.org/web/20220628180259/http://jti.lib.virginia.edu/japanese/manyoshu/Man5Yos.html#889">here</a></span>
+</li>
+<li id="cite&#95;note-KDJ-2"><span class="mw-cite-backlink">↑ <sup><a href="#cite_ref-KDJ_2-0">2.0</a></sup> <sup><a href="#cite_ref-KDJ_2-1">2.1</a></sup> <sup><a href="#cite_ref-KDJ_2-2">2.2</a></sup> <sup><a href="#cite_ref-KDJ_2-3">2.3</a></sup></span> <span class="reference-text"><span class="citation-whole"><span class="cited-source">Shōgaku Tosho (<span class="None" lang="und">1988</span>), <cite><span class="Jpan" lang="ja">国語大辞典（新装版）</span></cite> &#91;<cite><span class="e-translation">Unabridged Dictionary of Japanese (Revised Edition)</span></cite>&#93; (in Japanese), <a href="https://en.wikipedia.org/wiki/T%C5%8Dky%C5%8D" class="extiw" title="w:Tōkyō">Tōkyō</a>&#58; <a href="https://en.wikipedia.org/wiki/Shogakukan" class="extiw" title="w:Shogakukan">Shogakukan</a>, <small><a href="/wiki/Special:BookSources/9784095010021" title="Special:BookSources/9784095010021">→ISBN</a></small></span></span></span>
+</li>
+<li id="cite&#95;note-DJR-3"><span class="mw-cite-backlink">↑ <sup><a href="#cite_ref-DJR_3-0">3.0</a></sup> <sup><a href="#cite_ref-DJR_3-1">3.1</a></sup> <sup><a href="#cite_ref-DJR_3-2">3.2</a></sup> <sup><a href="#cite_ref-DJR_3-3">3.3</a></sup> <sup><a href="#cite_ref-DJR_3-4">3.4</a></sup></span> <span class="reference-text"><span class="citation-whole"><span class="cited-source"><a href="https://en.wikipedia.org/wiki/ja:%E6%9D%BE%E6%9D%91%E6%98%8E" class="extiw" title="w:ja:松村明">Matsumura, Akira</a>, editor (<span class="None" lang="und">2006</span>), <cite><span class="Jpan" lang="ja"><a href="https://en.wikipedia.org/wiki/ja:%E5%A4%A7%E8%BE%9E%E6%9E%97" class="extiw" title="w:ja:大辞林">大辞林</a></span></cite> &#91;<cite><span class="e-translation"><a href="https://en.wikipedia.org/wiki/Daijirin" class="extiw" title="w:Daijirin">Daijirin</a></span></cite>&#93; (in Japanese), Third edition, <a href="https://en.wikipedia.org/wiki/Tokyo" class="extiw" title="w:Tokyo">Tokyo</a>&#58; <a href="https://en.wikipedia.org/wiki/Sanseid%C5%8D" class="extiw" title="w:Sanseidō">Sanseidō</a>, <small><a href="/wiki/Special:BookSources/4-385-13905-9" title="Special:BookSources/4-385-13905-9">→ISBN</a></small></span></span></span>
+</li>
+<li id="cite&#95;note-DJS-4"><span class="mw-cite-backlink">↑ <sup><a href="#cite_ref-DJS_4-0">4.0</a></sup> <sup><a href="#cite_ref-DJS_4-1">4.1</a></sup> <sup><a href="#cite_ref-DJS_4-2">4.2</a></sup> <sup><a href="#cite_ref-DJS_4-3">4.3</a></sup></span> <span class="reference-text"><span class="citation-whole"><span class="cited-source"><a href="https://en.wikipedia.org/wiki/ja:%E6%9D%BE%E6%9D%91%E6%98%8E" class="extiw" title="w:ja:松村明">Matsumura, Akira</a>, editor (<span class="None" lang="und">1995</span>), <cite><span class="Jpan" lang="ja"><a href="https://en.wikipedia.org/wiki/ja:%E5%A4%A7%E8%BE%9E%E6%B3%89" class="extiw" title="w:ja:大辞泉">大辞泉</a></span></cite> &#91;<cite><span class="e-translation"><a href="https://en.wikipedia.org/wiki/Daijisen" class="extiw" title="w:Daijisen">Daijisen</a></span></cite>&#93; (in Japanese), First edition, <a href="https://en.wikipedia.org/wiki/Tokyo" class="extiw" title="w:Tokyo">Tokyo</a>&#58; <a href="https://en.wikipedia.org/wiki/Shogakukan" class="extiw" title="w:Shogakukan">Shogakukan</a>, <small><a href="/wiki/Special:BookSources/4-09-501211-0" title="Special:BookSources/4-09-501211-0">→ISBN</a></small></span></span></span>
+</li>
+<li id="cite&#95;note-NHK-5"><a href="#cite_ref-NHK_5-0"> ^ </a> <span class="reference-text"><span class="citation-whole"><span class="cited-source"><a href="https://en.wikipedia.org/wiki/ja:NHK%E6%94%BE%E9%80%81%E6%96%87%E5%8C%96%E7%A0%94%E7%A9%B6%E6%89%80" class="extiw" title="w:ja:NHK放送文化研究所">NHK Broadcasting Culture Research Institute</a>, editor (<span class="None" lang="und">1998</span>), <cite><span class="Jpan" lang="ja">NHK日本語発音アクセント辞典</span></cite> &#91;<cite><span class="e-translation"><a href="https://en.wikipedia.org/wiki/NHK" class="extiw" title="w:NHK">NHK</a> Japanese Pronunciation Accent Dictionary</span></cite>&#93; (in Japanese), <a href="https://en.wikipedia.org/wiki/Tokyo" class="extiw" title="w:Tokyo">Tokyo</a>&#58; <a href="https://en.wikipedia.org/wiki/ja:NHK%E5%87%BA%E7%89%88" class="extiw" title="w:ja:NHK出版">NHK Publishing, Inc.</a>, <small><a href="/wiki/Special:BookSources/978-4-14-011112-3" title="Special:BookSources/978-4-14-011112-3">→ISBN</a></small></span></span></span>
+</li>
+<li id="cite&#95;note-SMK5-6"><a href="#cite_ref-SMK5_6-0"> ^ </a> <span class="reference-text"><span class="citation-whole"><span class="cited-source"><a href="https://en.wikipedia.org/wiki/Ky%C5%8Dsuke_Kindaichi" class="extiw" title="w:Kyōsuke Kindaichi">Kindaichi, Kyōsuke</a> et al., editors (<span class="None" lang="und">1997</span>), <cite><span class="Jpan" lang="ja"><a href="https://en.wikipedia.org/wiki/ja:%E6%96%B0%E6%98%8E%E8%A7%A3%E5%9B%BD%E8%AA%9E%E8%BE%9E%E5%85%B8" class="extiw" title="w:ja:新明解国語辞典">新明解国語辞典</a></span></cite> &#91;<cite><span class="e-translation"><a href="https://en.wikipedia.org/wiki/Shin_Meikai_kokugo_jiten" class="extiw" title="w:Shin Meikai kokugo jiten">Shin Meikai Kokugo Jiten</a></span></cite>&#93; (in Japanese), Fifth edition, <a href="https://en.wikipedia.org/wiki/Tokyo" class="extiw" title="w:Tokyo">Tokyo</a>&#58; <a href="https://en.wikipedia.org/wiki/Sanseid%C5%8D" class="extiw" title="w:Sanseidō">Sanseidō</a>, <small><a href="/wiki/Special:BookSources/4-385-13143-0" title="Special:BookSources/4-385-13143-0">→ISBN</a></small></span></span></span>
+</li>
+</ol></div>
+<dl><dd><ul><li><span class="citation-whole"><span class="cited-source">“<a rel="nofollow" class="external text" href="https://www.kanjipedia.jp/kotoba/0002734400"><span class="Jpan" lang="ja">死ぬ</span></a>”, in <cite><span class="Jpan" lang="ja">漢字ぺディア</span></cite> &#91;<cite><span class="e-translation">Kanjipedia</span></cite>&#93;&#8206;<sup><a rel="nofollow" class="external autonumber" href="https://www.kanjipedia.jp">[1]</a></sup> (in Japanese), <a href="https://en.wikipedia.org/wiki/ja:%E6%97%A5%E6%9C%AC%E6%BC%A2%E5%AD%97%E8%83%BD%E5%8A%9B%E6%A4%9C%E5%AE%9A%E5%8D%94%E4%BC%9A" class="extiw" title="w:ja:日本漢字能力検定協会">The Japan Kanji Aptitude Testing Foundation</a>, <span class="None" lang="und">2015–2026</span></span></span></li></ul></dd></dl>
+<!-- 
+NewPP limit report
+Parsed by mw‐web.codfw.main‐dcc5cfdc4‐zcxgn
+Cached time: 20260802131658
+Cache expiry: 2592000
+Cache expiry source: Template:R:Kanjipedia_Kotoba (currentyear)
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.819 seconds
+Real time usage: 0.985 seconds
+Preprocessor visited node count: 2689/1000000
+Revision size: 6776/2097152 bytes
+Post‐expand include size: 120230/2097152 bytes
+Template argument size: 2495/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 22/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 7008/5000000 bytes
+Lua time usage: 0.611/10.000 seconds
+Lua memory usage: 27879439/104857600 bytes
+Number of Wikibase entities loaded: 0/500
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  890.480      1 -total
+ 24.43%  217.500      1 Template:ja-kanjitab
+ 12.69%  112.961     33 Template:ja-r
+  9.78%   87.077      1 Template:ja-go-nu
+  9.47%   84.340      1 Template:ja-verbconj-auto
+  8.54%   76.026      2 Template:inh
+  7.66%   68.198     16 Template:ja-verbconj-row
+  6.91%   61.502      5 Template:ja-usex
+  5.26%   46.855      1 Template:ja-conj-ex
+  4.83%   42.967      1 Template:quote-book
+-->
+
+<!-- Render ID 70805125-8e74-11f1-8c6d-ede74f8a833f -->
+
+<!-- Saved in parser cache with key enwiktionary:pcache:8930:|#|:idhash:canonical and timestamp 20260802131658 and revision id 89466989. Rendering was triggered because: page_view
+ -->
+</div><noscript><img src="https://en.wiktionary.org/wiki/Special:CentralAutoLogin/start?useformat=desktop&amp;type=1x1&amp;usesul3=1" alt="" width="1" height="1" style="border: none; position: absolute;"></noscript>
+<div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://en.wiktionary.org/w/index.php?title=死ぬ&amp;oldid=89466989">https://en.wiktionary.org/w/index.php?title=死ぬ&amp;oldid=89466989</a>"</div></div>
+					<div id="catlinks" class="catlinks" data-mw-interface=""><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/wiki/Special:Categories" title="Special:Categories">Categories</a>: <ul><li><a href="/wiki/Category:Japanese_terms_spelled_with_%E6%AD%BB_read_as_%E3%81%97" title="Category:Japanese terms spelled with 死 read as し">Japanese terms spelled with 死 read as し</a></li><li><a href="/wiki/Category:Japanese_terms_read_with_kun%27yomi" title="Category:Japanese terms read with kun&#039;yomi">Japanese terms read with kun&#039;yomi</a></li><li><a href="/wiki/Category:Japanese_terms_inherited_from_Old_Japanese" title="Category:Japanese terms inherited from Old Japanese">Japanese terms inherited from Old Japanese</a></li><li><a href="/wiki/Category:Japanese_terms_derived_from_Old_Japanese" title="Category:Japanese terms derived from Old Japanese">Japanese terms derived from Old Japanese</a></li><li><a href="/wiki/Category:Japanese_terms_inherited_from_Proto-Japonic" title="Category:Japanese terms inherited from Proto-Japonic">Japanese terms inherited from Proto-Japonic</a></li><li><a href="/wiki/Category:Japanese_terms_derived_from_Proto-Japonic" title="Category:Japanese terms derived from Proto-Japonic">Japanese terms derived from Proto-Japonic</a></li><li><a href="/wiki/Category:Japanese_terms_with_IPA_pronunciation" title="Category:Japanese terms with IPA pronunciation">Japanese terms with IPA pronunciation</a></li><li><a href="/wiki/Category:Japanese_terms_with_Heiban_pitch_accent_(T%C5%8Dky%C5%8D)" title="Category:Japanese terms with Heiban pitch accent (Tōkyō)">Japanese terms with Heiban pitch accent (Tōkyō)</a></li><li><a href="/wiki/Category:Japanese_terms_with_IPA_pronunciation_with_pitch_accent" title="Category:Japanese terms with IPA pronunciation with pitch accent">Japanese terms with IPA pronunciation with pitch accent</a></li><li><a href="/wiki/Category:Japanese_lemmas" title="Category:Japanese lemmas">Japanese lemmas</a></li><li><a href="/wiki/Category:Japanese_verbs" title="Category:Japanese verbs">Japanese verbs</a></li><li><a href="/wiki/Category:Japanese_intransitive_verbs" title="Category:Japanese intransitive verbs">Japanese intransitive verbs</a></li><li><a href="/wiki/Category:Japanese_godan_verbs" title="Category:Japanese godan verbs">Japanese godan verbs</a></li><li><a href="/wiki/Category:Japanese_godan_verbs_ending_with_-nu" title="Category:Japanese godan verbs ending with -nu">Japanese godan verbs ending with -nu</a></li><li><a href="/wiki/Category:Japanese_terms_spelled_with_third_grade_kanji" title="Category:Japanese terms spelled with third grade kanji">Japanese terms spelled with third grade kanji</a></li><li><a href="/wiki/Category:Japanese_terms_with_1_kanji" title="Category:Japanese terms with 1 kanji">Japanese terms with 1 kanji</a></li><li><a href="/wiki/Category:Japanese_terms_with_usage_examples" title="Category:Japanese terms with usage examples">Japanese terms with usage examples</a></li><li><a href="/wiki/Category:ja:Death" title="Category:ja:Death">ja:Death</a></li></ul></div><div id="mw-hidden-catlinks" class="mw-hidden-catlinks mw-hidden-cats-hidden">Hidden categories: <ul><li><a href="/wiki/Category:Japanese_links_with_redundant_wikilinks" title="Category:Japanese links with redundant wikilinks">Japanese links with redundant wikilinks</a></li><li><a href="/wiki/Category:Japanese_links_with_redundant_alt_parameters" title="Category:Japanese links with redundant alt parameters">Japanese links with redundant alt parameters</a></li><li><a href="/wiki/Category:Japanese_terms_with_redundant_sortkeys" title="Category:Japanese terms with redundant sortkeys">Japanese terms with redundant sortkeys</a></li><li><a href="/wiki/Category:Japanese_links_with_manual_fragments" title="Category:Japanese links with manual fragments">Japanese links with manual fragments</a></li><li><a href="/wiki/Category:Pages_with_entries" title="Category:Pages with entries">Pages with entries</a></li><li><a href="/wiki/Category:Pages_with_1_entry" title="Category:Pages with 1 entry">Pages with 1 entry</a></li><li><a href="/wiki/Category:Japanese_terms_with_redundant_script_codes" title="Category:Japanese terms with redundant script codes">Japanese terms with redundant script codes</a></li><li><a href="/wiki/Category:Requests_for_example_sentences_in_Japanese" title="Category:Requests for example sentences in Japanese">Requests for example sentences in Japanese</a></li></ul></div></div>
+				</div>
+			</main>
+			
+		</div>
+		<div class="mw-footer-container">
+			<footer id="footer" class="mw-footer" >
+				<ul id="footer-info" class="mw-portlet mw-portlet-footer-info">
+	<li id="footer-info-lastmod"> This page was last edited on 6 February 2026, at 03:34.</li>
+	<li id="footer-info-copyright">Definitions and other text are available under the <a rel="nofollow" class="external text" href="//creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike License</a>; additional terms may apply. By using this site, you agree to the <a class="external text" data-mw-original-href="//foundation.wikimedia.org/wiki/Special:MyLanguage/Policy:Terms_of_Use" href="https://foundation.wikimedia.org/wiki/Special:MyLanguage/Policy:Terms_of_Use">Terms of Use</a> and <a class="external text" data-mw-original-href="//foundation.wikimedia.org/wiki/Special:MyLanguage/Policy:Privacy_policy" href="https://foundation.wikimedia.org/wiki/Special:MyLanguage/Policy:Privacy_policy">Privacy Policy.</a></li>
+</ul>
+
+				<ul id="footer-places" class="mw-portlet mw-portlet-footer-places">
+	<li id="footer-places-privacy"><a href="https://foundation.wikimedia.org/wiki/Special:MyLanguage/Policy:Privacy_policy">Privacy policy</a></li>
+	<li id="footer-places-about"><a href="/wiki/Wiktionary:About">About Wiktionary</a></li>
+	<li id="footer-places-disclaimers"><a href="/wiki/Wiktionary:General_disclaimer">Disclaimers</a></li>
+	<li id="footer-places-wm-codeofconduct"><a href="https://foundation.wikimedia.org/wiki/Special:MyLanguage/Policy:Universal_Code_of_Conduct">Code of Conduct</a></li>
+	<li id="footer-places-developers"><a href="https://developer.wikimedia.org">Developers</a></li>
+	<li id="footer-places-statslink"><a href="https://stats.wikimedia.org/#/en.wiktionary.org">Statistics</a></li>
+	<li id="footer-places-cookiestatement"><a href="https://foundation.wikimedia.org/wiki/Special:MyLanguage/Policy:Cookie_statement">Cookie statement</a></li>
+	<li id="footer-places-mobileview"><a href="//en.wiktionary.org/w/index.php?title=%E6%AD%BB%E3%81%AC&amp;mobileaction=toggle_view_mobile" class="noprint stopMobileRedirectToggle">Mobile view</a></li>
+</ul>
+
+				<ul id="footer-icons" class="mw-portlet mw-portlet-footer-icons noprint">
+	<li id="footer-copyrightico"><a href="https://www.wikimedia.org/" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><picture><source media="(min-width: 500px)" srcset="/static/images/footer/wikimedia-button.svg" width="84" height="29"><img src="/static/images/footer/wikimedia.svg" width="25" height="25" alt="Wikimedia Foundation" lang="en" loading="lazy"></picture></a></li>
+	<li id="footer-poweredbyico"><a href="https://www.mediawiki.org/" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><picture><source media="(min-width: 500px)" srcset="/w/resources/assets/poweredby_mediawiki.svg" width="88" height="31"><img src="/w/resources/assets/mediawiki_compact.svg" alt="Powered by MediaWiki" lang="en" width="25" height="25" loading="lazy"></picture></a></li>
+</ul>
+
+			</footer>
+		</div>
+	</div> 
+</div> 
+<div class="vector-header-container vector-sticky-header-container no-font-mode-scale">
+	<div id="vector-sticky-header" class="vector-sticky-header">
+		<div class="vector-sticky-header-start">
+			<div class="vector-sticky-header-icon-start vector-button-flush-left" aria-hidden="true">
+				<button class="cdx-button cdx-button--weight-quiet cdx-button--icon-only vector-sticky-header-search-toggle" tabindex="-1" data-event-name="ui.vector-sticky-search-form.icon"><span class="vector-icon mw-ui-icon-search mw-ui-icon-wikimedia-search cdx-button__icon"></span>
+
+<span>Search</span>
+			</button>
+		</div>
+			
+		<div role="search" class="vector-search-box-vue  vector-search-box-show-thumbnail vector-search-box">
+			<div class="vector-typeahead-search-container">
+				<div class="cdx-typeahead-search cdx-typeahead-search--show-thumbnail">
+					<form action="/w/index.php" id="vector-sticky-search-form" class="cdx-search-input cdx-search-input--has-end-button">
+						<div  class="cdx-search-input__input-wrapper"  data-search-loc="header-moved">
+							<div class="cdx-text-input cdx-text-input--has-start-icon">
+								<input
+									class="cdx-text-input__input mw-searchInput" autocomplete="off"
+									
+									type="search" name="search" placeholder="Search Wiktionary">
+								<span class="cdx-text-input__icon cdx-text-input__start-icon"></span>
+							</div>
+							<input type="hidden" name="title" value="Special:Search">
+						</div>
+						<button class="cdx-button cdx-search-input__end-button">Search</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="vector-sticky-header-context-bar">
+				<nav aria-label="Contents" class="vector-toc-landmark">
+						
+					<div id="vector-sticky-header-toc" class="vector-dropdown mw-portlet mw-portlet-sticky-header-toc vector-sticky-header-toc vector-button-flush-left"  >
+						<input type="checkbox" id="vector-sticky-header-toc-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-sticky-header-toc" class="vector-dropdown-checkbox "  aria-label="Toggle the table of contents"   >
+						<label id="vector-sticky-header-toc-label" for="vector-sticky-header-toc-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-listBullet mw-ui-icon-wikimedia-listBullet cdx-button__icon"></span>
+
+<span class="vector-dropdown-label-text">Toggle the table of contents</span>
+						</label>
+						<div class="vector-dropdown-content">
+					
+						<div id="vector-sticky-header-toc-unpinned-container" class="vector-unpinned-container">
+						</div>
+					
+						</div>
+					</div>
+			</nav>
+				<div class="vector-sticky-header-context-bar-primary" aria-hidden="true" ><span class="Jpan">死ぬ</span></div>
+			</div>
+		</div>
+		<div class="vector-sticky-header-end" aria-hidden="true">
+			<div class="vector-sticky-header-icons">
+				<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-talk-sticky-header" tabindex="-1" data-event-name="talk-sticky-header"><span class="vector-icon mw-ui-icon-speechBubbles mw-ui-icon-wikimedia-speechBubbles cdx-button__icon"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-subject-sticky-header" tabindex="-1" data-event-name="subject-sticky-header"><span class="vector-icon mw-ui-icon-article mw-ui-icon-wikimedia-article cdx-button__icon"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-history-sticky-header" tabindex="-1" data-event-name="history-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-history mw-ui-icon-wikimedia-wikimedia-history cdx-button__icon"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only mw-watchlink" id="ca-watchstar-sticky-header" tabindex="-1" data-event-name="watch-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-star mw-ui-icon-wikimedia-wikimedia-star cdx-button__icon"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-edit-sticky-header" tabindex="-1" data-event-name="wikitext-edit-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-wikiText mw-ui-icon-wikimedia-wikimedia-wikiText cdx-button__icon"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-ve-edit-sticky-header" tabindex="-1" data-event-name="ve-edit-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-edit mw-ui-icon-wikimedia-wikimedia-edit cdx-button__icon"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-viewsource-sticky-header" tabindex="-1" data-event-name="ve-edit-protected-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-editLock mw-ui-icon-wikimedia-wikimedia-editLock cdx-button__icon"></span>
+
+<span></span>
+			</a>
+		</div>
+			<div class="vector-sticky-header-buttons">
+				<button class="cdx-button cdx-button--weight-quiet mw-interlanguage-selector" id="p-lang-btn-sticky-header" tabindex="-1" data-event-name="ui.dropdown-p-lang-btn-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-language mw-ui-icon-wikimedia-wikimedia-language cdx-button__icon"></span>
+
+<span>23 languages</span>
+			</button>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--action-progressive" id="ca-addsection-sticky-header" tabindex="-1" data-event-name="addsection-sticky-header"><span class="vector-icon mw-ui-icon-speechBubbleAdd-progressive mw-ui-icon-wikimedia-speechBubbleAdd-progressive cdx-button__icon"></span>
+
+<span>Add topic</span>
+			</a>
+		</div>
+			<div class="vector-sticky-header-icon-end">
+				<div class="vector-user-links">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="mw-portlet mw-portlet-dock-bottom emptyPortlet" id="p-dock-bottom">
+	<ul>
+		
+	</ul>
+</div>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgHostname":"mw-web.codfw.canary-76f87f84dc-6ftzp","wgBackendResponseTime":85,"wgPageParseReport":{"limitreport":{"cputime":"0.819","walltime":"0.985","ppvisitednodes":{"value":2689,"limit":1000000},"revisionsize":{"value":6776,"limit":2097152},"postexpandincludesize":{"value":120230,"limit":2097152},"templateargumentsize":{"value":2495,"limit":2097152},"expansiondepth":{"value":13,"limit":100},"expensivefunctioncount":{"value":22,"limit":500},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":7008,"limit":5000000},"entityaccesscount":{"value":0,"limit":500},"timingprofile":["100.00%  890.480      1 -total"," 24.43%  217.500      1 Template:ja-kanjitab"," 12.69%  112.961     33 Template:ja-r","  9.78%   87.077      1 Template:ja-go-nu","  9.47%   84.340      1 Template:ja-verbconj-auto","  8.54%   76.026      2 Template:inh","  7.66%   68.198     16 Template:ja-verbconj-row","  6.91%   61.502      5 Template:ja-usex","  5.26%   46.855      1 Template:ja-conj-ex","  4.83%   42.967      1 Template:quote-book"]},"scribunto":{"limitreport-timeusage":{"value":"0.611","limit":"10.000"},"limitreport-memusage":{"value":27879439,"limit":104857600}},"cachereport":{"origin":"mw-web.codfw.main-dcc5cfdc4-zcxgn","timestamp":"20260802131658","ttl":2592000,"transientcontent":false,"expiry-source":"Template:R:Kanjipedia_Kotoba (currentyear)"}}});});</script>
+</body>
+</html>

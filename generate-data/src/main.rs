@@ -1113,12 +1113,16 @@ async fn main() -> anyhow::Result<()> {
             .collect();
 
         let custom_definitions = {
-            let file = File::open(source_data_path.join("custom_definitions.jsonl"))
-                .context("Failed to open custom definitions file")?;
-            let reader = BufReader::new(file);
-            reader
-                .lines()
-                .map(|line| line.unwrap())
+            let path = source_data_path.join("custom_definitions.jsonl");
+            let lines = if path.exists() {
+                BufReader::new(File::open(&path).context("Failed to open custom definitions file")?)
+                    .lines()
+                    .collect::<Result<Vec<_>, _>>()?
+            } else {
+                Vec::new()
+            };
+            lines
+                .into_iter()
                 .filter(|line| !line.is_empty())
                 .map(|line| serde_json::from_str(&line))
                 .collect::<Result<

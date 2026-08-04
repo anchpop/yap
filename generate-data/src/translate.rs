@@ -158,8 +158,7 @@ enum Backend {
         client: Box<ChatClient>,
         /// Cumulative `client.cost()` already folded into the spend counters,
         /// in micro-USD. tysm only exposes a running total per client, so each
-        /// live request syncs the delta under this lock. (Batch API usage is
-        /// not reported by tysm at all — see the budget-fuse caveat above.)
+        /// live or batch request syncs the delta under this lock.
         recorded_micro: std::sync::Mutex<u64>,
     },
 }
@@ -292,8 +291,7 @@ impl Translator {
     /// Estimated USD spent on billable translations so far (cache hits excluded).
     /// An estimate: Google spend is counted in Unicode scalar values against
     /// possibly-drifted price constants; live OpenAI spend comes from tysm's
-    /// price table. OpenAI *Batch API* spend is not included (tysm doesn't
-    /// report batch usage), so in OpenAI mode this undercounts.
+    /// price table, including its discounted Batch API accounting.
     pub fn cost_estimate_usd(&self) -> f64 {
         self.spent_micro.load(Ordering::Relaxed) as f64 / 1_000_000.0
     }
@@ -709,16 +707,25 @@ impl Translator {
     }
 
     async fn prime_openai(&self, pending: Vec<&str>, pb: &indicatif::ProgressBar) {
-        let Backend::OpenAi { client, .. } = &self.backend else {
+        let Backend::OpenAi {
+            client,
+            recorded_micro,
+        } = &self.backend
+        else {
             unreachable!("prime_openai called on a non-OpenAI backend");
         };
         let system_prompt = self.openai_system_prompt();
-        pb.set_message(format!("{} Batch API, spend untracked", client.model));
+        pb.set_message(format!(
+            "{} Batch API, ~${:.4}",
+            client.model,
+            self.cost_estimate_usd()
+        ));
 
         // Jobs run sequentially: each one is already maximally parallel on
         // OpenAI's side, and sequential submission keeps the enqueued-token
         // footprint bounded.
         for chunk in pending.chunks(OPENAI_BATCH_CHUNK) {
+            let chunk_start = pb.position();
             if self.over_budget() {
                 pb.inc(chunk.len() as u64);
                 continue;
@@ -729,6 +736,9 @@ impl Translator {
                 .batch_chat_with_system_prompt::<TranslationResponse>(
                     &system_prompt,
                     chunk.to_vec(),
+                    |batch| {
+                        generate_data::report_batch_progress(pb, chunk_start, chunk.len(), batch)
+                    },
                 )
                 .await
             {
@@ -743,14 +753,28 @@ impl Translator {
                             Ok(_) => {}
                             Err(e) => eprintln!("Batch item failed for '{text}': {e}"),
                         }
-                        pb.inc(1);
                     }
+                    pb.set_position(chunk_start + chunk.len() as u64);
                 }
                 Err(e) => {
                     eprintln!("OpenAI batch translate failed ({} texts): {e}", chunk.len());
-                    pb.inc(chunk.len() as u64);
+                    pb.set_position(chunk_start + chunk.len() as u64);
                 }
             }
+
+            if let Some(cost) = client.cost() {
+                let total_micro = (cost * 1_000_000.0) as u64;
+                let mut recorded = recorded_micro.lock().unwrap();
+                if total_micro > *recorded {
+                    self.add_spend(total_micro - *recorded);
+                    *recorded = total_micro;
+                }
+            }
+            pb.set_message(format!(
+                "{} Batch API, ~${:.4}",
+                client.model,
+                self.cost_estimate_usd()
+            ));
         }
     }
 

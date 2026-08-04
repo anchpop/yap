@@ -118,7 +118,7 @@ jobs:
           version: 10
 
       - name: Build WASM module
-        run: wasm-pack build --release
+        run: CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release
         working-directory: yap-frontend-rs
 
       - name: Generate dictionary data from language packs
@@ -278,7 +278,7 @@ jobs:
       # imports — the WASM itself never enters the bundle, but tsc needs the
       # declarations).
       - name: Build WASM module (for widget type declarations)
-        run: wasm-pack build --release
+        run: CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release
         working-directory: yap-frontend-rs
 
       - name: Install frontend dependencies

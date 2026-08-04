@@ -398,7 +398,9 @@ fn heteronym_from_lexide_token(
         | language_utils::Language::Russian
         | language_utils::Language::ChineseSimplified
         | language_utils::Language::ChineseTraditional
-        | language_utils::Language::Japanese => {
+        | language_utils::Language::Japanese
+        | language_utils::Language::Hindi
+        | language_utils::Language::Thai => {
             // Simple normalization for unsupported languages
             let text = strip_punctuation(text);
             if text.is_empty() {
@@ -412,7 +414,6 @@ fn heteronym_from_lexide_token(
                 pos,
             });
         }
-        _ => todo!(),
     };
 
     let heteronym = if let Some(heteronym) = proper_nouns.get(&text.to_lowercase()) {

@@ -34,7 +34,7 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-tysm = "0.20"
+tysm = { git = "https://github.com/anchpop/tysm.git", rev = "af0945438c2c584f6a50f95e4ee7efc52ddc856d" }
 # Directory↔R2 sync engine (github.com/anchpop/osmo). generate-data uses it to mirror
 # the .cache directory to a bucket. Git dep until published to crates.io.
 osmo = { git = "https://github.com/anchpop/osmo" }
@@ -56,7 +56,7 @@ slotmap = { version = "1.1", features = ["serde"] }
 wasm-logger = "0.2.0"
 unicode-normalization = "0.1.25"
 weblocks = "0.2.0"
-lexide = { git = "https://github.com/anchpop/lexide.git", rev = "8c0a2b093cf70b5797101e36609d92fa6d16fb07", features = [
+lexide = { git = "https://github.com/anchpop/lexide.git", rev = "3feb835e7763e1991e45de3ac9170d55bde936bb", features = [
     "remote",
 ] }
 indicatif = "0.18"
@@ -78,7 +78,10 @@ features = ["derive"]
 [profile.release]
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
-lto = true
+# Full LTO makes iterative native tools such as generate-data spend several
+# minutes in their final rustc invocation. Release WASM builds opt back into
+# LTO explicitly at their build entry points.
+lto = false
 
 [profile.profiling]
 inherits = "release"

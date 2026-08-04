@@ -22,8 +22,10 @@ fn to_lexide_language(lang: Language) -> Option<lexide::Language> {
         Language::Russian => Some(lexide::Language::Russian),
         Language::Hindi => Some(lexide::Language::Hindi),
         Language::Japanese => Some(lexide::Language::Japanese),
-        // Languages not yet supported by lexide
-        Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => todo!(),
+        Language::ChineseSimplified => Some(lexide::Language::ChineseSimplified),
+        Language::Thai => Some(lexide::Language::Thai),
+        // There is no Traditional Chinese NLP pipeline yet.
+        Language::ChineseTraditional => None,
     }
 }
 

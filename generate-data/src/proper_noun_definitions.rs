@@ -1,16 +1,10 @@
-use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{Course, OtherWordType, ProperNounDefinition, SentenceInfo, WordType};
 use std::{collections::BTreeMap, sync::LazyLock};
 use tysm::chat_completions::ChatClient;
 
-static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.4-nano")
-            .unwrap()
-            .with_cache_directory("./.cache"),
-    )
-});
+static CHAT_CLIENT: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-luna"));
 
 pub async fn generate_proper_noun_definitions(
     course: Course,
@@ -21,6 +15,7 @@ pub async fn generate_proper_noun_definitions(
         target_language,
         ..
     } = course;
+    let chat_client = &*CHAT_CLIENT;
     // Collect proper nouns and their example sentences
     let mut proper_noun_to_sentences: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
@@ -52,22 +47,8 @@ pub async fn generate_proper_noun_definitions(
     );
     pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let definitions = futures::stream::iter(proper_noun_to_sentences.iter())
-        .map(|(proper_noun, example_sentences)| {
-            let pb = pb.clone();
-            async move {
-                // Take up to 3 example sentences
-                let examples = example_sentences
-                    .iter()
-                    .take(3)
-                    .map(|s| format!("- {s}"))
-                    .collect::<Vec<_>>()
-                    .join("\n");
-
-                let response: Result<ProperNounDefinition, _> = CHAT_CLIENT
-                    .chat_with_system_prompt(
-                        format!(
-                            r#"The learner is a native speaker of {native_language} and is learning {target_language}.
+    let system_prompt = format!(
+        r#"The learner is a native speaker of {native_language} and is learning {target_language}.
 
 You are analyzing a proper noun from {target_language} text. Your task is to:
 1. Determine what type of proper noun it is (person name, place name, organization name, or other)
@@ -130,29 +111,41 @@ Output JSON format:
     "learner_native_language_translation": "concise translation here",
     "description": null or "brief explanation if needed"
 }}"#
-                        ),
-                        format!(
-                            "Proper noun: `{proper_noun}`\n\nExample sentences containing this proper noun:\n{examples}"
-                        ),
-                    )
-                    .await;
-
-                pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
-                pb.inc(1);
-
-                (response, proper_noun.clone())
-            }
+    );
+    let prompts = proper_noun_to_sentences
+        .iter()
+        .map(|(proper_noun, example_sentences)| {
+            let examples = example_sentences
+                .iter()
+                .take(3)
+                .map(|s| format!("- {s}"))
+                .collect::<Vec<_>>()
+                .join("\n");
+            (
+                proper_noun.clone(),
+                format!(
+                    "Proper noun: `{proper_noun}`\n\nExample sentences containing this proper noun:\n{examples}"
+                ),
+            )
         })
-        .buffer_unordered(200)
-        .collect::<Vec<_>>()
-        .await
+        .collect::<Vec<_>>();
+    let definitions = chat_client
+        .batch_chat_with_system_prompt_fn::<_, _, ProperNounDefinition>(
+            system_prompt,
+            &prompts,
+            |(_, prompt)| prompt.clone(),
+            |batch| crate::report_batch_progress(&pb, 0, prompts.len(), batch),
+        )
+        .await?
         .into_iter()
-        .filter_map(|(response, proper_noun)| {
-            response.ok().map(|definition| (proper_noun, definition))
+        .filter_map(|((proper_noun, _), response)| {
+            response
+                .ok()
+                .map(|definition| (proper_noun.clone(), definition))
         })
         .collect::<BTreeMap<_, _>>();
 
-    pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
+    pb.finish_with_message(format!("{:.2}", chat_client.cost().unwrap_or(0.0)));
 
     Ok(definitions)
 }

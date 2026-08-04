@@ -130,7 +130,7 @@ fi
 
 # Build the WASM module
 print_info "Building WASM module in yap-frontend-rs..."
-wasm-pack build --release --features local-backend
+CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release --features local-backend
 cd ..
 print_status "WASM module built"
 

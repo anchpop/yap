@@ -6,14 +6,8 @@ use std::sync::LazyLock;
 use tysm::chat_completions::ChatClient;
 use unicode_normalization::UnicodeNormalization;
 
-static CHAT_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
-    crate::apply_cache_only(
-        ChatClient::from_env("gpt-5.2")
-            .unwrap()
-            .with_reasoning_effort("high")
-            .with_cache_directory("./.cache"),
-    )
-});
+static CHAT_CLIENT: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-luna"));
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 struct SoundsListResponse {
@@ -26,7 +20,8 @@ struct SoundsListResponse {
 pub async fn generate_language_sounds(
     language: Language,
 ) -> anyhow::Result<Vec<(String, PatternPosition)>> {
-    let response: SoundsListResponse = CHAT_CLIENT.chat_with_system_prompt(
+    let chat_client = &*CHAT_CLIENT;
+    let response: SoundsListResponse = chat_client.chat_with_system_prompt(
         format!(r#"You are creating a comprehensive list of characteristic sounds and letter patterns for {language:?}.
 
 Generate a list of the most important letter patterns and sounds that learners need to know. Include:
@@ -86,6 +81,7 @@ pub async fn generate_pronunciation_guides(
     course: Course,
     sounds: &[(String, PatternPosition)],
 ) -> anyhow::Result<Vec<(String, PronunciationGuideThoughts)>> {
+    let chat_client = &*CHAT_CLIENT;
     let guides = futures::stream::iter(sounds)
         .map(|(clean_pattern, position)| {
             let clean_pattern = clean_pattern.clone();
@@ -97,7 +93,7 @@ pub async fn generate_pronunciation_guides(
                     PatternPosition::Anywhere => "This pattern can appear anywhere in words.",
                 };
 
-                let response: Result<PronunciationGuideThoughts, _> = CHAT_CLIENT.chat_with_system_prompt(
+                let response: Result<PronunciationGuideThoughts, _> = chat_client.chat_with_system_prompt(
                     format!(r#"You are creating a pronunciation guide for {native:?} speakers learning {target:?}.
 
 Analyze the {target:?} sound/pattern: "{clean_pattern}"
