@@ -32,10 +32,10 @@ export function MobileKeyboardTip({
     return null;
   }
 
-  const { scriptName, englishName } = LANGUAGES[language];
+  const { characterType, englishName } = LANGUAGES[language];
 
   // Languages with no special characters (English) don't need the tip.
-  if (!scriptName) {
+  if (!characterType) {
     return null;
   }
 
@@ -45,7 +45,7 @@ export function MobileKeyboardTip({
     >
       <p className="text-sm text-muted-foreground flex-1">
         <span className="font-medium">Tip:</span> Enable the {englishName}{" "}
-        keyboard on your device to easily type {scriptName} characters
+        keyboard on your device to easily type {characterType} characters
       </p>
       <Button
         variant="ghost"

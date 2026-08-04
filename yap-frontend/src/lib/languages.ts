@@ -34,10 +34,19 @@ export interface LanguageMeta {
   /** Matches `Language::code` in language-utils: the data pipeline's code. */
   isoCode: string;
   /**
-   * BCP 47 tag for the HTML `lang` attribute. Script subtags are explicit
-   * where they need to be: `lang` drives Han glyph selection in browsers.
+   * ISO 639-1 two-letter code. The canonical code for all logic and every
+   * comparison — it matches Rust's `Language::iso_639_1` exactly, including
+   * both Chinese variants collapsing to "zh", so the two sides can't drift.
+   * Movie and book metadata's `original_language` holds these bare codes.
    */
-  bcp47: string;
+  iso6391: string;
+  /**
+   * ISO 15924 script, set only where a bare `iso6391` would leave Han glyph
+   * selection ambiguous. Presentation only: this belongs in the HTML `lang`
+   * attribute (see `languageToLangAttr`) and nowhere else. Putting it into a
+   * comparison is what silently broke movie filtering for Chinese.
+   */
+  script?: string;
   /**
    * `navigator.language` values that mean this language, lowercased. The bare
    * base subtag ("zh") belongs to whichever variant is the sane default.
@@ -51,8 +60,9 @@ export interface LanguageMeta {
   /**
    * How the mobile keyboard tip describes this language's characters
    * ("...to easily type Cyrillic characters"). Null suppresses the tip.
+   * Prose for a human; unrelated to the ISO 15924 `script` above.
    */
-  scriptName: string | null;
+  characterType: string | null;
   /** How finished this language's course is, surfaced in the picker. */
   status: "stable" | "beta" | "alpha";
   /** "I speak X", written in X. */
@@ -73,10 +83,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "English",
     badge: "EN",
     isoCode: "eng",
-    bcp47: "en",
+    iso6391: "en",
     browserCodes: ["en"],
     accentedCharacters: [],
-    scriptName: null,
+    characterType: null,
     status: "stable",
     iSpeak: "I speak English",
     yaptownName: "Yap.Town",
@@ -96,7 +106,7 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "French",
     badge: "FR",
     isoCode: "fra",
-    bcp47: "fr",
+    iso6391: "fr",
     browserCodes: ["fr"],
     accentedCharacters: [
       "à",
@@ -116,7 +126,7 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
       "œ",
       "æ",
     ],
-    scriptName: "accented",
+    characterType: "accented",
     status: "stable",
     iSpeak: "Je parle français",
     yaptownName: "Yap.Ville",
@@ -136,10 +146,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Spanish",
     badge: "ES",
     isoCode: "spa",
-    bcp47: "es",
+    iso6391: "es",
     browserCodes: ["es"],
     accentedCharacters: ["á", "é", "í", "ó", "ú", "ü", "ñ", "¿", "¡"],
-    scriptName: "accented",
+    characterType: "accented",
     status: "stable",
     iSpeak: "Hablo español",
     yaptownName: "Yap.Ciudad",
@@ -159,10 +169,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "German",
     badge: "DE",
     isoCode: "deu",
-    bcp47: "de",
+    iso6391: "de",
     browserCodes: ["de"],
     accentedCharacters: ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"],
-    scriptName: "accented",
+    characterType: "accented",
     status: "stable",
     iSpeak: "Ich spreche Deutsch",
     yaptownName: "Yap.Stadt",
@@ -182,10 +192,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Italian",
     badge: "IT",
     isoCode: "ita",
-    bcp47: "it",
+    iso6391: "it",
     browserCodes: ["it"],
     accentedCharacters: ["à", "è", "é", "ì", "ò", "ù"],
-    scriptName: "accented",
+    characterType: "accented",
     status: "beta",
     iSpeak: "Parlo italiano",
     yaptownName: "Yap.Città",
@@ -205,7 +215,7 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Portuguese",
     badge: "PT",
     isoCode: "por",
-    bcp47: "pt",
+    iso6391: "pt",
     browserCodes: ["pt"],
     accentedCharacters: [
       "á",
@@ -220,7 +230,7 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
       "õ",
       "ç",
     ],
-    scriptName: "accented",
+    characterType: "accented",
     status: "beta",
     iSpeak: "Eu falo português",
     yaptownName: "Yap.Cidade",
@@ -240,10 +250,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Russian",
     badge: "RU",
     isoCode: "rus",
-    bcp47: "ru",
+    iso6391: "ru",
     browserCodes: ["ru"],
     accentedCharacters: [],
-    scriptName: "Cyrillic",
+    characterType: "Cyrillic",
     status: "alpha",
     iSpeak: "Я говорю по-русски",
     yaptownName: "Yap.Город",
@@ -263,10 +273,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Korean",
     badge: "KO",
     isoCode: "kor",
-    bcp47: "ko",
+    iso6391: "ko",
     browserCodes: ["ko"],
     accentedCharacters: [],
-    scriptName: "hangul",
+    characterType: "hangul",
     status: "alpha",
     iSpeak: "한국어를 합니다",
     yaptownName: "얍.타운",
@@ -285,10 +295,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Japanese",
     badge: "JA",
     isoCode: "jpn",
-    bcp47: "ja",
+    iso6391: "ja",
     browserCodes: ["ja"],
     accentedCharacters: [],
-    scriptName: "Japanese",
+    characterType: "Japanese",
     status: "stable",
     iSpeak: "日本語を話します",
     yaptownName: "Yap.町",
@@ -307,11 +317,12 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Chinese",
     badge: "ZH",
     isoCode: "zho-hans",
-    bcp47: "zh-Hans",
+    iso6391: "zh",
+    script: "Hans",
     // Bare "zh" lands here: simplified is the majority default.
     browserCodes: ["zh", "zh-hans", "zh-cn", "zh-sg"],
     accentedCharacters: [],
-    scriptName: "Chinese",
+    characterType: "Chinese",
     status: "stable",
     iSpeak: "我说中文",
     yaptownName: "Yap.城",
@@ -330,10 +341,11 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Chinese",
     badge: "ZHT",
     isoCode: "zho-hant",
-    bcp47: "zh-Hant",
+    iso6391: "zh",
+    script: "Hant",
     browserCodes: ["zh-hant", "zh-tw", "zh-hk", "zh-mo"],
     accentedCharacters: [],
-    scriptName: "Chinese",
+    characterType: "Chinese",
     status: "stable",
     iSpeak: "我說中文",
     yaptownName: "Yap.城",
@@ -352,10 +364,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Hindi",
     badge: "HI",
     isoCode: "hin",
-    bcp47: "hi",
+    iso6391: "hi",
     browserCodes: ["hi"],
     accentedCharacters: [],
-    scriptName: "Devanagari",
+    characterType: "Devanagari",
     status: "stable",
     iSpeak: "मैं हिन्दी बोलता हूँ",
     yaptownName: "यैप.टाउन",
@@ -375,10 +387,10 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     commonName: "Thai",
     badge: "TH",
     isoCode: "tha",
-    bcp47: "th",
+    iso6391: "th",
     browserCodes: ["th"],
     accentedCharacters: [],
-    scriptName: "Thai",
+    characterType: "Thai",
     status: "alpha",
     iSpeak: "ฉันพูดภาษาไทย",
     yaptownName: "Yap.เมือง",

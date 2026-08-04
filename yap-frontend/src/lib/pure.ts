@@ -36,9 +36,24 @@ export function getLanguageName(isoCodeOrLanguage: string): string {
   return language ? LANGUAGES[language].nativeName : isoCodeOrLanguage;
 }
 
-/** BCP 47 tag for the HTML `lang` attribute. */
-export function languageToBcp47(language: Language): string {
-  return LANGUAGES[language].bcp47;
+/**
+ * The canonical ISO 639-1 code — use this for every comparison and lookup.
+ * Identical to Rust's `Language::iso_639_1`, so both Chinese variants give
+ * "zh", which is what movie and book metadata's `original_language` holds.
+ */
+export function languageToIso6391(language: Language): string {
+  return LANGUAGES[language].iso6391;
+}
+
+/**
+ * Value for an HTML `lang` attribute, and nothing else. Appends the script
+ * subtag where one is needed, because `lang` drives Han glyph selection:
+ * Traditional Chinese tagged as bare "zh" can render with mainland glyph
+ * forms. Never compare against this — see `languageToIso6391`.
+ */
+export function languageToLangAttr(language: Language): string {
+  const { iso6391, script } = LANGUAGES[language];
+  return script ? `${iso6391}-${script}` : iso6391;
 }
 
 export const profilerOnRender = (

@@ -470,6 +470,38 @@ pub enum FrequencySourceId {
     PimsleurLesson(PimsleurLesson),
 }
 
+/// Coerce a TMDB `original_language` into a real ISO 639-1 code.
+///
+/// TMDB reports `cn` for Cantonese — not an ISO 639-1 code at all (639-3 uses
+/// `yue`). For our purposes those films are Chinese: the Hong Kong canon
+/// (無間道, 重慶森林, 功夫, 花樣年華) is part of the Chinese courses' corpus and
+/// its subtitles are the Chinese text learners actually study. Left as `cn`
+/// they never equal [`Language::iso_639_1`], so 15 of the Chinese course's 45
+/// native films silently vanished from native-language movie lists.
+///
+/// Normalizing on the way in keeps every consumer's plain `==` correct. The
+/// alternative — teaching the Rust recommender and the TypeScript movie
+/// filter the same alias list — is how these two drifted apart to begin with.
+/// `cn` is the only non-ISO-639-1 code across the whole corpus.
+pub fn normalize_original_language(code: &str) -> &str {
+    match code {
+        "cn" => "zh",
+        other => other,
+    }
+}
+
+/// `deserialize_with` adapter applying [`normalize_original_language`]. Shared
+/// so the TMDB client normalizes on the way in too, rather than keeping a
+/// second copy of the alias list.
+pub fn deserialize_original_language<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    use serde::Deserialize;
+    Ok(Option::<String>::deserialize(deserializer)?
+        .map(|code| normalize_original_language(&code).to_owned()))
+}
+
 /// Basic movie metadata without poster bytes, for serialization to files
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
@@ -481,8 +513,10 @@ pub struct MovieMetadataBasic {
     pub title: String,
     /// Release year
     pub year: Option<u16>,
-    /// Original language of the movie (ISO 639-1 code, e.g., "en", "fr")
-    #[serde(default)]
+    /// Original language of the movie (ISO 639-1 code, e.g., "en", "fr").
+    /// Normalized on read, so consumers can compare it to
+    /// [`Language::iso_639_1`] directly — see [`normalize_original_language`].
+    #[serde(default, deserialize_with = "deserialize_original_language")]
     pub original_language: Option<String>,
     /// Rotten Tomatoes score (0-100)
     #[serde(default)]
@@ -4198,6 +4232,43 @@ pub fn literals_to_text(literals: &[Literal<String>]) -> String {
         .iter()
         .map(|lit| format!("{}{}", lit.word.text, lit.whitespace))
         .collect()
+}
+
+#[cfg(test)]
+mod original_language_tests {
+    use super::*;
+
+    /// The whole point: a normalized `original_language` compares equal to
+    /// `Language::iso_639_1`, so plain `==` is correct at every call site.
+    #[test]
+    fn tmdb_cn_matches_the_chinese_courses() {
+        let movie: MovieMetadataBasic = serde_json::from_str(
+            r#"{"id":"tt0338564","title":"無間道","year":2002,"original_language":"cn"}"#,
+        )
+        .unwrap();
+
+        assert_eq!(movie.original_language.as_deref(), Some("zh"));
+        for chinese in [Language::ChineseSimplified, Language::ChineseTraditional] {
+            assert_eq!(
+                movie.original_language.as_deref(),
+                Some(chinese.iso_639_1())
+            );
+        }
+    }
+
+    #[test]
+    fn real_iso_codes_pass_through_untouched() {
+        for code in ["en", "fr", "ja", "zh", "th", "ka", "tl"] {
+            assert_eq!(normalize_original_language(code), code);
+        }
+    }
+
+    #[test]
+    fn a_missing_original_language_stays_none() {
+        let movie: MovieMetadataBasic =
+            serde_json::from_str(r#"{"id":"tt0000001","title":"?","year":null}"#).unwrap();
+        assert_eq!(movie.original_language, None);
+    }
 }
 
 #[cfg(test)]

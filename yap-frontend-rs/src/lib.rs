@@ -50,6 +50,7 @@ use language_utils::transcription_challenge;
 use language_utils::{Course, Language};
 use language_utils::{
     Gram, GramDefinition, Heteronym, MovieMetadataBasic, PronunciationGuide, WordType,
+    normalize_original_language,
 };
 use lasso::Spur;
 use opfs::persistent::{self};
@@ -3208,7 +3209,7 @@ impl Deck {
                     && meta
                         .original_language
                         .as_deref()
-                        .is_some_and(|lang| lang == target_iso)
+                        .is_some_and(|lang| normalize_original_language(lang) == target_iso)
             })
             .filter_map(|(id, meta)| meta.rotten_tomatoes_score.map(|score| (id, score)))
             .max_by_key(|(_, score)| *score)
@@ -3240,7 +3241,13 @@ impl Deck {
                     id: movie_metadata.id.clone(),
                     title: movie_metadata.title.clone(),
                     year: movie_metadata.year,
-                    original_language: movie_metadata.original_language.clone(),
+                    // Normalized here as well as on ingest, so packs built
+                    // before that existed still hand the frontend a code it
+                    // can compare against `Language::iso_639_1`.
+                    original_language: movie_metadata
+                        .original_language
+                        .as_deref()
+                        .map(|code| normalize_original_language(code).to_owned()),
                     rotten_tomatoes_score: movie_metadata.rotten_tomatoes_score,
                 });
             }

@@ -58,7 +58,7 @@ import { AudioButton } from "../AudioButton";
 import { ReportIssueModal } from "./ReportIssueModal";
 import { playSoundEffect } from "@/lib/sound-effects";
 import { useBackground } from "../background-context";
-import { languageToBcp47 } from "@/lib/utils";
+import { languageToLangAttr } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { TargetLanguageText } from "../TargetLanguageText";
 import {
@@ -1179,7 +1179,7 @@ export function TranslationChallenge({
               <>
                 <Textarea
                   ref={inputRef}
-                  lang={languageToBcp47(nativeLanguage)}
+                  lang={languageToLangAttr(nativeLanguage)}
                   placeholder="Translation..."
                   value={userTranslation}
                   onChange={(e) => setUserTranslation(e.target.value)}
