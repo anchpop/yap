@@ -41,6 +41,24 @@ Sentry.init({
       }
     }
 
+    // Filter WASM compilation aborts — the page was navigated away from or
+    // reloaded while the .wasm module was still streaming in. Not actionable.
+    if (message.startsWith("WebAssembly compilation aborted")) {
+      return null;
+    }
+
+    // Filter environments that lack WebAssembly entirely (some stripped-down
+    // in-app browser webviews). We can't run at all there and nothing in our
+    // code can fix that; identifiable by the wasm-helper frame that references
+    // the global WebAssembly object before our own browser-support check runs.
+    if (message === "Can't find variable: WebAssembly") {
+      const frames =
+        event.exception?.values?.[0]?.stacktrace?.frames ?? [];
+      if (frames.some((f) => f.filename?.includes("wasm-helper"))) {
+        return null;
+      }
+    }
+
     return event;
   },
 
