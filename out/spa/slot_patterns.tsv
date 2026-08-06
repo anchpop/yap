@@ -1,0 +1,20 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+tener sus conchas	filled	20657	0	12	0.00	no	A Don Ciccio que, gracias a Dios, no tiene esposa.	tiene … esposa
+hacer su agosto	filled	13518	0	12	0.00	no	A Beth, su flojo novio le pidió hacer su tarea de historia.	hacer … tarea
+dar algo	filled	5960	12	12	1.00	yes		
+estar en sus días	filled	4033	0	12	0.00	no	A Tom le gustaría que Mary esté en el equipo.	esté … en … equipo
+dar algo	clitic	333	7	12	0.58	no	A él le da lo mismo lo que otros digan.	da … lo
+en su vida	clitic	116	6	12	0.50	no	Alguien en su vida, quizá.	en … su … vida
+necesito su ayuda	clitic	62	12	12	1.00	yes		
+no poder con su alma	filled	33	0	12	0.00	no	A veces uno no puede con la carga que lleva encima.	no … puede … con … carga
+ganar con su cuerpo	filled	32	0	12	0.00	no	Bien, y que gana el con eso?	gana … con … eso
+vencerlo en su propio juego	filled	9	0	9	0.00	no	Después de vencer en todos los encuentros, obtuvo el título de campeón.	vencer … en … encuentros
+su gracia	clitic	8	5	8	0.62	yes	Bendíceme con tu gracia.	tu … gracia
+adelantado a su época	filled	4	2	4	0.50	no	Nos adelantaremos a la frontera de Guilder.	adelantaremos … a … frontera
+buscarle las cosquillas a alguien	clitic	3	3	3	1.00	yes		
+en su vida	filled	1	1	1	1.00	yes		
+poner alguien en su sitio	clitic	1	1	1	1.00	yes		
+poner alguien en su sitio	filled	1	1	1	1.00	yes		
+su gracia	filled	1	0	1	0.00	no	Qué gracias a vos nunca será olvidado.	Qué … gracias
+tocar los cojones a alguien	clitic	1	1	1	1.00	yes		
+vivir por encima de sus posibilidades	clitic	1	1	1	1.00	yes		

@@ -83,17 +83,17 @@ pub fn compute_per_source_gram_frequencies(
 
             // Count high-confidence multiword term grams (weight 0.7),
             // skipping grams already in the encoded sentence
-            for gram in &sentence_grams.multiword_terms {
-                if !encoded_grams.contains(gram) {
-                    *gram_counts.entry(gram.clone()).or_insert(0.0) += 0.7;
+            for term in &sentence_grams.multiword_terms {
+                if !encoded_grams.contains(&term.gram) {
+                    *gram_counts.entry(term.gram.clone()).or_insert(0.0) += 0.7;
                 }
             }
 
             // Count low-confidence multiword term grams (weight 0.3),
             // skipping grams already in the encoded sentence
-            for gram in &sentence_grams.low_confidence_multiword_terms {
-                if !encoded_grams.contains(gram) {
-                    *gram_counts.entry(gram.clone()).or_insert(0.0) += 0.3;
+            for term in &sentence_grams.low_confidence_multiword_terms {
+                if !encoded_grams.contains(&term.gram) {
+                    *gram_counts.entry(term.gram.clone()).or_insert(0.0) += 0.3;
                 }
             }
         }
@@ -165,17 +165,17 @@ pub fn compute_gram_frequencies(
 
         // Count high-confidence multiword term grams (weight 0.7),
         // skipping grams already in the encoded sentence
-        for gram in &sentence_grams.multiword_terms {
-            if !encoded_grams.contains(gram) {
-                *gram_counts.entry(gram.clone()).or_insert(0.0) += 0.7;
+        for term in &sentence_grams.multiword_terms {
+            if !encoded_grams.contains(&term.gram) {
+                *gram_counts.entry(term.gram.clone()).or_insert(0.0) += 0.7;
             }
         }
 
         // Count low-confidence multiword term grams (weight 0.3),
         // skipping grams already in the encoded sentence
-        for gram in &sentence_grams.low_confidence_multiword_terms {
-            if !encoded_grams.contains(gram) {
-                *gram_counts.entry(gram.clone()).or_insert(0.0) += 0.3;
+        for term in &sentence_grams.low_confidence_multiword_terms {
+            if !encoded_grams.contains(&term.gram) {
+                *gram_counts.entry(term.gram.clone()).or_insert(0.0) += 0.3;
             }
         }
     }

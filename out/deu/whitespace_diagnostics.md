@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 3127243
-Total errors: 2279
+Total predictions: 3177940
+Total errors: 2311
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
 
-### "…" + "-" (48 occurrences)
+### "…" + "-" (51 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -21,6 +21,14 @@ Accuracy: 99.93%
   - Ach, wäre ich doch verliebt in dich - und nicht im Himmel.
   - Als geborene Münchnerin kennt sie die Stadt in- und auswendig.
   - Da triffst du Prinz William - und kannst ihn an seiner Stelle heiraten.
+
+### "-" + "das" (12 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Den Kindern - das Eis, dem Weib - die Blumen.
+  - Die Leuchtfeuer auf den Bergen - das sind die Rebellen.
+  - Dies - das ist echter Tabak.
 
 ### "’" + "ich" (12 occurrences)
 - Predicted: None
@@ -45,14 +53,6 @@ Accuracy: 99.93%
   - Ach, wo ist denn Kwang- ho hingegangen?
   - Apropos Kwang- ho.
   - Das bedeutet, Kwang- ho ist unser Zeuge.
-
-### "-" + "das" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Den Kindern - das Eis, dem Weib - die Blumen.
-  - Die Leuchtfeuer auf den Bergen - das sind die Rebellen.
-  - Dies - das ist echter Tabak.
 
 ### "Träne" + "n" (10 occurrences)
 - Predicted: Space
@@ -190,6 +190,14 @@ Accuracy: 99.93%
   - Es gibt fünfzehn- bis zwanzigtausend Zuschauer.
   - Ich esse nur drei- bis viermal im Monat Fleisch.
 
+### "-" + "ein" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das von Bacurau - ein ganz hübsches Museum.
+  - Man nennt ihn den Tataren - ein Auftragsmörder mit gutem Ruf.
+  - Mein Schützling - ein Feind?
+
 ### "-" + "ist" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -294,14 +302,6 @@ Accuracy: 99.93%
   - Den Kindern - das Eis, dem Weib - die Blumen.
   - Es wurde ein neues Kommunikationsmittel entwickelt - die Eisenbahn.
 
-### "-" + "ein" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Das von Bacurau - ein ganz hübsches Museum.
-  - Man nennt ihn den Tataren - ein Auftragsmörder mit gutem Ruf.
-  - Mein Schützling - ein Feind?
-
 ### "Gradisca" + "!" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -398,6 +398,14 @@ Accuracy: 99.93%
   - Das wusste ich nicht - wirklich nicht!
   - Gemelkt oder nicht - raus!
 
+### "sagen" + "-" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich kann es nicht sagen - Geister benutzen einander wie Menschen.
+  - Mehr kann ich dir nicht sagen - weder dir noch den anderen.
+  - Was Sie auch immer sagen - dieser Zustand wird nicht andauern.
+
 ### "’" + "schon" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -477,6 +485,14 @@ Accuracy: 99.93%
   - Der Ehemann - nach Minsk und die Ehefrau nach links.
   - Und dann schrieb Vater, er könne mir die Reise - nach England nicht bezahlen.
   - Wohin fährst du - nach Amerika?
+
+### "-" + "sind" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Die Menschen, mit denen ich verkehre, - sind wichtige Leute der Gesellschaft.
+  - Staatsstreiche, Mafia, Korruption - sind das nicht Ihre Kunden?
+  - Tiere - sind das Tschatlanen?
 
 ### "-" + "sook" (3 occurrences)
 - Predicted: None
@@ -710,6 +726,14 @@ Accuracy: 99.93%
   - Ich hab genug !
   - So, das ist genug !
 
+### "hier" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ich hab das hier - kein Aspirin.
+  - In Ordnung, hier - da!
+  - Nur schnell, denn eine Sekunde hier - das sind ein halbes Jahr dort.
+
 ### "hier" + "?" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -773,14 +797,6 @@ Accuracy: 99.93%
   - Brücke räumen.
   - Hank, kannst du das Atelier räumen?
   - Ihr müsst das Zimmer räumen.
-
-### "sagen" + "-" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich kann es nicht sagen - Geister benutzen einander wie Menschen.
-  - Mehr kann ich dir nicht sagen - weder dir noch den anderen.
-  - Was Sie auch immer sagen - dieser Zustand wird nicht andauern.
 
 ### "sein" + "-" (3 occurrences)
 - Predicted: None
@@ -922,6 +938,13 @@ Accuracy: 99.93%
   - Die Timour III - der sowjetische Schrecken.
   - Er sagte, ich hätte Glück gehabt - der Arzt.
 
+### "-" + "dieser" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Was Sie auch immer sagen - dieser Zustand wird nicht andauern.
+  - Zaki, zaraki —- dieser ganze Unsinn!
+
 ### "-" + "du" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -964,6 +987,13 @@ Accuracy: 99.93%
   - Hände - hinter den Kopf!
   - Sie würden hinter Ihnen sein, wir - hinter denen.
 
+### "-" + "ja" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Jetzt - ja.
+  - Myung- ja hat geschrien.
+
 ### "-" + "nicht" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -992,13 +1022,6 @@ Accuracy: 99.93%
   - Hey, Gui- ok, schalt doch bitte das Radio aus.
   - Na ja, dank der Aktion hat Gui- ok jetzt immerhin den schönen Rock an.
 
-### "-" + "sind" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Die Menschen, mit denen ich verkehre, - sind wichtige Leute der Gesellschaft.
-  - Staatsstreiche, Mafia, Korruption - sind das nicht Ihre Kunden?
-
 ### "-" + "so" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1012,6 +1035,13 @@ Accuracy: 99.93%
 - Examples:
   - Es geht um etwas wichtigeres als die Solaristik - um unser Erkenntnisvermögen.
   - Sie würde es verlangen - um zu überleben.
+
+### "-" + "wer" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Idiot - wer sonst?
+  - Svetlana, demonstrieren Sie die Wunder der Introskopie- wer ist an der Tür?
 
 ### "Aber" + "…" (2 occurrences)
 - Predicted: None
@@ -1138,6 +1168,13 @@ Accuracy: 99.93%
 - Examples:
   - Der Plural von „Kaktus“ lautet „Kakteen“.
   - Die Mehrzahl von „Kaktus“ lautet „Kakteen“.
+
+### "Karin" + "as" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Karinas Party hat dir gut getan, was?
+  - Karinas Party war Wahnsinn, oder?
 
 ### "Kopf-" + "und" (2 occurrences)
 - Predicted: None
@@ -1502,13 +1539,6 @@ Accuracy: 99.93%
 - Examples:
   - Geht heim !
   - Naso, ich gehe heim !
-
-### "hier" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ich hab das hier - kein Aspirin.
-  - In Ordnung, hier - da!
 
 ### "ich" + "?" (2 occurrences)
 - Predicted: None
@@ -2042,6 +2072,12 @@ Accuracy: 99.93%
 - Examples:
   - Daddy … - Daddy ist beschäftigt.
 
+### "-" + "Das" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie haben mich geschlagen - Das würde ich mir nie erlauben.
+
 ### "-" + "Die" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2570,12 +2606,6 @@ Accuracy: 99.93%
 - Examples:
   - Wenn der Widerstand es erfährt - - deutsches Baby.
 
-### "-" + "dieser" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Was Sie auch immer sagen - dieser Zustand wird nicht andauern.
-
 ### "-" + "dort" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2660,6 +2690,12 @@ Accuracy: 99.93%
 - Examples:
   - Das haben Sie Ihre Studien- freunde immer spüren lassen.
 
+### "-" + "freundliche" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Das Meer, die Sonne, Essen und gast- freundliche Menschen erwarten ihn.
+
 ### "-" + "frisch" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2713,6 +2749,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Und ich zieh vor dem Vorstellungs- gespräch alle meine Ringe aus.
+
+### "-" + "gestorben" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wie - gestorben?
 
 ### "-" + "gewöhnliche" (1 occurrences)
 - Predicted: None
@@ -2768,6 +2810,12 @@ Accuracy: 99.93%
 - Examples:
   - Du, liebster Onkel - höchstpersönlich.
 
+### "-" + "hörst" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Weißt du, mich geht es ja nichts an, aber ich möchte dir sagen - hörst du zu?
+
 ### "-" + "iert" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2797,12 +2845,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Und das Geld - in Strömen.
-
-### "-" + "ja" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Myung- ja hat geschrien.
 
 ### "-" + "jawohl" (1 occurrences)
 - Predicted: None
@@ -2875,6 +2917,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Das Haar der Frauen duftete - leuchtende, helle.
+
+### "-" + "leuten" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Gebt zuerst den Braut- leuten was, das bringt sonst Unglück.
 
 ### "-" + "lich" (1 occurrences)
 - Predicted: None
@@ -3133,12 +3181,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - In solchen Zeiten sucht die Zauber- welt bei ihren Anführern Stärke!
-
-### "-" + "wer" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Idiot - wer sonst?
 
 ### "-" + "wir" (1 occurrences)
 - Predicted: None
@@ -3902,6 +3944,12 @@ Accuracy: 99.93%
 - Examples:
   - Schwieriger Schuss, Eure Exzellenz !
 
+### "FRISKE" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Zhanna FRISKE -Na dann lade ich Sie ein.
+
 ### "Fakt" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4562,6 +4610,12 @@ Accuracy: 99.93%
 - Examples:
   - Jetzt !
 
+### "Jetzt" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Jetzt - ja.
+
 ### "Johannes’" + "Adresse" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4603,6 +4657,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Justine - bitte, Justine!
+
+### "KUTSENKO" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Gosha KUTSENKO -Wenn Boris Ivanych das sagt, stimmt das.
 
 ### "Kabinen" + "druck" (1 occurrences)
 - Predicted: Space
@@ -4898,6 +4958,18 @@ Accuracy: 99.93%
 - Examples:
   - Du Lümmel !
 
+### "MARKOVA" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Rimma MARKOVA -Dort können nicht einmal die leben.
+
+### "MENSHOV" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vladimir MENSHOV -Seid vorsichtig, er ist gefährlich.
+
 ### "Magda" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4909,6 +4981,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Ich seh sie jetzt zum ersten Mal - genau wie ihr.
+
+### "Mama" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Wir singen einen Monat lang in der Galaxis die „Mama“, und er ist unser.
 
 ### "Mami" + "!" (1 occurrences)
 - Predicted: None
@@ -5282,6 +5360,12 @@ Accuracy: 99.93%
 - Examples:
   - Fahren Richtung Osten … Lass das.
 
+### "POROSHINA" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Maria POROSHINA -Soll ich Sie in ein Restaurant einladen?
+
 ### "Pack" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5593,6 +5677,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Eine Schande !
+
+### "Schau" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Schau - ein Dunkler.
 
 ### "Schaut" + "!" (1 occurrences)
 - Predicted: None
@@ -5935,6 +6025,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Ari Up (Ariane Forster) war die Frontfrau von „The Slits“.
+
+### "Tiere" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tiere - sind das Tschatlanen?
 
 ### "Tigers" + "!" (1 occurrences)
 - Predicted: None
@@ -6331,6 +6427,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - In einem Whisky- oder Longdrink-Glas?
+
+### "Wie" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Wie - gestorben?
 
 ### "Wiedersehen" + "!" (1 occurrences)
 - Predicted: None
@@ -7406,6 +7508,12 @@ Accuracy: 99.93%
 - Examples:
   - Ist es genug gesalzen ?
 
+### "geschlagen" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sie haben mich geschlagen - Das würde ich mir nie erlauben.
+
 ### "geschlossen" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7753,6 +7861,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Nichts half ihm - nichts!
+
+### "ihn" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lass ihn !
 
 ### "ihr" + "!" (1 occurrences)
 - Predicted: None
@@ -10009,6 +10123,12 @@ Accuracy: 99.93%
 - Actual: None
 - Examples:
   - Die „Löwen“ haben gegen die „Falken“ einen leichten Sieg errungen.
+
+### "„" + "Mama" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Wir singen einen Monat lang in der Galaxis die „Mama“, und er ist unser.
 
 ### "„" + "Maria" (1 occurrences)
 - Predicted: Space

@@ -1099,6 +1099,7 @@ fn comprehensible_sentence_from_spur(
             .multiword_terms
             .iter()
             .chain(sentence_grams.low_confidence_multiword_terms.iter())
+            .map(|term| &term.gram)
         {
             if !phrases_set.contains(phrase) {
                 unique_phrases.push(*phrase);
@@ -1421,6 +1422,7 @@ impl weapon::AppState for Deck {
                                 .multiword_terms
                                 .iter()
                                 .chain(encoded_sentence.low_confidence_multiword_terms.iter())
+                                .map(|term| &term.gram)
                             {
                                 remembered_grams.insert(*gram_spur);
                             }
@@ -1431,6 +1433,7 @@ impl weapon::AppState for Deck {
                                     .multiword_terms
                                     .iter()
                                     .chain(encoded_sentence.low_confidence_multiword_terms.iter())
+                                    .map(|term| &term.gram)
                                     .find(|gram_spur| {
                                         let resolved = context
                                             .language_pack
@@ -6556,11 +6559,11 @@ mod tests {
                         SentenceGram::Obvious(g) => report(g, "obvious"),
                     }
                 }
-                for g in &sentence_grams.multiword_terms {
-                    report(g, "multiword");
+                for term in &sentence_grams.multiword_terms {
+                    report(&term.gram, "multiword");
                 }
-                for g in &sentence_grams.low_confidence_multiword_terms {
-                    report(g, "low-conf-multiword");
+                for term in &sentence_grams.low_confidence_multiword_terms {
+                    report(&term.gram, "low-conf-multiword");
                 }
             }
         }

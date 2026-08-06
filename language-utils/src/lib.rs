@@ -654,10 +654,12 @@ pub struct SentenceGrams<G> {
     pub grams: Vec<SentenceGram<G>>,
     /// Whether the first letter should be capitalized when displaying
     pub capitalize_first: bool,
-    /// High-confidence multiword terms found in this sentence
-    pub multiword_terms: Vec<G>,
-    /// Low-confidence multiword terms found in this sentence
-    pub low_confidence_multiword_terms: Vec<G>,
+    /// High-confidence multiword terms found in this sentence, with the word
+    /// indices each match bound
+    pub multiword_terms: Vec<MultiwordTermMatch<G>>,
+    /// Low-confidence multiword terms found in this sentence, with the word
+    /// indices each match bound
+    pub low_confidence_multiword_terms: Vec<MultiwordTermMatch<G>>,
 }
 
 impl SentenceGrams<SpurGram> {
@@ -757,12 +759,12 @@ impl SentenceGrams<SpurGram> {
             multiword_terms: self
                 .multiword_terms
                 .iter()
-                .map(|g| rodeo.resolve(g).to_gram())
+                .map(|m| m.map(|g| rodeo.resolve(g).to_gram()))
                 .collect(),
             low_confidence_multiword_terms: self
                 .low_confidence_multiword_terms
                 .iter()
-                .map(|g| rodeo.resolve(g).to_gram())
+                .map(|m| m.map(|g| rodeo.resolve(g).to_gram()))
                 .collect(),
         }
     }
@@ -776,12 +778,12 @@ impl SentenceGrams<Gram<lasso::Spur>> {
             multiword_terms: self
                 .multiword_terms
                 .iter()
-                .map(|gram| gram.resolve(rodeo))
+                .map(|m| m.map(|gram| gram.resolve(rodeo)))
                 .collect(),
             low_confidence_multiword_terms: self
                 .low_confidence_multiword_terms
                 .iter()
-                .map(|gram| gram.resolve(rodeo))
+                .map(|m| m.map(|gram| gram.resolve(rodeo)))
                 .collect(),
         }
     }
@@ -839,6 +841,41 @@ pub struct MultiwordTerms<T> {
     pub low_confidence: Vec<T>,
 }
 
+/// A multiword term found in a sentence, together with which words of the
+/// sentence the match bound. Indices are into the sentence's word sequence
+/// (the NLP tokenization, which is 1:1 with the `Atom::Tok`s / rendered
+/// literals of the sentence) — so graders and UI can point at the exact words
+/// that realized the term, e.g. "arriver à quelqu'un" matching "leur … arrivé".
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub struct MultiwordTermMatch<G> {
+    pub gram: G,
+    /// Word indices the match bound, sorted. Empty when the match positions
+    /// are unknown (e.g. produced by a matcher that doesn't report them).
+    pub matched_word_indices: Vec<u16>,
+}
+
+impl<G> MultiwordTermMatch<G> {
+    pub fn map<H>(&self, f: impl FnOnce(&G) -> H) -> MultiwordTermMatch<H> {
+        MultiwordTermMatch {
+            gram: f(&self.gram),
+            matched_word_indices: self.matched_word_indices.clone(),
+        }
+    }
+}
+
 /// The raw output from the Spacy python script
 #[derive(
     Clone,
@@ -876,7 +913,9 @@ pub struct NlpAnalyzedSentence {
 )]
 pub struct SentenceInfo {
     pub words: Vec<Literal<String>>,
-    pub multiword_terms: MultiwordTerms<Gram<String>>,
+    /// Multiword terms found in this sentence; `matched_word_indices` index
+    /// into `words`.
+    pub multiword_terms: MultiwordTerms<MultiwordTermMatch<Gram<String>>>,
 }
 
 impl SentenceInfo {
@@ -2421,13 +2460,13 @@ impl ConsolidatedLanguageData {
                     }
                 }
             }
-            for gram in &encoded.multiword_terms {
-                for atom in gram.iter() {
+            for term in &encoded.multiword_terms {
+                for atom in term.gram.iter() {
                     atom.get_or_intern(rodeo);
                 }
             }
-            for gram in &encoded.low_confidence_multiword_terms {
-                for atom in gram.iter() {
+            for term in &encoded.low_confidence_multiword_terms {
+                for atom in term.gram.iter() {
                     atom.get_or_intern(rodeo);
                 }
             }

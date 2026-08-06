@@ -1,0 +1,10 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+tirare fuori qualcosa	filled	120	12	12	1.00	yes		
+capitare a qualcuno	clitic	84	10	12	0.83	yes	Non sai mai quale sarà la prossima mano che ti capita.	ti … capita
+capitare a qualcuno	filled	60	9	12	0.75	yes	Cosa le è capitato a Boston?	capitato … a … Boston
+tirare fuori qualcosa	clitic	16	12	12	1.00	yes		
+sangue del proprio sangue	filled	4	2	4	0.50	no	Dammi il sangue del vampiro!	sangue … del … vampiro
+abbandonare al proprio destino	filled	2	1	2	0.50	no	Ci sono molti gatti abbandonati al mondo.	abbandonati … al … mondo
+ai propri piedi	clitic	2	2	2	1.00	yes		
+dalla propria parte	clitic	2	2	2	1.00	yes		
+a proprio agio	filled	1	1	1	1.00	yes		

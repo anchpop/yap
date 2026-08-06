@@ -1,0 +1,56 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+bei jemandem sein	filled	544	7	12	0.58	no	Bin ich bei der Mafia?	Bin … bei … Mafia
+zu etwas kommen	filled	505	3	12	0.25	no	Aber Jules Baumann und Frederik Clausen, die wollten auch noch zu uns kommen.	zu … uns … kommen
+bei jemandem sein	clitic	250	0	12	0.00	no	Aber bei dir hat man den Eindruck, du bist dir nicht im Klaren darüber.	bist … dir
+von etwas Wind bekommen	filled	80	0	12	0.00	no	Balthasar, frag ihn, ob er Geld von Ursua bekommen hat.	von … Ursua … bekommen
+jemandem Bescheid sagen	filled	70	12	12	1.00	yes		
+jemandem Bescheid sagen	clitic	59	12	12	1.00	yes		
+jemanden Bescheid geben	filled	42	12	12	1.00	yes		
+jemanden Bescheid geben	clitic	35	12	12	1.00	yes		
+etwas satt haben	filled	34	12	12	1.00	yes		
+jemanden mal können	filled	23	7	12	0.58	no	Das kann doch verdammt noch mal nicht Ihr Ernst sein!	kann … mal … Ernst
+im Bilde über etwas sein	filled	17	0	12	0.00	no	Bist du über dem Steuerungsmodul?	Bist … über … Steuerungsmodul
+aus etwas Kapital schlagen	filled	15	1	12	0.08	no	Die Mädchen schlugen mir meine Bücher aus den Händen und lachten mich aus.	schlugen … aus … Händen
+etwas im Schilde führen	filled	12	12	12	1.00	yes		
+jemandem über den Weg laufen	filled	12	12	12	1.00	yes		
+jemandem über den Weg laufen	clitic	11	11	11	1.00	yes		
+jemanden am Arsch lecken	filled	11	11	11	1.00	yes		
+etwas satt haben	clitic	10	10	10	1.00	yes		
+jemandem am Herzen liegen	clitic	9	9	9	1.00	yes		
+jemandem fehlen die Worte	clitic	9	8	9	0.89	yes	Mir fehlt das richtig Wort dafür.	Mir … fehlt … das … Wort
+jemandem fehlen die Worte	filled	9	8	9	0.89	yes	Mir fehlt das richtig Wort dafür.	Mir … fehlt … das … Wort
+jemand in die Tasche stecken	filled	6	1	6	0.17	no	Die stecken sich das Geld selber in die Tasche.	stecken … sich … in … die … Tasche
+etwas im Zaum halten	filled	5	5	5	1.00	yes		
+jemandem fällt ein Stein vom Herzen	clitic	5	5	5	1.00	yes		
+jemandem fällt ein Stein vom Herzen	filled	5	5	5	1.00	yes		
+ein Auge auf etwas werfen	filled	4	4	4	1.00	yes		
+für jemanden Partei ergreifen	filled	4	4	4	1.00	yes		
+jemanden mal können	clitic	4	1	4	0.25	no	Du kannst es ja nicht mal.	kannst … es … mal
+etwas am Hals haben	filled	3	3	3	1.00	yes		
+jemandem zu schaffen machen	clitic	3	2	3	0.67	yes	Sie machte sich an einem Stück Papier zu schaffen.	machte … sich … zu … schaffen
+jemandem zur Seite stehen	clitic	3	3	3	1.00	yes		
+jemandem zur Seite stehen	filled	3	3	3	1.00	yes		
+auf etwas wetten	filled	2	2	2	1.00	yes		
+etwas für bare Münze nehmen	filled	2	2	2	1.00	yes		
+etwas in den Wind schlagen	filled	2	2	2	1.00	yes		
+jemand in die Tasche stecken	clitic	2	0	2	0.00	no	Die stecken sich das Geld selber in die Tasche.	stecken … sich … in … die … Tasche
+jemandem am Herzen liegen	filled	2	2	2	1.00	yes		
+jemandem zu nahe treten	clitic	2	2	2	1.00	yes		
+nichts auf etwas geben	filled	2	0	2	0.00	no	Auf dem Markt gäbe es nichts von Wert.	Auf … Markt … gäbe … nichts
+sich etwas unter den Nagel reißen	filled	2	2	2	1.00	yes		
+was jemand nicht weiß, macht jemanden nicht heiß	filled	2	2	2	1.00	yes		
+etwas Revue passieren lassen	filled	1	1	1	1.00	yes		
+etwas am Hals haben	clitic	1	1	1	1.00	yes		
+etwas auf Eis legen	clitic	1	1	1	1.00	yes		
+etwas auf Eis legen	filled	1	1	1	1.00	yes		
+etwas im Keim ersticken	clitic	1	1	1	1.00	yes		
+etwas im Keim ersticken	filled	1	1	1	1.00	yes		
+etwas zu den Akten legen	filled	1	1	1	1.00	yes		
+etwas über die Bühne bringen	filled	1	1	1	1.00	yes		
+jemandem die Stirn bieten	filled	1	1	1	1.00	yes		
+jemandem etwas aus der Nase ziehen	filled	1	1	1	1.00	yes		
+jemandem etwas in die Schuhe schieben	filled	1	1	1	1.00	yes		
+jemandem etwas zur Last legen	filled	1	1	1	1.00	yes		
+jemandem in den Arsch kriechen	filled	1	1	1	1.00	yes		
+jemandem stehen die Haare zu Berge	filled	1	1	1	1.00	yes		
+jemandem zu schaffen machen	filled	1	1	1	1.00	yes		
