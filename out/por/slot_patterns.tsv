@@ -1,0 +1,13 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+tirar algo	filled	1024	12	12	1.00	yes		
+tirar algo	clitic	113	11	12	0.92	yes	Tão me tirando de besta?	me … tirando
+acontecer a alguém	filled	24	12	12	1.00	yes		
+não é da sua conta	clitic	6	6	6	1.00	yes		
+são seus olhos	clitic	6	2	6	0.33	no	De que cor são os seus olhos?	são … seus … olhos
+à sua maneira	clitic	6	6	6	1.00	yes		
+fazer a sua parte	clitic	4	4	4	1.00	yes		
+fazer a sua parte	filled	2	2	2	1.00	yes		
+o gato comeu sua língua	clitic	2	2	2	1.00	yes		
+são seus olhos	filled	2	2	2	1.00	yes		
+na de alguém	filled	1	1	1	1.00	yes		
+vou pensar no seu caso	clitic	1	1	1	1.00	yes		

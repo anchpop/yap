@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1755835
-Total errors: 500
+Total predictions: 1917453
+Total errors: 603
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -14,6 +14,14 @@ Accuracy: 99.97%
   - Deixe- me falar claro.
   - Deixe- me pensar sobre isto, Henry.
 
+### "-" + "Não" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - A melhor coisa do meu trabalho - Não preciso fazer decisões.
+  - LABORATÓRIO METEOROLÓGICO - Não temos interesse.
+  - Não deixe brilhar - Não deixe.
+
 ### "Maxim" + "?" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -22,13 +30,21 @@ Accuracy: 99.97%
   - Idéia de Maxim ?
   - Pronto, Maxim ?
 
-### "-" + "Não" (5 occurrences)
+### "-" + "não" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - A melhor coisa do meu trabalho - Não preciso fazer decisões.
-  - Não deixe brilhar - Não deixe.
-  - Não quero mudar - Não é verdade.
+  - Eu - não - vou - morrer.
+  - Eu faria - não faria?
+  - Eu não posso sair pelado - não na minha idade.
+
+### "-" + "se" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Acalme- se, Ethel.
+  - Adèle, sente- se, você já serviu todo mundo.
+  - Buckley, sente- se.
 
 ### "não" + "?" (5 occurrences)
 - Predicted: None
@@ -45,22 +61,6 @@ Accuracy: 99.97%
   - Nunca lembro de aproveitar para nadar até Junho, e você ?
   - O que está errado com você ?
   - Para onde está levando você ?
-
-### "-" + "não" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Eu - não - vou - morrer.
-  - Eu faria - não faria?
-  - Eu não posso sair pelado - não na minha idade.
-
-### "-" + "se" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Acalme- se, Ethel.
-  - Adèle, sente- se, você já serviu todo mundo.
-  - Buckley, sente- se.
 
 ### "isso" + "?" (4 occurrences)
 - Predicted: None
@@ -110,6 +110,14 @@ Accuracy: 99.97%
   - O que está fazendo aqui ?
   - Que faz aqui ?
 
+### "dizer" + "?" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O que quer dizer ?
+  - O que você tem a dizer ?
+  - Você pode me dizer ?
+
 ### "foi" + "?" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -125,6 +133,14 @@ Accuracy: 99.97%
   - O que eles estão fazendo lá ?
   - Por que não fazem alguma reforma lá ?
   - Vamos lá ?
+
+### "tudo" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mas ele não está bebendo de tudo - você sabe.
+  - Mas primeiro de tudo - sou uma mulher.
+  - Odiamos tudo -Ah, que sentimento é esse?
 
 ### "," + "####" (2 occurrences)
 - Predicted: None
@@ -147,12 +163,26 @@ Accuracy: 99.97%
   - E por favor não tenho ninguém - A cadeira!
   - Você falou - A cidade é a força, e todo mundo aqui é fraco.
 
+### "-" + "Bem" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - CONTRATANDO HOSTESS - Bem-vindo!
+  - Sempre trabalho duro à noite - Bem, até muito tarde.
+
 ### "-" + "Meu" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Benson, - Meu capitão.
   - HAVERÁ OUTROS IMPACTOS - Meu Deus!
+
+### "-" + "te" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Se não o quiser - te ensinaremos se não puder - te forçaremos.
+  - Se não o quiser - te ensinaremos se não puder - te forçaremos.
 
 ### "Deus" + "?" (2 occurrences)
 - Predicted: None
@@ -266,6 +296,34 @@ Accuracy: 99.97%
   - Mas o que você fazendo ?
   - O que está fazendo ?
 
+### "homem" + "." (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ele é o seu homem .
+  - Seu pai era um grande homem .
+
+### "jipe" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O que dirige Asgar de jipe ?
+  - Se você não precisa do jipe ?
+
+### "lá" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Nós não chegaremos lá - não bastante abasteça em tanque!
+  - Rebecca, estarei lá - e como!
+
+### "ninguém" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - E por favor não tenho ninguém - A cadeira!
+  - Ele não sabe ninguém - nem Rosa nem eu, compreendido?
+
 ### "novo" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -336,6 +394,13 @@ Accuracy: 99.97%
   - Este Shiva não é para si .
   - Para si .
 
+### "é" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Quem é ?
+  - Você sabe o você é ?
+
 ### "#" + "Evento" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -354,11 +419,11 @@ Accuracy: 99.97%
 - Examples:
   - Versos - Arseni TARKOVSKI ditos por ele mesmo.
 
-### "-" + "Bem" (1 occurrences)
+### "-" + "Beleza" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Sempre trabalho duro à noite - Bem, até muito tarde.
+  - QUATRO RESPOSTAS - Beleza!
 
 ### "-" + "Como" (1 occurrences)
 - Predicted: None
@@ -366,11 +431,35 @@ Accuracy: 99.97%
 - Examples:
   - Atropelamos o veado e a pata - Como se diz?
 
+### "-" + "Cuide" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tchau - Cuide-se.
+
+### "-" + "Dia" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Darjeeling - Dia de hoje.
+
 ### "-" + "Dê" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Eu não estou amaldiçoando a minha reputação - Dê uma cadeirada!
+
+### "-" + "Estação" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - CHUVA FORTE - Estação de Metrô de Shibuya.
+
+### "-" + "Está" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - HISTÓRICO DE TRANSAÇÕES - Está bem longe de casa.
 
 ### "-" + "Impossível" (1 occurrences)
 - Predicted: None
@@ -384,6 +473,24 @@ Accuracy: 99.97%
 - Examples:
   - Você selvagem nômade, - Mostre-me como fazer uma festa.
 
+### "-" + "Muito" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - REGISTRO DE VISITAS - Muito obrigado por virem!
+
+### "-" + "Nagi" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - SALA DE ENTREVISTA - Nagi.
+
+### "-" + "Nem" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - K&A PLANEJAMENTO - Nem a pau.
+
 ### "-" + "Por" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -395,6 +502,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - O JUDEU - Presas, certo.
+
+### "-" + "Quatro" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - LIVROS PREPARATÓRIOS - Quatro anos jogados fora.
 
 ### "-" + "Que" (1 occurrences)
 - Predicted: None
@@ -419,6 +532,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Por eu estar apaixonada - ai - mas não de ti!
+
+### "-" + "ao" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ou pior, um que - ignora - ao Acordo.
 
 ### "-" + "avança" (1 occurrences)
 - Predicted: None
@@ -456,11 +575,23 @@ Accuracy: 99.97%
 - Examples:
   - Um banho em cada apartamento - estas são as normas.
 
+### "-" + "está" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Escuta, certo que não é da minha conta, mas quero te dizer - está me ouvindo?
+
 ### "-" + "eu" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Diga - eu posso ver isso rapidinho?
+
+### "-" + "ignora" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ou pior, um que - ignora - ao Acordo.
 
 ### "-" + "isto" (1 occurrences)
 - Predicted: None
@@ -468,17 +599,35 @@ Accuracy: 99.97%
 - Examples:
   - Ladrão - isto sou eu!
 
+### "-" + "lá" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Me ajude a adquirir um pouco de vinho - lá não é partido muito.
+
 ### "-" + "mas" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Por eu estar apaixonada - ai - mas não de ti!
 
+### "-" + "milagrosamente" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Biocomplexo - milagrosamente atrasa o processo de envelhecimento.
+
 ### "-" + "morrer" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Eu - não - vou - morrer.
+
+### "-" + "nem" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ele não sabe ninguém - nem Rosa nem eu, compreendido?
 
 ### "-" + "no" (1 occurrences)
 - Predicted: None
@@ -504,6 +653,12 @@ Accuracy: 99.97%
 - Examples:
   - Pazu - olha só.
 
+### "-" + "perda" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Causa da morte - perda total da força vital.
+
 ### "-" + "pára" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -515,6 +670,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Rani - rainha!
+
+### "-" + "sou" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mas primeiro de tudo - sou uma mulher.
 
 ### "-" + "tirando" (1 occurrences)
 - Predicted: None
@@ -534,6 +695,18 @@ Accuracy: 99.97%
 - Examples:
   - Tenho uma ideia - vamos sair hoje?
 
+### "-" + "vidas" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ali, o tio não tinha encontrado uma, mas duas salva - vidas.
+
+### "-" + "você" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mas ele não está bebendo de tudo - você sabe.
+
 ### "-" + "vou" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -545,6 +718,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Mas não serviria para comer - É a música que estavam cantando.
+
+### "-" + "água" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hoje meu professor recordou sua primeira palavra - água.
 
 ### "--" + "-" (1 occurrences)
 - Predicted: None
@@ -612,11 +791,23 @@ Accuracy: 99.97%
 - Examples:
   - Assassino !
 
+### "Atenda" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Atenda !
+
 ### "Avançamos" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Avançamos .
+
+### "Barfi" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Como uma parte do Barfi , a lua está na metade.
 
 ### "Barfi" + "?" (1 occurrences)
 - Predicted: None
@@ -635,6 +826,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Viva a Mãe Bharat !
+
+### "Biocomplexo" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Biocomplexo - milagrosamente atrasa o processo de envelhecimento.
 
 ### "Bixio" + "?" (1 occurrences)
 - Predicted: None
@@ -714,6 +911,12 @@ Accuracy: 99.97%
 - Examples:
   - Danny !
 
+### "Darjeeling" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Darjeeling - Dia de hoje.
+
 ### "De" + "Caridade" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -767,6 +970,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Dubeau, Dubon, Dubonnet !
+
+### "ENTREVISTA" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - SALA DE ENTREVISTA - Nagi.
 
 ### "ESPlÃO" + "-" (1 occurrences)
 - Predicted: None
@@ -822,6 +1031,12 @@ Accuracy: 99.97%
 - Examples:
   - Como você sabe, o meu Baile do Bem, o #EventoDeCaridadeDoAno está chegando.
 
+### "FORTE" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - CHUVA FORTE - Estação de Metrô de Shibuya.
+
 ### "Frith" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -833,6 +1048,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Mas, afinal de contas, meus homens foram úteis a Garibaldi .
+
+### "HOSTESS" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - CONTRATANDO HOSTESS - Bem-vindo!
 
 ### "IMPACTOS" + "-" (1 occurrences)
 - Predicted: None
@@ -936,6 +1157,12 @@ Accuracy: 99.97%
 - Examples:
   - Là !
 
+### "METEOROLÓGICO" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - LABORATÓRIO METEOROLÓGICO - Não temos interesse.
+
 ### "Manderley" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1002,6 +1229,12 @@ Accuracy: 99.97%
 - Examples:
   - Ok, ok, senhor NRI .
 
+### "Namaste" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Namaste !
+
 ### "Negus" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1014,11 +1247,23 @@ Accuracy: 99.97%
 - Examples:
   - Não !
 
+### "Não" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Não , ele mordeu a si mesmo.
+
 ### "Ok" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ok -Não diga Ok, se não me acredita.
+
+### "Olá" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Olá , amigo vampiro.
 
 ### "Onde" + "?" (1 occurrences)
 - Predicted: None
@@ -1026,11 +1271,29 @@ Accuracy: 99.97%
 - Examples:
   - Onde ?
 
+### "PLANEJAMENTO" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - K&A PLANEJAMENTO - Nem a pau.
+
+### "PREPARATÓRIOS" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - LIVROS PREPARATÓRIOS - Quatro anos jogados fora.
+
 ### "Padre" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Vamos Padre !
+
+### "Para" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Para !
 
 ### "Parabéns" + "!" (1 occurrences)
 - Predicted: None
@@ -1056,6 +1319,12 @@ Accuracy: 99.97%
 - Examples:
   - Eu já sabia, Pepa .
 
+### "Piedade" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Piedade !
+
 ### "Preso" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1079,6 +1348,18 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - O estacionamento cobra R$20 por hora.
+
+### "RESPOSTAS" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - QUATRO RESPOSTAS - Beleza!
+
+### "Ramadhir Singh" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Seu nome é Ramadhir Singh .
 
 ### "Rani" + "-" (1 occurrences)
 - Predicted: None
@@ -1146,17 +1427,41 @@ Accuracy: 99.97%
 - Examples:
   - Eu quero falar com Sheeta - a sós.
 
+### "Sim" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sim -Tudo bem.
+
 ### "Sim" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Sim .
 
+### "Sim" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Sim ?
+
+### "TRANSAÇÕES" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - HISTÓRICO DE TRANSAÇÕES - Está bem longe de casa.
+
 ### "TV" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Pepa, acendo a TV ?
+
+### "Tchau" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tchau - Cuide-se.
 
 ### "Ter" + "ei" (1 occurrences)
 - Predicted: Space
@@ -1182,17 +1487,41 @@ Accuracy: 99.97%
 - Examples:
   - Trotiskistas -Maoistas.
 
+### "Tínha" + "mos" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tínhamos duas cartas pedindo resgate.
+
 ### "Uma" + "vez" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Umavez, sua mãe disse a ele que, se ele pedisse, você viria.
 
+### "Uuh" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uuh , uh , devolva meu corpo.
+
+### "VISITAS" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - REGISTRO DE VISITAS - Muito obrigado por virem!
+
 ### "Vamos" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Vamos !
+
+### "Vamos" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vamos , Vamos!
 
 ### "Vamos" + "IOúltlmo" (1 occurrences)
 - Predicted: Space
@@ -1260,6 +1589,12 @@ Accuracy: 99.97%
 - Examples:
   - Que acha ?
 
+### "aconteceu" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O que aconteceu -!
+
 ### "afogou" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1301,6 +1636,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Ligaram pro Townsend… da Joalheria Lafayette.
+
+### "ali" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O Giz está ali !
 
 ### "alterado" + "." (1 occurrences)
 - Predicted: None
@@ -1380,6 +1721,12 @@ Accuracy: 99.97%
 - Examples:
   - Quer dizer que ela assusta ?
 
+### "assustado" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Meu filho está assustado ?
+
 ### "atraso" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1457,6 +1804,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Quem está no carro ?
+
+### "casa" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Em casa -?
 
 ### "casamento" + "?" (1 occurrences)
 - Predicted: None
@@ -1584,11 +1937,23 @@ Accuracy: 99.97%
 - Examples:
   - De jeito nenhum, não quero ver esse desconhecido .
 
+### "deseja" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O que é que o deseja ?
+
 ### "desista" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Não desista !
+
+### "deu" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Quem deu ?
 
 ### "deus" + "?" (1 occurrences)
 - Predicted: None
@@ -1626,11 +1991,11 @@ Accuracy: 99.97%
 - Examples:
   - O que está dizendo ?
 
-### "dizer" + "?" (1 occurrences)
+### "dizer" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - O que quer dizer ?
+  - Escuta, certo que não é da minha conta, mas quero te dizer - está me ouvindo?
 
 ### "dizia" + ":" (1 occurrences)
 - Predicted: Space
@@ -1686,6 +2051,12 @@ Accuracy: 99.97%
 - Examples:
   - Não empurrel -Eu cheguei antes!
 
+### "endereço" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Por que não me deu, seu nome e endereço ?
+
 ### "entediado" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1704,11 +2075,23 @@ Accuracy: 99.97%
 - Examples:
   - Não entrou lá, entrou ?
 
+### "envergonhado" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Você está se sentindo envergonhado -!
+
 ### "errado" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - OK, você disse número errado .
+
+### "escola" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O que você vai fazer , indo para a escola ?
 
 ### "espacial" + "?" (1 occurrences)
 - Predicted: None
@@ -1740,6 +2123,18 @@ Accuracy: 99.97%
 - Examples:
   - Quanto tempo é preciso para ir ao estádio ?
 
+### "estão" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Você recorda, onde nossos povos estão ?
+
+### "eu" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - E eu ?
+
 ### "excelente" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1758,11 +2153,23 @@ Accuracy: 99.97%
 - Examples:
   - Que idioma estamos falando ?
 
+### "falar" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vá para fora e falar .
+
 ### "falecido" + "Dietrison" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Estas fotos são do falecidoDietrison?
+
+### "falou" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Você falou , eu posso falar?
 
 ### "falou" + "-" (1 occurrences)
 - Predicted: None
@@ -1788,6 +2195,12 @@ Accuracy: 99.97%
 - Examples:
   - Ligaram pro Townsend… da Joalheria Lafayette.
 
+### "fazer" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - O que você vai fazer , indo para a escola ?
+
 ### "fecha" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1805,6 +2218,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ivan nunca te disse que tinha um filho ?
+
+### "foda" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Que se foda .
 
 ### "fora" + "?" (1 occurrences)
 - Predicted: None
@@ -1866,12 +2285,6 @@ Accuracy: 99.97%
 - Examples:
   - Um homem - um homem de verdade!
 
-### "homem" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ele é o seu homem .
-
 ### "horror" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1895,6 +2308,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Estou cheio de novas ideias .
+
+### "ignora" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ou pior, um que - ignora - ao Acordo.
 
 ### "impedir" + "?" (1 occurrences)
 - Predicted: None
@@ -1956,17 +2375,23 @@ Accuracy: 99.97%
 - Examples:
   - Seu lamen ?
 
+### "liberdade" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - É isso, que significa liberdade ?
+
+### "lo" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Não matá-lo .
+
 ### "love" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Love, love, love - Você fez isso?
-
-### "lá" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Rebecca, estarei lá - e como!
 
 ### "macarrão" + "?" (1 occurrences)
 - Predicted: None
@@ -2076,11 +2501,23 @@ Accuracy: 99.97%
 - Examples:
   - Para se divertir de montão -Sua sabedoria para nos salvar?
 
+### "morte" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Causa da morte - perda total da força vital.
+
 ### "mortos" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Os seus três maridos estão mortos ?
+
+### "mova" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Não mova .
 
 ### "mudar" + "-" (1 occurrences)
 - Predicted: None
@@ -2118,6 +2555,12 @@ Accuracy: 99.97%
 - Examples:
   - Eu nem sempre pedi leite à mãe .
 
+### "mãe" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Como é sua mãe ?
+
 ### "médico" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2136,6 +2579,12 @@ Accuracy: 99.97%
 - Examples:
   - Vá tomar no cu naAlemanha, você e o bigodudo.
 
+### "negócios" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Mas havia muito poucos que entendem de negócios .
+
 ### "nele" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2147,12 +2596,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Você que me meteu nessa - não se esqueça disso.
-
-### "ninguém" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - E por favor não tenho ninguém - A cadeira!
 
 ### "noite" + "-" (1 occurrences)
 - Predicted: None
@@ -2196,11 +2639,35 @@ Accuracy: 99.97%
 - Examples:
   - Mas ele pode ver este mundo diferente de qualquer um de nós .
 
+### "o" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Jogue o ?
+
+### "olhando" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Onde você está olhando ?
+
+### "olhos" + "." (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Eu gosto mais de seus olhos .
+
 ### "onde" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Esta porta conduz a onde ?
+
+### "operar" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Agora operar !
 
 ### "ordem" + "," (1 occurrences)
 - Predicted: None
@@ -2214,11 +2681,29 @@ Accuracy: 99.97%
 - Examples:
   - Estou ouvindo -caiu e se rompeu a perna.
 
+### "palavra" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hoje meu professor recordou sua primeira palavra - água.
+
 ### "para" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Ainda não está pronto para ?
+
+### "partiu" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Express do vale já partiu ?
+
+### "passagem" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tem passagem ?
 
 ### "pata" + "-" (1 occurrences)
 - Predicted: None
@@ -2292,6 +2777,18 @@ Accuracy: 99.97%
 - Examples:
   - Vou até ao centro levo um presente .
 
+### "puder" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Se não o quiser - te ensinaremos se não puder - te forçaremos.
+
+### "que" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ou pior, um que - ignora - ao Acordo.
+
 ### "que" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2303,6 +2800,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Pergunte a quem ?
+
+### "quiser" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Se não o quiser - te ensinaremos se não puder - te forçaremos.
 
 ### "quiserem" + "." (1 occurrences)
 - Predicted: None
@@ -2382,6 +2885,12 @@ Accuracy: 99.97%
 - Examples:
   - Quem quer salsicha ?
 
+### "salva" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ali, o tio não tinha encontrado uma, mas duas salva - vidas.
+
 ### "salvador" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2399,6 +2908,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Apaixonou-se ?
+
+### "sei" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Eu não sei , eu não sei, eu não sei, eu não sei.
 
 ### "sempre" + "-" (1 occurrences)
 - Predicted: None
@@ -2460,6 +2975,12 @@ Accuracy: 99.97%
 - Examples:
   - Aqui, talvez ?
 
+### "também" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Você também , está lhe dando um emprego!
+
 ### "também" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2496,11 +3017,17 @@ Accuracy: 99.97%
 - Examples:
   - A melhor coisa do meu trabalho - Não preciso fazer decisões.
 
-### "tudo" + "-" (1 occurrences)
+### "tratar" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Odiamos tudo -Ah, que sentimento é esse?
+  - Você queria tratar -me para a minha doença.
+
+### "trazer" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Então, o que eu deveria trazer -?
 
 ### "tímidos" + "?" (1 occurrences)
 - Predicted: None
@@ -2513,6 +3040,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Eu quero que você ache ele… e que siga ele.
+
+### "uh" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Uuh , uh , devolva meu corpo.
 
 ### "uso" + "." (1 occurrences)
 - Predicted: None
@@ -2550,11 +3083,23 @@ Accuracy: 99.97%
 - Examples:
   - Talvez foi um homem, uma vez - no tempo da minha avó.
 
+### "vinho" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Me ajude a adquirir um pouco de vinho - lá não é partido muito.
+
 ### "visse" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Queria que Charlie me visse .
+
+### "você" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Parabéns pra você -Você matou o pai do Acerola?
 
 ### "você" + "e" (1 occurrences)
 - Predicted: Space
@@ -2598,11 +3143,11 @@ Accuracy: 99.97%
 - Examples:
   - ÉJade Fox!
 
-### "é" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
+### "…" + "tudo" (1 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - Você sabe o você é ?
+  - Minha família, trabalho…tudo.
 
 ### "… e q" + "u" (1 occurrences)
 - Predicted: Space
