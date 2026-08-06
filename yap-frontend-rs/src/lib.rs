@@ -5628,10 +5628,10 @@ mod tests {
     /// then apply the resulting `CompletePlacementTest` event.
     ///
     /// The split is by ease (the regression's x-axis), not by the order
-    /// `get_placement_test` returns: word selection binary-searches ease over
-    /// a frequency-sorted list, so cognate bonuses can make the returned
-    /// order non-monotone in ease — and an ease-interleaved known/unknown
-    /// split is one no isotonic regression could separate.
+    /// `get_placement_test` returns: it walks descending target *probabilities*
+    /// and cognate bonuses make ease non-monotone in that order — and an
+    /// ease-interleaved known/unknown split is one no isotonic regression
+    /// could separate.
     fn apply_placement_test_split(deck: Deck) -> (Deck, Vec<String>, Vec<String>) {
         use crate::{Deck, DeckState};
         use weapon::AppState;

@@ -12,24 +12,25 @@ pub struct PlacementTestWord {
 
 /// Extract a single heteronym from a gram, if it's a single-word gram.
 /// Returns None for multi-word grams.
+///
+/// The whole gram must be one atom, not merely contain one *heteronym*.
+/// Counting heteronyms alone lets a phrase whose other atoms are literals or
+/// proper nouns through — French has `doux Jésus`, which would be offered to
+/// the learner as the word "doux" while carrying the phrase's ease (6.29)
+/// rather than the word's own (4.29). The caller pairs the returned heteronym
+/// with the entry's `Frequency`, so those two must describe the same thing.
 fn extract_heteronym(
     spur_gram: &language_utils::SpurGram,
     gram_rodeo: &lasso::RodeoReader<language_utils::Gram<Spur>>,
 ) -> Option<Heteronym<Spur>> {
     let gram = gram_rodeo.resolve(spur_gram);
-    let mut heteronym_iter = gram.atoms().iter().filter_map(|atom| {
-        if let Atom::Tok(word) = atom {
-            word.heteronym()
-        } else {
-            None
-        }
-    });
-    let first = heteronym_iter.next()?;
-    // Only single-heteronym grams are useful for placement test
-    if heteronym_iter.next().is_some() {
+    let [atom] = gram.atoms() else {
         return None;
-    }
-    Some(*first)
+    };
+    let Atom::Tok(word) = atom else {
+        return None;
+    };
+    word.heteronym().copied()
 }
 
 impl Context {
@@ -106,44 +107,38 @@ impl Context {
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 impl Deck {
-    /// Helper function to find the heteronym with frequency_score closest to the target value
-    /// Uses binary search since gram_frequencies is sorted by frequency (descending)
-    /// Returns None if all words at that frequency are excluded
+    /// Find the placement-test-eligible heteronym whose `ease` is closest to
+    /// `target_ease`. Returns None if no eligible word exists.
+    ///
+    /// This scans the whole frequency list instead of binary searching it.
+    /// `gram_frequencies.entries` is ordered by *count* descending, but `ease`
+    /// is not a function of count: single-atom cognates get a flat bonus, and a
+    /// multi-atom gram inherits the ease of its hardest component. In French
+    /// that leaves ~39% of adjacent pairs inverted with respect to `ease`, so a
+    /// binary search keyed on `ease` lands at an arbitrary index — it used to
+    /// return a word 3.4 ease away from the target when one within 0.02
+    /// existed, which silently collapsed the placement test to a narrow
+    /// low-frequency band.
+    ///
+    /// Candidates are also required to round-trip through `lookup_word`. The
+    /// caller only returns the heteronym's surface string, and the answer is
+    /// later scored by looking that string back up — which resolves to the
+    /// form's *most common* heteronym. Offering a minority heteronym of an
+    /// ambiguous form (French `nains` has entries at ease 0.69 and 1.79) would
+    /// therefore select at one ease and score at another, quietly feeding the
+    /// knowledge regression a point it never asked for.
     pub(crate) fn find_heteronym_near_frequency_score_for_placement_test(
         &self,
-        target_ln_freq: f32,
+        target_ease: f32,
         excluded_lemmas: &std::collections::HashSet<Spur>,
     ) -> Option<(Heteronym<Spur>, language_utils::Frequency)> {
         let frequencies = &self.context.language_pack.gram_frequencies.entries;
         let gram_rodeo = &self.context.language_pack.gram_rodeo;
-        if frequencies.is_empty() {
-            return None;
-        }
+        let string_rodeo = &self.context.language_pack.string_rodeo;
 
-        // Binary search to find the closest frequency_score
-        // Note: frequencies are sorted descending, so ln_frequencies are also descending
-        let mut left: usize = 0;
-        let mut right = frequencies.len();
-
-        while left < right {
-            let mid = (left + right) / 2;
-            let (_, freq) = frequencies.get_index(mid)?;
-            let mid_ln_freq = freq.ease;
-
-            if mid_ln_freq > target_ln_freq {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
-        }
-
-        // Now left is the insertion point. Check neighbors to find closest non-excluded word
-        let start = left.saturating_sub(50);
-        let end = (left + 50).min(frequencies.len());
-
-        (start..end)
-            .filter_map(|i| frequencies.get_index(i))
-            .filter_map(|(gram_or_phrase, freq)| {
+        frequencies
+            .iter()
+            .filter_map(|(gram_or_phrase, _freq)| {
                 let heteronym = extract_heteronym(gram_or_phrase, gram_rodeo)?;
                 if excluded_lemmas.contains(&heteronym.lemma) {
                     return None;
@@ -151,8 +146,20 @@ impl Deck {
                 if !self.context.is_word_good_for_placement_test(&heteronym) {
                     return None;
                 }
-                let distance = (freq.ease - target_ln_freq).abs();
-                Some((heteronym, *freq, distance))
+                // Rank on the frequency `lookup_word` will return for this
+                // surface form, not on this entry's own. The list is only an
+                // enumeration of candidates: a form can appear in it more than
+                // once (French `nains` has entries at ease 0.69 and 1.79), and
+                // scoring always goes through `lookup_word`. Taking the ease
+                // from the same place the scorer does makes the mismatch
+                // unrepresentable rather than merely unlikely.
+                let word = string_rodeo.resolve(&heteronym.word);
+                let (resolved, resolved_freq) = self.context.lookup_word(word)?;
+                if resolved != heteronym {
+                    return None;
+                }
+                let distance = (resolved_freq.ease - target_ease).abs();
+                Some((resolved, resolved_freq, distance))
             })
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal))
             .map(|(lex, freq, _)| (lex, freq))
@@ -347,20 +354,18 @@ impl Deck {
             0.99, 0.90, 0.80, 0.70, 0.60, 0.50, 0.40, 0.30, 0.20, 0.10, 0.01,
         ];
 
-        // Invert to get ln_frequencies for each target probability
+        // Invert to get the target ease for each target probability
         let mut result_words = Vec::new();
 
         for &target_prob in &target_probabilities {
             // Invert the regression to find x for this y value
-            if let Some(target_ln_freq) = smooth_regression.invert(target_prob) {
+            if let Some(target_ease) = smooth_regression.invert(target_prob) {
                 // Make sure it's within bounds
-                if target_ln_freq >= least_common_freq.ease
-                    && target_ln_freq <= most_common_freq.ease
-                {
-                    // Find a heteronym near this frequency_score using binary search
+                if target_ease >= least_common_freq.ease && target_ease <= most_common_freq.ease {
+                    // Find the eligible heteronym closest to this ease
                     if let Some((heteronym, _freq)) = self
                         .find_heteronym_near_frequency_score_for_placement_test(
-                            target_ln_freq,
+                            target_ease,
                             &excluded_lemmas,
                         )
                     {
@@ -396,6 +401,131 @@ impl Deck {
 
 #[cfg(test)]
 mod tests {
+
+    /// The placement test picks each word by inverting a regression to a target
+    /// ease and then looking up the closest eligible word. When that lookup is
+    /// broken it does not fail — it silently returns words clustered in a
+    /// narrow low-frequency band, which is useless for placing a learner but
+    /// otherwise invisible. (It was once a binary search keyed on `ease` over a
+    /// list sorted by *count*; the two orders disagree on ~39% of adjacent
+    /// pairs, so the search landed at an arbitrary index.) Assert the spread
+    /// directly, so a regression here reads as a selection bug rather than
+    /// surfacing downstream as a regression-calibration failure.
+    #[test]
+    fn test_placement_test_words_span_the_frequency_range() {
+        use super::extract_heteronym;
+        use crate::Deck;
+
+        let deck = Deck::default();
+        let entries = &deck.context.language_pack.gram_frequencies.entries;
+        if entries.is_empty() {
+            return;
+        }
+        let gram_rodeo = &deck.context.language_pack.gram_rodeo;
+
+        // The ease the selection is anchored to: the most common single-word gram.
+        let most_common_ease = entries
+            .iter()
+            .find_map(|(gop, freq)| extract_heteronym(gop, gram_rodeo).map(|_| freq.ease))
+            .expect("corpus should contain at least one single-word gram");
+
+        let words = deck.get_placement_test(vec![], vec![]);
+        assert!(
+            words.len() >= 6,
+            "expected a usable number of placement words, got {}",
+            words.len()
+        );
+
+        let eases: Vec<f32> = words
+            .iter()
+            .filter_map(|w| deck.context.lookup_word(&w.word).map(|(_, f)| f.ease))
+            .collect();
+        let max_ease = eases.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+        let min_ease = eases.iter().copied().fold(f32::INFINITY, f32::min);
+
+        // The easiest word offered has to be a genuinely common one. The very
+        // most common words are deliberately excluded from the test, so some
+        // gap is expected — but not the ~4.8 (≈120x rarer) that the broken
+        // search produced.
+        assert!(
+            max_ease >= most_common_ease - 2.5,
+            "placement test's easiest word (ease={max_ease:.3}) should be near the most \
+             common word (ease={most_common_ease:.3}); a large gap means word selection \
+             is not finding words near its target ease"
+        );
+        assert!(
+            max_ease - min_ease >= 4.0,
+            "placement test should span a wide difficulty range; got [{min_ease:.3}, {max_ease:.3}]"
+        );
+    }
+
+    /// The property the selection actually owes its caller: whatever it returns
+    /// must be the *closest* eligible candidate to the requested ease. This is
+    /// threshold-free and data-independent, so unlike the spread test above it
+    /// stays meaningful as the corpus changes.
+    #[test]
+    fn test_placement_test_selection_returns_the_nearest_eligible_word() {
+        use super::extract_heteronym;
+        use crate::Deck;
+
+        let deck = Deck::default();
+        let entries = &deck.context.language_pack.gram_frequencies.entries;
+        if entries.is_empty() {
+            return;
+        }
+        let gram_rodeo = &deck.context.language_pack.gram_rodeo;
+        let excluded = std::collections::HashSet::new();
+
+        for target in [9.0f32, 8.0, 6.5, 5.0, 3.5, 2.0, 0.5] {
+            let (chosen, chosen_freq) = deck
+                .find_heteronym_near_frequency_score_for_placement_test(target, &excluded)
+                .expect("corpus should always offer some eligible word");
+            let chosen_distance = (chosen_freq.ease - target).abs();
+
+            // Brute force the same question over every entry, applying the same
+            // eligibility rules the helper does.
+            let best = entries
+                .iter()
+                .filter_map(|(gop, _freq)| {
+                    let h = extract_heteronym(gop, gram_rodeo)?;
+                    if !deck.context.is_word_good_for_placement_test(&h) {
+                        return None;
+                    }
+                    let w = deck.context.language_pack.string_rodeo.resolve(&h.word);
+                    let (resolved, resolved_freq) = deck.context.lookup_word(w)?;
+                    (resolved == h).then(|| (resolved_freq.ease - target).abs())
+                })
+                .fold(f32::INFINITY, f32::min);
+
+            assert!(
+                (chosen_distance - best).abs() < 1e-6,
+                "target {target}: selection returned a word {chosen_distance:.4} away \
+                 (ease {:.4}) when one {best:.4} away exists",
+                chosen_freq.ease,
+            );
+
+            // The caller hands the bare surface string back to `lookup_word` to
+            // score the answer, so the ease we selected on has to be the ease
+            // that lookup returns — otherwise the placement test shows one word
+            // and scores another.
+            let word = deck
+                .context
+                .language_pack
+                .string_rodeo
+                .resolve(&chosen.word);
+            let looked_up = deck
+                .context
+                .lookup_word(word)
+                .map(|(_, f)| f.ease)
+                .expect("selected word should resolve");
+            assert!(
+                (looked_up - chosen_freq.ease).abs() < 1e-6,
+                "target {target}: selected {word:?} at ease {:.4}, but looking the word \
+                 up gives {looked_up:.4} — it would be scored as a different heteronym",
+                chosen_freq.ease,
+            );
+        }
+    }
 
     #[test]
     fn test_placement_test() {
