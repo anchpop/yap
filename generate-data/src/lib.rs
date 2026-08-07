@@ -98,6 +98,7 @@ pub mod pronunciation_patterns;
 pub mod pronunciations;
 pub mod proper_noun_definitions;
 pub mod read_anki;
+pub mod slot_analysis;
 pub mod target_sentences;
 pub mod tatoeba;
 pub mod tokenize;

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2794442
-Total errors: 2833
+Total predictions: 2812015
+Total errors: 2835
 Accuracy: 99.90%
 
 ## Error Patterns (sorted by frequency)
@@ -3027,6 +3027,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Sparare - tipo cacciare?
+
+### "-" + "tutti" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - E questi sono i documenti dei prigionieri - tutti falsi, naturalmente.
 
 ### "-" + "tutto" (1 occurrences)
 - Predicted: None
@@ -10149,6 +10155,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Fai presto !
+
+### "prigionieri" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - E questi sono i documenti dei prigionieri - tutti falsi, naturalmente.
 
 ### "professore" + "?" (1 occurrences)
 - Predicted: None

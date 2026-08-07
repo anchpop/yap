@@ -4,7 +4,7 @@ import type { AppContextType } from "@/App";
 import { TopPageLayout } from "@/components/TopPageLayout";
 import { Card } from "@/components/ui/card";
 import { useDeck } from "@/App";
-import { languageToBcp47 } from "@/lib/utils";
+import { languageToIso6391 } from "@/lib/utils";
 import { getMovieMetadata } from "@/lib/movie-cache";
 import { Poster } from "@/components/Poster";
 import type { Deck as DeckType } from "../../../yap-frontend-rs/pkg";
@@ -55,7 +55,7 @@ export function SentenceListsPage() {
           weapon.add_deck_event(event);
           navigate("/learn");
         };
-        const targetLanguageIso = languageToBcp47(targetLanguage);
+        const targetLanguageIso = languageToIso6391(targetLanguage);
 
         const movieStats = deck.get_movie_stats();
         const movieIds = movieStats.map((s) => s.id);

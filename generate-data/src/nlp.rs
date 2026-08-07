@@ -296,7 +296,7 @@ pub async fn generate_nlp_sentences(
     discontinuous_lemma_patterns: &BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
     tree_patterns: &BTreeMap<Gram<String>, lexide::matching::TreeNode>,
 ) -> Result<BTreeMap<String, language_utils::SentenceInfo>> {
-    use language_utils::{MultiwordTerms, SentenceInfo};
+    use language_utils::{MultiwordTermMatch, MultiwordTerms, SentenceInfo};
     use lexide::matching::{DependencyMatcher, DiscontinuousLemmaMatcher, LemmaMatcher, TreeNode};
 
     type PatternList<'a> = Vec<(Gram<String>, Vec<(&'a str, lexide::pos::PartOfSpeech)>)>;
@@ -345,20 +345,23 @@ pub async fn generate_nlp_sentences(
             tokens: tokens.clone(),
         };
 
-        // Find high confidence matches using lemma matcher
+        // Find high confidence matches using lemma matcher. The matched word
+        // indices are the contiguous token span.
         let lemma_matches = lemma_matcher.find_all(&tokenization);
-        let high_confidence: Vec<Gram<String>> = lemma_matches
+        let mut high_confidence: Vec<MultiwordTermMatch<Gram<String>>> = lemma_matches
             .iter()
-            .map(|m| m.matched_label.clone())
+            .map(|m| MultiwordTermMatch {
+                gram: m.matched_label.clone(),
+                matched_word_indices: (m.start..m.end).map(|i| i as u16).collect(),
+            })
             .collect();
 
         // Find matches using discontinuous lemma matcher
         // Gap ≤ 1 → high confidence, gap > 1 → low confidence
         let disc_matches = discontinuous_matcher.find_all(&tokenization);
-        let mut high_confidence = high_confidence;
-        let mut low_confidence: Vec<Gram<String>> = Vec::new();
+        let mut low_confidence: Vec<MultiwordTermMatch<Gram<String>>> = Vec::new();
         for m in &disc_matches {
-            if high_confidence.contains(&m.matched_label) {
+            if high_confidence.iter().any(|t| t.gram == m.matched_label) {
                 continue;
             }
             let max_gap = m
@@ -367,10 +370,14 @@ pub async fn generate_nlp_sentences(
                 .map(|w| w[1] - w[0] - 1)
                 .max()
                 .unwrap_or(0);
+            let term = MultiwordTermMatch {
+                gram: m.matched_label.clone(),
+                matched_word_indices: m.positions.iter().map(|&p| p as u16).collect(),
+            };
             if max_gap <= 1 {
-                high_confidence.push(m.matched_label.clone());
+                high_confidence.push(term);
             } else {
-                low_confidence.push(m.matched_label.clone());
+                low_confidence.push(term);
             }
         }
 
@@ -379,10 +386,17 @@ pub async fn generate_nlp_sentences(
             let dep_matches = dependency_matcher.find_all(&tree);
 
             for m in &dep_matches {
-                if !high_confidence.contains(&m.matched_label)
-                    && !low_confidence.contains(&m.matched_label)
+                if !high_confidence.iter().any(|t| t.gram == m.matched_label)
+                    && !low_confidence.iter().any(|t| t.gram == m.matched_label)
                 {
-                    low_confidence.push(m.matched_label.clone());
+                    low_confidence.push(MultiwordTermMatch {
+                        gram: m.matched_label.clone(),
+                        matched_word_indices: m
+                            .matched_token_indices
+                            .iter()
+                            .map(|&i| i as u16)
+                            .collect(),
+                    });
                 }
             }
         }

@@ -7,7 +7,7 @@ use language_utils::{
     SentenceGram, SentenceGrams,
 };
 use rustc_hash::FxHashMap;
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fs::File;
 use std::hash::Hash;
 use std::io::{BufRead, BufReader, BufWriter, Write};
@@ -842,6 +842,118 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("Failed to generate NLP sentences")?;
 
+        // Slot-loosened multiword matching: citation forms like "arriver à
+        // quelqu'un" contain placeholder words that never appear literally in
+        // real sentences, so their tree patterns above never fire. Compile
+        // loosened realizations of the argument slots (slot filled by any
+        // nominal, or realized as a clitic pronoun), match them, LLM-grade a
+        // sample per (term, realization), and merge the survivors.
+        {
+            use generate_data::slot_analysis::{self, SlotRealization};
+
+            let slot_specs = slot_analysis::analyze_slots(course, &multiword_terms_tokenizations)
+                .await
+                .context("Failed to analyze multiword term slots")?;
+
+            // Clitic realizations are high-precision; process them first so a
+            // sentence matching both realizations lands in high confidence.
+            let mut slot_patterns: Vec<(
+                &String,
+                Gram<String>,
+                SlotRealization,
+                lexide::matching::PatternNode,
+            )> = Vec::new();
+            for (term, specs) in &slot_specs {
+                let (Some(tokens), Some(lits)) = (
+                    multiword_terms_tokenizations.get(term),
+                    multiword_term_literals.get(term),
+                ) else {
+                    continue;
+                };
+                let (atoms, _) = language_utils::literals_to_atoms(lits, course.target_language);
+                let gram = Gram::from(atoms);
+                for (realization, pattern) in slot_analysis::compile_realizations(tokens, specs) {
+                    slot_patterns.push((term, gram.clone(), realization, pattern));
+                }
+            }
+            slot_patterns.sort_by_key(|(term, _, realization, _)| {
+                (std::cmp::Reverse(*realization), term.to_string())
+            });
+
+            let matches_per_pattern = slot_analysis::find_slot_matches(
+                &sentences_tokenizations,
+                &slot_patterns
+                    .iter()
+                    .map(|(_, _, _, p)| p.clone())
+                    .collect::<Vec<_>>(),
+            );
+
+            // Grade every pattern's sample in one batch, then keep only the
+            // realizations that clear the precision bar. Per-pattern detail
+            // goes to a TSV rather than the log — there are thousands of
+            // patterns for a language like English.
+            let grade_requests: Vec<slot_analysis::GradeRequest> = slot_patterns
+                .iter()
+                .zip(&matches_per_pattern)
+                .filter(|(_, matched)| !matched.is_empty())
+                .map(|((term, _, realization, _), matched)| {
+                    slot_analysis::GradeRequest::new((*term).clone(), *realization, matched)
+                })
+                .collect();
+            let graded = slot_analysis::grade_patterns(&grade_requests)
+                .await
+                .context("Failed to grade slot patterns")?;
+
+            let summary_path = target_language_dir.join("slot_patterns.tsv");
+            slot_analysis::write_summary(&summary_path, &graded)
+                .context("Failed to write slot pattern summary")?;
+
+            let kept_patterns: HashSet<(&str, SlotRealization)> = graded
+                .iter()
+                .filter(|g| g.kept())
+                .map(|g| (g.term.as_str(), g.realization))
+                .collect();
+
+            let mut kept_matches = 0usize;
+            for ((term, gram, realization, _), matched) in
+                slot_patterns.iter().zip(&matches_per_pattern)
+            {
+                if !kept_patterns.contains(&(term.as_str(), *realization)) {
+                    continue;
+                }
+                for slot_match in matched {
+                    let Some(info) = nlp_sentences.get_mut(&slot_match.sentence) else {
+                        continue;
+                    };
+                    let terms = &mut info.multiword_terms;
+                    if terms.high_confidence.iter().any(|t| t.gram == *gram)
+                        || terms.low_confidence.iter().any(|t| t.gram == *gram)
+                    {
+                        continue;
+                    }
+                    let term = language_utils::MultiwordTermMatch {
+                        gram: gram.clone(),
+                        matched_word_indices: slot_match
+                            .matched_token_indices
+                            .iter()
+                            .map(|&i| i as u16)
+                            .collect(),
+                    };
+                    match realization {
+                        SlotRealization::Clitic => terms.high_confidence.push(term),
+                        SlotRealization::Filled => terms.low_confidence.push(term),
+                    }
+                    kept_matches += 1;
+                }
+            }
+            println!(
+                "Slot patterns: {} graded, {} kept, {kept_matches} sentence matches added (details: {})",
+                graded.len(),
+                kept_patterns.len(),
+                summary_path.display(),
+            );
+        }
+
         // Helper closure: convert encoded sentences to SentenceGrams using gram vocabulary + NLP data
         let convert_to_grams = |sentences: &[(String, EncodedSentence)],
                                 nlp: &BTreeMap<String, language_utils::SentenceInfo>|
@@ -871,13 +983,13 @@ async fn main() -> anyhow::Result<()> {
                                 info.multiword_terms
                                     .high_confidence
                                     .iter()
-                                    .filter(|g| !sentence_gram_set.contains(g))
+                                    .filter(|m| !sentence_gram_set.contains(&m.gram))
                                     .cloned()
                                     .collect(),
                                 info.multiword_terms
                                     .low_confidence
                                     .iter()
-                                    .filter(|g| !sentence_gram_set.contains(g))
+                                    .filter(|m| !sentence_gram_set.contains(&m.gram))
                                     .cloned()
                                     .collect(),
                             )
@@ -1464,9 +1576,9 @@ async fn main() -> anyhow::Result<()> {
                 let before_high = sg.multiword_terms.len();
                 let before_low = sg.low_confidence_multiword_terms.len();
                 sg.multiword_terms
-                    .retain(|term| vocab_gram_set.contains(term));
+                    .retain(|term| vocab_gram_set.contains(&term.gram));
                 sg.low_confidence_multiword_terms
-                    .retain(|term| vocab_gram_set.contains(term));
+                    .retain(|term| vocab_gram_set.contains(&term.gram));
                 removed_high += before_high - sg.multiword_terms.len();
                 removed_low += before_low - sg.low_confidence_multiword_terms.len();
             }
@@ -1525,31 +1637,59 @@ async fn main() -> anyhow::Result<()> {
             // Create a set of words that appear in our frequency list for quick lookup
             let frequent_words = &frequent_heteronym_words;
 
-            let phonetics_file =
-                File::open(wikipron_path).context("Failed to open wikipron pronunciations file")?;
-            let phonetics_file = BufReader::new(phonetics_file);
-            let extra_phonetics_file = File::open(extra_pronunciations_path)
-                .context("Failed to open extra pronunciations file")?;
-            let extra_phonetics_file = BufReader::new(extra_phonetics_file);
-            let word_to_pronunciations = phonetics_file
-                .lines()
-                .chain(extra_phonetics_file.lines())
-                .filter_map(|line| {
-                    let line = line.unwrap();
-                    if line.trim().is_empty() {
-                        return None;
-                    }
-                    let (word, ipa) = line.split_once('\t').unwrap();
-                    let word = word.trim().to_lowercase();
-                    let ipa = ipa.trim().to_string();
-                    Some((word, ipa))
-                })
-                .filter(|(word, _)| frequent_words.contains(word))
+            let parse_pronunciation_lines = |file: File| {
+                BufReader::new(file)
+                    .lines()
+                    .filter_map(|line| {
+                        let line = line.unwrap();
+                        if line.trim().is_empty() {
+                            return None;
+                        }
+                        let (word, ipa) = line.split_once('\t').unwrap();
+                        Some((word.trim().to_lowercase(), ipa.trim().to_string()))
+                    })
+                    .filter(|(word, _)| frequent_words.contains(word))
+                    .collect::<Vec<_>>()
+            };
+            let wikipron_lines = parse_pronunciation_lines(
+                File::open(wikipron_path).context("Failed to open wikipron pronunciations file")?,
+            );
+            let extra_lines = parse_pronunciation_lines(
+                File::open(extra_pronunciations_path)
+                    .context("Failed to open extra pronunciations file")?,
+            );
+
+            let mut word_to_pronunciations: HashMap<String, BTreeSet<String>> = wikipron_lines
+                .into_iter()
                 .into_group_map()
                 .into_iter()
                 .map(|(word, pronunciations)| (word, pronunciations.into_iter().collect()))
                 .collect();
-            let word_to_pronunciation =
+
+            // Hand-curated entries always win: a word listed in
+            // extra_pronunciations.tsv takes its first listed entry as the main
+            // pronunciation (WikiPron entries are demoted to alternates) and
+            // skips LLM selection entirely.
+            let mut extra_by_word: BTreeMap<String, Vec<String>> = BTreeMap::new();
+            for (word, ipa) in extra_lines {
+                extra_by_word.entry(word).or_default().push(ipa);
+            }
+            let manual_pronunciations: BTreeMap<String, language_utils::Pronunciations> =
+                extra_by_word
+                    .into_iter()
+                    .map(|(word, pronunciations)| {
+                        let mut pronunciations = pronunciations.into_iter();
+                        let main = pronunciations.next().expect("at least one pronunciation");
+                        let others = pronunciations
+                            .chain(word_to_pronunciations.remove(&word).into_iter().flatten())
+                            .filter(|p| *p != main)
+                            .unique()
+                            .collect();
+                        (word, language_utils::Pronunciations { main, others })
+                    })
+                    .collect();
+
+            let mut word_to_pronunciation =
                 generate_data::pronunciations::select_common_pronunciations(
                     *course,
                     word_to_pronunciations,
@@ -1558,6 +1698,7 @@ async fn main() -> anyhow::Result<()> {
                 .context("Failed to select common pronunciations")?
                 .into_iter()
                 .collect::<BTreeMap<_, _>>();
+            word_to_pronunciation.extend(manual_pronunciations);
 
             // Build word -> max frequency map for sorting
             let word_max_freq: std::collections::HashMap<&str, u32> = gram_frequencies

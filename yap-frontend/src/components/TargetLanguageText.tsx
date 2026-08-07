@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Language } from "../../../yap-frontend-rs/pkg";
-import { languageToBcp47 } from "@/lib/utils";
+import { languageToLangAttr } from "@/lib/utils";
 
 export function TargetLanguageText({
   children,
@@ -9,5 +9,5 @@ export function TargetLanguageText({
   children: ReactNode;
   language: Language;
 }) {
-  return <span lang={languageToBcp47(language)}>{children}</span>;
+  return <span lang={languageToLangAttr(language)}>{children}</span>;
 }

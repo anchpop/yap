@@ -49,7 +49,7 @@ import { ReportIssueModal } from "@/components/challenges/ReportIssueModal";
 import { Simulate } from "@/components/Simulate";
 import { TranslationChallenge } from "@/components/challenges/TranslationChallenge";
 import { PronunciationChallenge } from "@/components/challenges/PronunciationChallenge";
-import { profilerOnRender, languageToBcp47 } from "@/lib/utils";
+import { profilerOnRender, languageToIso6391 } from "@/lib/utils";
 import { ResetPassword } from "@/pages/reset-password";
 import { ConfirmEmail } from "@/pages/confirm-email";
 import { AcceptInvite } from "@/pages/accept-invite";
@@ -486,7 +486,7 @@ function ReviewPage() {
                 <Tools deck={deck} />
                 <Movies
                   moviesWithMetadata={moviesWithMetadata}
-                  targetLanguageIso={languageToBcp47(targetLanguage)}
+                  targetLanguageIso={languageToIso6391(targetLanguage)}
                   deck={deck}
                 />
                 <Stats deck={deck} targetLanguage={targetLanguage} />
@@ -821,7 +821,7 @@ function Review({
   const nextDueCard = findNextDueCard(deck);
 
   // Filter movies to target language for sentence list selector
-  const targetLanguageIso = languageToBcp47(targetLanguage);
+  const targetLanguageIso = languageToIso6391(targetLanguage);
   const targetLanguageMovies = useMemo(() => {
     return moviesWithMetadata.filter(
       (m) => m.original_language === targetLanguageIso,

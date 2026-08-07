@@ -50,6 +50,7 @@ use language_utils::transcription_challenge;
 use language_utils::{Course, Language};
 use language_utils::{
     Gram, GramDefinition, Heteronym, MovieMetadataBasic, PronunciationGuide, WordType,
+    normalize_original_language,
 };
 use lasso::Spur;
 use opfs::persistent::{self};
@@ -1098,6 +1099,7 @@ fn comprehensible_sentence_from_spur(
             .multiword_terms
             .iter()
             .chain(sentence_grams.low_confidence_multiword_terms.iter())
+            .map(|term| &term.gram)
         {
             if !phrases_set.contains(phrase) {
                 unique_phrases.push(*phrase);
@@ -1420,6 +1422,7 @@ impl weapon::AppState for Deck {
                                 .multiword_terms
                                 .iter()
                                 .chain(encoded_sentence.low_confidence_multiword_terms.iter())
+                                .map(|term| &term.gram)
                             {
                                 remembered_grams.insert(*gram_spur);
                             }
@@ -1430,6 +1433,7 @@ impl weapon::AppState for Deck {
                                     .multiword_terms
                                     .iter()
                                     .chain(encoded_sentence.low_confidence_multiword_terms.iter())
+                                    .map(|term| &term.gram)
                                     .find(|gram_spur| {
                                         let resolved = context
                                             .language_pack
@@ -3208,7 +3212,7 @@ impl Deck {
                     && meta
                         .original_language
                         .as_deref()
-                        .is_some_and(|lang| lang == target_iso)
+                        .is_some_and(|lang| normalize_original_language(lang) == target_iso)
             })
             .filter_map(|(id, meta)| meta.rotten_tomatoes_score.map(|score| (id, score)))
             .max_by_key(|(_, score)| *score)
@@ -3240,7 +3244,13 @@ impl Deck {
                     id: movie_metadata.id.clone(),
                     title: movie_metadata.title.clone(),
                     year: movie_metadata.year,
-                    original_language: movie_metadata.original_language.clone(),
+                    // Normalized here as well as on ingest, so packs built
+                    // before that existed still hand the frontend a code it
+                    // can compare against `Language::iso_639_1`.
+                    original_language: movie_metadata
+                        .original_language
+                        .as_deref()
+                        .map(|code| normalize_original_language(code).to_owned()),
                     rotten_tomatoes_score: movie_metadata.rotten_tomatoes_score,
                 });
             }
@@ -5618,10 +5628,10 @@ mod tests {
     /// then apply the resulting `CompletePlacementTest` event.
     ///
     /// The split is by ease (the regression's x-axis), not by the order
-    /// `get_placement_test` returns: word selection binary-searches ease over
-    /// a frequency-sorted list, so cognate bonuses can make the returned
-    /// order non-monotone in ease — and an ease-interleaved known/unknown
-    /// split is one no isotonic regression could separate.
+    /// `get_placement_test` returns: it walks descending target *probabilities*
+    /// and cognate bonuses make ease non-monotone in that order — and an
+    /// ease-interleaved known/unknown split is one no isotonic regression
+    /// could separate.
     fn apply_placement_test_split(deck: Deck) -> (Deck, Vec<String>, Vec<String>) {
         use crate::{Deck, DeckState};
         use weapon::AppState;
@@ -6549,11 +6559,11 @@ mod tests {
                         SentenceGram::Obvious(g) => report(g, "obvious"),
                     }
                 }
-                for g in &sentence_grams.multiword_terms {
-                    report(g, "multiword");
+                for term in &sentence_grams.multiword_terms {
+                    report(&term.gram, "multiword");
                 }
-                for g in &sentence_grams.low_confidence_multiword_terms {
-                    report(g, "low-conf-multiword");
+                for term in &sentence_grams.low_confidence_multiword_terms {
+                    report(&term.gram, "low-conf-multiword");
                 }
             }
         }

@@ -572,6 +572,12 @@ struct TmdbMovie {
     title: String,
     release_date: Option<String>,
     poster_path: Option<String>,
+    /// Normalized to real ISO 639-1 on the way in, so freshly written
+    /// metadata never carries TMDB's `cn`.
+    #[serde(
+        default,
+        deserialize_with = "language_utils::deserialize_original_language"
+    )]
     original_language: Option<String>,
 }
 

@@ -470,6 +470,38 @@ pub enum FrequencySourceId {
     PimsleurLesson(PimsleurLesson),
 }
 
+/// Coerce a TMDB `original_language` into a real ISO 639-1 code.
+///
+/// TMDB reports `cn` for Cantonese — not an ISO 639-1 code at all (639-3 uses
+/// `yue`). For our purposes those films are Chinese: the Hong Kong canon
+/// (無間道, 重慶森林, 功夫, 花樣年華) is part of the Chinese courses' corpus and
+/// its subtitles are the Chinese text learners actually study. Left as `cn`
+/// they never equal [`Language::iso_639_1`], so 15 of the Chinese course's 45
+/// native films silently vanished from native-language movie lists.
+///
+/// Normalizing on the way in keeps every consumer's plain `==` correct. The
+/// alternative — teaching the Rust recommender and the TypeScript movie
+/// filter the same alias list — is how these two drifted apart to begin with.
+/// `cn` is the only non-ISO-639-1 code across the whole corpus.
+pub fn normalize_original_language(code: &str) -> &str {
+    match code {
+        "cn" => "zh",
+        other => other,
+    }
+}
+
+/// `deserialize_with` adapter applying [`normalize_original_language`]. Shared
+/// so the TMDB client normalizes on the way in too, rather than keeping a
+/// second copy of the alias list.
+pub fn deserialize_original_language<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    use serde::Deserialize;
+    Ok(Option::<String>::deserialize(deserializer)?
+        .map(|code| normalize_original_language(&code).to_owned()))
+}
+
 /// Basic movie metadata without poster bytes, for serialization to files
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
@@ -481,8 +513,10 @@ pub struct MovieMetadataBasic {
     pub title: String,
     /// Release year
     pub year: Option<u16>,
-    /// Original language of the movie (ISO 639-1 code, e.g., "en", "fr")
-    #[serde(default)]
+    /// Original language of the movie (ISO 639-1 code, e.g., "en", "fr").
+    /// Normalized on read, so consumers can compare it to
+    /// [`Language::iso_639_1`] directly — see [`normalize_original_language`].
+    #[serde(default, deserialize_with = "deserialize_original_language")]
     pub original_language: Option<String>,
     /// Rotten Tomatoes score (0-100)
     #[serde(default)]
@@ -620,10 +654,12 @@ pub struct SentenceGrams<G> {
     pub grams: Vec<SentenceGram<G>>,
     /// Whether the first letter should be capitalized when displaying
     pub capitalize_first: bool,
-    /// High-confidence multiword terms found in this sentence
-    pub multiword_terms: Vec<G>,
-    /// Low-confidence multiword terms found in this sentence
-    pub low_confidence_multiword_terms: Vec<G>,
+    /// High-confidence multiword terms found in this sentence, with the word
+    /// indices each match bound
+    pub multiword_terms: Vec<MultiwordTermMatch<G>>,
+    /// Low-confidence multiword terms found in this sentence, with the word
+    /// indices each match bound
+    pub low_confidence_multiword_terms: Vec<MultiwordTermMatch<G>>,
 }
 
 impl SentenceGrams<SpurGram> {
@@ -723,12 +759,12 @@ impl SentenceGrams<SpurGram> {
             multiword_terms: self
                 .multiword_terms
                 .iter()
-                .map(|g| rodeo.resolve(g).to_gram())
+                .map(|m| m.map(|g| rodeo.resolve(g).to_gram()))
                 .collect(),
             low_confidence_multiword_terms: self
                 .low_confidence_multiword_terms
                 .iter()
-                .map(|g| rodeo.resolve(g).to_gram())
+                .map(|m| m.map(|g| rodeo.resolve(g).to_gram()))
                 .collect(),
         }
     }
@@ -742,12 +778,12 @@ impl SentenceGrams<Gram<lasso::Spur>> {
             multiword_terms: self
                 .multiword_terms
                 .iter()
-                .map(|gram| gram.resolve(rodeo))
+                .map(|m| m.map(|gram| gram.resolve(rodeo)))
                 .collect(),
             low_confidence_multiword_terms: self
                 .low_confidence_multiword_terms
                 .iter()
-                .map(|gram| gram.resolve(rodeo))
+                .map(|m| m.map(|gram| gram.resolve(rodeo)))
                 .collect(),
         }
     }
@@ -805,6 +841,41 @@ pub struct MultiwordTerms<T> {
     pub low_confidence: Vec<T>,
 }
 
+/// A multiword term found in a sentence, together with which words of the
+/// sentence the match bound. Indices are into the sentence's word sequence
+/// (the NLP tokenization, which is 1:1 with the `Atom::Tok`s / rendered
+/// literals of the sentence) — so graders and UI can point at the exact words
+/// that realized the term, e.g. "arriver à quelqu'un" matching "leur … arrivé".
+#[derive(
+    Clone,
+    Debug,
+    serde::Serialize,
+    serde::Deserialize,
+    Hash,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
+pub struct MultiwordTermMatch<G> {
+    pub gram: G,
+    /// Word indices the match bound, sorted. Empty when the match positions
+    /// are unknown (e.g. produced by a matcher that doesn't report them).
+    pub matched_word_indices: Vec<u16>,
+}
+
+impl<G> MultiwordTermMatch<G> {
+    pub fn map<H>(&self, f: impl FnOnce(&G) -> H) -> MultiwordTermMatch<H> {
+        MultiwordTermMatch {
+            gram: f(&self.gram),
+            matched_word_indices: self.matched_word_indices.clone(),
+        }
+    }
+}
+
 /// The raw output from the Spacy python script
 #[derive(
     Clone,
@@ -842,7 +913,9 @@ pub struct NlpAnalyzedSentence {
 )]
 pub struct SentenceInfo {
     pub words: Vec<Literal<String>>,
-    pub multiword_terms: MultiwordTerms<Gram<String>>,
+    /// Multiword terms found in this sentence; `matched_word_indices` index
+    /// into `words`.
+    pub multiword_terms: MultiwordTerms<MultiwordTermMatch<Gram<String>>>,
 }
 
 impl SentenceInfo {
@@ -2387,13 +2460,13 @@ impl ConsolidatedLanguageData {
                     }
                 }
             }
-            for gram in &encoded.multiword_terms {
-                for atom in gram.iter() {
+            for term in &encoded.multiword_terms {
+                for atom in term.gram.iter() {
                     atom.get_or_intern(rodeo);
                 }
             }
-            for gram in &encoded.low_confidence_multiword_terms {
-                for atom in gram.iter() {
+            for term in &encoded.low_confidence_multiword_terms {
+                for atom in term.gram.iter() {
                     atom.get_or_intern(rodeo);
                 }
             }
@@ -3642,6 +3715,22 @@ pub const COURSES: &[Course] = &[
         native_language: Language::English,
         target_language: Language::Russian,
     },
+    Course {
+        native_language: Language::English,
+        target_language: Language::Hindi,
+    },
+    Course {
+        native_language: Language::English,
+        target_language: Language::Thai,
+    },
+    Course {
+        native_language: Language::English,
+        target_language: Language::ChineseSimplified,
+    },
+    Course {
+        native_language: Language::English,
+        target_language: Language::Japanese,
+    },
 ];
 
 pub const LANGUAGES: &[Language] = &[
@@ -4182,6 +4271,43 @@ pub fn literals_to_text(literals: &[Literal<String>]) -> String {
         .iter()
         .map(|lit| format!("{}{}", lit.word.text, lit.whitespace))
         .collect()
+}
+
+#[cfg(test)]
+mod original_language_tests {
+    use super::*;
+
+    /// The whole point: a normalized `original_language` compares equal to
+    /// `Language::iso_639_1`, so plain `==` is correct at every call site.
+    #[test]
+    fn tmdb_cn_matches_the_chinese_courses() {
+        let movie: MovieMetadataBasic = serde_json::from_str(
+            r#"{"id":"tt0338564","title":"無間道","year":2002,"original_language":"cn"}"#,
+        )
+        .unwrap();
+
+        assert_eq!(movie.original_language.as_deref(), Some("zh"));
+        for chinese in [Language::ChineseSimplified, Language::ChineseTraditional] {
+            assert_eq!(
+                movie.original_language.as_deref(),
+                Some(chinese.iso_639_1())
+            );
+        }
+    }
+
+    #[test]
+    fn real_iso_codes_pass_through_untouched() {
+        for code in ["en", "fr", "ja", "zh", "th", "ka", "tl"] {
+            assert_eq!(normalize_original_language(code), code);
+        }
+    }
+
+    #[test]
+    fn a_missing_original_language_stays_none() {
+        let movie: MovieMetadataBasic =
+            serde_json::from_str(r#"{"id":"tt0000001","title":"?","year":null}"#).unwrap();
+        assert_eq!(movie.original_language, None);
+    }
 }
 
 #[cfg(test)]

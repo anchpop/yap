@@ -3,9 +3,9 @@ use crate::minimal_pairs::{MinimalPairs, build_minimal_pairs_index};
 use crate::{
     Atom, Audio, BookMetadata, ConsolidatedLanguageData, Course, DictionaryEntry, Frequency, Gram,
     GramDefinition, Heteronym, HomophonePractice, HomophoneWordPair, Lexeme, Literal, MorphemeInfo,
-    MorphemeSegment, MovieMetadata, PartOfSpeech, PatternPosition, PronunciationData,
-    ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram, VoiceActor,
-    WordType, grm,
+    MorphemeSegment, MovieMetadata, MultiwordTermMatch, PartOfSpeech, PatternPosition,
+    PronunciationData, ProperNounDefinition, SentenceGram, SentenceGrams, SentenceSource, SpurGram,
+    VoiceActor, WordType, grm,
 };
 use lasso::Spur;
 use rustc_hash::FxHashMap;
@@ -142,7 +142,7 @@ impl LanguagePack {
                 .iter()
                 .chain(sentence_grams.low_confidence_multiword_terms.iter())
             {
-                if !is_comprehensible(multiword_gram) {
+                if !is_comprehensible(&multiword_gram.gram) {
                     continue 'checkSentences; // Early exit!
                 }
             }
@@ -557,20 +557,28 @@ impl LanguagePack {
                             .try_map(|gram| gram_rodeo.get(&gram))
                     })
                     .collect();
-                let interned_multiword_terms: Option<Vec<SpurGram>> = encoded
+                let interned_multiword_terms: Option<Vec<MultiwordTermMatch<SpurGram>>> = encoded
                     .multiword_terms
                     .iter()
                     .map(|term| {
-                        let interned = term.get_interned(&rodeo)?;
-                        interned.get_interned(&gram_rodeo)
+                        let interned = term.gram.get_interned(&rodeo)?;
+                        Some(MultiwordTermMatch {
+                            gram: interned.get_interned(&gram_rodeo)?,
+                            matched_word_indices: term.matched_word_indices.clone(),
+                        })
                     })
                     .collect();
-                let interned_low_confidence_multiword_terms: Option<Vec<SpurGram>> = encoded
+                let interned_low_confidence_multiword_terms: Option<
+                    Vec<MultiwordTermMatch<SpurGram>>,
+                > = encoded
                     .low_confidence_multiword_terms
                     .iter()
                     .map(|term| {
-                        let interned = term.get_interned(&rodeo)?;
-                        interned.get_interned(&gram_rodeo)
+                        let interned = term.gram.get_interned(&rodeo)?;
+                        Some(MultiwordTermMatch {
+                            gram: interned.get_interned(&gram_rodeo)?,
+                            matched_word_indices: term.matched_word_indices.clone(),
+                        })
                     })
                     .collect();
                 Some((
@@ -782,12 +790,12 @@ impl LanguagePack {
                     map.entry(gram_spur).or_default().push(*sentence_spur);
                 }
                 // Add high-confidence multiword term grams to index
-                for gram_spur in &sentence_grams.multiword_terms {
-                    map.entry(*gram_spur).or_default().push(*sentence_spur);
+                for term in &sentence_grams.multiword_terms {
+                    map.entry(term.gram).or_default().push(*sentence_spur);
                 }
                 // Add low-confidence multiword term grams to index
-                for gram_spur in &sentence_grams.low_confidence_multiword_terms {
-                    map.entry(*gram_spur).or_default().push(*sentence_spur);
+                for term in &sentence_grams.low_confidence_multiword_terms {
+                    map.entry(term.gram).or_default().push(*sentence_spur);
                 }
             }
             map
