@@ -129,11 +129,15 @@ async fn main() -> anyhow::Result<()> {
     let _ = rustls::crypto::ring::default_provider().install_default();
 
     // Parse CLI args. Supported forms:
-    //   generate-data [--cache-only] [<lang_filter>]
+    //   generate-data [--cache-only] [<lang>...]
+    // Naming one or more target languages restricts the run to the courses
+    // teaching them; naming none runs every course. A language teaching more
+    // than one native audience (por has por_for_eng and por_for_fra) runs all
+    // of its courses.
     // --cache-only puts tysm ChatClients, the Translator, and lexide
     // tokenization into cache-only mode (no network calls; cache misses error
     // out or are skipped for lexide).
-    let mut lang_filter: Option<String> = None;
+    let mut lang_filter: BTreeSet<String> = BTreeSet::new();
     let mut cache_only = false;
     let mut sync_cache_only = false;
     for arg in std::env::args().skip(1) {
@@ -144,12 +148,33 @@ async fn main() -> anyhow::Result<()> {
                 anyhow::bail!("unknown flag: {s}");
             }
             _ => {
-                if lang_filter.is_some() {
-                    anyhow::bail!("unexpected positional argument: {arg}");
-                }
-                lang_filter = Some(arg);
+                lang_filter.insert(arg);
             }
         }
+    }
+
+    // Reject unknown codes up front. A typo used to be silent -- the filter
+    // simply matched nothing and the run "succeeded" having done no work, which
+    // is much easier to miss now that a run can name several languages and
+    // legitimately skip most courses.
+    if !lang_filter.is_empty() {
+        let known: BTreeSet<&str> = COURSES.iter().map(|c| c.target_language.code()).collect();
+        let unknown: Vec<&str> = lang_filter
+            .iter()
+            .map(String::as_str)
+            .filter(|code| !known.contains(code))
+            .collect();
+        if !unknown.is_empty() {
+            anyhow::bail!(
+                "unknown language code(s): {}\nknown codes: {}",
+                unknown.join(", "),
+                known.into_iter().collect::<Vec<_>>().join(", "),
+            );
+        }
+        println!(
+            "restricting run to: {}",
+            lang_filter.iter().cloned().collect::<Vec<_>>().join(", "),
+        );
     }
     generate_data::set_cache_only(cache_only);
     if cache_only {
@@ -194,9 +219,7 @@ async fn main() -> anyhow::Result<()> {
     }
 
     for course in COURSES {
-        if let Some(ref filter) = lang_filter
-            && course.target_language.code() != filter
-        {
+        if !lang_filter.is_empty() && !lang_filter.contains(course.target_language.code()) {
             continue;
         }
 
