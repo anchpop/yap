@@ -23,7 +23,7 @@ export function PrivacyPage() {
               sell your data, we don't run ads, and there are no advertising or
               analytics trackers on the site.
             </p>
-            <p className="text-sm">Effective July 19, 2026.</p>
+            <p className="text-sm">Effective August 7, 2026.</p>
           </div>
         </Card>
 
@@ -81,7 +81,10 @@ export function PrivacyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Supabase — accounts, authentication, and the database</li>
-              <li>Cloudflare — hosting and content delivery</li>
+              <li>
+                Cloudflare — hosting, content delivery, and speech recognition
+                used to check that generated audio says what it should
+              </li>
               <li>Fly.io — backend servers</li>
               <li>Sentry — error tracking and session replay</li>
               <li>Resend — sending emails, such as notifications</li>

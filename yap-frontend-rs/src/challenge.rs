@@ -13,6 +13,18 @@ use crate::{
     TranslateComprehensibleSentence, dictionary::compute_word_prefix_and_morphology,
 };
 
+/// The proper nouns from a sentence, in the shape [`TtsRequest`] wants for its
+/// ASR gate. Both sentence challenges already compute this list to render
+/// name tooltips, so verification rides along on data we have anyway.
+fn verification_hints(
+    proper_noun_definitions: &[(String, language_utils::ProperNounDefinition)],
+) -> Vec<String> {
+    proper_noun_definitions
+        .iter()
+        .map(|(text, _)| text.clone())
+        .collect()
+}
+
 /// Metadata computed from a CardIndicator and Deck, used to build FlashCardReview
 pub struct CardContext {
     pub indicator: CardIndicator<SpurGram, Spur>,
@@ -193,6 +205,7 @@ impl ReviewInfo {
                 is_ssml: false,
                 instructions: None,
                 speed: 1.0,
+                verification_hints: Vec::new(),
             },
             provider: TtsProvider::Google,
         };
@@ -365,6 +378,7 @@ impl ReviewInfo {
                         // `human_audio_applies`.
                         instructions: None,
                         speed: 1.0,
+                        verification_hints: verification_hints(&proper_noun_definitions),
                     },
                     // Gemini reads whole sentences with far more natural
                     // prosody than Chirp3, which is what a transcription
@@ -445,6 +459,7 @@ impl ReviewInfo {
                 is_ssml: false,
                 instructions: None,
                 speed: 1.0,
+                verification_hints: Vec::new(),
             },
             provider: TtsProvider::Google,
         };
@@ -605,6 +620,7 @@ impl Deck {
                     is_ssml: false,
                     instructions: None,
                     speed: 1.0,
+                    verification_hints: verification_hints(&proper_noun_definitions),
                 },
                 provider: TtsProvider::ElevenLabs,
             },
@@ -671,6 +687,7 @@ impl ReviewInfo {
                     is_ssml: true,
                     instructions: None,
                     speed: 1.0,
+                    verification_hints: Vec::new(),
                 },
                 provider: TtsProvider::Google,
             })

@@ -13,7 +13,7 @@ use axum_extra::{
 use base64::Engine;
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode};
 use language_utils::{
-    Course, Language, TtsRequest, autograde,
+    Course, Language, TtsProvider, TtsRequest, autograde,
     profile::{
         FollowRequest, FollowResponse, FollowStatus, GetProfileQuery, Profile,
         UpdateLanguageStatsRequest, UpdateLanguageStatsResponse, UpdateProfileRequest,
@@ -25,6 +25,8 @@ use postgrest::Postgrest;
 use resend_rs::{Resend, types::CreateEmailBaseOptions};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, sync::LazyLock};
+
+mod tts_verify;
 use tower_http::compression::CompressionLayer;
 use tower_http::cors::{Any, CorsLayer};
 use tysm::chat_completions::ChatClient;
@@ -135,17 +137,288 @@ static LANGUAGE_DATA: LazyLock<BTreeMap<Course, &'static [u8]>> = LazyLock::new(
     data
 });
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 struct ElevenLabsRequest {
     text: String,
     model_id: String,
     voice_settings: VoiceSettings,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 struct VoiceSettings {
     stability: f32,
     similarity_boost: f32,
+}
+
+/// Retry budget per provider. Each attempt now costs a synthesis *and* (for
+/// gated languages) a transcription, so this is deliberately smaller than the
+/// 5 `google-tts` used to run on its own.
+const TTS_MAX_ATTEMPTS: usize = 3;
+
+/// Why a synthesis attempt produced no audio.
+enum SynthError {
+    /// This provider can never serve this request — a language it has no
+    /// voice for, or credentials it wasn't given. Retrying is pointless, and
+    /// so is reporting it: move to the next provider.
+    Unsupported,
+    /// Something went wrong talking to the provider — a network blip, a 429,
+    /// a 5xx. Transient by nature, so it costs an attempt rather than the
+    /// whole arm; the status is just what we report if nothing else works.
+    Failed(StatusCode),
+}
+
+/// The providers to try, in order, for a request that asked for `primary`.
+///
+/// Gemini is deliberately never a fallback *target*. It's the one provider
+/// that can rewrite what it was asked to read — it reproducibly turned
+/// "Les Baxter ici ?" into "Laisse Baxter ici" — so falling back to it would
+/// risk trading one wrong reading for another. ElevenLabs and Google are
+/// faithful readers, which is exactly what's wanted once a content check has
+/// already failed once.
+///
+/// SSML gets no fallback at all: only Google interprets it, and handing raw
+/// markup to a provider that doesn't would have it read the tags aloud.
+fn fallback_chain(primary: TtsProvider, request: &TtsRequest) -> Vec<TtsProvider> {
+    if request.is_ssml {
+        return vec![primary];
+    }
+
+    // Because the fallbacks race, arrival order picks the winner and list
+    // order buys nothing. A provider that can't honor the request therefore
+    // has to be excluded outright rather than merely ranked last: ElevenLabs
+    // has no speaking-rate control, so a slowed request it won would come
+    // back at full speed, quietly dropping the one thing the learner asked
+    // for. Substituting a voice is fine; substituting the request is not.
+    let honors_request = |provider: &TtsProvider| match provider {
+        TtsProvider::ElevenLabs => (request.speed - 1.0).abs() <= f64::EPSILON,
+        _ => true,
+    };
+
+    std::iter::once(primary)
+        .chain(
+            [TtsProvider::ElevenLabs, TtsProvider::Google]
+                .into_iter()
+                .filter(|p| *p != primary && honors_request(p)),
+        )
+        .collect()
+}
+
+/// Synthesize with one specific provider, once.
+async fn synthesize_once(
+    http: &reqwest::Client,
+    provider: TtsProvider,
+    request: &TtsRequest,
+) -> Result<Option<Vec<u8>>, SynthError> {
+    match provider {
+        TtsProvider::ElevenLabs => elevenlabs_synthesize(http, request).await,
+        TtsProvider::Google => google_synthesize(request).await,
+        TtsProvider::OpenAI => openai_synthesize(http, request).await,
+        TtsProvider::Gemini => gemini_synthesize(http, request).await,
+    }
+}
+
+/// How bad a rejected clip is, worst first.
+///
+/// The two gates fail in genuinely different ways and the difference decides
+/// what we hand back when nothing passes. A content mismatch is *audible* —
+/// the learner hears speech, just not quite the right words. A signal defect
+/// is silence, truncation, or garbage, which is a dead button however it was
+/// produced. So an audible clip outranks a broken one even when the broken one
+/// came from the provider that was actually asked for.
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum Rejection {
+    /// Failed `audio_defect`: broken as a signal.
+    Defective,
+    /// Failed the transcript check: fine as a recording, wrong as speech.
+    WrongWords,
+}
+
+/// Both gates, in the order they should run: the free signal check first, the
+/// paid transcription only if that passes. `Some` means reject.
+async fn audio_rejection(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+    audio: &[u8],
+) -> Option<(Rejection, String)> {
+    if let Some(defect) = google_tts::audio_defect(audio) {
+        return Some((Rejection::Defective, defect.to_string()));
+    }
+    let reason = tts_verify::content_defect(http, request, audio).await?;
+    Some((Rejection::WrongWords, reason))
+}
+
+/// What a provider arm produced when it couldn't return passing audio.
+struct ProviderFailure {
+    /// The best clip it produced, if any. Worth keeping even though it failed:
+    /// silence is a worse card than a doubtful clip.
+    rejected: Option<(Rejection, Vec<u8>)>,
+    /// What to report if no provider anywhere works. Preserved per-arm so a
+    /// language nobody has a voice for still surfaces as 501 rather than
+    /// being flattened into a generic 502.
+    status: StatusCode,
+}
+
+/// One provider's whole budget, checks included.
+async fn synthesize_provider_checked(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+    provider: TtsProvider,
+    max_attempts: usize,
+) -> Result<Vec<u8>, ProviderFailure> {
+    let mut rejected: Option<(Rejection, Vec<u8>)> = None;
+    let mut status = StatusCode::BAD_GATEWAY;
+
+    for n in 1..=max_attempts {
+        let audio = match synthesize_once(http, provider, request).await {
+            Ok(Some(audio)) => audio,
+            Ok(None) => {
+                eprintln!("{provider:?} TTS: no audio on attempt {n}, retrying");
+                continue;
+            }
+            // The only permanent no. Everything else gets the same budget as
+            // a bad clip does — the alternative is that the retry count means
+            // one thing for defective audio and nothing at all for a 503,
+            // which matters most for Chinese and Thai, where the fallbacks
+            // have no voice and this provider is the entire race.
+            Err(SynthError::Unsupported) => {
+                return Err(ProviderFailure {
+                    rejected,
+                    status: StatusCode::NOT_IMPLEMENTED,
+                });
+            }
+            Err(SynthError::Failed(failed)) => {
+                eprintln!("{provider:?} TTS: attempt {n} failed ({failed}), retrying");
+                status = failed;
+                continue;
+            }
+        };
+
+        match audio_rejection(http, request, &audio).await {
+            None => return Ok(audio),
+            Some((grade, reason)) => {
+                eprintln!("{provider:?} TTS: rejected attempt {n} ({reason}), retrying");
+                // Keep the best of this arm's failures, not the first: an
+                // attempt that came back silent must not outrank a later one
+                // that at least made a sound.
+                if rejected.as_ref().is_none_or(|(best, _)| grade > *best) {
+                    rejected = Some((grade, audio));
+                }
+            }
+        }
+    }
+
+    Err(ProviderFailure { rejected, status })
+}
+
+/// Synthesize `request`, checking every clip before returning it, and racing
+/// the faithful providers when the requested one can't get it right.
+///
+/// Before this existed the four TTS handlers disagreed about robustness:
+/// `google-tts` retried five times on a defect, Gemini three, and ElevenLabs
+/// and OpenAI not at all — and none of them looked at *what the audio said*.
+/// Funnelling all four through here means a new check is added once and every
+/// provider inherits it, rather than being something each handler has to
+/// remember to do.
+///
+/// Shape of the work, and why:
+///
+/// - **One attempt with the requested provider first.** Nearly every request
+///   ends here, so the fan-out below costs nothing in the common case.
+/// - **Then every provider at once, not one after another.** A clip that
+///   failed the transcript check has already told us this provider is getting
+///   the words wrong; asking the alternatives in sequence just stacks their
+///   latencies. Racing them turns three round-trips into one.
+/// - **First clip to pass wins.** Not "best" — there's no meaningful ranking
+///   among clips that all say the right words, and waiting for a preferred
+///   one would give back the latency we just bought. The trade is that the
+///   voice on a rescued sentence isn't deterministic across runs.
+///
+/// The audio returned may not come from the requested provider. That's
+/// intended: the client treats `provider` as a preference rather than a
+/// guarantee, and caches whatever comes back under the key it asked with —
+/// so the correct clip is the one that gets kept.
+async fn synthesize_checked(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+    primary: TtsProvider,
+) -> Result<String, StatusCode> {
+    // Fast path. Clips that fail a check are kept rather than discarded, so a
+    // learner never lands on a silent card; the requested provider's is
+    // preferred, which makes giving up entirely degrade to the old behaviour.
+    // Every clip that failed a check, kept for the last resort below. Ranked
+    // rather than first-wins, so a silent clip can't beat an audible one.
+    let mut salvage: Vec<(Rejection, bool, Vec<u8>)> = Vec::new();
+
+    let mut failure_status = match synthesize_provider_checked(http, request, primary, 1).await {
+        Ok(audio) => return Ok(base64::engine::general_purpose::STANDARD.encode(&audio)),
+        Err(failure) => {
+            salvage.extend(failure.rejected.map(|(grade, audio)| (grade, true, audio)));
+            failure.status
+        }
+    };
+
+    let chain = fallback_chain(primary, request);
+    if chain.len() > 1 {
+        eprintln!("{primary:?} TTS: racing {} providers", chain.len());
+    }
+
+    // Spawned rather than merely joined so the providers genuinely overlap.
+    // Dropping the set at any exit aborts whatever is still in flight, which
+    // is what keeps the losing arms from costing a full budget each.
+    let mut racers = tokio::task::JoinSet::new();
+    for provider in chain {
+        let http = http.clone();
+        let request = request.clone();
+        racers.spawn(async move {
+            let outcome =
+                synthesize_provider_checked(&http, &request, provider, TTS_MAX_ATTEMPTS).await;
+            (provider, outcome)
+        });
+    }
+
+    while let Some(joined) = racers.join_next().await {
+        let Ok((provider, outcome)) = joined else {
+            continue; // task panicked; the other arms can still win
+        };
+        match outcome {
+            Ok(audio) => {
+                if provider != primary {
+                    eprintln!("{primary:?} TTS: {provider:?} won the race and passed its checks");
+                }
+                return Ok(base64::engine::general_purpose::STANDARD.encode(&audio));
+            }
+            Err(failure) => {
+                if provider == primary {
+                    // The requested provider's verdict is the one worth
+                    // reporting; a fallback being unsupported says nothing
+                    // about what the caller actually asked for.
+                    failure_status = failure.status;
+                }
+                let is_primary = provider == primary;
+                salvage.extend(
+                    failure
+                        .rejected
+                        .map(|(grade, audio)| (grade, is_primary, audio)),
+                );
+            }
+        }
+    }
+
+    // Nothing passed anywhere. Imperfect audio still beats a dead button: a
+    // learner staring at a silent card is a worse outcome than one clip we
+    // have doubts about. Audibility first, then the requested provider — an
+    // ElevenLabs clip that says the wrong thing is worth more than a silent
+    // one from the provider that was actually asked for.
+    let audio = salvage
+        .into_iter()
+        .max_by_key(|(grade, is_primary, _)| (*grade, *is_primary))
+        .map(|(_, _, audio)| audio)
+        .ok_or_else(|| {
+            eprintln!("{primary:?} TTS: no audio at all from any provider ({failure_status})");
+            failure_status
+        })?;
+    eprintln!("{primary:?} TTS: every provider failed its checks; returning best effort");
+    Ok(base64::engine::general_purpose::STANDARD.encode(&audio))
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -202,27 +475,11 @@ async fn health() -> Result<&'static str, StatusCode> {
     Ok("ok")
 }
 
-async fn text_to_speech(
-    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-    Json(request): Json<TtsRequest>,
-) -> Result<String, StatusCode> {
-    // Verify JWT token
-    // actually, disable authentication for now until people start abusing it:
-    let _claims = verify_jwt(auth.token()).await;
-
-    let client = reqwest::Client::new();
-
-    let elevenlabs_request = ElevenLabsRequest {
-        text: request.text,
-        model_id: "eleven_multilingual_v2".to_string(),
-        voice_settings: VoiceSettings {
-            stability: 0.5,
-            similarity_boost: 0.75,
-        },
-    };
-
-    let elevenlabs_api_key =
-        std::env::var("ELEVENLABS_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+async fn elevenlabs_synthesize(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+) -> Result<Option<Vec<u8>>, SynthError> {
+    let api_key = std::env::var("ELEVENLABS_API_KEY").map_err(|_| SynthError::Unsupported)?;
 
     // Select voice based on language
     let voice_id = match request.language {
@@ -237,47 +494,54 @@ async fn text_to_speech(
         Language::Japanese => "GxhGYQesaQaYKePCZDEC", // Japanese voice
         Language::Hindi => "K24eC7JpUgk8zMtQYrpV",  // Hindi voice
 
-        Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => {
-            return Err(StatusCode::NOT_IMPLEMENTED);
-        }
+        // Adam Li, Singapore Mandarin. Serves both scripts: the model reads
+        // Traditional and Simplified to identical audio, since the difference
+        // is orthography and the speech is Mandarin either way. Google leads
+        // on accent for a Traditional course, but as the fallback arm this is
+        // intelligible standard Mandarin, which beats no redundancy at all.
+        Language::ChineseSimplified | Language::ChineseTraditional => "hZTuv9Zqrq4yHYrEmF1r",
+        // Genuinely absent: `eleven_multilingual_v2` has no Thai, and it's
+        // only in `eleven_v3`, a different model with a different contract.
+        // Google is Thai's whole race until that changes.
+        Language::Thai => return Err(SynthError::Unsupported),
     };
-    let url = format!("https://api.elevenlabs.io/v1/text-to-speech/{voice_id}");
 
-    let response = client
-        .post(&url)
+    let body = ElevenLabsRequest {
+        text: request.text.clone(),
+        model_id: "eleven_multilingual_v2".to_string(),
+        voice_settings: VoiceSettings {
+            stability: 0.5,
+            similarity_boost: 0.75,
+        },
+    };
+
+    let response = http
+        .post(format!(
+            "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+        ))
         .header("Accept", "audio/mpeg")
         .header("Content-Type", "application/json")
-        .header("xi-api-key", elevenlabs_api_key)
-        .json(&elevenlabs_request)
+        .header("xi-api-key", api_key)
+        .json(&body)
         .send()
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|_| SynthError::Failed(StatusCode::INTERNAL_SERVER_ERROR))?;
 
     if !response.status().is_success() {
         eprintln!("ElevenLabs TTS Error: {response:?}");
-        return Err(StatusCode::BAD_GATEWAY);
+        return Err(SynthError::Failed(StatusCode::BAD_GATEWAY));
     }
 
     let audio_bytes = response
         .bytes()
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|_| SynthError::Failed(StatusCode::INTERNAL_SERVER_ERROR))?;
 
-    let base64_audio = base64::engine::general_purpose::STANDARD.encode(&audio_bytes);
-
-    Ok(base64_audio)
+    Ok(Some(audio_bytes.to_vec()))
 }
 
-async fn google_text_to_speech(
-    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-    Json(request): Json<TtsRequest>,
-) -> Result<String, StatusCode> {
-    // Verify JWT token
-    // actually, disable authentication for now until people start abusing it:
-    let _claims = verify_jwt(auth.token()).await;
-
-    let google_api_key =
-        std::env::var("GOOGLE_CLOUD_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+async fn google_synthesize(request: &TtsRequest) -> Result<Option<Vec<u8>>, SynthError> {
+    let api_key = std::env::var("GOOGLE_CLOUD_API_KEY").map_err(|_| SynthError::Unsupported)?;
 
     let (language_code, voice_name) = match request.language {
         Language::French => ("fr-FR", "fr-FR-Chirp3-HD-Achernar"),
@@ -290,16 +554,23 @@ async fn google_text_to_speech(
         Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Aoede"),
         Language::Japanese => ("ja-JP", "ja-JP-Chirp3-HD-Achernar"),
         Language::Hindi => ("hi-IN", "hi-IN-Chirp3-HD-Achernar"),
-
-        Language::ChineseSimplified | Language::ChineseTraditional | Language::Thai => {
-            return Err(StatusCode::NOT_IMPLEMENTED);
-        }
+        Language::ChineseSimplified => ("cmn-CN", "cmn-CN-Chirp3-HD-Achernar"),
+        Language::Thai => ("th-TH", "th-TH-Chirp3-HD-Achernar"),
+        // Taiwanese Mandarin, and the one language here without a Chirp3-HD
+        // voice. `cmn-CN-Chirp3-HD` does read Traditional characters
+        // correctly — the script is input encoding, the speech is Mandarin
+        // either way — but a Traditional course is a Taiwan course, and a
+        // mainland accent teaches the wrong pronunciation. Accent fidelity is
+        // worth more to a learner here than a newer voice model.
+        Language::ChineseTraditional => ("cmn-TW", "cmn-TW-Wavenet-A"),
     };
 
-    let client = google_tts::GoogleTtsClient::new(google_api_key);
+    // One attempt per call: `synthesize_checked` owns the retry budget now, so
+    // leaving the library's own loop enabled would multiply the two.
+    let client = google_tts::GoogleTtsClient::new(api_key).with_max_attempts(1);
     let outcome = client
         .synthesize(&google_tts::GoogleTtsRequest {
-            text: request.text,
+            text: request.text.clone(),
             language_code: language_code.to_string(),
             voice_name: voice_name.to_string(),
             speed: request.speed,
@@ -308,18 +579,84 @@ async fn google_text_to_speech(
         .await
         .map_err(|e| {
             eprintln!("Google TTS error: {e:?}");
-            StatusCode::BAD_GATEWAY
+            SynthError::Failed(StatusCode::BAD_GATEWAY)
         })?;
 
-    if let google_tts::TtsStatus::HitLimit { last_defect } = outcome.status {
-        eprintln!(
-            "Google TTS returned defective audio ({last_defect}) on all {} attempts; \
-             returning last response",
-            outcome.attempts
-        );
+    Ok(Some(outcome.audio_bytes))
+}
+
+async fn openai_synthesize(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+) -> Result<Option<Vec<u8>>, SynthError> {
+    let api_key = std::env::var("OPENAI_API_KEY").map_err(|_| SynthError::Unsupported)?;
+
+    let mut body = serde_json::json!({
+        "model": "gpt-4o-mini-tts",
+        "input": request.text,
+        "voice": "coral",
+        "response_format": "mp3",
+    });
+
+    if let Some(instructions) = &request.instructions {
+        body["instructions"] = serde_json::Value::String(instructions.clone());
     }
 
-    Ok(base64::engine::general_purpose::STANDARD.encode(&outcome.audio_bytes))
+    let response = http
+        .post("https://api.openai.com/v1/audio/speech")
+        .header("Authorization", format!("Bearer {api_key}"))
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send()
+        .await
+        .map_err(|_| SynthError::Failed(StatusCode::INTERNAL_SERVER_ERROR))?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let detail = response.text().await.unwrap_or_default();
+        eprintln!("OpenAI TTS Error ({status}): {detail}");
+        return Err(SynthError::Failed(StatusCode::BAD_GATEWAY));
+    }
+
+    let audio_bytes = response
+        .bytes()
+        .await
+        .map_err(|_| SynthError::Failed(StatusCode::INTERNAL_SERVER_ERROR))?;
+
+    Ok(Some(audio_bytes.to_vec()))
+}
+
+async fn gemini_synthesize(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+) -> Result<Option<Vec<u8>>, SynthError> {
+    let api_key = std::env::var("GEMINI_API_KEY").map_err(|_| SynthError::Unsupported)?;
+    let prompt = gemini_tts_prompt(request);
+    gemini_tts_attempt(http, &api_key, &prompt)
+        .await
+        .map_err(SynthError::Failed)
+}
+
+async fn text_to_speech(
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(request): Json<TtsRequest>,
+) -> Result<String, StatusCode> {
+    // Verify JWT token
+    // actually, disable authentication for now until people start abusing it:
+    let _claims = verify_jwt(auth.token()).await;
+
+    synthesize_checked(&reqwest::Client::new(), &request, TtsProvider::ElevenLabs).await
+}
+
+async fn google_text_to_speech(
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(request): Json<TtsRequest>,
+) -> Result<String, StatusCode> {
+    // Verify JWT token
+    // actually, disable authentication for now until people start abusing it:
+    let _claims = verify_jwt(auth.token()).await;
+
+    synthesize_checked(&reqwest::Client::new(), &request, TtsProvider::Google).await
 }
 
 async fn openai_text_to_speech(
@@ -328,46 +665,7 @@ async fn openai_text_to_speech(
 ) -> Result<String, StatusCode> {
     let _claims = verify_jwt(auth.token()).await;
 
-    let client = reqwest::Client::new();
-
-    let openai_api_key =
-        std::env::var("OPENAI_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    let mut openai_request = serde_json::json!({
-        "model": "gpt-4o-mini-tts",
-        "input": request.text,
-        "voice": "coral",
-        "response_format": "mp3",
-    });
-
-    if let Some(instructions) = &request.instructions {
-        openai_request["instructions"] = serde_json::Value::String(instructions.clone());
-    }
-
-    let response = client
-        .post("https://api.openai.com/v1/audio/speech")
-        .header("Authorization", format!("Bearer {openai_api_key}"))
-        .header("Content-Type", "application/json")
-        .json(&openai_request)
-        .send()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    if !response.status().is_success() {
-        let status = response.status();
-        let body = response.text().await.unwrap_or_default();
-        eprintln!("OpenAI TTS Error ({status}): {body}");
-        return Err(StatusCode::BAD_GATEWAY);
-    }
-
-    let audio_bytes = response
-        .bytes()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    let base64_audio = base64::engine::general_purpose::STANDARD.encode(&audio_bytes);
-
-    Ok(base64_audio)
+    synthesize_checked(&reqwest::Client::new(), &request, TtsProvider::OpenAI).await
 }
 
 fn wrap_pcm_in_wav(
@@ -407,10 +705,6 @@ const GEMINI_TTS_MODEL: &str = "gemini-3.1-flash-tts-preview";
 
 /// House style for Gemini TTS when the caller doesn't ask for something else.
 const GEMINI_TTS_DEFAULT_INSTRUCTIONS: &str = "Read aloud in a warm welcoming tone";
-
-/// Retry budget for defective audio, matching `google-tts`'s default. Gemini
-/// is generative, so the occasional silent or truncated clip is expected.
-const GEMINI_TTS_MAX_ATTEMPTS: usize = 3;
 
 /// Builds the prompt Gemini speaks. Everything before the newline is
 /// direction, everything after is the text to voice — which is also how the
@@ -511,35 +805,7 @@ async fn gemini_text_to_speech(
 ) -> Result<String, StatusCode> {
     let _claims = verify_jwt(auth.token()).await;
 
-    let client = reqwest::Client::new();
-
-    let gemini_api_key =
-        std::env::var("GEMINI_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    let prompt = gemini_tts_prompt(&request);
-
-    let mut last_wav: Option<Vec<u8>> = None;
-    for attempt in 1..=GEMINI_TTS_MAX_ATTEMPTS {
-        let Some(wav) = gemini_tts_attempt(&client, &gemini_api_key, &prompt).await? else {
-            eprintln!("Gemini TTS: no audio data on attempt {attempt}, retrying");
-            continue;
-        };
-        match google_tts::audio_defect(&wav) {
-            None => return Ok(base64::engine::general_purpose::STANDARD.encode(&wav)),
-            Some(defect) => {
-                eprintln!("Gemini TTS: defective audio ({defect}) on attempt {attempt}, retrying");
-                last_wav = Some(wav);
-            }
-        }
-    }
-
-    // Every attempt was flagged — hand back the last one rather than nothing,
-    // same bargain `google-tts` makes: imperfect audio beats a dead button.
-    let wav = last_wav.ok_or_else(|| {
-        eprintln!("Gemini TTS Error: no audio data in {GEMINI_TTS_MAX_ATTEMPTS} attempts");
-        StatusCode::BAD_GATEWAY
-    })?;
-    Ok(base64::engine::general_purpose::STANDARD.encode(&wav))
+    synthesize_checked(&reqwest::Client::new(), &request, TtsProvider::Gemini).await
 }
 
 async fn autograde_translation(
@@ -1857,6 +2123,19 @@ fn app() -> Router {
 async fn main() {
     dotenvy::dotenv().ok();
 
+    // Say out loud whether synthesized speech gets checked. The gate fails
+    // open by design, so an unset secret produces no errors and no rejections
+    // — exactly what a perfectly working gate produces. This is the only
+    // moment the difference is visible.
+    if tts_verify::is_configured() {
+        println!("TTS verification: on");
+    } else {
+        eprintln!(
+            "TTS verification: OFF — CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN are unset, \
+             so audio will not be checked against its text"
+        );
+    }
+
     let app = app();
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
@@ -1977,6 +2256,128 @@ mod tests {
         assert_eq!(smoke("GET", "/health", None).await, StatusCode::OK);
     }
 
+    fn tts_request(text: &str) -> TtsRequest {
+        TtsRequest {
+            text: text.to_string(),
+            language: Language::French,
+            is_ssml: false,
+            instructions: None,
+            speed: 1.0,
+            verification_hints: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn fallback_starts_with_the_requested_provider() {
+        for primary in [
+            TtsProvider::Gemini,
+            TtsProvider::ElevenLabs,
+            TtsProvider::Google,
+            TtsProvider::OpenAI,
+        ] {
+            let chain = fallback_chain(primary, &tts_request("bonjour"));
+            assert_eq!(chain.first(), Some(&primary));
+            // A provider must never be tried twice.
+            let mut seen = chain.clone();
+            seen.sort();
+            seen.dedup();
+            assert_eq!(
+                seen.len(),
+                chain.len(),
+                "{primary:?} chain repeats: {chain:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn gemini_is_never_a_fallback_target() {
+        // It's the provider that rewrites what it reads — falling back to it
+        // would risk swapping one wrong reading for another.
+        for primary in [
+            TtsProvider::ElevenLabs,
+            TtsProvider::Google,
+            TtsProvider::OpenAI,
+        ] {
+            let chain = fallback_chain(primary, &tts_request("bonjour"));
+            assert!(
+                !chain.contains(&TtsProvider::Gemini),
+                "{primary:?} fell back to Gemini: {chain:?}"
+            );
+        }
+        // As a primary it's still tried first, then handed off to faithful ones.
+        let chain = fallback_chain(TtsProvider::Gemini, &tts_request("bonjour"));
+        assert_eq!(
+            chain,
+            vec![
+                TtsProvider::Gemini,
+                TtsProvider::ElevenLabs,
+                TtsProvider::Google
+            ]
+        );
+    }
+
+    #[test]
+    fn ssml_never_falls_back() {
+        // Only Google interprets SSML; anyone else would read the tags aloud.
+        let mut request = tts_request("<speak>bonjour</speak>");
+        request.is_ssml = true;
+        assert_eq!(
+            fallback_chain(TtsProvider::Google, &request),
+            vec![TtsProvider::Google]
+        );
+    }
+
+    #[test]
+    fn a_slowed_request_excludes_the_provider_with_no_rate_control() {
+        let mut request = tts_request("bonjour");
+        request.speed = 0.8;
+        let chain = fallback_chain(TtsProvider::Gemini, &request);
+        // Not merely ranked last — absent. Ordering means nothing in a race,
+        // so an ElevenLabs clip could win and arrive at full speed.
+        assert!(!chain.contains(&TtsProvider::ElevenLabs));
+        assert!(chain.contains(&TtsProvider::Google));
+
+        // At default speed it has nothing to drop, so it races.
+        let chain = fallback_chain(TtsProvider::Gemini, &tts_request("bonjour"));
+        assert!(chain.contains(&TtsProvider::ElevenLabs));
+    }
+
+    /// The best-effort pick, exercised without touching the network. Ordering
+    /// is the whole point: an earlier version took the primary's first reject
+    /// unconditionally, which handed back silence whenever the requested
+    /// provider's first attempt was the broken one.
+    fn best_effort(salvage: Vec<(Rejection, bool, &str)>) -> Option<&str> {
+        salvage
+            .into_iter()
+            .max_by_key(|(grade, is_primary, _)| (*grade, *is_primary))
+            .map(|(_, _, audio)| audio)
+    }
+
+    #[test]
+    fn an_audible_clip_beats_a_silent_one_from_the_requested_provider() {
+        assert_eq!(
+            best_effort(vec![
+                (Rejection::Defective, true, "primary-silence"),
+                (Rejection::WrongWords, false, "fallback-audible"),
+            ]),
+            Some("fallback-audible")
+        );
+    }
+
+    #[test]
+    fn the_requested_provider_only_wins_ties() {
+        assert_eq!(
+            best_effort(vec![
+                (Rejection::WrongWords, false, "fallback"),
+                (Rejection::WrongWords, true, "primary"),
+            ]),
+            Some("primary")
+        );
+        // ...and with nothing to choose from at all, the caller gets an error
+        // rather than an empty clip.
+        assert_eq!(best_effort(vec![]), None);
+    }
+
     #[tokio::test]
     async fn tts_endpoints_respond_without_panicking() {
         let tts_body = serde_json::to_value(TtsRequest {
@@ -1985,6 +2386,7 @@ mod tests {
             is_ssml: false,
             instructions: None,
             speed: 1.0,
+            verification_hints: Vec::new(),
         })
         .unwrap();
 

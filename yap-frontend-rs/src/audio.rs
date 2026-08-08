@@ -366,6 +366,12 @@ impl TempAudioCache {
 /// changes the synthesized audio — otherwise a request differing only in, say,
 /// `speed` would be served a stale clip rendered at a different speed. Shared
 /// by both `AudioCache` and `TempAudioCache` so the two can never drift apart.
+///
+/// `verification_hints` is the one field that does *not* change the audio, and
+/// it's keyed anyway on purpose: adding hints to a request should invalidate
+/// any clip cached before the backend's ASR gate existed, so previously
+/// unverified audio gets re-synthesized and checked instead of living forever
+/// in OPFS. The cost of that choice is one round of cache misses.
 pub(crate) fn tts_cache_filename(request: &TtsRequest, provider: &TtsProvider) -> String {
     // Distinguish instructions None ('n') from Some("") ('s'): the /tts
     // handlers treat them differently (None = default prompt, Some("") = empty
@@ -379,14 +385,20 @@ pub(crate) fn tts_cache_filename(request: &TtsRequest, provider: &TtsProvider) -
     // "a:b" vs text "a" + instructions "b" would otherwise hash identically.
     // The remaining fields have bounded, colon-free Debug/Display/numeric
     // forms, so they're safe to join directly.
+    // Hints are joined with a separator that can't appear inside one (they're
+    // single words from the pack) and length-prefixed like the other
+    // free-form fields, so ["a", "b"] can't collide with ["a b"].
+    let hints = request.verification_hints.join("\u{1f}");
     let cache_text = format!(
-        "{provider:?}|{language}|{speed}|{is_ssml}|{tlen}:{text}|{itag}{ilen}:{instructions}",
+        "{provider:?}|{language}|{speed}|{is_ssml}|{tlen}:{text}|{itag}{ilen}:{instructions}\
+         |{hlen}:{hints}",
         language = request.language,
         speed = request.speed,
         is_ssml = request.is_ssml,
         tlen = request.text.len(),
         text = request.text,
         ilen = instructions.len(),
+        hlen = hints.len(),
     );
     let cache_key = const_xxh3(cache_text.as_bytes());
     format!("{cache_key}.mp3")

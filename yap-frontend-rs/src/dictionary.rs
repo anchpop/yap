@@ -279,6 +279,7 @@ impl GramDictionaryEntry {
                 is_ssml: false,
                 instructions: None,
                 speed: 1.0,
+                verification_hints: Vec::new(),
             },
             provider: TtsProvider::Google,
         }

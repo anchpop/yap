@@ -2504,6 +2504,7 @@ impl ConsolidatedLanguageData {
 
 #[derive(
     Clone,
+    Copy,
     Debug,
     serde::Serialize,
     serde::Deserialize,
@@ -3977,6 +3978,15 @@ pub struct TtsRequest {
     pub instructions: Option<String>,
     #[serde(default = "default_speed")]
     pub speed: f64,
+    /// Proper nouns occurring in `text`, handed to the backend's ASR gate as
+    /// decoding context so it doesn't mistake a name it has never seen for a
+    /// mispronunciation. Purely a verification aid — it never reaches the TTS
+    /// provider and never changes the synthesized audio.
+    ///
+    /// The caller supplies these because only the client has the language
+    /// pack's NLP tags; the backend has no way to find proper nouns itself.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub verification_hints: Vec<String>,
 }
 
 fn default_speed() -> f64 {
