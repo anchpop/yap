@@ -541,30 +541,51 @@ async fn elevenlabs_synthesize(
     Ok(Some(audio_bytes.to_vec()))
 }
 
-async fn google_synthesize(request: &TtsRequest) -> Result<Option<Vec<u8>>, SynthError> {
-    let api_key = std::env::var("GOOGLE_CLOUD_API_KEY").map_err(|_| SynthError::Unsupported)?;
-
-    let (language_code, voice_name) = match request.language {
-        Language::French => ("fr-FR", "fr-FR-Chirp3-HD-Achernar"),
-        Language::Spanish => ("es-US", "es-US-Chirp3-HD-Achernar"),
-        Language::English => ("en-US", "en-US-Chirp3-HD-Achernar"),
-        Language::Korean => ("ko-KR", "ko-KR-Chirp3-HD-Achernar"),
-        Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar"),
-        Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar"),
-        Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar"),
-        Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Aoede"),
-        Language::Japanese => ("ja-JP", "ja-JP-Chirp3-HD-Achernar"),
-        Language::Hindi => ("hi-IN", "hi-IN-Chirp3-HD-Achernar"),
-        Language::ChineseSimplified => ("cmn-CN", "cmn-CN-Chirp3-HD-Achernar"),
-        Language::Thai => ("th-TH", "th-TH-Chirp3-HD-Achernar"),
+/// The Google locale and voice to synthesize `language` with.
+///
+/// Two voices per language, because Chirp3-HD doesn't speak SSML — and it
+/// doesn't say so, it just drops what it can't parse. The pronunciation cards
+/// send `<say-as interpret-as="characters">e</say-as> comme dans je` and
+/// Chirp3-HD read back "comme dans", losing both the letter being taught and
+/// the example word; every other voice family says it in full. Nothing
+/// downstream catches that — the audio is a healthy recording, and the ASR
+/// gate skips SSML because a transcript can't resemble markup — so it has to
+/// be caught here, at the point where a voice that can't honor the request
+/// would otherwise be picked anyway.
+fn google_voice(language: Language, is_ssml: bool) -> (&'static str, &'static str) {
+    let (language_code, chirp3_voice, ssml_voice) = match language {
+        Language::French => ("fr-FR", "fr-FR-Chirp3-HD-Achernar", "fr-FR-Neural2-F"),
+        Language::Spanish => ("es-US", "es-US-Chirp3-HD-Achernar", "es-US-Neural2-A"),
+        Language::English => ("en-US", "en-US-Chirp3-HD-Achernar", "en-US-Neural2-A"),
+        Language::Korean => ("ko-KR", "ko-KR-Chirp3-HD-Achernar", "ko-KR-Neural2-A"),
+        Language::German => ("de-DE", "de-DE-Chirp3-HD-Achernar", "de-DE-Neural2-G"),
+        Language::Italian => ("it-IT", "it-IT-Chirp3-HD-Achernar", "it-IT-Neural2-A"),
+        Language::Portuguese => ("pt-BR", "pt-BR-Chirp3-HD-Achernar", "pt-BR-Neural2-A"),
+        // Russian and both Chinese locales have no Neural2 voice at all.
+        Language::Russian => ("ru-RU", "ru-RU-Chirp3-HD-Aoede", "ru-RU-Wavenet-A"),
+        Language::Japanese => ("ja-JP", "ja-JP-Chirp3-HD-Achernar", "ja-JP-Neural2-B"),
+        Language::Hindi => ("hi-IN", "hi-IN-Chirp3-HD-Achernar", "hi-IN-Neural2-A"),
+        Language::ChineseSimplified => ("cmn-CN", "cmn-CN-Chirp3-HD-Achernar", "cmn-CN-Wavenet-A"),
+        Language::Thai => ("th-TH", "th-TH-Chirp3-HD-Achernar", "th-TH-Neural2-C"),
         // Taiwanese Mandarin, and the one language here without a Chirp3-HD
         // voice. `cmn-CN-Chirp3-HD` does read Traditional characters
         // correctly — the script is input encoding, the speech is Mandarin
         // either way — but a Traditional course is a Taiwan course, and a
         // mainland accent teaches the wrong pronunciation. Accent fidelity is
-        // worth more to a learner here than a newer voice model.
-        Language::ChineseTraditional => ("cmn-TW", "cmn-TW-Wavenet-A"),
+        // worth more to a learner here than a newer voice model. Being a
+        // Wavenet voice already, it speaks SSML, so both columns agree.
+        Language::ChineseTraditional => ("cmn-TW", "cmn-TW-Wavenet-A", "cmn-TW-Wavenet-A"),
     };
+    (
+        language_code,
+        if is_ssml { ssml_voice } else { chirp3_voice },
+    )
+}
+
+async fn google_synthesize(request: &TtsRequest) -> Result<Option<Vec<u8>>, SynthError> {
+    let api_key = std::env::var("GOOGLE_CLOUD_API_KEY").map_err(|_| SynthError::Unsupported)?;
+
+    let (language_code, voice_name) = google_voice(request.language, request.is_ssml);
 
     // One attempt per call: `synthesize_checked` owns the retry budget now, so
     // leaving the library's own loop enabled would multiply the two.
@@ -2326,6 +2347,43 @@ mod tests {
             fallback_chain(TtsProvider::Google, &request),
             vec![TtsProvider::Google]
         );
+    }
+
+    #[test]
+    fn ssml_never_gets_a_chirp3_voice() {
+        // Chirp3-HD drops SSML it can't parse instead of erroring, so this is
+        // the only thing standing between a pronunciation card and audio that
+        // silently omits the letter it exists to teach. Asserted across every
+        // language so adding a course can't quietly reintroduce it.
+        for language in [
+            Language::French,
+            Language::Spanish,
+            Language::English,
+            Language::Korean,
+            Language::German,
+            Language::Italian,
+            Language::Portuguese,
+            Language::Russian,
+            Language::Japanese,
+            Language::Hindi,
+            Language::ChineseSimplified,
+            Language::ChineseTraditional,
+            Language::Thai,
+        ] {
+            let (locale, voice) = google_voice(language, true);
+            assert!(
+                !voice.contains("Chirp"),
+                "{language:?} would synthesize SSML with {voice}"
+            );
+            assert!(
+                voice.starts_with(locale),
+                "{language:?}: voice {voice} doesn't belong to locale {locale}"
+            );
+
+            // The plain-text path is the one that should keep the good voice.
+            let (_, plain) = google_voice(language, false);
+            assert!(plain.contains("Chirp3") || language == Language::ChineseTraditional);
+        }
     }
 
     #[test]

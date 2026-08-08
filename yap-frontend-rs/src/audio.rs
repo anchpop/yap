@@ -362,16 +362,36 @@ impl TempAudioCache {
     }
 }
 
-/// Cache filename for a TTS request. The key must include *every* field that
+/// Bumped whenever a backend change alters the audio produced for a request
+/// that is itself unchanged — a different voice, model, or post-processing
+/// step. Nothing in a `TtsRequest` describes *how* the backend renders it, so
+/// without this a clip cached before such a change is indistinguishable from
+/// one made after, and OPFS keeps serving the old one forever.
+///
+/// A bump costs every user one round of cache misses. That is the whole point:
+/// the alternative is a learner who already cached a defective clip never
+/// hearing the fix.
+///
+/// - 1: Chirp3-HD silently drops SSML, so pronunciation cards had cached audio
+///   that omitted the very letter they exist to teach.
+const TTS_SYNTHESIS_REVISION: u32 = 1;
+
+/// Cache filename for a TTS request. The key must include *every* input that
 /// changes the synthesized audio — otherwise a request differing only in, say,
 /// `speed` would be served a stale clip rendered at a different speed. Shared
 /// by both `AudioCache` and `TempAudioCache` so the two can never drift apart.
 ///
-/// `verification_hints` is the one field that does *not* change the audio, and
-/// it's keyed anyway on purpose: adding hints to a request should invalidate
-/// any clip cached before the backend's ASR gate existed, so previously
-/// unverified audio gets re-synthesized and checked instead of living forever
-/// in OPFS. The cost of that choice is one round of cache misses.
+/// That includes inputs the request doesn't carry: `TTS_SYNTHESIS_REVISION`
+/// stands in for the backend's own rendering decisions.
+///
+/// `verification_hints` is keyed too, which is easy to talk yourself out of —
+/// it never reaches a TTS provider, so it can't change a single sample of any
+/// one attempt. It does decide which attempt comes back: hints feed the ASR
+/// gate, the gate decides whether a clip is accepted or the providers race,
+/// and so the same text with and without hints can legitimately return
+/// different audio. Keying them means a pack update that tags a new proper
+/// noun re-verifies the sentences containing it rather than trusting a clip
+/// that was accepted without ever knowing the name.
 pub(crate) fn tts_cache_filename(request: &TtsRequest, provider: &TtsProvider) -> String {
     // Distinguish instructions None ('n') from Some("") ('s'): the /tts
     // handlers treat them differently (None = default prompt, Some("") = empty
@@ -390,8 +410,8 @@ pub(crate) fn tts_cache_filename(request: &TtsRequest, provider: &TtsProvider) -
     // free-form fields, so ["a", "b"] can't collide with ["a b"].
     let hints = request.verification_hints.join("\u{1f}");
     let cache_text = format!(
-        "{provider:?}|{language}|{speed}|{is_ssml}|{tlen}:{text}|{itag}{ilen}:{instructions}\
-         |{hlen}:{hints}",
+        "r{TTS_SYNTHESIS_REVISION}|{provider:?}|{language}|{speed}|{is_ssml}\
+         |{tlen}:{text}|{itag}{ilen}:{instructions}|{hlen}:{hints}",
         language = request.language,
         speed = request.speed,
         is_ssml = request.is_ssml,
