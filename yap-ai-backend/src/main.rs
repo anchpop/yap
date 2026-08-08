@@ -494,12 +494,13 @@ async fn elevenlabs_synthesize(
         Language::Japanese => "GxhGYQesaQaYKePCZDEC", // Japanese voice
         Language::Hindi => "K24eC7JpUgk8zMtQYrpV",  // Hindi voice
 
-        // Adam Li, Singapore Mandarin. Serves both scripts: the model reads
-        // Traditional and Simplified to identical audio, since the difference
-        // is orthography and the speech is Mandarin either way. Google leads
-        // on accent for a Traditional course, but as the fallback arm this is
-        // intelligible standard Mandarin, which beats no redundancy at all.
-        Language::ChineseSimplified | Language::ChineseTraditional => "hZTuv9Zqrq4yHYrEmF1r",
+        // Haoran (Beijing Mandarin) and Anna Su (Taiwan Mandarin). One voice
+        // could cover both, since the model reads Traditional and Simplified
+        // to the same speech — but the two courses exist precisely because
+        // they aren't the same target, so accent follows script here exactly
+        // as it does across Google's cmn-CN and cmn-TW voices.
+        Language::ChineseSimplified => "pU9NaAwkoR3v0Mrg3uKz",
+        Language::ChineseTraditional => "r6qgCCGI7RWKXCagm158",
         // Genuinely absent: `eleven_multilingual_v2` has no Thai, and it's
         // only in `eleven_v3`, a different model with a different contract.
         // Google is Thai's whole race until that changes.
