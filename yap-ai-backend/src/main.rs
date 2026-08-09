@@ -543,17 +543,63 @@ async fn elevenlabs_synthesize(
 
 /// The Google locale and voice to synthesize `language` with.
 ///
-/// Two voices per language, because Chirp3-HD doesn't speak SSML — and it
-/// doesn't say so, it just drops what it can't parse. The pronunciation cards
-/// send `<say-as interpret-as="characters">e</say-as> comme dans je` and
-/// Chirp3-HD read back "comme dans", losing both the letter being taught and
-/// the example word; every other voice family says it in full. Nothing
-/// downstream catches that — the audio is a healthy recording, and the ASR
-/// gate skips SSML because a transcript can't resemble markup — so it has to
-/// be caught here, at the point where a voice that can't honor the request
-/// would otherwise be picked anyway.
+/// Two voices per language, because Chirp3-HD mishandles `<break>` — and it
+/// doesn't error, it eats the text next to the tag. Our pronunciation cards
+/// are built entirely out of breaks:
+///
+/// ```text
+/// <break time="100ms"/><say-as interpret-as="characters">e</say-as>
+/// <break time="100ms"/>comme dans<break time="200ms"/>je
+/// ```
+///
+/// Chirp3-HD reads that back as "comme dans", losing both the letter being
+/// taught and the example word. Measured on the "e" card (transcribed with
+/// the same Whisper model the ASR gate uses):
+///
+/// | payload                     | Chirp3-HD     | Neural2            |
+/// |-----------------------------|---------------|--------------------|
+/// | breaks + say-as (we ship)   | "comme dans"  | "euh comme dans J" |
+/// | breaks only                 | "comme dans"  | "euh comme dans J" |
+/// | say-as only, no breaks      | "e comme dans jeu" | "e comme dans J" |
+/// | say-as, digraph "ch"        | "CH comme dans chat" | "CH comme dans chat" |
+///
+/// So `<say-as>` is *fine* on Chirp3-HD; `<break>` is the whole problem. This
+/// is worth stating precisely because the obvious fix — drop the breaks, keep
+/// the better voice — doesn't work either, for two reasons:
+///
+/// 1. Google's documented alternative, `[pause]` tags in the `markup` input
+///    field, fails identically: `e [pause short] comme dans [pause] je` comes
+///    back as "comme dans jeu", letter gone. Chirp3-HD has no working way to
+///    put a pause before a short token.
+/// 2. Chirp3-HD is generative, and on fragments this short it embellishes.
+///    Asked for "e comme dans je" with no pauses at all it produced "c'est
+///    comme dans le jeu" and "e comme dans je t'aide" — inventing words we
+///    never sent. Neural2 and Wavenet returned the exact text every time.
+///
+/// For a card whose entire job is to demonstrate one letter, saying precisely
+/// the requested words beats naturalness. That's the real axis here, and it's
+/// why the split isn't just "older tier for SSML": Chirp3-HD stays the better
+/// choice on the plain-text paths (grams, dictionary, sentence fallback).
+///
+/// # How this regressed without us touching it
+///
+/// The card shipped working in March 2026 and broke months later with no
+/// change on our side. Google's release notes date the cause to 2025-10-17:
+/// "Chirp 3 HD now supports speech synthesis using SSML input. Supported SSML
+/// tags are: `<phoneme>`, `<p>`, `<s>`, `<sub>`, and `<say-as>`." No
+/// `<break>` — so our breaks were silently *ignored*, the rest was read
+/// correctly, and the card sounded right. Google later added `<break>` to the
+/// supported list (it's on the Chirp3-HD docs page now, with no release-note
+/// entry), and the implementation ate the adjacent text. Support for the tag
+/// turned out to be worse than not having it.
+///
+/// Nothing downstream catches this: the audio is a healthy recording so
+/// `audio_defect` passes it, and the ASR gate skips SSML because a transcript
+/// can't resemble markup. It has to be caught here, at the point where a
+/// voice that can't honor the request would otherwise be picked anyway.
 fn google_voice(language: Language, is_ssml: bool) -> (&'static str, &'static str) {
-    let (language_code, chirp3_voice, ssml_voice) = match language {
+    // `generative` reads more naturally; `literal` says exactly what it's given.
+    let (language_code, generative_voice, literal_voice) = match language {
         Language::French => ("fr-FR", "fr-FR-Chirp3-HD-Achernar", "fr-FR-Neural2-F"),
         Language::Spanish => ("es-US", "es-US-Chirp3-HD-Achernar", "es-US-Neural2-A"),
         Language::English => ("en-US", "en-US-Chirp3-HD-Achernar", "en-US-Neural2-A"),
@@ -573,12 +619,18 @@ fn google_voice(language: Language, is_ssml: bool) -> (&'static str, &'static st
         // either way — but a Traditional course is a Taiwan course, and a
         // mainland accent teaches the wrong pronunciation. Accent fidelity is
         // worth more to a learner here than a newer voice model. Being a
-        // Wavenet voice already, it speaks SSML, so both columns agree.
+        // Wavenet voice already, it handles `<break>`, so both columns agree.
         Language::ChineseTraditional => ("cmn-TW", "cmn-TW-Wavenet-A", "cmn-TW-Wavenet-A"),
     };
+    // `is_ssml` is a proxy for "contains `<break>`", which is exact today:
+    // pronunciation cards are the only SSML we send, and they're all breaks.
     (
         language_code,
-        if is_ssml { ssml_voice } else { chirp3_voice },
+        if is_ssml {
+            literal_voice
+        } else {
+            generative_voice
+        },
     )
 }
 
@@ -2351,10 +2403,11 @@ mod tests {
 
     #[test]
     fn ssml_never_gets_a_chirp3_voice() {
-        // Chirp3-HD drops SSML it can't parse instead of erroring, so this is
-        // the only thing standing between a pronunciation card and audio that
-        // silently omits the letter it exists to teach. Asserted across every
-        // language so adding a course can't quietly reintroduce it.
+        // Chirp3-HD eats the text adjacent to a `<break>` instead of erroring,
+        // so this is the only thing standing between a pronunciation card and
+        // audio that silently omits the letter it exists to teach. Asserted
+        // across every language so adding a course can't quietly reintroduce
+        // it — see `google_voice` for the measurements.
         for language in [
             Language::French,
             Language::Spanish,

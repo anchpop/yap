@@ -372,8 +372,8 @@ impl TempAudioCache {
 /// the alternative is a learner who already cached a defective clip never
 /// hearing the fix.
 ///
-/// - 1: Chirp3-HD silently drops SSML, so pronunciation cards had cached audio
-///   that omitted the very letter they exist to teach.
+/// - 1: Chirp3-HD started eating the text next to a `<break>`, so pronunciation
+///   cards had cached audio that omitted the very letter they exist to teach.
 const TTS_SYNTHESIS_REVISION: u32 = 1;
 
 /// Cache filename for a TTS request. The key must include *every* input that
