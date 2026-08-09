@@ -25,7 +25,6 @@ use generate_data::audio_verification::{
     ClipVerification, VerifyContext, expected_phoneme_variants, normalize_phoneme, verify_clip,
 };
 use language_utils::{Language, Pronunciations};
-use regex::{NoExpand, Regex};
 use std::collections::{BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -136,41 +135,6 @@ async fn resolve_revision(
 
 // ─────────────────────────── Modal deploy plumbing ─────────────────────────
 
-/// Replace a line-anchored `KEY = "..."` assignment, bailing unless it matched
-/// — a silent no-op (e.g. the Modal file format changed) would otherwise deploy
-/// the OLD constant while still passing marker verification. Values here are
-/// model ids / SHAs / markers with no `"`, so literal substitution is safe.
-fn replace_assign(src: &str, key: &str, val: &str) -> Result<String> {
-    let re = Regex::new(&format!(r#"(?m)^{} = "[^"]*"$"#, regex::escape(key))).unwrap();
-    if !re.is_match(src) {
-        bail!("patch_modal: no `{key} = \"...\"` line found in {MODAL_PY}");
-    }
-    Ok(re
-        .replace(src, NoExpand(&format!(r#"{key} = "{val}""#)))
-        .into_owned())
-}
-
-/// Patch the Modal source for one deploy, returning the new content (the
-/// tracked file is never mutated — see `deploy_and_verify`). `deploy_marker` is
-/// unique per (re)deploy: it feeds MODEL_WEIGHTS_VERSION (the image cache-buster,
-/// forcing a fresh image + container) and DEPLOY_MARKER (the freshness check).
-/// It is deliberately NOT the prediction cache key — that stays stable per model.
-fn patch_modal(src: &str, model_id: &str, revision: &str, deploy_marker: &str) -> Result<String> {
-    let src = replace_assign(src, "MODEL_ID", model_id)?;
-    let src = replace_assign(&src, "MODEL_REVISION", revision)?;
-    let echo = Regex::new(r"echo 'MODEL_WEIGHTS_VERSION=[^']*'").unwrap();
-    if !echo.is_match(&src) {
-        bail!("patch_modal: MODEL_WEIGHTS_VERSION echo not found in {MODAL_PY}");
-    }
-    let src = echo
-        .replace(
-            &src,
-            NoExpand(&format!("echo 'MODEL_WEIGHTS_VERSION={deploy_marker}'")),
-        )
-        .into_owned();
-    replace_assign(&src, "DEPLOY_MARKER", deploy_marker)
-}
-
 /// Best-effort: drain warm containers before a redeploy. `-y` keeps it
 /// non-interactive; failures (e.g. nothing running) are ignored.
 fn stop_app() {
@@ -181,11 +145,21 @@ fn stop_app() {
         .status();
 }
 
-fn deploy(modal_file: &Path) -> Result<()> {
+/// Deploy the tracked Modal file to the eval app, selecting the checkpoint
+/// entirely through the environment — `wav2vec2_phoneme.py` reads all four of
+/// these, so the file is never rewritten and eval and production run byte-identical
+/// code. `deploy_marker` is unique per (re)deploy: it feeds both the freshness
+/// check and, via MODEL_WEIGHTS_VERSION, the image cache-buster that forces a
+/// fresh image + container. It is deliberately NOT the prediction cache key —
+/// that stays stable per model.
+fn deploy(model_id: &str, revision: &str, deploy_marker: &str) -> Result<()> {
     let out = Command::new("modal")
         .arg("deploy")
-        .arg(modal_file)
+        .arg(MODAL_PY)
         .env("WAV2VEC2_APP_NAME", EVAL_APP)
+        .env("WAV2VEC2_MODEL_ID", model_id)
+        .env("WAV2VEC2_MODEL_REVISION", revision)
+        .env("WAV2VEC2_DEPLOY_MARKER", deploy_marker)
         .output()
         .context("failed to run `modal deploy` (is the modal CLI installed?)")?;
     if !out.status.success() {
@@ -229,26 +203,17 @@ async fn probe_endpoint(http: &reqwest::Client, url: &str) -> Option<serde_json:
 /// marker once the live container reports it. Bumps the marker + redeploys on a
 /// stale-container mismatch (the warm-container contamination bug); aborts with
 /// the real traceback if the model failed to load.
-#[allow(clippy::too_many_arguments)]
 async fn deploy_and_verify(
     http: &reqwest::Client,
     url: &str,
     sn: &str,
     model_id: &str,
     revision: &str,
-    template: &str,
-    temp_file: &Path,
     seq: &mut u64,
 ) -> Result<String> {
-    // Patch the (in-memory) Modal template, write it to a TEMP file, and deploy
-    // that — the tracked production Modal source is never mutated, so a crash
-    // mid-run can't leave it pinned to an eval model.
     let deploy_marker = |marker: &str| -> Result<()> {
-        let patched = patch_modal(template, model_id, revision, marker)?;
-        std::fs::write(temp_file, patched)
-            .with_context(|| format!("write {}", temp_file.display()))?;
         stop_app();
-        deploy(temp_file)
+        deploy(model_id, revision, marker)
     };
 
     let mut marker = fresh_marker(sn, seq);
@@ -812,11 +777,6 @@ async fn run(args: Args) -> Result<()> {
     let http = reqwest::Client::new();
     let url = eval_endpoint_url();
     let mut seq: u64 = 0;
-    // Read the Modal source ONCE as a template; deploys go through a temp copy
-    // so the tracked production file is never mutated.
-    let modal_template =
-        std::fs::read_to_string(MODAL_PY).with_context(|| format!("read {MODAL_PY}"))?;
-    let temp_modal = std::env::temp_dir().join("wav2vec2_phoneme_eval.py");
 
     let mut runs: Vec<ModelRun> = Vec::new();
     for spec in &args.models {
@@ -829,19 +789,7 @@ async fn run(args: Args) -> Result<()> {
         let expected_marker = if args.skip_deploy {
             None
         } else {
-            Some(
-                deploy_and_verify(
-                    &http,
-                    &url,
-                    &sn,
-                    &model_id,
-                    &revision,
-                    &modal_template,
-                    &temp_modal,
-                    &mut seq,
-                )
-                .await?,
-            )
+            Some(deploy_and_verify(&http, &url, &sn, &model_id, &revision, &mut seq).await?)
         };
 
         let cache_key = format!("{sn}__greedy_v1");
@@ -858,7 +806,6 @@ async fn run(args: Args) -> Result<()> {
         .await?;
         runs.push(ModelRun { label, results });
     }
-    let _ = std::fs::remove_file(&temp_modal);
 
     // Shared clip set across all models (every model verifies the same set,
     // but intersect defensively).
@@ -954,19 +901,29 @@ mod tests {
         );
     }
 
+    /// `deploy` selects the checkpoint purely through the environment, which
+    /// only works while the Modal file still reads those variables. If someone
+    /// hard-codes one back, eval would quietly deploy production's pin — so
+    /// assert the contract against the tracked source. (The runtime marker check
+    /// would also catch it, but only after a full deploy.)
     #[test]
-    fn patch_modal_replaces_and_verifies() {
-        let src = "MODEL_ID = \"old/model\"\n\
-                   MODEL_REVISION = \"main\"\n\
-                   \x20       \"echo 'MODEL_WEIGHTS_VERSION=old__1' && \"\n\
-                   DEPLOY_MARKER = \"default\"\n";
-        let out = patch_modal(src, "new/model", "abc123def456", "mk__9").unwrap();
-        assert!(out.contains("MODEL_ID = \"new/model\""));
-        assert!(out.contains("MODEL_REVISION = \"abc123def456\""));
-        assert!(out.contains("MODEL_WEIGHTS_VERSION=mk__9"));
-        assert!(out.contains("DEPLOY_MARKER = \"mk__9\""));
-        // A line-anchored assignment must exist; a malformed file bails rather
-        // than silently deploying the old constants.
-        assert!(patch_modal("nothing to patch here", "a", "b", "c").is_err());
+    fn modal_file_honors_the_env_overrides_deploy_sets() {
+        let src = std::fs::read_to_string(format!("../{MODAL_PY}"))
+            .or_else(|_| std::fs::read_to_string(MODAL_PY))
+            .expect("read the tracked Modal source");
+        // Whitespace-stripped so a black-style line wrap inside the call still
+        // matches — we're asserting the read exists, not how it's formatted.
+        let packed: String = src.chars().filter(|c| !c.is_whitespace()).collect();
+        for var in [
+            "WAV2VEC2_APP_NAME",
+            "WAV2VEC2_MODEL_ID",
+            "WAV2VEC2_MODEL_REVISION",
+            "WAV2VEC2_DEPLOY_MARKER",
+        ] {
+            assert!(
+                packed.contains(&format!("os.environ.get(\"{var}\"")),
+                "{MODAL_PY} no longer reads {var}; `deploy` sets it and would be ignored"
+            );
+        }
     }
 }

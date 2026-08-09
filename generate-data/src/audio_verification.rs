@@ -40,21 +40,18 @@ static MODAL_URL: LazyLock<String> = LazyLock::new(|| {
 
 /// Bump this whenever the underlying Modal model OR the decoding strategy
 /// changes — the cache is partitioned by this string so old entries don't
-/// silently get reused with a new model. Format: `<repo>__<decoder>`; tracks
-/// `MODEL_ID` in `modal-envs/wav2vec2_phoneme.py` (now
-/// `anchpop/lexide-pronunciation`). For ad-hoc model comparisons,
-/// `compare_models.py` overrides this per-run via
+/// silently get reused with a new model. Format: `<repo>@<revision>__<decoder>`,
+/// and the revision must match `MODEL_REVISION` in
+/// `modal-envs/wav2vec2_phoneme.py`, since that's what production serves. For
+/// ad-hoc model comparisons the eval harness overrides this per-run via
 /// `WAV2VEC2_CACHE_VERSION_OVERRIDE`, so this const only governs the default
 /// (production) cache partition.
 ///
-/// NOTE: the string deliberately keeps the pre-rename repo name. The HF repo
-/// was renamed `-vad-clean-sidechannel-degrade` → `lexide-pronunciation` but
-/// the weights (commit `00a661934cdd`) are byte-identical, so the existing
-/// production cache is still valid — rewriting this key would needlessly
-/// invalidate it and force a full recompute. Only bump on a real weights/
-/// decoder change.
-const WAV2VEC2_CACHE_VERSION: &str =
-    "anchpop_lexide-pronunciation-vad-clean-sidechannel-degrade@00a661934cdd__greedy_v1";
+/// `953461d76eb5` is the multilingual checkpoint that added Japanese, Mandarin,
+/// Thai, and Hindi (38 new phoneme tokens, plus tone / pitch-accent heads).
+/// Its predictions differ from the previous pin everywhere, so the whole cache
+/// partition turns over — expect a full recompute on the next run.
+const WAV2VEC2_CACHE_VERSION: &str = "anchpop_lexide-pronunciation@953461d76eb5__greedy_v1";
 
 #[derive(Debug, Clone, Deserialize)]
 struct ModalResponse {

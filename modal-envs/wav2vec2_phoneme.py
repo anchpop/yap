@@ -21,21 +21,26 @@ _SCALEDOWN_WINDOW = 180 if _IS_EVAL else 600
 
 # Production champion (mel-sidechannel + MLP heads, degrade-augmented).
 # Renamed on HF from lexide-pronunciation-vad-clean-sidechannel-degrade; the
-# commit SHA below is preserved across the rename.
-MODEL_ID = "anchpop/lexide-pronunciation"
+# commit SHA below is preserved across the rename. WAV2VEC2_MODEL_ID points a
+# run at a different HF repo (the eval harness compares repos this way).
+MODEL_ID = os.environ.get("WAV2VEC2_MODEL_ID", "anchpop/lexide-pronunciation")
 # Frozen to an exact commit SHA so a force-push to the HF repo can't silently
 # change the weights production serves. The SHA also feeds the image
 # weights-version and the verifier cache key, so a re-pin forces a clean
-# rebuild + fresh predictions. (The eval harness overrides this per-run.)
-MODEL_REVISION = "00a661934cdd1179687b9500b2f08cc498964506"
+# rebuild + fresh predictions. Set WAV2VEC2_MODEL_REVISION to try a different
+# checkpoint (the eval harness does this per-run); never point it at a branch
+# name — an exact SHA is what makes the pin a pin.
+MODEL_REVISION = os.environ.get(
+    "WAV2VEC2_MODEL_REVISION", "953461d76eb50cace1007b7649f51b7495177cd9"
+)
 
-# Unique per-deploy identifier. compare_models.py rewrites this on every
-# deploy (same value it uses for the image cache-buster and cache subdir).
-# The /predict endpoint echoes it back so the comparison harness can assert
-# it's talking to the container it just deployed, not a stale warm one —
-# this is a *correct* freshness check (exact marker match), unlike inferring
-# freshness from whether phoneme predictions changed.
-DEPLOY_MARKER = "default"
+# Unique per-deploy identifier, echoed back by /predict so a caller can assert
+# it's talking to the container it just deployed rather than a stale warm one —
+# a *correct* freshness check (exact marker match), unlike inferring freshness
+# from whether phoneme predictions changed. Defaults to the pinned revision so
+# a re-pin always changes the marker; override per-deploy when two deploys
+# share a revision and must still be told apart.
+DEPLOY_MARKER = os.environ.get("WAV2VEC2_DEPLOY_MARKER", MODEL_REVISION[:12])
 
 # 0=no stress, 1=primary (ˈ), 2=secondary (ˌ). Matches train/factorized_ctc.
 STRESS_MARKS = {0: "", 1: "ˈ", 2: "ˌ"}
@@ -47,13 +52,31 @@ image = (
         "torch", "torchaudio", "transformers", "fastapi[standard]",
         "phonemizer", "huggingface_hub",
     )
+    # Bake the resolved identity into the image. The three constants above are
+    # read from the environment of whoever runs `modal deploy`, but the
+    # container re-imports this module with its OWN environment — so without
+    # this the remote worker would silently fall back to the defaults and serve
+    # the production pin no matter what the deployer asked for. Baking them
+    # here is what makes the values the local process chose survive the trip.
+    # It also sits *before* run_commands, so changing any of them invalidates
+    # the weights layer below and forces a genuinely fresh image.
+    .env(
+        {
+            "WAV2VEC2_MODEL_ID": MODEL_ID,
+            "WAV2VEC2_MODEL_REVISION": MODEL_REVISION,
+            "WAV2VEC2_DEPLOY_MARKER": DEPLOY_MARKER,
+        }
+    )
     .run_commands(
         # Pre-pull both the backbone + the factorized_heads side-file so the
         # snapshot has everything on disk; otherwise cold start re-downloads.
-        # The MODEL_WEIGHTS_VERSION echo IS part of the cached layer command,
-        # so bumping it forces Modal to rebuild the image and re-download
-        # weights when a new epoch is pushed to the model repo.
-        "echo 'MODEL_WEIGHTS_VERSION=anchpop__lexide_pronunciation__00a661934cdd' && "
+        # The pin is interpolated straight into the cached layer command, so
+        # re-pinning is itself the cache-buster: Modal sees a different command,
+        # rebuilds the image, and re-downloads the weights. (A hand-maintained
+        # version string here could drift from the pin.) DEPLOY_MARKER rides
+        # along so the eval harness, which wants a guaranteed-fresh image even
+        # when redeploying the *same* revision, gets one by varying the marker.
+        f"echo 'MODEL_WEIGHTS_VERSION={MODEL_ID}@{MODEL_REVISION}#{DEPLOY_MARKER}' && "
         "python -c \"from transformers import Wav2Vec2Model, Wav2Vec2Processor; "
         "from huggingface_hub import hf_hub_download; "
         f"Wav2Vec2Processor.from_pretrained('{MODEL_ID}', revision='{MODEL_REVISION}'); "
@@ -299,6 +322,19 @@ class Wav2Vec2Phoneme:
                 hop_length=320, n_mels=n_mels, center=False,
             ).to("cuda")
 
+        # Optional per-language auxiliary heads — Thai and Mandarin tone,
+        # Japanese pitch accent — shipped by the multilingual checkpoints. They
+        # run on the same head input as the phoneme head, so `_build_head_from_state`
+        # gets their shapes from the saved state dict and this code stays
+        # agnostic to which languages a checkpoint happens to cover. Older
+        # checkpoints have neither key and simply get no aux heads.
+        self.language_head_specs = dict(ckpt.get("language_head_specs") or {})
+        self.language_heads = {}
+        for name, state in (ckpt.get("language_heads") or {}).items():
+            head = _build_head_from_state(state)
+            head.load_state_dict(state)
+            self.language_heads[name] = head.to("cuda").eval()
+
         # Warmup forward pass so JIT/CUDA initialization is captured in the
         # snapshot (covers both backbone and head paths).
         dummy = self.processor(
@@ -382,8 +418,25 @@ class Wav2Vec2Phoneme:
         mel_proj = self.mel_proj(mel)                   # (1, T, acoustic_dim)
         return torch.cat([hidden, mel_proj], dim=-1)    # (1, T, H + acoustic_dim)
 
-    def _forward(self, input_values):
-        """Return (combined_log_probs, stress_logits, p_nonblank) — all (1, T, *).
+    def _aux_heads_for(self, language: str | None) -> dict:
+        """The aux heads that apply to `language`, keyed by their spec target
+        ("tone", "pitch_accent"). Empty when the caller names no language or the
+        checkpoint has no head for it, which is what keeps the response shape
+        unchanged for the languages that never had tone supervision.
+        """
+        if not language:
+            return {}
+        return {
+            spec["target"]: self.language_heads[name]
+            for name, spec in self.language_head_specs.items()
+            if spec.get("lang") == language and name in self.language_heads
+        }
+
+    def _forward(self, input_values, language: str | None = None):
+        """Return (combined_log_probs, stress_logits, p_nonblank, aux_ids).
+
+        The first three are (1, T, *); `aux_ids` maps each applicable aux
+        target ("tone", "pitch_accent") to its per-frame argmax, (T,).
 
         Branches on the head-input variant:
         - simple: heads run on backbone's last_hidden_state.
@@ -419,49 +472,52 @@ class Wav2Vec2Phoneme:
 
         stress_logits = self.stress_head(h)                         # (1, T, 3)
         p_nonblank = torch.sigmoid(l_nb)                            # (1, T)
-        return log_probs, stress_logits, p_nonblank
+        aux_ids = {
+            target: head(h)[0].argmax(dim=-1)                       # (T,)
+            for target, head in self._aux_heads_for(language).items()
+        }
+        return log_probs, stress_logits, p_nonblank, aux_ids
 
     def _label(self, token_id: int) -> str:
         return "<blank>" if token_id == self.blank_id else self.processor.decode(token_id)
 
     def _decode_with_confidence(
-        self, log_probs, stress_logits, top_k: int = 3
+        self, log_probs, stress_logits, aux_ids: dict, top_k: int = 3
     ) -> list[dict]:
         """Greedy CTC decode + per-emitted-phoneme top-k.
 
         Groups consecutive frames that predict the same token, averages their
         probabilities across the group, and returns one entry per collapsed
-        phoneme (skipping blanks). The `stress` field is the stress head's
-        prediction at the *first* frame of each emitted group (the model's
-        stress call for that segment).
+        phoneme (skipping blanks). Every frame-level label head — `stress`, plus
+        whichever aux heads apply to the request's language — is read at the
+        *first* frame of each emitted group (that head's call for the segment).
         """
-        import torch
-
         probs = log_probs[0].exp()                          # (T, V)
         predicted_ids = probs.argmax(dim=-1)                # (T,)
-        stress_ids = stress_logits[0].argmax(dim=-1)        # (T,)
+        # All the per-frame label heads, decoded the same way.
+        label_heads = {"stress": stress_logits[0].argmax(dim=-1), **aux_ids}
 
         results = []
         prev_id = None
         group_probs = []
-        group_stress = None
+        group_labels = {}
         for t in range(len(predicted_ids)):
             tid = predicted_ids[t].item()
             if tid != prev_id:
                 if prev_id is not None and prev_id != self.blank_id and group_probs:
                     results.append(
-                        self._aggregate_group(group_probs, group_stress, top_k)
+                        self._aggregate_group(group_probs, group_labels, top_k)
                     )
                 group_probs = [probs[t]]
-                group_stress = stress_ids[t].item()
+                group_labels = {k: int(v[t].item()) for k, v in label_heads.items()}
                 prev_id = tid
             else:
                 group_probs.append(probs[t])
         if prev_id is not None and prev_id != self.blank_id and group_probs:
-            results.append(self._aggregate_group(group_probs, group_stress, top_k))
+            results.append(self._aggregate_group(group_probs, group_labels, top_k))
         return results
 
-    def _aggregate_group(self, frame_probs, stress: int, top_k: int) -> dict:
+    def _aggregate_group(self, frame_probs, labels_at_onset: dict, top_k: int) -> dict:
         import torch
 
         avg_probs = torch.stack(frame_probs).mean(dim=0)  # (V,)
@@ -472,27 +528,31 @@ class Wav2Vec2Phoneme:
         # callers that just read `phoneme` get IPA-with-stress for free.
         # Alternatives stay bare since stress is predicted separately and
         # doesn't vary across phoneme alternatives at a given position.
-        chosen_with_stress = STRESS_MARKS[int(stress)] + labels[0]
+        chosen_with_stress = STRESS_MARKS[labels_at_onset["stress"]] + labels[0]
         return {
             "phoneme": chosen_with_stress,
-            "stress": int(stress),
             "confidence": round(top_values[0].item(), 4),
             "top_k": [
                 {"phoneme": label, "probability": round(prob.item(), 4)}
                 for label, prob in zip(labels, top_values)
             ],
+            # `stress` plus any aux target ("tone", "pitch_accent") for the
+            # requested language.
+            **labels_at_onset,
         }
 
     def _frames_topk(
-        self, log_probs, stress_logits, p_nonblank, top_k: int
+        self, log_probs, stress_logits, p_nonblank, aux_ids: dict, top_k: int
     ) -> list[dict]:
         """Per-frame top-k (no CTC collapse, blanks included).
 
         Each entry: {"frame", "stress", "p_nonblank", "top_k":
-        [{"phoneme","probability"}]}. `p_nonblank` is the raw sigmoid output
-        of the nonblank head — diagnostic for whether VAD-style training is
-        making the model over-emit through silence (compare to unified to
-        see if VAD-v2's nonblank fires high where unified's fires low).
+        [{"phoneme","probability"}]}, plus any aux target ("tone",
+        "pitch_accent") that applies to the request's language. `p_nonblank` is
+        the raw sigmoid output of the nonblank head — diagnostic for whether
+        VAD-style training is making the model over-emit through silence
+        (compare to unified to see if VAD-v2's nonblank fires high where
+        unified's fires low).
         """
         probs = log_probs[0].exp()                          # (T, V)
         stress_ids = stress_logits[0].argmax(dim=-1)        # (T,)
@@ -515,6 +575,7 @@ class Wav2Vec2Phoneme:
                     "stress": int(stress_ids[t].item()),
                     "p_nonblank": round(nb[t].item(), 4),
                     "top_k": entries,
+                    **{k: int(v[t].item()) for k, v in aux_ids.items()},
                 }
             )
         return frames
@@ -526,6 +587,7 @@ class Wav2Vec2Phoneme:
         sample_rate: int = 16000,
         top_k: int = 3,
         return_frames: bool = False,
+        language: str | None = None,
     ) -> dict:
         import torch
         import torchaudio.functional as F
@@ -541,14 +603,18 @@ class Wav2Vec2Phoneme:
         input_values = inputs.input_values.to("cuda").to(torch.float16)
 
         with torch.no_grad():
-            log_probs, stress_logits, p_nonblank = self._forward(input_values)
+            log_probs, stress_logits, p_nonblank, aux_ids = self._forward(
+                input_values, language
+            )
 
         out = {
-            "phonemes": self._decode_with_confidence(log_probs, stress_logits, top_k=top_k)
+            "phonemes": self._decode_with_confidence(
+                log_probs, stress_logits, aux_ids, top_k=top_k
+            )
         }
         if return_frames:
             out["frames"] = self._frames_topk(
-                log_probs, stress_logits, p_nonblank, top_k=top_k
+                log_probs, stress_logits, p_nonblank, aux_ids, top_k=top_k
             )
         return out
 
@@ -573,13 +639,19 @@ class Wav2Vec2Phoneme:
         # (not a stale warm one) without paying for a full forward pass.
         if request.get("marker_only"):
             return {"deploy_marker": DEPLOY_MARKER, "model_id": MODEL_ID,
-                    "model_revision": MODEL_REVISION}
+                    "model_revision": MODEL_REVISION,
+                    # So a caller can discover which languages this checkpoint
+                    # has aux (tone / pitch-accent) heads for.
+                    "language_head_specs": self.language_head_specs}
         audio = request["audio"]
         sample_rate = int(request.get("sample_rate", 16000))
         top_k = min(max(int(request.get("top_k", 3)), 1), 100)
         return_frames = bool(request.get("return_frames", False))
+        # Opt-in: names which language's aux heads to run, e.g. "tha", "jpn",
+        # "zho-hans". Omitted (or unknown) means phonemes + stress only.
+        language = request.get("language")
         result = self.transcribe_phonemes.local(
-            audio, sample_rate, top_k, return_frames
+            audio, sample_rate, top_k, return_frames, language
         )
         # Stamp every prediction with the deploy marker so the verifier can
         # reject (and refuse to cache) responses served by a stale/contaminated
