@@ -969,6 +969,13 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
     let sample_size: usize = if language == Language::Hindi {
         4_000 // hindi has more training data that was already sampled
+    } else if language == Language::ChineseSimplified || language == Language::Japanese {
+        // Cover the whole pool including the book corpora (Reverend Insanity +
+        // extended Pale Lights): book prose is the main source of rare/literary
+        // vocabulary the subtitle corpus never reaches (~50% of the zho book's
+        // lemma types are absent from the entire app corpus), and the default
+        // sample only admits ~1.2k newcomers per run.
+        20_000
     } else {
         8_000
     };
