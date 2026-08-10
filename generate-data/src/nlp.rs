@@ -100,6 +100,57 @@ fn record_failure(
     Ok(())
 }
 
+/// Load the incremental tokenization store, applying the deterministic correction
+/// pass (`token_corrections::fix_tokens`) to every RETURNED entry. The store itself
+/// is never touched: it holds the model's raw output, so the correction rules can
+/// be revisited later without having lost what the model actually said. Everything
+/// downstream of this loader (app data, and training exports via
+/// `export-training-data`) therefore sees canonical tokens, while the file keeps
+/// the raw form. Public so the export bin shares the exact same load path.
+pub fn load_canonicalized(
+    output_file: &Path,
+    language: Language,
+) -> Result<BTreeMap<String, Vec<lexide::Token>>> {
+    let mut already_processed: BTreeMap<String, Vec<lexide::Token>> = BTreeMap::new();
+    if output_file.exists() {
+        let file = std::fs::File::open(output_file)?;
+        let reader = BufReader::new(file);
+
+        for line in reader.lines().map_while(Result::ok) {
+            if let Ok(tokenized) = serde_json::from_str::<TokenizedSentence>(&line) {
+                already_processed.insert(tokenized.sentence, tokenized.tokens);
+            }
+        }
+    }
+
+    for tokens in already_processed.values_mut() {
+        crate::token_corrections::fix_tokens(language, tokens);
+    }
+
+    Ok(already_processed)
+}
+
+/// Write the canonicalized view of a tokenization store to `dest` — the form the
+/// student tokenizer trains on (`export-training-data` bin). Entries are sorted by
+/// sentence, so the export is deterministic. The source store is read-only here.
+pub fn export_canonicalized(store: &Path, language: Language, dest: &Path) -> Result<usize> {
+    let entries = load_canonicalized(store, language)?;
+    if let Some(parent) = dest.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let file = std::fs::File::create(dest)?;
+    let mut writer = std::io::BufWriter::new(file);
+    for (sentence, tokens) in &entries {
+        let record = TokenizedSentence {
+            sentence: sentence.clone(),
+            tokens: tokens.clone(),
+        };
+        writeln!(writer, "{}", serde_json::to_string(&record)?)?;
+    }
+    writer.flush()?;
+    Ok(entries.len())
+}
+
 /// Tokenize a list of sentences and write results to an output file
 /// This function implements incremental processing - it will only tokenize sentences
 /// that are not already in the output file
@@ -114,18 +165,9 @@ pub async fn process_sentences(
     let lexide_language = to_lexide_language(language)
         .ok_or_else(|| anyhow::anyhow!("Language {language} is not yet supported by lexide"))?;
 
-    // Load already processed sentences from output file (if it exists)
-    let mut already_processed: BTreeMap<String, Vec<lexide::Token>> = BTreeMap::new();
-    if output_file.exists() {
-        let file = std::fs::File::open(output_file)?;
-        let reader = BufReader::new(file);
-
-        for line in reader.lines().map_while(Result::ok) {
-            if let Ok(tokenized) = serde_json::from_str::<TokenizedSentence>(&line) {
-                already_processed.insert(tokenized.sentence, tokenized.tokens);
-            }
-        }
-    }
+    // Load the already-processed store; the returned entries are canonicalized,
+    // the file keeps the model's raw output.
+    let mut already_processed = load_canonicalized(output_file, language)?;
 
     // In cache-only mode, skip the Modal server entirely and return only
     // sentences already present in the output file.
@@ -216,9 +258,12 @@ pub async fn process_sentences(
     // Write results as they come in and collect them in memory
     while let Some(result) = results.next().await {
         match result {
-            Ok(tokenized) => {
+            Ok(mut tokenized) => {
+                // the store records the model's raw output…
                 let json = serde_json::to_string(&tokenized)?;
                 writeln!(writer, "{json}")?;
+                // …while everything downstream sees the canonical form
+                crate::token_corrections::fix_tokens(language, &mut tokenized.tokens);
                 newly_processed.insert(tokenized.sentence, tokenized.tokens);
             }
             Err(failed_sentence) => {
@@ -420,4 +465,52 @@ pub async fn generate_nlp_sentences(
     }
 
     Ok(result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn tok(text: &str, pos: lexide::pos::PartOfSpeech, head: i32) -> lexide::Token {
+        lexide::Token {
+            text: lexide::Text {
+                text: text.to_string(),
+            },
+            whitespace: String::new(),
+            pos,
+            lemma: lexide::Lemma {
+                lemma: text.to_string(),
+            },
+            dep: lexide::DependencyRelation::Dep,
+            head,
+        }
+    }
+
+    #[test]
+    fn load_canonicalized_corrects_in_memory_only() {
+        use lexide::pos::PartOfSpeech as P;
+        let dir = std::env::temp_dir().join(format!("nlp-canon-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("target_language_sentences_tokenization.jsonl");
+
+        // A raw model-output entry: 不要 as one token.
+        let record = TokenizedSentence {
+            sentence: "不要走".to_string(),
+            tokens: vec![tok("不要", P::Verb, 0), tok("走", P::Verb, 1)],
+        };
+        std::fs::write(
+            &path,
+            format!("{}\n", serde_json::to_string(&record).unwrap()),
+        )
+        .unwrap();
+
+        // The returned tokens are canonical; the raw store stays byte-untouched.
+        let before = std::fs::read_to_string(&path).unwrap();
+        let map = load_canonicalized(&path, Language::ChineseSimplified).unwrap();
+        let texts: Vec<&str> = map["不要走"].iter().map(|t| t.text.text.as_str()).collect();
+        assert_eq!(texts, vec!["不", "要", "走"]);
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), before);
+
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
 }

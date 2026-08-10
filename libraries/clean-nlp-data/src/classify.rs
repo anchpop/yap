@@ -1,4 +1,8 @@
 use crate::polysemous_words;
+use generate_data::token_corrections::{
+    TH_PREVERBAL_AUX, TokenView, ZH_MODAL_VERBS, fix_chinese, fix_hindi, fix_japanese, fix_korean,
+    fix_thai, is_hindi_aux_intervener, normalize_hindi_spelling,
+};
 use language_utils::{Language, NlpAnalyzedSentence, PartOfSpeechTag};
 use tysm::chat_completions::ChatClient;
 
@@ -2502,11 +2506,16 @@ impl SentenceClassifier for KoreanClassifier {
 struct KoreanCorrector;
 
 impl WordCorrector for KoreanCorrector {
-    fn correct(&self, _sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+    fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
+        let corrections = fix_korean(&mut sentence.doc);
         CorrectionResult {
-            corrected: false,
-            corrections: vec![],
+            corrected: !corrections.is_empty(),
+            corrections,
         }
+    }
+
+    fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
+        fix_korean(tokens);
     }
 }
 
@@ -6559,106 +6568,12 @@ impl SentenceClassifier for ChineseClassifier {
     }
 }
 
-/// Modal verbs that are AUX when they modify a following verb — the prompt's modal rule,
-/// enforced deterministically. 是 is deliberately absent: its AUX use (是...的 focus) is
-/// not decidable from adjacency. 得 is included: tagged VERB before another verb it is
-/// the modal děi (我得走), while its PART complement-marker use is untouched.
-const ZH_MODAL_VERBS: &[&str] = &[
-    "会", "能", "能够", "可以", "应该", "应当", "必须", "敢", "肯", "愿意", "想", "要", "得",
-];
-
-/// Deterministic per-token fixes, applied identically to the NLP proposal (`correct`)
-/// and the LLM output (`post_corrections`).
-fn fix_chinese_token(token: &mut impl TokenView) -> Vec<String> {
-    let mut fixes = Vec::new();
-
-    // Chinese words do not inflect: the lemma is the surface form, for every token.
-    // (Trimmed — the first token of a sentence may carry leading whitespace in its text
-    // to keep the reconstruction invariant, and that whitespace is not part of the word.)
-    let want_lemma = token.text().trim();
-    if token.lemma() != want_lemma && !want_lemma.is_empty() {
-        fixes.push(format!(
-            "Set lemma of '{}' to its surface form (was '{}')",
-            token.text().trim(),
-            token.lemma()
-        ));
-        token.set_lemma(want_lemma.to_string());
-    }
-
-    // 的 is always the structural particle in modern text — attributive, genitive, or
-    // nominalizing, all PART. (的 as part of a content word never stands alone.)
-    if token.text().trim() == "的" && token.pos() != PartOfSpeechTag::Part {
-        fixes.push(format!("Retagged 的 from {:?} to PART", token.pos()));
-        token.set_pos(PartOfSpeechTag::Part);
-    }
-
-    // Standalone 了 is always a particle (perfective or change-of-state). The verb
-    // reading liǎo only survives inside compounds (了解, 受不了), which are one token.
-    if token.text().trim() == "了" && token.pos() != PartOfSpeechTag::Part {
-        fixes.push(format!("Retagged 了 from {:?} to PART", token.pos()));
-        token.set_pos(PartOfSpeechTag::Part);
-    }
-
-    fixes
-}
-
-/// Deterministic context fixes over the whole token sequence.
-fn fix_chinese_context<T: TokenView>(tokens: &mut [T]) -> Vec<String> {
-    let mut fixes = Vec::new();
-
-    for i in 0..tokens.len() {
-        let text = tokens[i].text().trim().to_string();
-        if !ZH_MODAL_VERBS.contains(&text.as_str()) {
-            continue;
-        }
-        // The complement-marker 得 (PART) is a different word; only the verb readings
-        // participate in the modal rule.
-        if !matches!(
-            tokens[i].pos(),
-            PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
-        ) {
-            continue;
-        }
-        // Walk past adverbs (negation, degree, time: 不, 没, 也, 再, 很) to the word the
-        // modal would govern.
-        let next_pos = tokens[i + 1..]
-            .iter()
-            .map(|t| t.pos())
-            .find(|p| *p != PartOfSpeechTag::Adv);
-        match next_pos {
-            // Modal before a verb: AUX (我会说中文, 你应该不去).
-            Some(PartOfSpeechTag::Verb | PartOfSpeechTag::Aux) => {
-                if tokens[i].pos() == PartOfSpeechTag::Verb {
-                    fixes.push(format!("Retagged modal {text} before a verb to AUX"));
-                    tokens[i].set_pos(PartOfSpeechTag::Aux);
-                }
-            }
-            // Standalone modal — sentence-final or followed only by particles/punctuation:
-            // VERB (我不会。, 他会的). Anything else (nouns, 把-phrases…) is left for the
-            // LLM: the verb the modal governs may sit further right.
-            None | Some(PartOfSpeechTag::Part | PartOfSpeechTag::Punct)
-                if tokens[i].pos() == PartOfSpeechTag::Aux =>
-            {
-                fixes.push(format!("Retagged standalone modal {text} to VERB"));
-                tokens[i].set_pos(PartOfSpeechTag::Verb);
-            }
-            _ => {}
-        }
-    }
-
-    fixes
-}
-
 /// Chinese-specific corrector
 struct ChineseCorrector;
 
 impl WordCorrector for ChineseCorrector {
     fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
-        let mut corrections = Vec::new();
-        for token in &mut sentence.doc {
-            corrections.extend(fix_chinese_token(token));
-        }
-        corrections.extend(fix_chinese_context(&mut sentence.doc));
+        let corrections = fix_chinese(&mut sentence.doc);
         CorrectionResult {
             corrected: !corrections.is_empty(),
             corrections,
@@ -6666,135 +6581,8 @@ impl WordCorrector for ChineseCorrector {
     }
 
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
-        for token in tokens.iter_mut() {
-            fix_chinese_token(token);
-        }
-        fix_chinese_context(tokens.as_mut_slice());
+        fix_chinese(tokens);
     }
-}
-
-/// Preverbal tense-aspect-mood markers that are AUX when they modify a following
-/// verb: irrealis จะ, progressive กำลัง, experiential เคย, and the modals. ได้ is
-/// deliberately absent: its preverbal (past attainment), postverbal (potential
-/// "can"), and main-verb ("get") readings need context the adjacency rule can't see.
-const TH_PREVERBAL_AUX: &[&str] = &[
-    "จะ",
-    "กำลัง",
-    "เคย",
-    "ต้อง",
-    "ควร",
-    "อาจ",
-    "คง",
-    "มัก",
-    "น่าจะ",
-    "ย่อม",
-];
-
-/// Words with no content reading at all: the negator ไม่ and the politeness/mood
-/// particles. Always PART. (Question particle ไหม is absent — it is also the noun
-/// "silk"; the sentence-final case is handled in `fix_thai_context`.)
-const TH_ALWAYS_PART: &[&str] = &[
-    "ไม่",
-    "ครับ",
-    "ค่ะ",
-    "คะ",
-    "นะ",
-    "จ้ะ",
-    "จ๊ะ",
-    "ฮะ",
-    "เถอะ",
-    "หรอก",
-    "สิ",
-    "ล่ะ",
-];
-
-/// Deterministic per-token fixes, applied identically to the NLP proposal (`correct`)
-/// and the LLM output (`post_corrections`).
-fn fix_thai_token(token: &mut impl TokenView) -> Vec<String> {
-    let mut fixes = Vec::new();
-
-    // Thai words do not inflect: the lemma is the surface form, for every token —
-    // including colloquial spellings (เค้า, มั้ย), which keep their own spelling.
-    // (Trimmed — the first token of a sentence may carry leading whitespace.)
-    let want_lemma = token.text().trim();
-    if token.lemma() != want_lemma && !want_lemma.is_empty() {
-        fixes.push(format!(
-            "Set lemma of '{}' to its surface form (was '{}')",
-            token.text().trim(),
-            token.lemma()
-        ));
-        token.set_lemma(want_lemma.to_string());
-    }
-
-    let text = token.text().trim().to_string();
-    if TH_ALWAYS_PART.contains(&text.as_str()) && token.pos() != PartOfSpeechTag::Part {
-        fixes.push(format!("Retagged {} from {:?} to PART", text, token.pos()));
-        token.set_pos(PartOfSpeechTag::Part);
-    }
-
-    // The repetition mark ๆ is a grammatical sign (pluralize/intensify the previous
-    // word), not punctuation — PART, its own token.
-    if text == "ๆ" && token.pos() != PartOfSpeechTag::Part {
-        fixes.push(format!("Retagged ๆ from {:?} to PART", token.pos()));
-        token.set_pos(PartOfSpeechTag::Part);
-    }
-
-    fixes
-}
-
-/// Deterministic context fixes over the whole token sequence.
-fn fix_thai_context<T: TokenView>(tokens: &mut [T]) -> Vec<String> {
-    let mut fixes = Vec::new();
-
-    for i in 0..tokens.len() {
-        let text = tokens[i].text().trim().to_string();
-        if !TH_PREVERBAL_AUX.contains(&text.as_str()) {
-            continue;
-        }
-        if !matches!(
-            tokens[i].pos(),
-            PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
-        ) {
-            continue;
-        }
-        // Walk past negation (ไม่ — PART) and adverbs (ก็, ยัง, เพิ่ง) to the word the
-        // marker would govern.
-        let next_pos = tokens[i + 1..]
-            .iter()
-            .map(|t| t.pos())
-            .find(|p| !matches!(p, PartOfSpeechTag::Adv | PartOfSpeechTag::Part));
-        // Marker before a verb: AUX (ผมจะไป, เขาคงไม่มา). The standalone direction is
-        // left to the LLM: a bare ต้อง/ควร can still govern an elided verb.
-        if matches!(next_pos, Some(PartOfSpeechTag::Verb | PartOfSpeechTag::Aux))
-            && tokens[i].pos() == PartOfSpeechTag::Verb
-        {
-            fixes.push(format!(
-                "Retagged preverbal marker {text} before a verb to AUX"
-            ));
-            tokens[i].set_pos(PartOfSpeechTag::Aux);
-        }
-    }
-
-    // A sentence-final question particle — last token, or followed only by
-    // punctuation and other particles (ไปไหมครับ) — is PART. Mid-sentence ไหม can be
-    // the noun "silk", so position matters.
-    for i in 0..tokens.len() {
-        let text = tokens[i].text().trim().to_string();
-        if !matches!(text.as_str(), "ไหม" | "มั้ย" | "เหรอ" | "หรอ") {
-            continue;
-        }
-        let only_tail = tokens[i + 1..]
-            .iter()
-            .all(|t| matches!(t.pos(), PartOfSpeechTag::Punct | PartOfSpeechTag::Part));
-        if only_tail && tokens[i].pos() != PartOfSpeechTag::Part {
-            fixes.push(format!(
-                "Retagged sentence-final question particle {text} to PART"
-            ));
-            tokens[i].set_pos(PartOfSpeechTag::Part);
-        }
-    }
-
-    fixes
 }
 
 /// Thai-specific corrector
@@ -6802,11 +6590,7 @@ struct ThaiCorrector;
 
 impl WordCorrector for ThaiCorrector {
     fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
-        let mut corrections = Vec::new();
-        for token in &mut sentence.doc {
-            corrections.extend(fix_thai_token(token));
-        }
-        corrections.extend(fix_thai_context(&mut sentence.doc));
+        let corrections = fix_thai(&mut sentence.doc);
         CorrectionResult {
             corrected: !corrections.is_empty(),
             corrections,
@@ -6814,10 +6598,7 @@ impl WordCorrector for ThaiCorrector {
     }
 
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
-        for token in tokens.iter_mut() {
-            fix_thai_token(token);
-        }
-        fix_thai_context(tokens.as_mut_slice());
+        fix_thai(tokens);
     }
 }
 
@@ -8122,19 +7903,7 @@ struct JapaneseCorrector;
 
 impl WordCorrector for JapaneseCorrector {
     fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
-        let mut corrections = Vec::new();
-        for token in &mut sentence.doc {
-            corrections.extend(fix_japanese_token(token));
-        }
-        corrections.extend(fix_japanese_copula_negation(&mut sentence.doc));
-        let before = sentence.doc.len();
-        merge_japanese_inflection(&mut sentence.doc);
-        if sentence.doc.len() < before {
-            corrections.push(format!(
-                "Merged inflected predicate pieces: {before} tokens → {}",
-                sentence.doc.len()
-            ));
-        }
+        let corrections = fix_japanese(&mut sentence.doc);
         CorrectionResult {
             corrected: !corrections.is_empty(),
             corrections,
@@ -8142,499 +7911,8 @@ impl WordCorrector for JapaneseCorrector {
     }
 
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
-        for token in tokens.iter_mut() {
-            fix_japanese_token(token);
-        }
-        fix_japanese_copula_negation(tokens);
-        merge_japanese_inflection(tokens);
+        fix_japanese(tokens);
     }
-}
-
-/// Common view over the two token types the correctors touch: the NLP
-/// proposal's `DocToken` and the LLM output's `SimplifiedTokenPrime`. Lets a
-/// deterministic fix be written once and applied identically in `correct`
-/// (pre-LLM) and `post_corrections` (post-LLM).
-trait TokenView {
-    fn text(&self) -> &str;
-    fn whitespace(&self) -> &str;
-    fn pos(&self) -> PartOfSpeechTag;
-    fn lemma(&self) -> &str;
-    fn push_text(&mut self, more: &str);
-    fn set_text(&mut self, text: String);
-    fn set_whitespace(&mut self, ws: String);
-    fn set_pos(&mut self, pos: PartOfSpeechTag);
-    fn set_lemma(&mut self, lemma: String);
-}
-
-macro_rules! impl_token_view {
-    ($ty:ty) => {
-        impl TokenView for $ty {
-            fn text(&self) -> &str {
-                &self.text
-            }
-            fn whitespace(&self) -> &str {
-                &self.whitespace
-            }
-            fn pos(&self) -> PartOfSpeechTag {
-                self.pos
-            }
-            fn lemma(&self) -> &str {
-                &self.lemma
-            }
-            fn push_text(&mut self, more: &str) {
-                self.text.push_str(more);
-            }
-            fn set_text(&mut self, text: String) {
-                self.text = text;
-            }
-            fn set_whitespace(&mut self, ws: String) {
-                self.whitespace = ws;
-            }
-            fn set_pos(&mut self, pos: PartOfSpeechTag) {
-                self.pos = pos;
-            }
-            fn set_lemma(&mut self, lemma: String) {
-                self.lemma = lemma;
-            }
-        }
-    };
-}
-
-impl_token_view!(language_utils::DocToken);
-impl_token_view!(SimplifiedTokenPrime);
-
-/// Deterministic per-token lemma/POS fixes, applied identically to the NLP proposal
-/// (`correct`) and the LLM output (`post_corrections`). Returns descriptions of what
-/// changed.
-fn fix_japanese_token(token: &mut impl TokenView) -> Vec<String> {
-    let mut fixes = Vec::new();
-
-    // Fix copula lemma → だ. Keyed on the lemma, not the text, so it covers every
-    // copula form the analyzer lemmatizes as です (でしょう, でし, でした…) — a
-    // text-keyed version left でしょう with lemma です while です itself got だ,
-    // splitting one word across two keys.
-    if token.pos() == PartOfSpeechTag::Aux && token.lemma() == "です" {
-        fixes.push(format!(
-            "Fixed copula '{}' lemma from 'です' to 'だ'",
-            token.text()
-        ));
-        token.set_lemma("だ".to_string());
-    }
-
-    // Fix i-adjective adverbial form used as lemma (大きく → 大きい)
-    // Only fire on ADJ: if the model tagged this as ADJ with lemma == text ending in く,
-    // it's almost certainly an i-adjective adverbial form. ADV cases (しばらく, ごく,
-    // せっかく, etc.) are correct as-is and handled by classifier hints instead.
-    if token.pos() == PartOfSpeechTag::Adj
-        && token.text().ends_with("く")
-        && token.lemma() == token.text()
-        && token.text().chars().count() >= 2
-    {
-        let stem = &token.text()[..token.text().len() - "く".len()];
-        let fixed = format!("{stem}い");
-        fixes.push(format!(
-            "Fixed i-adjective lemma '{}' to '{}'",
-            token.lemma(),
-            fixed
-        ));
-        token.set_lemma(fixed);
-    }
-
-    // (Removed: rules that rewrote よい→いい and 達→たち. Both existed to make spelling
-    // variants share one lemma, which the analyzer now does natively — it normalizes both
-    // よい and いい to 良い, and both 子供達 and 子供たち to 子供達. Re-canonicalizing on top
-    // of that does not add grouping, it splits one key into two, which is the exact failure
-    // the lemma exists to prevent. The lemma is an identifier, not a display form.)
-
-    // Punctuation lemmas drift between the analyzer's normalization and the mark
-    // itself (？ carries lemma "?" and "？" in the same corpus). Pure noise —
-    // canonicalize so one mark is one key.
-    let punct_lemma = match token.text() {
-        "？" => Some("?"),
-        "！" => Some("!"),
-        "…" => Some("…"),
-        _ => None,
-    };
-    if let Some(canonical) = punct_lemma
-        && token.lemma() != canonical
-    {
-        fixes.push(format!(
-            "Fixed punctuation '{}' lemma from '{}' to '{canonical}'",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma(canonical.to_string());
-    }
-
-    // The analyzer normalizes numerals in lemmas to arabic (一つ→1つ, 三人→3人);
-    // the LLM drifts back to kanji. Keep the arabic identifier so 一番/1番 and
-    // 一人/1人 each group onto one key. (一番だ also lands here: 一番 is never a
-    // na-adjective.)
-    let numeral_lemma = match token.lemma() {
-        "一番" | "一番だ" => Some("1番"),
-        "一人" => Some("1人"),
-        _ => None,
-    };
-    if let Some(canonical) = numeral_lemma
-        && token.pos() != PartOfSpeechTag::Propn
-    {
-        fixes.push(format!(
-            "Fixed '{}' lemma from '{}' to '{canonical}'",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma(canonical.to_string());
-    }
-
-    // The adverb よく (well/often) is the analyzer's 良く — one word whether written
-    // よく or 良く. The LLM drifts to 良い (the adjective's lemma) or leaves よく;
-    // both split the key three ways.
-    if matches!(token.text(), "よく" | "良く")
-        && token.pos() == PartOfSpeechTag::Adv
-        && token.lemma() != "良く"
-    {
-        fixes.push(format!(
-            "Fixed adverb '{}' lemma from '{}' to '良く'",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma("良く".to_string());
-    }
-
-    // Quotative/topic って is its own word, not a spelling variant of と.
-    if token.text() == "って" && token.pos() == PartOfSpeechTag::Adp && token.lemma() != "って"
-    {
-        fixes.push(format!(
-            "Fixed 'って' lemma from '{}' to 'って'",
-            token.lemma()
-        ));
-        token.set_lemma("って".to_string());
-    }
-
-    // Sentence adverb 確か ("if I recall") is its own key, distinct from both the
-    // na-adjective 確かだ and the adverb 確かに.
-    if token.text() == "確か" && token.pos() == PartOfSpeechTag::Adv && token.lemma() != "確か"
-    {
-        fixes.push(format!(
-            "Fixed adverb '確か' lemma from '{}' to '確か'",
-            token.lemma()
-        ));
-        token.set_lemma("確か".to_string());
-    }
-
-    // A single token 別に is always the adverb — 別に払う "separately" and
-    // 別に急いでない "(not) particularly" alike — never the noun 別 or the
-    // na-adjective 別だ (those readings belong to the bare token 別).
-    if token.text() == "別に" {
-        if token.pos() != PartOfSpeechTag::Adv {
-            fixes.push(format!("Fixed '別に' POS from {:?} to ADV", token.pos()));
-            token.set_pos(PartOfSpeechTag::Adv);
-        }
-        if token.lemma() != "別に" {
-            fixes.push(format!(
-                "Fixed '別に' lemma from '{}' to '別に'",
-                token.lemma()
-            ));
-            token.set_lemma("別に".to_string());
-        }
-    }
-
-    // (Removed: rules that rewrote なさい→なさる and ください→くださる. They were
-    // text-keyed, so くださった kept the analyzer's 下さる while ください became
-    // くださる — one word split across two keys. The analyzer already lemmatizes the
-    // whole paradigm consistently (下さる, 為さる); the lemma is an identifier, so
-    // its spelling only has to be consistent, not kana.)
-
-    // Honorific verbs: never AUX, lemma is the dictionary form.
-    let honorific_verbs: &[(&str, &str)] = &[
-        ("いらっしゃ", "いらっしゃる"),
-        ("おっしゃ", "おっしゃる"),
-        ("召し上が", "召し上がる"),
-    ];
-    for (prefix, dict_form) in honorific_verbs {
-        if token.text().starts_with(prefix) {
-            if token.lemma() != *dict_form {
-                fixes.push(format!(
-                    "Fixed '{}' lemma from '{}' to '{}'",
-                    token.text(),
-                    token.lemma(),
-                    dict_form
-                ));
-                token.set_lemma(dict_form.to_string());
-            }
-            if token.pos() != PartOfSpeechTag::Verb {
-                fixes.push(format!(
-                    "Fixed '{}' POS from {:?} to VERB",
-                    token.text(),
-                    token.pos()
-                ));
-                token.set_pos(PartOfSpeechTag::Verb);
-            }
-            break;
-        }
-    }
-
-    // ございます → ござる
-    if (token.text() == "ございます"
-        || token.text() == "ございました"
-        || token.text() == "ございません")
-        && token.lemma() != "ござる"
-    {
-        fixes.push(format!(
-            "Fixed '{}' lemma from '{}' to 'ござる'",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma("ござる".to_string());
-    }
-
-    // そう lemma lockdown
-    if token.text() == "そう" && token.pos() == PartOfSpeechTag::Aux && token.lemma() != "そう"
-    {
-        fixes.push(format!(
-            "Fixed 'そう' (AUX) lemma from '{}' to 'そう'",
-            token.lemma()
-        ));
-        token.set_lemma("そう".to_string());
-    }
-
-    // Fix capitalized lemmas
-    if token.pos() != PartOfSpeechTag::Propn
-        && token
-            .lemma()
-            .chars()
-            .next()
-            .is_some_and(|c| c.is_uppercase() && c.is_ascii())
-    {
-        let lower = token.lemma().to_lowercase();
-        fixes.push(format!("Lowercased lemma '{}' to '{lower}'", token.lemma()));
-        token.set_lemma(lower);
-    }
-
-    fixes
-}
-
-/// The negated copula must never be one token: じゃない fused whole can only carry
-/// lemma だ, which erases the negation from the lemma entirely. The copula じゃ and
-/// the negation ない are both words, so the boundary is real. Splits a fused
-/// じゃない/じゃなかった/じゃなくて back apart, and retags a ない that already
-/// stands after the copula as the standalone ADJ 無い.
-fn fix_japanese_copula_negation<T: TokenView + Clone>(tokens: &mut Vec<T>) -> Vec<String> {
-    let mut fixes = Vec::new();
-    let mut i = 0;
-    while i < tokens.len() {
-        let negation = match tokens[i].text() {
-            "じゃない" => Some("ない"),
-            "じゃなかった" => Some("なかった"),
-            "じゃなくて" => Some("なくて"),
-            _ => None,
-        };
-        if let Some(negation) = negation {
-            fixes.push(format!(
-                "Split '{}' into じゃ (AUX, lemma だ) + {negation} (ADJ, lemma 無い)",
-                tokens[i].text()
-            ));
-            // the clone keeps the original trailing whitespace, so the surface
-            // still reconstructs exactly
-            let mut nai = tokens[i].clone();
-            nai.set_text(negation.to_string());
-            nai.set_pos(PartOfSpeechTag::Adj);
-            nai.set_lemma("無い".to_string());
-            let ja = &mut tokens[i];
-            ja.set_text("じゃ".to_string());
-            ja.set_whitespace(String::new());
-            ja.set_pos(PartOfSpeechTag::Aux);
-            ja.set_lemma("だ".to_string());
-            tokens.insert(i + 1, nai);
-        } else if i > 0
-            && matches!(tokens[i - 1].lemma(), "だ" | "です" | "じゃ")
-            && matches!(tokens[i].lemma(), "ない" | "無い")
-            && (tokens[i].pos() != PartOfSpeechTag::Adj || tokens[i].lemma() != "無い")
-        {
-            fixes.push(format!(
-                "Retagged '{}' after the copula to ADJ, lemma 無い",
-                tokens[i].text()
-            ));
-            tokens[i].set_pos(PartOfSpeechTag::Adj);
-            tokens[i].set_lemma("無い".to_string());
-        }
-        i += 1;
-    }
-    fixes
-}
-
-/// A token is a word. Japanese inflection is agglutinative, so a verb or adjective
-/// and the auxiliary chain hanging off it are one word however many morphemes deep
-/// it runs — 食べさせられたくなかった is a word the same way 食べた is. Splitting it
-/// strands pieces (食べ, まし, だっ, られ) that are not words in any sense and that
-/// nobody could be shown on their own. The internal structure is the morpheme
-/// layer's job (generate-data's MorphemeCategory::Inflectional), where each piece
-/// gets a gloss; that is also where a polysemous piece like られ belongs, since it
-/// is only ambiguous in isolation — inside 食べさせられた the reading is forced.
-///
-/// This mirrors what the Korean prompt already mandates ("conjugated verb forms
-/// should stay as one token... don't split the stem from its endings") and what the
-/// Korean data does: 91% of its verbs are whole, and the splits that remain are
-/// serial verbs (가져|가) whose halves are both real forms — the same category we
-/// keep split here as て-form + auxiliary verb.
-fn merge_japanese_inflection<T: TokenView>(tokens: &mut Vec<T>) {
-    let mut merged: Vec<T> = Vec::with_capacity(tokens.len());
-    for token in tokens.drain(..) {
-        match merged.last_mut() {
-            Some(head) if absorbs_suffix(head, &token) => {
-                head.push_text(token.text());
-                // trailing whitespace belongs to whichever piece ended up last
-                head.set_whitespace(token.whitespace().to_string());
-                // lemma and POS stay the head's: 食べました is a VERB with lemma 食べる
-            }
-            _ => merged.push(token),
-        }
-    }
-    *tokens = merged;
-}
-
-/// Auxiliaries that are full verbs (or adjectives) in their own right. `食べて` +
-/// `いる` are both showable words, so that boundary stays — it is the same split
-/// Korean keeps for serial verbs. なさい is deliberately NOT here: it attaches to a
-/// bare stem (見せ|なさい strands 見せ), so 見せなさい merges into one word.
-// Each verb is listed in both the kana spelling (what the LLM tends to write) and the
-// analyzer's normalized form (what the Sudachi proposal carries) — the carve-out must
-// recognize either.
-const JAPANESE_AUXILIARY_VERBS: &[&str] = &[
-    "いる",
-    "居る",
-    "ある",
-    "有る",
-    "くる",
-    "来る",
-    "いく",
-    "行く",
-    "しまう",
-    "仕舞う",
-    "みる",
-    "見る",
-    "おく",
-    "置く",
-    "あげる",
-    "上げる",
-    "くれる",
-    "呉れる",
-    "もらう",
-    "貰う",
-    "くださる",
-    "下さる",
-    "やる",
-    "遣る",
-    "いただく",
-    "頂く",
-    "おる",
-    "ほしい",
-    "欲しい",
-];
-
-/// Is this token already a complete, showable form — the dictionary form itself, or a
-/// finished past/negative? そう・らしい・よう・みたい after such a head are words of
-/// their own (hearsay 降る|そう|だ, 降った|らしい); after a bare stem they are bound
-/// (降りそう, 高そう).
-fn is_japanese_complete_form(head: &impl TokenView) -> bool {
-    head.text() == head.lemma()
-        || head.text().ends_with('た')
-        || head.text().ends_with('だ')
-        || head.text().ends_with("ない")
-}
-
-/// Should `next` be absorbed into the preceding token to keep every token a word?
-fn absorbs_suffix<T: TokenView>(head: &T, next: &T) -> bool {
-    // Anything written apart stays apart — merging across a space would drop it and the
-    // tokens would no longer reconstruct the sentence.
-    if !head.whitespace().is_empty() {
-        return false;
-    }
-    // Only a predicate has an inflectional tail. A noun keeps the copula separate
-    // (学生|です), exactly as Korean keeps 학생|입니다.
-    if !matches!(
-        head.pos(),
-        PartOfSpeechTag::Verb | PartOfSpeechTag::Adj | PartOfSpeechTag::Aux
-    ) {
-        return false;
-    }
-    // Inflectional tails that are not words no matter how the labeller tagged them:
-    // the て/で of a て-form, conditional ば/たら, listing たり, and stem-attaching
-    // ながら/つつ. Pulling them onto the predicate stops the stem being stranded:
-    // 食べ|て|いる → 食べて|いる, 食べれ|ば → 食べれば, 食べ|ながら → 食べながら.
-    // The copula's て-form (で with lemma だ) is not a tail — 静か|で stays split,
-    // like 静か|だ.
-    if matches!(
-        next.text(),
-        "て" | "で" | "ば" | "たら" | "だら" | "たり" | "だり" | "ながら" | "つつ"
-    ) && !matches!(next.lemma(), "だ" | "です")
-        && matches!(
-            next.pos(),
-            PartOfSpeechTag::Sconj
-                | PartOfSpeechTag::Part
-                | PartOfSpeechTag::Adp
-                | PartOfSpeechTag::Aux
-        )
-    {
-        return true;
-    }
-    // そう/らしい/よう/みたい bind to a bare stem but stand alone after a complete
-    // form: 降りそう and 実現しそう merge, 降る|そう|だ splits. Checked before the
-    // AUX gate because Sudachi tags them 形状詞 (mapped ADJ), not AUX.
-    if matches!(
-        next.lemma(),
-        "そう" | "そうだ" | "らしい" | "よう" | "ようだ" | "みたい" | "みたいだ"
-    ) && matches!(next.pos(), PartOfSpeechTag::Aux | PartOfSpeechTag::Adj)
-    {
-        return !is_japanese_complete_form(head)
-            && !head.text().ends_with('て')
-            && !head.text().ends_with('で');
-    }
-    // なさい binds to the bare stem it inflects (し+なさい, 食べ+なさい), and Sudachi
-    // tags it 動詞 — the AUX gate below would miss it.
-    if next.text() == "なさい"
-        && head.pos() == PartOfSpeechTag::Verb
-        && !head.text().ends_with('て')
-        && !head.text().ends_with('で')
-    {
-        return true;
-    }
-    if next.pos() != PartOfSpeechTag::Aux {
-        return false;
-    }
-    // The copula family (だ, です, でした, だった, でしょう, なら, じゃ) is a word: it
-    // stays split from nouns and from complete predicates alike — 学生|です,
-    // 静か|だった, 美しい|です, 行く|だろう. Two bound exceptions: the voiced past
-    // tense of a 撥音便 verb also arrives as だ with lemma だ (読ん+だ, 浮かん+だ) —
-    // a verb stem ending in ん is never a complete form, so だ there is inflection,
-    // not the copula — and でした continuing the ます chain (食べません+でした).
-    if matches!(next.lemma(), "だ" | "です" | "じゃ") {
-        return (head.pos() == PartOfSpeechTag::Verb && head.text().ends_with('ん'))
-            || head.text().ends_with("ません");
-    }
-    // ない after the copula is the standalone negation — a word of its own (無い):
-    // 学生|じゃ|ない, 静か|で|ない. Folding it in would produce a token whose lemma
-    // is だ, erasing the negation from the lemma entirely. Checked before the て/で
-    // contraction rule below, which would otherwise swallow ない after the copula で.
-    if matches!(head.lemma(), "だ" | "です" | "じゃ") && matches!(next.lemma(), "ない" | "無い")
-    {
-        return false;
-    }
-    // After a て-form the auxiliary is a separate word: 食べて|いる, 読んで|しまう.
-    // Except てた/てない/てます — contractions of ていた/ていない/ています (乗ってた,
-    // 言ってない, 書いてます) — where the piece after て is bound.
-    if head.text().ends_with('て') || head.text().ends_with('で') {
-        return matches!(next.lemma(), "た" | "ない" | "無い" | "ます");
-    }
-    if JAPANESE_AUXILIARY_VERBS.contains(&next.lemma()) {
-        return false;
-    }
-    // な on a na-adjective is a closed-class attributive marker attaching to any stem,
-    // so it is treated like a particle: 綿密|な.
-    if next.text() == "な" {
-        return false;
-    }
-    true
 }
 
 /// Hindi-specific classifier
@@ -9250,450 +8528,49 @@ impl SentenceClassifier for HindiClassifier {
 /// Hindi-specific corrector
 struct HindiCorrector;
 
-/// Deterministic per-token lemma/POS fixes for Hindi, applied identically to the
-/// NLP proposal (`correct`) and the LLM output (`post_corrections`). Returns
-/// descriptions of what changed.
-fn fix_hindi_token(token: &mut impl TokenView) -> Vec<String> {
-    let mut fixes = Vec::new();
-
-    // Lemma hygiene: no stray whitespace (a ',' token once got lemma ", ").
-    let trimmed = token.lemma().trim();
-    if trimmed != token.lemma() {
-        fixes.push(format!("Trimmed whitespace from lemma '{}'", token.lemma()));
-        let trimmed = trimmed.to_string();
-        token.set_lemma(trimmed);
+/// `TokenView` (from generate-data's token_corrections) over the LLM-output token
+/// type, so the shared deterministic fixes apply to it like every other pipeline.
+impl TokenView for SimplifiedTokenPrime {
+    fn text(&self) -> &str {
+        &self.text
     }
-
-    // A single-word token must not carry a multiword lemma (पास once got lemma
-    // "के पास"). When the token itself is one of the lemma's words, use it.
-    if !token.text().contains(' ')
-        && token.lemma().contains(' ')
-        && token.lemma().split_whitespace().any(|w| w == token.text())
-    {
-        fixes.push(format!(
-            "Collapsed multiword lemma '{}' to '{}'",
-            token.lemma(),
-            token.text()
-        ));
-        token.set_lemma(token.text().to_string());
+    fn whitespace(&self) -> &str {
+        &self.whitespace
     }
-
-    // Pronoun/possessive lemma normalization to base nominative pronoun.
-    // Applies to both PRON and DET (possessives are often tagged DET).
-    if token.pos() == PartOfSpeechTag::Pron || token.pos() == PartOfSpeechTag::Det {
-        let expected = match token.text() {
-            "मुझे" | "मुझको" | "मुझसे" | "मुझमें" | "मेरा" | "मेरी" | "मेरे" => {
-                Some("मैं")
-            }
-            "तुझे" | "तुझको" | "तुझसे" | "तेरा" | "तेरी" | "तेरे" => {
-                Some("तू")
-            }
-            "तुम्हें" | "तुम्हारा" | "तुम्हारी" | "तुम्हारे" => {
-                Some("तुम")
-            }
-            "आपको" | "आपसे" | "आपका" | "आपकी" | "आपके" => {
-                Some("आप")
-            }
-            "उसे" | "उसको" | "उससे" | "उसमें" | "उसका" | "उसकी" | "उसके" | "उसने" => {
-                Some("वह")
-            }
-            "इसे" | "इसको" | "इससे" | "इसमें" | "इसका" | "इसकी" | "इसके" | "इसने" => {
-                Some("यह")
-            }
-            "उन्हें" | "उनसे" | "उनका" | "उनकी" | "उनके" | "उन्होंने" | "वे" => {
-                Some("वह")
-            }
-            "इन्हें" | "इनसे" | "इनका" | "इनकी" | "इनके" | "इन्होंने" | "ये" => {
-                Some("यह")
-            }
-            "हमें" | "हमसे" | "हमारा" | "हमारी" | "हमारे" | "हमने" => {
-                Some("हम")
-            }
-            _ => None,
-        };
-
-        if let Some(expected) = expected
-            && token.lemma() != expected
-        {
-            fixes.push(format!(
-                "Fixed pronoun/possessive '{}' lemma from '{}' to '{}'",
-                token.text(),
-                token.lemma(),
-                expected
-            ));
-            token.set_lemma(expected.to_string());
-        }
+    fn pos(&self) -> PartOfSpeechTag {
+        self.pos
     }
-
-    // Possessives are DET regardless of syntactic position.
-    let possessive_forms = [
-        "मेरा",
-        "मेरी",
-        "मेरे",
-        "तेरा",
-        "तेरी",
-        "तेरे",
-        "तुम्हारा",
-        "तुम्हारी",
-        "तुम्हारे",
-        "आपका",
-        "आपकी",
-        "आपके",
-        "उसका",
-        "उसकी",
-        "उसके",
-        "इसका",
-        "इसकी",
-        "इसके",
-        "उनका",
-        "उनकी",
-        "उनके",
-        "इनका",
-        "इनकी",
-        "इनके",
-        "हमारा",
-        "हमारी",
-        "हमारे",
-    ];
-    if possessive_forms.contains(&token.text()) && token.pos() == PartOfSpeechTag::Pron {
-        fixes.push(format!(
-            "Fixed possessive '{}' POS from PRON to DET",
-            token.text()
-        ));
-        token.set_pos(PartOfSpeechTag::Det);
+    fn lemma(&self) -> &str {
+        &self.lemma
     }
-
-    // Normalize लिये → लिए spelling.
-    if token.text() == "लिये" {
-        fixes.push("Normalized 'लिये' to 'लिए'".to_string());
-        token.set_text("लिए".to_string());
-        token.set_lemma("लिए".to_string());
+    fn push_text(&mut self, more: &str) {
+        self.text.push_str(more);
     }
-
-    // Normalize the misspelling चहिए → चाहिए so the word stays under one key.
-    if token.text() == "चहिए" {
-        fixes.push("Normalized 'चहिए' to 'चाहिए'".to_string());
-        token.set_text("चाहिए".to_string());
+    fn set_text(&mut self, text: String) {
+        self.text = text;
     }
-
-    // चाहिए is its own lemma (dictionaries list it as its own entry, and it
-    // means "is needed/should", not चाहना "to want"). Its POS is contextual and
-    // set in fix_hindi_context.
-    if token.text() == "चाहिए" && token.lemma() != "चाहिए" {
-        fixes.push(format!(
-            "Fixed 'चाहिए' lemma from '{}' to 'चाहिए'",
-            token.lemma()
-        ));
-        token.set_lemma("चाहिए".to_string());
+    fn set_whitespace(&mut self, ws: String) {
+        self.whitespace = ws;
     }
-
-    // लाइए is the honorific imperative of लाना (to bring), not लेना (to take).
-    // This regresses repeatedly so it needs a deterministic fix.
-    if token.text() == "लाइए" && token.lemma() == "लेना" {
-        fixes.push("Fixed 'लाइए' lemma from 'लेना' to 'लाना'".to_string());
-        token.set_lemma("लाना".to_string());
+    fn set_pos(&mut self, pos: PartOfSpeechTag) {
+        self.pos = pos;
     }
-
-    // जनता (NOUN "the public") vs जानता (VERB "knows", from जानना).
-    if token.text() == "जनता" && token.pos() == PartOfSpeechTag::Verb {
-        fixes.push(
-            "Fixed 'जनता' from VERB to NOUN — the verb form is 'जानता' (lemma जानना), the noun is 'जनता' (the public)"
-                .to_string(),
-        );
-        token.set_pos(PartOfSpeechTag::Noun);
-        token.set_lemma("जनता".to_string());
+    fn set_lemma(&mut self, lemma: String) {
+        self.lemma = lemma;
     }
-
-    // किसी… → कोई (oblique → base indefinite pronoun).
-    if matches!(token.text(), "किसी" | "किसीने" | "किसीको" | "किसीसे") && token.lemma() != "कोई"
-    {
-        fixes.push(format!(
-            "Fixed '{}' lemma from '{}' to 'कोई' (oblique → base form)",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma("कोई".to_string());
-    }
-
-    // किस… → कौन (oblique of कौन, not क्या).
-    if matches!(token.text(), "किस" | "किसे" | "किसने" | "किसको" | "किससे") && token.lemma() != "कौन"
-    {
-        fixes.push(format!(
-            "Fixed '{}' lemma from '{}' to 'कौन' (किस is oblique of कौन, not क्या)",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma("कौन".to_string());
-    }
-
-    // और is CCONJ ("and") or ADV ("more"), never ADJ.
-    if token.text() == "और" && token.pos() == PartOfSpeechTag::Adj {
-        fixes.push("Fixed 'और' POS from ADJ to CCONJ".to_string());
-        token.set_pos(PartOfSpeechTag::Cconj);
-    }
-
-    // Simple postpositions lemmatize to themselves (के once got lemma का).
-    if matches!(
-        token.text(),
-        "में" | "पर" | "को" | "से" | "के" | "का" | "की" | "ने" | "तक" | "द्वारा"
-    ) && token.pos() == PartOfSpeechTag::Adp
-        && token.lemma() != token.text()
-    {
-        fixes.push(format!(
-            "Fixed postposition '{}' lemma from '{}' to itself",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma(token.text().to_string());
-    }
-
-    // पहले: as ADV ("earlier/first") it lemmatizes to पहला; as ADP
-    // (compound postposition के पहले) it is its own lemma.
-    if token.text() == "पहले" {
-        if token.pos() == PartOfSpeechTag::Adv && token.lemma() != "पहला" {
-            fixes.push(format!(
-                "Fixed 'पहले' ADV lemma from '{}' to 'पहला'",
-                token.lemma()
-            ));
-            token.set_lemma("पहला".to_string());
-        }
-        if token.pos() == PartOfSpeechTag::Adp && token.lemma() != "पहले" {
-            fixes.push(format!(
-                "Fixed 'पहले' ADP lemma from '{}' to 'पहले'",
-                token.lemma()
-            ));
-            token.set_lemma("पहले".to_string());
-        }
-    }
-
-    // कैसे as ADV ("how") is its own dictionary headword, not a form of कैसा.
-    if token.text() == "कैसे" && token.pos() == PartOfSpeechTag::Adv && token.lemma() != "कैसे"
-    {
-        fixes.push(format!(
-            "Fixed 'कैसे' ADV lemma from '{}' to 'कैसे'",
-            token.lemma()
-        ));
-        token.set_lemma("कैसे".to_string());
-    }
-
-    // रहा/रही/रहे/रहीं are forms of रहना only — never करना or होना.
-    if matches!(token.text(), "रहा" | "रही" | "रहे" | "रहीं")
-        && matches!(token.lemma(), "करना" | "होना")
-    {
-        fixes.push(format!(
-            "Fixed '{}' lemma from '{}' to 'रहना'",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma("रहना".to_string());
-    }
-
-    // Negation नहीं/न/मत → ADV.
-    if matches!(token.text(), "नहीं" | "न" | "मत") && token.pos() != PartOfSpeechTag::Adv
-    {
-        fixes.push(format!(
-            "Fixed '{}' POS from {:?} to ADV",
-            token.text(),
-            token.pos()
-        ));
-        token.set_pos(PartOfSpeechTag::Adv);
-    }
-
-    // Reflexive possessive अपना family: lemma अपना.
-    if matches!(token.text(), "अपना" | "अपने" | "अपनी" | "अपनों") && token.lemma() != "अपना"
-    {
-        fixes.push(format!(
-            "Fixed reflexive possessive '{}' lemma from '{}' to 'अपना'",
-            token.text(),
-            token.lemma()
-        ));
-        token.set_lemma("अपना".to_string());
-    }
-
-    // वह/यह tagged CCONJ → PRON.
-    if matches!(token.text(), "वह" | "यह") && token.pos() == PartOfSpeechTag::Cconj {
-        fixes.push(format!("Fixed '{}' POS from CCONJ to PRON", token.text()));
-        token.set_pos(PartOfSpeechTag::Pron);
-    }
-
-    // Focus particles ही/भी → PART.
-    if matches!(token.text(), "ही" | "भी") && token.pos() != PartOfSpeechTag::Part {
-        fixes.push(format!(
-            "Fixed '{}' POS from {:?} to Part",
-            token.text(),
-            token.pos()
-        ));
-        token.set_pos(PartOfSpeechTag::Part);
-    }
-
-    // Lowercase non-PROPN lemmas (only affects stray Latin text).
-    if token.pos() != PartOfSpeechTag::Propn
-        && token
-            .lemma()
-            .chars()
-            .next()
-            .is_some_and(|c| c.is_uppercase())
-    {
-        let lower = token.lemma().to_lowercase();
-        fixes.push(format!(
-            "Lowercased lemma '{}' to '{}'",
-            token.lemma(),
-            lower
-        ));
-        token.set_lemma(lower);
-    }
-
-    fixes
-}
-
-/// Tokens skipped when looking for the verbal host of a Hindi auxiliary:
-/// focus particles, negation, and displaced interrogatives can all intervene
-/// (करना ही नहीं चाहिए; तुम्हें हो क्या गया था?; कह कैसे सकती हो?).
-fn is_hindi_aux_intervener(text: &str) -> bool {
-    matches!(text, "ही" | "भी" | "तो" | "नहीं" | "न" | "मत" | "क्या" | "कैसे")
-}
-
-/// Deterministic context-dependent Hindi fixes (these need neighbor access),
-/// applied identically in `correct` and `post_corrections`.
-fn fix_hindi_context<T: TokenView>(tokens: &mut [T]) -> Vec<String> {
-    let mut fixes = Vec::new();
-
-    // "X जाने" where X ∈ {ईश्वर, खुदा, भगवान, कौन, अल्लाह} — जाने = subjunctive
-    // of जानना (to know), not जाना (to go). Fixed idioms meaning "God/who knows."
-    for i in 0..tokens.len().saturating_sub(1) {
-        if matches!(tokens[i].text(), "ईश्वर" | "खुदा" | "भगवान" | "कौन" | "अल्लाह")
-            && tokens[i + 1].text() == "जाने"
-            && tokens[i + 1].lemma() == "जाना"
-        {
-            fixes.push(format!(
-                "Fixed 'जाने' after '{}' — lemma 'जाना' (to go) → 'जानना' (to know). '{} जाने' = '{} knows'",
-                tokens[i].text(),
-                tokens[i].text(),
-                tokens[i].text()
-            ));
-            tokens[i + 1].set_lemma("जानना".to_string());
-            tokens[i + 1].set_pos(PartOfSpeechTag::Verb);
-        }
-    }
-
-    // चाहिए POS is decided by what it follows. After an infinitive (-ना/-नी/-ने
-    // verb form, possibly with particles/negation in between) it is the deontic
-    // "should" → AUX (जाना चाहिए). Anywhere else it is the main predicate of
-    // need, "X को Y चाहिए" → VERB (मुझे चाय चाहिए).
-    for i in 0..tokens.len() {
-        if tokens[i].text() != "चाहिए" {
-            continue;
-        }
-        let mut host_idx = None;
-        let mut j = i;
-        while j > 0 {
-            j -= 1;
-            if is_hindi_aux_intervener(tokens[j].text()) {
-                continue;
-            }
-            host_idx = Some(j);
-            break;
-        }
-        let deontic = host_idx.is_some_and(|j| {
-            matches!(
-                tokens[j].pos(),
-                PartOfSpeechTag::Verb | PartOfSpeechTag::Aux
-            ) && (tokens[j].text().ends_with("ना")
-                || tokens[j].text().ends_with("नी")
-                || tokens[j].text().ends_with("ने"))
-        });
-        let want = if deontic {
-            PartOfSpeechTag::Aux
-        } else {
-            PartOfSpeechTag::Verb
-        };
-        if tokens[i].pos() != want {
-            fixes.push(format!(
-                "Fixed 'चाहिए' POS from {:?} to {:?} — AUX after an infinitive (deontic 'should'), VERB otherwise (need: 'X को Y चाहिए')",
-                tokens[i].pos(),
-                want
-            ));
-            tokens[i].set_pos(want);
-        }
-    }
-
-    // ठीक/अच्छा before लगना is a predicative complement ("seems fine", "feels
-    // good") → ADJ, not ADV. Manner uses before other verbs stay ADV
-    // (अच्छा खेलता है, ठीक कहा).
-    for i in 0..tokens.len() {
-        if !matches!(tokens[i].text(), "ठीक" | "अच्छा" | "अच्छी" | "अच्छे")
-            || tokens[i].pos() != PartOfSpeechTag::Adv
-        {
-            continue;
-        }
-        let mut j = i + 1;
-        while j < tokens.len() && is_hindi_aux_intervener(tokens[j].text()) {
-            j += 1;
-        }
-        if j < tokens.len() && tokens[j].lemma() == "लगना" {
-            fixes.push(format!(
-                "Fixed '{}' POS from ADV to ADJ — predicative complement of लगना",
-                tokens[i].text()
-            ));
-            tokens[i].set_pos(PartOfSpeechTag::Adj);
-        }
-    }
-
-    // ADJ+करना conjunct verbs: after these unambiguous conjunct hosts, करना is
-    // the verbalizer → AUX (खत्म कर दें, चुप करो, दूर कर देगी). Interrogatives
-    // like कैसा कर रहा है are real main-verb uses and are not in this list.
-    const CONJUNCT_ADJ_HOSTS: &[&str] = &[
-        "खत्म",
-        "ख़त्म",
-        "दूर",
-        "चुप",
-        "बंद",
-        "साफ",
-        "साफ़",
-        "शुरू",
-        "शुरु",
-        "पूरा",
-        "पूरी",
-        "पूरे",
-        "माफ",
-        "माफ़",
-        "ठीक",
-        "तैयार",
-        "ख़ुश",
-        "खुश",
-        "अलग",
-        "समाप्त",
-        "कम",
-        "तर",
-    ];
-    for i in 1..tokens.len() {
-        if tokens[i].lemma() == "करना"
-            && tokens[i].pos() == PartOfSpeechTag::Verb
-            && CONJUNCT_ADJ_HOSTS.contains(&tokens[i - 1].text())
-        {
-            fixes.push(format!(
-                "Fixed '{}' POS from VERB to AUX — verbalizer in the conjunct verb '{} {}'",
-                tokens[i].text(),
-                tokens[i - 1].text(),
-                tokens[i].text()
-            ));
-            tokens[i].set_pos(PartOfSpeechTag::Aux);
-        }
-    }
-
-    fixes
 }
 
 impl WordCorrector for HindiCorrector {
     fn correct(&self, sentence: &mut NlpAnalyzedSentence) -> CorrectionResult {
-        let mut corrections = fix_hindi_context(&mut sentence.doc);
+        // Spelling normalization rewrites token text, which only this pipeline may
+        // do (its downstream reconstructs the sentence from the tokens) — the
+        // shared fix_hindi deliberately excludes it. Run it first so the चाहिए
+        // rules see the normalized spelling.
+        let mut corrections = Vec::new();
         for token in &mut sentence.doc {
-            corrections.extend(fix_hindi_token(token));
+            corrections.extend(normalize_hindi_spelling(token));
         }
-        // Context rules can be enabled by per-token normalizations (चहिए →
-        // चाहिए), so run the context pass again after the token pass.
-        corrections.extend(fix_hindi_context(&mut sentence.doc));
-
+        corrections.extend(fix_hindi(&mut sentence.doc));
         CorrectionResult {
             corrected: !corrections.is_empty(),
             corrections,
@@ -9701,11 +8578,10 @@ impl WordCorrector for HindiCorrector {
     }
 
     fn post_corrections(&self, tokens: &mut Vec<SimplifiedTokenPrime>) {
-        fix_hindi_context(tokens.as_mut_slice());
         for token in tokens.iter_mut() {
-            fix_hindi_token(token);
+            normalize_hindi_spelling(token);
         }
-        fix_hindi_context(tokens.as_mut_slice());
+        fix_hindi(tokens);
     }
 }
 
