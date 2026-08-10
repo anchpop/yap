@@ -1,4 +1,4 @@
-//! Translate an English book's extracted chunks into the course languages and segment
+//! Translate a book's extracted chunks into the course languages and segment
 //! them into sentences — producing `data/<lang>/sentence-sources/books/<series>/<book>.jsonl`
 //! (the source consumed by `generate_data::books`). Remember to add the book to the
 //! series' `metadata.jsonl` in the same folder.
@@ -6,13 +6,14 @@
 //!     cargo run -p generate-data --release --bin translate_book -- \
 //!         --chunks /data/books/pale-lights-extracted/chunks.jsonl \
 //!         --series pale-lights --book pale-lights \
-//!         [--take 300] [--model gpt-5.6-luna]
+//!         [--take 300] [--model gpt-5.6-luna] [--source-lang eng] [--only zho-hans]
 //!
 //! Run from the repo root (paths and `.cache/` are root-relative). Translations go
 //! through tysm (cached in `.cache/`, synced by osmo); segmentation goes through the
 //! parsley `/segment` serve with a language hint. Incremental: chunks already present in
-//! an output file are skipped, so reruns only fill gaps. English skips translation and
-//! segments the original text.
+//! an output file are skipped, so reruns only fill gaps. The source language (`--source-lang`,
+//! default `eng`) skips translation and segments the original text — e.g. a Chinese-original
+//! book runs with `--source-lang zho-hans --only zho-hans`.
 
 use std::collections::BTreeSet;
 use std::io::Write;
@@ -28,8 +29,9 @@ use serde::{Deserialize, Serialize};
 use tysm::chat_completions::ChatClient;
 
 /// (output code, display name for the translation prompt, segmenter language hint).
-/// Simplified Chinese has no `lexide::Language` variant, so it segments with no hint —
-/// the parsley `/segment` serve splits on Chinese sentence punctuation without one.
+/// Simplified Chinese has no `lexide::Language` variant, so it segments locally with
+/// [`segment_chinese`] — the parsley `/segment` serve filters out content it judges
+/// nontextual (by design), but book prose is all textual and we want it lossless.
 const LANGS: [(&str, &str, Option<Language>); 11] = [
     ("deu", "German", Some(Language::German)),
     ("eng", "English", Some(Language::English)),
@@ -77,6 +79,42 @@ struct ChunkTranslation {
     translation: String,
 }
 
+/// Deterministic sentence splitter for Chinese: split after runs of 。！？…
+/// (carrying along any closing quotes/brackets) and at line breaks. Lossless —
+/// the concatenation of the output is the input minus whitespace.
+fn segment_chinese(text: &str) -> Vec<String> {
+    const TERMINALS: [char; 4] = ['。', '！', '？', '…'];
+    const CLOSERS: [char; 5] = ['”', '』', '」', '）', '"'];
+    let mut sentences = Vec::new();
+    let mut current = String::new();
+    let mut flush = |current: &mut String| {
+        let sentence = current.trim();
+        if !sentence.is_empty() {
+            sentences.push(sentence.to_string());
+        }
+        current.clear();
+    };
+    let mut chars = text.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c == '\n' {
+            flush(&mut current);
+            continue;
+        }
+        current.push(c);
+        if TERMINALS.contains(&c) {
+            while chars
+                .peek()
+                .is_some_and(|c| TERMINALS.contains(c) || CLOSERS.contains(c))
+            {
+                current.push(chars.next().unwrap());
+            }
+            flush(&mut current);
+        }
+    }
+    flush(&mut current);
+    sentences
+}
+
 fn arg_value(name: &str) -> Option<String> {
     std::env::args()
         .collect::<Vec<_>>()
@@ -97,6 +135,13 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or(300);
     // Restrict the run to a single output code (e.g. `--only zho-hans`); others are skipped.
     let only = arg_value("--only");
+    // The language the chunks are already written in — skips translation for that
+    // output code and translates "from" it for the others.
+    let source_lang = arg_value("--source-lang").unwrap_or_else(|| "eng".to_string());
+    let (_, source_lang_name, _) = LANGS
+        .iter()
+        .find(|(code, _, _)| *code == source_lang)
+        .with_context(|| format!("unknown --source-lang {source_lang}"))?;
 
     let all_chunks: Vec<Chunk> = std::fs::read_to_string(&chunks_path)
         .with_context(|| format!("read {chunks_path}"))?
@@ -161,18 +206,19 @@ async fn main() -> anyhow::Result<()> {
         let mut writer = std::io::BufWriter::new(out_file);
 
         let system_prompt = format!(
-            "Translate this excerpt from an English fantasy novel into natural, fluent {}. \
-             Preserve the paragraph breaks. Keep names as a native translation would \
-             (transliterate where that is the convention). Return only the translation.",
-            lang_name
+            "Translate this excerpt from a fantasy novel written in {source_lang_name} into \
+             natural, fluent {lang_name}. Preserve the paragraph breaks. Keep names as a \
+             native translation would (transliterate where that is the convention). Return \
+             only the translation.",
         );
 
         let mut results = futures::stream::iter(todo)
             .map(|chunk| {
                 let system_prompt = system_prompt.clone();
                 let segmenter = &segmenter;
+                let source_lang = source_lang.clone();
                 async move {
-                    let text = if code == "eng" {
+                    let text = if code == source_lang {
                         chunk.text.clone()
                     } else {
                         let response: ChunkTranslation = CHAT_CLIENT
@@ -182,10 +228,12 @@ async fn main() -> anyhow::Result<()> {
                         response.translation
                     };
                     let sentences = match seg_hint {
-                        Some(l) => segmenter.segment_sentences_in(&text, l).await,
-                        None => segmenter.segment_sentences(&text).await,
-                    }
-                    .with_context(|| format!("segment chunk {}", chunk.id))?;
+                        Some(l) => segmenter
+                            .segment_sentences_in(&text, l)
+                            .await
+                            .with_context(|| format!("segment chunk {}", chunk.id))?,
+                        None => segment_chinese(&text),
+                    };
                     anyhow::Ok((chunk.id.clone(), sentences))
                 }
             })
@@ -233,4 +281,31 @@ async fn main() -> anyhow::Result<()> {
         CHAT_CLIENT.cost().unwrap_or(0.0)
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::segment_chinese;
+
+    #[test]
+    fn splits_on_terminals_and_carries_closers() {
+        let text = "“方源，交出春秋蝉！”他大喝。这里早已布下天罗大网……\n\n在他看来——\n\n无非是早死、晚死的区别罢了。";
+        assert_eq!(
+            segment_chinese(text),
+            vec![
+                "“方源，交出春秋蝉！”",
+                "他大喝。",
+                "这里早已布下天罗大网……",
+                "在他看来——",
+                "无非是早死、晚死的区别罢了。",
+            ]
+        );
+    }
+
+    #[test]
+    fn lossless_modulo_whitespace() {
+        let text = "第一段。没有终结标点的段尾\n\n“对话！？”……第二段。";
+        let strip = |s: &str| s.chars().filter(|c| !c.is_whitespace()).collect::<String>();
+        assert_eq!(strip(&segment_chinese(text).concat()), strip(text));
+    }
 }
