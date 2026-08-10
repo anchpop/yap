@@ -124,7 +124,7 @@ pub fn load_canonicalized(
     }
 
     for tokens in already_processed.values_mut() {
-        crate::token_corrections::fix_tokens(language, tokens);
+        token_corrections::fix_tokens(language, tokens);
     }
 
     Ok(already_processed)
@@ -263,7 +263,7 @@ pub async fn process_sentences(
                 let json = serde_json::to_string(&tokenized)?;
                 writeln!(writer, "{json}")?;
                 // …while everything downstream sees the canonical form
-                crate::token_corrections::fix_tokens(language, &mut tokenized.tokens);
+                token_corrections::fix_tokens(language, &mut tokenized.tokens);
                 newly_processed.insert(tokenized.sentence, tokenized.tokens);
             }
             Err(failed_sentence) => {

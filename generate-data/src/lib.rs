@@ -101,7 +101,6 @@ pub mod read_anki;
 pub mod slot_analysis;
 pub mod target_sentences;
 pub mod tatoeba;
-pub mod token_corrections;
 pub mod tokenize;
 pub mod wiktionary_conjugations;
 pub mod wiktionary_terms;

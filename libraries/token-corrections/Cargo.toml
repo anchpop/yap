@@ -1,0 +1,8 @@
+[package]
+name = "token-corrections"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+language-utils = { path = "../../language-utils" }
+lexide.workspace = true
