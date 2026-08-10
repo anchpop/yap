@@ -11,8 +11,10 @@
 //!
 //! Defaults: out-dir `out`, export-dir `out/training-data`. The export mirrors the
 //! `<lang>/<store>.jsonl` layout, covering every language (for languages with no
-//! correction rules the content matches the raw store), so it can serve as a
-//! drop-in `--big-dir` for data_prep.
+//! correction rules the content matches the raw store) and every store, the
+//! synthetic-augmentation files included — so `out/training-data` is the complete
+//! canonical training set, usable directly as data_prep's `--big-dir` (or synced
+//! over lexide's `data/big` in one copy).
 
 use anyhow::Result;
 
@@ -20,8 +22,8 @@ const STORES: &[&str] = &[
     "target_language_sentences_tokenization.jsonl",
     "restricted_sentences_tokenization.jsonl",
     "target_language_multiword_terms_tokenization.jsonl",
-    // lexide's synthetic-augmentation store lives on the lexide side, not in out/;
-    // listing it here lets this bin canonicalize a copied-in big-dir too
+    // lexide's synthetic-augmentation sentences, labelled by the teacher on the
+    // lexide side and synced into out/ so this one command covers every store
     "target_language_sentences_tokenization_augmented.jsonl",
 ];
 

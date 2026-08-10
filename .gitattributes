@@ -11,6 +11,7 @@ out/corrected_proper_nouns.jsonl filter=lfs diff=lfs merge=lfs -text
 out/*/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text
 out/*/target_language_sentences.jsonl filter=lfs diff=lfs merge=lfs -text
 out/*/target_language_sentences_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
+out/*/target_language_sentences_tokenization_augmented.jsonl filter=lfs diff=lfs merge=lfs -text
 out/*/target_language_multiword_terms_tokenization.jsonl filter=lfs diff=lfs merge=lfs -text
 out/cleaned_*.jsonl filter=lfs diff=lfs merge=lfs -text
 
