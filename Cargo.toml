@@ -15,7 +15,7 @@ members = [
     "libraries/enumap",
     "libraries/opensubtitles-downloader",
     "libraries/omnigram",
-    "libraries/weekly-active-users",
+    "libraries/user-metrics",
     "libraries/google-tts",
     "generate-dictionary-data",
     "yap-mcp",

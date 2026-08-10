@@ -34,7 +34,7 @@ use tysm::chat_completions::ChatClient;
 static CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
     let my_api =
         "https://g7edusstdonmn3vxdh3qdypkrq0wzttx.lambda-url.us-east-1.on.aws/v1/".to_string();
-    ChatClient::from_env("gpt-5.4")
+    ChatClient::from_env("gpt-5.6-sol")
         .unwrap()
         .with_url(my_api)
         .with_reasoning_effort("medium")

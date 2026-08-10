@@ -1,5 +1,5 @@
 [package]
-name = "weekly-active-users"
+name = "user-metrics"
 version = "0.1.0"
 edition = "2024"
 
