@@ -39,6 +39,7 @@ unicode-normalization.workspace = true
 dashmap = { version = "6.2.1", features = ["serde"] }
 indicatif.workspace = true
 lexide.workspace = true
+token-corrections = { path = "../libraries/token-corrections" }
 scraper = "0.27"
 percent-encoding = "2.3.2"
 dotenvy = "0.15.7"

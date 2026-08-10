@@ -12,6 +12,7 @@ members = [
     "libraries/course-spot-check",
     "libraries/sentence-sampler",
     "libraries/clean-nlp-data",
+    "libraries/token-corrections",
     "libraries/enumap",
     "libraries/opensubtitles-downloader",
     "libraries/omnigram",

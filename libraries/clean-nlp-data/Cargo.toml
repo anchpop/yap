@@ -15,5 +15,6 @@ sentence-sampler = { path = "../sentence-sampler" }
 tokio.workspace = true
 futures.workspace = true
 generate-data = { path = "../../generate-data" }
+token-corrections = { path = "../token-corrections" }
 indicatif.workspace = true
 unicode-general-category = "1.1"

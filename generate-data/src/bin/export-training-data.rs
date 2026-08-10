@@ -20,6 +20,9 @@ const STORES: &[&str] = &[
     "target_language_sentences_tokenization.jsonl",
     "restricted_sentences_tokenization.jsonl",
     "target_language_multiword_terms_tokenization.jsonl",
+    // lexide's synthetic-augmentation store lives on the lexide side, not in out/;
+    // listing it here lets this bin canonicalize a copied-in big-dir too
+    "target_language_sentences_tokenization_augmented.jsonl",
 ];
 
 fn main() -> Result<()> {

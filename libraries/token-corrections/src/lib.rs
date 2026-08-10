@@ -1,9 +1,11 @@
-//! Deterministic, idempotent per-language token corrections, shared by two pipelines:
-//! the silver tokenization data (`nlp::process_sentences`, lexide output) and
-//! clean-nlp-data's LLM cleaning (both the NLP proposal it shows the LLM and the LLM's
-//! output). Keeping one implementation here is what keeps the two datasets consistent —
-//! the corrections exist precisely because the corpus used to write the same string
-//! both ways.
+//! Deterministic, idempotent per-language token corrections — the single home for
+//! tokenization/POS/lemma policy that a model can't be trusted to apply
+//! consistently. Two consumers: generate-data's silver tokenization pipeline
+//! (`nlp::process_sentences` applies these at load time over the raw lexide
+//! stores) and clean-nlp-data's LLM cleaning (both the NLP proposal it shows the
+//! LLM and the LLM's output). Keeping one implementation here is what keeps the
+//! two datasets consistent — the corrections exist precisely because the corpus
+//! used to write the same string both ways.
 //!
 //! Everything operates through [`TokenView`], a common window onto the three token
 //! types the pipelines use: `language_utils::DocToken` (spaCy-side proposals),
@@ -1563,8 +1565,40 @@ fn ja_next_is_naru<T: TokenView>(tokens: &[T], i: usize) -> bool {
     })
 }
 
+/// Multiword proper nouns the teacher labels both ways — merged per the cleaning
+/// prompt's "unjoined multiword proper nouns should be one token". These occur
+/// almost entirely in the synthetic augmentation corpus (自由の女神 and 万里の長城
+/// were written merged/split roughly 50:50 there), where the split pieces are all
+/// real words, so only an explicit list can decide.
+const JA_MWE_MERGES: &[(&[&str], &str)] = &[
+    (&["自由", "の", "女神"], "自由の女神"),
+    (&["万里", "の", "長城"], "万里の長城"),
+];
+
 fn fix_japanese_segmentation<T: TokenView + Clone>(tokens: &mut Vec<T>) -> Vec<String> {
     let mut fixes = apply_segmentation(tokens, &JA_SEGMENTATION);
+    let mut i = 0;
+    while i < tokens.len() {
+        let matched = JA_MWE_MERGES.iter().find(|(seq, _)| {
+            i + seq.len() <= tokens.len()
+                && seq.iter().enumerate().all(|(j, piece)| {
+                    let tok = &tokens[i + j];
+                    let text = if j == 0 {
+                        tok.text().trim()
+                    } else {
+                        tok.text()
+                    };
+                    text == *piece && (j + 1 == seq.len() || tok.whitespace().is_empty())
+                })
+        });
+        if let Some((seq, whole)) = matched {
+            fixes.push(format!("Merged multiword proper noun {whole}"));
+            for _ in 1..seq.len() {
+                merge_pair(tokens, i, PartOfSpeechTag::Propn, whole);
+            }
+        }
+        i += 1;
+    }
     // Lexicalized に-adverbs the prompt lists: 本当に, 確かに — merge unless a なる
     // follows (see ja_next_is_naru). (Conditional ば after an izenkei stem needs no
     // rule here: `absorbs_suffix` already pulls it onto the predicate.)
@@ -2442,6 +2476,27 @@ mod tests {
         ];
         fix_japanese(&mut tokens);
         assert_eq!(texts(&tokens), vec!["本当", "に", "なった"]);
+    }
+
+    #[test]
+    fn japanese_mwe_merge() {
+        use lexide::DependencyRelation as D;
+        // 自由(nmod→女神) の(case→自由) 女神(nsubj→ext) は(case→女神) …
+        let mut tokens = vec![
+            ltok("自由", Noun, D::Nmod, 3),
+            ltok("の", Adp, D::Case, 1),
+            ltok("女神", Noun, D::Nsubj, 5),
+            ltok("は", Adp, D::Case, 3),
+            ltok("ある", Verb, D::Root, 0),
+        ];
+        fix_japanese(&mut tokens);
+        assert_eq!(texts(&tokens), vec!["自由の女神", "は", "ある"]);
+        // the merged PROPN keeps the head noun's external attachment
+        assert_eq!(tokens[0].pos, tag_to_lexide_pos(Propn));
+        assert_eq!(tokens[0].lemma.lemma, "自由の女神");
+        assert_eq!((tokens[0].dep, tokens[0].head), (D::Nsubj, 3));
+        assert_eq!(tokens[1].head, 1);
+        assert_eq!(tokens[2].head, 0);
     }
 
     #[test]

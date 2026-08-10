@@ -1,9 +1,9 @@
 use crate::polysemous_words;
-use generate_data::token_corrections::{
+use language_utils::{Language, NlpAnalyzedSentence, PartOfSpeechTag};
+use token_corrections::{
     TH_PREVERBAL_AUX, TokenView, ZH_MODAL_VERBS, fix_chinese, fix_hindi, fix_japanese, fix_korean,
     fix_thai, is_hindi_aux_intervener, normalize_hindi_spelling,
 };
-use language_utils::{Language, NlpAnalyzedSentence, PartOfSpeechTag};
 use tysm::chat_completions::ChatClient;
 
 /// Check a token against the polysemous word list for a language, returning a reason if it matches.
