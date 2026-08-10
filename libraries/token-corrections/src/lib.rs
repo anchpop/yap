@@ -91,7 +91,9 @@ macro_rules! impl_token_view {
 
 impl_token_view!(language_utils::DocToken);
 
-fn lexide_pos_to_tag(pos: lexide::pos::PartOfSpeech) -> PartOfSpeechTag {
+/// lexide's POS enum and language-utils' are the same UPOS set; public so
+/// format-normalizing exporters can convert without a serde round-trip.
+pub fn lexide_pos_to_tag(pos: lexide::pos::PartOfSpeech) -> PartOfSpeechTag {
     use lexide::pos::PartOfSpeech as P;
     match pos {
         P::Adj => PartOfSpeechTag::Adj,
@@ -214,6 +216,29 @@ pub enum PieceDep {
     Mark,
     Nummod,
     Obj,
+}
+
+impl PieceDep {
+    /// The Universal Dependencies label string, for token types that store the
+    /// dependency as text (the gold cleaned_*.jsonl format) rather than as
+    /// lexide's enum.
+    pub fn ud_label(self) -> &'static str {
+        match self {
+            PieceDep::Advmod => "advmod",
+            PieceDep::Aux => "aux",
+            PieceDep::Case => "case",
+            PieceDep::Clf => "clf",
+            PieceDep::Compound => "compound",
+            PieceDep::CompoundLvc => "compound:lvc",
+            PieceDep::Cop => "cop",
+            PieceDep::Det => "det",
+            PieceDep::Discourse => "discourse",
+            PieceDep::Fixed => "fixed",
+            PieceDep::Mark => "mark",
+            PieceDep::Nummod => "nummod",
+            PieceDep::Obj => "obj",
+        }
+    }
 }
 
 /// Where a split piece attaches. Exactly one piece per split is `Head`. The labels

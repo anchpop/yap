@@ -63,7 +63,9 @@ pub trait SentenceClassifier {
 
 /// Trait for language-specific word correction rules
 pub trait WordCorrector {
-    /// If true, skip LLM cleaning and dependency parsing entirely — just pass through NLP output.
+    /// If true, skip the LLM cleaning pass — the NLP analysis is trusted as-is.
+    /// The shared validation and dependency passes still run, so passthrough gold
+    /// carries dep/head like every other language's.
     fn passthrough(&self) -> bool {
         false
     }

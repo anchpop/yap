@@ -1225,47 +1225,6 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     let output_file = output_dir.join(format!("cleaned_{}.jsonl", language.code()));
     let output_tmp = output_dir.join(format!("cleaned_{}.jsonl.tmp", language.code()));
 
-    if is_passthrough {
-        // Passthrough mode: skip LLM cleaning and dependency parsing, write spaCy tokens directly
-        println!("Passthrough mode — skipping LLM cleaning and dependency parsing");
-        let file = File::create(&output_tmp)
-            .context(format!("Failed to create output file: {output_tmp:?}"))?;
-        let mut writer = BufWriter::new(file);
-        for (sentence, _suspicious_reasons) in &classified_sentences {
-            let tokens: Vec<_> = sentence
-                .doc
-                .iter()
-                .map(|token| {
-                    serde_json::json!({
-                        "text": token.text,
-                        "whitespace": token.whitespace,
-                        "pos": token.pos,
-                        "lemma": token.lemma,
-                    })
-                })
-                .collect();
-
-            let output = serde_json::json!({
-                "sentence": sentence.sentence,
-                "tokens": tokens,
-            });
-            writeln!(writer, "{}", serde_json::to_string(&output)?)
-                .context("Failed to write to output file")?;
-        }
-        writer.flush().context("Failed to flush writer")?;
-        drop(writer);
-        std::fs::rename(&output_tmp, &output_file).context("Failed to move gold into place")?;
-        println!("Results written to: {}", output_file.display());
-        set_status(
-            &base_dir,
-            &format!(
-                "done (passthrough): wrote {sample_count} gold sentences, LLM cost ${:.2}",
-                total_llm_cost()
-            ),
-        );
-        return Ok(());
-    }
-
     // Clean each sentence with LLM
     let pb = ProgressBar::new(sample_count as u64);
     pb.set_style(
@@ -1289,17 +1248,34 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                 }
 
                 let corrector = get_corrector(language);
-                let result = clean_sentence_with_llm(
-                    language,
-                    &sentence,
-                    suspicious_reasons,
-                    cleaning_client(language),
-                )
-                .await
-                .map(|mut tokens| {
-                    corrector.post_corrections(&mut tokens);
-                    tokens
-                });
+                // Passthrough languages (English): the NLP analysis IS the gold
+                // analysis — no cleaning LLM — but it flows through the same
+                // validation and dependency pass as every other language, so the
+                // gold format (dep/head included) stays uniform across languages.
+                let result = if is_passthrough {
+                    Ok(sentence
+                        .doc
+                        .iter()
+                        .map(|token| SimplifiedTokenPrime {
+                            text: token.text.clone(),
+                            whitespace: token.whitespace.clone(),
+                            pos: token.pos,
+                            lemma: token.lemma.clone(),
+                        })
+                        .collect())
+                } else {
+                    clean_sentence_with_llm(
+                        language,
+                        &sentence,
+                        suspicious_reasons,
+                        cleaning_client(language),
+                    )
+                    .await
+                    .map(|mut tokens| {
+                        corrector.post_corrections(&mut tokens);
+                        tokens
+                    })
+                };
 
                 pb.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
                 pb.inc(1);

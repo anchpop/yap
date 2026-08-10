@@ -130,27 +130,6 @@ pub fn load_canonicalized(
     Ok(already_processed)
 }
 
-/// Write the canonicalized view of a tokenization store to `dest` — the form the
-/// student tokenizer trains on (`export-training-data` bin). Entries are sorted by
-/// sentence, so the export is deterministic. The source store is read-only here.
-pub fn export_canonicalized(store: &Path, language: Language, dest: &Path) -> Result<usize> {
-    let entries = load_canonicalized(store, language)?;
-    if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent)?;
-    }
-    let file = std::fs::File::create(dest)?;
-    let mut writer = std::io::BufWriter::new(file);
-    for (sentence, tokens) in &entries {
-        let record = TokenizedSentence {
-            sentence: sentence.clone(),
-            tokens: tokens.clone(),
-        };
-        writeln!(writer, "{}", serde_json::to_string(&record)?)?;
-    }
-    writer.flush()?;
-    Ok(entries.len())
-}
-
 /// Tokenize a list of sentences and write results to an output file
 /// This function implements incremental processing - it will only tokenize sentences
 /// that are not already in the output file
