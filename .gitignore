@@ -69,6 +69,9 @@ out/*/minimal_pairs.jsonl
 out/*/audio_verification_failures.jsonl
 out/*/audio_verification_all.jsonl
 out/cleaned_*.partial.jsonl
+# Canonicalized training export — derived from the raw stores, regenerate with
+# `cargo run --release -p generate-data --bin export-training-data`
+out/training-data/
 out/clean-nlp-data/*/status.txt
 
 target-codex/
