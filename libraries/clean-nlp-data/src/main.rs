@@ -358,7 +358,7 @@ fn run_nlp_cached(
         );
     } else {
         println!(
-            "NLP cache hit: {}/{} sentences cached, running spaCy on {} new sentences",
+            "NLP cache hit: {}/{} sentences cached, running the base NLP layer (spaCy/Sudachi/HanLP/PyThaiNLP) on {} new sentences",
             sentences.len() - uncached_unique.len(),
             sentences.len(),
             uncached_unique.len()
