@@ -2,11 +2,11 @@
 //! phoneme model hosted on Modal.
 //!
 //! For each clip we:
-//! 1. Hash the raw .wav bytes (xxh3_64) and check
-//!    `.cache/wav2vec2/<WAV2VEC2_CACHE_VERSION>/<hash>.json` — same caching
-//!    philosophy as `translate.rs` and the tysm chat clients (hash
-//!    → response file). The model/decoder version is part of the path so a
-//!    model swap can't silently reuse stale predictions.
+//! 1. Hash the raw .wav bytes (xxh3_64) and check the shared cache store at
+//!    `wav2vec2/<WAV2VEC2_CACHE_VERSION>/<hash>` — same caching philosophy
+//!    as `translate.rs` and the tysm chat clients (hash → response). The
+//!    model/decoder version is part of the key so a model swap can't
+//!    silently reuse stale predictions.
 //! 2. On cache miss, decode WAV → f32 mono 16kHz via ffmpeg and POST to the
 //!    same Modal endpoint the AI backend uses
 //!    (`yap-ai-backend/src/main.rs::get_phonemes_from_modal`), then persist
@@ -27,7 +27,7 @@ use language_utils::Language;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, Stdio};
 use std::sync::LazyLock;
 use xxhash_rust::xxh3::xxh3_64;
@@ -168,7 +168,10 @@ impl ClipVerification {
 
 pub struct VerifyContext<'a> {
     pub http: &'a reqwest::Client,
-    pub cache_dir: PathBuf,
+    /// The shared cache store; predictions live under `wav2vec2/{version}/{hash}`.
+    store: osmo::Store,
+    /// Partitions predictions by (model, decoder) as part of the cache key.
+    cache_version: String,
     /// word (lowercase) → accepted IPA pronunciations (main + alternates).
     /// The verifier passes a clip if the model's prediction is within
     /// threshold of *any* of these variants — alternates exist because
@@ -197,7 +200,6 @@ impl<'a> VerifyContext<'a> {
     /// expected deploy marker likewise come from env.
     pub fn new(
         http: &'a reqwest::Client,
-        cache_root: &Path,
         word_to_pronunciation: &'a HashMap<String, language_utils::Pronunciations>,
         target_language: Language,
     ) -> Result<Self> {
@@ -212,7 +214,6 @@ impl<'a> VerifyContext<'a> {
             .filter(|s| !s.is_empty());
         Self::with_overrides(
             http,
-            cache_root,
             word_to_pronunciation,
             target_language,
             version,
@@ -228,19 +229,16 @@ impl<'a> VerifyContext<'a> {
     #[allow(clippy::too_many_arguments)]
     pub fn with_overrides(
         http: &'a reqwest::Client,
-        cache_root: &Path,
         word_to_pronunciation: &'a HashMap<String, language_utils::Pronunciations>,
         target_language: Language,
         cache_version: String,
         mismatch_threshold: f64,
         expected_deploy_marker: Option<String>,
     ) -> Result<Self> {
-        let cache_dir = cache_root.join("wav2vec2").join(cache_version);
-        std::fs::create_dir_all(&cache_dir)
-            .with_context(|| format!("Failed to create cache dir {}", cache_dir.display()))?;
         Ok(Self {
             http,
-            cache_dir,
+            store: crate::cache_remote::store(),
+            cache_version,
             word_to_pronunciation,
             mismatch_threshold,
             target_language,
@@ -456,10 +454,10 @@ async fn predict_phonemes(
     wav_bytes: &[u8],
 ) -> Result<(Vec<String>, Vec<Vec<RawPhonemeAlt>>)> {
     let hash = xxh3_64(wav_bytes);
-    let cache_file = ctx.cache_dir.join(format!("{hash:016x}.json"));
+    let cache_key = format!("wav2vec2/{}/{hash:016x}", ctx.cache_version);
 
-    if let Ok(contents) = std::fs::read_to_string(&cache_file)
-        && let Ok(cached) = serde_json::from_str::<CachedPrediction>(&contents)
+    if let Some(contents) = ctx.store.read(&cache_key).await
+        && let Ok(cached) = serde_json::from_slice::<CachedPrediction>(&contents)
     {
         return Ok((cached.raw_phonemes, cached.top_k));
     }
@@ -581,8 +579,10 @@ async fn predict_phonemes(
     };
     let serialized =
         serde_json::to_string(&to_write).context("Failed to serialize cache payload")?;
-    std::fs::write(&cache_file, serialized)
-        .with_context(|| format!("Failed to write cache file {}", cache_file.display()))?;
+    ctx.store
+        .write(&cache_key, serialized.as_bytes())
+        .await
+        .with_context(|| format!("Failed to write cache entry {cache_key}"))?;
 
     Ok((raw_phonemes, top_k))
 }
@@ -1086,7 +1086,7 @@ pub fn default_voice_for(language: Language) -> Option<TtsVoice> {
 
 /// Call Google TTS for `text` (using `voice`), running the result through
 /// the same wav2vec2 verifier we use for human audio. The synthesized audio
-/// is cached in `.cache/google-tts/<hash>.json` keyed by (text, voice, speed).
+/// is cached under `google-tts/{hash}` keyed by (text, voice, speed).
 ///
 /// `actor` is recorded on the resulting [`ClipVerification`] for logging —
 /// callers typically pass something like `"google-tts"` so the synthetic
@@ -1102,20 +1102,6 @@ pub async fn verify_with_google_tts(
     voice: TtsVoice,
     google_api_key: &str,
 ) -> Result<ClipVerification> {
-    let cache_dir = ctx
-        .cache_dir
-        .parent()
-        .map(|p| p.join("google-tts"))
-        .ok_or_else(|| {
-            anyhow::anyhow!("cache_dir has no parent — can't derive google-tts cache dir")
-        })?;
-    std::fs::create_dir_all(&cache_dir).with_context(|| {
-        format!(
-            "Failed to create google-tts cache dir {}",
-            cache_dir.display()
-        )
-    })?;
-
     // Cache key: hash the request inputs that uniquely determine the output.
     // If we ever change voice/speed/text, the cache miss is automatic.
     let speed = 1.0f64;
@@ -1124,10 +1110,10 @@ pub async fn verify_with_google_tts(
         voice.language_code, voice.voice_name
     );
     let hash = xxh3_64(cache_seed.as_bytes());
-    let cache_file = cache_dir.join(format!("{hash:016x}.json"));
+    let cache_key = format!("google-tts/{hash:016x}");
 
-    let (audio_bytes, tts_note) = if let Ok(s) = std::fs::read_to_string(&cache_file)
-        && let Ok(cached) = serde_json::from_str::<CachedTts>(&s)
+    let (audio_bytes, tts_note) = if let Some(s) = ctx.store.read(&cache_key).await
+        && let Ok(cached) = serde_json::from_slice::<CachedTts>(&s)
     {
         let bytes = base64::engine::general_purpose::STANDARD
             .decode(&cached.audio_base64)
@@ -1171,11 +1157,15 @@ pub async fn verify_with_google_tts(
             passed,
             last_defect: last_defect.clone(),
         };
-        std::fs::write(
-            &cache_file,
-            serde_json::to_string(&to_cache).context("serialize cached_tts")?,
-        )
-        .with_context(|| format!("Failed to write {}", cache_file.display()))?;
+        ctx.store
+            .write(
+                &cache_key,
+                serde_json::to_string(&to_cache)
+                    .context("serialize cached_tts")?
+                    .as_bytes(),
+            )
+            .await
+            .with_context(|| format!("Failed to write cache entry {cache_key}"))?;
         let note = (!passed).then(|| {
             format!(
                 "google-tts hit retry limit after {} attempts ({})",

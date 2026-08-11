@@ -21,7 +21,7 @@ This ~3400-line file contains language-specific modules that fetch and parse Wik
 - Key CSS selectors for French: `th.roa-indicative-left-rail`, `th.roa-subjunctive-left-rail`, `th.roa-imperative-left-rail`
 - Each `<td>` cell in a tense row contains the conjugated form as an `<a>` link or `<strong class="selflink">`
 - Noun gender parsing is also handled here (e.g., `parse_french_noun_gender`)
-- **Caching**: Pages are cached to `.cache/wiktionary/{language}/{word}.html` with 100ms rate limiting
+- **Caching**: Pages are cached in the shared osmo store under `wiktionary/{language}/{word}` with 100ms rate limiting. Inspect entries with `osmo ls .cache wiktionary/french/` or `osmo cat .cache "wiktionary/french/boire"` (the `osmo` CLI ships with the osmo crate: `cargo install --git https://github.com/anchpop/osmo` or `cargo run` in its checkout)
 - **Reflexive verb fallback**: French reflexive verbs (e.g., "s'échapper") fall back to the base form ("échapper")
 
 ### Stage 2: Morphology Feature Generation (`generate-data/src/morphology_analysis.rs`)

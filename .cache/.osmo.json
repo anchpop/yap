@@ -1,1 +1,0 @@
-{"files":[{"path":"*.kv","strategy":"records"},{"path":"google_translate/master_cache.json","strategy":"json_merge"}]}

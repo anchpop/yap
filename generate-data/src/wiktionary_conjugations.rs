@@ -1,34 +1,26 @@
 use anyhow::Context as _;
 use scraper::{ElementRef, Html, Selector};
 use std::collections::HashMap;
-use std::path::Path;
 
-/// Get HTML for a Wiktionary page, using cache if available
+/// Get HTML for a Wiktionary page, from the shared cache store when available,
+/// else fetched (rate-limited) and cached under `wiktionary/{lang}/{word}`.
 ///
-/// This function checks the cache first. If the file is cached, it returns it.
-/// Otherwise, it fetches from Wiktionary and saves to cache.
-///
-/// # Arguments
-/// * `word` - The word to fetch
-/// * `cache_dir` - Directory to cache HTML files
-///
-/// # Returns
-/// The HTML content of the Wiktionary page
+/// `lang` is the cache namespace for the language being processed (e.g.
+/// `"french"`); inspect entries with `osmo ls .cache wiktionary/french/`.
 // Global mutex to ensure rate limiting works even with parallel async requests
 static WIKTIONARY_FETCH_LOCK: std::sync::LazyLock<tokio::sync::Mutex<()>> =
     std::sync::LazyLock::new(|| tokio::sync::Mutex::new(()));
 
-pub async fn get_wiktionary_html(word: &str, cache_dir: &Path) -> anyhow::Result<String> {
-    std::fs::create_dir_all(cache_dir)?;
-
-    let cache_file = cache_dir.join(format!("{word}.html"));
+pub async fn get_wiktionary_html(word: &str, lang: &str) -> anyhow::Result<String> {
+    let store = crate::cache_remote::store();
+    let key = format!("wiktionary/{lang}/{word}");
 
     // Check cache first
-    if cache_file.exists() {
-        match std::fs::read_to_string(&cache_file) {
+    if let Some(bytes) = store.read(&key).await {
+        match String::from_utf8(bytes) {
             Ok(html) => return Ok(html),
             Err(e) => {
-                eprintln!("Failed to read cached HTML for {word}: {e}, will re-fetch");
+                eprintln!("Cached HTML for {word} is not UTF-8 ({e}), will re-fetch");
             }
         }
     }
@@ -57,9 +49,8 @@ pub async fn get_wiktionary_html(word: &str, cache_dir: &Path) -> anyhow::Result
         .await
         .context(format!("Failed to read HTML for {word}"))?;
 
-    // Save to cache
-    if let Err(e) = std::fs::write(&cache_file, &html) {
-        eprintln!("Warning: Failed to write cache file for {word}: {e}");
+    if let Err(e) = store.write(&key, html.as_bytes()).await {
+        eprintln!("Warning: Failed to cache HTML for {word}: {e}");
     }
 
     Ok(html)
@@ -426,7 +417,7 @@ pub mod french {
     /// Fetch French verb conjugations from Wiktionary with HTML caching
     pub async fn fetch_french_verb_conjugations(
         verbs: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, FrenchVerbConjugation>> {
         use futures::StreamExt;
 
@@ -451,7 +442,7 @@ pub mod french {
                         let mut tried_fallback = false;
 
                         let result = loop {
-                            match super::get_wiktionary_html(verb_to_try, cache_dir).await {
+                            match super::get_wiktionary_html(verb_to_try, lang).await {
                                 Ok(html) => {
                                     match parse_french_verb_conjugation(&html, verb_to_try) {
                                         Ok(conjugation) => {
@@ -537,7 +528,7 @@ pub mod french {
     /// Fetch French noun genders from Wiktionary with HTML caching
     pub async fn fetch_french_noun_genders(
         nouns: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, super::NounGender>> {
         use futures::StreamExt;
 
@@ -557,7 +548,7 @@ pub mod french {
                     async move {
                         pb.set_message(noun.to_string());
 
-                        let result = match super::get_wiktionary_html(noun, cache_dir).await {
+                        let result = match super::get_wiktionary_html(noun, lang).await {
                             Ok(html) => parse_french_noun_gender(&html, noun)
                                 .map_err(|e| format!("Failed to parse French noun '{noun}': {e}")),
                             Err(e) => {
@@ -1170,7 +1161,7 @@ pub mod spanish {
     ///
     /// # Arguments
     /// * `verbs` - List of verb infinitives to fetch
-    /// * `cache_dir` - Directory to cache HTML files (e.g., `.cache/wiktionary/spanish/`)
+    /// * `lang` - Cache namespace for the language (e.g., `"spanish"`)
     ///
     /// # Returns
     /// HashMap mapping verb infinitives to their conjugations
@@ -1181,7 +1172,7 @@ pub mod spanish {
     /// its conjugation instead.
     pub async fn fetch_spanish_verb_conjugations(
         verbs: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, SpanishVerbConjugation>> {
         use futures::StreamExt;
 
@@ -1206,7 +1197,7 @@ pub mod spanish {
                         let mut tried_fallback = false;
 
                         let result = loop {
-                            match super::get_wiktionary_html(verb_to_try, cache_dir).await {
+                            match super::get_wiktionary_html(verb_to_try, lang).await {
                                 Ok(html) => {
                                     match parse_spanish_verb_conjugation(&html, verb_to_try) {
                                         Ok(conjugation) => {
@@ -1279,7 +1270,7 @@ pub mod spanish {
     /// Fetch Spanish noun genders from Wiktionary with HTML caching
     pub async fn fetch_spanish_noun_genders(
         nouns: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, super::NounGender>> {
         use futures::StreamExt;
 
@@ -1299,7 +1290,7 @@ pub mod spanish {
                     async move {
                         pb.set_message(noun.to_string());
 
-                        let result = match super::get_wiktionary_html(noun, cache_dir).await {
+                        let result = match super::get_wiktionary_html(noun, lang).await {
                             Ok(html) => parse_spanish_noun_gender(&html, noun)
                                 .map_err(|e| format!("Failed to parse Spanish noun '{noun}': {e}")),
                             Err(e) => {
@@ -1806,7 +1797,7 @@ pub mod german {
     /// Fetch German verb conjugations from Wiktionary with HTML caching
     pub async fn fetch_german_verb_conjugations(
         verbs: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, GermanVerbConjugation>> {
         use futures::StreamExt;
 
@@ -1826,7 +1817,7 @@ pub mod german {
                     async move {
                         pb.set_message(verb.to_string());
 
-                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                        let result = match super::get_wiktionary_html(verb, lang).await {
                             Ok(html) => parse_german_verb_conjugation(&html, verb)
                                 .map_err(|e| format!("Failed to parse German verb '{verb}': {e}")),
                             Err(e) => {
@@ -2002,7 +1993,7 @@ pub mod german {
     /// Fetch German noun declensions from Wiktionary with HTML caching
     pub async fn fetch_german_noun_declensions(
         nouns: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, GermanNounDeclension>> {
         use futures::StreamExt;
 
@@ -2022,7 +2013,7 @@ pub mod german {
                     async move {
                         pb.set_message(noun.to_string());
 
-                        let result = match super::get_wiktionary_html(noun, cache_dir).await {
+                        let result = match super::get_wiktionary_html(noun, lang).await {
                             Ok(html) => parse_german_noun_declension(&html, noun)
                                 .map_err(|e| format!("Failed to parse German noun '{noun}': {e}")),
                             Err(e) => {
@@ -2524,7 +2515,7 @@ pub mod portuguese {
     /// Fetch Portuguese verb conjugations from Wiktionary with HTML caching
     pub async fn fetch_portuguese_verb_conjugations(
         verbs: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, PortugueseVerbConjugation>> {
         use futures::StreamExt;
 
@@ -2544,7 +2535,7 @@ pub mod portuguese {
                     async move {
                         pb.set_message(verb.to_string());
 
-                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                        let result = match super::get_wiktionary_html(verb, lang).await {
                             Ok(html) => {
                                 parse_portuguese_verb_conjugation(&html, verb).map_err(|e| {
                                     format!("Failed to parse Portuguese verb '{verb}': {e}")
@@ -2603,7 +2594,7 @@ pub mod portuguese {
     /// Fetch Portuguese noun genders from Wiktionary with HTML caching
     pub async fn fetch_portuguese_noun_genders(
         nouns: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, super::NounGender>> {
         use futures::StreamExt;
 
@@ -2623,7 +2614,7 @@ pub mod portuguese {
                     async move {
                         pb.set_message(noun.to_string());
 
-                        let result = match super::get_wiktionary_html(noun, cache_dir).await {
+                        let result = match super::get_wiktionary_html(noun, lang).await {
                             Ok(html) => parse_portuguese_noun_gender(&html, noun).map_err(|e| {
                                 format!("Failed to parse Portuguese noun '{noun}': {e}")
                             }),
@@ -3146,7 +3137,7 @@ pub mod italian {
     /// Fetch Italian verb conjugations from Wiktionary with HTML caching
     pub async fn fetch_italian_verb_conjugations(
         verbs: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, ItalianVerbConjugation>> {
         use futures::StreamExt;
 
@@ -3166,7 +3157,7 @@ pub mod italian {
                     async move {
                         pb.set_message(verb.to_string());
 
-                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                        let result = match super::get_wiktionary_html(verb, lang).await {
                             Ok(html) => parse_italian_verb_conjugation(&html, verb)
                                 .map_err(|e| format!("Failed to parse Italian verb '{verb}': {e}")),
                             Err(e) => {
@@ -3219,7 +3210,7 @@ pub mod italian {
     /// Fetch Italian noun genders from Wiktionary with HTML caching
     pub async fn fetch_italian_noun_genders(
         nouns: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, super::NounGender>> {
         use futures::StreamExt;
 
@@ -3239,7 +3230,7 @@ pub mod italian {
                     async move {
                         pb.set_message(noun.to_string());
 
-                        let result = match super::get_wiktionary_html(noun, cache_dir).await {
+                        let result = match super::get_wiktionary_html(noun, lang).await {
                             Ok(html) => parse_italian_noun_gender(&html, noun)
                                 .map_err(|e| format!("Failed to parse Italian noun '{noun}': {e}")),
                             Err(e) => {
@@ -3607,7 +3598,7 @@ pub mod english {
     /// Fetch English verb conjugations from Wiktionary with HTML caching
     pub async fn fetch_english_verb_conjugations(
         verbs: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, EnglishVerbConjugation>> {
         use futures::StreamExt;
 
@@ -3627,7 +3618,7 @@ pub mod english {
                     async move {
                         pb.set_message(verb.to_string());
 
-                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                        let result = match super::get_wiktionary_html(verb, lang).await {
                             Ok(html) => parse_english_verb_conjugation(&html, verb)
                                 .map_err(|e| format!("Failed to parse English verb '{verb}': {e}")),
                             Err(e) => {
@@ -4199,7 +4190,7 @@ pub mod russian {
     /// Fetch Russian verb conjugations from Wiktionary with HTML caching
     pub async fn fetch_russian_verb_conjugations(
         verbs: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, RussianVerbConjugation>> {
         use futures::StreamExt;
 
@@ -4219,7 +4210,7 @@ pub mod russian {
                     async move {
                         pb.set_message(verb.to_string());
 
-                        let result = match super::get_wiktionary_html(verb, cache_dir).await {
+                        let result = match super::get_wiktionary_html(verb, lang).await {
                             Ok(html) => parse_russian_verb_conjugation(&html, verb)
                                 .map_err(|e| format!("Failed to parse Russian verb '{verb}': {e}")),
                             Err(e) => {
@@ -4261,7 +4252,7 @@ pub mod russian {
     /// Fetch Russian noun declensions from Wiktionary with HTML caching
     pub async fn fetch_russian_noun_declensions(
         nouns: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, RussianNounDeclension>> {
         use futures::StreamExt;
 
@@ -4281,7 +4272,7 @@ pub mod russian {
                     async move {
                         pb.set_message(noun.to_string());
 
-                        let result = match super::get_wiktionary_html(noun, cache_dir).await {
+                        let result = match super::get_wiktionary_html(noun, lang).await {
                             Ok(html) => parse_russian_noun_declension(&html, noun)
                                 .map_err(|e| format!("Failed to parse Russian noun '{noun}': {e}")),
                             Err(e) => {
@@ -4430,7 +4421,7 @@ pub mod russian {
     /// Fetch Russian adjective declensions from Wiktionary with HTML caching
     pub async fn fetch_russian_adjective_declensions(
         adjectives: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, RussianAdjectiveDeclension>> {
         use futures::StreamExt;
 
@@ -4450,7 +4441,7 @@ pub mod russian {
                     async move {
                         pb.set_message(adj.to_string());
 
-                        let result = match super::get_wiktionary_html(adj, cache_dir).await {
+                        let result = match super::get_wiktionary_html(adj, lang).await {
                             Ok(html) => {
                                 parse_russian_adjective_declension(&html, adj).map_err(|e| {
                                     format!("Failed to parse Russian adjective '{adj}': {e}")
@@ -4846,7 +4837,7 @@ pub mod hindi {
     /// adverbs) and simply omitted from the result.
     pub async fn fetch_hindi_inflections(
         lemmas: &[String],
-        cache_dir: &std::path::Path,
+        lang: &str,
     ) -> anyhow::Result<std::collections::HashMap<String, HindiInflection>> {
         use futures::StreamExt;
 
@@ -4865,7 +4856,7 @@ pub mod hindi {
                     let pb = pb.clone();
                     async move {
                         pb.set_message(lemma.to_string());
-                        let result = match super::get_wiktionary_html(lemma, cache_dir).await {
+                        let result = match super::get_wiktionary_html(lemma, lang).await {
                             Ok(html) => parse_hindi_inflection(&html, lemma)
                                 .map_err(|e| format!("parse error: {e}")),
                             Err(e) => Err(format!("fetch error: {e}")),
@@ -5770,19 +5761,19 @@ pub mod japanese {
     /// pages) are logged and skipped — the LLM fallback picks them up.
     pub async fn fetch_japanese_verb_conjugations(
         lemmas: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, JapaneseVerbConjugation>> {
-        fetch_japanese(lemmas, cache_dir, "verbs", parse_japanese_verb_conjugation).await
+        fetch_japanese(lemmas, lang, "verbs", parse_japanese_verb_conjugation).await
     }
 
     /// Fetch and parse inflection tables for a batch of Japanese i-adjective lemmas.
     pub async fn fetch_japanese_adjective_inflections(
         lemmas: &[String],
-        cache_dir: &Path,
+        lang: &str,
     ) -> anyhow::Result<HashMap<String, JapaneseAdjectiveInflection>> {
         fetch_japanese(
             lemmas,
-            cache_dir,
+            lang,
             "adjectives",
             parse_japanese_adjective_inflection,
         )
@@ -5791,7 +5782,7 @@ pub mod japanese {
 
     async fn fetch_japanese<T: Clone + JapaneseInflection>(
         lemmas: &[String],
-        cache_dir: &Path,
+        lang: &str,
         what: &str,
         parse: impl Fn(&str, &str) -> anyhow::Result<T> + Copy,
     ) -> anyhow::Result<HashMap<String, T>> {
@@ -5811,13 +5802,13 @@ pub mod japanese {
                 let pb = pb.clone();
                 async move {
                     pb.set_message(lemma.to_string());
-                    let result = match super::get_wiktionary_html(lemma, cache_dir).await {
+                    let result = match super::get_wiktionary_html(lemma, lang).await {
                         Ok(html) => match parse(&html, lemma) {
                             Ok(parsed) => Ok(parsed),
                             Err(parse_err) => {
                                 // Follow a ja-see soft redirect (飲む → のむ) once.
                                 if let Some(host) = parse_ja_see_redirect(&html) {
-                                    match super::get_wiktionary_html(&host, cache_dir).await {
+                                    match super::get_wiktionary_html(&host, lang).await {
                                         // The host page often carries our lemma's
                                         // spelling in another table column (くる sits
                                         // in 来る's kana column, complete with the

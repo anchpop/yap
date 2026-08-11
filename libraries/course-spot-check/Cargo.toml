@@ -9,6 +9,7 @@ language-utils = { path = "../../language-utils" }
 weapon = { path = "../weapon" }
 tysm = { workspace = true }
 tokio = { workspace = true }
+osmo = { workspace = true }
 futures = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

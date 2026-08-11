@@ -7,9 +7,9 @@
 //!
 //! ## Cache keys and provenance
 //!
-//! Every translation lives in `.cache/google_translate/`, but each model gets
-//! its own key so we always know (by key) which system produced a cached
-//! translation:
+//! Every translation lives in the shared osmo store under `translate/{hash}`,
+//! where the hash input gives each model its own key so we always know (by
+//! key) which system produced a cached translation:
 //!
 //! - `{src}::{tgt}::{text}` — the legacy Google key. All historical Google
 //!   translations (NMT-era and `translation-llm`) live here, and the Google
@@ -32,7 +32,6 @@ use html_escape::decode_html_entities;
 use language_utils::Language;
 use rand::RngExt;
 use std::collections::VecDeque;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::time::{Duration, Instant};
@@ -177,9 +176,10 @@ pub struct Translator {
     /// ISO 639-1 codes; part of the cache keys, so these must stay stable.
     source_code: String,
     target_code: String,
-    cache: DashMap<u64, String>, // key hash -> translation
-    cache_dir: PathBuf,
-    master_cache_file: PathBuf,
+    /// In-memory read-through layer over `store` (key hash → translation).
+    cache: DashMap<u64, String>,
+    /// The persistent cache, under `translate/{hash}` keys.
+    store: osmo::Store,
     api_calls: AtomicU64,
     /// Estimated micro-USD spent by this language pair (cache hits are free
     /// and not counted).
@@ -197,7 +197,7 @@ impl Translator {
     pub async fn new(
         source_language: Language,
         target_language: Language,
-        cache_dir: PathBuf,
+        store: osmo::Store,
         backend: TranslationBackend,
     ) -> anyhow::Result<Self> {
         let backend = match backend {
@@ -241,16 +241,6 @@ impl Translator {
             }
         };
 
-        std::fs::create_dir_all(&cache_dir)?;
-
-        let master_cache_file = cache_dir.join("master_cache.json");
-        let cache: DashMap<u64, String> = if master_cache_file.exists() {
-            let master_content = std::fs::read_to_string(&master_cache_file)?;
-            serde_json::from_str(&master_content).unwrap_or_default()
-        } else {
-            DashMap::new()
-        };
-
         let budget_micro = |var: &str, default: f64| -> u64 {
             let dollars = std::env::var(var)
                 .ok()
@@ -265,23 +255,20 @@ impl Translator {
             DEFAULT_PER_LANGUAGE_BUDGET_USD,
         );
 
-        let res = Self {
+        Ok(Self {
             backend,
             source_language,
             target_language,
             source_code: source_language.iso_639_1().to_string(),
             target_code: target_language.iso_639_1().to_string(),
-            cache,
-            cache_dir,
-            master_cache_file,
+            cache: DashMap::new(),
+            store,
             api_calls: AtomicU64::new(0),
             spent_micro: AtomicU64::new(0),
             global_threshold_micro,
             per_language_budget_micro,
             budget_warned: AtomicBool::new(false),
-        };
-        res.consolidate_cache();
-        Ok(res)
+        })
     }
 
     pub fn api_calls(&self) -> u64 {
@@ -356,27 +343,42 @@ impl Translator {
         }
     }
 
+    /// Look one hash up: the in-memory layer first, then the persistent store
+    /// (populating the in-memory layer on a hit).
+    async fn cached_by_hash(&self, hash: u64) -> Option<String> {
+        if let Some(t) = self.cache.get(&hash) {
+            return Some(t.clone());
+        }
+        let bytes = self.store.read(&format!("translate/{hash}")).await?;
+        let t = String::from_utf8(bytes).ok()?;
+        self.cache.insert(hash, t.clone());
+        Some(t)
+    }
+
     /// Look `text` up in the cache: the backend's own key first, then (for
     /// OpenAI) the legacy Google key. A legacy hit is returned as-is, not
     /// copied under the model key — the key records which system translated it.
-    fn cached(&self, text: &str) -> Option<String> {
-        if let Some(t) = self.cache.get(&self.primary_hash(text)) {
-            return Some(t.clone());
+    async fn cached(&self, text: &str) -> Option<String> {
+        if let Some(t) = self.cached_by_hash(self.primary_hash(text)).await {
+            return Some(t);
         }
-        if matches!(self.backend, Backend::OpenAi { .. })
-            && let Some(t) = self.cache.get(&self.google_hash(text))
-        {
-            return Some(t.clone());
+        if matches!(self.backend, Backend::OpenAi { .. }) {
+            return self.cached_by_hash(self.google_hash(text)).await;
         }
         None
     }
 
-    /// Persist a single translation to the cache (in-memory + its own `{hash}.json`
-    /// file, the unit the crash-safe cache is rebuilt from on next startup).
+    /// Persist a single translation (in-memory + the store; the store's append
+    /// log is what makes this crash-safe).
     async fn store(&self, hash: u64, translation: &str) {
         self.cache.insert(hash, translation.to_string());
-        let cache_file = self.cache_dir.join(format!("{hash}.json"));
-        let _ = tokio::fs::write(&cache_file, translation).await;
+        if let Err(e) = self
+            .store
+            .write(&format!("translate/{hash}"), translation.as_bytes())
+            .await
+        {
+            eprintln!("translate: failed to persist cache entry {hash}: {e}");
+        }
     }
 
     fn is_retryable(status: reqwest::StatusCode) -> bool {
@@ -565,7 +567,7 @@ impl Translator {
     }
 
     pub async fn translate(&self, text: &str) -> anyhow::Result<String> {
-        if let Some(t) = self.cached(text) {
+        if let Some(t) = self.cached(text).await {
             return Ok(t);
         }
 
@@ -626,7 +628,7 @@ impl Translator {
         let mut seen = std::collections::HashSet::new();
         let mut pending: Vec<&str> = Vec::new();
         for t in texts {
-            if self.cached(t).is_some() {
+            if self.cached(t).await.is_some() {
                 continue;
             }
             if seen.insert(self.primary_hash(t)) {
@@ -777,66 +779,6 @@ impl Translator {
             ));
         }
     }
-
-    fn consolidate_cache(&self) {
-        // Collect individual cache files to delete after consolidation
-        let mut files_to_delete = Vec::new();
-
-        // Scan the cache directory for individual cache files and merge them
-        if let Ok(entries) = std::fs::read_dir(&self.cache_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-
-                // Skip if it's the master cache file or not a JSON file
-                if path == self.master_cache_file
-                    || path.extension().and_then(|s| s.to_str()) != Some("json")
-                {
-                    continue;
-                }
-
-                // Extract hash from filename
-                if let Some(filename) = path.file_stem().and_then(|s| s.to_str())
-                    && let Ok(hash) = filename.parse::<u64>()
-                {
-                    // Read the translation from the file
-                    if let Ok(translation) = std::fs::read_to_string(&path) {
-                        // Add to consolidated cache if not already present
-                        self.cache.entry(hash).or_insert_with(|| translation);
-                        // Mark this file for deletion
-                        files_to_delete.push(path);
-                    }
-                }
-            }
-        }
-
-        // Skip rewriting the master cache if nothing changed
-        if files_to_delete.is_empty() {
-            return;
-        }
-
-        // Write the consolidated cache to the master file
-        // Convert to BTreeMap for deterministic serialization order
-        let sorted_cache: std::collections::BTreeMap<_, _> = self
-            .cache
-            .iter()
-            .map(|entry| (*entry.key(), entry.value().clone()))
-            .collect();
-
-        if let Ok(json) = serde_json::to_string_pretty(&sorted_cache)
-            && std::fs::write(&self.master_cache_file, json).is_ok()
-        {
-            // Only delete individual files if the master cache was written successfully
-            for file in files_to_delete {
-                let _ = std::fs::remove_file(file);
-            }
-        }
-    }
-}
-
-impl Drop for Translator {
-    fn drop(&mut self) {
-        self.consolidate_cache();
-    }
 }
 
 #[cfg(test)]
@@ -855,7 +797,7 @@ mod tests {
             Translator::new(
                 Language::French,
                 Language::English,
-                cache_dir.to_path_buf(),
+                osmo::Store::open(cache_dir),
                 TranslationBackend::OpenAi {
                     model: SMOKE_MODEL.to_string(),
                 },
@@ -865,7 +807,7 @@ mod tests {
         )
     }
 
-    fn scratch_cache_dir(name: &str) -> PathBuf {
+    fn scratch_cache_dir(name: &str) -> std::path::PathBuf {
         std::env::temp_dir().join(format!("yap-translate-{name}-{}", std::process::id()))
     }
 

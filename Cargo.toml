@@ -35,9 +35,9 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-tysm = { git = "https://github.com/anchpop/tysm.git", rev = "af0945438c2c584f6a50f95e4ee7efc52ddc856d" }
-# Directory↔R2 sync engine (github.com/anchpop/osmo). generate-data uses it to mirror
-# the .cache directory to a bucket. Git dep until published to crates.io.
+tysm = { git = "https://github.com/anchpop/tysm.git", rev = "a35c74066f9d8bab3fa60505d1cfda564afbde48" }
+# Local-first KV cache store synced to R2 (github.com/anchpop/osmo). All of
+# generate-data's caches live in one store at .cache. Git dep until published.
 osmo = { git = "https://github.com/anchpop/osmo" }
 reqwest = { version = "0.13", features = ["json", "query"] }
 tokio = { version = "1.52.3", features = ["full"] }

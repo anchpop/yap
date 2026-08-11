@@ -1,8 +1,7 @@
 use anyhow::{Context as _, Result};
 use chrono::{TimeZone, Utc};
 use language_utils::{Course, Language};
-use std::collections::{BTreeMap, HashSet};
-use std::path::PathBuf;
+use std::collections::HashSet;
 use weapon::AppState;
 use weapon::data_model::Timestamped;
 use xxhash_rust::xxh3::xxh3_64;
@@ -146,21 +145,14 @@ fn collect_sentences(course: Course) -> Result<HashSet<String>> {
     Ok(unique_sentences)
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     env_logger::init();
 
     let filter = std::env::args().nth(1);
-    let cache_path = PathBuf::from(".cache/google_translate/master_cache.json");
-
-    let mut cache: BTreeMap<String, String> = if cache_path.exists() {
-        let content = std::fs::read_to_string(&cache_path)
-            .with_context(|| format!("Failed to read {cache_path:?}"))?;
-        serde_json::from_str(&content).context("Failed to parse master_cache.json")?
-    } else {
-        anyhow::bail!("No cache file at {cache_path:?}");
-    };
-
-    println!("Loaded {} cache entries", cache.len());
+    // Translations live in the shared cache store under `translate/{hash}`;
+    // deleting appends a tombstone, so the clear syncs to other machines too.
+    let store = osmo::Store::open(".cache");
 
     let mut total_removed = 0;
 
@@ -185,14 +177,19 @@ fn main() -> Result<()> {
         };
 
         // Translator is created with (target_language -> native_language),
-        // so the cache key is "<target_iso>::<native_iso>::<text>".
+        // so the legacy Google cache key is "<target_iso>::<native_iso>::<text>".
         let src = course.target_language.iso_639_1();
         let tgt = course.native_language.iso_639_1();
 
         let mut removed = 0;
         for sentence in &sentences {
-            let key = xxh3_64(format!("{src}::{tgt}::{sentence}").as_bytes()).to_string();
-            if cache.remove(&key).is_some() {
+            let hash = xxh3_64(format!("{src}::{tgt}::{sentence}").as_bytes());
+            let key = format!("translate/{hash}");
+            if store.read(&key).await.is_some() {
+                store
+                    .delete(&key)
+                    .await
+                    .with_context(|| format!("Failed to delete {key}"))?;
                 removed += 1;
             }
         }
@@ -203,12 +200,7 @@ fn main() -> Result<()> {
         total_removed += removed;
     }
 
-    println!(
-        "\nWriting cache back ({} entries, {total_removed} removed)",
-        cache.len()
-    );
-    let json = serde_json::to_string_pretty(&cache)?;
-    std::fs::write(&cache_path, json)?;
+    println!("\nRemoved {total_removed} cached translations");
 
     Ok(())
 }

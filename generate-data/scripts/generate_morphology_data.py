@@ -23,6 +23,7 @@ import html
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -49,24 +50,24 @@ def download_file(url: str, dest: Path) -> Path:
         print(f"  cached: {dest.name}")
         return dest
     print(f"  downloading: {url}")
-    subprocess.run(["curl", "-sL", "-o", str(dest), url], check=True)
+    # -f: fail on HTTP errors instead of caching an error page as data.
+    subprocess.run(["curl", "-fsL", "-o", str(dest), url], check=True)
     return dest
 
 
-def clone_repo(url: str, dest: Path) -> Path:
-    if dest.exists():
-        print(f"  cached: {dest.name}")
-        return dest
-    print(f"  cloning: {url}")
-    subprocess.run(["git", "clone", "--depth", "1", url, str(dest)], check=True)
-    return dest
+SIGMORPHON_RAW_BASE = (
+    "https://raw.githubusercontent.com/sigmorphon/2022SegmentationST/main/data"
+)
 
 
 def process_sigmorphon() -> dict[str, list[tuple[str, list[str]]]]:
     """Returns {lang_code: [(word, [morph1, morph2, ...]), ...]}"""
     print("\n=== SIGMORPHON 2022 ===")
-    sigmorphon_dir = CACHE_DIR / "2022SegmentationST"
-    clone_repo("https://github.com/sigmorphon/2022SegmentationST.git", sigmorphon_dir)
+    # We only need a handful of TSVs, fetched directly; a full clone of the
+    # dataset repo used to live here — drop it if present.
+    shutil.rmtree(CACHE_DIR / "2022SegmentationST", ignore_errors=True)
+    sigmorphon_dir = CACHE_DIR / "sigmorphon2022"
+    sigmorphon_dir.mkdir(parents=True, exist_ok=True)
 
     results = {}
     for sig_lang, our_lang in SIGMORPHON_LANG_MAP.items():
@@ -77,7 +78,15 @@ def process_sigmorphon() -> dict[str, list[tuple[str, list[str]]]]:
         seen = set()
         entries = []
         for suffix in ["train", "dev", "test.gold"]:
-            tsv_path = sigmorphon_dir / "data" / f"{sig_lang}.word.{suffix}.tsv"
+            tsv_path = sigmorphon_dir / f"{sig_lang}.word.{suffix}.tsv"
+            if not tsv_path.exists():
+                try:
+                    download_file(
+                        f"{SIGMORPHON_RAW_BASE}/{sig_lang}.word.{suffix}.tsv", tsv_path
+                    )
+                except subprocess.CalledProcessError:
+                    print(f"    (no {sig_lang}.word.{suffix}.tsv upstream, skipping)")
+                    continue
             if not tsv_path.exists():
                 continue
             with open(tsv_path) as f:

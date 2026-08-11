@@ -289,7 +289,7 @@ async fn main() -> anyhow::Result<()> {
             let translator = Translator::new(
                 course.target_language, // translate from target to native
                 course.native_language,
-                PathBuf::from(".cache/google_translate/"),
+                cache_remote::store(),
                 // Luna over the OpenAI Batch API is ~50x cheaper than Google's
                 // translation-llm; anything already in the Google cache is
                 // still reused (see translate.rs). Swap in

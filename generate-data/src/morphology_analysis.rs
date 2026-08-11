@@ -578,7 +578,6 @@ pub mod gold_morphology {
         use crate::wiktionary_conjugations::french::FrenchVerbConjugation;
         use language_utils::features::{Gender, Mood, Number, Person, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_french_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -604,11 +603,11 @@ pub mod gold_morphology {
             let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch and parse Wiktionary pages with HTML caching
-            let cache_dir = Path::new(".cache/wiktionary/french");
+            let lang = "french";
             let conjugations =
                 crate::wiktionary_conjugations::french::fetch_french_verb_conjugations(
                     &verb_lemmas_vec,
-                    cache_dir,
+                    lang,
                 )
                 .await?;
 
@@ -629,7 +628,7 @@ pub mod gold_morphology {
             // Step 4: Fetch noun genders
             let noun_genders = crate::wiktionary_conjugations::french::fetch_french_noun_genders(
                 &noun_lemmas_vec,
-                cache_dir,
+                lang,
             )
             .await?;
 
@@ -985,7 +984,6 @@ pub mod gold_morphology {
         };
         use language_utils::features::{Gender, Mood, Number, Person, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_spanish_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -1011,9 +1009,9 @@ pub mod gold_morphology {
             let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch Wiktionary pages with HTML caching
-            let cache_dir = Path::new(".cache/wiktionary/spanish");
+            let lang = "spanish";
 
-            let conjugations = fetch_spanish_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+            let conjugations = fetch_spanish_verb_conjugations(&verb_lemmas_vec, lang).await?;
 
             // Step 3: Convert conjugations to morphology entries
             let mut morphology = BTreeMap::new();
@@ -1026,7 +1024,7 @@ pub mod gold_morphology {
             // Step 4: Fetch noun genders
             let noun_genders = crate::wiktionary_conjugations::spanish::fetch_spanish_noun_genders(
                 &noun_lemmas_vec,
-                cache_dir,
+                lang,
             )
             .await?;
 
@@ -1307,7 +1305,6 @@ pub mod gold_morphology {
         };
         use language_utils::features::{Mood, Number, Person, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_portuguese_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -1333,10 +1330,9 @@ pub mod gold_morphology {
             let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch Wiktionary pages with HTML caching
-            let cache_dir = Path::new(".cache/wiktionary/portuguese");
+            let lang = "portuguese";
 
-            let conjugations =
-                fetch_portuguese_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+            let conjugations = fetch_portuguese_verb_conjugations(&verb_lemmas_vec, lang).await?;
 
             // Step 3: Convert conjugations to morphology entries
             let mut morphology = BTreeMap::new();
@@ -1350,7 +1346,7 @@ pub mod gold_morphology {
             let noun_genders =
                 crate::wiktionary_conjugations::portuguese::fetch_portuguese_noun_genders(
                     &noun_lemmas_vec,
-                    cache_dir,
+                    lang,
                 )
                 .await?;
 
@@ -1634,7 +1630,6 @@ pub mod gold_morphology {
         };
         use language_utils::features::{Mood, Number, Person, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_italian_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -1660,9 +1655,9 @@ pub mod gold_morphology {
             let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch Wiktionary pages with HTML caching
-            let cache_dir = Path::new(".cache/wiktionary/italian");
+            let lang = "italian";
 
-            let conjugations = fetch_italian_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+            let conjugations = fetch_italian_verb_conjugations(&verb_lemmas_vec, lang).await?;
 
             // Step 3: Convert conjugations to morphology entries
             let mut morphology = BTreeMap::new();
@@ -1675,7 +1670,7 @@ pub mod gold_morphology {
             // Step 4: Fetch noun genders
             let noun_genders = crate::wiktionary_conjugations::italian::fetch_italian_noun_genders(
                 &noun_lemmas_vec,
-                cache_dir,
+                lang,
             )
             .await?;
 
@@ -1928,7 +1923,6 @@ pub mod gold_morphology {
         };
         use language_utils::features::{Case, Gender, Mood, Number, Person, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_german_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -1957,9 +1951,8 @@ pub mod gold_morphology {
             let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
 
             // Step 2: Fetch verb conjugations
-            let cache_dir = Path::new(".cache/wiktionary/german");
-            let verb_conjugations =
-                fetch_german_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+            let lang = "german";
+            let verb_conjugations = fetch_german_verb_conjugations(&verb_lemmas_vec, lang).await?;
 
             // Step 3: Convert verb conjugations to morphology entries
             for (infinitive, conjugation) in verb_conjugations.iter() {
@@ -1968,8 +1961,7 @@ pub mod gold_morphology {
             }
 
             // Step 4: Fetch noun declensions
-            let noun_declensions =
-                fetch_german_noun_declensions(&noun_lemmas_vec, cache_dir).await?;
+            let noun_declensions = fetch_german_noun_declensions(&noun_lemmas_vec, lang).await?;
 
             // Step 5: Convert noun declensions to morphology entries
             for (lemma, declension) in noun_declensions.iter() {
@@ -2319,7 +2311,6 @@ pub mod gold_morphology {
         };
         use language_utils::features::{Mood, Number, Person, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_english_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -2342,8 +2333,8 @@ pub mod gold_morphology {
             let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
 
             // Fetch and parse Wiktionary pages
-            let cache_dir = Path::new(".cache/wiktionary/english");
-            let conjugations = fetch_english_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+            let lang = "english";
+            let conjugations = fetch_english_verb_conjugations(&verb_lemmas_vec, lang).await?;
 
             // Convert conjugations to morphology entries
             for (infinitive, conjugation) in conjugations.iter() {
@@ -2466,7 +2457,6 @@ pub mod gold_morphology {
         };
         use language_utils::features::{Case, Gender, Mood, Number, Person, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_russian_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -2503,18 +2493,16 @@ pub mod gold_morphology {
             let adj_lemmas_vec: Vec<String> = adj_lemmas.into_iter().collect();
             let det_lemmas_vec: Vec<String> = det_lemmas.into_iter().collect();
 
-            let cache_dir = Path::new(".cache/wiktionary/russian");
+            let lang = "russian";
 
-            let verb_conjugations =
-                fetch_russian_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
+            let verb_conjugations = fetch_russian_verb_conjugations(&verb_lemmas_vec, lang).await?;
 
             for (infinitive, conjugation) in verb_conjugations.iter() {
                 let verb_morphology = verb_conjugation_to_morphology(infinitive, conjugation);
                 morphology.extend(verb_morphology);
             }
 
-            let noun_declensions =
-                fetch_russian_noun_declensions(&noun_lemmas_vec, cache_dir).await?;
+            let noun_declensions = fetch_russian_noun_declensions(&noun_lemmas_vec, lang).await?;
 
             for (lemma, declension) in noun_declensions.iter() {
                 let noun_morphology = noun_declension_to_morphology(lemma, declension);
@@ -2522,7 +2510,7 @@ pub mod gold_morphology {
             }
 
             let adj_declensions =
-                fetch_russian_adjective_declensions(&adj_lemmas_vec, cache_dir).await?;
+                fetch_russian_adjective_declensions(&adj_lemmas_vec, lang).await?;
 
             for (lemma, declension) in adj_declensions.iter() {
                 let adj_morphology =
@@ -2532,7 +2520,7 @@ pub mod gold_morphology {
 
             // Determiners decline like adjectives in Russian
             let det_declensions =
-                fetch_russian_adjective_declensions(&det_lemmas_vec, cache_dir).await?;
+                fetch_russian_adjective_declensions(&det_lemmas_vec, lang).await?;
 
             for (lemma, declension) in det_declensions.iter() {
                 let det_morphology =
@@ -3164,7 +3152,6 @@ pub mod gold_morphology {
         use crate::wiktionary_conjugations::hindi::{HindiInflection, fetch_hindi_inflections};
         use language_utils::features::{Aspect, Case, Gender, Mood, Number, Person, Polite, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_hindi_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -3192,16 +3179,16 @@ pub mod gold_morphology {
                 }
             }
 
-            let cache_dir = Path::new(".cache/wiktionary/hindi");
+            let lang = "hindi";
 
             // Step 2: Fetch each POS bucket separately so we can record the POS with each entry
             let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
             let noun_lemmas_vec: Vec<String> = noun_lemmas.into_iter().collect();
             let adj_lemmas_vec: Vec<String> = adj_lemmas.into_iter().collect();
 
-            let verb_inflections = fetch_hindi_inflections(&verb_lemmas_vec, cache_dir).await?;
-            let noun_inflections = fetch_hindi_inflections(&noun_lemmas_vec, cache_dir).await?;
-            let adj_inflections = fetch_hindi_inflections(&adj_lemmas_vec, cache_dir).await?;
+            let verb_inflections = fetch_hindi_inflections(&verb_lemmas_vec, lang).await?;
+            let noun_inflections = fetch_hindi_inflections(&noun_lemmas_vec, lang).await?;
+            let adj_inflections = fetch_hindi_inflections(&adj_lemmas_vec, lang).await?;
 
             let mut morphology: BTreeMap<Heteronym<String>, Vec<Morphology>> = BTreeMap::new();
 
@@ -3686,7 +3673,6 @@ pub mod gold_morphology {
         };
         use language_utils::features::{Case, Mood, Number, Person, Polite, Tense};
         use std::collections::HashSet;
-        use std::path::Path;
 
         pub async fn create_japanese_morphology(
             gram_frequencies: &[GramFrequencyEntry<String>],
@@ -3749,12 +3735,10 @@ pub mod gold_morphology {
                 );
             }
 
-            let cache_dir = Path::new(".cache/wiktionary/japanese");
+            let lang = "japanese";
             let verb_lemmas_vec: Vec<String> = verb_lemmas.into_iter().collect();
-            let conjugations =
-                fetch_japanese_verb_conjugations(&verb_lemmas_vec, cache_dir).await?;
-            let adj_inflections =
-                fetch_japanese_adjective_inflections(&i_adj_lemmas, cache_dir).await?;
+            let conjugations = fetch_japanese_verb_conjugations(&verb_lemmas_vec, lang).await?;
+            let adj_inflections = fetch_japanese_adjective_inflections(&i_adj_lemmas, lang).await?;
 
             for conjugation in conjugations.values() {
                 // Verbs double as auxiliaries (いる in 食べている); insert both.

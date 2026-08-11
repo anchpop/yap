@@ -109,20 +109,13 @@ pub async fn load_human_audio(
             .with_context(|| format!("Failed to parse {}", voice_actors_path.display()))?
     };
 
-    // Cache root for wav2vec2 predictions. Lives at repo-root .cache, same
-    // location used by other generate-data caches.
-    let cache_root = PathBuf::from(".cache");
     let wp_lookup: std::collections::HashMap<String, language_utils::Pronunciations> =
         word_to_pronunciation
             .iter()
             .map(|(w, p)| (w.to_lowercase(), p.clone()))
             .collect();
-    let verify_ctx = crate::audio_verification::VerifyContext::new(
-        http,
-        &cache_root,
-        &wp_lookup,
-        target_language,
-    )?;
+    let verify_ctx =
+        crate::audio_verification::VerifyContext::new(http, &wp_lookup, target_language)?;
 
     let mut failures: Vec<crate::audio_verification::ClipVerification> = Vec::new();
     let mut all_results: Vec<crate::audio_verification::ClipVerification> = Vec::new();

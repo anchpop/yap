@@ -314,7 +314,6 @@ fn actor_dirs(audio_root: &Path, actor_filter: &Option<String>) -> Result<Vec<Pa
 /// Verify every clip for one model, in-process, holding results in memory.
 async fn verify_model(
     http: &reqwest::Client,
-    cache_root: &Path,
     word_to_pronunciation: &HashMap<String, Pronunciations>,
     language: Language,
     cache_key: String,
@@ -323,7 +322,6 @@ async fn verify_model(
 ) -> Result<Vec<ClipVerification>> {
     let ctx = VerifyContext::with_overrides(
         http,
-        cache_root,
         word_to_pronunciation,
         language,
         cache_key,
@@ -773,7 +771,6 @@ async fn run(args: Args) -> Result<()> {
         generate_data::set_cache_only(true);
     }
 
-    let cache_root = PathBuf::from(".cache");
     let http = reqwest::Client::new();
     let url = eval_endpoint_url();
     let mut seq: u64 = 0;
@@ -796,7 +793,6 @@ async fn run(args: Args) -> Result<()> {
         println!("  → verifying clips (cache={cache_key})");
         let results = verify_model(
             &http,
-            &cache_root,
             &word_to_pronunciation,
             language,
             cache_key,
