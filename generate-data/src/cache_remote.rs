@@ -42,24 +42,30 @@ pub fn enabled() -> bool {
     bucket().is_some()
 }
 
-/// Prepare the cache for a run: fold any legacy cache layouts into the store, then (if a
-/// bucket is configured) download segments other machines have pushed. Call this before
+/// Prepare the cache for a run: download segments other machines have pushed (if a bucket
+/// is configured), then fold any legacy cache layouts into the store. Call this before
 /// anything reads the cache. Best-effort: sync failures are logged, never fatal.
+///
+/// Pull deliberately runs *before* migration: on a machine that still has pre-osmo cache
+/// files, the pulled segments already hold almost every entry (another machine migrated
+/// and pushed them), so the migration's import skips those keys instead of writing — and
+/// later pushing — duplicate segments.
 pub async fn warm() {
+    if let Some(bucket) = bucket() {
+        println!(
+            "cache: warming {CACHE_DIR} from bucket '{}'…",
+            bucket.bucket
+        );
+        match store().pull(&bucket).await {
+            Ok(stats) if stats.downloaded > 0 => {
+                println!("cache: downloaded {} segment(s)", stats.downloaded)
+            }
+            Ok(_) => println!("cache: already in sync with bucket"),
+            Err(e) => eprintln!("cache: pull failed: {e}"),
+        }
+    }
     if let Err(e) = migrate_legacy_layouts(&store(), Path::new(CACHE_DIR)).await {
         eprintln!("cache: legacy migration failed: {e}");
-    }
-    let Some(bucket) = bucket() else { return };
-    println!(
-        "cache: warming {CACHE_DIR} from bucket '{}'…",
-        bucket.bucket
-    );
-    match store().pull(&bucket).await {
-        Ok(stats) if stats.downloaded > 0 => {
-            println!("cache: downloaded {} segment(s)", stats.downloaded)
-        }
-        Ok(_) => println!("cache: already in sync with bucket"),
-        Err(e) => eprintln!("cache: pull failed: {e}"),
     }
 }
 
@@ -110,8 +116,7 @@ async fn migrate_legacy_layouts(store: &Store, root: &Path) -> anyhow::Result<()
             };
             if lang_dir.is_dir() {
                 let prefix = format!("wiktionary/{lang}");
-                imported +=
-                    import_dir_files(store, &lang_dir, &prefix, Some("html"), true).await?;
+                imported += import_dir_files(store, &lang_dir, &prefix, Some("html"), true).await?;
                 remove_dir_if_empty(&lang_dir);
             }
         }
@@ -269,7 +274,10 @@ mod tests {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        std::env::temp_dir().join(format!("yap-cache-migrate-{tag}-{}-{nanos}", std::process::id()))
+        std::env::temp_dir().join(format!(
+            "yap-cache-migrate-{tag}-{}-{nanos}",
+            std::process::id()
+        ))
     }
 
     fn v1_record(key: &str, val: &[u8]) -> Vec<u8> {
@@ -331,7 +339,12 @@ mod tests {
         let read = |key: &str| {
             let store = store.clone();
             let key = key.to_string();
-            async move { store.read(&key).await.map(|b| String::from_utf8(b).unwrap()) }
+            async move {
+                store
+                    .read(&key)
+                    .await
+                    .map(|b| String::from_utf8(b).unwrap())
+            }
         };
         assert_eq!(read("tysm/llmkey").await.as_deref(), Some("llm response"));
         assert_eq!(read("tysm/ocrkey").await.as_deref(), Some("ocr response"));
@@ -340,7 +353,10 @@ mod tests {
             Some("fresh translation"),
             "crash file must beat the master map"
         );
-        assert_eq!(read("translate/67890").await.as_deref(), Some("only in master"));
+        assert_eq!(
+            read("translate/67890").await.as_deref(),
+            Some("only in master")
+        );
         assert_eq!(
             read("wiktionary/french/hors-d'œuvre").await.as_deref(),
             Some("<html>starter</html>")
@@ -350,9 +366,14 @@ mod tests {
             Some(r#"{"live":true}"#),
             "live tts cache must beat the orphaned dir"
         );
-        assert_eq!(read("google-tts/aa11").await.as_deref(), Some(r#"{"orphan_only":true}"#));
         assert_eq!(
-            read("wav2vec2/model@abc__greedy_v1/deadbeef").await.as_deref(),
+            read("google-tts/aa11").await.as_deref(),
+            Some(r#"{"orphan_only":true}"#)
+        );
+        assert_eq!(
+            read("wav2vec2/model@abc__greedy_v1/deadbeef")
+                .await
+                .as_deref(),
             Some(r#"{"raw_phonemes":[]}"#)
         );
 
