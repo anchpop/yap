@@ -3,14 +3,8 @@ use std::path::PathBuf;
 
 use anyhow::Context;
 use language_utils::{Course, Language, SentenceSource};
+use movie_subtitles::SubtitleLine;
 use serde::Deserialize;
-
-#[derive(Debug, Deserialize)]
-struct Subtitle {
-    sentence: String,
-    start_ms: u32,
-    end_ms: u32,
-}
 
 #[derive(Debug, Deserialize)]
 struct PimsleurSentence {
@@ -324,6 +318,7 @@ fn load_movie_sentences(
         std::fs::read_to_string(&metadata_file).context("Failed to read movie metadata file")?;
 
     let mut all_movie_sentences = Vec::new();
+    let (mut from_raw, mut from_derived) = (0usize, 0usize);
 
     for line in metadata_content.lines() {
         let line = line.trim();
@@ -334,30 +329,22 @@ fn load_movie_sentences(
         let movie: language_utils::MovieMetadataBasic =
             serde_json::from_str(line).context("Failed to parse movie metadata")?;
 
-        // Load subtitle file for this movie
-        let subtitle_file = movies_dir.join(format!("subtitles/{}.jsonl", movie.id));
-        if !subtitle_file.exists() {
+        // Prefer the raw SRT and clean it here, in memory, so improvements to
+        // the cleaning rules reach every course on the next build. Movies whose
+        // raw SRT was never kept fall back to the pre-cleaned JSONL.
+        let Some((subtitles, source)) = movie_subtitles::load(&movies_dir, &movie.id)? else {
             continue;
+        };
+        match source {
+            movie_subtitles::Source::RawSrt => from_raw += 1,
+            movie_subtitles::Source::DerivedJsonl => from_derived += 1,
         }
 
-        let subtitle_content = std::fs::read_to_string(&subtitle_file).with_context(|| {
-            format!("Failed to read subtitle file: {}", subtitle_file.display())
-        })?;
-
-        // Parse all subtitle lines into Subtitle objects
-        let mut parsed_subtitles = Vec::new();
-        for line in subtitle_content.lines() {
-            let line = line.trim();
-            if line.is_empty() {
-                continue;
-            }
-            let subtitle: Subtitle =
-                serde_json::from_str(line).context("Failed to parse subtitle line")?;
-
-            // Split multi-dialogue subtitles (e.g., "- Speaker 1 - Speaker 2")
-            let split_subtitles = split_multi_dialogue_subtitle(subtitle);
-            parsed_subtitles.extend(split_subtitles);
-        }
+        // Split multi-dialogue subtitles (e.g., "- Speaker 1 - Speaker 2")
+        let parsed_subtitles: Vec<SubtitleLine> = subtitles
+            .into_iter()
+            .flat_map(split_multi_dialogue_subtitle)
+            .collect();
 
         // Sanity check: verify subtitles are actually in the target language
         if !passes_language_sanity_check(&parsed_subtitles, language, &movie.id) {
@@ -370,6 +357,15 @@ fn load_movie_sentences(
 
         let movie_sentences = filter_subtitle_sentences(&parsed_subtitles, &movie.id, language);
         all_movie_sentences.extend(movie_sentences);
+    }
+
+    if from_derived > 0 {
+        println!(
+            "  movies: {from_raw} cleaned from raw SRT, {from_derived} still on the pre-cleaned \
+             JSONL (run recover-subtitles to close the gap)"
+        );
+    } else if from_raw > 0 {
+        println!("  movies: all {from_raw} cleaned from raw SRT");
     }
 
     Ok(all_movie_sentences)
@@ -484,7 +480,7 @@ fn load_pimsleur_sentences(
 
 /// Check if subtitle lines pass the language sanity check.
 fn passes_language_sanity_check(
-    subtitles: &[Subtitle],
+    subtitles: &[SubtitleLine],
     language: Language,
     movie_id: &str,
 ) -> bool {
@@ -519,7 +515,7 @@ fn sanity_check_skip_markers(language: Language, movie_id: &str) -> Vec<&'static
 /// "What are you doing? I don't know!"
 ///
 /// This function splits them into separate subtitle objects.
-fn split_multi_dialogue_subtitle(subtitle: Subtitle) -> Vec<Subtitle> {
+fn split_multi_dialogue_subtitle(subtitle: SubtitleLine) -> Vec<SubtitleLine> {
     let mut sentences = vec![subtitle.sentence.clone()];
 
     // First, split on " - " if it starts with "- "
@@ -563,7 +559,7 @@ fn split_multi_dialogue_subtitle(subtitle: Subtitle) -> Vec<Subtitle> {
     final_sentences
         .into_iter()
         .filter(|s| !s.is_empty())
-        .map(|sentence| Subtitle {
+        .map(|sentence| SubtitleLine {
             sentence,
             start_ms: subtitle.start_ms,
             end_ms: subtitle.end_ms,
@@ -591,7 +587,7 @@ fn split_multi_dialogue_subtitle(subtitle: Subtitle) -> Vec<Subtitle> {
 ///
 /// A vector of tuples: (sentence, None, source_info)
 fn filter_subtitle_sentences(
-    subtitles: &[Subtitle],
+    subtitles: &[SubtitleLine],
     movie_id: &str,
     language: Language,
 ) -> Vec<(String, Option<String>, SentenceSource)> {

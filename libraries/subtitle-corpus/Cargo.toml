@@ -1,0 +1,16 @@
+[package]
+name = "subtitle-corpus"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4", features = ["derive"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tysm = { workspace = true }
+schemars = { workspace = true }
+base64 = "0.22"
+tokio = { workspace = true }
+futures = { workspace = true }

@@ -1649,6 +1649,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 
 [[package]]
+name = "fdeflate"
+version = "0.3.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e6853b52649d4ac5c0bd02320cddc5ba956bdb407c4b75a2c6b75bf51500f8c"
+dependencies = [
+ "simd-adler32",
+]
+
+[[package]]
 name = "fetch-happen"
 version = "0.4.0"
 source = "git+https://github.com/anchpop/fetch-happen?rev=879d0fa66bd8ae4331704c5b1d3a193427646336#879d0fa66bd8ae4331704c5b1d3a193427646336"
@@ -1883,6 +1892,7 @@ dependencies = [
  "libc",
  "log 0.4.31",
  "markdown-tables",
+ "movie-subtitles",
  "omnigram",
  "osmo",
  "percent-encoding",
@@ -2630,6 +2640,7 @@ dependencies = [
  "byteorder-lite",
  "moxcms",
  "num-traits 0.2.19",
+ "png",
  "zune-core",
  "zune-jpeg",
 ]
@@ -3165,6 +3176,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1fa76a2c86f704bdb222d66965fb3d63269ce38518b83cb0575fca855ebb6316"
 dependencies = [
  "adler2",
+ "simd-adler32",
 ]
 
 [[package]]
@@ -3198,6 +3210,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.117",
+]
+
+[[package]]
+name = "movie-subtitles"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "regex 1.12.4",
+ "serde",
+ "serde_json",
+ "subparse",
 ]
 
 [[package]]
@@ -3486,6 +3509,7 @@ dependencies = [
  "dotenv",
  "futures",
  "language-utils",
+ "movie-subtitles",
  "regex 1.12.4",
  "reqwest 0.13.4",
  "rustc-hash",
@@ -3842,6 +3866,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51bae2ac328883f7acdfea3d66a7c35751187f870bc81f94563733a154d7a670"
 dependencies = [
  "plotters-backend",
+]
+
+[[package]]
+name = "png"
+version = "0.18.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60769b8b31b2a9f263dae2776c37b1b28ae246943cf719eb6946a1db05128a61"
+dependencies = [
+ "bitflags 2.9.3",
+ "crc32fast",
+ "fdeflate",
+ "flate2",
+ "miniz_oxide",
 ]
 
 [[package]]
@@ -5334,6 +5371,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "subtitle-corpus"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "base64 0.22.1",
+ "clap",
+ "futures",
+ "image 0.25.10",
+ "schemars",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tysm",
+]
+
+[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5849,7 +5902,7 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 [[package]]
 name = "tysm"
 version = "0.20.0"
-source = "git+https://github.com/anchpop/tysm.git?rev=a35c74066f9d8bab3fa60505d1cfda564afbde48#a35c74066f9d8bab3fa60505d1cfda564afbde48"
+source = "git+https://github.com/anchpop/tysm.git?rev=8efa115342a81938a8aff8c120d8fefd4805a49f#8efa115342a81938a8aff8c120d8fefd4805a49f"
 dependencies = [
  "base64 0.22.1",
  "dashmap",
