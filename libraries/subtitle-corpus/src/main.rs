@@ -118,6 +118,33 @@ enum Command_ {
         #[arg(long, default_value_t = 0.35)]
         min_agreement: f64,
     },
+    /// Cross-examine already-written alignments with Whisper word anchors.
+    ///
+    /// Calibration showed VAD can lock confidently onto the wrong shift —
+    /// Scary Movie sat 20.3s off at double the margin gate on a subtitle that
+    /// was in fact correct. Word anchors fail differently, so on a correct
+    /// subtitle the fit comes back as the identity: offset ≈ 0, rate ≈ 1.
+    /// This spends a few transcription windows per film asking exactly that,
+    /// and appends findings to `whisper-check.jsonl` (resumable; already-
+    /// checked films are skipped).
+    Check {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Only films whose subtitle came from this source (substring of the
+        /// tier label, e.g. "sidecar", "downloaded").
+        #[arg(long)]
+        tier: Option<String>,
+        /// Audio windows to transcribe per film.
+        #[arg(long, default_value_t = 5)]
+        windows: usize,
+        #[arg(long, default_value_t = 60)]
+        window_secs: u32,
+        #[arg(long, default_value_t = 4)]
+        films_in_flight: usize,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+    },
     /// Score how well a subtitle's timing agrees with where speech actually is.
     ///
     /// Reports the shift that best matches, so a subtitle already believed
@@ -878,6 +905,196 @@ async fn sync_one(
     let dir = out.join(&movie.imdb_id);
     std::fs::create_dir_all(&dir)?;
     std::fs::write(dir.join("subtitle.srt"), sync::write_cues(&shifted))?;
+    Ok(alignment)
+}
+
+#[tokio::main]
+async fn check_all(
+    out: PathBuf,
+    tier: Option<String>,
+    windows: usize,
+    window_secs: u32,
+    films_in_flight: usize,
+    limit: usize,
+) -> Result<()> {
+    use futures::stream::StreamExt;
+    use std::sync::Arc;
+
+    let log_path = out.join("whisper-check.jsonl");
+    let mut done: std::collections::HashSet<String> = Default::default();
+    if let Ok(existing) = std::fs::read_to_string(&log_path) {
+        for line in existing.lines() {
+            if let Ok(row) = serde_json::from_str::<serde_json::Value>(line) {
+                if let Some(id) = row["imdb_id"].as_str() {
+                    done.insert(id.to_string());
+                }
+            }
+        }
+    }
+
+    let plan = read_plan(&out)?;
+    let mut queue: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| out.join(&m.imdb_id).join("subtitle.srt").exists())
+        .filter(|m| tier.as_deref().is_none_or(|t| m.source.label().contains(t)))
+        .filter(|m| !done.contains(&m.imdb_id) && m.path.exists())
+        .collect();
+    if limit > 0 {
+        queue.truncate(limit);
+    }
+    let total = queue.len();
+    println!(
+        "{total} aligned films to cross-examine ({} already checked)",
+        done.len()
+    );
+
+    let log = Arc::new(Mutex::new(std::io::BufWriter::new(
+        std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&log_path)?,
+    )));
+    let http = Arc::new(reqwest::Client::new());
+    let out = Arc::new(out);
+    let progress = AtomicUsize::new(0);
+
+    let verdicts: Vec<&'static str> = futures::stream::iter(queue.into_iter())
+        .map(|movie| {
+            let http = Arc::clone(&http);
+            let out = Arc::clone(&out);
+            let log = Arc::clone(&log);
+            let progress = &progress;
+            async move {
+                let outcome = check_one(&http, &movie, &out, windows, window_secs).await;
+                let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
+                let (verdict, detail, row) = match &outcome {
+                    Ok(a) => {
+                        // The subtitle being checked is already aligned, so a
+                        // truthful fit is the identity. Half a second of
+                        // residual offset is a clip landing on the wrong word;
+                        // a rate away from 1 is drift the whole file shares.
+                        let offset_ok = a.offset_ms.abs() <= 500.0;
+                        let rate_ok = (a.rate - 1.0).abs() < 5e-4;
+                        let verdict = if offset_ok && rate_ok {
+                            "confirmed"
+                        } else {
+                            "contradicted"
+                        };
+                        (
+                            verdict,
+                            format!(
+                                "{:+.2}s rate {:.4} ({}/{} anchors, worst {:.0}ms)",
+                                a.offset_ms / 1000.0,
+                                a.rate,
+                                a.anchors_used,
+                                a.anchors_seen,
+                                a.worst_residual_ms
+                            ),
+                            serde_json::json!({
+                                "imdb_id": movie.imdb_id,
+                                "title": movie.title,
+                                "tier": movie.source.label(),
+                                "verdict": verdict,
+                                "offset_ms": a.offset_ms,
+                                "rate": a.rate,
+                                "anchors_used": a.anchors_used,
+                                "anchors_seen": a.anchors_seen,
+                                "worst_residual_ms": a.worst_residual_ms,
+                            }),
+                        )
+                    }
+                    // No fit is not a contradiction: sparse or musical films
+                    // starve the anchors, exactly like the VAD margin going
+                    // flat. Recorded so the film is not re-transcribed on the
+                    // next run.
+                    Err(e) => (
+                        "undecided",
+                        e.to_string(),
+                        serde_json::json!({
+                            "imdb_id": movie.imdb_id,
+                            "title": movie.title,
+                            "tier": movie.source.label(),
+                            "verdict": "undecided",
+                            "reason": e.to_string(),
+                        }),
+                    ),
+                };
+                let mark = match verdict {
+                    "confirmed" => "✓",
+                    "contradicted" => "✗",
+                    _ => "?",
+                };
+                println!(
+                    "[{n}/{total}] {} {mark} {verdict}: {detail}",
+                    truncate(&movie.title, 34)
+                );
+                {
+                    use std::io::Write;
+                    let mut log = log.lock().unwrap();
+                    let _ = serde_json::to_writer(&mut *log, &row);
+                    let _ = writeln!(log);
+                    let _ = log.flush();
+                }
+                verdict
+            }
+        })
+        .buffer_unordered(films_in_flight.max(1))
+        .collect()
+        .await;
+
+    let count = |v: &str| verdicts.iter().filter(|x| **x == v).count();
+    println!(
+        "\n{} confirmed, {} contradicted, {} undecided — details in {}",
+        count("confirmed"),
+        count("contradicted"),
+        count("undecided"),
+        log_path.display()
+    );
+    Ok(())
+}
+
+/// Fit Whisper anchors against a film's *already aligned* subtitle.
+async fn check_one(
+    http: &reqwest::Client,
+    movie: &Movie,
+    out: &std::path::Path,
+    windows: usize,
+    window_secs: u32,
+) -> Result<sync::Alignment> {
+    let srt = out.join(&movie.imdb_id).join("subtitle.srt");
+    let cues = sync::parse_cues(&std::fs::read_to_string(&srt)?);
+    if cues.is_empty() {
+        bail!("subtitle has no cues");
+    }
+    let codes = library::stream_codes(&movie.original_language);
+    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    let duration = sync::duration_ms(&movie.path)?;
+    let language = library::course_dir(&movie.original_language)
+        .and_then(whisper_language)
+        .unwrap_or("en");
+
+    let mut heard = Vec::new();
+    for at in sync::choose_windows(&cues, duration, windows, window_secs) {
+        match sync::transcribe_window(http, &movie.path, stream, at, window_secs, language).await {
+            Ok(words) => heard.extend(words),
+            Err(e) => eprintln!("      window at {}s failed: {e}", at / 1000),
+        }
+    }
+    if heard.is_empty() {
+        bail!("no audio could be transcribed");
+    }
+    let anchors = sync::find_anchors(&cues, &heard, 4);
+    let Some(alignment) = sync::fit(&anchors, 3000.0) else {
+        bail!("only {} anchors, too few to trust", anchors.len());
+    };
+    let agreement = alignment.anchors_used as f64 / alignment.anchors_seen.max(1) as f64;
+    if agreement < 0.35 {
+        bail!(
+            "only {:.0}% of {} anchors agree",
+            agreement * 100.0,
+            alignment.anchors_seen
+        );
+    }
     Ok(alignment)
 }
 
@@ -1650,6 +1867,14 @@ fn main() -> Result<()> {
                 min_agreement,
             },
         ),
+        Command_::Check {
+            out,
+            tier,
+            windows,
+            window_secs,
+            films_in_flight,
+            limit,
+        } => check_all(out, tier, windows, window_secs, films_in_flight, limit),
         Command_::Agreement {
             out,
             tier,
