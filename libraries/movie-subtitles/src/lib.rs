@@ -79,10 +79,19 @@ pub fn read_derived_jsonl(path: &Path) -> Result<Vec<SubtitleLine>> {
         if line.is_empty() {
             continue;
         }
-        lines.push(
-            serde_json::from_str(line)
-                .with_context(|| format!("Failed to parse subtitle line in {}", path.display()))?,
-        );
+        let mut parsed: SubtitleLine = serde_json::from_str(line)
+            .with_context(|| format!("Failed to parse subtitle line in {}", path.display()))?;
+        // Older JSONL was written before mojibake was repaired and before
+        // control codes like `{y:i}` were stripped, so it carries both. For
+        // many films this file is the only surviving copy, so the cleaning has
+        // to happen on read; it also keeps the two sources agreeing about what
+        // the text says.
+        parsed.sentence = repair_cp1252_mojibake(&parsed.sentence);
+        let stripped = CONTROL_TAGS.replace_all(&parsed.sentence, "");
+        if stripped != parsed.sentence {
+            parsed.sentence = SPACES.replace_all(stripped.trim(), " ").to_string();
+        }
+        lines.push(parsed);
     }
     Ok(lines)
 }
@@ -123,10 +132,59 @@ pub fn write_raw_srt(movies_dir: &Path, imdb_id: &str, srt: &str) -> Result<Path
     Ok(path)
 }
 
+/// Repair characters left behind by decoding a Windows-1252 file as Latin-1.
+///
+/// CP1252 puts printable characters — curly quotes, dashes, the œ ligature —
+/// in 0x80–0x9F, where Unicode has C1 control codes. Subtitles are routinely
+/// authored in CP1252 and decoded as Latin-1, which turns `cœur` into
+/// `c<U+009C>ur`. Those codepoints are never legitimate in dialogue, so the
+/// mapping is unambiguous.
+///
+/// This matters beyond tidiness: strip the control character instead of
+/// translating it and `cœur` silently becomes `cur`, `sœur` becomes `sur` —
+/// a different word, not a cosmetic difference.
+pub fn repair_cp1252_mojibake(text: &str) -> String {
+    text.chars()
+        .map(|c| match c as u32 {
+            0x80 => '€',
+            0x82 => '‚',
+            0x83 => 'ƒ',
+            0x84 => '„',
+            0x85 => '…',
+            0x86 => '†',
+            0x87 => '‡',
+            0x88 => 'ˆ',
+            0x89 => '‰',
+            0x8A => 'Š',
+            0x8B => '‹',
+            0x8C => 'Œ',
+            0x8E => 'Ž',
+            0x91 => '\u{2018}',
+            0x92 => '\u{2019}',
+            0x93 => '\u{201C}',
+            0x94 => '\u{201D}',
+            0x95 => '•',
+            0x96 => '–',
+            0x97 => '—',
+            0x98 => '˜',
+            0x99 => '™',
+            0x9A => 'š',
+            0x9B => '›',
+            0x9C => 'œ',
+            0x9E => 'ž',
+            0x9F => 'Ÿ',
+            // 0x81, 0x8D, 0x8F, 0x90 and 0x9D are unassigned in CP1252, so
+            // there is nothing to translate them to; leave them be.
+            _ => c,
+        })
+        .collect()
+}
+
 /// Parse SRT content into cleaned dialogue lines.
 pub fn parse_srt(srt_content: &str) -> Result<Vec<SubtitleLine>> {
     use subparse::SubtitleFormat;
 
+    let srt_content = &repair_cp1252_mojibake(srt_content);
     let subtitle_file = subparse::parse_str(
         SubtitleFormat::SubRip,
         srt_content,
@@ -161,6 +219,12 @@ pub fn parse_srt(srt_content: &str) -> Result<Vec<SubtitleLine>> {
 }
 
 static SSA_TAGS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\{\\[^}]*\}").unwrap());
+/// Control codes that survive the SSA pass: MicroDVD's `{y:i}`/`{C:$6F6F6F}`
+/// key:value codes, ASS toggles whose backslash a converter dropped (`{i1}`),
+/// and the empty `{}` those leave behind. Deliberately narrow — `{стоп}` or
+/// `{Malpronunciación}` is somebody's text, not markup, and stays.
+static CONTROL_TAGS: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\{(?:[iub][01]|[A-Za-z]:[^{}]*|[yY])?\}").unwrap());
 static HTML_TAGS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<[^>]+>").unwrap());
 static BRACKETS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\[.*?\]").unwrap());
 static PARENS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\(.*?\)").unwrap());
@@ -177,7 +241,17 @@ pub fn cleanup_subtitle_text(text: &str) -> String {
     // SSA/ASS override tags ({\an8}, {\i1}, {\pos(200,100)}, …) and the ASS
     // escapes for line break / hard space.
     result = SSA_TAGS.replace_all(&result, "").to_string();
+    result = CONTROL_TAGS.replace_all(&result, "").to_string();
     result = result.replace("\\N", " ").replace("\\h", " ");
+
+    // Stripping the tag off a *drawing* leaves its coordinate list behind, and
+    // that residue reads as text: `{\p1}m 71 60 b 71 0 161 0 161 60` becomes
+    // `m 71 60 b 71 0 161 0 161 60`. Fansub logos are authored this way, so the
+    // shapes carry no dialogue at all — dropping them keeps a vector outline
+    // from being tokenised into anchor candidates.
+    if is_drawing_residue(&result) {
+        return String::new();
+    }
 
     // Hearing-impaired annotations, then any remaining bracketed or
     // parenthesised aside, then "JOHN:"-style speaker labels.
@@ -187,6 +261,31 @@ pub fn cleanup_subtitle_text(text: &str) -> String {
 
     result = SPACES.replace_all(result.trim(), " ").to_string();
     result
+}
+
+/// Is this all that is left of an ASS vector drawing?
+///
+/// Drawing mode is a sequence of one-letter path commands (`m` move, `l` line,
+/// `b` bezier, …) and their coordinates. The test is deliberately strict —
+/// every character must belong to that alphabet, and there must be several
+/// numbers — because the cost of a false positive is deleting a real line of
+/// dialogue, while the cost of a false negative is one junk cue that the
+/// course's own numeric filter drops anyway.
+fn is_drawing_residue(text: &str) -> bool {
+    let text = text.trim();
+    let digits = text.chars().filter(char::is_ascii_digit).count();
+    if digits < 4 {
+        return false;
+    }
+    let mut commands = 0;
+    for c in text.chars() {
+        match c {
+            'm' | 'n' | 'l' | 'b' | 's' | 'p' | 'c' => commands += 1,
+            c if c.is_ascii_digit() || c.is_whitespace() || c == '.' || c == '-' => {}
+            _ => return false,
+        }
+    }
+    commands >= 2
 }
 
 /// Strip HTML tags from text
@@ -206,6 +305,58 @@ mod tests {
         assert_eq!(cleanup_subtitle_text("(sighs) Fine"), "Fine");
         assert_eq!(cleanup_subtitle_text("JOHN: Fine"), "Fine");
         assert_eq!(cleanup_subtitle_text("one\\Ntwo"), "one two");
+        // Backslash-dropped ASS toggles and MicroDVD key:value codes.
+        assert_eq!(
+            cleanup_subtitle_text("{i1}Il doit être stoppé"),
+            "Il doit être stoppé"
+        );
+        assert_eq!(cleanup_subtitle_text("{y:i}Va bene"), "Va bene");
+        assert_eq!(cleanup_subtitle_text("{C:$6F6F6F}{y}okay{}"), "okay");
+        // Braces holding somebody's words are not markup.
+        assert_eq!(cleanup_subtitle_text("{стоп}"), "{стоп}");
+    }
+
+    #[test]
+    fn cleanup_drops_vector_drawings_but_keeps_positioned_text() {
+        // A fansub logo: the tag goes, and the coordinate list must go with it.
+        assert_eq!(
+            cleanup_subtitle_text(r"{\p1}m 71 60 b 71 0 161 0 161 60 b 161 120 71 120 71 60"),
+            ""
+        );
+        // Positioned *text* is ordinary dialogue and has to survive — 152 of the
+        // 169 tagged lines in the corpus were signage like this, not drawings.
+        assert_eq!(cleanup_subtitle_text(r"{\an8}「警察手帳」"), "「警察手帳」");
+        assert_eq!(
+            cleanup_subtitle_text(r"{\pos(200,100)}人人影视"),
+            "人人影视"
+        );
+        // Dialogue that happens to use the command letters and digits stays.
+        assert_eq!(
+            cleanup_subtitle_text("small pale blue 1234 spans"),
+            "small pale blue 1234 spans"
+        );
+    }
+
+    #[test]
+    fn mojibake_becomes_the_character_it_stood_for() {
+        // The failure this guards against is not cosmetic: dropping U+009C
+        // instead of translating it turns "cœur" into "cur".
+        assert_eq!(repair_cp1252_mojibake("mon c\u{9c}ur"), "mon cœur");
+        assert_eq!(repair_cp1252_mojibake("s\u{9c}ur"), "sœur");
+        assert_eq!(repair_cp1252_mojibake("didn\u{92}t"), "didn’t");
+        assert_eq!(repair_cp1252_mojibake("\u{93}quoted\u{94}"), "“quoted”");
+        assert_eq!(repair_cp1252_mojibake("wait\u{85}"), "wait…");
+        // Text with nothing to repair is returned unchanged.
+        assert_eq!(
+            repair_cp1252_mojibake("plain ASCII, é and 中文"),
+            "plain ASCII, é and 中文"
+        );
+    }
+
+    #[test]
+    fn parse_srt_repairs_mojibake_in_dialogue() {
+        let srt = "1\n00:00:01,000 --> 00:00:02,000\nMon c\u{9c}ur\n\n";
+        assert_eq!(parse_srt(srt).unwrap()[0].sentence, "Mon cœur");
     }
 
     #[test]

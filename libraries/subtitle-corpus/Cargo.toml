@@ -14,3 +14,7 @@ schemars = { workspace = true }
 base64 = "0.22"
 tokio = { workspace = true }
 futures = { workspace = true }
+movie-subtitles = { path = "../movie-subtitles" }
+reqwest = { workspace = true }
+language-utils = { path = "../../language-utils" }
+earshot = "1.1"

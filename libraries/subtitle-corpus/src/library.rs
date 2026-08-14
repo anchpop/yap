@@ -62,13 +62,21 @@ pub fn course_dir(language: &str) -> Option<&'static str> {
 const TEXT_CODECS: &[&str] = &["subrip", "ass", "ssa", "mov_text", "webvtt", "text"];
 const BITMAP_CODECS: &[&str] = &["hdmv_pgs_subtitle", "dvd_subtitle", "dvb_subtitle", "xsub"];
 
-/// Where a movie's correctly-timed subtitle will come from.
+/// Where a movie's subtitle will come from, and how far its timing can be trusted.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "tier", rename_all = "snake_case")]
 pub enum Source {
     /// A text track on the disc. Authored against this file, so already synced.
     DiscText { index: u32, codec: String },
     /// A text file alongside the video, e.g. `Movie (1999).fr.srt`.
+    ///
+    /// **Not guaranteed to be in sync.** Two different things land here: a file
+    /// that shipped inside the rip, which is timed to this exact release, and
+    /// one Bazarr fetched afterwards from the same pool the downloads come
+    /// from. 23 of 49 were written over an hour after their video, and scoring
+    /// them against the audio put 27 of 48 within half a second but caught
+    /// *Il Mare* 3.4s out at a decisive 0.30 margin. Better than a download,
+    /// short of a disc track.
     Sidecar { path: PathBuf },
     /// A bitmap track on the disc. Also already synced, but needs OCR.
     DiscBitmap { index: u32, codec: String },
@@ -173,6 +181,36 @@ fn probe(path: &Path, kind: &str) -> Result<Vec<Stream>> {
         .context("ffprobe failed to start — is ffmpeg installed?")?;
     let parsed: Probe = serde_json::from_slice(&out.stdout).unwrap_or(Probe { streams: vec![] });
     Ok(parsed.streams)
+}
+
+/// A subtitle stream usable as a *timing* reference, whatever its language.
+///
+/// Every track on the disc was authored against this exact file, so its cue
+/// timings are ground truth even when its language is useless as text. A
+/// bitmap track qualifies too: only the timestamps are read, no OCR.
+pub struct ReferenceStream {
+    pub index: u32,
+    pub language: String,
+    pub is_text: bool,
+}
+
+pub fn reference_subtitle_streams(path: &Path) -> Result<Vec<ReferenceStream>> {
+    let mut refs: Vec<ReferenceStream> = probe(path, "s")?
+        .into_iter()
+        .filter(|s| !s.is_forced() && !s.is_commentary())
+        .filter_map(|s| {
+            let codec = s.codec_name.clone()?;
+            let is_text = TEXT_CODECS.contains(&codec.as_str());
+            (is_text || codec == "hdmv_pgs_subtitle").then(|| ReferenceStream {
+                index: s.index,
+                language: lang_of(&s),
+                is_text,
+            })
+        })
+        .collect();
+    // Text streams cost nothing to read; bitmaps need a full-track demux.
+    refs.sort_by_key(|r| !r.is_text);
+    Ok(refs)
 }
 
 fn lang_of(s: &Stream) -> String {

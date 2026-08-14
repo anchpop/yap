@@ -151,12 +151,15 @@ pub fn to_srt(lines: &[(u32, u32, String)]) -> String {
     }
     let mut out = String::new();
     for (i, (start, end, text)) in lines.iter().enumerate() {
+        // The OCR model sometimes returns a two-line cue with a literal
+        // backslash-n; in SRT a line break is a real newline.
+        let text = text.trim().replace("\\n", "\n");
         out.push_str(&format!(
             "{}\n{} --> {}\n{}\n\n",
             i + 1,
             stamp(*start),
             stamp(*end),
-            text.trim()
+            text
         ));
     }
     out
