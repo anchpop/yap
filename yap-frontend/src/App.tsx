@@ -9,6 +9,7 @@ import {
   useCallback,
 } from "react";
 import { useZeno } from "@/hooks/useZeno";
+import { AuthDialogProvider } from "@/components/auth-dialog-provider";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -368,8 +369,10 @@ function AppContent({ userInfo, accessToken }: AppContextType) {
         <div className="min-h-screen text-foreground">
           <div className="max-w-2xl mx-auto">
             <Profiler id="Content" onRender={profilerOnRender}>
-              <Outlet context={{ userInfo, accessToken }} />
-              <About />
+              <AuthDialogProvider>
+                <Outlet context={{ userInfo, accessToken }} />
+                <About />
+              </AuthDialogProvider>
             </Profiler>
             <div className="p-2"></div>
           </div>

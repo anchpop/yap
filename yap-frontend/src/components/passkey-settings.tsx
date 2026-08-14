@@ -12,19 +12,28 @@ import {
 } from "@/components/ui/dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { KeyRound, Trash2 } from "lucide-react";
-
-export function passkeysSupported(): boolean {
-  return typeof window !== "undefined" && "PublicKeyCredential" in window;
-}
+import {
+  canCreatePasskey,
+  isCancelled,
+  registerPasskeyCeremony,
+} from "@/lib/passkey";
+import { useEmailConfirmed } from "@/hooks/use-email-confirmed";
 
 export function PasskeySettings() {
   const [open, setOpen] = useState(false);
   // Supabase only allows passkey registration for confirmed, non-anonymous
-  // users, so hide the dialog entirely until the email is confirmed.
-  const [emailConfirmed, setEmailConfirmed] = useState(false);
+  // users, so hide the dialog entirely until the email is confirmed. The
+  // hook is live (onAuthStateChange), so the item appears the moment the
+  // email gets confirmed — even from another tab — without a reload.
+  const emailConfirmed = useEmailConfirmed();
+  const [canCreate, setCanCreate] = useState(false);
   const [passkeys, setPasskeys] = useState<PasskeyListItem[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    canCreatePasskey().then(setCanCreate);
+  }, []);
 
   const refresh = useCallback(async () => {
     const { data, error } = await supabase.auth.passkey.list();
@@ -48,11 +57,13 @@ export function PasskeySettings() {
   const handleRegister = async () => {
     setError(null);
     setBusy(true);
-    const { error } = await supabase.auth.registerPasskey();
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      await registerPasskeyCeremony();
       await refresh();
+    } catch (err) {
+      if (!isCancelled(err)) {
+        setError("Couldn't set up a passkey on this device.");
+      }
     }
     setBusy(false);
   };
@@ -69,13 +80,7 @@ export function PasskeySettings() {
     setBusy(false);
   };
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setEmailConfirmed(Boolean(session?.user.email_confirmed_at));
-    });
-  }, []);
-
-  if (!passkeysSupported() || !emailConfirmed) {
+  if (!canCreate || !emailConfirmed) {
     return null;
   }
 

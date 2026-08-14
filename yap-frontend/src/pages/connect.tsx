@@ -33,6 +33,7 @@ export function Connect() {
   const [session, setSession] = useState<Session | null>(null);
   const [sessionLoaded, setSessionLoaded] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [authView, setAuthView] = useState<"signin" | "signup">("signin");
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -149,7 +150,12 @@ export function Connect() {
             )}
           </CardContent>
         </Card>
-        <AuthDialog open={authOpen} onOpenChange={setAuthOpen} defaultView="signin" />
+        <AuthDialog
+          open={authOpen}
+          onOpenChange={setAuthOpen}
+          view={authView}
+          onViewChange={setAuthView}
+        />
       </div>
     </ThemeProvider>
   );

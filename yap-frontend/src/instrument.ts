@@ -41,6 +41,19 @@ Sentry.init({
       }
     }
 
+    // Filter cancelled/blocked WebAuthn ceremonies (user closed the passkey
+    // sheet, tab lost focus, etc.). Match on exception type, not message —
+    // WebAuthn error messages vary by browser and locale.
+    {
+      const first = event.exception?.values?.[0];
+      if (first?.type === "NotAllowedError" || first?.type === "AbortError") {
+        const frames = first.stacktrace?.frames ?? [];
+        if (frames.some((f) => f.filename?.includes("passkey"))) {
+          return null;
+        }
+      }
+    }
+
     return event;
   },
 

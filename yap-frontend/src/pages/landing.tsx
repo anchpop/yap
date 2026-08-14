@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card.tsx";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
 import { TopPageLayout } from "@/components/TopPageLayout";
+import { useAuthDialog } from "@/components/auth-dialog-provider";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -263,6 +264,7 @@ function MockFlashcard() {
 
 export function LandingPage() {
   const { userInfo } = useOutletContext<AppContextType>();
+  const { openSignIn } = useAuthDialog();
   const deckSelection = useDeckSelection();
   const navigate = useNavigate();
 
@@ -329,6 +331,15 @@ export function LandingPage() {
               </Button>
               <StartLearningButton />
             </div>
+
+            {!userInfo && (
+              <button
+                onClick={openSignIn}
+                className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+              >
+                Already have an account? Sign in
+              </button>
+            )}
           </div>
 
           <div className="flex flex-col items-center gap-4 relative w-full lg:gap-0 lg:justify-center lg:pb-40">

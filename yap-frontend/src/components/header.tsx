@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -15,7 +14,7 @@ import { LogOut, AlertTriangle, ArrowLeft, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { SyncStatusDialog } from "@/components/sync-status-dialog";
 import type { UserInfo } from "@/App";
-import { AuthDialog } from "@/components/auth-dialog";
+import { useAuthDialog } from "@/components/auth-dialog-provider";
 import type { Language } from "../../../yap-frontend-rs/pkg";
 import { LANGUAGES } from "@/lib/languages";
 
@@ -47,8 +46,7 @@ export function Header({
   title = "Yap.Town",
   dailyGoalPercent,
 }: HeaderProps) {
-  const [authOpen, setAuthOpen] = useState(false);
-  const [defaultView, setDefaultView] = useState<"signin" | "signup">("signin");
+  const { openSignIn, openSignUp } = useAuthDialog();
   const navigate = useNavigate();
 
   return (
@@ -136,23 +134,9 @@ export function Header({
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setDefaultView("signin");
-                  setAuthOpen(true);
-                }}
-              >
-                Sign In
-              </Button>
-              <AuthDialog
-                open={authOpen}
-                onOpenChange={setAuthOpen}
-                defaultView={defaultView}
-              />
-            </>
+            <Button variant="ghost" size="sm" onClick={openSignIn}>
+              Sign In
+            </Button>
           )}
           <ModeToggle />
         </div>
@@ -174,10 +158,7 @@ export function Header({
             </p>
           </div>
           <Button
-            onClick={() => {
-              setDefaultView("signup");
-              setAuthOpen(true);
-            }}
+            onClick={openSignUp}
             variant="outline"
             size="sm"
             className="flex-shrink-0"

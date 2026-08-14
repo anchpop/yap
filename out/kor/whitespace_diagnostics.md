@@ -1,8 +1,8 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 534272
-Total errors: 27323
-Accuracy: 94.89%
+Total predictions: 535872
+Total errors: 27473
+Accuracy: 94.87%
 
 ## Error Patterns (sorted by frequency)
 
@@ -70,6 +70,22 @@ Accuracy: 94.89%
   - 강둑에서 나한테 프로포즈도 했거든.
   - 걔도 나한테 그런단 말이야!
 
+### "은" + "요" (234 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 가뿐해요, 당신은요?
+  - 가슴 통증은요?
+  - 가족들은요?
+
+### "건" + "가요" (217 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 가져가실 건가요?
+  - 가족을 다 죽게 만들 건가요?
+  - 가지고 가실 건가요?
+
 ### "거" + "요" (215 occurrences)
 - Predicted: Space
 - Actual: None
@@ -85,6 +101,14 @@ Accuracy: 94.89%
   - 가란 말이야!
   - 가족에게서 말이야.
   - 갑자기 무슨 말이야?
+
+### "는" + "요" (176 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - ‘국가 코드는요?
+  - 감사해요, 직원 배지는요?
+  - 감자튀김이나 음료수는요?
 
 ### "나" + "랑" (139 occurrences)
 - Predicted: Space
@@ -158,14 +182,6 @@ Accuracy: 94.89%
   - 거기서 무슨 짓을 한거니?
   - 거기서 뭐 하는 거니?
 
-### "은" + "요" (91 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 가뿐해요, 당신은요?
-  - 가슴 통증은요?
-  - 갈아입을 속옷은요?
-
 ### "뭐" + "예요" (86 occurrences)
 - Predicted: Space
 - Actual: None
@@ -238,14 +254,6 @@ Accuracy: 94.89%
   - 고향이 어디야?
   - 그 고아원이 어디야?
 
-### "는" + "요" (59 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 갑각류나 견과류 과일 알레르기는요?
-  - 건강상 문제는요?
-  - 그럼 마리사는요?
-
 ### "소리" + "야" (59 occurrences)
 - Predicted: Space
 - Actual: None
@@ -286,13 +294,13 @@ Accuracy: 94.89%
   - 그 변소 얘기 누구한테 들은 거냐?
   - 그걸 누구한테 쏟아붓지?
 
-### "건" + "가요" (48 occurrences)
+### "도" + "요" (49 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - 같이 오신 건가요?
-  - 공산주의에 다시 매료된 건가요?
-  - 그 방어적 태도는 요즘 생긴 건가요?
+  - 경찰에도요?
+  - 곤돌라 친구들도요?
+  - 구보 중 탈락도요?
 
 ### "사람" + "이야" (47 occurrences)
 - Predicted: Space
@@ -637,14 +645,6 @@ Accuracy: 94.89%
   - 고민 중이야.
   - 군복무 중이야?
   - 나도 노력 중이야!
-
-### "도" + "요" (24 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 곤돌라 친구들도요?
-  - 구보 중 탈락도요?
-  - 국가도 그렇고 여기 있는 모두도요!
 
 ### "상관" + "이야" (24 occurrences)
 - Predicted: Space
@@ -1037,14 +1037,6 @@ Accuracy: 94.89%
   - 그 이타적이던 집단은 멸망할 수밖에 없나?
   - 그게 사실이면 캐내는 수밖에!
   - 그래서 독살일 수밖에 없는 겁니까?
-
-### "어떡" + "해" (15 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 고문을 당하면 어떡해?
-  - 그걸 거기 쑤셔 넣으면 어떡해!
-  - 그래서 한달 늦췄다가 멋진 남자 친구라도 생기면 어떡해?
 
 ### "중" + "이에요" (15 occurrences)
 - Predicted: Space
@@ -1493,14 +1485,6 @@ Accuracy: 94.89%
   - 내 이름은 오필리아에요 누구시죠?
   - 누, 누구시죠?
   - 누구시죠?
-
-### "당신" + "은요" (11 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 결혼했어요, 당신은요?
-  - 그러는 당신은요?
-  - 그럼 당신은요?
 
 ### "둘" + "이서" (11 occurrences)
 - Predicted: Space
@@ -2173,14 +2157,6 @@ Accuracy: 94.89%
   - 다음 관광 여행이 언제예요?
   - 다음 시합은 언제예요?
   - 마지막 우승이 언제예요?
-
-### "에" + "는요" (8 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그 외에는요?
-  - 그 이전에는요?
-  - 떠난 후에는요?
 
 ### "여기" + "요" (8 occurrences)
 - Predicted: Space
@@ -3454,14 +3430,6 @@ Accuracy: 94.89%
   - 놈들한테 매수됐어?
   - 똑같은 놈들한테 총을 맞고 버려진 거라면 어떻겠니?
 
-### "누" + "가" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 업계가 끝났다고 누가 그래!
-  - 왜냐하면 사람들이 어떤 욕망이 있을지, 누가 알겠나?
-  - 이 일을 또 누가 아나요?
-
 ### "누구" + "든" (5 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3782,14 +3750,6 @@ Accuracy: 94.89%
   - 몇 살인데, 여자가?
   - 몇 살인데?
 
-### "상황" + "은요" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 군책사, 상황은요?
-  - 그 다음 상황은요?
-  - 아미나 박사님, 분화구에 대한 최신 상황은요?
-
 ### "생각" + "이었어" (5 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3869,14 +3829,6 @@ Accuracy: 94.89%
   - 가자, 자기야 시작이다!
   - 내일부터 시작이다 알아들었나?
   - 놀라워 하고, 궁금해 하는 것이 이해의 시작이다.
-
-### "씨" + "는요" (5 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 네, 어맨다 씨는요?
-  - 루미 씨는요?
-  - 서래 씨는요?
 
 ### "아가" + "야" (5 occurrences)
 - Predicted: Space
@@ -5422,14 +5374,6 @@ Accuracy: 94.89%
   - 언니는 의사예요.
   - 의사예요.
 
-### "이름" + "은요" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 두 번째 이름은요?
-  - 중간 이름은요?
-  - 패거리들 이름은요?
-
 ### "인간" + "아" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -5949,14 +5893,6 @@ Accuracy: 94.89%
   - 거긴 뱀도 있잖아 그쪽으론 못 가!
   - 그쪽으론 그놈이 최고잖아.
   - 내 팔은 그쪽으론 안꺾인다구!
-
-### "그쪽" + "은요" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그러는 그쪽은요?
-  - 그쪽은요?
-  - 좋아요, 그쪽은요?
 
 ### "근처" + "야" (3 occurrences)
 - Predicted: Space
@@ -7302,14 +7238,6 @@ Accuracy: 94.89%
   - 이 게임은 완전히 끝났다 이거 아입니까?
   - 정보가 있으니끼니 그런 거 아입니까?
 
-### "아내" + "는요" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그 사람 아내는요?
-  - 아내는요?
-  - 제 아내는요?
-
 ### "아내" + "예요" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -7997,14 +7925,6 @@ Accuracy: 94.89%
   - 덤블도어 교수님이 저희에게 임무를 남겼어요.
   - 저희에게 알려주세요.
   - 차라리 저희에게 감사하다고 말씀하시는 편이 낫겠군요.
-
-### "적" + "은요" (3 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그래서 일이 복잡해진 적은요?
-  - 넘어지신 적은요?
-  - 차를 도둑맞으신 적은요?
 
 ### "전부" + "예요" (3 occurrences)
 - Predicted: Space
@@ -8728,13 +8648,6 @@ Accuracy: 94.89%
   - 가젤이예요, 당신은 섹시한 댄서이고요.
   - 그거, 가젤이예요?
 
-### "가족" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 가족은요?
-  - 연락할 가족은요?
-
 ### "가족" + "이라고" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -8832,13 +8745,6 @@ Accuracy: 94.89%
 - Examples:
   - 가명으로 살게 할 거고요.
   - 그럼 어제까지는 다 똑같은 거고요?
-
-### "거" + "는요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 마실 거는요?
-  - 뭐 하시고 싶은 거는요?
 
 ### "거" + "라고들" (2 occurrences)
 - Predicted: Space
@@ -9316,13 +9222,6 @@ Accuracy: 94.89%
   - 톰은 관리자야.
   - 톰은 훌륭한 관리자야.
 
-### "관장님" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 관장님은요?
-  - 브로디 관장님은요?
-
 ### "괜찮아" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9483,13 +9382,6 @@ Accuracy: 94.89%
 - Examples:
   - 금붕어다!
   - 아, 금붕어다!
-
-### "기간" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 이집트인이 이시스를 숭배한 기간은요?
-  - 차종과 기간은요?
 
 ### "기념일" + "이야" (2 occurrences)
 - Predicted: Space
@@ -9701,13 +9593,6 @@ Accuracy: 94.89%
   - 너네 같은 쓰레기들은 여기서 쫓겨나면 끝장이라고!
   - 넌 해고야 이제 넌 끝장이라고!
 
-### "나" + "는요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 나는요?
-  - 나는요?
-
 ### "나" + "밖에" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -9763,13 +9648,6 @@ Accuracy: 94.89%
 - Examples:
   - 난도한테 넘기라고!
   - 난도한테 줘!
-
-### "날" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 당신 생애에서 가장 아름다웠던 날은요?
-  - 생애에서 가장 아름다웠던 날은요?
 
 ### "날" + "이었다" (2 occurrences)
 - Predicted: Space
@@ -9875,13 +9753,6 @@ Accuracy: 94.89%
 - Examples:
   - 내꺼야, 미국산 앱이야.
   - 넌 내꺼야!
-
-### "내일" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 내일은요?
-  - 내일은요?
 
 ### "냄새" + "죠" (2 occurrences)
 - Predicted: Space
@@ -10380,13 +10251,6 @@ Accuracy: 94.89%
   - 대나무순이다!
   - 이제야 대나무순이다!
 
-### "대답" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그래서 대답은요?
-  - 설명 고맙습니다 대답은요?
-
 ### "대박" + "이야" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -10533,13 +10397,6 @@ Accuracy: 94.89%
 - Examples:
   - 네 돈엔 피가 묻었어.
   - 모든 돈엔 피가 묻어, 자기야.
-
-### "돈" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 돈은요?
-  - 토끼를 판 돈은요?
 
 ### "돈" + "인가요" (2 occurrences)
 - Predicted: Space
@@ -11528,13 +11385,6 @@ Accuracy: 94.89%
   - 배우요?
   - 혹시 배우요?
 
-### "배지" + "는요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 감사해요, 직원 배지는요?
-  - 조종사가 다는 배지는요?
-
 ### "뱀" + "이랑" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -12039,13 +11889,6 @@ Accuracy: 94.89%
   - 뉴스에 나온 사람들요?
   - 자기 스스로 당신 딸과 사위라고 하던 그 사람들요?
 
-### "사람들" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 먼저 죽은 사람들은요?
-  - 싸우지 못하는 사람들은요?
-
 ### "사람들" + "이랑" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -12312,13 +12155,6 @@ Accuracy: 94.89%
   - 같이 싸우는 놈들도 똑같은 새끼들이야!
   - 너희들 도대체 뭐 하는 새끼들이야?
 
-### "색" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 넥타이 색은요?
-  - 이 파이프 색은요?
-
 ### "색" + "이지" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -12332,13 +12168,6 @@ Accuracy: 94.89%
 - Examples:
   - 가벼운 샐러드요?
   - 사장님, 샐러드요!
-
-### "생각" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 끝나자마자 다시 시작됐을 때 증인 생각은요?
-  - 부인 생각은요?
 
 ### "생각" + "이고" (2 occurrences)
 - Predicted: Space
@@ -12466,13 +12295,6 @@ Accuracy: 94.89%
   - 그래, 내일 선발대랑 같이 아라키스에 가지.
   - 내일 선발대랑 같이 아라키스에 가는 거지?
 
-### "선생님" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 선생님은요?
-  - 좋습니다, 선생님은요?
-
 ### "선수" + "야" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -12493,13 +12315,6 @@ Accuracy: 94.89%
 - Examples:
   - 네 선택이야.
   - 왜 톰이 메리보다 더 좋은 선택이야?
-
-### "설탕" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 설탕은요?
-  - 크림과 설탕은요?
 
 ### "섬" + "이요" (2 occurrences)
 - Predicted: Space
@@ -12858,13 +12673,6 @@ Accuracy: 94.89%
   - 메리랑 케이트는 일란성 쌍둥이야.
   - 진과 케이트는 쌍둥이야.
 
-### "씨" + "도요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 미희 씨도요?
-  - 폭스 씨도요?
-
 ### "씨" + "인가요" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -13005,13 +12813,6 @@ Accuracy: 94.89%
   - 네, 아버지예요 생전에 알던 사이예요?
   - 아버지예요?
 
-### "아빠" + "는요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 거미요, 아빠는요?
-  - 아빠는요?
-
 ### "아빠" + "란" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -13067,13 +12868,6 @@ Accuracy: 94.89%
 - Examples:
   - 새 아이디어라도 있어?
   - 아이디어라도?
-
-### "아저씨" + "는요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 마르첼로 클레리치, 아저씨는요?
-  - 아저씨는요?
 
 ### "아저씨" + "에게" (2 occurrences)
 - Predicted: Space
@@ -14062,13 +13856,6 @@ Accuracy: 94.89%
   - 내 말 명심해요 이건 분명히 음모요!
   - 이건 말도 안 돼 모든 게 음모요!
 
-### "음식" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 좋아하는 이탈리아 음식은요?
-  - 중국 음식은요?
-
 ### "음식" + "이에요" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -14572,13 +14359,6 @@ Accuracy: 94.89%
 - Examples:
   - 야, 그, 재식아, 니 영어 쪼까 되잖애?
   - 재식아!
-
-### "잭" + "은요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 잭은요?
-  - 하, 하지만 잭은요?
 
 ### "저" + "밖에" (2 occurrences)
 - Predicted: Space
@@ -15476,13 +15256,6 @@ Accuracy: 94.89%
   - 참 이상한 친구네, 프랭크.
   - 터프한 친구네.
 
-### "친구" + "도요" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 네, 친구도요.
-  - 친구도요?
-
 ### "친구" + "란" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -15972,6 +15745,13 @@ Accuracy: 94.89%
 - Examples:
   - 지리는 학생입니다.
   - 학생입니다!
+
+### "한" + "건" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 내가 한건 해냈어!
+  - 이미 당신이 알고 있던 걸 찾으라고 한건가요?
 
 ### "한" + "적" (2 occurrences)
 - Predicted: Space
@@ -16823,6 +16603,12 @@ Accuracy: 94.89%
 - Examples:
   - 화가라도 돼요?
 
+### "가" + "로" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 내가 로한테 말할 줄 알았죠?
+
 ### "가" + "요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -16991,12 +16777,6 @@ Accuracy: 94.89%
 - Examples:
   - 내가 가르친건 다 까먹은거야!
 
-### "가르침" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그분의 가르침은요?
-
 ### "가리발디" + "에게" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -17008,12 +16788,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 하코넨 가문에게 잘 길들여졌군요.
-
-### "가문" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 중국 라면 기업 추 가문은요?
 
 ### "가문" + "이라니" (1 occurrences)
 - Predicted: Space
@@ -17303,12 +17077,6 @@ Accuracy: 94.89%
 - Examples:
   - 다른 가족들에게 알릴까요?
 
-### "가족들" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 가족들은요?
-
 ### "가족들" + "인가" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -17404,12 +17172,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 왜 간이랑 콩팥을 뗀다고 한 거야?
-
-### "간달프" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 간달프는요?
 
 ### "간식" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -19259,12 +19021,6 @@ Accuracy: 94.89%
 - Examples:
   - 결핵인지 뭔지는 모르겠지만!
 
-### "결혼" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 결혼은요?
-
 ### "결혼" + "이라고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -19390,12 +19146,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이거, 강의 신께서 주신 경단이야!
-
-### "경례" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그리고 나치식 경례는요?
 
 ### "경보" + "라고" (1 occurrences)
 - Predicted: Space
@@ -19714,12 +19464,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 여기서 뭐하고 계신건가요?
-
-### "계약" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 계약은요?
 
 ### "계약금" + "이라고" (1 occurrences)
 - Predicted: Space
@@ -20122,12 +19866,6 @@ Accuracy: 94.89%
 - Actual: Space
 - Examples:
   - 나는 단지 고파 -만두?
-
-### "고향" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 고향은요?
 
 ### "고향" + "이라고" (1 occurrences)
 - Predicted: Space
@@ -20735,12 +20473,6 @@ Accuracy: 94.89%
 - Examples:
   - 테러 공포로부터 자유를 얻었단 말인가요?
 
-### "공학자들" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 공학자들은요?
-
 ### "공항" + "에서부터" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -21052,12 +20784,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이 사건이 소령님 관할입니까?
-
-### "관현악단" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 관현악단은요?
 
 ### "광경" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -21683,12 +21409,6 @@ Accuracy: 94.89%
 - Examples:
   - 여긴 로빈슨 국장이야 거긴 누군가?
 
-### "국장님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 국장님은요?
-
 ### "국토방위법" + "이란" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -22121,12 +21841,6 @@ Accuracy: 94.89%
 - Examples:
   - 그냥 말해 줘요 그이의 정부였나요?
 
-### "그거" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그거는요?
-
 ### "그거" + "다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -22318,12 +22032,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그놈들이에요!
-
-### "그다음" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그다음은요?
 
 ### "그대로" + "네요" (1 occurrences)
 - Predicted: Space
@@ -22637,12 +22345,6 @@ Accuracy: 94.89%
 - Examples:
   - 이름이 그완다야?
 
-### "그이" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 들었어요 그이는요?
-
 ### "그이" + "한테" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -22720,12 +22422,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 극제비갈매기라는 새를 들어 본 적 있습니까?
-
-### "근거" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 버스에 제 동료가 있었다는 근거는요?
 
 ### "근거" + "라고" (1 occurrences)
 - Predicted: Space
@@ -22979,12 +22675,6 @@ Accuracy: 94.89%
 - Examples:
   - 초록 금요일요!
 
-### "금주법" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 금주법은요?
-
 ### "금주자" + "에게" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -23159,12 +22849,6 @@ Accuracy: 94.89%
 - Examples:
   - 그래서 기둥인!
 
-### "기록" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 기록은요?
-
 ### "기록" + "이군" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -23278,12 +22962,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 세상이 끝나면 이런 기분일까?
-
-### "기사" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제 기사는요?
 
 ### "기사" + "랑" (1 occurrences)
 - Predicted: Space
@@ -23422,12 +23100,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이게 내 기억들인가?
-
-### "기온" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 트랙 상태, 노면 품질 날씨, 기온은요?
 
 ### "기일" + "이잖습니까" (1 occurrences)
 - Predicted: Space
@@ -24287,12 +23959,6 @@ Accuracy: 94.89%
 - Examples:
   - 이 순간부터 너는 너 나는 나다!
 
-### "나" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 나도요?
-
 ### "나" + "또한" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -24755,12 +24421,6 @@ Accuracy: 94.89%
 - Examples:
   - 이 난리가 난거랑 우리랑 상관없는 거죠?
 
-### "난류" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 앞차가 만드는 난류는요?
-
 ### "난리" + "래" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -25181,12 +24841,6 @@ Accuracy: 94.89%
 - Examples:
   - 메리는 남자애들한테 인기 많아.
 
-### "남자친구" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 남자친구는요?
-
 ### "남자형제" + "랑" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -25240,12 +24894,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 마지막 남편요?
-
-### "남편" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 첫 번째 남편은요 아벡날리 부인?
 
 ### "남편" + "이다" (1 occurrences)
 - Predicted: Space
@@ -25306,12 +24954,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 너희들이 날 남편한테서 떼어놓을 순 없어.
-
-### "남편분" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 남편분은요?
 
 ### "남편분" + "이고요" (1 occurrences)
 - Predicted: Space
@@ -25379,12 +25021,6 @@ Accuracy: 94.89%
 - Examples:
   - 내껀 바로 이 냄새야!
 
-### "내가" + "로" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 내가 로한테 말할 줄 알았죠?
-
 ### "내각" + "에선" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -25402,12 +25038,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이거 내꺼니?
-
-### "내년" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 내년은요?
 
 ### "내년" + "이면" (1 occurrences)
 - Predicted: Space
@@ -25858,12 +25488,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 네프라고 했나요?
-
-### "넥타이" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그리고 셔츠하고 넥타이도요.
 
 ### "넥타이" + "라고" (1 occurrences)
 - Predicted: Space
@@ -26735,12 +26359,6 @@ Accuracy: 94.89%
 - Examples:
   - 누구한테요?
 
-### "누나" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 다른 누나는요?
-
 ### "누나" + "니" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -26782,12 +26400,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 밖에 있는 건 네 누나들이야?
-
-### "누님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 케이트 누님은요?
 
 ### "누마" + "에게" (1 occurrences)
 - Predicted: Space
@@ -27203,12 +26815,6 @@ Accuracy: 94.89%
 - Examples:
   - 페페, 다음번에 루실라 꼭 데리고 와.
 
-### "다음" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 다음은요?
-
 ### "다음" + "이라는" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -27401,12 +27007,6 @@ Accuracy: 94.89%
 - Examples:
   - 한 달쯤 후면 날 증오할 텐데?
 
-### "달걀" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 나무 달걀은요?
-
 ### "달걀" + "이니" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -27598,12 +27198,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 누가 당신더러 이 동네 대장이래요?
-
-### "당신" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 당신도요?
 
 ### "당신" + "마저" (1 occurrences)
 - Predicted: Space
@@ -28594,6 +28188,12 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 델타랑은 끝난 줄 알았는데.
+
+### "도" + "—" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - 너는 아무것도— 왜 천둥 호흡의 후계자가 악마가 된 거야?
 
 ### "도" + "―" (1 occurrences)
 - Predicted: Space
@@ -29981,12 +29581,6 @@ Accuracy: 94.89%
 - Examples:
   - 롤라 디드릭슨에요 기억하시죠?
 
-### "디쉬" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 사이드 디쉬는요?
-
 ### "디스코장" + "이야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -30004,12 +29598,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 모두 다 성인이다, 디에고랑은 거리가 먼?
-
-### "디저트" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 디저트는요?
 
 ### "디젤" + "이네" (1 occurrences)
 - Predicted: Space
@@ -30154,12 +29742,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 내 딸아!
-
-### "딸" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제 딸은요?
 
 ### "딸" + "이게" (1 occurrences)
 - Predicted: Space
@@ -30845,12 +30427,6 @@ Accuracy: 94.89%
 - Examples:
   - 라일락이다!
 
-### "라임병" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 라임병은요?
-
 ### "라주" + "한테" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -31121,12 +30697,6 @@ Accuracy: 94.89%
 - Examples:
   - 그럼 렌치라도 갖다줄래?
 
-### "렌터카" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 렌터카는요?
-
 ### "로" + "라고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -31355,12 +30925,6 @@ Accuracy: 94.89%
 - Examples:
   - 다시한번, 왜 루마니아냐?
 
-### "루벤" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 루벤은요?
-
 ### "루벤스" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -31541,12 +31105,6 @@ Accuracy: 94.89%
 - Examples:
   - 몇 주 전에 친구 리타랑 걔 어머니 뵈러 거기 갔었거든.
 
-### "리탈린" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 리탈린은요?
-
 ### "리프트카" + "야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -31576,12 +31134,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 린턴에게 느낀 빈약한 애정 때문에?
-
-### "릴리아" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 릴리아는요?
 
 ### "링귀니" + "인가" (1 occurrences)
 - Predicted: Space
@@ -31877,12 +31429,6 @@ Accuracy: 94.89%
 - Examples:
   - 마법봉이잖아!
 
-### "마법사" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 마법사는요?
-
 ### "마법사" + "라면" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -31972,12 +31518,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 마신건 아니겠지?
-
-### "마약" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 마약은요?
 
 ### "마약" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -32080,12 +31620,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 당신이 마이크죠?
-
-### "마이클" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 마이클은요?
 
 ### "마이클" + "이란" (1 occurrences)
 - Predicted: Space
@@ -33041,12 +32575,6 @@ Accuracy: 94.89%
 - Examples:
   - 특히 천한 머글인 네 에미가!
 
-### "머리" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제 머리는요?
-
 ### "머리" + "다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -33233,12 +32761,6 @@ Accuracy: 94.89%
 - Examples:
   - 멍텅구리야!
 
-### "메뉴" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 메뉴는요?
-
 ### "메뉴" + "인" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -33299,12 +32821,6 @@ Accuracy: 94.89%
 - Examples:
   - 메아리에요?
 
-### "메이" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 메이는요?
-
 ### "메이" + "한테" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -33334,12 +32850,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 메피스토라면 악마죠?
-
-### "멕라이언" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 멕라이언은요?
 
 ### "멤버" + "야" (1 occurrences)
 - Predicted: Space
@@ -34031,12 +33541,6 @@ Accuracy: 94.89%
 - Examples:
   - 모자요?
 
-### "모친" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 모친은요?
-
 ### "모친" + "이래" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -34090,12 +33594,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그들이 너를 봤지, 계시를 목격한거야.
-
-### "목록" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 또다른 생존자 목록은요?
 
 ### "목뿐" + "이야" (1 occurrences)
 - Predicted: Space
@@ -34318,12 +33816,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 너는 몽상가구나!
-
-### "몽유병" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 몽유병은요?
 
 ### "몽테주로" + "십니까" (1 occurrences)
 - Predicted: Space
@@ -36065,12 +35557,6 @@ Accuracy: 94.89%
 - Examples:
   - 한 바퀴만요?
 
-### "바퀴들" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 저 바퀴들은요?
-
 ### "바퀴벌레" + "요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -36286,12 +35772,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 아, 룩 반장이라!
-
-### "반장님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 반장님은요?
 
 ### "반장님" + "한테" (1 occurrences)
 - Predicted: Space
@@ -36635,12 +36115,6 @@ Accuracy: 94.89%
 - Examples:
   - 더 이상의 방문객이나 축하객, 친척들은 사절이오!
 
-### "방법" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 여기서 나갈 방법은요?
-
 ### "방법" + "이라네" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -36742,12 +36216,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이게 문제를 해결하는 방식입니까?
-
-### "방앗간" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 뉴햄프셔의 방앗간은요?
 
 ### "방어" + "야" (1 occurrences)
 - Predicted: Space
@@ -36886,12 +36354,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그 새낀 미친듯이 꽥꽥거렸어 배달부랑 잤지?
-
-### "배당금" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 배당금은요, 파파?
 
 ### "배리" + "라면" (1 occurrences)
 - Predicted: Space
@@ -37253,23 +36715,11 @@ Accuracy: 94.89%
 - Examples:
   - 그럼 잉그리드 버그만이라면?
 
-### "버뮤다 삼각지대" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그러면 버뮤다 삼각지대는요?
-
 ### "버밍햄" + "인" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 여기가 앨라배마주 버밍햄인 줄 아나?
-
-### "버번위스키" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 버번위스키는요?
 
 ### "버섯" + "이다" (1 occurrences)
 - Predicted: Space
@@ -37324,12 +36774,6 @@ Accuracy: 94.89%
 - Actual: Space
 - Examples:
   - 지금까지 한 번 도 그런 걸 들어본 적이 없어.
-
-### "번" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 단 한 번도요?
 
 ### "번" + "만" (1 occurrences)
 - Predicted: None
@@ -37414,12 +36858,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 톰은 우리의 번역가야.
-
-### "번지수" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 번지수는요?
 
 ### "번째" + "거든" (1 occurrences)
 - Predicted: Space
@@ -37709,12 +37147,6 @@ Accuracy: 94.89%
 - Examples:
   - 베니스지?
 
-### "베라" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 베라는요?
-
 ### "베로니카" + "야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -37798,12 +37230,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그는 벨라트릭스에게 맹세를 했어요.
-
-### "벨리니" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 벨리니는요?
 
 ### "벼락" + "이다" (1 occurrences)
 - Predicted: Space
@@ -38675,12 +38101,6 @@ Accuracy: 94.89%
 - Examples:
   - 처음 꺼낸 사람이 볼테르였다는 거 아나요?
 
-### "볼트" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 너트랑 볼트도요!
-
 ### "봉골레" + "라면" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -39179,12 +38599,6 @@ Accuracy: 94.89%
 - Examples:
   - 두 분에게 기쁜 뉴스겠지?
 
-### "분" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 두 분은요?
-
 ### "분" + "이니" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -39605,12 +39019,6 @@ Accuracy: 94.89%
 - Examples:
   - 이 공갈 브라자야!
 
-### "브래지어" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그리고 아내가 말했어요 브래지어는요?
-
 ### "브랜드" + "야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -39760,12 +39168,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 비도문이냐?
-
-### "비디오" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 비디오는요?
 
 ### "비만" + "이었어" (1 occurrences)
 - Predicted: Space
@@ -40019,12 +39421,6 @@ Accuracy: 94.89%
 - Examples:
   - 미스터 빅이랑 할 땐, 내 방식으로 가는 거야.
 
-### "빈" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 빈은요?
-
 ### "빈" + "한테" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -40180,12 +39576,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 빨치산이군!
-
-### "빵" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 필린셴 빵은요?
 
 ### "빵" + "이다" (1 occurrences)
 - Predicted: Space
@@ -40877,12 +40267,6 @@ Accuracy: 94.89%
 - Examples:
   - 왜 딴 사람들한텐 안 보이지?
 
-### "사랑" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 사랑은요?
-
 ### "사랑" + "이니까요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -40955,12 +40339,6 @@ Accuracy: 94.89%
 - Examples:
   - 아니면 사령관에게 보고할까?
 
-### "사령관" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 사령관은요?
-
 ### "사령관" + "이" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -40972,12 +40350,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 일본군 상급 사령부입니다 아주 놀랍군요!
-
-### "사루만" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그것 참 희소식이군요 그럼 사루만은요?
 
 ### "사루만" + "이야" (1 occurrences)
 - Predicted: Space
@@ -41423,12 +40795,6 @@ Accuracy: 94.89%
 - Examples:
   - 사제님이신가요?
 
-### "사진" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제 사진은요?
-
 ### "사진" + "이냐고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -41657,12 +41023,6 @@ Accuracy: 94.89%
 - Examples:
   - 네, 긴급 사태예요!
 
-### "사토리우스" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 기바리안과 사토리우스는요?
-
 ### "사투리" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -41704,12 +41064,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 어차피 결정된 사항인데, 연회를 가야 할 필요가 있나요?
-
-### "사형" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 사형은요?
 
 ### "사회" + "란" (1 occurrences)
 - Predicted: Space
@@ -42053,23 +41407,11 @@ Accuracy: 94.89%
 - Examples:
   - 삼각관계인가요?
 
-### "삼겹살" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 삼겹살도요.
-
 ### "삼십오" + "이다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 오 곱하기 칠은 삼십오이다.
-
-### "삼촌" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 삼촌도요.
 
 ### "삼촌" + "이니까" (1 occurrences)
 - Predicted: Space
@@ -42118,12 +41460,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 상관에게 벨을 보고했나요?
-
-### "상관" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그래요 그럼 프랭크의 상관은요?
 
 ### "상관" + "이" (1 occurrences)
 - Predicted: Space
@@ -42202,12 +41538,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그런 걸로 이길 수 있는 상대냐!
-
-### "상대" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 최고의 섹스 상대는요?
 
 ### "상대" + "라도" (1 occurrences)
 - Predicted: Space
@@ -42671,12 +42001,6 @@ Accuracy: 94.89%
 - Examples:
   - 샌드위치랑 주먹밥 중에 어느 것이 더 부담스러워?
 
-### "샐러드" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 수프나 샐러드는요?
-
 ### "샘" + "에겐" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -42850,12 +42174,6 @@ Accuracy: 94.89%
 - Actual: Space
 - Examples:
   - 사고가 생겼어요 -사고?
-
-### "생년월일" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 생년월일은요?
 
 ### "생명체" + "라고" (1 occurrences)
 - Predicted: Space
@@ -43193,12 +42511,6 @@ Accuracy: 94.89%
 - Examples:
   - 서울요?
 
-### "서유럽" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 서유럽은요?
-
 ### "서장" + "에게" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -43301,12 +42613,6 @@ Accuracy: 94.89%
 - Examples:
   - 선금이다!
 
-### "선물" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 선물은요?
-
 ### "선물" + "이군" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -43348,12 +42654,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 선박이다!
-
-### "선배" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 선배도요?
 
 ### "선배" + "라" (1 occurrences)
 - Predicted: Space
@@ -43721,12 +43021,6 @@ Accuracy: 94.89%
 - Examples:
   - 정말 성모님이었다는 걸 어떻게 믿죠?
 
-### "성별" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 성별은요?
-
 ### "성생활" + "인가" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -43858,12 +43152,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 불순분자들이 판을 치는 세상인데 뭐가 어때요?
-
-### "세시" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 세시는요?
 
 ### "세운" + "거" (1 occurrences)
 - Predicted: Space
@@ -44033,12 +43321,6 @@ Accuracy: 94.89%
 - Examples:
   - 저에겐 딸이 셋입니다.
 
-### "셋째" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 셋째는요?
-
 ### "셰르" + "랑" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -44086,12 +43368,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 똑같은 소야 봤다니까!
-
-### "소감" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 세계 챔피언이 된 소감은요?
 
 ### "소금" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -44164,12 +43440,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이런 어린 소년치고는, 그렇지않니?
-
-### "소다노" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 조셉 소다노는요?
 
 ### "소동" + "이라구" (1 occurrences)
 - Predicted: Space
@@ -44428,12 +43698,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 소스케한테 갈래!
-
-### "소식" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 프로도 소식은요?
 
 ### "소식" + "이라도" (1 occurrences)
 - Predicted: Space
@@ -44801,12 +44065,6 @@ Accuracy: 94.89%
 - Examples:
   - 정말 손녀요?
 
-### "손님" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 손님도요?
-
 ### "손님" + "요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -45041,12 +44299,6 @@ Accuracy: 94.89%
 - Examples:
   - 수갑있어요?
 
-### "수건" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아버지, 수건은요?
-
 ### "수녀" + "라고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -45130,12 +44382,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 다리는 수리중입니다.
-
-### "수미" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 수미는요?
 
 ### "수박씨" + "인가요" (1 occurrences)
 - Predicted: Space
@@ -45256,12 +44502,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 우리 수안이요?
-
-### "수안이" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 수안이는요?
 
 ### "수양버들" + "이고" (1 occurrences)
 - Predicted: Space
@@ -45419,12 +44659,6 @@ Accuracy: 94.89%
 - Examples:
   - 카텔리나가 손수 만든 수트인가요?
 
-### "수표" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 개인 수표는요?
-
 ### "수프" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -45562,12 +44796,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 많이 쓰는 순서대로?
-
-### "순양함" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 우리 아빠 순양함은요?
 
 ### "순찰대" + "요" (1 occurrences)
 - Predicted: Space
@@ -45995,12 +45223,6 @@ Accuracy: 94.89%
 - Examples:
   - 무슨 스토퍼요?
 
-### "스톨츠" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 에릭 스톨츠는요?
-
 ### "스튜" + "요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -46115,12 +45337,6 @@ Accuracy: 94.89%
 - Examples:
   - 조심해, 너 스피커폰이야.
 
-### "스핑크스" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 스핑크스는요?
-
 ### "슬로모션" + "인가" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -46229,12 +45445,6 @@ Accuracy: 94.89%
 - Examples:
   - 지금 몇 시노?
 
-### "시" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 여덟 시는요?
-
 ### "시" + "니" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -46289,12 +45499,6 @@ Accuracy: 94.89%
 - Examples:
   - 몇 시입니까?
 
-### "시가" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 시가는요?
-
 ### "시가릴로" + "란" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -46330,12 +45534,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 톰과 메리는 한 시간씩이나 거울 앞에 서 있다.
-
-### "시간" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 작업 시간은요?
 
 ### "시간" + "이고" (1 occurrences)
 - Predicted: Space
@@ -46450,12 +45648,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 시골이요?
-
-### "시기" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 멍이 생긴 시기는요?
 
 ### "시기" + "라서" (1 occurrences)
 - Predicted: Space
@@ -46588,12 +45780,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 왜 시비야?
-
-### "시술" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제네바의 시술은요?
 
 ### "시아파" + "라도" (1 occurrences)
 - Predicted: Space
@@ -46775,12 +45961,6 @@ Accuracy: 94.89%
 - Examples:
   - 시청자들에게 하실 말씀이 있으신가요?
 
-### "시체" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 시체는요?
-
 ### "시체" + "라고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -46931,12 +46111,6 @@ Accuracy: 94.89%
 - Examples:
   - 백화점 식당가에나 갈까?
 
-### "식료품" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 식료품도요.
-
 ### "식물" + "이래" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -46948,12 +46122,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 식물이면 뭐 채소 같은 거?
-
-### "식사" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 식사는요?
 
 ### "식사" + "다" (1 occurrences)
 - Predicted: Space
@@ -47140,12 +46308,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그 앞 못 보는 신부님요?
-
-### "신부님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 파자글리아 신부님은요?
 
 ### "신부님" + "한테" (1 occurrences)
 - Predicted: Space
@@ -47759,12 +46921,6 @@ Accuracy: 94.89%
 - Examples:
   - 아름다운 아가씨께는 아름다운 머핀을!
 
-### "아가씨" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 쿄코 아가씨는요?
-
 ### "아가씨" + "니" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -48089,12 +47245,6 @@ Accuracy: 94.89%
 - Examples:
   - 곤도르와 로한의 아들들이여 나의 형제들이여!
 
-### "아라고른" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아라고른은요?
-
 ### "아라키스" + "에선" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -48221,23 +47371,11 @@ Accuracy: 94.89%
 - Examples:
   - 여자라면 아무하고나 자고!
 
-### "아무것도" + "—" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 너는 아무것도— 왜 천둥 호흡의 후계자가 악마가 된 거야?
-
 ### "아버님" + "께서는" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 아버님께서는 기뻐해주셨습니까?
-
-### "아버님" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아버님도요?
 
 ### "아버님" + "예요" (1 occurrences)
 - Predicted: Space
@@ -48467,12 +47605,6 @@ Accuracy: 94.89%
 - Examples:
   - 그게 네 아이냐?
 
-### "아이" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 아이는요?
-
 ### "아이" + "다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -48629,12 +47761,6 @@ Accuracy: 94.89%
 - Examples:
   - 죽은 아정이한테도 이거 해줬니?
 
-### "아줌마" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 미래의 아줌마는요?
-
 ### "아줌마" + "라" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -48683,12 +47809,6 @@ Accuracy: 94.89%
 - Examples:
   - 오늘 아침엔 검둥이 사냥 좀 해야겠네, 얘들아.
 
-### "아침" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아침은요?
-
 ### "아침" + "이네요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -48718,12 +47838,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 좋은 아침인가?
-
-### "아침밥" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 두 번째 아침밥은요?
 
 ### "아칸소" + "에서도" (1 occurrences)
 - Predicted: Space
@@ -49228,12 +48342,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그 애가 무슨 짓을 했길래 다들 못 죽여서 안달이죠?
-
-### "안드레아" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 안드레아는요?
 
 ### "안방" + "이냐" (1 occurrences)
 - Predicted: Space
@@ -49967,12 +49075,6 @@ Accuracy: 94.89%
 - Examples:
   - 야유회요?
 
-### "야채" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그리고 야채도요.
-
 ### "야채요리" + "같은" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -50164,12 +49266,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 뭐가 그리도 중요해서 약혼자한테 연락도 못 해?
-
-### "양" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 필요한 양은요?
 
 ### "양" + "이고" (1 occurrences)
 - Predicted: Space
@@ -50693,12 +49789,6 @@ Accuracy: 94.89%
 - Examples:
   - 너희 어머니냐?
 
-### "어머니" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 어머니는요?
-
 ### "어머니" + "라" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -50848,12 +49938,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 순 억지예요!
-
-### "언니" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제뉴어리 언니는요?
 
 ### "언니" + "만큼" (1 occurrences)
 - Predicted: Space
@@ -51221,12 +50305,6 @@ Accuracy: 94.89%
 - Examples:
   - 내가 어떤 엄마냐고?
 
-### "엄마" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 엄마는요?
-
 ### "엄마" + "니" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -51437,12 +50515,6 @@ Accuracy: 94.89%
 - Examples:
   - 엉터리잖아요?
 
-### "에" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 경찰에도요?
-
 ### "에" + "라도" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -51496,12 +50568,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 전부 앨리스터랑 에디한테 넘기고?
-
-### "에미리" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 마니의 아기 에미리는요?
 
 ### "에밀리" + "한테" (1 occurrences)
 - Predicted: Space
@@ -51628,12 +50694,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 하지만 지금 너는 엔진조차 못 돌리잖아.
-
-### "엘로이즈" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 엘로이즈는요?
 
 ### "엘리사" + "한테" (1 occurrences)
 - Predicted: Space
@@ -52241,12 +51301,6 @@ Accuracy: 94.89%
 - Examples:
   - 아는 여자애구나 제법인데?
 
-### "여자애" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 여자애는요?
-
 ### "여자애" + "랑" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -52751,12 +51805,6 @@ Accuracy: 94.89%
 - Examples:
   - 이건 양이야 염소야?
 
-### "엽서" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 배에서 살아요, 엽서는요?
-
 ### "엽서" + "요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -52786,12 +51834,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 네가 만난다던 닉이 닉 영이었어?
-
-### "영감님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 영감님은요?
 
 ### "영광" + "이야" (1 occurrences)
 - Predicted: Space
@@ -52900,12 +51942,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 화끈한 영상이네요, 여러분!
-
-### "영수증" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 영수증은요?
 
 ### "영어" + "인데" (1 occurrences)
 - Predicted: Space
@@ -53537,12 +52573,6 @@ Accuracy: 94.89%
 - Examples:
   - 바트, 네 몸, 어느만큼 오리지널이었더라?
 
-### "오빠" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 사촌 오빠는요?
-
 ### "오빠" + "다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -53723,12 +52753,6 @@ Accuracy: 94.89%
 - Examples:
   - 내가 일찍 온건가?
 
-### "온도" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 안녕하세요, 휴 타이어 온도는요?
-
 ### "온도" + "이다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -53776,12 +52800,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 누군가가 입을 다물고서 실천에 옮기기라도 한다면!
-
-### "옷" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 옷은요?
 
 ### "옷" + "이네요" (1 occurrences)
 - Predicted: Space
@@ -53878,12 +52896,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 와일드 닉 와일드입니다.
-
-### "와타루" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 와타루는요?
 
 ### "완벽남" + "께서는" (1 occurrences)
 - Predicted: Space
@@ -54785,12 +53797,6 @@ Accuracy: 94.89%
 - Examples:
   - 그저 우연일 뿐이라고!
 
-### "우유" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 우유는요?
-
 ### "우유" + "랑" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -55331,12 +54337,6 @@ Accuracy: 94.89%
 - Examples:
   - 위선자요?
 
-### "위스키" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 위스키는요?
-
 ### "위스키" + "라도" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -55385,12 +54385,6 @@ Accuracy: 94.89%
 - Examples:
   - 수표 위조요?
 
-### "위치" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 놈들 위치는요?
-
 ### "위치" + "인데" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -55414,12 +54408,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 밝히기 위해서기도 해요 그렇지 않은가요?
-
-### "위해서" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 날 위해서도요?
 
 ### "위해서" + "라고" (1 occurrences)
 - Predicted: Space
@@ -55799,12 +54787,6 @@ Accuracy: 94.89%
 - Examples:
   - 유파님이다!
 
-### "유품" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아버지 유품은요?
-
 ### "유품" + "이라고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -55973,23 +54955,11 @@ Accuracy: 94.89%
 - Examples:
   - 하여튼 모두들 항상 음담패설뿐이라니까!
 
-### "음료" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 음료는요?
-
 ### "음료" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 러닝 맨의 공식 음료입니다.
-
-### "음료수" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 감자튀김이나 음료수는요?
 
 ### "음료수" + "라도" (1 occurrences)
 - Predicted: Space
@@ -56369,12 +55339,6 @@ Accuracy: 94.89%
 - Examples:
   - 이게 의상이야?
 
-### "의식" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 의식은요?
-
 ### "의식" + "일까요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -56422,12 +55386,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 루벤스 파이바 의원님이시죠?
-
-### "의자" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 안락 의자도요?
 
 ### "의자" + "야" (1 occurrences)
 - Predicted: Space
@@ -56969,12 +55927,6 @@ Accuracy: 94.89%
 - Examples:
   - 지금 있는 아기들 이분께 좀 보여 드릴래요?
 
-### "이분" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 이분은요?
-
 ### "이브" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -57268,12 +56220,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그게 가난한 나라에 불씨를 뿌리고 다니는 이유냐?
-
-### "이유" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 다시 소환된 이유는요?
 
 ### "이유" + "란다" (1 occurrences)
 - Predicted: Space
@@ -57665,12 +56611,6 @@ Accuracy: 94.89%
 - Examples:
   - 너도 인도인이잖아!
 
-### "인디" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 인디는요?
-
 ### "인디언" + "이야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -57922,12 +56862,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 무슨 일로요?
-
-### "일" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 팔레모 일은요?
 
 ### "일" + "이" (1 occurrences)
 - Predicted: Space
@@ -58757,12 +57691,6 @@ Accuracy: 94.89%
 - Examples:
   - 자객이다!
 
-### "자격증" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 자격증은요?
-
 ### "자경단원" + "이요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -59147,12 +58075,6 @@ Accuracy: 94.89%
 - Examples:
   - 그게 부풀어 넘친 거죠 자연적인 현상이에요!
 
-### "자원" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 저, 반장님, 병력 자원은요?
-
 ### "자유" + "네" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -59200,12 +58122,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 자재요?
-
-### "자전거" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아빠 자전거는요?
 
 ### "자정" + "이야" (1 occurrences)
 - Predicted: Space
@@ -59765,12 +58681,6 @@ Accuracy: 94.89%
 - Examples:
   - 권위에 도전 하랬잖아요 아버지가 패튼 장군인가요?
 
-### "장군님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 장군님은요?
-
 ### "장군들" + "놈" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -60011,12 +58921,6 @@ Accuracy: 94.89%
 - Examples:
   - 그래도 재미있네 - 어디 가?
 
-### "재봉사님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 재봉사님은요?
-
 ### "재봉틀" + "이요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -60185,23 +59089,11 @@ Accuracy: 94.89%
 - Examples:
   - 서두르지 마 저놈과 악수하지 마!
 
-### "저" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 저는요?
-
 ### "저" + "더러" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - 저더러 어쩌라고요?
-
-### "저" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 네, 저도요.
 
 ### "저" + "두요" (1 occurrences)
 - Predicted: Space
@@ -60329,12 +59221,6 @@ Accuracy: 94.89%
 - Examples:
   - 오늘 저녁에요?
 
-### "저녁" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 저녁은요?
-
 ### "저녁" + "이니까" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -60406,12 +59292,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 저분께 이미 설명드렸는데 맘에 들죠?
-
-### "저분" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 네, 저분은요?
 
 ### "저분" + "이에요" (1 occurrences)
 - Predicted: Space
@@ -60629,12 +59509,6 @@ Accuracy: 94.89%
 - Examples:
   - 넌 전갈이야?
 
-### "전공" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 전공은요?
-
 ### "전공" + "이다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -60730,12 +59604,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 전문가예요?
-
-### "전문의" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 위장병 전문의도요?
 
 ### "전문의" + "로서" (1 occurrences)
 - Predicted: Space
@@ -61103,12 +59971,6 @@ Accuracy: 94.89%
 - Examples:
   - 돈 벌기 위해 저렇게 분투하는 젊은이들이잖소!
 
-### "점" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 평소와 다른 점은요?
-
 ### "점" + "이야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -61186,12 +60048,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 접수창구라도 가볼까?
-
-### "접시" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 접시는요?
 
 ### "접시" + "야" (1 occurrences)
 - Predicted: Space
@@ -61547,12 +60403,6 @@ Accuracy: 94.89%
 - Examples:
   - 알버트 정원사죠?
 
-### "정의" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 정의는요?
-
 ### "정의" + "다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -61690,12 +60540,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 네 아빠가 제일 제멋대로잖아!
-
-### "제목" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제목은요?
 
 ### "제물" + "이요" (1 occurrences)
 - Predicted: Space
@@ -61918,12 +60762,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 초록옷 입은 애가 젤다죠?
-
-### "젤리" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 피쉬 젤리는요?
 
 ### "조" + "랑" (1 occurrences)
 - Predicted: Space
@@ -62381,12 +61219,6 @@ Accuracy: 94.89%
 - Examples:
   - 이 영화의 주제가 종교적인가요?
 
-### "종로" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 종로는요?
-
 ### "종류" + "예요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -62843,12 +61675,6 @@ Accuracy: 94.89%
 - Examples:
   - 뭔 주접이야?
 
-### "주제" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 주제는요?
-
 ### "주제" + "잖아요" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -63058,12 +61884,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 줄리아랑 나와 함께 가기로 하지 않았나요?
-
-### "줄리안 딜린저" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그리고 줄리안 딜린저는요?
 
 ### "중" + "에서도" (1 occurrences)
 - Predicted: Space
@@ -63599,12 +62419,6 @@ Accuracy: 94.89%
 - Examples:
   - 지금같은 아침에도 말이죠.
 
-### "지금" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 지금은요!
-
 ### "지금" + "이다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -63958,12 +62772,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 제 직업요?
-
-### "직업" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 직업은요?
 
 ### "직업" + "이기" (1 occurrences)
 - Predicted: Space
@@ -64337,12 +63145,6 @@ Accuracy: 94.89%
 - Examples:
   - 마지막 질문요 환자가 보험은 들었나요?
 
-### "질문" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 자, 이 질문은요?
-
 ### "질문" + "이겠죠" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -64439,12 +63241,6 @@ Accuracy: 94.89%
 - Examples:
   - 정신 질환이라고 둘러대고 너 빼낸 거 몰라?
 
-### "짐" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그쪽 짐은요?
-
 ### "짐" + "이야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -64492,12 +63288,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 집에다 연락하려고요?
-
-### "집" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 이 집은요?
 
 ### "집" + "이거든" (1 occurrences)
 - Predicted: Space
@@ -65045,12 +63835,6 @@ Accuracy: 94.89%
 - Examples:
   - 왜 아직도 그런 차림이야?
 
-### "차이" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 예전 앨범들과 이번 앨범의 차이는요?
-
 ### "차이" + "여" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -65326,12 +64110,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 네 책에다 사인받아다 줄까?
-
-### "책" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 책은요?
 
 ### "책" + "이라니" (1 occurrences)
 - Predicted: Space
@@ -65842,12 +64620,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 톰은 철로만큼 날씬해.
-
-### "철사" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그리고 철사는요?
 
 ### "철썩" + "인지" (1 occurrences)
 - Predicted: Space
@@ -67217,12 +65989,6 @@ Accuracy: 94.89%
 - Examples:
   - 카말한테 가면 어떨까?
 
-### "카메라" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 교통 카메라는요?
-
 ### "카메라" + "야" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -67336,12 +66102,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 어째서 칸쵸야?
-
-### "칼" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 칼도요?
 
 ### "칼" + "이오" (1 occurrences)
 - Predicted: Space
@@ -67463,12 +66223,6 @@ Accuracy: 94.89%
 - Examples:
   - 커플이세요?
 
-### "커피" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 커피는요?
-
 ### "커피" + "란" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -67577,12 +66331,6 @@ Accuracy: 94.89%
 - Examples:
   - 요리책을 읽고 있는 여자애는 케이트야.
 
-### "케이티" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 케이티는요?
-
 ### "케이티" + "라고" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -67642,12 +66390,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 내가 니 나이때 코니라는 상상속 친구가 있었단다.
-
-### "코드" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - ‘국가 코드는요?
 
 ### "코드" + "라고" (1 occurrences)
 - Predicted: Space
@@ -67739,12 +66481,6 @@ Accuracy: 94.89%
 - Examples:
   - 코클리한테도 안 좋아요?
 
-### "코트" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 제 코트는요?
-
 ### "코흘리개" + "한테" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -67768,12 +66504,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 개인 콘서트요?
-
-### "콜라" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 콜라는요?
 
 ### "콜라" + "요" (1 occurrences)
 - Predicted: Space
@@ -68093,12 +66823,6 @@ Accuracy: 94.89%
 - Examples:
   - 그러면 클로저이자 스승으로 일할 수 있을 것이에요.
 
-### "클리프턴" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 캐서린 클리프턴은요?
-
 ### "클린턴" + "에서도" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -68333,12 +67057,6 @@ Accuracy: 94.89%
 - Examples:
   - 타탈리아에게 전과자는 쓰지 말라고 명할까요?
 
-### "타티" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 타티는요?
-
 ### "타티아나" + "한테" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -68392,12 +67110,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 새로운 스타의 탄생일지, 세기의 웃음거리가 될지.
-
-### "탄크레디" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 없는지 알고 놀랐어요 탄크레디는요?
 
 ### "탈" + "이지" (1 occurrences)
 - Predicted: Space
@@ -68458,12 +67170,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 탐문이라도 하란 거야!
-
-### "탐사봉" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 수맥 탐사봉은요?
 
 ### "탐지기" + "라구" (1 occurrences)
 - Predicted: Space
@@ -68536,12 +67242,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 대신 태그랑 나를 이 일에서 빼 주게, 알겠나?
-
-### "태너" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 태너는요?
 
 ### "태도" + "입니까" (1 occurrences)
 - Predicted: Space
@@ -68752,12 +67452,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이것은 테이블입니다.
-
-### "테이프" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 테이프는요?
 
 ### "테이프" + "잖아요" (1 occurrences)
 - Predicted: Space
@@ -69022,12 +67716,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 말한 사람은 바로 눈앞의 통판이냐?
-
-### "통화" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 시내 통화도요?
 
 ### "통화" + "였어" (1 occurrences)
 - Predicted: Space
@@ -69389,12 +68077,6 @@ Accuracy: 94.89%
 - Examples:
   - 얘가 파울라야?
 
-### "파즈" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 파즈는요?
-
 ### "파충류" + "랑" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -69412,12 +68094,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 피터 파커라고?
-
-### "파코" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그럼 파코는요?
 
 ### "파키스탄" + "에선" (1 occurrences)
 - Predicted: Space
@@ -69460,12 +68136,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 무엇보다도 먼저 당신의 파트너입니다.
-
-### "파티" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 내 생일 파티는요?
 
 ### "파티" + "니까" (1 occurrences)
 - Predicted: Space
@@ -69556,12 +68226,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 모든 배심원의 판결입니까?
-
-### "판매" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 음반 판매는요?
 
 ### "판매원" + "으로써" (1 occurrences)
 - Predicted: Space
@@ -69977,12 +68641,6 @@ Accuracy: 94.89%
 - Examples:
   - 그게 남은 평생인가?
 
-### "평의회" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 평의회도요?
-
 ### "폐하" + "께서는" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -70139,12 +68797,6 @@ Accuracy: 94.89%
 - Examples:
   - 폭발물이라고!
 
-### "폭시" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 프레디, 보니, 치카 어, 그럼 폭시는요?
-
 ### "폭주족" + "이랄까" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -70276,12 +68928,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 제가 불어를 모르는 폴란드인이라고 차별하는 겁니까?
-
-### "폴리" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 그만 좀 하세요 그게 중요한 게 아녜요, 폴리는요?
 
 ### "폴크슈투름" + "입니다" (1 occurrences)
 - Predicted: Space
@@ -70463,12 +69109,6 @@ Accuracy: 94.89%
 - Examples:
   - 하일, 마인 퓌러 .
 
-### "프란츠" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 프란츠는요?
-
 ### "프랑" + "이면" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -70558,12 +69198,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 수 백만의 프레멘들이라, 자네가 옳았군.
-
-### "프레이고" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 프레이고는요?
 
 ### "프레이저" + "야" (1 occurrences)
 - Predicted: Space
@@ -70762,12 +69396,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 피차일반이거든!
-
-### "피클" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 스프리발 피클은요?
 
 ### "피클" + "이에요" (1 occurrences)
 - Predicted: Space
@@ -71135,12 +69763,6 @@ Accuracy: 94.89%
 - Examples:
   - 파리 불바르에서 단 하룻밤입니다!
 
-### "하리" + "는요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 하리는요?
-
 ### "하상현" + "입니다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -71416,18 +70038,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 그 밖에 한가지 더 있단다.
-
-### "한" + "건" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 내가 한건 해냈어!
-
-### "한" + "건가요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 이미 당신이 알고 있던 걸 찾으라고 한건가요?
 
 ### "한" + "마리" (1 occurrences)
 - Predicted: Space
@@ -71974,12 +70584,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 이게 해명만큼 되지 않을까?
-
-### "해명" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 피고인 해명은요?
 
 ### "해물" + "이에요" (1 occurrences)
 - Predicted: Space
@@ -72635,12 +71239,6 @@ Accuracy: 94.89%
 - Examples:
   - 형에게 알리게!
 
-### "형" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 마티아스 형은요?
-
 ### "형" + "이다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -72827,12 +71425,6 @@ Accuracy: 94.89%
 - Examples:
   - 너희 형제들이야!
 
-### "혜령" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 사도 혜령은요?
-
 ### "호" + "가면" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -72917,12 +71509,6 @@ Accuracy: 94.89%
 - Examples:
   - 호빗이군, 네 명의 호빗들!
 
-### "호빗들" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 불쌍한 호빗들은요?
-
 ### "호수" + "만큼" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -73006,12 +71592,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 호크룩스였다는 걸.
-
-### "호텔" + "도요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 호텔도요?
 
 ### "호텔" + "에라도" (1 occurrences)
 - Predicted: Space
@@ -73409,12 +71989,6 @@ Accuracy: 94.89%
 - Examples:
   - 환청이야!
 
-### "활" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 아니면 장인이 만든 활은요?
-
 ### "활" + "이다" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -73576,12 +72150,6 @@ Accuracy: 94.89%
 - Actual: None
 - Examples:
   - 대 테러 정보 회의다, 자네는?
-
-### "회장님" + "은요" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - 회장님은요?
 
 ### "회피" + "냐" (1 occurrences)
 - Predicted: Space

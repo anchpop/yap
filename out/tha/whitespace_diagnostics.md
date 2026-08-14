@@ -1,6 +1,6 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 445208
+Total predictions: 445736
 Total errors: 25571
 Accuracy: 94.26%
 
@@ -342,14 +342,6 @@ Accuracy: 94.26%
   - นับตั้งแต่ลูกยังเด็กๆ มา
   - นี่ๆ มาแล้ว
 
-### "ๆ" + "เข้า" (20 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ก็เล่นกินหงับๆ เข้าไปเลย
-  - ค่ะ เร็วๆ เข้า คริส
-  - งั้นก็เร็วๆ เข้า
-
 ### "," + "ฉัน" (19 occurrences)
 - Predicted: None
 - Actual: Space
@@ -533,6 +525,14 @@ Accuracy: 94.26%
   - ก็คิด ๆ อยู่
   - ก็เกือบๆ อยู่เหมือนกัน
   - ข้ายังชิล ๆ อยู่
+
+### "ๆ" + "เข้า" (16 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ค่ะ เร็วๆ เข้า คริส
+  - งั้นก็เร็วๆ เข้า
+  - ด้นออกไป เร็วๆ เข้า
 
 ### "ๆ" + "ไว้" (16 occurrences)
 - Predicted: None
@@ -894,14 +894,6 @@ Accuracy: 94.26%
   - โอ้ ไม่ ฉันพูดจริงนะ
   - โอ้ ไม่ ผมเห็นด้วยทุกอย่าง
 
-### "ไป" + "ออก" (12 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ทิ้งไป ออกมา
-  - ทุกคน ออกไป ออกไปเร็ว
-  - ทุกคนออกไป ออกไป
-
 ### "ๆ" + "ก่อน" (12 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1078,6 +1070,14 @@ Accuracy: 94.26%
   - โอ้ ใช่ ใช่แล้ว
   - ใช่ ใช่
 
+### "ไป" + "ออก" (11 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทุกคน ออกไป ออกไปเร็ว
+  - ทุกคนออกไป ออกไป
+  - ออกไป ออกไป
+
 ### "ๆ" + "นี่" (11 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1101,6 +1101,14 @@ Accuracy: 94.26%
   - กบร้องอ๊บๆ ได้เวลากลับบ้าน
   - ขอนั่งเงียบๆ ได้มั้ย
   - คนอื่น ๆ ได้แต่โทรมาลา
+
+### "," + "ได้" (10 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - งั้น, ได้ป่ะล่ะครับ ?
+  - ฉันชอบคุณ, ได้ไหม?
+  - ดูแลนี้ ให้ผมด้วย, ได้มัย?
 
 ### "," + "ไอ้" (10 occurrences)
 - Predicted: None
@@ -1821,14 +1829,6 @@ Accuracy: 94.26%
   - ถามหน่อย, แกมีลูกหรือเปล่า?
   - เฮ้, แก!
   - เฮ้, แกแน่ใจที่พูดเรอะ?
-
-### "," + "ได้" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - งั้น, ได้ป่ะล่ะครับ ?
-  - ฉันชอบคุณ, ได้ไหม?
-  - ดูแลนี้ ให้ผมด้วย, ได้มัย?
 
 ### "ขอโทษ" + "ผม" (7 occurrences)
 - Predicted: None
@@ -2950,14 +2950,6 @@ Accuracy: 94.26%
   - ท่องเหมือนกันนะ !
   - หยุดนะ !
 
-### "นะ" + "พวก" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - คาบีรา โทษทีนะ พวก
-  - ฉันเข้าไปก่อนนะ พวกเธอล่ะ
-  - ปล่อยฉันนะ พวกบ้า
-
 ### "นะ" + "ฟูเซอร์" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3277,6 +3269,14 @@ Accuracy: 94.26%
   - คุณรักผมมากเลย ใช่มั้ย
   - ฉันทำได้เยี่ยมเลย ใช่มั้ยคะ
   - แกไม่เคยจำเลย ใช่มั้ย?
+
+### "เลย" + "ได้" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - อย่าฆ่าฉันเลย ได้โปรด
+  - เมื่อไหร่ ได้ๆ บอกมาเลย ได้
+  - ได้ พวกคุณรีบทำเลย ได้มั้ย
 
 ### "เหรอ" + "เขา" (5 occurrences)
 - Predicted: None
@@ -4198,6 +4198,14 @@ Accuracy: 94.26%
   - ปล่อยเธอนะ ปล่อยเธอ
   - อย่าทำอย่างนี้นะ ปล่อยฉันซิ
 
+### "นะ" + "พวก" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - คาบีรา โทษทีนะ พวก
+  - ฉันเข้าไปก่อนนะ พวกเธอล่ะ
+  - ปล่อยฉันนะ พวกบ้า
+
 ### "นะ" + "มา" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4718,14 +4726,6 @@ Accuracy: 94.26%
   - เร็วเข้า ทุกคน ลงมา
   - เร็วเข้า ทุกคนลงไปที่อ่าว!
 
-### "เข้า" + "เข้า" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เข้า เข้ามา เรียบร้อยดีมั๊ย
-  - เร็วเข้า เข้ามา
-  - เร็วเข้า เข้าไป!
-
 ### "เดี๋ยว" + "หยุด" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4877,14 +4877,6 @@ Accuracy: 94.26%
   - ง่ายๆเลย เธอมันห่วยแตก ใช่มะ
   - อย่าฝืนเลย เธอไม่ไหวหรอก
   - ไม่เลย เธอล่ะ
-
-### "เลย" + "ได้" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เมื่อไหร่ ได้ๆ บอกมาเลย ได้
-  - ได้ พวกคุณรีบทำเลย ได้มั้ย
-  - ได้เลย ได้
 
 ### "เหรอ" + "นาย" (4 occurrences)
 - Predicted: None
@@ -5222,6 +5214,14 @@ Accuracy: 94.26%
   - โอ้ เราจะทิ้งโน็ตไว้ให้เธอ
   - โอ้ เราภูมิใจในตัวคุณมาก!
 
+### "โอ้" + "ได้" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - โอ้ ได้สิ
+  - โอ้ ได้เลยค่ะ ขอบคุณ
+  - โอ้ ได้โปรด ไม่ คุณไม่ได้
+
 ### "โอ้ย" + "ไอ้" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5550,13 +5550,13 @@ Accuracy: 94.26%
   - คุณหมอดูดีๆ หรือยังคะ
   - เป็นก้อนๆ หรือยังไง
 
-### "ๆ" + "ออก" (4 occurrences)
+### "ๆ" + "เข้าไป" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ถอนทัพๆๆ ออกจากเวียดนาม
-  - ผี ๆ ออกไปจากที่นี่เร็ว
-  - พาเด็กๆ ออกไปเร็ว!
+  - ก็เล่นกินหงับๆ เข้าไปเลย
+  - ช้าอยู่ไย รีบ ๆ เข้าไปเลย
+  - พูดซ้ำๆ เข้าไป สหาย
 
 ### "ๆ" + "แค่" (4 occurrences)
 - Predicted: None
@@ -5613,14 +5613,6 @@ Accuracy: 94.26%
   - ปล่อยนะ, ปล่อยฉันไป
   - ปล่อยเธอ ได้โปรด, ปล่อยเธอ
   - ไม่ใช่ไม่กล้าน่า, ปล่อยเหอะ
-
-### "," + "พวก" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ช่วยข้าด้วย, พวกมันจะกินเรา
-  - ถ้าจะทำ, พวกมึงก็ทำได้
-  - เฮ้ย, พวก
 
 ### "," + "ลู" (3 occurrences)
 - Predicted: None
@@ -5693,14 +5685,6 @@ Accuracy: 94.26%
   - มานี่, โอเฟเลีย.
   - อีกมือหนึ่ง, โอเฟเลีย.
   - โอเฟเลีย, โอเฟเลีย!
-
-### "," + "ได้โปรด" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - อย่าเรียกผมแบบนั้น, ได้โปรด.
-  - อินดี้, ได้โปรด!
-  - เมอซิเดส, ได้โปรด
 
 ### "-" + "ทำไม" (3 occurrences)
 - Predicted: None
@@ -6526,14 +6510,6 @@ Accuracy: 94.26%
   - ที่รัก เธอเป็นเด็กน่ารัก
   - ที่รัก เธอไปอยู่ที่ไหนมา
 
-### "ทุกคน" + "ออก" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ทุกคน ออกมาได้ครับ
-  - ทุกคน ออกไป ออกไปเร็ว
-  - ทุกคน ออกไป เร็ว
-
 ### "ทุกคน" + "ไป" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6710,6 +6686,14 @@ Accuracy: 94.26%
   - ตื่นเถอะนะ โซตะ
   - ให้ตายสิ ฉันอิจฉาแกนะ โซตะ
 
+### "นะ" + "ได้" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - อะไรนะ ได้ครับ
+  - แต่งงานกับผมนะ ได้โปรด
+  - ให้โอกาสเธอนะ ได้ไหม
+
 ### "นาน" + "ๆ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6814,6 +6798,22 @@ Accuracy: 94.26%
   - นี่ ไปดื่มกันหน่อยไหม
   - นี่ ไปโซลกันเถอะ
 
+### "นี้" + "จะ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทำแบบนี้ จะส่งไปให้คามาจิ
+  - แบดบอยคนนี้ จะขอเป็นเซียน
+  - แบบนี้ จะได้ดูตัดกับหิมะ
+
+### "นี้" + "ดู" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ฉันชอบผู้หญิงแบบนี้ ดูเท่ดี
+  - แบบนี้ ดูให้ดีๆ นะ
+  - แล้วลำไส้เราก็ไปแบบนี้ ดูนะ
+
 ### "นี้" + "ทาง" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6829,6 +6829,14 @@ Accuracy: 94.26%
   - ทางนี้ มา
   - ทางนี้ มาเลย
   - ทางนี้, ทางนี้ มานี่เร็วเข้า
+
+### "นี้" + "ใช่" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เขาต้องการแบบนี้ ใช่ไหม?
+  - เมื่อได้ยินเสียงนี้ ใช่
+  - ในช่วงนี้ ใช่
 
 ### "นี้" + "ไม่" (3 occurrences)
 - Predicted: None
@@ -8422,6 +8430,14 @@ Accuracy: 94.26%
   - ลุกขึ้นได้แล้ว เจ้าคนขี้เซา
   - ไม่มีเวลาแล้ว เจ้าโง่
 
+### "แล้ว" + "แบบ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - นึกออกแล้ว แบบนี้ดีกว่า
+  - แย่แล้ว แบบนี้แย่แน่ๆ
+  - ใช่แล้ว แบบนั้นแหละ
+
 ### "แล้ว" + "ใช่" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9110,6 +9126,14 @@ Accuracy: 94.26%
   - พาโบล เนรูดา กวีที่สาว ๆ หลง
   - สาวๆ หลงเขาอยู่แล้วน่า
 
+### "ๆ" + "ออก" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ถอนทัพๆๆ ออกจากเวียดนาม
+  - ผี ๆ ออกไปจากที่นี่เร็ว
+  - พาเด็กๆ ออกไปเร็ว!
+
 ### "ๆ" + "เบา" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9270,6 +9294,13 @@ Accuracy: 94.26%
   - ท่่านได้เลือกถูกแล้ว, ฝ่าบาท
   - เร็วเข้า, ฝ่าบาท,
 
+### "," + "พวก" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ถ้าจะทำ, พวกมึงก็ทำได้
+  - เฮ้ย, พวก
+
 ### "," + "พอ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9353,13 +9384,6 @@ Accuracy: 94.26%
 - Examples:
   - โอ้, อย่างนั้นหรือ.
   - โอ้, อย่างนั้นหรือ?
-
-### "," + "ออก" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - โตโต้, ออกไป !
-  - โอเฟเลีย, ออกมาสิ.
 
 ### "," + "อิตลาลี" (2 occurrences)
 - Predicted: None
@@ -10271,7 +10295,7 @@ Accuracy: 94.26%
   - ร้องหน่อยนะคะ นะ
   - ได้ไหมคะ นะคะพ่อ
 
-### "คะ" + "ออก" (2 occurrences)
+### "คะ" + "ออกมา" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -10284,13 +10308,6 @@ Accuracy: 94.26%
 - Examples:
   - ท่านคะ เกิดอะไรขึ้น
   - พ่อคะ เกิดอะไรขึ้น
-
-### "คะ" + "เข้า" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - คุณคะ เข้ามาข้างในสิ
-  - คุณพ่อคะ เข้าไปได้ไหม?
 
 ### "คะ" + "เดี๋ยว" (2 occurrences)
 - Predicted: None
@@ -10313,7 +10330,7 @@ Accuracy: 94.26%
   - ขอให้สนุกนะคะ โอเคมั้ย
   - น้ำแข็งเหรอคะ โอเค ฉันรู้
 
-### "คะ" + "ได้โปรด" (2 occurrences)
+### "คะ" + "ได้" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -11860,6 +11877,13 @@ Accuracy: 94.26%
   - ทุกคน อย่าขยับ
   - ทุกคน อย่าออกมา
 
+### "ทุกคน" + "ออก" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทุกคน ออกไป ออกไปเร็ว
+  - ทุกคน ออกไป เร็ว
+
 ### "ทุกคน" + "เรา" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12280,13 +12304,6 @@ Accuracy: 94.26%
   - อย่าดูถูกคนฮ่องกงนะ ใช่ไหม
   - ไม่เป็นไรนะ ใช่มั้ย
 
-### "นะ" + "ได้" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - อะไรนะ ได้ครับ
-  - ให้โอกาสเธอนะ ได้ไหม
-
 ### "นัม" + "ซูคี" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12349,6 +12366,13 @@ Accuracy: 94.26%
 - Examples:
   - คนนั้น ฉันอยากเจอเขา
   - ใครคนนั้น ฉันหาเจอแน่ๆ
+
+### "นั้น" + "มัน" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ฆ่าแบบนั้น มันง่ายเกินไป?
+  - เปลวไฟนั้น มันคืออะไรกัน
 
 ### "นั้น" + "มา" (2 occurrences)
 - Predicted: None
@@ -12546,13 +12570,6 @@ Accuracy: 94.26%
   - นี่ อยู่ตรงไหน?
   - มานี่ อยู่ใกล้กันไว้
 
-### "นี่" + "ออก" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - นี่ ออกมาก่อนสิ
-  - นี่ ออกไปจากที่นี่
-
 ### "นี่" + "เจ้า" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12665,6 +12682,13 @@ Accuracy: 94.26%
   - ฉันลงตานี้ นายจะลงเหรอ
   - เรื่องนี้ นายฟังแล้วดีแน่
 
+### "นี้" + "ผม" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เพราะเหตุนี้ ผมรู้สึกว่าผม
+  - ไง ซิ่งแบบนี้ ผมได้เอไหม
+
 ### "นี้" + "มี" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12672,12 +12696,12 @@ Accuracy: 94.26%
   - แต่ชาพวกนี้ มีดีในตัวมันเอง
   - แต่ตรงกำแพงนี้ มีหน้าต่าง
 
-### "นี้" + "ใช่" (2 occurrences)
+### "นี้" + "สาม" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - เมื่อได้ยินเสียงนี้ ใช่
-  - ในช่วงนี้ ใช่
+  - กีตาชนะยกนี้ สามต่อศูนย์
+  - แบบนี้ สามแต้ม
 
 ### "นี้" + "ไป" (2 occurrences)
 - Predicted: None
@@ -13196,6 +13220,13 @@ Accuracy: 94.26%
 - Examples:
   - พิกุ พิกุ
   - ฟังนะ พิกุ พิกุ
+
+### "พีเค" + "ได้" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ปล่อยมันไป พีเค ได้โปรดเถอะ
+  - พีเค ได้เสนอปัญหาสำคัญนี้
 
 ### "พี่" + "ขอร้อง" (2 occurrences)
 - Predicted: None
@@ -14303,7 +14334,7 @@ Accuracy: 94.26%
   - สบายดี แล้วคุณล่ะ
   - สบายดี แล้วเธอล่ะ
 
-### "สป็อค" + "ออก" (2 occurrences)
+### "สป็อค" + "ออกมา" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -15619,6 +15650,20 @@ Accuracy: 94.26%
   - เร็วเข้า มาทางนี้
   - เร็วเข้า มานี่ โอเค โอเค
 
+### "เข้า" + "เข้า" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เข้า เข้ามา เรียบร้อยดีมั๊ย
+  - เร็วเข้า เข้ามา
+
+### "เข้า" + "เข้าไป" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เร็วเข้า เข้าไป!
+  - เร็วเข้า เข้าไปยืนใกล้ๆกัน
+
 ### "เข้า" + "เจ้า" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -15660,6 +15705,13 @@ Accuracy: 94.26%
 - Examples:
   - พ่อไม่เข้าใจ ไม่เข้าใจเลย
   - ไม่เข้าใจ ไม่มีอะไรเลย
+
+### "เข้าไป" + "สหาย" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - พูดซ้ำๆ เข้าไป สหาย
+  - เข้าไป สหาย
 
 ### "เคย" + "แต่" (2 occurrences)
 - Predicted: None
@@ -15919,6 +15971,13 @@ Accuracy: 94.26%
 - Examples:
   - มาเถอะ เอเวอลิน
   - เชื่อลูกเถอะ เอเวอลิน!
+
+### "เถอะ" + "ได้" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ออกมาเถอะ ได้โปรด!
+  - เปลี่ยนเรื่องเถอะ ได้มั้ย
 
 ### "เถอะ" + "ไอ้" (2 occurrences)
 - Predicted: None
@@ -16192,13 +16251,6 @@ Accuracy: 94.26%
 - Examples:
   - หนีเร็ว หนี
   - หนีเร็ว หนีเร็ว
-
-### "เร็ว" + "ออก" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ทุกคนมาเร็ว ออกมาเร็ว
-  - เร็ว ออกไป
 
 ### "เร็ว" + "เข้า" (2 occurrences)
 - Predicted: None
@@ -17502,20 +17554,6 @@ Accuracy: 94.26%
   - แบงค์ แบงค์
   - แบงค์ แบงค์หยุด
 
-### "แบบนี้" + "จะ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ทำแบบนี้ จะส่งไปให้คามาจิ
-  - แบบนี้ จะได้ดูตัดกับหิมะ
-
-### "แบบนี้" + "ดู" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แบบนี้ ดูให้ดีๆ นะ
-  - แล้วลำไส้เราก็ไปแบบนี้ ดูนะ
-
 ### "แบบว่า" + "ผม" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -17852,6 +17890,13 @@ Accuracy: 94.26%
   - ถึงแล้ว โลกมนุษย์
   - ว่าจริงๆแล้ว โลกมองผมยังไง
 
+### "แล้ว" + "ได้" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - รู้แล้ว ได้ข่าวระเบิด
+  - ใช่แล้ว ได้รับ
+
 ### "แหม" + "คุณ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18041,6 +18086,13 @@ Accuracy: 94.26%
   - ได้โปรด อย่ากินเขาเลย
   - ได้โปรด อย่าทำแบบนี้อีกเลย
 
+### "โปรด" + "ไม่" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - โอ้ ได้โปรด ไม่ คุณไม่ได้
+  - ได้โปรด ไม่มีทางเลือกแล้ว
+
 ### "โฟรโด" + "ไม่" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18166,6 +18218,13 @@ Accuracy: 94.26%
 - Examples:
   - โอ โอว โอว
   - โอ โอว โอวว!
+
+### "โอ" + "ได้" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - โอ ได้ ได้สิ
+  - โอ ได้รับบิลล์
 
 ### "โอย" + "หนาว" (2 occurrences)
 - Predicted: None
@@ -18439,20 +18498,6 @@ Accuracy: 94.26%
 - Examples:
   - โอ้ โอ้
   - โอ้ โอ้ อ๊า
-
-### "โอ้" + "ได้" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - โอ้ ได้สิ
-  - โอ้ ได้เลยค่ะ ขอบคุณ
-
-### "โอ้" + "ได้โปรด" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - โอ้ ได้โปรด ไม่ คุณไม่ได้
-  - โอ้ ได้โปรดเถอะค่ะ
 
 ### "โอ้ย" + "ไม่" (2 occurrences)
 - Predicted: None
@@ -18797,13 +18842,6 @@ Accuracy: 94.26%
   - นี่ไง อะไรกันวะ
   - ไง อะไร
 
-### "ไง" + "เข้า" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ไง เข้ามาหน่อยน่า
-  - ไง เข้าไปเห็นเด็กแล้วเหรอ
-
 ### "ไง" + "เพื่อน" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18915,13 +18953,6 @@ Accuracy: 94.26%
 - Examples:
   - ก็ได้ บอกมาสิ
   - ได้ บอกข้ามาสิ
-
-### "ได้" + "พวก" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ถ้าจับได้ พวกมันจะฆ่านาย
-  - เอาเลย สมิธ ล้มมันให้ได้ พวก
 
 ### "ได้" + "พ่อ" (2 occurrences)
 - Predicted: None
@@ -19154,7 +19185,7 @@ Accuracy: 94.26%
   - วางไว้แล้วก็ไป โอเค
   - ได้โปรดปล่อยมิโดไป โอเค?
 
-### "ไป" + "ได้โปรด" (2 occurrences)
+### "ไป" + "ได้" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -20479,6 +20510,12 @@ Accuracy: 94.26%
 - Examples:
   - บางที, พวกคุณอาจได้ยิน
 
+### "," + "พวกมัน" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ช่วยข้าด้วย, พวกมันจะกินเรา
+
 ### "," + "พวกเรา" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20791,7 +20828,7 @@ Accuracy: 94.26%
 - Examples:
   - คลานมานี่, หมาน้อย!
 
-### "," + "หมายความว่า" (1 occurrences)
+### "," + "หมายความ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -20868,6 +20905,18 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ปีศาจดับสูญ, อสูรย์ดับสูญ
+
+### "," + "ออก" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - โตโต้, ออกไป !
+
+### "," + "ออกมา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - โอเฟเลีย, ออกมาสิ.
 
 ### "," + "อาทิตย์" (1 occurrences)
 - Predicted: None
@@ -22033,7 +22082,7 @@ Accuracy: 94.26%
 - Examples:
   - ไม่ ยังไม่กลับ ผมอยากฟัง
 
-### "กลับ" + "พวก" (1 occurrences)
+### "กลับ" + "พวกมัน" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -22909,7 +22958,7 @@ Accuracy: 94.26%
 - Examples:
   - กากุย เป็นอะไรหรือเปล่า
 
-### "กากุย" + "แบบนี้" (1 occurrences)
+### "กากุย" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -24931,7 +24980,7 @@ Accuracy: 94.26%
 - Examples:
   - ขอโทษ โทรฯจากโตเกียว
 
-### "ขอโทษ" + "ได้โปรด" (1 occurrences)
+### "ขอโทษ" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -25297,7 +25346,7 @@ Accuracy: 94.26%
 - Examples:
   - สูงขึ้น แกร่งขึ้น
 
-### "ขึ้น" + "แบบนี้" (1 occurrences)
+### "ขึ้น" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -25585,7 +25634,7 @@ Accuracy: 94.26%
 - Examples:
   - เข้าไปข้างใน มิโตะ พร้อมนะ
 
-### "ข้างใน" + "เข้า" (1 occurrences)
+### "ข้างใน" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -27403,12 +27452,6 @@ Accuracy: 94.26%
 - Examples:
   - ตาคล้ำ ๆ เป็นอะไร
 
-### "ควรจะ" + "ใน" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - คุณควรจะ ในพายุบนเรือใบ
-
 ### "ควองโฮซิ" + "เขา" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28063,6 +28106,18 @@ Accuracy: 94.26%
 - Examples:
   - พ่อคะ เกมเริ่มแล้ว
 
+### "คะ" + "เข้า" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - คุณคะ เข้ามาข้างในสิ
+
+### "คะ" + "เข้าไป" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - คุณพ่อคะ เข้าไปได้ไหม?
+
 ### "คะ" + "เค้า" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28357,7 +28412,7 @@ Accuracy: 94.26%
 - Examples:
   - เพื่อนๆ คาบีร์ อาร์จุน
 
-### "คาบีร์" + "ได้โปรด" (1 occurrences)
+### "คาบีร์" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -29593,7 +29648,7 @@ Accuracy: 94.26%
 - Examples:
   - ใครมาใกล้คุณ เขาก็เห็น
 
-### "คุณ" + "เข้า" (1 occurrences)
+### "คุณ" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -30241,7 +30296,7 @@ Accuracy: 94.26%
 - Examples:
   - ซันจูกำลังจะมาคุย เอาล่ะ
 
-### "คุโรสุเกะ" + "ออก" (1 occurrences)
+### "คุโรสุเกะ" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -31099,7 +31154,7 @@ Accuracy: 94.26%
 - Examples:
   - ค้ายา ทำร้ายเจ้าหน้าที่
 
-### "ฆอร์เฆ" + "ได้โปรด" (1 occurrences)
+### "ฆอร์เฆ" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -31261,6 +31316,12 @@ Accuracy: 94.26%
 - Examples:
   - ก็ว่างั้น ใช่มั้ยล่ะ
 
+### "งาน" + "ฉัน" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ฉันอยากทำงาน ฉันมีที่อุดหู
+
 ### "งาน" + "ซมซาน" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31297,6 +31358,12 @@ Accuracy: 94.26%
 - Examples:
   - เขาไปทำงาน พอเขากลับมา
 
+### "งาน" + "ฮารี" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ผมต้องทำงาน ฮารี
+
 ### "งาน" + "เร็ว" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31308,6 +31375,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ไปหางาน แล้วงานที่นี่ล่ะ
+
+### "งาน" + "ได้" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทำงาน ได้
 
 ### "งี่เง่า" + "ชาเหอ" (1 occurrences)
 - Predicted: None
@@ -32100,6 +32173,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ผมเพิ่งจะ แต่มันก็
+
+### "จะ" + "ใน" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - คุณควรจะ ในพายุบนเรือใบ
 
 ### "จะ" + "ไป" (1 occurrences)
 - Predicted: None
@@ -34003,7 +34082,7 @@ Accuracy: 94.26%
 - Examples:
   - ยี่สิบนั่นคือกำไรฉัน แทงโก้
 
-### "ฉัน" + "แบบนี้" (1 occurrences)
+### "ฉัน" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -34789,6 +34868,12 @@ Accuracy: 94.26%
 - Examples:
   - เป็นยอดรักในชีวิต แต่ดันตาย
 
+### "ชีวิต" + "ใช่" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - มันยังมีชีวิต ใช่มั้ยค่ะ?
+
 ### "ชีส" + "ขนมปัง" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35131,7 +35216,7 @@ Accuracy: 94.26%
 - Examples:
   - สายหมอก ของชุง ฮุนฮี
 
-### "ชุงซุก" + "ออก" (1 occurrences)
+### "ชุงซุก" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -35323,17 +35408,17 @@ Accuracy: 94.26%
 - Examples:
   - ช่วยด้วย แม่ หนูอยากกลับบ้าน
 
+### "ช่วยด้วย" + "ได้" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ช่วยด้วย ได้โปรดอย่าทำผมเลย
+
 ### "ช่วยด้วย" + "ได้ยิน" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ช่วยด้วย ได้ยินผมมั้ย
-
-### "ช่วยด้วย" + "ได้โปรด" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ช่วยด้วย ได้โปรดอย่าทำผมเลย
 
 ### "ช่องทาง" + "หรือ" (1 occurrences)
 - Predicted: None
@@ -35779,7 +35864,7 @@ Accuracy: 94.26%
 - Examples:
   - ลืมมันซะ ใจเย็นๆ มันตายแล้ว
 
-### "ซะ" + "ได้โปรด" (1 occurrences)
+### "ซะ" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -36541,7 +36626,7 @@ Accuracy: 94.26%
 - Examples:
   - เร็วซี่ จับขา
 
-### "ซี่" + "เข้า" (1 occurrences)
+### "ซี่" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -36817,7 +36902,7 @@ Accuracy: 94.26%
 - Examples:
   - ซู มิ ใช่ไหม
 
-### "ซู มิ" + "ได้โปรด" (1 occurrences)
+### "ซู มิ" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -37225,7 +37310,7 @@ Accuracy: 94.26%
 - Examples:
   - ดังนั้น เรื่องของเรื่องคือ
 
-### "ดังนั้น" + "ได้โปรด" (1 occurrences)
+### "ดังนั้น" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -37321,7 +37406,7 @@ Accuracy: 94.26%
 - Examples:
   - ดาร์ซี่ นี่ของคุณใช่ไหม
 
-### "ดาร์ซี่" + "ได้โปรด" (1 occurrences)
+### "ดาร์ซี่" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -37771,17 +37856,17 @@ Accuracy: 94.26%
 - Examples:
   - ดี เกิดอะไรเหรอ
 
-### "ดี" + "เข้า" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แต่กิน เอล เอส ดี เข้าไป
-
 ### "ดี" + "เข้าท่า" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ดี เข้าท่าดี เพราะฉันจะไป
+
+### "ดี" + "เข้าไป" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - แต่กิน เอล เอส ดี เข้าไป
 
 ### "ดี" + "เงย" (1 occurrences)
 - Predicted: None
@@ -38611,7 +38696,7 @@ Accuracy: 94.26%
 - Examples:
   - ระวังตัวด้วย นายก็เหมือนกัน
 
-### "ด้วย" + "พวก" (1 occurrences)
+### "ด้วย" + "พวกนั้น" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -38869,7 +38954,7 @@ Accuracy: 94.26%
 - Examples:
   - ใช่ ใช่ด้วย ใช่
 
-### "ด้วย" + "ได้โปรด" (1 occurrences)
+### "ด้วย" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -39505,7 +39590,7 @@ Accuracy: 94.26%
 - Examples:
   - ตอนนี้ สิ่งที่สำคัญก็คือ…
 
-### "ตอนนี้" + "เข้า" (1 occurrences)
+### "ตอนนี้" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -39595,7 +39680,7 @@ Accuracy: 94.26%
 - Examples:
   - ฉันควรตอกตะปู ลิงชิมแปนซี?
 
-### "ตะวัน" + "ออก" (1 occurrences)
+### "ตะวัน" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -41683,7 +41768,7 @@ Accuracy: 94.26%
 - Examples:
   - ทากิคุง สุดยอดไปเลย!
 
-### "ทากิคุง" + "แบบนี้" (1 occurrences)
+### "ทากิคุง" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -42006,24 +42091,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ถ้าเธอไม่ได้ทำ แล้วใครทำ
-
-### "ทำงาน" + "ฉัน" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ฉันอยากทำงาน ฉันมีที่อุดหู
-
-### "ทำงาน" + "ฮารี" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ผมต้องทำงาน ฮารี
-
-### "ทำงาน" + "ได้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ทำงาน ได้
 
 ### "ทำนอง" + "ฉัน" (1 occurrences)
 - Predicted: None
@@ -42385,7 +42452,7 @@ Accuracy: 94.26%
 - Examples:
   - พอที หุบปาก
 
-### "ที" + "ออก" (1 occurrences)
+### "ที" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -42475,7 +42542,7 @@ Accuracy: 94.26%
 - Examples:
   - ทีวีแมน นายรู้อยู่แล้วนี่
 
-### "ทีหลัง" + "หมายความว่า" (1 occurrences)
+### "ทีหลัง" + "หมายความ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -43284,6 +43351,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - พวกแกทุกคน ห้ามแตะโฮดากะ
+
+### "ทุกคน" + "ออกมา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทุกคน ออกมาได้ครับ
 
 ### "ทุกคน" + "อากาศ" (1 occurrences)
 - Predicted: None
@@ -44533,6 +44606,12 @@ Accuracy: 94.26%
 - Examples:
   - อะไรนะ พระเจ้า
 
+### "นะ" + "พวกนั้น" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ไม่นะ พวกนั้นตามล่าเราจริงๆ
+
 ### "นะ" + "พวกเธอ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45595,12 +45674,6 @@ Accuracy: 94.26%
 - Examples:
   - หยุดนะ ไดแอน หยุด
 
-### "นะ" + "ได้โปรด" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แต่งงานกับผมนะ ได้โปรด
-
 ### "นะ" + "ไม่ว่า" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45937,7 +46010,7 @@ Accuracy: 94.26%
 - Examples:
   - นั่น นายใช่มั้ย?
 
-### "นั่น" + "พวก" (1 occurrences)
+### "นั่น" + "พวกมัน" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -46369,11 +46442,11 @@ Accuracy: 94.26%
 - Examples:
   - ในค่ำคืนนั้น ผมก็รู้ว่า
 
-### "นั้น" + "พยายาม" (1 occurrences)
+### "นั้น" + "พวกเรา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - คนพวกนั้น พยายามจะฆ่าเรา!
+  - แบบนั้น พวกเราก็อยากทํา
 
 ### "นั้น" + "พีเค" (1 occurrences)
 - Predicted: None
@@ -46381,11 +46454,11 @@ Accuracy: 94.26%
 - Examples:
   - คุณบันทึกอะไรในนั้น พีเค
 
-### "นั้น" + "มัน" (1 occurrences)
+### "นั้น" + "ยก" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - เปลวไฟนั้น มันคืออะไรกัน
+  - ไม่ใช่แบบนั้น ยกเขาขึ้น
 
 ### "นั้น" + "สั่ง" (1 occurrences)
 - Predicted: None
@@ -46411,11 +46484,11 @@ Accuracy: 94.26%
 - Examples:
   - อะไรทำนองนั้น เข้าใจใช่ไหม
 
-### "นั้น" + "เจ้า" (1 occurrences)
+### "นั้น" + "เดเมี่ยน" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - เจ้าพวกนั้น เจ้าพวกตัวปัญหา
+  - ไม่ใช่แบบนั้น เดเมี่ยน
 
 ### "นั้น" + "เป็น" (1 occurrences)
 - Predicted: None
@@ -46434,6 +46507,18 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ทั้งที่คิดไว้แบบนั้น แต่ว่า-
+
+### "นั้น" + "โคเช่" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - อย่ามองฉันแบบนั้น โคเช่
+
+### "นั้น" + "ไม่" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ฉันคงไม่พูดแบบนั้น ไม่
 
 ### "นั้นแหละ" + "ขโมย" (1 occurrences)
 - Predicted: None
@@ -47557,6 +47642,18 @@ Accuracy: 94.26%
 - Examples:
   - นี่ อดัม เคเชอร์ ผู้กำกับ
 
+### "นี่" + "ออก" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - นี่ ออกไปจากที่นี่
+
+### "นี่" + "ออกมา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - นี่ ออกมาก่อนสิ
+
 ### "นี่" + "อะไร" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47953,6 +48050,18 @@ Accuracy: 94.26%
 - Examples:
   - อันนี้ ก.ไก่
 
+### "นี้" + "กระดูก" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ขืนสู้แบบนี้ กระดูกหักแน่
+
+### "นี้" + "กับ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทำไมพวกคุณทำแบบนี้ กับคนที่
+
 ### "นี้" + "กีฬา" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -48001,23 +48110,17 @@ Accuracy: 94.26%
 - Examples:
   - มองทางนี้ จอห์น
 
-### "นี้" + "จะ" (1 occurrences)
+### "นี้" + "จาก" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - แบดบอยคนนี้ จะขอเป็นเซียน
+  - แบบนี้ จากท่ายืน จนหงายหลัง
 
 ### "นี้" + "ฉัน" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ทางนี้ ฉันยังไม่ตาย
-
-### "นี้" + "ดู" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ฉันชอบผู้หญิงแบบนี้ ดูเท่ดี
 
 ### "นี้" + "ตรงนี้" (1 occurrences)
 - Predicted: None
@@ -48055,12 +48158,6 @@ Accuracy: 94.26%
 - Examples:
   - ด้วยวิธีนี้ ผบ.หมวด
 
-### "นี้" + "ผม" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เพราะเหตุนี้ ผมรู้สึกว่าผม
-
 ### "นี้" + "ฝน" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -48091,17 +48188,17 @@ Accuracy: 94.26%
 - Examples:
   - ในหมู่บ้านนี้ ฤ
 
+### "นี้" + "ลาคา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทำไมเจ้าถึงทำแบบนี้ ลาคา
+
 ### "นี้" + "วิ่ง" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ทางนี้ วิ่งเร็ว
-
-### "นี้" + "สาม" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - กีตาชนะยกนี้ สามต่อศูนย์
 
 ### "นี้" + "สำคัญ" (1 occurrences)
 - Predicted: None
@@ -48211,6 +48308,12 @@ Accuracy: 94.26%
 - Examples:
   - แถวนี้ เห็นมั้ย
 
+### "นี้" + "เอาละ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เป็นแบบนี้ เอาละ
+
 ### "นี้" + "แค่" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -48252,6 +48355,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - แนวนี้ ไร้แวว
+
+### "นี้" + "ไฮล์" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ต้องแบบนี้ ไฮล์
 
 ### "นี้" + "ๆ" (1 occurrences)
 - Predicted: None
@@ -48895,7 +49004,7 @@ Accuracy: 94.26%
 - Examples:
   - คุณคงเห็นภาพลวงตาน่ะ แซม
 
-### "น่ะ" + "แบบนี้" (1 occurrences)
+### "น่ะ" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -49243,7 +49352,7 @@ Accuracy: 94.26%
 - Examples:
   - ไม่เอาน่า ให้โอกาสเราหน่อย
 
-### "น่า" + "ได้โปรด" (1 occurrences)
+### "น่า" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -49483,7 +49592,7 @@ Accuracy: 94.26%
 - Examples:
   - ปีกมันจมน้ำ ใช้แป้นสิ
 
-### "น้ำ" + "ได้โปรด" (1 occurrences)
+### "น้ำ" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -50293,7 +50402,7 @@ Accuracy: 94.26%
 - Examples:
   - บี จาก บาร์ฟี่
 
-### "บี" + "เข้า" (1 occurrences)
+### "บี" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -50977,7 +51086,7 @@ Accuracy: 94.26%
 - Examples:
   - เปิดประตู เร็วเข้า
 
-### "ประตู" + "ได้โปรด" (1 occurrences)
+### "ประตู" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -52333,7 +52442,7 @@ Accuracy: 94.26%
 - Examples:
   - ใครคือผู้ป่วย - ไม่มีใคร
 
-### "ผู้พัน" + "ออก" (1 occurrences)
+### "ผู้พัน" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -53137,11 +53246,29 @@ Accuracy: 94.26%
 - Examples:
   - พวกนั้น ทำอะไรกันน่ะ?
 
+### "พวกนั้น" + "พยายาม" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - คนพวกนั้น พยายามจะฆ่าเรา!
+
+### "พวกนั้น" + "เจ้า" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เจ้าพวกนั้น เจ้าพวกตัวปัญหา
+
 ### "พวกนาย" + "หยุด" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - เอาน่า พวกนาย หยุดซะที
+
+### "พวกมัน" + "พา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ข้ารู้ ที่ม้าพวกมัน พาเราไป
 
 ### "พวกเขา" + "!" (1 occurrences)
 - Predicted: None
@@ -53755,18 +53882,6 @@ Accuracy: 94.26%
 - Examples:
   - ผม พีเค ไง
 
-### "พีเค" + "ได้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - พีเค ได้เสนอปัญหาสำคัญนี้
-
-### "พีเค" + "ได้โปรด" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ปล่อยมันไป พีเค ได้โปรดเถอะ
-
 ### "พี่" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54115,7 +54230,7 @@ Accuracy: 94.26%
 - Examples:
   - พี่เหวง ซวยแล้วล่ะ
 
-### "พี่เหวง" + "เข้า" (1 occurrences)
+### "พี่เหวง" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -54145,7 +54260,7 @@ Accuracy: 94.26%
 - Examples:
   - ที่พื้น เบาะหลังแคดดี้
 
-### "พื้น" + "แบบนี้" (1 occurrences)
+### "พื้น" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -54217,7 +54332,7 @@ Accuracy: 94.26%
 - Examples:
   - เปลี่ยนเรื่องพูด อย่าคิดมาก
 
-### "พูด" + "ออก" (1 occurrences)
+### "พูด" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -55381,12 +55496,6 @@ Accuracy: 94.26%
 - Examples:
   - ถ้าคุณใส่มัน ผมคงแข็งปั๋ง
 
-### "มัน" + "พา" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ข้ารู้ ที่ม้าพวกมัน พาเราไป
-
 ### "มัน" + "มนุษย์" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56202,12 +56311,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - บอกมา นังโสโครก
-
-### "มา" + "นาย" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ออกมา นายมากับฉัน
 
 ### "มา" + "บรูโน" (1 occurrences)
 - Predicted: None
@@ -57421,7 +57524,7 @@ Accuracy: 94.26%
 - Examples:
   - มารยาท มารยาท ได้โปรด
 
-### "มารยาท" + "ได้โปรด" (1 occurrences)
+### "มารยาท" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -58134,12 +58237,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - นั้นมันของมีค่า อย่าแตะ
-
-### "มีชีวิต" + "ใช่" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - มันยังมีชีวิต ใช่มั้ยค่ะ?
 
 ### "มีด" + "แล้ว" (1 occurrences)
 - Predicted: None
@@ -59887,7 +59984,7 @@ Accuracy: 94.26%
 - Examples:
   - พาเขาไปรักษา หรือบอกให้เขา
 
-### "รักสนุก" + "พวก" (1 occurrences)
+### "รักสนุก" + "พวกนั้น" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -59928,6 +60025,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ฉันรอสามีมารับ ก็เลย
+
+### "รับ" + "คำตอบ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - จนกว่าจะได้รับ คำตอบ
 
 ### "รับ" + "นี่" (1 occurrences)
 - Predicted: None
@@ -60241,7 +60344,7 @@ Accuracy: 94.26%
 - Examples:
   - รานา เพราะหลังจากอายุนึง
 
-### "รานา" + "ได้โปรด" (1 occurrences)
+### "รานา" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -63433,7 +63536,7 @@ Accuracy: 94.26%
 - Examples:
   - ไรวะ ปกติคนที่นี่ขี้เกรงใจ
 
-### "วะ" + "พวก" (1 occurrences)
+### "วะ" + "พวกมัน" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -64699,7 +64802,7 @@ Accuracy: 94.26%
 - Examples:
   - ว่าไง เเม็กซิม
 
-### "ว่าไง" + "แบบนั้น" (1 occurrences)
+### "ว่าไง" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -65911,7 +66014,7 @@ Accuracy: 94.26%
 - Examples:
   - สวัสดี ไฮล์ฮิตเลอร์ทุกคน
 
-### "สวีเทียน" + "ออก" (1 occurrences)
+### "สวีเทียน" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -68389,7 +68492,7 @@ Accuracy: 94.26%
 - Examples:
   - ที่จะรู้สึกหนาว อ้างว้าง
 
-### "หนาว" + "เข้า" (1 occurrences)
+### "หนาว" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -69823,7 +69926,7 @@ Accuracy: 94.26%
 - Examples:
   - หยุด ให้พวกเขาหยุดเดี๋ยวนี้
 
-### "หยุด" + "ได้โปรด" (1 occurrences)
+### "หยุด" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -71569,7 +71672,7 @@ Accuracy: 94.26%
 - Examples:
   - แกเป็นห่วง ห่วงฉันน่ะเหรอ
 
-### "ห่วง" + "ออก" (1 occurrences)
+### "ห่วง" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -72193,7 +72296,7 @@ Accuracy: 94.26%
 - Examples:
   - อย่า ไดแอน
 
-### "อย่า" + "ได้โปรด" (1 occurrences)
+### "อย่า" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -72696,6 +72799,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ที่มีควันออกมา คืออะไร
+
+### "ออกมา" + "นาย" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ออกมา นายมากับฉัน
 
 ### "ออกมา" + "ภูวัน" (1 occurrences)
 - Predicted: None
@@ -73927,7 +74036,7 @@ Accuracy: 94.26%
 - Examples:
   - อาจารย์ ทำยังไงดี
 
-### "อาจารย์" + "พวก" (1 occurrences)
+### "อาจารย์" + "พวกมัน" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -79123,19 +79232,13 @@ Accuracy: 94.26%
 - Examples:
   - เข้าไป ทูนหัว
 
-### "เข้าไป" + "สหาย" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เข้าไป สหาย
-
 ### "เข้าไป" + "อย่า" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ล้วงเข้าไป อย่ากลัว
 
-### "เข้าไป" + "ได้โปรด" (1 occurrences)
+### "เข้าไป" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -79759,7 +79862,7 @@ Accuracy: 94.26%
 - Examples:
   - เจ้อ เจี๋ย จาง หุยเคอะ
 
-### "เจี๋ย" + "ออก" (1 occurrences)
+### "เจี๋ย" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -80047,7 +80150,7 @@ Accuracy: 94.26%
 - Examples:
   - เจ้าหญิง เจ้าหญิง
 
-### "เจ้าหนู" + "ออก" (1 occurrences)
+### "เจ้าหนู" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -80059,7 +80162,7 @@ Accuracy: 94.26%
 - Examples:
   - โดยเจ้าหน้าที่ เทราโมโต?
 
-### "เจ้าหยวน" + "ออก" (1 occurrences)
+### "เจ้าหยวน" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -80839,7 +80942,7 @@ Accuracy: 94.26%
 - Examples:
   - โรฮินี แค่วินาทีเดียว ฮัลโหล
 
-### "เดียว" + "ได้โปรด" (1 occurrences)
+### "เดียว" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -81325,7 +81428,7 @@ Accuracy: 94.26%
 - Examples:
   - เดเมี่ยน กลับมาก่อน
 
-### "เดเมี่ยน" + "ได้โปรด" (1 occurrences)
+### "เดเมี่ยน" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -82039,18 +82142,6 @@ Accuracy: 94.26%
 - Examples:
   - หยุดเถอะ ให้ตายสิ
 
-### "เถอะ" + "ได้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เปลี่ยนเรื่องเถอะ ได้มั้ย
-
-### "เถอะ" + "ได้โปรด" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ออกมาเถอะ ได้โปรด!
-
 ### "เถอะ" + "ไฮล์" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82591,7 +82682,7 @@ Accuracy: 94.26%
 - Examples:
   - เธอยังมีปืนของเธอ ใช้มัน
 
-### "เธอ" + "ได้โปรด" (1 occurrences)
+### "เธอ" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -84013,7 +84104,7 @@ Accuracy: 94.26%
 - Examples:
   - มาเถอะ เฟสสิก อุ้มเขาขึ้นมา
 
-### "เฟสสิก" + "ได้โปรด" (1 occurrences)
+### "เฟสสิก" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -85213,6 +85304,18 @@ Accuracy: 94.26%
 - Examples:
   - ไปๆ ไปเร็ว อย่ามาแหยมนะ
 
+### "เร็ว" + "ออก" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เร็ว ออกไป
+
+### "เร็ว" + "ออกมา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทุกคนมาเร็ว ออกมาเร็ว
+
 ### "เร็ว" + "อันโตนิโอ้" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86268,12 +86371,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ไม่น่าเชื่อเลย โอ้ย!
-
-### "เลย" + "ได้โปรด" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - อย่าฆ่าฉันเลย ได้โปรด
 
 ### "เลย" + "ไหน" (1 occurrences)
 - Predicted: None
@@ -88927,7 +89024,7 @@ Accuracy: 94.26%
 - Examples:
   - เอลฟาบา นี่ใหญ่กว่าเรามาก
 
-### "เอลฟาบา" + "ได้โปรด" (1 occurrences)
+### "เอลฟาบา" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -89773,7 +89870,7 @@ Accuracy: 94.26%
 - Examples:
   - เอาละ อย่านั่งแข็งเกินไป
 
-### "เอาละ" + "ออก" (1 occurrences)
+### "เอาละ" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -91159,7 +91256,7 @@ Accuracy: 94.26%
 - Examples:
   - เอ้า หวัดดี!
 
-### "เอ้า" + "เข้า" (1 occurrences)
+### "เอ้า" + "เข้าไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -91309,7 +91406,7 @@ Accuracy: 94.26%
 - Examples:
   - โธ่เอ๊ย ปล่อยสิ
 
-### "เอ๊ย" + "พวก" (1 occurrences)
+### "เอ๊ย" + "พวกนั้น" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -93355,7 +93452,7 @@ Accuracy: 94.26%
 - Examples:
   - แคริน เรย์ อาหารเย็น
 
-### "แคริน" + "ได้โปรด" (1 occurrences)
+### "แคริน" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -93829,7 +93926,7 @@ Accuracy: 94.26%
 - Examples:
   - อย่าแตะต้อง ป้าย พี่ชาย.
 
-### "แตะต้อง" + "ได้โปรด" (1 occurrences)
+### "แตะต้อง" + "ได้" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -94357,7 +94454,7 @@ Accuracy: 94.26%
 - Examples:
   - กูแทงไส้ปลิ้นแน่ ไอ้สัตว์
 
-### "แน่จริง" + "ออก" (1 occurrences)
+### "แน่จริง" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -94674,96 +94771,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ทำแบบ เข้ามากิชาด้า
-
-### "แบบนั้น" + "พวกเรา" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แบบนั้น พวกเราก็อยากทํา
-
-### "แบบนั้น" + "มัน" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ฆ่าแบบนั้น มันง่ายเกินไป?
-
-### "แบบนั้น" + "ยก" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ไม่ใช่แบบนั้น ยกเขาขึ้น
-
-### "แบบนั้น" + "เดเมี่ยน" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ไม่ใช่แบบนั้น เดเมี่ยน
-
-### "แบบนั้น" + "โคเช่" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - อย่ามองฉันแบบนั้น โคเช่
-
-### "แบบนั้น" + "ไม่" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ฉันคงไม่พูดแบบนั้น ไม่
-
-### "แบบนี้" + "กระดูก" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ขืนสู้แบบนี้ กระดูกหักแน่
-
-### "แบบนี้" + "กับ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ทำไมพวกคุณทำแบบนี้ กับคนที่
-
-### "แบบนี้" + "จาก" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แบบนี้ จากท่ายืน จนหงายหลัง
-
-### "แบบนี้" + "ผม" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ไง ซิ่งแบบนี้ ผมได้เอไหม
-
-### "แบบนี้" + "ลาคา" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ทำไมเจ้าถึงทำแบบนี้ ลาคา
-
-### "แบบนี้" + "สาม" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แบบนี้ สามแต้ม
-
-### "แบบนี้" + "เอาละ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เป็นแบบนี้ เอาละ
-
-### "แบบนี้" + "ใช่" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เขาต้องการแบบนี้ ใช่ไหม?
-
-### "แบบนี้" + "ไฮล์" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ต้องแบบนี้ ไฮล์
 
 ### "แบบว่า" + "ดื่ม" (1 occurrences)
 - Predicted: None
@@ -96907,24 +96914,6 @@ Accuracy: 94.26%
 - Examples:
   - ใช่แล้ว แน่นอน
 
-### "แล้ว" + "แบบ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - นึกออกแล้ว แบบนี้ดีกว่า
-
-### "แล้ว" + "แบบนั้น" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ใช่แล้ว แบบนั้นแหละ
-
-### "แล้ว" + "แบบนี้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แย่แล้ว แบบนี้แย่แน่ๆ
-
 ### "แล้ว" + "และ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -97014,18 +97003,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - แล้ว ไซมอน ล่ะ?
-
-### "แล้ว" + "ได้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - รู้แล้ว ได้ข่าวระเบิด
-
-### "แล้ว" + "ได้รับ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ใช่แล้ว ได้รับ
 
 ### "แล้ว" + "ไร้" (1 occurrences)
 - Predicted: None
@@ -98563,7 +98540,7 @@ Accuracy: 94.26%
 - Examples:
   - ยายโซฟี หัวผักกาด
 
-### "โซฟี" + "ออก" (1 occurrences)
+### "โซฟี" + "ออกมา" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -99385,6 +99362,12 @@ Accuracy: 94.26%
 - Examples:
   - ได้โปรก ไปเพื่อเขาเถอะ
 
+### "โปรด" + "กลับ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ดาร์ซี่ ได้โปรด กลับมาก่อน
+
 ### "โปรด" + "ขอบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99409,6 +99392,12 @@ Accuracy: 94.26%
 - Examples:
   - ได้โปรด ตื่นเถอะ
 
+### "โปรด" + "ทาน" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ข้าขอโทษ ได้โปรด ทาน
+
 ### "โปรด" + "ท่านฮั่ว" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99420,6 +99409,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ได้โปรด ผมมีลูกสาว
+
+### "โปรด" + "พ่อ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - พ่อคะ ได้โปรด พ่อ
 
 ### "โปรด" + "ภาระ" (1 occurrences)
 - Predicted: None
@@ -99475,11 +99470,11 @@ Accuracy: 94.26%
 - Examples:
   - ได้โปรด โทรศัพท์
 
-### "โปรด" + "ไม่" (1 occurrences)
+### "โปรด" + "ไป" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ได้โปรด ไม่มีทางเลือกแล้ว
+  - ฆอร์เฆ ได้โปรด ไปกันเถอะ
 
 ### "โปรดทราบ" + "นักเรียน" (1 occurrences)
 - Predicted: None
@@ -100518,18 +100513,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - โอ ใช่
-
-### "โอ" + "ได้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - โอ ได้ ได้สิ
-
-### "โอ" + "ได้รับ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - โอ ได้รับบิลล์
 
 ### "โอ" + "ไฟ" (1 occurrences)
 - Predicted: None
@@ -103813,7 +103796,7 @@ Accuracy: 94.26%
 - Examples:
   - ใช่ แถวนี้มันไม่มีงาน
 
-### "ใช่" + "แบบนี้" (1 occurrences)
+### "ใช่" + "แบบ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -104965,6 +104948,18 @@ Accuracy: 94.26%
 - Examples:
   - ก็บอกแล้วไง เขาขอคิดก่อน
 
+### "ไง" + "เข้า" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ไง เข้ามาหน่อยน่า
+
+### "ไง" + "เข้าไป" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ไง เข้าไปเห็นเด็กแล้วเหรอ
+
 ### "ไง" + "เจนนี่" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -105547,11 +105542,23 @@ Accuracy: 94.26%
 - Examples:
   - เราจะทำให้ได้ ผู้ใหญ่บ้าน
 
+### "ได้" + "พวก" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เอาเลย สมิธ ล้มมันให้ได้ พวก
+
 ### "ได้" + "พวกคุณ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ได้ พวกคุณรีบทำเลย ได้มั้ย
+
+### "ได้" + "พวกมัน" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ถ้าจับได้ พวกมันจะฆ่านาย
 
 ### "ได้" + "พวกเขา" (1 occurrences)
 - Predicted: None
@@ -105979,12 +105986,6 @@ Accuracy: 94.26%
 - Examples:
   - ฟังสิ ได้ยิน ฤ ไม่
 
-### "ได้รับ" + "คำตอบ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - จนกว่าจะได้รับ คำตอบ
-
 ### "ได้เรื่อง" + "ดู" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -105996,36 +105997,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ได้แก่ ฟิลิป แอนเดอร์สัน
-
-### "ได้โปรด" + "กลับ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ดาร์ซี่ ได้โปรด กลับมาก่อน
-
-### "ได้โปรด" + "ทาน" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ข้าขอโทษ ได้โปรด ทาน
-
-### "ได้โปรด" + "พ่อ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - พ่อคะ ได้โปรด พ่อ
-
-### "ได้โปรด" + "ไป" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ฆอร์เฆ ได้โปรด ไปกันเถอะ
-
-### "ได้โปรด" + "ไม่" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - โอ้ ได้โปรด ไม่ คุณไม่ได้
 
 ### "ไตกระต่าย" + "อย่า" (1 occurrences)
 - Predicted: None
@@ -106537,12 +106508,6 @@ Accuracy: 94.26%
 - Examples:
   - นำทางไป สมีกอล
 
-### "ไป" + "สหาย" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - พูดซ้ำๆ เข้าไป สหาย
-
 ### "ไป" + "สากล" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -106602,6 +106567,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - หลบไป อยู่ใกล้ๆ แกนดัลฟ์ไว้
+
+### "ไป" + "ออกมา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ทิ้งไป ออกมา
 
 ### "ไป" + "อังเดร" (1 occurrences)
 - Predicted: None
@@ -110058,6 +110029,12 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ที่เปลี่ยวๆ อย่างนี้
+
+### "ๆ" + "ออกมา" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เสียงประหลาดๆ ออกมาจากนี่
 
 ### "ๆ" + "ออซ" (1 occurrences)
 - Predicted: None
