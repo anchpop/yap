@@ -109,7 +109,6 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt2278871",  // Blue Is the Warmest Color (2013)
     "tt0113247",  // La Haine (1995)
     "tt0250223",  // Astérix & Obélix: Mission Cléopâtre (2002)
-    "tt1655442",  // The Artist (2011)
     "tt4954522",  // Raw (2017)
     "tt1255953",  // Incendies (2010)
     "tt17009710", // Anatomy of a Fall (2023)
@@ -441,6 +440,15 @@ const EXTRA_MOVIES: &[&str] = &[
     // Swedish
     "tt0091670", // The Sacrifice (1986)
     "tt0050986", // Wild Strawberries (1957)
+];
+
+/// Movies deliberately kept out of yap even when `discover/popular` offers
+/// them. The Artist is a silent film: its "subtitles" are intertitles and a
+/// handful of English lines, so it can never yield original-language speech,
+/// and its presence in the packs was pure confusion.
+const EXCLUDED_MOVIES: &[&str] = &[
+    "tt1655442", // The Artist (2011)
+    "tt0309061", // War Photographer (2001)
 ];
 
 /// OMDB API response
@@ -1068,6 +1076,10 @@ async fn main() -> Result<()> {
                 continue;
             };
             let imdb_id_str = format!("tt{imdb_id:07}");
+            if EXCLUDED_MOVIES.contains(&imdb_id_str.as_str()) {
+                println!("  ✗ Excluded by policy: {}", attrs.title);
+                continue;
+            }
 
             println!(
                 "\n[Downloaded: {}/{}] {} ({})",
