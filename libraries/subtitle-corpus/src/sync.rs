@@ -219,7 +219,9 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
     // Position among *audio* streams, which is what `-map 0:a:N` counts.
     for (i, s) in probe.streams.iter().enumerate() {
         let lang = s.tags.get("language").cloned().unwrap_or_default();
-        if codes.contains(&lang.to_lowercase().as_str()) {
+        let lang = lang.trim().to_lowercase();
+        // "mul" is the original mixed track of a multilingual film.
+        if codes.contains(&lang.as_str()) || lang == "mul" {
             return Ok(i);
         }
     }

@@ -244,6 +244,35 @@ fn plan_path(out: &std::path::Path) -> PathBuf {
     out.join("plan.json")
 }
 
+/// The subtitle file a syncer should align for this movie, if any.
+///
+/// Usually the recovered raw SRT in the movie's language pack. Failing that,
+/// a sidecar file counts too: `extract` used to trust sidecars as
+/// already-synced, but 23 of 49 turned out to be Bazarr downloads on some
+/// other release's clock (*Il Mare* 3.4s out at margin 0.30) — so a sidecar
+/// whose finalized output has been removed re-enters through the same sync
+/// gates as any download.
+fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
+    // A film with no original-language audio can never yield a speech clip,
+    // so aligning a subtitle for it is work spent making a number wrong.
+    if matches!(movie.source, Source::NoOriginalAudio) {
+        return None;
+    }
+    if let Some(course) = library::course_dir(&movie.original_language) {
+        let raw = data_root
+            .join(course)
+            .join("sentence-sources/movies")
+            .join(format!("subtitles-raw/{}.srt", movie.imdb_id));
+        if raw.exists() {
+            return Some(raw);
+        }
+    }
+    match &movie.source {
+        Source::Sidecar { path } if path.exists() => Some(path.clone()),
+        _ => None,
+    }
+}
+
 fn read_plan(out: &std::path::Path) -> Result<Vec<Movie>> {
     let p = plan_path(out);
     let raw = std::fs::read(&p).with_context(|| {
@@ -696,15 +725,10 @@ async fn sync_all(
         if out.join(&movie.imdb_id).join("subtitle.srt").exists() {
             continue;
         }
-        let Some(course) = library::course_dir(&movie.original_language) else {
-            continue;
-        };
-        let raw = data_root
-            .join(course)
-            .join("sentence-sources/movies")
-            .join(format!("subtitles-raw/{}.srt", movie.imdb_id));
-        if raw.exists() && movie.path.exists() {
-            queue.push((movie, raw));
+        if let Some(raw) = subtitle_source(&movie, &data_root) {
+            if movie.path.exists() {
+                queue.push((movie, raw));
+            }
         }
     }
     if limit > 0 {
@@ -958,15 +982,10 @@ fn vad_sync(
         if out.join(&movie.imdb_id).join("subtitle.srt").exists() {
             continue;
         }
-        let Some(course) = library::course_dir(&movie.original_language) else {
-            continue;
-        };
-        let raw = data_root
-            .join(course)
-            .join("sentence-sources/movies")
-            .join(format!("subtitles-raw/{}.srt", movie.imdb_id));
-        if raw.exists() && movie.path.exists() {
-            queue.push((movie, raw));
+        if let Some(raw) = subtitle_source(&movie, &data_root) {
+            if movie.path.exists() {
+                queue.push((movie, raw));
+            }
         }
     }
     if limit > 0 {
@@ -1108,15 +1127,10 @@ fn text_sync(
         if out.join(&movie.imdb_id).join("subtitle.srt").exists() {
             continue;
         }
-        let Some(course) = library::course_dir(&movie.original_language) else {
-            continue;
-        };
-        let raw = data_root
-            .join(course)
-            .join("sentence-sources/movies")
-            .join(format!("subtitles-raw/{}.srt", movie.imdb_id));
-        if raw.exists() && movie.path.exists() {
-            queue.push((movie, raw));
+        if let Some(raw) = subtitle_source(&movie, &data_root) {
+            if movie.path.exists() {
+                queue.push((movie, raw));
+            }
         }
     }
     if limit > 0 {

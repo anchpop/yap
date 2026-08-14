@@ -25,7 +25,9 @@ pub fn stream_codes(language: &str) -> &'static [&'static str] {
         "Korean" => &["kor", "ko"],
         "Thai" => &["tha", "th"],
         "Hindi" => &["hin", "hi"],
-        "Chinese" | "Cantonese" | "Mandarin" => &["zho", "chi", "zh", "cmn", "yue"],
+        // "cn" is not ISO anything, but rips carry it.
+        "Chinese" | "Cantonese" | "Mandarin" => &["zho", "chi", "zh", "cmn", "yue", "cn"],
+        "Marathi" => &["mar", "mr"],
         "Swedish" => &["swe", "sv"],
         "Danish" => &["dan", "da"],
         "Dutch" => &["nld", "dut", "nl"],
@@ -214,10 +216,13 @@ pub fn reference_subtitle_streams(path: &Path) -> Result<Vec<ReferenceStream>> {
 }
 
 fn lang_of(s: &Stream) -> String {
+    // Tags come with whitespace attached often enough to matter: a real rip
+    // carried `"cn "` and classified as having no Chinese audio.
     s.tags
         .get("language")
         .cloned()
         .unwrap_or_default()
+        .trim()
         .to_lowercase()
 }
 
@@ -241,7 +246,14 @@ pub fn classify(
             .collect();
         // Untagged audio on a single-language rip is virtually always the
         // original, so only an explicit all-foreign tagging is disqualifying.
-        if !tagged.is_empty() && !tagged.iter().any(|l| codes.contains(&l.as_str())) {
+        // "mul" claims several languages in one track — that is what the
+        // original mix of a multilingual film looks like (Brother 2 is
+        // Russian with long English stretches), never what a dub looks like.
+        if !tagged.is_empty()
+            && !tagged
+                .iter()
+                .any(|l| codes.contains(&l.as_str()) || l == "mul")
+        {
             return Ok(Source::NoOriginalAudio);
         }
     }
