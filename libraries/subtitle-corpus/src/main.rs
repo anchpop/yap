@@ -330,6 +330,21 @@ const DIFFERENT_CUT: &[&str] = &[
     "tt0209189", // Not One Less (1999)
 ];
 
+/// Sidecars `check` has convicted of carrying another release's clock.
+///
+/// `extract` trusts a sidecar's own timings, and for most that is right —
+/// but a Bazarr download can be timed to a different rip of the same cut
+/// (Fallen Angels −19.2s over 104/110 anchors, When Marnie Was There +23.3s
+/// over 341/355, both at rate 1.0000). Deleting the finalized output is not
+/// enough on its own: the next `refresh` would just re-finalize the same
+/// file. Listing a film here makes `extract` leave it alone while `classify`
+/// still reports the sidecar, so `subtitle_source` hands its text to the
+/// syncers to be placed like any downloaded subtitle.
+const SIDECAR_UNTRUSTED: &[&str] = &[
+    "tt0112913", // Fallen Angels (1995)
+    "tt3398268", // When Marnie Was There (2014)
+];
+
 fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
     // A film with no original-language audio can never yield a speech clip,
     // so aligning a subtitle for it is work spent making a number wrong.
@@ -886,6 +901,10 @@ fn extract(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
     let mut todo: Vec<Movie> = plan
         .into_iter()
         .filter(|m| matches!(m.source, Source::DiscText { .. } | Source::Sidecar { .. }))
+        .filter(|m| {
+            !(matches!(m.source, Source::Sidecar { .. })
+                && SIDECAR_UNTRUSTED.contains(&m.imdb_id.as_str()))
+        })
         .collect();
     if limit > 0 {
         todo.truncate(limit);
