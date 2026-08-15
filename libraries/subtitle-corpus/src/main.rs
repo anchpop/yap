@@ -328,6 +328,7 @@ fn plan_path(out: &std::path::Path) -> PathBuf {
 const DIFFERENT_CUT: &[&str] = &[
     "tt0859765", // Still Life (2006)
     "tt0209189", // Not One Less (1999)
+    "tt3742378", // The Second Mother (2015) — sync locks +26.0s on 8/20 anchors, check re-measures +123.5s
 ];
 
 /// Sidecars `check` has convicted of carrying another release's clock.

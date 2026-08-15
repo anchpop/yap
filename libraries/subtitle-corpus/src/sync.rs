@@ -52,7 +52,12 @@ fn format_stamp(ms: i64) -> String {
 }
 
 pub fn parse_cues(srt: &str) -> Vec<Cue> {
-    let srt = movie_subtitles::repair_cp1252_mojibake(srt);
+    // Course raw SRTs are LF, but a Bazarr sidecar keeps whatever the uploader
+    // used — usually CRLF, where blank lines are `\r\n\r\n` and a `\n\n` block
+    // split sees the whole file as one cue (Marnie: "covers only 0% of the
+    // film" from a perfectly good 1,300-cue file).
+    let srt = srt.trim_start_matches('\u{feff}').replace("\r\n", "\n");
+    let srt = movie_subtitles::repair_cp1252_mojibake(&srt);
     let mut cues = Vec::new();
     for block in srt.split("\n\n") {
         let mut start = None;
