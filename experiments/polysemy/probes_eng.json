@@ -1,0 +1,266 @@
+{
+  "comment": "Probe set for word-sense discrimination. Target word wrapped in {braces}. All targets share lemma+POS within a word entry; only the sense differs. Sentences deliberately short (subtitle register) to match yap corpus conditions.",
+  "words": [
+    {
+      "lemma": "tear", "pos": "NOUN",
+      "senses": {
+        "teardrop": [
+          "He shed a {tear}.",
+          "A {tear} rolled down her cheek.",
+          "She wiped away a {tear}.",
+          "There's a {tear} in his eye.",
+          "One {tear}, and I'll forgive you.",
+          "I saw a single {tear} fall.",
+          "Not one {tear} at the funeral.",
+          "A {tear} slid down my face.",
+          "Her eyes filled with {tears}.",
+          "He fought back {tears}."
+        ],
+        "rip": [
+          "There's a {tear} in the paper.",
+          "A {tear} in the fabric.",
+          "The {tear} in his jacket got bigger.",
+          "She noticed a {tear} in the curtain.",
+          "Just a small {tear} in the canvas.",
+          "The {tear} in the sail slowed us down.",
+          "A {tear} in the wallpaper.",
+          "He patched the {tear} in the tent.",
+          "The page had a {tear} down the middle.",
+          "Careful, there's a {tear} in the seat."
+        ]
+      }
+    },
+    {
+      "lemma": "bank", "pos": "NOUN",
+      "senses": {
+        "financial": [
+          "I need to go to the {bank}.",
+          "The {bank} is closed on Sundays.",
+          "He robbed a {bank}.",
+          "My money is in the {bank}.",
+          "The {bank} denied the loan.",
+          "She works at a {bank} downtown.",
+          "The {bank} called about your account.",
+          "We owe the {bank} a fortune.",
+          "The {bank} froze his assets.",
+          "Meet me outside the {bank}."
+        ],
+        "river": [
+          "We sat on the {bank} of the river.",
+          "The boat drifted to the far {bank}.",
+          "Fish were jumping near the {bank}.",
+          "He climbed up the muddy {bank}.",
+          "The river overflowed its {banks}.",
+          "She fell asleep on the grassy {bank}.",
+          "We fished from the {bank} all morning.",
+          "The village sits on the west {bank}.",
+          "Reeds grew along the {bank}.",
+          "They camped on the {bank} of the stream."
+        ]
+      }
+    },
+    {
+      "lemma": "bat", "pos": "NOUN",
+      "senses": {
+        "animal": [
+          "A {bat} flew out of the cave.",
+          "The {bat} hung upside down.",
+          "There's a {bat} in the attic.",
+          "The {bat} screeched in the dark.",
+          "A vampire {bat} drinks blood.",
+          "The {bat} uses echolocation.",
+          "A {bat} got into the house last night.",
+          "That {bat} has huge ears.",
+          "The {bat} slept through the day.",
+          "{Bats} live in that old barn."
+        ],
+        "club": [
+          "He swung the {bat} and missed.",
+          "Grab a {bat}, you're up next.",
+          "The {bat} cracked on impact.",
+          "She hit the ball with a wooden {bat}.",
+          "He keeps a baseball {bat} by the door.",
+          "The kid dropped the {bat} and ran.",
+          "That {bat} is made of aluminum.",
+          "He broke the {bat} on a fastball.",
+          "Choke up on the {bat} a little.",
+          "Someone smashed the window with a {bat}."
+        ]
+      }
+    },
+    {
+      "lemma": "match", "pos": "NOUN",
+      "senses": {
+        "firestick": [
+          "He lit a {match}.",
+          "Strike a {match}, it's dark in here.",
+          "The {match} blew out in the wind.",
+          "She struck a {match} against the box.",
+          "One {match} left in the box.",
+          "The {match} flared in the darkness.",
+          "Don't waste another {match}.",
+          "He dropped the {match} into the fireplace.",
+          "The whole thing went up with a single {match}.",
+          "Got a {match}? My lighter died."
+        ],
+        "contest": [
+          "The {match} starts at noon.",
+          "We lost the {match} in overtime.",
+          "It was the best {match} of the season.",
+          "The {match} was cancelled due to rain.",
+          "She won her first {match} easily.",
+          "The boxing {match} lasted twelve rounds.",
+          "Who won the {match} last night?",
+          "The {match} ended in a draw.",
+          "He got injured during the {match}.",
+          "Tickets for the {match} sold out."
+        ]
+      }
+    },
+    {
+      "lemma": "spring", "pos": "NOUN",
+      "senses": {
+        "season": [
+          "Flowers bloom in {spring}.",
+          "We met in the {spring} of 1998.",
+          "{Spring} came early this year.",
+          "The birds return every {spring}.",
+          "I love the smell of {spring}.",
+          "Last {spring} we planted a garden.",
+          "The snow melts in {spring}.",
+          "See you in the {spring}.",
+          "{Spring} is my favorite season.",
+          "The wedding is set for next {spring}."
+        ],
+        "coil": [
+          "The {spring} in the mattress broke.",
+          "A rusty {spring} poked through the seat.",
+          "The {spring} snapped back into place.",
+          "This pen has a tiny {spring} inside.",
+          "The trap's {spring} was too stiff.",
+          "He stretched the {spring} too far.",
+          "The clock runs on a wound {spring}.",
+          "The {spring} launched the ball into the air.",
+          "One {spring} in the suspension is shot.",
+          "The mechanism uses a coiled {spring}."
+        ]
+      }
+    },
+    {
+      "lemma": "ring", "pos": "NOUN",
+      "senses": {
+        "jewelry": [
+          "He gave her a diamond {ring}.",
+          "The {ring} slipped off her finger.",
+          "She never takes off her wedding {ring}.",
+          "The {ring} was too big for me.",
+          "He pawned his gold {ring}.",
+          "That {ring} belonged to my grandmother.",
+          "She found the {ring} under the couch.",
+          "The {ring} sparkled in the light.",
+          "He bought the {ring} last week.",
+          "Where's your engagement {ring}?"
+        ],
+        "arena": [
+          "The boxer stepped into the {ring}.",
+          "He was knocked out of the {ring}.",
+          "The crowd circled the {ring}.",
+          "She trained for years before entering the {ring}.",
+          "Blood stained the canvas of the {ring}.",
+          "The referee cleared the {ring}.",
+          "Two fighters entered the {ring}.",
+          "He retired from the {ring} at forty.",
+          "The champion danced around the {ring}.",
+          "They met in the {ring} twice before."
+        ]
+      }
+    },
+    {
+      "lemma": "glass", "pos": "NOUN",
+      "senses": {
+        "material": [
+          "The window is made of {glass}.",
+          "Broken {glass} covered the floor.",
+          "The {glass} shattered into pieces.",
+          "Careful, there's {glass} everywhere.",
+          "The door has frosted {glass}.",
+          "He cut his hand on the {glass}.",
+          "The sculpture is blown {glass}.",
+          "Sea {glass} washed up on the beach.",
+          "The table has a {glass} top.",
+          "Bulletproof {glass} saved his life."
+        ],
+        "vessel": [
+          "Pour me a {glass} of water.",
+          "She raised her {glass} for a toast.",
+          "He drank the whole {glass} in one go.",
+          "Another {glass} of wine, please.",
+          "The {glass} is half empty.",
+          "She set her {glass} on the counter.",
+          "He refilled my {glass} twice.",
+          "A tall {glass} of lemonade.",
+          "Don't leave your {glass} on the piano.",
+          "She clinked her {glass} against mine."
+        ]
+      }
+    },
+    {
+      "lemma": "paper", "pos": "NOUN",
+      "senses": {
+        "material": [
+          "Write it on a piece of {paper}.",
+          "The {paper} tore in half.",
+          "She folded the {paper} into a crane.",
+          "I need a sheet of {paper}.",
+          "The printer is out of {paper}.",
+          "He crumpled the {paper} and threw it.",
+          "Wrap it in brown {paper}.",
+          "The {paper} turned yellow with age.",
+          "Cut the {paper} along the line.",
+          "There's ink all over the {paper}."
+        ],
+        "newspaper": [
+          "It was on the front page of the {paper}.",
+          "He reads the {paper} every morning.",
+          "The story made the {paper}.",
+          "She works for the local {paper}.",
+          "Did you see today's {paper}?",
+          "The {paper} ran a story about him.",
+          "He canceled his subscription to the {paper}.",
+          "The {paper} printed a retraction.",
+          "I saw your photo in the {paper}.",
+          "The {paper} comes at six every morning."
+        ]
+      }
+    },
+    {
+      "lemma": "date", "pos": "NOUN",
+      "senses": {
+        "romantic": [
+          "He asked her on a {date}.",
+          "The {date} went terribly.",
+          "It's our third {date}.",
+          "She canceled the {date} last minute.",
+          "Best first {date} of my life.",
+          "He was nervous before the {date}.",
+          "The {date} ended with a kiss.",
+          "I have a {date} tonight.",
+          "Their first {date} was at a diner.",
+          "She brought a friend to the {date}."
+        ],
+        "calendar": [
+          "What's the {date} today?",
+          "The {date} on the letter is wrong.",
+          "Set a {date} for the meeting.",
+          "The expiration {date} has passed.",
+          "Check the {date} on the milk.",
+          "The {date} of the invoice is March 3rd.",
+          "We haven't fixed a {date} yet.",
+          "The {date} stamped on the coin is 1921.",
+          "Note the {date} and time of the incident.",
+          "The due {date} is Friday."
+        ]
+      }
+    }
+  ]
+}

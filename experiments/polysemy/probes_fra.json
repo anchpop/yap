@@ -1,0 +1,240 @@
+{
+  "comment": "French word-sense probes. Same format as probes_eng.json: target in {braces}, same lemma+POS within each word, senses differ.",
+  "words": [
+    {
+      "lemma": "avocat", "pos": "NOUN",
+      "senses": {
+        "lawyer": [
+          "Mon {avocat} arrive demain.",
+          "Parlez à mon {avocat}.",
+          "L'{avocat} a défendu son client.",
+          "Il faut appeler un {avocat}.",
+          "Son {avocat} a plaidé coupable.",
+          "Je veux voir mon {avocat}.",
+          "L'{avocat} de la défense s'est levé.",
+          "Elle est devenue {avocate} à Paris."
+        ],
+        "fruit": [
+          "J'ai mangé un {avocat} au déjeuner.",
+          "Cet {avocat} est trop mûr.",
+          "Coupe l'{avocat} en deux.",
+          "Il reste un {avocat} dans le frigo.",
+          "Tu veux de l'{avocat} dans ta salade ?",
+          "L'{avocat} est plein de bonnes graisses.",
+          "Écrase l'{avocat} pour le guacamole.",
+          "Ces {avocats} viennent du Mexique."
+        ]
+      }
+    },
+    {
+      "lemma": "glace", "pos": "NOUN",
+      "senses": {
+        "ice": [
+          "La {glace} fond au soleil.",
+          "Le lac est couvert de {glace}.",
+          "Attention, il y a de la {glace} sur la route.",
+          "Mets des glaçons, la {glace} du congélateur.",
+          "La {glace} craque sous nos pieds.",
+          "Ses mains étaient froides comme la {glace}.",
+          "Le navire était pris dans la {glace}.",
+          "La {glace} recouvre les montagnes."
+        ],
+        "icecream": [
+          "Tu veux une {glace} à la vanille ?",
+          "J'ai acheté une {glace} au chocolat.",
+          "Ma {glace} est en train de fondre, vite !",
+          "Deux boules de {glace}, s'il vous plaît.",
+          "Les enfants mangent une {glace} sur la plage.",
+          "Cette {glace} à la fraise est délicieuse.",
+          "On s'arrête pour une {glace} ?",
+          "Il a renversé sa {glace} sur sa chemise."
+        ],
+        "mirror": [
+          "Elle se regarde dans la {glace}.",
+          "Il s'est vu dans la {glace} du couloir.",
+          "La {glace} de la salle de bain est cassée.",
+          "Regarde-toi dans la {glace} avant de sortir.",
+          "Elle a essuyé la {glace} embuée.",
+          "La {glace} lui renvoyait son reflet.",
+          "Il a brisé la {glace} de l'armoire.",
+          "Elle s'est coiffée devant la {glace}."
+        ]
+      }
+    },
+    {
+      "lemma": "voler", "pos": "VERB",
+      "senses": {
+        "fly": [
+          "Les oiseaux {volent} vers le sud.",
+          "L'avion {vole} à haute altitude.",
+          "Regarde le papillon {voler}.",
+          "Cet oiseau ne peut plus {voler}.",
+          "Les mouettes {volaient} au-dessus du port.",
+          "Le drone {vole} au-dessus du jardin.",
+          "J'aimerais pouvoir {voler} comme un aigle.",
+          "La montgolfière {vole} lentement vers l'est."
+        ],
+        "steal": [
+          "Il a {volé} mon portefeuille.",
+          "On m'a {volé} ma voiture.",
+          "Quelqu'un a {volé} l'argent de la caisse.",
+          "Ils ont {volé} des bijoux au musée.",
+          "Tu m'as {volé} mon idée.",
+          "Il {vole} dans les magasins depuis des années.",
+          "On lui a {volé} son vélo devant l'école.",
+          "Ne {vole} jamais rien à personne."
+        ]
+      }
+    },
+    {
+      "lemma": "livre", "pos": "NOUN",
+      "senses": {
+        "book": [
+          "Je lis un bon {livre}.",
+          "Ce {livre} est passionnant.",
+          "Elle a écrit un {livre} sur la guerre.",
+          "Pose ton {livre} et écoute-moi.",
+          "Il m'a prêté un {livre} de poèmes.",
+          "Le {livre} est sur la table.",
+          "J'ai fini le {livre} en deux jours.",
+          "Ouvrez votre {livre} à la page dix."
+        ],
+        "pound": [
+          "Ça coûte vingt {livres} sterling.",
+          "Il a payé cent {livres} pour ce billet.",
+          "Le prix est en {livres}, pas en euros.",
+          "Une {livre} de beurre, s'il vous plaît.",
+          "Ajoutez une demi-{livre} de farine.",
+          "Ça pèse deux {livres} environ.",
+          "Il me doit cinquante {livres}.",
+          "Une {livre} de cerises du marché."
+        ]
+      }
+    },
+    {
+      "lemma": "temps", "pos": "NOUN",
+      "senses": {
+        "time": [
+          "Je n'ai pas le {temps}.",
+          "Le {temps} passe vite.",
+          "Prends ton {temps}.",
+          "Il est {temps} de partir.",
+          "On a perdu trop de {temps}.",
+          "Ça prend du {temps}, tu sais.",
+          "Le {temps} guérit toutes les blessures.",
+          "Combien de {temps} ça va durer ?"
+        ],
+        "weather": [
+          "Quel {temps} fait-il à Paris ?",
+          "Le {temps} est magnifique aujourd'hui.",
+          "Avec ce {temps}, on reste à la maison.",
+          "Le {temps} se gâte, rentrons.",
+          "On annonce un {temps} pluvieux demain.",
+          "Par beau {temps}, on voit la montagne.",
+          "Le mauvais {temps} a retardé le vol.",
+          "Espérons que le {temps} reste sec."
+        ]
+      }
+    },
+    {
+      "lemma": "tour", "pos": "NOUN",
+      "senses": {
+        "tower": [
+          "La {tour} Eiffel brille la nuit.",
+          "Ils ont construit une {tour} de trente étages.",
+          "La {tour} du château est en ruine.",
+          "On voit toute la ville du haut de la {tour}.",
+          "La vieille {tour} penche dangereusement.",
+          "Une {tour} de guet dominait la vallée.",
+          "La {tour} de contrôle a donné l'autorisation.",
+          "Ils habitent dans une {tour} en banlieue."
+        ],
+        "turn": [
+          "C'est ton {tour} de jouer.",
+          "Attends ton {tour} comme tout le monde.",
+          "Chacun son {tour} !",
+          "On a fait un {tour} du quartier.",
+          "Il m'a joué un sale {tour}.",
+          "Un petit {tour} en voiture, ça te dit ?",
+          "Le magicien a fait un {tour} de cartes.",
+          "À mon {tour} maintenant."
+        ]
+      }
+    },
+    {
+      "lemma": "vol", "pos": "NOUN",
+      "senses": {
+        "flight": [
+          "Le {vol} pour Tokyo est retardé.",
+          "Notre {vol} part à huit heures.",
+          "Le {vol} a duré trois heures.",
+          "J'ai raté mon {vol} de retour.",
+          "Le {vol} direct est plus cher.",
+          "Bon {vol} et à bientôt !",
+          "Le {vol} des cigognes annonce l'automne.",
+          "Pendant le {vol}, éteignez vos téléphones."
+        ],
+        "theft": [
+          "Il a été arrêté pour {vol}.",
+          "Le {vol} a eu lieu pendant la nuit.",
+          "C'est du {vol}, ce prix !",
+          "La police enquête sur le {vol} du tableau.",
+          "Il a signalé le {vol} de sa moto.",
+          "Un {vol} à main armée dans la banque.",
+          "Le {vol} de données est un crime.",
+          "Accusé de {vol}, il a tout nié."
+        ]
+      }
+    },
+    {
+      "lemma": "somme", "pos": "NOUN",
+      "senses": {
+        "sum": [
+          "C'est une grosse {somme} d'argent.",
+          "Il a hérité d'une {somme} importante.",
+          "La {somme} totale s'élève à mille euros.",
+          "Ils ont payé une {somme} folle pour cette maison.",
+          "Quelle {somme} veux-tu emprunter ?",
+          "La {somme} des deux nombres est paire.",
+          "Une telle {somme}, c'est impossible à rembourser.",
+          "Il a misé toute la {somme} au casino."
+        ],
+        "nap": [
+          "Je vais faire un petit {somme}.",
+          "Il fait un {somme} après le déjeuner.",
+          "Un petit {somme} et je repars.",
+          "Elle s'est accordé un {somme} d'une heure.",
+          "Le chat fait un {somme} au soleil.",
+          "J'ai piqué un {somme} dans le train.",
+          "Va faire un {somme}, tu es épuisé.",
+          "Après un bon {somme}, ça ira mieux."
+        ]
+      }
+    },
+    {
+      "lemma": "feuille", "pos": "NOUN",
+      "senses": {
+        "leaf": [
+          "Les {feuilles} tombent en automne.",
+          "Une {feuille} morte flottait sur l'eau.",
+          "Les {feuilles} du chêne sont encore vertes.",
+          "Le vent emporte les {feuilles}.",
+          "La chenille mange une {feuille}.",
+          "Chaque {feuille} devient rouge en octobre.",
+          "Une {feuille} est tombée dans mon café.",
+          "Les {feuilles} bruissent dans le vent."
+        ],
+        "sheet": [
+          "Prends une {feuille} et un stylo.",
+          "Écris ton nom en haut de la {feuille}.",
+          "Il me faut une {feuille} blanche.",
+          "Elle a plié la {feuille} en quatre.",
+          "La {feuille} d'examen est restée vide.",
+          "Il a déchiré la {feuille} et recommencé.",
+          "Numérotez chaque {feuille} du dossier.",
+          "J'ai imprimé le contrat sur une seule {feuille}."
+        ]
+      }
+    }
+  ]
+}
