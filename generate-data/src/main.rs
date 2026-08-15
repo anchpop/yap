@@ -2099,7 +2099,6 @@ async fn main() -> anyhow::Result<()> {
             course.target_language,
             &nlp_sentences,
             &generate_data::cache_remote::store(),
-            &reqwest::Client::new(),
         )
         .await
         .context("Failed to ensure token embeddings")?;

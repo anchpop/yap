@@ -150,8 +150,16 @@ pub async fn ensure_token_embeddings(
     language: Language,
     sentences: &[(String, SentenceInfo)],
     store: &osmo::Store,
-    http: &reqwest::Client,
 ) -> Result<()> {
+    // HTTP/1.1 on purpose: with HTTP/2, reqwest multiplexes every concurrent
+    // request over one TCP connection, and hyper's default 64KB flow-control
+    // window caps that connection at ~2MB/s — which throttled the ~3.5MB
+    // embedding responses to a third of the endpoint's throughput. HTTP/1.1
+    // gives each in-flight request its own connection (measured 3x faster).
+    let http = &reqwest::Client::builder()
+        .http1_only()
+        .build()
+        .context("Failed to build HTTP client")?;
     // (key, text, spans) for sentences with at least one heteronym token.
     let mut candidates = Vec::new();
     for (sentence, info) in sentences {
