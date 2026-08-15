@@ -42,9 +42,10 @@ const CACHE_VERSION: &str = "bge-m3@5617a9f61b02__L17_v2";
 /// cache partition records, so we refuse to write.
 const EXPECTED_DEPLOY_MARKER: &str = "5617a9f61b02@L17";
 
-/// Sentences per HTTP request. Short subtitle-register sentences: 96 keeps the
-/// request bodies and GPU batches comfortable.
-const SENTENCES_PER_REQUEST: usize = 96;
+/// Sentences per HTTP request, matching the endpoint's inner forward-pass
+/// batch so each request is one GPU batch. Short subtitle-register sentences
+/// keep the request bodies comfortable even at 256.
+const SENTENCES_PER_REQUEST: usize = 256;
 
 /// Concurrent in-flight requests. The endpoint autoscales up to as many
 /// containers (`max_containers` in token_embeddings.py), so each in-flight

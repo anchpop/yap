@@ -53,7 +53,7 @@ image = (
 )
 
 
-@app.cls(gpu="T4", image=image, scaledown_window=300, max_containers=10)
+@app.cls(gpu="L4", image=image, scaledown_window=300, max_containers=10)
 class TokenEmbedder:
     @modal.enter()
     def load_model(self):
@@ -70,6 +70,13 @@ class TokenEmbedder:
                 )
                 .to("cuda")
                 .eval()
+            )
+            # We only ever serve hidden_states[LAYER]; layers past it are pure
+            # waste. hidden_states[k] is the output of encoder layer k-1
+            # (index 0 is the embedding layer), so keeping the first LAYER
+            # encoder layers leaves hidden_states[LAYER] bit-identical.
+            self.model.encoder.layer = torch.nn.ModuleList(
+                self.model.encoder.layer[:LAYER]
             )
             self.load_error = None
         except Exception:
@@ -144,7 +151,7 @@ class TokenEmbedder:
         spans = [s["spans"] for s in sentences]
         vectors: list[str] = []
         dim = None
-        BATCH = 64
+        BATCH = 256
         for i in range(0, len(texts), BATCH):
             for vecs in self._embed_batch(texts[i : i + BATCH], spans[i : i + BATCH]):
                 if vecs:
