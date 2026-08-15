@@ -10,10 +10,12 @@
 //! sweeps in `experiments/polysemy/`.
 //!
 //! Cache layout: `token-embed/{version}/{lang}/{xxh3(text):016x}` → binary
-//! record (see [`encode_record`]): header of `dim`, `n`, the `n` word indices
-//! (into `SentenceInfo::words`) that were embedded, then `n * dim` f16 values.
-//! Keys are per target language, so a sentence shared by several courses is
-//! embedded once.
+//! record (see [`encode_record`]): header of `dim`, `n`, the `n` char spans
+//! `(start, end)` that were embedded, then `n * dim` f16 values. Records are
+//! keyed by spans — not word indices — because the vectors depend only on
+//! `(text, span)`: a change to how words are split re-derives which spans are
+//! needed but keeps every unchanged span's vector valid. Keys are per target
+//! language, so a sentence shared by several courses is embedded once.
 
 use anyhow::{Context, Result};
 use base64::Engine;
@@ -32,7 +34,7 @@ static MODAL_URL: LazyLock<String> = LazyLock::new(|| {
 /// Cache partition. Bump whenever the model, revision, layer, pooling, or
 /// record format changes; must stay in sync with the pins in
 /// `modal-envs/token_embeddings.py` (which the deploy marker check enforces).
-const CACHE_VERSION: &str = "bge-m3@5617a9f61b02__L17_v1";
+const CACHE_VERSION: &str = "bge-m3@5617a9f61b02__L17_v2";
 
 /// The deploy marker the endpoint must report (`{revision[:12]}@L{layer}`).
 /// A mismatch means the endpoint serves a different model/layer than this
@@ -64,15 +66,16 @@ fn cache_key(language: Language, sentence: &str) -> String {
 
 /// The char spans of the tokens we embed: every heteronym word (words with a
 /// lemma + POS — the tokens that can become sense-split atoms). Returns
-/// `(word_index, start, end)` in char offsets of the sentence text as
-/// reconstructed from the words' text + whitespace.
-fn heteronym_spans(info: &SentenceInfo) -> Vec<(u32, u32, u32)> {
+/// `(start, end)` in Unicode code-point offsets of the sentence text as
+/// reconstructed from the words' text + whitespace (the convention the HF
+/// tokenizer's offset mapping uses).
+fn heteronym_spans(info: &SentenceInfo) -> Vec<(u32, u32)> {
     let mut spans = Vec::new();
     let mut offset = 0u32;
-    for (i, literal) in info.words.iter().enumerate() {
+    for literal in &info.words {
         let len = literal.word.text.chars().count() as u32;
         if matches!(literal.word.word_type, WordType::Heteronym(_)) && len > 0 {
-            spans.push((i as u32, offset, offset + len));
+            spans.push((offset, offset + len));
         }
         offset += len + literal.whitespace.chars().count() as u32;
     }
@@ -91,22 +94,46 @@ fn sentence_text(info: &SentenceInfo) -> String {
     text
 }
 
-/// `dim` (u32 LE), `n` (u32 LE), `n` word indices (u32 LE each), then
-/// `n * dim` f16 LE values as returned by the endpoint.
-fn encode_record(dim: u32, word_indices: &[(u32, u32, u32)], f16_bytes: &[u8]) -> Vec<u8> {
-    let n = word_indices.len() as u32;
-    let mut out = Vec::with_capacity(8 + word_indices.len() * 4 + f16_bytes.len());
+/// `dim` (u32 LE), `n` (u32 LE), `n` spans (`start` u32 LE, `end` u32 LE),
+/// then `n * dim` f16 LE values as returned by the endpoint.
+fn encode_record(dim: u32, spans: &[(u32, u32)], f16_bytes: &[u8]) -> Vec<u8> {
+    let n = spans.len() as u32;
+    let mut out = Vec::with_capacity(8 + spans.len() * 8 + f16_bytes.len());
     out.extend_from_slice(&dim.to_le_bytes());
     out.extend_from_slice(&n.to_le_bytes());
-    for (i, _, _) in word_indices {
-        out.extend_from_slice(&i.to_le_bytes());
+    for (start, end) in spans {
+        out.extend_from_slice(&start.to_le_bytes());
+        out.extend_from_slice(&end.to_le_bytes());
     }
     out.extend_from_slice(f16_bytes);
     out
 }
 
+/// Whether a cached record contains a vector for every span in `needed`.
+/// False for malformed records, so they get re-embedded rather than trusted.
+fn record_covers(record: &[u8], needed: &[(u32, u32)]) -> bool {
+    let Some(header) = record.get(..8) else {
+        return false;
+    };
+    let dim = u32::from_le_bytes(header[..4].try_into().unwrap()) as usize;
+    let n = u32::from_le_bytes(header[4..].try_into().unwrap()) as usize;
+    if record.len() != 8 + n * 8 + n * dim * 2 {
+        return false;
+    }
+    let cached: std::collections::HashSet<(u32, u32)> = record[8..8 + n * 8]
+        .chunks_exact(8)
+        .map(|c| {
+            (
+                u32::from_le_bytes(c[..4].try_into().unwrap()),
+                u32::from_le_bytes(c[4..].try_into().unwrap()),
+            )
+        })
+        .collect();
+    needed.iter().all(|span| cached.contains(span))
+}
+
 /// One sentence prepared for embedding: (cache key, text, heteronym spans).
-type SentenceBatchItem = (String, String, Vec<(u32, u32, u32)>);
+type SentenceBatchItem = (String, String, Vec<(u32, u32)>);
 
 #[derive(Debug, Deserialize)]
 struct EmbedResponse {
@@ -133,10 +160,14 @@ pub async fn ensure_token_embeddings(
         candidates.push((cache_key(language, sentence), sentence_text(info), spans));
     }
 
+    // A hit must actually cover the spans the current tokenization needs — a
+    // record written under a different word-splitting stays valid for its
+    // overlapping spans but must be refreshed if any needed span is missing.
     let mut misses = Vec::new();
     for candidate in candidates {
-        if store.read(&candidate.0).await.is_none() {
-            misses.push(candidate);
+        match store.read(&candidate.0).await {
+            Some(record) if record_covers(&record, &candidate.2) => {}
+            _ => misses.push(candidate),
         }
     }
     if misses.is_empty() {
@@ -204,7 +235,7 @@ async fn embed_batch(
             .map(|(_, text, spans)| {
                 serde_json::json!({
                     "text": text,
-                    "spans": spans.iter().map(|(_, a, b)| [a, b]).collect::<Vec<_>>(),
+                    "spans": spans.iter().map(|(a, b)| [a, b]).collect::<Vec<_>>(),
                 })
             })
             .collect::<Vec<_>>(),
