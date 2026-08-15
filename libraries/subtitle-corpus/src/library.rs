@@ -194,6 +194,7 @@ pub struct ReferenceStream {
     pub index: u32,
     pub language: String,
     pub is_text: bool,
+    pub codec: String,
 }
 
 pub fn reference_subtitle_streams(path: &Path) -> Result<Vec<ReferenceStream>> {
@@ -203,10 +204,13 @@ pub fn reference_subtitle_streams(path: &Path) -> Result<Vec<ReferenceStream>> {
         .filter_map(|s| {
             let codec = s.codec_name.clone()?;
             let is_text = TEXT_CODECS.contains(&codec.as_str());
-            (is_text || codec == "hdmv_pgs_subtitle").then(|| ReferenceStream {
-                index: s.index,
-                language: lang_of(&s),
-                is_text,
+            (is_text || codec == "hdmv_pgs_subtitle" || codec == "dvd_subtitle").then(|| {
+                ReferenceStream {
+                    index: s.index,
+                    language: lang_of(&s),
+                    is_text,
+                    codec,
+                }
             })
         })
         .collect();
@@ -225,6 +229,18 @@ fn lang_of(s: &Stream) -> String {
         .trim()
         .to_lowercase()
 }
+
+/// Films whose disc *text* track is not timed to the disc's own audio.
+///
+/// A remux can carry an srt muxed in from another cut entirely: The Money
+/// Maker's French subrip drifts +74s→+240s across the film (a TV edit's
+/// timing), while the disc's native PGS tracks sit exactly on the speech —
+/// verified by Whisper on both ends. Classification has no way to see this
+/// coming, so films the `check` command convicts of it are listed here and
+/// fall through to their PGS track instead.
+const TEXT_TRACK_UNTRUSTED: &[&str] = &[
+    "tt35495035", // The Money Maker (2026) — subrip is the TV cut
+];
 
 /// Decide the best subtitle source for one movie, probing the file.
 pub fn classify(
@@ -279,18 +295,20 @@ pub fn classify(
             })
             .copied()
     };
-    if let Some(s) = text(false).or_else(|| text(true)) {
-        return Ok(Source::DiscText {
-            index: s.index,
-            codec: s.codec_name.clone().unwrap_or_default(),
-        });
-    }
-    // A sidecar next to the video is text and usually matched to this release,
-    // but it was fetched by Bazarr rather than authored on the disc, so it is
-    // preferred over a bitmap track only because OCR is expensive — it still
-    // has to have its sync verified.
-    if let Some(p) = sidecar(path, codes) {
-        return Ok(Source::Sidecar { path: p });
+    if !TEXT_TRACK_UNTRUSTED.contains(&imdb_id) {
+        if let Some(s) = text(false).or_else(|| text(true)) {
+            return Ok(Source::DiscText {
+                index: s.index,
+                codec: s.codec_name.clone().unwrap_or_default(),
+            });
+        }
+        // A sidecar next to the video is text and usually matched to this
+        // release, but it was fetched by Bazarr rather than authored on the
+        // disc, so it is preferred over a bitmap track only because OCR is
+        // expensive — it still has to have its sync verified.
+        if let Some(p) = sidecar(path, codes) {
+            return Ok(Source::Sidecar { path: p });
+        }
     }
 
     if let Some(s) = own.iter().find(|s| {
@@ -349,6 +367,13 @@ fn sidecar(video: &Path, codes: &[&str]) -> Option<PathBuf> {
             .filter(|t| !t.is_empty())
             .map(|t| t.to_lowercase())
             .collect();
+        // Our own exported sidecars (`<stem>.yap.<lang>.srt`) must never be
+        // rediscovered as a *source* — the corpus would be feeding on its own
+        // output, and after an eviction it would happily re-adopt the stale
+        // subtitle the eviction just threw away.
+        if tokens.iter().any(|t| t == "yap") {
+            continue;
+        }
         for token in tokens.iter().rev() {
             if MODIFIERS.contains(&token.as_str()) {
                 if token == "hi" && codes.contains(&"hin") {

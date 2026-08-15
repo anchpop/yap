@@ -18,3 +18,5 @@ movie-subtitles = { path = "../movie-subtitles" }
 reqwest = { workspace = true }
 language-utils = { path = "../../language-utils" }
 earshot = "1.1"
+matroska-demuxer = "0.8.1"
+flate2 = "1.1.9"

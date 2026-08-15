@@ -104,9 +104,29 @@ pub struct CueImage {
 /// Decode a `.sup` and render the cues that look like dialogue.
 pub fn cue_images(sup: &Path) -> Result<Vec<CueImage>> {
     let data = std::fs::read(sup).with_context(|| format!("Failed to read {}", sup.display()))?;
+    render_cues(pgs::cues(&data), pgs::Cue::looks_like_text)
+}
+
+/// Decode a `dvd_subtitle` (VobSub) track straight out of the MKV.
+///
+/// The PGS text filter demands ≥4 antialiased colours, but a DVD subpicture
+/// has only four palette entries *total* — usually text, outline, and a
+/// transparent background — so the only graphics filter that survives is
+/// "something is actually inked". The OCR model's `not_text` verdict catches
+/// the rare logo the cheap filter lets through.
+pub fn vobsub_cue_images(video: &Path, index: u32) -> Result<Vec<CueImage>> {
+    render_cues(crate::vobsub::cues(video, index)?, |cue| {
+        cue.height >= 8 && cue.ink_and_colours().0 > 0.001
+    })
+}
+
+fn render_cues(
+    cues: Vec<pgs::Cue>,
+    looks_like_text: impl Fn(&pgs::Cue) -> bool,
+) -> Result<Vec<CueImage>> {
     let mut out = Vec::new();
-    for cue in pgs::cues(&data) {
-        if !cue.looks_like_text() {
+    for cue in cues {
+        if !looks_like_text(&cue) {
             continue;
         }
         let img = cue.to_rgb([0, 0, 0]);

@@ -278,6 +278,32 @@ fn inspect_unmatched(args: &Args) -> Result<()> {
 
             match diverge(&stored, &candidate) {
                 Err(reason) => {
+                    // Review can approve what the heuristic cannot compare: a
+                    // candidate that is the same translation *continued past*
+                    // a truncated stored file (The Leopard's stored JSONL was
+                    // a 707-line "CD1" of a 1,900-cue film) diverges by line
+                    // count alone, and taking it wholesale is the fix.
+                    let key = (dir_name.clone(), imdb_id.clone());
+                    if args.prefer_candidate && approved.as_ref().is_some_and(|a| a.contains(&key))
+                    {
+                        match prefer_candidate(&movies_dir, &imdb_id, &srt) {
+                            Ok(n) => {
+                                adopted += 1;
+                                println!(
+                                    "  {dir_name:9} {imdb_id:12} ✓ took the candidate \
+                                     ({n} lines) despite: {reason}"
+                                );
+                                let pending = unmatched_path(&movies_dir, &imdb_id);
+                                if let Err(e) = std::fs::remove_file(&pending) {
+                                    println!("      ! left in the pending pile: {e}");
+                                }
+                            }
+                            Err(e) => {
+                                println!("  {dir_name:9} {imdb_id:12} ✗ not taken: {e}")
+                            }
+                        }
+                        continue;
+                    }
                     println!("  {dir_name:9} {imdb_id:12} ✗ {reason}");
                     incomparable += 1;
                 }

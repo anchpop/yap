@@ -449,6 +449,7 @@ const EXTRA_MOVIES: &[&str] = &[
 const EXCLUDED_MOVIES: &[&str] = &[
     "tt1655442", // The Artist (2011)
     "tt0309061", // War Photographer (2001)
+    "tt0017136", // Metropolis (1927): silent — intertitles, no speech to clip
 ];
 
 /// OMDB API response

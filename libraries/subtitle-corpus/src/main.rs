@@ -13,6 +13,7 @@ mod ocr;
 mod pgs;
 mod sync;
 mod vad;
+mod vobsub;
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -44,6 +45,22 @@ enum Command_ {
         out: PathBuf,
         #[arg(long, default_value_t = 8)]
         jobs: usize,
+    },
+    /// Bring the corpus up to date with whatever arrived since last time.
+    ///
+    /// Runs the whole pipeline in order — inventory, extract, ocr, text-sync,
+    /// sync, vad-sync, check — each step resumable and skipping finished work,
+    /// so a run where nothing changed costs nearly nothing. OCR is included:
+    /// its spend per new film is trivial and its batches are cached, so an
+    /// interrupted film simply completes on the next refresh.
+    Refresh {
+        /// JSON from `arr radarr raw GET /movie`.
+        #[arg(long)]
+        library: PathBuf,
+        #[arg(long, default_value = "./generate-data/data")]
+        data_root: PathBuf,
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
     },
     /// Pull out the subtitles that are already text on the disc.
     Extract {
@@ -185,10 +202,13 @@ enum Command_ {
         min_agreement: f32,
         /// Least it must beat every shift more than 2s away.
         ///
-        /// The decisive number. A talky film correlates passably at many
-        /// shifts, so a high score alone proves nothing; a correctly-timed
-        /// subtitle showed 0.17-0.29 here while one with no real answer
-        /// managed 0.03.
+        /// The decisive number, calibrated by `calibrate` over 323 films ×
+        /// 14 perturbations: at 0.08 every one of 1,615 rate-error locks
+        /// (PAL/NTSC/cinema) fell below the line while 97% of 2,798 correct
+        /// recoveries stayed above it. What no margin can catch is a film
+        /// whose dialogue rhythm false-locks VAD outright (God of Cookery
+        /// answers +12.2s at margin 0.25 regardless of perturbation) — only
+        /// agreement with an independent method rules those out.
         #[arg(long, default_value_t = 0.08)]
         min_margin: f32,
     },
@@ -257,9 +277,29 @@ enum Command_ {
         #[arg(long, default_value_t = 2.0)]
         min_density: f64,
     },
-    /// Decode a PGS `.sup` and report what is in it.
+    /// Publish finished subtitles next to their films as media-server sidecars.
+    ///
+    /// Writes `<video>.yap.<lang>.srt` beside each film whose corpus subtitle
+    /// is verified against the file currently on disk — jellyfin shows it as
+    /// a subtitle track titled "yap". Only files matching `*.yap.*.srt` are
+    /// ever created or deleted, so shipped and Bazarr sidecars are untouched;
+    /// stale or orphaned yap-sidecars are removed. `classify` ignores the
+    /// `.yap.` namespace, so the corpus never rediscovers its own output as a
+    /// source.
+    ExportSidecars {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+    },
+    /// Decode a bitmap subtitle track and report what is in it.
+    ///
+    /// Takes a PGS `.sup`, or with `--index` a VobSub track read straight out
+    /// of an MKV. `--dump` writes sample cue PNGs for eyeballing a decode
+    /// before trusting it with an OCR spend.
     PgsStats {
-        sup: PathBuf,
+        input: PathBuf,
+        /// Read this stream of an MKV as VobSub instead of a `.sup`.
+        #[arg(long)]
+        index: Option<u32>,
         #[arg(long, default_value_t = 0)]
         dump: usize,
         #[arg(long, default_value = ".")]
@@ -279,10 +319,24 @@ fn plan_path(out: &std::path::Path) -> PathBuf {
 /// other release's clock (*Il Mare* 3.4s out at margin 0.30) — so a sidecar
 /// whose finalized output has been removed re-enters through the same sync
 /// gates as any download.
+/// Films whose only available subtitle was authored against a different cut,
+/// so no single offset+rate can place it: Whisper finds a strong local fit
+/// that a film-wide re-check then contradicts (a fresh Still Life fit of
+/// +74.71s re-measured at +14.30s with 45/101 anchors). Every sync pass
+/// would re-place and re-fail these forever; they wait for a replacement
+/// release instead.
+const DIFFERENT_CUT: &[&str] = &[
+    "tt0859765", // Still Life (2006)
+    "tt0209189", // Not One Less (1999)
+];
+
 fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
     // A film with no original-language audio can never yield a speech clip,
     // so aligning a subtitle for it is work spent making a number wrong.
     if matches!(movie.source, Source::NoOriginalAudio) {
+        return None;
+    }
+    if DIFFERENT_CUT.contains(&movie.imdb_id.as_str()) {
         return None;
     }
     if let Some(course) = library::course_dir(&movie.original_language) {
@@ -297,6 +351,234 @@ fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf
     match &movie.source {
         Source::Sidecar { path } if path.exists() => Some(path.clone()),
         _ => None,
+    }
+}
+
+/// Which inputs a finished subtitle was derived from, recorded next to it as
+/// `film.json`. For the video: filename and duration, not byte size — a
+/// re-encode keeps its timing but not its bytes. For the subtitle source (a
+/// downloaded raw SRT or a sidecar; absent for disc-derived outputs):
+/// filename and byte size, since subtitle files are replaced, not re-encoded.
+/// When `inventory` sees either input no longer matching the stamp, the
+/// derived artifacts are evicted and the film re-enters the queues — all of
+/// them if the video changed, just the subtitle if only its source did (the
+/// speech profile and reference timings depend on the video alone).
+#[derive(serde::Serialize, serde::Deserialize)]
+struct FilmStamp {
+    filename: String,
+    duration_ms: i64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    subtitle: Option<SubtitleStamp>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, PartialEq, Clone)]
+struct SubtitleStamp {
+    filename: String,
+    bytes: u64,
+}
+
+fn subtitle_stamp(path: &std::path::Path) -> Option<SubtitleStamp> {
+    Some(SubtitleStamp {
+        filename: path.file_name()?.to_string_lossy().into_owned(),
+        bytes: std::fs::metadata(path).ok()?.len(),
+    })
+}
+
+/// What a writer knows about the subtitle source it derived from.
+enum StampSource<'a> {
+    /// The subtitle came off the disc itself; there is no separate source.
+    Disc,
+    /// Derived from this subtitle file.
+    File(&'a std::path::Path),
+    /// Says nothing about the subtitle — a speech profile or reference cache
+    /// must not erase what the last subtitle writer recorded.
+    Keep,
+}
+
+fn read_stamp(dir: &std::path::Path) -> Option<FilmStamp> {
+    serde_json::from_slice(&std::fs::read(dir.join("film.json")).ok()?).ok()
+}
+
+/// The subtitle file the film's output *should* currently derive from, or
+/// None for disc-sourced films (their source is the video itself).
+fn expected_subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
+    match &movie.source {
+        Source::DiscText { .. } | Source::DiscBitmap { .. } => None,
+        _ => subtitle_source(movie, data_root),
+    }
+}
+
+impl FilmStamp {
+    /// Same film for subtitle purposes: identical name, and a duration within
+    /// 2s (container remuxes of the same cut wobble by frames, a different
+    /// cut differs by minutes).
+    fn matches(&self, other: &FilmStamp) -> bool {
+        self.filename == other.filename && (self.duration_ms - other.duration_ms).abs() <= 2_000
+    }
+}
+
+fn film_stamp(movie: &Movie) -> Result<FilmStamp> {
+    Ok(FilmStamp {
+        filename: movie
+            .path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default(),
+        duration_ms: sync::duration_ms(&movie.path)?,
+        subtitle: None,
+    })
+}
+
+/// The film's speech profile, from the per-film cache when present.
+///
+/// Decoding a feature's audio takes minutes; the profile is ~260KB. Cached
+/// next to the subtitle and stamped with the film's identity so `inventory`
+/// evicts it when the file changes underneath — which matters even for films
+/// with no finished subtitle yet, where only the profile exists.
+fn cached_speech_profile(movie: &Movie, dir: &std::path::Path) -> Result<Vec<f32>> {
+    let path = dir.join("speech-profile.f32");
+    if let Some(p) = vad::read_profile(&path) {
+        return Ok(p);
+    }
+    let codes = library::stream_codes(&movie.original_language);
+    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    let p = vad::speech_profile(&movie.path, stream)?;
+    std::fs::create_dir_all(dir)?;
+    vad::write_profile(&path, &p)?;
+    write_stamp(dir, movie, StampSource::Keep);
+    Ok(p)
+}
+
+/// Cue timings for one of the disc's reference tracks, cached per film.
+///
+/// Reading a bitmap reference means demuxing the whole film — minutes — for a
+/// product that is a few KB of timestamps. Cached like the speech profile,
+/// stamped with the film's identity, evicted with it when the film changes.
+/// Only timings survive the cache; text-sync never reads reference *text*.
+fn cached_reference_cues(
+    movie: &Movie,
+    out: &std::path::Path,
+    stream: &library::ReferenceStream,
+    scratch: &std::path::Path,
+) -> Result<Vec<sync::Cue>> {
+    let dir = out.join(&movie.imdb_id);
+    let path = dir.join("references.json");
+    let mut cache: std::collections::HashMap<u32, Vec<(i64, i64)>> = std::fs::read(&path)
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok())
+        .unwrap_or_default();
+    if let Some(spans) = cache.get(&stream.index) {
+        return Ok(spans
+            .iter()
+            .map(|&(start_ms, end_ms)| sync::Cue {
+                start_ms,
+                end_ms,
+                text: String::new(),
+            })
+            .collect());
+    }
+    let cues = reference_cues(&movie.path, stream, scratch)?;
+    cache.insert(
+        stream.index,
+        cues.iter().map(|c| (c.start_ms, c.end_ms)).collect(),
+    );
+    std::fs::create_dir_all(&dir)?;
+    std::fs::write(&path, serde_json::to_vec(&cache)?)?;
+    write_stamp(&dir, movie, StampSource::Keep);
+    Ok(cues)
+}
+
+/// Best-effort: a missing stamp is backfilled by the next `inventory`, never
+/// a reason to fail a sync that already succeeded.
+fn write_stamp(dir: &std::path::Path, movie: &Movie, source: StampSource) {
+    let Ok(mut stamp) = film_stamp(movie) else {
+        return;
+    };
+    stamp.subtitle = match source {
+        StampSource::Disc => None,
+        StampSource::File(p) => subtitle_stamp(p),
+        StampSource::Keep => read_stamp(dir).and_then(|s| s.subtitle),
+    };
+    if let Ok(json) = serde_json::to_vec_pretty(&stamp) {
+        let _ = std::fs::write(dir.join("film.json"), json);
+    }
+}
+
+enum Freshness {
+    /// No finished subtitle, or the stamp still matches the inputs on disk.
+    Fine,
+    /// Output predates stamping; stamped with the inputs currently on disk.
+    Backfilled,
+    /// An input changed underneath the output — stale artifacts evicted.
+    Evicted { why: String },
+}
+
+fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::Path) -> Freshness {
+    let dir = out.join(&movie.imdb_id);
+    let has_subtitle = dir.join("subtitle.srt").exists();
+    // A stamp with no subtitle is a cached speech profile — still worth
+    // checking, since a stale profile would poison the next vad-sync.
+    if !has_subtitle && !dir.join("film.json").exists() {
+        return Freshness::Fine;
+    }
+    // No film on disk is not evidence of change — the array may be offline.
+    // Evict only when a present file positively fails to match.
+    let Ok(current) = film_stamp(movie) else {
+        return Freshness::Fine;
+    };
+    let Some(old) = read_stamp(&dir) else {
+        // Legacy output predating stamps: it was verified against what is on
+        // disk today, so record today's inputs as its provenance.
+        match expected_subtitle_source(movie, data_root) {
+            Some(p) => write_stamp(&dir, movie, StampSource::File(&p)),
+            None => write_stamp(&dir, movie, StampSource::Disc),
+        }
+        return Freshness::Backfilled;
+    };
+    if !old.matches(&current) {
+        // The video changed: everything derived from it is stale.
+        let _ = std::fs::remove_file(dir.join("subtitle.srt"));
+        let _ = std::fs::remove_file(dir.join("speech-profile.f32"));
+        let _ = std::fs::remove_file(dir.join("references.json"));
+        let _ = std::fs::remove_file(dir.join("film.json"));
+        return Freshness::Evicted {
+            why: format!("film changed ({} → {})", old.filename, current.filename),
+        };
+    }
+    // Video unchanged; is the subtitle still derived from the right source?
+    let expected_path = expected_subtitle_source(movie, data_root);
+    let expected = expected_path.as_deref().and_then(subtitle_stamp);
+    match (&old.subtitle, &expected) {
+        (a, b) if a == b => Freshness::Fine,
+        (None, None) => Freshness::Fine,
+        (None, Some(_)) => {
+            // Pre-subtitle-stamp output: record its source, don't evict.
+            if !has_subtitle {
+                return Freshness::Fine;
+            }
+            if let Some(p) = &expected_path {
+                write_stamp(&dir, movie, StampSource::File(p));
+            }
+            Freshness::Backfilled
+        }
+        (Some(was), now) => {
+            // Only the subtitle source moved; the audio-derived caches
+            // (speech profile, reference timings) are still good.
+            let _ = std::fs::remove_file(dir.join("subtitle.srt"));
+            write_stamp(&dir, movie, StampSource::Disc);
+            if !has_subtitle {
+                return Freshness::Fine;
+            }
+            Freshness::Evicted {
+                why: match now {
+                    Some(n) => format!(
+                        "subtitle source changed ({} → {})",
+                        was.filename, n.filename
+                    ),
+                    None => format!("subtitle source gone ({})", was.filename),
+                },
+            }
+        }
     }
 }
 
@@ -353,7 +635,7 @@ fn inventory(library: PathBuf, data_root: PathBuf, out: PathBuf, jobs: usize) ->
     let movies = library::load_library(&library)?;
     println!("{} movies on disk", movies.len());
 
-    let classified = parallel(movies, jobs, "probing", |entry| {
+    let probed = parallel(movies, jobs, "probing", |entry| {
         let source = library::classify(
             &entry.imdb_id,
             &entry.path,
@@ -361,15 +643,33 @@ fn inventory(library: PathBuf, data_root: PathBuf, out: PathBuf, jobs: usize) ->
             &data_root,
         )
         .unwrap_or(Source::Missing);
-        Movie {
+        let movie = Movie {
             imdb_id: entry.imdb_id.clone(),
             title: entry.title.clone(),
             year: entry.year,
             path: entry.path.clone(),
             original_language: entry.original_language.clone(),
             source,
-        }
+        };
+        let freshness = freshen_output(&movie, &out, &data_root);
+        (movie, freshness)
     });
+
+    let mut backfilled = 0usize;
+    for (movie, freshness) in &probed {
+        match freshness {
+            Freshness::Fine => {}
+            Freshness::Backfilled => backfilled += 1,
+            Freshness::Evicted { why } => println!(
+                "  ✗ {} — {why}, evicted for re-derivation",
+                truncate(&movie.title, 40),
+            ),
+        }
+    }
+    if backfilled > 0 {
+        println!("  stamped {backfilled} existing subtitles with their film's identity");
+    }
+    let classified: Vec<Movie> = probed.into_iter().map(|(m, _)| m).collect();
 
     std::fs::create_dir_all(&out)?;
     std::fs::write(plan_path(&out), serde_json::to_vec_pretty(&classified)?)?;
@@ -390,6 +690,142 @@ fn inventory(library: PathBuf, data_root: PathBuf, out: PathBuf, jobs: usize) ->
     );
     println!("wrote {}", plan_path(&out).display());
     Ok(())
+}
+
+/// Is this film's finished subtitle verified against the file on disk?
+///
+/// Read-only twin of [`freshen_output`]: an unstamped output is not fresh
+/// (the next `inventory` will backfill it), and a changed film is not fresh
+/// (the next `inventory` will evict it).
+fn output_is_fresh(movie: &Movie, dir: &std::path::Path) -> bool {
+    if !dir.join("subtitle.srt").exists() {
+        return false;
+    }
+    let Ok(current) = film_stamp(movie) else {
+        return false;
+    };
+    std::fs::read(dir.join("film.json"))
+        .ok()
+        .and_then(|b| serde_json::from_slice::<FilmStamp>(&b).ok())
+        .is_some_and(|stored| stored.matches(&current))
+}
+
+/// Publish verified subtitles as `<video>.yap.<lang>.srt` sidecars, and
+/// retract the ones the corpus no longer stands behind.
+fn export_sidecars(out: PathBuf) -> Result<()> {
+    let plan = read_plan(&out)?;
+    let (mut written, mut kept, mut removed) = (0usize, 0usize, 0usize);
+    for movie in &plan {
+        let Some(video_dir) = movie.path.parent() else {
+            continue;
+        };
+        let Some(stem) = movie.path.file_stem().and_then(|s| s.to_str()) else {
+            continue;
+        };
+        let lang = library::stream_codes(&movie.original_language)
+            .first()
+            .copied()
+            .unwrap_or("und");
+        let expected = format!("{stem}.yap.{lang}.srt");
+        let fresh = output_is_fresh(movie, &out.join(&movie.imdb_id));
+
+        // Everything in our namespace that is not the one file we currently
+        // stand behind — old video names, evicted films — gets retracted.
+        for entry in std::fs::read_dir(video_dir).into_iter().flatten().flatten() {
+            let name = entry.file_name();
+            let Some(name) = name.to_str() else { continue };
+            if !name.contains(".yap.") || !name.ends_with(".srt") {
+                continue;
+            }
+            if !(fresh && name == expected) {
+                let _ = std::fs::remove_file(entry.path());
+                removed += 1;
+            }
+        }
+
+        if fresh {
+            let srt = std::fs::read(out.join(&movie.imdb_id).join("subtitle.srt"))?;
+            let dest = video_dir.join(&expected);
+            if std::fs::read(&dest).ok().as_deref() == Some(srt.as_slice()) {
+                kept += 1;
+            } else {
+                std::fs::write(&dest, srt)?;
+                written += 1;
+            }
+        }
+    }
+    println!("{written} sidecars written, {kept} already current, {removed} retracted");
+    Ok(())
+}
+
+/// The whole pipeline, in dependency order, with each step's own defaults.
+///
+/// Inventory failing aborts — every later step would read a stale plan and
+/// quietly do the wrong work. Any other step failing is reported and skipped
+/// past: a Whisper outage is no reason not to run text-sync, and the next
+/// refresh retries whatever was left undone.
+fn refresh(library: PathBuf, data_root: PathBuf, out: PathBuf) -> Result<()> {
+    println!("━━━ inventory ━━━");
+    inventory(library, data_root.clone(), out.clone(), 8)?;
+
+    type Step<'a> = (&'a str, Box<dyn FnOnce() -> Result<()>>);
+    let steps: Vec<Step> = vec![
+        ("extract", {
+            let out = out.clone();
+            Box::new(move || extract(out, 6, 0))
+        }),
+        ("ocr", {
+            let out = out.clone();
+            Box::new(move || ocr_all(out, "gpt-5.6-luna".into(), 8, 0, 0))
+        }),
+        ("text-sync", {
+            let (out, data_root) = (out.clone(), data_root.clone());
+            Box::new(move || text_sync(out, data_root, 4, 0, 300, 0.25, 0.10, false))
+        }),
+        ("sync", {
+            let (out, data_root) = (out.clone(), data_root.clone());
+            Box::new(move || {
+                sync_all(
+                    out,
+                    data_root,
+                    4,
+                    0,
+                    SyncOptions {
+                        windows: 5,
+                        window_secs: 60,
+                        max_residual_ms: 1500.0,
+                        min_agreement: 0.35,
+                    },
+                )
+            })
+        }),
+        ("vad-sync", {
+            let (out, data_root) = (out.clone(), data_root.clone());
+            Box::new(move || vad_sync(out, data_root, 3, 0, 120, 0.15, 0.08))
+        }),
+        ("check", {
+            let out = out.clone();
+            Box::new(move || check_all(out, None, 5, 60, 4, 0))
+        }),
+        ("sidecars", {
+            let out = out.clone();
+            Box::new(move || export_sidecars(out))
+        }),
+    ];
+
+    let mut failed: Vec<&str> = Vec::new();
+    for (name, run) in steps {
+        println!("\n━━━ {name} ━━━");
+        if let Err(e) = run() {
+            println!("  ✗ {name} failed: {e:#}");
+            failed.push(name);
+        }
+    }
+    if failed.is_empty() {
+        Ok(())
+    } else {
+        bail!("steps failed: {}", failed.join(", "))
+    }
 }
 
 /// Convert one embedded text track to SRT.
@@ -433,6 +869,10 @@ fn extract_one(movie: &Movie, out: &std::path::Path) -> Result<usize> {
         bail!("extracted track had no cues");
     }
     std::fs::rename(&tmp, &dest)?;
+    match &movie.source {
+        Source::Sidecar { path } => write_stamp(&dir, movie, StampSource::File(path)),
+        _ => write_stamp(&dir, movie, StampSource::Disc),
+    }
     Ok(cues)
 }
 
@@ -661,19 +1101,25 @@ async fn ocr_one(
     out: &std::path::Path,
     allow_unreadable: usize,
 ) -> Result<(usize, usize)> {
-    let Source::DiscBitmap { index, .. } = &movie.source else {
+    let Source::DiscBitmap { index, codec } = &movie.source else {
         bail!("not a bitmap source");
     };
     let sup = ocr::sup_path(out, &movie.imdb_id);
 
-    // ffmpeg blocks its thread for minutes reading a whole film; keep it off
-    // the async runtime so other films' batches keep progressing.
-    let (video, index, sup_for_task) = (movie.path.clone(), *index, sup.clone());
-    tokio::task::spawn_blocking(move || ocr::extract_sup(&video, index, &sup_for_task))
-        .await?
-        .context("extract")?;
-
-    let images = ocr::cue_images(&sup).context("decode")?;
+    // Reading a whole film blocks its thread for minutes; keep it off the
+    // async runtime so other films' batches keep progressing.
+    let images = if codec == "dvd_subtitle" {
+        let (video, index) = (movie.path.clone(), *index);
+        tokio::task::spawn_blocking(move || ocr::vobsub_cue_images(&video, index))
+            .await?
+            .context("decode")?
+    } else {
+        let (video, index, sup_for_task) = (movie.path.clone(), *index, sup.clone());
+        tokio::task::spawn_blocking(move || ocr::extract_sup(&video, index, &sup_for_task))
+            .await?
+            .context("extract")?;
+        ocr::cue_images(&sup).context("decode")?
+    };
     if images.is_empty() {
         bail!("no text cues in the bitmap track");
     }
@@ -720,6 +1166,7 @@ async fn ocr_one(
         out.join(&movie.imdb_id).join("subtitle.srt"),
         ocr::to_srt(&lines),
     )?;
+    write_stamp(&out.join(&movie.imdb_id), movie, StampSource::Disc);
     // The .sup is large and fully derived from the film; the SRT replaces it.
     let _ = std::fs::remove_file(&sup);
     Ok((lines.len(), images.len()))
@@ -905,6 +1352,7 @@ async fn sync_one(
     let dir = out.join(&movie.imdb_id);
     std::fs::create_dir_all(&dir)?;
     std::fs::write(dir.join("subtitle.srt"), sync::write_cues(&shifted))?;
+    write_stamp(&dir, movie, StampSource::File(raw_srt));
     Ok(alignment)
 }
 
@@ -970,10 +1418,13 @@ async fn check_all(
                 let (verdict, detail, row) = match &outcome {
                     Ok(a) => {
                         // The subtitle being checked is already aligned, so a
-                        // truthful fit is the identity. Half a second of
-                        // residual offset is a clip landing on the wrong word;
-                        // a rate away from 1 is drift the whole file shares.
-                        let offset_ok = a.offset_ms.abs() <= 500.0;
+                        // truthful fit is the identity — up to Whisper's own
+                        // clock. Its word timestamps skew ~0.6s on tracks VAD
+                        // places within ±0.2s, so half a second is Whisper
+                        // noise, not a finding; 1.5s is a clip on the wrong
+                        // dialogue. A rate away from 1 is drift the whole
+                        // file shares.
+                        let offset_ok = a.offset_ms.abs() <= 1500.0;
                         let rate_ok = (a.rate - 1.0).abs() < 5e-4;
                         let verdict = if offset_ok && rate_ok {
                             "confirmed"
@@ -1145,9 +1596,7 @@ fn agreement(
         if cues.is_empty() {
             return None;
         }
-        let codes = library::stream_codes(&movie.original_language);
-        let stream = sync::original_audio_stream(&movie.path, codes).ok()?;
-        let speech = vad::speech_profile(&movie.path, stream).ok()?;
+        let speech = cached_speech_profile(movie, &out.join(&movie.imdb_id)).ok()?;
         let subtitle = vad::subtitle_profile(&cues, speech.len());
         Some((
             movie.title.clone(),
@@ -1217,8 +1666,6 @@ fn vad_sync(
             if cues.is_empty() {
                 bail!("no cues");
             }
-            let codes = library::stream_codes(&movie.original_language);
-            let stream = sync::original_audio_stream(&movie.path, codes)?;
             let duration = sync::duration_ms(&movie.path)?;
             // A subtitle that covers only part of the film cannot be placed reliably:
             // there is no way to tell a correctly-timed first-half subtitle from the
@@ -1236,7 +1683,7 @@ fn vad_sync(
                 );
             }
 
-            let speech = vad::speech_profile(&movie.path, stream)?;
+            let speech = cached_speech_profile(movie, &out.join(&movie.imdb_id))?;
             let subtitle = vad::subtitle_profile(&cues, speech.len());
             let found = vad::find_offset(&speech, &subtitle, range_secs * 1000);
             if found.agreement < min_agreement {
@@ -1266,6 +1713,7 @@ fn vad_sync(
             let dir = out.join(&movie.imdb_id);
             std::fs::create_dir_all(&dir)?;
             std::fs::write(dir.join("subtitle.srt"), sync::write_cues(&shifted))?;
+            write_stamp(&dir, movie, StampSource::File(raw));
             Ok(found)
         })();
         match &outcome {
@@ -1311,12 +1759,17 @@ fn reference_cues(
         let _ = std::fs::remove_file(&tmp);
         Ok(cues)
     } else {
-        let tmp = scratch.with_extension("sup");
-        let _ = std::fs::remove_file(&tmp);
-        ocr::extract_sup(video, stream.index, &tmp)?;
-        let data = std::fs::read(&tmp)?;
-        let _ = std::fs::remove_file(&tmp);
-        Ok(pgs::cues(&data)
+        let bitmaps = if stream.codec == "dvd_subtitle" {
+            vobsub::cues(video, stream.index)?
+        } else {
+            let tmp = scratch.with_extension("sup");
+            let _ = std::fs::remove_file(&tmp);
+            ocr::extract_sup(video, stream.index, &tmp)?;
+            let data = std::fs::read(&tmp)?;
+            let _ = std::fs::remove_file(&tmp);
+            pgs::cues(&data)
+        };
+        Ok(bitmaps
             .into_iter()
             .map(|c| sync::Cue {
                 start_ms: c.start_ms as i64,
@@ -1423,7 +1876,7 @@ fn text_sync(
                     std::process::id(),
                     movie.imdb_id
                 ));
-                let Ok(ref_cues) = reference_cues(&movie.path, stream, &scratch) else {
+                let Ok(ref_cues) = cached_reference_cues(movie, out, stream, &scratch) else {
                     continue;
                 };
                 let ref_span = ref_cues.iter().map(|c| c.end_ms).max().unwrap_or(0)
@@ -1551,6 +2004,7 @@ fn text_sync(
                 let dir = out.join(&movie.imdb_id);
                 std::fs::create_dir_all(&dir)?;
                 std::fs::write(dir.join("subtitle.srt"), sync::write_cues(&shifted))?;
+                write_stamp(&dir, movie, StampSource::File(raw));
             }
             Ok((label, rate, best, votes.len()))
         })();
@@ -1654,17 +2108,7 @@ fn calibrate(out: PathBuf, jobs: usize, limit: usize, range_secs: i64) -> Result
             if cues.is_empty() {
                 bail!("no cues");
             }
-            let profile_path = dir.join("speech-profile.f32");
-            let speech = match vad::read_profile(&profile_path) {
-                Some(p) => p,
-                None => {
-                    let codes = library::stream_codes(&movie.original_language);
-                    let stream = sync::original_audio_stream(&movie.path, codes)?;
-                    let p = vad::speech_profile(&movie.path, stream)?;
-                    vad::write_profile(&profile_path, &p)?;
-                    p
-                }
-            };
+            let speech = cached_speech_profile(movie, &dir)?;
             let minutes = speech.len() as f64 * vad::BUCKET_MS as f64 / 60_000.0;
 
             let mut rows = 0;
@@ -1793,10 +2237,22 @@ fn parse_stamp_min(stamp: &str) -> Option<f64> {
     Some(h * 60.0 + m + s / 60.0)
 }
 
-fn pgs_stats(sup: PathBuf, dump: usize, out_dir: PathBuf) -> Result<()> {
-    let data = std::fs::read(&sup).with_context(|| format!("Failed to read {}", sup.display()))?;
-    let cues = pgs::cues(&data);
-    let text: Vec<_> = cues.iter().filter(|c| c.looks_like_text()).collect();
+fn pgs_stats(input: PathBuf, index: Option<u32>, dump: usize, out_dir: PathBuf) -> Result<()> {
+    let cues = match index {
+        Some(i) => vobsub::cues(&input, i)?,
+        None => {
+            let data = std::fs::read(&input)
+                .with_context(|| format!("Failed to read {}", input.display()))?;
+            pgs::cues(&data)
+        }
+    };
+    // The PGS text filter wants ≥4 antialiased colours; a DVD subpicture only
+    // has 4 palette entries total, so its filter is just "something is inked".
+    let filter = |c: &pgs::Cue| match index {
+        Some(_) => c.height >= 8 && c.ink_and_colours().0 > 0.001,
+        None => c.looks_like_text(),
+    };
+    let text: Vec<_> = cues.iter().filter(|c| filter(c)).collect();
 
     let mut durations: Vec<u32> = cues.iter().map(|c| c.duration_ms()).collect();
     durations.sort_unstable();
@@ -1832,6 +2288,11 @@ fn main() -> Result<()> {
             out,
             jobs,
         } => inventory(library, data_root, out, jobs),
+        Command_::Refresh {
+            library,
+            data_root,
+            out,
+        } => refresh(library, data_root, out),
         Command_::Extract { out, jobs, limit } => extract(out, jobs, limit),
         Command_::OcrSample {
             out,
@@ -1925,6 +2386,12 @@ fn main() -> Result<()> {
             range_secs,
         } => calibrate(out, jobs, limit, range_secs),
         Command_::Verify { out, min_density } => verify(out, min_density),
-        Command_::PgsStats { sup, dump, out_dir } => pgs_stats(sup, dump, out_dir),
+        Command_::ExportSidecars { out } => export_sidecars(out),
+        Command_::PgsStats {
+            input,
+            index,
+            dump,
+            out_dir,
+        } => pgs_stats(input, index, dump, out_dir),
     }
 }
