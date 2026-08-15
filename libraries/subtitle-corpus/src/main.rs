@@ -344,6 +344,7 @@ const DIFFERENT_CUT: &[&str] = &[
 const SIDECAR_UNTRUSTED: &[&str] = &[
     "tt0112913", // Fallen Angels (1995)
     "tt3398268", // When Marnie Was There (2014)
+    "tt1568921", // The Secret World of Arrietty (2010) — +28.5s over 257/262 anchors
 ];
 
 fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
@@ -518,6 +519,59 @@ fn write_stamp(dir: &std::path::Path, movie: &Movie, source: StampSource) {
     if let Ok(json) = serde_json::to_vec_pretty(&stamp) {
         let _ = std::fs::write(dir.join("film.json"), json);
     }
+    // A finalized output supersedes any recorded failure.
+    if !matches!(source, StampSource::Keep) {
+        let _ = std::fs::remove_file(dir.join("sync-failed.json"));
+    }
+}
+
+/// The inputs a failed alignment was attempted against: the video's identity
+/// plus the subtitle file it tried to place.
+fn sync_failure_stamp(movie: &Movie, raw: &std::path::Path) -> Option<FilmStamp> {
+    let mut stamp = film_stamp(movie).ok()?;
+    stamp.subtitle = subtitle_stamp(raw);
+    Some(stamp)
+}
+
+/// Alignment is deterministic in its inputs: until the video or the subtitle
+/// file changes, re-running the gauntlet reproduces the same failure. Every
+/// refresh used to grind all ~18 hopeless films through text-sync, sync and
+/// vad-sync anyway — half an hour of audio decoding and Whisper windows to
+/// learn nothing. `vad-sync` (the last gate) records the failed inputs as
+/// `sync-failed.json`; a matching stamp skips the film in every sync queue. A
+/// new download or release stops matching and retries automatically; deleting
+/// the file forces a retry by hand.
+fn sync_already_failed(movie: &Movie, dir: &std::path::Path, raw: &std::path::Path) -> bool {
+    let Ok(bytes) = std::fs::read(dir.join("sync-failed.json")) else {
+        return false;
+    };
+    let Ok(recorded) = serde_json::from_slice::<FilmStamp>(&bytes) else {
+        return false;
+    };
+    let Some(current) = sync_failure_stamp(movie, raw) else {
+        return false;
+    };
+    recorded.matches(&current) && recorded.subtitle == current.subtitle
+}
+
+fn record_sync_failure(movie: &Movie, dir: &std::path::Path, raw: &std::path::Path) {
+    let Some(stamp) = sync_failure_stamp(movie, raw) else {
+        return;
+    };
+    if let Ok(json) = serde_json::to_vec_pretty(&stamp) {
+        let _ = std::fs::create_dir_all(dir);
+        let _ = std::fs::write(dir.join("sync-failed.json"), json);
+    }
+}
+
+/// Queue-builder suffix explaining how many films were skipped as already
+/// failed on identical inputs.
+fn parked_note(parked: usize) -> String {
+    if parked == 0 {
+        String::new()
+    } else {
+        format!(" ({parked} skipped: same inputs already failed; delete sync-failed.json to retry)")
+    }
 }
 
 enum Freshness {
@@ -557,6 +611,7 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
         let _ = std::fs::remove_file(dir.join("speech-profile.f32"));
         let _ = std::fs::remove_file(dir.join("references.json"));
         let _ = std::fs::remove_file(dir.join("film.json"));
+        let _ = std::fs::remove_file(dir.join("sync-failed.json"));
         return Freshness::Evicted {
             why: format!("film changed ({} → {})", old.filename, current.filename),
         };
@@ -1215,13 +1270,19 @@ async fn sync_all(
 
     let plan = read_plan(&out)?;
     let mut queue: Vec<(Movie, PathBuf)> = Vec::new();
+    let mut parked = 0usize;
     for movie in plan {
-        if out.join(&movie.imdb_id).join("subtitle.srt").exists() {
+        let dir = out.join(&movie.imdb_id);
+        if dir.join("subtitle.srt").exists() {
             continue;
         }
         if let Some(raw) = subtitle_source(&movie, &data_root) {
             if movie.path.exists() {
-                queue.push((movie, raw));
+                if sync_already_failed(&movie, &dir, &raw) {
+                    parked += 1;
+                } else {
+                    queue.push((movie, raw));
+                }
             }
         }
     }
@@ -1229,7 +1290,10 @@ async fn sync_all(
         queue.truncate(limit);
     }
     let total = queue.len();
-    println!("{total} films have a subtitle to align, {films_in_flight} at a time");
+    println!(
+        "{total} films have a subtitle to align, {films_in_flight} at a time{}",
+        parked_note(parked)
+    );
 
     let http = Arc::new(reqwest::Client::new());
     let out = Arc::new(out);
@@ -1664,20 +1728,30 @@ fn vad_sync(
 ) -> Result<()> {
     let plan = read_plan(&out)?;
     let mut queue: Vec<(Movie, PathBuf)> = Vec::new();
+    let mut parked = 0usize;
     for movie in plan {
-        if out.join(&movie.imdb_id).join("subtitle.srt").exists() {
+        let dir = out.join(&movie.imdb_id);
+        if dir.join("subtitle.srt").exists() {
             continue;
         }
         if let Some(raw) = subtitle_source(&movie, &data_root) {
             if movie.path.exists() {
-                queue.push((movie, raw));
+                if sync_already_failed(&movie, &dir, &raw) {
+                    parked += 1;
+                } else {
+                    queue.push((movie, raw));
+                }
             }
         }
     }
     if limit > 0 {
         queue.truncate(limit);
     }
-    println!("{} films left for speech-activity alignment", queue.len());
+    println!(
+        "{} films left for speech-activity alignment{}",
+        queue.len(),
+        parked_note(parked)
+    );
 
     let out = &out;
     let results = parallel(queue, jobs, "aligning", move |(movie, raw)| {
@@ -1744,7 +1818,13 @@ fn vad_sync(
                 v.agreement,
                 v.margin()
             ),
-            Err(e) => println!("  {} ✗ {e}", truncate(&movie.title, 34)),
+            Err(e) => {
+                println!("  {} ✗ {e}", truncate(&movie.title, 34));
+                // vad-sync is the last gate: in refresh order the film has
+                // just failed text-sync and sync too, so these inputs are a
+                // proven dead end until one of them changes.
+                record_sync_failure(movie, &out.join(&movie.imdb_id), raw);
+            }
         }
         outcome.is_ok()
     });
@@ -1813,13 +1893,19 @@ fn text_sync(
 ) -> Result<()> {
     let plan = read_plan(&out)?;
     let mut queue: Vec<(Movie, PathBuf)> = Vec::new();
+    let mut parked = 0usize;
     for movie in plan {
-        if out.join(&movie.imdb_id).join("subtitle.srt").exists() {
+        let dir = out.join(&movie.imdb_id);
+        if dir.join("subtitle.srt").exists() {
             continue;
         }
         if let Some(raw) = subtitle_source(&movie, &data_root) {
             if movie.path.exists() {
-                queue.push((movie, raw));
+                if sync_already_failed(&movie, &dir, &raw) {
+                    parked += 1;
+                } else {
+                    queue.push((movie, raw));
+                }
             }
         }
     }
@@ -1827,8 +1913,9 @@ fn text_sync(
         queue.truncate(limit);
     }
     println!(
-        "{} films left to align against their discs' own tracks",
-        queue.len()
+        "{} films left to align against their discs' own tracks{}",
+        queue.len(),
+        parked_note(parked)
     );
 
     let out = &out;
