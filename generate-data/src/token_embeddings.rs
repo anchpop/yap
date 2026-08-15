@@ -20,6 +20,7 @@
 use anyhow::{Context, Result};
 use base64::Engine;
 use futures::StreamExt;
+use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{Language, SentenceInfo, WordType};
 use serde::Deserialize;
 use std::sync::LazyLock;
@@ -186,27 +187,27 @@ pub async fn ensure_token_embeddings(
         );
         return Ok(());
     }
-    println!(
-        "token-embed[{}]: embedding {} uncached sentences…",
-        language.code(),
-        misses.len()
+    let pb = ProgressBar::new(misses.len() as u64);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template(&format!(
+                "{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {} token embeddings ({{per_sec}}, {{eta}})",
+                language.code()
+            ))
+            .unwrap()
+            .progress_chars("#>-"),
     );
+    pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-    let total_batches = misses.len().div_ceil(SENTENCES_PER_REQUEST);
     let results: Vec<Result<usize>> =
-        futures::stream::iter(misses.chunks(SENTENCES_PER_REQUEST).enumerate().map(
-            |(batch_idx, batch)| async move {
+        futures::stream::iter(misses.chunks(SENTENCES_PER_REQUEST).map(|batch| {
+            let pb = &pb;
+            async move {
                 let written = embed_batch(store, http, batch).await?;
-                if (batch_idx + 1) % 20 == 0 || batch_idx + 1 == total_batches {
-                    println!(
-                        "token-embed[{}]: batch {}/{total_batches}",
-                        language.code(),
-                        batch_idx + 1
-                    );
-                }
+                pb.inc(batch.len() as u64);
                 Ok(written)
-            },
-        ))
+            }
+        }))
         .buffer_unordered(CONCURRENT_REQUESTS)
         .collect()
         .await;
@@ -215,6 +216,7 @@ pub async fn ensure_token_embeddings(
     for r in results {
         written += r?;
     }
+    pb.finish_and_clear();
     println!(
         "token-embed[{}]: wrote {written} sentence embedding records",
         language.code()
