@@ -87,9 +87,16 @@ impl Cue {
     }
 
     /// Is this plausibly a line of dialogue rather than a disc graphic?
+    ///
+    /// Graphics (rating bars, logos) are solid blocks of one or two colours
+    /// with most of the box inked. Text is looser on both counts — but not
+    /// as loose as first assumed: *Anything Goes* renders dialogue flat, with
+    /// no antialiasing at all — 3 colours, thick glyphs at ink 0.56 — and a
+    /// `colours >= 4 && ink < 0.6` filter silently discarded all 1,976 of its
+    /// cues. The LLM's `not_text` verdict backstops whatever this lets past.
     pub fn looks_like_text(&self) -> bool {
         let (ink, colours) = self.ink_and_colours();
-        self.height >= 16 && colours >= 4 && ink < 0.6
+        self.height >= 16 && colours >= 3 && ink < 0.75
     }
 }
 

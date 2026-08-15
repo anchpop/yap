@@ -2269,13 +2269,51 @@ fn pgs_stats(input: PathBuf, index: Option<u32>, dump: usize, out_dir: PathBuf) 
             last.end_ms as f64 / 1000.0
         );
     }
+    // Why cues pass or fail the text filter, in aggregate: the filter wants
+    // height ≥ 16, ≥ 4 inked colours, ink < 0.6.
+    let mut inks: Vec<f32> = Vec::new();
+    let mut colour_counts: Vec<usize> = Vec::new();
+    for c in &cues {
+        let (ink, colours) = c.ink_and_colours();
+        inks.push(ink);
+        colour_counts.push(colours);
+    }
+    inks.sort_by(f32::total_cmp);
+    colour_counts.sort_unstable();
+    if let (Some(ink), Some(colours), Some(c)) = (
+        inks.get(inks.len() / 2),
+        colour_counts.get(colour_counts.len() / 2),
+        cues.first(),
+    ) {
+        println!(
+            "median cue      {}x{}, ink {ink:.3}, {colours} colours",
+            c.width, c.height
+        );
+    }
     if dump > 0 {
+        // Fall back to unfiltered cues: when the filter rejects everything,
+        // seeing what it rejected is the whole point of dumping.
+        let pool: Vec<&pgs::Cue> = if text.is_empty() {
+            cues.iter().collect()
+        } else {
+            text.clone()
+        };
         std::fs::create_dir_all(&out_dir)?;
-        for (i, c) in text.iter().take(dump).enumerate() {
+        let picked = ocr::spread(&pool, dump);
+        for (i, c) in picked.iter().enumerate() {
             c.to_rgb([0, 0, 0])
                 .save(out_dir.join(format!("rs_cue_{i:03}.png")))?;
         }
-        println!("wrote {dump} sample PNGs to {}", out_dir.display());
+        println!(
+            "wrote {} sample PNGs to {}{}",
+            picked.len(),
+            out_dir.display(),
+            if text.is_empty() {
+                " (filter rejected all — dumping unfiltered)"
+            } else {
+                ""
+            }
+        );
     }
     Ok(())
 }
