@@ -72,6 +72,23 @@ enum Command_ {
         #[arg(long, default_value_t = 0)]
         limit: usize,
     },
+    /// Pull each film's original-language audio out as a seekable opus file.
+    ///
+    /// Written into the corpus (never beside the videos) as `audio.opus`, with
+    /// `audio.json` recording the source file *and* the exact stream it came
+    /// from — a changed video or a reshuffled remux evicts the track rather
+    /// than posing as it. The syncers prefer this artifact when it is current:
+    /// whisper windows and VAD profiles then read a few hundred MB of opus
+    /// instead of demuxing a lossless track out of a 30GB remux.
+    ExtractAudio {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        #[arg(long, default_value_t = 6)]
+        jobs: usize,
+        /// Stop after this many movies (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+    },
     /// Measure OCR cost and quality on a random sample before the full run.
     OcrSample {
         #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
@@ -427,10 +444,10 @@ fn expected_subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Optio
 
 impl FilmStamp {
     /// Same film for subtitle purposes: identical name, and a duration within
-    /// 2s (container remuxes of the same cut wobble by frames, a different
-    /// cut differs by minutes).
+    /// 250ms (a remux of the same cut wobbles by frames; anything that moved
+    /// the length by more than that has probably retimed the content too).
     fn matches(&self, other: &FilmStamp) -> bool {
-        self.filename == other.filename && (self.duration_ms - other.duration_ms).abs() <= 2_000
+        self.filename == other.filename && (self.duration_ms - other.duration_ms).abs() <= 250
     }
 }
 
@@ -457,9 +474,8 @@ fn cached_speech_profile(movie: &Movie, dir: &std::path::Path) -> Result<Vec<f32
     if let Some(p) = vad::read_profile(&path) {
         return Ok(p);
     }
-    let codes = library::stream_codes(&movie.original_language);
-    let stream = sync::original_audio_stream(&movie.path, codes)?;
-    let p = vad::speech_profile(&movie.path, stream)?;
+    let (media, stream) = audio_source(movie, dir)?;
+    let p = vad::speech_profile(&media, stream)?;
     std::fs::create_dir_all(dir)?;
     vad::write_profile(&path, &p)?;
     write_stamp(dir, movie, StampSource::Keep);
@@ -574,6 +590,50 @@ fn parked_note(parked: usize) -> String {
     }
 }
 
+/// Provenance for `audio.opus`: which file the track came out of and exactly
+/// which stream, so a video swap or an audio reshuffle inside a same-named
+/// remux evicts the extraction instead of being mistaken for it.
+#[derive(serde::Serialize, serde::Deserialize, PartialEq)]
+struct AudioStamp {
+    filename: String,
+    duration_ms: i64,
+    stream: sync::AudioStreamIdentity,
+}
+
+fn read_audio_stamp(dir: &std::path::Path) -> Option<AudioStamp> {
+    serde_json::from_slice(&std::fs::read(dir.join("audio.json")).ok()?).ok()
+}
+
+/// The film's extracted original-language audio, when it is present and still
+/// belongs to the file on disk. File identity only — the per-stream probe is
+/// `extract-audio`'s job; a caller here just needs to trust the artifact.
+fn extracted_audio(movie: &Movie, dir: &std::path::Path) -> Option<PathBuf> {
+    let path = dir.join("audio.opus");
+    if !path.exists() {
+        return None;
+    }
+    let stamp = read_audio_stamp(dir)?;
+    let current = film_stamp(movie).ok()?;
+    let recorded = FilmStamp {
+        filename: stamp.filename,
+        duration_ms: stamp.duration_ms,
+        subtitle: None,
+    };
+    recorded.matches(&current).then_some(path)
+}
+
+/// Where to listen for this film: the extracted opus when it is current —
+/// a few hundred MB that seeks instantly, instead of pulling a lossless
+/// track out of a 30GB remux on the array — else the video itself.
+fn audio_source(movie: &Movie, dir: &std::path::Path) -> Result<(PathBuf, usize)> {
+    if let Some(audio) = extracted_audio(movie, dir) {
+        return Ok((audio, 0));
+    }
+    let codes = library::stream_codes(&movie.original_language);
+    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    Ok((movie.path.clone(), stream))
+}
+
 enum Freshness {
     /// No finished subtitle, or the stamp still matches the inputs on disk.
     Fine,
@@ -610,6 +670,8 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
         let _ = std::fs::remove_file(dir.join("subtitle.srt"));
         let _ = std::fs::remove_file(dir.join("speech-profile.f32"));
         let _ = std::fs::remove_file(dir.join("references.json"));
+        let _ = std::fs::remove_file(dir.join("audio.opus"));
+        let _ = std::fs::remove_file(dir.join("audio.json"));
         let _ = std::fs::remove_file(dir.join("film.json"));
         let _ = std::fs::remove_file(dir.join("sync-failed.json"));
         return Freshness::Evicted {
@@ -849,6 +911,10 @@ fn refresh(library: PathBuf, data_root: PathBuf, out: PathBuf) -> Result<()> {
             let out = out.clone();
             Box::new(move || ocr_all(out, "gpt-5.6-luna".into(), 8, 0, 0))
         }),
+        ("extract-audio", {
+            let out = out.clone();
+            Box::new(move || extract_audio(out, 6, 0))
+        }),
         ("text-sync", {
             let (out, data_root) = (out.clone(), data_root.clone());
             Box::new(move || text_sync(out, data_root, 4, 0, 300, 0.25, 0.10, false))
@@ -987,6 +1053,133 @@ fn extract(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
         results.len()
     );
     println!("into {}", out.display());
+    Ok(())
+}
+
+/// What happened to one film in an `extract-audio` pass.
+enum AudioOutcome {
+    Extracted(sync::AudioStreamIdentity),
+    Current,
+    NoStream,
+    Failed(anyhow::Error),
+}
+
+/// Pull the original-language audio track out of one film as `audio.opus`.
+///
+/// The artifact lives in the corpus, not beside the video: it is internal
+/// substrate (whisper windows, VAD, future audio work), not part of the media
+/// collection. Channels are kept — dialogue lives in the centre channel of a
+/// surround mix, and folding it away now would close that door — and the
+/// original timeline is preserved, so a timestamp in the opus *is* a timestamp
+/// in the film.
+fn extract_audio_one(movie: &Movie, dir: &std::path::Path) -> AudioOutcome {
+    let codes = library::stream_codes(&movie.original_language);
+    let Ok(stream) = sync::original_audio_stream(&movie.path, codes) else {
+        return AudioOutcome::NoStream;
+    };
+    let identity = match sync::audio_stream_identity(&movie.path, stream) {
+        Ok(i) => i,
+        Err(e) => return AudioOutcome::Failed(e),
+    };
+    let current = match film_stamp(movie) {
+        Ok(s) => s,
+        Err(e) => return AudioOutcome::Failed(e),
+    };
+    if dir.join("audio.opus").exists() {
+        if let Some(stamp) = read_audio_stamp(dir) {
+            let recorded = FilmStamp {
+                filename: stamp.filename.clone(),
+                duration_ms: stamp.duration_ms,
+                subtitle: None,
+            };
+            if recorded.matches(&current) && stamp.stream == identity {
+                return AudioOutcome::Current;
+            }
+        }
+    }
+
+    let result = (|| -> Result<()> {
+        std::fs::create_dir_all(dir)?;
+        let tmp = dir.join("audio.opus.tmp");
+        // ~64 kbps per channel is transparent-enough opus for speech work;
+        // libopus rejects ffmpeg's "(side)" surround names, so aformat maps
+        // each layout onto the nearest one opus can carry.
+        let bitrate = (u64::from(identity.channels.max(1)) * 64_000).min(510_000);
+        let status = Command::new("ffmpeg")
+            .args(["-v", "error", "-y", "-i"])
+            .arg(&movie.path)
+            .args([
+                "-map",
+                &format!("0:a:{stream}"),
+                "-vn",
+                "-sn",
+                "-af",
+                "aformat=channel_layouts=7.1|6.1|5.1|5.0|quad|3.0|stereo|mono",
+                "-c:a",
+                "libopus",
+                "-b:a",
+                &bitrate.to_string(),
+                "-f",
+                "ogg",
+            ])
+            .arg(&tmp)
+            .status()
+            .context("ffmpeg failed to start")?;
+        if !status.success() {
+            let _ = std::fs::remove_file(&tmp);
+            bail!("ffmpeg exited with {status}");
+        }
+        std::fs::rename(&tmp, dir.join("audio.opus"))?;
+        let stamp = AudioStamp {
+            filename: current.filename.clone(),
+            duration_ms: current.duration_ms,
+            stream: identity.clone(),
+        };
+        std::fs::write(dir.join("audio.json"), serde_json::to_vec_pretty(&stamp)?)?;
+        write_stamp(dir, movie, StampSource::Keep);
+        Ok(())
+    })();
+    match result {
+        Ok(()) => AudioOutcome::Extracted(identity),
+        Err(e) => AudioOutcome::Failed(e),
+    }
+}
+
+fn extract_audio(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
+    let plan = read_plan(&out)?;
+    let mut todo: Vec<Movie> = plan.into_iter().filter(|m| m.path.exists()).collect();
+    if limit > 0 {
+        todo.truncate(limit);
+    }
+    println!("{} films to check for extracted audio", todo.len());
+
+    let results = parallel(todo, jobs, "extracting audio", |m| {
+        let outcome = extract_audio_one(m, &out.join(&m.imdb_id));
+        if let AudioOutcome::Extracted(id) = &outcome {
+            println!(
+                "  {} ✓ {} {}ch → opus",
+                truncate(&m.title, 40),
+                id.codec,
+                id.channels
+            );
+        }
+        (m.imdb_id.clone(), m.title.clone(), outcome)
+    });
+
+    let mut extracted = 0usize;
+    let mut current = 0usize;
+    let mut no_stream = 0usize;
+    for (imdb, title, outcome) in &results {
+        match outcome {
+            AudioOutcome::Extracted(_) => extracted += 1,
+            AudioOutcome::Current => current += 1,
+            AudioOutcome::NoStream => no_stream += 1,
+            AudioOutcome::Failed(e) => println!("  ✗ {imdb} {}: {e:#}", truncate(title, 40)),
+        }
+    }
+    println!(
+        "\n{extracted} tracks extracted, {current} already current, {no_stream} with no original-language stream"
+    );
     Ok(())
 }
 
@@ -1347,8 +1540,7 @@ async fn sync_one(
     if cues.is_empty() {
         bail!("subtitle has no cues");
     }
-    let codes = library::stream_codes(&movie.original_language);
-    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    let (media, stream) = audio_source(movie, &out.join(&movie.imdb_id))?;
     let duration = sync::duration_ms(&movie.path)?;
     let language = library::course_dir(&movie.original_language)
         .and_then(whisper_language)
@@ -1359,9 +1551,7 @@ async fn sync_one(
     // anchors clustered at one end cannot reveal a rate.
     let mut heard = Vec::new();
     for at in sync::choose_windows(&cues, duration, opts.windows, opts.window_secs) {
-        match sync::transcribe_window(http, &movie.path, stream, at, opts.window_secs, language)
-            .await
-        {
+        match sync::transcribe_window(http, &media, stream, at, opts.window_secs, language).await {
             Ok(words) => heard.extend(words),
             // One refused window is survivable; the fit needs several anyway.
             Err(e) => eprintln!("      window at {}s failed: {e}", at / 1000),
@@ -1601,6 +1791,10 @@ async fn check_one(
     if cues.is_empty() {
         bail!("subtitle has no cues");
     }
+    // Deliberately the video, not the extracted opus: check is the last line
+    // of defense that the placed subtitle fits the file clips are cut from.
+    // Syncing against the extraction and checking against the original means
+    // a defect in the extraction's timeline gets caught instead of ratified.
     let codes = library::stream_codes(&movie.original_language);
     let stream = sync::original_audio_stream(&movie.path, codes)?;
     let duration = sync::duration_ms(&movie.path)?;
@@ -2439,6 +2633,7 @@ fn main() -> Result<()> {
             out,
         } => refresh(library, data_root, out),
         Command_::Extract { out, jobs, limit } => extract(out, jobs, limit),
+        Command_::ExtractAudio { out, jobs, limit } => extract_audio(out, jobs, limit),
         Command_::OcrSample {
             out,
             movies,

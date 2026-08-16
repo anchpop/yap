@@ -16,7 +16,7 @@ use std::path::Path;
 use std::process::Command;
 
 use anyhow::{bail, Context, Result};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// One subtitle cue, text preserved exactly as written.
 ///
@@ -235,6 +235,63 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
         return Ok(0);
     }
     bail!("no audio stream in the film's own language")
+}
+
+/// The exact audio stream an extraction came from, for its provenance stamp.
+///
+/// A remux can keep a video's name while reordering or replacing its audio, so
+/// file identity alone is not enough: the stamp records which stream was read
+/// and what it looked like, and any mismatch evicts the extraction.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AudioStreamIdentity {
+    /// Position among the file's *audio* streams, as `-map 0:a:N` counts.
+    pub stream_index: usize,
+    pub codec: String,
+    pub channels: u32,
+    #[serde(default)]
+    pub channel_layout: String,
+}
+
+pub fn audio_stream_identity(video: &Path, audio_stream: usize) -> Result<AudioStreamIdentity> {
+    #[derive(Deserialize)]
+    struct Stream {
+        codec_name: Option<String>,
+        #[serde(default)]
+        channels: u32,
+        #[serde(default)]
+        channel_layout: String,
+    }
+    #[derive(Deserialize)]
+    struct Probe {
+        #[serde(default)]
+        streams: Vec<Stream>,
+    }
+    let out = Command::new("ffprobe")
+        .args([
+            "-v",
+            "error",
+            "-select_streams",
+            &format!("a:{audio_stream}"),
+            "-show_entries",
+            "stream=codec_name,channels,channel_layout",
+            "-of",
+            "json",
+        ])
+        .arg(video)
+        .output()
+        .context("ffprobe failed to start")?;
+    let probe: Probe = serde_json::from_slice(&out.stdout).unwrap_or(Probe { streams: vec![] });
+    let s = probe
+        .streams
+        .into_iter()
+        .next()
+        .with_context(|| format!("no audio stream a:{audio_stream}"))?;
+    Ok(AudioStreamIdentity {
+        stream_index: audio_stream,
+        codec: s.codec_name.unwrap_or_default(),
+        channels: s.channels,
+        channel_layout: s.channel_layout,
+    })
 }
 
 /// Transcribe one window of the film, returning words timed from its start.
