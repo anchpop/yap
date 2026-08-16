@@ -122,6 +122,28 @@ enum Command_ {
         #[arg(long, default_value_t = 0)]
         allow_unreadable: usize,
     },
+    /// OCR a standalone bitmap subtitle into an SRT with the disc's timings.
+    ///
+    /// For retail subtitle rips that arrive outside any library film — a
+    /// VobSub idx/sub pair muxed into an MKV (`ffmpeg -f vobsub -i file.idx
+    /// -map 0:s -c copy file.mkv`) or a bare PGS `.sup`. Drop the output into
+    /// `subtitles-raw/` and it syncs like any downloaded subtitle.
+    OcrFile {
+        /// MKV holding a dvd_subtitle track, or a bare PGS .sup.
+        #[arg(long)]
+        input: PathBuf,
+        /// ffmpeg stream index of the bitmap track within the MKV.
+        #[arg(long, default_value_t = 0)]
+        index: u32,
+        #[arg(long, default_value = "gpt-5.6-luna")]
+        model: String,
+        /// Where to write the SRT.
+        #[arg(long)]
+        srt: PathBuf,
+        /// Cues allowed to stay unreadable while still writing the SRT.
+        #[arg(long, default_value_t = 0)]
+        allow_unreadable: usize,
+    },
     /// Align downloaded subtitles to the films on disk, using Whisper.
     Sync {
         #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
@@ -151,6 +173,11 @@ enum Command_ {
         /// separates "found the offset" from "found an offset".
         #[arg(long, default_value_t = 0.35)]
         min_agreement: f64,
+        /// Print every anchor's position and delta, to see a failure's shape:
+        /// a flat band is an offset, a slope is a rate, a staircase is a
+        /// splice, shotgun noise is a wrong subtitle.
+        #[arg(long)]
+        debug_anchors: bool,
     },
     /// Cross-examine already-written alignments with Whisper word anchors.
     ///
@@ -932,6 +959,7 @@ fn refresh(library: PathBuf, data_root: PathBuf, out: PathBuf) -> Result<()> {
                         window_secs: 60,
                         max_residual_ms: 1500.0,
                         min_agreement: 0.35,
+                        debug_anchors: false,
                     },
                 )
             })
@@ -1440,6 +1468,68 @@ async fn ocr_one(
     Ok((lines.len(), images.len()))
 }
 
+/// OCR one standalone bitmap subtitle file into an SRT. The same read-it-all
+/// batch as `ocr_one`, without a film attached: cached cues are free on a
+/// rerun, so a run with unreadable cues converges by being repeated.
+#[tokio::main]
+async fn ocr_file(
+    input: PathBuf,
+    index: u32,
+    model: String,
+    srt: PathBuf,
+    allow_unreadable: usize,
+) -> Result<()> {
+    let client = ocr::client(&model)?;
+    let images = if input.extension().is_some_and(|e| e == "sup") {
+        ocr::cue_images(&input).context("decode")?
+    } else {
+        ocr::vobsub_cue_images(&input, index).context("decode")?
+    };
+    if images.is_empty() {
+        bail!("no text cues in the bitmap track");
+    }
+    println!("{} cues to read", images.len());
+
+    let requests: Vec<_> = images
+        .iter()
+        .map(|img| ocr::messages_for(&img.png))
+        .collect();
+    let results = client
+        .batch_chat_with_messages::<ocr::Transcription>(requests, |_| {})
+        .await
+        .map_err(|e| anyhow::anyhow!("batch: {e}"))?;
+
+    let unreadable = results.iter().filter(|r| r.is_err()).count();
+    let lines: Vec<(u32, u32, String)> = std::iter::zip(&images, results)
+        .filter_map(|(img, r)| {
+            let t = r.ok()?;
+            let text = t.text.trim().to_string();
+            (!t.not_text && !text.is_empty()).then_some((img.start_ms, img.end_ms, text))
+        })
+        .collect();
+    if unreadable > allow_unreadable {
+        bail!(
+            "{unreadable}/{} cues unreadable — rerun to retry just those",
+            images.len()
+        );
+    }
+    if lines.is_empty() {
+        bail!("no text recovered from {} cues", images.len());
+    }
+
+    std::fs::write(&srt, ocr::to_srt(&lines))?;
+    println!(
+        "{} lines (of {} cues) → {}",
+        lines.len(),
+        images.len(),
+        srt.display()
+    );
+    if let Some(cost) = client.cost() {
+        println!("spent ${cost:.2}");
+    }
+    Ok(())
+}
+
 /// Align each downloadable subtitle to the film on disk and write it out.
 /// The knobs that decide how hard to listen and how sure to be.
 #[derive(Clone, Copy)]
@@ -1448,6 +1538,26 @@ struct SyncOptions {
     window_secs: u32,
     max_residual_ms: f64,
     min_agreement: f64,
+    debug_anchors: bool,
+}
+
+/// The anchor scatter, one line per anchor: where in the subtitle it sits and
+/// how far the audio disagrees. Reading the shape tells failure modes apart —
+/// a flat band is a plain offset, a slope is a rate, a staircase is a splice
+/// (ad breaks, an extended scene), and shotgun noise is a wrong subtitle.
+fn print_anchor_scatter(title: &str, anchors: &[sync::Anchor]) {
+    let mut sorted: Vec<_> = anchors.iter().collect();
+    sorted.sort_by_key(|a| a.subtitle_ms);
+    println!("      anchor scatter for {title} (subtitle time → spoken-subtitle delta):");
+    for a in sorted {
+        let s = a.subtitle_ms / 1000;
+        println!(
+            "        {:>3}:{:02}  {:+7.2}s",
+            s / 60,
+            s % 60,
+            (a.spoken_ms - a.subtitle_ms) as f64 / 1000.0
+        );
+    }
 }
 
 #[tokio::main]
@@ -1578,6 +1688,9 @@ async fn sync_one(
     }
 
     let anchors = sync::find_anchors(&cues, &heard, 4);
+    if opts.debug_anchors {
+        print_anchor_scatter(&movie.title, &anchors);
+    }
     let Some(alignment) = sync::fit(&anchors, 3000.0) else {
         bail!("only {} anchors, too few to trust", anchors.len());
     };
@@ -2647,6 +2760,13 @@ fn main() -> Result<()> {
             limit,
             allow_unreadable,
         } => ocr_all(out, model, films_in_flight, limit, allow_unreadable),
+        Command_::OcrFile {
+            input,
+            index,
+            model,
+            srt,
+            allow_unreadable,
+        } => ocr_file(input, index, model, srt, allow_unreadable),
         Command_::Sync {
             out,
             data_root,
@@ -2656,6 +2776,7 @@ fn main() -> Result<()> {
             limit,
             max_residual_ms,
             min_agreement,
+            debug_anchors,
         } => sync_all(
             out,
             data_root,
@@ -2666,6 +2787,7 @@ fn main() -> Result<()> {
                 window_secs,
                 max_residual_ms,
                 min_agreement,
+                debug_anchors,
             },
         ),
         Command_::Check {
