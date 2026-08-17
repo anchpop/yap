@@ -7,9 +7,8 @@
 //! the server. The handler is now a thin wrapper: it selects a `ChatClient`
 //! (based on auth / difficulty) and calls [`grade_translation`].
 
-use language_utils::{
-    Language,
-    autograde::{AutoGradeTranslationRequest, AutoGradeTranslationResponse, Remembered},
+use language_utils::autograde::{
+    AutoGradeTranslationRequest, AutoGradeTranslationResponse, Remembered,
 };
 use serde::Deserialize;
 use tysm::chat_completions::ChatClient;
@@ -19,8 +18,6 @@ pub const PERSONALITY: &str = r#"You are a helpful assistant that helps users le
 
 #[derive(Debug, thiserror::Error)]
 pub enum GradeError {
-    #[error("translation grading is not implemented for target language {0:?}")]
-    UnsupportedLanguage(Language),
     #[error("llm error: {0}")]
     Llm(String),
 }
@@ -86,12 +83,6 @@ pub async fn grade_translation(
         });
     }
 
-    if matches!(
-        target_language,
-        Language::ChineseSimplified | Language::ChineseTraditional
-    ) {
-        return Err(GradeError::UnsupportedLanguage(target_language));
-    }
     let target_language_name = target_language.to_string();
     let native_language_name = native_language.to_string();
 
