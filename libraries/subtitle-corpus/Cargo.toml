@@ -1,0 +1,22 @@
+[package]
+name = "subtitle-corpus"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4", features = ["derive"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tysm = { workspace = true }
+schemars = { workspace = true }
+base64 = "0.22"
+tokio = { workspace = true }
+futures = { workspace = true }
+movie-subtitles = { path = "../movie-subtitles" }
+reqwest = { workspace = true }
+language-utils = { path = "../../language-utils" }
+earshot = "1.1"
+matroska-demuxer = "0.8.1"
+flate2 = "1.1.9"

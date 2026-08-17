@@ -1,0 +1,219 @@
+//! Aligning a subtitle by *when* people talk, ignoring what they say.
+//!
+//! Whisper anchoring depends on words surviving both the model and the
+//! subtitler. Often they do not: subtitles are condensed for reading speed, so
+//! a character says a whole sentence and the cue keeps a fragment. On one film
+//! whole-line matching found zero matches out of a thousand candidates.
+//!
+//! Speech detection sidesteps that entirely. A subtitle is a claim about when
+//! someone is speaking, and voice activity detection measures the same thing
+//! from the audio; lining the two profiles up needs no vocabulary at all. It
+//! also uses the *whole* film rather than a few sampled windows, so the
+//! evidence behind the answer is far larger.
+
+use std::path::Path;
+use std::process::{Command, Stdio};
+
+use anyhow::{bail, Context, Result};
+
+use crate::sync::Cue;
+
+/// earshot's native frame: 256 samples at 16 kHz, i.e. 16 ms.
+const FRAME: usize = 256;
+const SAMPLE_RATE: usize = 16_000;
+/// Frames per bucket. Six is ~96 ms — fine enough for an offset (a cue lasts
+/// seconds) and six times cheaper to search than the raw frame rate.
+const FRAMES_PER_BUCKET: usize = 6;
+
+/// Milliseconds per bucket, *derived* from the frame arithmetic rather than
+/// chosen.
+///
+/// Stating a round 100 ms here while the audio side actually produced
+/// `6 × 16 = 96 ms` buckets put the two profiles on different clocks. They
+/// drifted 4% apart — nearly five minutes across a feature — and correlation
+/// collapsed to 0.07 on a subtitle known to be correctly timed.
+pub const BUCKET_MS: i64 = (FRAMES_PER_BUCKET * FRAME * 1000 / SAMPLE_RATE) as i64;
+
+/// Fraction of each bucket that earshot judged to be speech.
+pub fn speech_profile(video: &Path, audio_stream: usize) -> Result<Vec<f32>> {
+    let mut child = Command::new("ffmpeg")
+        .args(["-v", "error", "-i"])
+        .arg(video)
+        .args([
+            "-map",
+            &format!("0:a:{audio_stream}"),
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            "-f",
+            "s16le",
+            "-",
+        ])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+        .context("ffmpeg failed to start")?;
+    let mut stdout = child.stdout.take().context("no ffmpeg output")?;
+
+    let frames_per_bucket = FRAMES_PER_BUCKET;
+
+    let mut detector = earshot::Detector::default_boxed();
+    let mut profile: Vec<f32> = Vec::new();
+    let mut raw = vec![0u8; FRAME * 2 * 64];
+    let mut pending: Vec<i16> = Vec::new();
+    let mut bucket_sum = 0.0f32;
+    let mut bucket_n = 0usize;
+
+    use std::io::Read;
+    loop {
+        let read = stdout.read(&mut raw)?;
+        if read == 0 {
+            break;
+        }
+        pending.extend(
+            raw[..read - read % 2]
+                .chunks_exact(2)
+                .map(|b| i16::from_le_bytes([b[0], b[1]])),
+        );
+        let usable = pending.len() - pending.len() % FRAME;
+        for frame in pending[..usable].chunks_exact(FRAME) {
+            bucket_sum += detector.predict_i16(frame);
+            bucket_n += 1;
+            if bucket_n == frames_per_bucket {
+                profile.push(bucket_sum / bucket_n as f32);
+                bucket_sum = 0.0;
+                bucket_n = 0;
+            }
+        }
+        pending.drain(..usable);
+    }
+    let _ = child.wait();
+    if profile.is_empty() {
+        bail!("no audio decoded");
+    }
+    Ok(profile)
+}
+
+/// Read a profile cached by [`write_profile`]. `None` means compute it afresh.
+pub fn read_profile(path: &Path) -> Option<Vec<f32>> {
+    let raw = std::fs::read(path).ok()?;
+    if raw.is_empty() || !raw.len().is_multiple_of(4) {
+        return None;
+    }
+    Some(
+        raw.chunks_exact(4)
+            .map(|b| f32::from_le_bytes([b[0], b[1], b[2], b[3]]))
+            .collect(),
+    )
+}
+
+/// Cache a speech profile beside the film's other artifacts.
+///
+/// Decoding a feature's audio costs minutes; the profile it reduces to is a
+/// few hundred kilobytes and never changes for a given file, so anything that
+/// scores subtitles repeatedly — calibration above all — reads this instead.
+pub fn write_profile(path: &Path, profile: &[f32]) -> Result<()> {
+    let mut raw = Vec::with_capacity(profile.len() * 4);
+    for v in profile {
+        raw.extend_from_slice(&v.to_le_bytes());
+    }
+    Ok(std::fs::write(path, raw)?)
+}
+
+/// The same profile, as the subtitle claims it: 1 where a cue is on screen.
+pub fn subtitle_profile(cues: &[Cue], buckets: usize) -> Vec<f32> {
+    let mut p = vec![0.0f32; buckets];
+    for c in cues {
+        let from = (c.start_ms / BUCKET_MS).max(0) as usize;
+        let to = ((c.end_ms / BUCKET_MS).max(0) as usize).min(buckets);
+        for slot in p.iter_mut().take(to).skip(from.min(buckets)) {
+            *slot = 1.0;
+        }
+    }
+    p
+}
+
+/// How well two profiles agree, as a correlation in [-1, 1].
+///
+/// Plain overlap would reward a subtitle that simply claimed speech everywhere,
+/// so this is centred on each profile's mean: agreement means matching the
+/// *pattern* of talk and silence, not the amount of it.
+fn correlation(a: &[f32], b: &[f32]) -> f32 {
+    let n = a.len().min(b.len());
+    if n == 0 {
+        return 0.0;
+    }
+    let (a, b) = (&a[..n], &b[..n]);
+    let ma = a.iter().sum::<f32>() / n as f32;
+    let mb = b.iter().sum::<f32>() / n as f32;
+    let mut num = 0.0;
+    let mut da = 0.0;
+    let mut db = 0.0;
+    for i in 0..n {
+        let (x, y) = (a[i] - ma, b[i] - mb);
+        num += x * y;
+        da += x * x;
+        db += y * y;
+    }
+    if da <= 0.0 || db <= 0.0 {
+        return 0.0;
+    }
+    num / (da.sqrt() * db.sqrt())
+}
+
+/// The shift that best lines the subtitle up with the speech.
+#[derive(Debug, Clone, Copy)]
+pub struct VadOffset {
+    pub offset_ms: i64,
+    /// Correlation at that shift.
+    pub agreement: f32,
+    /// Best correlation anywhere else, at least 2s away.
+    pub runner_up: f32,
+}
+
+impl VadOffset {
+    /// How far the winning shift stands above the next plausible one.
+    ///
+    /// A high correlation alone is not enough — a talky film correlates
+    /// reasonably at many shifts. What distinguishes a real answer is a peak
+    /// that beats its rivals.
+    pub fn margin(&self) -> f32 {
+        self.agreement - self.runner_up
+    }
+}
+
+/// Search shifts within `range_ms` for the one that best matches the audio.
+pub fn find_offset(speech: &[f32], subtitle: &[f32], range_ms: i64) -> VadOffset {
+    let range = (range_ms / BUCKET_MS) as isize;
+    let mut scored: Vec<(isize, f32)> = Vec::new();
+    for shift in -range..=range {
+        let score = if shift >= 0 {
+            let s = shift as usize;
+            correlation(&speech[s.min(speech.len())..], subtitle)
+        } else {
+            let s = (-shift) as usize;
+            correlation(speech, &subtitle[s.min(subtitle.len())..])
+        };
+        scored.push((shift, score));
+    }
+    let (best_shift, best) =
+        scored.iter().copied().fold(
+            (0isize, f32::MIN),
+            |acc, x| if x.1 > acc.1 { x } else { acc },
+        );
+    let runner_up = scored
+        .iter()
+        .filter(|(s, _)| (s - best_shift).abs() > 20) // at least 2s away
+        .map(|(_, v)| *v)
+        .fold(f32::MIN, f32::max);
+    VadOffset {
+        offset_ms: best_shift as i64 * BUCKET_MS,
+        agreement: best,
+        runner_up: if runner_up.is_finite() {
+            runner_up
+        } else {
+            0.0
+        },
+    }
+}

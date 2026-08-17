@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 445736
-Total errors: 25571
+Total predictions: 445540
+Total errors: 25560
 Accuracy: 94.26%
 
 ## Error Patterns (sorted by frequency)
@@ -3542,14 +3542,6 @@ Accuracy: 94.26%
   - รูมเมตไง ฉันมาถึงดึก ลุกขึ้น
   - หมายความว่าไง ฉันตลก?
 
-### "ได้" + "งั้น" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ก็ได้ งั้นทำให้มันง่ายขึ้น
-  - ก็ได้ งั้นเอาบทไปให้เขาเลย
-  - ก็ได้ งั้นไปก่อนนะ
-
 ### "ได้" + "จะ" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3957,14 +3949,6 @@ Accuracy: 94.26%
   - ตอนผมจับมือของคุณ ผมถึงรู้
   - นี่คุณ ผมก็แค่ทำงาน
   - ผมไม่มีอะไรให้คุณ ผมรู้ดีห
-
-### "ค่ะ" + "ขอ" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ขอโทษค่ะ ขอรบกวนสักครู่นะคะ
-  - สวัสดีค่ะ ขอมันบดได้ไหมคะ
-  - อ่อ ค่ะ ขอเวลาแป้บค่ะ
 
 ### "ค่ะ" + "ขอโทษ" (4 occurrences)
 - Predicted: None
@@ -4942,14 +4926,6 @@ Accuracy: 94.26%
   - เอาล่ะ เรามาป่วนกันหน่อย
   - เอาล่ะ เรามาไกลพอแล้ว!
 
-### "เอาล่ะ" + "เริ่ม" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เอาล่ะ เริ่มกันเลยดีกว่า
-  - เอาล่ะ เริ่มใหม่
-  - เอาล่ะ เริ่มได้
-
 ### "เอ้า" + "ดื่ม" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5325,6 +5301,14 @@ Accuracy: 94.26%
   - พี่ชายแกไง ไอ้มืด
   - แฟรงค์ญาติแกไง ไอ้มืด
   - ไง ไอ้เพรียว ได้หรือเปล่าวะ
+
+### "ได้" + "งั้น" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ก็ได้ งั้นทำให้มันง่ายขึ้น
+  - ก็ได้ งั้นไปก่อนนะ
+  - ได้ งั้นไปด้วยกัน
 
 ### "ได้" + "ตกลง" (4 occurrences)
 - Predicted: None
@@ -6061,6 +6045,14 @@ Accuracy: 94.26%
   - ดูหน้าตาคุ้น ๆ นะ
   - ลูกใครนะ หน้าคุ้น ๆ จัง
   - ไอ้นี่หน้าคุ้น ๆ เนอะ
+
+### "ค่ะ" + "ขอ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - สวัสดีค่ะ ขอมันบดได้ไหมคะ
+  - อ่อ ค่ะ ขอเวลาแป้บค่ะ
+  - อ๋อค่ะ ขอตัวนะคะ
 
 ### "ค่ะ" + "คน" (3 occurrences)
 - Predicted: None
@@ -8101,6 +8093,14 @@ Accuracy: 94.26%
   - เอาล่ะ มากับฉัน
   - เอาล่ะ มาทำกกกันเถอะ ใช่ไหม?
   - เอาล่ะ มาๆ
+
+### "เอาล่ะ" + "เริ่ม" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - เอาล่ะ เริ่มกันเลยดีกว่า
+  - เอาล่ะ เริ่มได้
+  - โอเค เอาล่ะ เริ่มได้
 
 ### "เอ่อ" + "ฉัน" (3 occurrences)
 - Predicted: None
@@ -17383,8 +17383,8 @@ Accuracy: 94.26%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - แจ็ค ฉัน
   - แจ็ค ฉันหมั้นแล้ว
+  - แจ็ค ฉัน…
 
 ### "แจ็ค" + "บาร์นส์" (2 occurrences)
 - Predicted: None
@@ -32018,12 +32018,6 @@ Accuracy: 94.26%
 - Examples:
   - จอร์จ นายทำอะไร
 
-### "จอร์จ" + "นี่แหละ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - อย่าขำไปจอร์จ นี่แหละอนาคต
-
 ### "จอร์จ" + "บอร์น" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32035,12 +32029,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - จอร์จ ลาวรี่ ส่วนตัว
-
-### "จอร์จ" + "เรา" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - จอร์จ เราต้องคุยกัน
 
 ### "จอร์จส์" + "ขอบคุณ" (1 occurrences)
 - Predicted: None
@@ -34021,12 +34009,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ส่วนนี่ก็ภาพวาดฉัน เป็นไงคะ
-
-### "ฉัน" + "เป๊ปปี้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ชื่อของฉัน เป๊ปปี้ มิลเลอร์
 
 ### "ฉัน" + "เพื่อนรัก" (1 occurrences)
 - Predicted: None
@@ -43369,12 +43351,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - นี่ๆ ทุกคน เป็นไงบ้าง
-
-### "ทุกคน" + "เสียง" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - เอาล่ะทุกคน เสียงพร้อม
 
 ### "ทุกคน" + "ใจเย็น" (1 occurrences)
 - Predicted: None
@@ -70292,12 +70268,6 @@ Accuracy: 94.26%
 - Examples:
   - ไม่ได้หรอก เป็นไปไม่ได้เลย
 
-### "หรอก" + "เป๊ปปี้" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - มันเป็นไปไม่ได้หรอก เป๊ปปี้
-
 ### "หรอก" + "เล่น" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83624,12 +83594,6 @@ Accuracy: 94.26%
 - Examples:
   - ลาก่อนนะ, เป๊ปปิโน่ !
 
-### "เป๊ปปี้" + "มิลเลอร์" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ชื่อของฉัน เป๊ปปี้ มิลเลอร์
-
 ### "เป๊ะ" + "โธ่" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86587,12 +86551,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - เดินเล่น ก็ฉันเบื่อ
-
-### "เล่น" + "ฉัน" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ไม่ได้พูดเล่น ฉันไล่นายออก
 
 ### "เล่น" + "ยก" (1 occurrences)
 - Predicted: None
@@ -97939,12 +97897,6 @@ Accuracy: 94.26%
 - Actual: Space
 - Examples:
   - ไอ้โง่ เลิกลดตัวสักที
-
-### "โง่" + "แก" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - แกมันโง่ แกมันจองหอง
 
 ### "โง่" + "ให้" (1 occurrences)
 - Predicted: None

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2812015
-Total errors: 2835
+Total predictions: 2793923
+Total errors: 2821
 Accuracy: 99.90%
 
 ## Error Patterns (sorted by frequency)
@@ -110,14 +110,6 @@ Accuracy: 99.90%
   - Che avrebbe detto ?
   - Che cosa hai detto ?
 
-### "questo" + "?" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Chi ha fatto questo ?
-  - Chi mai desidera questo ?
-  - E con questo ?
-
 ### "…" + "-" (9 occurrences)
 - Predicted: None
 - Actual: Space
@@ -173,6 +165,14 @@ Accuracy: 99.90%
   - Come ti chiama, mamma ?
   - Con la mamma ?
   - Gosha, lo racconteremo alla mamma ?
+
+### "questo" + "?" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Chi ha fatto questo ?
+  - Chi mai desidera questo ?
+  - E con questo ?
 
 ### "sai" + "?" (8 occurrences)
 - Predicted: None
@@ -261,14 +261,6 @@ Accuracy: 99.90%
   - Che mi farà adesso ?
   - Cosa staranno facendo adesso ?
   - E adesso ?
-
-### "capito" + "?" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Allora finalmente hai capito ?
-  - Ascoltami bene, io sono tua madre, capito ?
-  - Farla sparire, capito ?
 
 ### "così" + "?" (6 occurrences)
 - Predicted: None
@@ -366,13 +358,13 @@ Accuracy: 99.90%
   - Auguri, Katia !
   - Katia !
 
-### "cazzo" + "," (5 occurrences)
+### "capito" + "?" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Art, torna qui, cazzo , subito!
-  - Ehi, non dire quelle stronzate, cazzo , amico.
-  - Non tirare in ballo mia madre, cazzo , Pete.
+  - Allora finalmente hai capito ?
+  - Ascoltami bene, io sono tua madre, capito ?
+  - Farla sparire, capito ?
 
 ### "così" + "!" (5 occurrences)
 - Predicted: None
@@ -486,14 +478,6 @@ Accuracy: 99.90%
   - Non voglio più sentirti, smettila subito !
   - Slegami subito !
 
-### "te" + "?" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Che cosa devo fare con te ?
-  - Cosa devo fare con te ?
-  - Perché Chamseddine dovrebbe fidarsi di te ?
-
 ### "tu" + "!" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -573,6 +557,14 @@ Accuracy: 99.90%
   - Benvenute a casa !
   - Tornate a casa !
   - Tu resti a casa !
+
+### "cazzo" + "," (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ehi, non dire quelle stronzate, cazzo , amico.
+  - Non tirare in ballo mia madre, cazzo , Pete.
+  - Non volevo uccidere quel ragazzo, cazzo , amico!
 
 ### "dire" + "?" (4 occurrences)
 - Predicted: None
@@ -686,6 +678,14 @@ Accuracy: 99.90%
   - Saluta, su !
   - Su, su !
 
+### "te" + "?" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Che cosa devo fare con te ?
+  - Cosa devo fare con te ?
+  - Perché Chamseddine dovrebbe fidarsi di te ?
+
 ### "testa" + "!" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -709,14 +709,6 @@ Accuracy: 99.90%
   - Che cosa vede ?
   - Ecco, lo vede ?
   - Lo vede ?
-
-### "voi" + "?" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Cosa può essere peggio di restare qui con voi ?
-  - Ma voi ?
-  - Siete voi ?
 
 ### "!" + "—" (3 occurrences)
 - Predicted: None
@@ -1205,6 +1197,14 @@ Accuracy: 99.90%
   - Chi siete voi !
   - Peggio per voi !
   - Se non mi si rispetta, io non rispetto voi !
+
+### "voi" + "?" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ma voi ?
+  - Siete voi ?
+  - Sono venuti da voi ?
 
 ### "&" + "R" (2 occurrences)
 - Predicted: Space
@@ -1793,13 +1793,6 @@ Accuracy: 99.90%
 - Examples:
   - Come dici ?
   - Cosa dici ?
-
-### "dietro" + "?" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Lo facciamo da dietro ?
-  - Signor Chow, quanti mobili si è portato dietro ?
 
 ### "difetti" + "!" (2 occurrences)
 - Predicted: None
@@ -2877,12 +2870,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Melissa - tre; Geeta - due.
-
-### "-" + "era" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - E lei mi cantava questa ninna nanna - era così dolce, sai?
 
 ### "-" + "giusto" (1 occurrences)
 - Predicted: None
@@ -6778,12 +6765,6 @@ Accuracy: 99.90%
 - Examples:
   - Con questo vuoi dire che preferisci coltivare cavoli ?
 
-### "cazzo" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Devo dirtelo, non mi ero reso conto di quanto mi potesse mancare , cazzo .
-
 ### "cazzo" + "“" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -6994,12 +6975,6 @@ Accuracy: 99.90%
 - Examples:
   - Non oso pensare a quello che combina !
 
-### "cominciato" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Visto che è già successo, che importa chi ha cominciato ?
-
 ### "commilitoni" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7047,12 +7022,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Come possiamo mitigare gli effetti di questa legge voluta dai comuni ?
-
-### "comunque" + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Perché quando questo momento sarà finito, lo ucciderò comunque , cazzo.
 
 ### "concerto" + "!" (1 occurrences)
 - Predicted: None
@@ -7414,6 +7383,12 @@ Accuracy: 99.90%
 - Examples:
   - Non riesco a starvi dietro !
 
+### "dietro" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lo facciamo da dietro ?
+
 ### "difendi" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7443,12 +7418,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Chi è la direttrice ?
-
-### "dirgli" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hai cercato di svegliarlo poco fa, hai qualcosa da dirgli ?
 
 ### "dirigenti" + "?" (1 occurrences)
 - Predicted: None
@@ -8902,12 +8871,6 @@ Accuracy: 99.90%
 - Examples:
   - Forza, nessuno viene a dare una mano alla mammina ?
 
-### "mancare" + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Devo dirtelo, non mi ero reso conto di quanto mi potesse mancare , cazzo .
-
 ### "mancato" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9249,12 +9212,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Non è niente - non è niente!
-
-### "ninna nanna" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - E lei mi cantava questa ninna nanna - era così dolce, sai?
 
 ### "no" + "“" (1 occurrences)
 - Predicted: Space
@@ -12423,12 +12380,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Va’ in convento.
-
-### "’" + "per" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Quatritch ha preso il comando, sta’ per partire e nessuno lo fermerà quando?
 
 ### "’" + "un" (1 occurrences)
 - Predicted: None

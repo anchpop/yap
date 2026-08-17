@@ -19,3 +19,4 @@ rustc-hash = "2.1"
 base64 = "0.22"
 tysm = { workspace = true }
 schemars = { workspace = true }
+movie-subtitles = { path = "../movie-subtitles" }

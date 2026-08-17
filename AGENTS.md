@@ -20,6 +20,9 @@ Yap.Town is a language learning application with a Rust-based backend and React 
 - **yap-frontend**: React/TypeScript frontend using Vite, with Tailwind CSS and Radix UI components
 - **generate-data**: Rust binary that extracts sentences from Anki decks and generates dictionary data using Python NLP
 - **language-utils**: Shared Rust library containing language processing types and utilities
+- **libraries/movie-subtitles**: Movie subtitle text handling — raw SRTs as source of truth, lossy cleaning at load time, CP1252 mojibake repair
+- **libraries/opensubtitles-downloader**: Downloads course subtitles from OpenSubtitles; its `recover-subtitles` binary re-fetches the raw SRTs the old pipeline threw away and adjudicates near-misses
+- **libraries/subtitle-corpus**: Builds a correctly-synced subtitle per film in the movie library (inventory → disc extract/OCR → Whisper/VAD/text-to-text sync → calibration), the substrate for cutting per-sentence clips
 - **generate-dictionary-data**: Rust binary that reads `.rkyv` language pack archives and outputs structured JSON for the public dictionary site
 - **static-site**: Astro static site generator that builds ~178k dictionary pages from the JSON data, using Tailwind CSS v4
 - **yap-ai-backend**: Rust backend service for AI features (deployed on Fly.io)

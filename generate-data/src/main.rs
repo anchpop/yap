@@ -2091,6 +2091,18 @@ async fn main() -> anyhow::Result<()> {
             }
         }
 
+        // Per-token contextual embeddings for the final sentence set, cached in
+        // the osmo store (keyed per target language, so shared sentences across
+        // courses embed once). Nothing consumes them yet — substrate for sense
+        // discrimination. See generate_data::token_embeddings.
+        generate_data::token_embeddings::ensure_token_embeddings(
+            course.target_language,
+            &nlp_sentences,
+            &generate_data::cache_remote::store(),
+        )
+        .await
+        .context("Failed to ensure token embeddings")?;
+
         let (pronunciation_to_words, word_to_pronunciation) = {
             let words_set = gram_frequencies
                 .iter()

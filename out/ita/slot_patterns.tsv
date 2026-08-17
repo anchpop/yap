@@ -1,10 +1,10 @@
 term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
-tirare fuori qualcosa	filled	120	12	12	1.00	yes		
-capitare a qualcuno	clitic	84	10	12	0.83	yes	Non sai mai quale sarà la prossima mano che ti capita.	ti … capita
-fare del proprio meglio	clitic	78	12	12	1.00	yes		
+tirare fuori qualcosa	filled	119	12	12	1.00	yes		
+capitare a qualcuno	clitic	83	12	12	1.00	yes		
+fare del proprio meglio	clitic	77	12	12	1.00	yes		
 capitare a qualcuno	filled	60	9	12	0.75	yes	Cosa le è capitato a Boston?	capitato … a … Boston
 sangue del proprio sangue	clitic	52	1	12	0.08	no	Anche il mio sangue?	mio … sangue
-a proprio agio	clitic	45	12	12	1.00	yes		
+a proprio agio	clitic	44	12	12	1.00	yes		
 dalla propria parte	clitic	39	9	12	0.75	yes	Katherine, devo uscire dalla sua parte!	dalla … sua … parte
 fare la propria parte	clitic	17	12	12	1.00	yes		
 tirare fuori qualcosa	clitic	16	12	12	1.00	yes		

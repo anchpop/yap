@@ -1,9 +1,10 @@
 use anyhow::{anyhow, Context, Result};
 use clap::Parser;
 use language_utils::{Language, MovieMetadataBasic};
+use movie_subtitles::SubtitleLine;
+use opensubtitles_downloader::{rank_by_quality, OpenSubtitlesClient};
 use rustc_hash::FxHashMap;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use serde::Deserialize;
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
@@ -108,7 +109,6 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt2278871",  // Blue Is the Warmest Color (2013)
     "tt0113247",  // La Haine (1995)
     "tt0250223",  // Astérix & Obélix: Mission Cléopâtre (2002)
-    "tt1655442",  // The Artist (2011)
     "tt4954522",  // Raw (2017)
     "tt1255953",  // Incendies (2010)
     "tt17009710", // Anatomy of a Fall (2023)
@@ -442,6 +442,16 @@ const EXTRA_MOVIES: &[&str] = &[
     "tt0050986", // Wild Strawberries (1957)
 ];
 
+/// Movies deliberately kept out of yap even when `discover/popular` offers
+/// them. The Artist is a silent film: its "subtitles" are intertitles and a
+/// handful of English lines, so it can never yield original-language speech,
+/// and its presence in the packs was pure confusion.
+const EXCLUDED_MOVIES: &[&str] = &[
+    "tt1655442", // The Artist (2011)
+    "tt0309061", // War Photographer (2001)
+    "tt0017136", // Metropolis (1927): silent — intertitles, no speech to clip
+];
+
 /// OMDB API response
 #[derive(Debug, Deserialize)]
 struct OmdbResponse {
@@ -484,86 +494,6 @@ impl OmdbClient {
         }
         None
     }
-}
-
-/// Response from /discover/popular endpoint
-#[derive(Debug, Deserialize)]
-struct PopularMoviesResponse {
-    data: Vec<PopularMovie>,
-}
-
-#[derive(Debug, Deserialize)]
-struct PopularMovie {
-    attributes: PopularMovieAttributes,
-}
-
-#[derive(Debug, Deserialize)]
-struct PopularMovieAttributes {
-    title: String,
-    #[serde(rename = "imdb_id")]
-    imdb_id: Option<u64>,
-    year: Option<String>,
-}
-
-/// Response from /subtitles search endpoint
-#[derive(Debug, Deserialize)]
-struct SubtitleSearchResponse {
-    data: Vec<SubtitleResult>,
-}
-
-#[derive(Debug, Deserialize)]
-struct SubtitleResult {
-    attributes: SubtitleAttributes,
-}
-
-#[derive(Debug, Deserialize)]
-struct SubtitleAttributes {
-    #[allow(dead_code)]
-    #[serde(rename = "feature_details")]
-    feature_details: FeatureDetails,
-    files: Vec<SubtitleFile>,
-    download_count: Option<u64>,
-    #[serde(default)]
-    from_trusted: Option<bool>,
-    #[serde(default)]
-    ai_translated: bool,
-    #[serde(default)]
-    machine_translated: bool,
-    ratings: Option<f64>,
-}
-
-#[derive(Debug, Deserialize)]
-struct FeatureDetails {
-    #[allow(dead_code)]
-    #[serde(rename = "imdb_id")]
-    imdb_id: u64,
-    #[allow(dead_code)]
-    title: String,
-    #[allow(dead_code)]
-    year: Option<u16>,
-}
-
-#[derive(Debug, Deserialize)]
-struct SubtitleFile {
-    #[serde(rename = "file_id")]
-    file_id: u64,
-}
-
-/// Download link response
-#[derive(Debug, Deserialize)]
-struct DownloadResponse {
-    link: String,
-    #[allow(dead_code)]
-    #[serde(rename = "file_name")]
-    file_name: String,
-}
-
-/// Subtitle line for JSON output
-#[derive(Debug, Serialize)]
-struct SubtitleLineJson {
-    sentence: String,
-    start_ms: u32,
-    end_ms: u32,
 }
 
 /// TMDB API Movie Response
@@ -622,244 +552,8 @@ impl TmdbClient {
     }
 }
 
-struct OpenSubtitlesClient {
-    api_key: String,
-    client: reqwest::Client,
-    access_token: Option<String>,
-}
-
-impl OpenSubtitlesClient {
-    fn new(api_key: String) -> Self {
-        let client = reqwest::Client::builder()
-            .user_agent("yap-language-learning v0.1")
-            .build()
-            .expect("Failed to create HTTP client");
-
-        Self {
-            api_key,
-            client,
-            access_token: None,
-        }
-    }
-
-    /// Login to get JWT access token
-    async fn login(&mut self, username: &str, password: &str) -> Result<()> {
-        let url = "https://api.opensubtitles.com/api/v1/login";
-
-        let mut body = HashMap::new();
-        body.insert("username", username);
-        body.insert("password", password);
-
-        let response = self
-            .client
-            .post(url)
-            .header("Api-Key", &self.api_key)
-            .header("Content-Type", "application/json")
-            .json(&body)
-            .send()
-            .await?
-            .error_for_status()?;
-
-        #[derive(Deserialize)]
-        struct LoginResponse {
-            token: String,
-        }
-
-        let login_response: LoginResponse = response.json().await?;
-        self.access_token = Some(login_response.token);
-
-        println!("✓ Successfully authenticated");
-        Ok(())
-    }
-
-    /// Get popular movies from the discover/popular endpoint
-    async fn get_popular_movies(&self, language: &str, limit: usize) -> Result<Vec<PopularMovie>> {
-        let url = format!(
-            "https://api.opensubtitles.com/api/v1/discover/popular?languages={language}&type=movie"
-        );
-
-        println!("Fetching popular movies: {url}");
-
-        let response = self
-            .client
-            .get(&url)
-            .header("Api-Key", &self.api_key)
-            .send()
-            .await?;
-
-        let status = response.status();
-        println!("Response status: {status}");
-
-        if !status.is_success() {
-            let error_text = response.text().await?;
-            return Err(anyhow!("API error ({status}): {error_text}"));
-        }
-
-        let popular_response: PopularMoviesResponse = response.json().await?;
-
-        println!("Found {} popular movies", popular_response.data.len());
-
-        // Take only the first `limit` results
-        Ok(popular_response.data.into_iter().take(limit).collect())
-    }
-
-    /// Search for subtitles for a specific movie by IMDB ID
-    async fn search_subtitles_for_movie(
-        &self,
-        imdb_id: u64,
-        language: &str,
-    ) -> Result<Vec<SubtitleResult>> {
-        let url = format!(
-            "https://api.opensubtitles.com/api/v1/subtitles?imdb_id={imdb_id}&languages={language}"
-        );
-
-        let response = self
-            .client
-            .get(&url)
-            .header("Api-Key", &self.api_key)
-            .send()
-            .await?
-            .error_for_status()?;
-
-        let search_response = response
-            .text()
-            .await
-            .context("Failed to get subtitle search response")?;
-        let search_response: SubtitleSearchResponse = serde_json::from_str(&search_response)
-            .context(format!(
-                "Failed to parse subtitle search response: {search_response}"
-            ))
-            .unwrap();
-
-        // Return all results for filtering
-        Ok(search_response.data)
-    }
-
-    /// Download a subtitle file
-    async fn download_subtitle(&self, file_id: u64) -> Result<String> {
-        let url = "https://api.opensubtitles.com/api/v1/download";
-
-        let mut body = HashMap::new();
-        body.insert("file_id", file_id);
-
-        let mut request = self.client.post(url).header("Api-Key", &self.api_key);
-
-        // Add Authorization header if we have a token
-        if let Some(token) = &self.access_token {
-            request = request.header("Authorization", format!("Bearer {token}"));
-        }
-
-        let response = request.json(&body).send().await?.error_for_status()?;
-
-        let download_response: DownloadResponse = response.json().await?;
-
-        // Download the actual SRT file from the link
-        let srt_response = self.client.get(&download_response.link).send().await?;
-
-        let srt_content = srt_response.text().await?;
-
-        // Rate limiting: wait 500ms between requests
-        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
-
-        Ok(srt_content)
-    }
-}
-
-/// Parse SRT content and extract cleaned sentences with timestamps
-fn parse_srt(srt_content: &str) -> Result<Vec<SubtitleLineJson>> {
-    use subparse::SubtitleFormat;
-
-    let subtitle_file = subparse::parse_str(
-        SubtitleFormat::SubRip,
-        srt_content,
-        25.0, // fps (not used for SRT but required parameter)
-    )
-    .map_err(|e| anyhow!("Failed to parse SRT: {e:?}"))?;
-
-    let mut lines = Vec::new();
-
-    for entry in subtitle_file
-        .get_subtitle_entries()
-        .map_err(|e| anyhow!("Failed to get subtitle entries: {e:?}"))?
-    {
-        // entry.line is Option<String>
-        let text = match &entry.line {
-            Some(line) => cleanup_subtitle_text(line),
-            None => continue,
-        };
-
-        // Skip empty lines or very short lines
-        if text.len() < 3 {
-            continue;
-        }
-
-        // secs() returns i64, multiply by i64
-        let start_ms = entry.timespan.start.secs() * 1000;
-        let end_ms = entry.timespan.end.secs() * 1000;
-
-        lines.push(SubtitleLineJson {
-            sentence: text,
-            start_ms: start_ms as u32,
-            end_ms: end_ms as u32,
-        });
-    }
-
-    Ok(lines)
-}
-
-/// Clean up subtitle text
-fn cleanup_subtitle_text(text: &str) -> String {
-    let mut result = text.to_string();
-
-    // Remove HTML tags
-    result = strip_html_tags(&result);
-
-    // Remove SSA/ASS override tags ({\an8}, {\i1}, {\pos(200,100)}, …) and
-    // ASS escapes for line break / hard space
-    let re_ssa = regex::Regex::new(r"\{\\[^}]*\}").unwrap();
-    result = re_ssa.replace_all(&result, "").to_string();
-    result = result.replace("\\N", " ").replace("\\h", " ");
-
-    // Remove hearing-impaired annotations
-    result = result
-        .replace("[MUSIC]", "")
-        .replace("(MUSIC)", "")
-        .replace("[music]", "")
-        .replace("(music)", "")
-        .replace("[DOOR SLAMS]", "")
-        .replace("(DOOR SLAMS)", "")
-        .replace("[PHONE RINGS]", "")
-        .replace("(PHONE RINGS)", "");
-
-    // Remove bracketed content (hearing impaired)
-    let re_brackets = regex::Regex::new(r"\[.*?\]").unwrap();
-    result = re_brackets.replace_all(&result, "").to_string();
-
-    let re_parens = regex::Regex::new(r"\(.*?\)").unwrap();
-    result = re_parens.replace_all(&result, "").to_string();
-
-    // Remove speaker names like "JOHN:"
-    let re_speaker = regex::Regex::new(r"^[A-Z][A-Z\s]+:\s*").unwrap();
-    result = re_speaker.replace_all(&result, "").to_string();
-
-    // Trim whitespace
-    result = result.trim().to_string();
-
-    // Remove multiple spaces
-    let re_spaces = regex::Regex::new(r"\s+").unwrap();
-    result = re_spaces.replace_all(&result, " ").to_string();
-
-    result
-}
-
-/// Strip HTML tags from text
-fn strip_html_tags(text: &str) -> String {
-    let re = regex::Regex::new(r"<[^>]+>").unwrap();
-    re.replace_all(text, "").to_string()
-}
-
 /// Check if subtitle lines pass the language sanity check.
-fn passes_language_sanity_check(lines: &[SubtitleLineJson], language: Language) -> bool {
+fn passes_language_sanity_check(lines: &[SubtitleLine], language: Language) -> bool {
     match language.check_subtitle_sanity(lines.iter().map(|l| l.sentence.as_str()), &[]) {
         Ok(()) => true,
         Err(reason) => {
@@ -879,7 +573,7 @@ struct SubtitleQualityResponse {
 
 /// Use an LLM to check if subtitle samples look clean and properly encoded.
 /// Samples 3 blocks from the subtitle file (beginning, middle, end).
-async fn passes_llm_quality_check(lines: &[SubtitleLineJson], language: Language) -> bool {
+async fn passes_llm_quality_check(lines: &[SubtitleLine], language: Language) -> bool {
     if lines.len() < 10 {
         return true; // Too short to meaningfully check
     }
@@ -949,10 +643,12 @@ async fn download_movie_subtitles(
     imdb_id_str: &str,
     language_iso639_1: &str,
     tmdb_language: &str,
-    subtitle_path: &std::path::Path,
+    movies_dir: &std::path::Path,
     posters_dir: &std::path::Path,
     language: Language,
-) -> Result<Option<(Vec<SubtitleLineJson>, MovieMetadataBasic)>> {
+) -> Result<Option<(Vec<SubtitleLine>, MovieMetadataBasic)>> {
+    let subtitle_path = &movie_subtitles::derived_jsonl_path(movies_dir, imdb_id_str);
+
     // Search for subtitles
     let mut subtitle_results = opensub_client
         .search_subtitles_for_movie(imdb_id, language_iso639_1)
@@ -969,27 +665,7 @@ async fn download_movie_subtitles(
         return Ok(None);
     }
 
-    // Rank best-first: trusted, then most-downloaded, then best-rated. Tuple
-    // ordering is ascending, so each key is negated to put the desirable value
-    // first. Written as a key function rather than a chain of early returns
-    // because the latter is easy to get subtly wrong — the previous version
-    // reported `Less` when *both* sides were trusted, which is not a valid
-    // ordering and left the sort arbitrary among trusted subtitles.
-    subtitle_results.sort_by(|a, b| {
-        let rank = |s: &SubtitleResult| {
-            (
-                !s.attributes.from_trusted.unwrap_or(false),
-                std::cmp::Reverse(s.attributes.download_count.unwrap_or(0)),
-            )
-        };
-        rank(a).cmp(&rank(b)).then_with(|| {
-            b.attributes
-                .ratings
-                .unwrap_or(0.0)
-                .partial_cmp(&a.attributes.ratings.unwrap_or(0.0))
-                .unwrap_or(std::cmp::Ordering::Equal)
-        })
-    });
+    rank_by_quality(&mut subtitle_results);
 
     println!("  Found {} subtitle options", subtitle_results.len());
 
@@ -1017,7 +693,7 @@ async fn download_movie_subtitles(
         };
 
         println!("  Parsing SRT...");
-        let subtitle_lines = match parse_srt(&srt_content) {
+        let subtitle_lines = match movie_subtitles::parse_srt(&srt_content) {
             Ok(lines) => lines,
             Err(e) => {
                 println!("  ✗ Parse failed: {e}, trying next...");
@@ -1045,24 +721,19 @@ async fn download_movie_subtitles(
 
         println!("  Extracted {} dialogue lines", subtitle_lines.len());
 
-        // Save subtitle file
-        let subtitle_file = match fs::File::create(subtitle_path) {
-            Ok(file) => file,
-            Err(e) => {
-                println!("  ✗ Failed to create file: {e}, trying next...");
-                continue;
-            }
-        };
+        // The SRT exactly as OpenSubtitles served it, written *first* and never
+        // rewritten. Cleaning is lossy and the download quota is finite, so the
+        // original is what has to survive; the JSONL below is only a derived
+        // cache of it. (Movies fetched before this existed have no raw file —
+        // `recover-subtitles` re-downloads and verifies those.)
+        if let Err(e) = movie_subtitles::write_raw_srt(movies_dir, imdb_id_str, &srt_content) {
+            println!("  ✗ Failed to save raw SRT: {e}, trying next...");
+            continue;
+        }
 
-        for line in &subtitle_lines {
-            if let Err(e) = serde_json::to_writer(&subtitle_file, &line) {
-                println!("  ✗ Failed to write subtitle: {e}");
-                break;
-            }
-            if let Err(e) = writeln!(&subtitle_file) {
-                println!("  ✗ Failed to write newline: {e}");
-                break;
-            }
+        if let Err(e) = movie_subtitles::write_derived_jsonl(subtitle_path, &subtitle_lines) {
+            println!("  ✗ Failed to write subtitles: {e}, trying next...");
+            continue;
         }
 
         println!("  ✓ Saved to {}", subtitle_path.display());
@@ -1205,8 +876,18 @@ async fn process_movie(
     posters_dir: &std::path::Path,
     language: Language,
 ) -> Result<(MovieMetadataBasic, bool)> {
-    let subtitle_path = output_dir.join(format!("subtitles/{imdb_id_str}.jsonl"));
+    let subtitle_path = movie_subtitles::derived_jsonl_path(output_dir, imdb_id_str);
+    let raw_path = movie_subtitles::raw_srt_path(output_dir, imdb_id_str);
     let imdb_id = imdb_id_str.strip_prefix("tt").unwrap().parse::<u64>()?;
+
+    // A movie we already hold the raw SRT for never needs the network again,
+    // even if the derived cache is missing or was deleted to force a re-clean.
+    if raw_path.exists() && !subtitle_path.exists() {
+        println!("  ↻ Re-deriving dialogue from the stored SRT");
+        let srt = fs::read_to_string(&raw_path)?;
+        let lines = movie_subtitles::parse_srt(&srt)?;
+        movie_subtitles::write_derived_jsonl(&subtitle_path, &lines)?;
+    }
 
     let (is_new_download, maybe_metadata) = if subtitle_path.exists() {
         println!("  ✓ Subtitle already downloaded");
@@ -1221,7 +902,7 @@ async fn process_movie(
             imdb_id_str,
             language_iso639_1,
             tmdb_language,
-            &subtitle_path,
+            output_dir,
             posters_dir,
             language,
         )
@@ -1396,6 +1077,10 @@ async fn main() -> Result<()> {
                 continue;
             };
             let imdb_id_str = format!("tt{imdb_id:07}");
+            if EXCLUDED_MOVIES.contains(&imdb_id_str.as_str()) {
+                println!("  ✗ Excluded by policy: {}", attrs.title);
+                continue;
+            }
 
             println!(
                 "\n[Downloaded: {}/{}] {} ({})",

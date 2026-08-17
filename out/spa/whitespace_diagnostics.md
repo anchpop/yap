@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2915652
-Total errors: 943
+Total predictions: 2898835
+Total errors: 939
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -22,7 +22,7 @@ Accuracy: 99.97%
   - Así que,¿de veras eres una realizadora de cine?
   - Bueno,¿por qué lo preguntas?
 
-### "-" + "¡" (15 occurrences)
+### "-" + "¡" (14 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -190,14 +190,6 @@ Accuracy: 99.97%
   - Babinot, se acabaron las vacaciones.
   - Babinot, ¿qué haces?
 
-### "Pilar" + "," (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Como Pilar , claro que protegería a mis subordinados.
-  - Como Pilar , estoy aquí para investigar.
-  - Eres un Pilar , ¿verdad?
-
 ### "Por" + "qué" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -319,6 +311,13 @@ Accuracy: 99.97%
 - Examples:
   - Colocando el marcador a O - O.
   - Con esto, esta ronda está empatada en O - O.
+
+### "Pilar" + "," (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Como Pilar , estoy aquí para investigar.
+  - Eres un Pilar , ¿verdad?
 
 ### "Sírve" + "te" (2 occurrences)
 - Predicted: Space
@@ -2389,12 +2388,6 @@ Accuracy: 99.97%
 - Examples:
   - Mi punto fuerte es mi filosofía - Nada arriesgado, nada ganado.
 
-### "firdous" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Mi amado sigue los pasos del rocío bajo sus pies yace el firdous .
-
 ### "fluye" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3240,12 +3233,6 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Eres una 'turista'.
-
-### "usted" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Le agradezco, de mano y corazón, que usted - ¡quien no lo adivina!
 
 ### "va" + "'" (1 occurrences)
 - Predicted: Space

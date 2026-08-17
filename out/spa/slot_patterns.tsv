@@ -1,7 +1,7 @@
 term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
-dar algo	filled	5960	12	12	1.00	yes		
-dar algo	clitic	333	7	12	0.58	no	A él le da lo mismo lo que otros digan.	da … lo
-en su vida	clitic	184	9	12	0.75	yes	Alguien en su vida, quizá.	en … su … vida
+dar algo	filled	5930	9	12	0.75	yes	Hichiro, date prisa.	date … prisa
+dar algo	clitic	329	8	12	0.67	yes	A él le da lo mismo lo que otros digan.	da … lo
+en su vida	clitic	182	5	12	0.42	no	Alguien en su vida, quizá.	en … su … vida
 necesito su ayuda	clitic	66	12	12	1.00	yes		
 su gracia	filled	24	3	12	0.25	no	Dale las gracias de mi parte.	gracias … parte
 en su vida	filled	14	9	12	0.75	yes	Ella fue educada en una vida de lujo.	en … vida … lujo

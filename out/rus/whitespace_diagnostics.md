@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2224819
-Total errors: 11853
+Total predictions: 2222854
+Total errors: 11801
 Accuracy: 99.47%
 
 ## Error Patterns (sorted by frequency)
@@ -14,7 +14,7 @@ Accuracy: 99.47%
   - В настоящее время Том - учитель.
   - Все думают, что Том - гений.
 
-### "-" + "это" (704 occurrences)
+### "-" + "это" (703 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -54,7 +54,7 @@ Accuracy: 99.47%
   - Аваруа - столица Островов Кука.
   - Адамстаун - столица островов Питкэрн.
 
-### "Я" + "-" (105 occurrences)
+### "Я" + "-" (101 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -70,7 +70,7 @@ Accuracy: 99.47%
   - А это что здесь - не город?
   - Америка - не самая демократическая страна.
 
-### "Ты" + "-" (79 occurrences)
+### "Ты" + "-" (76 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -78,13 +78,13 @@ Accuracy: 99.47%
   - Ты - Иной.
   - Ты - Кан Чонги?
 
-### "я" + "-" (71 occurrences)
+### "я" + "-" (67 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - А если я буду знать наверняка, что я - гений?
   - А теперь я - надежда и слава Поднебесной.
-  - А я - Кеничи.
+  - А я - Фрау Бауман, бабушка Марселя.
 
 ### "-" + "моя" (65 occurrences)
 - Predicted: None
@@ -142,14 +142,6 @@ Accuracy: 99.47%
   - Арифметика - его сильная сторона.
   - Ваша работа - его найти.
 
-### "ты" + "-" (42 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - А ты - как внучка нашего отца.
-  - А ты - как подонок!
-  - А ты - нет?
-
 ### "-" + "самый" (41 occurrences)
 - Predicted: None
 - Actual: Space
@@ -157,6 +149,14 @@ Accuracy: 99.47%
   - Аляска - самый крупный штат США.
   - Африка - самый бедный континент.
   - Грасия - самый модный квартал Барселоны.
+
+### "ты" + "-" (40 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - А ты - как внучка нашего отца.
+  - А ты - как подонок!
+  - А ты - нет?
 
 ### "-" + "и" (39 occurrences)
 - Predicted: None
@@ -302,14 +302,6 @@ Accuracy: 99.47%
   - Все - мои друзья.
   - Все те книги - мои.
 
-### "Она" + "-" (20 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Она - бесценный учитель.
-  - Она - величайшее творение моей жизни!
-  - Она - весьма приятная соседка.
-
 ### "ни" + "будь" (20 occurrences)
 - Predicted: Space
 - Actual: None
@@ -333,6 +325,14 @@ Accuracy: 99.47%
   - А если нет, - что будет?
   - А твой двоюродный брат - что с ним?
   - Возможно - что?
+
+### "Она" + "-" (19 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Она - бесценный учитель.
+  - Она - весьма приятная соседка.
+  - Она - второкурсница.
 
 ### "работа" + "-" (19 occurrences)
 - Predicted: None
@@ -382,14 +382,6 @@ Accuracy: 99.47%
   - Все знают - ты работал на «Штази», ты, тряпка!
   - Все эти люди - ты один!
 
-### "вы" + "-" (17 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - А вы - к директору.
-  - А вы - пошли вы все нафиг!
-  - А вы - хороший человек.
-
 ### "мечта" + "-" (17 occurrences)
 - Predicted: None
 - Actual: Space
@@ -398,13 +390,13 @@ Accuracy: 99.47%
   - Её мечта - путешествовать вокруг света.
   - Её мечта - стать медсестрой.
 
-### "мы" + "-" (16 occurrences)
+### "вы" + "-" (16 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - А мы - да!
-  - В колледже все мы - хозяева своей судьбы.
-  - Все мы - лишь гости на пиру судьбы.
+  - А вы - к директору.
+  - А вы - пошли вы все нафиг!
+  - А вы - хороший человек.
 
 ### "-" + "стать" (15 occurrences)
 - Predicted: None
@@ -414,14 +406,6 @@ Accuracy: 99.47%
   - Дело всей жизни - стать одним из них.
   - Его цель - стать адвокатом.
 
-### "-" + "человек" (15 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Возможно, что ты - человек.
-  - Вот проблема - человек потерял сон.
-  - Джим - человек слова.
-
 ### "Любовь" + "-" (15 occurrences)
 - Predicted: None
 - Actual: Space
@@ -429,6 +413,14 @@ Accuracy: 99.47%
   - Любовь - враньё.
   - Любовь - дитя, дитя свободы.
   - Любовь - источник жизни.
+
+### "мы" + "-" (15 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - А мы - да!
+  - В колледже все мы - хозяева своей судьбы.
+  - Все мы - лишь гости на пиру судьбы.
 
 ### "что" + "-" (15 occurrences)
 - Predicted: None
@@ -501,14 +493,6 @@ Accuracy: 99.47%
   - Её мать - замечательная пианистка.
   - Её мать - красивая женщина.
   - Мои отец и мать - красивая пара.
-
-### "она" + "-" (14 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - В таких делах она - одна из лучших.
-  - Видите ли, она - карлица.
-  - Да, она - ангел.
 
 ### "сын" + "-" (14 occurrences)
 - Predicted: None
@@ -606,6 +590,14 @@ Accuracy: 99.47%
   - Его вторая жена - японка.
   - Его жена - француженка.
 
+### "она" + "-" (13 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - В таких делах она - одна из лучших.
+  - Видите ли, она - карлица.
+  - Значит, она - Луизон!
+
 ### "сестра" + "-" (13 occurrences)
 - Predicted: None
 - Actual: Space
@@ -678,14 +670,6 @@ Accuracy: 99.47%
   - Музыка - его страсть.
   - Музыка - международный язык.
 
-### "он" + "-" (12 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Будто, он - господь Бог.
-  - В этом деле он - лучший.
-  - Всё, что хочет он - любовь.
-
 ### "цель" + "-" (12 occurrences)
 - Predicted: None
 - Actual: Space
@@ -717,6 +701,14 @@ Accuracy: 99.47%
   - Вы - тот доктор?
   - Кто последний - тот тухлое яйцо!
   - Один - тот, что создал нас.
+
+### "-" + "человек" (11 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Возможно, что ты - человек.
+  - Вот проблема - человек потерял сон.
+  - Джим - человек слова.
 
 ### "Алжир" + "-" (11 occurrences)
 - Predicted: None
@@ -765,6 +757,14 @@ Accuracy: 99.47%
   - Без женщины мужчина - ничто.
   - Вон тот высокий мужчина - Том.
   - Какой ты мужчина - ты конченый алкаш.
+
+### "он" + "-" (11 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Будто, он - господь Бог.
+  - В этом деле он - лучший.
+  - Всё, что хочет он - любовь.
 
 ### "слово" + "-" (11 occurrences)
 - Predicted: None
@@ -1062,14 +1062,6 @@ Accuracy: 99.47%
   - И неожиданные вещи - самые опасные.
   - Колибри - самые маленькие птицы в мире.
 
-### "-" + "такая" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Анна - такая хорошая девочка.
-  - Быть удочерённой - такая удача!
-  - Всё остальное - такая ерунда.
-
 ### "-" + "хорошее" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1230,6 +1222,14 @@ Accuracy: 99.47%
   - Номер моей комнаты - пять.
   - Один - пять вагонов?
 
+### "-" + "такая" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Анна - такая хорошая девочка.
+  - Быть удочерённой - такая удача!
+  - Всё остальное - такая ерунда.
+
 ### "-" + "талантливый" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1285,14 +1285,6 @@ Accuracy: 99.47%
   - Ничего не делать - это очень утомительно.
   - Что вам делать - ваше дело.
   - Что вы будете делать - зависит только от вас.
-
-### "дядя" + "-" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Её дядя - известный врач.
-  - Мой дядя - адвокат.
-  - Мой дядя - ветеран войны во Вьетнаме.
 
 ### "его" + "-" (7 occurrences)
 - Predicted: None
@@ -1550,14 +1542,6 @@ Accuracy: 99.47%
   - А сейчас - только отдых.
   - А у женщин - только магазины и маджонг.
 
-### "-" + "три" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Время излучения - три минуты.
-  - Длина стены - три метра.
-  - Моё любимое число - три.
-
 ### "-" + "учительница" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1629,6 +1613,14 @@ Accuracy: 99.47%
   - Для меня каждый день - праздник.
   - Каждый день - дар.
   - Каждый день - подарок.
+
+### "дядя" + "-" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Её дядя - известный врач.
+  - Мой дядя - адвокат.
+  - Мой дядя - ветеран войны во Вьетнаме.
 
 ### "мальчик" + "-" (6 occurrences)
 - Predicted: None
@@ -1886,6 +1878,14 @@ Accuracy: 99.47%
   - Потому, что если ты такой - тебе кранты.
   - Эти - тебе, а эти - мне.
 
+### "-" + "три" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Длина стены - три метра.
+  - Моё любимое число - три.
+  - Сомножители пятнадцати - три и пять.
+
 ### "-" + "у" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2142,14 +2142,6 @@ Accuracy: 99.47%
   - Том - актёр-любитель.
   - Том - актёр.
 
-### "-" + "ангел" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ваш сын - ангел.
-  - Да, она - ангел.
-  - Её сын - ангел.
-
 ### "-" + "близнецы" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2302,14 +2294,6 @@ Accuracy: 99.47%
   - Дети - надежда завтрашнего дня.
   - Так что не отчаивайся - надежда есть.
 
-### "-" + "ничто" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Без женщины мужчина - ничто.
-  - Лидер - ничто без своего народа.
-  - Он - ничто и никто.
-
 ### "-" + "ноль" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2325,14 +2309,6 @@ Accuracy: 99.47%
   - Все мои мысли - о вас.
   - Все мои мысли - о тебе.
   - Для вас позор - о милости молить!
-
-### "-" + "одна" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Бразилия - одна из стран БРИК.
-  - В таких делах она - одна из лучших.
-  - Охранять отца - одна из моих обязанностей.
 
 ### "-" + "одно" (4 occurrences)
 - Predicted: None
@@ -3062,14 +3038,6 @@ Accuracy: 99.47%
   - На войне он знает одно слово — «быстро»!
   - Ответ на оба вопроса — «нет».
 
-### "-" + "-" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Знаю но- -Комната свободна.
-  - И раз- -Извините, мисс Таннер.
-  - Мы не можем отдать будущее-- -Дурак!
-
 ### "-" + "Ранчодас" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3093,6 +3061,14 @@ Accuracy: 99.47%
   - Мэри - агент по недвижимости.
   - Том - агент ФБР.
   - Том - агент по недвижимости.
+
+### "-" + "ангел" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ваш сын - ангел.
+  - Её сын - ангел.
+  - Том - ангел.
 
 ### "-" + "архитектор" (3 occurrences)
 - Predicted: None
@@ -3165,14 +3141,6 @@ Accuracy: 99.47%
   - Моя сестра - вдова.
   - Мэри - вдова.
   - Стелла - вдова.
-
-### "-" + "величайшее" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Музыка - величайшее из искусств.
-  - Она - величайшее творение моей жизни!
-  - Ты - величайшее, самое грандиозное творение!
 
 ### "-" + "ветеран" (3 occurrences)
 - Predicted: None
@@ -3301,14 +3269,6 @@ Accuracy: 99.47%
   - Потому что я - демон.
   - Этот поезд - демон!
   - Я - демон!
-
-### "-" + "дерьмо" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Всё остальное - дерьмо, чёрт возьми!
-  - Их жизнь - дерьмо?
-  - Мардуки - дерьмо собачье!
 
 ### "-" + "душа" (3 occurrences)
 - Predicted: None
@@ -3574,6 +3534,14 @@ Accuracy: 99.47%
   - Он - никто, просто коллега.
   - Ты - никто!
 
+### "-" + "ничто" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Без женщины мужчина - ничто.
+  - Лидер - ничто без своего народа.
+  - Он - ничто и никто.
+
 ### "-" + "новая" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3589,6 +3557,14 @@ Accuracy: 99.47%
   - Сэл - обычный человек!
   - Том - обычный парень.
   - Том - обычный ребёнок.
+
+### "-" + "одна" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Бразилия - одна из стран БРИК.
+  - В таких делах она - одна из лучших.
+  - Честность - одна из добродетелей.
 
 ### "-" + "около" (3 occurrences)
 - Predicted: None
@@ -3693,14 +3669,6 @@ Accuracy: 99.47%
   - Том - рисковый водитель.
   - Том - рисковый парень.
   - Том - рисковый человек.
-
-### "-" + "робот" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Иногда мне кажется, что Том - робот.
-  - О том, что ты - робот.
-  - Это правда, ты - робот.
 
 ### "-" + "ровесница" (3 occurrences)
 - Predicted: None
@@ -3909,14 +3877,6 @@ Accuracy: 99.47%
   - Его вторая жена - японка.
   - Его жена - японка.
   - Его супруга - японка.
-
-### "--" + "-" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - И ее автор, мистер Манн-- -Больной!
-  - Ладно, следующее-- -Тима.
-  - Я прибыл из Японии с детек-- -Что?
 
 ### "А" + "»" (3 occurrences)
 - Predicted: Space
@@ -4950,6 +4910,13 @@ Accuracy: 99.47%
   - Нет, нет, этот - не работает.
   - Этот дом - мой, а этот - только твой.
 
+### "-" + "-" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Знаю но- -Комната свободна.
+  - И раз- -Извините, мисс Таннер.
+
 ### "-" + "А" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5433,6 +5400,13 @@ Accuracy: 99.47%
   - Мария - девушка моей мечты.
   - Мэри - девушка в жёлтом платье.
 
+### "-" + "дерьмо" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Всё остальное - дерьмо, чёрт возьми!
+  - Их жизнь - дерьмо?
+
 ### "-" + "дети" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5824,13 +5798,6 @@ Accuracy: 99.47%
 - Examples:
   - Его любимый предмет - математика.
   - Её любимый предмет - математика.
-
-### "-" + "машина" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - За ней - машина сопровождения.
-  - Или я - машина, как те бедные роботы?
 
 ### "-" + "международный" (2 occurrences)
 - Predicted: None
@@ -6496,13 +6463,6 @@ Accuracy: 99.47%
 - Examples:
   - А сейчас - снова что-нибудь быстрое.
   - Каково это - снова быть дома?
-
-### "-" + "собака" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Звучит так, будто он - собака.
-  - Куки - собака или кошка?
 
 ### "-" + "состоятельный" (2 occurrences)
 - Predicted: None
@@ -8716,13 +8676,6 @@ Accuracy: 99.47%
   - Люблю их всех, в ответ - от них любовь.
   - На указующий перст, ответ - кулак.
 
-### "отца" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Воля отца - моя воля.
-  - Охранять отца - одна из моих обязанностей.
-
 ### "письмо" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9254,6 +9207,12 @@ Accuracy: 99.47%
 - Examples:
   - Моя голова… – Да?
   - Я Юрая… – Не откроете ли дверь?
+
+### "-" + "АААА" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Что спасает нас в любую непогоду - АААА!
 
 ### "-" + "Абуджа" (1 occurrences)
 - Predicted: None
@@ -9945,12 +9904,6 @@ Accuracy: 99.47%
 - Examples:
   - Мужчина с зонтом - Кен.
 
-### "-" + "Кеничи" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - А я - Кеничи.
-
 ### "-" + "Кети" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10508,12 +10461,6 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Имя пациента- Ройал Тененбаум.
-
-### "-" + "Рок" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Я - Рок из партии мардуков.
 
 ### "-" + "Рокси" (1 occurrences)
 - Predicted: None
@@ -11654,6 +11601,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Мэри - великолепная актриса.
+
+### "-" + "величайшее" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Музыка - величайшее из искусств.
 
 ### "-" + "велосипедист" (1 occurrences)
 - Predicted: None
@@ -13485,12 +13438,6 @@ Accuracy: 99.47%
 - Examples:
   - Том - искусный игрок.
 
-### "-" + "искусственный" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Я - искусственный человек.
-
 ### "-" + "искусство" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -14306,6 +14253,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Они же все - мафия.
+
+### "-" + "машина" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - За ней - машина сопровождения.
 
 ### "-" + "медиум" (1 occurrences)
 - Predicted: None
@@ -15410,12 +15363,6 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Скажешь сразу - освобожу от наказания.
-
-### "-" + "основатель" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Герцог Ред - основатель партии.
 
 ### "-" + "основная" (1 occurrences)
 - Predicted: None
@@ -17043,12 +16990,6 @@ Accuracy: 99.47%
 - Examples:
   - Том - ремесленник.
 
-### "-" + "репортер" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Мой дядя - репортер, и я ему помогаю.
-
 ### "-" + "репортёр" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -17072,6 +17013,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Том - риелтор.
+
+### "-" + "робот" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Иногда мне кажется, что Том - робот.
 
 ### "-" + "роботы" (1 occurrences)
 - Predicted: None
@@ -17739,6 +17686,12 @@ Accuracy: 99.47%
 - Examples:
   - Жена вашего сына - сноха.
 
+### "-" + "собака" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Куки - собака или кошка?
+
 ### "-" + "собирание" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18194,12 +18147,6 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Перед нами легенда Вольт - суперпес!
-
-### "-" + "суперчеловек" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ты - суперчеловек!
 
 ### "-" + "суровая" (1 occurrences)
 - Predicted: None
@@ -19521,12 +19468,6 @@ Accuracy: 99.47%
 - Examples:
   - Том - эльф.
 
-### "-" + "эмоции" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Верно, источник наших проблем - эмоции.
-
 ### "-" + "эмоциональный" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19623,11 +19564,11 @@ Accuracy: 99.47%
 - Examples:
   - Том - ясновидящий.
 
-### "--" + "Что" (1 occurrences)
+### "--" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - Он кажется маленьким, но-- Что?
+  - И ее автор, мистер Манн-- -Больной!
 
 ### "--" + "велики" (1 occurrences)
 - Predicted: None
@@ -22413,12 +22354,6 @@ Accuracy: 99.47%
 - Examples:
   - Какие ?
 
-### "Какого" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Какого ?
-
 ### "Калторп" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -23360,12 +23295,6 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Марафон - это довольно утомительно.
-
-### "Мардуки" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Мардуки - дерьмо собачье!
 
 ### "Марк" + "-" (1 occurrences)
 - Predicted: None
@@ -25052,12 +24981,6 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Регула - класс Д.
-
-### "Ред" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Герцог Ред - основатель партии.
 
 ### "Рейкьявик" + "-" (1 occurrences)
 - Predicted: None
@@ -29667,12 +29590,6 @@ Accuracy: 99.47%
 - Examples:
   - Я пришел издалека - с востока!
 
-### "излучения" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Время излучения - три минуты.
-
 ### "изображением" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31107,6 +31024,12 @@ Accuracy: 99.47%
 - Examples:
   - Тебе это кажется необычным ?
 
+### "непогоду" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Что спасает нас в любую непогоду - АААА!
+
 ### "нервным" + "»" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -31562,6 +31485,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Убирайтесь оттуда !
+
+### "отца" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Воля отца - моя воля.
 
 ### "отца" + "?" (1 occurrences)
 - Predicted: None
@@ -32469,12 +32398,6 @@ Accuracy: 99.47%
 - Examples:
   - Поэтому когда они пришли - я был не один.
 
-### "проблем" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Верно, источник наших проблем - эмоции.
-
 ### "проблемка" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32732,12 +32655,6 @@ Accuracy: 99.47%
 - Actual: None
 - Examples:
   - Они работаюттолько над похищением.
-
-### "работы" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Это из-за вас, ублюдков, мы лишились работы !
 
 ### "работы" + "," (1 occurrences)
 - Predicted: None

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1917453
-Total errors: 603
+Total predictions: 1902669
+Total errors: 604
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
@@ -78,6 +78,14 @@ Accuracy: 99.97%
   - Benson, - Meu capitão.
   - Você selvagem nômade, - Mostre-me como fazer uma festa.
 
+### "," + "“" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ah, não, “fofo” nada.
+  - Como assim, “eles foram embora”?
+  - Como assim, “todo mundo”?
+
 ### "-" + "um" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -148,13 +156,6 @@ Accuracy: 99.97%
 - Examples:
   - E sempre vou amar, ####.
   - Ou só late, ####?
-
-### "," + "“" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ah, não, “fofo” nada.
-  - Como assim, “eles foram embora”?
 
 ### "-" + "A" (2 occurrences)
 - Predicted: None
