@@ -134,6 +134,34 @@ static LANGUAGE_DATA: LazyLock<BTreeMap<Course, &'static [u8]>> = LazyLock::new(
         },
         include_bytes!("../../out/rus_for_eng/language_data.rkyv") as &'static [u8],
     );
+    data.insert(
+        Course {
+            native_language: Language::English,
+            target_language: Language::Hindi,
+        },
+        include_bytes!("../../out/hin_for_eng/language_data.rkyv") as &'static [u8],
+    );
+    data.insert(
+        Course {
+            native_language: Language::English,
+            target_language: Language::Thai,
+        },
+        include_bytes!("../../out/tha_for_eng/language_data.rkyv") as &'static [u8],
+    );
+    data.insert(
+        Course {
+            native_language: Language::English,
+            target_language: Language::ChineseSimplified,
+        },
+        include_bytes!("../../out/zho-hans_for_eng/language_data.rkyv") as &'static [u8],
+    );
+    data.insert(
+        Course {
+            native_language: Language::English,
+            target_language: Language::Japanese,
+        },
+        include_bytes!("../../out/jpn_for_eng/language_data.rkyv") as &'static [u8],
+    );
     data
 });
 
@@ -893,7 +921,6 @@ async fn autograde_translation(
     let response = autograde_core::grade_translation(&TRANSLATION_CLIENT, &request)
         .await
         .map_err(|e| match e {
-            autograde_core::GradeError::UnsupportedLanguage(_) => StatusCode::NOT_IMPLEMENTED,
             autograde_core::GradeError::Llm(msg) => {
                 eprintln!("Error: {msg}");
                 StatusCode::INTERNAL_SERVER_ERROR
@@ -994,9 +1021,8 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
             Language::Thai =>
                 r#"For example, if the user confused "ใกล้" (near) and "ไกล" (far), or "หมา" and "ม้า", you could generate ["ใกล้", "ไกล"] or ["หมา", "ม้า"] in the compare array."#,
 
-            Language::ChineseSimplified | Language::ChineseTraditional => {
-                return Err(StatusCode::NOT_IMPLEMENTED);
-            }
+            Language::ChineseSimplified | Language::ChineseTraditional =>
+                r#"For example, if the user confused "在" and "再", or "他" and "她", you could generate ["在", "再"] or ["他", "她"] in the compare array."#,
         }
     );
 

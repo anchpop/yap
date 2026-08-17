@@ -408,6 +408,18 @@ fn create_deck_for_course(course: Course) -> Result<Deck> {
         (Language::English, Language::Russian) => {
             include_bytes!("../../../out/rus_for_eng/language_data.rkyv").to_vec()
         }
+        (Language::English, Language::Hindi) => {
+            include_bytes!("../../../out/hin_for_eng/language_data.rkyv").to_vec()
+        }
+        (Language::English, Language::Thai) => {
+            include_bytes!("../../../out/tha_for_eng/language_data.rkyv").to_vec()
+        }
+        (Language::English, Language::ChineseSimplified) => {
+            include_bytes!("../../../out/zho-hans_for_eng/language_data.rkyv").to_vec()
+        }
+        (Language::English, Language::Japanese) => {
+            include_bytes!("../../../out/jpn_for_eng/language_data.rkyv").to_vec()
+        }
         _ => {
             return Err(anyhow::anyhow!(
                 "Unsupported course: {:?} -> {:?}",

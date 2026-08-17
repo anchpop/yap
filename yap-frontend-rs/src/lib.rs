@@ -107,6 +107,10 @@ pub fn get_showcase_data() -> Vec<language_utils::CourseShowcase> {
         include_str!("../../out/por_for_eng/showcase.json"),
         include_str!("../../out/por_for_fra/showcase.json"),
         include_str!("../../out/rus_for_eng/showcase.json"),
+        include_str!("../../out/hin_for_eng/showcase.json"),
+        include_str!("../../out/tha_for_eng/showcase.json"),
+        include_str!("../../out/zho-hans_for_eng/showcase.json"),
+        include_str!("../../out/jpn_for_eng/showcase.json"),
     ];
     SHOWCASE_JSONS
         .iter()
