@@ -1,25 +1,25 @@
 term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
-dire quelque chose	filled	6689	12	12	1.00	yes		
-dire quelque chose	clitic	1443	12	12	1.00	yes		
-sortir quelque chose	filled	466	7	12	0.58	no	A t on une chance de faire sortir Bohr du Danemark ?	sortir … Bohr
-arriver à quelqu'un	filled	356	5	12	0.42	no	Alors que le procès du siècle arrive finalement à son terme.	arrive … à … terme
-arriver à quelqu'un	clitic	305	12	12	1.00	yes		
-sortir quelque chose	clitic	243	7	12	0.58	no	Comment vous en sortez-vous, ces temps-ci ?	sortez … vous
-à côté de ses pompes	filled	105	0	12	0.00	no	A côté de Ruby Rhod !	A … côté … de … Ruby Rhod
+dire quelque chose	filled	6650	12	12	1.00	yes		
+dire quelque chose	clitic	1433	11	12	0.92	yes	Ma chérie, je ne peux pas te dire ça maintenant.	te … dire
+sortir quelque chose	filled	460	10	12	0.83	yes	A t on une chance de faire sortir Bohr du Danemark ?	sortir … Bohr
+arriver à quelqu'un	filled	355	5	12	0.42	no	Alors que le procès du siècle arrive finalement à son terme.	arrive … à … terme
+arriver à quelqu'un	clitic	304	12	12	1.00	yes		
+sortir quelque chose	clitic	240	7	12	0.58	no	Comment vous en sortez-vous, ces temps-ci ?	sortez … vous
+à côté de ses pompes	filled	103	0	12	0.00	no	A côté de Ruby Rhod !	A … côté … de … Ruby Rhod
 à côté de ses pompes	clitic	62	0	12	0.00	no	A mes cotés !	A … mes … cotés
 prendre son temps	clitic	49	11	12	0.92	yes	Les affaires lui prennent tout son temps.	prennent … son … temps
 faire son possible	clitic	36	12	12	1.00	yes		
-de toutes ses forces	clitic	25	12	12	1.00	yes		
+de toutes ses forces	clitic	24	12	12	1.00	yes		
 mettre dans sa poche	clitic	18	12	12	1.00	yes		
 avoir ses règles	clitic	17	9	12	0.75	yes	Chaque couvent a ses propres règles.	a … ses … règles
-dans son monde	filled	17	0	12	0.00	no	Bienvenue dans le monde de la chimie.	dans … monde … chimie
 retenir son souffle	clitic	17	12	12	1.00	yes		
+dans son monde	filled	16	0	12	0.00	no	Bienvenue dans le monde de la chimie.	dans … monde … chimie
 dans son monde	clitic	15	4	12	0.33	no	Dans notre monde pour le ruiner.	Dans … notre … monde
 régler son compte	clitic	13	7	12	0.58	no	Allons régler nos comptes avec ce dealer de merde.	régler … nos … comptes
-lever son verre	clitic	11	11	11	1.00	yes		
 perdre son chemin	clitic	11	11	11	1.00	yes		
 faire ses besoins	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
 faire ses comptes	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
+lever son verre	clitic	10	10	10	1.00	yes		
 reprendre son souffle	clitic	10	10	10	1.00	yes		
 avoir son compte	clitic	9	9	9	1.00	yes		
 faire son possible	filled	9	9	9	1.00	yes		
@@ -38,11 +38,11 @@ tirer son chapeau	clitic	6	6	6	1.00	yes
 y être pour quelque chose	filled	6	6	6	1.00	yes		
 avoir toute sa tête	clitic	5	5	5	1.00	yes		
 passer son chemin	clitic	5	5	5	1.00	yes		
-sauver sa peau	clitic	5	5	5	1.00	yes		
 avoir ses règles	filled	4	0	4	0.00	no	Ces deux villes ont les mêmes règles de circulation.	ont … règles … circulation
 prendre ses responsabilités	clitic	4	4	4	1.00	yes		
 prendre ses responsabilités	filled	4	4	4	1.00	yes		
 rendre son tablier	filled	4	0	4	0.00	no	Il a fait un compte-rendu de son voyage.	rendu … voyage
+sauver sa peau	clitic	4	4	4	1.00	yes		
 avoir fait son temps	clitic	3	3	3	1.00	yes		
 cracher son venin	clitic	3	3	3	1.00	yes		
 creuser sa tombe	clitic	3	3	3	1.00	yes		

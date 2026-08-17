@@ -1,14 +1,14 @@
 term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
-bei jemandem sein	filled	544	7	12	0.58	no	Bin ich bei der Mafia?	Bin … bei … Mafia
-zu etwas kommen	filled	505	3	12	0.25	no	Aber Jules Baumann und Frederik Clausen, die wollten auch noch zu uns kommen.	zu … uns … kommen
-bei jemandem sein	clitic	250	0	12	0.00	no	Aber bei dir hat man den Eindruck, du bist dir nicht im Klaren darüber.	bist … dir
+bei jemandem sein	filled	539	10	12	0.83	yes	Ich war dabei bei den ersten Schritten, Zähnen und Wörtern.	war … bei … Schritten
+zu etwas kommen	filled	501	7	12	0.58	no	Dann kommt ihr eben zu mir.	kommt … zu … mir
+bei jemandem sein	clitic	248	0	12	0.00	no	Aber bei dir hat man den Eindruck, du bist dir nicht im Klaren darüber.	bist … dir
 von etwas Wind bekommen	filled	80	0	12	0.00	no	Balthasar, frag ihn, ob er Geld von Ursua bekommen hat.	von … Ursua … bekommen
-jemandem Bescheid sagen	filled	70	12	12	1.00	yes		
-jemandem Bescheid sagen	clitic	59	12	12	1.00	yes		
+jemandem Bescheid sagen	filled	69	12	12	1.00	yes		
+jemandem Bescheid sagen	clitic	58	12	12	1.00	yes		
 jemanden Bescheid geben	filled	42	12	12	1.00	yes		
 jemanden Bescheid geben	clitic	35	12	12	1.00	yes		
 etwas satt haben	filled	34	12	12	1.00	yes		
-jemanden mal können	filled	23	7	12	0.58	no	Das kann doch verdammt noch mal nicht Ihr Ernst sein!	kann … mal … Ernst
+jemanden mal können	filled	22	8	12	0.67	yes	Das kann doch verdammt noch mal nicht Ihr Ernst sein!	kann … mal … Ernst
 im Bilde über etwas sein	filled	17	0	12	0.00	no	Bist du über dem Steuerungsmodul?	Bist … über … Steuerungsmodul
 aus etwas Kapital schlagen	filled	15	1	12	0.08	no	Die Mädchen schlugen mir meine Bücher aus den Händen und lachten mich aus.	schlugen … aus … Händen
 etwas im Schilde führen	filled	12	12	12	1.00	yes		
@@ -29,13 +29,13 @@ jemanden mal können	clitic	4	1	4	0.25	no	Du kannst es ja nicht mal.	kannst … 
 etwas am Hals haben	filled	3	3	3	1.00	yes		
 jemandem zu schaffen machen	clitic	3	2	3	0.67	yes	Sie machte sich an einem Stück Papier zu schaffen.	machte … sich … zu … schaffen
 jemandem zur Seite stehen	clitic	3	3	3	1.00	yes		
-jemandem zur Seite stehen	filled	3	3	3	1.00	yes		
 auf etwas wetten	filled	2	2	2	1.00	yes		
 etwas für bare Münze nehmen	filled	2	2	2	1.00	yes		
 etwas in den Wind schlagen	filled	2	2	2	1.00	yes		
 jemand in die Tasche stecken	clitic	2	0	2	0.00	no	Die stecken sich das Geld selber in die Tasche.	stecken … sich … in … die … Tasche
 jemandem am Herzen liegen	filled	2	2	2	1.00	yes		
 jemandem zu nahe treten	clitic	2	2	2	1.00	yes		
+jemandem zur Seite stehen	filled	2	2	2	1.00	yes		
 nichts auf etwas geben	filled	2	0	2	0.00	no	Auf dem Markt gäbe es nichts von Wert.	Auf … Markt … gäbe … nichts
 sich etwas unter den Nagel reißen	filled	2	2	2	1.00	yes		
 was jemand nicht weiß, macht jemanden nicht heiß	filled	2	2	2	1.00	yes		

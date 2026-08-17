@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 3010669
-Total errors: 704
+Total predictions: 2988851
+Total errors: 696
 Accuracy: 99.98%
 
 ## Error Patterns (sorted by frequency)
@@ -174,14 +174,6 @@ Accuracy: 99.98%
   - Il a dit que la philosophie-- Je frime, donc arrête-moi.
   - J'étais marié avec-- Je peux m'asseoir là ?
 
-### "Bips" + "-" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Bips -Alerte torpille !
-  - Bips -Allez, dérobe !
-  - Bips -Missile ?
-
 ### "Qu" + "‘" (3 occurrences)
 - Predicted: Space
 - Actual: None
@@ -280,13 +272,6 @@ Accuracy: 99.98%
   - Comme le Cachemire - Oui, comme le Cachemire.
   - Rire - Oui, ma copine.
 
-### "-" + "elle" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Comment va-t- elle ?
-  - On lui a raconté des choses, elle a fait des rêves - elle a peur.
-
 ### "-" + "un" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -370,13 +355,6 @@ Accuracy: 99.98%
 - Examples:
   - Ce n'est pas : 'Où est-il' ?
   - Qui 'il' ?
-
-### "là" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Oui, et tu ne peux pas conduire le caravan là -Alors ?
-  - Vous creusez là - tiens donc, le noyau atomique est constitué de protons.
 
 ### "là" + "." (2 occurrences)
 - Predicted: None
@@ -743,6 +721,12 @@ Accuracy: 99.98%
 - Examples:
   - Eh oui, mais - eh - les autres ?
 
+### "-" + "elle" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - On lui a raconté des choses, elle a fait des rêves - elle a peur.
+
 ### "-" + "gardé" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -929,12 +913,6 @@ Accuracy: 99.98%
 - Examples:
   - Je veux dire, je voudrais-- Non.
 
-### "--" + "bien" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Je ne suis pas illettré, mais cependant-- bien, alors.
-
 ### "--" + "quels" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -964,12 +942,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Accorche -toi !
-
-### "Agitation" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Agitation -Du calme !
 
 ### "Allez" + "," (1 occurrences)
 - Predicted: None
@@ -1216,12 +1188,6 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Oh - Mon - Dieu !
-
-### "Omaticaya" + "." (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Je suis tombé amoureux de la forêt, du peuple Omaticaya .
 
 ### "Ou" + "'" (1 occurrences)
 - Predicted: Space
@@ -2152,6 +2118,12 @@ Accuracy: 99.98%
 - Actual: Space
 - Examples:
   - Non, jamais entendu parler de lui .
+
+### "là" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Vous creusez là - tiens donc, le noyau atomique est constitué de protons.
 
 ### "là" + ";" (1 occurrences)
 - Predicted: NarrowNbsp

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1656780
-Total errors: 22241
+Total predictions: 1656343
+Total errors: 22212
 Accuracy: 98.66%
 
 ## Error Patterns (sorted by frequency)
@@ -62,14 +62,6 @@ Accuracy: 98.66%
   - うわ～！ （メイ） 待って！
   - う～ん… 赤！ （のり子） 赤！
 
-### "？" + "どこ" (44 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ？ どこに？
-  - あいつはどこだ？ どこにいるんだ？
-  - あいつらは？ どこだ？
-
 ### "は" + "何" (43 occurrences)
 - Predicted: None
 - Actual: Space
@@ -77,6 +69,14 @@ Accuracy: 98.66%
   - ”大気発火”とは 何の事だ？
   - あいつは 何を言っている？
   - あなたは 何を求めてるの?
+
+### "？" + "どこ" (43 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ？ どこに？
+  - あいつはどこだ？ どこにいるんだ？
+  - あいつらは？ どこだ？
 
 ### "？" + "それ" (39 occurrences)
 - Predicted: None
@@ -2390,14 +2390,6 @@ Accuracy: 98.66%
   - にげた！ あっち！ あっち！ あっち！
   - にげた！ あっち！ あっち！ あっち！
 
-### "！" + "あなた" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だがもう待てない！ あなた達の時が来たのよ！
-  - フン！ あなたは サリマンの回し者でしょ。
-  - マルコ！ あなたなの!
-
 ### "！" + "あんた" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2501,14 +2493,6 @@ Accuracy: 98.66%
   - ーいや！ ーおじさんと言え！
   - ーなんてこと！ ーポーリーだったろ？
   - ーキリストを思うのよ！ ー悪魔を連れてくる！
-
-### "！" + "一体" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた魔法使いみたいやねえ！ 一体どうやったん？
-  - ウォルト！ 一体全体どこだい？
-  - シータ！ 一体どうしたんだ！
 
 ### "！" + "宗介" (5 occurrences)
 - Predicted: None
@@ -2949,14 +2933,6 @@ Accuracy: 98.66%
   - そうだ ここは国境かね？
   - な… 何だ ここは…。
   - 僕 ソフィーが好きだ ここにいて。
-
-### "だ" + "その" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジョーに解雇されたんだ その意味がわるか？
-  - 何だ その目は？
-  - 何だ その面は あ?
 
 ### "だ" + "どう" (4 occurrences)
 - Predicted: None
@@ -3542,6 +3518,14 @@ Accuracy: 98.66%
   - みんな 私が悪いの！ あぁ！
   - ハッ！ あぁ… ヒィ～！
 
+### "！" + "あなた" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - フン！ あなたは サリマンの回し者でしょ。
+  - マルコ！ あなたなの!
+  - 行かない！ あなたも戻っちゃダメ！
+
 ### "！" + "あれ" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3629,6 +3613,14 @@ Accuracy: 98.66%
   - さあ さあ！ ブタが勝つか カーチスか！
   - すげぇ！ ブタが雲を引いた！
   - ひねりこみだ！ ブタが後ろをとった。
+
+### "！" + "一体" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あんた魔法使いみたいやねえ！ 一体どうやったん？
+  - ウォルト！ 一体全体どこだい？
+  - シータ！ 一体どうしたんだ！
 
 ### "！" + "人間" (4 occurrences)
 - Predicted: None
@@ -8809,6 +8801,13 @@ Accuracy: 98.66%
   - いた？ ダメだ こっちも？
   - 警備員 こっちだ こっち！
 
+### "だ" + "その" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何だ その目は？
+  - 何だ その面は あ?
+
 ### "だ" + "だめ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8913,13 +8912,6 @@ Accuracy: 98.66%
 - Examples:
   - 俺の店だ 知らなかった？
   - 変わったんだ 知らなかった？
-
-### "だ" + "私" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お願いだ 私と愛する人の前から消えてくれ！
-  - これは私のだ 私が見つけた！ 私のもとに来たんだ！
 
 ### "だ" + "行こう" (2 occurrences)
 - Predicted: None
@@ -9655,13 +9647,6 @@ Accuracy: 98.66%
 - Examples:
   - ダメだもん！ お母さんに あげるんだもん！
   - メイが取ったトウモコロシ お母さんに あげるの。
-
-### "に" + "いくら" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今夜ここを出ていくのに いくら必要かな？
-  - 私との夜に いくら払う？
 
 ### "に" + "おばあちゃん" (2 occurrences)
 - Predicted: None
@@ -10705,13 +10690,6 @@ Accuracy: 98.66%
 - Examples:
   - 我々の運命は 彼女と共にある。
   - 知ってるだろう。 コート無しでは 彼女は声を出せない。
-
-### "は" + "心" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 碑銘 頭脳と手をつなぐものは 心でなくてはならない！
-  - 頭脳と手をつなぐものは 心でなくてはならない！
 
 ### "は" + "必要" (2 occurrences)
 - Predicted: None
@@ -13729,13 +13707,6 @@ Accuracy: 98.66%
 - Examples:
   - 上げなおせ！ 駄目です！
   - 全速力だ！ 駄目です！
-
-### "！" + "魔女" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 自分の父親を殺した！ 魔女め！
-  - 魔女がいたぞ！ 魔女はあそこだ！
 
 ### "）" + "“" (2 occurrences)
 - Predicted: None
@@ -30079,12 +30050,6 @@ Accuracy: 98.66%
 - Examples:
   - いつソ連が 原爆を持つと思う？
 
-### "が" + "反乱" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もし地下の人たちが 反乱を起こしたらどうなる？
-
 ### "が" + "反対" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37489,12 +37454,6 @@ Accuracy: 98.66%
 - Examples:
   - そう お礼は これでいい？
 
-### "そう" + "きみ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そう きみこそマリアだ！
-
 ### "そう" + "じゃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40248,6 +40207,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 火傷くらい何だ 神なんか要らないんだ！
+
+### "だ" + "私" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - これは私のだ 私が見つけた！ 私のもとに来たんだ！
 
 ### "だ" + "空" (1 occurrences)
 - Predicted: None
@@ -46033,12 +45998,6 @@ Accuracy: 98.66%
 - Examples:
   - ところで 君は 演劇を勉強してるんだって？
 
-### "ところで" + "子供" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ところで 子供たちはどうした？
-
 ### "ところで" + "彼" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47418,12 +47377,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 近頃はな 札束が紙クズ並の 値打ちしかないんだよ。
-
-### "な" + "機械" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 誰も残らせるな 機械をぶっ壊せ！
 
 ### "な" + "止まれ" (1 occurrences)
 - Predicted: None
@@ -49909,6 +49862,12 @@ Accuracy: 98.66%
 - Examples:
   - ザッチは大コウモリみたいに いかれた男だった。
 
+### "に" + "いくら" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 私との夜に いくら払う？
+
 ### "に" + "いた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -51042,12 +51001,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - コルシカ人のために 働いてるんだろ？
-
-### "に" + "働く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 飢えた機械のために 働くのはもう終わり！
 
 ### "に" + "僕" (1 occurrences)
 - Predicted: None
@@ -52296,12 +52249,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 前掛けを出しとくように 言ってくれ。
-
-### "に" + "訊かれる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 明日 数千の怒りに満ちた民に 訊かれるでしょうか？
 
 ### "に" + "話したら" (1 occurrences)
 - Predicted: None
@@ -55134,12 +55081,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あなた達の 理解？
-
-### "の" + "生きた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大都市のための 生きた餌は誰？
 
 ### "の" + "男" (1 occurrences)
 - Predicted: None
@@ -61723,12 +61664,6 @@ Accuracy: 98.66%
 - Examples:
   - みんな 行け！ 行け！
 
-### "みんな" + "見逃さないで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな 見逃さないで！
-
 ### "みんな" + "追い返せ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61836,12 +61771,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - クズどもめ 全員 クズだ！
-
-### "め" + "子供" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 魔女め 子供たちをどこへやった？
 
 ### "め" + "思い知らせて" (1 occurrences)
 - Predicted: None
@@ -64146,12 +64075,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 葉脈や うぶ毛もよく 見えるでしょ？
-
-### "や" + "お母さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなた達のお父さんや お母さんはどこにいるの？
 
 ### "や" + "すぐ" (1 occurrences)
 - Predicted: None
@@ -69468,12 +69391,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうしてクレジット会社を 標的にするんです？
-
-### "を" + "機械" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 自らの骨を 機械と繋ぐのは誰？
 
 ### "を" + "欲しがってた" (1 occurrences)
 - Predicted: None
@@ -75655,12 +75572,6 @@ Accuracy: 98.66%
 - Examples:
   - フルジ これを持って向こうへ行ってろ！
 
-### "フレーダー" + "工場" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フレーダー 工場で何をしてた？
-
 ### "フロド" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75876,12 +75787,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ヘミングウェイ おたくは？
-
-### "ヘル" + "愛しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヘル 愛しいヘル！
 
 ### "ベアー" + "他" (1 occurrences)
 - Predicted: None
@@ -86047,12 +85952,6 @@ Accuracy: 98.66%
 - Examples:
   - 妹を探して 下りてきたんだ。
 
-### "探して" + "殺す" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 魔女を探して 殺すんだ！
-
 ### "探してる" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86646,12 +86545,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 検視官は明日 引き取りに？
-
-### "明日" + "数千" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 明日 数千の怒りに満ちた民に 訊かれるでしょうか？
 
 ### "明日" + "枢機卿" (1 occurrences)
 - Predicted: None
@@ -89646,12 +89539,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 硝子 あなた 何のつもりなの？
-
-### "碑銘" + "頭脳" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 碑銘 頭脳と手をつなぐものは 心でなくてはならない！
 
 ### "確か" + "こう" (1 occurrences)
 - Predicted: None
@@ -96457,12 +96344,6 @@ Accuracy: 98.66%
 - Examples:
   - 早く放せ！ フィーニャ！
 
-### "！" + "フレーダー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フレーダー！ フレーダー！
-
 ### "！" + "フロド" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98077,12 +97958,6 @@ Accuracy: 98.66%
 - Examples:
   - 来る！ 来る！ こっちへ来る！ 頭 下げて！
 
-### "！" + "機械" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 機械から離れて！ 機械を破壊するのよ！
-
 ### "！" + "次" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98803,12 +98678,6 @@ Accuracy: 98.66%
 - Examples:
   - 読める！ 読めるぞ！
 
-### "！" + "誰か" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 機械を操作しないと！ 誰か機械を！
-
 ### "！" + "質問" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99228,6 +99097,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 立て！ 鬼ごっこは終わりだ！
+
+### "！" + "魔女" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 自分の父親を殺した！ 魔女め！
 
 ### "！" + "黒鉛" (1 occurrences)
 - Predicted: None
