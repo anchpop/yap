@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { getMovieMetadata } from "@/lib/movie-cache";
+import { reportAutogradeFailure } from "@/instrument";
 import { MoviePosterGrid } from "./MoviePosterGrid";
 import {
   autograde_transcription,
@@ -366,6 +367,10 @@ export function TranscriptionChallenge({
 
     const graded = await autograde_transcription(request, accessToken, course);
     if (generation !== gradingGenerationRef.current) return;
+
+    if (graded.autograding_error) {
+      reportAutogradeFailure("transcription", graded.autograding_error);
+    }
 
     const isAllCorrect = graded.results.every(
       (result) =>

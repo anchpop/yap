@@ -1,5 +1,20 @@
 import * as Sentry from "@sentry/react";
 
+// Autograde failures degrade gracefully (the app falls back to manual
+// grading), so without an explicit report a broken backend is invisible to
+// us. Called from the challenge components where `autograding_error` is
+// handled. Offline failures are expected in an offline-first app; skip them.
+export function reportAutogradeFailure(
+  kind: "translation" | "transcription",
+  error: string,
+) {
+  if (!navigator.onLine) return;
+  Sentry.captureMessage(`Autograde failed (${kind})`, {
+    level: "error",
+    extra: { error },
+  });
+}
+
 Sentry.init({
   dsn: "https://46ad67fa41ae7cafe1048ba1c4c41994@o4511102905090048.ingest.us.sentry.io/4511102907056128",
   enabled: import.meta.env.PROD,
@@ -14,9 +29,19 @@ Sentry.init({
       maskAllText: false,
       blockAllMedia: false,
     }),
+    // Backend failures (autograde, TTS, language-stats) are handled gracefully
+    // in the app — a console.error and a fallback — so without this they never
+    // reach Sentry and an unreachable backend is invisible to us.
+    Sentry.captureConsoleIntegration({ levels: ["error"] }),
   ],
 
   beforeSend(event) {
+    // Console errors from an offline device are expected (offline-first app,
+    // fetches fail constantly); only report ones that happen while online.
+    if (event.logger === "console" && !navigator.onLine) {
+      return null;
+    }
+
     const message = event.exception?.values?.[0]?.value ?? "";
 
     // Filter out browser extension errors (not our code)

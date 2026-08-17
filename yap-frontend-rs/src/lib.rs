@@ -87,6 +87,14 @@ pub fn get_available_courses() -> Vec<language_utils::Course> {
     language_utils::COURSES.to_vec()
 }
 
+/// The AI-backend base URL baked into this build by the `local-backend`
+/// feature switch. Exposed so the frontend can report to Sentry if a
+/// local-backend build ever ends up deployed to production.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn get_ai_server_url() -> String {
+    utils::ai_server_url().to_string()
+}
+
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn get_showcase_data() -> Vec<language_utils::CourseShowcase> {
     static SHOWCASE_JSONS: &[&str] = &[

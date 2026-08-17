@@ -8,6 +8,7 @@ import {
   useMemo,
 } from "react";
 import { getMovieMetadata } from "@/lib/movie-cache";
+import { reportAutogradeFailure } from "@/instrument";
 import { MoviePosterGrid } from "./MoviePosterGrid";
 import {
   type TranslateComprehensibleSentence,
@@ -896,6 +897,7 @@ export function TranslationChallenge({
         playSoundEffect("aiDoneGrading");
 
         if (response.autograding_error) {
+          reportAutogradeFailure("translation", response.autograding_error);
           // Heuristic fallback was used — show grades for manual review
           setGrade({
             graded: {

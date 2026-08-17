@@ -1,6 +1,7 @@
 //! Reports active-user counts and a per-signup usage breakdown straight from
 //! Supabase. Run with `cargo run -p user-metrics -- [days]`, where `days` is
-//! the signup window (default 30).
+//! the signup window (default 30), or pass `--summary-json` for aggregate-only
+//! machine output.
 
 use anyhow::{Context, Result};
 use chrono::{DateTime, Duration, NaiveDate, Utc};
@@ -18,7 +19,9 @@ const REVIEW_KINDS: [&str; 3] = [
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
 
-    let signup_days: i64 = match std::env::args().nth(1) {
+    let argument = std::env::args().nth(1);
+    let summary_json = argument.as_deref() == Some("--summary-json");
+    let signup_days: i64 = match argument.filter(|arg| arg != "--summary-json") {
         Some(arg) => arg
             .parse()
             .context("signup window must be a number of days")?,
@@ -26,15 +29,39 @@ async fn main() -> Result<()> {
     };
 
     let supabase = Supabase::from_env()?;
+    let now = Utc::now();
 
     // One fetch covers both the activity windows and the per-signup usage.
     let window_days = signup_days.max(30);
-    let window_start = Utc::now() - Duration::days(window_days);
+    let window_start = now - Duration::days(window_days);
     let activity = supabase.fetch_activity_since(window_start).await?;
+    let weekly_start = now - Duration::days(7);
+    let weekly_active_users = activity
+        .iter()
+        .filter(|event| event.created_at >= weekly_start)
+        .map(|event| event.user_id.as_str())
+        .collect::<HashSet<_>>()
+        .len();
+    let signup_start = now - Duration::days(signup_days);
+    let signups = supabase.fetch_signups_since(signup_start).await?;
+
+    if summary_json {
+        println!(
+            "{}",
+            serde_json::json!({
+                "weeklyActiveUsers": weekly_active_users,
+                "signupsPastMonth": signups.len(),
+                "generatedAt": now.to_rfc3339(),
+                "activityWindowStart": weekly_start.to_rfc3339(),
+                "signupWindowStart": signup_start.to_rfc3339(),
+            })
+        );
+        return Ok(());
+    }
 
     println!("Active users (unique users with any event):");
     for days in [1, 7, 30] {
-        let since = Utc::now() - Duration::days(days);
+        let since = now - Duration::days(days);
         let users: HashSet<&str> = activity
             .iter()
             .filter(|e| e.created_at >= since)
@@ -43,8 +70,6 @@ async fn main() -> Result<()> {
         println!("  last {days:>2} day(s): {}", users.len());
     }
 
-    let signup_start = Utc::now() - Duration::days(signup_days);
-    let signups = supabase.fetch_signups_since(signup_start).await?;
     println!(
         "\nSignups in the last {signup_days} days (since {}): {}",
         signup_start.format("%Y-%m-%d"),

@@ -1,3 +1,4 @@
+import fs from "fs"
 import path from "path"
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -27,6 +28,28 @@ function staticSitePlugin() {
   };
 }
 
+// A WASM built with `--features local-backend` hardcodes http://localhost:21516
+// as the AI backend. `pnpm build` bundles whatever sits in yap-frontend-rs/pkg,
+// so a stale local-test build can silently ship to production (this happened:
+// autograde/TTS were broken on yap.town for three days). Fail the build instead.
+function localBackendGuardPlugin() {
+  return {
+    name: 'local-backend-guard',
+    apply: 'build' as const,
+    buildStart() {
+      if (process.env.ALLOW_LOCAL_BACKEND) return;
+      const wasmPath = path.resolve(__dirname, "../yap-frontend-rs/pkg/yap_frontend_rs_bg.wasm");
+      if (fs.readFileSync(wasmPath).includes("localhost:21516")) {
+        throw new Error(
+          "yap-frontend-rs/pkg was built with --features local-backend (AI backend = localhost:21516). " +
+          "Rebuild it without the feature (cd yap-frontend-rs && CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release) " +
+          "or set ALLOW_LOCAL_BACKEND=1 to build anyway."
+        );
+      }
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   build: {
@@ -37,6 +60,7 @@ export default defineConfig({
     allowedHosts: ["yap-preview.beef.baby"],
   },
   plugins: [
+    localBackendGuardPlugin(),
     staticSitePlugin(),
     VitePWA({ 
       registerType: 'autoUpdate',

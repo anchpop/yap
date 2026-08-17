@@ -840,10 +840,12 @@ function Review({
     if (accessToken && userInfo?.id) {
       deck
         .submit_push_notifications(accessToken, userInfo?.id)
-        .catch(() => console.error("Failed to update notification schedule"));
+        .catch((e) =>
+          console.error("Failed to update notification schedule:", e),
+        );
       deck
         .submit_language_stats(accessToken)
-        .catch(() => console.error("Failed to update language stats"));
+        .catch((e) => console.error("Failed to update language stats:", e));
     }
   }, [deck, userInfo?.id, accessToken]);
 

@@ -191,7 +191,9 @@ export async function armConditional(): Promise<Session | null> {
     try {
       credential = await navigator.credentials.get({
         publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(
-          options.options,
+          // auth-js mistypes this JSON payload's `extensions` with the native
+          // BufferSource extension types; the value is plain JSON off the wire.
+          options.options as PublicKeyCredentialRequestOptionsJSON,
         ),
         mediation: "conditional",
         signal: controller.signal,
@@ -254,7 +256,8 @@ export async function signInWithPasskeyModal(): Promise<Session | null> {
 
     const credential = await navigator.credentials.get({
       publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(
-        options.options,
+        // Same auth-js `extensions` mistyping as above.
+        options.options as PublicKeyCredentialRequestOptionsJSON,
       ),
       signal: controller.signal,
     });
