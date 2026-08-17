@@ -7,18 +7,20 @@ High score = candidate polysemy. Dumps ranked candidates with exemplar
 sentences per side for LLM judging.
 
 Usage: uv run python discover.py <model> <layer> <corpus.jsonl> <out.json>
+       (model "modal" = the deployed bge-m3@L17 Modal endpoint, ~100x faster)
 """
 
 import json
 import random
 import sys
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import normalize
 
-from senselib import Embedder
+from senselib import Embedder, ModalEmbedder
 
 MIN_OCC = 8
 CAP = 60  # max occurrences embedded per lemma/POS
@@ -60,18 +62,24 @@ def main():
     total = sum(len(v) for v in occ.values())
     print(f"{len(occ)} lemma/POS, {total} occurrences to embed", file=sys.stderr)
 
-    emb = Embedder(model_name)
-    results = []
-    for n_done, ((lemma, pos), items) in enumerate(sorted(occ.items())):
+    emb = ModalEmbedder() if model_name == "modal" else Embedder(model_name)
+    done = 0
+
+    def mine(entry):
+        nonlocal done
+        (lemma, pos), items = entry
         X = normalize(
             emb.embed_spans([s for s, _ in items], [sp for _, sp in items], layer=layer)
         )
+        done += 1
+        if done % 50 == 0:
+            print(f"  {done}/{len(occ)}", file=sys.stderr)
         km = KMeans(2, n_init=10, random_state=0).fit(X)
         labels = km.labels_
         sizes = np.bincount(labels, minlength=2)
         balance = sizes.min() / len(labels)
         if sizes.min() < 3:
-            continue
+            return None
         sil = float(silhouette_score(X, labels, metric="cosine"))
         # exemplars: nearest to each centroid
         cents = normalize(km.cluster_centers_)
@@ -86,18 +94,20 @@ def main():
                     for i in best.tolist()
                 ]
             )
-        results.append(
-            {
-                "lemma": lemma,
-                "pos": pos,
-                "n": len(items),
-                "silhouette": sil,
-                "balance": float(balance),
-                "clusters": sides,
-            }
-        )
-        if n_done % 50 == 0:
-            print(f"  {n_done}/{len(occ)}", file=sys.stderr)
+        return {
+            "lemma": lemma,
+            "pos": pos,
+            "n": len(items),
+            "silhouette": sil,
+            "balance": float(balance),
+            "clusters": sides,
+        }
+
+    # Network-bound against the endpoint, so thread it; the local path keeps
+    # a single worker (CPU torch gains nothing from thread contention).
+    workers = 8 if model_name == "modal" else 1
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        results = [r for r in ex.map(mine, sorted(occ.items())) if r is not None]
 
     results.sort(key=lambda r: -r["silhouette"])
     json.dump(results, open(out_path, "w"), indent=1)

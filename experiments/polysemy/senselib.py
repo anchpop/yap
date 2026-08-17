@@ -1,6 +1,9 @@
 """Shared helpers: contextual token embeddings from a bidirectional encoder."""
 
+import base64
+import json
 import re
+import urllib.request
 
 import numpy as np
 import torch
@@ -15,6 +18,46 @@ def parse_braced(sentence: str) -> tuple[str, tuple[int, int]]:
     assert m, sentence
     clean = sentence[: m.start()] + m.group(1) + sentence[m.end() :]
     return clean, (m.start(), m.start() + len(m.group(1)))
+
+
+class ModalEmbedder:
+    """Same embed_spans contract as Embedder (fixed-layer form only), served by
+    the deployed token-embeddings Modal endpoint (bge-m3 @ layer 17, GPU) —
+    parity with the local path is cosine 1.000, but ~100x faster than CPU."""
+
+    URL = "https://anchpop--token-embeddings-tokenembedder-embed.modal.run"
+    MARKER = "5617a9f61b02@L17"
+    LAYER = 17
+
+    def embed_spans(
+        self,
+        sentences: list[str],
+        spans: list[tuple[int, int]],
+        batch_size: int = 256,
+        layer: int | None = None,
+    ) -> np.ndarray:
+        assert layer == self.LAYER, f"endpoint serves layer {self.LAYER} only"
+        out = []
+        for i in range(0, len(sentences), batch_size):
+            payload = {
+                "sentences": [
+                    {"text": t, "spans": [list(s)]}
+                    for t, s in zip(
+                        sentences[i : i + batch_size], spans[i : i + batch_size]
+                    )
+                ]
+            }
+            req = urllib.request.Request(
+                self.URL,
+                json.dumps(payload).encode(),
+                {"Content-Type": "application/json"},
+            )
+            resp = json.loads(urllib.request.urlopen(req, timeout=600).read())
+            assert resp["deploy_marker"] == self.MARKER, resp["deploy_marker"]
+            for b64 in resp["vectors"]:
+                vec = np.frombuffer(base64.b64decode(b64), dtype=np.float16)
+                out.append(vec.astype(np.float32))
+        return np.stack(out)
 
 
 class Embedder:
