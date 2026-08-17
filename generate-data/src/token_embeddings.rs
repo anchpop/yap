@@ -6,8 +6,8 @@
 //! multilingual bidirectional encoder) and store the vectors in the osmo cache
 //! store. Nothing downstream consumes them yet — they are the substrate for
 //! sense discrimination (splitting e.g. "a tear in the paper" from "he shed a
-//! tear" into different atoms), where model/layer were chosen by the probe
-//! sweeps in `experiments/polysemy/`.
+//! tear" into different atoms), where broad multilingual probe sweeps selected
+//! the model and layer.
 //!
 //! Cache layout: `token-embed/{version}/{lang}/{xxh3(text):016x}` → binary
 //! record (see [`encode_record`]): header of `dim`, `n`, the `n` char spans

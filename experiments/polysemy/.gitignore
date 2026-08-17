@@ -1,5 +1,0 @@
-.venv/
-__pycache__/
-candidates_*.json
-results_*.json
-verdicts_*.json

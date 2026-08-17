@@ -2,8 +2,8 @@
 
 Serves subword-mean-pooled hidden-state vectors for requested char spans in
 each sentence, from a fixed layer of a multilingual bidirectional encoder.
-Chosen via experiments/polysemy probe sweeps (see memory + experiments dir):
-one model + one layer shared by every course language.
+Chosen via broad multilingual probe sweeps: one model + one layer shared by
+every course language.
 
 Same deploy pattern as wav2vec2_phoneme.py: identity is baked into the image
 env so the remote worker can't silently fall back to defaults, and every
