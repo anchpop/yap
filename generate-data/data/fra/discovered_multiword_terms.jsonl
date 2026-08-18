@@ -1,14 +1,15 @@
 {"term":"en gare","gram":"en gare","gloss":"at or into the station","opacity":"semi","count":5,"source":"gare","silhouette":0.45062986766759305}
-{"term":"de t'avoir fait peur","gram":"de t'avoir fait peur","gloss":"for having scared you","opacity":"semi","count":3,"source":"de t'avoir","silhouette":0.6887039612811722}
 {"term":"de t'avoir fait attendre","gram":"de t'avoir fait attendre","gloss":"for having kept you waiting","opacity":"semi","count":3,"source":"de t'avoir","silhouette":0.6887039612811722}
+{"term":"de t'avoir fait peur","gram":"de t'avoir fait peur","gloss":"for having scared you","opacity":"semi","count":3,"source":"de t'avoir","silhouette":0.6887039612811722}
 {"term":"un plaisir de te rencontrer","gram":"un plaisir de te rencontrer","gloss":"nice to meet you","opacity":"semi","count":6,"source":"un plaisir","silhouette":0.6684082692869093}
+{"term":"Le voici","gram":"le voici","gloss":"here he/it is","opacity":"semi","count":9,"source":"voici","silhouette":0.5883353874515851}
 {"term":"ça a un sens","gram":"ça a un sens","gloss":"has a meaning","opacity":"semi","count":5,"source":"ça a","silhouette":0.6079915373464445}
 {"term":"ce n'est pas le cas","gram":"ce n'est pas le cas","gloss":"that is not so","opacity":"semi","count":7,"source":"le cas","silhouette":0.3350232578343362}
 {"term":"ce qu'il lui faut","gram":"ce qu'il lui faut","gloss":"what he/she needs","opacity":"semi","count":6,"source":"il lui","silhouette":0.6216347303103802}
+{"term":"s'il y a du nouveau","gram":"s'il y a du nouveau","gloss":"if there is news","opacity":"semi","count":3,"source":"s'il","silhouette":0.24807307657166097}
 {"term":"Tu fais le malin","gram":"tu fais le malin","gloss":"act smug or clever","opacity":"semi","count":3,"source":"le Malin","silhouette":0.6745249010915351}
-{"term":"Le voici","gram":"le voici","gloss":"here he/it is","opacity":"semi","count":9,"source":"voici","silhouette":0.5883353874515851}
-{"term":"non ?","gram":"non ?","gloss":"right?; seeking confirmation","opacity":"semi","count":750,"source":"non","silhouette":0.1921258754026079}
 {"term":"va sans dire","gram":"va sans dire","gloss":"is self-evident","opacity":"semi","count":13,"source":"aller sans dire","silhouette":0.7357432687079531}
+{"term":"non ?","gram":"non ?","gloss":"right?; seeking confirmation","opacity":"semi","count":750,"source":"non","silhouette":0.1921258754026079}
 {"term":"me suis occupé de","gram":"me suis occupé de","gloss":"took care of","opacity":"semi","count":7,"source":"occupé","silhouette":0.6474093035766826}
 {"term":"d'un coup de main","gram":"d'un coup de main","gloss":"help; assistance","opacity":"semi","count":9,"source":"d'un coup","silhouette":0.6621410287469275}
 {"term":"d'ailleurs","gram":"d'ailleurs","gloss":"besides; moreover","opacity":"semi","count":9,"source":"ailleurs","silhouette":0.7058069571457748}
@@ -16,15 +17,14 @@
 {"term":"Pardon de","gram":"pardon de","gloss":"apology for doing something","opacity":"semi","count":15,"source":"pardon","silhouette":0.6732540864774945}
 {"term":"Pardon pour","gram":"pardon pour","gloss":"apology for something","opacity":"semi","count":13,"source":"pardon","silhouette":0.6732540864774945}
 {"term":"n'arrive pas à","gram":"n'arrive pas à","gloss":"be unable to","opacity":"semi","count":10,"source":"n'arrivera pas","silhouette":0.6530124916165482}
+{"term":"bon te semble","gram":"bon te semble","gloss":"as you please","opacity":"semi","count":8,"source":"semble","silhouette":0.6313767623340344}
 {"term":"Adorable Unit","gram":"adorable Unit","gloss":"unit named Adorable","opacity":"semi","count":3,"source":"adorable","silhouette":0.765806927720555}
 {"term":"adresse électronique","gram":"adresse électronique","gloss":"email address","opacity":"semi","count":14,"source":"électronique","silhouette":0.7131235410957338}
 {"term":"Désolé pour le retard","gram":"désolé pour le retard","gloss":"apology for being late","opacity":"semi","count":4,"source":"le retard","silhouette":0.6553898458315922}
 {"term":"Bordel de Dieu","gram":"bordel de Dieu","gloss":"damn it; for God’s sake","opacity":"semi","count":3,"source":"bordel","silhouette":0.7411169793847343}
-{"term":"bon te semble","gram":"bon te semble","gloss":"as you please","opacity":"semi","count":8,"source":"semble","silhouette":0.6313767623340344}
 {"term":"ainsi de suite","gram":"ainsi de suite","gloss":"and so on","opacity":"semi","count":8,"source":"de suite","silhouette":0.6073583311724917}
 {"term":"point de rendez-vous","gram":"point de rendez-vous","gloss":"meeting point","opacity":"semi","count":5,"source":"le point","silhouette":0.7071755625132555}
 {"term":"tirer ça au clair","gram":"tirer ça au clair","gloss":"make something clear","opacity":"semi","count":4,"source":"au clair","silhouette":0.8096515568132606}
-{"term":"s'il y a du nouveau","gram":"s'il y a du nouveau","gloss":"if there is news","opacity":"semi","count":3,"source":"s'il","silhouette":0.24807307657166097}
 {"term":"sors de ma vie","gram":"sors de ma vie","gloss":"leave my life","opacity":"semi","count":3,"source":"de ma vie","silhouette":0.6098878506730403}
 {"term":"ferais mieux de","gram":"ferais mieux de","gloss":"would be better to","opacity":"semi","count":91,"source":"faire mieux","silhouette":0.7128222379852468}
 {"term":"Comporte-toi","gram":"comporte-toi","gloss":"behave yourself","opacity":"semi","count":12,"source":"comporte","silhouette":0.7306002130615381}
