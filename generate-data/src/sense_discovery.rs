@@ -28,11 +28,13 @@
 //!   vocabulary.
 //!
 //! Grams are treated as opaque identities throughout: an occurrence is a
-//! gram from the sentence's own segmentation (the encoder's gram stream plus
-//! multiword-term matches), its vector is the mean of the cached vectors of
-//! the heteronym words it covers, and extracted expressions are sequences of
-//! grams. No linguistic re-analysis (lemmas, POS grouping) happens here —
-//! whatever units the gram system defines are the units mined.
+//! token of the encoder's gram stream — an exact instance of its gram, so
+//! every point in a cloud is truly the key (multiword matches are
+//! lemma-loosened and contribute no occurrences; they only claim their
+//! words) — its vector is the mean of the cached vectors of the heteronym
+//! words it covers, and extracted expressions are sequences of grams. No
+//! linguistic re-analysis (lemmas, POS grouping) happens here — whatever
+//! units the gram system defines are the units mined.
 //!
 //! Run by the standalone `sense_discovery` binary; nothing in the main
 //! generate-data pipeline consumes these files except
@@ -97,34 +99,18 @@ const MIN_EXPRESSION_COUNT: usize = 3;
 static JUDGE_CLIENT: LazyLock<ChatClient> =
     LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-terra"));
 
-/// Interned gram identity. Ids 0..vocab_len coincide with the encoded
-/// sentences' token ids; multiword-match grams are appended after.
+/// Gram identity: the gram's index in the trainer vocabulary, which is also
+/// its token id in the encoded sentences.
 type GramId = u32;
 
 struct GramArena {
     grams: Vec<Gram<String>>,
-    ids: HashMap<Gram<String>, GramId>,
 }
 
 impl GramArena {
     fn from_vocabulary(vocab: &[language_utils::GramVocabEntry<String>]) -> Self {
         let grams: Vec<Gram<String>> = vocab.iter().map(|e| e.atoms.clone()).collect();
-        let ids = grams
-            .iter()
-            .enumerate()
-            .map(|(i, g)| (g.clone(), i as GramId))
-            .collect();
-        GramArena { grams, ids }
-    }
-
-    fn intern(&mut self, gram: &Gram<String>) -> GramId {
-        if let Some(&id) = self.ids.get(gram) {
-            return id;
-        }
-        let id = self.grams.len() as GramId;
-        self.grams.push(gram.clone());
-        self.ids.insert(gram.clone(), id);
-        id
+        GramArena { grams }
     }
 
     fn display(&self, id: GramId, lang: Language) -> String {
@@ -224,16 +210,23 @@ fn index_sentence(
     )
 }
 
-/// Collect per-gram occurrences from each sentence's own segmentation.
-/// High-confidence multiword matches claim their member words: the multiword
-/// gram gets the occurrence and stream grams overlapping those words are
-/// excluded, so already-adopted collocations are invisible to the miner
-/// (that's the convergence property of the discover→adopt→re-segment loop).
+/// Collect per-gram occurrences from the encoder's token stream — and only
+/// from it. A stream token IS its gram (exact surface, by construction), so
+/// every point in a mined cloud is a true instance of the key; that
+/// invariant is what lets cluster structure be read as polysemy. Multiword
+/// matches contribute NO occurrences — matching is deliberately
+/// lemma-loosened for coverage, so a match is evidence the term applies,
+/// not that its gram appears (keying matches by their citation gram once
+/// put "J'ai aimé" lines in the "j'aurais aimé" cloud, and the resulting
+/// tense cluster judged as a sense at 0.98 confidence). High-confidence
+/// matches only claim their member words, which keeps the interiors of
+/// already-adopted collocations invisible to the miner — the convergence
+/// property of the discover→adopt→re-segment loop.
 fn collect_occurrences(
     corpus: &SegmentedCorpus,
     language: Language,
     index: &HashMap<String, SentenceIndex>,
-    arena: &mut GramArena,
+    arena: &GramArena,
 ) -> BTreeMap<GramId, Vec<Occurrence>> {
     let mut occurrences: BTreeMap<GramId, Vec<Occurrence>> = BTreeMap::new();
     for info in corpus.nlp_sentences.values() {
@@ -242,61 +235,24 @@ fn collect_occurrences(
         let Some(sent) = index.get(&text) else {
             continue;
         };
-        let heteronym_spans = |range: std::ops::Range<usize>| -> Vec<(u32, u32)> {
-            range
-                .filter_map(|i| sent.words.get(i))
-                .filter(|w| w.is_heteronym && w.char_span.0 < w.char_span.1)
-                .map(|w| w.char_span)
-                .collect()
-        };
-        // Maximal-match precedence: longest matches claim their words first,
-        // and a match overlapping already-claimed words is skipped entirely.
-        // Overlapping nested matches are common (unigram-learned fragments
-        // like "te plaît" also match inside "s'il te plaît" instances);
-        // without this, one formula gets mined once per covering gram.
-        let mut ordered_matches: Vec<_> = info.multiword_terms.high_confidence.iter().collect();
-        ordered_matches.sort_by_key(|m| std::cmp::Reverse(m.matched_word_indices.len()));
-        let mut consumed: HashSet<usize> = HashSet::new();
-        let mut match_ids: HashSet<GramId> = HashSet::new();
-        for m in ordered_matches {
-            if m.matched_word_indices
-                .iter()
-                .any(|&i| consumed.contains(&(i as usize)))
-            {
-                continue;
-            }
-            let id = arena.intern(&m.gram);
-            match_ids.insert(id);
-            let mut spans = Vec::new();
-            for &i in &m.matched_word_indices {
-                let i = i as usize;
-                consumed.insert(i);
-                if let Some(w) = sent.words.get(i)
-                    && w.is_heteronym
-                    && w.char_span.0 < w.char_span.1
-                {
-                    spans.push(w.char_span);
-                }
-            }
-            if !spans.is_empty() {
-                occurrences.entry(id).or_default().push(Occurrence {
-                    text: text.clone(),
-                    spans,
-                });
-            }
-        }
+        let consumed: HashSet<usize> = info
+            .multiword_terms
+            .high_confidence
+            .iter()
+            .flat_map(|m| m.matched_word_indices.iter().map(|&i| i as usize))
+            .collect();
         for &(id, start, end) in &sent.gram_stream {
-            // Skip stream grams overlapping a multiword match's words (and
-            // any stream gram identical to a match gram, so a match that
-            // coincides with the encoder's segmentation isn't double
-            // counted).
-            if (start..end).any(|i| consumed.contains(&(i as usize))) || match_ids.contains(&id) {
+            if (start..end).any(|i| consumed.contains(&(i as usize))) {
                 continue;
             }
             if !arena.grams[id as usize].is_learnable() {
                 continue;
             }
-            let spans = heteronym_spans(start as usize..end as usize);
+            let spans: Vec<(u32, u32)> = (start as usize..end as usize)
+                .filter_map(|i| sent.words.get(i))
+                .filter(|w| w.is_heteronym && w.char_span.0 < w.char_span.1)
+                .map(|w| w.char_span)
+                .collect();
             if spans.is_empty() {
                 continue;
             }
@@ -1014,7 +970,7 @@ pub async fn discover(
     corpus: &SegmentedCorpus,
     store: &osmo::Store,
 ) -> Result<()> {
-    let mut arena = GramArena::from_vocabulary(&corpus.gram_vocabulary);
+    let arena = GramArena::from_vocabulary(&corpus.gram_vocabulary);
 
     // Index every sentence: decoded word spans, the gram segmentation
     // (aligned by construction in the encoded form), and interned atoms.
@@ -1024,7 +980,7 @@ pub async fn discover(
         .map(|info| index_sentence(info, &corpus.interners, language))
         .collect();
 
-    let occurrences = collect_occurrences(corpus, language, &index, &mut arena);
+    let occurrences = collect_occurrences(corpus, language, &index, &arena);
     println!(
         "sense-discovery[{}]: {} grams with >= {MIN_OCC} occurrences",
         language.code(),
@@ -1137,11 +1093,10 @@ pub async fn discover(
     let key_lookup: HashMap<GramId, usize> =
         keys.iter().enumerate().map(|(i, km)| (km.key, i)).collect();
 
-    // Known multiword units (vocabulary grams and multiword-match grams
-    // alike) as Tok-atom sequences, for the novelty check: a proposal whose
-    // atom sequence is already a gram isn't a discovery. Match grams outside
-    // the vocabulary carry `String` atoms; ones whose strings were never
-    // interned can't match any corpus window, so they're safely skipped.
+    // Known multiword vocabulary grams as Tok-atom sequences, for the
+    // novelty check: a proposal whose atom sequence is already a gram isn't
+    // a discovery. (Adopted terms the trainer pruned from the vocabulary
+    // are still caught by the surface check against the terms txt.)
     let known_multi: HashSet<Vec<SpurAtom>> = arena
         .grams
         .iter()
