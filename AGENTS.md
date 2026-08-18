@@ -33,7 +33,7 @@ Cloudflare for hosting.
 
 ### Data Flow
 
-1. Sentence corpora (movie subtitles, Tatoeba, books) are processed with per-language NLP layers (spaCy for European languages and Korean, Sudachi for Japanese, HanLP for Chinese, PyThaiNLP for Thai); multiword terms come from Wiktionary category listings and are processed through the same pipeline as sentences
+1. Sentence corpora (movie subtitles, Tatoeba, books) are tokenized/lemmatized/dependency-parsed by lexide (a sibling repo: fine-tuned Gemma 3 1B doing structured linguistic analysis, one model for all course languages except zho-hant, served via Modal); multiword terms come from Wiktionary category listings and are processed through the same pipeline as sentences
 2. Generated data is embedded into the WASM module as static assets
 3. Frontend uses WASM module for offline-first language learning features
 4. Supabase handles user authentication and event syncing
@@ -59,9 +59,6 @@ Key details:
 ### Setup and Installation
 
 ```bash
-# Install French NLP model (required first)
-cd ./generate-data/nlp && uv pip install https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.8.0/fr_dep_news_trf-3.8.0-py3-none-any.whl
-
 # Install espeak-ng (required by generate-data for phrase-level phonemization
 # in audio_verification — Mac: `brew install espeak-ng`, Linux: apt/yum)
 espeak-ng --version
@@ -140,14 +137,14 @@ enforced mechanically — no human vigilance required.
 - **Tailwind CSS + Radix UI**: Styling and components
 - **Supabase**: Database, auth, and real-time features
 - **OPFS**: Browser-based persistent file storage for offline data
-- **spaCy / Sudachi / HanLP / PyThaiNLP**: per-language NLP base layers for sentence analysis
+- **lexide**: NLP base layer for sentence analysis (POS, lemmas, dependencies) — fine-tuned Gemma 3 1B in a sibling repo, served via Modal
 - **FSRS**: Spaced repetition algorithm implementation
 
 ### Important Notes
 
 - The build process is complex and requires multiple tools: Rust, wasm-pack, uv (Python), and pnpm
 - WASM module must be rebuilt after changes to `yap-frontend-rs`
-- Dictionary data generation requires spaCy transformer models
+- Sentence tokenization goes through lexide's Modal endpoint (results cached in per-language `*_tokenization.jsonl` files)
 - Frontend depends on the local WASM package at `../yap-frontend-rs/pkg`
 - Use `uv` for Python dependency management in NLP components
 - Use `pnpm` for JavaScript/TypeScript dependencies
