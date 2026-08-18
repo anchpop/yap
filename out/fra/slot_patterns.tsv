@@ -1,90 +1,121 @@
 term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
-dire quelque chose	filled	6650	12	12	1.00	yes		
-dire quelque chose	clitic	1433	11	12	0.92	yes	Ma chérie, je ne peux pas te dire ça maintenant.	te … dire
+dire quelque chose	filled	6647	12	12	1.00	yes		
+sa mère	clitic	1518	12	12	1.00	yes		
+dire quelque chose	clitic	1431	11	12	0.92	yes	Ma chérie, je ne peux pas te dire ça maintenant.	te … dire
 sortir quelque chose	filled	460	10	12	0.83	yes	A t on une chance de faire sortir Bohr du Danemark ?	sortir … Bohr
 arriver à quelqu'un	filled	355	5	12	0.42	no	Alors que le procès du siècle arrive finalement à son terme.	arrive … à … terme
-arriver à quelqu'un	clitic	304	12	12	1.00	yes		
+arriver à quelqu'un	clitic	303	12	12	1.00	yes		
 sortir quelque chose	clitic	240	7	12	0.58	no	Comment vous en sortez-vous, ces temps-ci ?	sortez … vous
-à côté de ses pompes	filled	103	0	12	0.00	no	A côté de Ruby Rhod !	A … côté … de … Ruby Rhod
-à côté de ses pompes	clitic	62	0	12	0.00	no	A mes cotés !	A … mes … cotés
+ravi de faire quelque chose	filled	166	12	12	1.00	yes		
+faire de son mieux	clitic	141	12	12	1.00	yes		
+nourrir son homme	filled	130	3	12	0.25	no	Après la partie, il se rendit directement chez lui pour nourrir son chien.	nourrir … chien
+désolé de faire quelque chose	filled	118	12	12	1.00	yes		
+sa mère	filled	68	10	12	0.83	yes	La diligence est mère de la bonne fortune.	mère … fortune
 prendre son temps	clitic	49	11	12	0.92	yes	Les affaires lui prennent tout son temps.	prennent … son … temps
+but contre son camp	clitic	48	0	12	0.00	no	As-tu atteint ton but ?	ton … but
+perdre son temps	clitic	38	12	12	1.00	yes		
 faire son possible	clitic	36	12	12	1.00	yes		
-de toutes ses forces	clitic	24	12	12	1.00	yes		
+enchanté de faire quelque chose	filled	33	12	12	1.00	yes		
+nourrir son homme	clitic	30	0	12	0.00	no	Diriez-vous à une vipère cannibale de se nourrir de feuilles de poirier ?	se … nourrir
+à sa façon	clitic	29	11	12	0.92	yes	Ces idées sont étrangères à notre façon de penser.	à … notre … façon
+faire sa valise	clitic	22	12	12	1.00	yes		
+faire son lit	clitic	22	12	12	1.00	yes		
 mettre dans sa poche	clitic	18	12	12	1.00	yes		
 avoir ses règles	clitic	17	9	12	0.75	yes	Chaque couvent a ses propres règles.	a … ses … règles
-retenir son souffle	clitic	17	12	12	1.00	yes		
-dans son monde	filled	16	0	12	0.00	no	Bienvenue dans le monde de la chimie.	dans … monde … chimie
-dans son monde	clitic	15	4	12	0.33	no	Dans notre monde pour le ruiner.	Dans … notre … monde
-régler son compte	clitic	13	7	12	0.58	no	Allons régler nos comptes avec ce dealer de merde.	régler … nos … comptes
+dans son monde	filled	15	0	12	0.00	no	Bienvenue dans le monde de la chimie.	dans … monde … chimie
+dans son monde	clitic	14	4	12	0.33	no	Dans mon monde, être naïf est interdit.	Dans … mon … monde
+en son temps	filled	14	0	12	0.00	no	Comment elle peut avoir ses règles en même temps que moi ?	en … temps … moi
+régler ses comptes	clitic	13	5	12	0.42	no	Il aurait dû venir pour le premier défi, on lui aurait réglé son compte.	réglé … son … compte
+à sa manière	clitic	12	10	12	0.83	yes	Il fait attention à ses manières.	à … ses … manières
 perdre son chemin	clitic	11	11	11	1.00	yes		
-faire ses besoins	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
-faire ses comptes	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
+à sa guise	clitic	11	11	11	1.00	yes		
+être victime de son succès	filled	11	0	11	0.00	no	Ce criminel est une victime de ses gènes.	est … victime … de … gènes
+faire son affaire	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
+faire son marché	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
+faire son âge	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
 lever son verre	clitic	10	10	10	1.00	yes		
-reprendre son souffle	clitic	10	10	10	1.00	yes		
-avoir son compte	clitic	9	9	9	1.00	yes		
+prendre son pied	clitic	10	9	10	0.90	yes	Prends ton pied de biche.	Prends … ton … pied
+suivre son cours	filled	10	0	10	0.00	no	Avez-vous suivi des cours de théâtre ?	suivi … cours … théâtre
 faire son possible	filled	9	9	9	1.00	yes		
 reprendre ses esprits	clitic	9	9	9	1.00	yes		
 vivre au-dessus de ses moyens	clitic	9	9	9	1.00	yes		
 avoir son mot à dire	clitic	8	8	8	1.00	yes		
+dans son coin	clitic	8	6	8	0.75	yes	Quelques arbres dans notre coin ont été abattus par la tempête.	dans … notre … coin
 de son choix	clitic	8	5	8	0.62	yes	Elle veut être libre de ses choix.	de … ses … choix
 donner sa langue au chat	clitic	8	8	8	1.00	yes		
-dans son ensemble	clitic	7	7	7	1.00	yes		
-faire son affaire	clitic	7	3	7	0.43	no	Fais tes affaires.	Fais … tes … affaires
-passer son tour	clitic	7	6	7	0.86	yes	Nous avons volontairement passé son tour.	passé … son … tour
+suivre son cours	clitic	8	6	8	0.75	yes	Je suis votre cours de psycho du mardi, Dr Gruber.	suis … votre … cours
+avoir son compte	filled	7	0	7	0.00	no	Il y en a trois à moi.	en … a
+dans son coin	filled	7	0	7	0.00	no	Dans le coin de ta rue.	Dans … coin … rue
+en avoir pour son argent	clitic	7	7	7	1.00	yes		
+fourrer son nez	clitic	7	7	7	1.00	yes		
 au péril de sa vie	filled	6	4	6	0.67	yes	Certaines photos ont été prises au péril de la vie.	au … péril … de … vie
-avoir son compte	filled	6	1	6	0.17	no	Avons-nous le compte des prisonniers ?	Avons … compte … prisonniers
 prendre son parti	clitic	6	1	6	0.17	no	Je ne suis pas ici pour prendre votre parti.	prendre … votre … parti
 tirer son chapeau	clitic	6	6	6	1.00	yes		
 y être pour quelque chose	filled	6	6	6	1.00	yes		
-avoir toute sa tête	clitic	5	5	5	1.00	yes		
 passer son chemin	clitic	5	5	5	1.00	yes		
 avoir ses règles	filled	4	0	4	0.00	no	Ces deux villes ont les mêmes règles de circulation.	ont … règles … circulation
-prendre ses responsabilités	clitic	4	4	4	1.00	yes		
-prendre ses responsabilités	filled	4	4	4	1.00	yes		
-rendre son tablier	filled	4	0	4	0.00	no	Il a fait un compte-rendu de son voyage.	rendu … voyage
-sauver sa peau	clitic	4	4	4	1.00	yes		
-avoir fait son temps	clitic	3	3	3	1.00	yes		
-cracher son venin	clitic	3	3	3	1.00	yes		
+en son temps	clitic	4	4	4	1.00	yes		
+payer de sa vie	clitic	4	4	4	1.00	yes		
+prunelle de ses yeux	clitic	4	4	4	1.00	yes		
+tremper son biscuit	clitic	4	0	4	0.00	no	Tom a trempé son biscuit dans son lait.	trempé … son … biscuit
 creuser sa tombe	clitic	3	3	3	1.00	yes		
-en avance sur son temps	clitic	3	3	3	1.00	yes		
-faire son compte	clitic	3	2	3	0.67	yes	Nous utilisons une calculatrice pour faire nos comptes.	faire … nos … comptes
-reprendre son cours	clitic	3	3	3	1.00	yes		
+faire ses comptes	clitic	3	1	3	0.33	no	Comment avons-nous fait notre compte pour ne pas le voir ?	fait … notre … compte
+garder son sang-froid	clitic	3	3	3	1.00	yes		
+ramener son cul	clitic	3	3	3	1.00	yes		
+refaire sa vie	clitic	3	3	3	1.00	yes		
+renaître de ses cendres	clitic	3	3	3	1.00	yes		
+sauver sa peau	clitic	3	3	3	1.00	yes		
+se retourner dans sa tombe	clitic	3	3	3	1.00	yes		
+sur son trente et un	clitic	3	3	3	1.00	yes		
 sûr de son coup	clitic	3	3	3	1.00	yes		
 tirer son coup	filled	3	0	3	0.00	no	Combien de coups de feu as-tu tirés ?	coups … feu … tirés
-unique en son genre	clitic	3	3	3	1.00	yes		
 vendre son âme au diable	clitic	3	3	3	1.00	yes		
-arrêter son char	clitic	2	2	2	1.00	yes		
+attendre son heure	clitic	2	2	2	1.00	yes		
+dans sa barbe	clitic	2	0	2	0.00	no	Il est entré dans ma barbe !	dans … ma … barbe
+de son propre chef	clitic	2	2	2	1.00	yes		
 de son état	clitic	2	0	2	0.00	no	Ceux de mon état civil.	de … mon … état
+faire ses dents	clitic	2	2	2	1.00	yes		
+faire ses premiers pas	clitic	2	2	2	1.00	yes		
+heureux de faire quelque chose	filled	2	2	2	1.00	yes		
 mettre son grain de sel	clitic	2	2	2	1.00	yes		
-montrer son vrai visage	clitic	2	2	2	1.00	yes		
+mettre tous ses œufs dans le même panier	clitic	2	2	2	1.00	yes		
 perdre son sang-froid	clitic	2	2	2	1.00	yes		
+pisser dans son froc	clitic	2	2	2	1.00	yes		
+porter dans son cœur	clitic	2	1	2	0.50	no	Mais nous portons des armes dans nos cœurs.	portons … dans … nos … cœurs
 prendre son temps	filled	2	0	2	0.00	no	Maman a pris le temps hors du travail.	pris … temps … travail
-protéger ses arrières	clitic	2	2	2	1.00	yes		
-aller son chemin	clitic	1	1	1	1.00	yes		
+tisser sa toile	clitic	2	0	2	0.00	no	As-tu déjà vu une araignée tisser sa toile ?	tisser … sa … toile
+voler de ses propres ailes	clitic	2	2	2	1.00	yes		
+aller son chemin	filled	1	0	1	0.00	no	Ils tuent à tout va mais au fond, ils ont peur.	tout … va
 attacher sa tuque	clitic	1	1	1	1.00	yes		
 avoir plus d'une corde à son arc	clitic	1	1	1	1.00	yes		
-avoir ses entrées	clitic	1	1	1	1.00	yes		
 bien porter son nom	clitic	1	1	1	1.00	yes		
-comme on fait son lit on se couche	clitic	1	1	1	1.00	yes		
-courir à sa perte	clitic	1	1	1	1.00	yes		
-dans son ensemble	filled	1	0	1	0.00	no	Je joue de la basse dans un ensemble de guitares.	dans … ensemble … guitares
 de son état	filled	1	0	1	0.00	no	Les docteurs nous informent de notre état de santé.	de … état … santé
-faire son intéressant	clitic	1	1	1	1.00	yes		
+faire son beurre	clitic	1	1	1	1.00	yes		
+faire son chemin	clitic	1	1	1	1.00	yes		
+faire son entrée	clitic	1	1	1	1.00	yes		
 faire son maximum	clitic	1	1	1	1.00	yes		
 faire son maximum	filled	1	1	1	1.00	yes		
-faire son âge	clitic	1	1	1	1.00	yes		
+faire son poids	filled	1	0	1	0.00	no	Tom fait environ le même poids que Mary.	fait … poids … Mary
+gagner son pain	filled	1	0	1	0.00	no	La plus forte gagne.	La … gagne
 jeter son dévolu	clitic	1	1	1	1.00	yes		
 mettre sa main à couper	clitic	1	1	1	1.00	yes		
+mouiller son lit	clitic	1	1	1	1.00	yes		
+ne pas mâcher ses mots	clitic	1	1	1	1.00	yes		
+paix à son âme	filled	1	0	1	0.00	no	Fichez la paix à Hitler.	paix … à … Hitler
 pointer le bout de son nez	clitic	1	1	1	1.00	yes		
-prendre ses distances	clitic	1	1	1	1.00	yes		
+porter sa croix	clitic	1	1	1	1.00	yes		
+pousser dans ses derniers retranchements	clitic	1	1	1	1.00	yes		
+prendre ses aises	clitic	1	1	1	1.00	yes		
+prendre ses cliques et ses claques	clitic	1	1	1	1.00	yes		
 prendre ses désirs pour des réalités	clitic	1	1	1	1.00	yes		
 prendre son courage à deux mains	clitic	1	1	1	1.00	yes		
 prendre son mal en patience	clitic	1	1	1	1.00	yes		
-prendre son élan	clitic	1	1	1	1.00	yes		
-reprendre son cours	filled	1	1	1	1.00	yes		
-régler son compte	filled	1	0	1	0.00	no	Je règle les comptes de la Famille.	règle … comptes … Famille
+prendre son pied	filled	1	0	1	0.00	no	Prends ton pied de biche.	Prends … pied … biche
+ramener sa fraise	clitic	1	1	1	1.00	yes		
+ramener ses fesses	clitic	1	1	1	1.00	yes		
+régler ses comptes	filled	1	0	1	0.00	no	Je règle les comptes de la Famille.	règle … comptes … Famille
 signer son arrêt de mort	clitic	1	1	1	1.00	yes		
-tenir son rang	filled	1	0	1	0.00	no	Compte tenu de la situation, nous sommes prêts à essayer un charme.	tenu … situation
-tenir sur ses jambes	clitic	1	1	1	1.00	yes		
-trouver son bonheur	clitic	1	1	1	1.00	yes		
-à la sueur de son front	filled	1	1	1	1.00	yes		
+sur son trente-et-un	clitic	1	1	1	1.00	yes		
+taire sa gueule	clitic	1	1	1	1.00	yes		
+valoir son pesant d'or	clitic	1	1	1	1.00	yes		
+vivre avec son temps	clitic	1	1	1	1.00	yes		

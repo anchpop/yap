@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2133861
-Total errors: 1465
+Total predictions: 2129984
+Total errors: 1460
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
 
-### "can" + "not" (630 occurrences)
+### "can" + "not" (629 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -22,14 +22,6 @@ Accuracy: 99.93%
   - Are we gonna let them do this?
   - Are you gonna finish me off?
 
-### "did" + "n’t" (20 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - As a matter of fact, I didn’t want to go.
-  - But I didn’t read it.
-  - Could it be that the Captain didn’t notify the customs?
-
 ### "-" + "I" (19 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37,6 +29,14 @@ Accuracy: 99.93%
   - And I need-- I need morphine.
   - And a third in - I forget.
   - I just-- I just wanted pie.
+
+### "did" + "n’t" (19 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - As a matter of fact, I didn’t want to go.
+  - But I didn’t read it.
+  - Could it be that the Captain didn’t notify the customs?
 
 ### "-" + "What" (10 occurrences)
 - Predicted: None
@@ -2792,12 +2792,6 @@ Accuracy: 99.93%
 - Examples:
   - A motorcycle !
 
-### "mouth" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - I have something in the mouth ?
-
 ### "music" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3134,12 +3128,6 @@ Accuracy: 99.93%
 - Examples:
   - Oh really -Yes.
 
-### "rent" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You want me to pay you a rent ?
-
 ### "revolution" + "is" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3247,12 +3235,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Is that so ?
-
-### "something" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - You offered tea or something ?
 
 ### "son" + "-" (1 occurrences)
 - Predicted: None

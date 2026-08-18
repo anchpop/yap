@@ -1,33 +1,27 @@
-{"term":"en gare","gram":"en gare","gloss":"at or into the station","opacity":"semi","count":5,"source":"gare","silhouette":0.45062986766759305}
-{"term":"de t'avoir fait attendre","gram":"de t'avoir fait attendre","gloss":"for having kept you waiting","opacity":"semi","count":3,"source":"de t'avoir","silhouette":0.6887039612811722}
-{"term":"de t'avoir fait peur","gram":"de t'avoir fait peur","gloss":"for having scared you","opacity":"semi","count":3,"source":"de t'avoir","silhouette":0.6887039612811722}
-{"term":"un plaisir de te rencontrer","gram":"un plaisir de te rencontrer","gloss":"nice to meet you","opacity":"semi","count":6,"source":"un plaisir","silhouette":0.6684082692869093}
+{"term":"en gare","gram":"en gare","gloss":"at or into the station","opacity":"semi","count":6,"source":"gare","silhouette":0.42794829983687477}
+{"term":"en forme de cœur","gram":"en forme de cœur","gloss":"in the shape of a heart","opacity":"semi","count":4,"source":"en forme","silhouette":0.7292423353545822}
 {"term":"Le voici","gram":"le voici","gloss":"here he/it is","opacity":"semi","count":9,"source":"voici","silhouette":0.5883353874515851}
-{"term":"ça a un sens","gram":"ça a un sens","gloss":"has a meaning","opacity":"semi","count":5,"source":"ça a","silhouette":0.6079915373464445}
-{"term":"ce n'est pas le cas","gram":"ce n'est pas le cas","gloss":"that is not so","opacity":"semi","count":7,"source":"le cas","silhouette":0.3350232578343362}
-{"term":"ce qu'il lui faut","gram":"ce qu'il lui faut","gloss":"what he/she needs","opacity":"semi","count":6,"source":"il lui","silhouette":0.6216347303103802}
-{"term":"s'il y a du nouveau","gram":"s'il y a du nouveau","gloss":"if there is news","opacity":"semi","count":3,"source":"s'il","silhouette":0.24807307657166097}
-{"term":"Tu fais le malin","gram":"tu fais le malin","gloss":"act smug or clever","opacity":"semi","count":3,"source":"le Malin","silhouette":0.6745249010915351}
-{"term":"va sans dire","gram":"va sans dire","gloss":"is self-evident","opacity":"semi","count":13,"source":"aller sans dire","silhouette":0.7357432687079531}
-{"term":"non ?","gram":"non ?","gloss":"right?; seeking confirmation","opacity":"semi","count":750,"source":"non","silhouette":0.1921258754026079}
+{"term":"Bien, bien","gram":"bien, bien","gloss":"well, well; acknowledgment","opacity":"semi","count":4,"source":"bien","silhouette":0.5751634825482864}
+{"term":"dit que non","gram":"dit que non","gloss":"say no; give a negative answer","opacity":"semi","count":8,"source":"non","silhouette":0.504508853048121}
+{"term":"où bon vous semble","gram":"où bon vous semble","gloss":"wherever you please","opacity":"semi","count":3,"source":"vous semblez","silhouette":0.7678928191205301}
+{"term":"fait preuve de","gram":"fait preuve de","gloss":"demonstrated a quality","opacity":"semi","count":5,"source":"preuve","silhouette":0.6424239143066847}
+{"term":"que ça te plaise ou non","gram":"que ça te plaise ou non","gloss":"whether you like it or not","opacity":"semi","count":4,"source":"que ça te plaise","silhouette":0.6496024968673069}
+{"term":"comme vous voulez","gram":"comme vous voulez","gloss":"as you wish","opacity":"semi","count":13,"source":"vous voulez","silhouette":0.5766993002744113}
+{"term":"ne veut rien dire","gram":"ne veut rien dire","gloss":"doesn't mean anything","opacity":"semi","count":9,"source":"veut","silhouette":0.6918198495815507}
+{"term":"va bien se passer","gram":"va bien se passer","gloss":"will go well","opacity":"semi","count":16,"source":"se passer","silhouette":0.6107388004397816}
+{"term":"trop boire","gram":"trop boire","gloss":"drink too much alcohol","opacity":"semi","count":6,"source":"trop bu","silhouette":0.6956238755311919}
+{"term":"me passer de","gram":"me passer de","gloss":"do without","opacity":"semi","count":11,"source":"me","silhouette":0.6469913489194487}
 {"term":"me suis occupé de","gram":"me suis occupé de","gloss":"took care of","opacity":"semi","count":7,"source":"occupé","silhouette":0.6474093035766826}
-{"term":"d'un coup de main","gram":"d'un coup de main","gloss":"help; assistance","opacity":"semi","count":9,"source":"d'un coup","silhouette":0.6621410287469275}
+{"term":"as sûrement raison","gram":"as sûrement raison","gloss":"be right","opacity":"semi","count":3,"source":"raison","silhouette":0.6025562553367113}
+{"term":"tant que tu le peux","gram":"tant que tu le peux","gloss":"while you still can","opacity":"semi","count":3,"source":"tu le peux","silhouette":0.6367525117790465}
+{"term":"tant que tu veux","gram":"tant que tu veux","gloss":"as long as you want","opacity":"semi","count":6,"source":"tu veux","silhouette":0.6021638173977958}
 {"term":"d'ailleurs","gram":"d'ailleurs","gloss":"besides; moreover","opacity":"semi","count":9,"source":"ailleurs","silhouette":0.7058069571457748}
-{"term":"d'après toi","gram":"d'après toi","gloss":"in your opinion","opacity":"semi","count":8,"source":"après toi","silhouette":0.7057596259197335}
-{"term":"Pardon de","gram":"pardon de","gloss":"apology for doing something","opacity":"semi","count":15,"source":"pardon","silhouette":0.6732540864774945}
-{"term":"Pardon pour","gram":"pardon pour","gloss":"apology for something","opacity":"semi","count":13,"source":"pardon","silhouette":0.6732540864774945}
-{"term":"n'arrive pas à","gram":"n'arrive pas à","gloss":"be unable to","opacity":"semi","count":10,"source":"n'arrivera pas","silhouette":0.6530124916165482}
-{"term":"bon te semble","gram":"bon te semble","gloss":"as you please","opacity":"semi","count":8,"source":"semble","silhouette":0.6313767623340344}
+{"term":"Pardon de","gram":"pardon de","gloss":"apology for doing something","opacity":"semi","count":15,"source":"pardon","silhouette":0.6645413440699156}
+{"term":"Pardon pour","gram":"pardon pour","gloss":"apology for something","opacity":"semi","count":13,"source":"pardon","silhouette":0.6645413440699156}
+{"term":"bon te semble","gram":"bon te semble","gloss":"as you please","opacity":"semi","count":3,"source":"semble","silhouette":0.6742046735889243}
 {"term":"Adorable Unit","gram":"adorable Unit","gloss":"unit named Adorable","opacity":"semi","count":3,"source":"adorable","silhouette":0.765806927720555}
-{"term":"adresse électronique","gram":"adresse électronique","gloss":"email address","opacity":"semi","count":14,"source":"électronique","silhouette":0.7131235410957338}
-{"term":"Désolé pour le retard","gram":"désolé pour le retard","gloss":"apology for being late","opacity":"semi","count":4,"source":"le retard","silhouette":0.6553898458315922}
-{"term":"Bordel de Dieu","gram":"bordel de Dieu","gloss":"damn it; for God’s sake","opacity":"semi","count":3,"source":"bordel","silhouette":0.7411169793847343}
-{"term":"ainsi de suite","gram":"ainsi de suite","gloss":"and so on","opacity":"semi","count":8,"source":"de suite","silhouette":0.6073583311724917}
-{"term":"point de rendez-vous","gram":"point de rendez-vous","gloss":"meeting point","opacity":"semi","count":5,"source":"le point","silhouette":0.7071755625132555}
-{"term":"tirer ça au clair","gram":"tirer ça au clair","gloss":"make something clear","opacity":"semi","count":4,"source":"au clair","silhouette":0.8096515568132606}
-{"term":"sors de ma vie","gram":"sors de ma vie","gloss":"leave my life","opacity":"semi","count":3,"source":"de ma vie","silhouette":0.6098878506730403}
-{"term":"ferais mieux de","gram":"ferais mieux de","gloss":"would be better to","opacity":"semi","count":91,"source":"faire mieux","silhouette":0.7128222379852468}
-{"term":"Comporte-toi","gram":"comporte-toi","gloss":"behave yourself","opacity":"semi","count":12,"source":"comporte","silhouette":0.7306002130615381}
-{"term":"pété les plombs","gram":"pété les plombs","gloss":"lose one’s temper","opacity":"opaque","count":4,"source":"le plomb","silhouette":0.6515579455323898}
-{"term":"porté ses fruits","gram":"porté ses fruits","gloss":"produce positive results","opacity":"semi","count":5,"source":"ses fruits","silhouette":0.6666269302933046}
+{"term":"adresse électronique","gram":"adresse électronique","gloss":"email address","opacity":"semi","count":14,"source":"électronique","silhouette":0.6633395723346359}
+{"term":"Enfin bref","gram":"enfin bref","gloss":"anyway, to sum up","opacity":"semi","count":4,"source":"bref","silhouette":0.6448139883733122}
+{"term":"Elles le sont","gram":"elles le sont","gloss":"they are so","opacity":"semi","count":6,"source":"elle le","silhouette":0.5966234197755458}
+{"term":"Comporte-toi bien","gram":"comporte-toi bien","gloss":"behave yourself","opacity":"semi","count":5,"source":"comporte","silhouette":0.7231596309804803}
 {"term":"Enchanté de vous","gram":"enchanté de vous","gloss":"pleased to meet you","opacity":"semi","count":11,"source":"enchanté","silhouette":0.6763047898182917}
