@@ -9,6 +9,7 @@ static CHAT_CLIENT: LazyLock<ChatClient> =
 pub async fn generate_proper_noun_definitions(
     course: Course,
     nlp_sentences: &BTreeMap<String, SentenceInfo>,
+    gram_vocabulary: &[language_utils::GramVocabEntry<String>],
 ) -> anyhow::Result<BTreeMap<String, ProperNounDefinition>> {
     let Course {
         native_language,
@@ -20,7 +21,7 @@ pub async fn generate_proper_noun_definitions(
     let mut proper_noun_to_sentences: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
     for (sentence, info) in nlp_sentences {
-        for literal in &info.words {
+        for literal in &info.decode_words(gram_vocabulary, target_language) {
             if let WordType::Other(other) = &literal.word.word_type
                 && other.other_tag == OtherWordType::Propn
             {

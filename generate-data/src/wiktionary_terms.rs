@@ -5,21 +5,30 @@ use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::File;
 use std::io::{BufRead as _, BufReader, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
+/// The language's multiword-term list. The file is a cache: when it already
+/// exists its contents are returned; otherwise the list is assembled
+/// (Wiktionary categories + extra/discovered terms − banned terms), written,
+/// and returned. Delete the file to force a refresh.
 pub async fn ensure_multiword_terms_file(
     course: &Course,
     base_path: &Path,
-) -> anyhow::Result<PathBuf> {
+) -> anyhow::Result<Vec<String>> {
     let Course {
         target_language, ..
     } = course;
     let multiword_terms_file = base_path.join("target_language_multiword_terms.txt");
 
     if multiword_terms_file.exists() {
-        return multiword_terms_file
-            .canonicalize()
-            .context("Failed to canonicalize multiword terms file path");
+        let content = std::fs::read_to_string(&multiword_terms_file)
+            .context("Failed to read multiword terms file")?;
+        return Ok(content
+            .lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty())
+            .map(String::from)
+            .collect());
     }
     let terms = download_multiword_terms(*target_language)
         .await
@@ -57,13 +66,11 @@ pub async fn ensure_multiword_terms_file(
     let mut file =
         File::create(&multiword_terms_file).context("Failed to create multiword terms file")?;
 
-    for term in terms {
+    for term in &terms {
         writeln!(file, "{term}")?;
     }
 
-    multiword_terms_file
-        .canonicalize()
-        .context("Failed to canonicalize multiword terms file path")
+    Ok(terms.into_iter().collect())
 }
 
 /// Returns the set of multiword terms that are discontinuous (contained `...` in the
@@ -108,6 +115,23 @@ async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>
                 .trim()
                 .to_string();
             terms.push(line);
+        }
+    }
+
+    // Terms mined by the sense_discovery binary (embedding-cluster splits,
+    // LLM-extracted, corpus-grounded) and committed for adoption. Only the
+    // surface form matters here; the rest of each record is review provenance.
+    let discovered_path =
+        format!("./generate-data/data/{language_code}/discovered_multiword_terms.jsonl");
+    if let Ok(file) = File::open(Path::new(&discovered_path)) {
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            let line = line?;
+            if let Ok(entry) = serde_json::from_str::<serde_json::Value>(&line)
+                && let Some(term) = entry["term"].as_str()
+            {
+                terms.push(term.trim().to_string());
+            }
         }
     }
 

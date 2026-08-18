@@ -912,46 +912,56 @@ pub struct NlpAnalyzedSentence {
     rkyv::Deserialize,
 )]
 pub struct SentenceInfo {
-    pub words: Vec<Literal<String>>,
+    /// The sentence itself, in its canonical (encoded) representation. Only
+    /// interpretable alongside the gram vocabulary that assigned the ids;
+    /// decode with [`SentenceInfo::decode_words`].
+    pub sentence: EncodedSentence,
     /// Multiword terms found in this sentence; `matched_word_indices` index
-    /// into `words`.
+    /// into the decoded word sequence (one word per `Tok` atom, in order).
     pub multiword_terms: MultiwordTerms<MultiwordTermMatch<Gram<String>>>,
 }
 
 impl SentenceInfo {
-    /// The fraction of words that are proper nouns
-    pub fn proper_noun_fraction(&self) -> f32 {
-        let total_words = self
-            .words
+    /// Decode the sentence's words (with whitespace and original
+    /// capitalization) through the gram vocabulary.
+    pub fn decode_words(
+        &self,
+        vocabulary: &[GramVocabEntry<String>],
+        language: Language,
+    ) -> Vec<Literal<String>> {
+        let atoms: Vec<Atom<String>> = self
+            .sentence
+            .tokens
             .iter()
-            .filter(|token| {
-                !matches!(
-                    token.word.word_type,
-                    WordType::Other(OtherWord {
-                        other_tag: OtherWordType::Punct | OtherWordType::Space | OtherWordType::X
-                    })
-                )
-            })
-            .count() as f32;
-
-        if total_words == 0.0 {
-            return 0.0;
+            .flat_map(|&id| vocabulary[id as usize].atoms.iter().cloned())
+            .collect();
+        let mut words = atoms_to_literals(&atoms, language);
+        if self.sentence.capitalize_first
+            && let Some(first_word) = words.first_mut()
+        {
+            first_word.word.text = capitalize_first_letter(&first_word.word.text);
         }
+        words
+    }
 
-        let proper_nouns = self
-            .words
-            .iter()
-            .filter(|token| {
-                matches!(
-                    token.word.word_type,
-                    WordType::Other(OtherWord {
-                        other_tag: OtherWordType::Propn
-                    })
-                )
-            })
-            .count() as f32;
-
-        proper_nouns / total_words
+    /// The sentence's gram segmentation: each encoded gram id with the range
+    /// of decoded-word indices it covers (one word per `Tok` atom).
+    pub fn gram_word_ranges(
+        &self,
+        vocabulary: &[GramVocabEntry<String>],
+    ) -> Vec<(u32, std::ops::Range<usize>)> {
+        let mut ranges = Vec::with_capacity(self.sentence.tokens.len());
+        let mut word_idx = 0usize;
+        for &id in &self.sentence.tokens {
+            let tok_count = vocabulary[id as usize]
+                .atoms
+                .iter()
+                .filter(|a| matches!(a, Atom::Tok(_)))
+                .count();
+            ranges.push((id, word_idx..word_idx + tok_count));
+            word_idx += tok_count;
+        }
+        ranges
     }
 }
 
@@ -1816,6 +1826,9 @@ impl Atom<lasso::Spur> {
     serde::Deserialize,
     PartialEq,
     Eq,
+    Hash,
+    Ord,
+    PartialOrd,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
@@ -2333,15 +2346,18 @@ impl ConsolidatedLanguageData {
             rodeo.get_or_intern(&entry.target_language_multi_word_term);
         }
 
-        // Intern words used in sentences (includes proper nouns, plus capitalization might differ)
-        for (_, sentence_info) in &self.nlp_sentences {
-            for literal in &sentence_info.words {
-                rodeo.get_or_intern(&literal.word.text);
-                rodeo.get_or_intern(&literal.whitespace);
-                // Also intern word and lemma if it's a heteronym
-                if let WordType::Heteronym(h) = &literal.word.word_type {
-                    rodeo.get_or_intern(&h.word);
-                    rodeo.get_or_intern(&h.lemma);
+        // Intern every string sentences can reference: sentence words are
+        // encoded against the gram vocabulary, so interning the vocabulary's
+        // atoms covers them (display-time capitalization is applied after
+        // resolving, so capitalized variants need no Spurs).
+        for entry in &self.gram_vocabulary {
+            for atom in entry.atoms.iter() {
+                if let Atom::Tok(word) = atom {
+                    rodeo.get_or_intern(&word.text);
+                    if let WordType::Heteronym(h) = &word.word_type {
+                        rodeo.get_or_intern(&h.word);
+                        rodeo.get_or_intern(&h.lemma);
+                    }
                 }
             }
         }
