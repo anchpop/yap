@@ -4,10 +4,10 @@
 //! For every sentence in a course's final NLP sentence set, we embed each
 //! heteronym token (subword-mean-pooled hidden state from one fixed layer of a
 //! multilingual bidirectional encoder) and store the vectors in the osmo cache
-//! store. Nothing downstream consumes them yet — they are the substrate for
-//! sense discrimination (splitting e.g. "a tear in the paper" from "he shed a
-//! tear" into different atoms), where broad multilingual probe sweeps selected
-//! the model and layer.
+//! store. They are the substrate for sense discrimination (splitting e.g. "a
+//! tear in the paper" from "he shed a tear" into different atoms), mined by
+//! the `sense_discovery` binary; broad multilingual probe sweeps selected the
+//! model and layer.
 //!
 //! Cache layout: `token-embed/{version}/{lang}/{xxh3(text):016x}` → binary
 //! record (see [`encode_record`]): header of `dim`, `n`, the `n` char spans

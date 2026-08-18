@@ -73,8 +73,10 @@ const SPLIT_SILHOUETTE: f64 = 0.55;
 /// first, then novel HDBSCAN clusters by silhouette).
 const MAX_CLUSTERS: usize = 8;
 /// How many top-silhouette grams (by root split) get adjudicated per
-/// language.
-const JUDGE_TOP: usize = 100;
+/// language. At 100+50, roughly a third of judged grams yielded artifacts —
+/// nowhere near dry — so this probes deeper; adjudications are cached, so
+/// raising it only ever costs the new grams.
+const JUDGE_TOP: usize = 400;
 /// Exemplars shown to the adjudicator per cluster.
 const EXEMPLARS: usize = 8;
 /// Silhouette is O(n²); score on a deterministic subsample past this size.
@@ -1150,6 +1152,11 @@ pub async fn discover(
     // Grounded expressions, each with a few example sentences for the
     // opacity judge. Opacity itself is filled by that later stage.
     let mut discovered: BTreeMap<Vec<SpurAtom>, (DiscoveredTerm, Vec<String>)> = BTreeMap::new();
+    // Per-reason rejection tallies for the grounding gate, so a language
+    // where extractions die wholesale (Korean's near-empty term file) shows
+    // where instead of failing silently.
+    let (mut n_ungroundable, mut n_single, mut n_boundary, mut n_infrequent, mut n_grounded) =
+        (0usize, 0usize, 0usize, 0usize, 0usize);
     for (idx, prop) in judged.iter().enumerate() {
         let (_, resp) = &results[idx];
         let Ok(resp) = resp else { continue };
@@ -1174,6 +1181,7 @@ pub async fn discover(
                     .to_string();
                 Some((ids, surface))
             }) else {
+                n_ungroundable += 1;
                 log::info!(
                     "sense-discovery[{}]: ungroundable extraction {:?} for {}",
                     language.code(),
@@ -1183,6 +1191,7 @@ pub async fn discover(
                 continue;
             };
             if ids.len() < 2 {
+                n_single += 1;
                 continue;
             }
             // A proposal must satisfy the same constraints the unigram
@@ -1193,14 +1202,17 @@ pub async fn discover(
                 let boundary_ok = ids.first().is_some_and(|a| a.is_content())
                     && ids.last().is_some_and(|a| a.is_content());
                 if !boundary_ok || ids.iter().any(|a| a.is_excluded_from_sequences()) {
+                    n_boundary += 1;
                     continue;
                 }
             }
             let matches = atom_window_matches(&index, &ids);
             let count = matches.len();
             if count < MIN_EXPRESSION_COUNT {
+                n_infrequent += 1;
                 continue;
             }
+            n_grounded += 1;
             discovered.entry(ids.clone()).or_insert_with(|| {
                 let gram = Gram::from(
                     ids.iter()
@@ -1258,10 +1270,36 @@ pub async fn discover(
                     .collect();
                 indices.sort_unstable();
                 indices.dedup();
-                let anchors: Vec<SenseAnchor> = members
+                // Round-robin the anchors across member clusters so a
+                // merged group is represented by all of its clusters, not
+                // just the first (anchors feed the future nearest-centroid
+                // assignment pass).
+                let mut picked: Vec<usize> = Vec::new();
+                let mut seen: HashSet<usize> = HashSet::new();
+                let mut cluster_exemplars: Vec<_> = members
                     .iter()
-                    .flat_map(|c| c.exemplars.iter().copied())
-                    .take(EXEMPLARS)
+                    .map(|c| c.exemplars.iter().copied())
+                    .collect();
+                'fill: loop {
+                    let mut progressed = false;
+                    for exemplars in &mut cluster_exemplars {
+                        for i in exemplars.by_ref() {
+                            if seen.insert(i) {
+                                picked.push(i);
+                                progressed = true;
+                                if picked.len() == EXEMPLARS {
+                                    break 'fill;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if !progressed {
+                        break;
+                    }
+                }
+                let anchors: Vec<SenseAnchor> = picked
+                    .into_iter()
                     .map(|i| SenseAnchor {
                         sentence: km.occs[i].text.clone(),
                         spans: km.occs[i].spans.clone(),
@@ -1284,6 +1322,12 @@ pub async fn discover(
             source: sources.join("+"),
         });
     }
+    println!(
+        "sense-discovery[{}]: expression grounding: {n_grounded} grounded, \
+         {n_ungroundable} ungroundable, {n_single} single-word, \
+         {n_boundary} boundary-rejected, {n_infrequent} below count {MIN_EXPRESSION_COUNT}",
+        language.code(),
+    );
     sense_rows.sort_by(|a, b| {
         b.confidence
             .total_cmp(&a.confidence)
@@ -1377,16 +1421,41 @@ pub async fn discover(
         sense_path.display()
     );
 
+    // The jsonl is the durable adoption record: entries from previous runs
+    // are preserved verbatim — once adopted, a term is in the merged
+    // multiword-terms list, so the novelty filter (correctly) refuses to
+    // re-discover it, and a plain rewrite here would silently un-adopt it —
+    // and only genuinely new discoveries are appended.
     let terms_path = Path::new(&data_dir).join("discovered_multiword_terms.jsonl");
+    let mut lines: Vec<String> = Vec::new();
+    let mut adopted: HashSet<String> = HashSet::new();
+    if let Ok(content) = std::fs::read_to_string(&terms_path) {
+        for line in content.lines().filter(|l| !l.trim().is_empty()) {
+            if let Ok(v) = serde_json::from_str::<serde_json::Value>(line)
+                && let Some(term) = v["term"].as_str()
+            {
+                adopted.insert(normalize_term(term));
+            }
+            lines.push(line.to_string());
+        }
+    }
+    let mut new_terms = 0usize;
+    for row in &discovered {
+        if !adopted.insert(normalize_term(&row.term)) {
+            continue;
+        }
+        lines.push(serde_json::to_string(row)?);
+        new_terms += 1;
+    }
     let mut f =
         File::create(&terms_path).context("Failed to create discovered_multiword_terms.jsonl")?;
-    for row in &discovered {
-        writeln!(f, "{}", serde_json::to_string(row)?)?;
+    for line in &lines {
+        writeln!(f, "{line}")?;
     }
     println!(
-        "sense-discovery[{}]: wrote {} discovered multiword terms to {}",
+        "sense-discovery[{}]: wrote {} discovered multiword terms ({new_terms} new) to {}",
         language.code(),
-        discovered.len(),
+        lines.len(),
         terms_path.display()
     );
     Ok(())

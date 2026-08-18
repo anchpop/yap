@@ -1,9 +1,9 @@
 //! Standalone sense & collocation discovery: builds each language's NLP
 //! sentence set with the same pipeline code as generate-data, fills any
 //! token-embedding gaps, mines the cached vectors for cluster structure, and
-//! writes reviewable proposal files under `generate-data/data/{lang}/`
-//! (`sense_candidates.jsonl`, `discovered_multiword_terms.jsonl`) for the
-//! next generate-data run to ingest.
+//! writes judge-gated adoption files under `generate-data/data/{lang}/`
+//! (`sense_candidates.jsonl`, `discovered_multiword_terms.jsonl`) that the
+//! next generate-data run ingests directly — no human review step.
 //!
 //! Usage: cargo run --release --bin sense_discovery -- [--cache-only] [<lang>...]
 
