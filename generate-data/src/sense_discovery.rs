@@ -11,14 +11,21 @@
 //! collocation membership — only a judge that sees both interpretations at
 //! once can (e.g. "au clair" splitting into "au clair de lune" vs "tirer au
 //! clair" has zero senses of its own, just two host expressions). Writes
-//! reviewable proposal files under `generate-data/data/{lang}/`:
+//! files under `generate-data/data/{lang}/` that feed the next
+//! generate-data run directly — there is no human review step, so the
+//! judges are the quality bar:
 //!
 //! - `sense_candidates.jsonl`: grams whose clusters group into two or more
 //!   distinct senses, in sense-inventory shape (gloss + anchor sentences
 //!   per sense).
-//! - `discovered_multiword_terms.jsonl`: grounded, novel, frequent fixed
+//! - `discovered_multiword_terms.jsonl`: grounded, novel, frequent
 //!   expressions (the LLM only cites lines and copies verbatim substrings;
-//!   surface forms, gram sequences, and corpus counts are derived here).
+//!   surface forms, gram sequences, and corpus counts are derived here)
+//!   that a final per-expression opacity judgment deemed worth learning as
+//!   a unit — the adjudicator reports even compositional cluster-dominating
+//!   patterns (to keep them out of the sense inventory), and the opacity
+//!   stage is what keeps "dire merci"-class free combinations out of the
+//!   vocabulary.
 //!
 //! Grams are treated as opaque identities throughout: an occurrence is a
 //! gram from the sentence's own segmentation (the encoder's gram stream plus
@@ -29,8 +36,8 @@
 //!
 //! Run by the standalone `sense_discovery` binary; nothing in the main
 //! generate-data pipeline consumes these files except
-//! `wiktionary_terms::extra_multiword_terms`, which folds adopted discovered
-//! terms into the next run's multiword-term inventory.
+//! `wiktionary_terms::extra_multiword_terms`, which folds the discovered
+//! terms into the next run's multiword-term inventory as-is.
 
 use anyhow::{Context, Result};
 use language_utils::{Atom, Gram, Language, SentenceInfo, WordType};
@@ -712,11 +719,6 @@ struct ExtractedExpression {
     /// 2-6 word gloss, in the language being mined.
     #[serde(rename = "4. gloss")]
     gloss: String,
-    // No doc comment: schemars would emit it as a `description` next to the
-    // enum's `$ref`, which OpenAI's structured-output validator rejects. The
-    // opacity guidance lives in the system prompt instead.
-    #[serde(rename = "5. opacity")]
-    opacity: Opacity,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
@@ -757,20 +759,20 @@ fn adjudication_system_prompt(language: Language) -> String {
         merge such clusters into one group. If the target has a single meaning \
         throughout, return one group containing every cluster.\n\
         \n\
-        2. FIXED EXPRESSIONS. A cluster is often driven by the target occurring \
-        inside a larger fixed multiword expression (collocation, idiom, compound, \
-        fixed phrase). Such a cluster is NOT a sense of the target: report the host \
-        expression in `expressions`, list that cluster's number in its \
-        cluster_numbers, and leave the cluster out of `senses`. Also report fixed \
-        expressions of the target that account for several lines without dominating \
-        a whole cluster (with empty cluster_numbers). For each expression: cite the \
-        line numbers it appears on, copy it VERBATIM as a contiguous substring of \
-        one cited line (never invent or normalize a citation form), give a short \
-        gloss, and classify opacity: \"opaque\" = meaning not derivable from the \
-        parts, must be learned as its own vocabulary item; \"semi\" = \
-        conventionalized, a learner benefits from learning it as a unit; \
-        \"transparent\" = fully compositional. Do NOT report free combinations, \
-        inflectional variants, or expressions appearing only once.\n\
+        2. EXPRESSIONS. A cluster is often driven by the target occurring inside a \
+        larger multiword pattern (collocation, idiom, compound, fixed phrase, or \
+        even a recurrent free combination). Such a cluster is NOT a sense of the \
+        target: report the host pattern in `expressions`, list that cluster's \
+        number in its cluster_numbers, and leave the cluster out of `senses`. \
+        Report a cluster-dominating pattern even when it is fully compositional — \
+        a separate step decides whether it is worth learning as a unit; your job \
+        here is to explain the cluster. Also report genuine fixed expressions of \
+        the target that account for several lines without dominating a whole \
+        cluster (with empty cluster_numbers). For each expression: cite the line \
+        numbers it appears on, copy it VERBATIM as a contiguous substring of one \
+        cited line (never invent or normalize a citation form), and give a short \
+        gloss. Do NOT report inflectional variants separately or patterns \
+        appearing on only one line.\n\
         \n\
         A cluster that is noise or an incoherent mixture may be left out of both \
         lists. Write your thoughts in English, but write every gloss IN {language}: \
@@ -846,6 +848,61 @@ fn adjudication_user_prompt(p: &KeyPrompt) -> String {
 }
 
 // ---------------------------------------------------------------------------
+// Opacity judging (the adoption gate)
+// ---------------------------------------------------------------------------
+//
+// A separate, per-expression call rather than a field on the adjudication
+// response, deliberately: the adjudicator must report even compositional
+// cluster-dominating patterns (that's what keeps them out of the sense
+// inventory), so it can't also be the adoption bar — and opacity is the
+// judgment we iterate on most, so it gets its own small prompt whose
+// calibration can change without refilling the expensive per-gram cache.
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+struct OpacityJudgeResponse {
+    /// Brief reasoning.
+    #[serde(rename = "1. thoughts")]
+    thoughts: String,
+    // No doc comment: schemars would emit it as a `description` next to the
+    // enum's `$ref`, which OpenAI's structured-output validator rejects. The
+    // opacity guidance lives in the system prompt instead.
+    #[serde(rename = "2. opacity")]
+    opacity: Opacity,
+}
+
+fn opacity_system_prompt(language: Language) -> String {
+    format!(
+        "You are curating multiword entries for a {language} vocabulary-learning \
+        app. Each request shows a candidate multiword expression mined from a \
+        sentence corpus, with a gloss and example sentences. Decide whether a \
+        learner needs it as its own vocabulary item:\n\
+        \n\
+        - \"opaque\": the meaning is not derivable from the parts; it must be \
+        learned as a unit (idioms — French \"il était une fois\", English \"once \
+        upon a time\").\n\
+        \n\
+        - \"semi\": compositional in hindsight, but conventionalized — of all the \
+        ways the idea could have been phrased, the language settled on this one, so \
+        a learner benefits from learning it as a unit (French \"fait preuve de\", \
+        \"adresse électronique\", \"me suis occupé de\"; English \"make a \
+        decision\").\n\
+        \n\
+        - \"transparent\": the learner gets it for free from its parts, or it is \
+        not a genuine unit at all. This includes: ordinary verb+object or \
+        verb+reply combinations (French \"dire merci\", \"dit non\"; English \"say \
+        thank you\" — knowing the words is knowing the phrase); free combinations \
+        that merely recur; and truncated fragments that stop mid-phrase instead of \
+        at a natural unit boundary (French \"reconnaissant pour votre\", \
+        \"enchanté de vous\").\n\
+        \n\
+        These entries are adopted automatically — nobody reviews them — so when \
+        unsure, choose \"transparent\": a wrongly admitted entry pollutes the \
+        vocabulary; a wrongly dropped one costs nothing. Write your thoughts in \
+        English."
+    )
+}
+
+// ---------------------------------------------------------------------------
 // Grounding
 // ---------------------------------------------------------------------------
 
@@ -890,15 +947,23 @@ fn snap_to_words(sent: &SentenceIndex, text: &str, verbatim: &str) -> Option<(us
     (last >= first).then_some((first, last))
 }
 
-/// Count corpus sentences whose atom sequence contains `needle` contiguously.
-fn count_atom_windows(index: &HashMap<String, SentenceIndex>, needle: &[SpurAtom]) -> usize {
+/// Corpus sentences whose atom sequence contains `needle` contiguously,
+/// sorted for determinism (their count is the expression's corpus count;
+/// the first few double as examples for the opacity judge).
+fn atom_window_matches<'a>(
+    index: &'a HashMap<String, SentenceIndex>,
+    needle: &[SpurAtom],
+) -> Vec<&'a str> {
     if needle.is_empty() {
-        return 0;
+        return Vec::new();
     }
-    index
-        .values()
-        .filter(|s| s.atom_seq.windows(needle.len()).any(|w| w == needle))
-        .count()
+    let mut texts: Vec<&str> = index
+        .iter()
+        .filter(|(_, s)| s.atom_seq.windows(needle.len()).any(|w| w == needle))
+        .map(|(text, _)| text.as_str())
+        .collect();
+    texts.sort_unstable();
+    texts
 }
 
 // ---------------------------------------------------------------------------
@@ -1127,7 +1192,9 @@ pub async fn discover(
     pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
 
     let mut sense_rows: Vec<SenseCandidate> = Vec::new();
-    let mut discovered: BTreeMap<Vec<SpurAtom>, DiscoveredTerm> = BTreeMap::new();
+    // Grounded expressions, each with a few example sentences for the
+    // opacity judge. Opacity itself is filled by that later stage.
+    let mut discovered: BTreeMap<Vec<SpurAtom>, (DiscoveredTerm, Vec<String>)> = BTreeMap::new();
     for (idx, prop) in judged.iter().enumerate() {
         let (_, resp) = &results[idx];
         let Ok(resp) = resp else { continue };
@@ -1142,9 +1209,6 @@ pub async fn discover(
         // (word range -> atom sequence, the substrate a new gram would be
         // made of), then against the whole corpus.
         for e in &resp.expressions {
-            if e.opacity == Opacity::Transparent {
-                continue;
-            }
             let Some((ids, surface)) = e.line_numbers.iter().find_map(|&n| {
                 let (_, _, occ_idx, _) = prompt.lines.iter().find(|(ln, _, _, _)| *ln == n)?;
                 let occ = &km.occs[*occ_idx];
@@ -1177,7 +1241,8 @@ pub async fn discover(
                     continue;
                 }
             }
-            let count = count_atom_windows(&index, &ids);
+            let matches = atom_window_matches(&index, &ids);
+            let count = matches.len();
             if count < MIN_EXPRESSION_COUNT {
                 continue;
             }
@@ -1187,16 +1252,20 @@ pub async fn discover(
                         .map(|a| a.resolve(&corpus.interners.strings))
                         .collect::<Vec<Atom<String>>>(),
                 );
-                DiscoveredTerm {
-                    term: surface,
-                    display: gram.to_display_string(language),
-                    gram,
-                    gloss: e.gloss.clone(),
-                    opacity: format!("{:?}", e.opacity).to_lowercase(),
-                    count,
-                    source: prompt.display.clone(),
-                    silhouette,
-                }
+                let examples = matches.iter().take(5).map(|s| s.to_string()).collect();
+                (
+                    DiscoveredTerm {
+                        term: surface,
+                        display: gram.to_display_string(language),
+                        gram,
+                        gloss: e.gloss.clone(),
+                        opacity: String::new(),
+                        count,
+                        source: prompt.display.clone(),
+                        silhouette,
+                    },
+                    examples,
+                )
             });
         }
 
@@ -1279,12 +1348,65 @@ pub async fn discover(
             .map(|s| s.lines().map(normalize_term).collect())
             .unwrap_or_default()
     };
-    let discovered: Vec<DiscoveredTerm> = discovered
+    let mut discovered: Vec<(DiscoveredTerm, Vec<String>)> = discovered
         .into_iter()
-        .filter(|(ids, d)| {
+        .filter(|(ids, (d, _))| {
             !known_terms.contains(&normalize_term(&d.term)) && !known_multi.contains(ids)
         })
-        .map(|(_, d)| d)
+        .map(|(_, entry)| entry)
+        .collect();
+
+    // Opacity judging: the adoption gate. These files feed the next
+    // generate-data run with no human review, so only expressions judged
+    // worth learning as a unit (opaque or semi) are written; transparent
+    // ones — and ones whose judgment failed — are dropped.
+    if !discovered.is_empty() {
+        let pb = indicatif::ProgressBar::new(discovered.len() as u64);
+        pb.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template(&format!(
+                    "{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {} opacity judgments ({{per_sec}}, ${{msg}}, {{eta}})",
+                    language.code()
+                ))
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+        let items: Vec<(usize, String)> = discovered
+            .iter()
+            .enumerate()
+            .map(|(i, (d, examples))| {
+                let mut p = format!(
+                    "Expression: \"{}\"\nGloss: {}\n\nExamples:\n",
+                    d.term, d.gloss
+                );
+                for e in examples {
+                    let _ = writeln!(p, "- {e}");
+                }
+                (i, p)
+            })
+            .collect();
+        let n_req = items.len();
+        let opacity_results = JUDGE_CLIENT
+            .batch_chat_with_system_prompt_fn::<_, _, OpacityJudgeResponse>(
+                opacity_system_prompt(language),
+                &items,
+                |(_, p)| p.clone(),
+                |batch| crate::report_batch_progress(&pb, 0, n_req, batch),
+            )
+            .await
+            .context("opacity batch failed")?;
+        pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
+        for ((i, _), resp) in opacity_results {
+            if let Ok(r) = resp {
+                discovered[*i].0.opacity = format!("{:?}", r.opacity).to_lowercase();
+            }
+        }
+    }
+    let discovered: Vec<DiscoveredTerm> = discovered
+        .into_iter()
+        .map(|(d, _)| d)
+        .filter(|d| matches!(d.opacity.as_str(), "opaque" | "semi"))
         .collect();
 
     std::fs::create_dir_all(&data_dir).context("Failed to create data dir")?;
