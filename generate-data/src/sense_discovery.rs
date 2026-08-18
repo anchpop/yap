@@ -225,9 +225,22 @@ fn collect_occurrences(
                 .map(|w| w.char_span)
                 .collect()
         };
+        // Maximal-match precedence: longest matches claim their words first,
+        // and a match overlapping already-claimed words is skipped entirely.
+        // Overlapping nested matches are common (unigram-learned fragments
+        // like "te plaît" also match inside "s'il te plaît" instances);
+        // without this, one formula gets mined once per covering gram.
+        let mut ordered_matches: Vec<_> = info.multiword_terms.high_confidence.iter().collect();
+        ordered_matches.sort_by_key(|m| std::cmp::Reverse(m.matched_word_indices.len()));
         let mut consumed: HashSet<usize> = HashSet::new();
         let mut match_ids: HashSet<GramId> = HashSet::new();
-        for m in &info.multiword_terms.high_confidence {
+        for m in ordered_matches {
+            if m.matched_word_indices
+                .iter()
+                .any(|&i| consumed.contains(&(i as usize)))
+            {
+                continue;
+            }
             let id = arena.intern(&m.gram);
             match_ids.insert(id);
             let mut spans = Vec::new();
@@ -1126,6 +1139,17 @@ pub async fn discover(
                     };
                     if ids.len() < 2 {
                         continue;
+                    }
+                    // A proposal must satisfy the same constraints the unigram
+                    // trainer puts on learned sequences: content words at both
+                    // ends, no proper nouns anywhere.
+                    {
+                        use omnigram::unigram::UnigramToken;
+                        let boundary_ok = ids.first().is_some_and(|a| a.is_content())
+                            && ids.last().is_some_and(|a| a.is_content());
+                        if !boundary_ok || ids.iter().any(|a| a.is_excluded_from_sequences()) {
+                            continue;
+                        }
                     }
                     let count = count_atom_windows(&index, &ids);
                     if count < MIN_EXPRESSION_COUNT {
