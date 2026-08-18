@@ -1,14 +1,21 @@
 //! Sense & collocation discovery over cached token embeddings.
 //!
-//! Mines every gram's occurrence cloud for cluster structure, has an LLM
-//! adjudicate each proposed split through two lanes — "are these genuinely
-//! distinct senses?" and "is a cluster driven by a fixed multiword
-//! expression?" — and writes reviewable proposal files under
-//! `generate-data/data/{lang}/`:
+//! Mines every gram's occurrence cloud for cluster structure (recursive
+//! 2-means plus HDBSCAN on large clouds — both purely geometric, tuned to
+//! over-propose), then has an LLM adjudicate each gram's full set of
+//! candidate clusters in a single call: group them into genuinely distinct
+//! senses (merging over-split ones), or explain them as the gram occurring
+//! inside a larger fixed multiword expression. The arbitration matters:
+//! contextual embeddings give a word inside a fixed expression a tight,
+//! distinctive cluster, so geometry alone cannot tell polysemy from
+//! collocation membership — only a judge that sees both interpretations at
+//! once can (e.g. "au clair" splitting into "au clair de lune" vs "tirer au
+//! clair" has zero senses of its own, just two host expressions). Writes
+//! reviewable proposal files under `generate-data/data/{lang}/`:
 //!
-//! - `sense_candidates.jsonl`: confirmed sense splits in sense-inventory
-//!   shape (gloss + anchor sentences per sense — leaves of a recursive,
-//!   judge-gated 2-means split tree).
+//! - `sense_candidates.jsonl`: grams whose clusters group into two or more
+//!   distinct senses, in sense-inventory shape (gloss + anchor sentences
+//!   per sense).
 //! - `discovered_multiword_terms.jsonl`: grounded, novel, frequent fixed
 //!   expressions (the LLM only cites lines and copies verbatim substrings;
 //!   surface forms, gram sequences, and corpus counts are derived here).
@@ -46,11 +53,20 @@ const MIN_OCC: usize = 8;
 /// balance fraction — a fraction tuned on small samples would kill real rare
 /// structure like "à temps" at 7% of "temps").
 const MIN_SIDE: usize = 5;
-/// Maximum recursive split depth (senses = leaves of the split tree).
+/// Maximum recursive 2-means split depth (up to 2^MAX_DEPTH leaves).
 const MAX_DEPTH: usize = 3;
-/// How many top-silhouette root splits get judged per language.
+/// Every 2-means split (root included) must clear this cosine-silhouette
+/// floor. Judge-confirmed root splits in French ranged 0.575-0.77, so this
+/// floor discards only structure weaker than anything ever confirmed;
+/// over-splitting past it is cheap because the adjudicator merges leaves.
+const SPLIT_SILHOUETTE: f64 = 0.55;
+/// Cap on clusters shown to the adjudicator for one gram (2-means leaves
+/// first, then novel HDBSCAN clusters by silhouette).
+const MAX_CLUSTERS: usize = 8;
+/// How many top-silhouette grams (by root split) get adjudicated per
+/// language.
 const JUDGE_TOP: usize = 100;
-/// Exemplars shown to the judge per cluster side.
+/// Exemplars shown to the adjudicator per cluster.
 const EXEMPLARS: usize = 8;
 /// Silhouette is O(n²); score on a deterministic subsample past this size.
 const SIL_SAMPLE: usize = 500;
@@ -61,9 +77,10 @@ const HDBSCAN_MIN_CLUSTER: usize = 5;
 /// HDBSCAN is O(n²)-ish in this dimensionality; larger clouds are
 /// deterministically subsampled to this size before clustering.
 const HDBSCAN_MAX_N: usize = 2000;
-/// How many top-silhouette HDBSCAN proposals get judged per language (the
-/// full corpus has thousands of n>=150 keys; unbounded, the secondary lane
-/// would dwarf the primary one it is meant to complement).
+/// How many additional grams surfaced by HDBSCAN get adjudicated per
+/// language, ranked by best novel-cluster silhouette (the full corpus has
+/// thousands of n>=150 keys; unbounded, the secondary proposer would dwarf
+/// the primary one it is meant to complement).
 const HDBSCAN_TOP: usize = 50;
 /// A grounded expression must recur this often in the corpus to be proposed.
 const MIN_EXPRESSION_COUNT: usize = 3;
@@ -425,24 +442,32 @@ fn cosine_silhouette(vectors: &[&Vec<f32>], labels: &[u8]) -> f64 {
 }
 
 // ---------------------------------------------------------------------------
-// Split proposal
+// Cluster proposal (purely geometric — the adjudicator arbitrates)
 // ---------------------------------------------------------------------------
 
-/// One proposed binary split of a gram's occurrence subset, ready to judge.
-struct Split {
-    key: GramId,
-    /// Indices into the key's occurrence list, per side. Side 0 is larger.
-    sides: [Vec<usize>; 2],
-    /// Exemplar occurrence indices per side: nearest own-centroid, margin
-    /// filtered (an occurrence near-tied between centroids is exactly the
-    /// noise HDBSCAN would have excluded — skip it as an exemplar).
-    exemplars: [Vec<usize>; 2],
-    silhouette: f64,
-    depth: usize,
+/// One candidate cluster of a gram's occurrence cloud.
+struct Cluster {
+    /// Indices into the key's occurrence list.
+    indices: Vec<usize>,
+    /// Exemplar occurrence indices: nearest own-centroid, margin filtered
+    /// against the nearest other cluster (an occurrence near-tied between
+    /// centroids is exactly the noise HDBSCAN would have excluded — skip it
+    /// as an exemplar).
+    exemplars: Vec<usize>,
     source: &'static str,
-    /// Gloss inherited from the parent judgment that created this subset
-    /// (None at the root).
-    parent_gloss: Option<String>,
+}
+
+/// Everything the adjudicator sees for one gram: its candidate clusters
+/// (which may overlap — an HDBSCAN cluster can carve a subset out of a
+/// 2-means leaf) plus the ranking scores used to pick which grams to judge.
+struct KeyProposal {
+    key: GramId,
+    clusters: Vec<Cluster>,
+    /// Root 2-means split silhouette (None if the cloud never split).
+    root_silhouette: Option<f64>,
+    /// Best novel HDBSCAN cluster-vs-rest silhouette (None without novel
+    /// clusters).
+    hdbscan_silhouette: Option<f64>,
 }
 
 fn margin_filtered_exemplars(
@@ -470,57 +495,48 @@ fn margin_filtered_exemplars(
     }
 }
 
-/// Propose a 2-means split of `subset` (indices into the key's occurrences).
-/// None if the subset is too small or the split leaves a side under the
-/// absolute floor.
-fn propose_kmeans_split(
-    key: GramId,
+/// Recursively 2-means-split `subset` into leaves while the geometry
+/// supports it: silhouette over the floor, both sides over the absolute
+/// minimum, depth and leaf count in bounds. No judgment gates recursion —
+/// over-splitting is safe because the adjudicator merges same-sense leaves.
+/// Returns the silhouette of the split performed at this level, if any.
+fn kmeans_leaves(
     vectors: &[Vec<f32>],
-    subset: &[usize],
+    subset: Vec<usize>,
     depth: usize,
-    parent_gloss: Option<String>,
-) -> Option<Split> {
-    if subset.len() < MIN_OCC {
+    leaves: &mut Vec<Vec<usize>>,
+) -> Option<f64> {
+    if depth > MAX_DEPTH || subset.len() < MIN_OCC || leaves.len() + 2 > MAX_CLUSTERS {
+        leaves.push(subset);
         return None;
     }
     let sub_vecs: Vec<&Vec<f32>> = subset.iter().map(|&i| &vectors[i]).collect();
-    let (labels, centroids) = kmeans2(&sub_vecs);
+    let (labels, _) = kmeans2(&sub_vecs);
     let mut sides: [Vec<usize>; 2] = [Vec::new(), Vec::new()];
     for (k, &l) in labels.iter().enumerate() {
         sides[l as usize].push(subset[k]);
     }
     if sides[1].len() < MIN_SIDE {
+        leaves.push(subset);
         return None;
     }
     let silhouette = cosine_silhouette(&sub_vecs, &labels);
-    let local: HashMap<usize, usize> = subset.iter().enumerate().map(|(k, &i)| (i, k)).collect();
-    let exemplars = [0, 1].map(|c: usize| {
-        let side_local: Vec<usize> = sides[c].iter().map(|i| local[i]).collect();
-        margin_filtered_exemplars(&sub_vecs, &side_local, &centroids[c], &centroids[1 - c])
-            .into_iter()
-            .map(|k| subset[k])
-            .collect()
-    });
-    Some(Split {
-        key,
-        sides,
-        exemplars,
-        silhouette,
-        depth,
-        source: "kmeans",
-        parent_gloss,
-    })
+    if silhouette < SPLIT_SILHOUETTE {
+        leaves.push(subset);
+        return None;
+    }
+    let [a, b] = sides;
+    kmeans_leaves(vectors, a, depth + 1, leaves);
+    kmeans_leaves(vectors, b, depth + 1, leaves);
+    Some(silhouette)
 }
 
 /// Secondary proposer: HDBSCAN on large occurrence clouds, where density
-/// estimation is in-regime. Each found cluster becomes a cluster-vs-rest
-/// binary split (deduped against the kmeans root split by side overlap), fed
-/// to the same judges — a bad proposal costs one judge call, nothing more.
-fn propose_hdbscan_splits(
-    key: GramId,
-    vectors: &[Vec<f32>],
-    kmeans_root: Option<&Split>,
-) -> Vec<Split> {
+/// estimation is in-regime. Clusters that essentially duplicate a 2-means
+/// leaf are dropped; the rest are returned with a cluster-vs-rest
+/// silhouette for ranking. A bad proposal costs the adjudicator one extra
+/// cluster to look at, nothing more.
+fn hdbscan_clusters(vectors: &[Vec<f32>], leaves: &[Vec<usize>]) -> Vec<(Vec<usize>, f64)> {
     if vectors.len() < HDBSCAN_MIN_N {
         return Vec::new();
     }
@@ -545,12 +561,28 @@ fn propose_hdbscan_splits(
     if clusters.len() < 2 {
         return Vec::new();
     }
-    let mut splits = Vec::new();
-    for (_, members) in clusters.iter() {
+    let sample_set: HashSet<usize> = sample.iter().copied().collect();
+    let mut out = Vec::new();
+    for members in clusters.into_values() {
         if members.len() < MIN_SIDE {
             continue;
         }
         let member_set: HashSet<usize> = members.iter().copied().collect();
+        // Dedup against the 2-means leaves: same structure, skip. Leaves
+        // are restricted to the subsample so the Jaccard is comparable.
+        let duplicate = leaves.iter().any(|leaf| {
+            let leaf_set: HashSet<usize> = leaf
+                .iter()
+                .copied()
+                .filter(|i| sample_set.contains(i))
+                .collect();
+            let inter = member_set.intersection(&leaf_set).count();
+            let union = member_set.union(&leaf_set).count();
+            union > 0 && inter as f64 / union as f64 > 0.5
+        });
+        if duplicate {
+            continue;
+        }
         let rest: Vec<usize> = labels
             .iter()
             .enumerate()
@@ -560,24 +592,6 @@ fn propose_hdbscan_splits(
         if rest.len() < MIN_SIDE {
             continue;
         }
-        // Dedup against the kmeans root split: same structure, skip. Root
-        // sides are restricted to the subsample so the Jaccard is comparable.
-        if let Some(root) = kmeans_root {
-            let sample_set: HashSet<usize> = sample.iter().copied().collect();
-            let overlaps = |side: &Vec<usize>| {
-                let side_set: HashSet<usize> = side
-                    .iter()
-                    .copied()
-                    .filter(|i| sample_set.contains(i))
-                    .collect();
-                let inter = member_set.intersection(&side_set).count();
-                let union = member_set.union(&side_set).count();
-                union > 0 && inter as f64 / union as f64 > 0.5
-            };
-            if overlaps(&root.sides[0]) || overlaps(&root.sides[1]) {
-                continue;
-            }
-        }
         let subset: Vec<usize> = rest.iter().chain(members.iter()).copied().collect();
         let sub_vecs: Vec<&Vec<f32>> = subset.iter().map(|&i| &vectors[i]).collect();
         let labels_bin: Vec<u8> = subset
@@ -585,60 +599,93 @@ fn propose_hdbscan_splits(
             .map(|i| u8::from(member_set.contains(i)))
             .collect();
         let silhouette = cosine_silhouette(&sub_vecs, &labels_bin);
-        let rest_refs: Vec<&Vec<f32>> = rest.iter().map(|&i| &vectors[i]).collect();
-        let member_refs: Vec<&Vec<f32>> = members.iter().map(|&i| &vectors[i]).collect();
-        let rest_centroid = mean_normalized(&rest_refs);
-        let member_centroid = mean_normalized(&member_refs);
-        let exemplars = [
-            margin_filtered_exemplars(
-                &vectors.iter().collect::<Vec<_>>(),
-                &rest,
-                &rest_centroid,
-                &member_centroid,
-            ),
-            margin_filtered_exemplars(
-                &vectors.iter().collect::<Vec<_>>(),
-                members,
-                &member_centroid,
-                &rest_centroid,
-            ),
-        ];
-        splits.push(Split {
-            key,
-            sides: [rest, members.clone()],
-            exemplars,
-            silhouette,
-            depth: 1,
-            source: "hdbscan",
-            parent_gloss: None,
-        });
+        out.push((members, silhouette));
     }
-    splits
+    out
+}
+
+/// Build a gram's full cluster proposal: geometric 2-means leaves plus
+/// novel HDBSCAN clusters, exemplars margin-filtered against each cluster's
+/// nearest neighbor cluster. None if no structure was found (fewer than two
+/// clusters).
+fn build_key_proposal(key: GramId, vectors: &[Vec<f32>]) -> Option<KeyProposal> {
+    let all: Vec<usize> = (0..vectors.len()).collect();
+    let mut leaves: Vec<Vec<usize>> = Vec::new();
+    let root_silhouette = kmeans_leaves(vectors, all, 1, &mut leaves);
+    let mut hdb = hdbscan_clusters(vectors, &leaves);
+    hdb.sort_by(|a, b| b.1.total_cmp(&a.1));
+    let hdbscan_silhouette = hdb.first().map(|&(_, s)| s);
+    let mut clusters: Vec<(Vec<usize>, &'static str)> = Vec::new();
+    if leaves.len() >= 2 {
+        clusters.extend(leaves.into_iter().map(|l| (l, "kmeans")));
+    } else if !hdb.is_empty() {
+        // No 2-means structure: show the HDBSCAN clusters against the
+        // complement of their union as background.
+        let in_cluster: HashSet<usize> = hdb.iter().flat_map(|(m, _)| m.iter().copied()).collect();
+        let rest: Vec<usize> = (0..vectors.len())
+            .filter(|i| !in_cluster.contains(i))
+            .collect();
+        if rest.len() >= MIN_SIDE {
+            clusters.push((rest, "hdbscan"));
+        }
+    }
+    for (members, _) in hdb {
+        if clusters.len() >= MAX_CLUSTERS {
+            break;
+        }
+        clusters.push((members, "hdbscan"));
+    }
+    if clusters.len() < 2 {
+        return None;
+    }
+    let refs: Vec<&Vec<f32>> = vectors.iter().collect();
+    let centroids: Vec<Vec<f32>> = clusters
+        .iter()
+        .map(|(indices, _)| {
+            let members: Vec<&Vec<f32>> = indices.iter().map(|&i| &vectors[i]).collect();
+            mean_normalized(&members)
+        })
+        .collect();
+    let clusters = clusters
+        .into_iter()
+        .enumerate()
+        .map(|(ci, (indices, source))| {
+            let own = &centroids[ci];
+            let other = centroids
+                .iter()
+                .enumerate()
+                .filter(|&(cj, _)| cj != ci)
+                .max_by(|a, b| dot(own, a.1).total_cmp(&dot(own, b.1)))
+                .map(|(_, c)| c)
+                .expect("at least two clusters");
+            let exemplars = margin_filtered_exemplars(&refs, &indices, own, other);
+            Cluster {
+                indices,
+                exemplars,
+                source,
+            }
+        })
+        .collect();
+    Some(KeyProposal {
+        key,
+        clusters,
+        root_silhouette,
+        hdbscan_silhouette,
+    })
 }
 
 // ---------------------------------------------------------------------------
-// LLM judging
+// LLM adjudication
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-struct SenseJudgeResponse {
-    /// Brief reasoning.
-    #[serde(rename = "1. thoughts")]
-    thoughts: String,
-    /// Whether the two clusters are genuinely distinct meanings.
-    #[serde(rename = "2. distinct")]
-    distinct: bool,
-    /// Confidence in the verdict, 0.0-1.0.
-    #[serde(rename = "3. confidence")]
-    confidence: f64,
-    /// 2-5 word gloss of cluster A's sense (or of the shared sense), in
-    /// the language being audited.
-    #[serde(rename = "4. sense_a")]
-    sense_a: String,
-    /// 2-5 word gloss of cluster B's sense (or of the shared sense), in
-    /// the language being audited.
-    #[serde(rename = "5. sense_b")]
-    sense_b: String,
+struct SenseGroup {
+    /// Numbers of the clusters that share this sense.
+    #[serde(rename = "1. cluster_numbers")]
+    cluster_numbers: Vec<usize>,
+    /// 2-5 word monolingual gloss of the sense, in the audited language.
+    #[serde(rename = "2. gloss")]
+    gloss: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
@@ -651,68 +698,85 @@ enum Opacity {
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 struct ExtractedExpression {
+    /// Numbers of the clusters dominated by this expression (empty if it
+    /// merely appears on some lines without explaining a whole cluster).
+    #[serde(rename = "1. cluster_numbers")]
+    cluster_numbers: Vec<usize>,
     /// Numbers of the listed lines that contain this expression.
-    #[serde(rename = "1. line_numbers")]
+    #[serde(rename = "2. line_numbers")]
     line_numbers: Vec<usize>,
     /// The expression copied VERBATIM (a contiguous substring) from one of
     /// the cited lines.
-    #[serde(rename = "2. verbatim")]
+    #[serde(rename = "3. verbatim")]
     verbatim: String,
     /// 2-6 word gloss, in the language being mined.
-    #[serde(rename = "3. gloss")]
+    #[serde(rename = "4. gloss")]
     gloss: String,
     // No doc comment: schemars would emit it as a `description` next to the
     // enum's `$ref`, which OpenAI's structured-output validator rejects. The
     // opacity guidance lives in the system prompt instead.
-    #[serde(rename = "4. opacity")]
+    #[serde(rename = "5. opacity")]
     opacity: Opacity,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-struct CollocationJudgeResponse {
+struct AdjudicationResponse {
     /// Brief reasoning.
     #[serde(rename = "1. thoughts")]
     thoughts: String,
-    /// Fixed multiword expressions accounting for several lines, if any.
-    #[serde(rename = "2. expressions")]
+    /// The clusters grouped into genuinely distinct senses.
+    #[serde(rename = "2. senses")]
+    senses: Vec<SenseGroup>,
+    /// Fixed multiword expressions found in the clusters, if any.
+    #[serde(rename = "3. expressions")]
     expressions: Vec<ExtractedExpression>,
+    /// Confidence in the overall grouping, 0.0-1.0.
+    #[serde(rename = "4. confidence")]
+    confidence: f64,
 }
 
-fn sense_system_prompt(language: Language) -> String {
+fn adjudication_system_prompt(language: Language) -> String {
     format!(
-        "You are auditing a language-learning vocabulary. Each \
-        request shows a word or expression from a {language} sentence corpus whose \
-        occurrences an embedding model split into two clusters. Decide whether the \
-        clusters correspond to GENUINELY DISTINCT MEANINGS — distinct enough that a \
-        learner would treat them as different vocabulary items and they would usually \
+        "You are auditing a language-learning vocabulary built from a {language} \
+        sentence corpus. Each request shows one target word or expression (marked \
+        \u{ab}like this\u{bb}) together with several CLUSTERS of its occurrences, \
+        produced by an embedding model. The clustering is imperfect: it may split one \
+        meaning across several clusters, and clusters may overlap — a small cluster \
+        can carve a subset out of a larger one. Lines are numbered across all \
+        clusters so you can cite them.\n\
+        \n\
+        Sort the clusters into:\n\
+        \n\
+        1. SENSES. Group the clusters by meaning: each entry in `senses` lists the \
+        clusters sharing one meaning, with a 2-5 word gloss. Only report separate \
+        groups for GENUINELY DISTINCT meanings — distinct enough that a learner \
+        would treat them as different vocabulary items and they would usually \
         receive different translations in another language (homonyms like \
         bank=money/river, or strong polysemy like paper=material/newspaper). Mere \
-        topic, register, or inflection variation of one meaning does NOT count. Idioms \
-        count as distinct if the word's meaning inside the idiom is opaque. The target \
-        is marked \u{ab}like this\u{bb}. If not distinct, sense_a and sense_b should \
-        both gloss the single shared sense. Write your thoughts in English, but write \
-        sense_a and sense_b IN {language}: they are monolingual dictionary-style \
-        glosses for a {language} sense inventory, not translations."
-    )
-}
-
-fn collocation_system_prompt(language: Language) -> String {
-    format!(
-        "You are mining a {language} sentence corpus for FIXED \
-        MULTIWORD EXPRESSIONS (collocations, idioms, compounds, fixed phrases). Each \
-        request shows a word from the corpus whose occurrences an embedding model split \
-        into two clusters; often one cluster is dominated by the word occurring inside \
-        one or more fixed expressions. The target word is marked \u{ab}like this\u{bb} \
-        in numbered lines. For each fixed multiword expression of the target that \
-        accounts for several lines, report it: cite the line numbers, copy the \
-        expression VERBATIM as a contiguous substring of one cited line (never invent \
-        or normalize a citation form), give a short gloss written IN {language} (a \
-        monolingual dictionary-style gloss, not a translation), and classify opacity: \
-        \"opaque\" = meaning not derivable from the parts, must be learned as its own \
-        vocabulary item; \"semi\" = conventionalized, a learner benefits from learning \
-        it as a unit; \"transparent\" = fully compositional. Do NOT report free \
-        combinations, inflectional variants, or expressions appearing only once. \
-        Report an empty list if neither cluster is driven by fixed expressions."
+        topic, register, or inflection variation of one meaning does NOT count — \
+        merge such clusters into one group. If the target has a single meaning \
+        throughout, return one group containing every cluster.\n\
+        \n\
+        2. FIXED EXPRESSIONS. A cluster is often driven by the target occurring \
+        inside a larger fixed multiword expression (collocation, idiom, compound, \
+        fixed phrase). Such a cluster is NOT a sense of the target: report the host \
+        expression in `expressions`, list that cluster's number in its \
+        cluster_numbers, and leave the cluster out of `senses`. Also report fixed \
+        expressions of the target that account for several lines without dominating \
+        a whole cluster (with empty cluster_numbers). For each expression: cite the \
+        line numbers it appears on, copy it VERBATIM as a contiguous substring of \
+        one cited line (never invent or normalize a citation form), give a short \
+        gloss, and classify opacity: \"opaque\" = meaning not derivable from the \
+        parts, must be learned as its own vocabulary item; \"semi\" = \
+        conventionalized, a learner benefits from learning it as a unit; \
+        \"transparent\" = fully compositional. Do NOT report free combinations, \
+        inflectional variants, or expressions appearing only once.\n\
+        \n\
+        A cluster that is noise or an incoherent mixture may be left out of both \
+        lists. Write your thoughts in English, but write every gloss IN {language}: \
+        they are monolingual dictionary-style glosses for a {language} sense \
+        inventory, not translations. Set confidence to your confidence in the \
+        overall grouping."
     )
 }
 
@@ -748,48 +812,35 @@ fn mark_occurrence(occ: &Occurrence) -> String {
     out
 }
 
-/// The per-split prompt context: marked exemplar lines, globally numbered so
-/// the collocation lane can cite them.
-struct SplitPrompt {
+/// The per-gram prompt context: marked exemplar lines grouped by cluster,
+/// globally numbered so expression extractions can cite them.
+struct KeyPrompt {
     display: String,
-    /// (global line number, side, occurrence index, marked line)
+    /// (global line number, cluster index, occurrence index, marked line)
     lines: Vec<(usize, usize, usize, String)>,
 }
 
-fn split_prompt(split: &Split, occs: &[Occurrence], display: String) -> SplitPrompt {
+fn key_prompt(prop: &KeyProposal, occs: &[Occurrence], display: String) -> KeyPrompt {
     let mut lines = Vec::new();
     let mut number = 0;
-    for side in 0..2 {
-        for &i in &split.exemplars[side] {
-            lines.push((number, side, i, mark_occurrence(&occs[i])));
+    for (cluster, c) in prop.clusters.iter().enumerate() {
+        for &i in &c.exemplars {
+            lines.push((number, cluster, i, mark_occurrence(&occs[i])));
             number += 1;
         }
     }
-    SplitPrompt { display, lines }
+    KeyPrompt { display, lines }
 }
 
-fn sense_user_prompt(p: &SplitPrompt) -> String {
-    let mut out = format!("Target: \"{}\"\n\nCluster A:\n", p.display);
-    for cluster in 0..2 {
-        if cluster == 1 {
-            out.push_str("\nCluster B:\n");
+fn adjudication_user_prompt(p: &KeyPrompt) -> String {
+    let mut out = format!("Target: \"{}\"\n", p.display);
+    let mut current = usize::MAX;
+    for (n, cluster, _, line) in &p.lines {
+        if *cluster != current {
+            current = *cluster;
+            let _ = write!(out, "\nCluster {}:\n", current + 1);
         }
-        for (_, _, _, line) in p.lines.iter().filter(|(_, s, _, _)| *s == cluster) {
-            let _ = writeln!(out, "- {line}");
-        }
-    }
-    out
-}
-
-fn collocation_user_prompt(p: &SplitPrompt) -> String {
-    let mut out = format!("Target: \"{}\"\n\nCluster A:\n", p.display);
-    for cluster in 0..2 {
-        if cluster == 1 {
-            out.push_str("\nCluster B:\n");
-        }
-        for (n, _, _, line) in p.lines.iter().filter(|(_, s, _, _)| *s == cluster) {
-            let _ = writeln!(out, "{n}. {line}");
-        }
+        let _ = writeln!(out, "{n}. {line}");
     }
     out
 }
@@ -984,48 +1035,38 @@ pub async fn discover(
         );
     }
 
-    // Root proposals: 2-means on every key (ranked, top-K), plus HDBSCAN
-    // cluster-vs-rest splits on large clouds (deduped against the root).
-    // CPU-bound and per-key independent, so mine keys in parallel.
+    // Cluster every key's occurrence cloud: recursive 2-means leaves plus
+    // novel HDBSCAN clusters on large clouds — purely geometric, tuned to
+    // over-propose (the adjudicator merges and arbitrates). CPU-bound and
+    // per-key independent, so mine keys in parallel.
     use rayon::prelude::*;
-    let mut root_splits: Vec<Split> = keys
+    let proposals: Vec<KeyProposal> = keys
         .par_iter()
-        .flat_map_iter(|km| {
-            let all: Vec<usize> = (0..km.occs.len()).collect();
-            let kmeans_root = propose_kmeans_split(km.key, &km.vectors, &all, 1, None);
-            let hdbscan = propose_hdbscan_splits(km.key, &km.vectors, kmeans_root.as_ref());
-            kmeans_root.into_iter().chain(hdbscan)
-        })
+        .filter_map(|km| build_key_proposal(km.key, &km.vectors))
         .collect();
-    // kmeans splits strictly before hdbscan ones (so a key's kmeans tree is
-    // resolved before its hdbscan duplicate is considered), each group by
-    // silhouette.
-    root_splits.sort_by(|a, b| {
-        (a.source == "hdbscan")
-            .cmp(&(b.source == "hdbscan"))
-            .then_with(|| b.silhouette.total_cmp(&a.silhouette))
-            .then_with(|| a.key.cmp(&b.key))
-    });
-    let kept: Vec<Split> = {
-        let mut kmeans_seen = 0usize;
-        let mut hdbscan_seen = 0usize;
-        root_splits
-            .into_iter()
-            .filter(|s| {
-                if s.source == "kmeans" {
-                    kmeans_seen += 1;
-                    kmeans_seen <= JUDGE_TOP
-                } else {
-                    hdbscan_seen += 1;
-                    hdbscan_seen <= HDBSCAN_TOP
-                }
-            })
+
+    // Pick which grams to adjudicate: top keys by root 2-means silhouette,
+    // plus top keys surfaced by HDBSCAN.
+    let judged: Vec<&KeyProposal> = {
+        let top = |score: fn(&KeyProposal) -> Option<f64>, limit: usize| -> HashSet<GramId> {
+            let mut scored: Vec<(GramId, f64)> = proposals
+                .iter()
+                .filter_map(|p| score(p).map(|s| (p.key, s)))
+                .collect();
+            scored.sort_by(|a, b| b.1.total_cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
+            scored.into_iter().take(limit).map(|(key, _)| key).collect()
+        };
+        let kmeans_top = top(|p| p.root_silhouette, JUDGE_TOP);
+        let hdbscan_top = top(|p| p.hdbscan_silhouette, HDBSCAN_TOP);
+        proposals
+            .iter()
+            .filter(|p| kmeans_top.contains(&p.key) || hdbscan_top.contains(&p.key))
             .collect()
     };
     println!(
-        "sense-discovery[{}]: judging {} root splits",
+        "sense-discovery[{}]: adjudicating {} grams",
         language.code(),
-        kept.len()
+        judged.len()
     );
 
     let key_lookup: HashMap<GramId, usize> =
@@ -1048,240 +1089,175 @@ pub async fn discover(
         .filter(|seq| seq.len() > 1)
         .collect();
 
-    // Judge round by round; confirmed splits recurse into their sides.
+    // One adjudication call per gram: the judge sees every candidate
+    // cluster at once and sorts them into sense groups (merging over-split
+    // ones) and fixed-expression fragments.
+    let prompts: Vec<KeyPrompt> = judged
+        .iter()
+        .map(|p| {
+            key_prompt(
+                p,
+                &keys[key_lookup[&p.key]].occs,
+                arena.display(p.key, language),
+            )
+        })
+        .collect();
+
+    let pb = indicatif::ProgressBar::new(prompts.len() as u64);
+    pb.set_style(
+        indicatif::ProgressStyle::default_bar()
+            .template(&format!(
+                "{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {} adjudications ({{per_sec}}, ${{msg}}, {{eta}})",
+                language.code()
+            ))
+            .unwrap()
+            .progress_chars("#>-"),
+    );
+    pb.enable_steady_tick(std::time::Duration::from_millis(100));
+    let n_req = prompts.len();
+    let results = JUDGE_CLIENT
+        .batch_chat_with_system_prompt_fn::<_, _, AdjudicationResponse>(
+            adjudication_system_prompt(language),
+            &prompts,
+            adjudication_user_prompt,
+            |batch| crate::report_batch_progress(&pb, 0, n_req, batch),
+        )
+        .await
+        .context("adjudication batch failed")?;
+    pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
+
     let mut sense_rows: Vec<SenseCandidate> = Vec::new();
     let mut discovered: BTreeMap<Vec<SpurAtom>, DiscoveredTerm> = BTreeMap::new();
-    let mut round = kept;
-    let mut depth = 1;
-    // Per key: the leaves of the split tree plus root stats, built as splits
-    // resolve. A key enters the inventory only if its root split confirmed.
-    struct Tree {
-        leaves: Vec<(String, Vec<usize>, f64)>, // gloss, indices, confidence
-        root_sil: f64,
-        root_conf: f64,
-        source: &'static str,
-    }
-    let mut trees: BTreeMap<GramId, Tree> = BTreeMap::new();
-    while !round.is_empty() && depth <= MAX_DEPTH {
-        let prompts: Vec<SplitPrompt> = round
-            .iter()
-            .map(|s| {
-                split_prompt(
-                    s,
-                    &keys[key_lookup[&s.key]].occs,
-                    arena.display(s.key, language),
-                )
-            })
-            .collect();
+    for (idx, prop) in judged.iter().enumerate() {
+        let (_, resp) = &results[idx];
+        let Ok(resp) = resp else { continue };
+        let km = &keys[key_lookup[&prop.key]];
+        let prompt = &prompts[idx];
+        let silhouette = prop
+            .root_silhouette
+            .or(prop.hdbscan_silhouette)
+            .unwrap_or(0.0);
 
-        let progress = |label: &str, n: usize| {
-            let pb = indicatif::ProgressBar::new(n as u64);
-            pb.set_style(
-                indicatif::ProgressStyle::default_bar()
-                    .template(&format!(
-                        "{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {label} ({{per_sec}}, ${{msg}}, {{eta}})"
-                    ))
-                    .unwrap()
-                    .progress_chars("#>-"),
-            );
-            pb.enable_steady_tick(std::time::Duration::from_millis(100));
-            pb
-        };
-
-        let pb = progress(
-            &format!("{} sense judgments (depth {depth})", language.code()),
-            prompts.len(),
-        );
-        let n_req = prompts.len();
-        let sense_results = JUDGE_CLIENT
-            .batch_chat_with_system_prompt_fn::<_, _, SenseJudgeResponse>(
-                sense_system_prompt(language),
-                &prompts,
-                sense_user_prompt,
-                |batch| crate::report_batch_progress(&pb, 0, n_req, batch),
-            )
-            .await
-            .context("sense judge batch failed")?;
-        pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
-
-        let pb = progress(
-            &format!(
-                "{} collocation extractions (depth {depth})",
-                language.code()
-            ),
-            prompts.len(),
-        );
-        let colloc_results = JUDGE_CLIENT
-            .batch_chat_with_system_prompt_fn::<_, _, CollocationJudgeResponse>(
-                collocation_system_prompt(language),
-                &prompts,
-                collocation_user_prompt,
-                |batch| crate::report_batch_progress(&pb, 0, n_req, batch),
-            )
-            .await
-            .context("collocation judge batch failed")?;
-        pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
-
-        let mut next_round: Vec<Split> = Vec::new();
-        for (idx, split) in round.iter().enumerate() {
-            let (_, sense) = &sense_results[idx];
-            let (_, colloc) = &colloc_results[idx];
-            let km = &keys[key_lookup[&split.key]];
-            let prompt = &prompts[idx];
-
-            // Collocation lane: ground every extraction against the cited
-            // lines (word range -> atom sequence, the substrate a new gram
-            // would be made of), then against the whole corpus.
-            if let Ok(colloc) = colloc {
-                for e in &colloc.expressions {
-                    if e.opacity == Opacity::Transparent {
-                        continue;
-                    }
-                    let Some((ids, surface)) = e.line_numbers.iter().find_map(|&n| {
-                        let (_, _, occ_idx, _) =
-                            prompt.lines.iter().find(|(ln, _, _, _)| *ln == n)?;
-                        let occ = &km.occs[*occ_idx];
-                        let sent = index.get(&occ.text)?;
-                        let (first, last) = snap_to_words(sent, &occ.text, &e.verbatim)?;
-                        let ids = sent.atom_seq.get(first..=last)?.to_vec();
-                        let surface = occ.text
-                            [sent.words[first].byte_span.0..sent.words[last].byte_span.1]
-                            .to_string();
-                        Some((ids, surface))
-                    }) else {
-                        log::info!(
-                            "sense-discovery[{}]: ungroundable extraction {:?} for {}",
-                            language.code(),
-                            e.verbatim,
-                            prompt.display,
-                        );
-                        continue;
-                    };
-                    if ids.len() < 2 {
-                        continue;
-                    }
-                    // A proposal must satisfy the same constraints the unigram
-                    // trainer puts on learned sequences: content words at both
-                    // ends, no proper nouns anywhere.
-                    {
-                        use omnigram::unigram::UnigramToken;
-                        let boundary_ok = ids.first().is_some_and(|a| a.is_content())
-                            && ids.last().is_some_and(|a| a.is_content());
-                        if !boundary_ok || ids.iter().any(|a| a.is_excluded_from_sequences()) {
-                            continue;
-                        }
-                    }
-                    let count = count_atom_windows(&index, &ids);
-                    if count < MIN_EXPRESSION_COUNT {
-                        continue;
-                    }
-                    discovered.entry(ids.clone()).or_insert_with(|| {
-                        let gram = Gram::from(
-                            ids.iter()
-                                .map(|a| a.resolve(&corpus.interners.strings))
-                                .collect::<Vec<Atom<String>>>(),
-                        );
-                        DiscoveredTerm {
-                            term: surface,
-                            display: gram.to_display_string(language),
-                            gram,
-                            gloss: e.gloss.clone(),
-                            opacity: format!("{:?}", e.opacity).to_lowercase(),
-                            count,
-                            source: prompt.display.clone(),
-                            silhouette: split.silhouette,
-                        }
-                    });
-                }
+        // Expression lane: ground every extraction against the cited lines
+        // (word range -> atom sequence, the substrate a new gram would be
+        // made of), then against the whole corpus.
+        for e in &resp.expressions {
+            if e.opacity == Opacity::Transparent {
+                continue;
             }
-
-            // Sense lane: confirmed splits recurse; refuted ones close their
-            // subtree into a leaf.
-            let Ok(sense) = sense else { continue };
-            if sense.distinct {
-                if split.source == "hdbscan" && trees.contains_key(&split.key) {
-                    // The kmeans tree already covers this key (kmeans splits
-                    // sort before hdbscan ones); skip the duplicate for
-                    // inventory purposes. Its collocation extractions above
-                    // still count.
+            let Some((ids, surface)) = e.line_numbers.iter().find_map(|&n| {
+                let (_, _, occ_idx, _) = prompt.lines.iter().find(|(ln, _, _, _)| *ln == n)?;
+                let occ = &km.occs[*occ_idx];
+                let sent = index.get(&occ.text)?;
+                let (first, last) = snap_to_words(sent, &occ.text, &e.verbatim)?;
+                let ids = sent.atom_seq.get(first..=last)?.to_vec();
+                let surface = occ.text[sent.words[first].byte_span.0..sent.words[last].byte_span.1]
+                    .to_string();
+                Some((ids, surface))
+            }) else {
+                log::info!(
+                    "sense-discovery[{}]: ungroundable extraction {:?} for {}",
+                    language.code(),
+                    e.verbatim,
+                    prompt.display,
+                );
+                continue;
+            };
+            if ids.len() < 2 {
+                continue;
+            }
+            // A proposal must satisfy the same constraints the unigram
+            // trainer puts on learned sequences: content words at both
+            // ends, no proper nouns anywhere.
+            {
+                use omnigram::unigram::UnigramToken;
+                let boundary_ok = ids.first().is_some_and(|a| a.is_content())
+                    && ids.last().is_some_and(|a| a.is_content());
+                if !boundary_ok || ids.iter().any(|a| a.is_excluded_from_sequences()) {
                     continue;
                 }
-                trees.entry(split.key).or_insert(Tree {
-                    leaves: Vec::new(),
-                    root_sil: split.silhouette,
-                    root_conf: sense.confidence,
-                    source: split.source,
-                });
-                for (side, gloss) in [(0, &sense.sense_a), (1, &sense.sense_b)] {
-                    let indices = split.sides[side].clone();
-                    match propose_kmeans_split(
-                        split.key,
-                        &km.vectors,
-                        &indices,
-                        split.depth + 1,
-                        Some(gloss.clone()),
-                    ) {
-                        Some(child) if split.depth < MAX_DEPTH && split.source == "kmeans" => {
-                            next_round.push(child)
-                        }
-                        _ => trees.get_mut(&split.key).unwrap().leaves.push((
-                            gloss.clone(),
-                            indices,
-                            sense.confidence,
-                        )),
-                    }
-                }
-            } else if let (Some(gloss), Some(tree)) =
-                (&split.parent_gloss, trees.get_mut(&split.key))
-            {
-                // A refuted deeper split: the whole subset is one sense.
-                let indices: Vec<usize> = split.sides.iter().flatten().copied().collect();
-                tree.leaves.push((gloss.clone(), indices, 1.0));
             }
+            let count = count_atom_windows(&index, &ids);
+            if count < MIN_EXPRESSION_COUNT {
+                continue;
+            }
+            discovered.entry(ids.clone()).or_insert_with(|| {
+                let gram = Gram::from(
+                    ids.iter()
+                        .map(|a| a.resolve(&corpus.interners.strings))
+                        .collect::<Vec<Atom<String>>>(),
+                );
+                DiscoveredTerm {
+                    term: surface,
+                    display: gram.to_display_string(language),
+                    gram,
+                    gloss: e.gloss.clone(),
+                    opacity: format!("{:?}", e.opacity).to_lowercase(),
+                    count,
+                    source: prompt.display.clone(),
+                    silhouette,
+                }
+            });
         }
-        round = next_round;
-        depth += 1;
-    }
-    // Any splits still pending when depth ran out: close them into leaves.
-    for split in round {
-        if let (Some(gloss), Some(tree)) = (&split.parent_gloss, trees.get_mut(&split.key)) {
-            let indices: Vec<usize> = split.sides.iter().flatten().copied().collect();
-            tree.leaves.push((gloss.clone(), indices, 1.0));
-        }
-    }
 
-    for (key, tree) in trees {
-        if tree.leaves.len() < 2 {
+        // Sense lane: resolve each group's clusters (1-based numbers from
+        // the prompt); a gram with two or more surviving groups becomes a
+        // sense candidate. Clusters explained by a host expression or
+        // judged noise simply appear in no group.
+        let groups: Vec<(&SenseGroup, Vec<&Cluster>)> = resp
+            .senses
+            .iter()
+            .filter_map(|g| {
+                let members: Vec<&Cluster> = g
+                    .cluster_numbers
+                    .iter()
+                    .filter_map(|&n| n.checked_sub(1).and_then(|i| prop.clusters.get(i)))
+                    .collect();
+                (!members.is_empty()).then_some((g, members))
+            })
+            .collect();
+        if groups.len() < 2 {
             continue;
         }
-        let km = &keys[key_lookup[&key]];
-        let senses: Vec<SenseEntry> = tree
-            .leaves
+        let mut sources: Vec<&str> = groups
             .iter()
-            .map(|(gloss, indices, _)| {
-                let anchors: Vec<SenseAnchor> = indices
+            .flat_map(|(_, cs)| cs.iter().map(|c| c.source))
+            .collect();
+        sources.sort_unstable();
+        sources.dedup();
+        let senses: Vec<SenseEntry> = groups
+            .iter()
+            .map(|(g, members)| {
+                let mut indices: Vec<usize> = members
                     .iter()
+                    .flat_map(|c| c.indices.iter().copied())
+                    .collect();
+                indices.sort_unstable();
+                indices.dedup();
+                let anchors: Vec<SenseAnchor> = members
+                    .iter()
+                    .flat_map(|c| c.exemplars.iter().copied())
                     .take(EXEMPLARS)
-                    .map(|&i| SenseAnchor {
+                    .map(|i| SenseAnchor {
                         sentence: km.occs[i].text.clone(),
                         spans: km.occs[i].spans.clone(),
                     })
                     .collect();
                 SenseEntry {
-                    gloss: gloss.clone(),
+                    gloss: g.gloss.clone(),
                     n: indices.len(),
                     anchors,
                 }
             })
             .collect();
         sense_rows.push(SenseCandidate {
-            key: arena.display(key, language),
-            gram: arena.grams[key as usize].clone(),
+            key: prompt.display.clone(),
+            gram: arena.grams[prop.key as usize].clone(),
             n: km.occs.len(),
             senses,
-            silhouette: tree.root_sil,
-            confidence: tree.root_conf,
-            source: tree.source.to_string(),
+            silhouette,
+            confidence: resp.confidence,
+            source: sources.join("+"),
         });
     }
     sense_rows.sort_by(|a, b| {
@@ -1366,6 +1342,35 @@ mod tests {
         assert_eq!(labels[6..], [1, 1, 1, 1]);
         let sil = cosine_silhouette(&refs, &labels);
         assert!(sil > 0.5, "silhouette {sil} too low for clean blobs");
+    }
+
+    #[test]
+    fn leaves_split_two_blobs_but_not_one() {
+        let two: Vec<Vec<f32>> = (0..12)
+            .map(|i| {
+                if i < 6 {
+                    vec2(1.0, 0.01 * i as f32)
+                } else {
+                    vec2(0.01 * i as f32, 1.0)
+                }
+            })
+            .collect();
+        let mut leaves = Vec::new();
+        let sil = kmeans_leaves(&two, (0..12).collect(), 1, &mut leaves);
+        assert!(sil.is_some());
+        assert_eq!(leaves.len(), 2);
+        assert_eq!(leaves[0], (0..6).collect::<Vec<_>>());
+        assert_eq!(leaves[1], (6..12).collect::<Vec<_>>());
+
+        // Identical points can't be split (every point lands on one side).
+        // A *near*-identical 1-D line is no good as the negative case here:
+        // cosine distance grows with angle², which inflates silhouette on
+        // degenerate synthetic data past the floor.
+        let one: Vec<Vec<f32>> = (0..12).map(|_| vec2(1.0, 0.5)).collect();
+        let mut leaves = Vec::new();
+        let sil = kmeans_leaves(&one, (0..12).collect(), 1, &mut leaves);
+        assert!(sil.is_none(), "identical points must not split");
+        assert_eq!(leaves.len(), 1);
     }
 
     #[test]
