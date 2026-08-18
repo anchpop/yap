@@ -631,10 +631,12 @@ struct SenseJudgeResponse {
     /// Confidence in the verdict, 0.0-1.0.
     #[serde(rename = "3. confidence")]
     confidence: f64,
-    /// 2-5 word gloss of cluster A's sense (or of the shared sense).
+    /// 2-5 word gloss of cluster A's sense (or of the shared sense), in
+    /// the language being audited.
     #[serde(rename = "4. sense_a")]
     sense_a: String,
-    /// 2-5 word gloss of cluster B's sense (or of the shared sense).
+    /// 2-5 word gloss of cluster B's sense (or of the shared sense), in
+    /// the language being audited.
     #[serde(rename = "5. sense_b")]
     sense_b: String,
 }
@@ -656,7 +658,7 @@ struct ExtractedExpression {
     /// the cited lines.
     #[serde(rename = "2. verbatim")]
     verbatim: String,
-    /// 2-6 word English gloss.
+    /// 2-6 word gloss, in the language being mined.
     #[serde(rename = "3. gloss")]
     gloss: String,
     // No doc comment: schemars would emit it as a `description` next to the
@@ -676,31 +678,43 @@ struct CollocationJudgeResponse {
     expressions: Vec<ExtractedExpression>,
 }
 
-const SENSE_SYSTEM_PROMPT: &str = "You are auditing a language-learning vocabulary. Each \
-    request shows a word or expression from a sentence corpus whose occurrences an \
-    embedding model split into two clusters. Decide whether the clusters correspond to \
-    GENUINELY DISTINCT MEANINGS — distinct enough that a learner would treat them as \
-    different vocabulary items and they would usually receive different translations in \
-    another language (homonyms like bank=money/river, or strong polysemy like \
-    paper=material/newspaper). Mere topic, register, or inflection variation of one \
-    meaning does NOT count. Idioms count as distinct if the word's meaning inside the \
-    idiom is opaque. The target is marked \u{ab}like this\u{bb}. If not distinct, \
-    sense_a and sense_b should both gloss the single shared sense.";
+fn sense_system_prompt(language: Language) -> String {
+    format!(
+        "You are auditing a language-learning vocabulary. Each \
+        request shows a word or expression from a {language} sentence corpus whose \
+        occurrences an embedding model split into two clusters. Decide whether the \
+        clusters correspond to GENUINELY DISTINCT MEANINGS — distinct enough that a \
+        learner would treat them as different vocabulary items and they would usually \
+        receive different translations in another language (homonyms like \
+        bank=money/river, or strong polysemy like paper=material/newspaper). Mere \
+        topic, register, or inflection variation of one meaning does NOT count. Idioms \
+        count as distinct if the word's meaning inside the idiom is opaque. The target \
+        is marked \u{ab}like this\u{bb}. If not distinct, sense_a and sense_b should \
+        both gloss the single shared sense. Write your thoughts in English, but write \
+        sense_a and sense_b IN {language}: they are monolingual dictionary-style \
+        glosses for a {language} sense inventory, not translations."
+    )
+}
 
-const COLLOCATION_SYSTEM_PROMPT: &str = "You are mining a sentence corpus for FIXED \
-    MULTIWORD EXPRESSIONS (collocations, idioms, compounds, fixed phrases). Each request \
-    shows a word from the corpus whose occurrences an embedding model split into two \
-    clusters; often one cluster is dominated by the word occurring inside one or more \
-    fixed expressions. The target word is marked \u{ab}like this\u{bb} in numbered \
-    lines. For each fixed multiword expression of the target that accounts for several \
-    lines, report it: cite the line numbers, copy the expression VERBATIM as a \
-    contiguous substring of one cited line (never invent or normalize a citation form), \
-    give a short English gloss, and classify opacity: \"opaque\" = meaning not \
-    derivable from the parts, must be learned as its own vocabulary item; \"semi\" = \
-    conventionalized, a learner benefits from learning it as a unit; \"transparent\" = \
-    fully compositional. Do NOT report free combinations, inflectional variants, or \
-    expressions appearing only once. Report an empty list if neither cluster is driven \
-    by fixed expressions.";
+fn collocation_system_prompt(language: Language) -> String {
+    format!(
+        "You are mining a {language} sentence corpus for FIXED \
+        MULTIWORD EXPRESSIONS (collocations, idioms, compounds, fixed phrases). Each \
+        request shows a word from the corpus whose occurrences an embedding model split \
+        into two clusters; often one cluster is dominated by the word occurring inside \
+        one or more fixed expressions. The target word is marked \u{ab}like this\u{bb} \
+        in numbered lines. For each fixed multiword expression of the target that \
+        accounts for several lines, report it: cite the line numbers, copy the \
+        expression VERBATIM as a contiguous substring of one cited line (never invent \
+        or normalize a citation form), give a short gloss written IN {language} (a \
+        monolingual dictionary-style gloss, not a translation), and classify opacity: \
+        \"opaque\" = meaning not derivable from the parts, must be learned as its own \
+        vocabulary item; \"semi\" = conventionalized, a learner benefits from learning \
+        it as a unit; \"transparent\" = fully compositional. Do NOT report free \
+        combinations, inflectional variants, or expressions appearing only once. \
+        Report an empty list if neither cluster is driven by fixed expressions."
+    )
+}
 
 /// «»-mark every member span of an occurrence in its sentence text.
 fn mark_occurrence(occ: &Occurrence) -> String {
@@ -789,8 +803,10 @@ fn collocation_user_prompt(p: &SplitPrompt) -> String {
 pub struct DiscoveredTerm {
     /// Surface form: the covered words as they appear in the cited sentence.
     pub term: String,
-    /// Display of the gram this proposal would become (its atom sequence).
-    pub gram: String,
+    /// Human-readable display of the gram this proposal would become.
+    pub display: String,
+    /// The proposed gram itself (its atom sequence — the canonical identity).
+    pub gram: Gram<String>,
     pub gloss: String,
     pub opacity: String,
     /// How many corpus sentences contain the atom sequence contiguously.
@@ -853,7 +869,11 @@ pub struct SenseEntry {
 
 #[derive(Debug, Serialize)]
 pub struct SenseCandidate {
+    /// Human-readable display of the mined gram.
     pub key: String,
+    /// The mined gram itself (canonical identity — display strings can
+    /// collide, e.g. est@AUX vs est@VERB grams both display "est").
+    pub gram: Gram<String>,
     pub n: usize,
     pub senses: Vec<SenseEntry>,
     pub silhouette: f64,
@@ -1075,7 +1095,7 @@ pub async fn discover(
         let n_req = prompts.len();
         let sense_results = JUDGE_CLIENT
             .batch_chat_with_system_prompt_fn::<_, _, SenseJudgeResponse>(
-                SENSE_SYSTEM_PROMPT,
+                sense_system_prompt(language),
                 &prompts,
                 sense_user_prompt,
                 |batch| crate::report_batch_progress(&pb, 0, n_req, batch),
@@ -1093,7 +1113,7 @@ pub async fn discover(
         );
         let colloc_results = JUDGE_CLIENT
             .batch_chat_with_system_prompt_fn::<_, _, CollocationJudgeResponse>(
-                COLLOCATION_SYSTEM_PROMPT,
+                collocation_system_prompt(language),
                 &prompts,
                 collocation_user_prompt,
                 |batch| crate::report_batch_progress(&pb, 0, n_req, batch),
@@ -1163,7 +1183,8 @@ pub async fn discover(
                         );
                         DiscoveredTerm {
                             term: surface,
-                            gram: gram.to_display_string(language),
+                            display: gram.to_display_string(language),
+                            gram,
                             gloss: e.gloss.clone(),
                             opacity: format!("{:?}", e.opacity).to_lowercase(),
                             count,
@@ -1255,6 +1276,7 @@ pub async fn discover(
             .collect();
         sense_rows.push(SenseCandidate {
             key: arena.display(key, language),
+            gram: arena.grams[key as usize].clone(),
             n: km.occs.len(),
             senses,
             silhouette: tree.root_sil,
