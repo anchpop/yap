@@ -1,0 +1,1237 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+have a normal one	filled	11978	2	12	0.17	no	A Japanese garden usually has a pond in it.	has … pond
+have someone going	filled	11978	0	12	0.00	no	A Japanese garden usually has a pond in it.	has … pond
+have something going for one	filled	11978	0	12	0.00	no	A Japanese garden usually has a pond in it.	has … pond
+have something on good authority	filled	11978	0	12	0.00	no	A Japanese garden usually has a pond in it.	has … pond
+have something over someone	filled	11978	0	12	0.00	no	A Japanese garden usually has a pond in it.	has … pond
+have something to show for something	filled	11978	0	12	0.00	no	A Japanese garden usually has a pond in it.	has … pond
+all one wants	filled	9203	0	12	0.00	no	A Luftwaffe captain wants to see the prisoners in the detention barracks.	captain … wants
+do someone like that	filled	6359	0	12	0.00	no	A Japanese would never do such a thing.	do … thing
+make one	filled	4024	3	12	0.25	no	A German hostess made love to a Turk on an intercontinental flight.	made … love
+all one likes	filled	3184	0	12	0.00	no	A bar is provided for those who like strong drinks.	who … like
+know someone	filled	2627	3	12	0.25	no	A baby does not know good or evil.	know … good
+know someone from Adam	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+know someone from Adam's off ox	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+know someone from Eve	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+know someone from a can of paint	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+know someone from a hole in the ground	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+know someone from a hole in the wall	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+know someone from the man in the moon	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+know someone from the man on the moon	filled	2627	0	12	0.00	no	A baby does not know good or evil.	know … good
+give someone something to think about	filled	2348	0	12	0.00	no	A cow gives us milk.	gives … us … milk
+find oneself	filled	1829	0	12	0.00	no	A Smart car can always find a spot to park.	find … spot
+help oneself	filled	1296	0	12	0.00	no	A cigarette might help my memory.	help … memory
+buy the big one	filled	1225	0	12	0.00	no	A few dollars to buy some record albums?	buy … albums
+kill oneself	filled	1099	2	12	0.17	no	A bomb killed eight people yesterday.	killed … people
+you know something	filled	899	7	12	0.58	no	Do you guys know him?	you … know … him
+talk to oneself	filled	841	11	12	0.92	yes	Some bitch might talk shit to you.	talk … to … you
+come to oneself	filled	691	0	12	0.00	no	A few people came to the lecture.	came … to … lecture
+make one	clitic	626	10	12	0.83	yes	He finally found out how to make it.	make … it
+show oneself	filled	605	0	12	0.00	no	A chance for Faramir, captain of Gondor, to show his quality.	show … quality
+what someone said	filled	549	4	12	0.33	no	Darling, what are you saying?	what … you … saying
+drink something like lemonade	filled	523	12	12	1.00	yes		
+change oneself	filled	468	1	12	0.08	no	A book can change your life.	change … life
+know someone from Adam	clitic	445	0	12	0.00	no	A man is an animal willing to die for those who know him well.	know … him
+know someone from Adam's off ox	clitic	445	0	12	0.00	no	A man is an animal willing to die for those who know him well.	know … him
+know someone from a can of paint	clitic	445	0	12	0.00	no	A man is an animal willing to die for those who know him well.	know … him
+know someone from a hole in the ground	clitic	445	0	12	0.00	no	A man is an animal willing to die for those who know him well.	know … him
+know someone from the man in the moon	clitic	445	0	12	0.00	no	A man is an animal willing to die for those who know him well.	know … him
+cut oneself	filled	382	1	12	0.08	no	A Shah may cut off the head of anyone he dislikes.	cut … head
+forget oneself	filled	347	0	12	0.00	no	A good friend never forgets us.	forgets … us
+be oneself	filled	327	0	12	0.00	no	A woman without a man is nothing.	is … nothing
+have something on good authority	clitic	304	0	12	0.00	no	After school, you can have it back again.	have … it
+have something to show for something	clitic	304	0	12	0.00	no	After school, you can have it back again.	have … it
+trust someone across the street	filled	300	0	12	0.00	no	And I could trust no one.	trust … one
+enjoy oneself	filled	285	3	12	0.25	no	Algerians enjoy state subsidies.	enjoy … subsidies
+teach someone who's the boss	filled	277	1	12	0.08	no	A premium teacher should teach premium kids.	teach … kids
+carry oneself	filled	266	0	12	0.00	no	A cargo ship carrying munitions explodes in the harbor.	carrying … munitions
+say to oneself	filled	258	0	12	0.00	no	After I said such a thing to my boss, I am certain to lose my job.	said … to … boss
+know someone	clitic	256	5	12	0.42	no	I already knew it.	knew … it
+know someone from the man on the moon	clitic	256	0	12	0.00	no	After all, you know me.	know … me
+in something's way	clitic	247	0	12	0.00	no	A caravan of fifty camels slowly made its way through the desert.	its … way
+one's way	clitic	247	11	12	0.92	yes	Frankly speaking, your way of thinking is out of date.	your … way
+beat oneself	filled	232	0	12	0.00	no	Am I supposed to dance naked, beating a drum?	beating … drum
+let one go	filled	217	8	12	0.67	yes	It would be a pity to let all our hard work go to waste.	let … work … go
+let oneself go	filled	217	0	12	0.00	no	Alika, as the Eagle Woman I command you to let me go.	let … me … go
+let someone go	filled	217	9	12	0.75	yes	It would be a pity to let all our hard work go to waste.	let … work … go
+work one's passage	clitic	217	0	12	0.00	no	A few minutes after he finished his work, he went to bed.	his … work
+pull oneself	filled	208	0	12	0.00	no	Actually, we have to pull it off before he gets here.	pull … it
+piece of someone	filled	206	1	12	0.08	no	A piece of Spanish territory is enclaved within France.	piece … of … territory
+cross oneself	filled	196	0	12	0.00	no	A little black dog is crossing the road.	crossing … road
+have something going for one	clitic	193	0	12	0.00	no	After school, you can have it back again.	have … it
+one's way	filled	180	5	12	0.42	no	A castle stands a little way up the hill.	way … hill
+let one go	clitic	166	5	12	0.42	no	Honjo, let it go.	let … it … go
+have someone going	clitic	158	0	12	0.00	no	All the stadiums have them now.	have … them
+clothes on one's back	clitic	154	0	12	0.00	no	Adjust your clothes.	your … clothes
+have something over someone	clitic	146	0	12	0.00	no	After school, you can have it back again.	have … it
+good for someone	filled	140	7	12	0.58	no	For me, it was the best season.	For … me … best
+give it to someone	filled	133	12	12	1.00	yes		
+live with oneself	filled	133	1	12	0.08	no	Although she lives with seven other man, she is not easy.	lives … with … man
+handle oneself	filled	127	0	12	0.00	no	And he can handle his relationship by himself.	handle … relationship
+trust someone across the street	clitic	127	12	12	1.00	yes		
+what can one do	filled	124	11	12	0.92	yes	What will the Colonel could do?	What … Colonel … could … do
+know someone from Eve	clitic	119	0	12	0.00	no	After all, you know me.	know … me
+know someone from a hole in the wall	clitic	119	0	12	0.00	no	After all, you know me.	know … me
+owe someone one	filled	116	3	12	0.25	no	And I do think you owe him an apology.	owe … him … apology
+collect oneself	filled	114	0	12	0.00	no	Ants collect food for their colonies.	collect … food
+of someone's life	clitic	109	12	12	1.00	yes		
+watch one's tongue	clitic	108	0	12	0.00	no	A blind woman who sensed my presence and groped at her watch.	her … watch
+live one	filled	103	10	12	0.83	yes	After living out her fair span of years, she will be yours.	living … span
+rest one's case	filled	101	0	12	0.00	no	And I love the rest of your face, too.	rest … face
+bear oneself	filled	98	0	12	0.00	no	A true king would bear the lushness of its plumage for all to see.	bear … lushness
+prove oneself	filled	91	1	12	0.08	no	A comparison proves nothing.	proves … nothing
+contain oneself	filled	89	1	12	0.08	no	A good question contains half the answer.	contains … half
+what has someone done	filled	88	11	12	0.92	yes	We know what we have to do.	what … we … have … do
+in one's life	clitic	84	6	12	0.50	no	After fighting, everything else in your life got the volume turned down.	in … your … life
+feel like oneself	filled	83	0	12	0.00	no	Ayrton, do you feel like a World Champion now?	feel … like … Champion
+out of someone's hands	filled	80	0	12	0.00	no	All this is so out of the blue Mohan.	out … of … blue
+letters after one's name	clitic	79	0	12	0.00	no	Did you acknowledge his letter?	his … letter
+on one's own	clitic	77	11	12	0.92	yes	A stone is heavy on its own turf.	on … its … own
+suit oneself	filled	77	3	12	0.25	no	Acting suited you.	suited … you
+promised one	filled	73	10	12	0.83	yes	Is there a place that promises peace to disillusioned souls?	promises … peace
+repeat oneself	filled	72	9	12	0.75	yes	A man over there repeated blinks at me.	repeated … blinks
+tell us another one	filled	72	0	12	0.00	no	And we thought that you could just tell us a story.	tell … us … story
+do one's homework	clitic	71	12	12	1.00	yes		
+on one's way	clitic	67	12	12	1.00	yes		
+put oneself out	filled	65	0	12	0.00	no	All them Chinks putting Americans out of work.	putting … Americans … out
+fall into oneself	filled	63	0	12	0.00	no	A fly fell into my cup of coffee.	fell … into … cup
+you know something	clitic	62	12	12	1.00	yes		
+sorry for oneself	filled	61	8	12	0.67	yes	And I am sorry for your loss.	sorry … for … loss
+teach someone who's the boss	clitic	61	0	12	0.00	no	Anand Sir taught us to see.	taught … us
+wipe oneself	filled	61	4	12	0.33	no	At this time, we should wipe out crime and collusion.	wipe … crime
+bless oneself	filled	60	0	12	0.00	no	And God bless you.	bless … you
+brush one's teeth	clitic	60	12	12	1.00	yes		
+in someone's eyes	clitic	59	0	12	0.00	no	A blood vessel broke in my eye.	in … my … eye
+wash one's hands	clitic	56	12	12	1.00	yes		
+full of one's self	filled	54	0	12	0.00	no	A bathtub full of hot water.	full … of … water
+full of oneself	filled	54	0	12	0.00	no	A bathtub full of hot water.	full … of … water
+use one's coconut	filled	54	0	12	0.00	no	A traffic accident deprived him of the use of his left hand.	use … hand
+express oneself	filled	53	9	12	0.75	yes	A frown may express anger or displeasure.	express … anger
+gather oneself	filled	53	1	12	0.08	no	A rolling stone gathers no moss.	gathers … moss
+master of one's time	clitic	49	0	12	0.00	no	Another half hour, and our master will be back here.	our … master
+run into one	filled	49	5	12	0.42	no	A guy nearly ran into us.	ran … into … us
+take one up	filled	48	2	12	0.17	no	He took up gardening after he retired.	took … up … gardening
+walk one's shots	filled	48	0	12	0.00	no	A mouse went for a walk on the table.	walk … table
+work one's passage	filled	46	0	12	0.00	no	A lot less work for you.	lot … work
+hug oneself	filled	45	0	12	0.00	no	Anthony hugs Mary.	hugs … Mary
+on one's back	clitic	44	5	12	0.42	no	All because of the pat on my back and a kick on my butt from you sir.	on … my … back
+on someone's back	clitic	44	0	12	0.00	no	All because of the pat on my back and a kick on my butt from you sir.	on … my … back
+in one's pocket	clitic	43	0	12	0.00	no	And why do I have it here in my pocket?	in … my … pocket
+in someone's pocket	clitic	43	0	12	0.00	no	And why do I have it here in my pocket?	in … my … pocket
+give someone a hand	filled	41	12	12	1.00	yes		
+on one's side	filled	41	2	12	0.17	no	Always look on the bright side of life.	on … side … life
+on someone's side	filled	41	2	12	0.17	no	Always look on the bright side of life.	on … side … life
+what was someone thinking	filled	41	7	12	0.58	no	And what are you thinking about now?	what … are … you … thinking
+drive someone crazy	filled	40	12	12	1.00	yes		
+raise one's hand	clitic	40	12	12	1.00	yes		
+close one's eyes	clitic	39	12	12	1.00	yes		
+how dare someone	filled	39	12	12	1.00	yes		
+keep to oneself	filled	39	10	12	0.83	yes	Keep it to a dull roar, Rex.	Keep … to … roar
+save someone's life	clitic	39	12	12	1.00	yes		
+get over oneself	filled	38	0	12	0.00	no	But she soon got over that and has thrown herself into a new hobby.	got … over … that
+give someone time	filled	38	12	12	1.00	yes		
+pick on someone your own size	clitic	37	0	12	0.00	no	Are you coming to pick me up?	pick … me
+piss oneself	filled	37	0	12	0.00	no	And your son hates you so much he married one to piss you off.	piss … you
+sure of oneself	filled	37	0	12	0.00	no	Are we sure of it?	sure … of … it
+in one's opinion	clitic	36	9	12	0.75	yes	Are you really interested in my honest opinion?	in … my … opinion
+let someone go	clitic	36	9	12	0.75	yes	He refuses to let it go.	let … it … go
+on one's feet	clitic	36	8	12	0.67	yes	He accidentally stepped on my foot.	on … my … foot
+get someone there	filled	35	5	12	0.42	no	And I got a piece of the action there.	got … piece … there
+on one's knees	clitic	35	10	12	0.83	yes	He saw a small Band-Aid on her left knee.	on … her … knee
+make up one's mind	clitic	34	12	12	1.00	yes		
+king of all one surveys	filled	32	0	12	0.00	no	All Beijing knows that you Master Yuan is the true king of the theater.	king … of … theater
+see for oneself	filled	32	7	12	0.58	no	And so I saw the Black Sea for the first time.	saw … for … time
+pleased with oneself	filled	31	1	12	0.08	no	And Mother will be pleased with your additional catch.	pleased … with … catch
+where someone lives	filled	31	11	12	0.92	yes	He retired to his hometown, where he lived a quiet life.	where … he … lived
+hold one's nose	filled	30	0	12	0.00	no	Get a hold of him!	hold … him
+hold one's peace	filled	30	0	12	0.00	no	Get a hold of him!	hold … him
+hold one's piece	filled	30	0	12	0.00	no	Get a hold of him!	hold … him
+on someone's hands	clitic	30	1	12	0.08	no	As to your enquiry on my hand.	on … my … hand
+change one's mind	clitic	29	12	12	1.00	yes		
+change someone's mind	clitic	29	1	12	0.08	no	At home, he makes toast but changes his mind.	changes … his … mind
+in someone's time	filled	29	1	12	0.08	no	Anyone who increases his wealth in time of war is a war profiteer.	in … time … war
+show oneself	clitic	29	0	12	0.00	no	Ah, let me show you.	show … you
+one's hour	filled	28	1	12	0.08	no	After long hours of training, the day had finally come.	hours … training
+pain in one's ass	filled	28	4	12	0.33	no	He felt a sharp pain in his chest.	pain … in … chest
+have someone there	filled	27	9	12	0.75	yes	Agnelli has coffee there every morning and he confided in him.	has … coffee … there
+in someone's face	clitic	27	1	12	0.08	no	But some of its blood got sprayed in my face.	in … my … face
+on one's way	filled	26	12	12	1.00	yes		
+open someone's eyes	clitic	26	3	12	0.25	no	Can I open my eyes now?	open … my … eyes
+behind someone's back	clitic	25	8	12	0.67	yes	Hands behind your back.	behind … your … back
+hold someone's hand	clitic	25	8	12	0.67	yes	He held his hand out to me.	held … his … hand
+on one's side	clitic	25	7	12	0.58	no	I sleep on my side.	on … my … side
+on someone's side	clitic	25	8	12	0.67	yes	I sleep on my side.	on … my … side
+crack one	filled	24	0	12	0.00	no	Crack open the bonnet.	Crack … bonnet
+get on someone's nerves	clitic	24	12	12	1.00	yes		
+hold one's breath	clitic	24	5	12	0.42	no	And the men are literally holding their breath.	holding … their … breath
+speak for oneself	filled	24	6	12	0.50	no	But can we let him get away with speaking up for the Japanese?	speaking … for … Japanese
+take one's time	clitic	24	11	12	0.92	yes	I fear this work will take up most of my time.	take … my … time
+up to something	filled	24	3	12	0.25	no	Are you up to the task?	up … to … task
+apply oneself	filled	23	0	12	0.00	no	A committee should apply the focus to the more concrete problem.	apply … focus
+give someone a lift	filled	23	11	12	0.92	yes	Give us a lift up, pal?	Give … us … a … lift
+look out for someone	filled	23	4	12	0.33	no	Drivers must look out for children crossing the road.	look … out … for … children
+pain in one's ass	clitic	23	0	12	0.00	no	All my pains were in vain.	my … pains
+think for oneself	filled	23	8	12	0.67	yes	For some reason, I thought of my first fight with Tyler.	For … reason … thought
+victim of one's own success	filled	23	0	12	0.00	no	He was a victim of the burden of the studies.	victim … of … burden
+in someone's time	clitic	22	2	12	0.17	no	A cyborg who goes diving in her spare time.	in … her … time
+lose one's mind	clitic	22	12	12	1.00	yes		
+on one's head	clitic	22	2	12	0.17	no	All the driver are sitting on my head.	on … my … head
+sort oneself out	filled	22	1	12	0.08	no	Captain, we can sort this thing out so everyone is happy.	sort … thing … out
+weight off someone's mind	clitic	22	0	12	0.00	no	A great little fighter for her weight.	her … weight
+in one's head	clitic	21	10	12	0.83	yes	I swear I will pull out my gun and put a bullet in your fucking heads!	in … your … heads
+keep one's mouth shut	clitic	21	12	12	1.00	yes		
+of one's own	filled	21	12	12	1.00	yes		
+shut one's mouth	clitic	21	12	12	1.00	yes		
+burn one down	filled	20	12	12	1.00	yes		
+do what one does	filled	20	8	12	0.67	yes	Gotta do what you gotta do.	do … what … you … do
+drink something like lemonade	clitic	20	12	12	1.00	yes		
+give someone a break	filled	20	12	12	1.00	yes		
+keep one's word	clitic	20	12	12	1.00	yes		
+make oneself clear	filled	20	4	12	0.33	no	An illustration may make the point clear.	make … point … clear
+risk one's neck	filled	20	3	12	0.25	no	A government statement warned of the risk of war in the country.	risk … war
+take one's place	clitic	20	12	12	1.00	yes		
+take someone's place	clitic	20	10	12	0.83	yes	Father took his place at the head of the table.	took … his … place
+trust someone to	filled	20	0	12	0.00	no	Before God, his grace is bold to trust these traitors.	to … trust … traitors
+with one's eyes closed	clitic	20	2	12	0.17	no	Can you walk with your eyes closed?	with … your … eyes … closed
+flat on one's back	clitic	19	0	12	0.00	no	Daddy was in his office, under our flat.	our … flat
+go fuck oneself	filled	19	12	12	1.00	yes		
+have a word with oneself	filled	19	0	12	0.00	no	Can I have a word with John regarding this?	have … a … word … with … John
+make oneself at home	filled	19	11	12	0.92	yes	At home, he makes toast but changes his mind.	At … home … makes … toast
+master of one's time	filled	19	5	12	0.42	no	A jack of all trades is master of none.	master … of … none
+run into one	clitic	19	0	12	0.00	no	A car coming along the street ran him down.	ran … him
+step on someone's toes	clitic	19	0	12	0.00	no	And watch your step every single minute.	your … step
+get oneself together	filled	18	6	12	0.50	no	Get everyone together!	Get … everyone … together
+lose one's way	clitic	18	11	12	0.92	yes	People prefer losing their ways to changing their ways.	losing … their … ways
+call outta one's name	clitic	17	0	12	0.00	no	And that will count as your call.	your … call
+give someone one	filled	17	0	12	0.00	no	Come on, give me one!	give … me … one
+happy to see someone	clitic	17	12	12	1.00	yes		
+happy to see someone	filled	17	12	12	1.00	yes		
+in someone's face	filled	17	0	12	0.00	no	Even in the face of peril.	in … face … peril
+for all of someone	filled	16	12	12	1.00	yes		
+lay one down	filled	16	4	12	0.33	no	He laid down his pen and leaned back in his chair.	laid … down … pen
+of one's own	clitic	16	11	12	0.92	yes	She did the dishes of her own accord.	of … her … own
+one's last	filled	16	2	12	0.17	no	And the last of our money is missing too.	last … money
+price on someone's head	clitic	16	0	12	0.00	no	Each mathematical formula in a book divides its selling price by two.	its … price
+watch one's mouth	clitic	16	12	12	1.00	yes		
+drive someone crazy	clitic	15	12	12	1.00	yes		
+to one's face	clitic	15	7	12	0.58	no	Mary applied cream to her face.	to … her … face
+to someone's face	clitic	15	7	12	0.58	no	Mary applied cream to her face.	to … her … face
+at one's feet	filled	14	0	12	0.00	no	At the foot of the hill is a beautiful lake.	At … foot … hill
+do one's duty	clitic	14	12	12	1.00	yes		
+drive someone mad	filled	14	12	12	1.00	yes		
+eat someone for breakfast	filled	14	2	12	0.17	no	Every morning, I eat honey for breakfast.	eat … honey … for … breakfast
+give something a try	filled	14	12	12	1.00	yes		
+in someone's way	clitic	14	8	12	0.67	yes	Do your work in your own way.	in … your … way
+knock one out	filled	14	6	12	0.50	no	Come one step closer and I will knock his teeth out!	knock … teeth … out
+knock oneself out	filled	14	2	12	0.17	no	But one day I snapped and just knocked him out cold.	knocked … him … out
+look at oneself in the mirror	filled	14	12	12	1.00	yes		
+make one's bed	clitic	14	10	12	0.83	yes	As you make your bed, so you must lie in it.	make … your … bed
+put one's hand up	clitic	14	8	12	0.67	yes	He put up his hand to catch the ball.	put … up … his … hand
+put one's hands up	clitic	14	3	12	0.25	no	He put up his hand to ask a question.	put … up … his … hand
+put up one's hand	clitic	14	7	12	0.58	no	He put up his hand to catch the ball.	put … up … his … hand
+put up one's hands	clitic	14	3	12	0.25	no	He put up his hand to ask a question.	put … up … his … hand
+take one's seat	clitic	14	9	12	0.75	yes	Everyone takes your seats.	takes … your … seats
+taste of one's own medicine	filled	14	0	12	0.00	no	Come on, give us a taste of your herbal vodka, Tushin.	taste … of … vodka
+taste of one's own poison	filled	14	0	12	0.00	no	Come on, give us a taste of your herbal vodka, Tushin.	taste … of … vodka
+wag one	filled	14	9	12	0.75	yes	Like to wag your tongue, eh?	wag … tongue
+drive someone nuts	filled	13	12	12	1.00	yes		
+give one's word	clitic	13	12	12	1.00	yes		
+hurt someone's feelings	clitic	13	12	12	1.00	yes		
+lose one's temper	clitic	13	12	12	1.00	yes		
+show one's face	clitic	13	0	12	0.00	no	But I think it fits better on your show.	your … show
+take one's place	filled	13	2	12	0.17	no	Bricks never take the place of ferro-concrete here.	take … place … concrete
+take someone's place	filled	13	9	12	0.75	yes	Father took his place at the head of the table and began to say grace.	took … place … head
+with all one's heart	clitic	13	12	12	1.00	yes		
+at one's feet	clitic	12	5	12	0.42	no	Everyone looked at my feet.	at … my … feet
+be onto something	clitic	12	0	12	0.00	no	All right, Milo, this is it.	is … it
+fruit of one's loins	clitic	12	0	12	0.00	no	A tree is known by its fruit.	its … fruit
+have one's moments	filled	12	0	12	0.00	no	Each of them has a bicycle.	them … has
+keep someone company	filled	12	12	12	1.00	yes		
+lose one's life	clitic	12	12	12	1.00	yes		
+on one's mind	clitic	12	12	12	1.00	yes		
+on someone's mind	clitic	12	12	12	1.00	yes		
+pull oneself	clitic	12	12	12	1.00	yes		
+set of one's jaw	filled	12	0	12	0.00	no	A TV set of this size will take little space.	set … of … size
+show one's face	filled	12	0	12	0.00	no	And let us do it with no show of fear!	show … fear
+slip into something more comfortable	filled	12	4	12	0.33	no	He must have slipped something into my glass.	slipped … into … glass
+take one's medicine	clitic	12	0	12	0.00	no	Did you take your medicine?	take … your … medicine
+taste of one's own medicine	clitic	12	0	12	0.00	no	Each has his own taste.	his … taste
+teach someone a lesson	filled	12	12	12	1.00	yes		
+God help someone	filled	11	11	11	1.00	yes		
+bird of one's own brain	filled	11	0	11	0.00	no	A falcon is a bird of prey.	bird … of … prey
+blow one's chance	filled	11	0	11	0.00	no	Guaracy was cashing in from my blows on trafficking.	blows … trafficking
+blow one's lid	filled	11	0	11	0.00	no	Guaracy was cashing in from my blows on trafficking.	blows … trafficking
+do somebody wrong	filled	11	1	11	0.09	no	Maybe you did that wrong.	did … that … wrong
+have one's way	filled	11	3	11	0.27	no	And I have I way.	have … I … way
+keep one's eyes open	clitic	11	10	11	0.91	yes	I need to keep my eyes open.	keep … my … eyes … open
+keep one's head	clitic	11	1	11	0.09	no	From now on, keep your heads down.	keep … your … heads
+know what one is doing	filled	11	3	11	0.27	no	But do you know what Baines is doing?	know … what … Baines … is … doing
+let one off	filled	11	3	11	0.27	no	If you want to let off steam, do it with me.	let … off … steam
+make one's way	clitic	11	11	11	1.00	yes		
+make one's way	filled	11	7	11	0.64	yes	Get back, make way for the gentleman!	make … way … gentleman
+mind one's business	clitic	11	11	11	1.00	yes		
+pack one's bags	clitic	11	10	11	0.91	yes	Who packed your bag?	packed … your … bag
+play one's part	filled	11	7	11	0.64	yes	He played a minor part in the play.	played … part … play
+raise one's voice	clitic	11	11	11	1.00	yes		
+satisfy oneself	filled	11	0	11	0.00	no	Always satisfy the needs of your customer.	satisfy … needs
+to one's way of thinking	clitic	11	0	11	0.00	no	Frankly speaking, your way of thinking is out of date.	your … way … of … thinking
+wet oneself	filled	11	9	11	0.82	yes	Can I get you something to wet your whistle?	wet … whistle
+at someone's door	clitic	10	10	10	1.00	yes		
+bet one's ass	clitic	10	0	10	0.00	no	And did Gina win her bet?	her … bet
+find one's way	clitic	10	10	10	1.00	yes		
+give something a shot	filled	10	6	10	0.60	yes	Give me a shot.	Give … me … a … shot
+go one's way	clitic	10	4	10	0.40	no	Go away, out of my way!	Go … my … way
+go one's ways	clitic	10	4	10	0.40	no	Go away, out of my way!	Go … my … way
+in one's backyard	clitic	10	10	10	1.00	yes		
+in one's corner	filled	10	0	10	0.00	no	And today I want to fuck you in every corner of this room.	in … corner … room
+in someone's corner	filled	10	0	10	0.00	no	And today I want to fuck you in every corner of this room.	in … corner … room
+lie at one's door	clitic	10	0	10	0.00	no	Her lie reflected my lie, and suddenly, I felt nothing.	Her … lie
+of someone's dreams	clitic	10	9	10	0.90	yes	We carry the weight of our dreams.	of … our … dreams
+on someone's account	filled	10	10	10	1.00	yes		
+one's self	clitic	10	2	10	0.20	no	Atreyu must face his true self.	his … self
+over one's head	clitic	10	2	10	0.20	no	Hands over your head.	over … your … head
+repeat oneself	clitic	10	10	10	1.00	yes		
+use one's head	clitic	10	10	10	1.00	yes		
+watch one's step	clitic	10	9	10	0.90	yes	White devil will be watching your every step.	watching … your … step
+with one's own eyes	clitic	10	10	10	1.00	yes		
+beg someone's pardon	clitic	9	9	9	1.00	yes		
+catch someone's eye	clitic	9	8	9	0.89	yes	I caught her eyes in the mirror.	caught … her … eyes
+from the bottom of one's heart	clitic	9	9	9	1.00	yes		
+get past oneself	filled	9	3	9	0.33	no	How can we get past this crisis?	get … past … crisis
+get someone's number	clitic	9	9	9	1.00	yes		
+give someone the creeps	filled	9	9	9	1.00	yes		
+hand it to someone	filled	9	3	9	0.33	no	Hand it to him.	Hand … it … to … him
+have someone's number	filled	9	0	9	0.00	no	Do you have additional contact numbers for him?	have … numbers … him
+in something's favor	clitic	9	6	9	0.67	yes	He is in my favor.	my … favor
+in spite of oneself	filled	9	0	9	0.00	no	He came in spite of bad weather.	in … spite … of … weather
+keep someone busy	filled	9	9	9	1.00	yes		
+let someone have it	filled	9	5	9	0.56	no	Kropp, let me have it.	let … me … have … it
+pick on someone your own size	filled	9	5	9	0.56	no	A man is picking out a tune on the guitar.	picking … on … guitar
+promised one	clitic	9	5	9	0.56	no	No, I promised it all.	promised … it
+risk one's life	clitic	9	9	9	1.00	yes		
+true to oneself	filled	9	3	9	0.33	no	Dan was true to his word.	true … to … word
+turn one's back	clitic	9	6	9	0.67	yes	I turn my back for a second, Ham, and you sprout like a beanstalk.	turn … my … back
+vote with one's feet	clitic	9	0	9	0.00	no	Because if there is, you know you have my vote.	my … vote
+vote with one's wallet	clitic	9	0	9	0.00	no	Because if there is, you know you have my vote.	my … vote
+comb one's hair	clitic	8	8	8	1.00	yes		
+do one's thing	filled	8	0	8	0.00	no	Anu must be so happy, we did such a good thing for them.	did … thing … them
+do someone like that	clitic	8	2	8	0.25	no	She loves Tom more than she does me.	does … me
+drive someone nuts	clitic	8	8	8	1.00	yes		
+ease oneself	filled	8	0	8	0.00	no	Ease his pain.	Ease … pain
+feel someone's pain	filled	8	0	8	0.00	no	He felt a pain in his back.	felt … pain … back
+have one's way	clitic	8	7	8	0.88	yes	Each person has his own way of doing things.	has … his … way
+have someone's blood	filled	8	6	8	0.75	yes	But Definite also had the dual blood of Durga and Sardar Khan.	had … blood … Durga
+in someone's way	filled	8	2	8	0.25	no	And walk in the ways of thine heart, and in the sight of thine eyes.	in … ways … heart
+kick someone's ass	clitic	8	8	8	1.00	yes		
+let one off	clitic	8	4	8	0.50	no	Let off me!	Let … off … me
+mind one's own business	clitic	8	8	8	1.00	yes		
+none of someone's business	clitic	8	8	8	1.00	yes		
+of one's word	clitic	8	4	8	0.50	no	He soon comprehended the significance of her words.	of … her … words
+on one's ones	filled	8	0	8	0.00	no	And on each one of their phones, the exact same images.	on … one … phones
+one's last	clitic	8	4	8	0.50	no	Cobbler, stick to your last.	your … last
+roll up one's sleeves	clitic	8	3	8	0.38	no	He rolled up his shirt sleeves.	rolled … up … his … sleeves
+roof over one's head	clitic	8	3	8	0.38	no	He had his roof damaged.	his … roof
+run one's face	filled	8	0	8	0.00	no	He had many run-ins with cops, but always escaped.	run … cops
+run one's mouth	filled	8	0	8	0.00	no	He had many run-ins with cops, but always escaped.	run … cops
+sell one's soul	clitic	8	8	8	1.00	yes		
+serve someone right	filled	8	7	8	0.88	yes	You loved the book, if memory serves me right.	serves … me … right
+spell one's name	clitic	8	8	8	1.00	yes		
+spell someone's name	clitic	8	8	8	1.00	yes		
+take one's life	clitic	8	5	8	0.62	yes	Each time I go upstairs, I take my life in my hands.	take … my … life
+take someone's life	clitic	8	6	8	0.75	yes	Each time I go upstairs, I take my life in my hands.	take … my … life
+turn someone's head	clitic	8	0	8	0.00	no	The point is not just to turn your head.	turn … your … head
+under one's arm	clitic	8	8	8	1.00	yes		
+up someone's ass	clitic	8	7	8	0.88	yes	No, that you had your head up your ass.	up … your … ass
+walk one's shots	clitic	8	0	8	0.00	no	Enjoy your walk?	your … walk
+worth one's salt	filled	8	0	8	0.00	no	Cars are worth its weight in gold, the gasoline is strictly rationed.	worth … weight
+worth one's while	filled	8	3	8	0.38	no	Cars are worth its weight in gold, the gasoline is strictly rationed.	worth … weight
+blow one's nose	clitic	7	7	7	1.00	yes		
+do one's job	filled	7	6	7	0.86	yes	He did a real snow job on my daughter.	did … job … daughter
+expose oneself	filled	7	0	7	0.00	no	Expose them.	Expose … them
+find one's way	filled	7	3	7	0.43	no	Life, finding a way through the contamination.	finding … way … contamination
+get out of someone's face	clitic	7	4	7	0.57	no	Get that camera out of my face, you haole piece of shit!	Get … out … of … my … face
+hit one hard	filled	7	1	7	0.14	no	Hit him harder.	Hit … him … harder
+in one's life	filled	7	3	7	0.43	no	Do you believe in life after death?	in … life … death
+in someone's blood	clitic	7	2	7	0.29	no	A diabetic has too much sugar in his blood and in his urine.	in … his … blood
+in someone's shoes	clitic	7	6	7	0.86	yes	There is a rock in my shoe.	in … my … shoe
+kiss someone's ass	clitic	7	6	7	0.86	yes	Kissing her ass when she was little.	Kissing … her … ass
+live one	clitic	7	4	7	0.57	no	Maybe he should have lived it up.	lived … it
+on one's own	filled	7	6	7	0.86	yes	A stone is heavy on its own turf.	on … own … turf
+one's days are numbered	clitic	7	7	7	1.00	yes		
+pull oneself together	clitic	7	7	7	1.00	yes		
+pull oneself together	filled	7	7	7	1.00	yes		
+pull someone's leg	clitic	7	6	7	0.86	yes	Pulled off her leg.	Pulled … her … leg
+run for one's life	clitic	7	7	7	1.00	yes		
+shift one's tides	clitic	7	0	7	0.00	no	Are you still joining us after your shift?	your … shift
+speak someone's language	clitic	7	5	7	0.71	yes	Do you speak my language?	speak … my … language
+stick one's tongue out	clitic	7	7	7	1.00	yes		
+stick out one's tongue	clitic	7	7	7	1.00	yes		
+sugar in one's tank	filled	7	0	7	0.00	no	A diabetic has too much sugar in his blood and in his urine.	sugar … in … blood
+talk through one's ass	clitic	7	0	7	0.00	no	He needs a few jokes to lighten up his talk.	his … talk
+thumb one's nose	clitic	7	0	7	0.00	no	I cut my thumb, but she fixed it.	my … thumb
+trust someone to	clitic	7	7	7	1.00	yes		
+wait one's turn	clitic	7	7	7	1.00	yes		
+with one's bare hands	clitic	7	7	7	1.00	yes		
+bite one's thumb	filled	6	0	6	0.00	no	A bite of heaven, on earth.	bite … heaven
+bite one's tongue	filled	6	0	6	0.00	no	A bite of heaven, on earth.	bite … heaven
+change one's ways	clitic	6	4	6	0.67	yes	It is hard for an old man to change his way of thinking.	change … his … way
+come one's way	filled	6	0	6	0.00	no	He came to London by way of Siberia.	came … way … Siberia
+do one's part	clitic	6	6	6	1.00	yes		
+drop someone a line	filled	6	6	6	1.00	yes		
+fill one's hand	clitic	6	0	6	0.00	no	Better eat your fill.	your … fill
+find one's place	filled	6	3	6	0.50	no	Hold the books for a moment while I find a place for them.	find … place … them
+follow one's heart	clitic	6	6	6	1.00	yes		
+fruit of one's loins	filled	6	1	6	0.17	no	And the fruit of sin that we feared.	fruit … of … sin
+get someone's back	clitic	6	5	6	0.83	yes	Get your back against the fence.	Get … your … back
+give someone a ring	filled	6	4	6	0.67	yes	Her fiancé gave her a very big ring.	gave … her … a … ring
+give something a go	filled	6	3	6	0.50	no	Give Mossy a go first, will you?	Give … Mossy … a … go
+have someone's head	filled	6	0	6	0.00	no	And he had this full head of steam.	had … head … steam
+in one's book	clitic	6	1	6	0.17	no	In your book, you hope to end the divide between the normal and the marginal.	In … your … book
+in something's way	filled	6	0	6	0.00	no	Each person must make his or her way in the world.	way … in … world
+live beyond one's means	clitic	6	6	6	1.00	yes		
+meat on one's bones	clitic	6	0	6	0.00	no	Help me beat my meat.	my … meat
+one's fill	clitic	6	6	6	1.00	yes		
+pee oneself	filled	6	2	6	0.33	no	Car was shaking so much that I almost peed a little bit.	peed … bit
+prove oneself	clitic	6	6	6	1.00	yes		
+put something behind one	filled	6	2	6	0.33	no	Put your hands behind your back.	Put … hands … behind … back
+raise one's head	clitic	6	6	6	1.00	yes		
+refresh someone's memory	clitic	6	6	6	1.00	yes		
+serve someone right	clitic	6	6	6	1.00	yes		
+show one's hand	clitic	6	0	6	0.00	no	Show Tom your hands.	Show … your … hands
+stretch one's legs	clitic	6	3	6	0.50	no	Mary stretched her legs.	stretched … her … legs
+watch one's back	clitic	6	6	6	1.00	yes		
+with all one's might	clitic	6	6	6	1.00	yes		
+against someone's will	clitic	5	5	5	1.00	yes		
+at one's risk	filled	5	5	5	1.00	yes		
+be oneself	clitic	5	4	5	0.80	yes	Someone you aspire to be yourself.	be … yourself
+before one's eyes	clitic	5	5	5	1.00	yes		
+believe one's eyes	clitic	5	5	5	1.00	yes		
+bet one's ass	filled	5	0	5	0.00	no	He made a bet with her.	bet … her
+bird of one's own brain	clitic	5	0	5	0.00	no	My bird sings so beautifully.	My … bird
+break one's fall	clitic	5	0	5	0.00	no	Check out my break!	my … break
+break one's neck	clitic	5	1	5	0.20	no	A man could slip and break his neck!	break … his … neck
+bust someone's balls	clitic	5	5	5	1.00	yes		
+catch one's breath	clitic	5	5	5	1.00	yes		
+cross someone's mind	clitic	5	5	5	1.00	yes		
+cut someone slack	filled	5	5	5	1.00	yes		
+cut someone some slack	filled	5	5	5	1.00	yes		
+drive someone up the wall	filled	5	5	5	1.00	yes		
+eat one's fill	clitic	5	5	5	1.00	yes		
+end one's life	clitic	5	5	5	1.00	yes		
+for one's part	clitic	5	5	5	1.00	yes		
+get ahead of oneself	filled	5	2	5	0.40	no	I got a couple cars ahead of you.	got … ahead … of … you
+go one's way	filled	5	0	5	0.00	no	Am I going the right way to Tomshino?	going … way … Tomshino
+go one's ways	filled	5	0	5	0.00	no	Am I going the right way to Tomshino?	going … way … Tomshino
+handle oneself	clitic	5	5	5	1.00	yes		
+have blood on one's hands	clitic	5	5	5	1.00	yes		
+have one's work cut out	clitic	5	5	5	1.00	yes		
+hold one's horses	clitic	5	5	5	1.00	yes		
+knock one out	clitic	5	5	5	1.00	yes		
+let something slip	filled	5	3	5	0.60	yes	Let me slip into something more comfortable.	Let … me … slip
+lick one's lips	clitic	5	5	5	1.00	yes		
+of one's word	filled	5	0	5	0.00	no	A lot of words in Toki Pona can mean different things.	of … words … Toki Pona
+off one's face	clitic	5	0	5	0.00	no	He wiped the sweat off his face.	off … his … face
+on one's conscience	clitic	5	5	5	1.00	yes		
+on one's guard	clitic	5	5	5	1.00	yes		
+on one's plate	clitic	5	3	5	0.60	yes	Eat everything on your plate.	on … your … plate
+on one's watch	clitic	5	4	5	0.80	yes	What time do you have on your watch?	on … your … watch
+play one's part	clitic	5	5	5	1.00	yes		
+redeem oneself	filled	5	1	5	0.20	no	Fear of death alone does not redeem sins.	redeem … sins
+speak one's mind	clitic	5	5	5	1.00	yes		
+stick to one's last	clitic	5	0	5	0.00	no	He beat on a drunken man with his stick.	his … stick
+swallow one's pride	clitic	5	5	5	1.00	yes		
+take one's own life	clitic	5	5	5	1.00	yes		
+top of one's class	clitic	5	5	5	1.00	yes		
+victim of one's own success	clitic	5	0	5	0.00	no	Authority corrupts its holder and debases its victims.	its … victims
+watch one's tongue	filled	5	0	5	0.00	no	And thee, I told thee to keep watch of Jonas and Mercy.	watch … Jonas
+wipe someone's nose	clitic	5	5	5	1.00	yes		
+with one's eyes open	clitic	5	0	5	0.00	no	I have lain in bed with my eyes open.	with … my … eyes … open
+words fail someone	filled	5	5	5	1.00	yes		
+all over oneself	filled	4	0	4	0.00	no	All over me.	All … over … me
+ants in one's pants	clitic	4	4	4	1.00	yes		
+at one's best	clitic	4	4	4	1.00	yes		
+at one's leisure	clitic	4	4	4	1.00	yes		
+at the top of one's lungs	clitic	4	4	4	1.00	yes		
+back of one's hand	clitic	4	4	4	1.00	yes		
+be on one's beanwater	clitic	4	0	4	0.00	no	He speaks a little bit, all of his time is taken up by his farm work.	his … is
+be on one's bullshit	clitic	4	0	4	0.00	no	He speaks a little bit, all of his time is taken up by his farm work.	his … is
+be on someone's dick	clitic	4	0	4	0.00	no	He speaks a little bit, all of his time is taken up by his farm work.	his … is
+blow someone's brains out	clitic	4	4	4	1.00	yes		
+close one's doors	clitic	4	1	4	0.25	no	Close my door.	Close … my … door
+come to someone's rescue	clitic	4	4	4	1.00	yes		
+dry one's eyes	clitic	4	4	4	1.00	yes		
+eat one's dinners	clitic	4	4	4	1.00	yes		
+eat someone alive	filled	4	4	4	1.00	yes		
+feel someone's pain	clitic	4	4	4	1.00	yes		
+fold one's arms	clitic	4	4	4	1.00	yes		
+gather oneself together	filled	4	0	4	0.00	no	Gather them together.	Gather … them … together
+get someone there	clitic	4	4	4	1.00	yes		
+give one's best	clitic	4	4	4	1.00	yes		
+give someone the bag	filled	4	4	4	1.00	yes		
+go out of one's way	clitic	4	4	4	1.00	yes		
+good on someone	filled	4	2	4	0.50	no	Dickens is so good on actual jokes, actual gags.	good … on … jokes
+have someone's ear	filled	4	0	4	0.00	no	He has a good ear for music.	has … ear … music
+hold one's tongue	clitic	4	4	4	1.00	yes		
+hold oneself together	filled	4	3	4	0.75	yes	Hold the two handsets together.	Hold … handsets … together
+in one's teens	clitic	4	4	4	1.00	yes		
+in someone's eyes	filled	4	3	4	0.75	yes	You were just a sparkle in the eye of a sailor, right?	in … eye … sailor
+keep one's voice down	clitic	4	4	4	1.00	yes		
+keep someone company	clitic	4	4	4	1.00	yes		
+know like the back of one's hand	clitic	4	4	4	1.00	yes		
+know someone when	filled	4	0	4	0.00	no	And when we know the world, the world is ours.	when … know … world
+let one loose	filled	4	4	4	1.00	yes		
+let someone loose	filled	4	4	4	1.00	yes		
+live within oneself	filled	4	0	4	0.00	no	He lives within his means.	lives … within … means
+love of one's life	clitic	4	4	4	1.00	yes		
+make someone's day	clitic	4	4	4	1.00	yes		
+make someone's skin crawl	clitic	4	4	4	1.00	yes		
+of someone's life	filled	4	2	4	0.50	no	The movie is a harrowing depiction of life in an urban slum.	of … life … slum
+off one's rocker	clitic	4	4	4	1.00	yes		
+off someone's hands	clitic	4	3	4	0.75	yes	She washed the blood off her hands.	off … her … hands
+on one's back	filled	4	2	4	0.50	no	Did you see what I put on the back of the car?	on … back … car
+on one's mark	clitic	4	4	4	1.00	yes		
+on someone's account	clitic	4	2	4	0.50	no	I put three on your account.	on … your … account
+on someone's ass	clitic	4	2	4	0.50	no	On your asses, bastards!	On … your … asses
+on someone's back	filled	4	0	4	0.00	no	Did you see what I put on the back of the car?	on … back … car
+open one's heart	clitic	4	4	4	1.00	yes		
+open one's mind	clitic	4	4	4	1.00	yes		
+pass one's word	filled	4	0	4	0.00	no	A pass to Cuauhtemoc Which stops it.	pass … Cuauhtemoc
+pay one's respects	clitic	4	4	4	1.00	yes		
+price on someone's head	filled	4	2	4	0.50	no	Well, hard to put a price on it.	price … on … it
+put one's foot down	clitic	4	4	4	1.00	yes		
+put oneself in someone's shoes	clitic	4	4	4	1.00	yes		
+put someone in a box	filled	4	4	4	1.00	yes		
+raise one's glass	clitic	4	4	4	1.00	yes		
+read someone's mind	clitic	4	4	4	1.00	yes		
+say one's prayers	clitic	4	4	4	1.00	yes		
+say someone's prayers	clitic	4	4	4	1.00	yes		
+scare someone to death	filled	4	3	4	0.75	yes	Scaring me half to death!	Scaring … me … to … death
+sell one's soul to the devil	clitic	4	4	4	1.00	yes		
+show one's ass	clitic	4	0	4	0.00	no	Show me your ass.	Show … your … ass
+shut one's trap	clitic	4	4	4	1.00	yes		
+slip off someone's tongue	clitic	4	0	4	0.00	no	Bring your pay slips?	your … slips
+slip one's wind	clitic	4	0	4	0.00	no	Bring your pay slips?	your … slips
+stare someone in the face	filled	4	4	4	1.00	yes		
+stuck on oneself	filled	4	3	4	0.75	yes	Dang door stuck on me.	stuck … on … me
+suck someone's cock	clitic	4	4	4	1.00	yes		
+take one's leave	clitic	4	4	4	1.00	yes		
+take one's turn	filled	4	0	4	0.00	no	Here is my take on the matter.	take … matter
+that'll teach someone	filled	4	3	4	0.75	yes	The same person that taught me this.	that … taught … this
+the sun sets on something	filled	4	1	4	0.25	no	The sun is setting on the horizon.	The … sun … setting … on … horizon
+tip one's hat	clitic	4	4	4	1.00	yes		
+to one's rescue	clitic	4	4	4	1.00	yes		
+to save one's life	clitic	4	4	4	1.00	yes		
+trip over oneself	filled	4	1	4	0.25	no	Be careful not to trip over this rock.	trip … over … rock
+use one's coconut	clitic	4	0	4	0.00	no	All this is for my personal use.	my … use
+what someone is made of	filled	4	1	4	0.25	no	Of what is the spirit made?	Of … what … is … spirit … made
+bang for one's buck	clitic	3	3	3	1.00	yes		
+beat someone's time	filled	3	0	3	0.00	no	I tap my foot to the beat of the music.	beat … music
+blow someone's mind	clitic	3	3	3	1.00	yes		
+break one's back	clitic	3	1	3	0.33	no	I broke my back.	broke … my … back
+break one's fall	filled	3	0	3	0.00	no	Do you have some kind of, what, break in the case?	break … case
+break someone's back	clitic	3	1	3	0.33	no	I broke my back.	broke … my … back
+cat got someone's tongue	clitic	3	3	3	1.00	yes		
+catch someone's drift	clitic	3	3	3	1.00	yes		
+change one's spots	clitic	3	3	3	1.00	yes		
+clench one's fists	clitic	3	3	3	1.00	yes		
+close one's doors	filled	3	0	3	0.00	no	Did you close the door to your bedroom?	close … door … bedroom
+come one's way	clitic	3	2	3	0.67	yes	On her way home, Mary came across John.	her … way … came
+cover one's tracks	clitic	3	3	3	1.00	yes		
+crack one	clitic	3	1	3	0.33	no	Man you got to warn somebody before you just crack one off.	crack … one
+crap oneself	filled	3	2	3	0.67	yes	Because I was so scared that I was literally crapping liquid in my pants.	crapping … liquid
+cross one's arms	clitic	3	3	3	1.00	yes		
+cross one's fingers	clitic	3	3	3	1.00	yes		
+cut of one's jib	clitic	3	0	3	0.00	no	Hey, my cut is gone!	my … cut
+do one's best	filled	3	0	3	0.00	no	It was bigger than anything you fucking ever did.	anything … did
+do one's damnedest	filled	3	0	3	0.00	no	It was bigger than anything you fucking ever did.	anything … did
+do one's utmost	clitic	3	3	3	1.00	yes		
+do well for oneself	filled	3	0	3	0.00	no	I have to do better, for everybody.	do … better … for … everybody
+drive someone insane	filled	3	3	3	1.00	yes		
+fall off one's chair	clitic	3	0	3	0.00	no	An awning broke his fall and saved his life.	his … fall
+fall off one's perch	clitic	3	0	3	0.00	no	An awning broke his fall and saved his life.	his … fall
+fall on one's face	clitic	3	0	3	0.00	no	An awning broke his fall and saved his life.	his … fall
+fall on one's feet	clitic	3	0	3	0.00	no	An awning broke his fall and saved his life.	his … fall
+fall over one's feet	clitic	3	0	3	0.00	no	An awning broke his fall and saved his life.	his … fall
+fall to one's knees	clitic	3	3	3	1.00	yes		
+fend for oneself	filled	3	3	3	1.00	yes		
+find one's place	clitic	3	0	3	0.00	no	Find your own place to hide!	Find … your … place
+float someone's boat	clitic	3	3	3	1.00	yes		
+for one's heart	clitic	3	1	3	0.33	no	I was aiming for your heart.	for … your … heart
+frame one	clitic	3	2	3	0.67	yes	Just in case you wanna frame it.	frame … it
+frog in one's pocket	filled	3	0	3	0.00	no	I have a frog in my throat.	frog … in … throat
+frog in one's throat	filled	3	2	3	0.67	yes	You always say there are only frogs in our class.	frogs … in … class
+get off someone's back	clitic	3	3	3	1.00	yes		
+get one's	filled	3	0	3	0.00	no	All they got from Paulie was protection from other guys looking to rip them off.	All … got
+get one's hands dirty	clitic	3	1	3	0.33	no	I got my hands quite dirty.	got … my … hands … dirty
+get one's hopes up	clitic	3	3	3	1.00	yes		
+get one's jollies	filled	3	0	3	0.00	no	All they got from Paulie was protection from other guys looking to rip them off.	All … got
+get one's kicks	filled	3	0	3	0.00	no	He gets a kick out of reckless driving.	gets … kick … driving
+get one's shit together	clitic	3	3	3	1.00	yes		
+get something over with	filled	3	3	3	1.00	yes		
+give of oneself	filled	3	0	3	0.00	no	Have you given any more thought to what we spoke of?	given … what … of
+give one's word	filled	3	3	3	1.00	yes		
+give someone five	filled	3	0	3	0.00	no	If he gets violent, give him five of them.	give … him … five
+give someone the eye	filled	3	1	3	0.33	no	She gave me the evil eye.	gave … me … the … eye
+grit one's teeth	clitic	3	3	3	1.00	yes		
+hang one's head	clitic	3	3	3	1.00	yes		
+have someone's head	clitic	3	0	3	0.00	no	He had his head in the clouds in class.	had … his … head
+head on one's shoulders	clitic	3	1	3	0.33	no	He has a head on his shoulders.	head … on … his … shoulders
+hold one's ground	clitic	3	3	3	1.00	yes		
+in one's sight	filled	3	3	3	1.00	yes		
+in one's sights	filled	3	0	3	0.00	no	And walk in the ways of thine heart, and in the sight of thine eyes.	in … sight … eyes
+in someone's day	clitic	3	3	3	1.00	yes		
+in someone's view	filled	3	0	3	0.00	no	I came in view of the castle.	in … view … castle
+keep one's countenance	clitic	3	0	3	0.00	no	I earned my keep.	my … keep
+keep one's eyes peeled	clitic	3	3	3	1.00	yes		
+keep one's fingers crossed	clitic	3	0	3	0.00	no	I earned my keep.	my … keep
+keep someone occupied	filled	3	3	3	1.00	yes		
+keep someone posted	filled	3	3	3	1.00	yes		
+keep to one's own knitting	clitic	3	0	3	0.00	no	I earned my keep.	my … keep
+kick someone's butt	clitic	3	3	3	1.00	yes		
+know one's mind	filled	3	0	3	0.00	no	Any of youse know how to cannulate?	Any … know
+know one's place	clitic	3	3	3	1.00	yes		
+last thing one needs	filled	3	3	3	1.00	yes		
+laugh in someone's face	clitic	3	0	3	0.00	no	Her laugh was a lie that concealed her sorrow.	Her … laugh
+leave someone cold	filled	3	3	3	1.00	yes		
+leave someone no choice	filled	3	3	3	1.00	yes		
+lose one's head	clitic	3	3	3	1.00	yes		
+make one's bow	clitic	3	0	3	0.00	no	Do you mind my making a suggestion?	my … making
+measure one's length	filled	3	0	3	0.00	no	I fear I cannot ever feel that same measure of love again.	measure … love
+oar in someone's boat	clitic	3	0	3	0.00	no	Leave me alone and mind your oars!	your … oars
+off one's face	filled	3	0	3	0.00	no	He disappeared off the face of the earth.	off … face … earth
+on one's deathbed	clitic	3	3	3	1.00	yes		
+on someone's books	clitic	3	1	3	0.33	no	Did you spill something on my book?	on … my … book
+on someone's doorstep	clitic	3	3	3	1.00	yes		
+on someone's tail	clitic	3	1	3	0.33	no	A big dog, sitting on its tail, was watching the fire.	on … its … tail
+one could hear a pin drop	filled	3	3	3	1.00	yes		
+one's door is open	clitic	3	3	3	1.00	yes		
+one's hour	clitic	3	1	3	0.33	no	Why should they repair my office during my work hours!	my … hours
+one's name is mud	clitic	3	3	3	1.00	yes		
+one's word is law	clitic	3	3	3	1.00	yes		
+owe it to oneself	filled	3	1	3	0.33	no	We owe it to them!	owe … it … to … them
+pass in one's checks	clitic	3	0	3	0.00	no	My parents had our passes in pocket, but I took sick.	our … passes
+pass one's word	clitic	3	0	3	0.00	no	My parents had our passes in pocket, but I took sick.	our … passes
+pay one's way	clitic	3	2	3	0.67	yes	My grandmother paid my way to Boston.	paid … my … way
+pay someone's way	clitic	3	3	3	1.00	yes		
+pee in one's pants	clitic	3	0	3	0.00	no	My pee is black.	My … pee
+pick one's nose	clitic	3	3	3	1.00	yes		
+rod for one's breech	clitic	3	0	3	0.00	no	Give me your rod.	your … rod
+roll one's eyes	clitic	3	3	3	1.00	yes		
+send someone packing	filled	3	3	3	1.00	yes		
+service oneself	filled	3	0	3	0.00	no	And have the air-conditioner serviced tomorrow.	conditioner … serviced
+shoot oneself in the foot	filled	3	1	3	0.33	no	He shoots him in the foot, he tells him to go fuck himself.	shoots … him … in … the … foot
+shut one's eyes	clitic	3	3	3	1.00	yes		
+slap someone around	filled	3	3	3	1.00	yes		
+sleep one off	filled	3	3	3	1.00	yes		
+slip one's wind	filled	3	0	3	0.00	no	A slip of the tongue is sometimes fatal to a politician.	slip … tongue
+slip someone's mind	clitic	3	3	3	1.00	yes		
+somebody's in here	filled	3	3	3	1.00	yes		
+spread one's legs	clitic	3	3	3	1.00	yes		
+stand one's ground	clitic	3	3	3	1.00	yes		
+stare someone in the face	clitic	3	3	3	1.00	yes		
+take one up	clitic	3	1	3	0.33	no	I need to take you up to bed.	take … you … up
+take someone to the grave	filled	3	3	3	1.00	yes		
+take someone's word for it	clitic	3	3	3	1.00	yes		
+tighten one's belt	clitic	3	3	3	1.00	yes		
+time is on one's side	clitic	3	3	3	1.00	yes		
+to one's advantage	clitic	3	3	3	1.00	yes		
+turn one's back	filled	3	3	3	1.00	yes		
+twist someone's balls	filled	3	0	3	0.00	no	All the good ones have a little twist in the tale.	twist … tale
+under one's hat	clitic	3	3	3	1.00	yes		
+watch one's language	clitic	3	3	3	1.00	yes		
+wish someone well	filled	3	3	3	1.00	yes		
+with one's eyes shut	clitic	3	2	3	0.67	yes	I have to wake up with my eyes shut!	with … my … eyes … shut
+words fail someone	clitic	3	3	3	1.00	yes		
+worth one's while	clitic	3	0	3	0.00	no	Another opportunity for one of the Shire-folk to prove their great worth.	their … worth
+Earth to someone	filled	2	2	2	1.00	yes		
+God love someone	filled	2	0	2	0.00	no	God loves me and watches over me.	God … loves … me
+answer someone's prayers	clitic	2	2	2	1.00	yes		
+assert oneself	filled	2	1	2	0.50	no	We must assert our right on your possessions.	assert … right
+at someone's heels	clitic	2	2	2	1.00	yes		
+bare one's soul	clitic	2	2	2	1.00	yes		
+bash someone's head	clitic	2	2	2	1.00	yes		
+be one's own worst enemy	clitic	2	2	2	1.00	yes		
+beg for one's life	clitic	2	2	2	1.00	yes		
+bite one's lip	clitic	2	2	2	1.00	yes		
+bite one's nails	clitic	2	2	2	1.00	yes		
+bite the hand that feeds one	clitic	2	2	2	1.00	yes		
+bite the hand that feeds one	filled	2	2	2	1.00	yes		
+blow up in one's face	clitic	2	2	2	1.00	yes		
+break one's balls	clitic	2	2	2	1.00	yes		
+break someone's balls	clitic	2	2	2	1.00	yes		
+broaden someone's horizons	clitic	2	2	2	1.00	yes		
+burn one's fingers	clitic	2	0	2	0.00	no	I burned my finger.	burned … my … finger
+carry one's weight	filled	2	0	2	0.00	no	That one spring carries the whole weight of the car.	carries … weight … car
+change one's ways	filled	2	0	2	0.00	no	It is hard for an old man to change his way of thinking.	change … way … thinking
+chase one's tail	filled	2	0	2	0.00	no	A wild-goose chase over here at Nakatomi Plaza.	chase … Nakatomi Plaza
+clear someone's name	clitic	2	2	2	1.00	yes		
+clothes on one's back	filled	2	1	2	0.50	no	He had no clothes on him at all.	clothes … on … him
+come to someone's aid	clitic	2	2	2	1.00	yes		
+cross oneself	clitic	2	2	2	1.00	yes		
+cross someone's path	clitic	2	2	2	1.00	yes		
+cut one loose	filled	2	1	2	0.50	no	They had to call the paramedics to cut the prick loose.	cut … prick … loose
+cut someone loose	filled	2	1	2	0.50	no	They had to call the paramedics to cut the prick loose.	cut … prick … loose
+do one's bit	filled	2	0	2	0.00	no	I can do a bit of recording.	do … bit … recording
+do one's business	filled	2	0	2	0.00	no	He does business in Turkey.	does … business … Turkey
+do one's stuff	filled	2	0	2	0.00	no	Everybody does stupid stuff like that in high school.	does … stuff … that
+do one's worst	clitic	2	2	2	1.00	yes		
+do someone's business	filled	2	0	2	0.00	no	He does business in Turkey.	does … business … Turkey
+does someone look like	filled	2	2	2	1.00	yes		
+drag one's feet	clitic	2	2	2	1.00	yes		
+drive someone mad	clitic	2	2	2	1.00	yes		
+earn one's keep	clitic	2	2	2	1.00	yes		
+eat someone alive	clitic	2	2	2	1.00	yes		
+fall into someone's hands	filled	2	2	2	1.00	yes		
+feel one's way	clitic	2	2	2	1.00	yes		
+feel one's way	filled	2	0	2	0.00	no	Everybody feels that way sometimes.	feels … that … way
+fight for one's life	clitic	2	2	2	1.00	yes		
+figment of one's imagination	clitic	2	2	2	1.00	yes		
+flex one's muscles	clitic	2	2	2	1.00	yes		
+fool to oneself	clitic	2	2	2	1.00	yes		
+for one's own good	clitic	2	2	2	1.00	yes		
+for the life of one	clitic	2	2	2	1.00	yes		
+for the life of one	filled	2	2	2	1.00	yes		
+force someone's hand	clitic	2	2	2	1.00	yes		
+get above oneself	filled	2	0	2	0.00	no	Get above him!	Get … above … him
+get ahold of oneself	filled	2	0	2	0.00	no	Get ahold of it, tip it over, but not all the way.	Get … ahold … of … it
+get on someone's wrong side	filled	2	0	2	0.00	no	He got up on the wrong side of the bed.	got … on … wrong … side … bed
+get one's act together	clitic	2	2	2	1.00	yes		
+get one's ass in gear	clitic	2	2	2	1.00	yes		
+get one's head together	clitic	2	2	2	1.00	yes		
+get someone's drift	clitic	2	2	2	1.00	yes		
+get someone's goat	clitic	2	1	2	0.50	no	With motorcycle access only, tricky to get your goat there.	get … your … goat
+get under someone's skin	clitic	2	2	2	1.00	yes		
+give someone a hard time	filled	2	2	2	1.00	yes		
+give someone the time	filled	2	1	2	0.50	no	Give me half the time you took to read a book!	Give … me … the … time
+give something a try	clitic	2	2	2	1.00	yes		
+go one's own way	clitic	2	2	2	1.00	yes		
+go to someone's head	clitic	2	0	2	0.00	no	And you my go.	my … go
+go with one's gut	clitic	2	0	2	0.00	no	And you my go.	my … go
+go with one's gut	filled	2	0	2	0.00	no	Give him a go with gun powder!	go … with … powder
+hang one's hat	clitic	2	0	2	0.00	no	He hung his hat on a nail.	hung … his … hat
+have a head on one's shoulders	clitic	2	1	2	0.50	no	He has a head on his shoulders.	has … a … head … on … his … shoulders
+have one's cake and eat it	clitic	2	2	2	1.00	yes		
+have one's hands full	clitic	2	2	2	1.00	yes		
+have someone's back	clitic	2	1	2	0.50	no	The old man had his back to me.	had … his … back
+have tickets on oneself	filled	2	0	2	0.00	no	Do you have a cheap flight ticket on a domestic line?	have … ticket … on … line
+hit one hard	clitic	2	1	2	0.50	no	I want you to hit me as hard as you can.	hit … me … hard
+hold one's fire	clitic	2	1	2	0.50	no	Hold back your fire!	Hold … your … fire
+hold one's nose	clitic	2	0	2	0.00	no	His hold over King Théoden is now very strong.	His … hold
+hold one's peace	clitic	2	0	2	0.00	no	His hold over King Théoden is now very strong.	His … hold
+in one's bones	clitic	2	1	2	0.50	no	My lowlife traits are like cancer in my bones.	in … my … bones
+in one's cups	clitic	2	0	2	0.00	no	Could you pour some coffee in my cup?	in … my … cup
+in one's midst	clitic	2	2	2	1.00	yes		
+in one's midst	filled	2	0	2	0.00	no	In the midst of this, he saw somebody on the dark platform.	In … midst … this
+in one's own time	clitic	2	2	2	1.00	yes		
+in one's own world	clitic	2	2	2	1.00	yes		
+in one's right mind	clitic	2	2	2	1.00	yes		
+in someone's blood	filled	2	0	2	0.00	no	I am thine enemy, wallowing in the blood of my sins!	in … blood … sins
+jog someone's memory	clitic	2	2	2	1.00	yes		
+keep one's head down	clitic	2	1	2	0.50	no	Just keep your big head down, Shalulu!	keep … your … head … down
+keep one's shirt on	clitic	2	2	2	1.00	yes		
+keep someone guessing	filled	2	2	2	1.00	yes		
+knock someone's head off	clitic	2	2	2	1.00	yes		
+know one's place	filled	2	0	2	0.00	no	I know a good place for dinner.	know … place … dinner
+know one's stuff	clitic	2	2	2	1.00	yes		
+land on one's feet	clitic	2	0	2	0.00	no	A cat always lands on its feet.	lands … on … its … feet
+laugh one's head off	clitic	2	2	2	1.00	yes		
+lay one down	clitic	2	2	2	1.00	yes		
+learn one's lesson	clitic	2	0	2	0.00	no	You have to learn your lesson.	learn … your … lesson
+leave one's mark	filled	2	1	2	0.50	no	The vaccination left a funny little mark on my arm.	left … mark … arm
+leave someone hanging	clitic	2	2	2	1.00	yes		
+leave someone hanging	filled	2	2	2	1.00	yes		
+leave someone in the lurch	filled	2	2	2	1.00	yes		
+let one's guard down	clitic	2	2	2	1.00	yes		
+let someone hold	clitic	2	1	2	0.50	no	Let me hold her!	Let … me … hold
+let someone hold	filled	2	1	2	0.50	no	Let me hold her!	Let … me … hold
+lie through one's teeth	clitic	2	2	2	1.00	yes		
+lose one's cool	clitic	2	2	2	1.00	yes		
+lose one's nerve	clitic	2	2	2	1.00	yes		
+lose one's touch	clitic	2	2	2	1.00	yes		
+lose one's virginity	clitic	2	2	2	1.00	yes		
+make someone's acquaintance	clitic	2	2	2	1.00	yes		
+make someone's blood boil	clitic	2	2	2	1.00	yes		
+make someone's hair stand on end	clitic	2	2	2	1.00	yes		
+meet one's end	clitic	2	2	2	1.00	yes		
+off one's head	clitic	2	0	2	0.00	no	Her hat fell off her head.	off … her … head
+on one's guard	filled	2	2	2	1.00	yes		
+on one's part	clitic	2	2	2	1.00	yes		
+on one's toes	clitic	2	1	2	0.50	no	Raise your arms in front of you and stand on your toes.	on … your … toes
+on the tip of one's tongue	clitic	2	2	2	1.00	yes		
+one's days are numbered	filled	2	2	2	1.00	yes		
+one's door is open	filled	2	0	2	0.00	no	The door of the safe was open.	door … safe … was … open
+one's lips are sealed	clitic	2	2	2	1.00	yes		
+one's own boss	clitic	2	2	2	1.00	yes		
+one's own master	clitic	2	1	2	0.50	no	Their own masters cannot find them if their secrets are forgotten.	Their … own … masters
+out of someone's way	clitic	2	2	2	1.00	yes		
+pay one's dues	clitic	2	0	2	0.00	no	I could pay my dues, and whatnot.	pay … my … dues
+pay one's own way	clitic	2	2	2	1.00	yes		
+pay one's respects	filled	2	2	2	1.00	yes		
+pee one's pants	clitic	2	2	2	1.00	yes		
+pee oneself	clitic	2	2	2	1.00	yes		
+piece of someone	clitic	2	0	2	0.00	no	Have my piece of cake if you like.	my … piece
+poke one's fun	filled	2	2	2	1.00	yes		
+poke someone's eye out	clitic	2	2	2	1.00	yes		
+pull the wool over someone's eyes	clitic	2	2	2	1.00	yes		
+push one's way	clitic	2	2	2	1.00	yes		
+put out of one's head	clitic	2	2	2	1.00	yes		
+put out of one's mind	clitic	2	2	2	1.00	yes		
+put someone in hospital	filled	2	2	2	1.00	yes		
+put someone in their place	clitic	2	0	2	0.00	no	Please put it back in its place.	put … it … in … its … place
+raise one's eyebrows	clitic	2	2	2	1.00	yes		
+rub one's hands	clitic	2	2	2	1.00	yes		
+rub one's hands together	clitic	2	2	2	1.00	yes		
+scratch one's head	clitic	2	2	2	1.00	yes		
+see one's breath	filled	2	0	2	0.00	no	Long time, no see!	no … see
+see oneself out	filled	2	0	2	0.00	no	I fear he will not see the year out.	see … year … out
+show one's butt	clitic	2	2	2	1.00	yes		
+show one's true colors	clitic	2	2	2	1.00	yes		
+show one's work	clitic	2	0	2	0.00	no	At the end of the year we show our work.	show … our … work
+show someone the ropes	filled	2	2	2	1.00	yes		
+shut one's gob	clitic	2	2	2	1.00	yes		
+sick to one's stomach	clitic	2	2	2	1.00	yes		
+sit on one's hands	clitic	2	2	2	1.00	yes		
+sit one's ass down	clitic	2	2	2	1.00	yes		
+skeleton in one's closet	clitic	2	2	2	1.00	yes		
+slit someone's throat	clitic	2	2	2	1.00	yes		
+smash someone's head	clitic	2	1	2	0.50	no	The hatchet that smashed his head was next to him.	smashed … his … head
+spare someone the details	filled	2	2	2	1.00	yes		
+spit in someone's face	clitic	2	0	2	0.00	no	Save your spit and fire for the bandits.	your … spit
+steal someone's heart	clitic	2	2	2	1.00	yes		
+stuff one's face	clitic	2	2	2	1.00	yes		
+sun oneself	clitic	2	2	2	1.00	yes		
+sun oneself	filled	2	2	2	1.00	yes		
+sweat one's guts out	clitic	2	2	2	1.00	yes		
+take one's leave	filled	2	1	2	0.50	no	Our hero took a leave of two weeks.	took … leave … weeks
+take one's life	filled	2	2	2	1.00	yes		
+take one's lumps	clitic	2	2	2	1.00	yes		
+take one's pick	clitic	2	2	2	1.00	yes		
+take one's seat	filled	2	2	2	1.00	yes		
+take someone's arm	clitic	2	1	2	0.50	no	Take your arm out!	Take … your … arm
+take someone's breath away	clitic	2	2	2	1.00	yes		
+take someone's fancy	filled	2	0	2	0.00	no	He took a fancy to her.	took … fancy … her
+take someone's head off	clitic	2	2	2	1.00	yes		
+take someone's life	filled	2	2	2	1.00	yes		
+take something as it comes	filled	2	2	2	1.00	yes		
+there one has it	filled	2	2	2	1.00	yes		
+thumb one's nose	filled	2	0	2	0.00	no	We will still demand the thumbs of our Ekalavyas.	thumbs … Ekalavyas
+time of one's life	clitic	2	0	2	0.00	no	It was the happiest time of my life.	time … of … my … life
+to one's feet	clitic	2	2	2	1.00	yes		
+to one's name	filled	2	1	2	0.50	no	The dog answers to the name of Blackie.	to … name … Blackie
+to someone's liking	clitic	2	2	2	1.00	yes		
+to someone's taste	clitic	2	2	2	1.00	yes		
+true to one's word	clitic	2	2	2	1.00	yes		
+turn over in one's grave	clitic	2	2	2	1.00	yes		
+twist someone's arm	clitic	2	2	2	1.00	yes		
+under one's breath	clitic	2	2	2	1.00	yes		
+under someone's roof	clitic	2	2	2	1.00	yes		
+up one's sleeve	clitic	2	2	2	1.00	yes		
+up one's sleeves	clitic	2	2	2	1.00	yes		
+watch one's ass	clitic	2	1	2	0.50	no	Walk ahead, so I can watch your ass.	watch … your … ass
+win someone's heart	clitic	2	2	2	1.00	yes		
+wish someone well	clitic	2	2	2	1.00	yes		
+within one's means	clitic	2	2	2	1.00	yes		
+God love someone	clitic	1	1	1	1.00	yes		
+about one's ears	clitic	1	0	1	0.00	no	I-I make jokes about your ears.	about … your … ears
+about one's person	clitic	1	1	1	1.00	yes		
+according to one's understanding	clitic	1	1	1	1.00	yes		
+act one's age	clitic	1	1	1	1.00	yes		
+ahead of one's time	clitic	1	1	1	1.00	yes		
+around one's ears	clitic	1	0	1	0.00	no	Grab the rabbit by the tail, wrap it around his ear.	around … his … ear
+assert oneself	clitic	1	1	1	1.00	yes		
+at one's fingertips	clitic	1	1	1	1.00	yes		
+at one's own peril	clitic	1	1	1	1.00	yes		
+at one's peril	clitic	1	1	1	1.00	yes		
+at the top of one's voice	clitic	1	1	1	1.00	yes		
+back of one's mind	clitic	1	1	1	1.00	yes		
+bag under one's eye	clitic	1	1	1	1.00	yes		
+bare one's heart	clitic	1	1	1	1.00	yes		
+bare one's teeth	clitic	1	1	1	1.00	yes		
+bat one's eyelashes	clitic	1	1	1	1.00	yes		
+bawl one's eyes out	clitic	1	1	1	1.00	yes		
+beat one's face	clitic	1	1	1	1.00	yes		
+beat one's meat	clitic	1	1	1	1.00	yes		
+beat someone's time	clitic	1	0	1	0.00	no	You guys know my name You dance to my beat.	my … beat
+because one can	filled	1	1	1	1.00	yes		
+bee in one's bonnet	clitic	1	1	1	1.00	yes		
+before one's eyes	filled	1	1	1	1.00	yes		
+behind someone's back	filled	1	1	1	1.00	yes		
+believe one's ears	clitic	1	1	1	1.00	yes		
+believe one's own eyes	clitic	1	1	1	1.00	yes		
+bend to one's will	clitic	1	1	1	1.00	yes		
+bend to one's will	filled	1	1	1	1.00	yes		
+bet one's boots	clitic	1	1	1	1.00	yes		
+bide one's time	clitic	1	1	1	1.00	yes		
+bite one's thumb	clitic	1	0	1	0.00	no	You should try not to scratch your mosquito bites.	your … bites
+bite one's tongue	clitic	1	0	1	0.00	no	You should try not to scratch your mosquito bites.	your … bites
+bite someone's head off	clitic	1	0	1	0.00	no	I hoped you would cry out in your sleep, so I could bite off your head.	bite … off … your … head
+blood in one's eye	clitic	1	0	1	0.00	no	No, you just got blood in your eyes.	blood … in … your … eyes
+blow one's chance	clitic	1	0	1	0.00	no	Guaracy was cashing in from my blows on trafficking.	my … blows
+blow one's lid	clitic	1	0	1	0.00	no	Guaracy was cashing in from my blows on trafficking.	my … blows
+blow someone's skirt up	clitic	1	1	1	1.00	yes		
+box someone's ears	clitic	1	1	1	1.00	yes		
+break one's word	clitic	1	1	1	1.00	yes		
+breathe one's last	clitic	1	1	1	1.00	yes		
+bring oneself away	filled	1	1	1	1.00	yes		
+bullet with someone's name on it	clitic	1	1	1	1.00	yes		
+burn a hole in someone's pocket	clitic	1	1	1	1.00	yes		
+burn one's bridges	clitic	1	1	1	1.00	yes		
+burn someone's ass	clitic	1	0	1	0.00	no	I burned her ass to a crisp.	burned … her … ass
+bust one's ass	clitic	1	1	1	1.00	yes		
+bust someone's ass	clitic	1	1	1	1.00	yes		
+butter someone's biscuit	filled	1	0	1	0.00	no	Is there any butter in the refrigerator?	butter … refrigerator
+call someone's number	clitic	1	0	1	0.00	no	When I call out your number go to the cells!	call … your … number
+cast one's vote	clitic	1	1	1	1.00	yes		
+change one's battery	filled	1	1	1	1.00	yes		
+change one's story	clitic	1	1	1	1.00	yes		
+change one's tune	clitic	1	1	1	1.00	yes		
+change oneself	clitic	1	1	1	1.00	yes		
+choose one's battles	clitic	1	1	1	1.00	yes		
+clean up one's act	clitic	1	1	1	1.00	yes		
+click one's fingers	clitic	1	1	1	1.00	yes		
+click one's tongue	clitic	1	1	1	1.00	yes		
+close to someone's heart	clitic	1	1	1	1.00	yes		
+come into one's own	clitic	1	1	1	1.00	yes		
+come out of one's shell	clitic	1	1	1	1.00	yes		
+come to oneself	clitic	1	0	1	0.00	no	I should have come myself.	come … myself
+come to someone's aid	filled	1	1	1	1.00	yes		
+comfortable in one's own skin	clitic	1	1	1	1.00	yes		
+comfortable in one's skin	clitic	1	1	1	1.00	yes		
+conspicuous by one's absence	clitic	1	1	1	1.00	yes		
+cool one's heels	clitic	1	1	1	1.00	yes		
+cool one's jets	clitic	1	1	1	1.00	yes		
+cramp someone's style	clitic	1	1	1	1.00	yes		
+cross one's heart	clitic	1	1	1	1.00	yes		
+cross one's legs	clitic	1	1	1	1.00	yes		
+cry one's eyes out	clitic	1	1	1	1.00	yes		
+curl someone's hair	clitic	1	1	1	1.00	yes		
+cut one loose	clitic	1	1	1	1.00	yes		
+dance to someone's tune	filled	1	1	1	1.00	yes		
+danger is one's middle name	clitic	1	1	1	1.00	yes		
+dash someone's hopes	clitic	1	1	1	1.00	yes		
+dig in one's heels	clitic	1	1	1	1.00	yes		
+dig one's own grave	clitic	1	1	1	1.00	yes		
+do one's own thing	clitic	1	1	1	1.00	yes		
+do one's part	filled	1	1	1	1.00	yes		
+do somebody wrong	clitic	1	0	1	0.00	no	Tom is doing it wrong.	doing … it … wrong
+do someone's bidding	clitic	1	1	1	1.00	yes		
+draw one's last breath	clitic	1	1	1	1.00	yes		
+drive someone insane	clitic	1	1	1	1.00	yes		
+drive someone up the wall	clitic	1	1	1	1.00	yes		
+drown one's sorrows	clitic	1	0	1	0.00	no	Let the rain drown out your sorrow.	drown … your … sorrow
+earn one's wings	clitic	1	1	1	1.00	yes		
+eat from someone's hand	clitic	1	0	1	0.00	no	The goat ate from her hand.	ate … from … her … hand
+eat one's young	clitic	1	1	1	1.00	yes		
+eat someone for breakfast	clitic	1	1	1	1.00	yes		
+eat someone's heart	clitic	1	0	1	0.00	no	The Indians ate his heart.	ate … his … heart
+egg on one's face	clitic	1	1	1	1.00	yes		
+everything one touches turns to gold	filled	1	1	1	1.00	yes		
+extend one's hand	clitic	1	1	1	1.00	yes		
+find one's voice	clitic	1	1	1	1.00	yes		
+fix someone's clock	clitic	1	0	1	0.00	no	Can you fix my clock?	fix … my … clock
+flip one's lid	clitic	1	1	1	1.00	yes		
+follow in someone's footsteps	clitic	1	1	1	1.00	yes		
+follow one's nose	clitic	1	1	1	1.00	yes		
+follow someone to the ends of the world	clitic	1	1	1	1.00	yes		
+follow someone to the ends of the world	filled	1	1	1	1.00	yes		
+for one's liking	clitic	1	1	1	1.00	yes		
+for one's trouble	clitic	1	1	1	1.00	yes		
+forget one's manners	clitic	1	1	1	1.00	yes		
+fuck someone's brains out	clitic	1	1	1	1.00	yes		
+fuck someone's brains out	filled	1	1	1	1.00	yes		
+get on someone's last nerve	clitic	1	1	1	1.00	yes		
+get on someone's tits	clitic	1	1	1	1.00	yes		
+get one's arse into gear	clitic	1	1	1	1.00	yes		
+get one's feet wet	clitic	1	0	1	0.00	no	Put the rubber boots on, or else you will get your feet wet!	get … your … feet … wet
+get one's fill	clitic	1	1	1	1.00	yes		
+get one's head around	clitic	1	1	1	1.00	yes		
+get one's head right	clitic	1	1	1	1.00	yes		
+get one's house in order	clitic	1	1	1	1.00	yes		
+get one's juices flowing	clitic	1	1	1	1.00	yes		
+get one's way	clitic	1	0	1	0.00	no	Happiness is bae, she gets my way.	gets … my … way
+get something over with	clitic	1	1	1	1.00	yes		
+get something twisted	filled	1	1	1	1.00	yes		
+get up someone's nose	clitic	1	1	1	1.00	yes		
+get what one asked for	filled	1	1	1	1.00	yes		
+give it one's best shot	clitic	1	1	1	1.00	yes		
+give it to someone	clitic	1	1	1	1.00	yes		
+give one's all	filled	1	1	1	1.00	yes		
+give one's right arm	clitic	1	0	1	0.00	no	Do you know about our giving birth?	our … giving
+give someone a bell	filled	1	1	1	1.00	yes		
+give someone a shout	filled	1	1	1	1.00	yes		
+give someone an earful	filled	1	1	1	1.00	yes		
+give someone hell	filled	1	1	1	1.00	yes		
+give someone line	filled	1	1	1	1.00	yes		
+give someone the arm	filled	1	0	1	0.00	no	He was gonna give me the arms!	give … me … the … arms
+give someone the chair	filled	1	1	1	1.00	yes		
+give someone the cold shoulder	filled	1	1	1	1.00	yes		
+give someone what for	filled	1	1	1	1.00	yes		
+give something a go	clitic	1	1	1	1.00	yes		
+give something a whirl	filled	1	1	1	1.00	yes		
+go about one's business	clitic	1	1	1	1.00	yes		
+go over someone's head	clitic	1	1	1	1.00	yes		
+good as one's word	clitic	1	1	1	1.00	yes		
+good head on one's shoulders	clitic	1	1	1	1.00	yes		
+hair of the dog that bit one	filled	1	1	1	1.00	yes		
+hang up one's hat	clitic	1	0	1	0.00	no	You should hang up your hat.	hang … up … your … hat
+harm a hair on someone's head	filled	1	1	1	1.00	yes		
+have eyes in the back of one's head	clitic	1	1	1	1.00	yes		
+have had one's day	clitic	1	1	1	1.00	yes		
+have one's cake and eat it too	clitic	1	1	1	1.00	yes		
+have one's head up one's ass	clitic	1	1	1	1.00	yes		
+have someone's back	filled	1	0	1	0.00	no	The old man had his back to me.	had … back … me
+have someone's blood	clitic	1	1	1	1.00	yes		
+heaven help someone	clitic	1	1	1	1.00	yes		
+heaven help someone	filled	1	1	1	1.00	yes		
+hold one's drink	clitic	1	1	1	1.00	yes		
+hold one's nerve	clitic	1	1	1	1.00	yes		
+if it kills one	clitic	1	1	1	1.00	yes		
+if it kills one	filled	1	1	1	1.00	yes		
+in a world of one's own	filled	1	0	1	0.00	no	In the name of all who are living in a world of sin.	in … a … world … of … sin
+in all one's glory	clitic	1	1	1	1.00	yes		
+in one's element	clitic	1	1	1	1.00	yes		
+in one's head	filled	1	1	1	1.00	yes		
+in one's infinite wisdom	clitic	1	1	1	1.00	yes		
+in one's own right	clitic	1	1	1	1.00	yes		
+in one's sight	clitic	1	1	1	1.00	yes		
+in one's sights	clitic	1	1	1	1.00	yes		
+in someone's boots	filled	1	0	1	0.00	no	Tom always keeps a set of jump leads in the boot of his car.	in … boot … car
+in someone's debt	clitic	1	1	1	1.00	yes		
+in something's favor	filled	1	0	1	0.00	no	Let me find favor in your eyes.	favor … in … eyes
+keep one's chin up	clitic	1	1	1	1.00	yes		
+keep one's counsel	clitic	1	1	1	1.00	yes		
+keep one's distance	clitic	1	1	1	1.00	yes		
+keep one's ears open	clitic	1	1	1	1.00	yes		
+keep one's eye on the ball	clitic	1	1	1	1.00	yes		
+keep one's eyes on the ball	clitic	1	1	1	1.00	yes		
+keep one's head	filled	1	1	1	1.00	yes		
+keep one's head on a swivel	clitic	1	1	1	1.00	yes		
+keep one's nose clean	clitic	1	1	1	1.00	yes		
+keep one's own counsel	clitic	1	1	1	1.00	yes		
+keep one's powder dry	clitic	1	1	1	1.00	yes		
+keep someone amused	filled	1	1	1	1.00	yes		
+keep someone busy	clitic	1	1	1	1.00	yes		
+keep someone in the loop	filled	1	1	1	1.00	yes		
+keep someone occupied	clitic	1	1	1	1.00	yes		
+keep someone up at night	clitic	1	1	1	1.00	yes		
+keep someone up at night	filled	1	1	1	1.00	yes		
+kiss someone's arse	clitic	1	1	1	1.00	yes		
+kiss someone's ring	clitic	1	1	1	1.00	yes		
+knit one's brow	clitic	1	1	1	1.00	yes		
+knit one's brows	clitic	1	1	1	1.00	yes		
+knock someone for six	clitic	1	1	1	1.00	yes		
+knock someone for six	filled	1	1	1	1.00	yes		
+knock someone's socks off	clitic	1	1	1	1.00	yes		
+know where one stands	filled	1	1	1	1.00	yes		
+lay down one's arms	clitic	1	1	1	1.00	yes		
+lay one's cards on the table	clitic	1	1	1	1.00	yes		
+leave someone cold	clitic	1	1	1	1.00	yes		
+let one loose	clitic	1	1	1	1.00	yes		
+let one's hair down	clitic	1	1	1	1.00	yes		
+let oneself go	clitic	1	1	1	1.00	yes		
+let someone have it	clitic	1	0	1	0.00	no	We can let you have it on credit.	let … you … have … it
+let someone loose	clitic	1	1	1	1.00	yes		
+let something slip	clitic	1	0	1	0.00	no	You think I would just let you slip away?	let … you … slip
+lick one's wounds	clitic	1	0	1	0.00	no	The injured dog was licking its wounds.	licking … its … wounds
+lift someone's spirits	clitic	1	1	1	1.00	yes		
+like one's life depended on it	clitic	1	1	1	1.00	yes		
+live one's best life	clitic	1	1	1	1.00	yes		
+live one's own life	clitic	1	1	1	1.00	yes		
+look one's age	clitic	1	1	1	1.00	yes		
+loosen one's tongue	clitic	1	1	1	1.00	yes		
+loosen someone's tongue	clitic	1	1	1	1.00	yes		
+lose one's battle	filled	1	1	1	1.00	yes		
+lose one's marbles	clitic	1	1	1	1.00	yes		
+lose one's shirt	clitic	1	1	1	1.00	yes		
+lose one's tongue	clitic	1	1	1	1.00	yes		
+make a name for oneself	filled	1	1	1	1.00	yes		
+make a spectacle of oneself	filled	1	1	1	1.00	yes		
+make one's bow	filled	1	0	1	0.00	no	What make was it?	What … make
+make one's manners	filled	1	0	1	0.00	no	On the mountain he would cut bamboo to make all manner of things.	make … manner … things
+make one's mark	clitic	1	1	1	1.00	yes		
+make one's mark	filled	1	1	1	1.00	yes		
+make one's own	clitic	1	1	1	1.00	yes		
+make one's own	filled	1	1	1	1.00	yes		
+make one's own luck	clitic	1	1	1	1.00	yes		
+make oneself scarce	filled	1	1	1	1.00	yes		
+make someone's flesh creep	clitic	1	1	1	1.00	yes		
+make someone's jaw drop	filled	1	1	1	1.00	yes		
+make something of oneself	filled	1	1	1	1.00	yes		
+make up one's mind	filled	1	1	1	1.00	yes		
+measure one's length	clitic	1	0	1	0.00	no	I chose the age up to my own measure.	my … measure
+meet one's match	clitic	1	1	1	1.00	yes		
+more power to someone	filled	1	1	1	1.00	yes		
+move one's body	clitic	1	1	1	1.00	yes		
+nail in one's coffin	clitic	1	1	1	1.00	yes		
+of one's choice	clitic	1	1	1	1.00	yes		
+of one's choice	filled	1	0	1	0.00	no	Plenty of choice in men, just like food.	of … choice … men
+of one's making	clitic	1	1	1	1.00	yes		
+of one's own making	clitic	1	1	1	1.00	yes		
+off one's guard	clitic	1	1	1	1.00	yes		
+off with someone's head	clitic	1	1	1	1.00	yes		
+offer one's condolences	clitic	1	1	1	1.00	yes		
+on one's behaviour	clitic	1	1	1	1.00	yes		
+on one's game	clitic	1	0	1	0.00	no	How the hell are you meant to concentrate on your game?	on … your … game
+on one's head	filled	1	1	1	1.00	yes		
+on one's honor	clitic	1	1	1	1.00	yes		
+on one's last legs	clitic	1	1	1	1.00	yes		
+on one's mind	filled	1	0	1	0.00	no	His lecture left a deep impression on the mind of those present there.	on … mind … those
+on one's part	filled	1	0	1	0.00	no	Both working on our distinct individual parts of that mission.	on … parts … mission
+on one's plate	filled	1	1	1	1.00	yes		
+on someone's hands	filled	1	0	1	0.00	no	You have enough on your hands at work.	on … hands … work
+on someone's mind	filled	1	0	1	0.00	no	His lecture left a deep impression on the mind of those present there.	on … mind … those
+on the edge of one's seat	clitic	1	1	1	1.00	yes		
+one should be so lucky	filled	1	1	1	1.00	yes		
+one's gotta do what one's gotta do	filled	1	1	1	1.00	yes		
+one's heart bleeds	clitic	1	1	1	1.00	yes		
+one's heart sinks	clitic	1	1	1	1.00	yes		
+open one's legs	clitic	1	1	1	1.00	yes		
+open someone's eyes	filled	1	0	1	0.00	no	Open you eyes, the garage is empty!	Open … you … eyes
+outstay one's welcome	clitic	1	1	1	1.00	yes		
+pass in one's checks	filled	1	0	1	0.00	no	Tom got a pass in the test.	pass … in … test
+pay one's debt to society	clitic	1	1	1	1.00	yes		
+pay one's way	filled	1	1	1	1.00	yes		
+pay someone's way	filled	1	1	1	1.00	yes		
+pick oneself up off the floor	filled	1	0	1	0.00	no	Tom picked something up off the floor.	picked … something … up … off … the … floor
+piss one's pants	clitic	1	1	1	1.00	yes		
+play one against another	filled	1	0	1	0.00	no	Tell them it was a sham and I want to play a real game against him.	play … game … against … him
+play one's cards well	clitic	1	1	1	1.00	yes		
+play someone like a fiddle	filled	1	1	1	1.00	yes		
+pole up one's ass	clitic	1	1	1	1.00	yes		
+poop one's pants	filled	1	0	1	0.00	no	He has poop on his butt, and this hyung is really bad at this.	poop … butt
+practice what one preaches	filled	1	1	1	1.00	yes		
+press someone's buttons	filled	1	0	1	0.00	no	Tom pressed a button on the remote control.	pressed … button … remote control
+pull one's finger out	clitic	1	1	1	1.00	yes		
+put all one's eggs in one basket	clitic	1	1	1	1.00	yes		
+put behind one	filled	1	1	1	1.00	yes		
+put one's affairs in order	clitic	1	1	1	1.00	yes		
+put one's feet up	clitic	1	1	1	1.00	yes		
+put one's hands together	clitic	1	1	1	1.00	yes		
+put one's money where one's mouth is	clitic	1	1	1	1.00	yes		
+put someone in a box	clitic	1	0	1	0.00	no	No, I put it in a box.	put … it … in … a … box
+put something over	filled	1	0	1	0.00	no	Put the shit over here!	Put … shit … over
+putty in someone's hands	clitic	1	1	1	1.00	yes		
+rattle one's saber	filled	1	0	1	0.00	no	Rattlesnakes have a rattle at the ends of their tails.	rattle … ends
+redeem oneself	clitic	1	1	1	1.00	yes		
+renew one's vows	clitic	1	0	1	0.00	no	I hereby renew my vow to marry you.	renew … my … vow
+rest on one's laurels	clitic	1	0	1	0.00	no	But you need your rest, my love.	your … rest
+rest one's case	clitic	1	0	1	0.00	no	But you need your rest, my love.	your … rest
+rest one's soul	clitic	1	1	1	1.00	yes		
+rip a page out of someone's book	clitic	1	0	1	0.00	no	Tom ripped a page out of his sketch book.	ripped … a … page … out … of … his … book
+roll from one's tongue	clitic	1	0	1	0.00	no	You added that to your roll?	your … roll
+roof over one's head	filled	1	1	1	1.00	yes		
+rub someone the wrong way	filled	1	1	1	1.00	yes		
+ruffle someone's feathers	clitic	1	1	1	1.00	yes		
+run one's face	clitic	1	0	1	0.00	no	Did you enjoy your run?	your … run
+run one's mouth	clitic	1	0	1	0.00	no	Did you enjoy your run?	your … run
+save one's breath	clitic	1	1	1	1.00	yes		
+save one's skin	clitic	1	1	1	1.00	yes		
+save someone's life	filled	1	1	1	1.00	yes		
+save someone's skin	clitic	1	1	1	1.00	yes		
+save something for a rainy day	filled	1	1	1	1.00	yes		
+scare someone to death	clitic	1	1	1	1.00	yes		
+scratch someone's back	clitic	1	1	1	1.00	yes		
+seal someone's fate	clitic	1	1	1	1.00	yes		
+see someone's etchings	clitic	1	1	1	1.00	yes		
+sell one's ass	clitic	1	0	1	0.00	no	We were selling rich women their own fat asses back to them.	selling … their … asses
+sell someone a pup	filled	1	1	1	1.00	yes		
+send shivers down someone's spine	clitic	1	1	1	1.00	yes		
+send someone packing	clitic	1	1	1	1.00	yes		
+serve one's time	clitic	1	1	1	1.00	yes		
+serve one's time	filled	1	1	1	1.00	yes		
+set one's sights	clitic	1	1	1	1.00	yes		
+set one's sights	filled	1	1	1	1.00	yes		
+shake one's ass	clitic	1	1	1	1.00	yes		
+shift one's tides	filled	1	0	1	0.00	no	All of the night shift on the artillery depot were killed.	shift … depot
+shit one's pants	clitic	1	1	1	1.00	yes		
+shoot one's mouth off	clitic	1	1	1	1.00	yes		
+show one's cards	clitic	1	0	1	0.00	no	Show your ID card to the officer.	Show … your … card
+show one's true colours	clitic	1	1	1	1.00	yes		
+show someone a good time	filled	1	1	1	1.00	yes		
+skin someone alive	filled	1	1	1	1.00	yes		
+sleep one off	clitic	1	1	1	1.00	yes		
+slip through someone's fingers	clitic	1	1	1	1.00	yes		
+slip through someone's fingers	filled	1	1	1	1.00	yes		
+someone's goose is cooked	clitic	1	1	1	1.00	yes		
+sort oneself out	clitic	1	1	1	1.00	yes		
+sow one's oats	filled	1	0	1	0.00	no	Get back in your trough, you fucking sow!	you … sow
+spill one's guts	clitic	1	1	1	1.00	yes		
+spoil somebody rotten	filled	1	1	1	1.00	yes		
+spoil someone rotten	filled	1	1	1	1.00	yes		
+spread oneself thin	filled	1	1	1	1.00	yes		
+spread oneself too thin	filled	1	1	1	1.00	yes		
+spring in one's step	clitic	1	1	1	1.00	yes		
+stake one's life	filled	1	0	1	0.00	no	A wooden stake to the heart.	stake … heart
+stand on someone's shoulders	filled	1	1	1	1.00	yes		
+stay in one's lane	clitic	1	1	1	1.00	yes		
+steal someone's identity	clitic	1	1	1	1.00	yes		
+stew in one's juices	clitic	1	0	1	0.00	no	Are you going to eat the rest of your stew?	your … stew
+stew in one's own broth	clitic	1	0	1	0.00	no	Are you going to eat the rest of your stew?	your … stew
+stew in one's own gravy	clitic	1	0	1	0.00	no	Are you going to eat the rest of your stew?	your … stew
+stick in someone's throat	clitic	1	0	1	0.00	no	A fish bone has stuck in my throat.	stuck … in … my … throat
+stick one on	filled	1	1	1	1.00	yes		
+stick one's neck out	clitic	1	1	1	1.00	yes		
+story of one's life	clitic	1	1	1	1.00	yes		
+strike one's flag	filled	1	0	1	0.00	no	Mine strike on Normandy?	strike … Normandy
+sweat of one's brow	filled	1	0	1	0.00	no	Perfumes are often made from the sweat of various male animals.	sweat … of … animals
+take matters into one's own hands	clitic	1	1	1	1.00	yes		
+take one's chance	clitic	1	1	1	1.00	yes		
+take one's chances	clitic	1	0	1	0.00	no	Take your chance, and do it.	Take … your … chance
+take one's eyes off	clitic	1	1	1	1.00	yes		
+take one's point	filled	1	0	1	0.00	no	Take down the main points of the speech.	Take … points … speech
+take one's time	filled	1	0	1	0.00	no	Mother took time off from work.	took … time … work
+take one's turn	clitic	1	0	1	0.00	no	Here is my take on the matter.	my … take
+take someone at their word	clitic	1	1	1	1.00	yes		
+take someone's part	filled	1	0	1	0.00	no	Not taking part in the festivities?	taking … part … festivities
+take someone's point	filled	1	0	1	0.00	no	Take down the main points of the speech.	Take … points … speech
+take something as it comes	clitic	1	1	1	1.00	yes		
+take something to the head	filled	1	1	1	1.00	yes		
+take to one's heels	clitic	1	0	1	0.00	no	Here is my take on the matter.	my … take
+take upon oneself	filled	1	1	1	1.00	yes		
+talk someone's ear off	clitic	1	1	1	1.00	yes		
+tan someone's hide	clitic	1	1	1	1.00	yes		
+thank one's lucky stars	clitic	1	1	1	1.00	yes		
+the ball is in someone's court	clitic	1	1	1	1.00	yes		
+think on one's feet	clitic	1	1	1	1.00	yes		
+think one is it	filled	1	1	1	1.00	yes		
+think the world revolves around one	filled	1	1	1	1.00	yes		
+throw one's hat into the ring	clitic	1	1	1	1.00	yes		
+tie someone's hands	clitic	1	0	1	0.00	no	You tied my fucking hands behind my back.	tied … my … hands
+to one's bones	clitic	1	0	1	0.00	no	A bass that rings to my very bone.	to … my … bone
+to one's face	filled	1	0	1	0.00	no	It is rare to be this close to the face of a murderer.	to … face … murderer
+to someone's face	filled	1	0	1	0.00	no	It is rare to be this close to the face of a murderer.	to … face … murderer
+to the best of one's knowledge	clitic	1	1	1	1.00	yes		
+toot one's own horn	clitic	1	1	1	1.00	yes		
+try one's luck	clitic	1	1	1	1.00	yes		
+try someone's patience	clitic	1	1	1	1.00	yes		
+tug at someone's heartstrings	clitic	1	1	1	1.00	yes		
+turn one's coat	clitic	1	0	1	0.00	no	He turned his coat inside out.	turned … his … coat
+turn one's nose up	clitic	1	1	1	1.00	yes		
+turn up one's nose	clitic	1	1	1	1.00	yes		
+twist someone's words	clitic	1	1	1	1.00	yes		
+under one's own steam	clitic	1	1	1	1.00	yes		
+under one's very nose	clitic	1	1	1	1.00	yes		
+under someone's nose	filled	1	1	1	1.00	yes		
+walk in someone's shoes	clitic	1	1	1	1.00	yes		
+warm someone's heart	clitic	1	1	1	1.00	yes		
+weigh one's words	clitic	1	1	1	1.00	yes		
+wet one's whistle	clitic	1	1	1	1.00	yes		
+what can one do	clitic	1	0	1	0.00	no	What can I do you for?	What … can … do … you
+while one is about it	filled	1	1	1	1.00	yes		
+while one is at it	filled	1	1	1	1.00	yes		
+win someone's heart	filled	1	1	1	1.00	yes		
+wipe oneself	clitic	1	1	1	1.00	yes		
+wipe someone's eye	clitic	1	0	1	0.00	no	Wipe your eyes.	Wipe … your … eyes
+with every fiber of one's being	clitic	1	1	1	1.00	yes		
+with one's head held high	clitic	1	1	1	1.00	yes		
+with one's last breath	clitic	1	1	1	1.00	yes		
+work one's way	clitic	1	1	1	1.00	yes		
+work one's way	filled	1	1	1	1.00	yes		
+work one's way up	clitic	1	1	1	1.00	yes		
+work with one's hands	clitic	1	1	1	1.00	yes		
+worth one's weight in gold	clitic	1	1	1	1.00	yes		
+would it kill someone	clitic	1	0	1	0.00	no	It would have killed him.	It … would … killed … him
+would it kill someone	filled	1	0	1	0.00	no	It would have killed him.	It … would … killed … him
+would the real someone please stand up	filled	1	0	1	0.00	no	Mona, would you stand up, please?	would … you … stand … up … please
+written in someone's face	clitic	1	1	1	1.00	yes		
+you learn something new every day	filled	1	1	1	1.00	yes		
