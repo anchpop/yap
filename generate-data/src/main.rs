@@ -134,6 +134,7 @@ async fn main() -> anyhow::Result<()> {
             mut nlp_sentences,
             restricted_nlp_sentences,
             gram_vocabulary,
+            interners,
             patterns:
                 generate_data::pipeline::MatchingPatterns {
                     contiguous_lemma_patterns,
@@ -184,9 +185,10 @@ async fn main() -> anyhow::Result<()> {
                     let grams: Vec<SentenceGram<Gram<String>>> = encoded
                         .tokens
                         .iter()
-                        .filter_map(|&token_id| {
+                        .filter_map(|&token_key| {
+                            use lasso::Key;
                             gram_vocabulary
-                                .get(token_id as usize)
+                                .get(token_key.into_usize())
                                 .map(|entry| SentenceGram::from(entry.atoms.clone()))
                         })
                         .collect();
@@ -419,7 +421,7 @@ async fn main() -> anyhow::Result<()> {
                 generate_data::proper_noun_definitions::generate_proper_noun_definitions(
                     *course,
                     &nlp_sentences,
-                    &gram_vocabulary,
+                    &interners,
                 )
                 .await
                 .context("Failed to generate proper noun definitions")?;
@@ -1052,7 +1054,8 @@ async fn main() -> anyhow::Result<()> {
                 if nlp_sentences.contains_key(text) {
                     continue;
                 }
-                let Some(sentence) = encoder.encode(words, course.target_language) else {
+                let Some(sentence) = encoder.encode(words, course.target_language, &interners)
+                else {
                     unencodable += 1;
                     continue;
                 };
@@ -1309,7 +1312,7 @@ async fn main() -> anyhow::Result<()> {
         generate_data::token_embeddings::ensure_token_embeddings(
             course.target_language,
             nlp_sentences.iter().map(|(s, info)| (s, info)),
-            &gram_vocabulary,
+            &interners,
             &generate_data::cache_remote::store(),
         )
         .await

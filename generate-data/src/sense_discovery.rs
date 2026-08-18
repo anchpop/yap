@@ -127,26 +127,9 @@ struct WordSpan {
 
 /// Interned atom identity (for expression grounding/counting — a proposed
 /// new gram is a sequence of atoms, independent of how the encoder chunked
-/// the words into existing grams).
-type AtomId = u32;
-
-#[derive(Default)]
-struct AtomArena {
-    atoms: Vec<Atom<String>>,
-    ids: HashMap<Atom<String>, AtomId>,
-}
-
-impl AtomArena {
-    fn intern(&mut self, atom: &Atom<String>) -> AtomId {
-        if let Some(&id) = self.ids.get(atom) {
-            return id;
-        }
-        let id = self.atoms.len() as AtomId;
-        self.atoms.push(atom.clone());
-        self.ids.insert(atom.clone(), id);
-        id
-    }
-}
+/// the words into existing grams). `Atom<Spur>` is `Copy` with interned
+/// strings, so it needs no arena of its own.
+type SpurAtom = Atom<lasso::Spur>;
 
 /// Per-sentence info shared by occurrence collection and expression
 /// grounding: the word spans, the sentence's gram segmentation (each stream
@@ -155,23 +138,22 @@ impl AtomArena {
 struct SentenceIndex {
     words: Vec<WordSpan>,
     /// (gram id, first word index, one-past-last word index), in sentence
-    /// order. Empty when the encoded stream could not be aligned.
+    /// order.
     gram_stream: Vec<(GramId, u16, u16)>,
-    /// One atom id per word (via `literals_to_atoms`, so sentence-initial
-    /// capitalization is normalized the same way gram matching does it).
-    atom_seq: Vec<AtomId>,
+    /// One `Tok` atom per word, in interned (Spur) form — the substrate
+    /// expression proposals are made of.
+    atom_seq: Vec<SpurAtom>,
 }
 
 /// Index a sentence for mining: decode its words (spans in both char and
-/// byte terms), take its gram segmentation directly from the encoded form
-/// (aligned by construction), and intern its per-word atoms.
+/// byte terms) and take its gram segmentation and atoms directly from the
+/// encoded form (aligned by construction).
 fn index_sentence(
     info: &SentenceInfo,
-    vocabulary: &[language_utils::GramVocabEntry<String>],
+    interners: &language_utils::GramInterners,
     language: Language,
-    atom_arena: &mut AtomArena,
 ) -> (String, SentenceIndex) {
-    let decoded = info.decode_words(vocabulary, language);
+    let decoded = info.decode_words(interners, language);
     let text = token_embeddings::sentence_text(&decoded);
     let mut words = Vec::with_capacity(decoded.len());
     let mut char_off = 0u32;
@@ -187,19 +169,25 @@ fn index_sentence(
         char_off += char_len + literal.whitespace.chars().count() as u32;
         byte_off += byte_len + literal.whitespace.len();
     }
+    use lasso::Key;
     let gram_stream: Vec<(GramId, u16, u16)> = info
-        .gram_word_ranges(vocabulary)
+        .gram_word_ranges(interners)
         .into_iter()
         .filter(|(_, range)| !range.is_empty())
-        .map(|(id, range)| (id, range.start as u16, range.end as u16))
+        .map(|(key, range)| {
+            (
+                key.into_usize() as GramId,
+                range.start as u16,
+                range.end as u16,
+            )
+        })
         .collect();
-    let atom_seq: Vec<AtomId> = info
+    let atom_seq: Vec<SpurAtom> = info
         .sentence
         .tokens
         .iter()
-        .flat_map(|&id| vocabulary[id as usize].atoms.iter())
+        .flat_map(|&key| interners.atoms(key).iter().copied())
         .filter(|a| matches!(a, Atom::Tok(_)))
-        .map(|a| atom_arena.intern(a))
         .collect();
     debug_assert_eq!(atom_seq.len(), words.len());
     (
@@ -225,7 +213,7 @@ fn collect_occurrences(
 ) -> BTreeMap<GramId, Vec<Occurrence>> {
     let mut occurrences: BTreeMap<GramId, Vec<Occurrence>> = BTreeMap::new();
     for info in corpus.nlp_sentences.values() {
-        let decoded = info.decode_words(&corpus.gram_vocabulary, language);
+        let decoded = info.decode_words(&corpus.interners, language);
         let text = token_embeddings::sentence_text(&decoded);
         let Some(sent) = index.get(&text) else {
             continue;
@@ -823,7 +811,7 @@ fn snap_to_words(sent: &SentenceIndex, text: &str, verbatim: &str) -> Option<(us
 }
 
 /// Count corpus sentences whose atom sequence contains `needle` contiguously.
-fn count_atom_windows(index: &HashMap<String, SentenceIndex>, needle: &[AtomId]) -> usize {
+fn count_atom_windows(index: &HashMap<String, SentenceIndex>, needle: &[SpurAtom]) -> usize {
     if needle.is_empty() {
         return 0;
     }
@@ -878,14 +866,13 @@ pub async fn discover(
     store: &osmo::Store,
 ) -> Result<()> {
     let mut arena = GramArena::from_vocabulary(&corpus.gram_vocabulary);
-    let mut atom_arena = AtomArena::default();
 
     // Index every sentence: decoded word spans, the gram segmentation
     // (aligned by construction in the encoded form), and interned atoms.
     let index: HashMap<String, SentenceIndex> = corpus
         .nlp_sentences
         .values()
-        .map(|info| index_sentence(info, &corpus.gram_vocabulary, language, &mut atom_arena))
+        .map(|info| index_sentence(info, &corpus.interners, language))
         .collect();
 
     let occurrences = collect_occurrences(corpus, language, &index, &mut arena);
@@ -1012,23 +999,25 @@ pub async fn discover(
         keys.iter().enumerate().map(|(i, km)| (km.key, i)).collect();
 
     // Known multiword units (vocabulary grams and multiword-match grams
-    // alike) as Tok-atom-id sequences, for the novelty check: a proposal
-    // whose atom sequence is already a gram isn't a discovery.
-    let known_multi: HashSet<Vec<AtomId>> = arena
+    // alike) as Tok-atom sequences, for the novelty check: a proposal whose
+    // atom sequence is already a gram isn't a discovery. Match grams outside
+    // the vocabulary carry `String` atoms; ones whose strings were never
+    // interned can't match any corpus window, so they're safely skipped.
+    let known_multi: HashSet<Vec<SpurAtom>> = arena
         .grams
         .iter()
-        .map(|g| {
+        .filter_map(|g| {
             g.iter()
                 .filter(|a| matches!(a, Atom::Tok(_)))
-                .map(|a| atom_arena.intern(a))
-                .collect::<Vec<AtomId>>()
+                .map(|a| a.get_interned(&corpus.interners.strings))
+                .collect::<Option<Vec<SpurAtom>>>()
         })
         .filter(|seq| seq.len() > 1)
         .collect();
 
     // Judge round by round; confirmed splits recurse into their sides.
     let mut sense_rows: Vec<SenseCandidate> = Vec::new();
-    let mut discovered: BTreeMap<Vec<AtomId>, DiscoveredTerm> = BTreeMap::new();
+    let mut discovered: BTreeMap<Vec<SpurAtom>, DiscoveredTerm> = BTreeMap::new();
     let mut round = kept;
     let mut depth = 1;
     // Per key: the leaves of the split tree plus root stats, built as splits
@@ -1145,7 +1134,7 @@ pub async fn discover(
                     discovered.entry(ids.clone()).or_insert_with(|| {
                         let gram = Gram::from(
                             ids.iter()
-                                .map(|&id| atom_arena.atoms[id as usize].clone())
+                                .map(|a| a.resolve(&corpus.interners.strings))
                                 .collect::<Vec<Atom<String>>>(),
                         );
                         DiscoveredTerm {

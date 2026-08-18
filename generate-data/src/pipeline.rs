@@ -33,6 +33,7 @@ use crate::cache_remote;
 use crate::target_sentences::TargetSentences;
 use crate::tokenize::{SentenceEncoder, TrainedEncoding};
 use crate::translate::{TranslationBackend, Translator};
+use language_utils::GramInterners;
 
 struct PhraseDetectionData {
     tokens: Option<Vec<lexide::Token>>, // we don't have this for grams
@@ -223,8 +224,10 @@ pub struct SegmentedCorpus {
     pub nlp_sentences: BTreeMap<String, SentenceInfo>,
     /// Restricted (Pimsleur) sentences: encoded, but never multiword-matched.
     pub restricted_nlp_sentences: BTreeMap<String, SentenceInfo>,
-    /// Gram vocabulary; index = encoded token id.
+    /// Gram vocabulary; index = encoded token key's `into_usize()`.
     pub gram_vocabulary: Vec<GramVocabEntry<String>>,
+    /// The interners behind the vocabulary (decode goes through these).
+    pub interners: GramInterners,
     pub patterns: MatchingPatterns,
     /// Encoder for sentences minted after training (homophone practice).
     pub encoder: SentenceEncoder,
@@ -400,6 +403,7 @@ pub async fn segment_corpus(
     // encoder come back in memory (the files are pure outputs).
     let TrainedEncoding {
         gram_vocabulary,
+        interners,
         encoded_sentences,
         encoder,
     } = crate::tokenize::train_supertokens_and_write_diagnostics(
@@ -710,6 +714,7 @@ pub async fn segment_corpus(
         nlp_sentences,
         restricted_nlp_sentences,
         gram_vocabulary,
+        interners,
         patterns: MatchingPatterns {
             contiguous_lemma_patterns,
             discontinuous_lemma_patterns,

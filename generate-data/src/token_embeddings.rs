@@ -181,7 +181,7 @@ struct EmbedResponse {
 pub async fn ensure_token_embeddings<'a>(
     language: Language,
     sentences: impl IntoIterator<Item = (&'a String, &'a SentenceInfo)>,
-    vocabulary: &[language_utils::GramVocabEntry<String>],
+    interners: &language_utils::GramInterners,
     store: &osmo::Store,
 ) -> Result<()> {
     // HTTP/1.1 on purpose: with HTTP/2, reqwest multiplexes every concurrent
@@ -198,7 +198,7 @@ pub async fn ensure_token_embeddings<'a>(
     let mut total_sentences = 0usize;
     for (sentence, info) in sentences {
         total_sentences += 1;
-        let words = info.decode_words(vocabulary, language);
+        let words = info.decode_words(interners, language);
         let spans = heteronym_spans(&words);
         if spans.is_empty() {
             continue;

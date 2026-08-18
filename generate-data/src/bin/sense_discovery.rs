@@ -74,7 +74,7 @@ async fn main() -> anyhow::Result<()> {
         generate_data::token_embeddings::ensure_token_embeddings(
             lang,
             segmented.nlp_sentences.iter(),
-            &segmented.gram_vocabulary,
+            &segmented.interners,
             &store,
         )
         .await

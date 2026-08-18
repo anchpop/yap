@@ -923,17 +923,18 @@ pub struct SentenceInfo {
 
 impl SentenceInfo {
     /// Decode the sentence's words (with whitespace and original
-    /// capitalization) through the gram vocabulary.
+    /// capitalization) through the gram interners.
     pub fn decode_words(
         &self,
-        vocabulary: &[GramVocabEntry<String>],
+        interners: &GramInterners,
         language: Language,
     ) -> Vec<Literal<String>> {
         let atoms: Vec<Atom<String>> = self
             .sentence
             .tokens
             .iter()
-            .flat_map(|&id| vocabulary[id as usize].atoms.iter().cloned())
+            .flat_map(|key| interners.grams.resolve(key).iter())
+            .map(|a| a.resolve(&interners.strings))
             .collect();
         let mut words = atoms_to_literals(&atoms, language);
         if self.sentence.capitalize_first
@@ -944,24 +945,51 @@ impl SentenceInfo {
         words
     }
 
-    /// The sentence's gram segmentation: each encoded gram id with the range
+    /// The sentence's gram segmentation: each encoded gram with the range
     /// of decoded-word indices it covers (one word per `Tok` atom).
     pub fn gram_word_ranges(
         &self,
-        vocabulary: &[GramVocabEntry<String>],
-    ) -> Vec<(u32, std::ops::Range<usize>)> {
+        interners: &GramInterners,
+    ) -> Vec<(SpurGram, std::ops::Range<usize>)> {
         let mut ranges = Vec::with_capacity(self.sentence.tokens.len());
         let mut word_idx = 0usize;
-        for &id in &self.sentence.tokens {
-            let tok_count = vocabulary[id as usize]
-                .atoms
+        for &key in &self.sentence.tokens {
+            let tok_count = interners
+                .grams
+                .resolve(&key)
                 .iter()
                 .filter(|a| matches!(a, Atom::Tok(_)))
                 .count();
-            ranges.push((id, word_idx..word_idx + tok_count));
+            ranges.push((key, word_idx..word_idx + tok_count));
             word_idx += tok_count;
         }
         ranges
+    }
+}
+
+/// The interners behind a trained gram vocabulary: one rodeo for strings,
+/// one for grams (whose atoms hold string Spurs). `SpurGram` keys are
+/// assigned in vocabulary-id order, so `key.into_usize()` is the vocabulary
+/// index.
+pub struct GramInterners {
+    pub strings: lasso::RodeoReader,
+    pub grams: lasso::RodeoReader<Gram<lasso::Spur>>,
+}
+
+impl GramInterners {
+    /// The gram's atoms in interned (Spur) form.
+    pub fn atoms(&self, key: SpurGram) -> &[Atom<lasso::Spur>] {
+        self.grams.resolve(&key).atoms()
+    }
+
+    /// Fully resolve a gram to its `String` form.
+    pub fn resolve(&self, key: SpurGram) -> Gram<String> {
+        Gram::from(
+            self.atoms(key)
+                .iter()
+                .map(|a| a.resolve(&self.strings))
+                .collect::<Vec<Atom<String>>>(),
+        )
     }
 }
 
@@ -1822,8 +1850,6 @@ impl Atom<lasso::Spur> {
 #[derive(
     Clone,
     Debug,
-    serde::Serialize,
-    serde::Deserialize,
     PartialEq,
     Eq,
     Hash,
@@ -1835,10 +1861,55 @@ impl Atom<lasso::Spur> {
 )]
 #[rkyv(compare(PartialEq), derive(Debug, PartialEq, Eq))]
 pub struct EncodedSentence {
-    /// Token IDs from the gram vocabulary
-    pub tokens: Vec<u32>,
+    /// The sentence as a sequence of interned gram keys (assigned in
+    /// vocabulary-id order, so `key.into_usize()` is the vocabulary index).
+    pub tokens: Vec<SpurGram>,
     /// Whether the first letter should be capitalized when displaying
     pub capitalize_first: bool,
+}
+
+// Manual serde: keys serialize as their vocabulary indices (plain integers),
+// keeping the artifact format independent of lasso's (bit-rotted) `serialize`
+// feature and identical to the pre-SpurGram encoding.
+impl serde::Serialize for EncodedSentence {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use lasso::Key;
+        use serde::ser::SerializeStruct;
+        let mut s = serializer.serialize_struct("EncodedSentence", 2)?;
+        s.serialize_field(
+            "tokens",
+            &self
+                .tokens
+                .iter()
+                .map(|k| k.into_usize() as u32)
+                .collect::<Vec<u32>>(),
+        )?;
+        s.serialize_field("capitalize_first", &self.capitalize_first)?;
+        s.end()
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for EncodedSentence {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        use lasso::Key;
+        #[derive(serde::Deserialize)]
+        struct Raw {
+            tokens: Vec<u32>,
+            capitalize_first: bool,
+        }
+        let raw = Raw::deserialize(deserializer)?;
+        Ok(EncodedSentence {
+            tokens: raw
+                .tokens
+                .into_iter()
+                .map(|id| {
+                    SpurGram::try_from_usize(id as usize)
+                        .ok_or_else(|| serde::de::Error::custom("gram key out of range"))
+                })
+                .collect::<Result<_, _>>()?,
+            capitalize_first: raw.capitalize_first,
+        })
+    }
 }
 
 /// A gram is a sequence of atoms representing a learnable unit in a sentence.
