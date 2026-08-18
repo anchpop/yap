@@ -6,16 +6,16 @@ sortir quelque chose	filled	460	10	12	0.83	yes	A t on une chance de faire sortir
 arriver à quelqu'un	filled	355	5	12	0.42	no	Alors que le procès du siècle arrive finalement à son terme.	arrive … à … terme
 arriver à quelqu'un	clitic	303	12	12	1.00	yes		
 sortir quelque chose	clitic	240	7	12	0.58	no	Comment vous en sortez-vous, ces temps-ci ?	sortez … vous
-ravi de faire quelque chose	filled	166	12	12	1.00	yes		
+ravi de faire quelque chose	infinitive	166	12	12	1.00	yes		
 faire de son mieux	clitic	141	12	12	1.00	yes		
 nourrir son homme	filled	130	3	12	0.25	no	Après la partie, il se rendit directement chez lui pour nourrir son chien.	nourrir … chien
-désolé de faire quelque chose	filled	118	12	12	1.00	yes		
+désolé de faire quelque chose	infinitive	118	12	12	1.00	yes		
 sa mère	filled	68	10	12	0.83	yes	La diligence est mère de la bonne fortune.	mère … fortune
 prendre son temps	clitic	49	11	12	0.92	yes	Les affaires lui prennent tout son temps.	prennent … son … temps
 but contre son camp	clitic	48	0	12	0.00	no	As-tu atteint ton but ?	ton … but
 perdre son temps	clitic	38	12	12	1.00	yes		
 faire son possible	clitic	36	12	12	1.00	yes		
-enchanté de faire quelque chose	filled	33	12	12	1.00	yes		
+enchanté de faire quelque chose	infinitive	33	12	12	1.00	yes		
 nourrir son homme	clitic	30	0	12	0.00	no	Diriez-vous à une vipère cannibale de se nourrir de feuilles de poirier ?	se … nourrir
 à sa façon	clitic	29	11	12	0.92	yes	Ces idées sont étrangères à notre façon de penser.	à … notre … façon
 faire sa valise	clitic	22	12	12	1.00	yes		
@@ -76,7 +76,7 @@ de son propre chef	clitic	2	2	2	1.00	yes
 de son état	clitic	2	0	2	0.00	no	Ceux de mon état civil.	de … mon … état
 faire ses dents	clitic	2	2	2	1.00	yes		
 faire ses premiers pas	clitic	2	2	2	1.00	yes		
-heureux de faire quelque chose	filled	2	2	2	1.00	yes		
+heureux de faire quelque chose	infinitive	2	2	2	1.00	yes		
 mettre son grain de sel	clitic	2	2	2	1.00	yes		
 mettre tous ses œufs dans le même panier	clitic	2	2	2	1.00	yes		
 perdre son sang-froid	clitic	2	2	2	1.00	yes		
