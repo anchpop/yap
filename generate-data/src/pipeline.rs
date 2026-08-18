@@ -653,7 +653,9 @@ pub async fn segment_corpus(
                         .collect(),
                 };
                 match realization {
-                    SlotRealization::Clitic => terms.high_confidence.push(term),
+                    SlotRealization::Clitic | SlotRealization::Infinitive => {
+                        terms.high_confidence.push(term)
+                    }
                     SlotRealization::Filled => terms.low_confidence.push(term),
                 }
                 kept_matches += 1;

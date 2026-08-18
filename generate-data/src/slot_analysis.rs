@@ -54,6 +54,12 @@ pub enum SlotRealization {
     /// term (the case marker is often ambiguous), so these matches are
     /// low-confidence and lean on the grading gate.
     Filled,
+    /// The slot is an infinitive complement filled by an arbitrary verb
+    /// (plus whatever arguments/clitics ride along): "enchanté de vous
+    /// rencontrer". Structurally tight (lemma-anchored head + retained
+    /// mark + verb wildcard), so grade-passing matches count as
+    /// high-confidence.
+    Infinitive,
     /// The slot is realized as a clitic/weak pronoun on the head, with the
     /// case marker gone: "ce qui leur est arrivé". High precision.
     Clitic,
@@ -63,6 +69,7 @@ impl std::fmt::Display for SlotRealization {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             SlotRealization::Filled => write!(f, "filled"),
+            SlotRealization::Infinitive => write!(f, "infinitive"),
             SlotRealization::Clitic => write!(f, "clitic"),
         }
     }
@@ -541,12 +548,25 @@ pub fn compile_realizations(
         })
     }
 
-    [SlotRealization::Filled, SlotRealization::Clitic]
-        .into_iter()
-        .filter_map(|realization| {
-            build(tokens, root_idx, realization, &slot_by_idx).map(|p| (realization, p))
-        })
-        .collect()
+    // A pattern whose slots are all infinitive complements is labeled with
+    // the (structurally tighter) Infinitive realization; mixed or nominal
+    // patterns keep the Filled label. Both build identically — the label
+    // decides merge confidence downstream.
+    let filled_label = if slots
+        .iter()
+        .all(|s| s.role == SlotRole::InfinitiveComplement)
+    {
+        SlotRealization::Infinitive
+    } else {
+        SlotRealization::Filled
+    };
+    [
+        (SlotRealization::Filled, filled_label),
+        (SlotRealization::Clitic, SlotRealization::Clitic),
+    ]
+    .into_iter()
+    .filter_map(|(mode, label)| build(tokens, root_idx, mode, &slot_by_idx).map(|p| (label, p)))
+    .collect()
 }
 
 /// One sentence matched by a slot pattern, with the tokens the pattern bound.
@@ -1024,7 +1044,7 @@ mod tests {
         let tokens = enchante_de_faire_quelque_chose();
         let realizations = compile_realizations(&tokens, &[infinitive_slot()]);
         let kinds: Vec<SlotRealization> = realizations.iter().map(|(k, _)| *k).collect();
-        assert_eq!(kinds, vec![SlotRealization::Filled]);
+        assert_eq!(kinds, vec![SlotRealization::Infinitive]);
 
         let (_, filled) = &realizations[0];
         assert_eq!(filled.matcher, NodeMatcher::Lemma("enchanté".to_string()));
