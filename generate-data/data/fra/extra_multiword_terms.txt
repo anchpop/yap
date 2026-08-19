@@ -522,3 +522,7 @@ en cas de
 au cas où
 le cas échéant
 sans quoi
+enchanté de faire quelque chose
+heureux de faire quelque chose
+ravi de faire quelque chose
+désolé de faire quelque chose

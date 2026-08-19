@@ -5,28 +5,72 @@ use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::File;
 use std::io::{BufRead as _, BufReader, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
+/// The language's multiword-term list: Wiktionary categories + extra +
+/// discovered terms − banned terms. Only the Wiktionary download is cached
+/// (`wiktionary_multiword_terms.txt`; delete it to force a refetch) — the
+/// merged list is REBUILT on every call, so terms discovered since the last
+/// run are adopted without any manual cache-busting. Discovery runs with no
+/// human review step; a load-if-exists cache here would silently freeze
+/// adoption. The merged file is still written each time: it's committed
+/// provenance, and sense_discovery reads it for its novelty check.
 pub async fn ensure_multiword_terms_file(
     course: &Course,
     base_path: &Path,
-) -> anyhow::Result<PathBuf> {
+) -> anyhow::Result<Vec<String>> {
     let Course {
         target_language, ..
     } = course;
     let multiword_terms_file = base_path.join("target_language_multiword_terms.txt");
+    let wiktionary_cache = base_path.join("wiktionary_multiword_terms.txt");
 
-    if multiword_terms_file.exists() {
-        return multiword_terms_file
-            .canonicalize()
-            .context("Failed to canonicalize multiword terms file path");
-    }
-    let terms = download_multiword_terms(*target_language)
-        .await
-        .context("Failed to download multiword terms")?;
     let extra_terms = extra_multiword_terms(*target_language)
         .await
         .context("Failed to get extra multiword terms")?;
+
+    let terms: Vec<String> = if wiktionary_cache.exists() {
+        let content = std::fs::read_to_string(&wiktionary_cache)
+            .context("Failed to read wiktionary terms cache")?;
+        content
+            .lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty())
+            .map(String::from)
+            .collect()
+    } else if multiword_terms_file.exists() {
+        // Bootstrap the download cache from the previously merged file by
+        // subtracting the locally sourced terms, instead of refetching:
+        // Wiktionary categories drift, and a refetch would churn every
+        // committed term list at once. (A term that was in both Wiktionary
+        // and the local lists loses its download provenance here, but the
+        // merged result is identical.) Delete the cache to really refetch.
+        let extra_set: BTreeSet<&str> = extra_terms.iter().map(String::as_str).collect();
+        let content = std::fs::read_to_string(&multiword_terms_file)
+            .context("Failed to read multiword terms file")?;
+        let derived: Vec<String> = content
+            .lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty() && !extra_set.contains(line))
+            .map(String::from)
+            .collect();
+        let mut file =
+            File::create(&wiktionary_cache).context("Failed to create wiktionary terms cache")?;
+        for term in &derived {
+            writeln!(file, "{term}")?;
+        }
+        derived
+    } else {
+        let downloaded = download_multiword_terms(*target_language)
+            .await
+            .context("Failed to download multiword terms")?;
+        let mut file =
+            File::create(&wiktionary_cache).context("Failed to create wiktionary terms cache")?;
+        for term in &downloaded {
+            writeln!(file, "{term}")?;
+        }
+        downloaded
+    };
     let banned_terms = match target_language {
         Language::French => vec!["de le", "de les", "à le", "à les", "fait que", "aller y"],
         Language::Spanish => vec!["de el", "a el"], // Spanish contractions that become "del" and "al"
@@ -57,13 +101,11 @@ pub async fn ensure_multiword_terms_file(
     let mut file =
         File::create(&multiword_terms_file).context("Failed to create multiword terms file")?;
 
-    for term in terms {
+    for term in &terms {
         writeln!(file, "{term}")?;
     }
 
-    multiword_terms_file
-        .canonicalize()
-        .context("Failed to canonicalize multiword terms file path")
+    Ok(terms.into_iter().collect())
 }
 
 /// Returns the set of multiword terms that are discontinuous (contained `...` in the
@@ -108,6 +150,23 @@ async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>
                 .trim()
                 .to_string();
             terms.push(line);
+        }
+    }
+
+    // Terms mined by the sense_discovery binary (embedding-cluster splits,
+    // LLM-extracted, corpus-grounded) and committed for adoption. Only the
+    // surface form matters here; the rest of each record is review provenance.
+    let discovered_path =
+        format!("./generate-data/data/{language_code}/discovered_multiword_terms.jsonl");
+    if let Ok(file) = File::open(Path::new(&discovered_path)) {
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            let line = line?;
+            if let Ok(entry) = serde_json::from_str::<serde_json::Value>(&line)
+                && let Some(term) = entry["term"].as_str()
+            {
+                terms.push(term.trim().to_string());
+            }
         }
     }
 

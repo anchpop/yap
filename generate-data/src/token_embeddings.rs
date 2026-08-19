@@ -4,10 +4,10 @@
 //! For every sentence in a course's final NLP sentence set, we embed each
 //! heteronym token (subword-mean-pooled hidden state from one fixed layer of a
 //! multilingual bidirectional encoder) and store the vectors in the osmo cache
-//! store. Nothing downstream consumes them yet — they are the substrate for
-//! sense discrimination (splitting e.g. "a tear in the paper" from "he shed a
-//! tear" into different atoms), where broad multilingual probe sweeps selected
-//! the model and layer.
+//! store. They are the substrate for sense discrimination (splitting e.g. "a
+//! tear in the paper" from "he shed a tear" into different atoms), mined by
+//! the `sense_discovery` binary; broad multilingual probe sweeps selected the
+//! model and layer.
 //!
 //! Cache layout: `token-embed/{version}/{lang}/{xxh3(text):016x}` → binary
 //! record (see [`encode_record`]): header of `dim`, `n`, the `n` char spans
@@ -21,7 +21,7 @@ use anyhow::{Context, Result};
 use base64::Engine;
 use futures::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use language_utils::{Language, SentenceInfo, WordType};
+use language_utils::{Language, Literal, SentenceInfo, WordType};
 use serde::Deserialize;
 use std::sync::LazyLock;
 use xxhash_rust::xxh3::xxh3_64;
@@ -58,7 +58,7 @@ fn is_transient_status(status: reqwest::StatusCode) -> bool {
     matches!(status.as_u16(), 408 | 425 | 429 | 500 | 502 | 503 | 504)
 }
 
-fn cache_key(language: Language, sentence: &str) -> String {
+pub fn cache_key(language: Language, sentence: &str) -> String {
     let hash = xxh3_64(sentence.as_bytes());
     format!(
         "token-embed/{CACHE_VERSION}/{}/{hash:016x}",
@@ -71,10 +71,10 @@ fn cache_key(language: Language, sentence: &str) -> String {
 /// `(start, end)` in Unicode code-point offsets of the sentence text as
 /// reconstructed from the words' text + whitespace (the convention the HF
 /// tokenizer's offset mapping uses).
-fn heteronym_spans(info: &SentenceInfo) -> Vec<(u32, u32)> {
+pub fn heteronym_spans(words: &[Literal<String>]) -> Vec<(u32, u32)> {
     let mut spans = Vec::new();
     let mut offset = 0u32;
-    for literal in &info.words {
+    for literal in words {
         let len = literal.word.text.chars().count() as u32;
         if matches!(literal.word.word_type, WordType::Heteronym(_)) && len > 0 {
             spans.push((offset, offset + len));
@@ -87,9 +87,9 @@ fn heteronym_spans(info: &SentenceInfo) -> Vec<(u32, u32)> {
 /// The sentence text the spans index into. Built from the same words the spans
 /// were computed from, so offsets always agree (unlike the map key, which may
 /// differ in capitalization).
-fn sentence_text(info: &SentenceInfo) -> String {
+pub fn sentence_text(words: &[Literal<String>]) -> String {
     let mut text = String::new();
-    for literal in &info.words {
+    for literal in words {
         text.push_str(&literal.word.text);
         text.push_str(&literal.whitespace);
     }
@@ -111,26 +111,58 @@ fn encode_record(dim: u32, spans: &[(u32, u32)], f16_bytes: &[u8]) -> Vec<u8> {
     out
 }
 
-/// Whether a cached record contains a vector for every span in `needed`.
-/// False for malformed records, so they get re-embedded rather than trusted.
-fn record_covers(record: &[u8], needed: &[(u32, u32)]) -> bool {
-    let Some(header) = record.get(..8) else {
-        return false;
-    };
+/// A decoded record entry: the char span and its pooled vector.
+pub type SpanVector = ((u32, u32), Vec<f32>);
+
+/// Decode a cached record into its per-span f32 vectors. `None` for malformed
+/// records (so callers treat them as cache misses rather than trusting them).
+pub fn decode_record(record: &[u8]) -> Option<Vec<SpanVector>> {
+    let header = record.get(..8)?;
     let dim = u32::from_le_bytes(header[..4].try_into().unwrap()) as usize;
     let n = u32::from_le_bytes(header[4..].try_into().unwrap()) as usize;
     if record.len() != 8 + n * 8 + n * dim * 2 {
-        return false;
+        return None;
     }
-    let cached: std::collections::HashSet<(u32, u32)> = record[8..8 + n * 8]
-        .chunks_exact(8)
-        .map(|c| {
-            (
-                u32::from_le_bytes(c[..4].try_into().unwrap()),
-                u32::from_le_bytes(c[4..].try_into().unwrap()),
-            )
-        })
-        .collect();
+    let spans = record[8..8 + n * 8].chunks_exact(8).map(|c| {
+        (
+            u32::from_le_bytes(c[..4].try_into().unwrap()),
+            u32::from_le_bytes(c[4..].try_into().unwrap()),
+        )
+    });
+    let vectors = record[8 + n * 8..].chunks_exact(dim * 2).map(|chunk| {
+        chunk
+            .chunks_exact(2)
+            .map(|b| half::f16::from_le_bytes([b[0], b[1]]).to_f32())
+            .collect::<Vec<f32>>()
+    });
+    Some(spans.zip(vectors).collect())
+}
+
+/// Read the cached vectors for `spans` of a sentence. `None` if the record is
+/// missing, malformed, or lacks any requested span.
+pub async fn read_word_vectors(
+    store: &osmo::Store,
+    language: Language,
+    sentence_text: &str,
+    spans: &[(u32, u32)],
+) -> Option<Vec<Vec<f32>>> {
+    let record = store.read(&cache_key(language, sentence_text)).await?;
+    let decoded = decode_record(&record)?;
+    let by_span: std::collections::HashMap<(u32, u32), Vec<f32>> = decoded.into_iter().collect();
+    spans
+        .iter()
+        .map(|span| by_span.get(span).cloned())
+        .collect()
+}
+
+/// Whether a cached record contains a vector for every span in `needed`.
+/// False for malformed records, so they get re-embedded rather than trusted.
+fn record_covers(record: &[u8], needed: &[(u32, u32)]) -> bool {
+    let Some(decoded) = decode_record(record) else {
+        return false;
+    };
+    let cached: std::collections::HashSet<(u32, u32)> =
+        decoded.into_iter().map(|(span, _)| span).collect();
     needed.iter().all(|span| cached.contains(span))
 }
 
@@ -146,9 +178,10 @@ struct EmbedResponse {
 
 /// Ensure every sentence in `sentences` has its token embeddings in the cache
 /// store. Reads are cheap; only cache misses go to the Modal endpoint.
-pub async fn ensure_token_embeddings(
+pub async fn ensure_token_embeddings<'a>(
     language: Language,
-    sentences: &[(String, SentenceInfo)],
+    sentences: impl IntoIterator<Item = (&'a String, &'a SentenceInfo)>,
+    interners: &language_utils::GramInterners,
     store: &osmo::Store,
 ) -> Result<()> {
     // HTTP/1.1 on purpose: with HTTP/2, reqwest multiplexes every concurrent
@@ -162,12 +195,15 @@ pub async fn ensure_token_embeddings(
         .context("Failed to build HTTP client")?;
     // (key, text, spans) for sentences with at least one heteronym token.
     let mut candidates = Vec::new();
+    let mut total_sentences = 0usize;
     for (sentence, info) in sentences {
-        let spans = heteronym_spans(info);
+        total_sentences += 1;
+        let words = info.decode_words(interners, language);
+        let spans = heteronym_spans(&words);
         if spans.is_empty() {
             continue;
         }
-        candidates.push((cache_key(language, sentence), sentence_text(info), spans));
+        candidates.push((cache_key(language, sentence), sentence_text(&words), spans));
     }
 
     // A hit must actually cover the spans the current tokenization needs — a
@@ -182,9 +218,8 @@ pub async fn ensure_token_embeddings(
     }
     if misses.is_empty() {
         println!(
-            "token-embed[{}]: all {} sentences already cached",
+            "token-embed[{}]: all {total_sentences} sentences already cached",
             language.code(),
-            sentences.len()
         );
         return Ok(());
     }
@@ -342,4 +377,33 @@ async fn embed_batch(
         written += 1;
     }
     Ok(written)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn record_round_trips() {
+        let spans = [(0u32, 4u32), (7, 12)];
+        let values = [[1.0f32, -0.5, 0.25], [0.0, 2.0, -1.0]];
+        let f16_bytes: Vec<u8> = values
+            .iter()
+            .flatten()
+            .flat_map(|&v| half::f16::from_f32(v).to_le_bytes())
+            .collect();
+        let record = encode_record(3, &spans, &f16_bytes);
+
+        let decoded = decode_record(&record).unwrap();
+        assert_eq!(decoded.len(), 2);
+        for ((span, vector), (expected_span, expected)) in
+            decoded.iter().zip(spans.iter().zip(&values))
+        {
+            assert_eq!(span, expected_span);
+            assert_eq!(vector.as_slice(), expected.as_slice());
+        }
+        assert!(record_covers(&record, &spans));
+        assert!(!record_covers(&record, &[(0, 4), (20, 25)]));
+        assert!(decode_record(&record[..record.len() - 1]).is_none());
+    }
 }

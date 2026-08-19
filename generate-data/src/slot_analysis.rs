@@ -35,9 +35,13 @@ use tysm::chat_completions::ChatClient;
 
 /// Listing a language's placeholder expressions — 2 calls per language, and
 /// mostly recall of well-known vocabulary rather than judgment, so it runs on
-/// the cheaper tier.
+/// the cheaper tier. These are the pipeline's live (non-Batch-API) calls, and
+/// the grounded one re-keys whenever the merged term list changes (its prompt
+/// samples the list), so it runs on the default service tier: flex saves
+/// fractions of a cent here and its capacity outages would otherwise block
+/// the whole segmentation run.
 static HINTS_CLIENT: LazyLock<ChatClient> =
-    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-sol"));
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-sol").with_service_tier("default"));
 
 /// The two judgment steps: deciding slot-vs-literal per term, and grading a
 /// pattern's matches. Both are only a few hundred calls per language, and
@@ -54,6 +58,12 @@ pub enum SlotRealization {
     /// term (the case marker is often ambiguous), so these matches are
     /// low-confidence and lean on the grading gate.
     Filled,
+    /// The slot is an infinitive complement filled by an arbitrary verb
+    /// (plus whatever arguments/clitics ride along): "enchanté de vous
+    /// rencontrer". Structurally tight (lemma-anchored head + retained
+    /// mark + verb wildcard), so grade-passing matches count as
+    /// high-confidence.
+    Infinitive,
     /// The slot is realized as a clitic/weak pronoun on the head, with the
     /// case marker gone: "ce qui leur est arrivé". High precision.
     Clitic,
@@ -63,6 +73,7 @@ impl std::fmt::Display for SlotRealization {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             SlotRealization::Filled => write!(f, "filled"),
+            SlotRealization::Infinitive => write!(f, "infinitive"),
             SlotRealization::Clitic => write!(f, "clitic"),
         }
     }
@@ -71,7 +82,11 @@ impl std::fmt::Display for SlotRealization {
 /// Grammatical role of a slot in its citation form: `direct_object` is a bare
 /// object of the verb ("dire quelque chose"), `case_marked_argument` is the
 /// object of a preposition/case marker ("arriver à quelqu'un"), `possessive`
-/// is "de quelqu'un" / "someone's" (realized as a possessive determiner).
+/// is "de quelqu'un" / "someone's" (realized as a possessive determiner),
+/// `infinitive_complement` is a verbal placeholder standing for an open
+/// infinitive clause ("enchanté de faire quelque chose" — the slot head is
+/// "faire", and real usage fills it with any infinitive plus its own
+/// arguments and clitics: "enchanté de vous rencontrer").
 //
 // NOTE: no doc comments on the variants or on fields of this type — OpenAI
 // structured outputs rejects schemas where a description sits next to a $ref.
@@ -83,6 +98,7 @@ pub enum SlotRole {
     DirectObject,
     CaseMarkedArgument,
     Possessive,
+    InfinitiveComplement,
     Other,
 }
 
@@ -150,9 +166,10 @@ async fn placeholder_hints(
         \"oneself\"; German \"jemand\", \"etwas\". Return every such placeholder \
         expression, each written as the space-separated LEMMA sequence a Universal \
         Dependencies lemmatizer would produce for it (e.g. \"quelque chose\" stays two \
-        lemmas). Include indefinite person and thing placeholders and possessive \
-        placeholders. Do not include ordinary pronouns (je, tu, il...) or reflexive \
-        markers.";
+        lemmas). Include indefinite person and thing placeholders, possessive \
+        placeholders, and dummy-verb placeholders standing for an open infinitive \
+        clause (French \"faire quelque chose\", English \"do something\"). Do not \
+        include ordinary pronouns (je, tu, il...) or reflexive markers.";
 
     let abstract_response: PlaceholderHintsResponse = HINTS_CLIENT
         .chat_with_system_prompt(
@@ -272,12 +289,14 @@ You are given a dictionary citation form and its dependency parse (index: text /
 
 Some citation forms contain PLACEHOLDER words (like French "quelqu'un"/"quelque chose", English "someone"/"something"/"one's") that stand for an open argument slot — in real sentences they are replaced by an actual noun phrase or a clitic pronoun. Others use these words LITERALLY as a fixed part of the idiom (e.g. "il y a quelque chose de pourri au royaume du Danemark" is a fixed quote).
 
+A placeholder can also be VERBAL: a dummy verb phrase like French "faire quelque chose" / English "do something" standing for an open infinitive clause ("enchanté de faire quelque chose" -> "enchanté de vous rencontrer"). In that case the slot's HEAD is the dummy VERB itself (e.g. "faire"), its role is infinitive_complement, and the dummy verb's own object ("quelque chose") should NOT be reported as a separate slot.
+
 For each candidate placeholder token in the citation form, decide:
 1. is_slot: is it an open argument slot (true) or a literal fixed part (false)?
-2. role: direct_object (bare object of the verb), case_marked_argument (object of a preposition/case marker), possessive ("of someone" / "someone's"), or other.
-3. clitic_pronoun_lemmas: which clitic/weak pronoun lemmas can fill this slot in real sentences. For French: dative slots ("à quelqu'un") -> ["me","te","lui","nous","vous","leur","se"]; direct-object slots -> ["le","la","les","me","te","nous","vous","se"]; inanimate "de X" -> ["en"]; inanimate "à X" -> ["y"]; possessive "de quelqu'un" -> possessive determiner lemmas ["mon","ton","son","notre","votre","leur"]. Other languages: use that language's clitic/weak pronoun system, or an empty list if the language has no such pronouns for this slot. Use the lemma forms a UD lemmatizer would output. Empty list if pronominalization is impossible or would destroy the idiom.
+2. role: direct_object (bare object of the verb), case_marked_argument (object of a preposition/case marker), possessive ("of someone" / "someone's"), infinitive_complement (dummy verb phrase standing for an open infinitive clause), or other.
+3. clitic_pronoun_lemmas: which clitic/weak pronoun lemmas can fill this slot in real sentences. For French: dative slots ("à quelqu'un") -> ["me","te","lui","nous","vous","leur","se"]; direct-object slots -> ["le","la","les","me","te","nous","vous","se"]; inanimate "de X" -> ["en"]; inanimate "à X" -> ["y"]; possessive "de quelqu'un" -> possessive determiner lemmas ["mon","ton","son","notre","votre","leur"]. Other languages: use that language's clitic/weak pronoun system, or an empty list if the language has no such pronouns for this slot. Use the lemma forms a UD lemmatizer would output. Empty list if pronominalization is impossible or would destroy the idiom, and always empty for infinitive_complement slots.
 
-Only report tokens that are placeholder candidates (indefinite pronouns / "quelque chose"-type phrases). Report the index of the HEAD token of the placeholder phrase (e.g. "chose" in "quelque chose")."#
+Only report tokens that are placeholder candidates (indefinite pronouns / "quelque chose"-type phrases / dummy verbs heading a verbal placeholder). Report the index of the HEAD token of the placeholder phrase (e.g. "chose" in "quelque chose", but "faire" in "faire quelque chose")."#
     );
 
     let progress = indicatif::ProgressBar::new(candidates.len() as u64);
@@ -340,14 +359,23 @@ fn possessive_relations() -> BTreeSet<DependencyRelation> {
 
 /// The relations a slot's edge should accept when the slot is *filled* by a
 /// real phrase. Possessives move between the det/nmod families depending on
-/// how the possessor is expressed; every other role keeps the citation
-/// form's own relation.
+/// how the possessor is expressed; infinitive complements accept the whole
+/// clausal-complement family (parsers split "enchanté de vous rencontrer"
+/// between xcomp/advcl/ccomp/acl depending on context); every other role
+/// keeps the citation form's own relation.
 fn filled_slot_relations(
     role: SlotRole,
     citation_dep: DependencyRelation,
 ) -> BTreeSet<DependencyRelation> {
     match role {
         SlotRole::Possessive => possessive_relations(),
+        SlotRole::InfinitiveComplement => BTreeSet::from([
+            citation_dep,
+            DependencyRelation::Xcomp,
+            DependencyRelation::Advcl,
+            DependencyRelation::Ccomp,
+            DependencyRelation::Acl,
+        ]),
         _ => BTreeSet::from([citation_dep]),
     }
 }
@@ -360,6 +388,12 @@ fn nominal_pos() -> BTreeSet<PartOfSpeech> {
         PartOfSpeech::Pron,
         PartOfSpeech::Num,
     ])
+}
+
+/// Which POS may head an infinitive-complement slot's filler. Aux included
+/// because copulas ("enchanté d'être ici") parse as AUX.
+fn verbal_pos() -> BTreeSet<PartOfSpeech> {
+    BTreeSet::from([PartOfSpeech::Verb, PartOfSpeech::Aux])
 }
 
 fn children_of(tokens: &[Token], idx: usize) -> impl Iterator<Item = usize> + '_ {
@@ -424,11 +458,26 @@ pub fn compile_realizations(
         slot_by_idx: &BTreeMap<usize, &SlotSpec>,
     ) -> Option<PatternNode> {
         let token = &tokens[idx];
-        if slot_by_idx.contains_key(&idx) {
+        if let Some(slot) = slot_by_idx.get(&idx) {
             // Only reachable in Filled mode (Clitic replaces the slot at the
-            // parent): wildcard nominal keeping just the case marker.
+            // parent): a wildcard node keeping just the marker children —
+            // the case marker for nominal slots ("à quelqu'un"), the
+            // mark/case of the infinitive for verbal ones ("de faire ...").
+            // Everything else in the placeholder's subtree (determiners,
+            // the placeholder's own dummy object) vanishes with it; subject
+            // trees may hang arbitrary real arguments off the filler, which
+            // pattern matching permits (children are requirements, not an
+            // exhaustive list).
+            let (wildcard_pos, kept_deps): (BTreeSet<PartOfSpeech>, BTreeSet<DependencyRelation>) =
+                match slot.role {
+                    SlotRole::InfinitiveComplement => (
+                        verbal_pos(),
+                        BTreeSet::from([DependencyRelation::Mark, DependencyRelation::Case]),
+                    ),
+                    _ => (nominal_pos(), BTreeSet::from([DependencyRelation::Case])),
+                };
             let children = children_of(tokens, idx)
-                .filter(|&c| tokens[c].dep == DependencyRelation::Case)
+                .filter(|&c| kept_deps.contains(&tokens[c].dep))
                 .map(|c| {
                     (
                         BTreeSet::from([tokens[c].dep]),
@@ -440,7 +489,7 @@ pub fn compile_realizations(
                 })
                 .collect();
             return Some(PatternNode {
-                matcher: NodeMatcher::AnyPos(nominal_pos()),
+                matcher: NodeMatcher::AnyPos(wildcard_pos),
                 children,
             });
         }
@@ -453,7 +502,12 @@ pub fn compile_realizations(
             if realization == SlotRealization::Clitic
                 && let Some(slot) = slot_by_idx.get(&c)
             {
-                if slot.clitic_pronoun_lemmas.is_empty() {
+                // An infinitive clause has no clitic realization (the clitics
+                // one sees — "de vous rencontrer" — belong to the filler verb,
+                // not to the slot); only the Filled pattern exists for it.
+                if slot.role == SlotRole::InfinitiveComplement
+                    || slot.clitic_pronoun_lemmas.is_empty()
+                {
                     return None; // this slot can't cliticize
                 }
                 let lemmas: BTreeSet<String> = slot.clitic_pronoun_lemmas.iter().cloned().collect();
@@ -466,7 +520,10 @@ pub fn compile_realizations(
                         BTreeSet::from([DependencyRelation::Iobj, DependencyRelation::Obj]),
                         BTreeSet::from([PartOfSpeech::Pron]),
                     ),
-                    SlotRole::DirectObject | SlotRole::Other => (
+                    // InfinitiveComplement is unreachable here (the early
+                    // return above rejects Clitic mode for it), included for
+                    // totality only.
+                    SlotRole::DirectObject | SlotRole::InfinitiveComplement | SlotRole::Other => (
                         BTreeSet::from([DependencyRelation::Obj]),
                         BTreeSet::from([PartOfSpeech::Pron]),
                     ),
@@ -495,12 +552,25 @@ pub fn compile_realizations(
         })
     }
 
-    [SlotRealization::Filled, SlotRealization::Clitic]
-        .into_iter()
-        .filter_map(|realization| {
-            build(tokens, root_idx, realization, &slot_by_idx).map(|p| (realization, p))
-        })
-        .collect()
+    // A pattern whose slots are all infinitive complements is labeled with
+    // the (structurally tighter) Infinitive realization; mixed or nominal
+    // patterns keep the Filled label. Both build identically — the label
+    // decides merge confidence downstream.
+    let filled_label = if slots
+        .iter()
+        .all(|s| s.role == SlotRole::InfinitiveComplement)
+    {
+        SlotRealization::Infinitive
+    } else {
+        SlotRealization::Filled
+    };
+    [
+        (SlotRealization::Filled, filled_label),
+        (SlotRealization::Clitic, SlotRealization::Clitic),
+    ]
+    .into_iter()
+    .filter_map(|(mode, label)| build(tokens, root_idx, mode, &slot_by_idx).map(|p| (label, p)))
+    .collect()
 }
 
 /// One sentence matched by a slot pattern, with the tokens the pattern bound.
@@ -923,6 +993,138 @@ mod tests {
         let matcher =
             DependencyMatcher::new(&[("arriver à quelqu'un".to_string(), clitic.clone())]);
         assert_eq!(matcher.find_all(&tree).len(), 1);
+    }
+
+    /// "enchanté de faire quelque chose": enchanté(root) <- faire(xcomp)
+    /// with faire <- de(mark) and faire <- chose(obj) <- quelque(det).
+    fn enchante_de_faire_quelque_chose() -> Vec<Token> {
+        vec![
+            tok(
+                "enchanté",
+                "enchanté",
+                PartOfSpeech::Adj,
+                DependencyRelation::Root,
+                0,
+            ),
+            tok("de", "de", PartOfSpeech::Adp, DependencyRelation::Mark, 3),
+            tok(
+                "faire",
+                "faire",
+                PartOfSpeech::Verb,
+                DependencyRelation::Xcomp,
+                1,
+            ),
+            tok(
+                "quelque",
+                "quelque",
+                PartOfSpeech::Det,
+                DependencyRelation::Det,
+                5,
+            ),
+            tok(
+                "chose",
+                "chose",
+                PartOfSpeech::Noun,
+                DependencyRelation::Obj,
+                3,
+            ),
+        ]
+    }
+
+    fn infinitive_slot() -> SlotSpec {
+        SlotSpec {
+            token_index: 2,
+            is_slot: true,
+            role: SlotRole::InfinitiveComplement,
+            clitic_pronoun_lemmas: vec![],
+        }
+    }
+
+    #[test]
+    fn infinitive_slot_compiles_filled_only_and_matches_real_usage() {
+        use lexide::Tokenization;
+        use lexide::matching::{DependencyMatcher, TreeNode};
+
+        let tokens = enchante_de_faire_quelque_chose();
+        let realizations = compile_realizations(&tokens, &[infinitive_slot()]);
+        let kinds: Vec<SlotRealization> = realizations.iter().map(|(k, _)| *k).collect();
+        assert_eq!(kinds, vec![SlotRealization::Infinitive]);
+
+        let (_, filled) = &realizations[0];
+        assert_eq!(filled.matcher, NodeMatcher::Lemma("enchanté".to_string()));
+        let (deps, slot_node) = &filled.children[0];
+        assert!(deps.contains(&DependencyRelation::Xcomp));
+        match &slot_node.matcher {
+            NodeMatcher::AnyPos(pos) => {
+                assert!(pos.contains(&PartOfSpeech::Verb));
+                assert!(!pos.contains(&PartOfSpeech::Noun));
+            }
+            other => panic!("expected AnyPos verb wildcard, got {other:?}"),
+        }
+        // The mark survives; the dummy verb's own object does not.
+        assert_eq!(slot_node.children.len(), 1);
+        assert_eq!(
+            slot_node.children[0].1.matcher,
+            NodeMatcher::Lemma("de".to_string())
+        );
+
+        // "enchanté de vous rencontrer": rencontrer(xcomp) carries a clitic
+        // the pattern doesn't constrain.
+        let sentence = Tokenization {
+            tokens: vec![
+                tok(
+                    "enchanté",
+                    "enchanté",
+                    PartOfSpeech::Adj,
+                    DependencyRelation::Root,
+                    0,
+                ),
+                tok("de", "de", PartOfSpeech::Adp, DependencyRelation::Mark, 4),
+                tok(
+                    "vous",
+                    "vous",
+                    PartOfSpeech::Pron,
+                    DependencyRelation::Obj,
+                    4,
+                ),
+                tok(
+                    "rencontrer",
+                    "rencontrer",
+                    PartOfSpeech::Verb,
+                    DependencyRelation::Xcomp,
+                    1,
+                ),
+            ],
+        };
+        let tree = TreeNode::try_from(sentence).unwrap();
+        let matcher = DependencyMatcher::new(&[("test".to_string(), filled.clone())]);
+        assert_eq!(matcher.find_all(&tree).len(), 1);
+
+        // "enchanté de la fête": a nominal complement must not satisfy the
+        // verb wildcard.
+        let nominal = Tokenization {
+            tokens: vec![
+                tok(
+                    "enchanté",
+                    "enchanté",
+                    PartOfSpeech::Adj,
+                    DependencyRelation::Root,
+                    0,
+                ),
+                tok("de", "de", PartOfSpeech::Adp, DependencyRelation::Case, 4),
+                tok("la", "le", PartOfSpeech::Det, DependencyRelation::Det, 4),
+                tok(
+                    "fête",
+                    "fête",
+                    PartOfSpeech::Noun,
+                    DependencyRelation::Obl,
+                    1,
+                ),
+            ],
+        };
+        let tree = TreeNode::try_from(nominal).unwrap();
+        let matcher = DependencyMatcher::new(&[("test".to_string(), filled.clone())]);
+        assert_eq!(matcher.find_all(&tree).len(), 0);
     }
 
     #[test]

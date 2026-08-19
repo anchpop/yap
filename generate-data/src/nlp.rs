@@ -319,8 +319,13 @@ pub async fn generate_nlp_sentences(
     lemma_patterns: &BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
     discontinuous_lemma_patterns: &BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
     tree_patterns: &BTreeMap<Gram<String>, lexide::matching::TreeNode>,
-) -> Result<BTreeMap<String, language_utils::SentenceInfo>> {
-    use language_utils::{MultiwordTermMatch, MultiwordTerms, SentenceInfo};
+) -> Result<
+    BTreeMap<
+        String,
+        language_utils::MultiwordTerms<language_utils::MultiwordTermMatch<Gram<String>>>,
+    >,
+> {
+    use language_utils::{MultiwordTermMatch, MultiwordTerms};
     use lexide::matching::{DependencyMatcher, DiscontinuousLemmaMatcher, LemmaMatcher, TreeNode};
 
     type PatternList<'a> = Vec<(Gram<String>, Vec<(&'a str, lexide::pos::PartOfSpeech)>)>;
@@ -361,10 +366,15 @@ pub async fn generate_nlp_sentences(
         .collect();
     let dependency_matcher = DependencyMatcher::new(&tree_patterns);
 
-    // Process all sentences
-    let mut result: BTreeMap<String, SentenceInfo> = BTreeMap::new();
+    // Process all sentences that survived the literal-level filters (the
+    // tokenization map may cover more).
+    let mut result: BTreeMap<String, MultiwordTerms<MultiwordTermMatch<Gram<String>>>> =
+        BTreeMap::new();
 
     for (sentence_str, tokens) in sentences_tokenizations.iter() {
+        if !sentence_literals.contains_key(sentence_str) {
+            continue;
+        }
         let tokenization = lexide::Tokenization {
             tokens: tokens.clone(),
         };
@@ -425,22 +435,13 @@ pub async fn generate_nlp_sentences(
             }
         }
 
-        // Use pre-computed literals
-        let words = sentence_literals
-            .get(sentence_str)
-            .cloned()
-            .unwrap_or_default();
-
-        let sentence_info = SentenceInfo {
-            words,
-            multiword_terms: MultiwordTerms {
+        result.insert(
+            sentence_str.clone(),
+            MultiwordTerms {
                 high_confidence,
                 low_confidence,
             },
-        };
-
-        // Store in result map
-        result.insert(sentence_str.clone(), sentence_info);
+        );
     }
 
     Ok(result)

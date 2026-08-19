@@ -289,27 +289,6 @@ async fn load_nlp_sentences(language: Language) -> anyhow::Result<Vec<NlpAnalyze
     Ok(sentences)
 }
 
-/// Load multiword term strings from the wiktionary terms file (plain text, one per line).
-fn load_multiword_term_strings(multiword_terms_file: &Path) -> anyhow::Result<Vec<String>> {
-    let file = File::open(multiword_terms_file).context("Failed to open multiword terms file")?;
-    let reader = BufReader::new(file);
-
-    let terms: Vec<String> = reader
-        .lines()
-        .filter_map(|line| {
-            let line = line.ok()?;
-            let trimmed = line.trim().to_string();
-            if trimmed.is_empty() {
-                None
-            } else {
-                Some(trimmed)
-            }
-        })
-        .collect();
-
-    Ok(terms)
-}
-
 /// Run spaCy NLP on a set of sentences, using a persistent cache so we only
 /// process sentences we haven't seen before.
 ///
@@ -1143,12 +1122,10 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
     );
     let sampled_texts = combined_texts;
 
-    let multiword_terms_file =
+    let term_strings =
         generate_data::wiktionary_terms::ensure_multiword_terms_file(&course, &base_dir)
             .await
             .context("Failed to ensure multiword terms file")?;
-
-    let term_strings = load_multiword_term_strings(&multiword_terms_file)?;
     println!("Loaded {} multiword terms", term_strings.len());
 
     let sampled_term_strings =

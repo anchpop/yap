@@ -10811,6 +10811,33 @@ Specific concerns about the current analysis are listed alongside the sentence. 
 }
 
 /// Use GPT to parse dependency relations for a sentence
+///
+/// TODO(clitic-labeling consistency): the gold parses this produces — and
+/// therefore lexide, which is trained on them — label Romance reflexive/object
+/// clitics inconsistently. Observed in the French corpus, the same pronominal
+/// construction analyzed three ways:
+///   "je saurai me passer de vous"       → me  lemma "me", dep obj
+///   "Mon peuple a appris à s'en passer" → s'  lemma "se", dep iobj
+///   "Je me suis occupé de ce problème"  → me  lemma "me", dep expl:pv
+/// UD's convention for inherently pronominal verbs is `expl:pv`; we should pick
+/// a policy (dep label, and whether the clitic lemmatizes to "se" across the
+/// paradigm) and enforce it here with explicit rules + examples in the prompt,
+/// the way the classify pass does for POS ambiguities, then regenerate/patch
+/// gold and retrain lexide. Until then, downstream consumers that match on a
+/// clitic's lemma or dep (e.g. multiword-term unification of "me passer de" /
+/// "s'en passer") must accept lemma-sets and dep-sets, not exact values.
+///
+/// TODO(pos/dep self-consistency): a related, mechanically detectable error
+/// class — tokens whose POS contradicts their dep label. In the French corpus
+/// lexide emits ~8.9k tokens with dep=det but pos!=DET; the unambiguous
+/// subclass is articles POS-tagged PRON (les/le/la/l' as PRON with a det
+/// edge, ~2.7k tokens), concentrated in verbless exclamations ("Les nuls !",
+/// "Les enculés !") where there is no verb to attach a clitic to. Sense
+/// discovery surfaced this as a spurious "article défini" sense of les@PRON.
+/// A dep/POS consistency check over the gold (det edge => DET head-side POS,
+/// modulo UD predeterminer conventions — tout/beaucoup need checking against
+/// the guidelines before being called errors) would catch these before they
+/// train lexide.
 pub async fn parse_dependencies_with_llm(
     language: Language,
     sentence: &str,

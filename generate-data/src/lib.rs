@@ -51,6 +51,34 @@ fn cached_chat_client(model: &str, reasoning_effort: &str) -> tysm::chat_complet
         .with_service_tier("flex")
 }
 
+/// Wall-clock stage timer for profiling pipeline runs: each `lap` logs the
+/// time since the previous one at info level (`RUST_LOG=generate_data=info`).
+pub struct StageTimer {
+    started: std::time::Instant,
+    last: std::time::Instant,
+}
+
+impl StageTimer {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        let now = std::time::Instant::now();
+        Self {
+            started: now,
+            last: now,
+        }
+    }
+
+    pub fn lap(&mut self, label: &str) {
+        let now = std::time::Instant::now();
+        log::info!(
+            "timing[{label}]: {:.1}s (total {:.1}s)",
+            (now - self.last).as_secs_f64(),
+            (now - self.started).as_secs_f64()
+        );
+        self.last = now;
+    }
+}
+
 fn cached_default_chat_client(model: &str) -> tysm::chat_completions::ChatClient {
     tysm::chat_completions::ChatClient::from_env(model)
         .unwrap()
@@ -94,14 +122,17 @@ pub mod llm_etymology;
 pub mod morpheme_info;
 pub mod morphology_analysis;
 pub mod nlp;
+pub mod pipeline;
 pub mod pronunciation_patterns;
 pub mod pronunciations;
 pub mod proper_noun_definitions;
 pub mod read_anki;
+pub mod sense_discovery;
 pub mod slot_analysis;
 pub mod target_sentences;
 pub mod tatoeba;
 pub mod token_embeddings;
 pub mod tokenize;
+pub mod translate;
 pub mod wiktionary_conjugations;
 pub mod wiktionary_terms;

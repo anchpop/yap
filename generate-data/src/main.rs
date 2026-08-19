@@ -1,122 +1,19 @@
 use anyhow::Context;
-use futures::StreamExt;
-use indexmap::IndexSet;
 use itertools::Itertools;
 use language_utils::{
     Atom, COURSES, EncodedSentence, Gram, GramFrequencyEntry, GramVocabEntry, HomophonePractice,
     SentenceGram, SentenceGrams,
 };
 use rustc_hash::FxHashMap;
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::fs::File;
-use std::hash::Hash;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
 
 use generate_data::cache_remote;
-mod translate;
-use translate::{TranslationBackend, Translator};
 
 use generate_data::morphology_analysis;
-
-struct PhraseDetectionData {
-    tokens: Option<Vec<lexide::Token>>, // we don't have this for grams
-}
-type PhraseDetectionDataMap = BTreeMap<Gram<String>, PhraseDetectionData>;
-
-/// Deduplicates a pattern map where multiple grams may produce the same matcher pattern.
-/// Convert language_utils PartOfSpeech to lexide PartOfSpeech.
-fn convert_pos(pos: language_utils::PartOfSpeech) -> lexide::pos::PartOfSpeech {
-    use language_utils::PartOfSpeech as LP;
-    use lexide::pos::PartOfSpeech as XP;
-    match pos {
-        LP::Adj => XP::Adj,
-        LP::Adp => XP::Adp,
-        LP::Adv => XP::Adv,
-        LP::Aux => XP::Aux,
-        LP::Cconj => XP::Cconj,
-        LP::Det => XP::Det,
-        LP::Intj => XP::Intj,
-        LP::Noun => XP::Noun,
-        LP::Num => XP::Num,
-        LP::Part => XP::Part,
-        LP::Pron => XP::Pron,
-        LP::Sconj => XP::Sconj,
-        LP::Sym => XP::Sym,
-        LP::Verb => XP::Verb,
-    }
-}
-
-/// When exactly one gram in a duplicate group is from wiktionary, keeps that one.
-/// When multiple are from wiktionary, keeps the shortest (then alphabetically first).
-/// When none are from wiktionary, warns and skips the pattern entirely.
-fn deduplicate_patterns<P: Eq + Hash + Clone>(
-    patterns: BTreeMap<Gram<String>, P>,
-    wiktionary_grams: &HashSet<Gram<String>>,
-    gram_frequencies: &rustc_hash::FxHashMap<Gram<String>, u32>,
-    alt_forms: &BTreeMap<String, String>,
-    lang: language_utils::Language,
-) -> BTreeMap<Gram<String>, P> {
-    // Invert: group grams by their pattern value
-    let mut by_pattern: rustc_hash::FxHashMap<P, Vec<Gram<String>>> =
-        rustc_hash::FxHashMap::default();
-    for (gram, pattern) in &patterns {
-        by_pattern
-            .entry(pattern.clone())
-            .or_default()
-            .push(gram.clone());
-    }
-
-    let mut result = BTreeMap::new();
-    for (pattern, grams) in by_pattern {
-        if grams.len() == 1 {
-            result.insert(grams.into_iter().next().unwrap(), pattern);
-            continue;
-        }
-        let wiktionary_entries: Vec<_> = grams
-            .iter()
-            .filter(|g| wiktionary_grams.contains(g))
-            .cloned()
-            .collect();
-        // Prefer wiktionary entries, but fall back to all candidates
-        let candidates = if wiktionary_entries.is_empty() {
-            grams
-        } else {
-            wiktionary_entries
-        };
-        // Score each candidate: (is_alt_form, has_punct, lemma_mismatches, -frequency, char_count, text)
-        let score = |g: &Gram<String>| {
-            let s = g.to_display_string(lang);
-            let is_alt_form = alt_forms.contains_key(&s);
-            let has_punct = s
-                .chars()
-                .any(|c| c.is_ascii_punctuation() && c != '\'' && c != '-');
-            let lemma_mismatches: usize = g
-                .iter()
-                .filter(|atom| match atom {
-                    language_utils::Atom::Tok(word) => match &word.word_type {
-                        language_utils::WordType::Heteronym(h) => word.text != h.lemma,
-                        _ => false,
-                    },
-                    _ => false,
-                })
-                .count();
-            let freq = gram_frequencies.get(g).copied().unwrap_or(0);
-            (
-                is_alt_form,
-                has_punct,
-                lemma_mismatches,
-                std::cmp::Reverse(freq),
-                s.chars().count(),
-                s,
-            )
-        };
-        let best = candidates.into_iter().min_by_key(score).unwrap();
-        result.insert(best, pattern);
-    }
-    result
-}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -231,751 +128,52 @@ async fn main() -> anyhow::Result<()> {
         );
         println!("================================================");
 
-        let target_language_dir = PathBuf::from(format!("./out/{}", course.target_language.code()));
-        std::fs::create_dir_all(&target_language_dir)
-            .context("Failed to create target language directory")?;
-        let target_language_dir = target_language_dir
-            .canonicalize()
-            .context("Failed to canonicalize target language output directory")?;
-
-        let native_specific_dir = PathBuf::from(format!(
-            "./out/{}_for_{}",
-            course.target_language.code(),
-            course.native_language.code()
-        ));
-        std::fs::create_dir_all(&native_specific_dir)
-            .context("Failed to create native-specific directory")?;
-        let native_specific_dir = native_specific_dir
-            .canonicalize()
-            .context("Failed to canonicalize native-specific output directory")?;
-
+        let sentence_corpus = generate_data::target_sentences::get_target_sentences(*course)
+            .context("Failed to get target sentences")?;
+        let generate_data::pipeline::SegmentedCorpus {
+            mut nlp_sentences,
+            restricted_nlp_sentences,
+            gram_vocabulary,
+            interners,
+            patterns:
+                generate_data::pipeline::MatchingPatterns {
+                    contiguous_lemma_patterns,
+                    discontinuous_lemma_patterns,
+                    tree_patterns,
+                },
+            encoder,
+        } = generate_data::pipeline::segment_corpus(course, &sentence_corpus).await?;
+        let translations_map =
+            generate_data::pipeline::translate_sentences(course, &sentence_corpus)
+                .await
+                .context("Failed to translate sentences")?;
+        let generate_data::pipeline::CourseDirs {
+            target_language_dir,
+            native_specific_dir,
+        } = generate_data::pipeline::course_dirs(course)?;
+        let banned_words = generate_data::pipeline::load_banned_words(course)?;
+        let initial_gram_frequencies =
+            generate_data::pipeline::initial_gram_frequencies(&gram_vocabulary);
+        let restricted_sentences = sentence_corpus.restricted_sentences;
+        let lang = course.target_language;
         let source_data_path = format!("./generate-data/data/{}", course.target_language.code());
         let source_data_path = Path::new(source_data_path.as_str());
 
-        let banned_words_file = source_data_path.join("banned_words.jsonl");
-        let banned_words = if banned_words_file.exists() {
-            let content = std::fs::read_to_string(banned_words_file)
-                .context("Failed to read banned words file")?;
-            content
-                .lines()
-                .map(|line| line.trim())
-                .filter(|line| !line.is_empty())
-                .map(|line| {
-                    serde_json::from_str::<language_utils::Heteronym<String>>(line).unwrap()
-                })
-                .collect::<std::collections::HashSet<_>>()
-        } else {
-            std::collections::HashSet::new()
-        };
-
-        // write sentences
-        let target_language_sentences_file =
-            target_language_dir.join("target_language_sentences.jsonl");
-        let translations_file =
-            native_specific_dir.join("target_language_to_native_translations.jsonl");
-        let sentence_sources_file = target_language_dir.join("sentence_sources.jsonl");
-        // Get target sentences split into app and restricted sets
-        let target_sentences_result =
-            generate_data::target_sentences::get_target_sentences(*course)
-                .context("Failed to get target sentences")?;
-        let restricted_sentences = target_sentences_result.restricted_sentences;
-
-        {
-            let mut total_sentences = 0;
-
-            let sentences_with_translations_and_sources = target_sentences_result.app_sentences;
-
-            // Create the translator once and share it across all async tasks
-            let translator = Translator::new(
-                course.target_language, // translate from target to native
-                course.native_language,
-                cache_remote::store(),
-                // Luna over the OpenAI Batch API is ~50x cheaper than Google's
-                // translation-llm; anything already in the Google cache is
-                // still reused (see translate.rs). Swap in
-                // `TranslationBackend::Google` to go back.
-                TranslationBackend::OpenAi {
-                    model: "gpt-5.6-luna".to_string(),
-                },
-            )
-            .await
-            .context("Failed to create translator")?;
-
-            // Warm the cache in batched requests first. The Translation LLM quota
-            // is requests-per-minute, so translating the misses in bulk here means
-            // the per-sentence pass below is (almost) all cache hits. Prime shows
-            // its own progress bar, so set up the per-sentence bar afterwards to
-            // avoid two live bars fighting over the terminal.
-            let targets: Vec<String> = sentences_with_translations_and_sources
-                .iter()
-                .map(|(target, _, _)| target.clone())
-                .collect();
-            translator.prime(&targets).await;
-
-            let total = sentences_with_translations_and_sources.len() as u64;
-            let translate_label = format!(
-                "translations {} → {}",
-                course.target_language.iso_639_1(),
-                course.native_language.iso_639_1(),
-            );
-            let pb = indicatif::ProgressBar::new(total);
-            pb.set_style(
-                indicatif::ProgressStyle::default_bar()
-                    .template(&format!("{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {translate_label} ({{per_sec}}, {{msg}}, {{eta}})"))
-                    .unwrap()
-                    .progress_chars("#>-"),
-            );
-            pb.set_message(format!(
-                "~${:.4} · {} calls",
-                translator.cost_estimate_usd(),
-                translator.api_calls()
-            ));
-            pb.enable_steady_tick(std::time::Duration::from_millis(100));
-
-            let all_sentences =
-                futures::stream::iter(sentences_with_translations_and_sources.into_iter().map(
-                    |(target_language_sentence, native_sentence, source)| async {
-                        let mut translation_set = IndexSet::new();
-                        match translator.translate(&target_language_sentence).await {
-                            Ok(t) => {
-                                if !t.trim().is_empty() {
-                                    translation_set.insert(t);
-                                }
-                            }
-                            Err(e) => {
-                                eprintln!(
-                                    "Error translating sentence '{target_language_sentence}': {e}"
-                                );
-                            }
-                        };
-                        if let Some(native_sentence) = native_sentence {
-                            translation_set.insert(native_sentence);
-                        }
-                        // Machine translation can reintroduce the XProtect tripwire
-                        // even when the corpus filter dropped the original pair
-                        // (e.g. "Bienvenidos al Paraíso." → "Welcome to Paradise."),
-                        // so filter the translations too.
-                        translation_set.retain(|t| {
-                            !generate_data::target_sentences::contains_xprotect_tripwire(t)
-                        });
-                        pb.set_message(format!(
-                            "~${:.4} · {} calls",
-                            translator.cost_estimate_usd(),
-                            translator.api_calls()
-                        ));
-                        pb.inc(1);
-                        (target_language_sentence, (translation_set, source))
-                    },
-                ))
-                .buffered(100)
-                .collect::<BTreeMap<_, _>>()
-                .await;
-
-            pb.finish_with_message(format!(
-                "~${:.4} · {} calls",
-                translator.cost_estimate_usd(),
-                translator.api_calls()
-            ));
-
-            // Drop the translator to trigger the Drop implementation
-            drop(translator);
-
-            let target_language_file = match File::create(target_language_sentences_file.clone()) {
-                Ok(f) => f,
-                Err(e) => {
-                    return Err(anyhow::anyhow!(
-                        "Error creating target_language sentences file: {e}"
-                    ));
-                }
-            };
-            let mut target_language_writer = BufWriter::new(target_language_file);
-
-            let translations_file_handle = match File::create(translations_file.clone()) {
-                Ok(f) => f,
-                Err(e) => {
-                    return Err(anyhow::anyhow!("Error creating translations file: {e}"));
-                }
-            };
-            let mut translations_writer = BufWriter::new(translations_file_handle);
-
-            let sentence_sources_file_handle = match File::create(sentence_sources_file.clone()) {
-                Ok(f) => f,
-                Err(e) => {
-                    return Err(anyhow::anyhow!("Error creating sentence sources file: {e}"));
-                }
-            };
-            let mut sentence_sources_writer = BufWriter::new(sentence_sources_file_handle);
-
-            for (target_language_sentence, (native_translations, source)) in all_sentences {
-                if native_translations.is_empty() {
-                    eprintln!(
-                        "Warning: no translations for '{target_language_sentence}', skipping"
-                    );
-                    continue;
-                }
-
-                // Write individual target language sentence
-                let target_language_json = serde_json::to_string(&target_language_sentence)
-                    .context("Failed to serialize target language sentence")?;
-                if let Err(e) = writeln!(target_language_writer, "{target_language_json}") {
-                    eprintln!("Error writing to target_language sentences file: {e}");
-                }
-
-                let translation_json = serde_json::to_string(&(
-                    &target_language_sentence,
-                    native_translations.into_iter().collect::<Vec<_>>(),
-                ))
-                .context("Failed to serialize translation")?;
-                if let Err(e) = writeln!(translations_writer, "{translation_json}") {
-                    eprintln!("Error writing to translations file: {e}");
-                }
-
-                let source_json = serde_json::to_string(&(&target_language_sentence, &source))
-                    .context("Failed to serialize sentence source")?;
-                if let Err(e) = writeln!(sentence_sources_writer, "{source_json}") {
-                    eprintln!("Error writing to sentence sources file: {e}");
-                }
-
-                total_sentences += 1;
-            }
-
-            // Flush the writers
-            if let Err(e) = target_language_writer.flush() {
-                eprintln!("Error flushing target_language sentences file: {e}");
-            }
-            if let Err(e) = translations_writer.flush() {
-                eprintln!("Error flushing translations file: {e}");
-            }
-            if let Err(e) = sentence_sources_writer.flush() {
-                eprintln!("Error flushing sentence sources file: {e}");
-            }
-
-            if total_sentences < 10 {
-                panic!("Too few sentences written: {total_sentences}");
-            }
-        }
-
-        // Ensure multiword terms file exists
-        let multiword_terms_file = generate_data::wiktionary_terms::ensure_multiword_terms_file(
-            course,
-            &target_language_dir,
-        )
-        .await
-        .context("Failed to ensure multiword terms file exists")?;
-
-        // Process multiword terms with Rust NLP (lexide)
-        let multiword_terms_tokenization_file =
-            target_language_dir.join("target_language_multiword_terms_tokenization.jsonl");
-
-        // Read multiword terms from file
-        let multiword_terms = {
-            let file =
-                File::open(&multiword_terms_file).context("Failed to open multiword terms file")?;
-            let reader = BufReader::new(file);
-            reader
-                .lines()
-                .map_while(Result::ok)
-                .filter(|line| !line.trim().is_empty())
-                .collect::<Vec<String>>()
-        };
-
-        // Download alt-form info from wiktionary
-        let wiktionary_alt_forms = generate_data::wiktionary_terms::download_alt_forms(
-            &multiword_terms,
-            &target_language_dir,
-        )
-        .await
-        .context("Failed to download alt forms")?;
-
-        // Process multiword terms and get tokenizations
-        let multiword_terms_tokenizations = generate_data::nlp::process_sentences(
-            multiword_terms,
-            &multiword_terms_tokenization_file,
-            course.target_language,
-        )
-        .await
-        .context("Failed to process multiword terms tokenization")?;
-
-        // Filter out "multiword terms" that tokenized to a single token —
-        // these are inflected forms or bad tokenizations, not real multi-word expressions
-        let multiword_terms_tokenizations: BTreeMap<String, Vec<lexide::Token>> =
-            multiword_terms_tokenizations
-                .into_iter()
-                .filter(|(term, tokens)| {
-                    if tokens.len() <= 1 {
-                        log::info!(
-                            "Dropping single-token multiword term: {:?} ({} tokens)",
-                            term,
-                            tokens.len()
-                        );
-                        false
-                    } else {
-                        true
-                    }
-                })
-                .collect();
-
-        // Process sentences with lexide
-        let target_language_tokenization_file =
-            target_language_dir.join("target_language_sentences_tokenization.jsonl");
-
-        // Read sentences from file
-        let sentences = {
-            let file = File::open(&target_language_sentences_file)
-                .context("Failed to open target language sentences file")?;
-            let reader = BufReader::new(file);
-            reader
-                .lines()
-                .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<String>, _>>()
-                .context("Failed to parse target language sentences")?
-        };
-
-        // Process sentences using the new Rust implementation and get tokenizations
-        // (incremental processing will skip already-processed sentences)
-        let sentences_tokenizations = generate_data::nlp::process_sentences(
-            sentences,
-            &target_language_tokenization_file,
-            course.target_language,
-        )
-        .await
-        .context("Failed to process sentences tokenization")?;
-
-        // Convert tokenizations to literals (without multiword detection)
-        // Multiword detection will happen later, after omnigram training
-        let sentence_literals = generate_data::nlp::convert_tokens_to_literals(
-            &sentences_tokenizations,
-            course.target_language,
-        );
-
-        // Filter out sentences containing banned words before gram processing
-        let sentence_literals: BTreeMap<String, Vec<language_utils::Literal<String>>> =
-            sentence_literals
-                .iter()
-                .filter(|(_, words)| {
-                    !words.iter().any(|word| {
-                        word.heteronym()
-                            .map(|h| banned_words.contains(h))
-                            .unwrap_or(false)
-                    })
-                })
-                .map(|(k, v)| (k.clone(), v.clone()))
-                .collect();
-
-        // Filter out sentences containing unknown (X) POS tags
-        let sentence_literals: BTreeMap<String, Vec<language_utils::Literal<String>>> =
-            sentence_literals
-                .into_iter()
-                .filter(|(_, words)| {
-                    !words.iter().any(|word| {
-                        matches!(
-                            &word.word.word_type,
-                            language_utils::WordType::Other(language_utils::OtherWord {
-                                other_tag: language_utils::OtherWordType::X
-                            })
-                        )
-                    })
-                })
-                .collect();
-
-        // Process restricted (Pimsleur) sentences — tokenize to a separate cache file
-        let restricted_tokenization_file =
-            target_language_dir.join("restricted_sentences_tokenization.jsonl");
-        let restricted_sentence_texts: Vec<String> = restricted_sentences
+        // The encoded-sentence views the phases below consume: app-only, and
+        // everything including restricted (for per-source frequencies).
+        let encoded_sentences: Vec<(String, EncodedSentence)> = nlp_sentences
             .iter()
-            .map(|(s, _)| s.clone())
+            .map(|(text, info)| (text.clone(), info.sentence.clone()))
             .collect();
-        let restricted_tokenizations = if !restricted_sentence_texts.is_empty() {
-            generate_data::nlp::process_sentences(
-                restricted_sentence_texts,
-                &restricted_tokenization_file,
-                course.target_language,
-            )
-            .await
-            .context("Failed to process restricted sentences tokenization")?
-        } else {
-            BTreeMap::new()
-        };
-        let restricted_literals = generate_data::nlp::convert_tokens_to_literals(
-            &restricted_tokenizations,
-            course.target_language,
-        );
-
-        // Merge restricted literals into sentence_literals for omnigram training.
-        // BTreeMap insert means duplicates (sentences in both sets) are naturally handled.
-        let mut all_sentence_literals = sentence_literals.clone();
-        for (text, lits) in &restricted_literals {
-            all_sentence_literals
-                .entry(text.clone())
-                .or_insert_with(|| lits.clone());
-        }
-
-        // Convert multiword term tokenizations to grams for seeding into omnigram
-        let multiword_term_literals = generate_data::nlp::convert_tokens_to_literals(
-            &multiword_terms_tokenizations,
-            course.target_language,
-        );
-        let seed_grams: Vec<Gram<String>> = multiword_term_literals
-            .values()
-            .map(|lits| {
-                let (atoms, _) = language_utils::literals_to_atoms(lits, course.target_language);
-                Gram::from(atoms)
-            })
-            .collect();
-        let wiktionary_grams: HashSet<Gram<String>> = seed_grams.iter().cloned().collect();
-
-        // Train supertokens and write whitespace diagnostics (using all sentences including restricted)
-        generate_data::tokenize::train_supertokens_and_write_diagnostics(
-            &all_sentence_literals,
-            course.target_language,
-            &target_language_dir,
-            &seed_grams,
-        );
-
-        // Load gram vocabulary from vocabulary.jsonl
-        let gram_vocabulary: Vec<GramVocabEntry<String>> = {
-            let vocab_file = target_language_dir.join("vocabulary.jsonl");
-            let file = File::open(&vocab_file).context("Failed to open vocabulary.jsonl")?;
-            let reader = BufReader::new(file);
-            let mut vocab = Vec::new();
-            for line in reader.lines() {
-                let line = line.context("Failed to read vocabulary line")?;
-                let entry: serde_json::Value =
-                    serde_json::from_str(&line).context("Failed to parse vocabulary entry")?;
-
-                // Deserialize atoms from JSON array
-                let atoms: Vec<Atom<String>> = entry["atoms"]
-                    .as_array()
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|v| serde_json::from_value(v.clone()).ok())
-                            .collect()
-                    })
-                    .unwrap_or_default();
-
-                vocab.push(GramVocabEntry {
-                    atoms: Gram::from(atoms),
-                    frequency: entry["frequency"].as_u64().unwrap_or(0) as u32,
-                });
-            }
-            vocab
-        };
-
-        // Get set of terms that are known to be discontinuous (had "..." in source files)
-        let discontinuous_terms = generate_data::wiktionary_terms::get_discontinuous_terms(course);
-
-        // Build phrase detection map from both Wiktionary multiword terms and unigram-learned multi-atom grams
-        let mut discontinuous_grams: std::collections::HashSet<Gram<String>> =
-            std::collections::HashSet::new();
-        let phrase_detection_map: PhraseDetectionDataMap = {
-            let mut map = PhraseDetectionDataMap::new();
-            // Wiktionary/lexide multiword terms (with tokens)
-            for (phrase, lits) in &multiword_term_literals {
-                let (atoms, _) = language_utils::literals_to_atoms(lits, course.target_language);
-                let gram = Gram::from(atoms);
-                let tokens = multiword_terms_tokenizations.get(phrase).cloned();
-                if discontinuous_terms.contains(phrase) {
-                    discontinuous_grams.insert(gram.clone());
-                }
-                map.insert(gram, PhraseDetectionData { tokens });
-            }
-            // Unigram-learned multi-atom grams (no tokens)
-            for entry in &gram_vocabulary {
-                if entry.atoms.len() > 1 {
-                    map.entry(entry.atoms.clone())
-                        .or_insert(PhraseDetectionData { tokens: None });
-                }
-            }
-            map
-        };
-
-        // Compute initial gram frequencies from vocabulary for filtering
-        // (we'll compute the full gram+phrase frequencies after filtering)
-        let mut initial_gram_frequencies: Vec<GramFrequencyEntry<String>> = gram_vocabulary
+        let all_encoded_sentences: Vec<(String, EncodedSentence)> = encoded_sentences
             .iter()
-            .filter(|entry| entry.atoms.is_learnable())
-            .map(|entry| GramFrequencyEntry {
-                count: entry.frequency,
-                direct_count: entry.frequency,
-                disambiguation_key: entry.atoms.disambiguation_key(),
-                gram: entry.atoms.clone(),
-            })
-            .collect();
-        initial_gram_frequencies.sort_by_key(|entry| std::cmp::Reverse(entry.clone()));
-
-        // Load encoded sentences from encoded_sentences.jsonl
-        let encoded_sentences: Vec<(String, EncodedSentence)> = {
-            let encoded_file = target_language_dir.join("encoded_sentences.jsonl");
-            let file =
-                File::open(&encoded_file).context("Failed to open encoded_sentences.jsonl")?;
-            let reader = BufReader::new(file);
-            let mut sentences = Vec::new();
-            for line in reader.lines() {
-                let line = line.context("Failed to read encoded sentence line")?;
-                let entry: serde_json::Value =
-                    serde_json::from_str(&line).context("Failed to parse encoded sentence")?;
-                let text = entry["text"].as_str().unwrap_or_default().to_string();
-                let tokens: Vec<u32> = entry["tokens"]
-                    .as_array()
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|v| v.as_u64().map(|n| n as u32))
-                            .collect()
-                    })
-                    .unwrap_or_default();
-                let capitalize_first = entry["capitalize_first"].as_bool().unwrap_or(false);
-                sentences.push((
-                    text,
-                    EncodedSentence {
-                        tokens,
-                        capitalize_first,
-                    },
-                ));
-            }
-            sentences
-        };
-
-        // Split encoded sentences: app-only (in sentence_literals) vs all (including restricted)
-        let all_encoded_sentences = encoded_sentences;
-        let encoded_sentences: Vec<(String, EncodedSentence)> = all_encoded_sentences
-            .iter()
-            .filter(|(text, _)| sentence_literals.contains_key(text))
             .cloned()
-            .collect();
-        println!(
-            "Encoded sentences: {} total, {} app-only, {} restricted-only",
-            all_encoded_sentences.len(),
-            encoded_sentences.len(),
-            all_encoded_sentences.len() - encoded_sentences.len(),
-        );
-
-        // Pre-compute matcher data from phrase detection map
-        let lang = course.target_language;
-        let lemma_patterns: BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>> =
-            phrase_detection_map
-                .iter()
-                .filter_map(|(gram, data)| {
-                    // If we have lexide tokens, use their lemmas and POS
-                    if let Some(tokens) = data.tokens.as_ref() {
-                        if tokens.len() <= 1 {
-                            return None;
-                        }
-                        return Some((
-                            gram.clone(),
-                            tokens
-                                .iter()
-                                .map(|t| (t.lemma.lemma.clone(), t.pos))
-                                .collect(),
-                        ));
-                    }
-                    // For omnigram-discovered grams without lexide tokens,
-                    // build lemma+POS patterns from the gram's atoms directly
-                    if gram.len() <= 1 {
-                        return None;
-                    }
-                    let lemma_pos_pairs: Vec<(String, lexide::pos::PartOfSpeech)> = gram
-                        .iter()
-                        .filter_map(|atom| match atom {
-                            language_utils::Atom::Tok(word) => match &word.word_type {
-                                language_utils::WordType::Heteronym(h) => {
-                                    Some((h.lemma.clone(), convert_pos(h.pos)))
-                                }
-                                _ => None,
-                            },
-                            _ => None,
-                        })
-                        .collect();
-                    // Only include if we got a lemma+POS for every atom
-                    if lemma_pos_pairs.len() == gram.len() {
-                        Some((gram.clone(), lemma_pos_pairs))
-                    } else {
-                        None
-                    }
-                })
-                .collect();
-
-        let tree_patterns: BTreeMap<Gram<String>, lexide::matching::TreeNode> =
-            phrase_detection_map
-                .iter()
-                .filter_map(|(gram, data)| {
-                    let tokens = data.tokens.as_ref()?;
-                    let tokenization = lexide::Tokenization {
-                        tokens: tokens.clone(),
-                    };
-                    let tree = lexide::matching::TreeNode::try_from(tokenization).ok()?;
-                    Some((gram.clone(), tree))
-                })
-                .collect();
-
-        // Build frequency map for deduplication heuristic
-        let gram_freq_map: rustc_hash::FxHashMap<Gram<String>, u32> = gram_vocabulary
-            .iter()
-            .map(|entry| (entry.atoms.clone(), entry.frequency))
-            .collect();
-
-        // Deduplicate patterns: if two grams produce the same matcher, prefer the wiktionary one
-        let lemma_patterns_before: std::collections::HashSet<Gram<String>> =
-            lemma_patterns.keys().cloned().collect();
-        let lemma_patterns = deduplicate_patterns(
-            lemma_patterns,
-            &wiktionary_grams,
-            &gram_freq_map,
-            &wiktionary_alt_forms,
-            lang,
-        );
-        // Remove tree_patterns for grams that were deduplicated away by lemma dedup
-        let lemma_survivors: std::collections::HashSet<Gram<String>> =
-            lemma_patterns.keys().cloned().collect();
-        let tree_patterns: BTreeMap<_, _> = tree_patterns
-            .into_iter()
-            .filter(|(gram, _)| {
-                // Keep if it wasn't in lemma_patterns to begin with, or if it survived dedup
-                !lemma_patterns_before.contains(gram) || lemma_survivors.contains(gram)
-            })
-            .collect();
-        let tree_patterns = deduplicate_patterns(
-            tree_patterns,
-            &wiktionary_grams,
-            &gram_freq_map,
-            &wiktionary_alt_forms,
-            lang,
-        );
-
-        // Split discontinuous patterns into their own map, but keep them in the
-        // contiguous map too so truly contiguous occurrences still get high confidence
-        // from the LemmaMatcher.
-        let discontinuous_lemma_patterns: BTreeMap<
-            Gram<String>,
-            Vec<(String, lexide::pos::PartOfSpeech)>,
-        > = lemma_patterns
-            .iter()
-            .filter(|(gram, _)| discontinuous_grams.contains(gram))
-            .map(|(gram, lemma_pos_pairs)| (gram.clone(), lemma_pos_pairs.clone()))
-            .collect();
-        let contiguous_lemma_patterns = lemma_patterns;
-
-        // Run multiword detection (after omnigram training)
-        let mut nlp_sentences = generate_data::nlp::generate_nlp_sentences(
-            &sentence_literals,
-            &sentences_tokenizations,
-            &contiguous_lemma_patterns,
-            &discontinuous_lemma_patterns,
-            &tree_patterns,
-        )
-        .await
-        .context("Failed to generate NLP sentences")?;
-
-        // Slot-loosened multiword matching: citation forms like "arriver à
-        // quelqu'un" contain placeholder words that never appear literally in
-        // real sentences, so their tree patterns above never fire. Compile
-        // loosened realizations of the argument slots (slot filled by any
-        // nominal, or realized as a clitic pronoun), match them, LLM-grade a
-        // sample per (term, realization), and merge the survivors.
-        {
-            use generate_data::slot_analysis::{self, SlotRealization};
-
-            let slot_specs = slot_analysis::analyze_slots(course, &multiword_terms_tokenizations)
-                .await
-                .context("Failed to analyze multiword term slots")?;
-
-            // Clitic realizations are high-precision; process them first so a
-            // sentence matching both realizations lands in high confidence.
-            let mut slot_patterns: Vec<(
-                &String,
-                Gram<String>,
-                SlotRealization,
-                lexide::matching::PatternNode,
-            )> = Vec::new();
-            for (term, specs) in &slot_specs {
-                let (Some(tokens), Some(lits)) = (
-                    multiword_terms_tokenizations.get(term),
-                    multiword_term_literals.get(term),
-                ) else {
-                    continue;
-                };
-                let (atoms, _) = language_utils::literals_to_atoms(lits, course.target_language);
-                let gram = Gram::from(atoms);
-                for (realization, pattern) in slot_analysis::compile_realizations(tokens, specs) {
-                    slot_patterns.push((term, gram.clone(), realization, pattern));
-                }
-            }
-            slot_patterns.sort_by_key(|(term, _, realization, _)| {
-                (std::cmp::Reverse(*realization), term.to_string())
-            });
-
-            let matches_per_pattern = slot_analysis::find_slot_matches(
-                &sentences_tokenizations,
-                &slot_patterns
+            .chain(
+                restricted_nlp_sentences
                     .iter()
-                    .map(|(_, _, _, p)| p.clone())
-                    .collect::<Vec<_>>(),
-            );
-
-            // Grade every pattern's sample in one batch, then keep only the
-            // realizations that clear the precision bar. Per-pattern detail
-            // goes to a TSV rather than the log — there are thousands of
-            // patterns for a language like English.
-            let grade_requests: Vec<slot_analysis::GradeRequest> = slot_patterns
-                .iter()
-                .zip(&matches_per_pattern)
-                .filter(|(_, matched)| !matched.is_empty())
-                .map(|((term, _, realization, _), matched)| {
-                    slot_analysis::GradeRequest::new((*term).clone(), *realization, matched)
-                })
-                .collect();
-            let graded = slot_analysis::grade_patterns(&grade_requests)
-                .await
-                .context("Failed to grade slot patterns")?;
-
-            let summary_path = target_language_dir.join("slot_patterns.tsv");
-            slot_analysis::write_summary(&summary_path, &graded)
-                .context("Failed to write slot pattern summary")?;
-
-            let kept_patterns: HashSet<(&str, SlotRealization)> = graded
-                .iter()
-                .filter(|g| g.kept())
-                .map(|g| (g.term.as_str(), g.realization))
-                .collect();
-
-            let mut kept_matches = 0usize;
-            for ((term, gram, realization, _), matched) in
-                slot_patterns.iter().zip(&matches_per_pattern)
-            {
-                if !kept_patterns.contains(&(term.as_str(), *realization)) {
-                    continue;
-                }
-                for slot_match in matched {
-                    let Some(info) = nlp_sentences.get_mut(&slot_match.sentence) else {
-                        continue;
-                    };
-                    let terms = &mut info.multiword_terms;
-                    if terms.high_confidence.iter().any(|t| t.gram == *gram)
-                        || terms.low_confidence.iter().any(|t| t.gram == *gram)
-                    {
-                        continue;
-                    }
-                    let term = language_utils::MultiwordTermMatch {
-                        gram: gram.clone(),
-                        matched_word_indices: slot_match
-                            .matched_token_indices
-                            .iter()
-                            .map(|&i| i as u16)
-                            .collect(),
-                    };
-                    match realization {
-                        SlotRealization::Clitic => terms.high_confidence.push(term),
-                        SlotRealization::Filled => terms.low_confidence.push(term),
-                    }
-                    kept_matches += 1;
-                }
-            }
-            println!(
-                "Slot patterns: {} graded, {} kept, {kept_matches} sentence matches added (details: {})",
-                graded.len(),
-                kept_patterns.len(),
-                summary_path.display(),
-            );
-        }
+                    .map(|(text, info)| (text.clone(), info.sentence.clone())),
+            )
+            .collect();
 
         // Helper closure: convert encoded sentences to SentenceGrams using gram vocabulary + NLP data
         let convert_to_grams = |sentences: &[(String, EncodedSentence)],
@@ -987,9 +185,10 @@ async fn main() -> anyhow::Result<()> {
                     let grams: Vec<SentenceGram<Gram<String>>> = encoded
                         .tokens
                         .iter()
-                        .filter_map(|&token_id| {
+                        .filter_map(|&token_key| {
+                            use lasso::Key;
                             gram_vocabulary
-                                .get(token_id as usize)
+                                .get(token_key.into_usize())
                                 .map(|entry| SentenceGram::from(entry.atoms.clone()))
                         })
                         .collect();
@@ -1222,6 +421,7 @@ async fn main() -> anyhow::Result<()> {
                 generate_data::proper_noun_definitions::generate_proper_noun_definitions(
                     *course,
                     &nlp_sentences,
+                    &interners,
                 )
                 .await
                 .context("Failed to generate proper noun definitions")?;
@@ -1835,7 +1035,7 @@ async fn main() -> anyhow::Result<()> {
                 course.target_language,
             );
 
-            let nlp = generate_data::nlp::generate_nlp_sentences(
+            let mut homophone_matches = generate_data::nlp::generate_nlp_sentences(
                 &homophone_literals,
                 &tokenizations,
                 &contiguous_lemma_patterns,
@@ -1845,7 +1045,38 @@ async fn main() -> anyhow::Result<()> {
             .await
             .context("Failed to generate NLP for homophone practice sentences")?;
 
-            nlp_sentences.extend(nlp.clone());
+            // Homophone practice sentences are minted after unigram training,
+            // so encode them with the trained encoder; a sentence containing
+            // an atom the corpus never saw can't be expressed in the gram
+            // system and is dropped (its practice pair falls away below).
+            let mut unencodable = 0usize;
+            for (text, words) in &homophone_literals {
+                if nlp_sentences.contains_key(text) {
+                    continue;
+                }
+                let Some(sentence) = encoder.encode(words, course.target_language, &interners)
+                else {
+                    unencodable += 1;
+                    continue;
+                };
+                nlp_sentences.insert(
+                    text.clone(),
+                    language_utils::SentenceInfo {
+                        sentence,
+                        multiword_terms: homophone_matches.remove(text).unwrap_or(
+                            language_utils::MultiwordTerms {
+                                high_confidence: Vec::new(),
+                                low_confidence: Vec::new(),
+                            },
+                        ),
+                    },
+                );
+            }
+            if unencodable > 0 {
+                println!(
+                    "Dropped {unencodable} homophone practice sentences that could not be encoded"
+                );
+            }
 
             practice
                 .into_iter()
@@ -1930,30 +1161,13 @@ async fn main() -> anyhow::Result<()> {
         // Consolidate all JSON files into a single rkyv file
         let rkyv_file = native_specific_dir.join("language_data.rkyv");
 
-        // Load all the JSON files
-        let target_language_sentences = {
-            let file = File::open(target_language_dir.join("target_language_sentences.jsonl"))
-                .context("Failed to open target language sentences file for consolidation")?;
-            let reader = BufReader::new(file);
-            reader
-                .lines()
-                .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<String>, _>>()
-                .context("Failed to parse target language sentences for consolidation")?
-        };
-
-        let translations = {
-            let file = File::open(
-                native_specific_dir.join("target_language_to_native_translations.jsonl"),
-            )
-            .context("Failed to open translations file for consolidation")?;
-            let reader = BufReader::new(file);
-            reader
-                .lines()
-                .map(|line| serde_json::from_str(&line.unwrap()))
-                .collect::<Result<Vec<(String, Vec<String>)>, _>>()
-                .context("Failed to parse translations for consolidation")?
-        };
+        // The pack only ships sentences that have translations; the filter
+        // against `target_language_sentences` below is where untranslatable
+        // sentences (which the segmented corpus deliberately includes) fall
+        // out.
+        let translations: Vec<(String, Vec<String>)> = translations_map.into_iter().collect();
+        let target_language_sentences: Vec<String> =
+            translations.iter().map(|(text, _)| text.clone()).collect();
 
         // Calculate pattern frequencies using the gram frequency data
         let pattern_freq_map = generate_data::pronunciation_patterns::calculate_pattern_frequencies(
@@ -2097,7 +1311,8 @@ async fn main() -> anyhow::Result<()> {
         // discrimination. See generate_data::token_embeddings.
         generate_data::token_embeddings::ensure_token_embeddings(
             course.target_language,
-            &nlp_sentences,
+            nlp_sentences.iter().map(|(s, info)| (s, info)),
+            &interners,
             &generate_data::cache_remote::store(),
         )
         .await
@@ -2302,22 +1517,15 @@ async fn main() -> anyhow::Result<()> {
             }
             books
         };
-        // Load sentence sources
-        let sentence_sources = {
-            let sentence_sources_file = target_language_dir.join("sentence_sources.jsonl");
-            if sentence_sources_file.exists() {
-                let file = File::open(&sentence_sources_file)
-                    .context("Failed to open sentence sources file")?;
-                let reader = BufReader::new(file);
-                reader
-                    .lines()
-                    .map(|line| serde_json::from_str(&line.unwrap()))
-                    .collect::<Result<Vec<(String, language_utils::SentenceSource)>, _>>()
-                    .context("Failed to parse sentence sources")?
-            } else {
-                Vec::new()
-            }
-        };
+        // Sentence sources come straight from sourcing (deduplicated by
+        // text, last source wins, matching the written sentence_sources.jsonl).
+        let sentence_sources: Vec<(String, language_utils::SentenceSource)> = sentence_corpus
+            .app_sentences
+            .iter()
+            .map(|(text, _, source)| (text.clone(), source.clone()))
+            .collect::<BTreeMap<_, _>>()
+            .into_iter()
+            .collect();
         for (_, source) in &sentence_sources {
             for book_id in &source.book_ids {
                 anyhow::ensure!(

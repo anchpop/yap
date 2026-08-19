@@ -7129,6 +7129,7 @@ désespoir du singe
 déshabiller Paul pour habiller Jean
 déshabiller Pierre pour habiller Paul
 désobéissance civile
+désolé de faire quelque chose
 désormais
 détecteur de mensonges
 détecteur de métaux
@@ -7688,6 +7689,7 @@ en-cas
 en-tête
 enceinte acoustique
 encens d'eau
+enchanté de faire quelque chose
 enchevêtrement quantique
 encore et encore
 encore et toujours
@@ -9798,6 +9800,7 @@ heures d'or
 heures dorées
 heures perdues
 heures supplémentaires
+heureux de faire quelque chose
 hibou des marais
 hibou grand-duc
 hibou moyen-duc
@@ -15660,6 +15663,7 @@ ravalement de façade
 ravaler sa fierté
 rave party
 rave-party
+ravi de faire quelque chose
 ravi de la crèche
 ravioli chinois
 ravioli polonais

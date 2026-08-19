@@ -571,7 +571,7 @@ impl Translator {
             return Ok(t);
         }
 
-        if generate_data::cache_only() {
+        if crate::cache_only() {
             anyhow::bail!(
                 "Translation cache miss for '{text}' ({}→{}); cache-only mode is enabled",
                 self.source_code,
@@ -620,7 +620,7 @@ impl Translator {
     /// uncached (a failed batch, or an empty individual result) simply stays a
     /// miss, and the later per-sentence path will retry and report it as before.
     pub async fn prime(&self, texts: &[String]) {
-        if generate_data::cache_only() {
+        if crate::cache_only() {
             return;
         }
 
@@ -738,9 +738,7 @@ impl Translator {
                 .batch_chat_with_system_prompt::<TranslationResponse>(
                     &system_prompt,
                     chunk.to_vec(),
-                    |batch| {
-                        generate_data::report_batch_progress(pb, chunk_start, chunk.len(), batch)
-                    },
+                    |batch| crate::report_batch_progress(pb, chunk_start, chunk.len(), batch),
                 )
                 .await
             {
