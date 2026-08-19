@@ -760,7 +760,7 @@ fn adjudication_system_prompt(language: Language) -> String {
         natural, learners would probably still benefit from learning it and seeing \
         examples of it, because it's not totally obvious to a language learner \
         that \"non\" would be used this way. So that case also deserves its own \
-        split. On the other hand, you can merge if the usage seems so similar that \
+        sense. On the other hand, you can merge if the usage seems so similar that \
         there's no real reason to teach them separately. For example, the word \
         \"ending\" in \"the road is ending\" vs \"the story is ending\" means \
         basically the same thing — we are reaching the end. These can be grouped, \
@@ -781,26 +781,36 @@ fn adjudication_system_prompt(language: Language) -> String {
         compositional and transparent, such as \"god willing\", it's still \
         beneficial to report it, because fluency requires that a language learner \
         already be familiar with such patterns, and we must be aware of them if \
-        we are to explicitly teach them.\n\
-        \n\
-        When you report an expression, cite the line numbers it appears on and \
-        copy it as a contiguous substring of one of those lines, character-exact: \
-        the citation is mechanically matched against the cited line, so an \
-        invented or normalized form can't be verified and gets discarded. If the \
-        expression dominates a whole cluster, list that cluster in its \
-        cluster_numbers and leave the cluster out of `senses`; an expression that \
-        only accounts for a few lines can be reported with empty cluster_numbers. \
-        Inflectional variants of one pattern belong in a single entry, and a \
-        pattern that appears on only one line is too thin to report.\n\
+        we are to explicitly teach them. One caveat: an expression needs at \
+        least two actual words — a single word with a characteristic position \
+        or punctuation, like the sentence-final \"non ?\", should be reported \
+        as a sense of that word instead.\n\
         \n\
         Noise: Some clusters are unfortunately incoherent. They might be a \
         mixture of many different senses, or just noise. Please put those in the \
         noise category so that the cluster is not taught to the user as a \
         coherent concept.\n\
         \n\
-        For the senses, please write the gloss in {language}: they are \
-        monolingual dictionary-style glosses for a {language} sense inventory, \
-        not translations. Feel free to put some thoughts in the thoughts field \
+        One practical note about reporting expressions. We can only use an \
+        expression if we can find it in the corpus ourselves: we take exactly \
+        what you write and look for it in the lines you cited, so the safest \
+        thing is to copy the expression directly out of one of the numbered \
+        lines, without tidying it up or converting it to a dictionary form — if \
+        what you write doesn't appear in the cited line word-for-word, we won't \
+        be able to find it, and the expression will unfortunately be lost. Along \
+        with the expression itself, cite the numbers of the lines you saw it on. \
+        Sometimes an expression is the real explanation for an entire cluster; \
+        when that happens, put that cluster's number in the expression's \
+        cluster_numbers and leave the cluster out of the senses, since it isn't \
+        really evidence of a separate sense of the word. Other times an \
+        expression just shows up on a few lines here and there — report it too, \
+        with empty cluster_numbers. If the same pattern appears in several \
+        inflected forms, one entry covering the pattern is enough. And a pattern \
+        that only ever appears on one line is too little evidence for us to do \
+        anything with, so it isn't worth reporting.\n\
+        \n\
+        For the senses, please write the gloss in {language}. Feel free to put \
+        some thoughts in the thoughts field \
         (in English) — that will help us understand your reasoning for your \
         decisions."
     )
