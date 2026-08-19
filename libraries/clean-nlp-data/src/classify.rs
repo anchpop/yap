@@ -10826,6 +10826,18 @@ Specific concerns about the current analysis are listed alongside the sentence. 
 /// gold and retrain lexide. Until then, downstream consumers that match on a
 /// clitic's lemma or dep (e.g. multiword-term unification of "me passer de" /
 /// "s'en passer") must accept lemma-sets and dep-sets, not exact values.
+///
+/// TODO(pos/dep self-consistency): a related, mechanically detectable error
+/// class — tokens whose POS contradicts their dep label. In the French corpus
+/// lexide emits ~8.9k tokens with dep=det but pos!=DET; the unambiguous
+/// subclass is articles POS-tagged PRON (les/le/la/l' as PRON with a det
+/// edge, ~2.7k tokens), concentrated in verbless exclamations ("Les nuls !",
+/// "Les enculés !") where there is no verb to attach a clitic to. Sense
+/// discovery surfaced this as a spurious "article défini" sense of les@PRON.
+/// A dep/POS consistency check over the gold (det edge => DET head-side POS,
+/// modulo UD predeterminer conventions — tout/beaucoup need checking against
+/// the guidelines before being called errors) would catch these before they
+/// train lexide.
 pub async fn parse_dependencies_with_llm(
     language: Language,
     sentence: &str,
