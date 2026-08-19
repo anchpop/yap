@@ -670,7 +670,7 @@ struct ExtractedExpression {
     /// Numbers of the listed lines that contain this expression.
     #[serde(rename = "2. line_numbers")]
     line_numbers: Vec<usize>,
-    /// The expression copied VERBATIM (a contiguous substring) from one of
+    /// The expression copied verbatim (a contiguous substring) from one of
     /// the cited lines.
     #[serde(rename = "3. verbatim")]
     verbatim: String,
@@ -690,53 +690,89 @@ struct AdjudicationResponse {
     /// Fixed multiword expressions found in the clusters, if any.
     #[serde(rename = "3. expressions")]
     expressions: Vec<ExtractedExpression>,
-    /// Confidence in the overall grouping, 0.0-1.0.
-    #[serde(rename = "4. confidence")]
-    confidence: f64,
+    /// Numbers of the clusters that are incoherent mixtures or noise.
+    #[serde(rename = "4. noise")]
+    noise: Vec<usize>,
 }
 
 fn adjudication_system_prompt(language: Language) -> String {
     format!(
         "You are auditing a language-learning vocabulary built from a {language} \
-        sentence corpus. Each request shows one target word or expression (marked \
-        \u{ab}like this\u{bb}) together with several CLUSTERS of its occurrences, \
-        produced by an embedding model. The clustering is imperfect: it may split one \
-        meaning across several clusters, and clusters may overlap — a small cluster \
-        can carve a subset out of a larger one. Lines are numbered across all \
-        clusters so you can cite them.\n\
+        sentence corpus. What we have done is taken all the known occurrences of a \
+        certain vocabulary item (a word or phrase), embedded them with an embedding \
+        model, then clustered them. The goal is to split the vocabulary item into \
+        distinct meanings, so that we can teach each meaning separately. \
+        Unfortunately, the embedding models are not perfect at this, which is where \
+        you come in. We would like you to sort the clusters into \"senses\", \
+        \"expressions\", and \"noise\".\n\
         \n\
-        Sort the clusters into:\n\
+        In each request the target item is marked \u{ab}like this\u{bb} in its \
+        sentence, and the lines are numbered across all clusters so you can cite \
+        them. The clustering is imperfect in shape as well: one meaning may be \
+        split across several clusters, and clusters may overlap — a small cluster \
+        can carve a subset out of a larger one. The embedding features, and \
+        therefore the resulting input clusters, often reflect superficial \
+        features like sentence length, punctuation, or surrounding formality \
+        rather than a difference in meaning, which is one reason why merges can \
+        be necessary.\n\
         \n\
-        1. SENSES. Group the clusters by meaning: each entry in `senses` lists the \
-        clusters sharing one meaning, with a 2-5 word gloss. Only report separate \
-        groups for GENUINELY DISTINCT meanings — distinct enough that a learner \
-        would treat them as different vocabulary items and they would usually \
-        receive different translations in another language (homonyms like \
-        bank=money/river, or strong polysemy like paper=material/newspaper). Mere \
-        topic, register, or inflection variation of one meaning does NOT count — \
-        merge such clusters into one group. If the target has a single meaning \
-        throughout, return one group containing every cluster.\n\
+        Senses: Definitely report separate groups for distinct meanings — distinct \
+        enough that a learner would treat them as different vocabulary items and \
+        they would usually receive different translations in another language \
+        (homonyms like bank=money/river, or strong polysemy like \
+        paper=material/newspaper). Some of the input will show splits that only \
+        vary slightly in topic, register, or inflection, but where the meaning is \
+        the same. Such clusters should be merged into one group. And there is a \
+        final category, where the meaning really is slightly different, but might \
+        not ordinarily be seen as different. For example, in French it is common \
+        to say \"non\" to literally mean \"no\", but at the end of a sentence \
+        \"non ?\" can mean something like \"don't you think?\". Even though it's \
+        natural, learners would probably still benefit from learning it and seeing \
+        examples of it, because it's not totally obvious to a language learner \
+        that \"non\" would be used this way. So that case also deserves its own \
+        split. On the other hand, you can merge if the usage seems so similar that \
+        there's no real reason to teach them separately. For example, the word \
+        \"ending\" in \"the road is ending\" vs \"the story is ending\" means \
+        basically the same thing — we are reaching the end. These can be grouped, \
+        as it is very unlikely that a learner would even benefit from learning \
+        them separately. Your judgement in deciding when to split into different \
+        senses and when to group occurrences into one sense is appreciated.\n\
         \n\
-        2. EXPRESSIONS. A cluster is often driven by the target occurring inside a \
-        larger multiword pattern (collocation, idiom, compound, fixed phrase, or \
-        even a recurrent free combination). Such a cluster is NOT a sense of the \
-        target: report the host pattern in `expressions`, list that cluster's \
-        number in its cluster_numbers, and leave the cluster out of `senses`. \
-        Report a cluster-dominating pattern even when it is fully compositional — \
-        a separate step decides whether it is worth learning as a unit; your job \
-        here is to explain the cluster. Also report genuine fixed expressions of \
-        the target that account for several lines without dominating a whole \
-        cluster (with empty cluster_numbers). For each expression: cite the line \
-        numbers it appears on, copy it VERBATIM as a contiguous substring of one \
-        cited line (never invent or normalize a citation form), and give a short \
-        gloss. Do NOT report inflectional variants separately or patterns \
-        appearing on only one line.\n\
+        Expressions: The above directives refer to cases where a word individually \
+        has multiple meanings, but sometimes a word takes on a new meaning when \
+        it's a component of a fixed expression. This can range from the opaque, \
+        like the \"high\" in \"high school\", to the relatively transparent, like \
+        \"god\" in \"god willing\". In these cases, it is true that \"high\" and \
+        \"god\" mean something slightly different from usual, but the best way to \
+        explain this to users is not to say that \"high\" has some sense relating \
+        to schools or something, but to just say that \"high\" has senses like \
+        \"vertically elevated\", \"inebriated\", and also participates in fixed \
+        expressions like \"high school\". Even when a pattern is very \
+        compositional and transparent, such as \"god willing\", it's still \
+        beneficial to report it, because fluency requires that a language learner \
+        already be familiar with such patterns, and we must be aware of them if \
+        we are to explicitly teach them.\n\
         \n\
-        A cluster that is noise or an incoherent mixture may be left out of both \
-        lists. Write your thoughts in English, but write every gloss IN {language}: \
-        they are monolingual dictionary-style glosses for a {language} sense \
-        inventory, not translations. Set confidence to your confidence in the \
-        overall grouping."
+        When you report an expression, cite the line numbers it appears on and \
+        copy it as a contiguous substring of one of those lines, character-exact: \
+        the citation is mechanically matched against the cited line, so an \
+        invented or normalized form can't be verified and gets discarded. If the \
+        expression dominates a whole cluster, list that cluster in its \
+        cluster_numbers and leave the cluster out of `senses`; an expression that \
+        only accounts for a few lines can be reported with empty cluster_numbers. \
+        Inflectional variants of one pattern belong in a single entry, and a \
+        pattern that appears on only one line is too thin to report.\n\
+        \n\
+        Noise: Some clusters are unfortunately incoherent. They might be a \
+        mixture of many different senses, or just noise. Please put those in the \
+        noise category so that the cluster is not taught to the user as a \
+        coherent concept.\n\
+        \n\
+        For the senses, please write the gloss in {language}: they are \
+        monolingual dictionary-style glosses for a {language} sense inventory, \
+        not translations. Feel free to put some thoughts in the thoughts field \
+        (in English) — that will help us understand your reasoning for your \
+        decisions."
     )
 }
 
@@ -951,7 +987,6 @@ pub struct SenseCandidate {
     pub n: usize,
     pub senses: Vec<SenseEntry>,
     pub silhouette: f64,
-    pub confidence: f64,
     pub source: String,
 }
 
@@ -965,12 +1000,27 @@ struct KeyMining {
     vectors: Vec<Vec<f32>>,
 }
 
+/// What `discover` does once the adjudication prompts are built.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum DiscoverMode {
+    /// Run the judges and write the proposal files.
+    Full,
+    /// Print every adjudication prompt to stdout and stop — for iterating
+    /// on the prompt against the judge's real inputs, without LLM spend.
+    DumpPrompts,
+    /// Run the adjudication batch (a pure tysm cache hit after a Full run)
+    /// and print every raw response to stdout, then stop — for inspecting
+    /// the judge's thoughts and noise assignments behind the artifacts.
+    DumpResponses,
+}
+
 /// Discover sense splits and collocation candidates for one language and
 /// write the proposal files under `generate-data/data/{lang}/`.
 pub async fn discover(
     language: Language,
     corpus: &SegmentedCorpus,
     store: &osmo::Store,
+    mode: DiscoverMode,
 ) -> Result<()> {
     let arena = GramArena::from_vocabulary(&corpus.gram_vocabulary);
 
@@ -1125,6 +1175,16 @@ pub async fn discover(
         })
         .collect();
 
+    if mode == DiscoverMode::DumpPrompts {
+        println!("──── system prompt ────");
+        println!("{}", adjudication_system_prompt(language));
+        for prompt in &prompts {
+            println!("──── {} ────", prompt.display);
+            println!("{}", adjudication_user_prompt(prompt));
+        }
+        return Ok(());
+    }
+
     let pb = indicatif::ProgressBar::new(prompts.len() as u64);
     pb.set_style(
         indicatif::ProgressStyle::default_bar()
@@ -1147,6 +1207,18 @@ pub async fn discover(
         .await
         .context("adjudication batch failed")?;
     pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
+
+    if mode == DiscoverMode::DumpResponses {
+        for (idx, prompt) in prompts.iter().enumerate() {
+            let (_, resp) = &results[idx];
+            println!("──── {} ────", prompt.display);
+            match resp {
+                Ok(resp) => println!("{}", serde_json::to_string_pretty(resp)?),
+                Err(e) => println!("(failed: {e})"),
+            }
+        }
+        return Ok(());
+    }
 
     let mut sense_rows: Vec<SenseCandidate> = Vec::new();
     // Grounded expressions, each with a few example sentences for the
@@ -1318,7 +1390,6 @@ pub async fn discover(
             n: km.occs.len(),
             senses,
             silhouette,
-            confidence: resp.confidence,
             source: sources.join("+"),
         });
     }
@@ -1329,8 +1400,8 @@ pub async fn discover(
         language.code(),
     );
     sense_rows.sort_by(|a, b| {
-        b.confidence
-            .total_cmp(&a.confidence)
+        b.silhouette
+            .total_cmp(&a.silhouette)
             .then(a.key.cmp(&b.key))
     });
 

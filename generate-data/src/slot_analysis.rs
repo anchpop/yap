@@ -35,9 +35,13 @@ use tysm::chat_completions::ChatClient;
 
 /// Listing a language's placeholder expressions — 2 calls per language, and
 /// mostly recall of well-known vocabulary rather than judgment, so it runs on
-/// the cheaper tier.
+/// the cheaper tier. These are the pipeline's live (non-Batch-API) calls, and
+/// the grounded one re-keys whenever the merged term list changes (its prompt
+/// samples the list), so it runs on the default service tier: flex saves
+/// fractions of a cent here and its capacity outages would otherwise block
+/// the whole segmentation run.
 static HINTS_CLIENT: LazyLock<ChatClient> =
-    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-sol"));
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-sol").with_service_tier("default"));
 
 /// The two judgment steps: deciding slot-vs-literal per term, and grading a
 /// pattern's matches. Both are only a few hundred calls per language, and

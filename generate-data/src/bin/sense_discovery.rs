@@ -5,7 +5,12 @@
 //! (`sense_candidates.jsonl`, `discovered_multiword_terms.jsonl`) that the
 //! next generate-data run ingests directly — no human review step.
 //!
-//! Usage: cargo run --release --bin sense_discovery -- [--cache-only] [<lang>...]
+//! Usage: cargo run --release --bin sense_discovery -- [--cache-only] [--dump-prompts|--dump-responses] [<lang>...]
+//!
+//! `--dump-prompts` prints every adjudication prompt to stdout instead of
+//! calling the LLM — for iterating on the prompt against its real inputs.
+//! `--dump-responses` runs the adjudication batch (a pure cache hit after a
+//! full run) and prints every raw judge response instead of writing files.
 
 use anyhow::Context;
 use language_utils::COURSES;
@@ -21,9 +26,14 @@ async fn main() -> anyhow::Result<()> {
 
     let mut lang_filter: BTreeSet<String> = BTreeSet::new();
     let mut cache_only = false;
+    let mut mode = generate_data::sense_discovery::DiscoverMode::Full;
     for arg in std::env::args().skip(1) {
         match arg.as_str() {
             "--cache-only" => cache_only = true,
+            "--dump-prompts" => mode = generate_data::sense_discovery::DiscoverMode::DumpPrompts,
+            "--dump-responses" => {
+                mode = generate_data::sense_discovery::DiscoverMode::DumpResponses
+            }
             s if s.starts_with("--") => anyhow::bail!("unknown flag: {s}"),
             _ => {
                 lang_filter.insert(arg);
@@ -79,7 +89,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .await
         .context("Failed to ensure token embeddings")?;
-        generate_data::sense_discovery::discover(lang, &segmented, &store)
+        generate_data::sense_discovery::discover(lang, &segmented, &store, mode)
             .await
             .context("Sense discovery failed")?;
     }
