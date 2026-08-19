@@ -1022,6 +1022,7 @@ pub async fn discover(
     store: &osmo::Store,
     mode: DiscoverMode,
 ) -> Result<()> {
+    let mut timer = crate::StageTimer::new();
     let arena = GramArena::from_vocabulary(&corpus.gram_vocabulary);
 
     // Index every sentence: decoded word spans, the gram segmentation
@@ -1031,8 +1032,10 @@ pub async fn discover(
         .values()
         .map(|info| index_sentence(info, &corpus.interners, language))
         .collect();
+    timer.lap("sentence indexing");
 
     let occurrences = collect_occurrences(corpus, language, &index, &arena);
+    timer.lap("occurrence collection");
     println!(
         "sense-discovery[{}]: {} grams with >= {MIN_OCC} occurrences",
         language.code(),
@@ -1107,6 +1110,7 @@ pub async fn discover(
             language.code()
         );
     }
+    timer.lap("vector fetch");
 
     // Cluster every key's occurrence cloud: recursive 2-means leaves plus
     // novel HDBSCAN clusters on large clouds — purely geometric, tuned to
@@ -1117,6 +1121,7 @@ pub async fn discover(
         .par_iter()
         .filter_map(|km| build_key_proposal(km.key, &km.vectors))
         .collect();
+    timer.lap("mining (2-means + hdbscan)");
 
     // Pick which grams to adjudicate: top keys by root 2-means silhouette,
     // plus top keys surfaced by HDBSCAN.
@@ -1175,6 +1180,7 @@ pub async fn discover(
         })
         .collect();
 
+    timer.lap("prompt building");
     if mode == DiscoverMode::DumpPrompts {
         println!("──── system prompt ────");
         println!("{}", adjudication_system_prompt(language));

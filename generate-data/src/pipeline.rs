@@ -240,6 +240,7 @@ pub async fn segment_corpus(
     sentence_corpus: &TargetSentences,
 ) -> anyhow::Result<SegmentedCorpus> {
     let course = *course;
+    let mut timer = crate::StageTimer::new();
     let CourseDirs {
         target_language_dir,
         ..
@@ -284,6 +285,7 @@ pub async fn segment_corpus(
     )
     .await
     .context("Failed to process sentences tokenization")?;
+    timer.lap("tokenization load");
 
     // Convert tokenizations to literals (without multiword detection)
     // Multiword detection will happen later, after omnigram training
@@ -338,6 +340,7 @@ pub async fn segment_corpus(
     };
     let restricted_literals =
         crate::nlp::convert_tokens_to_literals(&restricted_tokenizations, course.target_language);
+    timer.lap("literals + filters");
 
     // Merge restricted literals into sentence_literals for omnigram training.
     // BTreeMap insert means duplicates (sentences in both sets) are naturally handled.
@@ -386,6 +389,7 @@ pub async fn segment_corpus(
             .collect();
 
     // Convert multiword term tokenizations to grams for seeding into omnigram
+    timer.lap("multiword terms + alt forms");
     let multiword_term_literals = crate::nlp::convert_tokens_to_literals(
         &multiword_terms_tokenizations,
         course.target_language,
@@ -412,6 +416,7 @@ pub async fn segment_corpus(
         &target_language_dir,
         &seed_grams,
     );
+    timer.lap("omnigram training");
 
     // Get set of terms that are known to be discontinuous (had "..." in source files)
     let discontinuous_terms = crate::wiktionary_terms::get_discontinuous_terms(&course);
@@ -555,6 +560,7 @@ pub async fn segment_corpus(
     )
     .await
     .context("Failed to generate NLP sentences")?;
+    timer.lap("multiword matching");
 
     // Slot-loosened multiword matching: citation forms like "arriver à
     // quelqu'un" contain placeholder words that never appear literally in
@@ -594,6 +600,7 @@ pub async fn segment_corpus(
             (std::cmp::Reverse(*realization), term.to_string())
         });
 
+        timer.lap("slot analysis + compile");
         let matches_per_pattern = slot_analysis::find_slot_matches(
             &sentences_tokenizations,
             &slot_patterns
@@ -602,6 +609,7 @@ pub async fn segment_corpus(
                 .collect::<Vec<_>>(),
         );
 
+        timer.lap("slot matching");
         // Grade every pattern's sample in one batch, then keep only the
         // realizations that clear the precision bar. Per-pattern detail
         // goes to a TSV rather than the log — there are thousands of
@@ -669,6 +677,7 @@ pub async fn segment_corpus(
         );
     }
 
+    timer.lap("slot grading + merge");
     // Assemble the corpus: every filtered sentence in its canonical encoded
     // form, paired with its matches.
     let empty_terms = || MultiwordTerms {
@@ -706,6 +715,7 @@ pub async fn segment_corpus(
             .filter(|k| !sentence_literals.contains_key(*k)),
         &mut BTreeMap::new(),
     );
+    timer.lap("corpus assembly");
     println!(
         "Segmented corpus: {} app sentences, {} restricted-only",
         nlp_sentences.len(),

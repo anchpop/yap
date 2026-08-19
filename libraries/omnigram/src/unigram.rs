@@ -12,9 +12,184 @@ use std::hash::Hash;
 
 const LOG_PROB_FLOOR: f64 = -99.0;
 type VocabEntry<T> = (Seq<T>, f64, u32);
+#[cfg(test)]
 type ExpectedCounts<T> = FxHashMap<Seq<T>, f64>;
-type EmRunResult<T> = (Vec<VocabEntry<T>>, ExpectedCounts<T>, f64);
-type SentenceLattice = Vec<Vec<(usize, u32, f64)>>;
+
+/// A lattice edge: a vocabulary sequence spanning `[start, end)` of a
+/// sentence, identified by its index into the round's vocabulary.
+type Edge = (u32, u32, u32);
+
+/// Per-sentence lattice edges for one vocabulary *set*. Within a shrink
+/// round the set is fixed — EM only reweights it, and pruning only rescores
+/// under it — so the edges are found once per round and shared by every EM
+/// iteration and the prune pass, instead of re-probing the vocabulary
+/// hashmap for every window of every sentence on every pass.
+struct RoundLattice {
+    /// Per sentence, edges in (start asc, end asc) order — the order the
+    /// window loops have always visited them — for the backward pass,
+    /// marginals, and Viterbi.
+    by_start: Vec<Vec<Edge>>,
+    /// The same edges stably re-sorted by end position, for the forward pass.
+    by_end: Vec<Vec<Edge>>,
+}
+
+impl RoundLattice {
+    fn build<T: UnigramToken>(corpus: &[Vec<T>], vocab: &[VocabEntry<T>]) -> Self {
+        let max_piece_length = vocab.iter().map(|(s, _, _)| s.len()).max().unwrap_or(1);
+        let ids: FxHashMap<&[T], u32> = vocab
+            .iter()
+            .enumerate()
+            .map(|(idx, (seq, _, _))| (seq.0.as_slice(), idx as u32))
+            .collect();
+        let mut by_start = Vec::with_capacity(corpus.len());
+        let mut by_end = Vec::with_capacity(corpus.len());
+        for sentence in corpus {
+            let n = sentence.len();
+            let mut edges: Vec<Edge> = Vec::new();
+            for start in 0..n {
+                for end in start + 1..=n.min(start + max_piece_length) {
+                    if let Some(&id) = ids.get(&sentence[start..end]) {
+                        edges.push((start as u32, end as u32, id));
+                    }
+                }
+            }
+            let mut ends = edges.clone();
+            ends.sort_by_key(|&(_, end, _)| end); // stable sort keeps starts ascending within an end
+            by_start.push(edges);
+            by_end.push(ends);
+        }
+        Self { by_start, by_end }
+    }
+}
+
+/// Per-token Viterbi/EM edge scores for a vocabulary, in vocabulary order:
+/// `(1-α)·log_prob - α` (see `UnigramTrainerConfig::merge_alpha`).
+fn blended_scores<T>(vocab: &[VocabEntry<T>], merge_alpha: f64) -> Vec<f64> {
+    vocab
+        .iter()
+        .map(|(_, log_prob, _)| (1.0 - merge_alpha) * log_prob - merge_alpha)
+        .collect()
+}
+
+fn forward_pass(n: usize, by_end: &[Edge], scores: &[f64]) -> Vec<f64> {
+    let mut alpha = vec![f64::NEG_INFINITY; n + 1];
+    alpha[0] = 0.0;
+    let mut i = 0;
+    for end in 1..=n {
+        let run = i;
+        while i < by_end.len() && by_end[i].1 as usize == end {
+            i += 1;
+        }
+        alpha[end] = logsumexp_by(&by_end[run..i], |(start, _, id)| {
+            alpha[*start as usize] + scores[*id as usize]
+        });
+    }
+    alpha
+}
+
+fn backward_pass(n: usize, by_start: &[Edge], scores: &[f64]) -> Vec<f64> {
+    let mut beta = vec![f64::NEG_INFINITY; n + 1];
+    beta[n] = 0.0;
+    let mut j = by_start.len();
+    for start in (0..n).rev() {
+        let run_end = j;
+        while j > 0 && by_start[j - 1].0 as usize == start {
+            j -= 1;
+        }
+        beta[start] = logsumexp_by(&by_start[j..run_end], |(_, end, id)| {
+            scores[*id as usize] + beta[*end as usize]
+        });
+    }
+    beta
+}
+
+/// One EM E-step over the whole corpus: run forward-backward on every
+/// sentence's edge lattice, accumulate each edge's marginal into `expected`
+/// (indexed like the round's vocabulary), and return the corpus log
+/// likelihood.
+fn accumulate_expected_counts<T: UnigramToken>(
+    corpus: &[Vec<T>],
+    lattice: &RoundLattice,
+    scores: &[f64],
+    expected: &mut [f64],
+) -> f64 {
+    let mut corpus_log_likelihood = 0.0;
+
+    for (sentence_idx, sentence) in corpus.iter().enumerate() {
+        let n = sentence.len();
+        let by_start = &lattice.by_start[sentence_idx];
+        let by_end = &lattice.by_end[sentence_idx];
+        let alpha = forward_pass(n, by_end, scores);
+        let beta = backward_pass(n, by_start, scores);
+
+        let sentence_log_prob = alpha[n];
+        assert!(
+            sentence_log_prob.is_finite(),
+            "EM E-step found a sentence with no finite lattice path.\n\
+             sentence_tokens={sentence:#?}\n\
+             alpha={alpha:#?}"
+        );
+        corpus_log_likelihood += sentence_log_prob;
+
+        for &(start, end, id) in by_start {
+            let marginal = (alpha[start as usize] + scores[id as usize] + beta[end as usize]
+                - sentence_log_prob)
+                .exp();
+            expected[id as usize] += marginal;
+        }
+    }
+
+    corpus_log_likelihood
+}
+
+/// Viterbi over one sentence's edges. Returns the segmentation (as vocabulary
+/// indices) and its score, or None when no path survives (only possible with
+/// a forbidden token, since single tokens otherwise cover every position).
+fn viterbi_segments_and_score(
+    n: usize,
+    by_start: &[Edge],
+    scores: &[f64],
+    forbidden: Option<u32>,
+) -> Option<(Vec<u32>, f64)> {
+    if n == 0 {
+        return Some((Vec::new(), 0.0));
+    }
+
+    let mut best_score = vec![f64::NEG_INFINITY; n + 1];
+    let mut best_prev: Vec<Option<(usize, u32)>> = vec![None; n + 1];
+    best_score[0] = 0.0;
+
+    for &(start, end, id) in by_start {
+        if forbidden == Some(id) {
+            continue;
+        }
+        let (start, end) = (start as usize, end as usize);
+        if !best_score[start].is_finite() {
+            continue;
+        }
+        let candidate = best_score[start] + scores[id as usize];
+        if candidate > best_score[end] {
+            best_score[end] = candidate;
+            best_prev[end] = Some((start, id));
+        }
+    }
+
+    let final_score = best_score[n];
+    if !final_score.is_finite() {
+        return None;
+    }
+
+    let mut pos = n;
+    let mut segments = Vec::new();
+    while pos > 0 {
+        let (start, id) = best_prev[pos].take()?;
+        segments.push(id);
+        pos = start;
+    }
+    segments.reverse();
+
+    Some((segments, final_score))
+}
 
 /// Trait for tokens that can be used with the unigram model.
 ///
@@ -85,6 +260,14 @@ impl<T: Hash> Seq<T> {
 fn logsumexp_by<T>(values: &[T], value: impl Fn(&T) -> f64) -> f64 {
     if values.is_empty() {
         return f64::NEG_INFINITY;
+    }
+    // A single finite value is its own logsumexp, exactly: the general path
+    // computes max + ln(exp(v - v)) = v + ln(1.0) = v in IEEE arithmetic.
+    if let [only] = values {
+        let v = value(only);
+        if v.is_finite() {
+            return v;
+        }
     }
 
     let max = values.iter().map(&value).fold(f64::NEG_INFINITY, f64::max);
@@ -191,17 +374,8 @@ impl<T: UnigramToken> UnigramModel<T> {
         })
     }
 
-    fn vocab_log_prob(&self, seq: &Seq<T>) -> Option<f64> {
-        self.vocab.get(seq).map(|(_, lp)| *lp)
-    }
-
     fn sequence_score_from_log_prob(&self, log_prob: f64) -> f64 {
         (1.0 - self.merge_alpha) * log_prob - self.merge_alpha
-    }
-
-    fn vocab_score(&self, seq: &Seq<T>) -> Option<f64> {
-        self.vocab_log_prob(seq)
-            .map(|log_prob| self.sequence_score_from_log_prob(log_prob))
     }
 
     fn vocab_entry(&self, tokens: &[T]) -> Option<(u32, f64)> {
@@ -536,11 +710,9 @@ impl UnigramTrainer {
 
         while vocab.len() > target_vocab_size {
             let start_size = vocab.len();
-            let (trained_vocab, _, _) =
-                self.run_em(corpus, &vocab, em_iterations, &seed_set, fixed_counts);
-            vocab = trained_vocab;
-            let model = UnigramModel::new(vocab.clone(), self.config.merge_alpha);
-            let mut losses = self.compute_prune_losses(corpus, &vocab, &model, &seed_set);
+            let lattice = RoundLattice::build(corpus, &vocab);
+            vocab = self.run_em(corpus, &lattice, &vocab, em_iterations, fixed_counts);
+            let mut losses = self.compute_prune_losses(corpus, &lattice, &vocab, &seed_set);
             losses.sort_by(|a, b| a.1.total_cmp(&b.1));
 
             let iter_target = (vocab.len() as f64 * self.config.shrinking_factor).ceil() as usize;
@@ -567,7 +739,8 @@ impl UnigramTrainer {
             }
         }
 
-        let (vocab, _, _) = self.run_em(corpus, &vocab, em_iterations, &seed_set, fixed_counts);
+        let lattice = RoundLattice::build(corpus, &vocab);
+        let vocab = self.run_em(corpus, &lattice, &vocab, em_iterations, fixed_counts);
         let model = UnigramModel::new(vocab, self.config.merge_alpha);
 
         // Reorder by actual usage when segmenting the corpus
@@ -578,121 +751,131 @@ impl UnigramTrainer {
     fn run_em<T: UnigramToken>(
         &self,
         corpus: &[Vec<T>],
+        lattice: &RoundLattice,
         vocab: &[VocabEntry<T>],
         iterations: usize,
-        _seed_set: &HashSet<Seq<T>>,
         fixed_counts: &FxHashMap<Seq<T>, f64>,
-    ) -> EmRunResult<T> {
+    ) -> Vec<VocabEntry<T>> {
+        // Resolve fixed counts against this vocabulary once: in-vocab entries
+        // boost their own expected count, the rest only feed the normalizer
+        // (matching the old map-based accumulation, where out-of-vocab fixed
+        // sequences contributed to the total but matched no vocab entry).
+        let mut fixed_by_id: Vec<(u32, f64)> = Vec::new();
+        let mut fixed_extra_total = 0.0;
+        if !fixed_counts.is_empty() {
+            let ids: FxHashMap<&[T], u32> = vocab
+                .iter()
+                .enumerate()
+                .map(|(idx, (seq, _, _))| (seq.0.as_slice(), idx as u32))
+                .collect();
+            for (seq, &count) in fixed_counts {
+                match ids.get(seq.0.as_slice()) {
+                    Some(&id) => fixed_by_id.push((id, count)),
+                    None => fixed_extra_total += count,
+                }
+            }
+        }
+
         let mut current: Vec<VocabEntry<T>> = vocab.to_vec();
-        let mut last_expected = FxHashMap::default();
-        let mut last_likelihood = f64::NEG_INFINITY;
 
         for _ in 0..iterations {
-            let model = UnigramModel::new(current.clone(), self.config.merge_alpha);
-            let (mut expected_counts, corpus_log_likelihood) =
-                self.compute_expected_counts(corpus, &model);
+            let scores = blended_scores(&current, self.config.merge_alpha);
+            let mut expected = vec![0.0f64; current.len()];
+            let corpus_log_likelihood =
+                accumulate_expected_counts(corpus, lattice, &scores, &mut expected);
 
             // Merge in fixed counts from known segmentations.
             // These act as a prior: known morphemes get a count boost every iteration,
             // anchoring the model toward real morphological segments.
-            for (seq, &count) in fixed_counts {
-                *expected_counts.entry(seq.clone()).or_insert(0.0) += count;
+            for &(id, count) in &fixed_by_id {
+                expected[id as usize] += count;
             }
 
-            let total_expected = expected_counts.values().sum::<f64>();
+            let total_expected = expected.iter().sum::<f64>() + fixed_extra_total;
             assert!(
                 total_expected.is_finite() && total_expected > 0.0,
                 "EM M-step received a non-finite total expected count.\n\
                  total_expected={total_expected}\n\
                  corpus_log_likelihood={corpus_log_likelihood}\n\
-                 nonfinite_expected_entries={:#?}",
-                expected_counts
+                 nonfinite_expected_indices={:#?}",
+                expected
                     .iter()
+                    .enumerate()
                     .filter(|(_, value)| !value.is_finite())
                     .take(20)
                     .collect::<Vec<_>>()
             );
 
-            current = current
-                .iter()
-                .map(|(seq, _, count)| {
-                    let expected = *expected_counts.get(seq).unwrap_or(&0.0);
-                    let log_prob = if expected.is_finite() && expected > 0.0 {
-                        let ratio = expected / total_expected;
-                        if ratio.is_finite() && ratio > 0.0 {
-                            ratio.ln()
-                        } else {
-                            LOG_PROB_FLOOR
-                        }
+            for ((_, log_prob, _), &value) in current.iter_mut().zip(&expected) {
+                *log_prob = if value.is_finite() && value > 0.0 {
+                    let ratio = value / total_expected;
+                    if ratio.is_finite() && ratio > 0.0 {
+                        ratio.ln()
                     } else {
                         LOG_PROB_FLOOR
-                    };
-                    (seq.clone(), log_prob, *count)
-                })
-                .collect();
-
-            last_expected = expected_counts;
-            last_likelihood = corpus_log_likelihood;
+                    }
+                } else {
+                    LOG_PROB_FLOOR
+                };
+            }
         }
 
-        (current, last_expected, last_likelihood)
+        current
     }
 
+    /// Expected counts for one model over a corpus, keyed by sequence — a
+    /// thin wrapper over the lattice-based E-step, kept for tests. Training
+    /// itself uses the dense-index path in `run_em`.
+    #[cfg(test)]
     fn compute_expected_counts<T: UnigramToken>(
         &self,
         corpus: &[Vec<T>],
         model: &UnigramModel<T>,
     ) -> (ExpectedCounts<T>, f64) {
-        let mut expected_counts: ExpectedCounts<T> = FxHashMap::default();
-        let mut corpus_log_likelihood = 0.0;
+        let vocab: Vec<VocabEntry<T>> = model
+            .id_to_seq
+            .iter()
+            .enumerate()
+            .map(|(id, seq)| {
+                let log_prob = model.vocab[seq].1;
+                (seq.clone(), log_prob, model.counts[id])
+            })
+            .collect();
+        let lattice = RoundLattice::build(corpus, &vocab);
+        let scores = blended_scores(&vocab, model.merge_alpha);
+        let mut expected = vec![0.0f64; vocab.len()];
+        let corpus_log_likelihood =
+            accumulate_expected_counts(corpus, &lattice, &scores, &mut expected);
 
-        for sentence in corpus {
-            let n = sentence.len();
-            let (incoming, outgoing) = self.build_lattice(sentence, model);
-            let alpha = self.forward_pass(&incoming);
-            let beta = self.backward_pass(&outgoing);
-
-            let sentence_log_prob = alpha[n];
-            assert!(
-                sentence_log_prob.is_finite(),
-                "EM E-step found a sentence with no finite lattice path.\n\
-                 sentence_tokens={:#?}\n\
-                 max_piece_length={}\n\
-                 alpha={:#?}",
-                sentence,
-                model.max_piece_length,
-                alpha
-            );
-            corpus_log_likelihood += sentence_log_prob;
-
-            for edges in outgoing.iter().take(n) {
-                for (end, id, log_prob) in edges {
-                    let seq = &model.id_to_seq[*id as usize];
-                    let start = end - seq.len();
-                    let marginal =
-                        (alpha[start] + *log_prob + beta[*end] - sentence_log_prob).exp();
-                    *expected_counts.entry(seq.clone()).or_insert(0.0) += marginal;
-                }
-            }
-        }
-
+        let expected_counts: ExpectedCounts<T> = model
+            .id_to_seq
+            .iter()
+            .zip(&expected)
+            .filter(|&(_, &value)| value != 0.0)
+            .map(|(seq, &value)| (seq.clone(), value))
+            .collect();
         (expected_counts, corpus_log_likelihood)
     }
 
     fn compute_prune_losses<T: UnigramToken>(
         &self,
         corpus: &[Vec<T>],
+        lattice: &RoundLattice,
         vocab: &[VocabEntry<T>],
-        model: &UnigramModel<T>,
         seed_set: &HashSet<Seq<T>>,
     ) -> Vec<(usize, f64)> {
+        let scores = blended_scores(vocab, self.config.merge_alpha);
         let mut sentence_scores = Vec::with_capacity(corpus.len());
-        let mut token_to_sentences = vec![Vec::new(); model.id_to_seq.len()];
+        let mut token_to_sentences = vec![Vec::new(); vocab.len()];
 
         for (sentence_idx, sentence) in corpus.iter().enumerate() {
-            let (segmentation, score) = self
-                .viterbi_segments_and_score(sentence, model, None)
-                .expect("single-token fallback should always permit segmentation");
+            let (segmentation, score) = viterbi_segments_and_score(
+                sentence.len(),
+                &lattice.by_start[sentence_idx],
+                &scores,
+                None,
+            )
+            .expect("single-token fallback should always permit segmentation");
             sentence_scores.push(score);
 
             let unique_tokens: HashSet<u32> = segmentation.into_iter().collect();
@@ -717,36 +900,29 @@ impl UnigramTrainer {
             let mut loss = 0.0;
             for &sentence_idx in sentence_indices {
                 let original_score = sentence_scores[sentence_idx];
-                let rescored = self
-                    .viterbi_score_with_forbidden(&corpus[sentence_idx], model, seq)
-                    .unwrap_or_else(|| {
-                        let missing_singletons: Vec<u32> = corpus[sentence_idx]
-                            .iter()
-                            .filter_map(|token| {
-                                let singleton = Seq(vec![token.clone()]);
-                                (!model.vocab.contains_key(&singleton))
-                                    .then_some(singleton.disambiguation_key())
-                            })
-                            .collect();
-                        panic!(
-                            "Pruning invariant violated: removing a token made a sentence non-segmentable.\n\
-                             sentence_idx={sentence_idx}\n\
-                             token_len={}\n\
-                             token_disambiguation_key={}\n\
-                             token={:#?}\n\
-                             sentence_tokens={:#?}\n\
-                             missing_singleton_keys={:#?}\n\
-                             model_max_piece_length={}\n\
-                             original_score={}",
-                            seq.len(),
-                            seq.disambiguation_key(),
-                            seq,
-                            &corpus[sentence_idx],
-                            missing_singletons,
-                            model.max_piece_length,
-                            original_score
-                        )
-                    });
+                let rescored = viterbi_segments_and_score(
+                    corpus[sentence_idx].len(),
+                    &lattice.by_start[sentence_idx],
+                    &scores,
+                    Some(idx as u32),
+                )
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Pruning invariant violated: removing a token made a sentence non-segmentable.\n\
+                         sentence_idx={sentence_idx}\n\
+                         token_len={}\n\
+                         token_disambiguation_key={}\n\
+                         token={:#?}\n\
+                         sentence_tokens={:#?}\n\
+                         original_score={}",
+                        seq.len(),
+                        seq.disambiguation_key(),
+                        seq,
+                        &corpus[sentence_idx],
+                        original_score
+                    )
+                })
+                .1;
                 loss += (original_score - rescored).max(0.0);
             }
 
@@ -754,193 +930,6 @@ impl UnigramTrainer {
         }
 
         losses
-    }
-
-    fn viterbi_segments_and_score<T: UnigramToken>(
-        &self,
-        sentence: &[T],
-        model: &UnigramModel<T>,
-        forbidden: Option<&Seq<T>>,
-    ) -> Option<(Vec<u32>, f64)> {
-        if sentence.is_empty() {
-            return Some((Vec::new(), 0.0));
-        }
-
-        let n = sentence.len();
-        let mut best_score = vec![f64::NEG_INFINITY; n + 1];
-        let mut best_prev: Vec<Option<(usize, u32)>> = vec![None; n + 1];
-        best_score[0] = 0.0;
-
-        for start in 0..n {
-            if !best_score[start].is_finite() {
-                continue;
-            }
-
-            for end in start + 1..=n.min(start + model.max_piece_length) {
-                let slice = &sentence[start..end];
-                if forbidden.is_some_and(|forbidden| forbidden.0 == slice) {
-                    continue;
-                }
-                let Some((id, score)) = model.vocab_entry(slice) else {
-                    continue;
-                };
-                let candidate = best_score[start] + score;
-                if candidate > best_score[end] {
-                    best_score[end] = candidate;
-                    best_prev[end] = Some((start, id));
-                }
-            }
-        }
-
-        let final_score = best_score[n];
-        if !final_score.is_finite() {
-            return None;
-        }
-
-        let mut pos = n;
-        let mut segments = Vec::new();
-        while pos > 0 {
-            let (start, id) = best_prev[pos].take()?;
-            segments.push(id);
-            pos = start;
-        }
-        segments.reverse();
-
-        Some((segments, final_score))
-    }
-
-    fn viterbi_score_with_forbidden<T: UnigramToken>(
-        &self,
-        sentence: &[T],
-        model: &UnigramModel<T>,
-        forbidden: &Seq<T>,
-    ) -> Option<f64> {
-        if sentence.is_empty() {
-            return Some(0.0);
-        }
-
-        let n = sentence.len();
-        let mut best_score = vec![f64::NEG_INFINITY; n + 1];
-        best_score[0] = 0.0;
-
-        for start in 0..n {
-            if !best_score[start].is_finite() {
-                continue;
-            }
-
-            for end in start + 1..=n.min(start + model.max_piece_length) {
-                let slice = &sentence[start..end];
-                if forbidden.0 == slice {
-                    continue;
-                }
-                let Some((_, score)) = model.vocab_entry(slice) else {
-                    continue;
-                };
-                let candidate = best_score[start] + score;
-                if candidate > best_score[end] {
-                    best_score[end] = candidate;
-                }
-            }
-        }
-
-        if best_score[n].is_finite() {
-            Some(best_score[n])
-        } else {
-            panic!(
-                "Viterbi with forbidden token found no path.\n\
-                 forbidden_token={:#?}\n\
-                 sentence_tokens={:#?}\n\
-                 reachable_positions={:#?}\n\
-                 edge_dump={}",
-                forbidden,
-                sentence,
-                best_score
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(idx, score)| score.is_finite().then_some(idx))
-                    .collect::<Vec<_>>(),
-                self.debug_edge_dump(sentence, model, forbidden, &best_score)
-            );
-        }
-    }
-
-    fn debug_edge_dump<T: UnigramToken>(
-        &self,
-        sentence: &[T],
-        model: &UnigramModel<T>,
-        forbidden: &Seq<T>,
-        best_score: &[f64],
-    ) -> String {
-        let n = sentence.len();
-        let mut out = String::new();
-
-        for start in 0..n {
-            if !best_score[start].is_finite() {
-                continue;
-            }
-
-            out.push_str(&format!("\nstart={start} token={:#?}\n", sentence[start]));
-            for end in start + 1..=n.min(start + model.max_piece_length) {
-                let seq = Seq(sentence[start..end].to_vec());
-                let is_forbidden = &seq == forbidden;
-                let score = model.vocab_score(&seq);
-                out.push_str(&format!(
-                    "  end={end} forbidden={is_forbidden} score={score:?} seq={seq:#?}\n"
-                ));
-            }
-        }
-
-        out
-    }
-
-    fn build_lattice<T: UnigramToken>(
-        &self,
-        sentence: &[T],
-        model: &UnigramModel<T>,
-    ) -> (SentenceLattice, SentenceLattice) {
-        let n = sentence.len();
-        let mut incoming: SentenceLattice = vec![Vec::new(); n + 1];
-        let mut outgoing: SentenceLattice = vec![Vec::new(); n + 1];
-
-        for start in 0..n {
-            for end in start + 1..=n.min(start + model.max_piece_length) {
-                let Some((id, score)) = model.vocab_entry(&sentence[start..end]) else {
-                    continue;
-                };
-                incoming[end].push((start, id, score));
-                outgoing[start].push((end, id, score));
-            }
-        }
-
-        (incoming, outgoing)
-    }
-
-    fn forward_pass(&self, incoming: &SentenceLattice) -> Vec<f64> {
-        let n = incoming.len() - 1;
-        let mut alpha = vec![f64::NEG_INFINITY; n + 1];
-        alpha[0] = 0.0;
-
-        for end in 1..=n {
-            alpha[end] = logsumexp_by(&incoming[end], |(start, _, log_prob)| {
-                alpha[*start] + *log_prob
-            });
-        }
-
-        alpha
-    }
-
-    fn backward_pass(&self, outgoing: &SentenceLattice) -> Vec<f64> {
-        let n = outgoing.len() - 1;
-        let mut beta = vec![f64::NEG_INFINITY; n + 1];
-        beta[n] = 0.0;
-
-        for start in (0..n).rev() {
-            beta[start] = logsumexp_by(&outgoing[start], |(end, _, log_prob)| {
-                *log_prob + beta[*end]
-            });
-        }
-
-        beta
     }
 }
 
@@ -1147,7 +1136,6 @@ mod tests {
 
     #[test]
     fn test_viterbi_score_with_forbidden_matches_resegmentation_loss() {
-        let trainer = UnigramTrainer::new(UnigramTrainerConfig::default());
         let vocab = vec![
             (Seq(vec![make_token("a")]), 0.1f64.ln(), 10),
             (Seq(vec![make_token("b")]), 0.1f64.ln(), 10),
@@ -1163,16 +1151,24 @@ mod tests {
                 10,
             ),
         ];
-        let model = UnigramModel::new(vocab, 0.0);
+        let model = UnigramModel::new(vocab.clone(), 0.0);
         let sentence = vec![make_token("a"), make_token("b"), make_token("c")];
         let removed = Seq(vec![make_token("a"), make_token("b"), make_token("c")]);
+        let removed_id = model.get_token_id(&removed).unwrap();
 
-        let (_, original_score) = trainer
-            .viterbi_segments_and_score(&sentence, &model, None)
-            .unwrap();
-        let rescored = trainer
-            .viterbi_score_with_forbidden(&sentence, &model, &removed)
-            .unwrap();
+        let corpus = vec![sentence.clone()];
+        let lattice = RoundLattice::build(&corpus, &vocab);
+        let scores = blended_scores(&vocab, 0.0);
+        let (_, original_score) =
+            viterbi_segments_and_score(sentence.len(), &lattice.by_start[0], &scores, None)
+                .unwrap();
+        let (_, rescored) = viterbi_segments_and_score(
+            sentence.len(),
+            &lattice.by_start[0],
+            &scores,
+            Some(removed_id),
+        )
+        .unwrap();
         let expected_rescored = 0.35f64.ln() + 0.1f64.ln();
 
         assert!((rescored - expected_rescored).abs() < 1e-9);
@@ -1218,11 +1214,11 @@ mod tests {
             ),
         ];
 
-        let trainer = UnigramTrainer::new(UnigramTrainerConfig::default());
-        let model = UnigramModel::new(vocab, 0.0);
-        let (incoming, outgoing) = trainer.build_lattice(&sentence, &model);
-        let alpha = trainer.forward_pass(&incoming);
-        let beta = trainer.backward_pass(&outgoing);
+        let corpus = vec![sentence.clone()];
+        let lattice = RoundLattice::build(&corpus, &vocab);
+        let scores = blended_scores(&vocab, 0.0);
+        let alpha = forward_pass(sentence.len(), &lattice.by_end[0], &scores);
+        let beta = backward_pass(sentence.len(), &lattice.by_start[0], &scores);
 
         assert!((alpha[sentence.len()] - beta[0]).abs() < 1e-9);
     }

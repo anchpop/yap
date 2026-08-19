@@ -75,11 +75,14 @@ async fn main() -> anyhow::Result<()> {
         println!("Discovering senses/collocations for {lang}");
         println!("================================================");
 
+        let mut timer = generate_data::StageTimer::new();
         let sentence_corpus = generate_data::target_sentences::get_target_sentences(*course)
             .context("Failed to get target sentences")?;
+        timer.lap("sentence loading");
         let segmented = generate_data::pipeline::segment_corpus(course, &sentence_corpus)
             .await
             .context("Failed to segment corpus")?;
+        timer.lap("segment_corpus (see stage laps above)");
         let store = cache_remote::store();
         generate_data::token_embeddings::ensure_token_embeddings(
             lang,
@@ -89,6 +92,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .await
         .context("Failed to ensure token embeddings")?;
+        timer.lap("embedding presence check");
         generate_data::sense_discovery::discover(lang, &segmented, &store, mode)
             .await
             .context("Sense discovery failed")?;
