@@ -281,8 +281,28 @@ fn normalize(v: &mut [f32]) {
     }
 }
 
+/// Dot product with eight independent accumulator lanes. A plain
+/// `zip().map().sum()` fixes the summation order to a single serial chain,
+/// which blocks SIMD (float addition is not associative) and runs at FP-add
+/// latency per element; spelling out the lanes fixes a *parallel* summation
+/// order the compiler can vectorize. Deterministic across runs and builds.
 fn dot(a: &[f32], b: &[f32]) -> f32 {
-    a.iter().zip(b).map(|(x, y)| x * y).sum()
+    let mut acc = [0.0f32; 8];
+    for (ca, cb) in a.chunks_exact(8).zip(b.chunks_exact(8)) {
+        for k in 0..8 {
+            acc[k] += ca[k] * cb[k];
+        }
+    }
+    let mut tail = 0.0f32;
+    for (x, y) in a
+        .chunks_exact(8)
+        .remainder()
+        .iter()
+        .zip(b.chunks_exact(8).remainder())
+    {
+        tail += x * y;
+    }
+    (((acc[0] + acc[4]) + (acc[1] + acc[5])) + ((acc[2] + acc[6]) + (acc[3] + acc[7]))) + tail
 }
 
 fn mean_normalized(vectors: &[&Vec<f32>]) -> Vec<f32> {
@@ -323,26 +343,36 @@ fn kmeans2(vectors: &[&Vec<f32>]) -> (Vec<u8>, [Vec<f32>; 2]) {
         if j == i {
             j = (i + 1) % n;
         }
+        let dim = vectors[0].len();
         let mut centroids = [vectors[i].clone(), vectors[j].clone()];
         let mut labels = vec![0u8; n];
         for _ in 0..100 {
+            // Assign and accumulate the new centroids in one pass. The sums
+            // run in index order, exactly like the old collect-then-mean
+            // version, so the arithmetic is unchanged.
             let mut changed = false;
+            let mut sums = [vec![0.0f32; dim], vec![0.0f32; dim]];
+            let mut counts = [0usize; 2];
             for (k, v) in vectors.iter().enumerate() {
                 let label = u8::from(dot(v, &centroids[1]) > dot(v, &centroids[0]));
                 if labels[k] != label {
                     labels[k] = label;
                     changed = true;
                 }
+                let sum = &mut sums[label as usize];
+                for (o, x) in sum.iter_mut().zip(v.iter()) {
+                    *o += x;
+                }
+                counts[label as usize] += 1;
             }
-            for c in 0..2u8 {
-                let members: Vec<&Vec<f32>> = vectors
-                    .iter()
-                    .zip(&labels)
-                    .filter(|&(_, &l)| l == c)
-                    .map(|(v, _)| *v)
-                    .collect();
-                if !members.is_empty() {
-                    centroids[c as usize] = mean_normalized(&members);
+            for c in 0..2 {
+                if counts[c] > 0 {
+                    let mut centroid = std::mem::take(&mut sums[c]);
+                    for o in centroid.iter_mut() {
+                        *o /= counts[c] as f32;
+                    }
+                    normalize(&mut centroid);
+                    centroids[c] = centroid;
                 }
             }
             if !changed {

@@ -88,6 +88,17 @@ opt-level = "s"
 # LTO explicitly at their build entry points.
 lto = false
 
+# Native data-pipeline crates with hot numeric loops (embedding mining,
+# unigram training, clustering) want speed, not size. None of these are in
+# the WASM dependency graph, so the size-focused default above is pure loss
+# for them.
+[profile.release.package.generate-data]
+opt-level = 3
+[profile.release.package.omnigram]
+opt-level = 3
+[profile.release.package.hdbscan]
+opt-level = 3
+
 [profile.profiling]
 inherits = "release"
 debug = true
