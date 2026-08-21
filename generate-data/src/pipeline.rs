@@ -231,6 +231,49 @@ pub struct MatchingPatterns {
     pub citations: BTreeMap<Gram<String>, Gram<String>>,
 }
 
+/// Rewrite every match of a discovered variant to the citation form of the
+/// phrase it realizes.
+///
+/// Each variant carries its own pattern and is attempted independently — that
+/// is the whole reason paradigm expansion exists, since a lemma pattern built
+/// from French "me" can never match "te" or "se". But whichever variant fires,
+/// what we record is the phrase, so all of them accrue to one vocabulary item
+/// instead of splitting into near-duplicates the learner meets separately.
+///
+/// `matched_word_indices` is deliberately left alone: it points at the words
+/// the variant actually bound, which is what graders and the UI need to
+/// highlight, and those words are the variant's, not the citation's.
+///
+/// Rewriting can collide — two variants of one phrase matching the same words
+/// both become the same citation match — so duplicates are collapsed
+/// afterwards. Matches at different positions are distinct and both survive.
+pub fn apply_citations(
+    citations: &BTreeMap<Gram<String>, Gram<String>>,
+    matches: &mut BTreeMap<String, MultiwordTerms<MultiwordTermMatch<Gram<String>>>>,
+) {
+    if citations.is_empty() {
+        return;
+    }
+    let mut rewritten = 0usize;
+    let mut rewrite = |terms: &mut Vec<MultiwordTermMatch<Gram<String>>>| {
+        for term in terms.iter_mut() {
+            if let Some(citation) = citations.get(&term.gram) {
+                term.gram = citation.clone();
+                rewritten += 1;
+            }
+        }
+        terms.sort();
+        terms.dedup();
+    };
+    for terms in matches.values_mut() {
+        rewrite(&mut terms.high_confidence);
+        rewrite(&mut terms.low_confidence);
+    }
+    if rewritten > 0 {
+        println!("Citations: rewrote {rewritten} variant matches to their citation form");
+    }
+}
+
 /// Build the citation map from a language's committed discovery record.
 ///
 /// Filtering happens here rather than at write time so the record stays a
@@ -608,6 +651,7 @@ pub async fn segment_corpus(
         .map(|(gram, lemma_pos_pairs)| (gram.clone(), lemma_pos_pairs.clone()))
         .collect();
     let contiguous_lemma_patterns = lemma_patterns;
+    let citations = build_citation_map(course.target_language, &contiguous_lemma_patterns)?;
 
     // Run multiword detection (after omnigram training)
     let mut multiword_matches = crate::nlp::generate_nlp_sentences(
@@ -737,6 +781,13 @@ pub async fn segment_corpus(
     }
 
     timer.lap("slot grading + merge");
+
+    // Every variant of a discovered phrase gets its own pattern and is
+    // attempted independently, but whichever one fires, the match records the
+    // phrase's citation form. Applied after slot merging so it covers every
+    // match in the map.
+    apply_citations(&citations, &mut multiword_matches);
+
     // Assemble the corpus: every filtered sentence in its canonical encoded
     // form, paired with its matches.
     let empty_terms = || MultiwordTerms {
@@ -787,7 +838,7 @@ pub async fn segment_corpus(
         gram_vocabulary,
         interners,
         patterns: MatchingPatterns {
-            citations: build_citation_map(course.target_language, &contiguous_lemma_patterns)?,
+            citations,
             contiguous_lemma_patterns,
             discontinuous_lemma_patterns,
             tree_patterns,

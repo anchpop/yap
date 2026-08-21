@@ -1030,18 +1030,25 @@ pub struct DiscoveredTerm {
     /// The citation form this variant belongs to — not required to be a
     /// vocabulary member.
     ///
-    /// The discovery lane never adds it to the multiword-terms list, so
-    /// nothing here makes it matchable, encodable into a sentence's gram
-    /// stream, or a card. That restraint is the point: the multiword route
-    /// would happily admit it (most of the multiword inventory never occurs
-    /// in the corpus — 2,780 of a 2,959-term French sample — and is in the
-    /// vocabulary anyway), and the result would be a gram competing with its
-    /// own variants. "god help me" and "god help someone" would both be
-    /// encodable, each sentence's segmentation would pick one, and nothing at
-    /// runtime would relate the two: the learner can end up holding a card
-    /// for each as unrelated vocabulary, and the phrase's frequency splits
-    /// across them. A few independently-learned near-duplicates already
-    /// behave this way; the discovery lane must not manufacture more.
+    /// The citation is what a *match* records — every variant is attempted
+    /// separately and whichever fires reports the phrase, so the whole
+    /// paradigm accrues to one vocabulary item (see
+    /// [`crate::pipeline::apply_citations`]). What it is never made into is a
+    /// gram in the encoded stream: the discovery lane does not add it to the
+    /// multiword-terms list, so it is never trained on and never segments a
+    /// sentence.
+    ///
+    /// That restraint is the point. The multiword route would happily admit
+    /// it (most of the inventory never occurs in the corpus — 2,780 of a
+    /// 2,959-term French sample — and is in the vocabulary anyway), and the
+    /// result would be a gram competing with its own variants: "god help me"
+    /// and "god help someone" both encodable, each sentence's segmentation
+    /// picking one, and nothing relating the two, so the learner can end up
+    /// holding a card for each as unrelated vocabulary and the phrase's
+    /// frequency splits across them. A few independently-learned
+    /// near-duplicates already behave this way; the discovery lane must not
+    /// manufacture more. Rewriting matches gives the connection the competing
+    /// gram would not have had.
     ///
     /// It may nonetheless already BE a vocabulary member — Wiktionary lists
     /// many citation forms, and the trainer learns some from frequency. That
