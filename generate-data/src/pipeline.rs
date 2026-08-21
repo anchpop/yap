@@ -214,6 +214,65 @@ pub struct MatchingPatterns {
     pub discontinuous_lemma_patterns:
         BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
     pub tree_patterns: BTreeMap<Gram<String>, lexide::matching::TreeNode>,
+    /// Discovered variant gram → the citation form it realizes, for phrases
+    /// the discovery lane found (see
+    /// [`crate::sense_discovery::DiscoveredTerm::citation`] for why the
+    /// citation is not itself made matchable). Two invariants hold by
+    /// construction, both enforced in [`build_citation_map`]:
+    ///
+    /// - No self-edges. A variant equal to its own citation is a group of
+    ///   one, so it contributes nothing and is dropped.
+    /// - Citations are never keys, so the map is exactly one level deep and
+    ///   no consumer has to chase a chain or guard against a cycle.
+    ///
+    /// Keys are restricted to grams that actually survived into
+    /// `contiguous_lemma_patterns`, so there are no dangling entries for
+    /// variants the trainer pruned or pattern dedup collapsed.
+    pub citations: BTreeMap<Gram<String>, Gram<String>>,
+}
+
+/// Build the citation map from a language's committed discovery record.
+///
+/// Filtering happens here rather than at write time so the record stays a
+/// faithful account of what the judge proposed — the same property the
+/// append-only adoption log relies on — and so hand edits to that file are
+/// covered by the same checks.
+fn build_citation_map(
+    language: language_utils::Language,
+    matchable: &BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
+) -> anyhow::Result<BTreeMap<Gram<String>, Gram<String>>> {
+    let mut citations: BTreeMap<Gram<String>, Gram<String>> = BTreeMap::new();
+    let (mut self_edges, mut unmatchable) = (0usize, 0usize);
+    for entry in crate::sense_discovery::load_discovered_terms(language)? {
+        let Some(citation) = entry.citation else {
+            continue;
+        };
+        if citation == entry.gram {
+            self_edges += 1;
+            continue;
+        }
+        if !matchable.contains_key(&entry.gram) {
+            unmatchable += 1;
+            continue;
+        }
+        citations.insert(entry.gram, citation);
+    }
+    if let Some(chained) = citations.values().find(|c| citations.contains_key(*c)) {
+        anyhow::bail!(
+            "citation {:?} is itself a discovered variant — the citation map must stay one level \
+             deep, so a phrase cited by another phrase has to be resolved before it gets here",
+            chained.to_display_string(language)
+        );
+    }
+    if self_edges > 0 || unmatchable > 0 {
+        log::warn!(
+            "citations[{}]: {} entries ({self_edges} self-cited, {unmatchable} whose variant is \
+             not matchable)",
+            language.code(),
+            citations.len(),
+        );
+    }
+    Ok(citations)
 }
 
 /// The segmented corpus: every sentence in its canonical encoded form with
@@ -728,6 +787,7 @@ pub async fn segment_corpus(
         gram_vocabulary,
         interners,
         patterns: MatchingPatterns {
+            citations: build_citation_map(course.target_language, &contiguous_lemma_patterns)?,
             contiguous_lemma_patterns,
             discontinuous_lemma_patterns,
             tree_patterns,

@@ -155,20 +155,15 @@ async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>
 
     // Terms mined by the sense_discovery binary (embedding-cluster splits,
     // LLM-extracted, corpus-grounded) and committed for adoption. Only the
-    // surface form matters here; the rest of each record is review provenance.
-    let discovered_path =
-        format!("./generate-data/data/{language_code}/discovered_multiword_terms.jsonl");
-    if let Ok(file) = File::open(Path::new(&discovered_path)) {
-        let reader = BufReader::new(file);
-        for line in reader.lines() {
-            let line = line?;
-            if let Ok(entry) = serde_json::from_str::<serde_json::Value>(&line)
-                && let Some(term) = entry["term"].as_str()
-            {
-                terms.push(term.trim().to_string());
-            }
-        }
-    }
+    // variant surface enters the inventory: a record's `citation` is
+    // deliberately *not* pushed here, because making it a term would make it
+    // matchable and encodable, which is exactly the competing-gram situation
+    // that field exists to avoid.
+    terms.extend(
+        crate::sense_discovery::load_discovered_terms(language)?
+            .into_iter()
+            .map(|entry| entry.term.trim().to_string()),
+    );
 
     Ok(terms)
 }

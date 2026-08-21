@@ -44,7 +44,7 @@
 use anyhow::{Context, Result};
 use language_utils::{Atom, Gram, Language, SentenceInfo, WordType};
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Write as _;
 use std::fs::File;
 use std::io::Write as _;
@@ -95,6 +95,9 @@ const HDBSCAN_MAX_N: usize = 2000;
 const HDBSCAN_TOP: usize = 50;
 /// A grounded expression must recur this often in the corpus to be proposed.
 const MIN_EXPRESSION_COUNT: usize = 3;
+/// Examples shown per paradigm member in the opacity prompt. A paradigm can
+/// have several members, so this is a per-member budget rather than a total.
+const EXAMPLES_PER_PARADIGM: usize = 2;
 
 /// Judgment-tier model, same reasoning as slot grading: few hundred calls
 /// per language, and each one decides what enters the review files.
@@ -937,11 +940,86 @@ fn opacity_system_prompt(language: Language) -> String {
 }
 
 // ---------------------------------------------------------------------------
+// Paradigm expansion
+// ---------------------------------------------------------------------------
+//
+// Grounded extractions are copied verbatim out of a cited line, so they arrive
+// frozen in whatever person, tense, or clitic that line happened to use. The
+// frozen form is a poor citation ("me suis occupé de" where a dictionary says
+// "s'occuper de") and a poor pattern: French clitics lemmatize to themselves,
+// so a lemma pattern built from `me` can never match `te` or `se`, and the
+// rest of the paradigm is simply invisible to the matcher.
+//
+// A third batched stage, separate from adjudication and opacity for the same
+// reason those two are separate: it is the judgment most likely to be
+// recalibrated, and its prompt must be able to change without refilling the
+// expensive per-gram adjudication cache.
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+struct ParadigmResponse {
+    /// Brief reasoning.
+    #[serde(rename = "1. thoughts")]
+    thoughts: String,
+    /// Dictionary citation form of the phrase, or empty if the expression is
+    /// already general.
+    #[serde(rename = "2. citation")]
+    citation: String,
+    /// Complete surface forms of the phrase's other instantiations.
+    #[serde(rename = "3. variants")]
+    variants: Vec<String>,
+}
+
+fn paradigm_system_prompt(language: Language) -> String {
+    format!(
+        "You are curating multiword entries for a {language} vocabulary-learning \
+        app. Each request shows one expression mined from a sentence corpus, with \
+        its gloss and example sentences.\n\
+        \n\
+        The mining copies an expression verbatim out of whatever sentence it was \
+        found in, so it often arrives frozen in one person, tense, or pronoun even \
+        though the phrase itself is more general: French \"me suis occupé de\" for \
+        what a dictionary would list as \"s'occuper de\", English \"God help me\" \
+        for \"God help someone\". Taught as-is, the learner meets one arbitrary \
+        instantiation and never sees that the others are the same phrase.\n\
+        \n\
+        Decide whether the expression you are shown is one instantiation of a more \
+        general phrase.\n\
+        \n\
+        If it is, give the citation form a {language} dictionary would use as the \
+        headword, and list the instantiations a learner would actually meet — the \
+        other persons, the other clitics, the ordinary tenses. Write each one as a \
+        complete surface form that could appear in a sentence rather than a \
+        template with a placeholder in it: the forms are matched mechanically \
+        against the corpus and any that does not occur there is dropped, so a \
+        placeholder can never match anything. Include the expression you were \
+        shown when it is itself one of the instantiations.\n\
+        \n\
+        If the expression is already general — nothing in it stands in for an open \
+        slot or agrees with a subject — leave the citation empty and the variant \
+        list empty. Most fixed expressions genuinely admit no variation, so an \
+        empty answer is the common and expected one; inventing variation where \
+        there is none fills the vocabulary with near-duplicates that each have to \
+        be learned separately. Write your thoughts in English."
+    )
+}
+
+fn paradigm_user_prompt(term: &DiscoveredTerm, examples: &[String]) -> String {
+    let mut p = format!(
+        "Expression: \"{}\"\nGloss: {}\n\nExamples:\n",
+        term.term, term.gloss
+    );
+    for e in examples {
+        let _ = writeln!(p, "- {e}");
+    }
+    p
+}
+
+// ---------------------------------------------------------------------------
 // Grounding
 // ---------------------------------------------------------------------------
 
 /// A grounded, corpus-verified expression proposal.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiscoveredTerm {
     /// Surface form: the covered words as they appear in the cited sentence.
     pub term: String,
@@ -949,6 +1027,36 @@ pub struct DiscoveredTerm {
     pub display: String,
     /// The proposed gram itself (its atom sequence — the canonical identity).
     pub gram: Gram<String>,
+    /// The citation form this variant belongs to — not required to be a
+    /// vocabulary member.
+    ///
+    /// The discovery lane never adds it to the multiword-terms list, so
+    /// nothing here makes it matchable, encodable into a sentence's gram
+    /// stream, or a card. That restraint is the point: the multiword route
+    /// would happily admit it (most of the multiword inventory never occurs
+    /// in the corpus — 2,780 of a 2,959-term French sample — and is in the
+    /// vocabulary anyway), and the result would be a gram competing with its
+    /// own variants. "god help me" and "god help someone" would both be
+    /// encodable, each sentence's segmentation would pick one, and nothing at
+    /// runtime would relate the two: the learner can end up holding a card
+    /// for each as unrelated vocabulary, and the phrase's frequency splits
+    /// across them. A few independently-learned near-duplicates already
+    /// behave this way; the discovery lane must not manufacture more.
+    ///
+    /// It may nonetheless already BE a vocabulary member — Wiktionary lists
+    /// many citation forms, and the trainer learns some from frequency. That
+    /// case is fine, and is in fact where the citation map earns its keep:
+    /// the citation has a real card, and its variants now point at it instead
+    /// of floating unconnected. The rules are only that the lane must not
+    /// require it, must not create it, and must tolerate the overlap — see
+    /// [`crate::pipeline::MatchingPatterns::citations`] for the two
+    /// invariants that enforces.
+    ///
+    /// So the citation's atoms are minted at discovery time and stored here —
+    /// it has no other derivation, because it travels no other path. `None`
+    /// for terms discovered before citations existed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub citation: Option<Gram<String>>,
     pub gloss: String,
     pub opacity: String,
     /// How many corpus sentences contain the atom sequence contiguously.
@@ -960,6 +1068,33 @@ pub struct DiscoveredTerm {
 
 fn normalize_term(s: &str) -> String {
     s.to_lowercase().replace(['\u{2019}', '\u{02BC}'], "'")
+}
+
+/// Path of a language's committed discovery record.
+fn discovered_terms_path(language: Language) -> std::path::PathBuf {
+    Path::new("./generate-data/data")
+        .join(language.code())
+        .join("discovered_multiword_terms.jsonl")
+}
+
+/// Read a language's committed discovery record. Absent file → no
+/// discoveries; a malformed line is an error rather than a skip, because this
+/// file is meant to be reviewed and corrected by hand and a silently dropped
+/// entry would un-adopt a term without saying so.
+pub fn load_discovered_terms(language: Language) -> Result<Vec<DiscoveredTerm>> {
+    let path = discovered_terms_path(language);
+    let Ok(content) = std::fs::read_to_string(&path) else {
+        return Ok(Vec::new());
+    };
+    content
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| !line.trim().is_empty())
+        .map(|(i, line)| {
+            serde_json::from_str::<DiscoveredTerm>(line)
+                .with_context(|| format!("{}:{}: malformed discovered term", path.display(), i + 1))
+        })
+        .collect()
 }
 
 /// Snap a verbatim substring of `text` to word boundaries; returns the
@@ -979,6 +1114,46 @@ fn snap_to_words(sent: &SentenceIndex, text: &str, verbatim: &str) -> Option<(us
     let first = sent.words.iter().position(|w| w.byte_span.0 == start)?;
     let last = sent.words.iter().position(|w| w.byte_span.1 == end)?;
     (last >= first).then_some((first, last))
+}
+
+/// The structural constraints a proposed sequence must satisfy to become a
+/// gram, matching what the unigram trainer requires of learned sequences:
+/// more than one atom, real word tokens at both ends, no proper nouns
+/// anywhere. Shared by the adjudicator's extractions and by paradigm variants
+/// so the two can't drift apart.
+fn admissible_sequence(ids: &[SpurAtom]) -> bool {
+    use omnigram::unigram::UnigramToken;
+    ids.len() >= 2
+        && ids.first().is_some_and(|a| a.is_content())
+        && ids.last().is_some_and(|a| a.is_content())
+        && !ids.iter().any(|a| a.is_excluded_from_sequences())
+}
+
+/// Ground a free-standing surface form against the corpus: find a sentence
+/// containing it on word boundaries and take the atom sequence it covers.
+///
+/// The adjudicator's extractions ground against the line they cite, but a
+/// paradigm variant cites nothing — it is a form the judge believes occurs, so
+/// the corpus is the only witness, and a form no sentence realizes is
+/// ungroundable by definition. Sentences are visited in sorted order so the
+/// witness (and therefore the recorded surface) is deterministic.
+fn ground_surface(
+    index: &HashMap<String, SentenceIndex>,
+    surface: &str,
+) -> Option<(Vec<SpurAtom>, String)> {
+    let needle = surface.trim();
+    if needle.is_empty() {
+        return None;
+    }
+    let mut texts: Vec<&String> = index.keys().filter(|t| t.contains(needle)).collect();
+    texts.sort_unstable();
+    texts.into_iter().find_map(|text| {
+        let sent = index.get(text)?;
+        let (first, last) = snap_to_words(sent, text, needle)?;
+        let ids = sent.atom_seq.get(first..=last)?.to_vec();
+        let surface = text[sent.words[first].byte_span.0..sent.words[last].byte_span.1].to_string();
+        Some((ids, surface))
+    })
 }
 
 /// Corpus sentences whose atom sequence contains `needle` contiguously,
@@ -1028,6 +1203,183 @@ pub struct SenseCandidate {
     pub senses: Vec<SenseEntry>,
     pub silhouette: f64,
     pub source: String,
+}
+
+/// Expand each grounded expression into its paradigm: ask the judge for the
+/// citation form and the other instantiations, ground every proposed variant
+/// against the corpus, append the ones that survive, and attach the citation
+/// gram to every member of the phrase.
+///
+/// Variants go through exactly the gates an adjudicator extraction goes
+/// through — admissible sequence, corpus count, novelty — because a variant is
+/// a vocabulary proposal like any other; the judge's belief that a form exists
+/// counts for nothing until the corpus shows it. A variant that is already a
+/// discovered term is not duplicated; it just joins the paradigm.
+///
+/// Citation grams are minted here, through the same tokenizer that turns a
+/// Wiktionary citation form into a gram, and this is their only derivation —
+/// the citation never enters the multiword-terms list, so nothing else will
+/// ever tokenize it (see [`DiscoveredTerm::citation`]).
+async fn expand_paradigms(
+    language: Language,
+    strings: &lasso::RodeoReader,
+    index: &HashMap<String, SentenceIndex>,
+    known_terms: &HashSet<String>,
+    known_multi: &HashSet<Vec<SpurAtom>>,
+    discovered: &mut Vec<(DiscoveredTerm, Vec<String>)>,
+) -> Result<()> {
+    if discovered.is_empty() {
+        return Ok(());
+    }
+    let pb = indicatif::ProgressBar::new(discovered.len() as u64);
+    pb.set_style(
+        indicatif::ProgressStyle::default_bar()
+            .template(&format!(
+                "{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {} paradigm expansions ({{per_sec}}, ${{msg}}, {{eta}})",
+                language.code()
+            ))
+            .unwrap()
+            .progress_chars("#>-"),
+    );
+    pb.enable_steady_tick(std::time::Duration::from_millis(100));
+    let items: Vec<(usize, String)> = discovered
+        .iter()
+        .enumerate()
+        .map(|(i, (d, examples))| (i, paradigm_user_prompt(d, examples)))
+        .collect();
+    let n_req = items.len();
+    let results = JUDGE_CLIENT
+        .batch_chat_with_system_prompt_fn::<_, _, ParadigmResponse>(
+            paradigm_system_prompt(language),
+            &items,
+            |(_, p)| p.clone(),
+            |batch| crate::report_batch_progress(&pb, 0, n_req, batch),
+        )
+        .await
+        .context("paradigm batch failed")?;
+    pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
+
+    // Surface → index, so a proposed variant that is already a discovered term
+    // joins its paradigm instead of being appended a second time.
+    let mut by_surface: HashMap<String, usize> = discovered
+        .iter()
+        .enumerate()
+        .map(|(i, (d, _))| (normalize_term(&d.term), i))
+        .collect();
+    // Member index → citation string, resolved to grams in one batch below.
+    let mut membership: BTreeMap<usize, String> = BTreeMap::new();
+    let (mut n_new, mut n_ungroundable, mut n_rejected) = (0usize, 0usize, 0usize);
+
+    for ((parent, _), resp) in &results {
+        let Ok(resp) = resp else { continue };
+        let citation = resp.citation.trim().to_string();
+        if citation.is_empty() {
+            continue;
+        }
+        membership.insert(*parent, citation.clone());
+        let (gloss, source, silhouette) = {
+            let d = &discovered[*parent].0;
+            (d.gloss.clone(), d.source.clone(), d.silhouette)
+        };
+        for variant in &resp.variants {
+            if let Some(&i) = by_surface.get(&normalize_term(variant.trim())) {
+                membership.insert(i, citation.clone());
+                continue;
+            }
+            let Some((ids, surface)) = ground_surface(index, variant) else {
+                n_ungroundable += 1;
+                continue;
+            };
+            // Re-check after grounding: the corpus surface can differ from the
+            // judge's spelling (case, elision) and land on a term we have.
+            let key = normalize_term(&surface);
+            if let Some(&i) = by_surface.get(&key) {
+                membership.insert(i, citation.clone());
+                continue;
+            }
+            if !admissible_sequence(&ids)
+                || known_multi.contains(&ids)
+                || known_terms.contains(&key)
+            {
+                n_rejected += 1;
+                continue;
+            }
+            let matches = atom_window_matches(index, &ids);
+            if matches.len() < MIN_EXPRESSION_COUNT {
+                n_rejected += 1;
+                continue;
+            }
+            let gram = Gram::from(
+                ids.iter()
+                    .map(|a| a.resolve(strings))
+                    .collect::<Vec<Atom<String>>>(),
+            );
+            discovered.push((
+                DiscoveredTerm {
+                    term: surface,
+                    display: gram.to_display_string(language),
+                    gram,
+                    citation: None,
+                    gloss: gloss.clone(),
+                    opacity: String::new(),
+                    count: matches.len(),
+                    source: source.clone(),
+                    silhouette,
+                },
+                matches.iter().take(5).map(|s| s.to_string()).collect(),
+            ));
+            let i = discovered.len() - 1;
+            by_surface.insert(key, i);
+            membership.insert(i, citation.clone());
+            n_new += 1;
+        }
+    }
+
+    let citation_strings: BTreeSet<String> = membership.values().cloned().collect();
+    println!(
+        "sense-discovery[{}]: paradigms: {} citation forms, {n_new} new variants grounded, \
+         {n_ungroundable} not attested in the corpus, {n_rejected} rejected by the term gates",
+        language.code(),
+        citation_strings.len(),
+    );
+    if citation_strings.is_empty() {
+        return Ok(());
+    }
+
+    let tokenized = crate::nlp::process_sentences(
+        citation_strings.into_iter().collect(),
+        &Path::new("./out")
+            .join(language.code())
+            .join("discovered_citations_tokenization.jsonl"),
+        language,
+    )
+    .await
+    .context("Failed to tokenize discovered citation forms")?;
+    let citation_grams: BTreeMap<String, Gram<String>> =
+        crate::nlp::convert_tokens_to_literals(&tokenized, language)
+            .iter()
+            .filter_map(|(text, literals)| {
+                let (atoms, _) = language_utils::literals_to_atoms(literals, language);
+                // A citation that tokenizes to one atom is a word, not a
+                // phrase — the same filter the multiword-terms list applies.
+                (atoms.len() > 1).then(|| (text.clone(), Gram::from(atoms)))
+            })
+            .collect();
+    let mut unresolved = 0usize;
+    for (i, citation) in membership {
+        match citation_grams.get(&citation) {
+            Some(gram) => discovered[i].0.citation = Some(gram.clone()),
+            None => unresolved += 1,
+        }
+    }
+    if unresolved > 0 {
+        log::warn!(
+            "sense-discovery[{}]: {unresolved} members left uncited (their citation form did not \
+             tokenize to a phrase)",
+            language.code()
+        );
+    }
+    Ok(())
 }
 
 // ---------------------------------------------------------------------------
@@ -1312,17 +1664,9 @@ pub async fn discover(
                 n_single += 1;
                 continue;
             }
-            // A proposal must satisfy the same constraints the unigram
-            // trainer puts on learned sequences: content words at both
-            // ends, no proper nouns anywhere.
-            {
-                use omnigram::unigram::UnigramToken;
-                let boundary_ok = ids.first().is_some_and(|a| a.is_content())
-                    && ids.last().is_some_and(|a| a.is_content());
-                if !boundary_ok || ids.iter().any(|a| a.is_excluded_from_sequences()) {
-                    n_boundary += 1;
-                    continue;
-                }
+            if !admissible_sequence(&ids) {
+                n_boundary += 1;
+                continue;
             }
             let matches = atom_window_matches(&index, &ids);
             let count = matches.len();
@@ -1343,6 +1687,10 @@ pub async fn discover(
                         term: surface,
                         display: gram.to_display_string(language),
                         gram,
+                        // Minted by the paradigm-expansion stage, which does
+                        // not exist yet; the format and the map that consumes
+                        // it land first.
+                        citation: None,
                         gloss: e.gloss.clone(),
                         opacity: String::new(),
                         count,
@@ -1472,12 +1820,40 @@ pub async fn discover(
         .map(|(_, entry)| entry)
         .collect();
 
+    // Paradigm expansion, after the novelty filter so it only runs on terms
+    // that are actually going to be proposed, and before opacity so the
+    // adoption gate judges whole phrases rather than individual surfaces.
+    expand_paradigms(
+        language,
+        &corpus.interners.strings,
+        &index,
+        &known_terms,
+        &known_multi,
+        &mut discovered,
+    )
+    .await?;
+
     // Opacity judging: the adoption gate. These files feed the next
     // generate-data run with no human review, so only expressions judged
     // worth learning as a unit (opaque or semi) are written; transparent
     // ones — and ones whose judgment failed — are dropped.
+    //
+    // One judgment per paradigm, not per surface form: the instantiations of
+    // a phrase are one vocabulary decision, so judging them separately costs
+    // N times as much and can leave a paradigm half-adopted, which is worse
+    // than either adopting or dropping it whole.
+    let paradigms: Vec<(Gram<String>, Vec<usize>)> = {
+        let mut groups: BTreeMap<Gram<String>, Vec<usize>> = BTreeMap::new();
+        for (i, (d, _)) in discovered.iter().enumerate() {
+            // Keyed by gram, not display string, so two phrases that render
+            // identically (est@AUX vs est@VERB) don't share a verdict.
+            let key = d.citation.clone().unwrap_or_else(|| d.gram.clone());
+            groups.entry(key).or_default().push(i);
+        }
+        groups.into_iter().collect()
+    };
     if !discovered.is_empty() {
-        let pb = indicatif::ProgressBar::new(discovered.len() as u64);
+        let pb = indicatif::ProgressBar::new(paradigms.len() as u64);
         pb.set_style(
             indicatif::ProgressStyle::default_bar()
                 .template(&format!(
@@ -1488,18 +1864,35 @@ pub async fn discover(
                 .progress_chars("#>-"),
         );
         pb.enable_steady_tick(std::time::Duration::from_millis(100));
-        let items: Vec<(usize, String)> = discovered
+        let items: Vec<(usize, String)> = paradigms
             .iter()
             .enumerate()
-            .map(|(i, (d, examples))| {
+            .map(|(g, (key, members))| {
+                let head = &discovered[members[0]].0;
                 let mut p = format!(
-                    "Expression: \"{}\"\nGloss: {}\n\nExamples:\n",
-                    d.term, d.gloss
+                    "Expression: \"{}\"\nGloss: {}\n",
+                    key.to_display_string(language),
+                    head.gloss
                 );
-                for e in examples {
-                    let _ = writeln!(p, "- {e}");
+                if members.len() > 1 {
+                    let forms: Vec<&str> = members
+                        .iter()
+                        .map(|&i| discovered[i].0.term.as_str())
+                        .collect();
+                    let _ = writeln!(p, "Attested forms: {}", forms.join(", "));
                 }
-                (i, p)
+                p.push_str("\nExamples:\n");
+                // Round-robin one example per member before taking a second
+                // from any, so a paradigm is illustrated by its whole range
+                // rather than by whichever form happens to be first.
+                for round in 0..EXAMPLES_PER_PARADIGM {
+                    for &i in members {
+                        if let Some(e) = discovered[i].1.get(round) {
+                            let _ = writeln!(p, "- {e}");
+                        }
+                    }
+                }
+                (g, p)
             })
             .collect();
         let n_req = items.len();
@@ -1513,9 +1906,12 @@ pub async fn discover(
             .await
             .context("opacity batch failed")?;
         pb.finish_with_message(format!("{:.2}", JUDGE_CLIENT.cost().unwrap_or(0.0)));
-        for ((i, _), resp) in opacity_results {
+        for ((g, _), resp) in opacity_results {
             if let Ok(r) = resp {
-                discovered[*i].0.opacity = format!("{:?}", r.opacity).to_lowercase();
+                let verdict = format!("{:?}", r.opacity).to_lowercase();
+                for &i in &paradigms[*g].1 {
+                    discovered[i].0.opacity = verdict.clone();
+                }
             }
         }
     }
@@ -1634,6 +2030,50 @@ mod tests {
         let sil = kmeans_leaves(&one, (0..12).collect(), 1, &mut leaves);
         assert!(sil.is_none(), "identical points must not split");
         assert_eq!(leaves.len(), 1);
+    }
+
+    /// A record as committed before citations existed, verbatim from
+    /// `data/fra/discovered_multiword_terms.jsonl`. The adoption log is
+    /// append-only, so every future read of it has to keep parsing lines in
+    /// this shape.
+    const LEGACY_RECORD: &str = r#"{"term":"dit vrai","display":"dit vrai","gram":[{"Tok":{"text":"dit","word_type":{"type":"Heteronym","word":"dit","lemma":"dire","pos":"VERB"}}},{"Tok":{"text":"vrai","word_type":{"type":"Heteronym","word":"vrai","lemma":"vrai","pos":"ADV"}}}],"gloss":"dire la vérité","opacity":"semi","count":6,"source":"vrai","silhouette":0.5770227295363336}"#;
+
+    #[test]
+    fn citationless_record_round_trips() {
+        let parsed: DiscoveredTerm = serde_json::from_str(LEGACY_RECORD).unwrap();
+        assert_eq!(parsed.term, "dit vrai");
+        assert_eq!(parsed.gram.iter().count(), 2);
+        assert!(parsed.citation.is_none());
+        // `skip_serializing_if` keeps a citationless entry byte-identical, so
+        // adding the field doesn't churn every committed line on the next
+        // write.
+        assert_eq!(serde_json::to_string(&parsed).unwrap(), LEGACY_RECORD);
+    }
+
+    #[test]
+    fn citation_round_trips_and_is_the_only_added_field() {
+        let mut parsed: DiscoveredTerm = serde_json::from_str(LEGACY_RECORD).unwrap();
+        parsed.citation = Some(parsed.gram.clone());
+        let json = serde_json::to_string(&parsed).unwrap();
+        let back: DiscoveredTerm = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.citation.as_ref(), Some(&parsed.gram));
+        // The citation is a full gram, not a display string, so two phrases
+        // that render alike stay distinct in the file as well as in the map.
+        assert!(json.contains("\"citation\":[{\"Tok\""));
+    }
+
+    #[test]
+    fn admissible_sequence_rejects_lone_and_unbounded_atoms() {
+        let parsed: DiscoveredTerm = serde_json::from_str(LEGACY_RECORD).unwrap();
+        let atoms: Vec<Atom<String>> = parsed.gram.iter().cloned().collect();
+        let mut interner = lasso::Rodeo::default();
+        let interned: Vec<SpurAtom> = atoms
+            .iter()
+            .map(|a| a.get_or_intern(&mut interner))
+            .collect();
+        assert!(admissible_sequence(&interned));
+        assert!(!admissible_sequence(&interned[..1]));
+        assert!(!admissible_sequence(&[]));
     }
 
     #[test]

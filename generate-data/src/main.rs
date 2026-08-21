@@ -140,6 +140,11 @@ async fn main() -> anyhow::Result<()> {
                     contiguous_lemma_patterns,
                     discontinuous_lemma_patterns,
                     tree_patterns,
+                    // Built and validated in segment_corpus; nothing consumes
+                    // it yet. The exhaustive destructure here is deliberate —
+                    // it makes the first consumer an explicit edit rather than
+                    // something that quietly compiles.
+                    citations: _,
                 },
             encoder,
         } = generate_data::pipeline::segment_corpus(course, &sentence_corpus).await?;
