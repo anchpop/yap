@@ -1056,8 +1056,9 @@ pub struct DiscoveredTerm {
     /// the citation has a real card, and its variants now point at it instead
     /// of floating unconnected. The rules are only that the lane must not
     /// require it, must not create it, and must tolerate the overlap — see
-    /// [`crate::pipeline::MatchingPatterns::citations`] for the two
-    /// invariants that enforces.
+    /// [`crate::pipeline::MatchingPatterns::citations`] for the invariants
+    /// that enforces, shared with Wiktionary's alternative-form relations,
+    /// which make exactly the same claim and so share the same map.
     ///
     /// So the citation's atoms are minted at discovery time and stored here —
     /// it has no other derivation, because it travels no other path. `None`

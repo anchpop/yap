@@ -23,7 +23,7 @@ use language_utils::{
     Course, Gram, GramFrequencyEntry, GramVocabEntry, MultiwordTermMatch, MultiwordTerms,
     SentenceInfo, SentenceSource,
 };
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::fs::File;
 use std::hash::Hash;
 use std::io::{BufWriter, Write};
@@ -214,31 +214,34 @@ pub struct MatchingPatterns {
     pub discontinuous_lemma_patterns:
         BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
     pub tree_patterns: BTreeMap<Gram<String>, lexide::matching::TreeNode>,
-    /// Discovered variant gram → the citation form it realizes, for phrases
-    /// the discovery lane found (see
-    /// [`crate::sense_discovery::DiscoveredTerm::citation`] for why the
-    /// citation is not itself made matchable). Two invariants hold by
-    /// construction, both enforced in [`build_citation_map`]:
+    /// Instantiation gram → the entry it should be recorded as. Both of the
+    /// pipeline's sources for that claim feed this one map: Wiktionary's
+    /// "alternative form of" relations, and the citation forms the discovery
+    /// lane mints (see [`crate::sense_discovery::DiscoveredTerm::citation`]
+    /// for why a discovered citation is not itself made into a stream gram).
     ///
-    /// - No self-edges. A variant equal to its own citation is a group of
-    ///   one, so it contributes nothing and is dropped.
-    /// - Citations are never keys, so the map is exactly one level deep and
-    ///   no consumer has to chase a chain or guard against a cycle.
+    /// Three invariants hold by construction, all established in
+    /// [`build_citation_map`]:
     ///
-    /// Keys are restricted to grams that actually survived into
-    /// `contiguous_lemma_patterns`, so there are no dangling entries for
-    /// variants the trainer pruned or pattern dedup collapsed.
+    /// - No self-edges. A gram equal to its own citation is a group of one,
+    ///   so it contributes nothing and is dropped.
+    /// - Exactly one level deep. Chains are collapsed to their terminal form
+    ///   and cycles are dropped, so no consumer walks the map.
+    /// - Keys are restricted to grams present in `contiguous_lemma_patterns`,
+    ///   so no entry dangles on something that can never match.
     pub citations: BTreeMap<Gram<String>, Gram<String>>,
 }
 
-/// Rewrite every match of a discovered variant to the citation form of the
-/// phrase it realizes.
+/// Rewrite every match of an instantiation to the entry it realizes.
 ///
-/// Each variant carries its own pattern and is attempted independently — that
-/// is the whole reason paradigm expansion exists, since a lemma pattern built
-/// from French "me" can never match "te" or "se". But whichever variant fires,
-/// what we record is the phrase, so all of them accrue to one vocabulary item
-/// instead of splitting into near-duplicates the learner meets separately.
+/// Each instantiation carries its own pattern and is attempted independently —
+/// that is the whole reason paradigm expansion exists, since a lemma pattern
+/// built from French "me" can never match "te" or "se". But whichever one
+/// fires, what we record is the entry, so all of them accrue to one vocabulary
+/// item instead of splitting into near-duplicates the learner meets
+/// separately. This is also what finally makes Wiktionary's alternative-form
+/// data do something: it has always been collected, but until now it only
+/// broke ties in pattern dedup.
 ///
 /// `matched_word_indices` is deliberately left alone: it points at the words
 /// the variant actually bound, which is what graders and the UI need to
@@ -270,52 +273,105 @@ pub fn apply_citations(
         rewrite(&mut terms.low_confidence);
     }
     if rewritten > 0 {
-        println!("Citations: rewrote {rewritten} variant matches to their citation form");
+        println!("Citations: rewrote {rewritten} matches to their citation form");
     }
 }
 
-/// Build the citation map from a language's committed discovery record.
+/// Collapse `a → b → c` to `a → c` so the map is exactly one level deep and no
+/// consumer has to walk it.
 ///
-/// Filtering happens here rather than at write time so the record stays a
-/// faithful account of what the judge proposed — the same property the
-/// append-only adoption log relies on — and so hand edits to that file are
-/// covered by the same checks.
+/// Wiktionary genuinely contains chains, and that data is not ours to reject,
+/// so a chain is resolved rather than refused. A cycle has no terminal form to
+/// resolve to, so its members are dropped and returned for reporting.
+fn collapse_chains<T: Ord + Clone>(edges: &BTreeMap<T, T>) -> (BTreeMap<T, T>, Vec<T>) {
+    let mut cycles = Vec::new();
+    let resolved = edges
+        .iter()
+        .filter_map(|(from, to)| {
+            let mut target = to;
+            let mut seen: BTreeSet<&T> = BTreeSet::from([from]);
+            while let Some(next) = edges.get(target) {
+                if !seen.insert(target) {
+                    cycles.push(from.clone());
+                    return None;
+                }
+                target = next;
+            }
+            (target != from).then(|| (from.clone(), target.clone()))
+        })
+        .collect();
+    (resolved, cycles)
+}
+
+/// Build the citation map: every gram that should be recorded as some other
+/// gram when it matches.
+///
+/// Two sources, deliberately one map. Wiktionary states "alternative form of"
+/// relations between page titles, and the discovery lane states which mined
+/// variants realize which phrase; both are the same claim — this surface is an
+/// instantiation, that one is the entry — and both want the same effect on a
+/// match, so they get one mechanism rather than two that drift.
+///
+/// Filtering happens here rather than at either source so the discovery record
+/// stays a faithful account of what the judge proposed (the property the
+/// append-only adoption log relies on), hand edits to it get the same checks,
+/// and the Wiktionary data is taken as-is rather than being pre-cleaned.
 fn build_citation_map(
     language: language_utils::Language,
     matchable: &BTreeMap<Gram<String>, Vec<(String, lexide::pos::PartOfSpeech)>>,
+    alt_forms: &BTreeMap<String, String>,
+    term_grams: &BTreeMap<String, Gram<String>>,
 ) -> anyhow::Result<BTreeMap<Gram<String>, Gram<String>>> {
     let mut citations: BTreeMap<Gram<String>, Gram<String>> = BTreeMap::new();
-    let (mut self_edges, mut unmatchable) = (0usize, 0usize);
-    for entry in crate::sense_discovery::load_discovered_terms(language)? {
-        let Some(citation) = entry.citation else {
-            continue;
-        };
-        if citation == entry.gram {
+    let (mut self_edges, mut unmatchable, mut unresolved) = (0usize, 0usize, 0usize);
+    let mut add = |from: Gram<String>, to: Gram<String>| {
+        if from == to {
             self_edges += 1;
-            continue;
-        }
-        if !matchable.contains_key(&entry.gram) {
+        } else if !matchable.contains_key(&from) {
+            // No pattern, so it can never match and the entry would only ever
+            // dangle. Both sources produce these: a variant the trainer pruned,
+            // an alt form pattern dedup collapsed.
             unmatchable += 1;
-            continue;
+        } else {
+            citations.insert(from, to);
         }
-        citations.insert(entry.gram, citation);
+    };
+    for (alt, canonical) in alt_forms {
+        // The canonical is parsed out of wikitext and need not be a multiword
+        // term itself, in which case we have no tokenization and so no gram
+        // for it. Those relations are dropped rather than tokenized: they do
+        // nothing today either, so resolving the ones we can is already a
+        // strict improvement.
+        match (term_grams.get(alt), term_grams.get(canonical)) {
+            (Some(from), Some(to)) => add(from.clone(), to.clone()),
+            (Some(_), None) => unresolved += 1,
+            _ => {}
+        }
     }
-    if let Some(chained) = citations.values().find(|c| citations.contains_key(*c)) {
-        anyhow::bail!(
-            "citation {:?} is itself a discovered variant — the citation map must stay one level \
-             deep, so a phrase cited by another phrase has to be resolved before it gets here",
-            chained.to_display_string(language)
-        );
+    for entry in crate::sense_discovery::load_discovered_terms(language)? {
+        if let Some(citation) = entry.citation {
+            add(entry.gram, citation);
+        }
     }
-    if self_edges > 0 || unmatchable > 0 {
+
+    let (resolved, cycles) = collapse_chains(&citations);
+    if !cycles.is_empty() {
         log::warn!(
-            "citations[{}]: {} entries ({self_edges} self-cited, {unmatchable} whose variant is \
-             not matchable)",
+            "citations[{}]: dropped {} entries in alternative-form cycles (e.g. {})",
             language.code(),
-            citations.len(),
+            cycles.len(),
+            cycles
+                .first()
+                .map(|g| g.to_display_string(language))
+                .unwrap_or_default(),
         );
     }
-    Ok(citations)
+    println!(
+        "Citations: {} entries ({self_edges} self-cited, {unmatchable} unmatchable, \
+         {unresolved} alt forms whose canonical is not a term)",
+        resolved.len(),
+    );
+    Ok(resolved)
 }
 
 /// The segmented corpus: every sentence in its canonical encoded form with
@@ -496,13 +552,17 @@ pub async fn segment_corpus(
         &multiword_terms_tokenizations,
         course.target_language,
     );
-    let seed_grams: Vec<Gram<String>> = multiword_term_literals
-        .values()
-        .map(|lits| {
+    // Surface → gram for every multiword term. Kept as a map (rather than
+    // just the grams) because the alt-form data is stated in surfaces and has
+    // to be resolved through it to join the citation map.
+    let term_grams: BTreeMap<String, Gram<String>> = multiword_term_literals
+        .iter()
+        .map(|(term, lits)| {
             let (atoms, _) = language_utils::literals_to_atoms(lits, course.target_language);
-            Gram::from(atoms)
+            (term.clone(), Gram::from(atoms))
         })
         .collect();
+    let seed_grams: Vec<Gram<String>> = term_grams.values().cloned().collect();
     let wiktionary_grams: HashSet<Gram<String>> = seed_grams.iter().cloned().collect();
 
     // Train supertokens; the vocabulary, every sentence's encoding, and the
@@ -651,7 +711,12 @@ pub async fn segment_corpus(
         .map(|(gram, lemma_pos_pairs)| (gram.clone(), lemma_pos_pairs.clone()))
         .collect();
     let contiguous_lemma_patterns = lemma_patterns;
-    let citations = build_citation_map(course.target_language, &contiguous_lemma_patterns)?;
+    let citations = build_citation_map(
+        course.target_language,
+        &contiguous_lemma_patterns,
+        &wiktionary_alt_forms,
+        &term_grams,
+    )?;
 
     // Run multiword detection (after omnigram training)
     let mut multiword_matches = crate::nlp::generate_nlp_sentences(
@@ -971,4 +1036,37 @@ pub async fn translate_sentences(
     writer.flush()?;
 
     Ok(translations)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn edges(pairs: &[(&str, &str)]) -> BTreeMap<String, String> {
+        pairs
+            .iter()
+            .map(|(a, b)| (a.to_string(), b.to_string()))
+            .collect()
+    }
+
+    #[test]
+    fn chains_collapse_to_their_terminal_form() {
+        let (resolved, cycles) = collapse_chains(&edges(&[("a", "b"), ("b", "c")]));
+        assert!(cycles.is_empty());
+        // Every member points at "c" directly, so a consumer never walks.
+        assert_eq!(resolved, edges(&[("a", "c"), ("b", "c")]));
+    }
+
+    #[test]
+    fn cycles_are_dropped_not_walked_forever() {
+        let (resolved, cycles) = collapse_chains(&edges(&[("a", "b"), ("b", "a"), ("x", "y")]));
+        assert_eq!(cycles, vec!["a".to_string(), "b".to_string()]);
+        // The unrelated edge survives — one bad Wiktionary loop must not take
+        // the rest of the map with it.
+        assert_eq!(resolved, edges(&[("x", "y")]));
+        // A self-loop has no terminal form either.
+        let (resolved, cycles) = collapse_chains(&edges(&[("a", "a")]));
+        assert_eq!(cycles, vec!["a".to_string()]);
+        assert!(resolved.is_empty());
+    }
 }
