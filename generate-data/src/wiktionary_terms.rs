@@ -154,16 +154,17 @@ async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>
     }
 
     // Terms mined by the sense_discovery binary (embedding-cluster splits,
-    // LLM-extracted, corpus-grounded) and committed for adoption. Only the
-    // variant surface enters the inventory: a record's `citation` is
-    // deliberately *not* pushed here, because making it a term would make it
-    // matchable and encodable, which is exactly the competing-gram situation
-    // that field exists to avoid.
-    terms.extend(
-        crate::sense_discovery::load_discovered_terms(language)?
-            .into_iter()
-            .map(|entry| entry.term.trim().to_string()),
-    );
+    // LLM-extracted, corpus-grounded) and committed for adoption. Both the
+    // variant surface and its citation form enter the inventory: the citation
+    // is an ordinary term — encodable, matchable, taught like any other — so
+    // it exists as the vocabulary item that variant matches are recorded
+    // under (see [`crate::sense_discovery::DiscoveredTerm::citation`]).
+    for entry in crate::sense_discovery::load_discovered_terms(language)? {
+        terms.push(entry.term.trim().to_string());
+        if let Some(citation) = &entry.citation {
+            terms.push(citation.to_display_string(language));
+        }
+    }
 
     Ok(terms)
 }

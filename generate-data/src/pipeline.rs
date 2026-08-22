@@ -217,8 +217,8 @@ pub struct MatchingPatterns {
     /// Instantiation gram → the entry it should be recorded as. Both of the
     /// pipeline's sources for that claim feed this one map: Wiktionary's
     /// "alternative form of" relations, and the citation forms the discovery
-    /// lane mints (see [`crate::sense_discovery::DiscoveredTerm::citation`]
-    /// for why a discovered citation is not itself made into a stream gram).
+    /// lane mints (themselves ordinary multiword terms — see
+    /// [`crate::sense_discovery::DiscoveredTerm::citation`]).
     ///
     /// Three invariants hold by construction, all established in
     /// [`build_citation_map`]:
@@ -323,15 +323,10 @@ fn build_citation_map(
     term_grams: &BTreeMap<String, Gram<String>>,
 ) -> anyhow::Result<BTreeMap<Gram<String>, Gram<String>>> {
     let mut citations: BTreeMap<Gram<String>, Gram<String>> = BTreeMap::new();
-    let (mut self_edges, mut unmatchable, mut unresolved) = (0usize, 0usize, 0usize);
+    let (mut self_edges, mut unresolved) = (0usize, 0usize);
     let mut add = |from: Gram<String>, to: Gram<String>| {
         if from == to {
             self_edges += 1;
-        } else if !matchable.contains_key(&from) {
-            // No pattern, so it can never match and the entry would only ever
-            // dangle. Both sources produce these: a variant the trainer pruned,
-            // an alt form pattern dedup collapsed.
-            unmatchable += 1;
         } else {
             citations.insert(from, to);
         }
@@ -354,7 +349,10 @@ fn build_citation_map(
         }
     }
 
-    let (resolved, cycles) = collapse_chains(&citations);
+    // Collapse before filtering: a chain may pass through a gram that lost
+    // its pattern to dedup, and its members must still resolve to the
+    // terminal form rather than stopping at the unmatchable middle.
+    let (mut resolved, cycles) = collapse_chains(&citations);
     if !cycles.is_empty() {
         log::warn!(
             "citations[{}]: dropped {} entries in alternative-form cycles (e.g. {})",
@@ -366,6 +364,12 @@ fn build_citation_map(
                 .unwrap_or_default(),
         );
     }
+    // A key with no pattern can never match, so its entry would only ever
+    // dangle. Both sources produce these: a variant the trainer pruned, an
+    // alt form pattern dedup collapsed.
+    let before = resolved.len();
+    resolved.retain(|from, _| matchable.contains_key(from));
+    let unmatchable = before - resolved.len();
     println!(
         "Citations: {} entries ({self_edges} self-cited, {unmatchable} unmatchable, \
          {unresolved} alt forms whose canonical is not a term)",

@@ -1027,42 +1027,28 @@ pub struct DiscoveredTerm {
     pub display: String,
     /// The proposed gram itself (its atom sequence — the canonical identity).
     pub gram: Gram<String>,
-    /// The citation form this variant belongs to — not required to be a
-    /// vocabulary member.
+    /// The citation form this variant belongs to.
     ///
-    /// The citation is what a *match* records — every variant is attempted
-    /// separately and whichever fires reports the phrase, so the whole
-    /// paradigm accrues to one vocabulary item (see
-    /// [`crate::pipeline::apply_citations`]). What it is never made into is a
-    /// gram in the encoded stream: the discovery lane does not add it to the
-    /// multiword-terms list, so it is never trained on and never segments a
-    /// sentence.
+    /// The citation is an ordinary multiword term: it enters the inventory
+    /// alongside the variant surfaces (`wiktionary_terms::extra_multiword_terms`),
+    /// so it is tokenized, encodable, matchable, and taught like anything
+    /// else — which is what makes it a legitimate vocabulary member for a
+    /// match to point at. The variants are its paradigm, but they are related
+    /// only loosely: each is its own vocabulary item, and any deeper
+    /// relation (propagating a review across a paradigm, merging frequency)
+    /// is deliberately deferred until practice shows it's needed.
     ///
-    /// That restraint is the point. The multiword route would happily admit
-    /// it (most of the inventory never occurs in the corpus — 2,780 of a
-    /// 2,959-term French sample — and is in the vocabulary anyway), and the
-    /// result would be a gram competing with its own variants: "god help me"
-    /// and "god help someone" both encodable, each sentence's segmentation
-    /// picking one, and nothing relating the two, so the learner can end up
-    /// holding a card for each as unrelated vocabulary and the phrase's
-    /// frequency splits across them. A few independently-learned
-    /// near-duplicates already behave this way; the discovery lane must not
-    /// manufacture more. Rewriting matches gives the connection the competing
-    /// gram would not have had.
+    /// The rule the pipeline does enforce: when a variant matches in a
+    /// sentence, the sentence's phrases list shows the citation form. Every
+    /// variant is attempted separately — necessary, since clitics lemmatize
+    /// to themselves, so a lemma pattern built from French "me" can never
+    /// match "te" or "se" — and whichever fires, the match is rewritten to
+    /// record the citation (see [`crate::pipeline::apply_citations`]).
     ///
-    /// It may nonetheless already BE a vocabulary member — Wiktionary lists
-    /// many citation forms, and the trainer learns some from frequency. That
-    /// case is fine, and is in fact where the citation map earns its keep:
-    /// the citation has a real card, and its variants now point at it instead
-    /// of floating unconnected. The rules are only that the lane must not
-    /// require it, must not create it, and must tolerate the overlap — see
-    /// [`crate::pipeline::MatchingPatterns::citations`] for the invariants
-    /// that enforces, shared with Wiktionary's alternative-form relations,
-    /// which make exactly the same claim and so share the same map.
-    ///
-    /// So the citation's atoms are minted at discovery time and stored here —
-    /// it has no other derivation, because it travels no other path. `None`
-    /// for terms discovered before citations existed.
+    /// The citation's atoms are minted at discovery time and stored here;
+    /// the terms-inventory copy is derived from this gram's display string.
+    /// `None` for terms discovered before citations existed and for
+    /// expressions the judge deemed already general.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub citation: Option<Gram<String>>,
     pub gloss: String,
