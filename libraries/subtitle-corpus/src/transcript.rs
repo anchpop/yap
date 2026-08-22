@@ -348,6 +348,66 @@ fn encode_opus(pcm: &[u8]) -> Result<Vec<u8>> {
     Ok(out.stdout)
 }
 
+/// Identify a film's audio by its *encoded* content, ignoring the container.
+///
+/// This is what the cache key rests on, so it has to be exactly reproducible
+/// forever. Two things could spoil that, and this skips both. ffmpeg stamps a
+/// random serial number into every Ogg page it writes, so the same audio
+/// extracted twice is a different file byte for byte — so the page headers are
+/// skipped and only the packets underneath are hashed. And decoding is not
+/// bit-exact by specification: RFC 6716 defines conformance against test
+/// vectors with a *tolerance*, and fixed-point and float builds legitimately
+/// disagree — so nothing here decodes at all. A newer ffmpeg, a different CPU,
+/// or a pure-Rust decoder cannot move this number, because none of them are
+/// consulted.
+///
+/// A file that is not Ogg at all is hashed whole. That is still stable, which
+/// is all the key needs; it just is not serial-independent, and nothing else
+/// in the corpus produces one.
+pub fn source_digest(path: &Path) -> Result<String> {
+    use std::io::Read;
+    let mut file = std::io::BufReader::new(std::fs::File::open(path)?);
+    let mut hash = xxhash_rust::xxh3::Xxh3::new();
+    let mut header = [0u8; 27];
+
+    loop {
+        match file.read_exact(&mut header) {
+            Ok(()) => {}
+            Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => break,
+            Err(e) => return Err(e.into()),
+        }
+        if &header[..4] != b"OggS" {
+            // Not (or no longer) an Ogg stream. Hash the whole file instead of
+            // guessing where the next page starts: a digest of the wrong bytes
+            // is worse than a digest of all of them.
+            let mut whole = std::io::BufReader::new(std::fs::File::open(path)?);
+            let mut hash = xxhash_rust::xxh3::Xxh3::new();
+            let mut buf = vec![0u8; 1 << 20];
+            loop {
+                let n = whole.read(&mut buf)?;
+                if n == 0 {
+                    break;
+                }
+                hash.update(&buf[..n]);
+            }
+            return Ok(format!("{:016x}", hash.digest()));
+        }
+        // Byte 26 is the segment count; the table that follows gives each
+        // packet fragment's length, and their sum is the payload.
+        let segments = header[26] as usize;
+        let mut table = vec![0u8; segments];
+        file.read_exact(&mut table)?;
+        let payload_len: usize = table.iter().map(|&n| n as usize).sum();
+        let mut payload = vec![0u8; payload_len];
+        file.read_exact(&mut payload)?;
+        // The table is hashed too: it is how the payload divides into packets,
+        // which is part of the content and not of the container's bookkeeping.
+        hash.update(&table);
+        hash.update(&payload);
+    }
+    Ok(format!("{:016x}", hash.digest()))
+}
+
 /// Every input that can change the response, in one canonical value.
 ///
 /// The cache key is a hash of this, so adding or changing a parameter
@@ -362,12 +422,47 @@ struct RequestSpec<'a> {
     timestamps_granularity: &'a str,
     diarize: bool,
     no_verbatim: bool,
-    /// The audio by content — the *decoded samples*, deliberately not the
-    /// encoded bytes we actually upload. ffmpeg stamps a random Ogg serial
-    /// into every opus stream, so hashing what goes on the wire would make
-    /// every key unique and every lookup a miss. The samples are identical
-    /// run to run, and they are what the model actually hears.
+    /// Which audio was asked about: the source film by content, and the
+    /// stretch of it this request covers.
+    ///
+    /// Deliberately not a hash of what goes on the wire, and no longer a hash
+    /// of the decoded samples either. Both are the output of a decode-and-
+    /// re-encode that nobody guarantees is reproducible; see [`source_digest`].
+    /// Naming the *region of a known file* instead is stable by construction,
+    /// and it is the honest identity anyway — an ffmpeg upgrade that shifts a
+    /// sample by one bit has not changed which audio we are asking about.
+    audio_source_xxh3: &'a str,
+    audio_start_ms: i64,
+    audio_end_ms: i64,
+}
+
+/// The key this chunk used before the audio was identified by its source.
+///
+/// Kept so the entries already paid for are still found. It hashes the decoded
+/// samples, so it can only be computed by decoding — but the caller has the
+/// samples in hand already, and a lookup under it happens only when the new
+/// key missed, which is exactly when the alternative is spending money.
+#[derive(Serialize)]
+struct LegacySpec<'a> {
+    endpoint: &'a str,
+    model_id: &'a str,
+    language_code: &'a str,
+    timestamps_granularity: &'a str,
+    diarize: bool,
+    no_verbatim: bool,
     audio_xxh3: String,
+}
+
+impl LegacySpec<'_> {
+    fn key(&self) -> Result<String> {
+        let canonical = serde_json::to_vec(self)?;
+        Ok(format!(
+            "asr/{}/{}/{:016x}",
+            self.model_id,
+            self.language_code,
+            xxh3_64(&canonical)
+        ))
+    }
 }
 
 impl RequestSpec<'_> {
@@ -382,6 +477,15 @@ impl RequestSpec<'_> {
     }
 }
 
+/// One stretch of one film's audio: the samples to send, and the two ways of
+/// saying which audio they are.
+struct Chunk<'a> {
+    pcm: &'a [u8],
+    source_xxh3: &'a str,
+    start_ms: i64,
+    end_ms: i64,
+}
+
 /// Transcribe one chunk, reading the shared cache first.
 ///
 /// The cache holds the provider's **raw response body**, unparsed. Caching a
@@ -392,7 +496,7 @@ async fn transcribe_chunk(
     http: &reqwest::Client,
     account: &ScribeAccount,
     store: &osmo::Store,
-    pcm: &[u8],
+    chunk: Chunk<'_>,
     language: &str,
 ) -> Result<Vec<ScribeWord>> {
     let spec = RequestSpec {
@@ -402,11 +506,37 @@ async fn transcribe_chunk(
         timestamps_granularity: GRANULARITY,
         diarize: DIARIZE,
         no_verbatim: NO_VERBATIM,
-        audio_xxh3: format!("{:016x}", xxh3_64(pcm)),
+        audio_source_xxh3: chunk.source_xxh3,
+        audio_start_ms: chunk.start_ms,
+        audio_end_ms: chunk.end_ms,
     };
     let key = spec.key()?;
 
-    let raw = match store.read(&key).await {
+    let legacy = LegacySpec {
+        endpoint: SCRIBE_URL,
+        model_id: SCRIBE_MODEL,
+        language_code: language,
+        timestamps_granularity: GRANULARITY,
+        diarize: DIARIZE,
+        no_verbatim: NO_VERBATIM,
+        audio_xxh3: format!("{:016x}", xxh3_64(chunk.pcm)),
+    };
+
+    let cached = match store.read(&key).await {
+        Some(bytes) => Some(bytes),
+        // Only now, and only because the alternative is being billed: look
+        // under the old key and carry anything found forward, so the change of
+        // key costs nothing rather than re-buying what is already paid for.
+        None => match store.read(&legacy.key()?).await {
+            Some(bytes) => {
+                store.write(&key, &bytes).await.ok();
+                Some(bytes)
+            }
+            None => None,
+        },
+    };
+
+    let raw = match cached {
         Some(bytes) => bytes,
         None => {
             let form = reqwest::multipart::Form::new()
@@ -420,7 +550,7 @@ async fn transcribe_chunk(
                 // Opus on the wire; see `encode_opus`. Scribe accepts ogg.
                 .part(
                     "file",
-                    reqwest::multipart::Part::bytes(encode_opus(pcm)?)
+                    reqwest::multipart::Part::bytes(encode_opus(chunk.pcm)?)
                         .file_name("chunk.ogg")
                         .mime_str("audio/ogg")?,
                 );
@@ -468,6 +598,8 @@ pub async fn transcribe_film(
     let mut words = Vec::new();
     let mut failed = 0usize;
     let bounds = chunk_bounds(profile, film_ms);
+    // Once per film, not once per chunk: it reads the whole file.
+    let source_xxh3 = source_digest(audio)?;
     for (start_ms, end_ms) in &bounds {
         let pcm = match slice_pcm(audio, *start_ms, *end_ms) {
             Ok(o) => o,
@@ -477,7 +609,13 @@ pub async fn transcribe_film(
                 continue;
             }
         };
-        match transcribe_chunk(http, account, store, &pcm, language).await {
+        let chunk = Chunk {
+            pcm: &pcm,
+            source_xxh3: &source_xxh3,
+            start_ms: *start_ms,
+            end_ms: *end_ms,
+        };
+        match transcribe_chunk(http, account, store, chunk, language).await {
             Ok(heard) => words.extend(heard.into_iter().map(|w| Spoken {
                 at_ms: start_ms + (w.start * 1000.0) as i64,
                 until_ms: start_ms + (w.end.max(w.start) * 1000.0) as i64,
@@ -534,9 +672,87 @@ mod tests {
             timestamps_granularity: GRANULARITY,
             diarize: DIARIZE,
             no_verbatim: NO_VERBATIM,
+            audio_source_xxh3: "0000000000000000",
+            audio_start_ms: 0,
+            audio_end_ms: 600_000,
+        };
+        assert_eq!(spec.key().unwrap(), "asr/scribe_v2/en/375f151a696e4a16");
+    }
+
+    /// The legacy key must stay exactly where it was, or the fallback that
+    /// rescues already-paid-for entries looks in the wrong place and they are
+    /// bought a second time.
+    #[test]
+    fn legacy_key_still_resolves() {
+        let spec = LegacySpec {
+            endpoint: SCRIBE_URL,
+            model_id: SCRIBE_MODEL,
+            language_code: "en",
+            timestamps_granularity: GRANULARITY,
+            diarize: DIARIZE,
+            no_verbatim: NO_VERBATIM,
             audio_xxh3: "0000000000000000".to_string(),
         };
         assert_eq!(spec.key().unwrap(), "asr/scribe_v2/en/25d1e40fd8719fb9");
+    }
+
+    /// One Ogg page carrying one packet, with a caller-chosen stream serial.
+    fn ogg_page(serial: u32, seq: u32, payload: &[u8]) -> Vec<u8> {
+        let mut page = Vec::new();
+        page.extend_from_slice(b"OggS");
+        page.push(0); // version
+        page.push(0); // header type
+        page.extend_from_slice(&0u64.to_le_bytes()); // granule position
+        page.extend_from_slice(&serial.to_le_bytes());
+        page.extend_from_slice(&seq.to_le_bytes());
+        page.extend_from_slice(&0u32.to_le_bytes()); // CRC
+        page.push(1); // one segment
+        page.push(payload.len() as u8);
+        page.extend_from_slice(payload);
+        page
+    }
+
+    /// The whole reason the key stopped hashing decoded samples: ffmpeg picks
+    /// a random stream serial every time it writes an Ogg file, so the same
+    /// audio extracted twice differs byte for byte. Identical packets must
+    /// digest identically regardless.
+    #[test]
+    fn digest_ignores_the_stream_serial() {
+        let dir = std::env::temp_dir().join("yap-source-digest-test");
+        std::fs::create_dir_all(&dir).unwrap();
+        let (a, b) = (dir.join("a.opus"), dir.join("b.opus"));
+        std::fs::write(
+            &a,
+            [
+                ogg_page(0xDEAD_BEEF, 0, b"packet-one"),
+                ogg_page(0xDEAD_BEEF, 1, b"two"),
+            ]
+            .concat(),
+        )
+        .unwrap();
+        std::fs::write(
+            &b,
+            [
+                ogg_page(0x0BAD_F00D, 0, b"packet-one"),
+                ogg_page(0x0BAD_F00D, 1, b"two"),
+            ]
+            .concat(),
+        )
+        .unwrap();
+        assert_eq!(source_digest(&a).unwrap(), source_digest(&b).unwrap());
+
+        // ...but different audio must still differ, or the digest is useless.
+        let c = dir.join("c.opus");
+        std::fs::write(
+            &c,
+            [
+                ogg_page(0xDEAD_BEEF, 0, b"packet-ONE"),
+                ogg_page(0xDEAD_BEEF, 1, b"two"),
+            ]
+            .concat(),
+        )
+        .unwrap();
+        assert_ne!(source_digest(&a).unwrap(), source_digest(&c).unwrap());
     }
 
     /// Provenance has to move when the settings do, or a stale transcript
