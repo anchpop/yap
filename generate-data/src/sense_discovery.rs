@@ -1216,7 +1216,10 @@ pub struct SenseCandidate {
 /// Expand each grounded expression into its paradigm: ask the judge for the
 /// citation form and the other instantiations, ground every proposed variant
 /// against the corpus, append the ones that survive, and attach the citation
-/// gram to every member of the phrase.
+/// gram to every member of the phrase. Returns the paradigm membership —
+/// member index to citation string — which stays valid even for members
+/// whose citation string failed to tokenize into a gram, so the opacity
+/// stage can still judge the family as one unit.
 ///
 /// Variants go through exactly the gates an adjudicator extraction goes
 /// through — admissible sequence, corpus count, novelty — because a variant is
@@ -1235,9 +1238,9 @@ async fn expand_paradigms(
     known_terms: &HashSet<String>,
     known_multi: &HashSet<Vec<SpurAtom>>,
     discovered: &mut Vec<(DiscoveredTerm, Vec<String>)>,
-) -> Result<()> {
+) -> Result<BTreeMap<usize, String>> {
     if discovered.is_empty() {
-        return Ok(());
+        return Ok(BTreeMap::new());
     }
     let pb = indicatif::ProgressBar::new(discovered.len() as u64);
     pb.set_style(
@@ -1351,7 +1354,7 @@ async fn expand_paradigms(
         citation_strings.len(),
     );
     if citation_strings.is_empty() {
-        return Ok(());
+        return Ok(membership);
     }
 
     let tokenized = crate::nlp::process_sentences(
@@ -1374,8 +1377,8 @@ async fn expand_paradigms(
             })
             .collect();
     let mut unresolved = 0usize;
-    for (i, citation) in membership {
-        match citation_grams.get(&citation) {
+    for (&i, citation) in &membership {
+        match citation_grams.get(citation) {
             Some(gram) => discovered[i].0.citation = Some(gram.clone()),
             None => unresolved += 1,
         }
@@ -1387,7 +1390,7 @@ async fn expand_paradigms(
             language.code()
         );
     }
-    Ok(())
+    Ok(membership)
 }
 
 // ---------------------------------------------------------------------------
@@ -1831,7 +1834,7 @@ pub async fn discover(
     // Paradigm expansion, after the novelty filter so it only runs on terms
     // that are actually going to be proposed, and before opacity so the
     // adoption gate judges whole phrases rather than individual surfaces.
-    expand_paradigms(
+    let paradigm_membership = expand_paradigms(
         language,
         &corpus.interners.strings,
         &index,
@@ -1850,15 +1853,44 @@ pub async fn discover(
     // a phrase are one vocabulary decision, so judging them separately costs
     // N times as much and can leave a paradigm half-adopted, which is worse
     // than either adopting or dropping it whole.
-    let paradigms: Vec<(Gram<String>, Vec<usize>)> = {
-        let mut groups: BTreeMap<Gram<String>, Vec<usize>> = BTreeMap::new();
+    // Grouped by the judge's citation *string* rather than the resolved
+    // citation gram: the string exists even when the citation form failed to
+    // tokenize into a gram (a transient lexide failure), and grouping on it
+    // keeps such a family from fragmenting into per-surface judgments with
+    // potentially inconsistent verdicts. Citation-less terms fall back to
+    // their own gram — not the display string, so two phrases that render
+    // identically (est@AUX vs est@VERB) don't share a verdict.
+    #[derive(PartialEq, Eq, PartialOrd, Ord)]
+    enum ParadigmKey {
+        Citation(String),
+        Solo(Gram<String>),
+    }
+    let paradigms: Vec<(String, Vec<usize>)> = {
+        let mut groups: BTreeMap<ParadigmKey, Vec<usize>> = BTreeMap::new();
         for (i, (d, _)) in discovered.iter().enumerate() {
-            // Keyed by gram, not display string, so two phrases that render
-            // identically (est@AUX vs est@VERB) don't share a verdict.
-            let key = d.citation.clone().unwrap_or_else(|| d.gram.clone());
+            let key = match paradigm_membership.get(&i) {
+                Some(citation) => ParadigmKey::Citation(citation.clone()),
+                None => ParadigmKey::Solo(d.gram.clone()),
+            };
             groups.entry(key).or_default().push(i);
         }
-        groups.into_iter().collect()
+        groups
+            .into_iter()
+            .map(|(key, members)| {
+                // Prompt heading: the resolved citation gram's display when it
+                // exists (byte-identical to the old prompt, preserving the
+                // judgment cache), else the citation string itself.
+                let display = match &key {
+                    ParadigmKey::Citation(c) => discovered[members[0]]
+                        .0
+                        .citation
+                        .as_ref()
+                        .map_or_else(|| c.clone(), |g| g.to_display_string(language)),
+                    ParadigmKey::Solo(g) => g.to_display_string(language),
+                };
+                (display, members)
+            })
+            .collect()
     };
     if !discovered.is_empty() {
         let pb = indicatif::ProgressBar::new(paradigms.len() as u64);
@@ -1875,13 +1907,9 @@ pub async fn discover(
         let items: Vec<(usize, String)> = paradigms
             .iter()
             .enumerate()
-            .map(|(g, (key, members))| {
+            .map(|(g, (display, members))| {
                 let head = &discovered[members[0]].0;
-                let mut p = format!(
-                    "Expression: \"{}\"\nGloss: {}\n",
-                    key.to_display_string(language),
-                    head.gloss
-                );
+                let mut p = format!("Expression: \"{display}\"\nGloss: {}\n", head.gloss);
                 if members.len() > 1 {
                     let forms: Vec<&str> = members
                         .iter()
@@ -1943,22 +1971,56 @@ pub async fn discover(
     );
 
     // The jsonl is the durable adoption record: entries from previous runs
-    // are preserved verbatim — once adopted, a term is in the merged
-    // multiword-terms list, so the novelty filter (correctly) refuses to
-    // re-discover it, and a plain rewrite here would silently un-adopt it —
-    // and only genuinely new discoveries are appended.
+    // are preserved — once adopted, a term is in the merged multiword-terms
+    // list, so the novelty filter (correctly) refuses to re-discover it, and
+    // dropping a line here would silently un-adopt it — and only genuinely
+    // new discoveries are appended. Metadata, though, is healed: when this
+    // run re-derived an already-adopted term (the caches replay extractions
+    // until the term enters the inventory), a citation the original run
+    // failed to mint is backfilled, and opacity is re-aligned with the fresh
+    // per-paradigm verdict so a family can't stay half opaque, half semi.
     let terms_path = Path::new(&data_dir).join("discovered_multiword_terms.jsonl");
+    let fresh_by_term: HashMap<String, &DiscoveredTerm> = discovered
+        .iter()
+        .map(|d| (normalize_term(&d.term), d))
+        .collect();
     let mut lines: Vec<String> = Vec::new();
     let mut adopted: HashSet<String> = HashSet::new();
+    let mut n_backfilled = 0usize;
     if let Ok(content) = std::fs::read_to_string(&terms_path) {
         for line in content.lines().filter(|l| !l.trim().is_empty()) {
-            if let Ok(v) = serde_json::from_str::<serde_json::Value>(line)
+            let mut line = line.to_string();
+            if let Ok(mut row) = serde_json::from_str::<DiscoveredTerm>(&line) {
+                let key = normalize_term(&row.term);
+                if let Some(fresh) = fresh_by_term.get(&key) {
+                    let heal_citation = row.citation.is_none() && fresh.citation.is_some();
+                    let heal_opacity = !fresh.opacity.is_empty() && row.opacity != fresh.opacity;
+                    if heal_citation {
+                        row.citation = fresh.citation.clone();
+                    }
+                    if heal_opacity {
+                        row.opacity = fresh.opacity.clone();
+                    }
+                    if heal_citation || heal_opacity {
+                        line = serde_json::to_string(&row)?;
+                        n_backfilled += 1;
+                    }
+                }
+                adopted.insert(key);
+            } else if let Ok(v) = serde_json::from_str::<serde_json::Value>(&line)
                 && let Some(term) = v["term"].as_str()
             {
                 adopted.insert(normalize_term(term));
             }
-            lines.push(line.to_string());
+            lines.push(line);
         }
+    }
+    if n_backfilled > 0 {
+        println!(
+            "sense-discovery[{}]: backfilled citation/opacity on {n_backfilled} previously \
+             adopted terms",
+            language.code(),
+        );
     }
     let mut new_terms = 0usize;
     for row in &discovered {
