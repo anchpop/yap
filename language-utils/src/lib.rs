@@ -4125,18 +4125,19 @@ pub fn capitalize_first_letter(s: &str) -> String {
 /// - Proper nouns in any language (e.g. "Paris", "Marie")
 /// - All nouns in German (German capitalizes every noun)
 /// - The pronoun "I" in English
-/// - Fully-uppercase multi-character tokens in any language ("OK", "DVD",
-///   "ADN"): their capitalization is a property of the token, and lowercasing
-///   only the first letter would mint a freak gram ("oK") distinct from the
-///   mid-sentence form
+/// - Fully-uppercase tokens with two or more uppercase letters in any
+///   language ("OK", "DVD", "ADN"): their capitalization is a property of the
+///   token, and lowercasing only the first letter would mint a freak gram
+///   ("oK") distinct from the mid-sentence form. Two letters, not one, so
+///   that elided clitics ("L'", "J'", "C'" — one uppercase letter plus an
+///   apostrophe) still normalize to their lowercase grams.
 pub fn first_letter_always_capitalized<S: AsRef<str>>(word: &Word<S>, language: Language) -> bool {
     // English "I" is always capitalized
     if language == Language::English && word.text.as_ref() == "I" {
         return true;
     }
     let text = word.text.as_ref();
-    if text.chars().count() > 1
-        && text.chars().any(|c| c.is_uppercase())
+    if text.chars().filter(|c| c.is_uppercase()).count() >= 2
         && !text.chars().any(|c| c.is_lowercase())
     {
         return true;
@@ -4415,6 +4416,52 @@ mod original_language_tests {
         let movie: MovieMetadataBasic =
             serde_json::from_str(r#"{"id":"tt0000001","title":"?","year":null}"#).unwrap();
         assert_eq!(movie.original_language, None);
+    }
+}
+
+#[cfg(test)]
+mod capitalization_tests {
+    use super::*;
+
+    fn word(text: &str, pos: PartOfSpeech) -> Word<String> {
+        Word {
+            text: text.to_string(),
+            word_type: WordType::Heteronym(Heteronym {
+                word: text.to_lowercase(),
+                lemma: text.to_lowercase(),
+                pos,
+            }),
+        }
+    }
+
+    #[test]
+    fn all_caps_tokens_keep_their_capitalization() {
+        for caps in ["OK", "DVD", "ADN", "L.A."] {
+            assert!(
+                first_letter_always_capitalized(&word(caps, PartOfSpeech::Intj), Language::French),
+                "{caps} should keep its capitalization"
+            );
+        }
+    }
+
+    #[test]
+    fn elided_clitics_still_normalize() {
+        // One uppercase letter plus an apostrophe is an elision, not an
+        // acronym: sentence-initial "L'homme" must still normalize "L'" to
+        // the "l'" gram (a regression here splits the article vocabulary).
+        for clitic in ["L'", "J'", "C'", "D'", "N'", "M'", "S'", "T'"] {
+            assert!(
+                !first_letter_always_capitalized(
+                    &word(clitic, PartOfSpeech::Det),
+                    Language::French
+                ),
+                "{clitic} should still be decapitalized"
+            );
+        }
+        assert!(!first_letter_always_capitalized(
+            &word("Le", PartOfSpeech::Det),
+            Language::French
+        ));
     }
 }
 
