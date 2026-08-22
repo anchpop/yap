@@ -4471,6 +4471,7 @@ dependencies = [
  "bytes",
  "encoding_rs",
  "futures-core",
+ "futures-util",
  "h2 0.4.12",
  "http 1.3.1",
  "http-body 1.0.1",
@@ -4482,6 +4483,7 @@ dependencies = [
  "js-sys",
  "log 0.4.31",
  "mime",
+ "mime_guess",
  "native-tls",
  "percent-encoding",
  "pin-project-lite",
@@ -5403,6 +5405,7 @@ dependencies = [
  "anyhow",
  "base64 0.22.1",
  "clap",
+ "dotenvy",
  "earshot",
  "flate2",
  "futures",
@@ -5410,12 +5413,14 @@ dependencies = [
  "language-utils",
  "matroska-demuxer",
  "movie-subtitles",
+ "osmo",
  "reqwest 0.13.4",
  "schemars",
  "serde",
  "serde_json",
  "tokio",
  "tysm",
+ "xxhash-rust",
 ]
 
 [[package]]

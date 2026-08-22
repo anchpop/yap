@@ -12,6 +12,7 @@ mod library;
 mod ocr;
 mod pgs;
 mod sync;
+mod transcript;
 mod vad;
 mod vobsub;
 
@@ -23,6 +24,7 @@ use std::sync::Mutex;
 use anyhow::{bail, Context, Result};
 use clap::{Parser, Subcommand};
 use library::{Movie, Source};
+use serde::{Deserialize, Serialize};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -205,6 +207,26 @@ enum Command_ {
         /// Stop after this many films (0 = all).
         #[arg(long, default_value_t = 0)]
         limit: usize,
+    },
+    /// Transcribe every film in full, so its subtitle can be checked against
+    /// what was actually said.
+    ///
+    /// Reads the extracted `audio.opus`, cuts it at the quietest seams the
+    /// film's speech profile offers, and writes `transcript.jsonl` beside the
+    /// subtitle. Responses are cached in the shared store by chunk bytes, so
+    /// re-running is free for everything already transcribed.
+    Transcribe {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Films transcribed at once.
+        #[arg(long, default_value_t = 4)]
+        films_in_flight: usize,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// Transcribe this film alone, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
     },
     /// Score how well a subtitle's timing agrees with where speech actually is.
     ///
@@ -697,6 +719,7 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
         let _ = std::fs::remove_file(dir.join("subtitle.srt"));
         let _ = std::fs::remove_file(dir.join("speech-profile.f32"));
         let _ = std::fs::remove_file(dir.join("references.json"));
+        let _ = std::fs::remove_file(dir.join("transcript.jsonl"));
         let _ = std::fs::remove_file(dir.join("audio.opus"));
         let _ = std::fs::remove_file(dir.join("audio.json"));
         let _ = std::fs::remove_file(dir.join("film.json"));
@@ -971,6 +994,10 @@ fn refresh(library: PathBuf, data_root: PathBuf, out: PathBuf) -> Result<()> {
         ("check", {
             let out = out.clone();
             Box::new(move || check_all(out, None, 5, 60, 4, 0))
+        }),
+        ("transcribe", {
+            let out = out.clone();
+            Box::new(move || transcribe_all(out, 4, 0, None))
         }),
         ("sidecars", {
             let out = out.clone();
@@ -1571,6 +1598,9 @@ async fn sync_all(
     use futures::stream::StreamExt;
     use std::sync::Arc;
 
+    // Fail here rather than one window at a time — see `check_all`.
+    let account = Arc::new(sync::WhisperAccount::from_env()?);
+
     let plan = read_plan(&out)?;
     let mut queue: Vec<(Movie, PathBuf)> = Vec::new();
     let mut parked = 0usize;
@@ -1605,10 +1635,11 @@ async fn sync_all(
     let results: Vec<bool> = futures::stream::iter(queue.into_iter())
         .map(|(movie, raw)| {
             let http = Arc::clone(&http);
+            let account = Arc::clone(&account);
             let out = Arc::clone(&out);
             let progress = &progress;
             async move {
-                let outcome = sync_one(&http, &movie, &raw, &out, opts).await;
+                let outcome = sync_one(&http, &account, &movie, &raw, &out, opts).await;
                 let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
                 match &outcome {
                     Ok(a) => println!(
@@ -1641,6 +1672,7 @@ async fn sync_all(
 /// Align one film: transcribe a few windows, match lines, fit, write.
 async fn sync_one(
     http: &reqwest::Client,
+    account: &sync::WhisperAccount,
     movie: &Movie,
     raw_srt: &std::path::Path,
     out: &std::path::Path,
@@ -1661,7 +1693,17 @@ async fn sync_one(
     // anchors clustered at one end cannot reveal a rate.
     let mut heard = Vec::new();
     for at in sync::choose_windows(&cues, duration, opts.windows, opts.window_secs) {
-        match sync::transcribe_window(http, &media, stream, at, opts.window_secs, language).await {
+        match sync::transcribe_window(
+            http,
+            account,
+            &media,
+            stream,
+            at,
+            opts.window_secs,
+            language,
+        )
+        .await
+        {
             Ok(words) => heard.extend(words),
             // One refused window is survivable; the fit needs several anyway.
             Err(e) => eprintln!("      window at {}s failed: {e}", at / 1000),
@@ -1743,6 +1785,141 @@ async fn sync_one(
     Ok(alignment)
 }
 
+/// How far a confirmed subtitle may sit from where Whisper heard the words.
+///
+/// The subtitle being checked is already aligned, so a truthful fit is the
+/// identity — up to Whisper's own clock, which skews ~0.6s on tracks VAD
+/// places within ±0.2s. Half a second is Whisper noise, not a finding; 1.5s
+/// is a clip landing on the wrong dialogue.
+const CHECK_MAX_OFFSET_MS: f64 = 1500.0;
+/// Drift the whole file shares, rather than a constant displacement.
+const CHECK_MAX_RATE_ERROR: f64 = 5e-4;
+
+/// What one cross-examination measured. Deliberately holds no verdict.
+///
+/// An earlier version stored the verdict beside the evidence, and `check`
+/// skips films already in the ledger — so when the offset gate moved to 1.5s
+/// every row written under the older, stricter rule kept its old label
+/// forever. 84 films read as `contradicted` while their own recorded numbers
+/// said otherwise. Storing only what was measured means moving a threshold
+/// re-labels the whole corpus at once, and repairing a film no longer needs
+/// its row purged by hand.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct CheckRow {
+    imdb_id: String,
+    #[serde(default)]
+    title: String,
+    #[serde(default)]
+    tier: String,
+    #[serde(flatten)]
+    outcome: CheckOutcome,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+enum CheckOutcome {
+    /// Anchors placed the subtitle; these are the fit's terms.
+    Fit {
+        offset_ms: f64,
+        rate: f64,
+        anchors_used: usize,
+        anchors_seen: usize,
+        worst_residual_ms: f64,
+    },
+    /// No fit was possible — sparse or musical films starve the anchors,
+    /// exactly like the VAD margin going flat. Not a contradiction.
+    NoFit { reason: String },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Verdict {
+    Confirmed,
+    Contradicted,
+    Undecided,
+}
+
+impl Verdict {
+    fn label(self) -> &'static str {
+        match self {
+            Verdict::Confirmed => "confirmed",
+            Verdict::Contradicted => "contradicted",
+            Verdict::Undecided => "undecided",
+        }
+    }
+
+    fn mark(self) -> &'static str {
+        match self {
+            Verdict::Confirmed => "✓",
+            Verdict::Contradicted => "✗",
+            Verdict::Undecided => "?",
+        }
+    }
+}
+
+impl CheckRow {
+    /// The verdict today's thresholds give this evidence.
+    fn verdict(&self) -> Verdict {
+        match &self.outcome {
+            CheckOutcome::NoFit { .. } => Verdict::Undecided,
+            CheckOutcome::Fit {
+                offset_ms, rate, ..
+            } => {
+                let offset_ok = offset_ms.abs() <= CHECK_MAX_OFFSET_MS;
+                let rate_ok = (rate - 1.0).abs() < CHECK_MAX_RATE_ERROR;
+                if offset_ok && rate_ok {
+                    Verdict::Confirmed
+                } else {
+                    Verdict::Contradicted
+                }
+            }
+        }
+    }
+
+    fn detail(&self) -> String {
+        match &self.outcome {
+            CheckOutcome::NoFit { reason } => reason.clone(),
+            CheckOutcome::Fit {
+                offset_ms,
+                rate,
+                anchors_used,
+                anchors_seen,
+                worst_residual_ms,
+            } => format!(
+                "{:+.2}s rate {rate:.4} ({anchors_used}/{anchors_seen} anchors, worst {worst_residual_ms:.0}ms)",
+                offset_ms / 1000.0
+            ),
+        }
+    }
+}
+
+/// Every cross-examination recorded so far.
+///
+/// Rows written before the verdict was derived still carry a `verdict` field;
+/// it is ignored, and their measurements re-judged like everything else.
+fn read_check_log(path: &std::path::Path) -> Vec<CheckRow> {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return Vec::new();
+    };
+    text.lines()
+        .filter_map(|line| serde_json::from_str::<CheckRow>(line).ok())
+        .collect()
+}
+
+/// One row per film — the most recent, since the ledger is append-only.
+///
+/// A film re-checked after a repair leaves both measurements on disk, and
+/// counting the file line by line reports it twice, once under each verdict.
+/// The latest row is the one that describes the subtitle as it stands.
+fn latest_per_film(rows: &[CheckRow]) -> Vec<&CheckRow> {
+    let mut newest: std::collections::HashMap<&str, &CheckRow> = Default::default();
+    for row in rows {
+        newest.insert(row.imdb_id.as_str(), row);
+    }
+    let mut rows: Vec<&CheckRow> = newest.into_values().collect();
+    rows.sort_by(|a, b| a.imdb_id.cmp(&b.imdb_id));
+    rows
+}
+
 #[tokio::main]
 async fn check_all(
     out: PathBuf,
@@ -1755,17 +1932,15 @@ async fn check_all(
     use futures::stream::StreamExt;
     use std::sync::Arc;
 
+    // Before any film is touched: a run without credentials would fail every
+    // window of every film and record each one `undecided`, which reads as
+    // "unverifiable" forever after.
+    let account = Arc::new(sync::WhisperAccount::from_env()?);
+
     let log_path = out.join("whisper-check.jsonl");
-    let mut done: std::collections::HashSet<String> = Default::default();
-    if let Ok(existing) = std::fs::read_to_string(&log_path) {
-        for line in existing.lines() {
-            if let Ok(row) = serde_json::from_str::<serde_json::Value>(line) {
-                if let Some(id) = row["imdb_id"].as_str() {
-                    done.insert(id.to_string());
-                }
-            }
-        }
-    }
+    let existing = read_check_log(&log_path);
+    let done: std::collections::HashSet<String> =
+        existing.iter().map(|r| r.imdb_id.clone()).collect();
 
     let plan = read_plan(&out)?;
     let mut queue: Vec<Movie> = plan
@@ -1793,78 +1968,41 @@ async fn check_all(
     let out = Arc::new(out);
     let progress = AtomicUsize::new(0);
 
-    let verdicts: Vec<&'static str> = futures::stream::iter(queue.into_iter())
+    let fresh: Vec<CheckRow> = futures::stream::iter(queue.into_iter())
         .map(|movie| {
             let http = Arc::clone(&http);
+            let account = Arc::clone(&account);
             let out = Arc::clone(&out);
             let log = Arc::clone(&log);
             let progress = &progress;
             async move {
-                let outcome = check_one(&http, &movie, &out, windows, window_secs).await;
+                let outcome = check_one(&http, &account, &movie, &out, windows, window_secs).await;
                 let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
-                let (verdict, detail, row) = match &outcome {
-                    Ok(a) => {
-                        // The subtitle being checked is already aligned, so a
-                        // truthful fit is the identity — up to Whisper's own
-                        // clock. Its word timestamps skew ~0.6s on tracks VAD
-                        // places within ±0.2s, so half a second is Whisper
-                        // noise, not a finding; 1.5s is a clip on the wrong
-                        // dialogue. A rate away from 1 is drift the whole
-                        // file shares.
-                        let offset_ok = a.offset_ms.abs() <= 1500.0;
-                        let rate_ok = (a.rate - 1.0).abs() < 5e-4;
-                        let verdict = if offset_ok && rate_ok {
-                            "confirmed"
-                        } else {
-                            "contradicted"
-                        };
-                        (
-                            verdict,
-                            format!(
-                                "{:+.2}s rate {:.4} ({}/{} anchors, worst {:.0}ms)",
-                                a.offset_ms / 1000.0,
-                                a.rate,
-                                a.anchors_used,
-                                a.anchors_seen,
-                                a.worst_residual_ms
-                            ),
-                            serde_json::json!({
-                                "imdb_id": movie.imdb_id,
-                                "title": movie.title,
-                                "tier": movie.source.label(),
-                                "verdict": verdict,
-                                "offset_ms": a.offset_ms,
-                                "rate": a.rate,
-                                "anchors_used": a.anchors_used,
-                                "anchors_seen": a.anchors_seen,
-                                "worst_residual_ms": a.worst_residual_ms,
-                            }),
-                        )
-                    }
-                    // No fit is not a contradiction: sparse or musical films
-                    // starve the anchors, exactly like the VAD margin going
-                    // flat. Recorded so the film is not re-transcribed on the
-                    // next run.
-                    Err(e) => (
-                        "undecided",
-                        e.to_string(),
-                        serde_json::json!({
-                            "imdb_id": movie.imdb_id,
-                            "title": movie.title,
-                            "tier": movie.source.label(),
-                            "verdict": "undecided",
-                            "reason": e.to_string(),
-                        }),
-                    ),
+                let row = CheckRow {
+                    imdb_id: movie.imdb_id.clone(),
+                    title: movie.title.clone(),
+                    tier: movie.source.label().to_string(),
+                    outcome: match &outcome {
+                        Ok(a) => CheckOutcome::Fit {
+                            offset_ms: a.offset_ms,
+                            rate: a.rate,
+                            anchors_used: a.anchors_used,
+                            anchors_seen: a.anchors_seen,
+                            worst_residual_ms: a.worst_residual_ms,
+                        },
+                        // Recorded so the film is not re-transcribed next run.
+                        Err(e) => CheckOutcome::NoFit {
+                            reason: e.to_string(),
+                        },
+                    },
                 };
-                let mark = match verdict {
-                    "confirmed" => "✓",
-                    "contradicted" => "✗",
-                    _ => "?",
-                };
+                let verdict = row.verdict();
                 println!(
-                    "[{n}/{total}] {} {mark} {verdict}: {detail}",
-                    truncate(&movie.title, 34)
+                    "[{n}/{total}] {} {} {}: {}",
+                    truncate(&movie.title, 34),
+                    verdict.mark(),
+                    verdict.label(),
+                    row.detail()
                 );
                 {
                     use std::io::Write;
@@ -1873,19 +2011,25 @@ async fn check_all(
                     let _ = writeln!(log);
                     let _ = log.flush();
                 }
-                verdict
+                row
             }
         })
         .buffer_unordered(films_in_flight.max(1))
         .collect()
         .await;
 
-    let count = |v: &str| verdicts.iter().filter(|x| **x == v).count();
+    // Report over the whole ledger, not just this run: the verdicts are
+    // derived, so every film's standing reflects today's thresholds whether
+    // or not it was re-transcribed.
+    let all: Vec<CheckRow> = existing.into_iter().chain(fresh).collect();
+    let all = latest_per_film(&all);
+    let count = |v: Verdict| all.iter().filter(|r| r.verdict() == v).count();
     println!(
-        "\n{} confirmed, {} contradicted, {} undecided — details in {}",
-        count("confirmed"),
-        count("contradicted"),
-        count("undecided"),
+        "\n{} confirmed, {} contradicted, {} undecided across {} films — details in {}",
+        count(Verdict::Confirmed),
+        count(Verdict::Contradicted),
+        count(Verdict::Undecided),
+        all.len(),
         log_path.display()
     );
     Ok(())
@@ -1894,6 +2038,7 @@ async fn check_all(
 /// Fit Whisper anchors against a film's *already aligned* subtitle.
 async fn check_one(
     http: &reqwest::Client,
+    account: &sync::WhisperAccount,
     movie: &Movie,
     out: &std::path::Path,
     windows: usize,
@@ -1917,7 +2062,17 @@ async fn check_one(
 
     let mut heard = Vec::new();
     for at in sync::choose_windows(&cues, duration, windows, window_secs) {
-        match sync::transcribe_window(http, &movie.path, stream, at, window_secs, language).await {
+        match sync::transcribe_window(
+            http,
+            account,
+            &movie.path,
+            stream,
+            at,
+            window_secs,
+            language,
+        )
+        .await
+        {
             Ok(words) => heard.extend(words),
             Err(e) => eprintln!("      window at {}s failed: {e}", at / 1000),
         }
@@ -1957,6 +2112,134 @@ fn whisper_language(course: &str) -> Option<&'static str> {
         "zho-hans" => "zh",
         _ => return None,
     })
+}
+
+/// Transcribe one film in full and write it beside the subtitle.
+/// Does this film need transcribing — because it has none, or because the one
+/// it has was made under settings we no longer use?
+///
+/// The chunk cache would make an unnecessary re-run nearly free, so the
+/// tempting simplification is to drop this and always recompute. What stops
+/// that is the "nearly": a cache key is a hash of the *decoded* samples, and
+/// anything that perturbs decoding — a different ffmpeg, a different opus
+/// decoder — turns a free re-run into the corpus billed again at full price.
+/// So the artifact carries its own provenance and is trusted while it matches.
+fn transcript_is_stale(movie: &Movie, dir: &std::path::Path) -> bool {
+    let Some(stored) = transcript::stored_provenance(&dir.join("transcript.jsonl")) else {
+        // No file, or one written before provenance was recorded.
+        return true;
+    };
+    match library::course_dir(&movie.original_language)
+        .and_then(whisper_language)
+        .map(transcript::provenance)
+    {
+        Some(Ok(current)) => stored != current,
+        // No language, or no provenance to compare against: there is nothing
+        // this run could produce, so leave what is there alone.
+        _ => false,
+    }
+}
+
+async fn transcribe_one(
+    http: &reqwest::Client,
+    account: &transcript::ScribeAccount,
+    store: &osmo::Store,
+    movie: &Movie,
+    out: &std::path::Path,
+) -> Result<usize> {
+    let dir = out.join(&movie.imdb_id);
+    let language = library::course_dir(&movie.original_language)
+        .and_then(whisper_language)
+        .context("no Whisper language for this film's original language")?;
+    let audio = extracted_audio(movie, &dir).context("no extracted audio")?;
+
+    // The profile has to come from the whole film in one pass — see the
+    // module docs on earshot's recurrence — which `cached_speech_profile`
+    // already guarantees, and caches for everyone else.
+    let profile = cached_speech_profile(movie, &dir)?;
+    // The audio's own duration, not the video's: it is what we slice.
+    let film_ms = sync::duration_ms(&audio)?;
+
+    let transcript =
+        transcript::transcribe_film(http, account, store, &audio, &profile, film_ms, language)
+            .await?;
+    std::fs::create_dir_all(&dir)?;
+    std::fs::write(dir.join("transcript.jsonl"), transcript.to_jsonl()?)?;
+    write_stamp(&dir, movie, StampSource::Keep);
+    Ok(transcript.words.len())
+}
+
+#[tokio::main]
+async fn transcribe_all(
+    out: PathBuf,
+    films_in_flight: usize,
+    limit: usize,
+    imdb: Option<String>,
+) -> Result<()> {
+    use futures::stream::StreamExt;
+    use std::sync::Arc;
+
+    // Not the Whisper credentials the syncers use: transcription runs against
+    // ElevenLabs. Fail here rather than once per chunk.
+    let account = Arc::new(transcript::ScribeAccount::from_env()?);
+
+    let plan = read_plan(&out)?;
+    let mut queue: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| imdb.as_deref().is_none_or(|id| m.imdb_id == id))
+        .filter(|m| out.join(&m.imdb_id).join("subtitle.srt").exists())
+        .filter(|m| transcript_is_stale(m, &out.join(&m.imdb_id)))
+        .filter(|m| extracted_audio(m, &out.join(&m.imdb_id)).is_some())
+        .collect();
+    if limit > 0 {
+        queue.truncate(limit);
+    }
+    let total = queue.len();
+    println!("{total} films to transcribe in full");
+    if total == 0 {
+        return Ok(());
+    }
+
+    // Opened only once there is work: this is the store generate-data fills,
+    // 10M keys and 43GB of it, and opening it costs tens of seconds. A
+    // refresh with every film already transcribed should cost nothing at all.
+    // Sharing it is the point — a transcript outlives eviction of the
+    // artifact and rides the R2 mirror to other machines.
+    let store = Arc::new(osmo::Store::open("./.cache"));
+    let http = Arc::new(reqwest::Client::new());
+    let out = Arc::new(out);
+    let progress = AtomicUsize::new(0);
+
+    let done: Vec<bool> = futures::stream::iter(queue.into_iter())
+        .map(|movie| {
+            let http = Arc::clone(&http);
+            let account = Arc::clone(&account);
+            let store = Arc::clone(&store);
+            let out = Arc::clone(&out);
+            let progress = &progress;
+            async move {
+                let outcome = transcribe_one(&http, &account, &store, &movie, &out).await;
+                let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
+                match &outcome {
+                    Ok(words) => println!(
+                        "[{n}/{total}] {} ✓ {words} words",
+                        truncate(&movie.title, 34)
+                    ),
+                    Err(e) => println!("[{n}/{total}] {} ✗ {e:#}", truncate(&movie.title, 34)),
+                }
+                outcome.is_ok()
+            }
+        })
+        .buffer_unordered(films_in_flight.max(1))
+        .collect()
+        .await;
+
+    println!(
+        "\n{} transcribed, {} failed",
+        done.iter().filter(|ok| **ok).count(),
+        done.iter().filter(|ok| !**ok).count()
+    );
+    Ok(())
 }
 
 /// Score each subtitle against where the audio says people are talking.
@@ -2733,6 +3016,12 @@ fn pgs_stats(input: PathBuf, index: Option<u32>, dump: usize, out_dir: PathBuf) 
 }
 
 fn main() -> Result<()> {
+    // The Cloudflare and OpenAI keys live in the repo's `.env`, which nothing
+    // in the environment exports: `.envrc` is only `use flake`, and the flake's
+    // shellHook handles R2 and GCP alone. Without this, every invocation
+    // outside an interactive shell that happened to have them is one missing
+    // variable away from a run that quietly verifies nothing.
+    dotenvy::dotenv().ok();
     match Args::parse().command {
         Command_::Inventory {
             library,
@@ -2798,6 +3087,12 @@ fn main() -> Result<()> {
             films_in_flight,
             limit,
         } => check_all(out, tier, windows, window_secs, films_in_flight, limit),
+        Command_::Transcribe {
+            out,
+            films_in_flight,
+            limit,
+            imdb,
+        } => transcribe_all(out, films_in_flight, limit, imdb),
         Command_::Agreement {
             out,
             tier,
