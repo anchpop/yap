@@ -4125,9 +4125,20 @@ pub fn capitalize_first_letter(s: &str) -> String {
 /// - Proper nouns in any language (e.g. "Paris", "Marie")
 /// - All nouns in German (German capitalizes every noun)
 /// - The pronoun "I" in English
+/// - Fully-uppercase multi-character tokens in any language ("OK", "DVD",
+///   "ADN"): their capitalization is a property of the token, and lowercasing
+///   only the first letter would mint a freak gram ("oK") distinct from the
+///   mid-sentence form
 pub fn first_letter_always_capitalized<S: AsRef<str>>(word: &Word<S>, language: Language) -> bool {
     // English "I" is always capitalized
     if language == Language::English && word.text.as_ref() == "I" {
+        return true;
+    }
+    let text = word.text.as_ref();
+    if text.chars().count() > 1
+        && text.chars().any(|c| c.is_uppercase())
+        && !text.chars().any(|c| c.is_lowercase())
+    {
         return true;
     }
     match &word.word_type {
