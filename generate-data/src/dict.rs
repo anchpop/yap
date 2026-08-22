@@ -261,6 +261,24 @@ fn build_gram_to_sentences_index<'a>(
                 .or_default()
                 .push(sentence_text.as_str());
         }
+        // A high-confidence match witnesses its gram as well as the encoded
+        // stream does — and for a citation gram, whose matches are variant
+        // occurrences rewritten to it (`pipeline::apply_citations`), matches
+        // are the only witnesses: the citation form itself rarely occurs
+        // literally, so without these its definition would be generated with
+        // no example sentences at all.
+        for term in &sentence_grams.multiword_terms {
+            index
+                .entry(&term.gram)
+                .or_default()
+                .push(sentence_text.as_str());
+        }
+    }
+    // A sentence can witness the same gram twice (encoded + match, or two
+    // match positions); pushes for one sentence are adjacent, so `dedup`
+    // suffices to keep the example pool duplicate-free.
+    for sentences in index.values_mut() {
+        sentences.dedup();
     }
 
     index
