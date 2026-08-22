@@ -25,107 +25,15 @@
 //! effect is oversampling gold.
 
 use anyhow::Result;
-use language_utils::PartOfSpeechTag;
 use std::collections::BTreeMap;
-use std::io::{BufRead, Write};
+use std::io::Write;
 use std::path::Path;
-use token_corrections::{PieceDep, TokenView, fix_tokens, lexide_pos_to_tag};
 
-/// The export's one token format — the gold `cleaned_*.jsonl` schema: flat
-/// text/lemma, the dependency as its UD label string. Every field is required:
-/// since English joined the dependency pass, every gold file carries dep/head,
-/// and a missing field should fail the export loudly rather than be papered over.
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
-struct CleanedToken {
-    text: String,
-    whitespace: String,
-    pos: PartOfSpeechTag,
-    lemma: String,
-    dep: String,
-    head: i32,
-}
-
-#[derive(serde::Serialize, serde::Deserialize)]
-struct CleanedSentence {
-    sentence: String,
-    tokens: Vec<CleanedToken>,
-}
-
-impl TokenView for CleanedToken {
-    fn text(&self) -> &str {
-        &self.text
-    }
-    fn whitespace(&self) -> &str {
-        &self.whitespace
-    }
-    fn pos(&self) -> PartOfSpeechTag {
-        self.pos
-    }
-    fn lemma(&self) -> &str {
-        &self.lemma
-    }
-    fn push_text(&mut self, more: &str) {
-        self.text.push_str(more);
-    }
-    fn set_text(&mut self, text: String) {
-        self.text = text;
-    }
-    fn set_whitespace(&mut self, ws: String) {
-        self.whitespace = ws;
-    }
-    fn set_pos(&mut self, pos: PartOfSpeechTag) {
-        self.pos = pos;
-    }
-    fn set_lemma(&mut self, lemma: String) {
-        self.lemma = lemma;
-    }
-    fn head(&self) -> i32 {
-        self.head
-    }
-    fn set_head(&mut self, head: i32) {
-        self.head = head;
-    }
-    fn set_dep_label(&mut self, dep: PieceDep) {
-        self.dep = dep.ud_label().to_string();
-    }
-    fn copy_attachment(&mut self, from: &Self) {
-        self.dep = from.dep.clone();
-        self.head = from.head;
-    }
-}
-
-fn to_flat(tokens: Vec<lexide::Token>) -> Vec<CleanedToken> {
-    tokens
-        .into_iter()
-        .map(|t| CleanedToken {
-            text: t.text.text,
-            whitespace: t.whitespace,
-            pos: lexide_pos_to_tag(t.pos),
-            lemma: t.lemma.lemma,
-            dep: serde_json::to_value(t.dep)
-                .expect("dep serializes")
-                .as_str()
-                .expect("dep is a string")
-                .to_string(),
-            head: t.head,
-        })
-        .collect()
-}
-
-/// Load a gold `cleaned_*.jsonl`, canonicalized, keyed by sentence.
-fn load_gold(
-    path: &Path,
-    language: language_utils::Language,
-) -> Result<BTreeMap<String, Vec<CleanedToken>>> {
-    let mut gold = BTreeMap::new();
-    let reader = std::io::BufReader::new(std::fs::File::open(path)?);
-    for line in reader.lines() {
-        let mut record: CleanedSentence = serde_json::from_str(&line?)?;
-        fix_tokens(language, &mut record.tokens);
-        gold.insert(record.sentence, record.tokens);
-    }
-    Ok(gold)
-}
+/// The gold token schema, the `TokenView` impl over it, the canonicalizing
+/// loader, and the lexide conversions all live in `generate_data::gold` now:
+/// the pipeline reads gold too, and one definition is what keeps the export's
+/// merge and the pipeline's overlay from drifting apart.
+use generate_data::gold::{CleanedToken, load as load_gold, to_flat};
 
 /// Write entries as flat-format jsonl, sorted by sentence (deterministic export).
 fn write_flat(dest: &Path, entries: &BTreeMap<String, Vec<CleanedToken>>) -> Result<()> {

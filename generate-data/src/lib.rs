@@ -116,6 +116,7 @@ pub mod dict;
 pub mod disambiguation_practice;
 pub mod etymology;
 pub mod frequencies;
+pub mod gold;
 pub mod human_audio;
 pub mod lexide_token;
 pub mod llm_etymology;
