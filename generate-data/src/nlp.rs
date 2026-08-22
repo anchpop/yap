@@ -147,6 +147,14 @@ pub async fn process_sentences(
     // Load the already-processed store; the returned entries are canonicalized,
     // the file keeps the model's raw output.
     let mut already_processed = load_canonicalized(output_file, language)?;
+    // Gold beats silver for any sentence we have hand-corrected, and a
+    // gold-only sentence stops being a cache miss — so this must run before the
+    // miss set is computed, not after.
+    crate::gold::overlay(
+        language,
+        sentences.iter().map(String::as_str),
+        &mut already_processed,
+    )?;
 
     // In cache-only mode, skip the Modal server entirely and return only
     // sentences already present in the output file.

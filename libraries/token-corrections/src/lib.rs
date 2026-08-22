@@ -46,6 +46,13 @@ pub trait TokenView {
     }
     fn set_head(&mut self, _head: i32) {}
     fn set_dep_label(&mut self, _dep: PieceDep) {}
+    /// The token's dependency label, for the rules that key off syntax rather
+    /// than surface. `None` both for token types that carry no dependency and
+    /// for labels outside [`PieceDep`], so a dep-conditioned rule is a no-op on
+    /// those rather than silently misfiring on an unknown relation.
+    fn dep_label(&self) -> Option<PieceDep> {
+        None
+    }
     /// Take another token's dependency attachment (label + head). Used when a merge
     /// discards the piece that carried the pair's external attachment.
     fn copy_attachment(&mut self, _from: &Self)
@@ -117,7 +124,7 @@ pub fn lexide_pos_to_tag(pos: lexide::pos::PartOfSpeech) -> PartOfSpeechTag {
     }
 }
 
-fn tag_to_lexide_pos(pos: PartOfSpeechTag) -> lexide::pos::PartOfSpeech {
+pub fn tag_to_lexide_pos(pos: PartOfSpeechTag) -> lexide::pos::PartOfSpeech {
     use lexide::pos::PartOfSpeech as P;
     match pos {
         PartOfSpeechTag::Adj => P::Adj,
@@ -174,6 +181,25 @@ impl TokenView for lexide::Token {
     }
     fn set_head(&mut self, head: i32) {
         self.head = head;
+    }
+    fn dep_label(&self) -> Option<PieceDep> {
+        use lexide::DependencyRelation as D;
+        Some(match self.dep {
+            D::Advmod => PieceDep::Advmod,
+            D::Aux => PieceDep::Aux,
+            D::Case => PieceDep::Case,
+            D::Clf => PieceDep::Clf,
+            D::Compound => PieceDep::Compound,
+            D::CompoundLvc => PieceDep::CompoundLvc,
+            D::Cop => PieceDep::Cop,
+            D::Det => PieceDep::Det,
+            D::Discourse => PieceDep::Discourse,
+            D::Fixed => PieceDep::Fixed,
+            D::Mark => PieceDep::Mark,
+            D::Nummod => PieceDep::Nummod,
+            D::Obj => PieceDep::Obj,
+            _ => return None,
+        })
     }
     fn set_dep_label(&mut self, dep: PieceDep) {
         use lexide::DependencyRelation as D;
@@ -238,6 +264,29 @@ impl PieceDep {
             PieceDep::Nummod => "nummod",
             PieceDep::Obj => "obj",
         }
+    }
+
+    /// Inverse of [`ud_label`](Self::ud_label), for token types that store the
+    /// dependency as text. `None` for any label outside this enum, which keeps
+    /// dep-conditioned rules inert on relations they were not written for.
+    pub fn from_ud_label(label: &str) -> Option<Self> {
+        [
+            PieceDep::Advmod,
+            PieceDep::Aux,
+            PieceDep::Case,
+            PieceDep::Clf,
+            PieceDep::Compound,
+            PieceDep::CompoundLvc,
+            PieceDep::Cop,
+            PieceDep::Det,
+            PieceDep::Discourse,
+            PieceDep::Fixed,
+            PieceDep::Mark,
+            PieceDep::Nummod,
+            PieceDep::Obj,
+        ]
+        .into_iter()
+        .find(|d| d.ud_label() == label)
     }
 }
 
@@ -2345,6 +2394,52 @@ pub fn fix_hindi<T: TokenView + Clone>(tokens: &mut Vec<T>) -> Vec<String> {
 /// tokenization stores (`nlp::load_canonicalized`) — the stores keep the model's raw
 /// output so these rules stay revisable — and at generation time in clean-nlp-data's
 /// correctors. Idempotent: applying it to already-corrected tokens changes nothing.
+/// The French definite and indefinite articles, including the elided form.
+/// Only these: the rule below relabels by syntax, and `de`/`du`/`des` reach a
+/// `det` slot as contractions with their own analysis, so they stay out.
+const FRENCH_ARTICLES: &[&str] = &["le", "la", "les", "l'", "un", "une"];
+
+/// French: an article the tagger called a pronoun while attaching it as a
+/// determiner.
+///
+/// The teacher model routinely emits `les/le/PRON` with `dep=det` — 3.1k tokens
+/// of a French corpus, 1k of them `les` — and the gold cleaner reproduces the
+/// same error, so neither dataset can be trusted to settle it. The `det`
+/// relation does settle it: a word attached as a determiner is a determiner,
+/// whatever the POS field says, so this is a self-inconsistency to repair
+/// rather than a judgment call about context. That distinction is why the rule
+/// belongs here at all — `les` really is ambiguous between article and object
+/// clitic ("les livres" vs "je les vois"), and a surface-keyed table entry
+/// would be exactly the context-blind fix this module warns against. Keying on
+/// the parse instead means the ambiguous cases never reach the rule.
+///
+/// Left uncorrected: `tout`/`tous`/`ce` (another ~3.2k `det`-attached PRONs)
+/// and the `un peu`/`beaucoup` ADVs, which need their own audit.
+///
+/// Only affects token types that carry a dependency — [`TokenView::dep_label`]
+/// is `None` for spaCy-side proposals, so this is a no-op there.
+pub fn fix_french<T: TokenView + Clone>(tokens: &mut [T]) -> Vec<String> {
+    let mut notes = Vec::new();
+    for token in tokens.iter_mut() {
+        if token.pos() != PartOfSpeechTag::Pron || token.dep_label() != Some(PieceDep::Det) {
+            continue;
+        }
+        let surface = token
+            .text()
+            .to_lowercase()
+            .replace(['\u{2019}', '\u{02BC}'], "'");
+        if !FRENCH_ARTICLES.contains(&surface.as_str()) {
+            continue;
+        }
+        token.set_pos(PartOfSpeechTag::Det);
+        notes.push(format!(
+            "article {:?} attached as det: PRON -> DET",
+            token.text()
+        ));
+    }
+    notes
+}
+
 pub fn fix_tokens<T: TokenView + Clone>(language: Language, tokens: &mut Vec<T>) -> Vec<String> {
     match language {
         Language::ChineseSimplified | Language::ChineseTraditional => fix_chinese(tokens),
@@ -2352,6 +2447,7 @@ pub fn fix_tokens<T: TokenView + Clone>(language: Language, tokens: &mut Vec<T>)
         Language::Hindi => fix_hindi(tokens),
         Language::Korean => fix_korean(tokens),
         Language::Thai => fix_thai(tokens),
+        Language::French => fix_french(tokens),
         _ => Vec::new(),
     }
 }
@@ -2560,5 +2656,41 @@ mod tests {
         assert_eq!(texts(&tokens), vec!["你", "有", "没有", "水"]);
         let again = fix_tokens(Language::ChineseSimplified, &mut tokens);
         assert!(again.is_empty(), "second pass changed tokens: {again:?}");
+    }
+
+    #[test]
+    fn french_article_under_det_becomes_det() {
+        use lexide::DependencyRelation as D;
+        // "À tous les deux." — the tagger's own `det` attachment contradicts
+        // the PRON tag it gave the article.
+        let mut toks = vec![
+            ltok("tous", Pron, D::Det, 4),
+            ltok("les", Pron, D::Det, 4),
+            ltok("deux", Num, D::Nmod, 1),
+        ];
+        let notes = fix_french(&mut toks);
+        assert_eq!(toks[1].pos, tag_to_lexide_pos(Det));
+        assert_eq!(notes.len(), 1, "only the article is in scope, not `tous`");
+        // Idempotent: a second pass has nothing left to say.
+        assert!(fix_french(&mut toks).is_empty());
+    }
+
+    #[test]
+    fn french_object_clitic_les_is_left_alone() {
+        use lexide::DependencyRelation as D;
+        // "Nous allons les encercler." — same surface, object relation, so the
+        // PRON tag is right and the rule must not touch it.
+        let mut toks = vec![ltok("les", Pron, D::Obj, 3)];
+        assert!(fix_french(&mut toks).is_empty());
+        assert_eq!(toks[0].pos, tag_to_lexide_pos(Pron));
+        // A dep-less token type reports no label, so the rule can't fire.
+        let mut doc = vec![language_utils::DocToken {
+            text: "les".to_string(),
+            whitespace: " ".to_string(),
+            pos: Pron,
+            lemma: "le".to_string(),
+            morph: Default::default(),
+        }];
+        assert!(fix_french(&mut doc).is_empty());
     }
 }

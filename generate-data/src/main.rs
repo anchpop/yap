@@ -140,6 +140,7 @@ async fn main() -> anyhow::Result<()> {
                     contiguous_lemma_patterns,
                     discontinuous_lemma_patterns,
                     tree_patterns,
+                    citations,
                 },
             encoder,
         } = generate_data::pipeline::segment_corpus(course, &sentence_corpus).await?;
@@ -1044,6 +1045,9 @@ async fn main() -> anyhow::Result<()> {
             )
             .await
             .context("Failed to generate NLP for homophone practice sentences")?;
+            // Same rewrite the corpus matches got: a variant that fires here
+            // records the phrase, not the instantiation.
+            generate_data::pipeline::apply_citations(&citations, &mut homophone_matches);
 
             // Homophone practice sentences are minted after unigram training,
             // so encode them with the trained encoder; a sentence containing
