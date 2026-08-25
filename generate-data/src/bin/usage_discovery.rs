@@ -1,11 +1,11 @@
-//! Standalone sense & collocation discovery: builds each language's NLP
+//! Standalone usage & collocation discovery: builds each language's NLP
 //! sentence set with the same pipeline code as generate-data, fills any
 //! token-embedding gaps, mines the cached vectors for cluster structure, and
 //! writes judge-gated adoption files under `generate-data/data/{lang}/`
-//! (`sense_candidates.jsonl`, `discovered_multiword_terms.jsonl`) that the
+//! (`usage_inventories.jsonl`, `discovered_multiword_terms.jsonl`) that the
 //! next generate-data run ingests directly — no human review step.
 //!
-//! Usage: cargo run --release --bin sense_discovery -- [--cache-only] [--dump-prompts|--dump-responses] [<lang>...]
+//! Usage: cargo run --release --bin usage_discovery -- [--cache-only] [--dump-prompts|--dump-responses] [<lang>...]
 //!
 //! `--dump-prompts` prints every adjudication prompt to stdout instead of
 //! calling the LLM — for iterating on the prompt against its real inputs.
@@ -26,13 +26,13 @@ async fn main() -> anyhow::Result<()> {
 
     let mut lang_filter: BTreeSet<String> = BTreeSet::new();
     let mut cache_only = false;
-    let mut mode = generate_data::sense_discovery::DiscoverMode::Full;
+    let mut mode = generate_data::usage_discovery::DiscoverMode::Full;
     for arg in std::env::args().skip(1) {
         match arg.as_str() {
             "--cache-only" => cache_only = true,
-            "--dump-prompts" => mode = generate_data::sense_discovery::DiscoverMode::DumpPrompts,
+            "--dump-prompts" => mode = generate_data::usage_discovery::DiscoverMode::DumpPrompts,
             "--dump-responses" => {
-                mode = generate_data::sense_discovery::DiscoverMode::DumpResponses
+                mode = generate_data::usage_discovery::DiscoverMode::DumpResponses
             }
             s if s.starts_with("--") => anyhow::bail!("unknown flag: {s}"),
             _ => {
@@ -72,7 +72,7 @@ async fn main() -> anyhow::Result<()> {
             continue;
         }
         println!();
-        println!("Discovering senses/collocations for {lang}");
+        println!("Discovering usages/collocations for {lang}");
         println!("================================================");
 
         let mut timer = generate_data::StageTimer::new();
@@ -93,9 +93,9 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("Failed to ensure token embeddings")?;
         timer.lap("embedding presence check");
-        generate_data::sense_discovery::discover(lang, &segmented, &store, mode)
+        generate_data::usage_discovery::discover(lang, &segmented, &store, mode)
             .await
-            .context("Sense discovery failed")?;
+            .context("Usage discovery failed")?;
     }
 
     cache_remote::flush().await;

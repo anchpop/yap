@@ -1,31 +1,54 @@
-//! Sense & collocation discovery over cached token embeddings.
+//! Usage & collocation discovery over cached token embeddings.
+//!
+//! A "usage" is a pedagogical unit, not a dictionary sense: two usages of a
+//! gram are distinct exactly when a teacher would introduce them to a
+//! learner one at a time rather than together. That deliberately includes
+//! grammatical constructions (French "ils sont ..." vs the inverted
+//! "sont-ils ...?") and conversational formulas (sentence-final "non ?" as
+//! a confirmation tag) alongside genuine polysemy — each usage carries a
+//! `kind` (meaning / construction / formula) so downstream consumers can
+//! treat the categories differently.
 //!
 //! Mines every gram's occurrence cloud for cluster structure (recursive
 //! 2-means plus HDBSCAN on large clouds — both purely geometric, tuned to
-//! over-propose), then has an LLM adjudicate each gram's full set of
-//! candidate clusters in a single call: group them into genuinely distinct
-//! senses (merging over-split ones), or explain them as the gram occurring
-//! inside a larger fixed multiword expression. The arbitration matters:
-//! contextual embeddings give a word inside a fixed expression a tight,
-//! distinctive cluster, so geometry alone cannot tell polysemy from
-//! collocation membership — only a judge that sees both interpretations at
-//! once can (e.g. "au clair" splitting into "au clair de lune" vs "tirer au
-//! clair" has zero senses of its own, just two host expressions). Writes
-//! files under `generate-data/data/{lang}/` that feed the next
-//! generate-data run directly — there is no human review step, so the
-//! judges are the quality bar:
+//! over-propose), then has an LLM adjudicate each gram in a single call.
+//! Clusters organize the judge's reading material and pick which grams are
+//! worth judging, but the unit of judgment is the *line*: the judge defines
+//! the gram's usage inventory and labels every clearly-classifiable line
+//! with the usage (or fixed expression) it shows. Line-level labels are
+//! what make the artifacts trustworthy where cluster-level grouping was
+//! not: clusters overlap (an HDBSCAN cluster can carve a subset out of a
+//! 2-means leaf) and big background clusters are usually mixtures, so any
+//! per-cluster verdict inherits their double counting and mislabeling.
+//! The labeled lines ("gold") then drive a purely geometric extension:
+//! per-usage centroids classify every occurrence in the cloud, yielding a
+//! true partition with honest counts, a leave-one-out agreement score per
+//! usage, and per-occurrence corpus labels. The same anchors + centroid
+//! machinery classifies the gram's occurrences in *arbitrary* sentences
+//! later (see [`usage_centroids`] and [`InventoryCentroids::classify`]) — anchors
+//! are stored as (sentence, spans) rather than raw vectors, so they can be
+//! re-embedded under any future embedding model.
 //!
-//! - `sense_candidates.jsonl`: grams whose clusters group into two or more
-//!   distinct senses, in sense-inventory shape (gloss + anchor sentences
-//!   per sense).
+//! The expression lane is unchanged in spirit: contextual embeddings give a
+//! word inside a fixed expression a tight, distinctive cluster, so geometry
+//! alone cannot tell polysemy from collocation membership — the judge sees
+//! both interpretations at once (e.g. "au clair" splitting into "au clair
+//! de lune" vs "tirer au clair" has zero usages of its own, just two host
+//! expressions). Writes files under `generate-data/data/{lang}/` that feed
+//! the next generate-data run directly — there is no human review step, so
+//! the judges are the quality bar:
+//!
+//! - `usage_inventories.jsonl`: grams with two or more usages, each usage
+//!   with kind, gloss, gold + assigned counts, LOO agreement, and anchor
+//!   sentences. Also writes per-occurrence labels for the whole corpus to
+//!   `out/{lang}/usage_labels.jsonl` (inspection + downstream labeling).
 //! - `discovered_multiword_terms.jsonl`: grounded, novel, frequent
 //!   expressions (the LLM only cites lines and copies verbatim substrings;
 //!   surface forms, gram sequences, and corpus counts are derived here)
 //!   that a final per-expression opacity judgment deemed worth learning as
-//!   a unit — the adjudicator reports even compositional cluster-dominating
-//!   patterns (to keep them out of the sense inventory), and the opacity
-//!   stage is what keeps "dire merci"-class free combinations out of the
-//!   vocabulary.
+//!   a unit — the adjudicator reports even compositional patterns (to keep
+//!   their lines out of the usage gold), and the opacity stage is what
+//!   keeps "dire merci"-class free combinations out of the vocabulary.
 //!
 //! Grams are treated as opaque identities throughout: an occurrence is a
 //! token of the encoder's gram stream — an exact instance of its gram, so
@@ -36,7 +59,7 @@
 //! linguistic re-analysis (lemmas, POS grouping) happens here — whatever
 //! units the gram system defines are the units mined.
 //!
-//! Run by the standalone `sense_discovery` binary; nothing in the main
+//! Run by the standalone `usage_discovery` binary; nothing in the main
 //! generate-data pipeline consumes these files except
 //! `wiktionary_terms::extra_multiword_terms`, which folds the discovered
 //! terms into the next run's multiword-term inventory as-is.
@@ -77,8 +100,25 @@ const MAX_CLUSTERS: usize = 8;
 /// nowhere near dry — so this probes deeper; adjudications are cached, so
 /// raising it only ever costs the new grams.
 const JUDGE_TOP: usize = 400;
-/// Exemplars shown to the adjudicator per cluster.
-const EXEMPLARS: usize = 8;
+/// Lines shown to the adjudicator per cluster: the most central (margin
+/// filtered, they characterize what the cluster is about) plus a spread
+/// sample strided across the whole core→edge spectrum (they reveal whether
+/// the cluster is homogeneous — a background cluster's central exemplars
+/// systematically misrepresent it, which once glossed the 3682-occurrence
+/// mixed remainder of French "mais" as a single sense).
+const EXEMPLARS_CENTRAL: usize = 4;
+const EXEMPLARS_SPREAD: usize = 4;
+/// Lines in the final "random sample" section: a deterministic stride over
+/// the entire occurrence cloud, so the judge always sees the item's true
+/// usage distribution no matter how unrepresentative the clusters are.
+const RANDOM_SAMPLE_LINES: usize = 8;
+/// A usage (or expression absorber class) needs this many resolvable gold
+/// lines to get a centroid; below this the extension would be classifying
+/// against noise.
+const MIN_GOLD: usize = 3;
+/// Anchor sentences stored per usage (gold lines first, then high-margin
+/// assigned occurrences strided across the usage's similarity range).
+const MAX_ANCHORS: usize = 16;
 /// Silhouette is O(n²); score on a deterministic subsample past this size.
 const SIL_SAMPLE: usize = 500;
 /// HDBSCAN (the secondary proposer) only runs where density estimation is
@@ -443,16 +483,12 @@ fn cosine_silhouette(vectors: &[&Vec<f32>], labels: &[u8]) -> f64 {
 // Cluster proposal (purely geometric — the adjudicator arbitrates)
 // ---------------------------------------------------------------------------
 
-/// One candidate cluster of a gram's occurrence cloud.
+/// One candidate cluster of a gram's occurrence cloud. Only the exemplars
+/// survive into the prompt — the judge labels lines, so cluster membership
+/// carries no downstream authority.
 struct Cluster {
-    /// Indices into the key's occurrence list.
-    indices: Vec<usize>,
-    /// Exemplar occurrence indices: nearest own-centroid, margin filtered
-    /// against the nearest other cluster (an occurrence near-tied between
-    /// centroids is exactly the noise HDBSCAN would have excluded — skip it
-    /// as an exemplar).
+    /// Exemplar occurrence indices (see [`cluster_exemplars`]).
     exemplars: Vec<usize>,
-    source: &'static str,
 }
 
 /// Everything the adjudicator sees for one gram: its candidate clusters
@@ -468,7 +504,13 @@ struct KeyProposal {
     hdbscan_silhouette: Option<f64>,
 }
 
-fn margin_filtered_exemplars(
+/// A cluster's exemplar lines: `EXEMPLARS_CENTRAL` most-central members
+/// (margin filtered against the nearest other cluster — an occurrence
+/// near-tied between centroids is exactly the noise HDBSCAN would have
+/// excluded) plus `EXEMPLARS_SPREAD` members strided across the remaining
+/// core→edge similarity range, so a heterogeneous cluster shows its
+/// heterogeneity instead of only its center.
+fn cluster_exemplars(
     vectors: &[&Vec<f32>],
     side: &[usize],
     own: &[f32],
@@ -483,20 +525,35 @@ fn margin_filtered_exemplars(
         .iter()
         .filter(|(_, o, x)| o > x)
         .map(|(i, _, _)| *i)
-        .take(EXEMPLARS)
+        .take(EXEMPLARS_CENTRAL)
         .collect();
-    if confident.len() >= EXEMPLARS.min(side.len()).min(3) {
+    let mut picked: Vec<usize> = if confident.len() >= EXEMPLARS_CENTRAL.min(side.len()).min(3) {
         confident
     } else {
         // Degenerate margins (tiny side): fall back to nearest-to-centroid.
-        ranked.iter().map(|(i, _, _)| *i).take(EXEMPLARS).collect()
+        ranked
+            .iter()
+            .map(|(i, _, _)| *i)
+            .take(EXEMPLARS_CENTRAL)
+            .collect()
+    };
+    let chosen: HashSet<usize> = picked.iter().copied().collect();
+    let rest: Vec<usize> = ranked
+        .iter()
+        .map(|(i, _, _)| *i)
+        .filter(|i| !chosen.contains(i))
+        .collect();
+    if !rest.is_empty() {
+        let stride = rest.len().div_ceil(EXEMPLARS_SPREAD);
+        picked.extend(rest.iter().step_by(stride.max(1)).take(EXEMPLARS_SPREAD));
     }
+    picked
 }
 
 /// Recursively 2-means-split `subset` into leaves while the geometry
 /// supports it: silhouette over the floor, both sides over the absolute
 /// minimum, depth and leaf count in bounds. No judgment gates recursion —
-/// over-splitting is safe because the adjudicator merges same-sense leaves.
+/// over-splitting is safe because the judge labels lines, not clusters.
 /// Returns the silhouette of the split performed at this level, if any.
 fn kmeans_leaves(
     vectors: &[Vec<f32>],
@@ -647,7 +704,7 @@ fn build_key_proposal(key: GramId, vectors: &[Vec<f32>]) -> Option<KeyProposal> 
     let clusters = clusters
         .into_iter()
         .enumerate()
-        .map(|(ci, (indices, source))| {
+        .map(|(ci, (indices, _))| {
             let own = &centroids[ci];
             let other = centroids
                 .iter()
@@ -656,12 +713,8 @@ fn build_key_proposal(key: GramId, vectors: &[Vec<f32>]) -> Option<KeyProposal> 
                 .max_by(|a, b| dot(own, a.1).total_cmp(&dot(own, b.1)))
                 .map(|(_, c)| c)
                 .expect("at least two clusters");
-            let exemplars = margin_filtered_exemplars(&refs, &indices, own, other);
-            Cluster {
-                indices,
-                exemplars,
-                source,
-            }
+            let exemplars = cluster_exemplars(&refs, &indices, own, other);
+            Cluster { exemplars }
         })
         .collect();
     Some(KeyProposal {
@@ -676,14 +729,38 @@ fn build_key_proposal(key: GramId, vectors: &[Vec<f32>]) -> Option<KeyProposal> 
 // LLM adjudication
 // ---------------------------------------------------------------------------
 
+/// What kind of pedagogical split a usage is. The definitions live in the
+/// system prompt (a doc comment here would be emitted by schemars as a
+/// `description` next to the enum's `$ref`, which OpenAI's structured-output
+/// validator rejects).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "lowercase")]
+enum UsageKind {
+    Meaning,
+    Construction,
+    Formula,
+}
+
+impl UsageKind {
+    fn as_str(self) -> &'static str {
+        match self {
+            UsageKind::Meaning => "meaning",
+            UsageKind::Construction => "construction",
+            UsageKind::Formula => "formula",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-struct SenseGroup {
-    /// Numbers of the clusters that share this sense.
-    #[serde(rename = "1. cluster_numbers")]
-    cluster_numbers: Vec<usize>,
-    /// 2-5 word monolingual gloss of the sense, in the audited language.
+struct UsageGroup {
+    #[serde(rename = "1. kind")]
+    kind: UsageKind,
+    /// 2-5 word monolingual gloss of the usage, in the audited language.
     #[serde(rename = "2. gloss")]
     gloss: String,
+    /// Numbers of every listed line that clearly shows this usage.
+    #[serde(rename = "3. line_numbers")]
+    line_numbers: Vec<usize>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
@@ -696,19 +773,15 @@ enum Opacity {
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 struct ExtractedExpression {
-    /// Numbers of the clusters dominated by this expression (empty if it
-    /// merely appears on some lines without explaining a whole cluster).
-    #[serde(rename = "1. cluster_numbers")]
-    cluster_numbers: Vec<usize>,
     /// Numbers of the listed lines that contain this expression.
-    #[serde(rename = "2. line_numbers")]
+    #[serde(rename = "1. line_numbers")]
     line_numbers: Vec<usize>,
     /// The expression copied verbatim (a contiguous substring) from one of
     /// the cited lines.
-    #[serde(rename = "3. verbatim")]
+    #[serde(rename = "2. verbatim")]
     verbatim: String,
     /// 2-6 word gloss, in the language being mined.
-    #[serde(rename = "4. gloss")]
+    #[serde(rename = "3. gloss")]
     gloss: String,
 }
 
@@ -717,15 +790,12 @@ struct AdjudicationResponse {
     /// Brief reasoning.
     #[serde(rename = "1. thoughts")]
     thoughts: String,
-    /// The clusters grouped into genuinely distinct senses.
-    #[serde(rename = "2. senses")]
-    senses: Vec<SenseGroup>,
-    /// Fixed multiword expressions found in the clusters, if any.
+    /// The item's usage inventory, with per-line labels.
+    #[serde(rename = "2. usages")]
+    usages: Vec<UsageGroup>,
+    /// Fixed multiword expressions found in the lines, if any.
     #[serde(rename = "3. expressions")]
     expressions: Vec<ExtractedExpression>,
-    /// Numbers of the clusters that are incoherent mixtures or noise.
-    #[serde(rename = "4. noise")]
-    noise: Vec<usize>,
 }
 
 fn adjudication_system_prompt(language: Language) -> String {
@@ -734,28 +804,33 @@ fn adjudication_system_prompt(language: Language) -> String {
         sentence corpus. What we have done is taken all the known occurrences of a \
         certain vocabulary item (a word or phrase), embedded them with an embedding \
         model, then clustered them. The goal is to split the vocabulary item into \
-        distinct meanings, so that we can teach each meaning separately. \
-        Unfortunately, the embedding models are not perfect at this, which is where \
-        you come in. We would like you to sort the clusters into \"senses\", \
-        \"expressions\", and \"noise\".\n\
+        distinct usages, so that we can introduce each usage to learners \
+        separately. Unfortunately, the embedding models are not perfect at this, \
+        which is where you come in. We would like you to work out the item's \
+        distinct usages, label the example lines with them, and report any fixed \
+        expressions you notice along the way.\n\
         \n\
         In each request the target item is marked \u{ab}like this\u{bb} in its \
         sentence, and the lines are numbered across all clusters so you can cite \
-        them. The clustering is imperfect in shape as well: one meaning may be \
-        split across several clusters, and clusters may overlap — a small cluster \
-        can carve a subset out of a larger one. The embedding features, and \
-        therefore the resulting input clusters, often reflect superficial \
+        them. The clustering is imperfect in shape as well: one usage may be \
+        split across several clusters, clusters may overlap — a small cluster \
+        can carve a subset out of a larger one — and a large cluster is often \
+        really a mixture of several usages, so please judge each line on its \
+        own rather than assuming a cluster is uniform. The embedding features, \
+        and therefore the resulting input clusters, often reflect superficial \
         features like sentence length, punctuation, or surrounding formality \
-        rather than a difference in meaning, which is one reason why merges can \
-        be necessary.\n\
+        rather than a difference in usage, which is one reason why merges can \
+        be necessary. After the clusters there is a random sample drawn from \
+        all occurrences; it shows the item's overall distribution, which the \
+        clusters by themselves can misrepresent.\n\
         \n\
-        Senses: Definitely report separate groups for distinct meanings — distinct \
+        Usages: Definitely report separate usages for distinct meanings — distinct \
         enough that a learner would treat them as different vocabulary items and \
         they would usually receive different translations in another language \
         (homonyms like bank=money/river, or strong polysemy like \
         paper=material/newspaper). Some of the input will show splits that only \
-        vary slightly in topic, register, or inflection, but where the meaning is \
-        the same. Such clusters should be merged into one group. And there is a \
+        vary slightly in topic, register, or inflection, but where the usage is \
+        the same. Those lines should be labeled as one usage. And there is a \
         final category, where the meaning really is slightly different, but might \
         not ordinarily be seen as different. For example, in French it is common \
         to say \"non\" to literally mean \"no\", but at the end of a sentence \
@@ -763,22 +838,55 @@ fn adjudication_system_prompt(language: Language) -> String {
         natural, learners would probably still benefit from learning it and seeing \
         examples of it, because it's not totally obvious to a language learner \
         that \"non\" would be used this way. So that case also deserves its own \
-        sense. On the other hand, you can merge if the usage seems so similar that \
+        usage. On the other hand, you can merge if the usage seems so similar that \
         there's no real reason to teach them separately. For example, the word \
         \"ending\" in \"the road is ending\" vs \"the story is ending\" means \
         basically the same thing — we are reaching the end. These can be grouped, \
         as it is very unlikely that a learner would even benefit from learning \
-        them separately. Your judgement in deciding when to split into different \
-        senses and when to group occurrences into one sense is appreciated.\n\
+        them separately.\n\
+        \n\
+        The overall test is pedagogical rather than lexicographic. Ask yourself: \
+        if I were going to teach this word to someone learning the language, \
+        would I find it helpful to introduce these ways of using it one at a \
+        time, or are they similar enough that it makes more sense to teach them \
+        together? A usage does not have to be a distinct dictionary sense — \
+        grammatical patterns count too. French \"ils sont ...\" vs the inverted \
+        question \"sont-ils ... ?\" is worth introducing separately even though \
+        \"ils\" refers to the same people in both: a learner who has only met \
+        one pattern will stumble on the other. The same goes for a word negating \
+        a verb vs the same word standing alone as an answer. Your judgement in \
+        deciding when to split into different usages and when to group \
+        occurrences into one usage is appreciated.\n\
+        \n\
+        To help us organize the results, please tag each usage with a kind: \
+        \"meaning\" when a different thing is meant (the bank and paper cases), \
+        \"construction\" when it is the same core meaning appearing in a \
+        distinct grammatical pattern (the sont-ils inversion, or verb negation \
+        vs a standalone answer), and \"formula\" when the item is serving as a \
+        conversational routine — a greeting, a term of address, a discourse \
+        marker that moves the conversation along, an exclamation, or a \
+        confirmation tag like the sentence-final \"non ?\". Don't agonize over \
+        a borderline kind; the usages themselves matter more than their tags.\n\
+        \n\
+        For each usage, cite the numbers of all the lines that show it, \
+        including lines from the random sample. We use your line labels as \
+        anchors to automatically classify every other occurrence in the corpus, \
+        so it matters that every cited line really does show its usage — when a \
+        line is ambiguous between usages, garbled, or doesn't fit any usage, \
+        the right thing to do is leave it uncited. Uncited lines are simply set \
+        aside, so an incoherent cluster needs no special treatment: just don't \
+        cite its lines. And if the whole item is really one usage, reporting a \
+        single usage covering its lines is a perfectly good outcome — that \
+        tells us not to split it.\n\
         \n\
         Expressions: The above directives refer to cases where a word individually \
-        has multiple meanings, but sometimes a word takes on a new meaning when \
+        has multiple usages, but sometimes a word takes on a new meaning when \
         it's a component of a fixed expression. This can range from the opaque, \
         like the \"high\" in \"high school\", to the relatively transparent, like \
         \"god\" in \"god willing\". In these cases, it is true that \"high\" and \
         \"god\" mean something slightly different from usual, but the best way to \
         explain this to users is not to say that \"high\" has some sense relating \
-        to schools or something, but to just say that \"high\" has senses like \
+        to schools or something, but to just say that \"high\" has usages like \
         \"vertically elevated\", \"inebriated\", and also participates in fixed \
         expressions like \"high school\". Even when a pattern is very \
         compositional and transparent, such as \"god willing\", it's still \
@@ -787,12 +895,10 @@ fn adjudication_system_prompt(language: Language) -> String {
         we are to explicitly teach them. One caveat: an expression needs at \
         least two actual words — a single word with a characteristic position \
         or punctuation, like the sentence-final \"non ?\", should be reported \
-        as a sense of that word instead.\n\
-        \n\
-        Noise: Some clusters are unfortunately incoherent. They might be a \
-        mixture of many different senses, or just noise. Please put those in the \
-        noise category so that the cluster is not taught to the user as a \
-        coherent concept.\n\
+        as a usage of that word instead. A line where the item only appears as \
+        part of a fixed expression should be cited on that expression rather \
+        than on a usage, since it isn't really evidence of a separate usage of \
+        the word.\n\
         \n\
         One practical note about reporting expressions. We can only use an \
         expression if we can find it in the corpus ourselves: we take exactly \
@@ -802,17 +908,12 @@ fn adjudication_system_prompt(language: Language) -> String {
         what you write doesn't appear in the cited line word-for-word, we won't \
         be able to find it, and the expression will unfortunately be lost. Along \
         with the expression itself, cite the numbers of the lines you saw it on. \
-        Sometimes an expression is the real explanation for an entire cluster; \
-        when that happens, put that cluster's number in the expression's \
-        cluster_numbers and leave the cluster out of the senses, since it isn't \
-        really evidence of a separate sense of the word. Other times an \
-        expression just shows up on a few lines here and there — report it too, \
-        with empty cluster_numbers. If the same pattern appears in several \
-        inflected forms, one entry covering the pattern is enough. And a pattern \
-        that only ever appears on one line is too little evidence for us to do \
-        anything with, so it isn't worth reporting.\n\
+        If the same pattern appears in several inflected forms, one entry \
+        covering the pattern is enough. And a pattern that only ever appears on \
+        one line is too little evidence for us to do anything with, so it isn't \
+        worth reporting.\n\
         \n\
-        For the senses, please write the gloss in {language}. Feel free to put \
+        For the usages, please write the gloss in {language}. Feel free to put \
         some thoughts in the thoughts field \
         (in English) — that will help us understand your reasoning for your \
         decisions."
@@ -851,8 +952,13 @@ fn mark_occurrence(occ: &Occurrence) -> String {
     out
 }
 
+/// Sentinel "cluster" index for the random-sample section of the prompt.
+const RANDOM_SECTION: usize = usize::MAX;
+
 /// The per-gram prompt context: marked exemplar lines grouped by cluster,
-/// globally numbered so expression extractions can cite them.
+/// then a deterministic stride over the entire cloud (the random-sample
+/// section — cluster index [`RANDOM_SECTION`]), globally numbered so usage
+/// labels and expression extractions can cite them.
 struct KeyPrompt {
     display: String,
     /// (global line number, cluster index, occurrence index, marked line)
@@ -868,16 +974,29 @@ fn key_prompt(prop: &KeyProposal, occs: &[Occurrence], display: String) -> KeyPr
             number += 1;
         }
     }
+    let shown: HashSet<usize> = lines.iter().map(|(_, _, i, _)| *i).collect();
+    let unshown: Vec<usize> = (0..occs.len()).filter(|i| !shown.contains(i)).collect();
+    if !unshown.is_empty() {
+        let stride = unshown.len().div_ceil(RANDOM_SAMPLE_LINES).max(1);
+        for &i in unshown.iter().step_by(stride).take(RANDOM_SAMPLE_LINES) {
+            lines.push((number, RANDOM_SECTION, i, mark_occurrence(&occs[i])));
+            number += 1;
+        }
+    }
     KeyPrompt { display, lines }
 }
 
 fn adjudication_user_prompt(p: &KeyPrompt) -> String {
     let mut out = format!("Target: \"{}\"\n", p.display);
-    let mut current = usize::MAX;
+    let mut current = usize::MAX - 1;
     for (n, cluster, _, line) in &p.lines {
         if *cluster != current {
             current = *cluster;
-            let _ = write!(out, "\nCluster {}:\n", current + 1);
+            if current == RANDOM_SECTION {
+                out.push_str("\nRandom sample (from all occurrences):\n");
+            } else {
+                let _ = write!(out, "\nCluster {}:\n", current + 1);
+            }
         }
         let _ = writeln!(out, "{n}. {line}");
     }
@@ -890,7 +1009,7 @@ fn adjudication_user_prompt(p: &KeyPrompt) -> String {
 //
 // A separate, per-expression call rather than a field on the adjudication
 // response, deliberately: the adjudicator must report even compositional
-// cluster-dominating patterns (that's what keeps them out of the sense
+// cluster-dominating patterns (that's what keeps them out of the usage
 // inventory), so it can't also be the adoption bar — and opacity is the
 // judgment we iterate on most, so it gets its own small prompt whose
 // calibration can change without refilling the expensive per-gram cache.
@@ -1095,11 +1214,18 @@ pub fn load_discovered_terms(language: Language) -> Result<Vec<DiscoveredTerm>> 
 /// (inclusive) word index range only if both ends align exactly with word
 /// edges — a citation that starts or ends mid-word is rejected rather than
 /// guessed at.
+/// Strip the «» target markers the model may copy along with the words
+/// (anywhere in the citation, not just its edges).
+fn clean_verbatim(verbatim: &str) -> String {
+    verbatim
+        .replace(['\u{ab}', '\u{bb}'], "")
+        .trim()
+        .to_string()
+}
+
 fn snap_to_words(sent: &SentenceIndex, text: &str, verbatim: &str) -> Option<(usize, usize)> {
-    // The model may copy our «» markers along with the words (anywhere in
-    // the citation, not just its edges); strip them.
-    let needle = verbatim.replace(['\u{ab}', '\u{bb}'], "");
-    let needle = needle.trim();
+    let needle = clean_verbatim(verbatim);
+    let needle = needle.as_str();
     if needle.is_empty() {
         return None;
     }
@@ -1173,30 +1299,214 @@ fn atom_window_matches<'a>(
 // Artifacts
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Serialize)]
-pub struct SenseAnchor {
+/// One anchor occurrence of a usage: a corpus sentence and the char spans
+/// of the gram's words in it. Anchors are stored as (sentence, spans), not
+/// vectors, so centroids can be recomputed under any embedding version.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UsageAnchor {
     pub sentence: String,
     pub spans: Vec<(u32, u32)>,
+    /// Labeled by the judge (true) or assigned by the centroid extension.
+    pub gold: bool,
 }
 
-#[derive(Debug, Serialize)]
-pub struct SenseEntry {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UsageEntry {
+    /// "meaning" | "construction" | "formula".
+    pub kind: String,
     pub gloss: String,
-    pub n: usize,
-    pub anchors: Vec<SenseAnchor>,
+    /// Judge-labeled lines that grounded this usage.
+    pub n_gold: usize,
+    /// Occurrences assigned to this usage by the centroid extension over
+    /// the whole cloud (a true partition; includes the gold lines).
+    pub n_assigned: usize,
+    /// Leave-one-out validation: how many of the gold lines are assigned
+    /// back to this usage when classified against centroids built without
+    /// them. `loo_correct == n_gold` means the split is cleanly separable
+    /// in embedding space.
+    pub loo_correct: usize,
+    pub anchors: Vec<UsageAnchor>,
 }
 
-#[derive(Debug, Serialize)]
-pub struct SenseCandidate {
+/// A gram's usage inventory: the pedagogical units it splits into, with
+/// enough labeled data to classify any occurrence of the gram.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UsageInventory {
     /// Human-readable display of the mined gram.
     pub key: String,
     /// The mined gram itself (canonical identity — display strings can
     /// collide, e.g. est@AUX vs est@VERB grams both display "est").
     pub gram: Gram<String>,
+    /// Total occurrences in the mined cloud.
     pub n: usize,
-    pub senses: Vec<SenseEntry>,
+    /// Occurrences absorbed by extracted-expression prototypes (the gram
+    /// appearing inside a fixed expression) rather than any usage — the sum
+    /// of the absorbers' `n_assigned`.
+    pub n_expression: usize,
+    pub usages: Vec<UsageEntry>,
+    /// Expression-absorber classes (kind "expression"), persisted so that
+    /// arbitrary-sentence classification can reproduce the corpus-time
+    /// behavior: without them, an occurrence inside a fixed expression
+    /// would be force-assigned to whichever usage is nearest.
+    pub absorbers: Vec<UsageEntry>,
     pub silhouette: f64,
     pub source: String,
+}
+
+/// One per-occurrence corpus label, as written to
+/// `out/{lang}/usage_labels.jsonl`.
+#[derive(Debug, Serialize)]
+struct UsageLabelRow<'a> {
+    key: &'a str,
+    /// 0-based line number of this gram's row in usage_inventories.jsonl —
+    /// the unambiguous join key (display strings can collide across grams).
+    inventory: usize,
+    /// The assigned usage's gloss ("expression: {gloss}" for occurrences
+    /// absorbed by an extracted-expression prototype).
+    usage: &'a str,
+    kind: &'a str,
+    sentence: &'a str,
+    spans: &'a [(u32, u32)],
+    /// Cosine similarity to the assigned class centroid.
+    sim: f32,
+    /// Similarity margin over the strongest competing class (confidence
+    /// proxy — downstream consumers can threshold on it; negative for a
+    /// gold line the geometry disagrees with).
+    margin: f32,
+    /// Whether the judge labeled this occurrence directly.
+    gold: bool,
+}
+
+/// A label computed during the judged loop, held until the inventory rows
+/// are sorted so each label row can cite its inventory line number.
+struct PendingLabel {
+    usage: String,
+    kind: &'static str,
+    occ: usize,
+    sim: f32,
+    margin: f32,
+    gold: bool,
+}
+
+/// Classify one occurrence vector against class centroids: returns
+/// (best class index, similarity, margin over the runner-up). `None` if
+/// fewer than two centroids (nothing to discriminate).
+pub fn assign_to_centroids(v: &[f32], centroids: &[Vec<f32>]) -> Option<(usize, f32, f32)> {
+    if centroids.len() < 2 {
+        return None;
+    }
+    let mut sims: Vec<(usize, f32)> = centroids.iter().map(|c| dot(v, c)).enumerate().collect();
+    sims.sort_by(|a, b| b.1.total_cmp(&a.1));
+    Some((sims[0].0, sims[0].1, sims[0].1 - sims[1].1))
+}
+
+/// Where an occurrence lands when classified against an inventory.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UsageAssignment {
+    /// Index into [`UsageInventory::usages`].
+    Usage(usize),
+    /// Index into [`UsageInventory::absorbers`] — the occurrence is inside
+    /// a fixed expression, not evidence of any usage.
+    ExpressionMember(usize),
+}
+
+/// A usage inventory's classifier state: one centroid per usage and one per
+/// expression absorber, recomputed from anchors under whatever embedding
+/// version is current.
+pub struct InventoryCentroids {
+    pub usages: Vec<Vec<f32>>,
+    pub absorbers: Vec<Vec<f32>>,
+}
+
+impl InventoryCentroids {
+    /// Classify one occurrence vector: (assignment, similarity, margin over
+    /// the strongest competitor). `None` if the inventory has fewer than
+    /// two classes.
+    pub fn classify(&self, v: &[f32]) -> Option<(UsageAssignment, f32, f32)> {
+        let sims: Vec<f32> = self
+            .usages
+            .iter()
+            .chain(self.absorbers.iter())
+            .map(|c| dot(v, c))
+            .collect();
+        if sims.len() < 2 {
+            return None;
+        }
+        let best = (0..sims.len())
+            .max_by(|&a, &b| sims[a].total_cmp(&sims[b]))
+            .expect("non-empty");
+        let runner_up = (0..sims.len())
+            .filter(|&i| i != best)
+            .map(|i| sims[i])
+            .fold(f32::NEG_INFINITY, f32::max);
+        let assignment = if best < self.usages.len() {
+            UsageAssignment::Usage(best)
+        } else {
+            UsageAssignment::ExpressionMember(best - self.usages.len())
+        };
+        Some((assignment, sims[best], sims[best] - runner_up))
+    }
+}
+
+/// One class's centroid from its anchors' cached embeddings. Each anchor's
+/// vector is the mean of its span vectors, matching how the mining built
+/// occurrence vectors.
+async fn entry_centroid(
+    store: &osmo::Store,
+    language: Language,
+    key: &str,
+    entry: &UsageEntry,
+) -> Result<Vec<f32>> {
+    let mut anchor_vectors: Vec<Vec<f32>> = Vec::new();
+    for anchor in &entry.anchors {
+        let Some(vecs) =
+            token_embeddings::read_word_vectors(store, language, &anchor.sentence, &anchor.spans)
+                .await
+        else {
+            continue;
+        };
+        let refs: Vec<&Vec<f32>> = vecs.iter().collect();
+        anchor_vectors.push(mean_normalized(&refs));
+    }
+    anyhow::ensure!(
+        !anchor_vectors.is_empty(),
+        "no cached embeddings for any anchor of {key} usage {:?}",
+        entry.gloss
+    );
+    if anchor_vectors.len() < entry.anchors.len() {
+        // Tolerated (an embedding-version migration re-embeds lazily), but
+        // worth a trace: a centroid from a subset of the serialized anchors
+        // is not exactly the classifier the mining run validated.
+        log::warn!(
+            "usage centroid for {key} {:?} built from {}/{} anchors (missing embeddings)",
+            entry.gloss,
+            anchor_vectors.len(),
+            entry.anchors.len()
+        );
+    }
+    let refs: Vec<&Vec<f32>> = anchor_vectors.iter().collect();
+    Ok(mean_normalized(&refs))
+}
+
+/// Recompute a usage inventory's classifier centroids from its anchors'
+/// cached embeddings — the entry point for labeling the gram in arbitrary
+/// sentences: fetch the target occurrence's vector (embedding the sentence
+/// via the token-embeddings endpoint if it isn't cached), then
+/// [`InventoryCentroids::classify`] against these.
+pub async fn usage_centroids(
+    store: &osmo::Store,
+    language: Language,
+    inventory: &UsageInventory,
+) -> Result<InventoryCentroids> {
+    let mut usages = Vec::with_capacity(inventory.usages.len());
+    for entry in &inventory.usages {
+        usages.push(entry_centroid(store, language, &inventory.key, entry).await?);
+    }
+    let mut absorbers = Vec::with_capacity(inventory.absorbers.len());
+    for entry in &inventory.absorbers {
+        absorbers.push(entry_centroid(store, language, &inventory.key, entry).await?);
+    }
+    Ok(InventoryCentroids { usages, absorbers })
 }
 
 /// Expand each grounded expression into its paradigm: ask the judge for the
@@ -1334,7 +1644,7 @@ async fn expand_paradigms(
 
     let citation_strings: BTreeSet<String> = membership.values().cloned().collect();
     println!(
-        "sense-discovery[{}]: paradigms: {} citation forms, {n_new} new variants grounded, \
+        "usage-discovery[{}]: paradigms: {} citation forms, {n_new} new variants grounded, \
          {n_ungroundable} not attested in the corpus, {n_rejected} rejected by the term gates",
         language.code(),
         citation_strings.len(),
@@ -1371,7 +1681,7 @@ async fn expand_paradigms(
     }
     if unresolved > 0 {
         log::warn!(
-            "sense-discovery[{}]: {unresolved} members left uncited (their citation form did not \
+            "usage-discovery[{}]: {unresolved} members left uncited (their citation form did not \
              tokenize to a phrase)",
             language.code()
         );
@@ -1399,11 +1709,11 @@ pub enum DiscoverMode {
     DumpPrompts,
     /// Run the adjudication batch (a pure tysm cache hit after a Full run)
     /// and print every raw response to stdout, then stop — for inspecting
-    /// the judge's thoughts and noise assignments behind the artifacts.
+    /// the judge's thoughts and line labels behind the artifacts.
     DumpResponses,
 }
 
-/// Discover sense splits and collocation candidates for one language and
+/// Discover usage splits and collocation candidates for one language and
 /// write the proposal files under `generate-data/data/{lang}/`.
 pub async fn discover(
     language: Language,
@@ -1426,7 +1736,7 @@ pub async fn discover(
     let occurrences = collect_occurrences(corpus, language, &index, &arena);
     timer.lap("occurrence collection");
     println!(
-        "sense-discovery[{}]: {} grams with >= {MIN_OCC} occurrences",
+        "usage-discovery[{}]: {} grams with >= {MIN_OCC} occurrences",
         language.code(),
         occurrences.len()
     );
@@ -1495,7 +1805,7 @@ pub async fn discover(
     }
     if missing > 0 {
         log::warn!(
-            "sense-discovery[{}]: {missing} occurrences lacked cached embeddings and were skipped",
+            "usage-discovery[{}]: {missing} occurrences lacked cached embeddings and were skipped",
             language.code()
         );
     }
@@ -1531,7 +1841,7 @@ pub async fn discover(
             .collect()
     };
     println!(
-        "sense-discovery[{}]: adjudicating {} grams",
+        "usage-discovery[{}]: adjudicating {} grams",
         language.code(),
         judged.len()
     );
@@ -1556,8 +1866,8 @@ pub async fn discover(
         .collect();
 
     // One adjudication call per gram: the judge sees every candidate
-    // cluster at once and sorts them into sense groups (merging over-split
-    // ones) and fixed-expression fragments.
+    // cluster's exemplars plus a random sample, defines the usage
+    // inventory, and labels each line with its usage or host expression.
     let prompts: Vec<KeyPrompt> = judged
         .iter()
         .map(|p| {
@@ -1615,7 +1925,13 @@ pub async fn discover(
         return Ok(());
     }
 
-    let mut sense_rows: Vec<SenseCandidate> = Vec::new();
+    // One entry per inventoried gram: the inventory row, the gram's index
+    // into `keys` (to reach occurrence texts at write time), and the
+    // per-occurrence labels — held until the rows are sorted so each label
+    // can cite its final inventory line number.
+    let mut inventory_rows: Vec<(UsageInventory, usize, Vec<PendingLabel>)> = Vec::new();
+    // Aggregate leave-one-out and judge-conflict tallies for the summary.
+    let (mut loo_total, mut loo_ok, mut n_conflict) = (0usize, 0usize, 0usize);
     // Grounded expressions, each with a few example sentences for the
     // opacity judge. Opacity itself is filled by that later stage.
     let mut discovered: BTreeMap<Vec<SpurAtom>, (DiscoveredTerm, Vec<String>)> = BTreeMap::new();
@@ -1650,7 +1966,7 @@ pub async fn discover(
             }) else {
                 n_ungroundable += 1;
                 log::info!(
-                    "sense-discovery[{}]: ungroundable extraction {:?} for {}",
+                    "usage-discovery[{}]: ungroundable extraction {:?} for {}",
                     language.code(),
                     e.verbatim,
                     prompt.display,
@@ -1699,102 +2015,311 @@ pub async fn discover(
             });
         }
 
-        // Sense lane: resolve each group's clusters (1-based numbers from
-        // the prompt); a gram with two or more surviving groups becomes a
-        // sense candidate. Clusters explained by a host expression or
-        // judged noise simply appear in no group.
-        let groups: Vec<(&SenseGroup, Vec<&Cluster>)> = resp
-            .senses
-            .iter()
-            .filter_map(|g| {
-                let members: Vec<&Cluster> = g
-                    .cluster_numbers
-                    .iter()
-                    .filter_map(|&n| n.checked_sub(1).and_then(|i| prop.clusters.get(i)))
-                    .collect();
-                (!members.is_empty()).then_some((g, members))
-            })
-            .collect();
-        if groups.len() < 2 {
-            continue;
+        // Usage lane: resolve the judge's per-line labels to occurrence
+        // indices and build one prototype class per usage, plus one
+        // absorber class per extracted expression (so occurrences of e.g.
+        // "au clair de lune" are claimed by the expression rather than
+        // force-assigned to a usage of "clair"). A line cited by more than
+        // one class is a judge conflict: drop it from all of them — it
+        // would poison both centroids.
+        let resolve = |n: usize| {
+            prompt
+                .lines
+                .iter()
+                .find(|(ln, _, _, _)| *ln == n)
+                .map(|(_, _, occ, _)| *occ)
+        };
+        struct ProtoClass<'r> {
+            /// `None` marks an extracted-expression absorber.
+            kind: Option<UsageKind>,
+            gloss: &'r str,
+            gold: Vec<usize>,
         }
-        let mut sources: Vec<&str> = groups
+        let gold_lines = |numbers: &[usize]| {
+            let mut gold: Vec<usize> = numbers.iter().filter_map(|&n| resolve(n)).collect();
+            gold.sort_unstable();
+            gold.dedup();
+            gold
+        };
+        let mut classes: Vec<ProtoClass> = resp
+            .usages
             .iter()
-            .flat_map(|(_, cs)| cs.iter().map(|c| c.source))
-            .collect();
-        sources.sort_unstable();
-        sources.dedup();
-        let senses: Vec<SenseEntry> = groups
-            .iter()
-            .map(|(g, members)| {
-                let mut indices: Vec<usize> = members
-                    .iter()
-                    .flat_map(|c| c.indices.iter().copied())
-                    .collect();
-                indices.sort_unstable();
-                indices.dedup();
-                // Round-robin the anchors across member clusters so a
-                // merged group is represented by all of its clusters, not
-                // just the first (anchors feed the future nearest-centroid
-                // assignment pass).
-                let mut picked: Vec<usize> = Vec::new();
-                let mut seen: HashSet<usize> = HashSet::new();
-                let mut cluster_exemplars: Vec<_> = members
-                    .iter()
-                    .map(|c| c.exemplars.iter().copied())
-                    .collect();
-                'fill: loop {
-                    let mut progressed = false;
-                    for exemplars in &mut cluster_exemplars {
-                        for i in exemplars.by_ref() {
-                            if seen.insert(i) {
-                                picked.push(i);
-                                progressed = true;
-                                if picked.len() == EXEMPLARS {
-                                    break 'fill;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if !progressed {
-                        break;
-                    }
-                }
-                let anchors: Vec<SenseAnchor> = picked
+            .map(|u| ProtoClass {
+                kind: Some(u.kind),
+                gloss: &u.gloss,
+                gold: gold_lines(&u.line_numbers),
+            })
+            .chain(resp.expressions.iter().map(|e| {
+                // An absorber's citations are verified individually: the
+                // expression must ground on the cited line as a two-plus
+                // word window on word boundaries that contains the target
+                // occurrence — a mistakenly cited line (or an expression
+                // matching elsewhere in the sentence) would poison the
+                // absorber centroid and siphon unrelated occurrences.
+                let gold: Vec<usize> = gold_lines(&e.line_numbers)
                     .into_iter()
-                    .map(|i| SenseAnchor {
-                        sentence: km.occs[i].text.clone(),
-                        spans: km.occs[i].spans.clone(),
+                    .filter(|&i| {
+                        let occ = &km.occs[i];
+                        let Some(sent) = index.get(&occ.text) else {
+                            return false;
+                        };
+                        let Some((first, last)) = snap_to_words(sent, &occ.text, &e.verbatim)
+                        else {
+                            return false;
+                        };
+                        if last <= first {
+                            return false;
+                        }
+                        let lo = sent.words[first].char_span.0;
+                        let hi = sent.words[last].char_span.1;
+                        occ.spans.iter().all(|&(a, b)| lo <= a && b <= hi)
                     })
                     .collect();
-                SenseEntry {
-                    gloss: g.gloss.clone(),
-                    n: indices.len(),
-                    anchors,
+                ProtoClass {
+                    kind: None,
+                    gloss: &e.gloss,
+                    gold,
+                }
+            }))
+            .collect();
+        let mut claims: HashMap<usize, usize> = HashMap::new();
+        for c in &classes {
+            for &i in &c.gold {
+                *claims.entry(i).or_default() += 1;
+            }
+        }
+        let contested: HashSet<usize> = claims
+            .iter()
+            .filter(|&(_, &n)| n > 1)
+            .map(|(&i, _)| i)
+            .collect();
+        n_conflict += contested.len();
+        for c in &mut classes {
+            c.gold.retain(|i| !contested.contains(i));
+        }
+        classes.retain(|c| c.gold.len() >= MIN_GOLD);
+        if classes.iter().filter(|c| c.kind.is_some()).count() < 2 {
+            continue;
+        }
+
+        // Two-pass centroid extension. Pass 1: gold-only centroids
+        // provisionally classify the cloud, which is how each class's
+        // spread anchors get picked. Pass 2: final centroids are computed
+        // from exactly the anchor sets that get persisted, and those
+        // produce the labels and counts — so the classifier we ship
+        // (anchors → [`usage_centroids`] → [`InventoryCentroids::classify`])
+        // is the classifier that produced them, not a near miss. Gold
+        // lines keep the judge's label in both passes.
+        let gold_class: HashMap<usize, usize> = classes
+            .iter()
+            .enumerate()
+            .flat_map(|(ci, c)| c.gold.iter().map(move |&i| (i, ci)))
+            .collect();
+        let classify_all = |centroids: &[Vec<f32>]| -> Vec<(usize, f32, f32)> {
+            km.vectors
+                .iter()
+                .enumerate()
+                .map(|(i, v)| {
+                    let (best, sim, margin) =
+                        assign_to_centroids(v, centroids).expect("two or more classes");
+                    match gold_class.get(&i) {
+                        Some(&ci) => {
+                            // The judge's label wins; the margin is measured
+                            // from the assigned class to its strongest
+                            // competitor, so a gold line the geometry
+                            // disagrees with correctly shows a negative
+                            // margin.
+                            let own = dot(v, &centroids[ci]);
+                            let best_other = centroids
+                                .iter()
+                                .enumerate()
+                                .filter(|&(cj, _)| cj != ci)
+                                .map(|(_, c)| dot(v, c))
+                                .fold(f32::NEG_INFINITY, f32::max);
+                            (ci, own, own - best_other)
+                        }
+                        None => (best, sim, margin),
+                    }
+                })
+                .collect()
+        };
+        let gold_centroids: Vec<Vec<f32>> = classes
+            .iter()
+            .map(|c| {
+                let members: Vec<&Vec<f32>> = c.gold.iter().map(|&i| &km.vectors[i]).collect();
+                mean_normalized(&members)
+            })
+            .collect();
+        let provisional = classify_all(&gold_centroids);
+        let mut prov_members: Vec<Vec<usize>> = vec![Vec::new(); classes.len()];
+        for (i, &(ci, _, _)) in provisional.iter().enumerate() {
+            prov_members[ci].push(i);
+        }
+
+        // Anchor selection: every gold line first, then provisionally
+        // assigned occurrences strided across the class's similarity range
+        // (not just the most central), so the persisted anchors span the
+        // class.
+        let anchor_sets: Vec<Vec<(usize, bool)>> = classes
+            .iter()
+            .enumerate()
+            .map(|(ci, class)| {
+                let gold_set: HashSet<usize> = class.gold.iter().copied().collect();
+                let mut anchor_idx: Vec<(usize, bool)> =
+                    class.gold.iter().map(|&i| (i, true)).collect();
+                let mut rest: Vec<usize> = prov_members[ci]
+                    .iter()
+                    .copied()
+                    .filter(|i| !gold_set.contains(i))
+                    .collect();
+                rest.sort_by(|&a, &b| provisional[b].1.total_cmp(&provisional[a].1));
+                if anchor_idx.len() < MAX_ANCHORS && !rest.is_empty() {
+                    let want = MAX_ANCHORS - anchor_idx.len();
+                    let stride = rest.len().div_ceil(want).max(1);
+                    anchor_idx.extend(rest.iter().step_by(stride).take(want).map(|&i| (i, false)));
+                }
+                anchor_idx.truncate(MAX_ANCHORS);
+                anchor_idx
+            })
+            .collect();
+        let centroids: Vec<Vec<f32>> = anchor_sets
+            .iter()
+            .map(|set| {
+                let vecs: Vec<&Vec<f32>> = set.iter().map(|&(i, _)| &km.vectors[i]).collect();
+                mean_normalized(&vecs)
+            })
+            .collect();
+        let assignments = classify_all(&centroids);
+        let mut members: Vec<Vec<usize>> = vec![Vec::new(); classes.len()];
+        for (i, &(ci, _, _)) in assignments.iter().enumerate() {
+            members[ci].push(i);
+        }
+
+        // Leave-one-out over the gold lines, entirely in gold-only
+        // geometry: withhold each gold line from its own gold centroid and
+        // check it still classifies home against the other classes' gold
+        // centroids. This is the honesty meter for the judge's labels
+        // themselves — gold that can't be recovered geometrically means
+        // the usage distinction is real to the judge but invisible to the
+        // embedding, so assignment can't be trusted.
+        let loo: Vec<usize> = classes
+            .iter()
+            .enumerate()
+            .map(|(ci, c)| {
+                c.gold
+                    .iter()
+                    .filter(|&&g| {
+                        let rest: Vec<&Vec<f32>> = c
+                            .gold
+                            .iter()
+                            .filter(|&&i| i != g)
+                            .map(|&i| &km.vectors[i])
+                            .collect();
+                        let held = mean_normalized(&rest);
+                        let own = dot(&km.vectors[g], &held);
+                        gold_centroids
+                            .iter()
+                            .enumerate()
+                            .filter(|&(cj, _)| cj != ci)
+                            .all(|(_, other)| own >= dot(&km.vectors[g], other))
+                    })
+                    .count()
+            })
+            .collect();
+
+        let mut usages: Vec<UsageEntry> = Vec::new();
+        let mut absorbers: Vec<UsageEntry> = Vec::new();
+        let mut n_expression = 0usize;
+        for (ci, class) in classes.iter().enumerate() {
+            let anchors: Vec<UsageAnchor> = anchor_sets[ci]
+                .iter()
+                .map(|&(i, gold)| UsageAnchor {
+                    sentence: km.occs[i].text.clone(),
+                    spans: km.occs[i].spans.clone(),
+                    gold,
+                })
+                .collect();
+            let entry = |kind: &str| UsageEntry {
+                kind: kind.to_string(),
+                gloss: class.gloss.to_string(),
+                n_gold: class.gold.len(),
+                n_assigned: members[ci].len(),
+                loo_correct: loo[ci],
+                anchors,
+            };
+            match class.kind {
+                Some(kind) => {
+                    loo_total += class.gold.len();
+                    loo_ok += loo[ci];
+                    usages.push(entry(kind.as_str()));
+                }
+                None => {
+                    n_expression += members[ci].len();
+                    absorbers.push(entry("expression"));
+                }
+            }
+        }
+
+        let pending: Vec<PendingLabel> = assignments
+            .iter()
+            .enumerate()
+            .map(|(i, &(ci, sim, margin))| {
+                let class = &classes[ci];
+                let (kind, usage) = match class.kind {
+                    Some(k) => (k.as_str(), class.gloss.to_string()),
+                    None => ("expression", format!("expression: {}", class.gloss)),
+                };
+                PendingLabel {
+                    usage,
+                    kind,
+                    occ: i,
+                    sim,
+                    margin,
+                    gold: gold_class.contains_key(&i),
                 }
             })
             .collect();
-        sense_rows.push(SenseCandidate {
-            key: prompt.display.clone(),
-            gram: arena.grams[prop.key as usize].clone(),
-            n: km.occs.len(),
-            senses,
-            silhouette,
-            source: sources.join("+"),
-        });
+        inventory_rows.push((
+            UsageInventory {
+                key: prompt.display.clone(),
+                gram: arena.grams[prop.key as usize].clone(),
+                n: km.occs.len(),
+                n_expression,
+                usages,
+                absorbers,
+                silhouette,
+                source: match (
+                    prop.root_silhouette.is_some(),
+                    prop.hdbscan_silhouette.is_some(),
+                ) {
+                    (true, true) => "kmeans+hdbscan",
+                    (true, false) => "kmeans",
+                    _ => "hdbscan",
+                }
+                .to_string(),
+            },
+            key_lookup[&prop.key],
+            pending,
+        ));
     }
     println!(
-        "sense-discovery[{}]: expression grounding: {n_grounded} grounded, \
+        "usage-discovery[{}]: expression grounding: {n_grounded} grounded, \
          {n_ungroundable} ungroundable, {n_single} single-word, \
          {n_boundary} boundary-rejected, {n_infrequent} below count {MIN_EXPRESSION_COUNT}",
         language.code(),
     );
-    sense_rows.sort_by(|a, b| {
-        b.silhouette
-            .total_cmp(&a.silhouette)
-            .then(a.key.cmp(&b.key))
+    inventory_rows.sort_by(|a, b| {
+        b.0.silhouette
+            .total_cmp(&a.0.silhouette)
+            .then(a.0.key.cmp(&b.0.key))
     });
+    if loo_total > 0 {
+        println!(
+            "usage-discovery[{}]: gold labels: {loo_ok}/{loo_total} recovered by leave-one-out \
+             centroid assignment, {n_conflict} lines dropped as multi-class conflicts",
+            language.code(),
+        );
+    }
 
     // Novelty filter for the multiword proposals: drop expressions the
     // pipeline already knows — by normalized surface against the
@@ -1944,16 +2469,62 @@ pub async fn discover(
         .collect();
 
     std::fs::create_dir_all(&data_dir).context("Failed to create data dir")?;
-    let sense_path = Path::new(&data_dir).join("sense_candidates.jsonl");
-    let mut f = File::create(&sense_path).context("Failed to create sense_candidates.jsonl")?;
-    for row in &sense_rows {
+    let inventory_path = Path::new(&data_dir).join("usage_inventories.jsonl");
+    let mut f =
+        File::create(&inventory_path).context("Failed to create usage_inventories.jsonl")?;
+    for (row, _, _) in &inventory_rows {
         writeln!(f, "{}", serde_json::to_string(row)?)?;
     }
+    // The usage inventory replaces the old cluster-grouped sense file
+    // wholesale (nothing ever consumed it); leaving the stale file behind
+    // would look like data.
+    let legacy = Path::new(&data_dir).join("sense_candidates.jsonl");
+    if legacy.exists() {
+        std::fs::remove_file(&legacy).context("Failed to remove legacy sense_candidates.jsonl")?;
+    }
     println!(
-        "sense-discovery[{}]: wrote {} sense candidates to {}",
+        "usage-discovery[{}]: wrote {} usage inventories to {}",
         language.code(),
-        sense_rows.len(),
-        sense_path.display()
+        inventory_rows.len(),
+        inventory_path.display()
+    );
+
+    // Per-occurrence labels for the whole mined corpus: one row per
+    // occurrence of every inventoried gram — the demonstration (and
+    // inspection surface) of the assignment capability.
+    let labels_path = Path::new("./out")
+        .join(language.code())
+        .join("usage_labels.jsonl");
+    if let Some(parent) = labels_path.parent() {
+        std::fs::create_dir_all(parent).context("Failed to create out dir")?;
+    }
+    let mut f = File::create(&labels_path).context("Failed to create usage_labels.jsonl")?;
+    let mut n_labels = 0usize;
+    for (inv_idx, (inv, key_idx, pending)) in inventory_rows.iter().enumerate() {
+        let km = &keys[*key_idx];
+        for l in pending {
+            writeln!(
+                f,
+                "{}",
+                serde_json::to_string(&UsageLabelRow {
+                    key: &inv.key,
+                    inventory: inv_idx,
+                    usage: &l.usage,
+                    kind: l.kind,
+                    sentence: &km.occs[l.occ].text,
+                    spans: &km.occs[l.occ].spans,
+                    sim: l.sim,
+                    margin: l.margin,
+                    gold: l.gold,
+                })?
+            )?;
+            n_labels += 1;
+        }
+    }
+    println!(
+        "usage-discovery[{}]: wrote {n_labels} per-occurrence labels to {}",
+        language.code(),
+        labels_path.display()
     );
 
     // The jsonl is the durable adoption record: entries from previous runs
@@ -2003,7 +2574,7 @@ pub async fn discover(
     }
     if n_backfilled > 0 {
         println!(
-            "sense-discovery[{}]: backfilled citation/opacity on {n_backfilled} previously \
+            "usage-discovery[{}]: backfilled citation/opacity on {n_backfilled} previously \
              adopted terms",
             language.code(),
         );
@@ -2022,7 +2593,7 @@ pub async fn discover(
         writeln!(f, "{line}")?;
     }
     println!(
-        "sense-discovery[{}]: wrote {} discovered multiword terms ({new_terms} new) to {}",
+        "usage-discovery[{}]: wrote {} discovered multiword terms ({new_terms} new) to {}",
         language.code(),
         lines.len(),
         terms_path.display()

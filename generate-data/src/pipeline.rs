@@ -1,5 +1,5 @@
 //! The per-course corpus pipeline, shared between the main generate-data
-//! binary and the standalone `sense_discovery` tool. Two independent
+//! binary and the standalone `usage_discovery` tool. Two independent
 //! branches hang off `target_sentences::get_target_sentences`:
 //!
 //! - [`segment_corpus`]: tokenization → multiword-term patterns → unigram
@@ -218,7 +218,7 @@ pub struct MatchingPatterns {
     /// pipeline's sources for that claim feed this one map: Wiktionary's
     /// "alternative form of" relations, and the citation forms the discovery
     /// lane mints (themselves ordinary multiword terms — see
-    /// [`crate::sense_discovery::DiscoveredTerm::citation`]).
+    /// [`crate::usage_discovery::DiscoveredTerm::citation`]).
     ///
     /// Three invariants hold by construction, all established in
     /// [`build_citation_map`]:
@@ -343,7 +343,7 @@ fn build_citation_map(
             _ => {}
         }
     }
-    for entry in crate::sense_discovery::load_discovered_terms(language)? {
+    for entry in crate::usage_discovery::load_discovered_terms(language)? {
         if let Some(citation) = entry.citation {
             add(entry.gram, citation);
         }

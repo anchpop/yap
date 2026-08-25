@@ -14,7 +14,7 @@ use std::path::Path;
 /// run are adopted without any manual cache-busting. Discovery runs with no
 /// human review step; a load-if-exists cache here would silently freeze
 /// adoption. The merged file is still written each time: it's committed
-/// provenance, and sense_discovery reads it for its novelty check.
+/// provenance, and usage_discovery reads it for its novelty check.
 pub async fn ensure_multiword_terms_file(
     course: &Course,
     base_path: &Path,
@@ -153,13 +153,13 @@ async fn extra_multiword_terms(language: Language) -> anyhow::Result<Vec<String>
         }
     }
 
-    // Terms mined by the sense_discovery binary (embedding-cluster splits,
+    // Terms mined by the usage_discovery binary (embedding-cluster splits,
     // LLM-extracted, corpus-grounded) and committed for adoption. Both the
     // variant surface and its citation form enter the inventory: the citation
     // is an ordinary term — encodable, matchable, taught like any other — so
     // it exists as the vocabulary item that variant matches are recorded
-    // under (see [`crate::sense_discovery::DiscoveredTerm::citation`]).
-    for entry in crate::sense_discovery::load_discovered_terms(language)? {
+    // under (see [`crate::usage_discovery::DiscoveredTerm::citation`]).
+    for entry in crate::usage_discovery::load_discovered_terms(language)? {
         terms.push(entry.term.trim().to_string());
         if let Some(citation) = &entry.citation {
             terms.push(citation.to_display_string(language));
