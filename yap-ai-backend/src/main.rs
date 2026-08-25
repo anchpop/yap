@@ -2227,13 +2227,15 @@ async fn main() {
     // open by design, so an unset secret produces no errors and no rejections
     // — exactly what a perfectly working gate produces. This is the only
     // moment the difference is visible.
-    if tts_verify::is_configured() {
-        println!("TTS verification: on");
-    } else {
+    let transcribers = tts_verify::configured_transcribers();
+    if transcribers.is_empty() {
         eprintln!(
-            "TTS verification: OFF — CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN are unset, \
+            "TTS verification: OFF — neither Cloudflare (CLOUDFLARE_ACCOUNT_ID + \
+             CLOUDFLARE_API_TOKEN) nor Groq (GROQ_API_KEY) is configured, \
              so audio will not be checked against its text"
         );
+    } else {
+        println!("TTS verification: on ({})", transcribers.join(" + "));
     }
 
     let app = app();
