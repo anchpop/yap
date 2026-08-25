@@ -9,8 +9,13 @@
 //! `audio_defect` returns early for any clip at or over a second.
 //!
 //! So we transcribe what the provider actually produced and compare it to what
-//! we asked for, using Cloudflare Workers AI's `whisper-large-v3-turbo`
-//! (~$0.0005/audio-minute, so a two-second clip costs about 1.7e-5 dollars).
+//! we asked for, using `whisper-large-v3-turbo` — hosted by both Cloudflare
+//! Workers AI (~$0.0005/audio-minute, so a two-second clip costs about 1.7e-5
+//! dollars) and Groq (~$0.04/audio-hour, the same order of magnitude). The two
+//! hosts race and the first transcript wins: same model, so the transcripts
+//! agree, but measured on the same clip Cloudflare took 0.8–4.3s per call
+//! while Groq took 0.3–0.9s. Racing rather than preferring Groq means a Groq
+//! outage costs nothing — the race degrades to exactly the old behaviour.
 //!
 //! Three design points worth keeping:
 //!
@@ -120,25 +125,63 @@ fn is_checkable(request: &TtsRequest) -> bool {
 }
 
 /// The Cloudflare credentials the gate runs on, if both are present.
-fn credentials() -> Option<(String, String)> {
+fn cloudflare_credentials() -> Option<(String, String)> {
     let account_id = std::env::var("CLOUDFLARE_ACCOUNT_ID").ok()?;
     let api_token = std::env::var("CLOUDFLARE_API_TOKEN").ok()?;
     Some((account_id, api_token))
 }
 
-/// Whether the gate can actually run.
+/// The Groq credential, if present.
+fn groq_api_key() -> Option<String> {
+    std::env::var("GROQ_API_KEY").ok()
+}
+
+/// The transcription hosts that can actually run, by name — for the boot log.
 ///
 /// Failing open means an unconfigured gate is *silent* — every clip passes and
 /// nothing distinguishes that from every clip being correct. So the one place
 /// that must not fail open is startup: a missing secret is a deploy mistake,
 /// and it should be a line in the boot log, not a mystery six weeks later.
-pub fn is_configured() -> bool {
-    credentials().is_some()
+pub fn configured_transcribers() -> Vec<&'static str> {
+    let mut hosts = Vec::new();
+    if cloudflare_credentials().is_some() {
+        hosts.push("cloudflare");
+    }
+    if groq_api_key().is_some() {
+        hosts.push("groq");
+    }
+    hosts
 }
 
 /// Transcribe `audio` with Whisper, conditioned on the request's proper
-/// nouns. `None` on any failure — see the fail-open rule.
+/// nouns. Races every configured host and returns the first transcript to
+/// arrive; a host that errors just cedes the race to the other. `None` only
+/// when no host produced anything — see the fail-open rule.
 async fn transcribe(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+    audio: &[u8],
+    language: &str,
+) -> Option<String> {
+    let cloudflare = transcribe_cloudflare(http, request, audio, language);
+    let groq = transcribe_groq(http, request, audio, language);
+    tokio::pin!(cloudflare, groq);
+    // An unconfigured host resolves to None immediately, so its arm just
+    // hands the race to the other — no special-casing per configuration.
+    tokio::select! {
+        first = &mut cloudflare => match first {
+            Some(transcript) => Some(transcript),
+            None => groq.await,
+        },
+        first = &mut groq => match first {
+            Some(transcript) => Some(transcript),
+            None => cloudflare.await,
+        },
+    }
+}
+
+/// One transcription attempt against Cloudflare Workers AI.
+async fn transcribe_cloudflare(
     http: &reqwest::Client,
     request: &TtsRequest,
     audio: &[u8],
@@ -146,7 +189,7 @@ async fn transcribe(
 ) -> Option<String> {
     use base64::Engine;
 
-    let (account_id, api_token) = credentials()?;
+    let (account_id, api_token) = cloudflare_credentials()?;
 
     let mut body = serde_json::json!({
         "audio": base64::engine::general_purpose::STANDARD.encode(audio),
@@ -189,6 +232,71 @@ async fn transcribe(
 
     payload
         .pointer("/result/text")
+        .and_then(|v| v.as_str())
+        .map(str::to_owned)
+}
+
+/// Groq's hosting of the same model, behind an OpenAI-compatible endpoint.
+const GROQ_WHISPER_MODEL: &str = "whisper-large-v3-turbo";
+
+/// One transcription attempt against Groq.
+async fn transcribe_groq(
+    http: &reqwest::Client,
+    request: &TtsRequest,
+    audio: &[u8],
+    language: &str,
+) -> Option<String> {
+    let api_key = groq_api_key()?;
+
+    // Groq sniffs the container from the part's filename extension, so it has
+    // to match the bytes: Google returns Ogg Opus, Gemini WAV, the rest MP3.
+    let filename = if audio.starts_with(b"RIFF") {
+        "audio.wav"
+    } else if audio.starts_with(b"OggS") {
+        "audio.ogg"
+    } else {
+        "audio.mp3"
+    };
+
+    let mut form = reqwest::multipart::Form::new()
+        .part(
+            "file",
+            reqwest::multipart::Part::bytes(audio.to_vec()).file_name(filename),
+        )
+        .text("model", GROQ_WHISPER_MODEL)
+        .text("language", language.to_owned())
+        .text("response_format", "json");
+
+    // Groq's `prompt` conditions like Cloudflare's `initial_prompt`:
+    // vocabulary, not a transcript to parrot.
+    if !request.verification_hints.is_empty() {
+        form = form.text("prompt", request.verification_hints.join(", "));
+    }
+
+    let response = http
+        .post("https://api.groq.com/openai/v1/audio/transcriptions")
+        .header("Authorization", format!("Bearer {api_key}"))
+        .multipart(form)
+        .send()
+        .await
+        .map_err(|e| eprintln!("TTS verify: Groq request failed: {e}"))
+        .ok()?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let detail = response.text().await.unwrap_or_default();
+        eprintln!("TTS verify: Groq returned {status}: {detail}");
+        return None;
+    }
+
+    let payload: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|e| eprintln!("TTS verify: Groq response was not JSON: {e}"))
+        .ok()?;
+
+    payload
+        .get("text")
         .and_then(|v| v.as_str())
         .map(str::to_owned)
 }
