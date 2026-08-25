@@ -12,6 +12,31 @@ export type { VoiceActorInfo };
 export * from "./pure";
 
 let currentAudio: HTMLAudioElement | null = null;
+// Settles the in-flight play as an interruption, tearing the element down
+// with its handlers already cleared. Tearing down via `src = ""` alone fires
+// the element's error event, which the playback promise would treat as a bad
+// clip — and evict a perfectly good entry from the OPFS audio cache.
+let interruptCurrent: (() => void) | null = null;
+
+function stopCurrentPlayback() {
+  const interrupt = interruptCurrent;
+  interruptCurrent = null;
+  if (interrupt) {
+    interrupt();
+    return;
+  }
+  // No interrupt registered yet (playback not started): the element has no
+  // handlers attached, so tearing it down directly can't fire anything.
+  if (currentAudio) {
+    try {
+      currentAudio.pause();
+      currentAudio.src = "";
+    } catch {
+      // ignore
+    }
+    currentAudio = null;
+  }
+}
 
 function abortError(): DOMException {
   return new DOMException("Aborted", "AbortError");
@@ -28,15 +53,7 @@ export async function playAudio(
   if (signal?.aborted) throw abortError();
 
   // If something else is already playing, stop it so the new request wins.
-  if (currentAudio) {
-    try {
-      currentAudio.pause();
-      currentAudio.src = "";
-    } catch {
-      // ignore
-    }
-    currentAudio = null;
-  }
+  stopCurrentPlayback();
 
   try {
     const result = await get_audio(audioRequest, accessToken);
@@ -55,6 +72,13 @@ export async function playAudio(
     currentAudio = audio;
     if (onAudioElement) {
       await onAudioElement(audio);
+      // A play started during that await tears this element down via
+      // stopCurrentPlayback (clearing currentAudio); continuing would call
+      // play() on a dead element and misreport it as a playback failure.
+      if (currentAudio !== audio) {
+        URL.revokeObjectURL(audioUrl);
+        throw abortError();
+      }
     }
     if (signal?.aborted) {
       try {
@@ -84,6 +108,7 @@ export async function playAudio(
       const onAbort = () => {
         if (settled) return;
         settled = true;
+        if (interruptCurrent === onAbort) interruptCurrent = null;
         audio.onended = null;
         audio.onerror = null;
         try {
@@ -97,10 +122,15 @@ export async function playAudio(
         reject(abortError());
       };
       signal?.addEventListener("abort", onAbort, { once: true });
+      // Being superseded by a new play tears down exactly like an abort —
+      // crucially clearing onerror first, so the interruption isn't
+      // misread as a defective clip and invalidated from the cache.
+      interruptCurrent = onAbort;
 
       const handlePlaybackFailure = (error: unknown) => {
         if (settled) return;
         settled = true;
+        if (interruptCurrent === onAbort) interruptCurrent = null;
         signal?.removeEventListener("abort", onAbort);
 
         // Only invalidate cache for actual audio file errors, not autoplay restrictions
@@ -121,6 +151,7 @@ export async function playAudio(
       audio.onended = () => {
         if (settled) return;
         settled = true;
+        if (interruptCurrent === onAbort) interruptCurrent = null;
         signal?.removeEventListener("abort", onAbort);
         URL.revokeObjectURL(audioUrl);
         if (currentAudio === audio) currentAudio = null;
@@ -162,15 +193,7 @@ export async function playTempAudio(
 ): Promise<void> {
   if (signal?.aborted) throw abortError();
 
-  if (currentAudio) {
-    try {
-      currentAudio.pause();
-      currentAudio.src = "";
-    } catch {
-      // ignore
-    }
-    currentAudio = null;
-  }
+  stopCurrentPlayback();
 
   try {
     const result = await get_temp_audio(audioRequest, accessToken);
@@ -194,6 +217,7 @@ export async function playTempAudio(
       const onAbort = () => {
         if (settled) return;
         settled = true;
+        if (interruptCurrent === onAbort) interruptCurrent = null;
         audio.onended = null;
         audio.onerror = null;
         try {
@@ -207,10 +231,12 @@ export async function playTempAudio(
         reject(abortError());
       };
       signal?.addEventListener("abort", onAbort, { once: true });
+      interruptCurrent = onAbort;
 
       audio.onended = () => {
         if (settled) return;
         settled = true;
+        if (interruptCurrent === onAbort) interruptCurrent = null;
         signal?.removeEventListener("abort", onAbort);
         URL.revokeObjectURL(audioUrl);
         if (currentAudio === audio) currentAudio = null;
@@ -220,6 +246,7 @@ export async function playTempAudio(
       audio.onerror = () => {
         if (settled) return;
         settled = true;
+        if (interruptCurrent === onAbort) interruptCurrent = null;
         signal?.removeEventListener("abort", onAbort);
         if (currentAudio === audio) currentAudio = null;
         reject(new Error("Audio playback failed"));
@@ -228,6 +255,7 @@ export async function playTempAudio(
       audio.play().catch((error) => {
         if (settled) return;
         settled = true;
+        if (interruptCurrent === onAbort) interruptCurrent = null;
         signal?.removeEventListener("abort", onAbort);
         reject(error);
       });

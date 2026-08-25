@@ -964,12 +964,16 @@ function Review({
   useEffect(() => {
     const abortController = new AbortController();
 
-    deck.cache_challenge_audio(accessToken, abortController.signal);
+    deck.cache_challenge_audio(
+      bannedChallengeTypes,
+      accessToken,
+      abortController.signal,
+    );
 
     return () => {
       abortController.abort();
     };
-  }, [deck, accessToken, reviewInfo]);
+  }, [deck, accessToken, reviewInfo, bannedChallengeTypes]);
 
   const sentenceListSelection = sentenceListToSelection(sentenceList);
 

@@ -1,10 +1,28 @@
 use crate::{AudioRequest, TtsRequest, human_audio, persistent, utils::hit_ai_server};
 use base64::Engine;
+use futures::FutureExt;
+use futures::future::{LocalBoxFuture, Shared};
 use language_utils::{Compensation, TtsProvider};
 use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _};
-use std::collections::BTreeSet;
+use std::cell::RefCell;
+use std::collections::{BTreeSet, HashMap};
 use wasm_bindgen::JsValue;
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
+
+type SharedFetch = Shared<LocalBoxFuture<'static, Result<Vec<u8>, String>>>;
+
+thread_local! {
+    /// One in-flight TTS fetch per cache filename. The play button and the
+    /// background prefetcher both call `fetch_and_cache` for the same clip at
+    /// nearly the same moment (a rating re-runs the prefetcher, whose first
+    /// simulated challenge is the card now on screen). Without this they each
+    /// miss the OPFS cache and issue independent `/tts` requests — and since
+    /// the backend races providers, those return *different* audio, so the
+    /// clip cached (last writer) isn't the clip the user just heard. Sharing
+    /// one future per filename means one request, one set of bytes, one write.
+    static IN_FLIGHT_FETCHES: RefCell<HashMap<String, SharedFetch>> =
+        RefCell::new(HashMap::new());
+}
 
 /// Result of fetching an audio clip — the bytes plus a sidecar saying who
 /// recorded it, when the clip came from a human voice actor (vs. TTS).
@@ -22,6 +40,23 @@ pub struct VoiceActorInfo {
     pub name: String,
     pub compensation: Compensation,
 }
+
+/// Sidecar in the audio directory mapping cache filename → unix seconds of
+/// last use. OPFS exposes no modification times, so cleanup's age check needs
+/// its own bookkeeping.
+const CACHE_INDEX_FILENAME: &str = "last_used.json";
+
+/// How long a cached clip survives after its last use when it is *not* in the
+/// prefetch simulation's keep set. The simulation only looks ~30 challenges
+/// ahead and can diverge from real usage, so deleting everything outside its
+/// horizon throws away clips that are about to be replayed (e.g. a card rated
+/// Again coming back in minutes). Age is the backstop instead: recently used
+/// clips stay put, and only genuinely stale ones are evicted.
+const CACHE_MAX_UNUSED_AGE_SECS: i64 = 7 * 24 * 60 * 60;
+
+/// Skip rewriting the index when the entry was touched this recently, so
+/// replaying the same card doesn't rewrite the file on every play.
+const CACHE_TOUCH_GRANULARITY_SECS: i64 = 60 * 60;
 
 #[derive(Clone)]
 pub struct AudioCache {
@@ -63,6 +98,7 @@ impl AudioCache {
             match file_handle.read().await {
                 Ok(cached_bytes) => {
                     if is_valid_audio_data(&cached_bytes) {
+                        self.touch_index(&cache_filename).await;
                         return Some(cached_bytes);
                     }
 
@@ -124,6 +160,62 @@ impl AudioCache {
             let _ = writable.write_at_cursor_pos(&bytes).await;
             let _ = writable.close().await;
         }
+
+        self.touch_index(&cache_filename).await;
+    }
+
+    /// Read the last-used index, treating a missing or corrupt file as empty.
+    async fn read_index(&self) -> HashMap<String, i64> {
+        let Ok(file_handle) = self
+            .audio_dir
+            .get_file_handle_with_options(
+                CACHE_INDEX_FILENAME,
+                &opfs::GetFileHandleOptions { create: false },
+            )
+            .await
+        else {
+            return HashMap::new();
+        };
+        let Ok(bytes) = file_handle.read().await else {
+            return HashMap::new();
+        };
+        serde_json::from_slice(&bytes).unwrap_or_default()
+    }
+
+    async fn write_index(&self, index: &HashMap<String, i64>) {
+        let Ok(bytes) = serde_json::to_vec(index) else {
+            return;
+        };
+        if let Ok(mut file_handle) = self
+            .audio_dir
+            .get_file_handle_with_options(
+                CACHE_INDEX_FILENAME,
+                &opfs::GetFileHandleOptions { create: true },
+            )
+            .await
+            && let Ok(mut writable) = file_handle
+                .create_writable_with_options(&opfs::CreateWritableOptions {
+                    keep_existing_data: false,
+                })
+                .await
+        {
+            let _ = writable.write_at_cursor_pos(&bytes).await;
+            let _ = writable.close().await;
+        }
+    }
+
+    /// Record that `filename` was just used, so age-based cleanup spares it.
+    async fn touch_index(&self, filename: &str) {
+        let now = chrono::Utc::now().timestamp();
+        let mut index = self.read_index().await;
+        if index
+            .get(filename)
+            .is_some_and(|&t| now - t < CACHE_TOUCH_GRANULARITY_SECS)
+        {
+            return;
+        }
+        index.insert(filename.to_string(), now);
+        self.write_index(&index).await;
     }
 
     pub async fn fetch_and_cache(
@@ -155,12 +247,10 @@ impl AudioCache {
             });
         }
 
-        let bytes = fetch_tts(request, provider, access_token)
+        let bytes = self
+            .fetch_and_cache_coalesced(request, provider, access_token)
             .await
             .map_err(|e| JsValue::from_str(&e))?;
-
-        // Cache the audio data
-        self.cache_audio(request, provider, bytes.clone()).await;
 
         Ok(FetchedAudio {
             bytes,
@@ -168,27 +258,96 @@ impl AudioCache {
         })
     }
 
+    /// Fetch a clip through the per-filename shared future (see
+    /// `IN_FLIGHT_FETCHES`), writing it to the cache exactly once. Every
+    /// concurrent caller for the same filename gets the same bytes, so what
+    /// the user hears and what replays from the cache can't diverge.
+    async fn fetch_and_cache_coalesced(
+        &self,
+        request: &TtsRequest,
+        provider: &TtsProvider,
+        access_token: Option<&String>,
+    ) -> Result<Vec<u8>, String> {
+        let key = tts_cache_filename(request, provider);
+        let fetch = IN_FLIGHT_FETCHES.with(|map| {
+            let mut map = map.borrow_mut();
+            if let Some(fetch) = map.get(&key) {
+                return fetch.clone();
+            }
+            let cache = self.clone();
+            let request = request.clone();
+            let provider = *provider;
+            let access_token = access_token.cloned();
+            let key_in_future = key.clone();
+            let fetch: SharedFetch = async move {
+                let result = fetch_tts(&request, &provider, access_token.as_ref()).await;
+                if let Ok(bytes) = &result {
+                    cache.cache_audio(&request, &provider, bytes.clone()).await;
+                }
+                // Remove only after the cache write, so a caller arriving
+                // between removal and return finds the file in OPFS.
+                IN_FLIGHT_FETCHES.with(|map| map.borrow_mut().remove(&key_in_future));
+                result
+            }
+            .boxed_local()
+            .shared();
+            map.insert(key, fetch.clone());
+            fetch
+        });
+        fetch.await
+    }
+
+    /// Evict cache entries that are neither in `keep_filenames` (the prefetch
+    /// simulation's upcoming clips) nor recently used. The age gate matters
+    /// because the simulation can diverge from what the app actually shows
+    /// (and only looks ~30 challenges ahead), so "not in the keep set" alone
+    /// is not evidence a clip is done with.
     pub async fn cleanup_except(
         &mut self,
         keep_filenames: BTreeSet<String>,
     ) -> Result<(), JsValue> {
         use futures::StreamExt;
 
+        let now = chrono::Utc::now().timestamp();
+        let mut index = self.read_index().await;
+        let mut index_changed = false;
+
         // First, collect all files to delete
-        let files_to_delete = {
+        let (files_to_delete, present_files) = {
             let mut entries = self.audio_dir.entries().await.map_err(|e| {
                 JsValue::from_str(&format!("Failed to read audio directory: {e:?}"))
             })?;
 
-            let mut files = Vec::new();
+            let mut to_delete = Vec::new();
+            let mut present = BTreeSet::new();
 
             while let Some(Ok((filename, _))) = entries.next().await {
-                if filename.ends_with(".mp3") && !keep_filenames.contains(&filename) {
-                    files.push(filename);
+                if !filename.ends_with(".mp3") {
+                    continue;
+                }
+                if keep_filenames.contains(&filename) {
+                    present.insert(filename);
+                    continue;
+                }
+                match index.get(&filename) {
+                    Some(&last_used) if now - last_used > CACHE_MAX_UNUSED_AGE_SECS => {
+                        to_delete.push(filename);
+                    }
+                    Some(_) => {
+                        present.insert(filename);
+                    }
+                    None => {
+                        // Unindexed (predates the index, or its touch failed):
+                        // start its clock now rather than deleting something
+                        // that may have been used a minute ago.
+                        index.insert(filename.clone(), now);
+                        index_changed = true;
+                        present.insert(filename);
+                    }
                 }
             }
 
-            files
+            (to_delete, present)
         };
 
         // Delete the files
@@ -196,7 +355,25 @@ impl AudioCache {
             log::info!("Removing unused audio file: {filename}");
             if let Err(e) = self.audio_dir.remove_entry(&filename).await {
                 log::info!("Failed to remove audio file {filename}: {e:?}");
+                continue;
             }
+            index.remove(&filename);
+            index_changed = true;
+        }
+
+        // Drop index entries for files that no longer exist.
+        let stale: Vec<String> = index
+            .keys()
+            .filter(|name| !present_files.contains(*name))
+            .cloned()
+            .collect();
+        for name in stale {
+            index.remove(&name);
+            index_changed = true;
+        }
+
+        if index_changed {
+            self.write_index(&index).await;
         }
 
         Ok(())

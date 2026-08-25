@@ -26,6 +26,12 @@ pub struct DailySimulationIterator {
     /// How many new cards to add at the end of each day. None uses the same
     /// smart-add batch size the app would offer (ramps up to ~10/day).
     new_cards_per_day: Option<usize>,
+    /// Challenge types the user has turned off (can't listen / can't speak).
+    banned_challenge_types: Vec<crate::ChallengeRequirements>,
+    /// Whether locked cards are treated as due. Projections include them so
+    /// long-range estimates aren't skewed by lockup; the audio prefetcher
+    /// excludes them to match what the app will actually show.
+    include_locked: bool,
 }
 
 impl DailySimulationIterator {
@@ -35,12 +41,28 @@ impl DailySimulationIterator {
             current_time,
             event_index: 0,
             new_cards_per_day: None,
+            banned_challenge_types: Vec::new(),
+            include_locked: true,
         }
     }
 
     /// Override how many new cards are added per simulated day.
     pub fn with_new_cards_per_day(mut self, count: usize) -> Self {
         self.new_cards_per_day = Some(count);
+        self
+    }
+
+    /// Restrict the simulation to challenges the app would actually show:
+    /// exclude locked cards and respect the user's banned challenge types.
+    /// Used by the audio prefetcher, where simulating a challenge the app
+    /// will never display both wastes a fetch and lets cleanup delete clips
+    /// that are genuinely upcoming.
+    pub fn with_app_visible_challenges(
+        mut self,
+        banned_challenge_types: Vec<crate::ChallengeRequirements>,
+    ) -> Self {
+        self.banned_challenge_types = banned_challenge_types;
+        self.include_locked = false;
         self
     }
 
@@ -52,6 +74,8 @@ impl DailySimulationIterator {
             current_time: self.current_time,
             event_index: self.event_index,
             new_cards_per_day: self.new_cards_per_day,
+            banned_challenge_types: self.banned_challenge_types,
+            include_locked: self.include_locked,
             done: false,
         }
     }
@@ -66,6 +90,8 @@ pub struct DayChallengeIterator {
     current_time: DateTime<Utc>,
     event_index: usize,
     new_cards_per_day: Option<usize>,
+    banned_challenge_types: Vec<crate::ChallengeRequirements>,
+    include_locked: bool,
     done: bool,
 }
 
@@ -123,6 +149,8 @@ impl DayChallengeIterator {
             current_time: self.current_time + Duration::days(1),
             event_index: self.event_index,
             new_cards_per_day: self.new_cards_per_day,
+            banned_challenge_types: self.banned_challenge_types,
+            include_locked: self.include_locked,
         }
     }
 }
@@ -135,10 +163,11 @@ impl Iterator for DayChallengeIterator {
             return None;
         }
 
-        // Include locked cards so projections aren't skewed by cards frozen in lockup
-        let review_info = self
-            .deck()
-            .get_review_info_including_locked(self.current_time.timestamp_millis() as f64);
+        let review_info = self.deck().get_review_info_impl(
+            self.banned_challenge_types.clone(),
+            self.current_time.timestamp_millis() as f64,
+            self.include_locked,
+        );
         if let Some(challenge) = review_info.get_next_challenge(self.deck()) {
             let to_return = challenge.clone();
             // Answer the challenge, marking new flashcards as forgotten once

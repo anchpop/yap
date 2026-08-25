@@ -2667,6 +2667,7 @@ impl Deck {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub async fn cache_challenge_audio(
         &self,
+        banned_challenge_types: Vec<ChallengeRequirements>,
         access_token: Option<String>,
         abort_signal: Option<web_sys::AbortSignal>,
     ) {
@@ -2680,12 +2681,23 @@ impl Deck {
         let access_token = access_token.as_ref();
 
         const SIMULATION_CHALLENGES: usize = 30;
+        // A deck can produce empty simulated days indefinitely (e.g. every
+        // due card banned or locked, and smart-add with nothing to add). Bail
+        // after this many rather than spinning forever in the background.
+        const MAX_EMPTY_DAYS: usize = 14;
         let mut requested_filenames = BTreeSet::new();
-        let mut simulation_iterator = self.simulate_usage(chrono::Utc::now());
+        // Simulate only what the app will actually show — a challenge the
+        // user never sees is a wasted fetch here and, worse, its absence from
+        // `requested_filenames` gets a genuinely upcoming clip cleaned up.
+        let mut simulation_iterator = self
+            .simulate_usage(chrono::Utc::now())
+            .with_app_visible_challenges(banned_challenge_types);
         let mut challenges_fetched = 0;
+        let mut consecutive_empty_days = 0;
 
         'outer: loop {
             let mut day = simulation_iterator.next_day();
+            let mut challenges_this_day = 0;
 
             loop {
                 // Yield to the main thread to avoid blocking old devices
@@ -2717,6 +2729,7 @@ impl Deck {
                     break;
                 };
                 challenges_fetched += 1;
+                challenges_this_day += 1;
 
                 // Pre-fetch audio files
                 for request in challenge.audio_requests() {
@@ -2729,6 +2742,15 @@ impl Deck {
                 if challenges_fetched >= SIMULATION_CHALLENGES {
                     break 'outer;
                 }
+            }
+
+            if challenges_this_day == 0 {
+                consecutive_empty_days += 1;
+                if consecutive_empty_days >= MAX_EMPTY_DAYS {
+                    break 'outer;
+                }
+            } else {
+                consecutive_empty_days = 0;
             }
 
             simulation_iterator = day.finish_day();
