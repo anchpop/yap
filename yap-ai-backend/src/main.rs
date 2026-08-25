@@ -183,6 +183,30 @@ struct VoiceSettings {
 /// 5 `google-tts` used to run on its own.
 const TTS_MAX_ATTEMPTS: usize = 3;
 
+/// How much longer the race may run once an audible clip is in hand. Generous
+/// on purpose: a wrong clip is very bad, so any arm that could still produce a
+/// right one gets ample time — this only cuts off the tail where nothing was
+/// ever going to pass.
+const SALVAGE_GRACE: std::time::Duration = std::time::Duration::from_secs(15);
+
+/// When to stop waiting on the race: [`SALVAGE_GRACE`] after the first
+/// *audible* clip lands in salvage. A defective clip never starts the clock —
+/// hurrying toward silence would be trading latency for a dead button. An
+/// already-armed deadline is kept, not extended, so later clips can't push
+/// the ceiling out.
+fn salvage_deadline(
+    salvage: &[(Rejection, bool, Vec<u8>)],
+    current: Option<tokio::time::Instant>,
+) -> Option<tokio::time::Instant> {
+    if current.is_some() {
+        return current;
+    }
+    salvage
+        .iter()
+        .any(|(grade, _, _)| *grade == Rejection::WrongWords)
+        .then(|| tokio::time::Instant::now() + SALVAGE_GRACE)
+}
+
 /// Why a synthesis attempt produced no audio.
 enum SynthError {
     /// This provider can never serve this request — a language it has no
@@ -360,6 +384,16 @@ async fn synthesize_provider_checked(
 ///   among clips that all say the right words, and waiting for a preferred
 ///   one would give back the latency we just bought. The trade is that the
 ///   voice on a rescued sentence isn't deterministic across runs.
+/// - **Fifteen seconds after the first audible clip, stop waiting.** Some
+///   sentences can never pass — "la mer" transcribes as "la mère" on
+///   perfectly correct audio — and before this bound they burned every arm's
+///   full budget on every fetch. The grace is deliberately generous: an arm
+///   that is going to pass does so within one synth-and-verify cycle, a few
+///   seconds, so fifteen keeps essentially every genuine rescue and a wrong
+///   clip is only ever returned when the alternatives had ample time to beat
+///   it and couldn't. It starts at the first *audible* clip rather than the
+///   request, because until something is worth returning there is nothing to
+///   trade latency against.
 ///
 /// The audio returned may not come from the requested provider. That's
 /// intended: the client treats `provider` as a preference rather than a
@@ -404,7 +438,28 @@ async fn synthesize_checked(
         });
     }
 
-    while let Some(joined) = racers.join_next().await {
+    // Arms when the first audible clip lands in salvage — possibly already,
+    // from the primary's fast path above. Defective clips don't arm it:
+    // returning silence early would be trading latency for a dead button.
+    let mut deadline = salvage_deadline(&salvage, None);
+
+    loop {
+        let joined = match deadline {
+            Some(deadline) => tokio::select! {
+                joined = racers.join_next() => joined,
+                _ = tokio::time::sleep_until(deadline) => {
+                    eprintln!(
+                        "{primary:?} TTS: grace period expired with arms still \
+                         running; returning best effort"
+                    );
+                    break;
+                }
+            },
+            None => racers.join_next().await,
+        };
+        let Some(joined) = joined else {
+            break; // every arm has finished
+        };
         let Ok((provider, outcome)) = joined else {
             continue; // task panicked; the other arms can still win
         };
@@ -428,11 +483,13 @@ async fn synthesize_checked(
                         .rejected
                         .map(|(grade, audio)| (grade, is_primary, audio)),
                 );
+                deadline = salvage_deadline(&salvage, deadline);
             }
         }
     }
 
-    // Nothing passed anywhere. Imperfect audio still beats a dead button: a
+    // Nothing passed anywhere — every arm exhausted itself, or the grace
+    // period called time. Imperfect audio still beats a dead button: a
     // learner staring at a silent card is a worse outcome than one clip we
     // have doubts about. Audibility first, then the requested provider — an
     // ElevenLabs clip that says the wrong thing is worth more than a silent
