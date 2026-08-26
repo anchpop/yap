@@ -35,6 +35,19 @@ pub struct HumanAudio {
     pub compensation: Compensation,
 }
 
+/// Whether any voice actor has a recording for `(language, text)` — the
+/// existence half of `lookup`, without advancing the round-robin counter or
+/// cloning clip bytes.
+pub fn has_clip(language: Language, text: &str) -> bool {
+    let registry = REGISTRY.lock().expect("human audio registry poisoned");
+    let Some(pack) = registry.packs.get(&language).and_then(Weak::upgrade) else {
+        return false;
+    };
+    pack.human_audio
+        .values()
+        .any(|clips| clips.contains_key(text))
+}
+
 /// Return a human-recorded clip for `(language, text)` if any voice actor
 /// has a recording for that exact phrase. When multiple actors have a recording,
 /// rotates round-robin across successive calls (actors sorted by name).

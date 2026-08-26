@@ -4,7 +4,7 @@ use futures::FutureExt;
 use futures::future::{LocalBoxFuture, Shared};
 use language_utils::{Compensation, TtsProvider};
 use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _};
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap};
 use wasm_bindgen::JsValue;
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
@@ -22,6 +22,72 @@ thread_local! {
     /// one future per filename means one request, one set of bytes, one write.
     static IN_FLIGHT_FETCHES: RefCell<HashMap<String, SharedFetch>> =
         RefCell::new(HashMap::new());
+
+    /// Synchronous mirror of which clip filenames exist in the OPFS audio
+    /// directory. Challenge selection is a synchronous wasm call, but every
+    /// OPFS probe is async — this mirror is how `get_review_info` can ask
+    /// "is this clip already local?" without I/O. `None` until the first
+    /// `AudioCache::new` enumerates the directory (and forever on native,
+    /// where there is no OPFS audio cache); callers must treat unknown as
+    /// available so nothing gets hidden before the mirror loads.
+    static CACHED_CLIPS: RefCell<Option<BTreeSet<String>>> = const { RefCell::new(None) };
+
+    /// Bumped on every `CACHED_CLIPS` change. The frontend polls this cheap
+    /// counter to know when to re-run challenge selection as prefetched
+    /// clips land.
+    static CACHED_CLIPS_VERSION: Cell<u32> = const { Cell::new(0) };
+}
+
+fn cached_clips_publish(files: BTreeSet<String>) {
+    CACHED_CLIPS.with(|clips| *clips.borrow_mut() = Some(files));
+    CACHED_CLIPS_VERSION.with(|v| v.set(v.get().wrapping_add(1)));
+}
+
+fn cached_clips_insert(filename: &str) {
+    let changed = CACHED_CLIPS.with(|clips| {
+        clips
+            .borrow_mut()
+            .as_mut()
+            .is_some_and(|set| set.insert(filename.to_string()))
+    });
+    if changed {
+        CACHED_CLIPS_VERSION.with(|v| v.set(v.get().wrapping_add(1)));
+    }
+}
+
+fn cached_clips_remove(filename: &str) {
+    let changed = CACHED_CLIPS.with(|clips| {
+        clips
+            .borrow_mut()
+            .as_mut()
+            .is_some_and(|set| set.remove(filename))
+    });
+    if changed {
+        CACHED_CLIPS_VERSION.with(|v| v.set(v.get().wrapping_add(1)));
+    }
+}
+
+/// Whether the mirror has been populated at all. When false, availability is
+/// unknown and challenge selection must not hold anything back.
+pub(crate) fn cached_clips_loaded() -> bool {
+    CACHED_CLIPS.with(|clips| clips.borrow().is_some())
+}
+
+pub(crate) fn cached_clips_version() -> u32 {
+    CACHED_CLIPS_VERSION.with(|v| v.get())
+}
+
+/// Synchronously judge whether `request` can be played without a network
+/// fetch: a human recording bundled in the language pack, or a clip already
+/// in the OPFS cache. `None` means the cache mirror hasn't loaded yet, so
+/// availability is unknown.
+pub(crate) fn locally_available(request: &AudioRequest) -> Option<bool> {
+    let AudioRequest { request, provider } = request;
+    if human_audio_applies(request) && human_audio::has_clip(request.language, &request.text) {
+        return Some(true);
+    }
+    let filename = tts_cache_filename(request, provider);
+    CACHED_CLIPS.with(|clips| clips.borrow().as_ref().map(|set| set.contains(&filename)))
 }
 
 /// Result of fetching an audio clip — the bytes plus a sidecar saying who
@@ -77,6 +143,22 @@ impl AudioCache {
             .await
             .map_err(|e| JsValue::from_str(&format!("Failed to get audio directory: {e:?}")))?;
 
+        // First construction this session: enumerate the directory once to
+        // seed the synchronous mirror. Later constructions skip this — the
+        // mirror is kept current by the insert/remove hooks below.
+        if !cached_clips_loaded() {
+            use futures::StreamExt;
+            if let Ok(mut entries) = audio_dir.entries().await {
+                let mut files = BTreeSet::new();
+                while let Some(Ok((filename, _))) = entries.next().await {
+                    if filename.ends_with(".mp3") {
+                        files.insert(filename);
+                    }
+                }
+                cached_clips_publish(files);
+            }
+        }
+
         Ok(Self { audio_dir })
     }
 
@@ -111,6 +193,7 @@ impl AudioCache {
                     if let Err(e) = audio_dir.remove_entry(&cache_filename).await {
                         log::warn!("Failed to remove invalid audio cache {cache_filename}: {e:?}");
                     }
+                    cached_clips_remove(&cache_filename);
                 }
                 Err(_) => {
                     // File exists but couldn't read
@@ -120,6 +203,7 @@ impl AudioCache {
                             "Failed to remove unreadable audio cache {cache_filename}: {e:?}"
                         );
                     }
+                    cached_clips_remove(&cache_filename);
                 }
             }
         }
@@ -137,6 +221,7 @@ impl AudioCache {
         if let Err(e) = audio_dir.remove_entry(&cache_filename).await {
             log::warn!("Failed to remove audio cache {cache_filename}: {e:?}");
         }
+        cached_clips_remove(&cache_filename);
 
         Ok(())
     }
@@ -159,6 +244,7 @@ impl AudioCache {
         {
             let _ = writable.write_at_cursor_pos(&bytes).await;
             let _ = writable.close().await;
+            cached_clips_insert(&cache_filename);
         }
 
         self.touch_index(&cache_filename).await;
@@ -375,6 +461,11 @@ impl AudioCache {
         if index_changed {
             self.write_index(&index).await;
         }
+
+        // The enumeration above is ground truth; republish it so the mirror
+        // recovers from any drift (e.g. an insert hook missed by an
+        // interrupted write).
+        cached_clips_publish(present_files);
 
         Ok(())
     }

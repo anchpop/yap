@@ -35,6 +35,7 @@ import {
   type /* comes from TranscriptionChallenge */ PartGraded,
   type Rating,
   get_pronunciation_connector,
+  get_audio_cache_version,
 } from "../../yap-frontend-rs/pkg";
 import { Button } from "@/components/ui/button.tsx";
 import { Progress } from "@/components/ui/progress.tsx";
@@ -901,6 +902,13 @@ function Review({
     ChallengeRequirements[]
   >(() => computeBannedChallengeTypes());
 
+  // Challenges whose audio isn't cached yet are held back by
+  // get_review_info; poll the cache version so they surface as soon as the
+  // background prefetcher lands their clips. Same-value updates bail out of
+  // the state change, so the steady state costs no re-renders.
+  const [audioCacheVersion, setAudioCacheVersion] = useState(0);
+  useInterval(() => setAudioCacheVersion(get_audio_cache_version()), 2000);
+
   const { reviewInfo, lockupOffer } = useMemo(() => {
     const now = Date.now();
     return {
@@ -909,8 +917,9 @@ function Review({
       // most-due cards active and set the rest aside
       lockupOffer: deck.get_lockup_offer(bannedChallengeTypes, now),
     };
-    // cardsBecameDue is intentionally included to trigger recalculation when cards become due
-  }, [deck, bannedChallengeTypes, cardsBecameDue]);
+    // cardsBecameDue and audioCacheVersion are intentionally included to
+    // trigger recalculation when cards become due / audio finishes caching
+  }, [deck, bannedChallengeTypes, cardsBecameDue, audioCacheVersion]);
 
   useInterval(
     () => setCardsBecameDue((cardsBecameDue) => cardsBecameDue + 1),
@@ -1207,6 +1216,7 @@ function Review({
             targetLanguage={targetLanguage}
             deck={deck}
             bannedChallengeTypes={bannedChallengeTypes}
+            audioPendingCount={reviewInfo.due_but_audio_pending_count}
             userInfo={userInfo}
             sentenceList={sentenceList}
             setSentenceList={setSentenceList}

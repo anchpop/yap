@@ -174,12 +174,14 @@ pub(crate) async fn get_or_create_device_id(
     }
 }
 
-/// Base URL of the yap AI backend (compile-time switch for local dev).
+/// Base URL of the yap AI backend. The `local-backend` feature wins (local
+/// dev), then the `YAP_AI_BACKEND_URL` compile-time env var (beta/staging
+/// builds pointing at a non-production backend), then production.
 pub fn ai_server_url() -> &'static str {
     if cfg!(feature = "local-backend") {
         "http://localhost:21516"
     } else {
-        "https://yap-ai-backend.fly.dev"
+        option_env!("YAP_AI_BACKEND_URL").unwrap_or("https://yap-ai-backend.fly.dev")
     }
 }
 
