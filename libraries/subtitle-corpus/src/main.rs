@@ -63,6 +63,13 @@ enum Command_ {
         data_root: PathBuf,
         #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
         out: PathBuf,
+        /// Limit full-film transcription and its audio extraction to these
+        /// IMDb ids.
+        ///
+        /// May be repeated. Every other refresh stage still considers the whole
+        /// inventory. With no values, refresh processes every film as before.
+        #[arg(long)]
+        transcribe_imdb: Vec<String>,
     },
     /// Pull out the subtitles that are already text on the disc.
     Extract {
@@ -90,6 +97,9 @@ enum Command_ {
         /// Stop after this many movies (0 = all).
         #[arg(long, default_value_t = 0)]
         limit: usize,
+        /// Extract audio for this film alone, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
     },
     /// Measure OCR cost and quality on a random sample before the full run.
     OcrSample {
@@ -947,9 +957,15 @@ fn export_sidecars(out: PathBuf) -> Result<()> {
 /// quietly do the wrong work. Any other step failing is reported and skipped
 /// past: a Whisper outage is no reason not to run text-sync, and the next
 /// refresh retries whatever was left undone.
-fn refresh(library: PathBuf, data_root: PathBuf, out: PathBuf) -> Result<()> {
+fn refresh(
+    library: PathBuf,
+    data_root: PathBuf,
+    out: PathBuf,
+    transcribe_imdb: Vec<String>,
+) -> Result<()> {
     println!("━━━ inventory ━━━");
     inventory(library, data_root.clone(), out.clone(), 8)?;
+    let audio_imdb = transcribe_imdb.clone();
 
     type Step<'a> = (&'a str, Box<dyn FnOnce() -> Result<()>>);
     let steps: Vec<Step> = vec![
@@ -963,7 +979,16 @@ fn refresh(library: PathBuf, data_root: PathBuf, out: PathBuf) -> Result<()> {
         }),
         ("extract-audio", {
             let out = out.clone();
-            Box::new(move || extract_audio(out, 6, 0))
+            Box::new(move || {
+                if audio_imdb.is_empty() {
+                    extract_audio(out, 6, 0, None)
+                } else {
+                    for imdb in audio_imdb {
+                        extract_audio(out.clone(), 1, 0, Some(&imdb))?;
+                    }
+                    Ok(())
+                }
+            })
         }),
         ("text-sync", {
             let (out, data_root) = (out.clone(), data_root.clone());
@@ -997,7 +1022,16 @@ fn refresh(library: PathBuf, data_root: PathBuf, out: PathBuf) -> Result<()> {
         }),
         ("transcribe", {
             let out = out.clone();
-            Box::new(move || transcribe_all(out, 4, 0, None))
+            Box::new(move || {
+                if transcribe_imdb.is_empty() {
+                    transcribe_all(out, 4, 0, None)
+                } else {
+                    for imdb in transcribe_imdb {
+                        transcribe_all(out.clone(), 1, 0, Some(imdb))?;
+                    }
+                    Ok(())
+                }
+            })
         }),
         ("sidecars", {
             let out = out.clone();
@@ -1200,9 +1234,13 @@ fn extract_audio_one(movie: &Movie, dir: &std::path::Path) -> AudioOutcome {
     }
 }
 
-fn extract_audio(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
+fn extract_audio(out: PathBuf, jobs: usize, limit: usize, imdb: Option<&str>) -> Result<()> {
     let plan = read_plan(&out)?;
-    let mut todo: Vec<Movie> = plan.into_iter().filter(|m| m.path.exists()).collect();
+    let mut todo: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| imdb.is_none_or(|id| m.imdb_id == id))
+        .filter(|m| m.path.exists())
+        .collect();
     if limit > 0 {
         todo.truncate(limit);
     }
@@ -3033,9 +3071,15 @@ fn main() -> Result<()> {
             library,
             data_root,
             out,
-        } => refresh(library, data_root, out),
+            transcribe_imdb,
+        } => refresh(library, data_root, out, transcribe_imdb),
         Command_::Extract { out, jobs, limit } => extract(out, jobs, limit),
-        Command_::ExtractAudio { out, jobs, limit } => extract_audio(out, jobs, limit),
+        Command_::ExtractAudio {
+            out,
+            jobs,
+            limit,
+            imdb,
+        } => extract_audio(out, jobs, limit, imdb.as_deref()),
         Command_::OcrSample {
             out,
             movies,

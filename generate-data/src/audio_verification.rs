@@ -630,16 +630,23 @@ fn decode_wav_to_f32(wav_bytes: &[u8]) -> Result<Vec<f32>> {
         .spawn()
         .context("Failed to spawn ffmpeg for WAV decoding")?;
 
-    {
-        let mut stdin = child.stdin.take().context("ffmpeg stdin not captured")?;
-        stdin
-            .write_all(wav_bytes)
-            .context("Failed to write WAV bytes to ffmpeg stdin")?;
-    }
+    // Write stdin from its own thread: ffmpeg streams output while it
+    // still has input left to read, so once the input is larger than the
+    // OS pipe buffers, writing it all before draining stdout deadlocks —
+    // ffmpeg blocks writing stdout, we block writing stdin. Short clips
+    // never hit this; a 12-second movie cue does. Same pattern as
+    // `subtitle-corpus`'s `encode_opus`.
+    let mut stdin = child.stdin.take().context("ffmpeg stdin not captured")?;
+    let owned_bytes = wav_bytes.to_vec();
+    let writer = std::thread::spawn(move || stdin.write_all(&owned_bytes));
 
     let output = child
         .wait_with_output()
         .context("Failed to wait for ffmpeg")?;
+    writer
+        .join()
+        .map_err(|_| anyhow::anyhow!("ffmpeg stdin writer thread panicked"))?
+        .context("Failed to write WAV bytes to ffmpeg stdin")?;
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         anyhow::bail!("ffmpeg decode failed ({}): {stderr}", output.status);

@@ -129,6 +129,7 @@ pub mod pronunciations;
 pub mod proper_noun_definitions;
 pub mod read_anki;
 pub mod slot_analysis;
+pub mod subtitle_corpus;
 pub mod target_sentences;
 pub mod tatoeba;
 pub mod token_embeddings;
