@@ -42,6 +42,7 @@ import { Progress } from "@/components/ui/progress.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { ThemeProvider } from "@/components/theme-provider";
+import { RouteErrorScreen } from "@/components/route-error-screen";
 import { supabase } from "@/lib/supabase";
 import type { Session as SupabaseSession } from "@supabase/supabase-js";
 import { useInterval, useNetworkState } from "react-use";
@@ -1326,6 +1327,7 @@ function AppShell() {
 const router = createBrowserRouter([
   {
     element: <AppShell />,
+    errorElement: <RouteErrorScreen />,
     children: [
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/confirm-email", element: <ConfirmEmail /> },
@@ -1339,6 +1341,8 @@ const router = createBrowserRouter([
       {
         path: "/*",
         element: <AppMain />,
+        // Keeps the themed shell (background, toaster) around the error screen
+        errorElement: <RouteErrorScreen />,
         children: [
           { index: true, element: <LandingPage /> },
           { path: "learn", element: <ReviewPage /> },
