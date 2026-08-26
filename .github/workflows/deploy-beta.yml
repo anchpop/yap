@@ -84,10 +84,16 @@ jobs:
         run: pnpm build
         working-directory: yap-frontend
 
+      # Deploy from a neutral directory: wrangler-action npm-installs wrangler
+      # in its working directory, and inside yap-frontend/dist npm would walk
+      # up into the pnpm-managed yap-frontend package and fail.
+      - name: Stage deploy directory
+        run: cp -r yap-frontend/dist deploy-output
+
       - name: Deploy to Cloudflare Pages (dev branch)
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: yap-frontend/dist
+          workingDirectory: deploy-output
           command: pages deploy . --project-name=yap --branch=dev
