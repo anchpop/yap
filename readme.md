@@ -70,6 +70,7 @@ Of course, in addition to being the most effective language learning app, I coul
 3. Yap works seamlessly offline once installed as a Progressive Web App. All of the language data is downloaded to your device and challenge selection etc. is all done locally.
 4. Yap is quite fast, with most operations taking less than the time to render one frame, despite processing large amounts of sentences. Yap's performance benefits from being primarily written in Rust (and compiled to WebAssembly to run in the browser). We also implement various optimizations, including string interning, which allows most operations to work with objects that fit entirely in the stack (removing the need for most heap access or allocations).
 5. The placement test at the beginning, and the "adaptive placement" as you use the app, where we use the pool adjacent violators algorithm to compute your level based on the frequency rank of the words you do and don't know. It's totally extra, but I actually use a "smoothed" version of the isotonic regression curve, and making that fast ended up being an [insane rabbit hole](https://github.com/anchpop/pav.rs/blob/master/src/smooth_regression.rs).
+6. The audio in the app is mostly TTS, but it's verified with a combination of strategies. Some is verified with a simple whisper check, but some is verified with a custom 9audio → phoneme model](https://github.com/anchpop/lexide/) (which will soon be used to grade user pronunciations!)
 
 ## Build Process
 
