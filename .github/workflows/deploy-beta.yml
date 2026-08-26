@@ -1,8 +1,8 @@
 name: Deploy Beta
 
-# Beta channel: every push to `dev` deploys the frontend bundle as a Cloudflare
-# Pages *preview* deployment of the same `yap` project (branch alias
-# `dev.yap.pages.dev`, surfaced as beta.yap.town via a CNAME in the zone).
+# Beta channel: every push to `dev` deploys the SPA to the dedicated `yap-beta`
+# Cloudflare Pages project (production branch: dev), whose custom domain is
+# beta.yap.town.
 #
 # Deliberately lighter than Deploy Production:
 #   - no test/clippy gate (this is the play-with-it channel; main stays gated)
@@ -90,10 +90,10 @@ jobs:
       - name: Stage deploy directory
         run: cp -r yap-frontend/dist deploy-output
 
-      - name: Deploy to Cloudflare Pages (dev branch)
+      - name: Deploy to Cloudflare Pages (yap-beta project)
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: deploy-output
-          command: pages deploy . --project-name=yap --branch=dev
+          command: pages deploy . --project-name=yap-beta --branch=dev
