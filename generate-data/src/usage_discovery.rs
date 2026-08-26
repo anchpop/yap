@@ -144,6 +144,10 @@ const EXAMPLES_PER_PARADIGM: usize = 2;
 static JUDGE_CLIENT: LazyLock<ChatClient> =
     LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-terra"));
 
+/// Client for the polysemy probe list — one call per language.
+static PROBE_CLIENT: LazyLock<ChatClient> =
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-sol"));
+
 /// Gram identity: the gram's index in the trainer vocabulary, which is also
 /// its token id in the encoded sentences.
 type GramId = u32;
@@ -690,6 +694,19 @@ fn build_key_proposal(key: GramId, vectors: &[Vec<f32>]) -> Option<KeyProposal> 
         }
         clusters.push((members, "hdbscan"));
     }
+    finish_proposal(key, vectors, clusters, root_silhouette, hdbscan_silhouette)
+}
+
+/// Turn member-index clusters into a [`KeyProposal`] with exemplars picked
+/// against each cluster's nearest competitor. `None` with fewer than two
+/// clusters — the exemplar picks are built around contrast.
+fn finish_proposal(
+    key: GramId,
+    vectors: &[Vec<f32>],
+    clusters: Vec<(Vec<usize>, &'static str)>,
+    root_silhouette: Option<f64>,
+    hdbscan_silhouette: Option<f64>,
+) -> Option<KeyProposal> {
     if clusters.len() < 2 {
         return None;
     }
@@ -723,6 +740,24 @@ fn build_key_proposal(key: GramId, vectors: &[Vec<f32>]) -> Option<KeyProposal> 
         root_silhouette,
         hdbscan_silhouette,
     })
+}
+
+/// Proposal for a probe gram the geometry never surfaced: one unconditional
+/// 2-means split, silhouette floor ignored. Even a meaningless split is a
+/// fine sampler — the clusters only choose which lines the judge sees, and
+/// the random-sample section always shows the item's true distribution.
+fn build_forced_proposal(key: GramId, vectors: &[Vec<f32>]) -> Option<KeyProposal> {
+    let refs: Vec<&Vec<f32>> = vectors.iter().collect();
+    let (labels, _) = kmeans2(&refs);
+    let mut sides: [Vec<usize>; 2] = [Vec::new(), Vec::new()];
+    for (i, &l) in labels.iter().enumerate() {
+        sides[l as usize].push(i);
+    }
+    let [a, b] = sides;
+    if a.is_empty() || b.is_empty() {
+        return None;
+    }
+    finish_proposal(key, vectors, vec![(a, "forced"), (b, "forced")], None, None)
 }
 
 // ---------------------------------------------------------------------------
@@ -796,6 +831,74 @@ struct AdjudicationResponse {
     /// Fixed multiword expressions found in the lines, if any.
     #[serde(rename = "3. expressions")]
     expressions: Vec<ExtractedExpression>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+struct ProbeWord {
+    /// The word exactly as it appears in text.
+    #[serde(rename = "1. word")]
+    word: String,
+    /// One short line per usage: a few-word gloss plus a tiny example phrase.
+    #[serde(rename = "2. usages")]
+    usages: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+struct PolysemyProbeResponse {
+    /// Brief reasoning.
+    #[serde(rename = "1. thoughts")]
+    thoughts: String,
+    /// The polysemous words worth probing.
+    #[serde(rename = "2. words")]
+    words: Vec<ProbeWord>,
+}
+
+fn probe_system_prompt(language: Language) -> String {
+    format!(
+        "We are building a course for {language} learners, and we split each \
+        vocabulary word into distinct \"usages\" so we can introduce them to the \
+        learner one at a time. The test is pedagogical rather than \
+        lexicographic: would a learner benefit from having these uses introduced \
+        separately, or are they similar enough to teach as one thing?\n\
+        \n\
+        We find candidate words by clustering contextual embeddings of every \
+        occurrence in our corpus, but that only surfaces words whose usages are \
+        balanced enough to form visible clusters. A word whose second usage is \
+        real but rarer slips right through — French \u{ab}quartier\u{bb} is \
+        almost always 'neighborhood' in everyday speech, so the clustering never \
+        notices \u{ab}pas de quartier !\u{bb}. Those are the words we would like \
+        your help finding, since you can simply know them rather than having to \
+        see them. Every word you name that occurs in our corpus gets its \
+        occurrences looked at properly, so a suggestion that turns out to be \
+        monosemous in practice costs little — err on the side of naming it.\n\
+        \n\
+        Please list {language} words with genuinely distinct usages a learner \
+        would want introduced separately: a literal meaning plus an idiomatic or \
+        figurative one, a noun that doubles as an interjection or form of \
+        address, a grammar-conditioned use (politeness formula, discourse \
+        marker, tag question), a second sense that dictionaries list but a \
+        course would never think to teach.\n\
+        \n\
+        For each word give the surface form as it actually appears in text \
+        (inflected is fine if that is the form the second usage lives in), and \
+        one short line per usage: a few-word gloss plus a tiny example phrase in \
+        {language}. Two or three usages is typical; only list usages you are \
+        confident about. Aim for breadth — a hundred or more words would be \
+        wonderful."
+    )
+}
+
+/// Ask the probe model for polysemous words the geometric gate would miss.
+/// One cached call per language.
+async fn probe_words(language: Language) -> Result<Vec<ProbeWord>> {
+    let response: PolysemyProbeResponse = PROBE_CLIENT
+        .chat_with_system_prompt(
+            probe_system_prompt(language),
+            "Please list the words when ready!",
+        )
+        .await
+        .context("polysemy probe failed")?;
+    Ok(response.words)
 }
 
 fn adjudication_system_prompt(language: Language) -> String {
@@ -1816,14 +1919,57 @@ pub async fn discover(
     // over-propose (the adjudicator merges and arbitrates). CPU-bound and
     // per-key independent, so mine keys in parallel.
     use rayon::prelude::*;
-    let proposals: Vec<KeyProposal> = keys
+    let mut proposals: Vec<KeyProposal> = keys
         .par_iter()
         .filter_map(|km| build_key_proposal(km.key, &km.vectors))
         .collect();
     timer.lap("mining (2-means + hdbscan)");
 
+    // The silhouette gate only surfaces grams whose usages are balanced
+    // enough to cluster; a common word with a rare second usage (French
+    // "quartier": overwhelmingly 'neighborhood', occasionally 'mercy')
+    // never shows up geometrically. The probe list attacks that blind spot
+    // from the other side: a model that simply knows the language names
+    // polysemous words worth checking, and every probe word present in the
+    // corpus gets judged regardless of geometry. The judge labels lines
+    // either way, so a dud probe just comes back as a single usage.
+    let probe_ids: HashSet<GramId> = {
+        let mut by_display: HashMap<String, Vec<GramId>> = HashMap::new();
+        for km in &keys {
+            by_display
+                .entry(arena.display(km.key, language).to_lowercase())
+                .or_default()
+                .push(km.key);
+        }
+        let words = probe_words(language).await?;
+        let mut ids = HashSet::new();
+        let mut matched = 0usize;
+        for w in &words {
+            if let Some(list) = by_display.get(&w.word.to_lowercase()) {
+                matched += 1;
+                ids.extend(list.iter().copied());
+            }
+        }
+        println!(
+            "usage-discovery[{}]: polysemy probe: {} words suggested, {matched} present in the corpus",
+            language.code(),
+            words.len(),
+        );
+        ids
+    };
+    {
+        let have: HashSet<GramId> = proposals.iter().map(|p| p.key).collect();
+        let by_key: HashMap<GramId, &KeyMining> = keys.iter().map(|km| (km.key, km)).collect();
+        proposals.extend(
+            probe_ids
+                .iter()
+                .filter(|id| !have.contains(id))
+                .filter_map(|id| build_forced_proposal(*id, &by_key[id].vectors)),
+        );
+    }
+
     // Pick which grams to adjudicate: top keys by root 2-means silhouette,
-    // plus top keys surfaced by HDBSCAN.
+    // top keys surfaced by HDBSCAN, plus every probe word.
     let judged: Vec<&KeyProposal> = {
         let top = |score: fn(&KeyProposal) -> Option<f64>, limit: usize| -> HashSet<GramId> {
             let mut scored: Vec<(GramId, f64)> = proposals
@@ -1837,7 +1983,11 @@ pub async fn discover(
         let hdbscan_top = top(|p| p.hdbscan_silhouette, HDBSCAN_TOP);
         proposals
             .iter()
-            .filter(|p| kmeans_top.contains(&p.key) || hdbscan_top.contains(&p.key))
+            .filter(|p| {
+                kmeans_top.contains(&p.key)
+                    || hdbscan_top.contains(&p.key)
+                    || probe_ids.contains(&p.key)
+            })
             .collect()
     };
     println!(

@@ -73,23 +73,22 @@ fn load_failures(failure_file: &Path) -> Result<HashMap<String, u32>> {
     Ok(failures)
 }
 
-/// Update the failure count for a sentence
-fn record_failure(
-    sentence: String,
-    failures: &mut HashMap<String, u32>,
-    failure_file: &Path,
-) -> Result<()> {
-    // Increment failure count
-    let count = failures.entry(sentence.clone()).or_insert(0);
-    *count += 1;
+/// How many separate runs a sentence may fail before we stop retrying it.
+/// Most tokenization failures are transient — a DNS blip, a cold Modal
+/// container, a momentary refusal — so a single failure must not be permanent.
+const MAX_TOKENIZATION_ATTEMPTS: u32 = 3;
 
-    // Rewrite the entire failure file with updated counts
+/// Attempts within a single run before a sentence counts as failed for that run.
+const IN_RUN_ATTEMPTS: usize = 3;
+
+/// Write the failure map out, replacing the file's previous contents.
+fn write_failures(failures: &HashMap<String, u32>, failure_file: &Path) -> Result<()> {
     let file = std::fs::File::create(failure_file)?;
     let mut writer = std::io::BufWriter::new(file);
 
-    for (sent, &failure_count) in failures.iter() {
+    for (sentence, &failure_count) in failures {
         let record = FailureRecord {
-            sentence: sent.clone(),
+            sentence: sentence.clone(),
             failure_count,
         };
         let json = serde_json::to_string(&record)?;
@@ -184,10 +183,18 @@ pub async fn process_sentences(
     let failure_file = get_failure_file_path(output_file);
     let mut failures = load_failures(&failure_file)?;
 
-    // Filter out already processed sentences AND previously failed sentences
+    // Filter out already-processed sentences, and sentences that have burned
+    // through their retry budget. A sentence that failed a previous run is
+    // retried: treating one failure as permanent silently drops the sentence
+    // from the corpus forever, which is how ~17k sentences went missing.
     let sentences_to_process: HashSet<String> = sentences
         .iter()
-        .filter(|s| !already_processed.contains_key(*s) && !failures.contains_key(*s))
+        .filter(|s| !already_processed.contains_key(*s))
+        .filter(|s| {
+            failures
+                .get(*s)
+                .is_none_or(|&count| count < MAX_TOKENIZATION_ATTEMPTS)
+        })
         .cloned()
         .collect();
 
@@ -225,24 +232,42 @@ pub async fn process_sentences(
             let lexide = &lexide;
             let pb = pb.clone();
             async move {
-                let result = match lexide.analyze(&sentence, lexide_language).await {
-                    Ok(tokenization) => Ok(TokenizedSentence {
-                        sentence,
-                        tokens: tokenization.tokens,
-                    }),
-                    Err(e) => {
-                        eprintln!("Warning: Failed to analyze sentence '{sentence}': {e:?}");
-                        Err(sentence)
+                let mut last_error = None;
+                for attempt in 0..IN_RUN_ATTEMPTS {
+                    match lexide.analyze(&sentence, lexide_language).await {
+                        Ok(tokenization) => {
+                            pb.inc(1);
+                            return Ok(TokenizedSentence {
+                                sentence,
+                                tokens: tokenization.tokens,
+                            });
+                        }
+                        Err(e) => {
+                            last_error = Some(e);
+                            if attempt + 1 < IN_RUN_ATTEMPTS {
+                                // Back off before retrying — the failures worth
+                                // retrying are the transient ones.
+                                tokio::time::sleep(std::time::Duration::from_millis(
+                                    500u64 << attempt,
+                                ))
+                                .await;
+                            }
+                        }
                     }
-                };
+                }
 
+                let error = last_error.expect("the retry loop runs at least once");
+                eprintln!(
+                    "Warning: Failed to analyze sentence '{sentence}' after {IN_RUN_ATTEMPTS} attempts: {error:?}"
+                );
                 pb.inc(1);
-                result
+                Err(sentence)
             }
         })
         .buffer_unordered(600);
 
     // Write results as they come in and collect them in memory
+    let mut failures_changed = false;
     while let Some(result) = results.next().await {
         match result {
             Ok(mut tokenized) => {
@@ -251,11 +276,14 @@ pub async fn process_sentences(
                 writeln!(writer, "{json}")?;
                 // …while everything downstream sees the canonical form
                 token_corrections::fix_tokens(language, &mut tokenized.tokens);
+                // A sentence that came back this time has earned its budget
+                // back, so a later blip starts from a clean slate.
+                failures_changed |= failures.remove(&tokenized.sentence).is_some();
                 newly_processed.insert(tokenized.sentence, tokenized.tokens);
             }
             Err(failed_sentence) => {
-                // Record the failure
-                record_failure(failed_sentence, &mut failures, &failure_file)?;
+                *failures.entry(failed_sentence).or_insert(0) += 1;
+                failures_changed = true;
             }
         }
     }
@@ -263,6 +291,12 @@ pub async fn process_sentences(
     pb.finish_and_clear();
 
     writer.flush()?;
+
+    // One rewrite at the end. Rewriting per failure was quadratic in the
+    // number of failures, which is why a bad run crawled.
+    if failures_changed {
+        write_failures(&failures, &failure_file)?;
+    }
 
     // Build result map containing only the requested sentences
     // Merge newly processed sentences with already processed ones
