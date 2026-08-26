@@ -205,6 +205,19 @@ impl Weapon {
             }
         });
 
+        // Seed the audio-cache mirror before any deck API is reachable, so
+        // even the first get_review_info of a session can hold back audio
+        // challenges whose clips aren't local (otherwise the first challenge
+        // of a cold start races the directory enumeration and can slip
+        // through unplayable). Failure just leaves the mirror unloaded,
+        // which degrades to not holding anything back. Wasm-only: on native
+        // (yap-mcp) there is no audio cache and the mirror must stay
+        // unloaded so nothing is ever filtered there.
+        #[cfg(target_arch = "wasm32")]
+        if let Err(e) = audio::AudioCache::new().await {
+            log::warn!("Failed to seed audio cache mirror: {e:?}");
+        }
+
         Ok(Self {
             store: RefCell::new(events),
             user_id,
