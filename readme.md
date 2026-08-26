@@ -63,6 +63,7 @@ Of course, in addition to being the most effective language learning app, I coul
 2. You can use Yap while logged out, and it functions almost exactly the same as when you're logged in. (The exception is features that fundamentally require an account, like cross-device sync.) As soon as you do log in, all of your data is migrated to your account, and you can pick up exactly where you left off.
 3. Yap works seamlessly offline once installed as a Progressive Web App. All of the language data is downloaded to your device and challenge selection etc. is all done locally.
 4. Yap is quite fast, with most operations taking less than the time to render one frame, despite processing large amounts of sentences. Yap's performance benefits from being primarily written in Rust (and compiled to WebAssembly to run in the browser). We also implement various optimizations, including string interning, which allows most operations to work with objects that fit entirely in the stack (removing the need for most heap access or allocations).
+5. The placement test at the beginning, and the "adaptive placement" as you use the app, where we use the pool adjacent violators algorithm to compute your level based on the frequency rank of the words you do and don't know. It's totally extra, but I actually use a "smoothed" version of the isotonic regression curve, and making that fast ended up being an [insane rabbit hole](https://github.com/anchpop/pav.rs/blob/master/src/smooth_regression.rs).
 
 ## Build Process
 
@@ -91,7 +92,7 @@ The data in out/ is generated via the `generate-data` binary.
 cargo run --bin generate-data --release
 ```
 
-Each individual step is cached inside a file in the out/ directory. To rerun a step, you need to delete the cache file. For example, if you want to rerun the dictionary generation for a language, you'll need to delete the dictionary file for that language. LLM calls are cached in the .cache directory. This allows you to rerun a step without spending a ton of money.
+Each individual step is writes artifacts to a file in the out/ directory, for you to inspect. LLM calls are cached in the .cache directory. This allows you to rerun a step without spending a ton of money.
 
 The NLP is extremely slow. I rented a GH200 from Lambda Labs when I need to recalculate it.
 
@@ -133,6 +134,8 @@ You can connect Yap to your LLM provider of choice using the following MCP serve
 
 ## Special thanks
 
+[The Open Spaced Repetition group](https://github.com/open-spaced-repetition)
+
 ### Data
 
 1. Tatoeba
@@ -141,7 +144,6 @@ You can connect Yap to your LLM provider of choice using the following MCP serve
 4. [opensubtitles](http://www.opensubtitles.org/) and TMDB for the movie integration!
 5. [Michael Oeser](https://unsplash.com/photos/black-and-gray-textile-in-close-up-photography-X7jvviscg8o) and [Corina Rainer](https://unsplash.com/photos/white-cotton-on-white-textile-jZc5eTXnYLU) on unsplash (their images are used in the background)
 
-### Libraries
+### Coming soon
 
-1. [Pair Adjacent Violators for Rust](https://github.com/sanity/)
-2. [The Open Spaced Repetition group](https://github.com/open-spaced-repetition)
+Soon... Pronunciation grading with a [custom audio → phoneme model](https://huggingface.co/anchpop/lexide-pronunciation)! I'm very excited about this, because with my model I can actually represent things like Japanese pitch accent and French's unusual stress patterns.
