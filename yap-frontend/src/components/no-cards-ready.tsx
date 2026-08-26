@@ -22,6 +22,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Headphones,
+  LoaderCircle,
   Sparkles,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -53,6 +54,9 @@ interface NoCardsReadyProps {
   targetLanguage: Language;
   deck: Deck;
   bannedChallengeTypes: ChallengeRequirements[];
+  /// Due cards held back because their audio hasn't downloaded yet — they'll
+  /// appear as challenges once the background prefetcher catches up.
+  audioPendingCount: number;
   userInfo: UserInfo | undefined;
   sentenceList: SentenceList;
   setSentenceList: (sentenceList: SentenceList) => void;
@@ -67,6 +71,7 @@ export const NoCardsReady = memo(function NoCardsReady({
   targetLanguage,
   deck,
   bannedChallengeTypes,
+  audioPendingCount,
   userInfo,
   sentenceList,
   setSentenceList,
@@ -309,6 +314,28 @@ export const NoCardsReady = memo(function NoCardsReady({
         return null;
     }
   })();
+
+  // Due challenges exist but their audio hasn't downloaded yet (the review
+  // screen only offers challenges the user can actually complete). This
+  // normally resolves within seconds as the background prefetcher lands
+  // clips — but it can persist offline, which is why it explains itself
+  // rather than showing a bare spinner.
+  if (audioPendingCount > 0) {
+    return (
+      <div className="flex flex-col flex-1 gap-4 pt-4">
+        <div className="flex flex-col gap-2 text-center">
+          <p className="text-2xl font-bold">Just a moment…</p>
+          <p className="text-muted-foreground">
+            Downloading the audio for your next challenge.
+          </p>
+        </div>
+        <div className="flex justify-center py-4">
+          <LoaderCircle className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+        <WeekProgressStrip deck={deck} className="mt-auto mb-2" />
+      </div>
+    );
+  }
 
   // While cards remain set aside in lockup, the whole add-cards area is
   // replaced by releasing the next batch. Never says "all caught up" — that's

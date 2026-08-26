@@ -486,11 +486,7 @@ async fn download_language_data_chunk(
         };
         async move {
             let client = fetch_happen::Client;
-            let url = if cfg!(feature = "local-backend") {
-                "http://localhost:21516"
-            } else {
-                "https://yap-ai-backend.fly.dev"
-            };
+            let url = crate::utils::ai_server_url();
             let full_url = format!("{url}{path}");
             client.post(&full_url).json(&request)?.send().await
         }

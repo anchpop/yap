@@ -1,0 +1,117 @@
+name: Deploy Beta
+
+# Beta channel: every push to `dev` deploys the frontend bundle as a Cloudflare
+# Pages *preview* deployment of the same `yap` project (branch alias
+# `dev.yap.pages.dev`, surfaced as beta.yap.town via a CNAME in the zone).
+#
+# Deliberately lighter than Deploy Production:
+#   - no test/clippy gate (this is the play-with-it channel; main stays gated)
+#   - no Fly backend/MCP deploy — the beta frontend talks to the production
+#     backend (CORS allows any origin). A future beta backend just needs
+#     YAP_AI_BACKEND_URL set on the wasm build step below.
+#   - no dictionary KV upload and no Modal deploy — both are shared with
+#     production and a beta push must never clobber them. Dictionary pages on
+#     beta therefore render from production's KV data.
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-beta
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-deploy:
+    runs-on: big-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          lfs: false
+
+      - name: Pull LFS rkyv files
+        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-web-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-web-
+            ${{ runner.os }}-cargo-
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Build WASM module
+        # To point beta at a non-production backend, add
+        # `YAP_AI_BACKEND_URL=https://...` to this line.
+        run: CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release
+        working-directory: yap-frontend-rs
+
+      - name: Generate dictionary data from language packs
+        run: cargo run --release --bin generate-dictionary-data
+
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: yap-frontend
+
+      - name: Install dictionary site dependencies
+        run: pnpm install
+        working-directory: static-site
+
+      - name: Build dictionary site (SSR)
+        run: pnpm build
+        working-directory: static-site
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+
+      - name: Build frontend (SPA)
+        run: pnpm build
+        working-directory: yap-frontend
+
+      - name: Merge SPA and dictionary into single deploy directory
+        run: |
+          DEPLOY_DIR=deploy-output
+          cp -r static-site/dist "$DEPLOY_DIR"
+          cp -r yap-frontend/dist/* "$DEPLOY_DIR/"
+          node -e "
+            const fs = require('fs');
+            const routes = JSON.parse(fs.readFileSync('$DEPLOY_DIR/_routes.json', 'utf-8'));
+            routes.include = ['/d/*', '/blog/*', '/sitemap*', '/robots.txt'];
+            fs.writeFileSync('$DEPLOY_DIR/_routes.json', JSON.stringify(routes, null, 2));
+          "
+
+      - name: Deploy to Cloudflare Pages (dev branch)
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: deploy-output
+          command: pages deploy . --project-name=yap --branch=dev

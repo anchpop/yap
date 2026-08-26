@@ -95,6 +95,15 @@ pub fn get_ai_server_url() -> String {
     utils::ai_server_url().to_string()
 }
 
+/// Version counter of the local audio-clip mirror; changes whenever a clip
+/// is cached or evicted. The frontend polls this to re-run challenge
+/// selection as the background prefetcher lands clips (which can un-hide
+/// audio challenges that were held back as not-yet-playable).
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn get_audio_cache_version() -> u32 {
+    audio::cached_clips_version()
+}
+
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn get_showcase_data() -> Vec<language_utils::CourseShowcase> {
     static SHOWCASE_JSONS: &[&str] = &[
@@ -2472,7 +2481,14 @@ impl Deck {
         banned_challenge_types: Vec<ChallengeRequirements>,
         timestamp_ms: f64,
     ) -> ReviewInfo {
-        self.get_review_info_impl(banned_challenge_types, timestamp_ms, false)
+        let mut review_info =
+            self.get_review_info_impl(banned_challenge_types, timestamp_ms, false);
+        // Only the app-facing view holds back audio-pending cards. The
+        // prefetch simulation goes through `get_review_info_impl` directly
+        // and must keep seeing them — it's the thing that downloads their
+        // audio, so hiding them there would leave them hidden forever.
+        review_info.hold_back_audio_pending(self);
+        review_info
     }
 
     /// Like `get_review_info`, but treats locked cards as due. Used by the
@@ -2541,6 +2557,7 @@ impl Deck {
             due_cards,
             due_but_banned_cards,
             due_but_locked_cards,
+            due_but_audio_pending_cards: vec![],
             future_cards,
         }
     }
@@ -2569,7 +2586,10 @@ impl Deck {
             return None;
         }
 
-        let review_info = self.get_review_info(banned_challenge_types, timestamp_ms);
+        // Unfiltered view: a card whose audio merely hasn't downloaded yet is
+        // still one of today's most-due cards, and must land in the lockup's
+        // keep-list rather than get locked away for the day.
+        let review_info = self.get_review_info_impl(banned_challenge_types, timestamp_ms, false);
         if review_info.due_cards.len() <= REVIEW_LOCKUP_TRIGGER {
             return None;
         }
@@ -4271,6 +4291,10 @@ pub struct ReviewInfo {
     due_cards: Vec<CardIndicator<SpurGram, Spur>>,
     due_but_banned_cards: Vec<CardIndicator<SpurGram, Spur>>,
     due_but_locked_cards: Vec<CardIndicator<SpurGram, Spur>>,
+    /// Due cards held back because their challenge needs audio that isn't in
+    /// the local cache yet (see `hold_back_audio_pending`). They reappear in
+    /// `due_cards` once the background prefetcher lands their clips.
+    due_but_audio_pending_cards: Vec<CardIndicator<SpurGram, Spur>>,
     future_cards: Vec<CardIndicator<SpurGram, Spur>>,
 }
 
@@ -4341,6 +4365,44 @@ pub enum ChallengeRequirements {
 }
 
 impl ReviewInfo {
+    /// Move cards from the front of `due_cards` into
+    /// `due_but_audio_pending_cards` when their challenge needs audio the
+    /// device doesn't have locally yet — the app should only offer a
+    /// challenge the user can actually complete right now.
+    ///
+    /// Only the front of the queue is examined, stopping at the first card
+    /// that is playable (or isn't an audio challenge): generating a challenge
+    /// is expensive, and correctness only requires that the challenge the app
+    /// will actually show — `due_cards[0]` — is playable. When the audio
+    /// cache mirror hasn't loaded (first moments of a session, native
+    /// builds), availability is unknown and nothing is held back.
+    fn hold_back_audio_pending(&mut self, deck: &Deck) {
+        if !audio::cached_clips_loaded() {
+            return;
+        }
+        while let Some(&card) = self.due_cards.first() {
+            let needs_audio = matches!(
+                card.card_type().challenge_type(),
+                ChallengeRequirements::Listening | ChallengeRequirements::Speaking
+            );
+            if !needs_audio {
+                break;
+            }
+            let Some(challenge) = self.get_challenge_for_card(deck, card) else {
+                break;
+            };
+            let missing_audio = challenge
+                .audio_requests()
+                .iter()
+                .any(|request| audio::locally_available(request) == Some(false));
+            if !missing_audio {
+                break;
+            }
+            self.due_cards.remove(0);
+            self.due_but_audio_pending_cards.push(card);
+        }
+    }
+
     // TODO: make this more resillient by separating it into a function that fallibly a real challenge and a function that tries to call the previous and returns a flashcard if it fails
     pub fn get_challenge_for_card(
         &self,
@@ -4390,6 +4452,11 @@ impl ReviewInfo {
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
     pub fn due_but_locked_count(&self) -> usize {
         self.due_but_locked_cards.len()
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    pub fn due_but_audio_pending_count(&self) -> usize {
+        self.due_but_audio_pending_cards.len()
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
