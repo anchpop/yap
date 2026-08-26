@@ -8,7 +8,7 @@ Join the community on [Discord](https://discord.gg/mpgqfsH).
 
 **Yap's goal is to be the #1 most effective language learning app.**
 
-The idea is basically to combine Anki-style spaced repetition with comprehensible input. You add vocabulary to your deck, like any flashcard app. But Yap has a corpus of sentences, and can show you a sentence containing the word you need to review. You review the whole sentence my translating it or listening to it, and then Yap records what you got right and what you got wrong. It then figures out what you got right and what you didn't, and feeds all of that back into the spaced repetition system. That way it can alway prompt you to review exactly what and when you need to! 
+The idea is basically to combine Anki-style spaced repetition with comprehensible input. You add vocabulary to your deck, like any flashcard app. But Yap has a corpus of sentences, and can show you a sentence containing the word you need to review. You review the whole sentence by translating it or listening to it, and then Yap records what you got right and what you got wrong. It then figures out what you got right and what you didn't, and feeds all of that back into the spaced repetition system. That way it can always prompt you to review exactly what and when you need to!
 
 ![Yap example](docs/yap-example-image.png)
 
@@ -23,7 +23,13 @@ The idea is basically to combine Anki-style spaced repetition with comprehensibl
 3. German
 4. Italian (beta)
 5. Portuguese (beta)
-3. Korean (alpha)
+6. Russian (alpha)
+7. Korean (alpha)
+8. Japanese (alpha)
+9. Simplified Chinese (alpha)
+10. Traditional Chinese (alpha)
+11. Hindi (alpha)
+12. Thai (alpha)
 
 ## Supported learning modalities
 
@@ -57,7 +63,7 @@ The words that Yap chooses to introduce are initially based on which words are m
 
 ## Other features of Yap I'm proud of
 
-Of course, in addition to being the most effective language learning app, I couldn't live with myself if I didn't think that YAP was also just a generally pleasant app to use. To that end, there are some features of YAP that I'm proud of that set it apart from most other apps on the internet.
+Of course, in addition to being the most effective language learning app, I couldn't live with myself if I didn't think that Yap was also just a generally pleasant app to use. To that end, there are some features of Yap that I'm proud of that set it apart from most other apps on the internet.
 
 1. Instant sync across all your devices.
 2. You can use Yap while logged out, and it functions almost exactly the same as when you're logged in. (The exception is features that fundamentally require an account, like cross-device sync.) As soon as you do log in, all of your data is migrated to your account, and you can pick up exactly where you left off.
@@ -82,7 +88,7 @@ pnpm i
 pnpm dev
 ```
 
-There is also a supporting backend, normally assumed to be at `https://yap-ai-backend.fly.io`. But If you build the rust library with `wasm-pack build --features "local-backend`, it will look for the server on `localhost:8080`. You can then run the server locally with `cd yap-ai-backend && cargo run`.
+There is also a supporting backend, normally assumed to be at `https://yap-ai-backend.fly.io`. But if you build the rust library with `wasm-pack build --features "local-backend"`, it will look for the server on `localhost:8080`. You can then run the server locally with `cd yap-ai-backend && cargo run`.
 
 ## Data Generation
 
@@ -92,39 +98,17 @@ The data in out/ is generated via the `generate-data` binary.
 cargo run --bin generate-data --release
 ```
 
-Each individual step is writes artifacts to a file in the out/ directory, for you to inspect. LLM calls are cached in the .cache directory. This allows you to rerun a step without spending a ton of money.
+Each individual step writes artifacts to a file in the out/ directory, for you to inspect. LLM calls are cached in the .cache directory. This allows you to rerun a step without spending a ton of money.
 
-The NLP is extremely slow. I rented a GH200 from Lambda Labs when I need to recalculate it.
+The NLP is extremely slow. I rented a GH200 from Lambda Labs when I needed to recalculate it.
 
 ## Data Cleaning (for custom NLP training data)
 
-The NLP model used by Yap (lexide) is trained from data in this repo. Generating that data requires python.
-
-1. Install the spaCy NLP module:
-
-```bash
-cd ./generate-data/nlp && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.8.0/fr_dep_news_trf-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/es_dep_news_trf-3.8.0/es_dep_news_trf-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/ko_core_news_lg-3.8.0/ko_core_news_lg-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/de_dep_news_trf-3.8.0/de_dep_news_trf-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/zh_core_web_trf-3.8.0/zh_core_web_trf-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/it_core_news_lg-3.8.0/it_core_news_lg-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/pt_core_news_lg-3.8.0/pt_core_news_lg-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/ja_core_news_trf-3.8.0/ja_core_news_trf-3.8.0-py3-none-any.whl && \
-  uv pip install https://github.com/explosion/spacy-models/releases/download/ru_core_news_lg-3.8.0/ru_core_news_lg-3.8.0-py3-none-any.whl
-```
-
-2. Generate the data
-
-```
-cargo run --bin clean-nlp-data clean
-```
+The NLP model used by Yap (lexide) is trained from data in this repo. See [libraries/clean-nlp-data](libraries/clean-nlp-data/README.md) for setup (spaCy model installation) and usage.
 
 ## Supabase / Onesignal
 
-Accounts and cross-device sync uses supabase as a backend. Migrations are in the supabase/ folder. Onesignal is used for notifications.
+Accounts and cross-device sync use supabase as a backend. Migrations are in the supabase/ folder. Onesignal is used for notifications.
 
 ## MCP
 
