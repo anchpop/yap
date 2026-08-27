@@ -23,7 +23,7 @@
 
 use anyhow::{Context, Result};
 use base64::Engine;
-use language_utils::Language;
+use language_utils::{Language, PhonemeLabelSource};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::Write;
@@ -47,11 +47,13 @@ static MODAL_URL: LazyLock<String> = LazyLock::new(|| {
 /// `WAV2VEC2_CACHE_VERSION_OVERRIDE`, so this const only governs the default
 /// (production) cache partition.
 ///
-/// `953461d76eb5` is the multilingual checkpoint that added Japanese, Mandarin,
-/// Thai, and Hindi (38 new phoneme tokens, plus tone / pitch-accent heads).
-/// Its predictions differ from the previous pin everywhere, so the whole cache
-/// partition turns over — expect a full recompute on the next run.
-const WAV2VEC2_CACHE_VERSION: &str = "anchpop_lexide-pronunciation@953461d76eb5__greedy_v1";
+/// `edcbbbf43a7f` is the retrain that added the F0-capable acoustic
+/// side-channel (log-mel widened to 128 bins / 1024-point window, plus a
+/// 64-dim low-band spectrogram over the F0 range) and folded 3,414
+/// transcript-verified movie clips into the corpus. Same 392-token vocab as
+/// the previous pin, but every prediction moves, so the whole cache partition
+/// turns over — expect a full recompute on the next run.
+const WAV2VEC2_CACHE_VERSION: &str = "anchpop_lexide-pronunciation@edcbbbf43a7f__greedy_v1";
 
 #[derive(Debug, Clone, Deserialize)]
 struct ModalResponse {
@@ -235,6 +237,33 @@ impl<'a> VerifyContext<'a> {
         mismatch_threshold: f64,
         expected_deploy_marker: Option<String>,
     ) -> Result<Self> {
+        // Fail closed on the label source. The model is trained on labels from
+        // exactly one G2P engine per language; scoring against a different
+        // one silently compares incompatible phoneme inventories, and every
+        // downstream number still *looks* fine. Hindi is the worked example:
+        // scored against espeak `hi` it measured as our worst language by a
+        // wide margin, because its real labels come from `schwa-stress-hin`,
+        // which emits aspiration bound to its consonant rather than as the
+        // standalone `ʰ` espeak produces.
+        //
+        // Refusing here rather than in the caller matters, because the
+        // fallback is not "no targets" — `ground_truth_phoneme_variants`
+        // would quietly fall back to wikipron, which is a *third* inventory.
+        match target_language.phoneme_label_source() {
+            PhonemeLabelSource::Espeak(_) => {}
+            PhonemeLabelSource::Backend(provider) => anyhow::bail!(
+                "{:?} phoneme labels come from the {provider} backend, which we \
+                 don't run yet — refusing to verify audio against espeak or \
+                 wikipron targets. See lexide's PHONEME_BACKENDS.md.",
+                target_language
+            ),
+            PhonemeLabelSource::Unvalidated => anyhow::bail!(
+                "{:?} has no validated phoneme label source — refusing to \
+                 verify audio against an unchecked reference. See lexide's \
+                 PHONEME_BACKENDS.md.",
+                target_language
+            ),
+        }
         Ok(Self {
             http,
             store: crate::cache_remote::store(),

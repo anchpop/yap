@@ -9,6 +9,7 @@
 //! carries the span's diarized speaker).
 
 use anyhow::{Context, Result, bail};
+use language_utils::Language;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::process::Command;
@@ -21,22 +22,20 @@ pub struct PlanEntry {
     pub original_language: String,
 }
 
-/// The subtitle-corpus inventory language names → course codes, for the
-/// languages espeak supports. CJK/Thai/Korean are absent deliberately: no
-/// espeak reference. (This is the eval's gate — the extractor uses
-/// [`course_code_full`], since the training pipeline has non-espeak backends.)
+/// Inventory language names → course codes, restricted to languages whose
+/// phoneme labels genuinely come from espeak.
+///
+/// Derived from [`Language::phoneme_label_source`] rather than hand-listed, so
+/// it cannot drift from the table that defines which G2P source each language
+/// is allowed to use. Hindi is excluded despite espeak having a `hi` voice —
+/// its labels come from `schwa-stress-hin`, and scoring hin against espeak was
+/// measurably wrong (see the enum's docs). This is the phoneme-scoring gate;
+/// the clip extractor uses [`course_code_full`], since selection is
+/// transcript-driven and needs no phoneme reference at all.
 pub fn course_code_espeak(original_language: &str) -> Option<&'static str> {
-    Some(match original_language {
-        "English" => "eng",
-        "French" => "fra",
-        "German" => "deu",
-        "Spanish" => "spa",
-        "Italian" => "ita",
-        "Portuguese" => "por",
-        "Russian" => "rus",
-        "Hindi" => "hin",
-        _ => return None,
-    })
+    let code = course_code_full(original_language)?;
+    let language = Language::from_code(code)?;
+    language.phoneme_label_source().espeak_voice().map(|_| code)
 }
 
 /// Full mapping to pronunciation-corpus lang codes, mirroring

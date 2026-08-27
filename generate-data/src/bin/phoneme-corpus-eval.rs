@@ -74,12 +74,20 @@ struct Args {
     /// Only print the summary of an existing output file; run nothing.
     #[arg(long, default_value_t = false)]
     summary_only: bool,
+    /// Short model marker to evaluate, e.g. `953461d76eb5` (production) or a
+    /// newly trained checkpoint's 12-char prefix. Selects the cache partition
+    /// AND is required to match the serving container's deploy marker, so a
+    /// stale container can't silently contribute another model's predictions.
+    #[arg(long, default_value = "953461d76eb5")]
+    model_marker: String,
 }
 
-/// Matches the production partition in `audio_verification.rs`, so eval
-/// predictions and any later production run share a cache.
-const CACHE_VERSION: &str = "anchpop_lexide-pronunciation@953461d76eb5__greedy_v1";
-const EXPECTED_DEPLOY_MARKER: &str = "953461d76eb5";
+/// The cache partition for a given model marker. The production marker's
+/// partition is byte-identical to `audio_verification.rs`'s, so eval and
+/// production share predictions; any other marker gets its own partition.
+fn cache_version(model_marker: &str) -> String {
+    format!("anchpop_lexide-pronunciation@{model_marker}__greedy_v1")
+}
 
 /// One evaluated cue, as a line of the output JSONL.
 #[derive(Serialize, Deserialize)]
@@ -230,9 +238,9 @@ async fn main() -> Result<()> {
             &http,
             &empty_pronunciations,
             language,
-            CACHE_VERSION.to_string(),
+            cache_version(&args.model_marker),
             0.3,
-            Some(EXPECTED_DEPLOY_MARKER.to_string()),
+            Some(args.model_marker.clone()),
         )?;
 
         use futures::StreamExt;

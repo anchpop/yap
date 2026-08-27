@@ -31,7 +31,7 @@ MODEL_ID = os.environ.get("WAV2VEC2_MODEL_ID", "anchpop/lexide-pronunciation")
 # checkpoint (the eval harness does this per-run); never point it at a branch
 # name — an exact SHA is what makes the pin a pin.
 MODEL_REVISION = os.environ.get(
-    "WAV2VEC2_MODEL_REVISION", "953461d76eb50cace1007b7649f51b7495177cd9"
+    "WAV2VEC2_MODEL_REVISION", "edcbbbf43a7ff337f43d233a9d89566509715e63"
 )
 
 # Unique per-deploy identifier, echoed back by /predict so a caller can assert
@@ -111,7 +111,7 @@ def _build_head_from_state(state):
     ``nn.Linear`` ({weight, bias}) or a 2-layer MLP ``nn.Sequential`` (params at
     indices 0 and 3, i.e. Linear→GELU→Dropout→Linear). Shape-driven, so we never
     hard-code hidden dims; used by the mel-sidechannel variant whose heads are
-    MLPs. See pronunciation/SIDECHANNEL_INFERENCE.md.
+    MLPs. See pronunciation/train/src/factorized_ctc.py.
     """
     import torch.nn as nn
 
@@ -134,7 +134,6 @@ def _build_regularized_modules(
     num_layers_total: int,
     head_base_dim: int,
     acoustic_dim: int,
-    n_mels: int,
     num_mixtures: int,
 ):
     """Modules for the regularized variant (articulatory-aux-regularized).
@@ -142,7 +141,7 @@ def _build_regularized_modules(
     The forward goes:
       backbone (output_hidden_states=True)  →  (L+1) layer outputs of dim H
       layer_weights:(K, L+1) softmax+sum    →  K mixtures of dim H, concat → K*H
-      raw waveform → log-mel → LayerNorm → Linear(n_mels → acoustic_dim) → A
+      raw waveform → AcousticSidechannel (log-mel [+ low band]) → A
       cat([K*H, A]) → shared_base (Linear → GELU → Dropout) → head_base_dim
       heads(head_base_dim) on that shared base.
     """
@@ -151,8 +150,6 @@ def _build_regularized_modules(
     layer_weights = nn.Parameter(
         __import__("torch").zeros(num_mixtures, num_layers_total)
     )
-    mel_norm = nn.LayerNorm(n_mels)
-    mel_proj = nn.Linear(n_mels, acoustic_dim)
     shared_input = num_mixtures * backbone_hidden + acoustic_dim
     shared_base = nn.Sequential(
         nn.Linear(shared_input, head_base_dim),
@@ -165,9 +162,108 @@ def _build_regularized_modules(
     # 2-layer MLP used in the simple variant.
     stress_head = nn.Linear(head_base_dim, num_stress_labels)
     return (
-        layer_weights, mel_norm, mel_proj, shared_base,
+        layer_weights, shared_base,
         nonblank_head, phoneme_head, stress_head,
     )
+
+
+# wav2vec2's conv feature extractor: 400-sample receptive field, 320-sample
+# stride (50 fps). Copied from pronunciation/train/src/factorized_ctc.py, which
+# is the reference implementation this must match bit-for-bit.
+W2V2_RECEPTIVE_FIELD = 400
+W2V2_STRIDE = 320
+# Low-band linear-spectrogram channel: n_fft=2048 → 7.8125 Hz bins; bins
+# [8, 78) span 62.5–601.6 Hz, bracketing adult F0.
+LOWBAND_N_FFT = 2048
+LOWBAND_BIN_LO = 8
+LOWBAND_BIN_HI = 78
+LOWBAND_BINS = LOWBAND_BIN_HI - LOWBAND_BIN_LO
+
+
+def _build_sidechannel(ckpt):
+    """Rebuild the checkpoint's acoustic side-channel.
+
+    Port of `AcousticSidechannel` from the training repo. Two banks, both
+    deterministic transforms of the waveform: a log-mel bank, plus (when
+    `lowband_dim > 0`) a 2048-point low-band linear spectrogram restricted to
+    the F0 range, which is what gives the tone / pitch-accent heads
+    sub-semitone resolution.
+
+    Handles both checkpoint layouts: the current one stores the whole module
+    under `sidechannel`, while older ones stored bare `mel_norm`/`mel_proj`
+    tensors with an implicit n_fft=400 mel-only bank.
+    """
+    import torch.nn as nn
+    import torch.nn.functional as F
+    import torchaudio.transforms as T_audio
+
+    n_mels = int(ckpt.get("n_mels", 80))
+    mel_proj_dim = int(ckpt.get("acoustic_dim", 64))
+    mel_n_fft = int(ckpt.get("mel_n_fft", W2V2_RECEPTIVE_FIELD))
+    lowband_dim = int(ckpt.get("lowband_dim", 0))
+
+    class _Sidechannel(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.mel_spec = T_audio.MelSpectrogram(
+                sample_rate=16000, n_fft=mel_n_fft, win_length=mel_n_fft,
+                hop_length=W2V2_STRIDE, n_mels=n_mels, center=False,
+            )
+            self.mel_norm = nn.LayerNorm(n_mels)
+            self.mel_proj = nn.Linear(n_mels, mel_proj_dim)
+            self.lowband_dim = lowband_dim
+            if lowband_dim > 0:
+                self.low_spec = T_audio.Spectrogram(
+                    n_fft=LOWBAND_N_FFT, win_length=LOWBAND_N_FFT,
+                    hop_length=W2V2_STRIDE, center=False, power=2.0,
+                )
+                self.low_norm = nn.LayerNorm(LOWBAND_BINS)
+                self.low_proj = nn.Linear(LOWBAND_BINS, lowband_dim)
+            else:
+                self.low_spec = self.low_norm = self.low_proj = None
+            self.out_dim = mel_proj_dim + lowband_dim
+
+        def _bank(self, spec, norm, proj, input_values, T_target, dtype,
+                  bin_lo=None, bin_hi=None):
+            import torch
+            # Symmetric pre-pad aligns this bank's window centers with
+            # wav2vec2's conv receptive-field centers. Zero for the legacy
+            # 400-point bank, so old checkpoints reproduce exactly.
+            pad = (spec.n_fft - W2V2_RECEPTIVE_FIELD) // 2
+            x = input_values.float()
+            if pad:
+                x = F.pad(x, (pad, pad))
+            with torch.autocast(device_type=input_values.device.type, enabled=False):
+                feats = spec(x)                                # (B, bins, T)
+            if bin_lo is not None:
+                feats = feats[:, bin_lo:bin_hi, :]
+            feats = feats.transpose(1, 2)                      # (B, T, bins)
+            if feats.shape[1] > T_target:
+                feats = feats[:, :T_target, :]
+            elif feats.shape[1] < T_target:
+                feats = F.pad(feats, (0, 0, 0, T_target - feats.shape[1]))
+            feats = torch.log(feats + 1e-6).to(dtype)
+            return proj(norm(feats))
+
+        def forward(self, input_values, T_target, dtype):
+            import torch
+            out = self._bank(self.mel_spec, self.mel_norm, self.mel_proj,
+                             input_values, T_target, dtype)
+            if self.low_spec is not None:
+                low = self._bank(self.low_spec, self.low_norm, self.low_proj,
+                                 input_values, T_target, dtype,
+                                 bin_lo=LOWBAND_BIN_LO, bin_hi=LOWBAND_BIN_HI)
+                out = torch.cat([out, low], dim=-1)
+            return out
+
+    module = _Sidechannel()
+    if "sidechannel" in ckpt:
+        module.load_state_dict(ckpt["sidechannel"])
+    else:
+        # Legacy layout: mel-only bank stored as two bare state dicts.
+        module.mel_norm.load_state_dict(ckpt["mel_norm"])
+        module.mel_proj.load_state_dict(ckpt["mel_proj"])
+    return module
 
 
 @app.cls(
@@ -236,34 +332,22 @@ class Wav2Vec2Phoneme:
         # VAD-style variant with a log-mel side-channel concatenated onto
         # last_hidden_state, feeding 2-layer MLP heads (no layer mixing, no
         # shared base). Orthogonal to `regularized`. See
-        # pronunciation/SIDECHANNEL_INFERENCE.md.
+        # pronunciation/train/src/factorized_ctc.py (`AcousticSidechannel`).
         self.mel_sidechannel = bool(ckpt.get("mel_sidechannel", False))
 
         if self.mel_sidechannel:
             # --- mel-sidechannel variant: heads run on
             # cat([last_hidden_state, mel_proj]); heads are MLPs (mlp_heads).
-            acoustic_dim = int(ckpt.get("acoustic_dim", 64))
-            n_mels = int(ckpt.get("n_mels", 80))
             nonblank_head = _build_head_from_state(ckpt["nonblank_head"])
             phoneme_head = _build_head_from_state(ckpt["phoneme_head"])
             stress_head = _build_head_from_state(ckpt["stress_head"])
             nonblank_head.load_state_dict(ckpt["nonblank_head"])
             phoneme_head.load_state_dict(ckpt["phoneme_head"])
             stress_head.load_state_dict(ckpt["stress_head"])
-            mel_norm = nn.LayerNorm(n_mels)
-            mel_norm.load_state_dict(ckpt["mel_norm"])
-            mel_proj = nn.Linear(n_mels, acoustic_dim)
-            mel_proj.load_state_dict(ckpt["mel_proj"])
             self.nonblank_head = nonblank_head.to("cuda").eval()
             self.phoneme_head = phoneme_head.to("cuda").eval()
             self.stress_head = stress_head.to("cuda").eval()
-            self.mel_norm = mel_norm.to("cuda").eval()
-            self.mel_proj = mel_proj.to("cuda").eval()
-            # Matches train/factorized_ctc MelSpectrogram (center=False).
-            self.mel_spec = T_audio.MelSpectrogram(
-                sample_rate=16000, n_fft=400, win_length=400,
-                hop_length=320, n_mels=n_mels, center=False,
-            ).to("cuda")
+            self.sidechannel = _build_sidechannel(ckpt).to("cuda").eval()
         elif not self.regularized:
             # --- Plain / VAD-style variant: heads operate on last_hidden_state.
             nonblank_head, phoneme_head, stress_head = _build_simple_heads(
@@ -283,10 +367,9 @@ class Wav2Vec2Phoneme:
             num_layers_total = self.backbone.config.num_hidden_layers + 1  # +1 for embedding output
             num_mixtures = ckpt["layer_weights"].shape[0]
             head_base_dim = int(ckpt.get("head_base_dim", 768))
-            acoustic_dim = int(ckpt.get("acoustic_dim", 64))
-            n_mels = int(ckpt.get("n_mels", 80))
+            sidechannel = _build_sidechannel(ckpt)
             (
-                layer_weights, mel_norm, mel_proj, shared_base,
+                layer_weights, shared_base,
                 nonblank_head, phoneme_head, stress_head,
             ) = _build_regularized_modules(
                 backbone_hidden=backbone_hidden,
@@ -294,14 +377,14 @@ class Wav2Vec2Phoneme:
                 num_stress_labels=ckpt.get("num_stress_labels", 3),
                 num_layers_total=num_layers_total,
                 head_base_dim=head_base_dim,
-                acoustic_dim=acoustic_dim,
-                n_mels=n_mels,
+                # The shared base consumes the *whole* side-channel, so its
+                # input width tracks out_dim (mel + optional low band), not
+                # the mel projection alone.
+                acoustic_dim=sidechannel.out_dim,
                 num_mixtures=num_mixtures,
             )
             with torch.no_grad():
                 layer_weights.copy_(ckpt["layer_weights"])
-            mel_norm.load_state_dict(ckpt["mel_norm"])
-            mel_proj.load_state_dict(ckpt["mel_proj"])
             shared_base.load_state_dict(ckpt["shared_base"])
             nonblank_head.load_state_dict(ckpt["nonblank_head"])
             phoneme_head.load_state_dict(ckpt["phoneme_head"])
@@ -309,18 +392,11 @@ class Wav2Vec2Phoneme:
             # Keep in fp32 — log/sigmoid math at the heads + 393-way softmax
             # is sensitive to precision, and these modules are tiny.
             self.layer_weights = nn.Parameter(layer_weights.to("cuda")).requires_grad_(False)
-            self.mel_norm = mel_norm.to("cuda").eval()
-            self.mel_proj = mel_proj.to("cuda").eval()
             self.shared_base = shared_base.to("cuda").eval()
             self.nonblank_head = nonblank_head.to("cuda").eval()
             self.phoneme_head = phoneme_head.to("cuda").eval()
             self.stress_head = stress_head.to("cuda").eval()
-            # log-mel spectrogram. Matches train/factorized_ctc:
-            # n_fft=400, win_length=400, hop_length=320, n_mels=80, center=False.
-            self.mel_spec = T_audio.MelSpectrogram(
-                sample_rate=16000, n_fft=400, win_length=400,
-                hop_length=320, n_mels=n_mels, center=False,
-            ).to("cuda")
+            self.sidechannel = sidechannel.to("cuda").eval()
 
         # Optional per-language auxiliary heads — Thai and Mandarin tone,
         # Japanese pitch accent — shipped by the multilingual checkpoints. They
@@ -369,54 +445,23 @@ class Wav2Vec2Phoneme:
             mixtures.append(mix_k)
         hidden = torch.cat(mixtures, dim=-1)  # (B, T, K * backbone_hidden)
 
-        # Mel spectrogram off the raw waveform (fp32, MelSpec dislikes fp16).
-        with torch.autocast(device_type="cuda", enabled=False):
-            mel = self.mel_spec(input_values.float())  # (B, n_mels, T_mel)
-        mel = mel.transpose(1, 2)  # (B, T_mel, n_mels)
-
-        # Both encoder + mel run at ~50 fps via hop=320 but edge frames can
-        # differ by ±1. Pad-or-truncate the mel side to match encoder T.
-        T_target = hidden.shape[1]
-        if mel.shape[1] > T_target:
-            mel = mel[:, :T_target, :]
-        elif mel.shape[1] < T_target:
-            mel = F.pad(mel, (0, 0, 0, T_target - mel.shape[1]))
-
-        mel = torch.log(mel + 1e-6)
-        mel = self.mel_norm(mel)                   # LayerNorm over n_mels
-        mel_proj = self.mel_proj(mel)              # (B, T, acoustic_dim)
-
-        combined = torch.cat([hidden, mel_proj], dim=-1)  # (B, T, 9664)
+        acoustic = self.sidechannel(input_values, hidden.shape[1], hidden.dtype)
+        combined = torch.cat([hidden, acoustic], dim=-1)  # (B, T, K*H + out_dim)
         return self.shared_base(combined)                  # (B, T, head_base_dim)
 
     def _compute_head_input_sidechannel(self, input_values):
         """Build the (1, T, H + acoustic_dim) head input for the mel-sidechannel
-        variant: backbone last_hidden_state concatenated with a projected
-        per-frame log-mel side-channel computed straight off the waveform. See
-        pronunciation/SIDECHANNEL_INFERENCE.md (`_compute_head_input`).
+        variant: backbone last_hidden_state concatenated with the projected
+        per-frame acoustic side-channel computed straight off the waveform. See
+        pronunciation/train/src/factorized_ctc.py (`_compute_head_input`).
         """
         import torch
         import torch.nn.functional as F
 
         out = self.backbone(input_values)
         hidden = out.last_hidden_state.float()       # (1, T, H), fp32
-
-        # Mel off the raw waveform (fp32; MelSpec dislikes fp16/autocast).
-        with torch.autocast(device_type="cuda", enabled=False):
-            mel = self.mel_spec(input_values.float())  # (1, n_mels, T_mel)
-        mel = mel.transpose(1, 2)                       # (1, T_mel, n_mels)
-
-        # Encoder + mel both ~50 fps (hop=320) but edges differ by ±1.
-        T_target = hidden.shape[1]
-        if mel.shape[1] > T_target:
-            mel = mel[:, :T_target, :]
-        elif mel.shape[1] < T_target:
-            mel = F.pad(mel, (0, 0, 0, T_target - mel.shape[1]))
-
-        mel = torch.log(mel + 1e-6)
-        mel = self.mel_norm(mel)                        # LayerNorm over n_mels
-        mel_proj = self.mel_proj(mel)                   # (1, T, acoustic_dim)
-        return torch.cat([hidden, mel_proj], dim=-1)    # (1, T, H + acoustic_dim)
+        acoustic = self.sidechannel(input_values, hidden.shape[1], hidden.dtype)
+        return torch.cat([hidden, acoustic], dim=-1)  # (1, T, H + out_dim)
 
     def _aux_heads_for(self, language: str | None) -> dict:
         """The aux heads that apply to `language`, keyed by their spec target
@@ -477,6 +522,121 @@ class Wav2Vec2Phoneme:
             for target, head in self._aux_heads_for(language).items()
         }
         return log_probs, stress_logits, p_nonblank, aux_ids
+
+    def _frame_matrix(self, log_probs) -> dict:
+        """The full per-frame log-prob matrix, losslessly enough to rescore
+        *any* phoneme sequence later without touching a GPU.
+
+        `frames` (top-k) is a diagnostic view: it truncates to at most 100 of
+        392 vocab entries, so a target phoneme that fell outside the top-k at
+        some frame has no probability at all and CTC cannot be evaluated
+        exactly. Storing the whole matrix instead makes the stored artifact
+        target-agnostic — the expensive part (the forward pass) is done once,
+        and any future question about any candidate transcription is then a
+        cheap local computation.
+
+        fp16 is well inside what this needs: these are log-probs used in a
+        sum-exp, and fp16's ~3 decimal digits are far below the model's own
+        uncertainty. Shipped zlib-compressed because a log-prob matrix is
+        mostly near-identical very-negative values and compresses ~10x.
+        `vocab` is included so the row order can never be misread later.
+        """
+        import base64, zlib
+
+        # torch's own buffer, not numpy's — numpy is not in this image (torch
+        # imports it lazily and warns when absent), and going through it would
+        # add a dependency for a byte copy we can do directly.
+        mat = log_probs[0].detach().to("cpu").half().contiguous()
+        payload = zlib.compress(bytes(mat.untyped_storage()), 6)
+        # Row labels come from the tokenizer's own vocab, NOT `_label`
+        # (`decode`). The two disagree on 78 of 461 entries — decode renders
+        # `<pad>` as `<blank>` and collapses some doubled forms — so labeling
+        # rows with decode output produces a matrix whose indices can't be
+        # looked up by the same token strings `_score_target` uses. A consumer
+        # rescoring offline would then silently index the wrong rows.
+        vocab = self.processor.tokenizer.get_vocab()
+        by_id = {i: tok for tok, i in vocab.items()}
+        return {
+            "shape": list(mat.shape),                       # (T, V)
+            "dtype": "float16",
+            "encoding": "zlib+base64",
+            "blank_id": self.blank_id,
+            "vocab": [by_id.get(i, self._label(i)) for i in range(mat.shape[1])],
+            "data": base64.b64encode(payload).decode(),
+        }
+
+    def _score_target(self, log_probs, target_phonemes: list) -> dict:
+        """How well does the audio support *this specific* phoneme sequence?
+
+        Greedy decode + edit distance answers a different question than the one
+        we actually care about: it asks "what did the model think it heard, and
+        does that string match?", which throws away the distribution and turns
+        every soft disagreement (a phoneme the model split 60/40, a
+        transcription-convention mismatch) into a hard edit. CTC scores the
+        real question directly — the total probability of *all* frame
+        alignments that spell the target — so mass the model put on the right
+        answer still counts even when it lost the argmax.
+
+        Returned as a likelihood ratio against the model's own free decode:
+        `ratio = (logP(target) - logP(free)) / len(target)`, i.e. log-odds per
+        phoneme of the claimed sentence versus the best explanation the model
+        can offer for this audio. 0 means the target IS the model's preferred
+        reading; more negative means the audio increasingly fails to support it.
+        Scale-free across clip lengths, and needs no per-language equivalence
+        table to be meaningful.
+        """
+        import torch
+        import torch.nn.functional as F
+
+        vocab = self.processor.tokenizer.get_vocab()
+        ids, oov = [], []
+        for tok in target_phonemes:
+            if tok in vocab:
+                ids.append(vocab[tok])
+            else:
+                oov.append(tok)
+        if not ids:
+            return {"error": "no target phoneme was in the model vocab", "oov": oov}
+
+        lp = log_probs.transpose(0, 1).float()              # (T, 1, V), CTC layout
+        T = lp.shape[0]
+
+        def score(seq: list) -> float:
+            if not seq or len(seq) > T:
+                return float("nan")
+            loss = F.ctc_loss(
+                lp,
+                torch.tensor([seq], dtype=torch.long, device=lp.device),
+                torch.tensor([T], dtype=torch.long),
+                torch.tensor([len(seq)], dtype=torch.long),
+                blank=self.blank_id, reduction="none", zero_infinity=True,
+            )
+            return float(-loss[0].item())                   # loss is -logP
+
+        # The model's own reading of this audio: greedy path, CTC-collapsed.
+        # Its CTC score is the reference the target is measured against.
+        pred = log_probs[0].argmax(dim=-1).tolist()
+        free = []
+        for i, tok in enumerate(pred):
+            if tok != self.blank_id and (i == 0 or tok != pred[i - 1]):
+                free.append(tok)
+
+        logp_target = score(ids)
+        logp_free = score(free) if free else float("nan")
+        ratio = (
+            (logp_target - logp_free) / len(ids)
+            if logp_free == logp_free and logp_target == logp_target
+            else float("nan")
+        )
+        return {
+            "logp_target": logp_target,
+            "logp_target_per_phoneme": logp_target / len(ids),
+            "logp_free": logp_free,
+            "ratio": ratio,
+            "target_len": len(ids),
+            "free_len": len(free),
+            "oov": oov,
+        }
 
     def _label(self, token_id: int) -> str:
         return "<blank>" if token_id == self.blank_id else self.processor.decode(token_id)
@@ -588,6 +748,8 @@ class Wav2Vec2Phoneme:
         top_k: int = 3,
         return_frames: bool = False,
         language: str | None = None,
+        target_phonemes: list | None = None,
+        return_frame_matrix: bool = False,
     ) -> dict:
         import torch
         import torchaudio.functional as F
@@ -612,6 +774,10 @@ class Wav2Vec2Phoneme:
                 log_probs, stress_logits, aux_ids, top_k=top_k
             )
         }
+        if target_phonemes:
+            out["target_score"] = self._score_target(log_probs, target_phonemes)
+        if return_frame_matrix:
+            out["frame_matrix"] = self._frame_matrix(log_probs)
         if return_frames:
             out["frames"] = self._frames_topk(
                 log_probs, stress_logits, p_nonblank, aux_ids, top_k=top_k
@@ -647,11 +813,14 @@ class Wav2Vec2Phoneme:
         sample_rate = int(request.get("sample_rate", 16000))
         top_k = min(max(int(request.get("top_k", 3)), 1), 100)
         return_frames = bool(request.get("return_frames", False))
+        target_phonemes = request.get("target_phonemes") or None
+        return_frame_matrix = bool(request.get("return_frame_matrix", False))
         # Opt-in: names which language's aux heads to run, e.g. "tha", "jpn",
         # "zho-hans". Omitted (or unknown) means phonemes + stress only.
         language = request.get("language")
         result = self.transcribe_phonemes.local(
-            audio, sample_rate, top_k, return_frames, language
+            audio, sample_rate, top_k, return_frames, language, target_phonemes,
+            return_frame_matrix,
         )
         # Stamp every prediction with the deploy marker so the verifier can
         # reject (and refuse to cache) responses served by a stale/contaminated
