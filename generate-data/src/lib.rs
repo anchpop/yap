@@ -16,6 +16,23 @@ pub fn cache_only() -> bool {
     CACHE_ONLY.load(Ordering::Relaxed)
 }
 
+/// Whether to route batches through ordinary chat completions instead of
+/// OpenAI's Batch API (`YAP_NO_BATCH=1`).
+///
+/// The Batch API is otherwise a hard dependency with no fallback: when it
+/// breaks account-side — as it did on 2026-08-28, when every batch started
+/// failing validation with "Cannot find file <its own freshly uploaded
+/// input>" — a run simply cannot finish, however healthy the rest of the
+/// pipeline is. Sending live costs about double and runs the misses
+/// sequentially, so this is an escape hatch to be switched off again once
+/// batching recovers, not a default.
+///
+/// Read from the environment at client construction, which is lazy and so
+/// always happens after `dotenvy` has loaded `.env`.
+fn no_batch() -> bool {
+    std::env::var("YAP_NO_BATCH").is_ok_and(|v| !v.is_empty() && v != "0")
+}
+
 /// Update an indicatif bar from a Batch API status poll. `offset` is the number
 /// of items handled by earlier batches and `expected` includes cache hits, which
 /// OpenAI's request counts do not include.
@@ -44,9 +61,7 @@ pub fn apply_cache_only(
 }
 
 fn cached_chat_client(model: &str, reasoning_effort: &str) -> tysm::chat_completions::ChatClient {
-    tysm::chat_completions::ChatClient::from_env(model)
-        .unwrap()
-        .with_cache_directory("./.cache")
+    base_chat_client(model)
         .with_reasoning_effort(reasoning_effort)
         .with_service_tier("flex")
 }
@@ -79,17 +94,25 @@ impl StageTimer {
     }
 }
 
-fn cached_default_chat_client(model: &str) -> tysm::chat_completions::ChatClient {
-    tysm::chat_completions::ChatClient::from_env(model)
+/// Every chat client in this crate starts here, so the Batch API escape hatch
+/// below needs to exist in exactly one place.
+fn base_chat_client(model: &str) -> tysm::chat_completions::ChatClient {
+    let client = tysm::chat_completions::ChatClient::from_env(model)
         .unwrap()
-        .with_cache_directory("./.cache")
+        .with_cache_directory("./.cache");
+    if no_batch() {
+        // Every batch is "small", so tysm sends its cache misses live.
+        client.with_small_batch_threshold(usize::MAX)
+    } else {
+        client
+    }
 }
 
 fn cached_reasoning_chat_client(
     model: &str,
     reasoning_effort: &str,
 ) -> tysm::chat_completions::ChatClient {
-    cached_default_chat_client(model).with_reasoning_effort(reasoning_effort)
+    base_chat_client(model).with_reasoning_effort(reasoning_effort)
 }
 
 /// A current generation client whose cache is checked first, followed by historical model
@@ -100,12 +123,12 @@ pub fn migrating_chat_client(model: &str) -> tysm::chat_completions::ChatClient 
             .with_cache_fallback(cached_chat_client("gpt-5.4", "high"))
             .with_cache_fallback(cached_chat_client("gpt-5.4", "low"))
             .with_cache_fallback(cached_chat_client("gpt-5.4-mini", "low"))
-            .with_cache_fallback(cached_default_chat_client("gpt-5.4-nano"))
+            .with_cache_fallback(base_chat_client("gpt-5.4-nano"))
             .with_cache_fallback(cached_reasoning_chat_client("gpt-5.2", "high"))
             .with_cache_fallback(cached_chat_client("gpt-5.2", "low"))
-            .with_cache_fallback(cached_default_chat_client("gpt-5"))
-            .with_cache_fallback(cached_default_chat_client("gpt-5").with_service_tier("flex"))
-            .with_cache_fallback(cached_default_chat_client("gpt-4o")),
+            .with_cache_fallback(base_chat_client("gpt-5"))
+            .with_cache_fallback(base_chat_client("gpt-5").with_service_tier("flex"))
+            .with_cache_fallback(base_chat_client("gpt-4o")),
     )
 }
 

@@ -145,8 +145,15 @@ static JUDGE_CLIENT: LazyLock<ChatClient> =
     LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-terra"));
 
 /// Client for the polysemy probe list — one call per language.
+// Off the flex tier the migrating client defaults to: flex has no capacity
+// guarantee, and a `flex_unavailable` on this one blocking call aborts the
+// whole language. service_tier is excluded from tysm's cache key, so every
+// probe response cached under flex still hits.
 static PROBE_CLIENT: LazyLock<ChatClient> =
-    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-sol"));
+    LazyLock::new(|| crate::migrating_chat_client("gpt-5.6-sol").with_service_tier("default"));
+
+/// How many times to try the probe call before giving up on the language.
+const PROBE_ATTEMPTS: u32 = 4;
 
 /// Gram identity: the gram's index in the trainer vocabulary, which is also
 /// its token id in the encoded sentences.
@@ -890,14 +897,36 @@ fn probe_system_prompt(language: Language) -> String {
 
 /// Ask the probe model for polysemous words the geometric gate would miss.
 /// One cached call per language.
+///
+/// Retried because this call sits on the critical path with an expensive
+/// corpus rebuild behind it and nothing in front of it: a DNS blip or a
+/// capacity refusal that lasts seconds would otherwise throw the rebuild away
+/// and fail the language. The response is cached, so a later attempt in the
+/// same run costs nothing.
 async fn probe_words(language: Language) -> Result<Vec<ProbeWord>> {
-    let response: PolysemyProbeResponse = PROBE_CLIENT
-        .chat_with_system_prompt(
-            probe_system_prompt(language),
-            "Please list the words when ready!",
-        )
-        .await
-        .context("polysemy probe failed")?;
+    let mut attempt = 0;
+    let response: PolysemyProbeResponse = loop {
+        attempt += 1;
+        match PROBE_CLIENT
+            .chat_with_system_prompt(
+                probe_system_prompt(language),
+                "Please list the words when ready!",
+            )
+            .await
+        {
+            Ok(response) => break response,
+            Err(e) if attempt < PROBE_ATTEMPTS => {
+                let delay = u64::from(30 * attempt);
+                log::warn!(
+                    "usage-discovery[{}]: polysemy probe attempt {attempt} failed, retrying in \
+                     {delay}s: {e}",
+                    language.code(),
+                );
+                tokio::time::sleep(std::time::Duration::from_secs(delay)).await;
+            }
+            Err(e) => return Err(e).context("polysemy probe failed"),
+        }
+    };
     Ok(response.words)
 }
 

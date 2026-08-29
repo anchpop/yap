@@ -5939,7 +5939,7 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 [[package]]
 name = "tysm"
 version = "0.20.0"
-source = "git+https://github.com/anchpop/tysm.git?rev=35b1f9e09cc2ed2d5bea039007b1be3309c84740#35b1f9e09cc2ed2d5bea039007b1be3309c84740"
+source = "git+https://github.com/anchpop/tysm.git?rev=d8a1c080043e5ca3837824bb9f157b9a0f288940#d8a1c080043e5ca3837824bb9f157b9a0f288940"
 dependencies = [
  "base64 0.22.1",
  "dashmap",
