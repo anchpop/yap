@@ -23,3 +23,6 @@ matroska-demuxer = "0.8.1"
 flate2 = "1.1.9"
 osmo = { workspace = true }
 xxhash-rust = { workspace = true }
+tempfile = { workspace = true }
+phoneme-verify = { path = "../phoneme-verify" }
+espeak = { path = "../espeak" }

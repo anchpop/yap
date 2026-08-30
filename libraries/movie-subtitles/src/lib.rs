@@ -293,6 +293,8 @@ pub fn strip_html_tags(text: &str) -> String {
     HTML_TAGS.replace_all(text, "").to_string()
 }
 
+pub mod segment;
+
 #[cfg(test)]
 mod tests {
     use super::*;

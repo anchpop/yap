@@ -69,6 +69,18 @@ fn parse_espeak_ipa(raw: &str) -> Vec<String> {
                 // Stray diacritic at the start with nothing to attach to.
                 None => phonemes.push(ch.to_string()),
             }
+        } else if ch == 'ʲ' {
+            // Palatalization folds onto a preceding CONSONANT — Russian soft
+            // tʲ nʲ sʲ, soft л ɫʲ, щ ʃʲ are single model tokens. After a
+            // vowel espeak uses ʲ for a glide (Italian "io" = iʲo), which
+            // stays its own token. Emitted standalone after a consonant it
+            // scored every palatalized word as a mismatch: that made Russian
+            // look ungateable (median log-odds −4.5 on verified clips) until
+            // this was found.
+            match phonemes.last_mut() {
+                Some(last) if !last.starts_with(|c| IPA_VOWELS.contains(c)) => last.push(ch),
+                _ => phonemes.push(ch.to_string()),
+            }
         } else {
             // Vowel or consonant — its own phoneme.
             phonemes.push(ch.to_string());
@@ -76,6 +88,10 @@ fn parse_espeak_ipa(raw: &str) -> Vec<String> {
     }
     phonemes
 }
+
+/// `IPA_VOWELS` from the same pipeline: what palatalization may *not* fold
+/// onto.
+const IPA_VOWELS: &str = "iyɨʉɯuɪʏʊeøɘɵɤoəɛœɜɞʌɔæɐaɶɑɒɚɝᵻ";
 
 /// Bound on a single espeak-ng invocation in [`phonemize_phrase_ipa`].
 /// Normal runs finish in <10 ms; this only exists so a wedged binary or
@@ -97,31 +113,107 @@ fn espeak_binary() -> String {
 /// stdout. No `--sep` — [`phonemize_phrase`] tokenizes the continuous
 /// output itself in `parse_espeak_ipa` to match the model's training
 /// preprocessing, and [`phonemize_phrase_ipa`] wants it verbatim.
-fn espeak_command(binary: &str, code: &str, text: &str) -> Command {
+fn espeak_command(binary: &str, code: &str) -> Command {
     let mut cmd = Command::new(binary);
     if let Ok(p) = std::env::var("ESPEAK_NG_DATA_PATH") {
         cmd.arg(format!("--path={p}"));
     }
-    cmd.args(["-v", code, "-q", "--ipa", "-x", text]);
+    // Text goes in on **stdin**, never argv. Passed as an argument, any text
+    // beginning with a dash is parsed as options — espeak prints "invalid
+    // option" to stderr, emits NOTHING on stdout, and still exits 0, so the
+    // caller receives an empty phoneme sequence indistinguishable from a
+    // punctuation-only input. Subtitle dialogue dashes make that the common
+    // case (16% of film cues), and it silently dropped 417 rows from the
+    // training corpus before anyone noticed. `--` would also fix it, but
+    // stdin removes the option-parsing surface altogether rather than
+    // relying on every future call site remembering the separator.
+    // Verified equivalent to the argv form on 867 corpus sentences.
+    cmd.args(["-v", code, "-q", "--ipa", "-x", "--stdin"]);
     cmd
+}
+
+/// Espeak prints `Invalid phoneme code 123` to *stdout*, mixed in with the
+/// phonemes, when it can't render one. Left in place it would be tokenized as
+/// though it were IPA, quietly injecting Latin letters into the phoneme
+/// sequence. (lexide's preprocessing filters the same line.)
+fn is_stdout_diagnostic(line: &str) -> bool {
+    line.strip_prefix("Invalid phoneme code ")
+        .is_some_and(|rest| !rest.is_empty() && rest.chars().all(|c| c.is_ascii_digit()))
+}
+
+/// Drop espeak's stdout diagnostics, keeping only spoken output.
+fn espeak_output_lines(stdout: &str) -> String {
+    stdout
+        .lines()
+        .map(str::trim)
+        .filter(|l| !l.is_empty() && !is_stdout_diagnostic(l))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// One espeak utterance. Newlines are flattened first: a manifest sentence is
+/// conceptually one utterance, and an embedded newline would otherwise split
+/// it into two stdin records.
+fn stdin_payload(text: &str) -> String {
+    let flat: String = text
+        .chars()
+        .map(|c| if c == '\n' || c == '\r' { ' ' } else { c })
+        .collect();
+    format!("{flat}\n")
 }
 
 /// Extract stdout from a finished espeak-ng invocation, turning a non-zero
 /// exit into a diagnosable error.
 fn espeak_stdout(text: &str, output: std::process::Output) -> Result<String> {
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let data_hint = if std::env::var("ESPEAK_NG_DATA_PATH").is_err() {
+        " (set ESPEAK_NG_DATA_PATH=<parent of espeak-ng-data> if using a custom build)"
+    } else {
+        ""
+    };
     if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        let data_hint = if std::env::var("ESPEAK_NG_DATA_PATH").is_err() {
-            " (set ESPEAK_NG_DATA_PATH=<parent of espeak-ng-data> if using a custom build)"
-        } else {
-            ""
-        };
         anyhow::bail!(
             "espeak-ng exited with status {} for {text:?}: {stderr}{data_hint}",
             output.status
         );
     }
+    // Espeak reports usage problems on stderr while still exiting 0, so the
+    // exit status alone is not evidence of success. Measured across 840
+    // corpus sentences, a healthy run writes nothing to stderr at all — so
+    // any output here is treated as failure rather than guessed at. If a
+    // benign warning class ever appears, whitelist it explicitly; defaulting
+    // to "ignore what we don't recognize" is how the dash bug survived.
+    if !stderr.trim().is_empty() {
+        anyhow::bail!(
+            "espeak-ng wrote to stderr for {text:?} (exit status was success): \
+             {}{data_hint}",
+            stderr.trim()
+        );
+    }
     Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+}
+
+/// Run espeak with `text` on stdin and collect its output.
+///
+/// The payload is one short sentence — far below the pipe buffer — so writing
+/// it before draining stdout cannot deadlock the way a large payload would.
+fn run_with_stdin(mut cmd: Command, binary: &str, text: &str) -> Result<std::process::Output> {
+    use std::io::Write as _;
+    let mut child = cmd
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .with_context(|| invoke_failure_context(binary))?;
+    child
+        .stdin
+        .take()
+        .context("espeak-ng stdin not captured")?
+        .write_all(stdin_payload(text).as_bytes())
+        .context("failed to write text to espeak-ng stdin")?;
+    child
+        .wait_with_output()
+        .with_context(|| invoke_failure_context(binary))
 }
 
 fn invoke_failure_context(binary: &str) -> String {
@@ -158,11 +250,21 @@ pub fn phonemize_phrase(text: &str, language: Language) -> Result<Option<Vec<Str
     };
 
     let binary = espeak_binary();
-    let output = espeak_command(&binary, code, text)
-        .output()
-        .with_context(|| invoke_failure_context(&binary))?;
+    let output = run_with_stdin(espeak_command(&binary, code), &binary, text)?;
     let stdout = espeak_stdout(text, output)?;
-    Ok(Some(parse_espeak_ipa(&stdout)))
+    let phonemes = parse_espeak_ipa(&espeak_output_lines(&stdout));
+    // Text with pronounceable content must produce phonemes. Silence here is
+    // how the `--` bug hid for so long: an empty result is indistinguishable
+    // from "this cue is punctuation only" at the call site, where it becomes
+    // a clip rejected for "no ground truth" rather than a bug report.
+    if phonemes.is_empty() && text.chars().any(char::is_alphabetic) {
+        anyhow::bail!(
+            "espeak-ng produced no phonemes for {text:?} (voice {code}) despite \
+             the text containing letters — this indicates an espeak invocation \
+             problem, not an unpronounceable input"
+        );
+    }
+    Ok(Some(phonemes))
 }
 
 /// Phonemize a single phrase into espeak-ng's standard readable IPA, word
@@ -182,20 +284,43 @@ pub async fn phonemize_phrase_ipa(text: &str, language: Language) -> Result<Opti
     };
 
     let binary = espeak_binary();
-    let mut cmd = tokio::process::Command::from(espeak_command(&binary, code, text));
+    let mut cmd = tokio::process::Command::from(espeak_command(&binary, code));
     // Ensure the child is reaped if the timeout (or the caller) drops us.
     cmd.kill_on_drop(true);
+    cmd.stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
 
-    let output = tokio::time::timeout(ESPEAK_TIMEOUT, cmd.output())
-        .await
-        .map_err(|_| anyhow::anyhow!("espeak-ng timed out after {ESPEAK_TIMEOUT:?} for {text:?}"))?
-        .with_context(|| invoke_failure_context(&binary))?;
+    let payload = stdin_payload(text);
+    let output = tokio::time::timeout(ESPEAK_TIMEOUT, async {
+        let mut child = cmd
+            .spawn()
+            .with_context(|| invoke_failure_context(&binary))?;
+        {
+            use tokio::io::AsyncWriteExt as _;
+            let mut stdin = child.stdin.take().context("espeak-ng stdin not captured")?;
+            stdin
+                .write_all(payload.as_bytes())
+                .await
+                .context("failed to write text to espeak-ng stdin")?;
+            stdin.shutdown().await.ok();
+        }
+        child
+            .wait_with_output()
+            .await
+            .with_context(|| invoke_failure_context(&binary))
+    })
+    .await
+    .map_err(|_| anyhow::anyhow!("espeak-ng timed out after {ESPEAK_TIMEOUT:?} for {text:?}"))??;
     let stdout = espeak_stdout(text, output)?;
 
     // espeak emits one line per clause; collapse all whitespace runs to
     // single spaces so the result reads as one phrase.
     Ok(Some(
-        stdout.split_whitespace().collect::<Vec<_>>().join(" "),
+        espeak_output_lines(&stdout)
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" "),
     ))
 }
 
@@ -219,6 +344,11 @@ mod tests {
         // A stray leading diacritic has nothing to attach to and stands
         // alone rather than panicking.
         assert_eq!(parse_espeak_ipa("ːa"), vec!["ː", "a"]);
+        // Palatalization binds to a consonant, not to a vowel.
+        assert_eq!(
+            parse_espeak_ipa("tʲinʲ ɫʲ iʲo"),
+            vec!["tʲ", "i", "nʲ", "ɫʲ", "i", "ʲ", "o"]
+        );
     }
 
     // Ignored in CI: requires the espeak-ng binary (and the liaison output
@@ -252,6 +382,43 @@ mod tests {
             bare.contains(&"ɛ".to_string()),
             "expected /ɛ/, got {bare:?}"
         );
+    }
+
+    // Ignored in CI: requires the espeak-ng binary. Run with `--ignored`.
+    #[test]
+    #[ignore = "requires espeak-ng binary"]
+    fn leading_dash_is_text_not_options() {
+        // Subtitle dialogue dashes are ~16% of film cues. Before `--` was
+        // passed, espeak read "- Bonjour" as flags: empty stdout, exit 0, and
+        // the caller silently got zero phonemes.
+        let dashed = phonemize_phrase("- Bonjour", Language::French)
+            .expect("espeak invocation failed")
+            .expect("French has espeak support");
+        let plain = phonemize_phrase("Bonjour", Language::French)
+            .expect("espeak invocation failed")
+            .expect("French has espeak support");
+        assert!(!dashed.is_empty(), "leading dash swallowed the text");
+        assert_eq!(dashed, plain, "the dash must not change the phonemes");
+    }
+
+    #[test]
+    fn stdout_diagnostics_are_not_phonemes() {
+        assert!(is_stdout_diagnostic("Invalid phoneme code 123"));
+        assert!(!is_stdout_diagnostic("Invalid phoneme code"));
+        assert!(!is_stdout_diagnostic("bɔ̃ʒuʁ"));
+        // The diagnostic must not survive into the phoneme stream.
+        assert_eq!(
+            espeak_output_lines("Invalid phoneme code 42\nbɔ̃ʒuʁ"),
+            "bɔ̃ʒuʁ"
+        );
+    }
+
+    #[test]
+    fn stdin_payload_flattens_newlines() {
+        // A cue is one utterance; an embedded newline would otherwise make
+        // espeak read it as two stdin records and return two clause lines.
+        assert_eq!(stdin_payload("a\nb"), "a b\n");
+        assert_eq!(stdin_payload("a\r\nb"), "a  b\n");
     }
 
     #[test]

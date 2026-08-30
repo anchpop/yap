@@ -2948,6 +2948,34 @@ impl WritingSystem {
 const SIMPLIFIED_ONLY: &str = "国会这说对时们来学见还没电车门问间东儿点开关认让话语读写听号妈谁么几个长张马鸟鱼龙风华为乐现买卖医难题双观欢击级红纪经给绝统继续绿网罗办变边币标产称迟处传单当党动断队发刚归龟汉护记举剧亲轻确热伤审圣书树术岁孙态万习县响择泽针诊争证织职执质钟种众专转庄状准务议译异样养药钥远运杂灾脏则贼赠纸骂";
 const TRADITIONAL_ONLY: &str = "國會這說對時們來學見還沒電車門問間東兒點開關認讓話語讀寫聽號媽誰麼幾個長張馬鳥魚龍風華為樂現買賣醫難題雙觀歡擊級紅紀經給絕統繼續綠網羅辦變邊幣標產稱遲處傳單當黨動斷隊發剛歸龜漢護記舉劇親輕確熱傷審聖書樹術歲孫態萬習縣響擇澤針診爭證織職執質鐘種眾專轉莊狀準務議譯異樣養藥鑰遠運雜災臟則賊贈紙罵";
 
+/// The one G2P source a language's phoneme labels may come from.
+///
+/// Mirrors lexide's `PHONEME_BACKENDS.md`; see
+/// [`Language::phoneme_label_source`] for why mixing sources is a
+/// correctness bug rather than a quality trade-off.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PhonemeLabelSource {
+    /// espeak-ng fork, with this voice code. Must match lexide's
+    /// `LANG_TO_ESPEAK` entry for the language.
+    Espeak(&'static str),
+    /// A dedicated G2P engine, named by its lexide provider string. We do
+    /// not run these yet, so phoneme scoring must refuse rather than
+    /// substitute espeak.
+    Backend(&'static str),
+    /// No validated label source. Scoring is not supported.
+    Unvalidated,
+}
+
+impl PhonemeLabelSource {
+    /// The espeak voice, if espeak is genuinely this language's label source.
+    pub fn espeak_voice(&self) -> Option<&'static str> {
+        match self {
+            PhonemeLabelSource::Espeak(v) => Some(v),
+            _ => None,
+        }
+    }
+}
+
 impl Language {
     /// True if `text` contains Han characters that belong exclusively to the
     /// *other* Chinese script (e.g. Traditional-only characters when `self` is
@@ -2962,34 +2990,62 @@ impl Language {
         }
     }
 
-    /// espeak-ng voice code for this language, or `None` if espeak's
-    /// support for it is too weak to trust phonemic output. Used by the
-    /// audio verifier to derive phrase-level IPA (handles liaison,
-    /// connected-speech effects) and by downstream features like
-    /// homophone indexing.
+    /// Where this language's phoneme labels legitimately come from.
     ///
-    /// Returning `None` causes callers to fall back to word-by-word
-    /// wikipron lookups, which miss connected-speech effects but at
-    /// least exist for every documented word.
-    pub fn espeak_code(&self) -> Option<&'static str> {
+    /// Not a preference — a correctness constraint, and the single source of
+    /// truth for it on this side. The pronunciation model is trained on
+    /// labels from exactly one G2P source per language (lexide's
+    /// `PHONEME_BACKENDS.md`, mirrored here); scoring audio against targets
+    /// from a *different* source compares two phoneme inventories that
+    /// disagree about what a segment is, and nothing downstream can detect
+    /// it. Shapes match, distances are computed, results are simply wrong.
+    ///
+    /// This was not hypothetical: Hindi was scored against espeak `hi` and
+    /// measured as our worst language by a wide margin (AUC 0.75 against
+    /// 0.97 for Spanish), because ~290 standalone `ʰ` tokens in the targets
+    /// are not in the model's vocabulary at all — Hindi's labels come from
+    /// `schwa-stress-hin`, which emits aspiration as one segment with its
+    /// consonant. The model was never the problem.
+    pub fn phoneme_label_source(&self) -> PhonemeLabelSource {
         match self {
-            // Languages where espeak-ng's IPA output is well-tested and
-            // matches the phonetic conventions our wikipron data uses.
-            Language::French => Some("fr"),
-            Language::English => Some("en-us"),
-            Language::Spanish => Some("es"),
-            Language::German => Some("de"),
-            Language::Italian => Some("it"),
-            Language::Portuguese => Some("pt"),
-            Language::Russian => Some("ru"),
-            Language::Hindi => Some("hi"),
-            // Less trustworthy — espeak produces output but with known
-            // quality issues. Leave off until each is validated against a
-            // ground-truth pronunciation corpus for that language.
-            Language::Korean => None,
-            Language::Japanese => None,
-            Language::ChineseSimplified | Language::ChineseTraditional => None,
-            Language::Thai => None,
+            // espeak-ng's IPA is the training label source for these, using
+            // the fork at the pinned branch. Voices must match lexide's
+            // `LANG_TO_ESPEAK` exactly — including `pt-br`, not `pt`:
+            // European Portuguese targets against Brazilian audio measured
+            // 41% median phoneme distance where `pt-br` measured 31%.
+            Language::French => PhonemeLabelSource::Espeak("fr-fr"),
+            Language::English => PhonemeLabelSource::Espeak("en-us"),
+            Language::Spanish => PhonemeLabelSource::Espeak("es"),
+            Language::German => PhonemeLabelSource::Espeak("de"),
+            Language::Italian => PhonemeLabelSource::Espeak("it"),
+            Language::Portuguese => PhonemeLabelSource::Espeak("pt-br"),
+            Language::Russian => PhonemeLabelSource::Espeak("ru"),
+            // espeak has voices for all of these, and using them is a bug.
+            // The provider strings are lexide's
+            // `build_external_phoneme_sidecars.CONFIG` keys.
+            Language::Hindi => PhonemeLabelSource::Backend("schwa-stress-hin"),
+            Language::Japanese => PhonemeLabelSource::Backend("pyopenjtalk"),
+            Language::ChineseSimplified => PhonemeLabelSource::Backend("g2pm-ipa"),
+            Language::Thai => PhonemeLabelSource::Backend("vachana-thai"),
+            // Traditional-script Mandarin has no corpus of its own; the
+            // model never saw it, so there is no label source to name.
+            Language::ChineseTraditional => PhonemeLabelSource::Unvalidated,
+            // lexide labels Korean from espeak `ko`, but that output has
+            // never been checked against a ground-truth Korean corpus.
+            // Unvalidated rather than Espeak: refusing to score is honest,
+            // scoring against an unchecked reference is not.
+            Language::Korean => PhonemeLabelSource::Unvalidated,
+        }
+    }
+
+    /// espeak-ng voice code, but **only** for languages espeak legitimately
+    /// labels. Returns `None` for backend-labeled and unvalidated languages,
+    /// so a caller that reaches for espeak on Hindi or Japanese gets nothing
+    /// rather than a plausible-looking wrong answer.
+    pub fn espeak_code(&self) -> Option<&'static str> {
+        match self.phoneme_label_source() {
+            PhonemeLabelSource::Espeak(voice) => Some(voice),
+            PhonemeLabelSource::Backend(_) | PhonemeLabelSource::Unvalidated => None,
         }
     }
 

@@ -8,13 +8,7 @@
 //! authored against this exact file, so their timings need no correction at
 //! all — which is why two thirds of the library is free.
 
-mod library;
-mod ocr;
-mod pgs;
-mod sync;
-mod transcript;
-mod vad;
-mod vobsub;
+use subtitle_corpus::{library, ocr, pgs, sync, transcript, vad, vobsub};
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -23,7 +17,7 @@ use std::sync::Mutex;
 
 use anyhow::{bail, Context, Result};
 use clap::{Parser, Subcommand};
-use library::{Movie, Source};
+use library::{plan_path, read_plan, truncate, Movie, Source};
 use serde::{Deserialize, Serialize};
 
 #[derive(Parser, Debug)]
@@ -345,6 +339,29 @@ enum Command_ {
         #[arg(long, default_value_t = 120)]
         range_secs: i64,
     },
+    /// Map every sentence in each transcribed film to the clip it is spoken
+    /// in, verified by the transcript and by the phoneme model. Writes
+    /// `clips.jsonl` beside the transcript; current films are skipped.
+    Clips {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        #[arg(long, default_value_t = 2)]
+        jobs: usize,
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// One film only, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+        /// Comma-separated course codes (fra,spa,…); default every language
+        /// with a phoneme reference.
+        #[arg(long, value_delimiter = ',')]
+        langs: Option<Vec<String>>,
+        /// Lowest CTC log-odds ratio (per phoneme, against the model's own
+        /// reading) a clip may have and still pass. Default: the calibrated
+        /// per-language cut.
+        #[arg(long, allow_hyphen_values = true)]
+        min_ratio: Option<f64>,
+    },
     /// Flag extracted subtitles that are too sparse to be real dialogue.
     Verify {
         #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
@@ -381,10 +398,6 @@ enum Command_ {
         #[arg(long, default_value = ".")]
         out_dir: PathBuf,
     },
-}
-
-fn plan_path(out: &std::path::Path) -> PathBuf {
-    out.join("plan.json")
 }
 
 /// The subtitle file a syncer should align for this movie, if any.
@@ -775,17 +788,6 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
     }
 }
 
-fn read_plan(out: &std::path::Path) -> Result<Vec<Movie>> {
-    let p = plan_path(out);
-    let raw = std::fs::read(&p).with_context(|| {
-        format!(
-            "No inventory at {} — run `subtitle-corpus inventory` first",
-            p.display()
-        )
-    })?;
-    Ok(serde_json::from_slice(&raw)?)
-}
-
 /// Run `f` over `items` on `jobs` threads, reporting progress as it goes.
 ///
 /// The work is IO-bound on ffmpeg reading whole films off the array, so the
@@ -1033,6 +1035,10 @@ fn refresh(
                 }
             })
         }),
+        ("clips", {
+            let out = out.clone();
+            Box::new(move || clips(out, 2, 0, None, None, None))
+        }),
         ("sidecars", {
             let out = out.clone();
             Box::new(move || export_sidecars(out))
@@ -1274,14 +1280,6 @@ fn extract_audio(out: PathBuf, jobs: usize, limit: usize, imdb: Option<&str>) ->
         "\n{extracted} tracks extracted, {current} already current, {no_stream} with no original-language stream"
     );
     Ok(())
-}
-
-fn truncate(s: &str, n: usize) -> String {
-    if s.chars().count() <= n {
-        s.to_string()
-    } else {
-        s.chars().take(n).collect::<String>() + "…"
-    }
 }
 
 /// Measure what OCR of the whole library would cost, on a sample.
@@ -2167,11 +2165,12 @@ fn transcript_is_stale(movie: &Movie, dir: &std::path::Path) -> bool {
         // No file, or one written before provenance was recorded.
         return true;
     };
+    let audio = read_audio_stamp(dir).map(|s| s.stream);
     match library::course_dir(&movie.original_language)
         .and_then(whisper_language)
-        .map(transcript::provenance)
+        .map(|language| transcript::provenance(language, audio))
     {
-        Some(Ok(current)) => stored != current,
+        Some(Ok(current)) => stored.is_stale_against(&current),
         // No language, or no provenance to compare against: there is nothing
         // this run could produce, so leave what is there alone.
         _ => false,
@@ -2198,9 +2197,16 @@ async fn transcribe_one(
     // The audio's own duration, not the video's: it is what we slice.
     let film_ms = sync::duration_ms(&audio)?;
 
-    let transcript =
-        transcript::transcribe_film(http, account, store, &audio, &profile, film_ms, language)
-            .await?;
+    let transcript = transcript::transcribe_film(
+        http,
+        account,
+        store,
+        &audio,
+        &profile,
+        film_ms,
+        transcript::provenance(language, read_audio_stamp(&dir).map(|s| s.stream))?,
+    )
+    .await?;
     std::fs::create_dir_all(&dir)?;
     std::fs::write(dir.join("transcript.jsonl"), transcript.to_jsonl()?)?;
     write_stamp(&dir, movie, StampSource::Keep);
@@ -2278,6 +2284,22 @@ async fn transcribe_all(
         done.iter().filter(|ok| !**ok).count()
     );
     Ok(())
+}
+
+#[tokio::main]
+async fn clips(
+    out: PathBuf,
+    jobs: usize,
+    limit: usize,
+    imdb: Option<String>,
+    langs: Option<Vec<String>>,
+    min_ratio: Option<f64>,
+) -> Result<()> {
+    let gate = subtitle_corpus::clips::Gate {
+        min_ratio,
+        ..Default::default()
+    };
+    subtitle_corpus::clips::clips_all(out, jobs, limit, imdb, langs, gate).await
 }
 
 /// Score each subtitle against where the audio says people are talking.
@@ -3186,6 +3208,14 @@ fn main() -> Result<()> {
             limit,
             range_secs,
         } => calibrate(out, jobs, limit, range_secs),
+        Command_::Clips {
+            out,
+            jobs,
+            limit,
+            imdb,
+            langs,
+            min_ratio,
+        } => clips(out, jobs, limit, imdb, langs, min_ratio),
         Command_::Verify { out, min_density } => verify(out, min_density),
         Command_::ExportSidecars { out } => export_sidecars(out),
         Command_::PgsStats {

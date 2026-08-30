@@ -202,6 +202,21 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
     struct Stream {
         #[serde(default)]
         tags: std::collections::HashMap<String, String>,
+        #[serde(default)]
+        disposition: std::collections::HashMap<String, u8>,
+    }
+    impl Stream {
+        /// A director's commentary is in the film's language and comes
+        /// first on plenty of discs (Delicatessen: track 1 is Jeunet
+        /// talking over the film, track 3 is the film). Transcribing it
+        /// yields a transcript that agrees with almost nothing.
+        fn is_commentary(&self) -> bool {
+            self.disposition.get("comment").copied().unwrap_or(0) == 1
+                || self
+                    .tags
+                    .get("title")
+                    .is_some_and(|t| t.to_lowercase().contains("commentary"))
+        }
     }
     #[derive(Deserialize)]
     struct Probe {
@@ -215,7 +230,7 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
             "-select_streams",
             "a",
             "-show_entries",
-            "stream_tags=language",
+            "stream_tags=language,title:stream_disposition=comment",
             "-of",
             "json",
         ])
@@ -224,6 +239,9 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
     let probe: Probe = serde_json::from_slice(&out.stdout).unwrap_or(Probe { streams: vec![] });
     // Position among *audio* streams, which is what `-map 0:a:N` counts.
     for (i, s) in probe.streams.iter().enumerate() {
+        if s.is_commentary() {
+            continue;
+        }
         let lang = s.tags.get("language").cloned().unwrap_or_default();
         let lang = lang.trim().to_lowercase();
         // "mul" is the original mixed track of a multilingual film.
@@ -232,7 +250,7 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
         }
     }
     // Untagged audio on a single-track rip is the original often enough to try.
-    if probe.streams.len() == 1 {
+    if probe.streams.len() == 1 && !probe.streams[0].is_commentary() {
         return Ok(0);
     }
     bail!("no audio stream in the film's own language")
@@ -243,7 +261,7 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
 /// A remux can keep a video's name while reordering or replacing its audio, so
 /// file identity alone is not enough: the stamp records which stream was read
 /// and what it looked like, and any mismatch evicts the extraction.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AudioStreamIdentity {
     /// Position among the file's *audio* streams, as `-map 0:a:N` counts.
     pub stream_index: usize,

@@ -17,6 +17,7 @@ members = [
     "libraries/opensubtitles-downloader",
     "libraries/movie-subtitles",
     "libraries/subtitle-corpus",
+    "libraries/phoneme-verify",
     "libraries/omnigram",
     "libraries/user-metrics",
     "libraries/google-tts",
@@ -37,7 +38,8 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-tysm = { git = "https://github.com/anchpop/tysm.git", rev = "d8a1c080043e5ca3837824bb9f157b9a0f288940", features = [
+tysm = { git = "https://github.com/anchpop/tysm.git", rev = "2c12d98cf1348434c4e872f462c6629729884e12", features = [
+    "no-batch",
     "small-batch-optimization",
 ] }
 # Local-first KV cache store synced to R2 (github.com/anchpop/osmo). All of
@@ -63,6 +65,7 @@ unicode-normalization = "0.1.25"
 weblocks = "0.2.0"
 lexide = { git = "https://github.com/anchpop/lexide.git", rev = "f27160eab541c3d8de55386a72efce142c6f8086", features = [
     "remote",
+    "segment",
 ] }
 indicatif = "0.18"
 

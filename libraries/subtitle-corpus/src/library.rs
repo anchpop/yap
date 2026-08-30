@@ -446,3 +446,29 @@ pub fn load_library(dump: &Path) -> Result<Vec<LibraryEntry>> {
         })
         .collect())
 }
+
+/// Where `inventory` writes the plan, under the corpus root.
+pub fn plan_path(out: &Path) -> PathBuf {
+    out.join("plan.json")
+}
+
+/// Every film the inventory knows about, in inventory order.
+pub fn read_plan(out: &Path) -> Result<Vec<Movie>> {
+    let p = plan_path(out);
+    let raw = std::fs::read(&p).with_context(|| {
+        format!(
+            "No inventory at {} — run `subtitle-corpus inventory` first",
+            p.display()
+        )
+    })?;
+    Ok(serde_json::from_slice(&raw)?)
+}
+
+/// `s` cut to `n` characters with an ellipsis, for progress lines.
+pub fn truncate(s: &str, n: usize) -> String {
+    if s.chars().count() <= n {
+        s.to_string()
+    } else {
+        s.chars().take(n).collect::<String>() + "…"
+    }
+}

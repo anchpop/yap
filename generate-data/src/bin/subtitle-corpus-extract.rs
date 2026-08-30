@@ -29,16 +29,16 @@
 //!     cargo run --release --bin subtitle-corpus-extract -- [--dry-run] \
 //!         [--langs fra,jpn] [--per-film 120]
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Parser;
-use generate_data::subtitle_corpus::{
-    CueLabel, MIN_FILM_POSITIVES, PlanEntry, course_code_full, label_cues, load_transcript,
-    parse_cues, sample, slice_wav, tokenization_for,
-};
 use serde_json::json;
 use std::collections::{BTreeMap, HashSet};
 use std::io::Write as _;
 use std::path::PathBuf;
+use subtitle_corpus::cues::{
+    CueLabel, MIN_FILM_POSITIVES, course_code_full, label_cues, load_transcript, parse_cues,
+    sample, slice_wav, tokenization_for,
+};
 
 #[derive(Parser, Debug)]
 #[command(about = "Extract transcript-verified film cues as training clips")]
@@ -75,9 +75,7 @@ fn main() -> Result<()> {
         .as_ref()
         .map(|s| s.split(',').map(|x| x.trim().to_string()).collect());
 
-    let plan: Vec<PlanEntry> = serde_json::from_slice(
-        &std::fs::read(args.corpus.join("plan.json")).context("reading plan.json")?,
-    )?;
+    let plan = subtitle_corpus::library::read_plan(&args.corpus)?;
     // Resume: (imdb_id, cue_index) pairs already staged, across all langs.
     let mut done: HashSet<(String, usize)> = HashSet::new();
     if let Ok(dirs) = std::fs::read_dir(&args.out_root) {

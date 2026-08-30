@@ -227,6 +227,7 @@ pub async fn process_sentences(
 
     // Process all sentences concurrently with buffering and collect results
     let mut newly_processed: BTreeMap<String, Vec<lexide::Token>> = BTreeMap::new();
+    let mut transport_failures = 0usize;
     let mut results = futures::stream::iter(sentences_to_process)
         .map(|sentence| {
             let lexide = &lexide;
@@ -261,7 +262,10 @@ pub async fn process_sentences(
                     "Warning: Failed to analyze sentence '{sentence}' after {IN_RUN_ATTEMPTS} attempts: {error:?}"
                 );
                 pb.inc(1);
-                Err(sentence)
+                // Still unreachable after every retry: that says nothing about
+                // the sentence, and must not spend its failure budget.
+                let transport = format!("{error:#}").contains("Failed to send request");
+                Err((sentence, transport))
             }
         })
         .buffer_unordered(600);
@@ -281,14 +285,28 @@ pub async fn process_sentences(
                 failures_changed |= failures.remove(&tokenized.sentence).is_some();
                 newly_processed.insert(tokenized.sentence, tokenized.tokens);
             }
-            Err(failed_sentence) => {
-                *failures.entry(failed_sentence).or_insert(0) += 1;
-                failures_changed = true;
+            Err((failed_sentence, transport)) => {
+                // A transport failure (endpoint cold-starting, network out)
+                // says nothing about the sentence; recording it would silently
+                // drop a good sentence from every future build. Only the
+                // model's own failures count against a sentence.
+                if transport {
+                    transport_failures += 1;
+                } else {
+                    *failures.entry(failed_sentence).or_insert(0) += 1;
+                    failures_changed = true;
+                }
             }
         }
     }
 
     pb.finish_and_clear();
+    if transport_failures > 0 {
+        eprintln!(
+            "Warning: {transport_failures} sentence(s) not tokenized because the endpoint could \
+             not be reached; they are not recorded as failures and will be retried next run"
+        );
+    }
 
     writer.flush()?;
 
