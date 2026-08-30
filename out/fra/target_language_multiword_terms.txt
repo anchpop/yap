@@ -220,6 +220,7 @@ Buenos-Ayres
 Burkina Faso
 Bâle-Campagne
 Bâle-Ville
+C'est le moins que
 C.-B.
 CMA CGM
 COVID-19
@@ -429,6 +430,7 @@ Frobisher Bay
 Front National
 Front de libération du Québec
 Gardí Sugdub
+Gare à
 Gaspésie–Îles-de-la-Madeleine
 Gasville-Oisème
 Gaule chevelue
@@ -508,6 +510,8 @@ Hauts-de-France
 Hauts-de-Seine
 Havre-Saint-Pierre
 Head-Smashed-In
+Heureuse de vous rencontrer
+Heureux de vous rencontrer
 Hollande-Méridionale
 Hollande-Septentrionale
 Hong Kong
@@ -518,6 +522,7 @@ Huang He
 Hunter's Point
 Hô-Chi-Minh-Ville
 I.-P.-E.
+Il est possible que
 Ille-et-Vilaine
 Ille-sur-Têt
 Immaculée Conception
@@ -730,6 +735,7 @@ Le Touquet
 Le Touquet-Paris-Plage
 Le Val-Saint-François
 Le Vauclin
+Le voici
 Lebel-sur-Quévillon
 Les Abymes
 Les Allemans
@@ -1812,6 +1818,7 @@ adresse IP
 adresse de courrier électronique
 adresse de messagerie
 adresse e-mail
+adresse électronique
 adresser la parole
 adverbe interrogatif
 advienne que pourra
@@ -6093,6 +6100,7 @@ cœur à prendre
 c’est carré comme en Corée
 d'abord et avant tout
 d'abord que
+d'ailleurs
 d'année en année
 d'arrache-pied
 d'autant moins
@@ -6709,6 +6717,7 @@ dire quoi
 dire ses quatre vérités
 dire tantôt blanc, tantôt noir
 dire tout et son contraire
+dire vrai
 directeur artistique
 directeur commercial
 directeur de conscience
@@ -6742,6 +6751,7 @@ distanciation sociale
 distributeur automatique de billets
 distributeur de billets
 distribution complémentaire
+dit vrai
 dites donc
 divers et varié
 dividende de la paix
@@ -7137,6 +7147,7 @@ détective privé
 détention provisoire
 détention préventive
 déterminant possessif
+déterminé à
 déterrer la hache de guerre
 détournement de fonds
 détournement de mineur
@@ -7396,6 +7407,7 @@ en dur
 en définitive
 en délicatesse
 en dépit de
+en dérangement
 en désespoir de cause
 en détail
 en effet
@@ -7760,6 +7772,7 @@ entre couilles
 entre de bonnes mains
 entre deux maux, il faut choisir le moindre
 entre deux âges
+entre en éruption
 entre guillemets
 entre l'arbre et l'écorce
 entre la peste et le choléra
@@ -7802,6 +7815,7 @@ entrer en religion
 entrer en scène
 entrer en service
 entrer en vigueur
+entrer en éruption
 entrer par une oreille et ressortir par l'autre
 entrer par une oreille et sortir par l'autre
 entretien d'embauche
@@ -7879,6 +7893,7 @@ essuie-glace
 essuie-mains
 essuie-tout
 essuyer les plâtres
+est entré en éruption
 est passé
 est-allemand
 est-asiatique
@@ -10009,6 +10024,7 @@ hôpital de campagne
 hôpital militaire
 hôpital psychiatrique
 hôte de marque
+hôtel cinq étoiles
 hôtel de ville
 hôtel particulier
 hôtel-Dieu
@@ -10033,6 +10049,7 @@ idée reçue
 idée-force
 il arrive que
 il convient de
+il dit vrai
 il est inconscient
 il est interdit d'interdire
 il est quelle heure
@@ -10082,6 +10099,7 @@ il ne faut pas dire, fontaine, je ne boirai pas de ton eau
 il ne faut pas réveiller le chat qui dort
 il ne faut pas vendre la peau de l'ours avant de l'avoir tué
 il ne manquait plus que ça
+il ne s'agit pas de
 il paraît que
 il reste que
 il s'agit de
@@ -11279,6 +11297,8 @@ lévrier persan
 m'as-tu-vu
 m'en aller
 m'est avis
+m'occupe de
+m'occuperai de
 ma foi
 ma gia
 ma lai
@@ -11684,6 +11704,9 @@ maïs soufflé
 maïs éclaté
 me diras-tu
 me direz-vous
+me passer de
+me suis occupé
+me suis occupé de
 mea culpa
 meilleur ami
 meilleur ami de l'homme
@@ -12652,6 +12675,7 @@ ne rien valoir
 ne rien vouloir entendre
 ne rien vouloir savoir
 ne rimer à rien
+ne s'agit pas de
 ne s'en faire pas
 ne savoir que faire
 ne serait-ce que
@@ -12914,6 +12938,8 @@ nourrir son homme
 nourrir un serpent dans son sein
 nous autres
 nous de majesté
+nous occupons de
+nous passer de
 nous-autres
 nous-mêmes
 nouveau départ
@@ -15688,6 +15714,7 @@ recoller au score
 recoller les morceaux
 reconnaissance faciale
 reconnaissance vocale
+reconnu coupable
 recoudre les morceaux
 rectifier le tir
 rectitude politique
@@ -16246,11 +16273,13 @@ s'il te plaît
 s'il vous plait
 s'il vous plaît
 s'inscrire en faux
+s'occupe de
 s'occuper de
 s'occuper de ses affaires
 s'occuper de ses fesses
 s'occuper de ses ognons
 s'occuper de ses oignons
+s'occupera de
 s'offrir en spectacle
 s'y attendre
 s'y casser les dents
@@ -16410,6 +16439,7 @@ sans feu ni lieu
 sans fil
 sans fin
 sans foi ni loi
+sans fondement
 sans gêne
 sans histoire
 sans histoires
@@ -16941,6 +16971,7 @@ serrer les dents
 serrer les fesses
 serrer les rangs
 servant de messe
+serve de leçon
 service après-vente
 service au volant
 service civil
@@ -16956,6 +16987,7 @@ service à la française
 service à la russe
 serviette de bain
 serviette hygiénique
+servir de leçon
 setter irlandais
 seuil de pauvreté
 seuil de rentabilité
@@ -17825,6 +17857,7 @@ taxi-auto
 taïpan du désert
 tchin tchin
 tchin-tchin
+te passer de
 technicien de surface
 techno-bureaucratique
 tectonique des plaques
@@ -18817,6 +18850,7 @@ valoir de l'or
 valoir la peine
 valoir la peine de
 valoir le coup
+valoir le coup d'essayer
 valoir le coup d'œil
 valoir le détour
 valoir mieux
@@ -18839,6 +18873,7 @@ vaso-constriction
 vaso-dilatateur
 vaso-dilatation
 vaso-moteur
+vaut le coup d'essayer
 vautour moine
 veau d'or
 vecteur propre
@@ -19249,9 +19284,12 @@ vouloir bien
 vouloir c'est pouvoir
 vouloir dire
 vous autres
+vous dites vrai
 vous m'en direz des nouvelles
+vous occupez de
 vous savez
 vous savez quoi
+vous voici
 vous voulez rire
 vous-autres
 vous-même
@@ -19783,6 +19821,7 @@ zéro pointé
 à la maison
 à la manque
 à la masse
+à la merci
 à la merci de
 à la minute
 à la mode
@@ -20423,6 +20462,7 @@ zéro pointé
 être du gâteau
 être du matin
 être du pareil au même
+être déterminé à
 être en avance
 être en bonne odeur
 être en bons termes
@@ -20440,6 +20480,7 @@ zéro pointé
 être fait comme un rat
 être faux comme un jeton
 être grand temps
+être heureux de rencontrer quelqu'un
 être humain
 être juge et partie
 être l'éclate
@@ -20458,6 +20499,7 @@ zéro pointé
 être pris entre deux feux
 être près de
 être question
+être reconnu coupable
 être sur la corde raide
 être sur la même longueur d'onde
 être sur la paille
