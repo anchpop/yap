@@ -40,15 +40,15 @@ use clap::Parser;
 use generate_data::audio_verification::{
     AlignmentOp, ClipVerification, VerifyContext, expected_phoneme_variants, verify_clip_bytes,
 };
-use generate_data::subtitle_corpus::{
-    Candidate, CueLabel, MIN_FILM_POSITIVES, PlanEntry, Tokenization,
-    course_code_espeak as course_code, label_cues, load_transcript, parse_cues, sample, slice_wav,
-};
 use language_utils::Language;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
+use subtitle_corpus::cues::{
+    Candidate, CueLabel, MIN_FILM_POSITIVES, Tokenization, course_code_espeak as course_code,
+    label_cues, load_transcript, parse_cues, sample, slice_wav,
+};
 
 #[derive(Parser, Debug)]
 #[command(about = "Evaluate the wav2vec2 phoneme model against transcript-labeled film cues")]
@@ -78,7 +78,7 @@ struct Args {
     /// newly trained checkpoint's 12-char prefix. Selects the cache partition
     /// AND is required to match the serving container's deploy marker, so a
     /// stale container can't silently contribute another model's predictions.
-    #[arg(long, default_value = "953461d76eb5")]
+    #[arg(long, default_value = "edcbbbf43a7f")]
     model_marker: String,
 }
 
@@ -114,6 +114,11 @@ struct EvalRecord {
     /// Nested (not flattened): `ClipVerification` also carries a `text`
     /// field, and duplicate keys break the JSONL round-trip.
     verification: ClipVerification,
+    /// CTC score of espeak's raw rendering against the frame matrix — the
+    /// signal `subtitle-corpus clips` gates on. Absent on records written
+    /// before it existed.
+    #[serde(default)]
+    ctc: Option<phoneme_verify::TargetScore>,
 }
 
 #[tokio::main]
@@ -131,9 +136,7 @@ async fn main() -> Result<()> {
         .as_ref()
         .map(|s| s.split(',').map(|x| x.trim().to_string()).collect());
 
-    let plan: Vec<PlanEntry> = serde_json::from_slice(
-        &std::fs::read(args.corpus.join("plan.json")).context("reading plan.json")?,
-    )?;
+    let plan = subtitle_corpus::library::read_plan(&args.corpus)?;
 
     // Resume: skip cues already evaluated.
     let mut done: HashSet<(String, usize)> = HashSet::new();
@@ -236,6 +239,7 @@ async fn main() -> Result<()> {
 
         let ctx = VerifyContext::with_overrides(
             &http,
+            generate_data::cache_remote::store(),
             &empty_pronunciations,
             language,
             cache_version(&args.model_marker),
@@ -283,6 +287,25 @@ async fn main() -> Result<()> {
                         return None;
                     }
                 };
+                // The CTC ratio scores the raw espeak sequence (the model's
+                // own label space); `(`/`)` are language-switch markers, not
+                // phonemes.
+                let ctc = match espeak::phonemize_phrase(&c.cleaned_text, language) {
+                    Ok(Some(target)) if !target.is_empty() => {
+                        let target: Vec<String> = target
+                            .into_iter()
+                            .filter(|t| t != "(" && t != ")")
+                            .collect();
+                        match phoneme_verify::frame_matrix(ctx, &wav).await {
+                            Ok(frames) => Some(frames.score_target(&target)),
+                            Err(e) => {
+                                eprintln!("  cue {}: frame matrix: {e:#}", c.cue_index);
+                                None
+                            }
+                        }
+                    }
+                    _ => None,
+                };
                 Some(EvalRecord {
                     imdb_id: entry_id,
                     title: entry_title,
@@ -299,6 +322,7 @@ async fn main() -> Result<()> {
                     audio_event_overlap: c.audio_event_overlap,
                     neighbor_speech: c.neighbor_speech,
                     verification,
+                    ctc,
                 })
             }
         }))
@@ -313,6 +337,90 @@ async fn main() -> Result<()> {
     }
 
     print_summary(&args.out)
+}
+
+/// The CTC ratio's separation of transcript-verified cues from the rest,
+/// and what each candidate cut keeps: the table `subtitle-corpus clips`'
+/// `--min-ratio` is chosen from.
+fn print_ctc_summary(by_lang: &BTreeMap<&str, Vec<&EvalRecord>>) {
+    println!("\n=== CTC log-odds ratio (per phoneme, target vs free decode) by label ===");
+    println!(
+        "{:<6} {:<14} {:>5}  {:>6} {:>6} {:>6} {:>6} {:>6}",
+        "lang", "label", "n", "p10", "p25", "p50", "p75", "p90"
+    );
+    let ratio = |r: &EvalRecord| r.ctc.as_ref().and_then(|c| c.ratio);
+    for (lang, rs) in by_lang {
+        for label in [
+            CueLabel::Pos,
+            CueLabel::NegExtraSpeech,
+            CueLabel::NegMismatch,
+            CueLabel::NegSilent,
+        ] {
+            let mut xs: Vec<f64> = rs
+                .iter()
+                .filter(|r| r.label == label)
+                .filter_map(|r| ratio(r))
+                .collect();
+            if xs.is_empty() {
+                continue;
+            }
+            xs.sort_by(|a, b| a.partial_cmp(b).unwrap());
+            let q = |p: f64| xs[((xs.len() - 1) as f64 * p) as usize];
+            println!(
+                "{:<6} {:<14} {:>5}  {:>6.2} {:>6.2} {:>6.2} {:>6.2} {:>6.2}",
+                lang,
+                format!("{label:?}"),
+                xs.len(),
+                q(0.10),
+                q(0.25),
+                q(0.50),
+                q(0.75),
+                q(0.90),
+            );
+        }
+        let pos: Vec<f64> = rs
+            .iter()
+            .filter(|r| r.label == CueLabel::Pos)
+            .filter_map(|r| ratio(r))
+            .collect();
+        let neg: Vec<f64> = rs
+            .iter()
+            .filter(|r| r.label != CueLabel::Pos)
+            .filter_map(|r| ratio(r))
+            .collect();
+        if pos.is_empty() || neg.is_empty() {
+            continue;
+        }
+        let mut wins = 0f64;
+        for p in &pos {
+            for n in &neg {
+                wins += if p > n {
+                    1.0
+                } else if p == n {
+                    0.5
+                } else {
+                    0.0
+                };
+            }
+        }
+        println!(
+            "{lang:<6} AUC(pos>neg) = {:.3}  ({} pos vs {} neg)",
+            wins / (pos.len() * neg.len()) as f64,
+            pos.len(),
+            neg.len()
+        );
+        print!("{lang:<6} cut ≥ :");
+        for cut in [-2.0, -1.5, -1.0, -0.75, -0.5, -0.35, -0.25, -0.15] {
+            let keep =
+                |xs: &[f64]| xs.iter().filter(|&&x| x >= cut).count() as f64 / xs.len() as f64;
+            print!(
+                "  {cut:>5.2} → pos {:>3.0}% neg {:>3.0}%",
+                keep(&pos) * 100.0,
+                keep(&neg) * 100.0
+            );
+        }
+        println!();
+    }
 }
 
 /// Distribution + separation + confusion summary over the output JSONL.
@@ -332,6 +440,8 @@ fn print_summary(out: &Path) -> Result<()> {
     for r in &records {
         by_lang.entry(r.lang.as_str()).or_default().push(r);
     }
+
+    print_ctc_summary(&by_lang);
 
     println!("\n=== phoneme-vs-espeak edit-distance % by label ===");
     println!(

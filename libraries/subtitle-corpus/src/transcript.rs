@@ -166,10 +166,32 @@ pub struct Provenance {
     /// same reason as the cache key: a version string nobody bumps is a
     /// transcript silently kept under settings nobody chose.
     pub settings: String,
+    /// The audio stream the words were heard in. A remux that reorders its
+    /// tracks, or an extraction that used to pick the director's commentary
+    /// (Delicatessen, Face/Off, Psycho all did), changes the audio under a
+    /// transcript that would otherwise look current. `None` on transcripts
+    /// written before this was recorded; those are trusted as they are.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub audio: Option<crate::sync::AudioStreamIdentity>,
 }
 
-/// The provenance a transcript made right now, for this language, would carry.
-pub fn provenance(language: &str) -> Result<Provenance> {
+impl Provenance {
+    /// Would a transcript with this provenance be redone under `current`?
+    /// Settings must match exactly; the audio only when both sides know it.
+    pub fn is_stale_against(&self, current: &Provenance) -> bool {
+        self.produced_by != current.produced_by
+            || self.language != current.language
+            || self.settings != current.settings
+            || matches!((&self.audio, &current.audio), (Some(a), Some(b)) if a != b)
+    }
+}
+
+/// The provenance a transcript made right now, for this language and from
+/// this audio stream, would carry.
+pub fn provenance(
+    language: &str,
+    audio: Option<crate::sync::AudioStreamIdentity>,
+) -> Result<Provenance> {
     let settings = Settings {
         endpoint: SCRIBE_URL,
         model_id: SCRIBE_MODEL,
@@ -186,6 +208,7 @@ pub fn provenance(language: &str) -> Result<Provenance> {
         produced_by: PRODUCED_BY.to_string(),
         language: language.to_string(),
         settings: format!("{:016x}", xxh3_64(&serde_json::to_vec(&settings)?)),
+        audio,
     })
 }
 
@@ -593,8 +616,9 @@ pub async fn transcribe_film(
     audio: &Path,
     profile: &[f32],
     film_ms: i64,
-    language: &str,
+    provenance: Provenance,
 ) -> Result<Transcript> {
+    let language = provenance.language.as_str();
     let mut words = Vec::new();
     let mut failed = 0usize;
     let bounds = chunk_bounds(profile, film_ms);
@@ -648,10 +672,7 @@ pub async fn transcribe_film(
         bail!("{failed} of {} chunks failed", bounds.len());
     }
     words.sort_by_key(|w| w.at_ms);
-    Ok(Transcript {
-        provenance: provenance(language)?,
-        words,
-    })
+    Ok(Transcript { provenance, words })
 }
 
 #[cfg(test)]
@@ -760,8 +781,8 @@ mod tests {
     #[test]
     fn provenance_tracks_settings() {
         assert_ne!(
-            provenance("en").unwrap().settings,
-            provenance("ja").unwrap().settings
+            provenance("en", None).unwrap().settings,
+            provenance("ja", None).unwrap().settings
         );
     }
 

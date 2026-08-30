@@ -8,19 +8,14 @@
 //! additive extensions (`Spoken.speaker` is now parsed, and `Candidate`
 //! carries the span's diarized speaker).
 
-use anyhow::{Context, Result, bail};
+use anyhow::{bail, Context, Result};
+
+pub use crate::sync::{parse_cues, Cue};
+pub use crate::transcript::{Kind, Spoken};
 use language_utils::Language;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::process::Command;
-
-/// One film from `plan.json`. Only what discovery needs.
-#[derive(Deserialize)]
-pub struct PlanEntry {
-    pub imdb_id: String,
-    pub title: String,
-    pub original_language: String,
-}
 
 /// Inventory language names → course codes, restricted to languages whose
 /// phoneme labels genuinely come from espeak.
@@ -62,72 +57,6 @@ pub fn course_code_full(original_language: &str) -> Option<&'static str> {
     })
 }
 
-/// One transcript unit, as written by subtitle-corpus `transcribe`. The
-/// provenance first line fails to parse as this and is skipped.
-#[derive(Deserialize)]
-pub struct Spoken {
-    pub text: String,
-    pub at_ms: i64,
-    pub until_ms: i64,
-    pub kind: String,
-    /// ElevenLabs diarization label, namespaced per transcription chunk
-    /// (`speaker_0@<chunk_start_secs>`). Chunk scoping over-segments real
-    /// speakers, which is the safe direction for within-speaker analyses.
-    #[serde(default)]
-    pub speaker: Option<String>,
-}
-
-pub struct Cue {
-    pub start_ms: i64,
-    pub end_ms: i64,
-    pub text: String,
-}
-
-/// Minimal SRT parser, matching subtitle-corpus `sync::parse_cues` (BOM,
-/// CRLF, mojibake repair) — that one lives in a binary crate, so it can't be
-/// imported here.
-pub fn parse_cues(srt: &str) -> Vec<Cue> {
-    let srt = srt.trim_start_matches('\u{feff}').replace("\r\n", "\n");
-    let srt = movie_subtitles::repair_cp1252_mojibake(&srt);
-    let mut cues = Vec::new();
-    for block in srt.split("\n\n") {
-        let mut start = None;
-        let mut end = None;
-        let mut text = Vec::new();
-        for line in block.lines() {
-            if let Some((a, b)) = line.split_once("-->") {
-                start = parse_stamp(a);
-                end = parse_stamp(b);
-            } else if !line.trim().is_empty() && line.trim().parse::<u32>().is_err() {
-                text.push(line.trim());
-            }
-        }
-        if let (Some(start), Some(end)) = (start, end)
-            && !text.is_empty()
-        {
-            cues.push(Cue {
-                start_ms: start,
-                end_ms: end,
-                text: text.join("\n"),
-            });
-        }
-    }
-    cues
-}
-
-fn parse_stamp(s: &str) -> Option<i64> {
-    let s = s.trim().replace(',', ".");
-    let mut parts = s.split(':');
-    let h: i64 = parts.next()?.parse().ok()?;
-    let m: i64 = parts.next()?.parse().ok()?;
-    let sec: f64 = parts.next()?.parse().ok()?;
-    Some(h * 3_600_000 + m * 60_000 + (sec * 1000.0) as i64)
-}
-
-/// Repair Greek/Cyrillic capitals OCR'd into Latin text ("Κiss it" with a
-/// Greek kappa, "Τhat" with a tau). Applied only when the text is
-/// Latin-dominant, so genuinely Greek/Cyrillic text is untouched; safe to
-/// run before both agreement tokenization and espeak.
 pub fn repair_latin_homoglyphs(text: &str) -> String {
     let latin = text.chars().filter(|c| c.is_ascii_alphabetic()).count();
     let confusable = text
@@ -351,7 +280,7 @@ pub fn label_cues(
         let hi = cue.end_ms + MATCH_SLOP_MS;
         let window: Vec<&Spoken> = transcript
             .iter()
-            .filter(|w| w.kind == "word" && w.at_ms < hi && w.until_ms > lo)
+            .filter(|w| w.kind == Kind::Word && w.at_ms < hi && w.until_ms > lo)
             .collect();
         let heard_text = window
             .iter()
@@ -360,11 +289,11 @@ pub fn label_cues(
             .join(" ");
         let heard_tokens = agreement_tokens(&heard_text, tokenization);
 
-        let audio_event_overlap = transcript
-            .iter()
-            .any(|w| w.kind == "audio_event" && w.at_ms < cue.end_ms && w.until_ms > cue.start_ms);
+        let audio_event_overlap = transcript.iter().any(|w| {
+            w.kind == Kind::AudioEvent && w.at_ms < cue.end_ms && w.until_ms > cue.start_ms
+        });
         let neighbor_speech = transcript.iter().any(|w| {
-            w.kind == "word"
+            w.kind == Kind::Word
                 && ((w.until_ms > cue.start_ms - NEIGHBOR_MARGIN_MS
                     && w.at_ms < cue.start_ms - MATCH_SLOP_MS)
                     || (w.at_ms < cue.end_ms + NEIGHBOR_MARGIN_MS
@@ -381,7 +310,7 @@ pub fn label_cues(
         let span_words: Vec<&Spoken> = transcript
             .iter()
             .filter(|w| {
-                w.kind == "word"
+                w.kind == Kind::Word
                     && (w.at_ms + w.until_ms) / 2 >= cue.start_ms - AUDIO_PAD_MS
                     && (w.at_ms + w.until_ms) / 2 <= cue.end_ms + AUDIO_PAD_MS
             })
@@ -398,7 +327,7 @@ pub fn label_cues(
         let exact_wer = exact_dist as f64 / cue_tokens.len().max(span_tokens.len()).max(1) as f64;
 
         let edge_bleed = transcript.iter().any(|w| {
-            w.kind == "word"
+            w.kind == Kind::Word
                 && w.at_ms < cue.end_ms + AUDIO_PAD_MS
                 && w.until_ms > cue.start_ms - AUDIO_PAD_MS
                 && !((w.at_ms + w.until_ms) / 2 >= cue.start_ms - AUDIO_PAD_MS
@@ -468,8 +397,20 @@ pub fn sample(cands: &[Candidate], label: CueLabel, quota: usize) -> Vec<&Candid
 /// "data chunk length is not a multiple of sample size". A seekable file
 /// gets its header patched on close and is equally byte-reproducible.
 pub fn slice_wav(audio: &Path, start_ms: i64, end_ms: i64) -> Result<Vec<u8>> {
-    let start = (start_ms - AUDIO_PAD_MS).max(0);
-    let dur = end_ms + AUDIO_PAD_MS - start;
+    slice_wav_padded(audio, start_ms, end_ms, AUDIO_PAD_MS, AUDIO_PAD_MS)
+}
+
+/// [`slice_wav`] with the padding chosen per side — so a clip can take as
+/// much room as the silence around it allows and no more.
+pub fn slice_wav_padded(
+    audio: &Path,
+    start_ms: i64,
+    end_ms: i64,
+    pad_before_ms: i64,
+    pad_after_ms: i64,
+) -> Result<Vec<u8>> {
+    let start = (start_ms - pad_before_ms).max(0);
+    let dur = end_ms + pad_after_ms - start;
     let tmp = tempfile::Builder::new()
         .suffix(".wav")
         .tempfile()
@@ -501,4 +442,109 @@ pub fn load_transcript(path: &Path) -> Result<Vec<Spoken>> {
         // The provenance first line isn't a Spoken and fails to parse — skipped.
         .filter_map(|l| serde_json::from_str::<Spoken>(l).ok())
         .collect())
+}
+
+/// Where a sentence sits in the transcript: the run of transcript words that
+/// best matches it, and how well.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SentenceMatch {
+    /// Indices into the window the sentence was aligned against, inclusive.
+    pub first: usize,
+    pub last: usize,
+    /// Token edit distance between the sentence and that run.
+    pub distance: usize,
+}
+
+/// Align a sentence's tokens to a window of transcript words and return the
+/// contiguous run of words that spells it best.
+///
+/// The same free-start / free-end edit alignment as
+/// [`substring_edit_distance`], with the path recovered so the caller gets
+/// *which* words matched — and from them, when the sentence was actually
+/// spoken. Sentence timing from the transcript's word stamps is what makes a
+/// clip trustworthy: a cue's own times are display times, authored for
+/// reading, and a cue holding two sentences has no per-sentence timing at
+/// all. `None` when either side is empty.
+pub fn align_sentence(sentence: &[String], heard: &[String]) -> Option<SentenceMatch> {
+    let (m, n) = (sentence.len(), heard.len());
+    if m == 0 || n == 0 {
+        return None;
+    }
+    // cost[i][j]: best cost matching sentence[..i] to a run of heard ending
+    // at j; start[i][j]: where that run began. Row 0 is free.
+    let mut cost = vec![vec![0usize; n + 1]; m + 1];
+    let mut start = vec![vec![0usize; n + 1]; m + 1];
+    for (j, slot) in start[0].iter_mut().enumerate() {
+        *slot = j;
+    }
+    for i in 1..=m {
+        cost[i][0] = i;
+        start[i][0] = 0;
+        for j in 1..=n {
+            let sub = cost[i - 1][j - 1] + usize::from(sentence[i - 1] != heard[j - 1]);
+            let del = cost[i - 1][j] + 1; // sentence token unheard
+            let ins = cost[i][j - 1] + 1; // extra heard token inside the run
+            let (c, s) = if sub <= del && sub <= ins {
+                (sub, start[i - 1][j - 1])
+            } else if del <= ins {
+                (del, start[i - 1][j])
+            } else {
+                (ins, start[i][j - 1])
+            };
+            cost[i][j] = c;
+            start[i][j] = s;
+        }
+    }
+    // Free end: the best-scoring end position. Ties go to the run whose
+    // length is closest to the sentence's (a cheap partial match that stops
+    // early costs the same as full coverage with two substitutions), then to
+    // the earliest, so a sentence repeated later in the window doesn't steal
+    // the match.
+    let (last, distance) = (1..=n)
+        .map(|j| (j, cost[m][j]))
+        .min_by_key(|&(j, c)| (c, (j - start[m][j]).abs_diff(m), j))?;
+    let first = start[m][last];
+    if first >= last {
+        return None;
+    }
+    Some(SentenceMatch {
+        first,
+        last: last - 1,
+        distance,
+    })
+}
+
+#[cfg(test)]
+mod align_tests {
+    use super::*;
+
+    fn toks(s: &str) -> Vec<String> {
+        agreement_tokens(s, Tokenization::Words)
+    }
+
+    #[test]
+    fn finds_the_run_inside_a_longer_window() {
+        let heard = toks("oui bien sûr je vous supplie de ne pas chercher à nous retrouver merci");
+        let m = align_sentence(
+            &toks("Je vous supplie de ne pas chercher à nous retrouver."),
+            &heard,
+        )
+        .unwrap();
+        assert_eq!((m.first, m.last, m.distance), (3, 12, 0));
+    }
+
+    #[test]
+    fn tolerates_a_misheard_word_and_reports_it() {
+        let heard = toks("plus haut jusqu'aux genoux oh");
+        let m = align_sentence(&toks("Plus haut, jusqu'au genou !"), &heard).unwrap();
+        assert_eq!((m.first, m.last), (0, 4));
+        assert_eq!(m.distance, 2);
+    }
+
+    #[test]
+    fn prefers_the_first_of_two_identical_runs() {
+        let heard = toks("bois bois bois attends bois bois");
+        let m = align_sentence(&toks("Bois ! Bois !"), &heard).unwrap();
+        assert_eq!((m.first, m.last, m.distance), (0, 1, 0));
+    }
 }

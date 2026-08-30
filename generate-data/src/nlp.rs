@@ -220,6 +220,7 @@ pub async fn process_sentences(
 
     // Process all sentences concurrently with buffering and collect results
     let mut newly_processed: BTreeMap<String, Vec<lexide::Token>> = BTreeMap::new();
+    let mut transport_failures = 0usize;
     let mut results = futures::stream::iter(sentences_to_process)
         .map(|sentence| {
             let lexide = &lexide;
@@ -232,7 +233,8 @@ pub async fn process_sentences(
                     }),
                     Err(e) => {
                         eprintln!("Warning: Failed to analyze sentence '{sentence}': {e:?}");
-                        Err(sentence)
+                        let transport = format!("{e:#}").contains("Failed to send request");
+                        Err((sentence, transport))
                     }
                 };
 
@@ -253,14 +255,27 @@ pub async fn process_sentences(
                 token_corrections::fix_tokens(language, &mut tokenized.tokens);
                 newly_processed.insert(tokenized.sentence, tokenized.tokens);
             }
-            Err(failed_sentence) => {
-                // Record the failure
-                record_failure(failed_sentence, &mut failures, &failure_file)?;
+            Err((failed_sentence, transport)) => {
+                // A transport failure (endpoint cold-starting, network out)
+                // says nothing about the sentence; recording it would silently
+                // drop a good sentence from every future build. Only the
+                // model's own failures count against a sentence.
+                if transport {
+                    transport_failures += 1;
+                } else {
+                    record_failure(failed_sentence, &mut failures, &failure_file)?;
+                }
             }
         }
     }
 
     pb.finish_and_clear();
+    if transport_failures > 0 {
+        eprintln!(
+            "Warning: {transport_failures} sentence(s) not tokenized because the endpoint could \
+             not be reached; they are not recorded as failures and will be retried next run"
+        );
+    }
 
     writer.flush()?;
 

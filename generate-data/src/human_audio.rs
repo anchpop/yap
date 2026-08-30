@@ -114,8 +114,12 @@ pub async fn load_human_audio(
             .iter()
             .map(|(w, p)| (w.to_lowercase(), p.clone()))
             .collect();
-    let verify_ctx =
-        crate::audio_verification::VerifyContext::new(http, &wp_lookup, target_language)?;
+    let verify_ctx = crate::audio_verification::VerifyContext::new(
+        http,
+        crate::cache_remote::store(),
+        &wp_lookup,
+        target_language,
+    )?;
 
     let mut failures: Vec<crate::audio_verification::ClipVerification> = Vec::new();
     let mut all_results: Vec<crate::audio_verification::ClipVerification> = Vec::new();

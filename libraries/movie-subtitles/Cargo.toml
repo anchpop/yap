@@ -9,3 +9,5 @@ regex = "1.12"
 serde = { workspace = true }
 serde_json = { workspace = true }
 subparse = "0.7"
+lexide = { workspace = true }
+language-utils = { path = "../../language-utils" }

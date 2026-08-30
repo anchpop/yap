@@ -10,6 +10,7 @@ static CACHE_ONLY: AtomicBool = AtomicBool::new(false);
 /// cache misses produce errors (or are skipped, for lexide).
 pub fn set_cache_only(enabled: bool) {
     CACHE_ONLY.store(enabled, Ordering::Relaxed);
+    phoneme_verify::set_cache_only(enabled);
 }
 
 pub fn cache_only() -> bool {
@@ -109,7 +110,7 @@ pub fn migrating_chat_client(model: &str) -> tysm::chat_completions::ChatClient 
     )
 }
 
-pub mod audio_verification;
+pub use phoneme_verify as audio_verification;
 pub mod books;
 pub mod cache_remote;
 pub mod dict;
@@ -129,7 +130,6 @@ pub mod pronunciations;
 pub mod proper_noun_definitions;
 pub mod read_anki;
 pub mod slot_analysis;
-pub mod subtitle_corpus;
 pub mod target_sentences;
 pub mod tatoeba;
 pub mod token_embeddings;

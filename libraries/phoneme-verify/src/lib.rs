@@ -32,6 +32,9 @@ use std::process::{Command, Stdio};
 use std::sync::LazyLock;
 use xxhash_rust::xxh3::xxh3_64;
 
+pub mod ctc;
+pub use ctc::{FrameMatrix, FrameMatrixPayload, TargetScore};
+
 static MODAL_URL: LazyLock<String> = LazyLock::new(|| {
     std::env::var("WAV2VEC2_ENDPOINT_URL").unwrap_or_else(|_| {
         "https://anchpop--wav2vec2-phoneme-wav2vec2phoneme-predict.modal.run".to_string()
@@ -55,6 +58,13 @@ static MODAL_URL: LazyLock<String> = LazyLock::new(|| {
 /// turns over — expect a full recompute on the next run.
 const WAV2VEC2_CACHE_VERSION: &str = "anchpop_lexide-pronunciation@edcbbbf43a7f__greedy_v1";
 
+/// The cache partition production predictions live under — what a caller
+/// should record as provenance for anything derived from them.
+pub fn production_cache_version() -> String {
+    std::env::var("WAV2VEC2_CACHE_VERSION_OVERRIDE")
+        .unwrap_or_else(|_| WAV2VEC2_CACHE_VERSION.to_string())
+}
+
 #[derive(Debug, Clone, Deserialize)]
 struct ModalResponse {
     phonemes: Vec<ModalPhoneme>,
@@ -64,6 +74,9 @@ struct ModalResponse {
     /// Absent for older endpoints / production, where the check is a no-op.
     #[serde(default)]
     deploy_marker: Option<String>,
+    /// Present when the request asked for `return_frame_matrix`.
+    #[serde(default)]
+    frame_matrix: Option<FrameMatrixPayload>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -202,6 +215,7 @@ impl<'a> VerifyContext<'a> {
     /// expected deploy marker likewise come from env.
     pub fn new(
         http: &'a reqwest::Client,
+        store: osmo::Store,
         word_to_pronunciation: &'a HashMap<String, language_utils::Pronunciations>,
         target_language: Language,
     ) -> Result<Self> {
@@ -216,6 +230,7 @@ impl<'a> VerifyContext<'a> {
             .filter(|s| !s.is_empty());
         Self::with_overrides(
             http,
+            store,
             word_to_pronunciation,
             target_language,
             version,
@@ -231,6 +246,7 @@ impl<'a> VerifyContext<'a> {
     #[allow(clippy::too_many_arguments)]
     pub fn with_overrides(
         http: &'a reqwest::Client,
+        store: osmo::Store,
         word_to_pronunciation: &'a HashMap<String, language_utils::Pronunciations>,
         target_language: Language,
         cache_version: String,
@@ -266,7 +282,7 @@ impl<'a> VerifyContext<'a> {
         }
         Ok(Self {
             http,
-            store: crate::cache_remote::store(),
+            store,
             cache_version,
             word_to_pronunciation,
             mismatch_threshold,
@@ -478,34 +494,11 @@ fn is_transient_status(status: reqwest::StatusCode) -> bool {
     matches!(status.as_u16(), 408 | 425 | 429 | 500 | 502 | 503 | 504)
 }
 
-async fn predict_phonemes(
-    ctx: &VerifyContext<'_>,
-    wav_bytes: &[u8],
-) -> Result<(Vec<String>, Vec<Vec<RawPhonemeAlt>>)> {
-    let hash = xxh3_64(wav_bytes);
-    let cache_key = format!("wav2vec2/{}/{hash:016x}", ctx.cache_version);
-
-    if let Some(contents) = ctx.store.read(&cache_key).await
-        && let Ok(cached) = serde_json::from_slice::<CachedPrediction>(&contents)
-    {
-        return Ok((cached.raw_phonemes, cached.top_k));
-    }
-
-    if crate::cache_only() {
-        anyhow::bail!(
-            "wav2vec2 cache miss for {hash:016x}; cache-only mode is enabled. \
-             Run without --cache-only to populate the cache."
-        );
-    }
-
-    let samples =
-        decode_wav_to_f32(wav_bytes).context("Failed to decode WAV to f32 samples via ffmpeg")?;
-    let samples = pad_to_min_length(samples, MODAL_MIN_SAMPLES);
-    let payload = serde_json::json!({
-        "audio": samples,
-        "sample_rate": MODAL_SAMPLE_RATE,
-        "top_k": MODAL_TOP_K,
-    });
+/// POST one request to the endpoint, retrying transient failures, and
+/// refuse any response from a container whose deploy marker is not the
+/// one expected — so nothing from a stale/contaminated container is
+/// ever cached under the wrong model's key.
+async fn post_modal(ctx: &VerifyContext<'_>, payload: serde_json::Value) -> Result<ModalResponse> {
     // Retry transient endpoint failures — cold-start timeouts (408), rate
     // limits (429), and 5xx — which are otherwise fatal to a long run. A 408
     // typically means the container was mid-cold-start; a short backoff lets it
@@ -584,6 +577,38 @@ async fn predict_phonemes(
             modal.deploy_marker
         );
     }
+    Ok(modal)
+}
+
+async fn predict_phonemes(
+    ctx: &VerifyContext<'_>,
+    wav_bytes: &[u8],
+) -> Result<(Vec<String>, Vec<Vec<RawPhonemeAlt>>)> {
+    let hash = xxh3_64(wav_bytes);
+    let cache_key = format!("wav2vec2/{}/{hash:016x}", ctx.cache_version);
+
+    if let Some(contents) = ctx.store.read(&cache_key).await
+        && let Ok(cached) = serde_json::from_slice::<CachedPrediction>(&contents)
+    {
+        return Ok((cached.raw_phonemes, cached.top_k));
+    }
+
+    if cache_only() {
+        anyhow::bail!(
+            "wav2vec2 cache miss for {hash:016x}; cache-only mode is enabled. \
+             Run without --cache-only to populate the cache."
+        );
+    }
+
+    let samples =
+        decode_wav_to_f32(wav_bytes).context("Failed to decode WAV to f32 samples via ffmpeg")?;
+    let samples = pad_to_min_length(samples, MODAL_MIN_SAMPLES);
+    let payload = serde_json::json!({
+        "audio": samples,
+        "sample_rate": MODAL_SAMPLE_RATE,
+        "top_k": MODAL_TOP_K,
+    });
+    let modal = post_modal(ctx, payload).await?;
 
     let raw_phonemes: Vec<String> = modal.phonemes.iter().map(|p| p.phoneme.clone()).collect();
     let top_k: Vec<Vec<RawPhonemeAlt>> = modal
@@ -614,6 +639,46 @@ async fn predict_phonemes(
         .with_context(|| format!("Failed to write cache entry {cache_key}"))?;
 
     Ok((raw_phonemes, top_k))
+}
+
+/// The model's per-frame log-prob matrix for a clip, from the cache or the
+/// endpoint. Cached under its own partition (`wav2vec2-frames/…`), keyed by
+/// the WAV bytes like predictions are; the compressed payload is stored as
+/// shipped, so a cache entry is ~24 KB per audio-second.
+pub async fn frame_matrix(ctx: &VerifyContext<'_>, wav_bytes: &[u8]) -> Result<FrameMatrix> {
+    let hash = xxh3_64(wav_bytes);
+    let cache_key = format!("wav2vec2-frames/{}/{hash:016x}", ctx.cache_version);
+    if let Some(contents) = ctx.store.read(&cache_key).await
+        && let Ok(payload) = serde_json::from_slice::<FrameMatrixPayload>(&contents)
+    {
+        return FrameMatrix::decode(&payload);
+    }
+    if cache_only() {
+        anyhow::bail!(
+            "wav2vec2 frame-matrix cache miss for {hash:016x}; cache-only mode is enabled"
+        );
+    }
+    let samples =
+        decode_wav_to_f32(wav_bytes).context("Failed to decode WAV to f32 samples via ffmpeg")?;
+    let samples = pad_to_min_length(samples, MODAL_MIN_SAMPLES);
+    let payload = serde_json::json!({
+        "audio": samples,
+        "sample_rate": MODAL_SAMPLE_RATE,
+        "top_k": 1,
+        "return_frame_matrix": true,
+    });
+    let modal = post_modal(ctx, payload).await?;
+    let Some(payload) = modal.frame_matrix else {
+        anyhow::bail!(
+            "endpoint returned no frame matrix (does this deploy support return_frame_matrix?)"
+        );
+    };
+    let serialized = serde_json::to_string(&payload).context("serializing frame matrix")?;
+    ctx.store
+        .write(&cache_key, serialized.as_bytes())
+        .await
+        .with_context(|| format!("Failed to write cache entry {cache_key}"))?;
+    FrameMatrix::decode(&payload)
 }
 
 /// Pad `samples` symmetrically with zeros to reach at least `min_len`.
@@ -1163,7 +1228,7 @@ pub async fn verify_with_google_tts(
         });
         (bytes, note)
     } else {
-        if crate::cache_only() {
+        if cache_only() {
             anyhow::bail!(
                 "google-tts cache miss for {text:?} ({hash:016x}); cache-only mode is enabled"
             );
@@ -1250,6 +1315,20 @@ pub async fn verify_with_google_tts(
     .await
 }
 
+use std::sync::atomic::{AtomicBool, Ordering};
+
+static CACHE_ONLY: AtomicBool = AtomicBool::new(false);
+
+/// Refuse every network call process-wide: a phoneme prediction or TTS
+/// synthesis that isn't already cached becomes an error. generate-data
+/// mirrors its own `--cache-only` flag here.
+pub fn set_cache_only(enabled: bool) {
+    CACHE_ONLY.store(enabled, Ordering::Relaxed);
+}
+
+pub fn cache_only() -> bool {
+    CACHE_ONLY.load(Ordering::Relaxed)
+}
 #[cfg(test)]
 mod tests {
     use super::*;

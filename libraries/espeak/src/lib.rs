@@ -69,6 +69,18 @@ fn parse_espeak_ipa(raw: &str) -> Vec<String> {
                 // Stray diacritic at the start with nothing to attach to.
                 None => phonemes.push(ch.to_string()),
             }
+        } else if ch == 'ʲ' {
+            // Palatalization folds onto a preceding CONSONANT — Russian soft
+            // tʲ nʲ sʲ, soft л ɫʲ, щ ʃʲ are single model tokens. After a
+            // vowel espeak uses ʲ for a glide (Italian "io" = iʲo), which
+            // stays its own token. Emitted standalone after a consonant it
+            // scored every palatalized word as a mismatch: that made Russian
+            // look ungateable (median log-odds −4.5 on verified clips) until
+            // this was found.
+            match phonemes.last_mut() {
+                Some(last) if !last.starts_with(|c| IPA_VOWELS.contains(c)) => last.push(ch),
+                _ => phonemes.push(ch.to_string()),
+            }
         } else {
             // Vowel or consonant — its own phoneme.
             phonemes.push(ch.to_string());
@@ -76,6 +88,10 @@ fn parse_espeak_ipa(raw: &str) -> Vec<String> {
     }
     phonemes
 }
+
+/// `IPA_VOWELS` from the same pipeline: what palatalization may *not* fold
+/// onto.
+const IPA_VOWELS: &str = "iyɨʉɯuɪʏʊeøɘɵɤoəɛœɜɞʌɔæɐaɶɑɒɚɝᵻ";
 
 /// Bound on a single espeak-ng invocation in [`phonemize_phrase_ipa`].
 /// Normal runs finish in <10 ms; this only exists so a wedged binary or
@@ -328,6 +344,11 @@ mod tests {
         // A stray leading diacritic has nothing to attach to and stands
         // alone rather than panicking.
         assert_eq!(parse_espeak_ipa("ːa"), vec!["ː", "a"]);
+        // Palatalization binds to a consonant, not to a vowel.
+        assert_eq!(
+            parse_espeak_ipa("tʲinʲ ɫʲ iʲo"),
+            vec!["tʲ", "i", "nʲ", "ɫʲ", "i", "ʲ", "o"]
+        );
     }
 
     // Ignored in CI: requires the espeak-ng binary (and the liaison output

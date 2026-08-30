@@ -322,6 +322,7 @@ async fn verify_model(
 ) -> Result<Vec<ClipVerification>> {
     let ctx = VerifyContext::with_overrides(
         http,
+        generate_data::cache_remote::store(),
         word_to_pronunciation,
         language,
         cache_key,

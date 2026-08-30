@@ -1,9 +1,12 @@
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
+use std::sync::LazyLock;
 
 use anyhow::Context;
 use language_utils::{Course, Language, SentenceSource};
 use movie_subtitles::SubtitleLine;
+use movie_subtitles::segment::{SubtitleSegmenter, subtitle_passages};
+use regex::Regex;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -317,46 +320,50 @@ fn load_movie_sentences(
     let metadata_content =
         std::fs::read_to_string(&metadata_file).context("Failed to read movie metadata file")?;
 
+    let movies: Vec<language_utils::MovieMetadataBasic> = metadata_content
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(|line| serde_json::from_str(line).context("Failed to parse movie metadata"))
+        .collect::<anyhow::Result<_>>()?;
+    let segmenter = SubtitleSegmenter::for_language(language)?;
+
+    // Segmentation is the expensive step (tens of seconds for a long film),
+    // so films are processed in parallel; results keep metadata order.
+    use rayon::prelude::*;
+    type MovieSentences = Vec<(String, Option<String>, SentenceSource)>;
+    let per_movie: Vec<Option<(movie_subtitles::Source, MovieSentences)>> = movies
+        .par_iter()
+        .map(|movie| {
+            // Prefer the raw SRT and clean it here, in memory, so improvements to
+            // the cleaning rules reach every course on the next build. Movies whose
+            // raw SRT was never kept fall back to the pre-cleaned JSONL.
+            let Some((subtitles, source)) = movie_subtitles::load(&movies_dir, &movie.id)? else {
+                return Ok(None);
+            };
+
+            // Sanity check: verify subtitles are actually in the target language
+            if !passes_language_sanity_check(&subtitles, language, &movie.id) {
+                eprintln!(
+                    "Warning: subtitles for movie {} failed language sanity check, skipping",
+                    movie.id
+                );
+                return Ok(None);
+            }
+
+            let sentences = filter_subtitle_sentences(&subtitles, &movie.id, language, &segmenter);
+            Ok(Some((source, sentences)))
+        })
+        .collect::<anyhow::Result<_>>()?;
+
     let mut all_movie_sentences = Vec::new();
     let (mut from_raw, mut from_derived) = (0usize, 0usize);
-
-    for line in metadata_content.lines() {
-        let line = line.trim();
-        if line.is_empty() {
-            continue;
-        }
-
-        let movie: language_utils::MovieMetadataBasic =
-            serde_json::from_str(line).context("Failed to parse movie metadata")?;
-
-        // Prefer the raw SRT and clean it here, in memory, so improvements to
-        // the cleaning rules reach every course on the next build. Movies whose
-        // raw SRT was never kept fall back to the pre-cleaned JSONL.
-        let Some((subtitles, source)) = movie_subtitles::load(&movies_dir, &movie.id)? else {
-            continue;
-        };
+    for (source, sentences) in per_movie.into_iter().flatten() {
         match source {
             movie_subtitles::Source::RawSrt => from_raw += 1,
             movie_subtitles::Source::DerivedJsonl => from_derived += 1,
         }
-
-        // Split multi-dialogue subtitles (e.g., "- Speaker 1 - Speaker 2")
-        let parsed_subtitles: Vec<SubtitleLine> = subtitles
-            .into_iter()
-            .flat_map(split_multi_dialogue_subtitle)
-            .collect();
-
-        // Sanity check: verify subtitles are actually in the target language
-        if !passes_language_sanity_check(&parsed_subtitles, language, &movie.id) {
-            eprintln!(
-                "Warning: subtitles for movie {} failed language sanity check, skipping",
-                movie.id
-            );
-            continue;
-        }
-
-        let movie_sentences = filter_subtitle_sentences(&parsed_subtitles, &movie.id, language);
-        all_movie_sentences.extend(movie_sentences);
+        all_movie_sentences.extend(sentences);
     }
 
     if from_derived > 0 {
@@ -507,139 +514,49 @@ fn sanity_check_skip_markers(language: Language, movie_id: &str) -> Vec<&'static
     }
 }
 
-/// Split subtitles that contain multiple speakers' dialogue or multiple sentences.
+/// A title abbreviation and its period: `M. Godefroy`, `Mme. Dupont`,
+/// `Dr. No`. Only counted as a title when a capitalised name follows.
+static TITLE_ABBREVIATION: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\b(?P<title>M|Mme|Mlle|Mr|Mrs|Ms|Dr|St|Sr|Jr|Sra|Hr|Fr)\.(?P<name>\s+\p{Lu})")
+        .unwrap()
+});
+
+/// Sentences spoken in a subtitle track.
 ///
-/// Subtitles often combine multiple speakers in one line like:
-/// "- Speaker 1 dialogue - Speaker 2 dialogue"
-/// or multiple sentences like:
-/// "What are you doing? I don't know!"
-///
-/// This function splits them into separate subtitle objects.
-fn split_multi_dialogue_subtitle(subtitle: SubtitleLine) -> Vec<SubtitleLine> {
-    let mut sentences = vec![subtitle.sentence.clone()];
-
-    // First, split on " - " if it starts with "- "
-    if subtitle.sentence.starts_with("- ") {
-        let parts: Vec<&str> = subtitle.sentence.split(" - ").collect();
-        if parts.len() > 1 {
-            sentences = parts
-                .into_iter()
-                .map(|s| s.trim_start_matches("- ").trim().to_string())
-                .filter(|s| !s.is_empty())
-                .collect();
-        }
-    }
-
-    // Then split on ? and ! (but not . to avoid splitting abbreviations)
-    let mut final_sentences = Vec::new();
-    for sentence in sentences {
-        let mut current = String::new();
-
-        for ch in sentence.chars() {
-            current.push(ch);
-
-            // If we hit ? or !, that's the end of a sentence
-            if ch == '?' || ch == '!' {
-                let trimmed = current.trim().trim_start_matches('-').trim().to_string();
-                if !trimmed.is_empty() {
-                    final_sentences.push(trimmed);
-                }
-                current = String::new();
-            }
-        }
-
-        // Don't forget the last part if it doesn't end with ? or !
-        let trimmed = current.trim().trim_start_matches('-').trim().to_string();
-        if !trimmed.is_empty() {
-            final_sentences.push(trimmed);
-        }
-    }
-
-    // Convert to Subtitle objects
-    final_sentences
-        .into_iter()
-        .filter(|s| !s.is_empty())
-        .map(|sentence| SubtitleLine {
-            sentence,
-            start_ms: subtitle.start_ms,
-            end_ms: subtitle.end_ms,
-        })
+/// Cues are first regrouped into passages ([`subtitle_passages`]): a sentence
+/// a subtitle broke across cues for display is rejoined, and a cue holding two
+/// speakers is split at its dialogue dashes. Each passage is then segmented
+/// by parsley — a cue often holds more than one sentence, and the segmenter
+/// knows about abbreviations (`M. Godefroy`) and quotes — and each sentence
+/// goes through [`should_include_sentence`].
+pub fn subtitle_sentences(
+    subtitles: &[SubtitleLine],
+    language: Language,
+    segmenter: &SubtitleSegmenter,
+) -> Vec<String> {
+    subtitle_passages(subtitles)
+        .iter()
+        .flat_map(|passage| segmenter.segment(passage))
+        .map(|s| s.trim().to_string())
+        .filter(|s| should_include_sentence(s, language))
         .collect()
 }
 
-/// Filter and transform parsed subtitle objects into sentences with source information.
-/// This function is separated for testability.
-///
-/// Subtitles often break long sentences into multiple pieces for display. This function
-/// merges them back together when:
-/// - Writing system is Latin (where capitalization matters)
-/// - Current subtitle doesn't end with sentence-terminating punctuation
-/// - Next subtitle starts at the same time (or within 1ms) as current one ends
-/// - Next subtitle starts with a lowercase letter
-///
-/// # Arguments
-///
-/// * `subtitles` - Array of parsed subtitle objects
-/// * `movie_id` - The ID of the movie these subtitles belong to
-/// * `language` - The language of the subtitles for filtering
-///
-/// # Returns
-///
-/// A vector of tuples: (sentence, None, source_info)
+/// Sentences from one movie's subtitle track, tagged with the movie as source.
 fn filter_subtitle_sentences(
     subtitles: &[SubtitleLine],
     movie_id: &str,
     language: Language,
+    segmenter: &SubtitleSegmenter,
 ) -> Vec<(String, Option<String>, SentenceSource)> {
-    let mut sentences = Vec::new();
-    let is_latin = language.writing_system() == language_utils::WritingSystem::Latin;
-
-    let mut i = 0;
-    while i < subtitles.len() {
-        let mut merged_sentence = subtitles[i].sentence.clone();
-        let mut j = i + 1;
-
-        // Merge consecutive subtitle fragments if they belong to the same sentence
-        while j < subtitles.len() && is_latin {
-            let current = &subtitles[j - 1];
-            let next = &subtitles[j];
-
-            // Check if we should merge
-            let no_terminating_punctuation = !current.sentence.ends_with('.')
-                && !current.sentence.ends_with('!')
-                && !current.sentence.ends_with('?');
-
-            let timing_matches = next.start_ms <= current.end_ms + 1;
-
-            let next_starts_lowercase = next
-                .sentence
-                .chars()
-                .next()
-                .map(|c| c.is_lowercase())
-                .unwrap_or(false);
-
-            if no_terminating_punctuation && timing_matches && next_starts_lowercase {
-                // Merge with a space
-                merged_sentence.push(' ');
-                merged_sentence.push_str(&next.sentence);
-                j += 1;
-            } else {
-                break;
-            }
-        }
-
-        // Filter out bad sentences (music markers, numbers, too short/long, etc.)
-        if should_include_sentence(&merged_sentence, language) {
+    subtitle_sentences(subtitles, language, segmenter)
+        .into_iter()
+        .map(|sentence| {
             let mut source = SentenceSource::none();
             source.movie_ids.push(movie_id.to_string());
-
-            sentences.push((merged_sentence, None, source));
-        }
-
-        i = j;
-    }
-
-    sentences
+            (sentence, None, source)
+        })
+        .collect()
 }
 
 /// Check if a sentence pair should be included based on filtering criteria
@@ -675,10 +592,18 @@ pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
         return false;
     }
 
-    // 6. Skip sentences with multiple punctuation marks
-    let punct_count = sentence.matches('.').count()
-        + sentence.matches('!').count()
-        + sentence.matches('?').count();
+    // 6. Skip sentences with multiple punctuation marks — two sentences the
+    // segmenter left joined. The period of a title abbreviation (M. Godefroy,
+    // Mrs. Smith) is not a sentence boundary and doesn't count.
+    let without_titles = TITLE_ABBREVIATION.replace_all(sentence, "$title$name");
+    // A run like `?!` or `!!!` is one mark, not several sentences.
+    let punct_count = without_titles
+        .chars()
+        .fold((0, false), |(count, in_run), c| {
+            let terminal = matches!(c, '.' | '!' | '?');
+            (count + usize::from(terminal && !in_run), terminal)
+        })
+        .0;
 
     if punct_count > 1 {
         return false;
@@ -754,6 +679,18 @@ fn has_encoding_corruption(sentence: &str) -> bool {
             // These look identical to Latin letters but are different Unicode codepoints.
             '\u{0370}'..='\u{03FF}'
         )
+    })
+}
+
+/// Does the text use an apostrophe as a quotation mark — that is, anywhere
+/// other than between two letters?
+fn has_quote_apostrophe(text: &str) -> bool {
+    let chars: Vec<char> = text.chars().collect();
+    chars.iter().enumerate().any(|(i, &c)| {
+        matches!(c, '\'' | '’' | '‘')
+            && !(i > 0
+                && chars[i - 1].is_alphabetic()
+                && chars.get(i + 1).is_some_and(|n| n.is_alphabetic()))
     })
 }
 
@@ -893,8 +830,10 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
         }
     }
 
-    // Reject sentences with quotes (often dialogue or non-standard)
-    if text.contains('"') || text.contains('\'') || text.contains('"') || text.contains('"') {
+    // Reject sentences with quotation marks (often dialogue or non-standard).
+    // An apostrophe *inside* a word is elision or contraction (c'est, l'ami,
+    // don't) and stays; one at a word edge is a quote and goes.
+    if text.contains(['"', '“', '”', '„']) || has_quote_apostrophe(text) {
         return false;
     }
 
@@ -919,4 +858,66 @@ fn is_proper_sentence(text: &str, language: Language) -> bool {
     }
 
     true
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn cue(sentence: &str, start_ms: u32, end_ms: u32) -> SubtitleLine {
+        SubtitleLine {
+            sentence: sentence.to_string(),
+            start_ms,
+            end_ms,
+        }
+    }
+
+    #[test]
+    fn elision_apostrophes_are_not_quotes() {
+        for ok in [
+            "C'est bien de l'épaule.",
+            "M'aimez-vous, ma douce ?",
+            "Don't stop.",
+        ] {
+            assert!(!has_quote_apostrophe(ok), "{ok}");
+            assert!(is_proper_sentence(ok, Language::French), "{ok}");
+        }
+        for quote in ["'Bonjour', dit-il.", "Il a dit 'non'.", "Rock 'n roll."] {
+            assert!(has_quote_apostrophe(quote), "{quote}");
+        }
+    }
+
+    /// End-to-end through the real segmenter. Skipped when the weights aren't
+    /// on this machine (`LEXIDE_MODEL_DIR`, as lexide's own tests use).
+    #[test]
+    fn multi_sentence_cues_are_split_by_the_segmenter() {
+        let Ok(dir) = std::env::var("LEXIDE_MODEL_DIR") else {
+            eprintln!("LEXIDE_MODEL_DIR unset; skipping");
+            return;
+        };
+        if !std::path::Path::new(&dir)
+            .join("sentence_segmenter.safetensors")
+            .exists()
+        {
+            eprintln!("no segmenter weights in LEXIDE_MODEL_DIR; skipping");
+            return;
+        }
+        let segmenter = SubtitleSegmenter::for_language(Language::French).unwrap();
+        let cues = [
+            cue("On va la dépecer vive ! Lui arracher la langue !", 0, 2_000),
+            cue("M. Godefroy ! Vous voilà.", 2_100, 3_000),
+            cue("- Où est mon Daniel ? - Il est là.", 3_100, 4_000),
+        ];
+        assert_eq!(
+            subtitle_sentences(&cues, Language::French, &segmenter),
+            vec![
+                "On va la dépecer vive !",
+                "Lui arracher la langue !",
+                "M. Godefroy !",
+                "Vous voilà.",
+                "Où est mon Daniel ?",
+                "Il est là.",
+            ]
+        );
+    }
 }
