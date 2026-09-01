@@ -362,6 +362,43 @@ enum Command_ {
         #[arg(long, allow_hyphen_values = true)]
         min_ratio: Option<f64>,
     },
+    /// Cut serve-ready video clips (two renditions + sidecar JSON) for every
+    /// passing clip. See docs/clip-sidecar.md for the schema.
+    ExportClips {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Where the clip directories land, under `<dest>/<lang>/<id>/`.
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus/export")]
+        dest: PathBuf,
+        /// Clips encoded at once (each is one ffmpeg run).
+        #[arg(long, default_value_t = 4)]
+        jobs: usize,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// One film only, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+        /// Comma-separated course codes (fra,spa,…); default every language.
+        #[arg(long, value_delimiter = ',')]
+        langs: Option<Vec<String>>,
+    },
+    /// The whole serve pipeline in order — clips, export-clips, R2 upload —
+    /// each stage resumable and skipping finished work (like refresh).
+    Publish {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus/export")]
+        dest: PathBuf,
+        /// Clips encoded at once (each is one ffmpeg run).
+        #[arg(long, default_value_t = 8)]
+        jobs: usize,
+        /// Comma-separated course codes (fra,spa,…); default every language.
+        #[arg(long, value_delimiter = ',')]
+        langs: Option<Vec<String>>,
+        #[arg(long, default_value = "yap-clips")]
+        bucket: String,
+    },
     /// Flag extracted subtitles that are too sparse to be real dialogue.
     Verify {
         #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
@@ -2302,6 +2339,29 @@ async fn clips(
     subtitle_corpus::clips::clips_all(out, jobs, limit, imdb, langs, gate).await
 }
 
+#[tokio::main]
+async fn export_clips(
+    out: PathBuf,
+    dest: PathBuf,
+    jobs: usize,
+    limit: usize,
+    imdb: Option<String>,
+    langs: Option<Vec<String>>,
+) -> Result<()> {
+    subtitle_corpus::export::export_clips(out, dest, jobs, limit, imdb, langs).await
+}
+
+#[tokio::main]
+async fn publish(
+    out: PathBuf,
+    dest: PathBuf,
+    jobs: usize,
+    langs: Option<Vec<String>>,
+    bucket: String,
+) -> Result<()> {
+    subtitle_corpus::export::publish(out, dest, jobs, langs, bucket).await
+}
+
 /// Score each subtitle against where the audio says people are talking.
 fn agreement(
     out: PathBuf,
@@ -3216,6 +3276,21 @@ fn main() -> Result<()> {
             langs,
             min_ratio,
         } => clips(out, jobs, limit, imdb, langs, min_ratio),
+        Command_::ExportClips {
+            out,
+            dest,
+            jobs,
+            limit,
+            imdb,
+            langs,
+        } => export_clips(out, dest, jobs, limit, imdb, langs),
+        Command_::Publish {
+            out,
+            dest,
+            jobs,
+            langs,
+            bucket,
+        } => publish(out, dest, jobs, langs, bucket),
         Command_::Verify { out, min_density } => verify(out, min_density),
         Command_::ExportSidecars { out } => export_sidecars(out),
         Command_::PgsStats {

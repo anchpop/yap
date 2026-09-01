@@ -33,7 +33,7 @@ use std::sync::LazyLock;
 use xxhash_rust::xxh3::xxh3_64;
 
 pub mod ctc;
-pub use ctc::{FrameMatrix, FrameMatrixPayload, TargetScore};
+pub use ctc::{AlignedPhoneme, FrameMatrix, FrameMatrixPayload, TargetScore};
 
 static MODAL_URL: LazyLock<String> = LazyLock::new(|| {
     std::env::var("WAV2VEC2_ENDPOINT_URL").unwrap_or_else(|_| {

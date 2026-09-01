@@ -18,6 +18,8 @@ out/cleaned_*.jsonl filter=lfs diff=lfs merge=lfs -text
 # Language pair data (e.g., fra_for_eng)
 out/*_for_*/language_data_*.rkyv filter=lfs diff=lfs merge=lfs -text
 out/*_for_*/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
+out/*_for_*/target_language_to_native_translations.jsonl filter=lfs diff=lfs merge=lfs -text
+out/*/sentence_sources.jsonl filter=lfs diff=lfs merge=lfs -text
 
 # Clean NLP data (all languages)
 out/clean-nlp-data/*/target_language_sentences_nlp.jsonl filter=lfs diff=lfs merge=lfs -text

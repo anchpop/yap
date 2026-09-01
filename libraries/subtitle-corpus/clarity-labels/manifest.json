@@ -1,0 +1,3002 @@
+[
+ {
+  "id": 0,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "C’est le rationnement.",
+  "voiced": 0.40540540540540543,
+  "ratio": -0.4188259215285492,
+  "reject": null
+ },
+ {
+  "id": 1,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "I've gone on dates.",
+  "voiced": 0.8591549295774648,
+  "ratio": -1.107916058696235,
+  "reject": null
+ },
+ {
+  "id": 2,
+  "band": "pass-random",
+  "lang": "spa",
+  "imdb": "tt0095675",
+  "sentence": "¡Qué capacidad de recuperación la de Candela!",
+  "voiced": 0.6111111111111112,
+  "ratio": -0.9574186742131852,
+  "reject": null
+ },
+ {
+  "id": 3,
+  "band": "pass-borderline-voice",
+  "lang": "spa",
+  "imdb": "tt0070040",
+  "sentence": "¿Qué haces aquí, criatura?",
+  "voiced": 0.44660194174757284,
+  "ratio": -1.4068014876117625,
+  "reject": null
+ },
+ {
+  "id": 4,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Mon petit Hercule.",
+  "voiced": 0.5842105263157895,
+  "ratio": -0.9698864485240247,
+  "reject": "lead-in louder than the dialogue (rms x1.50)"
+ },
+ {
+  "id": 5,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "C'est bien.",
+  "voiced": 0.8857142857142857,
+  "ratio": 0.0,
+  "reject": "voices in the lead-in (speech 0.50)"
+ },
+ {
+  "id": 6,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "Marion, whenever it's possible, I want to see you.",
+  "voiced": 0.3821292775665399,
+  "ratio": -0.479180525643521,
+  "reject": null
+ },
+ {
+  "id": 7,
+  "band": "pass-borderline-voice",
+  "lang": "rus",
+  "imdb": "tt0062759",
+  "sentence": "Я думал купить жене шубу.",
+  "voiced": 0.4375,
+  "ratio": -1.7746677362432663,
+  "reject": null
+ },
+ {
+  "id": 8,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "I want you to take a chance and trust me.",
+  "voiced": 0.3696969696969697,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 9,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "That's the problem.",
+  "voiced": 0.18556701030927836,
+  "ratio": -1.7429562529091673,
+  "reject": "whispered delivery (voiced 0.19)"
+ },
+ {
+  "id": 10,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "En plus, il faut vraiment que j’y aille, là.",
+  "voiced": 0.38288288288288286,
+  "ratio": -1.287450837975218,
+  "reject": "lead-in louder than the dialogue (rms x1.22)"
+ },
+ {
+  "id": 11,
+  "band": "pass-random",
+  "lang": "spa",
+  "imdb": "tt0245574",
+  "sentence": "O como Tenoch levantaba con el pie el asiento del excusado en casa de Julio.",
+  "voiced": 0.6227758007117438,
+  "ratio": -0.056865852307832476,
+  "reject": null
+ },
+ {
+  "id": 12,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "So he must have found out something.",
+  "voiced": 0.12403100775193798,
+  "ratio": -0.611064475482575,
+  "reject": "whispered delivery (voiced 0.12)"
+ },
+ {
+  "id": 13,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "La sagesse de ces enfants ressemblait à de l'indifférence.",
+  "voiced": 0.7490774907749077,
+  "ratio": -1.2257519657127292,
+  "reject": null
+ },
+ {
+  "id": 14,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "Well, I put a cloth over the strings to lessen the noise.",
+  "voiced": 0.628099173553719,
+  "ratio": -0.07437188806786016,
+  "reject": "lead-in louder than the dialogue (rms x1.14)"
+ },
+ {
+  "id": 15,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "What are you asking me to do?",
+  "voiced": 0.8160919540229885,
+  "ratio": -2.3254373131580715,
+  "reject": "ratio -2.33 below -2.00"
+ },
+ {
+  "id": 16,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "I can't tell you.",
+  "voiced": 0.9411764705882353,
+  "ratio": -1.3196883102017496,
+  "reject": "voices in the lead-in (speech 0.50)"
+ },
+ {
+  "id": 17,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "À vous aussi, cher collègue.",
+  "voiced": 0.6015625,
+  "ratio": -1.2073837727252736,
+  "reject": "lead-in louder than the dialogue (rms x1.18)"
+ },
+ {
+  "id": 18,
+  "band": "pass-random",
+  "lang": "por",
+  "imdb": "tt1555149",
+  "sentence": "telespectador, da sua atenção, telespectadora.",
+  "voiced": 0.7333333333333333,
+  "ratio": -0.5967818471498094,
+  "reject": null
+ },
+ {
+  "id": 19,
+  "band": "whisper-reject",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Wir könnten kämpfen.",
+  "voiced": 0.09821428571428571,
+  "ratio": -1.7790288445776556,
+  "reject": "whispered delivery (voiced 0.10)"
+ },
+ {
+  "id": 20,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Peut-être plus.",
+  "voiced": 0.016129032258064516,
+  "ratio": -1.389730841672797,
+  "reject": "whispered delivery (voiced 0.02)"
+ },
+ {
+  "id": 21,
+  "band": "pass-borderline-voice",
+  "lang": "ita",
+  "imdb": "tt0076786",
+  "sentence": "Entrò nella camera accanto e si mise a dormire.",
+  "voiced": 0.39195979899497485,
+  "ratio": -0.6698360886502808,
+  "reject": null
+ },
+ {
+  "id": 22,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "C'est le printemps.",
+  "voiced": 0.7,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 23,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "Be with you in a second!",
+  "voiced": 0.7391304347826086,
+  "ratio": -2.3444440474641755,
+  "reject": "ratio -2.34 below -2.00"
+ },
+ {
+  "id": 24,
+  "band": "whisper-reject",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Wir hatten hier mal TBC-Fälle.",
+  "voiced": 0.23684210526315788,
+  "ratio": -1.3540112652624743,
+  "reject": "whispered delivery (voiced 0.24)"
+ },
+ {
+  "id": 25,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Well, I suppose it was only a matter of time before you forgot where we lived.",
+  "voiced": 0.64,
+  "ratio": -0.4835016232809329,
+  "reject": null
+ },
+ {
+  "id": 26,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "I think it's very hot.",
+  "voiced": 0.4406779661016949,
+  "ratio": -0.26009694374023035,
+  "reject": "voices in the lead-in (speech 0.50)"
+ },
+ {
+  "id": 27,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "You want to come around to my office this afternoon and report a missing person and a theft, that's what you want to do.",
+  "voiced": 0.32919254658385094,
+  "ratio": -0.8539708587968694,
+  "reject": null
+ },
+ {
+  "id": 28,
+  "band": "pass-random",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Sie kommen auch aus dem Finanzwesen, Herr Sorowitsch?",
+  "voiced": 0.5975609756097561,
+  "ratio": -1.6073481780756362,
+  "reject": null
+ },
+ {
+  "id": 29,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Parce que c'est impossible, mademoiselle.",
+  "voiced": 0.22012578616352202,
+  "ratio": -0.3859009977238695,
+  "reject": "whispered delivery (voiced 0.22)"
+ },
+ {
+  "id": 30,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "In the beginning, it is always dark.",
+  "voiced": 0.5032258064516129,
+  "ratio": -1.0779738385838427,
+  "reject": "lead-in louder than the dialogue (rms x1.19)"
+ },
+ {
+  "id": 31,
+  "band": "pass-random",
+  "lang": "spa",
+  "imdb": "tt8228288",
+  "sentence": "¿Crees en Dios?",
+  "voiced": 0.47368421052631576,
+  "ratio": -1.2144422862167894,
+  "reject": null
+ },
+ {
+  "id": 32,
+  "band": "pass-borderline-voice",
+  "lang": "ita",
+  "imdb": "tt0076786",
+  "sentence": "Basta seguire l'ultima insegnante che passa.",
+  "voiced": 0.2862453531598513,
+  "ratio": -0.7047813671434755,
+  "reject": null
+ },
+ {
+  "id": 33,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "I'll do the shopping.",
+  "voiced": 0.6129032258064516,
+  "ratio": -0.8947181154868881,
+  "reject": null
+ },
+ {
+  "id": 34,
+  "band": "ratio-marginal",
+  "lang": "deu",
+  "imdb": "tt0082096",
+  "sentence": "Reicht der Sauerstoff?",
+  "voiced": 0.484375,
+  "ratio": -2.6593331058587735,
+  "reject": "ratio -2.66 below -2.50"
+ },
+ {
+  "id": 35,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "A man should have a hobby.",
+  "voiced": 0.37272727272727274,
+  "ratio": -0.759190164326259,
+  "reject": null
+ },
+ {
+  "id": 36,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "Go take a look.",
+  "voiced": 0.323943661971831,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 37,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "But after his openings, to be honest, he does tend to get a little fucking boring.",
+  "voiced": 0.07027027027027027,
+  "ratio": -0.5060582810751816,
+  "reject": "whispered delivery (voiced 0.07)"
+ },
+ {
+  "id": 38,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Ah, c'est con, ça !",
+  "voiced": 0.3939393939393939,
+  "ratio": -0.06650734139677576,
+  "reject": null
+ },
+ {
+  "id": 39,
+  "band": "whisper-reject",
+  "lang": "por",
+  "imdb": "tt0861739",
+  "sentence": "Eram uns anjinhos.",
+  "voiced": 0.19230769230769232,
+  "ratio": -2.474520605059215,
+  "reject": "whispered delivery (voiced 0.19)"
+ },
+ {
+  "id": 40,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Il paraît qu’elle entend des voix maintenant.",
+  "voiced": 0.31382978723404253,
+  "ratio": -1.8353473760073236,
+  "reject": null
+ },
+ {
+  "id": 41,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "L'onde d'espoir",
+  "voiced": 1.0,
+  "ratio": -0.5260971290399562,
+  "reject": null
+ },
+ {
+  "id": 42,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "Leeloo, we are not on vacation.",
+  "voiced": 0.706766917293233,
+  "ratio": -1.5551777648926373,
+  "reject": "voices in the tail (speech 0.33)"
+ },
+ {
+  "id": 43,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Qui c'est ?",
+  "voiced": 0.38095238095238093,
+  "ratio": -1.5007738456914979,
+  "reject": null
+ },
+ {
+  "id": 44,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Dites oui, je vous en supplie.",
+  "voiced": 0.4117647058823529,
+  "ratio": -0.9360288110225653,
+  "reject": null
+ },
+ {
+  "id": 45,
+  "band": "whisper-reject",
+  "lang": "ita",
+  "imdb": "tt0076786",
+  "sentence": "Lo stesso respiro, così strano che non l'ho mai dimenticato.",
+  "voiced": 0.04229607250755287,
+  "ratio": -0.3803946988899367,
+  "reject": "whispered delivery (voiced 0.04)"
+ },
+ {
+  "id": 46,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Vous êtes vraiment trop con.",
+  "voiced": 0.18811881188118812,
+  "ratio": -0.53586562969694,
+  "reject": "whispered delivery (voiced 0.19)"
+ },
+ {
+  "id": 47,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "The Last of the Mohicans, Wizard of Oz...",
+  "voiced": 0.9451219512195121,
+  "ratio": -1.3633646717625523,
+  "reject": null
+ },
+ {
+  "id": 48,
+  "band": "pass-random",
+  "lang": "ita",
+  "imdb": "tt0058461",
+  "sentence": "I Baxter da una parte,",
+  "voiced": 0.6181818181818182,
+  "ratio": -0.1718540419733768,
+  "reject": null
+ },
+ {
+  "id": 49,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "I'm always finding you in my place.",
+  "voiced": 0.4444444444444444,
+  "ratio": -0.8376107862371419,
+  "reject": "lead-in louder than the dialogue (rms x1.41)"
+ },
+ {
+  "id": 50,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "You got something that I crave.",
+  "voiced": 0.3202614379084967,
+  "ratio": -1.066212532994704,
+  "reject": null
+ },
+ {
+  "id": 51,
+  "band": "ratio-marginal",
+  "lang": "por",
+  "imdb": "tt1555149",
+  "sentence": "Eu achei o comitê de campanha do Governador.",
+  "voiced": 0.3225806451612903,
+  "ratio": -3.1530317339174894,
+  "reject": "ratio -3.15 below -2.50"
+ },
+ {
+  "id": 52,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "And I have been trying to help it.",
+  "voiced": 0.14333333333333334,
+  "ratio": -1.8069941492484532e-05,
+  "reject": "whispered delivery (voiced 0.14)"
+ },
+ {
+  "id": 53,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "C'est l’antenne, avec le vent dehors.",
+  "voiced": 0.3125,
+  "ratio": -0.47774894146608504,
+  "reject": "lead-in louder than the dialogue (rms x1.33)"
+ },
+ {
+  "id": 54,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "Yes, you did.",
+  "voiced": 0.34146341463414637,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 55,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Ah ouais, ils sont plus là !",
+  "voiced": 0.7518248175182481,
+  "ratio": -0.8482066510423665,
+  "reject": null
+ },
+ {
+  "id": 56,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "I've been trying to trace a girl that's been missing for, oh, about a week now from Phoenix.",
+  "voiced": 0.40633245382585753,
+  "ratio": -0.5263069566852713,
+  "reject": "voices in the lead-in (speech 0.33)"
+ },
+ {
+  "id": 57,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Bandez-moi les yeux.",
+  "voiced": 0.8656716417910447,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 58,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Un vrai livre.",
+  "voiced": 0.14393939393939395,
+  "ratio": -0.715679311235541,
+  "reject": "whispered delivery (voiced 0.14)"
+ },
+ {
+  "id": 59,
+  "band": "pass-random",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Sie haben einem Genossen Ihr Brot gegeben.",
+  "voiced": 0.6912751677852349,
+  "ratio": -0.5950661077304212,
+  "reject": null
+ },
+ {
+  "id": 60,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Attention à la marche.",
+  "voiced": 0.3,
+  "ratio": -2.022993788539205,
+  "reject": "ratio -2.02 below -2.00"
+ },
+ {
+  "id": 61,
+  "band": "ratio-marginal",
+  "lang": "rus",
+  "imdb": "tt0056111",
+  "sentence": "Майор из оперативного?",
+  "voiced": 0.6162790697674418,
+  "ratio": -2.2715574912288847,
+  "reject": "ratio -2.27 below -2.00"
+ },
+ {
+  "id": 62,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Qui est Le Querrec ?",
+  "voiced": 0.8970588235294118,
+  "ratio": -2.6368999844888314,
+  "reject": "ratio -2.64 below -2.00"
+ },
+ {
+  "id": 63,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Ça va, t’inquiète.",
+  "voiced": 0.4461538461538462,
+  "ratio": -1.756379456127967,
+  "reject": "voices in the lead-in (speech 0.50)"
+ },
+ {
+  "id": 64,
+  "band": "pass-random",
+  "lang": "rus",
+  "imdb": "tt0056111",
+  "sentence": "Три дня ничего не делал, только читал.",
+  "voiced": 0.675,
+  "ratio": -0.4316136009243851,
+  "reject": null
+ },
+ {
+  "id": 65,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "I can't believe it.",
+  "voiced": 0.17721518987341772,
+  "ratio": -0.4037123642752599,
+  "reject": "whispered delivery (voiced 0.18)"
+ },
+ {
+  "id": 66,
+  "band": "whisper-reject",
+  "lang": "rus",
+  "imdb": "tt0056111",
+  "sentence": "Порядок, все подшито и прошнуровано.",
+  "voiced": 0.0625,
+  "ratio": -0.3940774760799537,
+  "reject": "whispered delivery (voiced 0.06)"
+ },
+ {
+  "id": 67,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "J'en ai pas.",
+  "voiced": 0.9705882352941176,
+  "ratio": 0.0,
+  "reject": "voices in the lead-in (speech 0.33)"
+ },
+ {
+  "id": 68,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "What's he look like?",
+  "voiced": 0.125,
+  "ratio": -2.5631260783031635,
+  "reject": "ratio -2.56 below -2.00"
+ },
+ {
+  "id": 69,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "C'est au sujet de votre mère...",
+  "voiced": 0.3761467889908257,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 70,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Anything you want.",
+  "voiced": 0.8450704225352113,
+  "ratio": -1.3285098961922077,
+  "reject": null
+ },
+ {
+  "id": 71,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "C’est que c’est un langage…",
+  "voiced": 0.17045454545454544,
+  "ratio": -1.7333585720514035,
+  "reject": "whispered delivery (voiced 0.17)"
+ },
+ {
+  "id": 72,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "C'est pas très romantique mais j'avais trop envie.",
+  "voiced": 0.38636363636363635,
+  "ratio": -0.45404523624543863,
+  "reject": null
+ },
+ {
+  "id": 73,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "...and to save our world.",
+  "voiced": 0.6083333333333333,
+  "ratio": -2.568441723898756,
+  "reject": "ratio -2.57 below -2.00"
+ },
+ {
+  "id": 74,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "C'est pour moi les fleurs ?",
+  "voiced": 0.9861111111111112,
+  "ratio": -0.16598153496288712,
+  "reject": null
+ },
+ {
+  "id": 75,
+  "band": "pass-borderline-voice",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Ich kann es besser.",
+  "voiced": 0.41379310344827586,
+  "ratio": -1.1034849330695726,
+  "reject": null
+ },
+ {
+  "id": 76,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Yes, well, my son's birthday.",
+  "voiced": 0.16326530612244897,
+  "ratio": -0.10259697922682705,
+  "reject": "whispered delivery (voiced 0.16)"
+ },
+ {
+  "id": 77,
+  "band": "pass-random",
+  "lang": "rus",
+  "imdb": "tt0062759",
+  "sentence": "Ну и хорошо.",
+  "voiced": 0.6428571428571429,
+  "ratio": -1.0812325393548274,
+  "reject": null
+ },
+ {
+  "id": 78,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "I know what you want.",
+  "voiced": 0.3157894736842105,
+  "ratio": -2.485833500911349,
+  "reject": "ratio -2.49 below -2.00"
+ },
+ {
+  "id": 79,
+  "band": "pass-random",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Willkommen in Sachsenhausen.",
+  "voiced": 0.78,
+  "ratio": -0.2849895375404275,
+  "reject": null
+ },
+ {
+  "id": 80,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0055254",
+  "sentence": "It's that devil woman.",
+  "voiced": 0.9512195121951219,
+  "ratio": -0.9090049961023628,
+  "reject": null
+ },
+ {
+  "id": 81,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "C'était très bien.",
+  "voiced": 0.44642857142857145,
+  "ratio": -0.011342060943880706,
+  "reject": null
+ },
+ {
+  "id": 82,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "You know, sometimes I can keep my mouth shut.",
+  "voiced": 0.11421319796954314,
+  "ratio": -0.6948061920917008,
+  "reject": "whispered delivery (voiced 0.11)"
+ },
+ {
+  "id": 83,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Ma vie a... Comment dire ?",
+  "voiced": 0.8103448275862069,
+  "ratio": -2.2915845264600567,
+  "reject": "ratio -2.29 below -2.00"
+ },
+ {
+  "id": 84,
+  "band": "whisper-reject",
+  "lang": "rus",
+  "imdb": "tt0056111",
+  "sentence": "Я вот лично очень хочу к мамке.",
+  "voiced": 0.024,
+  "ratio": -0.23186481619969218,
+  "reject": "whispered delivery (voiced 0.02)"
+ },
+ {
+  "id": 85,
+  "band": "ratio-marginal",
+  "lang": "spa",
+  "imdb": "tt0095675",
+  "sentence": "Yo confiaba ciegamente",
+  "voiced": 0.7631578947368421,
+  "ratio": -2.0599611569199845,
+  "reject": "ratio -2.06 below -2.00"
+ },
+ {
+  "id": 86,
+  "band": "pass-random",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Vor ein paar Tagen betritt ein Geschäftsmann eine Bank in Zürich.",
+  "voiced": 0.8,
+  "ratio": -0.23744871936551096,
+  "reject": null
+ },
+ {
+  "id": 87,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Maréchal, nous voilà",
+  "voiced": 0.9848484848484849,
+  "ratio": -0.8360963948142547,
+  "reject": null
+ },
+ {
+  "id": 88,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "You're right!",
+  "voiced": 0.8055555555555556,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 89,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Je dis Julie parce que vous me plaisez Mais je veux pas vous presser.",
+  "voiced": 0.13793103448275862,
+  "ratio": -0.9766895697225839,
+  "reject": "whispered delivery (voiced 0.14)"
+ },
+ {
+  "id": 90,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Vous êtes gentille.",
+  "voiced": 0.2222222222222222,
+  "ratio": -0.5563420312397414,
+  "reject": "whispered delivery (voiced 0.22)"
+ },
+ {
+  "id": 91,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "Oh, I see.",
+  "voiced": 0.32941176470588235,
+  "ratio": -1.6194561056352945,
+  "reject": "lead-in louder than the dialogue (rms x1.51)"
+ },
+ {
+  "id": 92,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Would you kiss me?",
+  "voiced": 0.3170731707317073,
+  "ratio": -1.0765946185452435,
+  "reject": null
+ },
+ {
+  "id": 93,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "You have to try.",
+  "voiced": 0.45263157894736844,
+  "ratio": -0.06078591138229401,
+  "reject": null
+ },
+ {
+  "id": 94,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Comme je casse tout, j’ai tout en double.",
+  "voiced": 0.7572815533980582,
+  "ratio": -0.058959519342801615,
+  "reject": null
+ },
+ {
+  "id": 95,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "I know Castor too well for this to be a hunch!",
+  "voiced": 0.6780487804878049,
+  "ratio": -0.7846426381933802,
+  "reject": "lead-in louder than the dialogue (rms x1.82)"
+ },
+ {
+  "id": 96,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "J'y ai vécu dix ans.",
+  "voiced": 0.3130434782608696,
+  "ratio": -2.2737354901271405,
+  "reject": "ratio -2.27 below -2.00"
+ },
+ {
+  "id": 97,
+  "band": "pass-borderline-voice",
+  "lang": "rus",
+  "imdb": "tt0118767",
+  "sentence": "В общем, дело непростое.",
+  "voiced": 0.39864864864864863,
+  "ratio": -0.3476205520745705,
+  "reject": null
+ },
+ {
+  "id": 98,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "Well, all right.",
+  "voiced": 0.05,
+  "ratio": -1.049280197097314,
+  "reject": "whispered delivery (voiced 0.05)"
+ },
+ {
+  "id": 99,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Ne faites rien pour l'instant.",
+  "voiced": 0.13392857142857142,
+  "ratio": -1.0802761537548369,
+  "reject": "whispered delivery (voiced 0.13)"
+ },
+ {
+  "id": 100,
+  "band": "pass-borderline-voice",
+  "lang": "por",
+  "imdb": "tt0317248",
+  "sentence": "Uma semana só.",
+  "voiced": 0.43333333333333335,
+  "ratio": -1.060242987596719,
+  "reject": null
+ },
+ {
+  "id": 101,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "C'est le choc.",
+  "voiced": 0.2857142857142857,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 102,
+  "band": "ratio-marginal",
+  "lang": "por",
+  "imdb": "tt2762506",
+  "sentence": "Tá muito escuro.",
+  "voiced": 0.8240740740740741,
+  "ratio": -2.805492935951643,
+  "reject": "ratio -2.81 below -2.50"
+ },
+ {
+  "id": 103,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Je vous demande pardon.",
+  "voiced": 0.29577464788732394,
+  "ratio": -0.38321714832262777,
+  "reject": null
+ },
+ {
+  "id": 104,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Je vous aime, Alice.",
+  "voiced": 0.6575342465753424,
+  "ratio": -2.159349477147329,
+  "reject": "ratio -2.16 below -2.00"
+ },
+ {
+  "id": 105,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "My man was killed right here on your turf.",
+  "voiced": 0.4174757281553398,
+  "ratio": -0.4598408419618976,
+  "reject": null
+ },
+ {
+  "id": 106,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Je l'aime tellement.",
+  "voiced": 0.5517241379310345,
+  "ratio": -2.1935875896051216,
+  "reject": "ratio -2.19 below -2.00"
+ },
+ {
+  "id": 107,
+  "band": "pass-borderline-voice",
+  "lang": "ita",
+  "imdb": "tt0076786",
+  "sentence": "Il tappeto, ecco perché i passi finivano qui.",
+  "voiced": 0.4046242774566474,
+  "ratio": -0.11490711944987994,
+  "reject": null
+ },
+ {
+  "id": 108,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Whatever someone you become, wherever you are in the world...",
+  "voiced": 0.34615384615384615,
+  "ratio": -0.7456901171814251,
+  "reject": null
+ },
+ {
+  "id": 109,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "How do they expect us to find anything in this shit?",
+  "voiced": 0.6814159292035398,
+  "ratio": -0.08164905352640357,
+  "reject": null
+ },
+ {
+  "id": 110,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "And he sounded very aggravated.",
+  "voiced": 0.7730496453900709,
+  "ratio": -1.3547669289564555,
+  "reject": null
+ },
+ {
+  "id": 111,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "C'est agréable, d'être regardée.",
+  "voiced": 1.0,
+  "ratio": -1.5600675640938273,
+  "reject": null
+ },
+ {
+  "id": 112,
+  "band": "pass-random",
+  "lang": "deu",
+  "imdb": "tt0068182",
+  "sentence": "Stellvertretender Kommandeur wird Don Lope de Aguirre, ein Mann sehr wohl befähigt für diese Stellung.",
+  "voiced": 0.5329949238578681,
+  "ratio": -0.6216966585910584,
+  "reject": null
+ },
+ {
+  "id": 113,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "He's already chosen it.",
+  "voiced": 0.5810055865921788,
+  "ratio": -0.10826515718091548,
+  "reject": "lead-in louder than the dialogue (rms x1.95)"
+ },
+ {
+  "id": 114,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Still waiting, but Interpol insists he's in Tripoli.",
+  "voiced": 0.6567164179104478,
+  "ratio": -0.19407040119597516,
+  "reject": null
+ },
+ {
+  "id": 115,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Raccrochez le premier.",
+  "voiced": 0.7368421052631579,
+  "ratio": -0.4867478121800109,
+  "reject": null
+ },
+ {
+  "id": 116,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Je ne sais pas.",
+  "voiced": 0.21052631578947367,
+  "ratio": -2.560954354472176,
+  "reject": "ratio -2.56 below -2.00"
+ },
+ {
+  "id": 117,
+  "band": "ratio-marginal",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Sally, hör auf!",
+  "voiced": 0.2692307692307692,
+  "ratio": -3.150103675360149,
+  "reject": "ratio -3.15 below -2.50"
+ },
+ {
+  "id": 118,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "I've got a government job to abuse and a lonely wife to fuck.",
+  "voiced": 0.23389021479713604,
+  "ratio": -0.32939426399887456,
+  "reject": "whispered delivery (voiced 0.23)"
+ },
+ {
+  "id": 119,
+  "band": "whisper-reject",
+  "lang": "rus",
+  "imdb": "tt0056111",
+  "sentence": "Товарищ старший лейтенант!",
+  "voiced": 0.125,
+  "ratio": -1.7114976893689353,
+  "reject": "whispered delivery (voiced 0.12)"
+ },
+ {
+  "id": 120,
+  "band": "pass-random",
+  "lang": "ita",
+  "imdb": "tt0076786",
+  "sentence": "Elena, dammi la forza!",
+  "voiced": 0.5298507462686567,
+  "ratio": -0.8113716967013689,
+  "reject": null
+ },
+ {
+  "id": 121,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Alors, où on va ?",
+  "voiced": 0.92,
+  "ratio": -0.42001662872396284,
+  "reject": null
+ },
+ {
+  "id": 122,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "What is it?",
+  "voiced": 0.125,
+  "ratio": 0.0,
+  "reject": "whispered delivery (voiced 0.12)"
+ },
+ {
+  "id": 123,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "That's all I wanted.",
+  "voiced": 0.5135135135135135,
+  "ratio": -2.3832054987232842,
+  "reject": "ratio -2.38 below -2.00"
+ },
+ {
+  "id": 124,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "On a plus de puissance.",
+  "voiced": 0.12295081967213115,
+  "ratio": -0.5947965188674431,
+  "reject": "whispered delivery (voiced 0.12)"
+ },
+ {
+  "id": 125,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Je vais cartonner.",
+  "voiced": 0.22388059701492538,
+  "ratio": -0.13041011937081268,
+  "reject": "lead-in louder than the dialogue (rms x2.20)"
+ },
+ {
+  "id": 126,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "You're amazing.",
+  "voiced": 0.7777777777777778,
+  "ratio": -2.3819314154554014,
+  "reject": "ratio -2.38 below -2.00"
+ },
+ {
+  "id": 127,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Quand tout à coup...",
+  "voiced": 0.109375,
+  "ratio": -0.20262527239291955,
+  "reject": "whispered delivery (voiced 0.11)"
+ },
+ {
+  "id": 128,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "They told me this guy came from the outside, He was a pro.",
+  "voiced": 0.14285714285714285,
+  "ratio": -0.8451843032634584,
+  "reject": "whispered delivery (voiced 0.14)"
+ },
+ {
+  "id": 129,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Je suis désolé, Monsieur.",
+  "voiced": 0.7623762376237624,
+  "ratio": -2.277680812432209,
+  "reject": "ratio -2.28 below -2.00"
+ },
+ {
+  "id": 130,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "And I need you to let me go.",
+  "voiced": 0.9411764705882353,
+  "ratio": -2.013420831265355,
+  "reject": "ratio -2.01 below -2.00"
+ },
+ {
+  "id": 131,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Les gardiens des squares la connaissaient.",
+  "voiced": 0.39814814814814814,
+  "ratio": -0.2910893105297622,
+  "reject": null
+ },
+ {
+  "id": 132,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Un coup de ciseau",
+  "voiced": 0.5,
+  "ratio": -2.3116880091505556,
+  "reject": "ratio -2.31 below -2.00"
+ },
+ {
+  "id": 133,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Si c'était possible psychologiquement.",
+  "voiced": 0.24050632911392406,
+  "ratio": 0.0,
+  "reject": "whispered delivery (voiced 0.24)"
+ },
+ {
+  "id": 134,
+  "band": "whisper-reject",
+  "lang": "ita",
+  "imdb": "tt4901306",
+  "sentence": "...o meglio, avevi detto di no.",
+  "voiced": 0.1366906474820144,
+  "ratio": -1.6119663011987875,
+  "reject": "whispered delivery (voiced 0.14)"
+ },
+ {
+  "id": 135,
+  "band": "pass-borderline-voice",
+  "lang": "rus",
+  "imdb": "tt0118767",
+  "sentence": "Ты что, брат?",
+  "voiced": 0.38181818181818183,
+  "ratio": -0.7070027440490896,
+  "reject": null
+ },
+ {
+  "id": 136,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Le huit, c'est mon chiffre.",
+  "voiced": 0.5873015873015873,
+  "ratio": -1.9855335865476884,
+  "reject": "voices in the lead-in (speech 0.50)"
+ },
+ {
+  "id": 137,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Je suis obligée de filer.",
+  "voiced": 0.3564356435643564,
+  "ratio": -1.9356959104146592,
+  "reject": "voices in the lead-in (speech 0.50)"
+ },
+ {
+  "id": 138,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Pas si vite.",
+  "voiced": 0.4444444444444444,
+  "ratio": -0.46925760858427035,
+  "reject": null
+ },
+ {
+  "id": 139,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "No, ma'am.",
+  "voiced": 0.08064516129032258,
+  "ratio": -1.019414737052967,
+  "reject": "whispered delivery (voiced 0.08)"
+ },
+ {
+  "id": 140,
+  "band": "whisper-reject",
+  "lang": "ita",
+  "imdb": "tt0058461",
+  "sentence": "Beh, che ne pensi?",
+  "voiced": 0.22033898305084745,
+  "ratio": -0.9907416441190425,
+  "reject": "whispered delivery (voiced 0.22)"
+ },
+ {
+  "id": 141,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "After I've seen the outline of my brother's body on the floor, you expect me to forget?",
+  "voiced": 0.9745454545454545,
+  "ratio": -1.2961779511159637,
+  "reject": null
+ },
+ {
+  "id": 142,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Elle est trop drôle.",
+  "voiced": 0.4782608695652174,
+  "ratio": -1.8330638153835122,
+  "reject": "lead-in louder than the dialogue (rms x1.11)"
+ },
+ {
+  "id": 143,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "What is it, Marion?",
+  "voiced": 0.08333333333333333,
+  "ratio": 0.0,
+  "reject": "whispered delivery (voiced 0.08)"
+ },
+ {
+  "id": 144,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Là-haut il y a une marche qui tient pas bien.",
+  "voiced": 0.23809523809523808,
+  "ratio": -2.6327408996786827,
+  "reject": "ratio -2.63 below -2.00"
+ },
+ {
+  "id": 145,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Dites quelque chose.",
+  "voiced": 0.21686746987951808,
+  "ratio": -0.9770053039720072,
+  "reject": "whispered delivery (voiced 0.22)"
+ },
+ {
+  "id": 146,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Excusez-moi, je suis un peu en retard.",
+  "voiced": 0.45714285714285713,
+  "ratio": -2.2501611450032546,
+  "reject": "ratio -2.25 below -2.00"
+ },
+ {
+  "id": 147,
+  "band": "pass-borderline-voice",
+  "lang": "por",
+  "imdb": "tt0140888",
+  "sentence": "O que que tá longe?",
+  "voiced": 0.3058823529411765,
+  "ratio": -1.2207181974447852,
+  "reject": null
+ },
+ {
+  "id": 148,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "...and let it take me away, too.",
+  "voiced": 0.06190476190476191,
+  "ratio": -1.546395479794169,
+  "reject": "whispered delivery (voiced 0.06)"
+ },
+ {
+  "id": 149,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "What can I do for you?",
+  "voiced": 0.0963855421686747,
+  "ratio": -2.194724430512729,
+  "reject": "ratio -2.19 below -2.00"
+ },
+ {
+  "id": 150,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Ça fume, ça boit Pour tout ce que ça travaille",
+  "voiced": 1.0,
+  "ratio": -0.2497032059565625,
+  "reject": null
+ },
+ {
+  "id": 151,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "I know she's young, but she learns fast.",
+  "voiced": 0.15286624203821655,
+  "ratio": -0.083361017540643,
+  "reject": "whispered delivery (voiced 0.15)"
+ },
+ {
+  "id": 152,
+  "band": "pass-random",
+  "lang": "ita",
+  "imdb": "tt4901306",
+  "sentence": "L'ho detto bene o no?",
+  "voiced": 0.7640449438202247,
+  "ratio": -0.5521970907154545,
+  "reject": null
+ },
+ {
+  "id": 153,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "J'ai pas de sous.",
+  "voiced": 0.68,
+  "ratio": -1.4003452636362619,
+  "reject": null
+ },
+ {
+  "id": 154,
+  "band": "whisper-reject",
+  "lang": "spa",
+  "imdb": "tt0095675",
+  "sentence": "Mete mis cosas en la maleta.",
+  "voiced": 0.08737864077669903,
+  "ratio": 0.0,
+  "reject": "whispered delivery (voiced 0.09)"
+ },
+ {
+  "id": 155,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "Otherwise, though, it's just hard work.",
+  "voiced": 0.25892857142857145,
+  "ratio": -1.1746824332073778,
+  "reject": null
+ },
+ {
+  "id": 156,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "So are you, um...?",
+  "voiced": 0.9863013698630136,
+  "ratio": -2.3843797324626954,
+  "reject": "ratio -2.38 below -2.00"
+ },
+ {
+  "id": 157,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "We can even have dinner.",
+  "voiced": 0.7866666666666666,
+  "ratio": -0.1543798752388022,
+  "reject": null
+ },
+ {
+  "id": 158,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Chacun pour soi et Dieu pour tous !",
+  "voiced": 0.6071428571428571,
+  "ratio": -0.5608043247665223,
+  "reject": null
+ },
+ {
+  "id": 159,
+  "band": "pass-random",
+  "lang": "deu",
+  "imdb": "tt1954701",
+  "sentence": "Haben Sie seine Familie benachrichtigt?",
+  "voiced": 0.782051282051282,
+  "ratio": -0.9293722781436577,
+  "reject": null
+ },
+ {
+  "id": 160,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "Not even a dried-up lake.",
+  "voiced": 0.3412698412698413,
+  "ratio": -0.3417833101745301,
+  "reject": "voices in the lead-in (speech 1.00)"
+ },
+ {
+  "id": 161,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "I refuse to speak of disgusting things, because they disgust me!",
+  "voiced": 0.7517482517482518,
+  "ratio": -1.4301453058782083,
+  "reject": "lead-in louder than the dialogue (rms x1.01)"
+ },
+ {
+  "id": 162,
+  "band": "whisper-reject",
+  "lang": "spa",
+  "imdb": "tt0095675",
+  "sentence": "Pepa, estoy avergonzado.",
+  "voiced": 0.12844036697247707,
+  "ratio": -1.2854668837035046,
+  "reject": "whispered delivery (voiced 0.13)"
+ },
+ {
+  "id": 163,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Faut dire qu’elle est jolie.",
+  "voiced": 0.16666666666666666,
+  "ratio": -0.7288094291014365,
+  "reject": "whispered delivery (voiced 0.17)"
+ },
+ {
+  "id": 164,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Les enfants furent interrogés, Rachin renvoyé.",
+  "voiced": 0.19444444444444445,
+  "ratio": -0.1915578335771167,
+  "reject": "whispered delivery (voiced 0.19)"
+ },
+ {
+  "id": 165,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Your blood types won't match, but Pollux won't know that.",
+  "voiced": 0.4716981132075472,
+  "ratio": -1.1063806463511008,
+  "reject": null
+ },
+ {
+  "id": 166,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "I mean, not the sad, mopey you.",
+  "voiced": 0.23076923076923078,
+  "ratio": -0.3645595997266789,
+  "reject": "whispered delivery (voiced 0.23)"
+ },
+ {
+  "id": 167,
+  "band": "pass-borderline-voice",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Darauf kommt's an, Sorowitsch.",
+  "voiced": 0.30973451327433627,
+  "ratio": -0.75866896519216,
+  "reject": null
+ },
+ {
+  "id": 168,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Et la borne.",
+  "voiced": 0.6842105263157895,
+  "ratio": -0.08283710532273544,
+  "reject": null
+ },
+ {
+  "id": 169,
+  "band": "ratio-marginal",
+  "lang": "rus",
+  "imdb": "tt0097561",
+  "sentence": "единственный, который способен...",
+  "voiced": 0.9393939393939394,
+  "ratio": -2.044470871002415,
+  "reject": "ratio -2.04 below -2.00"
+ },
+ {
+  "id": 170,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Are you wearing any underwear?",
+  "voiced": 0.9765625,
+  "ratio": -2.492127330558604,
+  "reject": "ratio -2.49 below -2.00"
+ },
+ {
+  "id": 171,
+  "band": "pass-borderline-voice",
+  "lang": "deu",
+  "imdb": "tt0082096",
+  "sentence": "Wir machen uns bei Dunkelheit ran.",
+  "voiced": 0.34959349593495936,
+  "ratio": -0.9097599331689752,
+  "reject": null
+ },
+ {
+  "id": 172,
+  "band": "ratio-marginal",
+  "lang": "ita",
+  "imdb": "tt4901306",
+  "sentence": "Invece se era vivo chiamava mia moglie!",
+  "voiced": 0.9300699300699301,
+  "ratio": -2.2831925182170965,
+  "reject": "ratio -2.28 below -2.00"
+ },
+ {
+  "id": 173,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "She needs me.",
+  "voiced": 0.6493506493506493,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 174,
+  "band": "whisper-reject",
+  "lang": "por",
+  "imdb": "tt0861739",
+  "sentence": "geralmente dá merda.",
+  "voiced": 0.21379310344827587,
+  "ratio": -1.4586121652753115,
+  "reject": "whispered delivery (voiced 0.21)"
+ },
+ {
+  "id": 175,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Me remercier, mais, euh, de quoi ?",
+  "voiced": 0.48120300751879697,
+  "ratio": -1.2138652717020277,
+  "reject": null
+ },
+ {
+  "id": 176,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Are you in love with anyone else?",
+  "voiced": 0.7019230769230769,
+  "ratio": -0.7517921464533273,
+  "reject": null
+ },
+ {
+  "id": 177,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "Jesus fucking Christ, Benny!",
+  "voiced": 0.1791044776119403,
+  "ratio": -2.066232956037991,
+  "reject": "ratio -2.07 below -2.00"
+ },
+ {
+  "id": 178,
+  "band": "ratio-marginal",
+  "lang": "spa",
+  "imdb": "tt0095675",
+  "sentence": "En la fiebre de tus besos",
+  "voiced": 0.5972222222222222,
+  "ratio": -2.3720703967602375,
+  "reject": "ratio -2.37 below -2.00"
+ },
+ {
+  "id": 179,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "C'est toi.",
+  "voiced": 0.32142857142857145,
+  "ratio": -2.5650484427277163,
+  "reject": "ratio -2.57 below -2.00"
+ },
+ {
+  "id": 180,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "The Neverending Story?",
+  "voiced": 0.32727272727272727,
+  "ratio": -0.4740074507539058,
+  "reject": null
+ },
+ {
+  "id": 181,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Ce que je comprends pas, c'est pourquoi vous vous entêtez à ne rien dire.",
+  "voiced": 0.4444444444444444,
+  "ratio": -0.24832031435052604,
+  "reject": null
+ },
+ {
+  "id": 182,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "But that's impossible!",
+  "voiced": 0.25874125874125875,
+  "ratio": -1.716249519417537,
+  "reject": null
+ },
+ {
+  "id": 183,
+  "band": "pass-borderline-voice",
+  "lang": "spa",
+  "imdb": "tt8228288",
+  "sentence": "Se ha apagado la luz roja y se ha encendido la verde.",
+  "voiced": 0.38219895287958117,
+  "ratio": -1.4646050880633212,
+  "reject": null
+ },
+ {
+  "id": 184,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Je suis désolé.",
+  "voiced": 0.22388059701492538,
+  "ratio": -0.796180066374965,
+  "reject": "whispered delivery (voiced 0.22)"
+ },
+ {
+  "id": 185,
+  "band": "pass-random",
+  "lang": "spa",
+  "imdb": "tt0464141",
+  "sentence": "¿No crees que eres un poquito mayor para estas cosas?",
+  "voiced": 0.4550898203592814,
+  "ratio": -0.014370122038543154,
+  "reject": null
+ },
+ {
+  "id": 186,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0083287",
+  "sentence": "Elle s'appelle comment ?",
+  "voiced": 0.25675675675675674,
+  "ratio": -2.005156281541393,
+  "reject": "ratio -2.01 below -2.00"
+ },
+ {
+  "id": 187,
+  "band": "ratio-marginal",
+  "lang": "por",
+  "imdb": "tt2762506",
+  "sentence": "Abre a boca.",
+  "voiced": 0.6744186046511628,
+  "ratio": -2.822019000173491,
+  "reject": "ratio -2.82 below -2.50"
+ },
+ {
+  "id": 188,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Who are you talking to?",
+  "voiced": 0.9473684210526315,
+  "ratio": -1.5448457085392162,
+  "reject": null
+ },
+ {
+  "id": 189,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Pour l’instant elle pense qu’à ce Louison.",
+  "voiced": 0.06,
+  "ratio": -0.6878444754514782,
+  "reject": "whispered delivery (voiced 0.06)"
+ },
+ {
+  "id": 190,
+  "band": "whisper-reject",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Ich wüsste, wie man euch beibringt, zu spuren.",
+  "voiced": 0.1794871794871795,
+  "ratio": -1.6826845078926005,
+  "reject": "whispered delivery (voiced 0.18)"
+ },
+ {
+  "id": 191,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Je suis fini.",
+  "voiced": 0.6714285714285714,
+  "ratio": -1.408842231845611,
+  "reject": "voices in the tail (speech 0.33)"
+ },
+ {
+  "id": 192,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Je crois que c'est grave.",
+  "voiced": 0.5,
+  "ratio": -1.0465458493809636,
+  "reject": null
+ },
+ {
+  "id": 193,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "She said she didn't feel well and wanted to leave early, and I said she could.",
+  "voiced": 0.15584415584415584,
+  "ratio": -2.012991802805821,
+  "reject": "ratio -2.01 below -2.00"
+ },
+ {
+  "id": 194,
+  "band": "pass-random",
+  "lang": "ita",
+  "imdb": "tt4901306",
+  "sentence": "Si ipotizzava anche un sale e pepe.",
+  "voiced": 0.6802721088435374,
+  "ratio": -1.446256524840277,
+  "reject": null
+ },
+ {
+  "id": 195,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "He hid the body in the fruit cellar, even treated it to keep it as well as it would keep.",
+  "voiced": 0.4054982817869416,
+  "ratio": -0.6018616961594495,
+  "reject": null
+ },
+ {
+  "id": 196,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "We're in a bad way here.",
+  "voiced": 0.6976744186046512,
+  "ratio": -1.5990858411454785,
+  "reject": null
+ },
+ {
+  "id": 197,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Petit coup d’œil.",
+  "voiced": 0.8333333333333334,
+  "ratio": -1.733892628287281,
+  "reject": null
+ },
+ {
+  "id": 198,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "The following are adult female, can't sleep…",
+  "voiced": 0.7976878612716763,
+  "ratio": -0.11112424556078006,
+  "reject": "voices in the tail (speech 0.33)"
+ },
+ {
+  "id": 199,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "If anything happens to me,",
+  "voiced": 0.1925925925925926,
+  "ratio": 0.0,
+  "reject": "whispered delivery (voiced 0.19)"
+ },
+ {
+  "id": 200,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Je connais le coupable.",
+  "voiced": 0.515625,
+  "ratio": -0.8794295537152209,
+  "reject": null
+ },
+ {
+  "id": 201,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Je ne fais que regarder, c'est tout.",
+  "voiced": 0.6153846153846154,
+  "ratio": -0.9388827580450602,
+  "reject": null
+ },
+ {
+  "id": 202,
+  "band": "pass-random",
+  "lang": "spa",
+  "imdb": "tt0464141",
+  "sentence": "Y creo que esa fue su manera de decirme:",
+  "voiced": 0.9032258064516129,
+  "ratio": -0.3047542670912621,
+  "reject": null
+ },
+ {
+  "id": 203,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Je te le jure.",
+  "voiced": 0.7647058823529411,
+  "ratio": -2.0496098337564432,
+  "reject": "ratio -2.05 below -2.00"
+ },
+ {
+  "id": 204,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "I actually like crying sometimes.",
+  "voiced": 0.5585585585585585,
+  "ratio": -1.3261057486474945,
+  "reject": null
+ },
+ {
+  "id": 205,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "But what makes me \"me\" is my ability to grow through my experiences,",
+  "voiced": 0.9310344827586207,
+  "ratio": -0.8516708462157591,
+  "reject": null
+ },
+ {
+  "id": 206,
+  "band": "pass-random",
+  "lang": "spa",
+  "imdb": "tt0095675",
+  "sentence": "Pues siento decirte que sí ha pasado.",
+  "voiced": 0.5988372093023255,
+  "ratio": -1.225057998283277,
+  "reject": null
+ },
+ {
+  "id": 207,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "What's your name?",
+  "voiced": 0.8421052631578947,
+  "ratio": -1.8645308242131369,
+  "reject": null
+ },
+ {
+  "id": 208,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "I'm your father!",
+  "voiced": 0.8709677419354839,
+  "ratio": 0.0,
+  "reject": "voices in the lead-in (speech 0.50)"
+ },
+ {
+  "id": 209,
+  "band": "ratio-marginal",
+  "lang": "ita",
+  "imdb": "tt0076786",
+  "sentence": "Bene, era la mia.",
+  "voiced": 0.40425531914893614,
+  "ratio": -2.45377592752272,
+  "reject": "ratio -2.45 below -2.00"
+ },
+ {
+  "id": 210,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "Why don't you do what you dream, Bastian?",
+  "voiced": 0.7246376811594203,
+  "ratio": -0.40219805558480054,
+  "reject": null
+ },
+ {
+  "id": 211,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "T'as le droit de bouffer.",
+  "voiced": 0.8769230769230769,
+  "ratio": -1.548445395654739,
+  "reject": null
+ },
+ {
+  "id": 212,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Where are you going?",
+  "voiced": 0.9215686274509803,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 213,
+  "band": "pass-random",
+  "lang": "por",
+  "imdb": "tt0317248",
+  "sentence": "Ainda não é hora de contar a história do Mané Galinha.",
+  "voiced": 0.8571428571428571,
+  "ratio": -0.5111181617017185,
+  "reject": null
+ },
+ {
+  "id": 214,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "C'était pas le livre.",
+  "voiced": 0.25757575757575757,
+  "ratio": -0.302547651695202,
+  "reject": null
+ },
+ {
+  "id": 215,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Ah oui, toujours les voix.",
+  "voiced": 0.02962962962962963,
+  "ratio": -1.6161033112847796,
+  "reject": "whispered delivery (voiced 0.03)"
+ },
+ {
+  "id": 216,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "So he began to think and speak for her, give her half his life, so to speak.",
+  "voiced": 0.3584905660377358,
+  "ratio": -0.11128735897360566,
+  "reject": null
+ },
+ {
+  "id": 217,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "Why did you hide the cigarette?",
+  "voiced": 0.10909090909090909,
+  "ratio": -1.4563597315536707,
+  "reject": "whispered delivery (voiced 0.11)"
+ },
+ {
+  "id": 218,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0108500",
+  "sentence": "Approche, Godefroy de Montmirail.",
+  "voiced": 0.7049180327868853,
+  "ratio": -0.720747866453368,
+  "reject": null
+ },
+ {
+  "id": 219,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "S'il va sur l'autoroute, il est mort.",
+  "voiced": 0.3767123287671233,
+  "ratio": -0.7789665845166893,
+  "reject": null
+ },
+ {
+  "id": 220,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "C'est le mien, perso.",
+  "voiced": 0.796875,
+  "ratio": -0.6648512554474264,
+  "reject": null
+ },
+ {
+  "id": 221,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Wanda, this is Eve Archer.",
+  "voiced": 0.8351648351648352,
+  "ratio": -0.24845899778808064,
+  "reject": null
+ },
+ {
+  "id": 222,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Ce sera la Marseillaise de banque à la porte d’Aix.",
+  "voiced": 0.42857142857142855,
+  "ratio": -0.05881204520312219,
+  "reject": null
+ },
+ {
+  "id": 223,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Avec votre père aussi ça se passe très très bien.",
+  "voiced": 0.632,
+  "ratio": -0.43349894068069467,
+  "reject": null
+ },
+ {
+  "id": 224,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "You know those things will kill you.",
+  "voiced": 0.550561797752809,
+  "ratio": -1.4759182833546762,
+  "reject": null
+ },
+ {
+  "id": 225,
+  "band": "whisper-reject",
+  "lang": "spa",
+  "imdb": "tt8228288",
+  "sentence": "Y que ha tenido usted mucha suerte.",
+  "voiced": 0.17721518987341772,
+  "ratio": -0.32568724081115097,
+  "reject": "whispered delivery (voiced 0.18)"
+ },
+ {
+  "id": 226,
+  "band": "pad-reject",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Or are they just programming?",
+  "voiced": 0.8414634146341463,
+  "ratio": -0.25252021659459045,
+  "reject": "voices in the tail (speech 0.29)"
+ },
+ {
+  "id": 227,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "I'd put my mouth on you.",
+  "voiced": 0.19680851063829788,
+  "ratio": -2.2460154201712244,
+  "reject": "ratio -2.25 below -2.00"
+ },
+ {
+  "id": 228,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "What is the Nothing?",
+  "voiced": 0.25,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 229,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "I was the one chosen to stop the Nothing.",
+  "voiced": 0.3118811881188119,
+  "ratio": -0.4914190472198458,
+  "reject": null
+ },
+ {
+  "id": 230,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "J'en étais sûre : t'étais pas sincère, l'autre fois.",
+  "voiced": 0.6102941176470589,
+  "ratio": -2.118016068081696,
+  "reject": "ratio -2.12 below -2.00"
+ },
+ {
+  "id": 231,
+  "band": "pass-random",
+  "lang": "rus",
+  "imdb": "tt0062759",
+  "sentence": "К сожалению, нет.",
+  "voiced": 0.8421052631578947,
+  "ratio": -1.431530359381546,
+  "reject": null
+ },
+ {
+  "id": 232,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "The Council is worried about the economy heating up.",
+  "voiced": 0.19607843137254902,
+  "ratio": -0.9965635616657115,
+  "reject": "whispered delivery (voiced 0.20)"
+ },
+ {
+  "id": 233,
+  "band": "pass-random",
+  "lang": "ita",
+  "imdb": "tt0058461",
+  "sentence": "È strano come riusciate a trovarvi sempre nel posto giusto e al momento giusto.",
+  "voiced": 0.6711864406779661,
+  "ratio": -0.7995578776459915,
+  "reject": null
+ },
+ {
+  "id": 234,
+  "band": "pass-borderline-voice",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Ich war im \"Kanada\".",
+  "voiced": 0.3787878787878788,
+  "ratio": -0.24398664324446676,
+  "reject": null
+ },
+ {
+  "id": 235,
+  "band": "pass-borderline-voice",
+  "lang": "rus",
+  "imdb": "tt0062759",
+  "sentence": "Такова наша дислокация.",
+  "voiced": 0.296875,
+  "ratio": -0.24617327600127573,
+  "reject": null
+ },
+ {
+  "id": 236,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "And if you don't help me, I'll be dead by tonight.",
+  "voiced": 0.722972972972973,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 237,
+  "band": "pass-random",
+  "lang": "rus",
+  "imdb": "tt0062759",
+  "sentence": "Объявление уже висит.",
+  "voiced": 1.0,
+  "ratio": -0.3598044934592035,
+  "reject": null
+ },
+ {
+  "id": 238,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Follow Archer's lead!",
+  "voiced": 0.2711864406779661,
+  "ratio": -2.4981714260432377,
+  "reject": "ratio -2.50 below -2.00"
+ },
+ {
+  "id": 239,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "We're gonna deal with it!",
+  "voiced": 0.6964285714285714,
+  "ratio": -2.540660101724872,
+  "reject": "ratio -2.54 below -2.00"
+ },
+ {
+  "id": 240,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Oh Facteur, ça va ?",
+  "voiced": 0.3924050632911392,
+  "ratio": -1.574443972439323,
+  "reject": null
+ },
+ {
+  "id": 241,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Oh, les jolies fleurs !",
+  "voiced": 0.9439252336448598,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 242,
+  "band": "ratio-marginal",
+  "lang": "rus",
+  "imdb": "tt0118767",
+  "sentence": "У тебя контрацептивы есть?",
+  "voiced": 0.6357142857142857,
+  "ratio": -2.030403192705649,
+  "reject": "ratio -2.03 below -2.00"
+ },
+ {
+  "id": 243,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "Do you think if something happened, it happened there?",
+  "voiced": 0.319672131147541,
+  "ratio": -1.5583112004454105,
+  "reject": null
+ },
+ {
+  "id": 244,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0088323",
+  "sentence": "Let's hope so, Atreyu.",
+  "voiced": 0.44242424242424244,
+  "ratio": -0.4779631245702686,
+  "reject": null
+ },
+ {
+  "id": 245,
+  "band": "whisper-reject",
+  "lang": "por",
+  "imdb": "tt0861739",
+  "sentence": "também corrompe pra família.",
+  "voiced": 0.13,
+  "ratio": -1.0650074762084896,
+  "reject": "whispered delivery (voiced 0.13)"
+ },
+ {
+  "id": 246,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Pierrette Bourgeois a été assassinée juste à côté de chez vous.",
+  "voiced": 0.22169811320754718,
+  "ratio": -0.11275230842944677,
+  "reject": "whispered delivery (voiced 0.22)"
+ },
+ {
+  "id": 247,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Alors, tu vois !",
+  "voiced": 0.8409090909090909,
+  "ratio": -1.6830297790037545,
+  "reject": null
+ },
+ {
+  "id": 248,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "Take the boy and get out of here.",
+  "voiced": 0.29545454545454547,
+  "ratio": -0.9735019944699388,
+  "reject": null
+ },
+ {
+  "id": 249,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "Yo, but they got nothing to do with it, man.",
+  "voiced": 0.37967914438502676,
+  "ratio": -0.09341790095799882,
+  "reject": null
+ },
+ {
+  "id": 250,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "This man, this perfect being...",
+  "voiced": 0.2716417910447761,
+  "ratio": -2.1383176403158077,
+  "reject": "ratio -2.14 below -2.00"
+ },
+ {
+  "id": 251,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "It's me.",
+  "voiced": 0.6976744186046512,
+  "ratio": -2.672852612245472,
+  "reject": "ratio -2.67 below -2.00"
+ },
+ {
+  "id": 252,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "We're shipping a beta of a new game out tomorrow.",
+  "voiced": 0.5654205607476636,
+  "ratio": -1.1396924944875408,
+  "reject": null
+ },
+ {
+  "id": 253,
+  "band": "pass-random",
+  "lang": "por",
+  "imdb": "tt0861739",
+  "sentence": "Pede pra sair!",
+  "voiced": 0.6119402985074627,
+  "ratio": -2.1361553586149173,
+  "reject": null
+ },
+ {
+  "id": 254,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Dehors, la chorale.",
+  "voiced": 0.42,
+  "ratio": -0.6085588600111201,
+  "reject": null
+ },
+ {
+  "id": 255,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "C’était son préféré.",
+  "voiced": 0.746268656716418,
+  "ratio": -0.9132986009763078,
+  "reject": null
+ },
+ {
+  "id": 256,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Vous voyez ce que je veux dire.",
+  "voiced": 0.1724137931034483,
+  "ratio": -2.2022416802779907,
+  "reject": "ratio -2.20 below -2.00"
+ },
+ {
+  "id": 257,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Je tiens à toi, tu sais.",
+  "voiced": 0.08571428571428572,
+  "ratio": -1.5680835083498557,
+  "reject": "whispered delivery (voiced 0.09)"
+ },
+ {
+  "id": 258,
+  "band": "ratio-marginal",
+  "lang": "deu",
+  "imdb": "tt0813547",
+  "sentence": "Was Sie wollen.",
+  "voiced": 0.7777777777777778,
+  "ratio": -2.9598773165265824,
+  "reject": "ratio -2.96 below -2.50"
+ },
+ {
+  "id": 259,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "Please, I'd like to go.",
+  "voiced": 0.32432432432432434,
+  "ratio": -0.028268419747058793,
+  "reject": null
+ },
+ {
+  "id": 260,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "They need... five more minutes.",
+  "voiced": 0.5871559633027523,
+  "ratio": -0.29963747609663755,
+  "reject": null
+ },
+ {
+  "id": 261,
+  "band": "pass-borderline-voice",
+  "lang": "por",
+  "imdb": "tt1555149",
+  "sentence": "O bairro Tanque era o último reduto do tráfico na Zona Oeste.",
+  "voiced": 0.40086206896551724,
+  "ratio": -0.7554710014629266,
+  "reject": null
+ },
+ {
+  "id": 262,
+  "band": "pass-borderline-voice",
+  "lang": "ita",
+  "imdb": "tt0058461",
+  "sentence": "Ho una mano di poker che mi aspetta da tre giorni, ma niente da fare, dobbiamo fare la guardia a questo bastardo!",
+  "voiced": 0.3645833333333333,
+  "ratio": -0.8434265854973894,
+  "reject": null
+ },
+ {
+  "id": 263,
+  "band": "pass-random",
+  "lang": "por",
+  "imdb": "tt2762506",
+  "sentence": "Esse povo é gente importante.",
+  "voiced": 0.6375,
+  "ratio": -1.58992205525424,
+  "reject": null
+ },
+ {
+  "id": 264,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Alice, il faut que je te dise quelque chose.",
+  "voiced": 0.2845528455284553,
+  "ratio": -1.0902186251701718,
+  "reject": null
+ },
+ {
+  "id": 265,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "Je sais pas.",
+  "voiced": 0.3770491803278688,
+  "ratio": -0.9396375414614341,
+  "reject": null
+ },
+ {
+  "id": 266,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "Look how cute that is.",
+  "voiced": 0.9722222222222222,
+  "ratio": -1.8669390267020147,
+  "reject": null
+ },
+ {
+  "id": 267,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Faut dire que ça le fait plutôt quand on est deux.",
+  "voiced": 0.7642857142857142,
+  "ratio": -1.5496312374114505,
+  "reject": null
+ },
+ {
+  "id": 268,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Un, deux, trois.",
+  "voiced": 0.45652173913043476,
+  "ratio": -0.9191147154204414,
+  "reject": "lead-in louder than the dialogue (rms x2.49)"
+ },
+ {
+  "id": 269,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Ah, les fumiers, il y en a partout.",
+  "voiced": 0.75,
+  "ratio": -2.4595908662410335,
+  "reject": "ratio -2.46 below -2.00"
+ },
+ {
+  "id": 270,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Il est vraiment bon votre café ?",
+  "voiced": 0.8461538461538461,
+  "ratio": -2.26867688098657,
+  "reject": "ratio -2.27 below -2.00"
+ },
+ {
+  "id": 271,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "I just meant that it was a different experience.",
+  "voiced": 0.7516339869281046,
+  "ratio": -2.213223144438053,
+  "reject": "ratio -2.21 below -2.00"
+ },
+ {
+  "id": 272,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Elle sonne bien.",
+  "voiced": 0.6585365853658537,
+  "ratio": -2.0233896225622465,
+  "reject": "ratio -2.02 below -2.00"
+ },
+ {
+  "id": 273,
+  "band": "ratio-marginal",
+  "lang": "spa",
+  "imdb": "tt8228288",
+  "sentence": "Ramsés es el mensaje.",
+  "voiced": 0.14615384615384616,
+  "ratio": -2.4060284451352243,
+  "reject": "ratio -2.41 below -2.00"
+ },
+ {
+  "id": 274,
+  "band": "pass-borderline-voice",
+  "lang": "spa",
+  "imdb": "tt8228288",
+  "sentence": "comimos carne humana.",
+  "voiced": 0.40384615384615385,
+  "ratio": -0.31175047186897226,
+  "reject": null
+ },
+ {
+  "id": 275,
+  "band": "whisper-reject",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Ça fait pas net.",
+  "voiced": 0.12195121951219512,
+  "ratio": 0.0,
+  "reject": "whispered delivery (voiced 0.12)"
+ },
+ {
+  "id": 276,
+  "band": "pass-random",
+  "lang": "por",
+  "imdb": "tt0861739",
+  "sentence": "Quando acontece um crime na área do batalhão...",
+  "voiced": 0.6051282051282051,
+  "ratio": -0.7663800633161137,
+  "reject": null
+ },
+ {
+  "id": 277,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "Match up the symbols, go!",
+  "voiced": 0.2702702702702703,
+  "ratio": -0.6278268982867888,
+  "reject": null
+ },
+ {
+  "id": 278,
+  "band": "ratio-marginal",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "Mois de mai.",
+  "voiced": 0.9090909090909091,
+  "ratio": -2.296378871707438,
+  "reject": "ratio -2.30 below -2.00"
+ },
+ {
+  "id": 279,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Reconnaissez-vous ce sac, et niez-vous l'avoir caché dans votre armoire ?",
+  "voiced": 0.47307692307692306,
+  "ratio": -0.12099443587730663,
+  "reject": "voices in the lead-in (speech 0.29)"
+ },
+ {
+  "id": 280,
+  "band": "pass-random",
+  "lang": "rus",
+  "imdb": "tt0062759",
+  "sentence": "Куда ты смотрел, старый осел?",
+  "voiced": 0.8695652173913043,
+  "ratio": -0.6976247872213343,
+  "reject": null
+ },
+ {
+  "id": 281,
+  "band": "ratio-marginal",
+  "lang": "ita",
+  "imdb": "tt4901306",
+  "sentence": "Hai fatto bene.",
+  "voiced": 0.37254901960784315,
+  "ratio": -2.5324417893307896,
+  "reject": "ratio -2.53 below -2.00"
+ },
+ {
+  "id": 282,
+  "band": "pass-random",
+  "lang": "por",
+  "imdb": "tt0317248",
+  "sentence": "o Cenoura tirou o Mané Galinha do hospital sem precisar dar nenhum tiro.",
+  "voiced": 0.4896073903002309,
+  "ratio": -0.5647838775754821,
+  "reject": null
+ },
+ {
+  "id": 283,
+  "band": "pad-reject",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "En plein dans le mille !",
+  "voiced": 0.6347826086956522,
+  "ratio": -1.7200576731546555,
+  "reject": "lead-in louder than the dialogue (rms x1.61)"
+ },
+ {
+  "id": 284,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0101700",
+  "sentence": "Faut jamais dire ça, personne n’est entièrement mauvais, et puis il y a les circonstances.",
+  "voiced": 0.2923728813559322,
+  "ratio": -1.8897108801914468,
+  "reject": null
+ },
+ {
+  "id": 285,
+  "band": "pass-random",
+  "lang": "eng",
+  "imdb": "tt0119116",
+  "sentence": "You, me, anybody.",
+  "voiced": 0.6,
+  "ratio": 0.0,
+  "reject": null
+ },
+ {
+  "id": 286,
+  "band": "ratio-marginal",
+  "lang": "eng",
+  "imdb": "tt1798709",
+  "sentence": "It's making my brain hurt, you know what I mean?",
+  "voiced": 0.6879432624113475,
+  "ratio": -2.0529851197550695,
+  "reject": "ratio -2.05 below -2.00"
+ },
+ {
+  "id": 287,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "À quoi ça sert de jouer cette comédie, Alice ?",
+  "voiced": 0.4041095890410959,
+  "ratio": -0.24337599637155163,
+  "reject": null
+ },
+ {
+  "id": 288,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0097904",
+  "sentence": "Je serai patient.",
+  "voiced": 0.25925925925925924,
+  "ratio": -0.3521552136551147,
+  "reject": null
+ },
+ {
+  "id": 289,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0110413",
+  "sentence": "What's your name, angel?",
+  "voiced": 0.3958333333333333,
+  "ratio": -1.1020029557504007,
+  "reject": null
+ },
+ {
+  "id": 290,
+  "band": "pass-borderline-voice",
+  "lang": "spa",
+  "imdb": "tt8228288",
+  "sentence": "Lo sé porque lo he vivido.",
+  "voiced": 0.44715447154471544,
+  "ratio": -0.7160561864452123,
+  "reject": null
+ },
+ {
+  "id": 291,
+  "band": "pass-borderline-voice",
+  "lang": "eng",
+  "imdb": "tt0054215",
+  "sentence": "But that old woman, whoever she is, she told arbogast something.",
+  "voiced": 0.41739130434782606,
+  "ratio": -0.6895692347599717,
+  "reject": null
+ },
+ {
+  "id": 292,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0372824",
+  "sentence": "C'était un internat de rééducation réservé à des enfants en difficulté.",
+  "voiced": 0.5150684931506849,
+  "ratio": -0.7772876447269583,
+  "reject": null
+ },
+ {
+  "id": 293,
+  "band": "pass-random",
+  "lang": "ita",
+  "imdb": "tt0058461",
+  "sentence": "Di solito non si limitano a sparare tra le zampe di un mulo.",
+  "voiced": 0.48698884758364314,
+  "ratio": -0.17457466724221213,
+  "reject": null
+ },
+ {
+  "id": 294,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "Je comprends pas.",
+  "voiced": 0.3811659192825112,
+  "ratio": -1.1307913967372794,
+  "reject": null
+ },
+ {
+  "id": 295,
+  "band": "pass-borderline-voice",
+  "lang": "fra",
+  "imdb": "tt0152930",
+  "sentence": "C'est sûr, c'est pas évident.",
+  "voiced": 0.2631578947368421,
+  "ratio": -0.9110283860308523,
+  "reject": null
+ },
+ {
+  "id": 296,
+  "band": "pass-borderline-voice",
+  "lang": "por",
+  "imdb": "tt1555149",
+  "sentence": "Tu vai querer com esculacho então?",
+  "voiced": 0.38235294117647056,
+  "ratio": -1.8969849654975033,
+  "reject": null
+ },
+ {
+  "id": 297,
+  "band": "pass-random",
+  "lang": "rus",
+  "imdb": "tt0056111",
+  "sentence": "В госпиталь переводят.",
+  "voiced": 0.5544554455445545,
+  "ratio": -0.18528346340712584,
+  "reject": null
+ },
+ {
+  "id": 298,
+  "band": "pass-random",
+  "lang": "fra",
+  "imdb": "tt0101765",
+  "sentence": "J'ai vu un dessin...",
+  "voiced": 0.9436619718309859,
+  "ratio": -1.3427732052394417,
+  "reject": null
+ },
+ {
+  "id": 299,
+  "band": "whisper-reject",
+  "lang": "eng",
+  "imdb": "tt0119094",
+  "sentence": "You goddamn right!",
+  "voiced": 0.04032258064516129,
+  "ratio": -1.2853727199800415,
+  "reject": "whispered delivery (voiced 0.04)"
+ }
+]

@@ -26,3 +26,5 @@ xxhash-rust = { workspace = true }
 tempfile = { workspace = true }
 phoneme-verify = { path = "../phoneme-verify" }
 espeak = { path = "../espeak" }
+sha2 = "0.10"
+unicode-normalization = { workspace = true }

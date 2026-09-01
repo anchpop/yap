@@ -1617,6 +1617,7 @@ dependencies = [
  "anyhow",
  "language-utils",
  "tokio",
+ "xxhash-rust",
 ]
 
 [[package]]
@@ -5555,9 +5556,11 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "tempfile",
  "tokio",
  "tysm",
+ "unicode-normalization",
  "xxhash-rust",
 ]
 

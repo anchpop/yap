@@ -180,6 +180,105 @@ impl FrameMatrix {
         (total != f64::NEG_INFINITY).then_some(total)
     }
 
+    /// Fraction of frames in `[from, to)` the model considers speech —
+    /// P(blank) below ½, i.e. some phoneme (any language) is carrying real
+    /// probability mass. The model is a better voice detector on film audio
+    /// than an energy VAD: ambience and score mostly stay blank, a voice in
+    /// any language does not. `None` when the range holds no frames.
+    pub fn speech_fraction(&self, from: usize, to: usize) -> Option<f64> {
+        let to = to.min(self.frames);
+        if from >= to {
+            return None;
+        }
+        let half = 0.5f64.ln();
+        let speech = (from..to).filter(|&t| self.lp(t, self.blank_id) < half).count();
+        Some(speech as f64 / (to - from) as f64)
+    }
+
+    /// Best-path (Viterbi) CTC alignment of `target` to the frames: where in
+    /// the audio each target phoneme was emitted, and how strongly.
+    ///
+    /// [`log_likelihood`](Self::log_likelihood) answers "is the whole target
+    /// supported"; this answers *where* — a phoneme that is not in the audio
+    /// at all still gets assigned frames (Viterbi must pass through every
+    /// label), but its frames carry very low probability, so `logp_mean`
+    /// exposes exactly the phonemes the clip is missing. `None` under the
+    /// same conditions as `log_likelihood`.
+    pub fn force_align(&self, target: &[usize]) -> Option<Vec<AlignedPhoneme>> {
+        if target.is_empty() || target.len() > self.frames {
+            return None;
+        }
+        let ext_len = 2 * target.len() + 1;
+        let label = |s: usize| -> usize {
+            if s.is_multiple_of(2) {
+                self.blank_id
+            } else {
+                target[s / 2]
+            }
+        };
+        // delta[t][s]: best log-prob of any path through state s at frame t;
+        // from[t][s]: which state it came from.
+        let mut delta = vec![f64::NEG_INFINITY; ext_len];
+        let mut from = vec![vec![0usize; ext_len]; self.frames];
+        delta[0] = self.lp(0, self.blank_id);
+        if ext_len > 1 {
+            delta[1] = self.lp(0, label(1));
+            from[0][1] = 1;
+        }
+        let mut next = vec![f64::NEG_INFINITY; ext_len];
+        for t in 1..self.frames {
+            for (s, slot) in next.iter_mut().enumerate() {
+                let (mut best, mut arg) = (delta[s], s);
+                if s >= 1 && delta[s - 1] > best {
+                    (best, arg) = (delta[s - 1], s - 1);
+                }
+                if s >= 2 && s % 2 == 1 && label(s) != label(s - 2) && delta[s - 2] > best {
+                    (best, arg) = (delta[s - 2], s - 2);
+                }
+                from[t][s] = arg;
+                *slot = if best == f64::NEG_INFINITY {
+                    best
+                } else {
+                    best + self.lp(t, label(s))
+                };
+            }
+            std::mem::swap(&mut delta, &mut next);
+        }
+        let mut state = if delta[ext_len - 1] >= delta[ext_len - 2] {
+            ext_len - 1
+        } else {
+            ext_len - 2
+        };
+        if delta[state] == f64::NEG_INFINITY {
+            return None;
+        }
+        // Walk the path back, collecting the frames each label state emitted.
+        let mut spans = vec![
+            AlignedPhoneme {
+                start_frame: usize::MAX,
+                end_frame: 0,
+                frames: 0,
+                logp_mean: 0.0,
+            };
+            target.len()
+        ];
+        for t in (0..self.frames).rev() {
+            if state % 2 == 1 {
+                let p = &mut spans[state / 2];
+                p.start_frame = t;
+                p.end_frame = p.end_frame.max(t);
+                p.frames += 1;
+                p.logp_mean += self.lp(t, label(state));
+            }
+            state = from[t][state];
+        }
+        for p in &mut spans {
+            debug_assert!(p.frames > 0, "Viterbi must visit every label");
+            p.logp_mean /= p.frames as f64;
+        }
+        Some(spans)
+    }
+
     /// Score `target` the way the endpoint's `target_phonemes` does.
     pub fn score_target(&self, target: &[String]) -> TargetScore {
         let mut ids = Vec::with_capacity(target.len());
@@ -211,6 +310,18 @@ impl FrameMatrix {
             oov,
         }
     }
+}
+
+/// One target phoneme's place in the audio under the best CTC alignment.
+#[derive(Debug, Clone)]
+pub struct AlignedPhoneme {
+    pub start_frame: usize,
+    pub end_frame: usize,
+    /// Frames the best path spent emitting this label (≥ 1).
+    pub frames: usize,
+    /// Mean per-frame log-prob of the label over those frames — very low
+    /// when the phoneme is not actually in the audio.
+    pub logp_mean: f64,
 }
 
 /// How well the audio supports one specific phoneme sequence.
@@ -315,6 +426,26 @@ mod tests {
             m.score_target(&["zz".into(), "a".into()]).oov,
             vec!["zz".to_string()]
         );
+    }
+
+    /// Forced alignment localises each phoneme and exposes a missing one.
+    #[test]
+    fn force_align_localises_and_scores() {
+        let a = lp(&[0.1, 0.8, 0.1]);
+        let b = lp(&[0.1, 0.1, 0.8]);
+        let blank = lp(&[0.8, 0.1, 0.1]);
+        let m = matrix(&["<pad>", "a", "b"], 0, &[&a, &a, &blank, &b, &b, &blank]);
+        let spans = m.force_align(&[1, 2]).unwrap();
+        assert_eq!(spans.len(), 2);
+        assert!(spans[0].end_frame < spans[1].start_frame);
+        assert!((spans[0].logp_mean - 0.8f64.ln()).abs() < 1e-5);
+        // "b a b": the audio spells "a b", so the leading "b" exists nowhere
+        // — its best frames still carry only the 0.1 the model left it,
+        // while "a" and the real "b" align to their frames at 0.8.
+        let spans = m.force_align(&[2, 1, 2]).unwrap();
+        assert!((spans[0].logp_mean - 0.1f64.ln()).abs() < 1e-5);
+        assert!((spans[1].logp_mean - 0.8f64.ln()).abs() < 1e-5);
+        assert!(spans[0].logp_mean < spans[2].logp_mean);
     }
 
     /// Round-trips the endpoint's wire format.

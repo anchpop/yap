@@ -1,12 +1,13 @@
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
-use std::sync::LazyLock;
 
 use anyhow::Context;
 use language_utils::{Course, Language, SentenceSource};
 use movie_subtitles::SubtitleLine;
-use movie_subtitles::segment::{SubtitleSegmenter, subtitle_passages};
-use regex::Regex;
+pub use movie_subtitles::sentences::{
+    has_encoding_corruption, has_quote_apostrophe, is_proper_sentence, should_include_sentence,
+};
+use movie_subtitles::segment::SubtitleSegmenter;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -514,31 +515,20 @@ fn sanity_check_skip_markers(language: Language, movie_id: &str) -> Vec<&'static
     }
 }
 
-/// A title abbreviation and its period: `M. Godefroy`, `Mme. Dupont`,
-/// `Dr. No`. Only counted as a title when a capitalised name follows.
-static TITLE_ABBREVIATION: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\b(?P<title>M|Mme|Mlle|Mr|Mrs|Ms|Dr|St|Sr|Jr|Sra|Hr|Fr)\.(?P<name>\s+\p{Lu})")
-        .unwrap()
-});
-
-/// Sentences spoken in a subtitle track.
-///
-/// Cues are first regrouped into passages ([`subtitle_passages`]): a sentence
-/// a subtitle broke across cues for display is rejoined, and a cue holding two
-/// speakers is split at its dialogue dashes. Each passage is then segmented
-/// by parsley — a cue often holds more than one sentence, and the segmenter
-/// knows about abbreviations (`M. Godefroy`) and quotes — and each sentence
-/// goes through [`should_include_sentence`].
+/// Course-worthy sentences of a subtitle track, spelled as the pack keys
+/// them. The segmentation, filtering and keying all live in
+/// [`movie_subtitles::sentences::keyed_sentences`] — the same code the
+/// subtitle corpus's clip mapping runs, so a pack sentence and its clip
+/// agree byte-for-byte.
 pub fn subtitle_sentences(
     subtitles: &[SubtitleLine],
     language: Language,
     segmenter: &SubtitleSegmenter,
 ) -> Vec<String> {
-    subtitle_passages(subtitles)
-        .iter()
-        .flat_map(|passage| segmenter.segment(passage))
-        .map(|s| s.trim().to_string())
-        .filter(|s| should_include_sentence(s, language))
+    movie_subtitles::sentences::keyed_sentences(subtitles, language, segmenter)
+        .into_iter()
+        .filter(|s| s.course_worthy)
+        .map(|s| s.sentence)
         .collect()
 }
 
@@ -563,301 +553,6 @@ fn filter_subtitle_sentences(
 pub fn should_include_pair(target_sentence: &str, native_sentence: &str, course: Course) -> bool {
     should_include_sentence(target_sentence, course.target_language)
         && should_include_sentence(native_sentence, course.native_language)
-}
-
-/// Check if a single sentence should be included (for sources without translations like movies)
-pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
-    // 1. Skip sentences that are too short or too long
-    if sentence.len() < 5 || sentence.len() > 80 {
-        return false;
-    }
-
-    // 2. Skip sentences ending with ellipsis
-    if sentence.ends_with("...") {
-        return false;
-    }
-
-    // 3. Skip sentences containing ellipsis anywhere
-    if sentence.contains("...") {
-        return false;
-    }
-
-    // 4. Skip music markers (common in subtitles)
-    if sentence.contains('♪') {
-        return false;
-    }
-
-    // 5. Check if sentence is "proper" according to language rules
-    if !is_proper_sentence(sentence, language) {
-        return false;
-    }
-
-    // 6. Skip sentences with multiple punctuation marks — two sentences the
-    // segmenter left joined. The period of a title abbreviation (M. Godefroy,
-    // Mrs. Smith) is not a sentence boundary and doesn't count.
-    let without_titles = TITLE_ABBREVIATION.replace_all(sentence, "$title$name");
-    // A run like `?!` or `!!!` is one mark, not several sentences.
-    let punct_count = without_titles
-        .chars()
-        .fold((0, false), |(count, in_run), c| {
-            let terminal = matches!(c, '.' | '!' | '?');
-            (count + usize::from(terminal && !in_run), terminal)
-        })
-        .0;
-
-    if punct_count > 1 {
-        return false;
-    }
-
-    // 7. Skip sentences with numbers
-    if sentence.chars().any(|c| c.is_numeric()) {
-        return false;
-    }
-
-    // 8. Skip sentences with encoding corruption or garbage characters
-    if has_encoding_corruption(sentence) {
-        return false;
-    }
-
-    // 9. Skip ALL_CAPS sentences (shouting in subtitles)
-    {
-        let alpha_chars: Vec<char> = sentence.chars().filter(|c| c.is_alphabetic()).collect();
-        if alpha_chars.len() >= 2 && alpha_chars.iter().all(|c| c.is_uppercase()) {
-            return false;
-        }
-    }
-
-    // 10. Skip sentences with malformed spacing: a comma or semicolon glued directly
-    // to the next word with no space (e.g. "Vous savez,à avoir un boulot ici.").
-    // Well-formed text always puts a space after these marks.
-    {
-        let mut chars = sentence.chars().peekable();
-        while let Some(c) = chars.next() {
-            if matches!(c, ',' | ';')
-                && let Some(&next) = chars.peek()
-                && next.is_alphabetic()
-            {
-                return false;
-            }
-        }
-    }
-
-    true
-}
-
-/// Check if a sentence has encoding corruption or garbage characters that make it unusable.
-fn has_encoding_corruption(sentence: &str) -> bool {
-    // BOM character in text
-    if sentence.contains('\u{FEFF}') {
-        return true;
-    }
-    // &nbsp; HTML entity (common in corrupted subtitle files)
-    if sentence.contains("&nbsp;") {
-        return true;
-    }
-    sentence.chars().any(|c| {
-        matches!(
-            c,
-            // Literal backslash (from corrupted subtitle escapes like \n, \h)
-            '\\' |
-        // @ symbol (not a real word)
-        '@' |
-        // MacRoman encoding artifacts (ˆ instead of à, Ž instead of é)
-        '\u{02C6}' | '\u{017D}' |
-        // Backtick and acute accent used as apostrophe in corrupted subtitles
-        '`' | '\u{00B4}' |
-        // Unicode replacement character (indicates failed decoding)
-        '\u{FFFD}' |
-        // Soft hyphen used incorrectly (e.g., as ¡ in Spanish OCR)
-        '\u{00AD}' |
-        // Zero-width space (typically from copy-paste corruption)
-        '\u{200B}'
-        ) || matches!(c,
-            // C1 control characters indicate mojibake (e.g., U+009C instead of œ)
-            '\u{0080}'..='\u{009F}' |
-            // Greek letter homoglyphs mixed into Latin text (subtitle copy-protection).
-            // These look identical to Latin letters but are different Unicode codepoints.
-            '\u{0370}'..='\u{03FF}'
-        )
-    })
-}
-
-/// Does the text use an apostrophe as a quotation mark — that is, anywhere
-/// other than between two letters?
-fn has_quote_apostrophe(text: &str) -> bool {
-    let chars: Vec<char> = text.chars().collect();
-    chars.iter().enumerate().any(|(i, &c)| {
-        matches!(c, '\'' | '’' | '‘')
-            && !(i > 0
-                && chars[i - 1].is_alphabetic()
-                && chars.get(i + 1).is_some_and(|n| n.is_alphabetic()))
-    })
-}
-
-/// Check if a sentence is "proper" - language-specific validation
-fn is_proper_sentence(text: &str, language: Language) -> bool {
-    if text.is_empty() {
-        return false;
-    }
-
-    // Reject sentences starting with dash/hyphen
-    if text.starts_with('-') || text.starts_with('—') || text.starts_with('–') {
-        return false;
-    }
-
-    let first_char = text.chars().next().unwrap();
-    let last_char = text.chars().last().unwrap();
-
-    // Language-specific checks
-    match language {
-        Language::English
-        | Language::French
-        | Language::Spanish
-        | Language::German
-        | Language::Portuguese
-        | Language::Italian => {
-            // Must start with uppercase letter
-            if !first_char.is_uppercase() || !first_char.is_alphabetic() {
-                return false;
-            }
-
-            // Must end with period, exclamation mark, or question mark
-            if last_char != '.' && last_char != '!' && last_char != '?' {
-                return false;
-            }
-        }
-        Language::Russian => {
-            // Russian sentences should not contain Latin letters
-            if text
-                .chars()
-                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
-            {
-                return false;
-            }
-
-            // Must start with uppercase Cyrillic letter
-            if !first_char.is_uppercase() {
-                return false;
-            }
-
-            // Must end with period, exclamation mark, or question mark
-            if last_char != '.' && last_char != '!' && last_char != '?' {
-                return false;
-            }
-        }
-        Language::ChineseSimplified | Language::ChineseTraditional => {
-            // Chinese sentences should not contain Latin letters (except maybe proper nouns)
-            // But we'll be strict and reject any with Latin letters
-            if text
-                .chars()
-                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
-            {
-                return false;
-            }
-
-            // Must end with Chinese or Western punctuation
-            if last_char != '。'
-                && last_char != '！'
-                && last_char != '？'
-                && last_char != '.'
-                && last_char != '!'
-                && last_char != '?'
-            {
-                return false;
-            }
-        }
-        Language::Japanese => {
-            // Japanese sentences should not contain Latin letters (except maybe proper nouns)
-            // But we'll be strict and reject any with Latin letters
-            if text
-                .chars()
-                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
-            {
-                return false;
-            }
-
-            // Must end with Japanese or Western punctuation
-            if last_char != '。'
-                && last_char != '！'
-                && last_char != '？'
-                && last_char != '.'
-                && last_char != '!'
-                && last_char != '?'
-            {
-                return false;
-            }
-        }
-        Language::Korean => {
-            // Korean sentences should not contain Latin letters
-            if text
-                .chars()
-                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
-            {
-                return false;
-            }
-
-            // Must end with appropriate Korean punctuation or period/exclamation/question
-            if last_char != '.' && last_char != '!' && last_char != '?' {
-                return false;
-            }
-        }
-        Language::Hindi => {
-            // Devanagari script — reject sentences with Latin letters
-            if text
-                .chars()
-                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
-            {
-                return false;
-            }
-            // Must end with Devanagari danda, or Western punctuation
-            if last_char != '।' && last_char != '.' && last_char != '!' && last_char != '?' {
-                return false;
-            }
-        }
-        Language::Thai => {
-            // Thai script — reject sentences with Latin letters
-            if text
-                .chars()
-                .any(|c| c.is_ascii_lowercase() || c.is_ascii_uppercase())
-            {
-                return false;
-            }
-            // Must start with a Thai-script character. No requirement on the
-            // last character: Thai does not use sentence-final punctuation.
-            if !('\u{0E00}'..='\u{0E7F}').contains(&first_char) {
-                return false;
-            }
-        }
-    }
-
-    // Reject sentences with quotation marks (often dialogue or non-standard).
-    // An apostrophe *inside* a word is elision or contraction (c'est, l'ami,
-    // don't) and stays; one at a word edge is a quote and goes.
-    if text.contains(['"', '“', '”', '„']) || has_quote_apostrophe(text) {
-        return false;
-    }
-
-    // Reject sentences with special characters that indicate non-standard text
-    if text.contains('~') || text.contains('*') || text.contains('_') {
-        return false;
-    }
-
-    // Reject sentences with slashes (subtitle line-break markers or other artifacts)
-    if text.contains('/') || text.contains('\\') {
-        return false;
-    }
-
-    // Reject sentences containing `j"` (a subtitle OCR/encoding artifact)
-    if text.contains("j\"") {
-        return false;
-    }
-
-    // Reject sentences with colons (often speaker attribution in subtitles)
-    if text.contains(':') {
-        return false;
-    }
-
-    true
 }
 
 #[cfg(test)]

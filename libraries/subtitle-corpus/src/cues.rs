@@ -57,58 +57,7 @@ pub fn course_code_full(original_language: &str) -> Option<&'static str> {
     })
 }
 
-pub fn repair_latin_homoglyphs(text: &str) -> String {
-    let latin = text.chars().filter(|c| c.is_ascii_alphabetic()).count();
-    let confusable = text
-        .chars()
-        .filter(|c| ('\u{0370}'..='\u{03FF}').contains(c) || ('\u{0400}'..='\u{04FF}').contains(c))
-        .count();
-    if confusable == 0 || confusable * 3 > latin.max(1) {
-        return text.to_string();
-    }
-    text.chars()
-        .map(|c| match c {
-            // Greek capitals that are visual twins of Latin ones.
-            'Α' => 'A',
-            'Β' => 'B',
-            'Ε' => 'E',
-            'Ζ' => 'Z',
-            'Η' => 'H',
-            'Ι' => 'I',
-            'Κ' => 'K',
-            'Μ' => 'M',
-            'Ν' => 'N',
-            'Ο' => 'O',
-            'Ρ' => 'P',
-            'Τ' => 'T',
-            'Υ' => 'Y',
-            'Χ' => 'X',
-            'ο' => 'o',
-            'ν' => 'v',
-            'ι' => 'i',
-            // Cyrillic capitals likewise.
-            'А' => 'A',
-            'В' => 'B',
-            'Е' => 'E',
-            'К' => 'K',
-            'М' => 'M',
-            'Н' => 'H',
-            'О' => 'O',
-            'Р' => 'P',
-            'С' => 'C',
-            'Т' => 'T',
-            'Х' => 'X',
-            'У' => 'Y',
-            'а' => 'a',
-            'е' => 'e',
-            'о' => 'o',
-            'с' => 'c',
-            'р' => 'p',
-            'х' => 'x',
-            other => other,
-        })
-        .collect()
-}
+pub use movie_subtitles::sentences::repair_latin_homoglyphs;
 
 /// How subtitle/transcript text is split into comparable agreement units.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

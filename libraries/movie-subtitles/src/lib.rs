@@ -294,6 +294,7 @@ pub fn strip_html_tags(text: &str) -> String {
 }
 
 pub mod segment;
+pub mod sentences;
 
 #[cfg(test)]
 mod tests {

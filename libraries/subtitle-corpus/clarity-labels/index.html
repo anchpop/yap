@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>clarity labels</title>
+<script>
+  const t = localStorage.theme;
+  if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches))
+    document.documentElement.classList.add("dark");
+</script>
+<style>
+  :root {
+    --bg: #ffffff; --card: oklch(0.975 0 0); --fg: oklch(0.145 0 0);
+    --muted: oklch(0.45 0 0); --border: oklch(0 0 0 / 10%);
+    color-scheme: light;
+  }
+  .dark {
+    --bg: oklch(0.145 0 0); --card: oklch(0.205 0 0); --fg: oklch(0.985 0 0);
+    --muted: oklch(0.708 0 0); --border: oklch(1 0 0 / 10%);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 15px/1.5 system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  main { max-width: 42rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
+  header { display: flex; justify-content: space-between; align-items: baseline;
+           padding: 1rem 0 0.25rem; }
+  header .name { font-size: 14px; }
+  header button { background: none; border: 0; color: var(--muted);
+                  cursor: pointer; font-size: 12px; padding: 0; }
+  #stats { color: var(--muted); font-size: 12px; padding-bottom: 0.75rem;
+           border-bottom: 1px solid var(--border); }
+  #sentence { font-size: 1.25rem; margin: 2rem 0 0.5rem; min-height: 3rem; }
+  #meta { color: var(--muted); font-size: 12px; margin-bottom: 1rem; }
+  .dim { margin-top: 1rem; }
+  .dim .label { color: var(--muted); font-size: 11px; text-transform: uppercase;
+                letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+  .dim .opts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .opts button { border: 1px solid var(--border); background: var(--card);
+                 color: var(--fg); border-radius: 9999px; padding: 0.35rem 0.9rem;
+                 font-size: 13px; cursor: pointer; }
+  .opts button:hover { border-color: var(--muted); }
+  .opts button.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .opts button b { color: inherit; opacity: 0.55; font-weight: 400; margin-right: 0.4ch; }
+  #controls { margin-top: 1.5rem; display: flex; gap: 0.75rem; align-items: center;
+              flex-wrap: wrap; }
+  #next { background: var(--fg); color: var(--bg); border: 0; border-radius: 9999px;
+          padding: 0.35rem 1.1rem; font-size: 13px; cursor: pointer; }
+  .ghost { background: var(--card); color: var(--fg);
+           border: 1px solid var(--border); border-radius: 9999px;
+           padding: 0.35rem 0.9rem; font-size: 13px; cursor: pointer; }
+  #hint { color: var(--muted); font-size: 12px; width: 100%; }
+  #who { margin: 2rem 0; }
+  #who input { background: var(--card); color: var(--fg);
+               border: 1px solid var(--border); border-radius: 0.5rem;
+               padding: 0.4rem 0.7rem; font-size: 14px; }
+  #done { display: none; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 3rem;
+           border-top: 1px solid var(--border); padding-top: 0.5rem;
+           display: flex; justify-content: space-between; gap: 1rem; }
+  footer button { background: none; border: 0; color: var(--muted);
+                  cursor: pointer; font-size: 12px; padding: 0; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="name mono">clarity labels</span>
+    <button id="theme" class="mono"></button>
+  </header>
+  <div id="stats" class="mono"></div>
+
+  <section id="who">
+    <div class="mono" style="font-size:12px;color:var(--muted);margin-bottom:0.5rem">your name — labels are saved under it</div>
+    <input id="whoname" class="mono" placeholder="name" autocomplete="off">
+    <button id="whogo" class="ghost mono" style="margin-left:0.5rem">start</button>
+  </section>
+
+  <section id="grader" style="display:none">
+    <div id="sentence"></div>
+    <div id="meta" class="mono"></div>
+    <audio id="player" preload="auto"></audio>
+
+    <div class="dim">
+      <div class="label mono">phonation</div>
+      <div class="opts mono" data-dim="phonation">
+        <button data-v="voiced"><b>1</b>voiced</button>
+        <button data-v="whispered"><b>2</b>whispered</button>
+      </div>
+    </div>
+    <div class="dim">
+      <div class="label mono">articulation</div>
+      <div class="opts mono" data-dim="articulation">
+        <button data-v="enunciated"><b>3</b>enunciated</button>
+        <button data-v="mumbled"><b>4</b>mumbled</button>
+      </div>
+    </div>
+    <div class="dim">
+      <div class="label mono">background</div>
+      <div class="opts mono" data-dim="background">
+        <button data-v="isolated"><b>5</b>isolated</button>
+        <button data-v="music"><b>6</b>music</button>
+        <button data-v="minor-noise"><b>7</b>minor noise</button>
+        <button data-v="bothersome-noise"><b>0</b>bothersome noise</button>
+      </div>
+    </div>
+
+    <div class="dim">
+      <div class="label mono">singing</div>
+      <div class="opts mono" data-dim="singing">
+        <button data-v="not-singing"><b>q</b>not singing</button>
+        <button data-v="singing"><b>w</b>singing</button>
+        <button data-v="spoken-weirdly"><b>e</b>spoken weirdly</button>
+      </div>
+    </div>
+    <div class="dim">
+      <div class="label mono">text</div>
+      <div class="opts mono" data-dim="text">
+        <button data-v="accurate"><b>t</b>accurate</button>
+        <button data-v="inaccurate"><b>x</b>inaccurate</button>
+      </div>
+      <input id="note" class="mono" placeholder="what you actually heard" style="display:none;margin-top:0.5rem;width:100%;background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:0.5rem;padding:0.4rem 0.7rem;font-size:13px">
+    </div>
+    <div class="dim">
+      <div class="label mono">accent</div>
+      <div class="opts mono" data-dim="accent">
+        <button data-v="no-accent"><b>d</b>no accent</button>
+        <button data-v="accent"><b>a</b>accent</button>
+      </div>
+    </div>
+
+    <div class="dim">
+      <div class="label mono">overall</div>
+      <div class="opts mono" data-dim="overall">
+        <button data-v="beginner"><b>8</b>good for beginning students</button>
+        <button data-v="advanced"><b>9</b>good for advanced students</button>
+        <button data-v="hard"><b>p</b>not good for students</button>
+      </div>
+    </div>
+
+    <div id="controls">
+      <button id="next" class="mono">next</button>
+      <button id="replay" class="ghost mono">replay</button>
+      <label class="mono" style="display:flex;align-items:center;gap:0.4rem;color:var(--muted);font-size:12px">vol
+        <input id="vol" type="range" min="-30" max="30" step="1" style="width:9rem;accent-color:var(--fg)">
+        <span id="voldb" style="min-width:4ch"></span>
+      </label>
+      <button id="undo" class="ghost mono" style="margin-left:auto;margin-top:1.5rem;color:var(--muted);border-style:dashed">undo</button>
+      <span id="hint" class="mono">every axis optional — leave blank if unsure · space replay · enter next · u undo · 1–9 toggle</span>
+    </div>
+  </section>
+
+  <section id="done">
+    <div class="mono" style="font-size:13px">all clips labeled — thank you. labels are saved on the server; nothing else to do.</div>
+  </section>
+
+  <footer class="mono">
+    <span id="whofoot"></span>
+    <button id="switch">switch labeler</button>
+  </footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const langFilter = params.get("lang");
+let manifest = [], labels = {}, labeler = localStorage.labeler || "";
+let current = {};
+
+const themeBtn = $("theme");
+function paintTheme() {
+  themeBtn.textContent = document.documentElement.classList.contains("dark") ? "light" : "dark";
+}
+themeBtn.onclick = () => {
+  const dark = document.documentElement.classList.toggle("dark");
+  localStorage.theme = dark ? "dark" : "light";
+  paintTheme();
+};
+paintTheme();
+
+function storeKey() { return "clarity_" + labeler; }
+
+async function begin(name) {
+  labeler = name.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+  if (!labeler) return;
+  localStorage.labeler = labeler;
+  labels = JSON.parse(localStorage[storeKey()] || "{}");
+  try {
+    const r = await fetch("labels-" + labeler + ".json", { cache: "no-store" });
+    if (r.ok) labels = { ...labels, ...(await r.json()) };
+  } catch {}
+  localStorage[storeKey()] = JSON.stringify(labels);
+  $("who").style.display = "none";
+  $("whofoot").textContent = "labeling as " + labeler + (langFilter ? " · " + langFilter + " only" : "");
+  paint();
+}
+$("whogo").onclick = () => begin($("whoname").value);
+$("whoname").addEventListener("keydown", e => { if (e.key === "Enter") begin($("whoname").value); });
+$("switch").onclick = () => { delete localStorage.labeler; location.reload(); };
+
+function queue() { return manifest.filter(m => !langFilter || m.lang === langFilter); }
+function next() { return queue().find(m => !(m.id in labels)); }
+
+function save() {
+  localStorage[storeKey()] = JSON.stringify(labels);
+  fetch("/labels/" + labeler, { method: "POST", body: JSON.stringify(labels) }).catch(() => {});
+}
+
+function paintDims() {
+  document.querySelectorAll(".opts button").forEach(b => {
+    const dim = b.parentElement.dataset.dim;
+    b.classList.toggle("on", current[dim] === b.dataset.v);
+  });
+  $("note").style.display = current.text === "inaccurate" ? "block" : "none";
+}
+
+function paint() {
+  if (!labeler) return;
+  const q = queue(), done = q.filter(m => m.id in labels).length;
+  $("stats").textContent = `${q.length} clips · ${done} labeled · ${q.length - done} left`;
+  const m = next();
+  if (!m) { $("grader").style.display = "none"; $("done").style.display = "block"; return; }
+  $("grader").style.display = "block"; $("done").style.display = "none";
+  current = {};
+  $("note").value = "";
+  paintDims();
+  $("sentence").textContent = m.sentence;
+  $("meta").textContent = `clip ${String(m.id).padStart(3, "0")} · ${m.lang}`;
+  const p = $("player");
+  p.src = `clips/${String(m.id).padStart(3, "0")}.mp3`;
+  p.play().catch(() => {});
+}
+
+function advance() {
+  const m = next();
+  if (!m) return;
+  const entry = { ...current };
+  if (entry.text === "inaccurate" && $("note").value.trim())
+    entry.note = $("note").value.trim();
+  entry.volume_db = +vol.value;
+  labels[m.id] = entry;
+  save();
+  resetVol();
+  paint();
+}
+
+function undo() {
+  const done = queue().filter(m => m.id in labels);
+  if (!done.length) return;
+  delete labels[done[done.length - 1].id];
+  save();
+  resetVol();
+  paint();
+}
+
+document.querySelectorAll(".opts button").forEach(b => b.onclick = () => {
+  const dim = b.parentElement.dataset.dim;
+  current[dim] = current[dim] === b.dataset.v ? undefined : b.dataset.v;
+  paintDims();
+});
+const vol = $("vol");
+vol.value = localStorage.voldb ?? "0";
+let gain = null;
+function applyVol() {
+  const db = +vol.value;
+  $("voldb").textContent = (db > 0 ? "+" : "") + db + "dB";
+  const lin = Math.pow(10, db / 20);
+  if (db > 0 && !gain) {
+    const ctx = new AudioContext();
+    gain = ctx.createGain();
+    ctx.createMediaElementSource($("player")).connect(gain);
+    gain.connect(ctx.destination);
+    const resume = () => ctx.resume();
+    resume();
+    addEventListener("pointerdown", resume);
+    addEventListener("keydown", resume);
+  }
+  if (gain) { $("player").volume = 1; gain.gain.value = lin; }
+  else $("player").volume = lin;
+}
+applyVol();
+vol.oninput = () => { localStorage.voldb = vol.value; applyVol(); };
+function resetVol() { vol.value = "0"; localStorage.voldb = "0"; applyVol(); }
+$("next").onclick = advance;
+$("replay").onclick = () => { $("player").currentTime = 0; $("player").play(); };
+$("undo").onclick = undo;
+const keymap = { "1": ["phonation", "voiced"], "2": ["phonation", "whispered"],
+                 "3": ["articulation", "enunciated"], "4": ["articulation", "mumbled"],
+                 "5": ["background", "isolated"], "6": ["background", "music"],
+                 "7": ["background", "minor-noise"],
+                 "0": ["background", "bothersome-noise"],
+                 "8": ["overall", "beginner"], "9": ["overall", "advanced"],
+                 "p": ["overall", "hard"],
+                 "q": ["singing", "not-singing"], "w": ["singing", "singing"],
+                 "e": ["singing", "spoken-weirdly"],
+                 "t": ["text", "accurate"], "x": ["text", "inaccurate"],
+                 "d": ["accent", "no-accent"], "a": ["accent", "accent"] };
+addEventListener("keydown", e => {
+  if (document.activeElement === $("whoname")) return;
+  if (document.activeElement === $("note")) {
+    if (e.key === "Enter") { e.preventDefault(); advance(); }
+    return;
+  }
+  if (e.key === " ") { e.preventDefault(); $("replay").onclick(); }
+  else if (e.key === "Enter") advance();
+  else if (e.key === "u") undo();
+  else if (keymap[e.key]) {
+    const [dim, v] = keymap[e.key];
+    current[dim] = current[dim] === v ? undefined : v;
+    paintDims();
+  }
+});
+
+fetch("manifest.json").then(r => r.json()).then(m => {
+  manifest = m;
+  if (labeler) begin(labeler); else $("whoname").focus();
+}).catch(() => { $("stats").textContent = "manifest.json failed to load"; });
+</script>
+</body>
+</html>

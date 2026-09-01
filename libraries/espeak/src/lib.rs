@@ -244,6 +244,39 @@ fn invoke_failure_context(binary: &str) -> String {
 /// - `ESPEAK_NG_DATA_PATH` — directory containing the `espeak-ng-data`
 ///   subdirectory. Passed as `--path=…` when set. Required for custom
 ///   builds that don't install data to `/usr/local/share/espeak-ng-data`.
+/// A digest identifying *which* espeak produces this process's phonemes:
+/// the resolved binary's bytes, plus the phoneme table when a data path is
+/// pinned. Cached artifacts stamped with this can never be mistaken for the
+/// output of a different build — and a missing binary fails here, loudly,
+/// instead of surfacing as a thousand per-sentence rejects.
+pub fn identity() -> Result<String> {
+    use xxhash_rust::xxh3::xxh3_64;
+    let binary = espeak_binary();
+    let path = if binary.contains('/') {
+        std::path::PathBuf::from(&binary)
+    } else {
+        std::env::var_os("PATH")
+            .and_then(|paths| {
+                std::env::split_paths(&paths).find_map(|dir| {
+                    let p = dir.join(&binary);
+                    p.is_file().then_some(p)
+                })
+            })
+            .ok_or_else(|| anyhow::anyhow!("espeak binary {binary:?} not on PATH"))?
+    };
+    let mut h = xxh3_64(
+        &std::fs::read(&path)
+            .map_err(|e| anyhow::anyhow!("espeak binary {} unreadable: {e}", path.display()))?,
+    );
+    if let Ok(data) = std::env::var("ESPEAK_NG_DATA_PATH") {
+        let phontab = std::path::Path::new(&data).join("espeak-ng-data/phontab");
+        if let Ok(bytes) = std::fs::read(&phontab) {
+            h ^= xxh3_64(&bytes).rotate_left(1);
+        }
+    }
+    Ok(format!("{h:016x}"))
+}
+
 pub fn phonemize_phrase(text: &str, language: Language) -> Result<Option<Vec<String>>> {
     let Some(code) = language.espeak_code() else {
         return Ok(None);
